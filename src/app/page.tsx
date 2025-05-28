@@ -53,10 +53,9 @@ export default function Home() {
 
         {/* Audience Sections */}
         <section className="my-16 grid md:grid-cols-3 gap-8">
-          <div className="card bg-base-200 shadow-xl">
-            <figure className="px-10 pt-10">
+          <div className="card bg-base-200 shadow-xl">            <figure className="px-10 pt-10">
               {/* Placeholder for Kids Book Image */}
-              <Image src="/SampleBooks/A_Bea_tem_um_macaco_no_nariz.jpg" alt="Kids Book" width={300} height={200} className="rounded-xl" />
+              <Image src="/SampleBooks/A_bea_tem_um_macaco_no_nariz.jpg" alt="Kids Book" width={300} height={200} className="rounded-xl" />
             </figure>
             <div className="card-body items-center text-center">
               <h2 className="card-title text-2xl">For Kids 🎈</h2>
@@ -81,10 +80,9 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="card bg-base-200 shadow-xl">
-            <figure className="px-10 pt-10">
+          <div className="card bg-base-200 shadow-xl">            <figure className="px-10 pt-10">
               {/* Placeholder for Company Book Image */}
-              <Image src="/SampleBooks/centralcasa.jpg" alt="Company Book" width={300} height={200} className="rounded-xl" />
+              <Image src="/SampleBooks/CentralCasa.jpg" alt="Company Book" width={300} height={200} className="rounded-xl" />
             </figure>
             <div className="card-body items-center text-center">
               <h2 className="card-title text-2xl">For Companies 🌟</h2>

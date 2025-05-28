@@ -20,9 +20,9 @@ steps:
       - '--build-arg'
       - 'NEXTAUTH_SECRET=your-development-secret'
       - '--build-arg'
-      - 'NEXTAUTH_URL=https://mythoria-webapp-803421888801.us-central1.run.app'
+      - 'NEXTAUTH_URL=https://mythoria.pt'
       - '--build-arg'
-      - 'DB_HOST=34.155.187.193'
+      - 'DB_HOST=10.19.192.3'
       - '--build-arg'
       - 'DB_PORT=5432'
       - '--build-arg'
@@ -39,7 +39,7 @@ steps:
       - 'push'
       - 'gcr.io/$PROJECT_ID/mythoria-webapp'
 
-  # Deploy container image to Cloud Run
+  # Deploy container image to Cloud Run with VPC egress
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -47,13 +47,20 @@ steps:
       - 'deploy'
       - 'mythoria-webapp'
       - '--image'
-      - 'gcr.io/$PROJECT_ID/mythoria-webapp'      - '--region'
+      - 'gcr.io/$PROJECT_ID/mythoria-webapp'
+      - '--region'
       - 'europe-west9'
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
+      - '--vpc-egress'
+      - 'all-traffic'
+      - '--network'
+      - 'default'
+      - '--subnet'
+      - 'default'
       - '--set-env-vars'
-      - 'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_ZXhjaXRpbmctaWJleC0xMi5jbGVyay5hY2NvdW50cy5kZXYk,CLERK_SECRET_KEY=sk_test_OzLRy8KzN94cyMmQQSWE2TYKUo8JvWdfnso4dBkbda,NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in,NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up,NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/,NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/,NEXTAUTH_SECRET=your-development-secret,NEXTAUTH_URL=https://mythoria-webapp-803421888801.us-central1.run.app,DB_HOST=34.155.187.193,DB_PORT=5432,DB_USER=postgres,DB_PASSWORD=Mythoria1GCould,DB_NAME=mythoria_db'
+      - 'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_ZXhjaXRpbmctaWJleC0xMi5jbGVyay5hY2NvdW50cy5kZXYk,CLERK_SECRET_KEY=sk_test_OzLRy8KzN94cyMmQQSWE2TYKUo8JvWdfnso4dBkbda,NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in,NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up,NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/,NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/,NEXTAUTH_SECRET=your-development-secret,NEXTAUTH_URL=https://mythoria-webapp-803421888801.europe-west9.run.app,DB_HOST=10.19.192.3,DB_PORT=5432,DB_USER=postgres,DB_PASSWORD=Mythoria1GCould,DB_NAME=mythoria_db'
 
 images:
   - 'gcr.io/$PROJECT_ID/mythoria-webapp'
