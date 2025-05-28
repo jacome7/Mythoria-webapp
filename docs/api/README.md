@@ -2,27 +2,23 @@
 
 ## Overview
 
-The Mythoria API provides RESTful endpoints for managing stories, users, and application health. All endpoints return JSON responses and follow standard HTTP status codes.
+RESTful API for managing stories, users, and application health. All endpoints return JSON and use standard HTTP status codes.
 
-## Base URL
-
+## Base URLs
 - **Production**: `https://mythoria.pt/api`
 - **Development**: `http://localhost:3000/api`
 
 ## Authentication
 
-Authentication is handled by Clerk. Protected endpoints require a valid session token.
-
-### Headers
+Protected endpoints require Clerk session token:
 ```http
 Authorization: Bearer <clerk_session_token>
 Content-Type: application/json
 ```
 
-## API Standards
+## Response Format
 
-### Response Format
-All API responses follow this structure:
+All responses follow this structure:
 ```json
 {
   "success": boolean,
@@ -31,24 +27,71 @@ All API responses follow this structure:
     "message": string,
     "code": string
   } | null,
-  "timestamp": string (ISO 8601)
+  "timestamp": string
 }
 ```
 
-### HTTP Status Codes
+## Status Codes
 - `200` - Success
-- `201` - Created
+- `201` - Created  
 - `400` - Bad Request
 - `401` - Unauthorized
-- `403` - Forbidden
 - `404` - Not Found
-- `500` - Internal Server Error
+- `500` - Server Error
 
-### Pagination
-For paginated endpoints:
+## Endpoints
+
+### Health & Configuration
+```
+GET /api/health                # Health check
+GET /api/config/check          # Configuration validation
+```
+
+### Authentication
+```
+GET /api/auth/me               # Current user info
+POST /api/webhooks             # Clerk user sync webhook
+```
+
+### Stories
+```
+GET /api/stories               # List all stories
+POST /api/stories              # Create new story
+GET /api/stories/{id}          # Get story by ID
+PUT /api/stories/{id}          # Update story
+DELETE /api/stories/{id}       # Delete story
+```
+
+### Users
+```
+GET /api/users                 # List users
+GET /api/users/{id}            # Get user by ID
+PUT /api/users/{id}            # Update user
+```
+
+## Error Handling
+
+Errors include descriptive messages and appropriate status codes:
 ```json
 {
-  "success": true,
+  "success": false,
+  "data": null,
+  "error": {
+    "message": "Story not found",
+    "code": "STORY_NOT_FOUND"
+  },
+  "timestamp": "2025-05-29T10:00:00.000Z"
+}
+```
+
+## Rate Limiting
+
+- **Development**: No limits
+- **Production**: 100 requests per minute per IP
+
+---
+
+*For detailed endpoint specifications, see the OpenAPI documentation at `/api/docs`*
   "data": {
     "items": [...],
     "pagination": {

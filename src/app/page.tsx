@@ -4,8 +4,36 @@ import Image from "next/image";
 import Link from "next/link"; // For CTAs if needed
 import { TypeAnimation } from 'react-type-animation';
 import StoryCounter from "@/components/StoryCounter"; // Added import
+import QuoteOfTheDay from "@/components/QuoteOfTheDay";
 
 export default function Home() {
+  // Define the words array
+  const words = [
+    'Story', 'Adventure', 'Book', 'Romance', 'Novel', 'Memories', 
+    'Manuscript', 'Chronicle', 'Tale', 'Fiction', 'Myth', 'Fable', 
+    'Odyssey', 'Prose'
+  ];
+
+  // Function to shuffle array using Fisher-Yates algorithm
+  const shuffleArray = (array: string[]) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  // Create randomized sequence for TypeAnimation
+  const createRandomSequence = () => {
+    const shuffledWords = shuffleArray(words);
+    const sequence: (string | number)[] = [];
+    shuffledWords.forEach(word => {
+      sequence.push(word, 1500);
+    });
+    return sequence;
+  };
+
   return (
     <div className="min-h-screen bg-base-100 text-base-content">
       <div className="container mx-auto px-4 py-8">
@@ -17,13 +45,7 @@ export default function Home() {
               <h1 className="text-4xl md:text-5xl font-bold">
                 ✨ Write Your Own<br/>
                 <TypeAnimation
-                  sequence={[
-                    'Story', 1500,
-                    'Adventure', 1500,
-                    'Book', 1500,
-                    'Novel', 1500,
-                    'Memories', 1500,
-                  ]}
+                  sequence={createRandomSequence()}
                   wrapper="span"
                   speed={10}
                   className="text-primary"
@@ -48,8 +70,12 @@ export default function Home() {
                 className="rounded-lg"
               />
             </div>
-          </div>
-        </header>
+          </div>        </header>
+
+        {/* Quote of the Day Section */}
+        <section className="my-16">
+          <QuoteOfTheDay />
+        </section>
 
         {/* Audience Sections */}
         <section className="my-16 grid md:grid-cols-3 gap-8">

@@ -16,16 +16,20 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, name } = await request.json();
+    const { email, name, clerkUserId } = await request.json();
     
-    if (!email || !name) {
+    if (!email || !name || !clerkUserId) {
       return NextResponse.json(
-        { error: "Email and name are required" },
+        { error: "Email, name, and clerkUserId are required" },
         { status: 400 }
       );
     }
 
-    const user = await authorService.createAuthor({ email, displayName: name });
+    const user = await authorService.createAuthor({ 
+      email, 
+      displayName: name, 
+      clerkUserId 
+    });
     return NextResponse.json({ user }, { status: 201 });
   } catch (error) {
     console.error("Error creating user:", error);

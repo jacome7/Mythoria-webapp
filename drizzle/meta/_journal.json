@@ -15,6 +15,13 @@
       "when": 1748273334367,
       "tag": "0001_odd_romulus",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1748472450948,
+      "tag": "0002_curved_rage",
+      "breakpoints": true
     }
   ]
 }

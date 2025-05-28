@@ -14,7 +14,8 @@ export const paymentProviderEnum = pgEnum("payment_provider", ['stripe', 'paypal
 
 // 2.1 Authors (formerly users)
 export const authors = pgTable("authors", {
-  authorId: uuid("author_id").primaryKey().defaultRandom(), // Firebase UID
+  authorId: uuid("author_id").primaryKey().defaultRandom(),
+  clerkUserId: varchar("clerk_user_id", { length: 255 }).notNull().unique(), // Clerk User ID
   displayName: varchar("display_name", { length: 120 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   fiscalNumber: varchar("fiscal_number", { length: 40 }),

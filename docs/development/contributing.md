@@ -1,54 +1,180 @@
 # Contributing to Mythoria
 
-Thank you for your interest in contributing to Mythoria! This document provides guidelines and information for contributors.
+Thank you for contributing to Mythoria! This guide covers everything you need to know.
 
-## Table of Contents
+## Quick Start
 
-- [Code of Conduct](#code-of-conduct)
-- [Getting Started](#getting-started)
-- [Development Workflow](#development-workflow)
-- [Coding Standards](#coding-standards)
-- [Commit Guidelines](#commit-guidelines)
-- [Pull Request Process](#pull-request-process)
-- [Issue Reporting](#issue-reporting)
+1. **Fork and clone** the repository
+2. **Set up** development environment (see [setup.md](./setup.md))
+3. **Create** feature branch: `git checkout -b feature/your-feature`
+4. **Make** your changes
+5. **Test** locally: `npm run test && npm run build`
+6. **Submit** pull request
+
+## Development Workflow
+
+### Branch Naming
+- **Features**: `feature/add-story-comments`
+- **Bug fixes**: `fix/authentication-error`
+- **Documentation**: `docs/update-api-guide`
+- **Refactoring**: `refactor/story-service`
+
+### Commit Guidelines
+
+Use conventional commit format:
+```
+type(scope): description
+
+Examples:
+feat(auth): add social login support
+fix(api): resolve story creation bug
+docs(readme): update setup instructions
+style(components): fix linting issues
+refactor(db): optimize story queries
+test(auth): add login flow tests
+```
+
+### Code Standards
+
+#### TypeScript
+- **Strict mode**: Always enabled
+- **Type safety**: No `any` types
+- **Interfaces**: Prefer over type aliases
+- **Enums**: Use for constants
+
+#### React/Next.js
+- **Functional components**: Prefer over class components
+- **Hooks**: Use built-in hooks appropriately
+- **Server components**: Use when possible (App Router)
+- **Error boundaries**: Implement for user-facing errors
+
+#### Styling
+- **Tailwind CSS**: Primary styling framework
+- **DaisyUI**: For component consistency
+- **Responsive**: Mobile-first approach
+- **Accessibility**: Follow WCAG guidelines
+
+#### Database
+- **Drizzle ORM**: Use typed queries
+- **Migrations**: Always generate for schema changes
+- **Indexing**: Consider performance implications
+- **Transactions**: Use for multi-step operations
+
+### Testing
+
+#### Required Tests
+- **Unit tests**: All utility functions
+- **Component tests**: React components
+- **API tests**: All endpoints
+- **Integration tests**: Critical user flows
+
+#### Testing Standards
+```bash
+# Run all tests
+npm run test
+
+# Run with coverage
+npm run test:coverage
+
+# Run specific test file
+npm run test auth.test.ts
+
+# Run in watch mode
+npm run test:watch
+```
+
+### Pull Request Process
+
+#### Before Submitting
+- [ ] All tests pass locally
+- [ ] Code follows style guidelines
+- [ ] Documentation updated if needed
+- [ ] No console.log statements left
+- [ ] TypeScript compiles without errors
+
+#### PR Description Template
+```markdown
+## Description
+Brief description of changes
+
+## Type of Change
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Breaking change
+- [ ] Documentation update
+
+## Testing
+- [ ] Unit tests added/updated
+- [ ] Manual testing completed
+- [ ] Edge cases considered
+
+## Screenshots (if applicable)
+Add screenshots for UI changes
+```
+
+#### Review Process
+1. **Automated checks** must pass
+2. **Code review** by maintainer
+3. **Testing** in staging environment
+4. **Approval** and merge
 
 ## Code of Conduct
 
-### Our Pledge
-
-We are committed to making participation in this project a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, nationality, personal appearance, race, religion, or sexual identity and orientation.
-
-### Expected Behavior
-
+### Our Standards
 - Use welcoming and inclusive language
-- Be respectful of differing viewpoints and experiences
-- Gracefully accept constructive criticism
-- Focus on what is best for the community
-- Show empathy towards other community members
+- Be respectful of different viewpoints
+- Accept constructive feedback gracefully
+- Focus on what's best for the community
+- Show empathy towards other contributors
 
-## Getting Started
+### Unacceptable Behavior
+- Harassment or discriminatory language
+- Personal attacks or trolling
+- Public or private harassment
+- Publishing others' private information
+- Other unprofessional conduct
 
-### Prerequisites
+## Getting Help
 
-Before contributing, make sure you have:
+### Resources
+- **Setup Issues**: See [setup.md](./setup.md)
+- **API Questions**: Check [API docs](../api/README.md)
+- **Architecture**: Review [architecture overview](../architecture/overview.md)
 
-- Node.js 18+ installed
-- PostgreSQL 15+ running locally
-- Git configured with your GitHub account
-- A code editor (VS Code recommended)
+### Support Channels
+- **GitHub Issues**: Bug reports and feature requests
+- **GitHub Discussions**: General questions and ideas
+- **Pull Request Comments**: Code-specific discussions
 
-### Setup Development Environment
+### Maintainer Response Times
+- **Bug reports**: 2-3 business days
+- **Feature requests**: 1 week
+- **Pull requests**: 3-5 business days
+- **Security issues**: 24 hours
 
-1. **Fork and clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/mythoria-webapp.git
-   cd mythoria-webapp
-   ```
+## Development Tips
 
-2. **Run the setup script**
-   ```bash
-   bash scripts/setup-env.sh
-   ```
+### Performance
+- Use React.memo() for expensive components
+- Implement proper loading states
+- Optimize database queries
+- Use Next.js Image component for images
+
+### Security
+- Validate all inputs on server side
+- Use environment variables for secrets
+- Implement proper authentication checks
+- Follow OWASP security guidelines
+
+### Accessibility
+- Use semantic HTML elements
+- Provide alt text for images
+- Ensure keyboard navigation works
+- Test with screen readers
+
+---
+
+Thank you for contributing to Mythoria! 🎭
 
 3. **Start development server**
    ```bash

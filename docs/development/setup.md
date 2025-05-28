@@ -1,54 +1,151 @@
 # Development Setup Guide
 
-This guide will help you set up your local development environment for the Mythoria project.
+Quick setup for local Mythoria development environment.
 
 ## Prerequisites
 
-- **Node.js** 18+ 
+- **Node.js** 18+
 - **PostgreSQL** 15+
-- **Google Cloud SDK** (gcloud CLI)
+- **Google Cloud SDK** (for deployment)
 - **Git**
 
-## Quick Start
+## Quick Setup
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd mythoria-webapp
-   ```
+```bash
+# 1. Clone and install
+git clone <repository-url>
+cd mythoria-webapp
+npm install
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+# 2. Environment setup
+copy .env.example .env.local
+```
 
-3. **Set up environment variables**
-   ```bash
-   # Copy the example environment file
-   copy .env.example .env.local
-   ```
+## Environment Configuration
 
-4. **Configure your `.env.local` file** with:
-   ```env
-   # Database Configuration
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_NAME=mythoria_db_dev
-   DB_USER=postgres
-   DB_PASSWORD=your_local_password
+Edit `.env.local` with your credentials:
 
-   # Clerk Authentication (Development Keys)
-   CLERK_SECRET_KEY=sk_test_your_development_key
-   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_development_key
-   NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-   NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-   NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
-   NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
+```env
+# Database
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=mythoria_db_dev
+DB_USER=postgres
+DB_PASSWORD=your_local_password
 
-   # NextAuth Configuration
-   NEXTAUTH_URL=http://localhost:3000
-   NEXTAUTH_SECRET=your-local-development-secret
-   ```
+# Clerk Authentication (Development)
+CLERK_SECRET_KEY=sk_test_your_development_key
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_development_key
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
+CLERK_WEBHOOK_SIGNING_SECRET=whsec_your_development_secret
+
+# NextAuth (if using)
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-local-development-secret
+```
+
+## Database Setup
+
+```bash
+# Create local database
+createdb mythoria_db_dev
+
+# Apply schema and seed data
+npm run db:push
+npm run db:seed
+```
+
+## Authentication Setup
+
+### Clerk Configuration
+1. Create account at [Clerk Dashboard](https://dashboard.clerk.com/)
+2. Create new application
+3. Copy development keys to `.env.local`
+4. Configure URLs:
+   - Sign-in: `/sign-in`
+   - Sign-up: `/sign-up`
+   - After auth: `/dashboard`
+
+### Webhook Setup (Required for user sync)
+```bash
+# Install ngrok for local development
+npm install -g ngrok
+
+# Start ngrok tunnel
+ngrok http 3000
+
+# In Clerk Dashboard > Webhooks:
+# - URL: https://your-ngrok-url.ngrok.io/api/webhooks
+# - Events: user.created, user.updated, user.deleted
+# - Copy signing secret to .env.local
+```
+
+## Start Development
+
+```bash
+# Start development server
+npm run dev
+
+# Open in browser
+# http://localhost:3000
+```
+
+## Available Scripts
+
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run test         # Run tests
+npm run lint         # Run ESLint
+
+# Database commands
+npm run db:generate  # Generate migrations
+npm run db:migrate   # Apply migrations
+npm run db:push      # Push schema (dev only)
+npm run db:seed      # Seed with sample data
+npm run db:studio    # Open Drizzle Studio
+```
+
+## Development Tools
+
+### Recommended VS Code Extensions
+- TypeScript
+- ESLint
+- Prettier
+- Tailwind CSS IntelliSense
+- Auto Rename Tag
+
+### Database Tools
+- **Drizzle Studio**: `npm run db:studio`
+- **pgAdmin**: GUI for PostgreSQL
+- **VS Code PostgreSQL**: Direct DB access
+
+## Troubleshooting
+
+### Common Issues
+
+**Database connection error**:
+- Check PostgreSQL is running
+- Verify credentials in `.env.local`
+- Ensure database exists
+
+**Clerk authentication not working**:
+- Verify environment variables
+- Check ngrok tunnel is active
+- Validate webhook configuration
+
+**Build failures**:
+- Clear Next.js cache: `rm -rf .next`
+- Clear node_modules: `rm -rf node_modules && npm install`
+- Check TypeScript errors: `npm run type-check`
+
+---
+
+*For contribution guidelines, see [contributing.md](./contributing.md)*
 
 ## Database Setup
 

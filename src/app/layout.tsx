@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" data-theme="forest">
+      <html lang="en" data-theme="autumn">
         <body>
           <div className="flex flex-col min-h-screen">
             <Header />

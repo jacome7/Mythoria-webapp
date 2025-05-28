@@ -4,13 +4,23 @@ import { eq, and, count } from "drizzle-orm";
 
 // Author operations
 export const authorService = {
-  async createAuthor(authorData: { email: string; displayName: string }) {
+  async createAuthor(authorData: { clerkUserId: string; email: string; displayName: string }) {
+    const [author] = await db.insert(authors).values(authorData).returning();
+    return author;
+  },
+
+  async createAuthorFromClerk(authorData: { clerkUserId: string; email: string; displayName: string }) {
     const [author] = await db.insert(authors).values(authorData).returning();
     return author;
   },
 
   async getAuthorById(authorId: string) {
     const [author] = await db.select().from(authors).where(eq(authors.authorId, authorId));
+    return author;
+  },
+
+  async getAuthorByClerkId(clerkUserId: string) {
+    const [author] = await db.select().from(authors).where(eq(authors.clerkUserId, clerkUserId));
     return author;
   },
 

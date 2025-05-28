@@ -1,53 +1,137 @@
 # Deployment Guide
 
-This guide covers deployment procedures for the Mythoria application to Google Cloud Platform.
+Deploy Mythoria to Google Cloud Platform using Cloud Run and automated CI/CD.
 
-## Overview
-
-The application is deployed using:
-- **Cloud Run** for containerized application hosting
-- **Cloud SQL** for PostgreSQL database
-- **Cloud Build** for CI/CD pipeline
-- **Load Balancer** with SSL termination
-- **Cloud DNS** for domain management
-
-## Prerequisites
-
-- Access to Google Cloud Project: `oceanic-beach-460916-n5`
-- Google Cloud SDK installed and authenticated
-- Docker (for local testing)
-- Project environment variables configured
-
-## Production Deployment
-
-### 1. Pre-deployment Checklist
-
-- [ ] All tests passing locally
-- [ ] Environment variables updated
-- [ ] Database migrations ready
-- [ ] SSL certificates active
-- [ ] DNS properly configured
-
-### 2. Automated Deployment (Recommended)
+## Quick Deploy
 
 ```bash
-# Deploy using Cloud Build
+# Automated deployment (recommended)
 npm run deploy:production
 ```
 
-This triggers the `cloudbuild.yaml` configuration which:
-1. Builds the Docker container
-2. Pushes to Container Registry
+This triggers the Cloud Build pipeline which:
+1. Builds Docker container
+2. Pushes to Container Registry  
 3. Deploys to Cloud Run
 4. Updates traffic routing
 
-### 3. Manual Deployment
+## Prerequisites
+
+- Google Cloud SDK installed and authenticated
+- Access to project: `oceanic-beach-460916-n5`
+- Environment variables configured
+- Tests passing locally
+
+## Production Environment
+
+### Infrastructure
+- **Project**: `oceanic-beach-460916-n5`
+- **Region**: `europe-west9` (Paris)
+- **Service**: `mythoria-webapp`
+- **Domain**: `mythoria.pt`
+
+### Configuration
+- **Container Port**: 8080
+- **Memory**: 512Mi
+- **CPU**: 1000m
+- **Min Instances**: 0
+- **Max Instances**: 3
+- **Timeout**: 300s
+
+## Manual Deployment
 
 If automated deployment fails:
 
 ```bash
-# Build and deploy manually
+# 1. Build locally
+npm run build
+npm run test
+
+# 2. Deploy manually
 gcloud builds submit --config cloudbuild.yaml
+
+# 3. Verify deployment
+curl https://mythoria.pt/api/health
+```
+
+## Environment Variables (Production)
+
+Set these in Cloud Run:
+```bash
+# Database
+DB_HOST=<cloud-sql-private-ip>
+DB_NAME=mythoria_production
+DB_USER=mythoria_user
+DB_PASSWORD=<secure-password>
+
+# Clerk
+CLERK_SECRET_KEY=sk_live_your_production_key
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_your_production_key
+CLERK_WEBHOOK_SIGNING_SECRET=whsec_production_secret
+
+# URLs
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
+```
+
+## Deployment Checklist
+
+### Pre-Deploy
+- [ ] All tests passing locally
+- [ ] Environment variables updated
+- [ ] Database migrations ready
+- [ ] Clerk webhooks configured for production URL
+- [ ] SSL certificates active
+- [ ] DNS properly configured
+
+### Post-Deploy
+- [ ] Health check responds correctly
+- [ ] Authentication flow works
+- [ ] Database connectivity verified
+- [ ] Webhooks receiving events
+- [ ] Performance monitoring active
+
+## Rollback Procedure
+
+```bash
+# Quick rollback to previous version
+gcloud run services update mythoria-webapp \
+  --region=europe-west9 \
+  --image=gcr.io/oceanic-beach-460916-n5/mythoria-webapp:previous-tag
+```
+
+## Monitoring
+
+- **Health Endpoint**: `https://mythoria.pt/api/health`
+- **Logs**: Cloud Logging (GCP Console)
+- **Metrics**: Cloud Monitoring
+- **Uptime**: Cloud Monitoring uptime checks
+
+## Troubleshooting
+
+### Common Issues
+
+**Container won't start**:
+```bash
+# Check logs
+gcloud logs read --service=mythoria-webapp --limit=50
+```
+
+**Database connection failed**:
+- Verify Cloud SQL instance is running
+- Check VPC connector configuration
+- Validate environment variables
+
+**Authentication not working**:
+- Verify Clerk webhook URL is updated for production
+- Check Clerk dashboard configuration
+- Validate environment variables
+
+---
+
+*For hosting infrastructure details, see `hosting.md`*
 
 # Or deploy directly to Cloud Run
 gcloud run deploy mythoria-webapp \

@@ -1,54 +1,100 @@
-# System Architecture Overview
+# Architecture Overview
 
-## Overview
+Modern web application for interactive story sharing, built with cloud-native architecture on Google Cloud Platform.
 
-Mythoria is a modern web application for creating and sharing interactive stories, built with a scalable cloud-native architecture on Google Cloud Platform.
-
-## High-Level Architecture
+## System Architecture
 
 ```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Users/Clients │    │   Load Balancer  │    │   Cloud Run     │
-│                 │────│   (Global)       │────│   Application   │
-│ Web Browsers    │    │   34.160.155.196 │    │   Container     │
-│ Mobile Apps     │    │   SSL Termination│    │   (mythoria-    │
-└─────────────────┘    └──────────────────┘    │   webapp)       │
-                                               └─────────────────┘
-                                                         │
-                       ┌─────────────────┐              │
-                       │   Cloud DNS     │              │
-                       │   mythoria.pt   │              │
-                       └─────────────────┘              │
-                                                         │
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Clerk Auth    │    │   Cloud SQL      │    │   Cloud Build   │
-│   Service       │────│   PostgreSQL 17  │────│   CI/CD         │
-│   (External)    │    │   (Private VPC)  │    │   Pipeline      │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│   Users     │────│Load Balancer│────│ Cloud Run   │
+│             │    │(mythoria.pt)│    │(Container)  │
+└─────────────┘    └─────────────┘    └─────────────┘
+                                              │
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│Clerk Auth   │────│PostgreSQL   │────│Cloud Build  │
+│(External)   │    │(Cloud SQL)  │    │(CI/CD)      │
+└─────────────┘    └─────────────┘    └─────────────┘
 ```
 
-## Technology Stack
+## Tech Stack
 
 ### Frontend
 - **Framework**: Next.js 14 (App Router)
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **UI Components**: Custom React components
-- **Authentication**: Clerk (managed service)
+- **Styling**: Tailwind CSS + DaisyUI
+- **UI**: Custom React components
 
-### Backend
+### Backend  
 - **Runtime**: Node.js
 - **Framework**: Next.js API Routes
-- **Database ORM**: Drizzle ORM
+- **ORM**: Drizzle ORM
 - **Language**: TypeScript
 
 ### Database
-- **Primary Database**: Cloud SQL PostgreSQL 17
-- **Connection**: Private VPC network
-- **Backup**: Automated daily backups (7-day retention)
-- **High Availability**: Zonal (can be upgraded to regional)
+- **Engine**: PostgreSQL 17 (Cloud SQL)
+- **Connection**: Private VPC
+- **Backup**: Daily automated (7-day retention)
+- **High Availability**: Zonal
 
 ### Infrastructure
+- **Hosting**: Cloud Run (containerized)
+- **Domain**: mythoria.pt (Cloud DNS)
+- **SSL**: Google-managed certificates
+- **Region**: Europe West 9 (Paris)
+- **CI/CD**: Cloud Build with GitHub integration
+
+### External Services
+- **Authentication**: Clerk (managed service)
+- **Monitoring**: Cloud Logging + Monitoring
+- **Storage**: Container Registry
+
+## Key Features
+
+### Performance
+- **Auto-scaling**: 0-3 instances based on load
+- **CDN**: Global load balancing
+- **Caching**: Next.js static generation
+- **Database**: Connection pooling
+
+### Security
+- **Authentication**: Clerk with custom UI
+- **Authorization**: Middleware-based route protection
+- **Database**: Private VPC network
+- **SSL**: End-to-end encryption
+- **Webhooks**: Signature verification
+
+### Development
+- **Type Safety**: Full TypeScript coverage
+- **Testing**: Jest + React Testing Library
+- **Linting**: ESLint + Prettier
+- **Git Integration**: Automated deployments
+
+## Data Flow
+
+1. **User Request** → Load Balancer
+2. **Load Balancer** → Cloud Run Container
+3. **Container** → Clerk Authentication (if needed)
+4. **Container** → PostgreSQL Database
+5. **Response** ← Container ← Database
+6. **User** ← Load Balancer ← Container
+
+## Environment Configuration
+
+### Development
+- **URL**: `http://localhost:3000`
+- **Database**: Local PostgreSQL
+- **Authentication**: Clerk test keys
+- **Webhooks**: ngrok tunnel
+
+### Production
+- **URL**: `https://mythoria.pt`
+- **Database**: Cloud SQL (Private IP)
+- **Authentication**: Clerk production keys
+- **Webhooks**: Direct HTTPS
+
+---
+
+*For deployment details, see [Deployment Guide](../deployment/deployment-guide.md)*
 - **Hosting**: Google Cloud Run (Serverless containers)
 - **Load Balancer**: Google Cloud Load Balancer (Global)
 - **SSL/TLS**: Google-managed SSL certificates
