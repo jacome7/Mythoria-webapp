@@ -8,15 +8,12 @@ import {
   addresses,
   NewAuthor,
   NewStory,
-  NewCharacter,
-  NewStoryCharacter,
+  NewCharacter,  NewStoryCharacter,
   NewPaymentMethod,
   NewAddress,
   storyStatusEnum,
-  addressTypeEnum,
   paymentProviderEnum,
 } from "./schema";
-import { sql } from "drizzle-orm";
 
 // Helper to get a random element from an array
 function getRandomElement<T>(arr: T[]): T {
@@ -30,7 +27,6 @@ function getRandomDate(start: Date, end: Date): Date {
 
 // Sample data arrays
 const sampleDisplayNames = ["StoryWeaver", "MythMaker", "TaleSpinner", "WordSmith", "InkSlinger"];
-const sampleEmails = ["user1@example.com", "user2@example.com", "user3@example.com", "user4@example.com", "user5@example.com"];
 const sampleStoryTitles = [
   "The Dragon's Prophecy",
   "Whispers of the Ancient Forest",

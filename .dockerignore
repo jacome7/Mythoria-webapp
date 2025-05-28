@@ -1,0 +1,18 @@
+# .dockerignore
+node_modules
+.git
+.DS_Store
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env.local
+README.md
+Dockerfile*
+docker-compose*
+.gitignore
+.nyc_output
+.vscode
+coverage
+test-connection.js
+DRIZZLE_SETUP.md
+drizzle/

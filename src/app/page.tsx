@@ -133,7 +133,7 @@ export default function Home() {
               <div className="timeline-start md:text-end mb-10">
                 <time className="font-mono italic">Step 3</time>
                 <div className="text-lg font-black">Optional: Upload a photo</div>
-                Or simply describe the characters, and we'll handle the rest.
+                Or simply describe the characters, and we&apos;ll handle the rest.
               </div>
               <hr/>
             </li>
@@ -157,7 +157,7 @@ export default function Home() {
               <div className="timeline-start md:text-end mb-10">
                 <time className="font-mono italic">Step 5</time>
                 <div className="text-lg font-black">Fully customize with unique details!</div>
-                Write or simply speak about all the little details you'd like included. Even include specific products, services, or meaningful family traditions.
+                Write or simply speak about all the little details you&apos;d like included. Even include specific products, services, or meaningful family traditions.
               </div>
               <hr/>
             </li>
@@ -189,7 +189,7 @@ export default function Home() {
             <div>
               <h2 className="text-3xl font-bold mb-4">Why Mythoria?</h2>
               <p className="py-6">
-                We believe reading and imagination are essential to a child's growth and creativity. When children become the heroes of their own stories, they enjoy an unforgettable experience that fosters a lifelong passion for reading and encourages their imagination to soar.
+                We believe reading and imagination are essential to a child&apos;s growth and creativity. When children become the heroes of their own stories, they enjoy an unforgettable experience that fosters a lifelong passion for reading and encourages their imagination to soar.
               </p>
             </div>
           </div>
@@ -206,7 +206,7 @@ export default function Home() {
             <div>
               <h2 className="text-3xl font-bold mb-4">The Perfect Gift: Personal, Meaningful, and Fun 🎁</h2>
               <p className="py-6">
-                A personalized Mythoria book is much more than just a gift—it's a heartfelt, educational, and joyful keepsake. Ideal for birthdays, special occasions, or just to show you care, these stories become treasured memories that last forever.
+                A personalized Mythoria book is much more than just a gift—it&apos;s a heartfelt, educational, and joyful keepsake. Ideal for birthdays, special occasions, or just to show you care, these stories become treasured memories that last forever.
               </p>
               <Link href="/create" className="btn btn-accent">Create a Gift</Link>
             </div>

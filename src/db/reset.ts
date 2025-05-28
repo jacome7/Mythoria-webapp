@@ -49,11 +49,10 @@ async function resetDatabase() {
       'DROP TABLE IF EXISTS __drizzle_migrations CASCADE;'
     ];
     
-    for (const query of dropQueries) {
-      try {
+    for (const query of dropQueries) {      try {
         await pool.query(query);
         console.log(`✅ Executed: ${query}`);
-      } catch (error) {
+      } catch {
         // Ignore errors for tables that don't exist
         console.log(`ℹ️ Skipped: ${query} (table/type doesn't exist)`);
       }

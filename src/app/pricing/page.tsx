@@ -135,9 +135,8 @@ export default function PricingPage() {
 						<div tabIndex={3} className="collapse collapse-plus border border-base-300 bg-base-200 rounded-box">
 							<div className="collapse-title text-xl font-medium flex items-center">
 								<FaQuestionCircle className="mr-2 text-primary" /> How are printed books shipped?
-							</div>
-							<div className="collapse-content">
-								<p>Printed books are shipped via standard postal services. Shipping times and costs may vary depending on your location. You'll see detailed shipping information at checkout when ordering a printed book.</p>
+							</div>							<div className="collapse-content">
+								<p>Printed books are shipped via standard postal services. Shipping times and costs may vary depending on your location. You&apos;ll see detailed shipping information at checkout when ordering a printed book.</p>
 							</div>
 						</div>
 					</div>

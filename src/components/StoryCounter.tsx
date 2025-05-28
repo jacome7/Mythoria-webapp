@@ -20,11 +20,10 @@ const StoryCounter = () => {
           const errData = await response.json();
           if (errData && errData.error) {
             errorBody = errData.error;
-          }
-        } catch (parseError) {
+          }        } catch {
           try {
             errorBody = await response.text();
-          } catch (textError) {
+          } catch {
             errorBody = 'Could not read error response body.';
           }
         }
@@ -44,11 +43,10 @@ const StoryCounter = () => {
         }
       } else {
         throw new Error(`Unexpected count type: ${typeof data.count} value: ${data.count}`);
-      }
-
-    } catch (err: any) {
-      console.error("Failed to fetch story count:", err, err.stack); // Log stack too
-      setError(err.message || "An unknown error occurred while fetching story count.");
+      }    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred while fetching story count.";
+      console.error("Failed to fetch story count:", err); 
+      setError(errorMessage);
       setStoryCount(null); // Clear count on error
     } finally {
       setIsLoading(false);

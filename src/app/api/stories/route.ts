@@ -33,16 +33,16 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { title, content, authorId } = await request.json();
+    const { title, authorId, plotDescription, synopsis } = await request.json(); // Removed content, added plotDescription and synopsis
     
-    if (!title || !content || !authorId) {
+    if (!title || !authorId) { // Removed content from check
       return NextResponse.json(
-        { error: "Title, content, and authorId are required" },
+        { error: "Title and authorId are required" }, // Updated error message
         { status: 400 }
       );
     }
 
-    const story = await storyService.createStory({ title, content, authorId });
+    const story = await storyService.createStory({ title, authorId, plotDescription, synopsis }); // Pass plotDescription and synopsis
     return NextResponse.json({ story }, { status: 201 });
   } catch (error) {
     console.error("Error creating story:", error);

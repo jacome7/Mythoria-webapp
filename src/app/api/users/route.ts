@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { userService } from "@/db/services";
+import { authorService } from "@/db/services";
 
 export async function GET() {
   try {
-    const users = await userService.getAllUsers();
+    const users = await authorService.getAllAuthors();
     return NextResponse.json({ users });
   } catch (error) {
     console.error("Error fetching users:", error);
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const user = await userService.createUser({ email, name });
+    const user = await authorService.createAuthor({ email, displayName: name });
     return NextResponse.json({ user }, { status: 201 });
   } catch (error) {
     console.error("Error creating user:", error);
