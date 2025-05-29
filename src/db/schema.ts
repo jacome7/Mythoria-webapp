@@ -25,6 +25,14 @@ export const authors = pgTable("authors", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+// 2.1.1 Leads (email collection for app launch notifications)
+export const leads = pgTable("leads", {
+  leadId: uuid("lead_id").primaryKey().defaultRandom(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  notifiedAt: timestamp("notified_at", { withTimezone: true }), // Track when we notified them
+});
+
 // 2.2 Payment methods
 export const paymentMethods = pgTable("payment_methods", {
   paymentMethodId: uuid("payment_method_id").primaryKey().defaultRandom(),
@@ -287,3 +295,6 @@ export type NewStoryVersion = typeof storyVersions.$inferInsert;
 
 export type Event = typeof events.$inferSelect;
 export type NewEvent = typeof events.$inferInsert;
+
+export type Lead = typeof leads.$inferSelect;
+export type NewLead = typeof leads.$inferInsert;

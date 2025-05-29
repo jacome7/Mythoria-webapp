@@ -8,7 +8,7 @@ const isPublicRoute = createRouteMatcher([
   '/aboutUs',
   '/pricing',
   '/get-inspired',
-  '/api/health'
+  '/(api|trpc)(.*)'
 ]);
 
 export default clerkMiddleware(async (auth, req) => {

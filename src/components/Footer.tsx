@@ -42,7 +42,6 @@ const Footer = () => {
             {/* Links */}
             <div className="flex flex-col items-end gap-2">
               <Link href="/privacy-policy" className="link link-hover text-sm">Privacy Policy</Link>
-              <Link href="/faq" className="link link-hover text-sm">FAQ</Link>
             </div>
           </div>
         </div>

@@ -17,12 +17,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const showSoonPage = process.env.NEXT_PUBLIC_SHOW_SOON_PAGE === 'true';
+
   return (
     <ClerkProvider>
       <html lang="en" data-theme="autumn">
         <body>
           <div className="flex flex-col min-h-screen">
-            <Header />
+            {!showSoonPage && <Header />}
             <main className="flex-grow">{children}</main>
             <Footer />
           </div>
