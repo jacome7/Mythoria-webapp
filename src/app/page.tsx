@@ -58,10 +58,10 @@ export default function Home() {
               </h1>
               <p className="py-6 text-lg">
                 Craft personalized, AI-powered stories that bring your imagination to life. Perfect for kids, adults, and even your company!
-              </p>
+              </p>{/*}
               <Link href="/create" className="btn btn-primary btn-lg">
                 Try it now
-              </Link>
+              </Link>*/}
             </div>
             {/* Right Side: Logo */}
             <div className="lg:w-1/2 flex justify-center lg:justify-end mt-8 lg:mt-0">
@@ -217,7 +217,6 @@ export default function Home() {
             <section className="my-16 text-center">
               <h2 className="text-3xl font-bold mb-4">Join Our Growing Community of Storytellers!</h2>
               <StoryCounter />
-              <p className="mt-4 text-lg">stories created and counting...</p>
             </section>
           </>
         )}

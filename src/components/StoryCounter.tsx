@@ -66,7 +66,6 @@ const StoryCounter = () => {
         <div className="stat-figure">
           <FaBookReader className="text-3xl" />
         </div>
-        <div className="stat-title">Stories Generated</div>
         {isLoading && <div className="stat-value"><span className="loading loading-dots loading-md"></span></div>}
         {error && <div className="stat-value text-error text-sm">Error loading</div>}
         {!isLoading && !error && storyCount !== null && (
@@ -75,7 +74,7 @@ const StoryCounter = () => {
         {!isLoading && !error && storyCount === null && (
             <div className="stat-value">N/A</div>
         )}
-        <div className="stat-desc">Join our growing community of storytellers!</div>
+        <div className="stat-desc text-primary-content">stories created and counting...</div>
       </div>
     </div>
   );
