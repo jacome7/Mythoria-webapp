@@ -58,9 +58,7 @@ const StepNavigation = ({
 
       <div className="text-sm text-gray-500">
         Step {currentStep} of {totalSteps}
-      </div>
-
-      <div>
+      </div>      <div>
         {nextHref ? (
           <Link 
             href={nextHref} 
@@ -72,6 +70,17 @@ const StepNavigation = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </Link>
+        ) : onNext ? (
+          <button 
+            onClick={handleNext}
+            disabled={nextDisabled}
+            className={`btn btn-primary btn-lg ${nextDisabled ? 'btn-disabled' : ''}`}
+          >
+            {currentStep === totalSteps - 1 ? 'Finish Story' : nextLabel}
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         ) : (
           <div></div> // Empty div to maintain flex layout
         )}

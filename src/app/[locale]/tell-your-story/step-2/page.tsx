@@ -3,8 +3,10 @@
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
 import StepNavigation from '../../../../components/StepNavigation';
 import { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Step2Page() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'image' | 'audio' | 'text'>('text');
   const [storyText, setStoryText] = useState('');
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
@@ -12,6 +14,7 @@ export default function Step2Page() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [audioPreview, setAudioPreview] = useState<string | null>(null);
   const [isCapturing, setIsCapturing] = useState(false);
+  const [isCreatingStory, setIsCreatingStory] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
@@ -107,9 +110,62 @@ export default function Step2Page() {
       audioInputRef.current.value = '';
     }
   };
-
   const hasContent = () => {
     return storyText.trim() !== '' || uploadedImage !== null || uploadedAudio !== null;
+  };  const handleNextStep = async () => {
+    try {
+      setIsCreatingStory(true);
+      
+      // Get the current authenticated user
+      const userResponse = await fetch('/api/auth/me');
+      if (!userResponse.ok) {
+        throw new Error('Failed to get user information');
+      }
+      const userData = await userResponse.json();
+      
+      // Create a new story in the database
+      const response = await fetch('/api/stories', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: 'My Story', // Default title - will be updated in later steps
+          authorId: userData.authorId,
+          plotDescription: storyText || null, // Store any initial text content
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create story');
+      }
+
+      const { story } = await response.json();
+      
+      // Store the story ID in localStorage for use in subsequent steps
+      localStorage.setItem('currentStoryId', story.storyId);
+      
+      // Store the story content data for use in step-3
+      localStorage.setItem('step2Data', JSON.stringify({
+        text: storyText,
+        hasImage: uploadedImage !== null,
+        hasAudio: uploadedAudio !== null,
+        activeTab: activeTab
+      }));
+      
+      console.log('Story created successfully:', story.storyId);
+      
+      // Navigate to step 3
+      router.push('/tell-your-story/step-3');
+      
+    } catch (error) {
+      console.error('Error creating story:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      alert(`Failed to create story: ${errorMessage}. Please try again.`);
+    } finally {
+      setIsCreatingStory(false);
+    }
   };
 
   return (
@@ -354,15 +410,14 @@ export default function Step2Page() {
                       </p>
                     </div>
                   </div>
-                </div>
-
-                <StepNavigation 
+                </div>                <StepNavigation 
                   currentStep={2}
                   totalSteps={7}
-                  nextHref="/tell-your-story/step-3"
+                  nextHref={null} // We'll handle navigation programmatically
                   prevHref="/tell-your-story/step-1"
-                  nextDisabled={false} // Allow continuing even without content
-                  nextLabel={hasContent() ? "Continue with Story" : "Get Guided Help"}
+                  nextDisabled={isCreatingStory}
+                  onNext={handleNextStep}
+                  nextLabel={isCreatingStory ? "Creating Story..." : (hasContent() ? "Continue with Story" : "Next Chapter")}
                 />
               </div>
             </div>
