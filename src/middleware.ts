@@ -1,20 +1,29 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware } from "@clerk/nextjs/server";
+import createMiddleware from 'next-intl/middleware';
+import {routing} from './i18n/routing';
+import { NextRequest, NextResponse } from 'next/server';
 
-const isPublicRoute = createRouteMatcher([
-  '/',
-  '/sign-in(.*)',
-  '/sign-up(.*)',
-  '/api/webhooks(.*)',
-  '/aboutUs',
-  '/pricing',
-  '/get-inspired',
-  '/(api|trpc)(.*)'
-]);
+const intlMiddleware = createMiddleware(routing);
 
-export default clerkMiddleware(async (auth, req) => {
-  if (!isPublicRoute(req)) {
-    await auth.protect();
+export default clerkMiddleware((auth, req: NextRequest) => {
+  // Skip internationalization for API routes
+  if (req.nextUrl.pathname.startsWith('/api/')) {
+    return NextResponse.next();
   }
+  
+  // Run the internationalization middleware for non-API routes
+  const response = intlMiddleware(req);
+  
+  // Add the pathname to headers so we can access it in the root layout
+  if (response) {
+    response.headers.set('x-pathname', req.nextUrl.pathname);
+    return response;
+  }
+  
+  // If no response from intl middleware, create one and add the header
+  const newResponse = NextResponse.next();
+  newResponse.headers.set('x-pathname', req.nextUrl.pathname);
+  return newResponse;
 });
 
 export const config = {

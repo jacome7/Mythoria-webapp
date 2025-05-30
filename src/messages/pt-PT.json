@@ -1,0 +1,94 @@
+{
+  "Header": {
+    "navigation": {
+      "homepage": "Página Inicial",
+      "getInspired": "Inspire-se",
+      "tellYourStory": "Conte a Sua História",
+      "pricing": "Preços",
+      "dashboard": "Painel"
+    },
+    "auth": {
+      "signIn": "Entrar",
+      "signUp": "Registar"
+    },
+    "logoAlt": "Logótipo Mythoria"
+  },
+  "HomePage": {
+    "title": "Bem-vindo",
+    "hero": {
+      "writeYourOwn": "Escreva a Sua Própria",
+      "subtitle": "Crie histórias personalizadas e alimentadas por IA que dão vida à sua imaginação. Perfeito para crianças, adultos e até para a sua empresa!",
+      "tryItNow": "Experimente agora"
+    },
+    "words": [
+      "História", "Aventura", "Livro", "Romance", "Romance", "Memórias", 
+      "Manuscrito", "Crónica", "Conto", "Ficção", "Mito", "Fábula", 
+      "Odisseia", "Prosa"
+    ],
+    "comingSoon": {
+      "title": "A nossa história está apenas a começar...",
+      "subtitle": "A Mythoria está a preparar algo mágico! Estamos a trabalhar arduamente para lhe trazer um novo mundo de narrativa alimentada por IA. Fique atento, a aventura estará disponível em breve! 🧙‍♂️📚✨"
+    },
+    "audiences": {
+      "kids": {
+        "title": "Para Crianças 🎈",
+        "description": "Transforme o seu filho, neto, sobrinho ou sobrinha no herói da sua própria aventura mágica!",
+        "button": "Criar para Crianças"
+      },
+      "adults": {
+        "title": "Para Adultos ❤️",
+        "description": "Alguma vez sentiu que a sua vida poderia ser um livro? Dê vida às suas memórias e aventuras num livro lindamente ilustrado. Partilhe a história de como conheceu a sua cara-metade ou reviva momentos inesquecíveis com amigos e família.",
+        "button": "Criar para Adultos"
+      },
+      "companies": {
+        "title": "Para Empresas 🌟",
+        "description": "Deleite os filhos dos seus funcionários com livros de histórias personalizadas que destacam de forma única a sua marca.",
+        "button": "Contacte-nos"
+      }
+    },
+    "howItWorks": {
+      "title": "Com a Mythoria, criar a sua própria história é fácil:",
+      "steps": {
+        "step1": {
+          "title": "Escolha a(s) sua(s) personagem(ns)",
+          "description": "Selecione os seus filhos, netos ou qualquer jovem especial na sua vida."
+        },
+        "step2": {
+          "title": "Conte-nos sobre as suas paixões e superpoderes",
+          "description": "O que os torna especiais? Destaque os seus talentos ou interesses únicos!"
+        },
+        "step3": {
+          "title": "Opcional: Carregue uma fotografia",
+          "description": "Ou simplesmente descreva as personagens, e nós tratamos do resto."
+        },
+        "step4": {
+          "title": "Escolha entre mais de 20 cenários fantásticos",
+          "description": "De castelos encantados a missões espaciais emocionantes, temos aventuras adequadas para a imaginação de todas as crianças."
+        },
+        "step5": {
+          "title": "Personalize completamente com detalhes únicos!",
+          "description": "Escreva ou simplesmente fale sobre todos os pequenos detalhes que gostaria de incluir. Inclua até produtos específicos, serviços ou tradições familiares significativas."
+        },
+        "step6": {
+          "title": "Escolha o formato do seu presente",
+          "description": "Receba a sua história personalizada como um belo livro de capa dura, um ebook digital ou um audiolivro envolvente."
+        }
+      },
+      "conclusion": "Nós tratamos de todo o resto, alimentado pela magia da Inteligência Artificial!"
+    },
+    "community": {
+      "title": "Junte-se à Nossa Crescente Comunidade de Contadores de Histórias!"
+    }
+  },
+  "AboutUs": {
+    "title": "Olá! O meu nome é Rodrigo e tenho quase 18 anos.",
+    "imageAlt": "Rodrigo - Fundador da Mythoria",
+    "paragraphs": {
+      "p1": "Cresci fascinado pelas aventuras que o meu pai inventava, histórias que alimentaram a minha imaginação e me ensinaram que cada um de nós pode ser o herói de aventuras incríveis.",
+      "p2": "Hoje, não só gosto de ouvir histórias, como também adoro criá-las. Sou apaixonado por Inteligência Artificial e descobri que a IA pode ajudar a construir mundos fantásticos e personagens inesquecíveis. Gosto particularmente de criar histórias para contar ao meu irmão mais novo, transformando cada narrativa numa experiência única e pessoal.",
+      "p3": "Quando usei o ChatGPT pela primeira vez, fiquei espantado com o potencial desta tecnologia. Desde então, tenho explorado as infinitas possibilidades que a IA oferece para personalizar e melhorar a narrativa.",
+      "p4": "Será que um jovem de 17 anos consegue criar uma empresa inovadora usando apenas Inteligência Artificial? Impulsionado por esta ambição e curiosidade, nasceu a Mythoria—um projeto dedicado à criação de livros totalmente personalizados, onde cada criança se torna o herói da sua própria aventura.",
+      "tagline": "A Mythoria é mais do que apenas um livro: é a sua própria história."
+    }
+  }
+}
