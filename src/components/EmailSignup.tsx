@@ -51,8 +51,8 @@ const EmailSignup = ({ className = "" }: EmailSignupProps) => {
           setMessage(t('errors.general'));
         }
         setIsSuccess(false);
-      }
-    } catch (error) {
+      }    } catch (error) {
+      console.error('Email signup error:', error);
       setMessage(t('errors.network'));
       setIsSuccess(false);
     } finally {
