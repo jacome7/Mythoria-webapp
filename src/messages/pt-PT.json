@@ -119,8 +119,7 @@
     "community": {
       "title": "Junte-se à Nossa Crescente Comunidade de Contadores de Histórias!"
     }
-  },
-  "AboutUs": {
+  },  "AboutUs": {
     "title": "Olá! O meu nome é Rodrigo e tenho quase 18 anos.",
     "imageAlt": "Rodrigo - Fundador da Mythoria",
     "paragraphs": {
@@ -130,5 +129,25 @@
       "p4": "Será que um jovem de 17 anos consegue criar uma empresa inovadora usando apenas Inteligência Artificial? Impulsionado por esta ambição e curiosidade, nasceu a Mythoria—um projeto dedicado à criação de livros totalmente personalizados, onde cada criança se torna o herói da sua própria aventura.",
       "tagline": "A Mythoria é mais do que apenas um livro: é a sua própria história."
     }
+  },  "EmailSignup": {
+    "title": "Seja Notificado Quando Lançarmos!",
+    "subtitle": "Seja o primeiro a saber quando a Mythoria estiver disponível e comece a criar as suas histórias mágicas.",
+    "form": {
+      "placeholder": "Introduza o seu endereço de email",
+      "button": "Notificar-me"
+    },
+    "validation": {
+      "emailRequired": "Por favor, introduza o seu endereço de email",
+      "emailInvalid": "Por favor, introduza um endereço de email válido"
+    },
+    "errors": {
+      "general": "Algo correu mal. Por favor, tente novamente.",
+      "network": "Erro de rede. Por favor, verifique a sua ligação e tente novamente."
+    },
+    "messages": {
+      "success": "Obrigado pelo seu interesse! Iremos notificá-lo assim que a Mythoria estiver disponível.",
+      "alreadyRegistered": "Uau, está mesmo ansioso para experimentar a Mythoria. Fique descansado que iremos notificá-lo quando lançarmos!"
+    },
+    "privacy": "Respeitamos a sua privacidade. Sem spam, apenas notificações de lançamento."
   }
 }

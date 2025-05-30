@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface EmailSignupProps {
   className?: string;
@@ -11,12 +12,12 @@ const EmailSignup = ({ className = "" }: EmailSignupProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
+  const t = useTranslations('EmailSignup');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!email.trim()) {
-      setMessage('Please enter your email address');
+      if (!email.trim()) {
+      setMessage(t('validation.emailRequired'));
       setIsSuccess(false);
       return;
     }
@@ -31,46 +32,50 @@ const EmailSignup = ({ className = "" }: EmailSignupProps) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email: email.trim() }),
-      });
-
-      const data = await response.json();
+      });      const data = await response.json();
 
       if (response.ok) {
-        setMessage(data.message);
+        if (data.alreadyRegistered) {
+          setMessage(t('messages.alreadyRegistered'));
+        } else {
+          setMessage(t('messages.success'));
+        }
         setIsSuccess(true);
         if (data.success) {
           setEmail(''); // Clear email if it's a new signup
+        }      } else {
+        // Handle specific API error messages
+        if (data.error === 'Please enter a valid email address') {
+          setMessage(t('validation.emailInvalid'));
+        } else {
+          setMessage(t('errors.general'));
         }
-      } else {
-        setMessage(data.error || 'Something went wrong. Please try again.');
         setIsSuccess(false);
       }
     } catch (error) {
-      setMessage(`Network error. Please check your connection and try again. ${error}`);
+      setMessage(t('errors.network'));
       setIsSuccess(false);
     } finally {
       setIsLoading(false);
     }
   };
 
-  return (
-    <div className={`bg-gradient-to-br from-primary/10 to-secondary/10 p-8 rounded-2xl border border-primary/20 ${className}`}>
+  return (    <div className={`bg-gradient-to-br from-primary/10 to-secondary/10 p-8 rounded-2xl border border-primary/20 ${className}`}>
       <div className="text-center mb-6">
         <h3 className="text-2xl font-bold text-base-content mb-2">
-          🔔 Get Notified When We Launch!
+          🔔 {t('title')}
         </h3>
         <p className="text-base-content/70 text-sm">
-          Be the first to know when Mythoria becomes available and start creating your magical stories.
+          {t('subtitle')}
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <input
+        <div className="flex flex-col sm:flex-row gap-3">          <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email address"
+            placeholder={t('form.placeholder')}
             className="input input-bordered flex-1 focus:input-primary"
             disabled={isLoading}
             required
@@ -83,7 +88,7 @@ const EmailSignup = ({ className = "" }: EmailSignupProps) => {
             {isLoading ? (
               <span className="loading loading-spinner loading-sm"></span>
             ) : (
-              'Notify Me'
+              t('form.button')
             )}
           </button>
         </div>
@@ -115,11 +120,9 @@ const EmailSignup = ({ className = "" }: EmailSignupProps) => {
             <span>{message}</span>
           </div>
         )}
-      </form>
-
-      <div className="text-center mt-4">
+      </form>      <div className="text-center mt-4">
         <p className="text-xs text-base-content/50">
-          We respect your privacy. No spam, just launch notifications.
+          {t('privacy')}
         </p>
       </div>
     </div>
