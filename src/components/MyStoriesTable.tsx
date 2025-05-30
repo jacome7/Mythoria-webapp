@@ -112,7 +112,7 @@ export default function MyStoriesTable({ authorName }: MyStoriesTableProps) {
       <div className="flex justify-between items-center">
         <h1 className="text-4xl font-bold">
           {t('title')}, {authorName}!
-        </h1>        <Link href="/tell-your-story" className="btn btn-primary">
+        </h1>        <Link href="/tell-your-story/step-1" className="btn btn-primary">
           <FiPlus className="w-5 h-5 mr-2" />
           {t('writeNewStory')}
         </Link>
@@ -126,8 +126,7 @@ export default function MyStoriesTable({ authorName }: MyStoriesTableProps) {
             </h2>
             <p className="text-base-content/70">
               {t('noStories.subtitle')}
-            </p>
-            <Link href="/tell-your-story" className="btn btn-primary btn-lg">
+            </p>            <Link href="/tell-your-story/step-1" className="btn btn-primary btn-lg">
               {t('noStories.action')}
             </Link>
           </div>

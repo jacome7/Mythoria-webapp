@@ -18,7 +18,7 @@ const Header = () => {
           </label>          <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
             <li><Link href="/">{t('navigation.homepage')}</Link></li>
             <li><Link href="/get-inspired">{t('navigation.getInspired')}</Link></li>
-            <li><Link href="/tell-your-story">{t('navigation.tellYourStory')}</Link></li>
+            <li><Link href="/tell-your-story/step-1">{t('navigation.tellYourStory')}</Link></li>
             <li><Link href="/pricing">{t('navigation.pricing')}</Link></li>
             <SignedIn>
               <li><Link href="/my-stories">{t('navigation.myStories')}</Link></li>
@@ -34,11 +34,10 @@ const Header = () => {
           <Link href="/" className="btn btn-ghost normal-case text-xl px-2 py-1">
           <Image src="/Mythoria-logo-white-transparent-256x168.png" alt={t('logoAlt')} width={52} height={34} />
         </Link>
-      </div>      <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">
+      </div>      <div className="navbar-center hidden lg:flex">        <ul className="menu menu-horizontal px-1">
           <li><Link href="/">{t('navigation.homepage')}</Link></li>
           <li><Link href="/get-inspired">{t('navigation.getInspired')}</Link></li>
-          <li><Link href="/tell-your-story">{t('navigation.tellYourStory')}</Link></li>
+          <li><Link href="/tell-your-story/step-1">{t('navigation.tellYourStory')}</Link></li>
           <li><Link href="/pricing">{t('navigation.pricing')}</Link></li>
           <SignedIn>
             <li><Link href="/my-stories">{t('navigation.myStories')}</Link></li>

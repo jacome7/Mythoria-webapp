@@ -1,10 +1,8 @@
-import { getCurrentAuthor } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 import { SignedIn, SignedOut } from '@clerk/nextjs';
 import Link from 'next/link';
 
-export default async function TellYourStoryPage() {
-  const author = await getCurrentAuthor();
-
+export default function TellYourStoryPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <SignedOut>
@@ -22,15 +20,10 @@ export default async function TellYourStoryPage() {
             </Link>
           </div>
         </div>
-      </SignedOut>      <SignedIn>
-        <div className="space-y-6">
-          <h1 className="text-4xl font-bold">
-            Welcome back, {author?.displayName || 'Storyteller'}!
-          </h1>
-          <p className="text-lg text-gray-600">
-            Continue your storytelling journey or create a new adventure.
-          </p>
-        </div>
+      </SignedOut>
+
+      <SignedIn>
+        {redirect('/tell-your-story/step-1')}
       </SignedIn>
     </div>
   );
