@@ -1,30 +1,133 @@
+'use client';
+
 import { SignedIn, SignedOut } from '@clerk/nextjs';
 import Link from 'next/link';
-import StepNavigation from '@/components/StepNavigation';
+import StepNavigation from '../../../../components/StepNavigation';
+import { useState, useEffect } from 'react';
+
+interface AuthorData {
+  authorId: string;
+  clerkUserId: string;
+  displayName: string;
+  email: string;
+  mobilePhone: string | null;
+  lastLoginAt: string | null;
+  createdAt: string;
+  preferredLocale: string;
+}
 
 export default function Step1Page() {
+  const [authorData, setAuthorData] = useState<AuthorData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  
+  // Form data
+  const [displayName, setDisplayName] = useState('');
+  const [email, setEmail] = useState('');
+  const [mobilePhone, setMobilePhone] = useState('');
+
+  useEffect(() => {
+    fetchAuthorData();
+  }, []);
+
+  const fetchAuthorData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await fetch('/api/auth/me');
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch user data');
+      }
+      
+      const data: AuthorData = await response.json();
+      setAuthorData(data);
+      
+      // Pre-populate form fields
+      setDisplayName(data.displayName || '');
+      setEmail(data.email || '');
+      setMobilePhone(data.mobilePhone || '');
+      
+    } catch (error) {
+      console.error('Error fetching author data:', error);
+      setError('Failed to load user information. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!displayName.trim() || !email.trim()) {
+      setError('Name and email are required.');
+      return;
+    }
+
+    setSaving(true);
+    setError(null);
+    setSuccessMessage(null);
+
+    try {
+      const response = await fetch('/api/users/update-profile', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          displayName: displayName.trim(),
+          email: email.trim(),
+          mobilePhone: mobilePhone.trim() || null,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update profile');
+      }
+
+      setSuccessMessage('Profile updated successfully!');
+      
+      // Refresh author data
+      await fetchAuthorData();
+
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      setError('Failed to update profile. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <SignedOut>
-        <div className="text-center space-y-6">
-          <h1 className="text-4xl font-bold">Ready to Tell Your Story?</h1>
+        <div className="text-center space-y-6 max-w-2xl mx-auto">
+          <div className="text-6xl">📚</div>
+          <h1 className="text-4xl font-bold">Oops! Looks like you're trying to sneak into the author's lounge!</h1>
           <p className="text-lg text-gray-600">
-            Sign up to start creating your magical adventures with Mythoria.
+            While we appreciate your enthusiasm for storytelling, you'll need to sign in first. 
+            Don't worry, it's easier than convincing a dragon to share its treasure! 🐉
           </p>
           <div className="space-x-4">
-            <Link href="/sign-up" className="btn btn-primary">
-              Get Started
+            <Link href="/sign-in" className="btn btn-primary btn-lg">
+              🔐 Sign In to Start Your Adventure
             </Link>
-            <Link href="/sign-in" className="btn btn-outline">
-              Sign In
+            <Link href="/sign-up" className="btn btn-outline btn-lg">
+              ✨ Create Your Author Account
             </Link>
           </div>
+          <p className="text-sm text-gray-500">
+            Once you're signed in, you'll be ready to create magical stories that would make even Merlin jealous! 🧙‍♂️
+          </p>
         </div>
       </SignedOut>
 
       <SignedIn>
-        <div className="max-w-4xl mx-auto">          {/* Progress indicator */}
+        <div className="max-w-4xl mx-auto">
+          {/* Progress indicator */}
           <div className="mb-8">
             <ul className="steps steps-horizontal w-full">
               <li className="step step-primary" data-content="1"></li>
@@ -42,10 +145,116 @@ export default function Step1Page() {
             <div className="card-body">
               <h1 className="card-title text-3xl mb-6">Chapter 1 - The Author</h1>
               
-              {/* Step 1 content will go here */}
-              <div className="text-center py-12">
-                <p className="text-lg text-gray-600">Step 1 content coming soon...</p>
-              </div>
+              {loading ? (
+                <div className="text-center py-12">
+                  <span className="loading loading-spinner loading-lg"></span>
+                  <p className="text-lg text-gray-600 mt-4">Loading your author profile...</p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="prose max-w-none mb-6">
+                    <p className="text-gray-600">
+                      Welcome, storyteller! Before we dive into your magical adventure, 
+                      let's make sure we have your correct information. This helps us 
+                      personalize your experience and keep you updated on your story's progress.
+                    </p>
+                  </div>
+
+                  {error && (
+                    <div className="alert alert-error">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>{error}</span>
+                    </div>
+                  )}
+
+                  {successMessage && (
+                    <div className="alert alert-success">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>{successMessage}</span>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Name Field */}
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text font-semibold">Full Name *</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={displayName}
+                        onChange={(e) => setDisplayName(e.target.value)}
+                        placeholder="Enter your full name"
+                        className="input input-bordered w-full"
+                        required
+                      />
+                      <label className="label">
+                        <span className="label-text-alt">This is how you'll be credited as the author</span>
+                      </label>
+                    </div>
+
+                    {/* Email Field */}
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text font-semibold">Email Address *</span>
+                      </label>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Enter your email address"
+                        className="input input-bordered w-full"
+                        required
+                      />
+                      <label className="label">
+                        <span className="label-text-alt">We'll use this for important updates about your story</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Mobile Phone Field */}
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-semibold">Mobile Phone</span>
+                      <span className="label-text-alt">Optional</span>
+                    </label>
+                    <input
+                      type="tel"
+                      value={mobilePhone}
+                      onChange={(e) => setMobilePhone(e.target.value)}
+                      placeholder="Enter your mobile phone number"
+                      className="input input-bordered w-full max-w-md"
+                    />
+                    <label className="label">
+                      <span className="label-text-alt">For urgent notifications or delivery updates (optional)</span>
+                    </label>
+                  </div>
+
+                  {/* Update Button */}
+                  <div className="flex justify-center pt-4">
+                    <button
+                      type="submit"
+                      disabled={saving}
+                      className="btn btn-primary btn-wide"
+                    >
+                      {saving ? (
+                        <>
+                          <span className="loading loading-spinner loading-sm"></span>
+                          Updating Profile...
+                        </>
+                      ) : (
+                        <>
+                          💾 Update Profile
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              )}
 
               <StepNavigation 
                 currentStep={1}
