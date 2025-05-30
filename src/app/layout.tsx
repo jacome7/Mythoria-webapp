@@ -20,10 +20,10 @@ export default async function RootLayout({
   const headersList = await headers();
   const pathname = headersList.get('x-pathname') || '/';
   const locale = pathname.split('/')[1] || 'en-US';
-
   return (
     <ClerkProvider>
-      <html data-theme="autumn" lang={locale}>        <body>
+      <html data-theme="autumn" lang={locale}>
+        <body>
           <div className="flex flex-col min-h-screen">
             <main className="flex-grow">{children}</main>
             <Footer />

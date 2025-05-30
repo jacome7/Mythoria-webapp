@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import { useTranslations } from 'next-intl';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const Header = () => {
   const t = useTranslations('Header');
@@ -22,6 +23,11 @@ const Header = () => {
             <SignedIn>
               <li><Link href="/dashboard">{t('navigation.dashboard')}</Link></li>
             </SignedIn>
+            <li className="border-t pt-2 mt-2">
+              <div className="flex items-center justify-center">
+                <LanguageSwitcher />
+              </div>
+            </li>
           </ul>
         </div>        <Link href="/" className="btn btn-ghost normal-case text-xl px-2 py-1">
           <Image src="/Logo_black_transparent_256x222.png" alt={t('logoAlt')} width={46} height={40} />
@@ -38,7 +44,9 @@ const Header = () => {
         </ul>
       </div>
 
-      <div className="navbar-end">        <SignedOut>
+      <div className="navbar-end">
+        <LanguageSwitcher />
+        <SignedOut>
           <div className="flex gap-2">
             <Link href="/sign-in" className="btn btn-ghost">
               {t('auth.signIn')}
