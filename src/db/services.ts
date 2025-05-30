@@ -1,6 +1,7 @@
 import { db } from "./index";
 import { authors, stories, characters, storyCharacters } from "./schema";
 import { eq, and, count } from "drizzle-orm";
+import { ClerkUserForSync } from "@/types/clerk";
 
 // Author operations
 export const authorService = {
@@ -12,6 +13,57 @@ export const authorService = {
   async createAuthorFromClerk(authorData: { clerkUserId: string; email: string; displayName: string }) {
     const [author] = await db.insert(authors).values(authorData).returning();
     return author;
+  },  async syncUserOnSignIn(clerkUser: ClerkUserForSync) {
+    const currentTime = new Date();
+    
+    // Try to find existing user
+    const existingAuthor = await this.getAuthorByClerkId(clerkUser.id);
+    
+    if (existingAuthor) {
+      // User exists, update lastLoginAt
+      const [updatedAuthor] = await db
+        .update(authors)
+        .set({ lastLoginAt: currentTime })
+        .where(eq(authors.clerkUserId, clerkUser.id))
+        .returning();
+      
+      console.log('Updated existing user login time:', updatedAuthor.clerkUserId);
+      return updatedAuthor;
+    } else {
+      // User doesn't exist, create new user
+      const primaryEmail = clerkUser.emailAddresses?.find((email) => email.id === clerkUser.primaryEmailAddressId);
+      const primaryPhone = clerkUser.phoneNumbers?.find((phone) => phone.id === clerkUser.primaryPhoneNumberId);      const newAuthorData = {
+        clerkUserId: clerkUser.id,
+        email: primaryEmail?.emailAddress || clerkUser.emailAddresses?.[0]?.emailAddress || '',
+        displayName: this.buildDisplayName(clerkUser),
+        lastLoginAt: currentTime,
+        ...(primaryPhone?.phoneNumber && { mobilePhone: primaryPhone.phoneNumber })
+      };
+      
+      const [newAuthor] = await db.insert(authors).values(newAuthorData).returning();
+      console.log('Created new user on sign-in:', newAuthor.clerkUserId);
+      return newAuthor;
+    }
+  },
+
+  buildDisplayName(clerkUser: ClerkUserForSync) {
+    // Try to build display name from available information
+    if (clerkUser.firstName || clerkUser.lastName) {
+      return `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim();
+    }
+    
+    if (clerkUser.username) {
+      return clerkUser.username;
+    }
+      // Fallback to email prefix
+    const primaryEmail = clerkUser.emailAddresses?.find((email) => email.id === clerkUser.primaryEmailAddressId);
+    const email = primaryEmail?.emailAddress || clerkUser.emailAddresses?.[0]?.emailAddress;
+    
+    if (email) {
+      return email.split('@')[0];
+    }
+    
+    return 'Anonymous User';
   },
 
   async getAuthorById(authorId: string) {
@@ -58,10 +110,13 @@ export const storyService = {
     const result = await db.select({ value: count() }).from(stories);
     return result[0]?.value || 0;
   },
-
   async updateStory(storyId: string, updates: Partial<{ title: string; plotDescription: string; synopsis: string; status: 'draft' | 'writing' | 'published' }>) {
     const [story] = await db.update(stories).set(updates).where(eq(stories.storyId, storyId)).returning();
     return story;
+  },
+
+  async deleteStory(storyId: string) {
+    await db.delete(stories).where(eq(stories.storyId, storyId));
   }
 };
 

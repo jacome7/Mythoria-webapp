@@ -2,6 +2,7 @@ import { currentUser, auth } from '@clerk/nextjs/server';
 import { db } from '@/db';
 import { authors } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+import { authorService } from '@/db/services';
 
 export async function getCurrentAuthor() {
   const user = await currentUser();
@@ -11,11 +12,24 @@ export async function getCurrentAuthor() {
   }
 
   // Try to find the author in our database
-  const [author] = await db
+  let [author] = await db
     .select()
     .from(authors)
     .where(eq(authors.clerkUserId, user.id))
     .limit(1);
+
+  // If author doesn't exist, create them
+  if (!author) {
+    author = await authorService.syncUserOnSignIn(user);
+  } else {
+    // Update last login time for existing users
+    const currentTime = new Date();
+    [author] = await db
+      .update(authors)
+      .set({ lastLoginAt: currentTime })
+      .where(eq(authors.clerkUserId, user.id))
+      .returning();
+  }
 
   return author || null;
 }

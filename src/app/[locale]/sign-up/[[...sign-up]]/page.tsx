@@ -60,6 +60,8 @@ export default function SignUpPage() {
                 {t('form.subtitle')}
               </p>
             </div>            <SignUp 
+              fallbackRedirectUrl="/my-stories"
+              signInFallbackRedirectUrl="/my-stories"
               appearance={{
                 elements: {
                   formButtonPrimary: 

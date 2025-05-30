@@ -10,14 +10,14 @@ export async function GET() {
     }
 
     return NextResponse.json({
-      success: true,
-      author: {
-        id: author.authorId,
-        clerkUserId: author.clerkUserId,
-        displayName: author.displayName,
-        email: author.email,
-        createdAt: author.createdAt
-      }
+      authorId: author.authorId,
+      clerkUserId: author.clerkUserId,
+      displayName: author.displayName,
+      email: author.email,
+      mobilePhone: author.mobilePhone,
+      lastLoginAt: author.lastLoginAt,
+      createdAt: author.createdAt,
+      preferredLocale: author.preferredLocale
     });
   } catch (error) {
     console.error('Error getting current author:', error);

@@ -1,9 +1,9 @@
-{
-  "Header": {
+{  "Header": {
     "navigation": {
       "homepage": "Homepage",
       "getInspired": "Get Inspired",
       "tellYourStory": "Tell Your Story",
+      "myStories": "My Stories",
       "pricing": "Pricing",
       "dashboard": "Dashboard"
     },
@@ -45,6 +45,36 @@
     "form": {
       "title": "Create Account",
       "subtitle": "Begin your storytelling journey today"
+    }  },
+  "MyStoriesPage": {
+    "title": "My Stories",
+    "writeNewStory": "Write a New Story",
+    "noStories": {
+      "title": "Your story collection is waiting to begin! 📚✨",
+      "subtitle": "Every great storyteller started with a single tale. Ready to write your first magical adventure?",
+      "action": "Start Your First Story"
+    },
+    "table": {
+      "date": "Date",
+      "title": "Title",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "draft": "Draft",
+      "writing": "Writing",
+      "published": "Published"
+    },
+    "actions": {
+      "share": "Share",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "deleteConfirm": {
+      "title": "Delete Story",
+      "message": "Are you sure you want to delete this story? This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
     }
   },
   "Footer": {

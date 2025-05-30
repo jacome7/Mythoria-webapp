@@ -1,9 +1,9 @@
-{
-  "Header": {
+{  "Header": {
     "navigation": {
       "homepage": "Página Inicial",
       "getInspired": "Inspire-se",
       "tellYourStory": "Conte a Sua História",
+      "myStories": "As Minhas Histórias",
       "pricing": "Preços",
       "dashboard": "Painel"
     },
@@ -45,6 +45,36 @@
     "form": {
       "title": "Criar Conta",
       "subtitle": "Comece hoje a sua jornada de narrativa"
+    }  },
+  "MyStoriesPage": {
+    "title": "As Minhas Histórias",
+    "writeNewStory": "Escrever Nova História",
+    "noStories": {
+      "title": "A sua coleção de histórias está à espera de começar! 📚✨",
+      "subtitle": "Todos os grandes contadores de histórias começaram com uma única narrativa. Pronto para escrever a sua primeira aventura mágica?",
+      "action": "Comece a Sua Primeira História"
+    },
+    "table": {
+      "date": "Data",
+      "title": "Título",
+      "status": "Estado",
+      "actions": "Ações"
+    },
+    "status": {
+      "draft": "Rascunho",
+      "writing": "A Escrever",
+      "published": "Publicado"
+    },
+    "actions": {
+      "share": "Partilhar",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar História",
+      "message": "Tem a certeza de que quer eliminar esta história? Esta ação não pode ser desfeita.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar"
     }
   },
   "Footer": {

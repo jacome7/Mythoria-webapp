@@ -21,6 +21,7 @@ const Header = () => {
             <li><Link href="/tell-your-story">{t('navigation.tellYourStory')}</Link></li>
             <li><Link href="/pricing">{t('navigation.pricing')}</Link></li>
             <SignedIn>
+              <li><Link href="/my-stories">{t('navigation.myStories')}</Link></li>
               <li><Link href="/dashboard">{t('navigation.dashboard')}</Link></li>
             </SignedIn>
             <li className="border-t pt-2 mt-2">
@@ -33,25 +34,30 @@ const Header = () => {
           <Link href="/" className="btn btn-ghost normal-case text-xl px-2 py-1">
           <Image src="/Mythoria-logo-white-transparent-256x168.png" alt={t('logoAlt')} width={52} height={34} />
         </Link>
-      </div>
-      <div className="navbar-center hidden lg:flex">
+      </div>      <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
           <li><Link href="/">{t('navigation.homepage')}</Link></li>
           <li><Link href="/get-inspired">{t('navigation.getInspired')}</Link></li>
           <li><Link href="/tell-your-story">{t('navigation.tellYourStory')}</Link></li>
           <li><Link href="/pricing">{t('navigation.pricing')}</Link></li>
+          <SignedIn>
+            <li><Link href="/my-stories">{t('navigation.myStories')}</Link></li>
+          </SignedIn>
         </ul>
       </div>
 
       <div className="navbar-end">
-        <LanguageSwitcher />
+        <div className="mr-4">
+          <LanguageSwitcher />
+        </div>
         <SignedOut>
           <div className="flex gap-2">
             <Link href="/sign-in" className="btn btn-primary">
               {t('auth.signIn')}
             </Link>
           </div>
-        </SignedOut>        <SignedIn>
+        </SignedOut>
+        <SignedIn>
           <UserButton />
         </SignedIn>
       </div>
