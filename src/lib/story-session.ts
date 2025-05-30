@@ -4,11 +4,11 @@ export interface Character {
   characterId?: string;
   name: string;
   type: string;
+  role?: string;
   passions?: string;
   superpowers?: string;
   physicalDescription?: string;
   photoUrl?: string;
-  role?: string;
 }
 
 export interface StorySessionData {
