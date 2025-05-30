@@ -1,7 +1,13 @@
+'use client'
+
 import { SignUp } from '@clerk/nextjs'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 
 export default function SignUpPage() {
+  const t = useTranslations('SignUpPage')
+  const tHeader = useTranslations('Header')
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 flex">
       {/* Left side - Logo and branding (only on desktop) */}
@@ -9,26 +15,26 @@ export default function SignUpPage() {
         <div className="text-center space-y-8">
           <div className="flex justify-center">
             <Image 
-              src="/Logo_black_transparent_256x222.png" 
-              alt="Mythoria Logo" 
-              width={200} 
-              height={174}
+              src="/Mythoria-logo-white-512x336.jpg" 
+              alt={tHeader('logoAlt')} 
+              width={256} 
+              height={168}
               className="drop-shadow-lg"
             />
           </div>
           <div className="space-y-4">
             <h1 className="text-4xl font-bold text-gray-800">
-              Join the Mythoria Universe
+              {t('hero.title')}
             </h1>
             <p className="text-lg text-gray-600 max-w-md mx-auto">
-              Start your magical storytelling adventure. Create personalized stories that bring your imagination to life.
+              {t('hero.subtitle')}
             </p>
           </div>
           <div className="space-y-2 text-sm text-gray-500">
-            <p>🌟 Create your first story for free</p>
-            <p>👥 Build unique characters</p>
-            <p>📖 Get published books delivered</p>
-            <p>🎭 Unlimited creativity</p>
+            <p>{t('features.firstStoryFree')}</p>
+            <p>{t('features.uniqueCharacters')}</p>
+            <p>{t('features.publishedBooks')}</p>
+            <p>{t('features.unlimitedCreativity')}</p>
           </div>
         </div>
       </div>
@@ -40,23 +46,20 @@ export default function SignUpPage() {
             {/* Mobile logo */}
             <div className="lg:hidden flex justify-center mb-6">
               <Image 
-                src="/Logo_black_transparent_256x222.png" 
-                alt="Mythoria Logo" 
-                width={80} 
-                height={70}
+                src="/Mythoria-logo-white-transparent-256x168.png" 
+                alt={tHeader('logoAlt')} 
+                width={128} 
+                height={84}
               />
             </div>
-            
-            <div className="text-center mb-8">
+              <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                Create Account
+                {t('form.title')}
               </h2>
               <p className="text-gray-600">
-                Begin your storytelling journey today
+                {t('form.subtitle')}
               </p>
-            </div>
-
-            <SignUp 
+            </div>            <SignUp 
               appearance={{
                 elements: {
                   formButtonPrimary: 

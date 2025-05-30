@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import {
   ClerkProvider,
 } from "@clerk/nextjs";
+import { enUS, ptPT } from '@clerk/localizations';
 import "./globals.css";
-import Footer from "@/components/Footer";
-import { headers } from 'next/headers';
+import { getLocale } from 'next-intl/server'; // Import getLocale
 
 export const metadata: Metadata = {
   title: "Mythoria - Tell your own story",
@@ -16,17 +16,30 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Get the locale from the URL pathname
-  const headersList = await headers();
-  const pathname = headersList.get('x-pathname') || '/';
-  const locale = pathname.split('/')[1] || 'en-US';
-  return (
-    <ClerkProvider>
+  // Get the locale using next-intl's getLocale
+  let locale;
+  try {
+    locale = await getLocale();
+  } catch (error) {
+    console.warn('Failed to get locale from next-intl, falling back to default en-US:', error);
+    locale = 'en-US'; // Fallback locale
+  }
+  
+  // Map locale to Clerk localization
+  const getClerkLocalization = () => {
+    switch (locale) {
+      case 'pt-PT':
+        return ptPT;
+      case 'en-US':
+      default:
+        return enUS;
+    }
+  };  return (
+    <ClerkProvider localization={getClerkLocalization()}>
       <html data-theme="autumn" lang={locale}>
         <body>
           <div className="flex flex-col min-h-screen">
             <main className="flex-grow">{children}</main>
-            <Footer />
           </div>
         </body>
       </html>

@@ -8,11 +8,10 @@ const LanguageSwitcher = () => {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
-
   const handleLanguageChange = (newLocale: string) => {
     // Remove the current locale from the pathname
     const segments = pathname.split('/');
-    if (routing.locales.includes(segments[1] as any)) {
+    if (routing.locales.includes(segments[1] as (typeof routing.locales)[number])) {
       segments[1] = newLocale;
     } else {
       segments.unshift('', newLocale);

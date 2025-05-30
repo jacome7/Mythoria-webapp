@@ -1,15 +1,12 @@
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  const config = {
-    clerk: {
+  const config = {    clerk: {
       publishableKey: !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
       secretKey: !!process.env.CLERK_SECRET_KEY,
       webhookSecret: !!process.env.CLERK_WEBHOOK_SIGNING_SECRET,
       signInUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL,
       signUpUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL,
-      afterSignInUrl: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL,
-      afterSignUpUrl: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL,
     },
     database: {
       connected: true, // Assuming connection is working based on previous operations

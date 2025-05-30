@@ -1,7 +1,14 @@
+'use client'
+
 import { SignIn } from '@clerk/nextjs'
 import Image from 'next/image'
+import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 
 export default function SignInPage() {
+  const t = useTranslations('SignInPage')
+  const tHeader = useTranslations('Header')
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex">
       {/* Left side - Logo and branding (only on desktop) */}
@@ -9,25 +16,32 @@ export default function SignInPage() {
         <div className="text-center space-y-8">
           <div className="flex justify-center">
             <Image 
-              src="/Logo_black_transparent_256x222.png" 
-              alt="Mythoria Logo" 
-              width={200} 
-              height={174}
+              src="/Mythoria-logo-white-512x336.jpg" 
+              alt={tHeader('logoAlt')} 
+              width={256} 
+              height={168}
               className="drop-shadow-lg"
             />
           </div>
           <div className="space-y-4">
             <h1 className="text-4xl font-bold text-gray-800">
-              Welcome Back to Mythoria
+              {t('hero.title')}
             </h1>
             <p className="text-lg text-gray-600 max-w-md mx-auto">
-              Continue your storytelling journey. Sign in to access your magical stories and characters.
+              {t('hero.subtitle')}
+            </p>
+            <p className="text-lg text-gray-600 max-w-md mx-auto">
+              {t('hero.firstTimeMessage')}
+              <Link href="/sign-up" className="text-orange-600 hover:text-orange-700 font-medium">
+                {t('hero.signUpLink')}
+              </Link>
+              {t('hero.signUpSuffix')}
             </p>
           </div>
           <div className="space-y-2 text-sm text-gray-500">
-            <p>✨ Create unlimited stories</p>
-            <p>📚 Manage your character library</p>
-            <p>🎨 Customize your adventures</p>
+            <p>{t('features.unlimitedStories')}</p>
+            <p>{t('features.characterLibrary')}</p>
+            <p>{t('features.customizeAdventures')}</p>
           </div>
         </div>
       </div>
@@ -36,26 +50,23 @@ export default function SignInPage() {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <div className="bg-white rounded-2xl shadow-2xl p-8 border border-orange-100">
-            {/* Mobile logo */}
             <div className="lg:hidden flex justify-center mb-6">
               <Image 
-                src="/Logo_black_transparent_256x222.png" 
-                alt="Mythoria Logo" 
-                width={80} 
-                height={70}
+                src="/Mythoria-logo-white-transparent-256x168.png" 
+                alt={tHeader('logoAlt')} 
+                width={128} 
+                height={84}
               />
             </div>
-            
-            <div className="text-center mb-8">
+              <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                Sign In
+                {t('form.title')}
               </h2>
               <p className="text-gray-600">
-                Enter your credentials to continue your story
+                {t('form.subtitle')}
               </p>
             </div>
-
-            <SignIn 
+            <SignIn
               appearance={{
                 elements: {
                   formButtonPrimary: 

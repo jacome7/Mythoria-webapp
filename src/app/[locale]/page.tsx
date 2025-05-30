@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { TypeAnimation } from 'react-type-animation';
 import { useTranslations } from 'next-intl';
+import { useMemo } from 'react';
 import StoryCounter from "@/components/StoryCounter";
 import QuoteOfTheDay from "@/components/QuoteOfTheDay";
 import EmailSignup from "@/components/EmailSignup";
@@ -14,25 +15,14 @@ export default function Home() {
   // Get the words array from translations
   const words = t.raw('words') as string[];
 
-  // Function to shuffle array using Fisher-Yates algorithm
-  const shuffleArray = (array: string[]) => {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  };
-
-  // Create randomized sequence for TypeAnimation
-  const createRandomSequence = () => {
-    const shuffledWords = shuffleArray(words);
-    const sequence: (string | number)[] = [];
-    shuffledWords.forEach(word => {
-      sequence.push(word, 1500);
+  // Create sequence for TypeAnimation - memoized to prevent hydration issues
+  const sequence = useMemo(() => {
+    const seq: (string | number)[] = [];
+    words.forEach(word => {
+      seq.push(word, 1500);
     });
-    return sequence;
-  };
+    return seq;
+  }, [words]);
 
   const showSoonPage = process.env.NEXT_PUBLIC_SHOW_SOON_PAGE === 'true';
 
@@ -45,7 +35,7 @@ export default function Home() {
               <h1 className="text-4xl md:text-5xl font-bold">
                 ✨ {t('hero.writeYourOwn')}<br/>
                 <TypeAnimation
-                  sequence={createRandomSequence()}
+                  sequence={sequence}
                   wrapper="span"
                   speed={10}
                   className="text-primary"

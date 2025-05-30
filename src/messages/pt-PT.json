@@ -13,6 +13,46 @@
     },
     "logoAlt": "Logótipo Mythoria"
   },
+  "SignInPage": {
+    "hero": {
+      "title": "Bem-vindo à Mythoria",
+      "subtitle": "Continue a sua jornada de narrativa. Entre para aceder às suas histórias e personagens mágicas.",
+      "firstTimeMessage": "Se é a primeira vez aqui, ",
+      "signUpLink": "registe-se e junte-se",
+      "signUpSuffix": " ao Universo Mythoria hoje."
+    },
+    "features": {
+      "unlimitedStories": "✨ Crie histórias ilimitadas",
+      "characterLibrary": "📚 Gira a sua biblioteca de personagens",
+      "customizeAdventures": "🎨 Personalize as suas aventuras"
+    },
+    "form": {
+      "title": "Entrar",
+      "subtitle": "Introduza as suas credenciais para continuar a sua história"
+    }
+  },
+  "SignUpPage": {
+    "hero": {
+      "title": "Junte-se ao Universo Mythoria",
+      "subtitle": "Inicie a sua aventura mágica de narrativa. Crie histórias personalizadas que dão vida à sua imaginação."
+    },
+    "features": {
+      "firstStoryFree": "🌟 Crie a sua primeira história gratuitamente",
+      "uniqueCharacters": "👥 Construa personagens únicas",
+      "publishedBooks": "📖 Receba livros publicados entregues",
+      "unlimitedCreativity": "🎭 Criatividade ilimitada"
+    },
+    "form": {
+      "title": "Criar Conta",
+      "subtitle": "Comece hoje a sua jornada de narrativa"
+    }
+  },
+  "Footer": {
+    "aboutFounder": "Olá! O meu nome é Rodrigo, tenho quase 18 anos e adoro ouvir histórias desde pequeno.",
+    "readMyStory": "Leia a minha própria história",
+    "privacyPolicy": "Política de Privacidade",
+    "copyright": "Aventuras Contemporâneas, Lda - Todos os direitos reservados"
+  },
   "HomePage": {
     "title": "Bem-vindo",
     "hero": {
@@ -21,13 +61,13 @@
       "tryItNow": "Experimente agora"
     },
     "words": [
-      "História", "Aventura", "Livro", "Romance", "Romance", "Memória", 
-      "Manuscrito", "Crónica", "Conto", "Ficção", "Mito", "Fábula", 
-      "Odisseia", "Prosa"
+      "História", "Aventura", "Memória", "Crónica",  "Ficção", "Fábula", 
+      "Odisseia", "Prosa", "Livro", "Romance", "Romance", 
+      "Manuscrito", "Conto", "Ficção", "Mito"
     ],
     "comingSoon": {
       "title": "A nossa história está apenas a começar...",
-      "subtitle": "A Mythoria está a preparar algo mágico! Estamos a trabalhar arduamente para lhe trazer um novo mundo de narrativa alimentada por IA. Fique atento, a aventura estará disponível em breve! 🧙‍♂️📚✨"
+      "subtitle": "A Mythoria está a preparar algo mágico! Estou a trabalhar arduamente, juntamente com a IA, para lhe trazer um novo mundo de histórias personalizadas. Fique atento, a aventura estará disponível em breve! 🧙‍♂️📚✨"
     },
     "audiences": {
       "kids": {

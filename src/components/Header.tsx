@@ -29,18 +29,17 @@ const Header = () => {
               </div>
             </li>
           </ul>
-        </div>        <Link href="/" className="btn btn-ghost normal-case text-xl px-2 py-1">
-          <Image src="/Logo_black_transparent_256x222.png" alt={t('logoAlt')} width={46} height={40} />
+        </div>
+          <Link href="/" className="btn btn-ghost normal-case text-xl px-2 py-1">
+          <Image src="/Mythoria-logo-white-transparent-256x168.png" alt={t('logoAlt')} width={52} height={34} />
         </Link>
-      </div>      <div className="navbar-center hidden lg:flex">
+      </div>
+      <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
           <li><Link href="/">{t('navigation.homepage')}</Link></li>
           <li><Link href="/get-inspired">{t('navigation.getInspired')}</Link></li>
           <li><Link href="/tell-your-story">{t('navigation.tellYourStory')}</Link></li>
           <li><Link href="/pricing">{t('navigation.pricing')}</Link></li>
-          <SignedIn>
-            <li><Link href="/dashboard">{t('navigation.dashboard')}</Link></li>
-          </SignedIn>
         </ul>
       </div>
 
@@ -48,16 +47,12 @@ const Header = () => {
         <LanguageSwitcher />
         <SignedOut>
           <div className="flex gap-2">
-            <Link href="/sign-in" className="btn btn-ghost">
+            <Link href="/sign-in" className="btn btn-primary">
               {t('auth.signIn')}
             </Link>
-            <Link href="/sign-up" className="btn btn-primary">
-              {t('auth.signUp')}
-            </Link>
           </div>
-        </SignedOut>
-        <SignedIn>
-          <UserButton afterSignOutUrl="/" />
+        </SignedOut>        <SignedIn>
+          <UserButton />
         </SignedIn>
       </div>
     </header>

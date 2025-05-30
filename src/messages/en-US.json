@@ -13,6 +13,46 @@
     },
     "logoAlt": "Mythoria Logo"
   },
+  "SignInPage": {
+    "hero": {
+      "title": "Welcome to Mythoria",
+      "subtitle": "Continue your storytelling journey. Sign in to access your magical stories and characters.",
+      "firstTimeMessage": "If it is your first time here, ",
+      "signUpLink": "sign-up and join",
+      "signUpSuffix": " the Mythoria Universe today."
+    },
+    "features": {
+      "unlimitedStories": "✨ Create unlimited stories",
+      "characterLibrary": "📚 Manage your character library",
+      "customizeAdventures": "🎨 Customize your adventures"
+    },
+    "form": {
+      "title": "Sign In",
+      "subtitle": "Enter your credentials to continue your story"
+    }
+  },
+  "SignUpPage": {
+    "hero": {
+      "title": "Join the Mythoria Universe",
+      "subtitle": "Start your magical storytelling adventure. Create personalized stories that bring your imagination to life."
+    },
+    "features": {
+      "firstStoryFree": "🌟 Create your first story for free",
+      "uniqueCharacters": "👥 Build unique characters",
+      "publishedBooks": "📖 Get published books delivered",
+      "unlimitedCreativity": "🎭 Unlimited creativity"
+    },
+    "form": {
+      "title": "Create Account",
+      "subtitle": "Begin your storytelling journey today"
+    }
+  },
+  "Footer": {
+    "aboutFounder": "Hello! My name is Rodrigo, I am almost 18 years old and I love listening to stories since I was little.",
+    "readMyStory": "Read my own story",
+    "privacyPolicy": "Privacy Policy",
+    "copyright": "Aventuras Contemporâneas, Lda - All rights reserved"
+  },
   "HomePage": {
     "title": "Welcome",
     "hero": {
@@ -27,7 +67,7 @@
     ],
     "comingSoon": {
       "title": "Our story is just beginning...",
-      "subtitle": "Mythoria is brewing something magical! We're working hard to bring you a new world of AI-powered storytelling. Stay tuned, the adventure will be available soon! 🧙‍♂️📚✨"
+      "subtitle": "Mythoria is brewing something magical! We (myself but, mostly AI) are working hard to bring you a new world of personalized storytelling. Stay tuned, the adventure will be available soon! 🧙‍♂️📚✨"
     },
     "audiences": {
       "kids": {

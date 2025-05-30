@@ -1,19 +1,22 @@
+'use client';
+
 import Link from 'next/link';
 import { FaFacebook, FaInstagram, FaLinkedin, FaTiktok, FaYoutube } from 'react-icons/fa';
+import { useTranslations } from 'next-intl';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const t = useTranslations('Footer');
   return (
     <footer className="bg-base-200 text-base-content p-10">
       <div className="container mx-auto">
         {/* Main footer content with left and right sections */}
-        <div className="flex flex-col md:flex-row justify-between items-start mb-8">
-          <div className="mb-6 md:mb-0">
+        <div className="flex flex-col md:flex-row justify-between items-start mb-8">          <div className="mb-6 md:mb-0">
             <div className="max-w-sm">
               <p className="text-xs text-left mb-2">
-                Hello! My name is Rodrigo, I am almost 18 years old and I love listening to stories since I was little.
+                {t('aboutFounder')}
               </p>
-              <Link href="/aboutUs" className="link link-hover text-xs">Read my own story</Link>
+              <Link href="/aboutUs" className="link link-hover text-xs">{t('readMyStory')}</Link>
             </div>
           </div>
 
@@ -38,16 +41,14 @@ const Footer = () => {
                   <FaYoutube size={24} />
                 </a>
               </div>
-            </div>
-            {/* Links */}
+            </div>            {/* Links */}
             <div className="flex flex-col items-end gap-2">
-              <Link href="/privacy-policy" className="link link-hover text-sm">Privacy Policy</Link>
+              <Link href="/privacy-policy" className="link link-hover text-sm">{t('privacyPolicy')}</Link>
             </div>
           </div>
-        </div>
-        {/* Copyright at the bottom */}
+        </div>        {/* Copyright at the bottom */}
         <div className="border-t border-base-300 pt-4 text-center text-xs">
-          <p className="text-xs">&copy; {currentYear} Aventuras Contemporâneas, Lda - All rights reserved</p>
+          <p className="text-xs">&copy; {currentYear} {t('copyright')}</p>
         </div>
       </div>
     </footer>
