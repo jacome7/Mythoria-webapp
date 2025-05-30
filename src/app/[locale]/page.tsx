@@ -39,9 +39,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-base-100 text-base-content">
       <div className="container mx-auto px-4 py-8">
-        {/* Updated Hero Section */}
         <header className="hero min-h-[60vh] bg-base-200 rounded-box my-12">
-          <div className="hero-content flex-col lg:flex-row w-full">            {/* Left Side: Animated Headline and CTA */}
+          <div className="hero-content flex-col lg:flex-row w-full">
             <div className="lg:w-1/2 text-center lg:text-left">
               <h1 className="text-4xl md:text-5xl font-bold">
                 ✨ {t('hero.writeYourOwn')}<br/>
@@ -92,7 +91,8 @@ export default function Home() {
         ) : (
           <>
             {/* Audience Sections */}
-            <section className="my-16 grid md:grid-cols-3 gap-8">              <div className="card bg-base-200 shadow-xl">
+            <section className="my-16 grid md:grid-cols-3 gap-8">
+              <div className="card bg-base-200 shadow-xl">
                 <figure className="px-10 pt-10">
                   <Image src="/SampleBooks/A_bea_tem_um_macaco_no_nariz.jpg" alt="Kids Book" width={300} height={200} className="rounded-xl" />
                 </figure>
@@ -131,7 +131,8 @@ export default function Home() {
               </div>
             </section>
 
-            <div className="divider my-16"></div>            {/* How It Works Section */}
+            <div className="divider my-16"></div>
+            {/* How It Works Section */}
             <section className="my-16">
               <h2 className="text-3xl font-bold text-center mb-10">{t('howItWorks.title')}</h2>
               <ul className="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical">
@@ -205,7 +206,8 @@ export default function Home() {
               </ul>              <p className="text-center mt-8 text-lg">
                 {t('howItWorks.conclusion')}
               </p>
-            </section>            {/* Story Counter Section */}
+            </section>
+            {/* Story Counter Section */}
             <section className="my-16 text-center">
               <h2 className="text-3xl font-bold mb-4">{t('community.title')}</h2>
               <StoryCounter />

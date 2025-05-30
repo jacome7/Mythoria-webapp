@@ -16,12 +16,12 @@
   "HomePage": {
     "title": "Bem-vindo",
     "hero": {
-      "writeYourOwn": "Escreva a Sua Própria",
+      "writeYourOwn": "Escreva a sua própria",
       "subtitle": "Crie histórias personalizadas e alimentadas por IA que dão vida à sua imaginação. Perfeito para crianças, adultos e até para a sua empresa!",
       "tryItNow": "Experimente agora"
     },
     "words": [
-      "História", "Aventura", "Livro", "Romance", "Romance", "Memórias", 
+      "História", "Aventura", "Livro", "Romance", "Romance", "Memória", 
       "Manuscrito", "Crónica", "Conto", "Ficção", "Mito", "Fábula", 
       "Odisseia", "Prosa"
     ],
