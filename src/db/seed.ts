@@ -6,6 +6,7 @@ import {
   storyCharacters,
   paymentMethods,
   addresses,
+  creditLedger,
   NewAuthor,
   NewStory,
   NewCharacter,
@@ -15,6 +16,8 @@ import {
   storyStatusEnum,
   paymentProviderEnum,
 } from "./schema";
+import { creditService } from "./services";
+import { eq } from "drizzle-orm";
 
 // Helper to get a random element from an array
 function getRandomElement<T>(arr: T[]): T {
@@ -186,6 +189,24 @@ async function seedDatabase() {
     console.log("🔗 No story-character links to create.");
   }
 
+  // Initialize credits for existing authors who don't have credit entries yet
+  console.log("💰 Initializing credits for existing authors...");
+  const existingAuthors = await db.select({ authorId: authors.authorId }).from(authors);
+  
+  for (const author of existingAuthors) {
+    // Check if author already has credit entries
+    const existingCredits = await db
+      .select()
+      .from(creditLedger)
+      .where(eq(creditLedger.authorId, author.authorId))
+      .limit(1);
+    
+    if (existingCredits.length === 0) {
+      // Initialize with some starter credits (e.g., 10 credits)
+      await creditService.initializeAuthorCredits(author.authorId, 10);
+      console.log(`💰 Initialized 10 credits for author ${author.authorId}`);
+    }
+  }
 
   console.log("✅ Database seeding completed successfully!");
 }

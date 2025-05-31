@@ -158,7 +158,8 @@ export default function UsersPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <AdminHeader />      <main className="flex-1 container mx-auto px-4 py-8">
+      <AdminHeader />
+      <main className="flex-1 container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold text-center mb-8">Users Management</h1>
         
         {/* Search Component */}
@@ -328,8 +329,10 @@ export default function UsersPage() {
                   Next
                 </button>
               </div>
-            )}            {/* Pagination Info */}
-            {pagination && (              <div className="text-center mt-4 text-gray-600">
+            )}
+            {/* Pagination Info */}
+            {pagination && (
+              <div className="text-center mt-4 text-gray-600">
                 Showing {users.length} of {pagination.totalCount} users
                 {searchTerm && <span> matching &quot;{searchTerm}&quot;</span>}
                 {pagination.totalPages > 1 && (

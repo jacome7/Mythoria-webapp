@@ -151,6 +151,84 @@ Stored payment method information.
 | Column | Type | Constraints | Description |
 |--------|------|-------------|-------------|
 | `payment_method_id` | UUID | PRIMARY KEY, DEFAULT random | Unique identifier for the payment method |
+| `author_id` | UUID | NOT NULL, FK → authors.author_id CASCADE | Owner of the payment method |
+| `provider` | payment_provider ENUM | NOT NULL | Payment provider (stripe, paypal, etc.) |
+| `provider_payment_method_id` | VARCHAR(255) | NOT NULL | Provider's internal payment method ID |
+| `type` | VARCHAR(60) | NOT NULL | Payment method type (card, bank_account, etc.) |
+| `is_default` | BOOLEAN | DEFAULT false | Whether this is the default payment method |
+| `last_four` | VARCHAR(4) | NULLABLE | Last four digits of card/account |
+| `brand` | VARCHAR(60) | NULLABLE | Card brand or bank name |
+| `exp_month` | INTEGER | NULLABLE | Card expiration month |
+| `exp_year` | INTEGER | NULLABLE | Card expiration year |
+| `billing_details` | JSONB | NULLABLE | Billing address and contact information |
+| `created_at` | TIMESTAMP WITH TIMEZONE | NOT NULL, DEFAULT NOW() | Payment method creation timestamp |
+
+##### `payments`
+Transaction records.
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `payment_id` | UUID | PRIMARY KEY, DEFAULT random | Unique identifier for the payment |
+| `author_id` | UUID | NOT NULL, FK → authors.author_id CASCADE | Payment owner |
+| `payment_method_id` | UUID | NOT NULL, FK → payment_methods.payment_method_id | Payment method used |
+| `amount` | INTEGER | NOT NULL | Payment amount in cents |
+| `currency` | VARCHAR(3) | NOT NULL | Currency code (e.g., 'USD', 'EUR') |
+| `status` | VARCHAR(60) | NOT NULL | Payment status |
+| `provider_payment_id` | VARCHAR(255) | NULLABLE | Provider's payment ID |
+| `provider_payment_intent_id` | VARCHAR(255) | NULLABLE | Provider's payment intent ID |
+| `shipping_code_id` | UUID | NULLABLE, FK → shipping_codes.shipping_code_id | Associated shipping record |
+| `metadata` | JSONB | NULLABLE | Additional payment metadata |
+| `created_at` | TIMESTAMP WITH TIMEZONE | NOT NULL, DEFAULT NOW() | Payment creation timestamp |
+
+##### `credits`
+Author credit balance tracking (legacy).
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `credit_id` | UUID | PRIMARY KEY, DEFAULT random | Unique identifier for the credit record |
+| `author_id` | UUID | NOT NULL, FK → authors.author_id CASCADE | Credit owner |
+| `balance` | INTEGER | NOT NULL, DEFAULT 0 | Current credit balance |
+| `updated_at` | TIMESTAMP WITH TIMEZONE | NOT NULL, DEFAULT NOW() | Last update timestamp |
+
+### 5. Credits Domain
+
+The Credits domain manages the author credit system with a complete audit trail and real-time balance tracking.
+
+#### Tables
+
+##### `credit_ledger`
+Insert-only ledger for all credit operations (audit trail).
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `id` | UUID | PRIMARY KEY, DEFAULT random | Unique identifier for the transaction |
+| `author_id` | UUID | NOT NULL, FK → authors.author_id CASCADE | Author whose credits are affected |
+| `created_at` | TIMESTAMP WITH TIMEZONE | NOT NULL, DEFAULT NOW() | Transaction timestamp |
+| `amount` | INTEGER | NOT NULL | Credit amount (positive for additions, negative for deductions) |
+| `credit_event_type` | credit_event_type ENUM | NOT NULL | Type of credit operation |
+| `purchase_id` | UUID | NULLABLE | Foreign key to purchases table (future implementation) |
+| `story_id` | UUID | NULLABLE, FK → stories.story_id SET NULL | Story associated with the credit operation |
+
+##### `author_credit_balances` (Materialized View)
+Auto-refreshed materialized view providing fast access to current credit balances.
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `author_id` | UUID | PRIMARY KEY, FK → authors.author_id CASCADE | Author identifier |
+| `total_credits` | INTEGER | NOT NULL | Current total credit balance |
+| `last_updated` | TIMESTAMP WITH TIMEZONE | NOT NULL | Last materialized view refresh timestamp |
+
+**Implementation Notes:**
+- This is implemented as a PostgreSQL materialized view that automatically refreshes when credit_ledger changes
+- Provides O(1) lookup time for credit balance queries
+- Includes triggers for automatic refresh on any credit_ledger modifications
+
+### 6. Shipping Domain
+Stored payment method information.
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `payment_method_id` | UUID | PRIMARY KEY, DEFAULT random | Unique identifier for the payment method |
 | `author_id` | UUID | NOT NULL, FK → authors.author_id CASCADE | Payment method owner |
 | `provider` | payment_provider ENUM | NOT NULL | Provider: 'stripe', 'paypal', 'revolut', 'other' |
 | `provider_ref` | VARCHAR(255) | NOT NULL | Provider-specific reference (e.g., Stripe PM ID) |
@@ -188,7 +266,7 @@ Payment transaction records.
 | `created_at` | TIMESTAMP WITH TIMEZONE | NOT NULL, DEFAULT NOW() | Payment creation timestamp |
 | `updated_at` | TIMESTAMP WITH TIMEZONE | NOT NULL, DEFAULT NOW() | Payment update timestamp |
 
-### 5. Shipping Domain
+### 6. Shipping Domain
 
 The Shipping domain manages delivery of printed materials.
 
@@ -224,6 +302,14 @@ Shipping and tracking information for printed orders.
 - `revolut`: Revolut payment processing
 - `other`: Other payment providers
 
+### `credit_event_type`
+- `InitialCredit`: Initial credit allocation for new authors
+- `CreditPurchase`: Credits purchased by the author
+- `eBookGeneration`: Credits spent on e-book generation
+- `audioBookGeneration`: Credits spent on audiobook generation
+- `printOrder`: Credits spent on printed book orders
+- `refund`: Credit refund or reversal
+
 ## Relationships
 
 ### Key Relationships
@@ -251,6 +337,18 @@ Shipping and tracking information for printed orders.
 6. **Payments → Shipping Codes**: One-to-One
    - A payment can be associated with one shipping record
    - A shipping record can be associated with one payment
+
+7. **Authors → Credit Ledger**: One-to-Many
+   - An author can have multiple credit transactions
+   - Each credit transaction belongs to one author
+
+8. **Authors → Credit Balances**: One-to-One
+   - Each author has one current credit balance record
+   - The balance is computed from all credit ledger entries
+
+9. **Credit Ledger → Stories**: Many-to-One (optional)
+   - Multiple credit transactions can be related to one story
+   - A credit transaction may or may not be associated with a story
 
 ## Data Types and Formats
 
@@ -284,5 +382,10 @@ The schema integrates with **Clerk** authentication service:
 - The database supports multiple languages through the `preferred_locale` field
 - Event logging provides an audit trail for system activities
 - The schema supports both digital and physical product delivery
-- Credit system allows for prepaid services or rewards
+- **Advanced credit system** with complete audit trail:
+  - Insert-only `credit_ledger` table ensures transaction immutability
+  - Auto-refreshed materialized view provides O(1) credit balance lookups
+  - Supports various credit operations (purchases, spending, refunds)
+  - Credit transactions can be linked to specific stories or purchases
 - Flexible character system supports both author-created and system-provided characters
+- All monetary amounts are stored as integers (smallest currency unit) to avoid floating-point precision issues

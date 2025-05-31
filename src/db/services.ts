@@ -1,12 +1,15 @@
 import { db } from "./index";
-import { authors, stories, characters, storyCharacters } from "./schema";
-import { eq, and, count } from "drizzle-orm";
+import { authors, stories, characters, storyCharacters, creditLedger, authorCreditBalances } from "./schema";
+import { eq, and, count, desc } from "drizzle-orm";
 import { ClerkUserForSync } from "@/types/clerk";
 
 // Author operations
-export const authorService = {
-  async createAuthor(authorData: { clerkUserId: string; email: string; displayName: string }) {
+export const authorService = {  async createAuthor(authorData: { clerkUserId: string; email: string; displayName: string }) {
     const [author] = await db.insert(authors).values(authorData).returning();
+    
+    // Initialize credits for new author
+    await creditService.initializeAuthorCredits(author.authorId, 0);
+    
     return author;
   },
 
@@ -36,8 +39,11 @@ export const authorService = {
         lastLoginAt: currentTime,
         ...(primaryPhone?.phoneNumber && { mobilePhone: primaryPhone.phoneNumber })
       };
+        const [newAuthor] = await db.insert(authors).values(newAuthorData).returning();
       
-      const [newAuthor] = await db.insert(authors).values(newAuthorData).returning();
+      // Initialize credits for new author
+      await creditService.initializeAuthorCredits(newAuthor.authorId, 0);
+      
       console.log('Created new user on sign-in:', newAuthor.clerkUserId);
       return newAuthor;
     }
@@ -186,5 +192,81 @@ export const storyCharacterService = {
         eq(storyCharacters.storyId, storyId),
         eq(storyCharacters.characterId, characterId)
       ));
+  }
+};
+
+// Credit operations
+export const creditService = {  async addCreditEntry(
+    authorId: string, 
+    amount: number, 
+    creditEventType: 'initialCredit' | 'creditPurchase' | 'eBookGeneration' | 'audioBookGeneration' | 'printOrder' | 'refund',
+    storyId?: string,
+    purchaseId?: string
+  ) {
+    const [entry] = await db.insert(creditLedger).values({
+      authorId,
+      amount,
+      creditEventType,
+      storyId,
+      purchaseId
+    }).returning();
+    return entry;
+  },
+
+  async getAuthorCreditBalance(authorId: string) {
+    const [balance] = await db
+      .select()
+      .from(authorCreditBalances)
+      .where(eq(authorCreditBalances.authorId, authorId));
+    
+    return balance?.totalCredits ?? 0;
+  },
+
+  async getCreditHistory(authorId: string, limit: number = 50) {
+    return await db
+      .select({
+        id: creditLedger.id,
+        amount: creditLedger.amount,
+        creditEventType: creditLedger.creditEventType,
+        createdAt: creditLedger.createdAt,
+        storyId: creditLedger.storyId,
+        purchaseId: creditLedger.purchaseId
+      })
+      .from(creditLedger)
+      .where(eq(creditLedger.authorId, authorId))
+      .orderBy(desc(creditLedger.createdAt))
+      .limit(limit);
+  },
+  async initializeAuthorCredits(authorId: string, initialAmount: number = 0) {
+    // Add initial credit entry
+    await this.addCreditEntry(authorId, initialAmount, 'initialCredit');
+    return initialAmount;
+  },
+
+  async canAfford(authorId: string, amount: number) {
+    const balance = await this.getAuthorCreditBalance(authorId);
+    return balance >= amount;
+  },
+
+  async deductCredits(
+    authorId: string, 
+    amount: number, 
+    eventType: 'eBookGeneration' | 'audioBookGeneration' | 'printOrder',
+    storyId?: string
+  ) {
+    const canAfford = await this.canAfford(authorId, amount);
+    if (!canAfford) {
+      throw new Error('Insufficient credits');
+    }
+    
+    return await this.addCreditEntry(authorId, -amount, eventType, storyId);
+  },
+  async addCredits(
+    authorId: string, 
+    amount: number, 
+    eventType: 'creditPurchase' | 'refund',
+    purchaseId?: string
+  ) {
+    return await this.addCreditEntry(authorId, amount, eventType, undefined, purchaseId);
   }
 };

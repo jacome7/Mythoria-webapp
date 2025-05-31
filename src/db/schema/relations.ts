@@ -4,12 +4,13 @@ import { stories, storyVersions } from './stories';
 import { characters, storyCharacters } from './characters';
 import { paymentMethods, payments, credits } from './payments';
 import { shippingCodes } from './shipping';
+import { creditLedger, authorCreditBalances } from './credits';
 
 // -----------------------------------------------------------------------------
 // Relations (for type safety with Drizzle ORM queries)
 // -----------------------------------------------------------------------------
 
-export const authorsRelations = relations(authors, ({ many }) => ({
+export const authorsRelations = relations(authors, ({ one, many }) => ({
   paymentMethods: many(paymentMethods),
   addresses: many(addresses),
   stories: many(stories),
@@ -17,6 +18,11 @@ export const authorsRelations = relations(authors, ({ many }) => ({
   credits: many(credits),
   payments: many(payments),
   events: many(events),
+  creditLedgerEntries: many(creditLedger),
+  creditBalance: one(authorCreditBalances, {
+    fields: [authors.authorId],
+    references: [authorCreditBalances.authorId],
+  }),
 }));
 
 export const paymentMethodsRelations = relations(paymentMethods, ({ one, many }) => ({
@@ -43,6 +49,7 @@ export const storiesRelations = relations(stories, ({ one, many }) => ({
   storyCharacters: many(storyCharacters),
   shippingCodes: many(shippingCodes),
   storyVersions: many(storyVersions),
+  creditLedgerEntries: many(creditLedger),
 }));
 
 export const charactersRelations = relations(characters, ({ one, many }) => ({
@@ -107,6 +114,24 @@ export const storyVersionsRelations = relations(storyVersions, ({ one }) => ({
 export const eventsRelations = relations(events, ({ one }) => ({
   author: one(authors, {
     fields: [events.authorId],
+    references: [authors.authorId],
+  }),
+}));
+
+export const creditLedgerRelations = relations(creditLedger, ({ one }) => ({
+  author: one(authors, {
+    fields: [creditLedger.authorId],
+    references: [authors.authorId],
+  }),
+  story: one(stories, {
+    fields: [creditLedger.storyId],
+    references: [stories.storyId],
+  }),
+}));
+
+export const authorCreditBalancesRelations = relations(authorCreditBalances, ({ one }) => ({
+  author: one(authors, {
+    fields: [authorCreditBalances.authorId],
     references: [authors.authorId],
   }),
 }));

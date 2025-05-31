@@ -11,6 +11,7 @@ export * from './stories';
 export * from './characters';
 export * from './payments';
 export * from './shipping';
+export * from './credits';
 
 // Relations
 export * from './relations';
