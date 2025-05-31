@@ -70,6 +70,8 @@ export const stories = pgTable("stories", {
   title: varchar("title", { length: 255 }).notNull(),
   plotDescription: text("plot_description"),
   synopsis: text("synopsis"),
+  place: text("place"), // Setting of the story (real or imaginary)
+  additionalRequests: text("additionalRequests"), // Optional text area for mentioning products, companies, or specific details to include.
   targetAudience: varchar("target_audience", { length: 120 }),
   novelStyle: varchar("novel_style", { length: 120 }), // e.g. “kids book”, “adventure”
   graphicalStyle: varchar("graphical_style", { length: 120 }),

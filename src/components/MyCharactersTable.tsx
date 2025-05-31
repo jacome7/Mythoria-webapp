@@ -27,7 +27,7 @@ interface MyCharactersTableProps {
   authorName: string;
 }
 
-export default function MyCharactersTable({ authorName }: MyCharactersTableProps) {
+export default function MyCharactersTable({ }: MyCharactersTableProps) {
   const t = useTranslations('MyCharactersPage');
   const [characters, setCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);
@@ -128,14 +128,8 @@ export default function MyCharactersTable({ authorName }: MyCharactersTableProps
         return sortDirection === 'asc' ? 1 : -1;
       }
       return 0;
-    });
-
-    return sorted;
+    });    return sorted;
   }, [characters, sortField, sortDirection]);
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
-  };
 
   if (loading) {
     return (

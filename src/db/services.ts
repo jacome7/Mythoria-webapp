@@ -109,8 +109,17 @@ export const storyService = {
   async getTotalStoriesCount() {
     const result = await db.select({ value: count() }).from(stories);
     return result[0]?.value || 0;
-  },
-  async updateStory(storyId: string, updates: Partial<{ title: string; plotDescription: string; synopsis: string; status: 'draft' | 'writing' | 'published' }>) {
+  },  async updateStory(storyId: string, updates: Partial<{ 
+    title: string; 
+    plotDescription: string; 
+    synopsis: string; 
+    place: string;
+    targetAudience: string;
+    novelStyle: string;
+    graphicalStyle: string;
+    additionalRequests: string;
+    status: 'draft' | 'writing' | 'published' 
+  }>) {
     const [story] = await db.update(stories).set(updates).where(eq(stories.storyId, storyId)).returning();
     return story;
   },
