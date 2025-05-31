@@ -59,6 +59,7 @@ export default function UsersPage() {
       }      // Fetch users data if authorized
       fetchUsers(currentPage);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoaded, isSignedIn, user, router, currentPage, searchTerm, sortField, sortOrder]);
 
   const fetchUsers = async (page: number) => {
@@ -159,7 +160,6 @@ export default function UsersPage() {
     <div className="min-h-screen flex flex-col">
       <AdminHeader />      <main className="flex-1 container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold text-center mb-8">Users Management</h1>
-        <p className="text-center text-gray-600 mb-8">All registered authors on the platform</p>
         
         {/* Search Component */}
         <div className="mb-6 max-w-md mx-auto">
@@ -271,9 +271,8 @@ export default function UsersPage() {
                     const maxVisiblePages = 5;
                     const totalPages = pagination.totalPages;
                     const current = currentPage;
-                    
-                    let startPage = Math.max(1, current - Math.floor(maxVisiblePages / 2));
-                    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                      let startPage = Math.max(1, current - Math.floor(maxVisiblePages / 2));
+                    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
                     
                     if (endPage - startPage + 1 < maxVisiblePages) {
                       startPage = Math.max(1, endPage - maxVisiblePages + 1);
@@ -330,10 +329,9 @@ export default function UsersPage() {
                 </button>
               </div>
             )}            {/* Pagination Info */}
-            {pagination && (
-              <div className="text-center mt-4 text-gray-600">
+            {pagination && (              <div className="text-center mt-4 text-gray-600">
                 Showing {users.length} of {pagination.totalCount} users
-                {searchTerm && <span> matching "{searchTerm}"</span>}
+                {searchTerm && <span> matching &quot;{searchTerm}&quot;</span>}
                 {pagination.totalPages > 1 && (
                   <span> (Page {pagination.currentPage} of {pagination.totalPages})</span>
                 )}

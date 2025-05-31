@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 import { db } from '@/db';
-import { authors } from '@/db/schema';
-import { desc, asc, count, ilike, or, SQL } from 'drizzle-orm';
+import { stories, authors } from '@/db/schema';
+import { desc, asc, count, ilike, or, SQL, eq } from 'drizzle-orm';
 
 export async function GET(request: Request) {
   try {
@@ -25,59 +25,66 @@ export async function GET(request: Request) {
     const offset = (page - 1) * limit;
     const search = searchParams.get('search') || '';
     const sortBy = searchParams.get('sortBy') || 'createdAt';
-    const sortOrder = searchParams.get('sortOrder') || 'desc';    // Build search conditions
+    const sortOrder = searchParams.get('sortOrder') || 'desc';
+
+    // Build search conditions
     let whereCondition: SQL | undefined;
     if (search.trim()) {
       whereCondition = or(
-        ilike(authors.displayName, `%${search}%`),
-        ilike(authors.email, `%${search}%`),
-        ilike(authors.mobilePhone, `%${search}%`)
+        ilike(stories.title, `%${search}%`),
+        ilike(authors.displayName, `%${search}%`)
       );
-    }    // Build sort condition
-    const validSortFields = ['displayName', 'email', 'createdAt', 'lastLoginAt'];
+    }
+
+    // Build sort condition
+    const validSortFields = ['title', 'authorName', 'createdAt', 'status'];
     const sortField = validSortFields.includes(sortBy) ? sortBy : 'createdAt';
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const orderDirection = sortOrder === 'asc' ? asc : desc;
     
     // Get total count with search
-    const countQuery = db.select({ value: count() }).from(authors);
+    const countQuery = db
+      .select({ value: count() })
+      .from(stories)
+      .innerJoin(authors, eq(stories.authorId, authors.authorId));
+    
     if (whereCondition) {
       countQuery.where(whereCondition);
     }
     const totalCountResult = await countQuery;
     const totalCount = totalCountResult[0]?.value || 0;
 
-    // Get users with pagination, search, and sorting
-    const usersQuery = db
+    // Get stories with pagination, search, and sorting
+    const storiesQuery = db
       .select({
-        authorId: authors.authorId,
-        displayName: authors.displayName,
-        email: authors.email,
-        mobilePhone: authors.mobilePhone,
-        createdAt: authors.createdAt,
-        lastLoginAt: authors.lastLoginAt,
+        storyId: stories.storyId,
+        title: stories.title,
+        authorName: authors.displayName,
+        status: stories.status,
+        createdAt: stories.createdAt,
       })
-      .from(authors);
+      .from(stories)
+      .innerJoin(authors, eq(stories.authorId, authors.authorId));
 
     if (whereCondition) {
-      usersQuery.where(whereCondition);
-    }    // Build sort condition
-    let orderBy;
-    switch (sortField) {
-      case 'displayName':
-        orderBy = sortOrder === 'asc' ? asc(authors.displayName) : desc(authors.displayName);
-        break;
-      case 'email':
-        orderBy = sortOrder === 'asc' ? asc(authors.email) : desc(authors.email);
-        break;
-      case 'lastLoginAt':
-        orderBy = sortOrder === 'asc' ? asc(authors.lastLoginAt) : desc(authors.lastLoginAt);
-        break;
-      default:
-        orderBy = sortOrder === 'asc' ? asc(authors.createdAt) : desc(authors.createdAt);
+      storiesQuery.where(whereCondition);
     }
 
-    const users = await usersQuery
+    // Build sort condition
+    let orderBy;
+    switch (sortField) {
+      case 'title':
+        orderBy = sortOrder === 'asc' ? asc(stories.title) : desc(stories.title);
+        break;
+      case 'authorName':
+        orderBy = sortOrder === 'asc' ? asc(authors.displayName) : desc(authors.displayName);
+        break;
+      case 'status':
+        orderBy = sortOrder === 'asc' ? asc(stories.status) : desc(stories.status);
+        break;
+      default:
+        orderBy = sortOrder === 'asc' ? asc(stories.createdAt) : desc(stories.createdAt);
+    }
+
+    const storiesResult = await storiesQuery
       .orderBy(orderBy)
       .limit(limit)
       .offset(offset);
@@ -88,7 +95,7 @@ export async function GET(request: Request) {
     const hasPrevPage = page > 1;
 
     return NextResponse.json({
-      users,
+      stories: storiesResult,
       pagination: {
         currentPage: page,
         totalPages,
@@ -99,7 +106,7 @@ export async function GET(request: Request) {
       },
     });
   } catch (error) {
-    console.error('Error fetching users:', error);
+    console.error('Error fetching stories:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
