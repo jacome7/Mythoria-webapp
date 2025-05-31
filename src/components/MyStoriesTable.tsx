@@ -12,6 +12,7 @@ import {
   FiChevronDown
 } from 'react-icons/fi';
 import MyCharactersTable from './MyCharactersTable';
+import CreditsDisplay from './CreditsDisplay';
 
 interface Story {
   storyId: string;
@@ -23,12 +24,13 @@ interface Story {
 
 interface MyStoriesTableProps {
   authorName: string;
+  credits: number;
 }
 
 type SortField = 'title' | 'createdAt' | 'updatedAt' | 'status';
 type SortDirection = 'asc' | 'desc';
 
-export default function MyStoriesTable({ authorName }: MyStoriesTableProps) {
+export default function MyStoriesTable({ authorName, credits }: MyStoriesTableProps) {
   const t = useTranslations('MyStoriesPage');
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
@@ -175,15 +177,17 @@ export default function MyStoriesTable({ authorName }: MyStoriesTableProps) {
       </div>
     );
   }  return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-6">      <div className="flex justify-between items-center">
         <h1 className="text-4xl font-bold">
           {t('title')}, {authorName}!
         </h1>
-        <Link href="/tell-your-story/step-1" className="btn btn-primary">
-          <FiPlus className="w-5 h-5 mr-2" />
-          {t('writeNewStory')}
-        </Link>
+        <div className="flex items-center gap-4">
+          <CreditsDisplay credits={credits} />
+          <Link href="/tell-your-story/step-1" className="btn btn-primary">
+            <FiPlus className="w-5 h-5 mr-2" />
+            {t('writeNewStory')}
+          </Link>
+        </div>
       </div>
 
       {/* Tabs */}

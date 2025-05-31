@@ -2,9 +2,16 @@ import { getCurrentAuthor } from '@/lib/auth';
 import { SignedIn, SignedOut } from '@clerk/nextjs';
 import Link from 'next/link';
 import MyStoriesTable from '@/components/MyStoriesTable';
+import { creditService } from '@/db/services';
 
 export default async function MyStoriesPage() {
   const author = await getCurrentAuthor();
+  
+  // Get user's credit balance if they're signed in
+  let credits = 0;
+  if (author) {
+    credits = await creditService.getAuthorCreditBalance(author.authorId);
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -21,12 +28,9 @@ export default async function MyStoriesPage() {
             <Link href="/sign-up" className="btn btn-outline">
               Create Account
             </Link>
-          </div>
-        </div>
-      </SignedOut>
-
-      <SignedIn>
-        <MyStoriesTable authorName={author?.displayName || 'Storyteller'} />
+          </div>        </div>
+      </SignedOut>      <SignedIn>
+        <MyStoriesTable authorName={author?.displayName || 'Storyteller'} credits={credits} />
       </SignedIn>
     </div>
   );
