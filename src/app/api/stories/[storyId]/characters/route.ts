@@ -4,7 +4,7 @@ import { storyCharacterService, storyService } from '../../../../../db/services'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { storyId: string } }
+  { params }: { params: Promise<{ storyId: string }> }
 ) {
   try {
     // Get the current authenticated user
@@ -14,7 +14,8 @@ export async function POST(
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
-    const storyId = params.storyId;
+    const resolvedParams = await params;
+    const storyId = resolvedParams.storyId;
     
     // Check if story exists and belongs to the current author
     const story = await storyService.getStoryById(storyId);
@@ -56,7 +57,7 @@ export async function POST(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { storyId: string } }
+  { params }: { params: Promise<{ storyId: string }> }
 ) {
   try {
     // Get the current authenticated user
@@ -66,7 +67,8 @@ export async function GET(
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
-    const storyId = params.storyId;
+    const resolvedParams = await params;
+    const storyId = resolvedParams.storyId;
     
     // Check if story exists and belongs to the current author
     const story = await storyService.getStoryById(storyId);

@@ -3,11 +3,11 @@ import { getCurrentAuthor } from '../../../../lib/auth';
 import { characterService } from '../../../../db/services';
 import { db } from '../../../../db';
 import { characters } from '../../../../db/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get the current authenticated user
@@ -17,7 +17,8 @@ export async function PATCH(
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
-    const characterId = params.id;
+    const resolvedParams = await params;
+    const characterId = resolvedParams.id;
     
     // Check if character exists and belongs to the current author
     const existingCharacter = await characterService.getCharacterById(characterId);
@@ -71,7 +72,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get the current authenticated user
@@ -81,7 +82,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
-    const characterId = params.id;
+    const resolvedParams = await params;
+    const characterId = resolvedParams.id;
     
     // Check if character exists and belongs to the current author
     const existingCharacter = await characterService.getCharacterById(characterId);

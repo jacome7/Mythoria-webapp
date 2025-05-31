@@ -1,6 +1,7 @@
 'use client';
 
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
+import Image from 'next/image';
 import StepNavigation from '../../../../components/StepNavigation';
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -233,12 +234,12 @@ export default function Step2Page() {
                       </label>
                       <textarea
                         className="textarea textarea-bordered h-64 text-base leading-relaxed"
-                        placeholder="Once upon a time... Let your imagination run wild! Share your adventure, your dreams, or any story that's close to your heart."
+                        placeholder="Once upon a time... Let your imagination run wild! Share your adventure, your dreams, or any story that&apos;s close to your heart."
                         value={storyText}
                         onChange={(e) => setStoryText(e.target.value)}
                       />
                       <label className="label">
-                        <span className="label-text-alt">Write as much or as little as you'd like. You can always edit this later!</span>
+                        <span className="label-text-alt">Write as much or as little as you&apos;d like. You can always edit this later!</span>
                       </label>
                     </div>
                   </div>
@@ -298,14 +299,16 @@ export default function Step2Page() {
 
                     {/* Image Preview */}
                     {imagePreview && (
-                      <div className="text-center space-y-4">
-                        <div className="card bg-base-200">
+                      <div className="text-center space-y-4">                        <div className="card bg-base-200">
                           <div className="card-body">
-                            <img
-                              src={imagePreview}
-                              alt="Uploaded story image"
-                              className="w-full max-w-md mx-auto rounded-lg"
-                            />
+                            <div className="relative w-full max-w-md mx-auto aspect-video rounded-lg overflow-hidden">
+                              <Image
+                                src={imagePreview}
+                                alt="Uploaded story image"
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
                             <div className="card-actions justify-center">
                               <button
                                 className="btn btn-outline btn-sm"
@@ -402,11 +405,10 @@ export default function Step2Page() {
                   <div className="flex items-start space-x-3">
                     <div className="text-2xl">💡</div>
                     <div>
-                      <p className="text-blue-800 font-medium">
-                        Prefer structured guidance? Continue, and we'll prompt you for each detail separately!
+                      <p className="text-blue-800 font-medium">                        Prefer structured guidance? Continue, and we&apos;ll prompt you for each detail separately!
                       </p>
                       <p className="text-blue-600 text-sm mt-1">
-                        Don't worry if you haven't filled everything out perfectly. The next steps will help you refine and enhance your story.
+                        Don&apos;t worry if you haven&apos;t filled everything out perfectly. The next steps will help you refine and enhance your story.
                       </p>
                     </div>
                   </div>

@@ -1,13 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { 
   FiEdit3, 
   FiTrash2, 
   FiShare2,
-  FiPlus 
+  FiPlus,
+  FiChevronUp,
+  FiChevronDown
 } from 'react-icons/fi';
 
 interface Story {
@@ -22,12 +24,19 @@ interface MyStoriesTableProps {
   authorName: string;
 }
 
+type SortField = 'title' | 'createdAt' | 'updatedAt' | 'status';
+type SortDirection = 'asc' | 'desc';
+
 export default function MyStoriesTable({ authorName }: MyStoriesTableProps) {
   const t = useTranslations('MyStoriesPage');
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [storyToDelete, setStoryToDelete] = useState<Story | null>(null);
+  
+  // Sorting state
+  const [sortField, setSortField] = useState<SortField>('updatedAt');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   useEffect(() => {
     fetchStories();
@@ -69,7 +78,6 @@ export default function MyStoriesTable({ authorName }: MyStoriesTableProps) {
       console.error('Error deleting story:', error);
     }
   };
-
   const handleShare = async (story: Story) => {
     // Simple share functionality - copy link to clipboard
     const shareUrl = `${window.location.origin}/stories/${story.storyId}`;
@@ -81,6 +89,63 @@ export default function MyStoriesTable({ authorName }: MyStoriesTableProps) {
       console.error('Error copying to clipboard:', error);
     }
   };
+  // Filtering and sorting functions
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) return null;
+    return sortDirection === 'asc' ? 
+      <FiChevronUp className="w-4 h-4 inline ml-1" /> : 
+      <FiChevronDown className="w-4 h-4 inline ml-1" />;
+  };
+
+  // Sorted stories
+  const sortedStories = useMemo(() => {
+    const sorted = [...stories];
+
+    sorted.sort((a, b) => {
+      let aValue: string | number;
+      let bValue: string | number;
+
+      switch (sortField) {
+        case 'title':
+          aValue = a.title.toLowerCase();
+          bValue = b.title.toLowerCase();
+          break;
+        case 'createdAt':
+          aValue = new Date(a.createdAt).getTime();
+          bValue = new Date(b.createdAt).getTime();
+          break;
+        case 'updatedAt':
+          aValue = new Date(a.updatedAt).getTime();
+          bValue = new Date(b.updatedAt).getTime();
+          break;
+        case 'status':
+          aValue = a.status;
+          bValue = b.status;
+          break;
+        default:
+          return 0;
+      }
+
+      if (aValue < bValue) {
+        return sortDirection === 'asc' ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return sortDirection === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+
+    return sorted;
+  }, [stories, sortField, sortDirection]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
@@ -106,13 +171,13 @@ export default function MyStoriesTable({ authorName }: MyStoriesTableProps) {
       </div>
     );
   }
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-4xl font-bold">
           {t('title')}, {authorName}!
-        </h1>        <Link href="/tell-your-story/step-1" className="btn btn-primary">
+        </h1>
+        <Link href="/tell-your-story/step-1" className="btn btn-primary">
           <FiPlus className="w-5 h-5 mr-2" />
           {t('writeNewStory')}
         </Link>
@@ -126,61 +191,88 @@ export default function MyStoriesTable({ authorName }: MyStoriesTableProps) {
             </h2>
             <p className="text-base-content/70">
               {t('noStories.subtitle')}
-            </p>            <Link href="/tell-your-story/step-1" className="btn btn-primary btn-lg">
+            </p>
+            <Link href="/tell-your-story/step-1" className="btn btn-primary btn-lg">
               {t('noStories.action')}
             </Link>
           </div>
-        </div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="table table-zebra w-full">
-            <thead>
-              <tr>
-                <th>{t('table.date')}</th>
-                <th>{t('table.title')}</th>
-                <th>{t('table.status')}</th>
-                <th className="text-center">{t('table.actions')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stories.map((story) => (
-                <tr key={story.storyId}>
-                  <td>{formatDate(story.createdAt)}</td>
-                  <td className="font-medium">{story.title}</td>
-                  <td>
-                    <span className={getStatusBadgeClass(story.status)}>
-                      {t(`status.${story.status}`)}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="flex justify-center gap-2">                      <button
-                        className="btn btn-ghost btn-sm"
-                        onClick={() => handleShare(story)}
-                        title={t('actions.share')}
-                      >
-                        <FiShare2 className="w-4 h-4" />
-                      </button>
-                      <Link
-                        href={`/tell-your-story?edit=${story.storyId}`}
-                        className="btn btn-ghost btn-sm"
-                        title={t('actions.edit')}
-                      >
-                        <FiEdit3 className="w-4 h-4" />
-                      </Link>
-                      <button
-                        className="btn btn-ghost btn-sm text-error hover:bg-error hover:text-error-content"
-                        onClick={() => handleDeleteClick(story)}
-                        title={t('actions.delete')}
-                      >
-                        <FiTrash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
+        </div>      ) : (
+        <>
+          <div className="overflow-x-auto">
+            <table className="table table-zebra w-full">
+              <thead>
+                <tr>
+                  <th>
+                    <button
+                      className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
+                      onClick={() => handleSort('createdAt')}
+                    >
+                      {t('table.date')}
+                      {getSortIcon('createdAt')}
+                    </button>
+                  </th>
+                  <th>
+                    <button
+                      className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
+                      onClick={() => handleSort('title')}
+                    >
+                      {t('table.title')}
+                      {getSortIcon('title')}
+                    </button>
+                  </th>
+                  <th>
+                    <button
+                      className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
+                      onClick={() => handleSort('status')}
+                    >
+                      {t('table.status')}
+                      {getSortIcon('status')}
+                    </button>
+                  </th>
+                  <th className="text-center">{t('table.actions')}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {sortedStories.map((story) => (
+                  <tr key={story.storyId}>
+                    <td>{formatDate(story.createdAt)}</td>
+                    <td className="font-medium">{story.title}</td>
+                    <td>
+                      <span className={getStatusBadgeClass(story.status)}>
+                        {t(`status.${story.status}`)}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="flex justify-center gap-2">
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          onClick={() => handleShare(story)}
+                          title={t('actions.share')}
+                        >
+                          <FiShare2 className="w-4 h-4" />
+                        </button>
+                        <Link
+                          href={`/tell-your-story?edit=${story.storyId}`}
+                          className="btn btn-ghost btn-sm"
+                          title={t('actions.edit')}
+                        >
+                          <FiEdit3 className="w-4 h-4" />
+                        </Link>
+                        <button
+                          className="btn btn-ghost btn-sm text-error hover:bg-error hover:text-error-content"
+                          onClick={() => handleDeleteClick(story)}
+                          title={t('actions.delete')}
+                        >
+                          <FiTrash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       {/* Delete Confirmation Modal */}

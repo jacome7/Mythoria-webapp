@@ -10,7 +10,7 @@ export default async function MyStoriesPage() {
     <div className="container mx-auto px-4 py-8">
       <SignedOut>
         <div className="text-center space-y-6">
-          <h1 className="text-4xl font-bold">My Stories</h1>
+          <h1 className="text-4xl font-bold">Welcome</h1>
           <p className="text-lg text-gray-600">
             You need to be signed in to view your stories.
           </p>

@@ -17,7 +17,7 @@ interface AuthorData {
 }
 
 export default function Step1Page() {
-  const [authorData, setAuthorData] = useState<AuthorData | null>(null);
+  const [, setAuthorData] = useState<AuthorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -105,11 +105,10 @@ export default function Step1Page() {
     <div className="container mx-auto px-4 py-8">
       <SignedOut>
         <div className="text-center space-y-6 max-w-2xl mx-auto">
-          <div className="text-6xl">📚</div>
-          <h1 className="text-4xl font-bold">Oops! Looks like you're trying to sneak into the author's lounge!</h1>
+          <div className="text-6xl">📚</div>          <h1 className="text-4xl font-bold">Oops! Looks like you&apos;re trying to sneak into the author&apos;s lounge!</h1>
           <p className="text-lg text-gray-600">
-            While we appreciate your enthusiasm for storytelling, you'll need to sign in first. 
-            Don't worry, it's easier than convincing a dragon to share its treasure! 🐉
+            While we appreciate your enthusiasm for storytelling, you&apos;ll need to sign in first. 
+            Don&apos;t worry, it&apos;s easier than convincing a dragon to share its treasure! 🐉
           </p>
           <div className="space-x-4">
             <Link href="/sign-in" className="btn btn-primary btn-lg">
@@ -120,7 +119,7 @@ export default function Step1Page() {
             </Link>
           </div>
           <p className="text-sm text-gray-500">
-            Once you're signed in, you'll be ready to create magical stories that would make even Merlin jealous! 🧙‍♂️
+            Once you&apos;re signed in, you&apos;ll be ready to create magical stories that would make even Merlin jealous! 🧙‍♂️
           </p>
         </div>
       </SignedOut>
@@ -154,9 +153,8 @@ export default function Step1Page() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="prose max-w-none mb-6">
                     <p className="text-gray-600">
-                      Welcome, storyteller! Before we dive into your magical adventure, 
-                      let's make sure we have your correct information. This helps us 
-                      personalize your experience and keep you updated on your story's progress.
+                      Welcome, storyteller! Before we dive into your magical adventure,                      let&apos;s make sure we have your correct information. This helps us 
+                      personalize your experience and keep you updated on your story&apos;s progress.
                     </p>
                   </div>
 
@@ -193,7 +191,7 @@ export default function Step1Page() {
                         required
                       />
                       <label className="label">
-                        <span className="label-text-alt">This is how you'll be credited as the author</span>
+                        <span className="label-text-alt">This is how you&apos;ll be credited as the author</span>
                       </label>
                     </div>
 
@@ -211,7 +209,7 @@ export default function Step1Page() {
                         required
                       />
                       <label className="label">
-                        <span className="label-text-alt">We'll use this for important updates about your story</span>
+                        <span className="label-text-alt">We&apos;ll use this for important updates about your story</span>
                       </label>
                     </div>
                   </div>

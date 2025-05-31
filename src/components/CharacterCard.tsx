@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import Image from 'next/image';
 import { Character } from '../lib/story-session';
 
 interface CharacterCardProps {
@@ -125,9 +126,13 @@ export default function CharacterCard({
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center space-x-3">
               {formData.photoUrl && (
-                <div className="avatar">
-                  <div className="w-16 h-16 rounded-full">
-                    <img src={formData.photoUrl} alt={formData.name} />
+                <div className="avatar">                  <div className="w-16 h-16 rounded-full relative overflow-hidden">
+                    <Image 
+                      src={formData.photoUrl} 
+                      alt={formData.name}
+                      fill
+                      className="object-cover"
+                    />
                   </div>
                 </div>
               )}
@@ -278,9 +283,13 @@ export default function CharacterCard({
           
           {formData.photoUrl ? (
             <div className="flex items-center space-x-4">
-              <div className="avatar">
-                <div className="w-16 h-16 rounded-full">
-                  <img src={formData.photoUrl} alt="Character" />
+              <div className="avatar">                <div className="w-16 h-16 rounded-full relative overflow-hidden">
+                  <Image 
+                    src={formData.photoUrl} 
+                    alt="Character"
+                    fill
+                    className="object-cover"
+                  />
                 </div>
               </div>
               <div className="flex space-x-2">

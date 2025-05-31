@@ -253,8 +253,7 @@ export default function Step3Page() {
                         <h3 className="text-xl font-semibold text-blue-800 mb-2">
                           Ready to meet your characters?
                         </h3>
-                        <p className="text-blue-600">
-                          Every great story needs amazing characters! Click "Add Character" to create 
+                        <p className="text-blue-600">                          Every great story needs amazing characters! Click &quot;Add Character&quot; to create 
                           the heroes, friends, and magical beings that will make your story unforgettable.
                         </p>
                       </div>
@@ -267,7 +266,7 @@ export default function Step3Page() {
                           <div className="text-2xl">💡</div>
                           <div>
                             <p className="text-green-800 font-medium">
-                              Great work! You've created {characters.length} character{characters.length === 1 ? '' : 's'}.
+                              Great work! You&apos;ve created {characters.length} character{characters.length === 1 ? '' : 's'}.
                             </p>
                             <p className="text-green-600 text-sm mt-1">
                               You can always add more characters later or continue to the next chapter to develop your story further.

@@ -45,9 +45,8 @@
     "form": {
       "title": "Create Account",
       "subtitle": "Begin your storytelling journey today"
-    }  },
-  "MyStoriesPage": {
-    "title": "My Stories",
+    }  },  "MyStoriesPage": {
+    "title": "Hi",
     "writeNewStory": "Write a New Story",
     "noStories": {
       "title": "Your story collection is waiting to begin! 📚✨",

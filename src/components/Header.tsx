@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/nextjs';
+import { UserButton, useUser } from '@clerk/nextjs';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import LanguageSwitcher from './LanguageSwitcher';
