@@ -3,6 +3,7 @@
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import AdminHeader from '../../../components/AdminHeader';
 import AdminFooter from '../../../components/AdminFooter';
 
@@ -13,6 +14,7 @@ interface User {
   mobilePhone: string | null;
   createdAt: string;
   lastLoginAt: string | null;
+  credits: number;
 }
 
 interface PaginationData {
@@ -215,9 +217,9 @@ export default function UsersPage() {
                       <div className="flex items-center space-x-2">
                         <span>Email</span>
                         {getSortIcon('email')}
-                      </div>
-                    </th>
+                      </div>                    </th>
                     <th className="text-left">Mobile Phone</th>
+                    <th className="text-left">Credits</th>
                     <th 
                       className="text-left cursor-pointer hover:bg-gray-100 select-none"
                       onClick={() => handleSort('createdAt')}
@@ -241,15 +243,23 @@ export default function UsersPage() {
                 <tbody>
                   {users.map((user) => (
                     <tr key={user.authorId} className="hover:bg-gray-50">
-                      <td className="font-medium">{user.displayName}</td>
+                      <td className="font-medium">
+                        <Link 
+                          href={`/portaldegestao/users/${user.authorId}`}
+                          className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                        >
+                          {user.displayName}
+                        </Link>
+                      </td>
                       <td>{user.email}</td>
                       <td>{user.mobilePhone || 'Not provided'}</td>
+                      <td>{user.credits}</td>
                       <td>{formatDate(user.createdAt)}</td>
                       <td>{formatDate(user.lastLoginAt)}</td>
                     </tr>
                   ))}
                 </tbody>
-              </table>              
+              </table>
               {users.length === 0 && (
                 <div className="text-center py-12 text-gray-500">
                   {searchTerm ? `No users found matching "${searchTerm}".` : 'No users found.'}
@@ -265,7 +275,7 @@ export default function UsersPage() {
                   disabled={!pagination.hasPrevPage}
                   className="btn btn-outline btn-sm"
                 >
-                  Previous
+                Previous
                 </button>
                   <div className="flex space-x-1">
                   {(() => {
@@ -326,7 +336,7 @@ export default function UsersPage() {
                   disabled={!pagination.hasNextPage}
                   className="btn btn-outline btn-sm"
                 >
-                  Next
+                Next
                 </button>
               </div>
             )}

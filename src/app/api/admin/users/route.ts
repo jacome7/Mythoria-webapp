@@ -3,6 +3,7 @@ import { currentUser } from '@clerk/nextjs/server';
 import { db } from '@/db';
 import { authors } from '@/db/schema';
 import { desc, asc, count, ilike, or, SQL } from 'drizzle-orm';
+import { creditService } from '@/db/services';
 
 export async function GET(request: Request) {
   try {
@@ -75,12 +76,21 @@ export async function GET(request: Request) {
         break;
       default:
         orderBy = sortOrder === 'asc' ? asc(authors.createdAt) : desc(authors.createdAt);
-    }
-
-    const users = await usersQuery
+    }    const users = await usersQuery
       .orderBy(orderBy)
       .limit(limit)
       .offset(offset);
+
+    // Fetch credit balances for each user
+    const usersWithCredits = await Promise.all(
+      users.map(async (user) => {
+        const credits = await creditService.getAuthorCreditBalance(user.authorId);
+        return {
+          ...user,
+          credits
+        };
+      })
+    );
 
     // Calculate pagination metadata
     const totalPages = Math.ceil(totalCount / limit);
@@ -88,7 +98,7 @@ export async function GET(request: Request) {
     const hasPrevPage = page > 1;
 
     return NextResponse.json({
-      users,
+      users: usersWithCredits,
       pagination: {
         currentPage: page,
         totalPages,
