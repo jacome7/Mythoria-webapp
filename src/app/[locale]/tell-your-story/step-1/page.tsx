@@ -58,13 +58,10 @@ export default function Step1Page() {
       setLoading(false);
     }
   };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const updateProfileAndNavigate = async (): Promise<boolean> => {
     if (!displayName.trim() || !email.trim()) {
       setError('Name and email are required.');
-      return;
+      return false;
     }
 
     setSaving(true);
@@ -88,14 +85,12 @@ export default function Step1Page() {
         throw new Error('Failed to update profile');
       }
 
-      setSuccessMessage('Profile updated successfully!');
-      
-      // Refresh author data
-      await fetchAuthorData();
+      return true;
 
     } catch (error) {
       console.error('Error updating profile:', error);
       setError('Failed to update profile. Please try again.');
+      return false;
     } finally {
       setSaving(false);
     }
@@ -148,9 +143,8 @@ export default function Step1Page() {
                 <div className="text-center py-12">
                   <span className="loading loading-spinner loading-lg"></span>
                   <p className="text-lg text-gray-600 mt-4">Loading your author profile...</p>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
+                </div>              ) : (
+                <div className="space-y-6">
                   <div className="prose max-w-none mb-6">
                     <p className="text-gray-600">
                       Welcome, storyteller! Before we dive into your magical adventure,                      let&apos;s make sure we have your correct information. This helps us 
@@ -212,46 +206,25 @@ export default function Step1Page() {
                         <span className="label-text-alt">We&apos;ll use this for important updates about your story</span>
                       </label>
                     </div>
+                    
+                    {/* Mobile Phone Field */}
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text font-semibold">Mobile Phone</span>
+                      </label>
+                      <input
+                        type="tel"
+                        value={mobilePhone}
+                        onChange={(e) => setMobilePhone(e.target.value)}
+                        placeholder="Enter your mobile phone number"
+                        className="input input-bordered w-full"
+                      />
+                      <label className="label">
+                        <span className="label-text-alt">For urgent notifications or delivery updates (optional)</span>
+                      </label>
+                    </div>
                   </div>
-
-                  {/* Mobile Phone Field */}
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text font-semibold">Mobile Phone</span>
-                      <span className="label-text-alt">Optional</span>
-                    </label>
-                    <input
-                      type="tel"
-                      value={mobilePhone}
-                      onChange={(e) => setMobilePhone(e.target.value)}
-                      placeholder="Enter your mobile phone number"
-                      className="input input-bordered w-full max-w-md"
-                    />
-                    <label className="label">
-                      <span className="label-text-alt">For urgent notifications or delivery updates (optional)</span>
-                    </label>
-                  </div>
-
-                  {/* Update Button */}
-                  <div className="flex justify-center pt-4">
-                    <button
-                      type="submit"
-                      disabled={saving}
-                      className="btn btn-primary btn-wide"
-                    >
-                      {saving ? (
-                        <>
-                          <span className="loading loading-spinner loading-sm"></span>
-                          Updating Profile...
-                        </>
-                      ) : (
-                        <>
-                          💾 Update Profile
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </form>
+                </div>
               )}
 
               <StepNavigation 
