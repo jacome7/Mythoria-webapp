@@ -1,6 +1,7 @@
 import { db } from "./src/db/index";
 import { creditService } from "./src/db/services";
 import { authors, authorCreditBalances } from "./src/db/schema";
+import { eq } from "drizzle-orm";
 
 async function testCreditSystem() {
   console.log("🧪 Testing Credit System...");

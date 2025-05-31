@@ -1,7 +1,7 @@
 'use client';
 
 import { useUser } from '@clerk/nextjs';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import AdminHeader from '../../../../components/AdminHeader';
@@ -28,9 +28,8 @@ interface Story {
   synopsis: string | null;
   place: string | null;
   targetAudience: string | null;
-  novelStyle: string | null;
-  graphicalStyle: string | null;
-  features: any;
+  novelStyle: string | null;  graphicalStyle: string | null;
+  features: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
 }
@@ -57,12 +56,35 @@ interface UserDetailsResponse {
 export default function UserDetailsPage() {
   const { isLoaded, isSignedIn, user } = useUser();
   const router = useRouter();
-  const params = useParams();
-  const [userDetails, setUserDetails] = useState<UserDetailsResponse | null>(null);
+  const params = useParams();  const [userDetails, setUserDetails] = useState<UserDetailsResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showAddCreditsModal, setShowAddCreditsModal] = useState(false);
+  const [isAddingCredits, setIsAddingCredits] = useState(false);  const [creditsAmount, setCreditsAmount] = useState<number>(1);
+  const [creditsReason, setCreditsReason] = useState<'refund' | 'voucher' | 'promotion'>('voucher');
+
+  const fetchUserDetails = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`/api/admin/users/${params.id}`);
+      
+      if (response.ok) {
+        const data: UserDetailsResponse = await response.json();
+        setUserDetails(data);
+      } else if (response.status === 404) {
+        setError('User not found');
+      } else {
+        setError('Failed to fetch user details');
+      }
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+      setError('An error occurred while fetching user details');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [params.id]);
 
   useEffect(() => {
     if (isLoaded) {
@@ -82,28 +104,7 @@ export default function UserDetailsPage() {
       // Fetch user details if authorized
       fetchUserDetails();
     }
-  }, [isLoaded, isSignedIn, user, router, params.id]);
-
-  const fetchUserDetails = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(`/api/admin/users/${params.id}`);
-      
-      if (response.ok) {
-        const data: UserDetailsResponse = await response.json();
-        setUserDetails(data);
-      } else if (response.status === 404) {
-        setError('User not found');
-      } else {
-        setError('Failed to fetch user details');
-      }
-    } catch (error) {
-      console.error('Error fetching user details:', error);
-      setError('An error occurred while fetching user details');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [isLoaded, isSignedIn, user, router, fetchUserDetails]);
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'Never';
@@ -150,6 +151,49 @@ export default function UserDetailsPage() {
     } finally {
       setIsDeleting(false);
       setShowDeleteModal(false);
+    }
+  };
+
+  const handleAddCredits = async () => {
+    if (!userDetails) return;
+    
+    try {
+      setIsAddingCredits(true);
+      const response = await fetch(`/api/admin/users/${params.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: creditsAmount,
+          reason: creditsReason,
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        // Update the user details with new credit balance
+        setUserDetails(prev => prev ? {
+          ...prev,
+          author: {
+            ...prev.author,
+            credits: result.newBalance
+          }
+        } : null);
+        
+        // Close modal and reset form
+        setShowAddCreditsModal(false);
+        setCreditsAmount(1);
+        setCreditsReason('voucher');
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error || 'Failed to add credits');
+      }
+    } catch (error) {
+      console.error('Error adding credits:', error);
+      setError('An error occurred while adding credits');
+    } finally {
+      setIsAddingCredits(false);
     }
   };
 
@@ -235,10 +279,18 @@ export default function UserDetailsPage() {
                   <h2 className="text-2xl font-semibold mb-4">Basic Information</h2>
                   <div className="space-y-2">
                     <p><strong>Email:</strong> {userDetails.author.email}</p>
-                    <p><strong>Mobile Phone:</strong> {userDetails.author.mobilePhone || 'Not provided'}</p>
-                    <p><strong>Fiscal Number:</strong> {userDetails.author.fiscalNumber || 'Not provided'}</p>
+                    <p><strong>Mobile Phone:</strong> {userDetails.author.mobilePhone || 'Not provided'}</p>                    <p><strong>Fiscal Number:</strong> {userDetails.author.fiscalNumber || 'Not provided'}</p>
                     <p><strong>Preferred Locale:</strong> {userDetails.author.preferredLocale || 'en'}</p>
-                    <p><strong>Credits:</strong> {userDetails.author.credits}</p>
+                    <div className="flex items-center gap-3">
+                      <p><strong>Credits:</strong> {userDetails.author.credits}</p>
+                      <button
+                        onClick={() => setShowAddCreditsModal(true)}
+                        className="btn btn-sm btn-success"
+                        disabled={isAddingCredits}
+                      >
+                        + Add Credits
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -280,10 +332,9 @@ export default function UserDetailsPage() {
             {/* Stories Section */}
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-2xl font-semibold mb-4">Stories ({userDetails.stories.length})</h2>
-              
-              {userDetails.stories.length === 0 ? (
+                {userDetails.stories.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
-                  This user hasn't created any stories yet.
+                  This user hasn&apos;t created any stories yet.
                 </div>
               ) : (
                 <div className="overflow-x-auto">
@@ -318,9 +369,97 @@ export default function UserDetailsPage() {
                 </div>              )}
             </div>
           </div>
-        ) : null}
-      </main>
+        ) : null}      </main>
       <AdminFooter />
+
+      {/* Add Credits Modal */}
+      {showAddCreditsModal && userDetails && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg text-success">Add Credits to User</h3>
+            <div className="py-4 space-y-4">
+              <div className="bg-blue-50 border border-blue-200 p-3 rounded">
+                <p className="text-blue-800 font-semibold text-sm">
+                  Adding credits to: {userDetails.author.displayName}
+                </p>
+                <p className="text-blue-700 text-sm">
+                  Current balance: {userDetails.author.credits} credits
+                </p>
+              </div>
+
+              {/* Amount Input */}
+              <div>
+                <label className="label">
+                  <span className="label-text font-semibold">Amount (1-100 credits):</span>
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="100"
+                  value={creditsAmount}
+                  onChange={(e) => setCreditsAmount(Math.min(100, Math.max(1, parseInt(e.target.value) || 1)))}
+                  className="input input-bordered w-full"
+                  disabled={isAddingCredits}
+                />
+              </div>
+
+              {/* Reason Selection */}
+              <div>
+                <label className="label">
+                  <span className="label-text font-semibold">Reason for credit top-up:</span>
+                </label>
+                <select
+                  value={creditsReason}
+                  onChange={(e) => setCreditsReason(e.target.value as 'refund' | 'voucher' | 'promotion')}
+                  className="select select-bordered w-full"
+                  disabled={isAddingCredits}
+                >
+                  <option value="voucher">Voucher</option>
+                  <option value="refund">Refund</option>
+                  <option value="promotion">Promotion</option>
+                </select>
+              </div>
+
+              {/* Warning Message */}
+              <div className="bg-orange-50 border border-orange-200 p-3 rounded">
+                <p className="text-orange-800 font-semibold text-sm">
+                  ⚠️ IMPORTANT WARNING
+                </p>                <p className="text-orange-700 text-sm mt-1">
+                  This operation CANNOT be undone. Credits will be permanently added to the user&apos;s account.
+                </p>
+              </div>
+            </div>
+
+            <div className="modal-action">
+              <button
+                className="btn btn-ghost"
+                onClick={() => {
+                  setShowAddCreditsModal(false);
+                  setCreditsAmount(1);
+                  setCreditsReason('voucher');
+                }}
+                disabled={isAddingCredits}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-success"
+                onClick={handleAddCredits}
+                disabled={isAddingCredits}
+              >
+                {isAddingCredits ? (
+                  <>
+                    <span className="loading loading-spinner loading-xs"></span>
+                    Adding Credits...
+                  </>
+                ) : (
+                  `Add ${creditsAmount} Credits`
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && userDetails && (
@@ -377,7 +516,6 @@ export default function UserDetailsPage() {
             </div>
           </div>
         </div>
-      )}
-    </div>
+      )}    </div>
   );
 }

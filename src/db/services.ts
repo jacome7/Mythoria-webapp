@@ -1,14 +1,15 @@
 import { db } from "./index";
 import { authors, stories, characters, storyCharacters, creditLedger, authorCreditBalances } from "./schema";
-import { eq, and, count, desc } from "drizzle-orm";
+import { eq, and, count, desc, sql } from "drizzle-orm";
 import { ClerkUserForSync } from "@/types/clerk";
 
 // Author operations
 export const authorService = {  async createAuthor(authorData: { clerkUserId: string; email: string; displayName: string }) {
     const [author] = await db.insert(authors).values(authorData).returning();
     
-    // Initialize credits for new author
-    await creditService.initializeAuthorCredits(author.authorId, 0);
+    // Initialize credits for new author with initial credits from environment
+    const initialCredits = parseInt(process.env.INITIAL_USER_CREDITS || '10', 10);
+    await creditService.initializeAuthorCredits(author.authorId, initialCredits);
     
     return author;
   },
@@ -38,13 +39,13 @@ export const authorService = {  async createAuthor(authorData: { clerkUserId: st
         displayName: this.buildDisplayName(clerkUser),
         lastLoginAt: currentTime,
         ...(primaryPhone?.phoneNumber && { mobilePhone: primaryPhone.phoneNumber })
-      };
-        const [newAuthor] = await db.insert(authors).values(newAuthorData).returning();
+      };      const [newAuthor] = await db.insert(authors).values(newAuthorData).returning();
       
-      // Initialize credits for new author
-      await creditService.initializeAuthorCredits(newAuthor.authorId, 0);
+      // Initialize credits for new author with initial credits from environment
+      const initialCredits = parseInt(process.env.INITIAL_USER_CREDITS || '10', 10);
+      await creditService.initializeAuthorCredits(newAuthor.authorId, initialCredits);
       
-      console.log('Created new user on sign-in:', newAuthor.clerkUserId);
+      console.log('Created new user on sign-in:', newAuthor.clerkUserId, `with ${initialCredits} initial credits`);
       return newAuthor;
     }
   },
@@ -199,10 +200,11 @@ export const storyCharacterService = {
 export const creditService = {  async addCreditEntry(
     authorId: string, 
     amount: number, 
-    creditEventType: 'initialCredit' | 'creditPurchase' | 'eBookGeneration' | 'audioBookGeneration' | 'printOrder' | 'refund',
+    creditEventType: 'initialCredit' | 'creditPurchase' | 'eBookGeneration' | 'audioBookGeneration' | 'printOrder' | 'refund' | 'voucher' | 'promotion',
     storyId?: string,
     purchaseId?: string
   ) {
+    // Insert the credit ledger entry
     const [entry] = await db.insert(creditLedger).values({
       authorId,
       amount,
@@ -210,6 +212,23 @@ export const creditService = {  async addCreditEntry(
       storyId,
       purchaseId
     }).returning();
+
+    // Update or insert the author's credit balance
+    await db
+      .insert(authorCreditBalances)
+      .values({
+        authorId,
+        totalCredits: amount,
+        lastUpdated: new Date()
+      })
+      .onConflictDoUpdate({
+        target: authorCreditBalances.authorId,
+        set: {
+          totalCredits: sql`${authorCreditBalances.totalCredits} + ${amount}`,
+          lastUpdated: new Date()
+        }
+      });
+    
     return entry;
   },
 
@@ -260,11 +279,10 @@ export const creditService = {  async addCreditEntry(
     }
     
     return await this.addCreditEntry(authorId, -amount, eventType, storyId);
-  },
-  async addCredits(
+  },  async addCredits(
     authorId: string, 
     amount: number, 
-    eventType: 'creditPurchase' | 'refund',
+    eventType: 'creditPurchase' | 'refund' | 'voucher' | 'promotion',
     purchaseId?: string
   ) {
     return await this.addCreditEntry(authorId, amount, eventType, undefined, purchaseId);

@@ -179,3 +179,73 @@ export async function DELETE(
     }, { status: 500 });
   }
 }
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    // Check if user is authenticated and authorized
+    const user = await currentUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Check if user has admin access
+    const publicMetadata = user.publicMetadata as { [key: string]: string } | undefined;
+    if (!publicMetadata || publicMetadata['autorizaçãoDeAcesso'] !== 'Comejá') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const resolvedParams = await params;
+    const authorId = resolvedParams.id;
+
+    // Parse request body
+    const body = await request.json();
+    const { amount, reason } = body;
+
+    // Validate input
+    if (!amount || typeof amount !== 'number' || amount <= 0 || amount > 100) {
+      return NextResponse.json({ 
+        error: 'Amount must be a positive number between 1 and 100' 
+      }, { status: 400 });
+    }
+
+    if (!reason || !['refund', 'voucher', 'promotion'].includes(reason)) {
+      return NextResponse.json({ 
+        error: 'Reason must be one of: refund, voucher, promotion' 
+      }, { status: 400 });
+    }
+
+    // Check if the author exists
+    const author = await db
+      .select()
+      .from(authors)
+      .where(eq(authors.authorId, authorId))
+      .limit(1);
+
+    if (author.length === 0) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Add credits
+    await creditService.addCredits(authorId, amount, reason);
+
+    // Get updated credit balance
+    const newBalance = await creditService.getAuthorCreditBalance(authorId);
+
+    return NextResponse.json({
+      success: true,
+      message: `Successfully added ${amount} credits`,
+      newBalance,
+      creditsAdded: amount,
+      reason
+    });
+
+  } catch (error) {
+    console.error('Error adding credits:', error);
+    return NextResponse.json({ 
+      error: 'Internal server error while adding credits' 
+    }, { status: 500 });
+  }
+}

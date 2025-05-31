@@ -12,5 +12,7 @@ export const creditEventTypeEnum = pgEnum("credit_event_type", [
   'eBookGeneration',
   'audioBookGeneration',
   'printOrder',
-  'refund'
+  'refund',
+  'voucher',
+  'promotion'
 ]);

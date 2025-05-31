@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1748271846056,
-      "tag": "0000_eager_the_renegades",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1748273334367,
-      "tag": "0001_odd_romulus",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1748472450948,
-      "tag": "0002_curved_rage",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1748695338697,
-      "tag": "0003_flawless_carlie_cooper",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1748716775217,
-      "tag": "0004_illegal_moon_knight",
+      "when": 1748727904207,
+      "tag": "0000_parched_odin",
       "breakpoints": true
     }
   ]
