@@ -48,6 +48,10 @@
     }  },  "MyStoriesPage": {
     "title": "Hi",
     "writeNewStory": "Write a New Story",
+    "tabs": {
+      "myStories": "My Stories",
+      "myCharacters": "My Characters"
+    },
     "noStories": {
       "title": "Your story collection is waiting to begin! 📚✨",
       "subtitle": "Every great storyteller started with a single tale. Ready to write your first magical adventure?",
@@ -72,6 +76,27 @@
     "deleteConfirm": {
       "title": "Delete Story",
       "message": "Are you sure you want to delete this story? This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    }
+  },
+  "MyCharactersPage": {
+    "noCharacters": {
+      "title": "No characters yet!",
+      "subtitle": "Start creating characters for your stories to see them here."
+    },
+    "table": {
+      "name": "Name",
+      "type": "Type",
+      "actions": "Actions"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "deleteConfirm": {
+      "title": "Delete Character",
+      "message": "Are you sure you want to delete this character? This action cannot be undone.",
       "cancel": "Cancel",
       "confirm": "Delete"
     }

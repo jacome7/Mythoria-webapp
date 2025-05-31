@@ -11,6 +11,7 @@ import {
   FiChevronUp,
   FiChevronDown
 } from 'react-icons/fi';
+import MyCharactersTable from './MyCharactersTable';
 
 interface Story {
   storyId: string;
@@ -33,6 +34,9 @@ export default function MyStoriesTable({ authorName }: MyStoriesTableProps) {
   const [loading, setLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [storyToDelete, setStoryToDelete] = useState<Story | null>(null);
+  
+  // Tab state
+  const [activeTab, setActiveTab] = useState<'stories' | 'characters'>('stories');
   
   // Sorting state
   const [sortField, setSortField] = useState<SortField>('updatedAt');
@@ -170,8 +174,7 @@ export default function MyStoriesTable({ authorName }: MyStoriesTableProps) {
         <span className="loading loading-spinner loading-lg"></span>
       </div>
     );
-  }
-  return (
+  }  return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-4xl font-bold">
@@ -183,96 +186,120 @@ export default function MyStoriesTable({ authorName }: MyStoriesTableProps) {
         </Link>
       </div>
 
-      {stories.length === 0 ? (
-        <div className="text-center py-16 bg-base-200 rounded-lg">
-          <div className="max-w-md mx-auto space-y-4">
-            <h2 className="text-2xl font-semibold text-base-content">
-              {t('noStories.title')}
-            </h2>
-            <p className="text-base-content/70">
-              {t('noStories.subtitle')}
-            </p>
-            <Link href="/tell-your-story/step-1" className="btn btn-primary btn-lg">
-              {t('noStories.action')}
-            </Link>
+      {/* Tabs */}
+      <div className="tabs tabs-boxed">
+        <a 
+          className={`tab ${activeTab === 'stories' ? 'tab-active' : ''}`}
+          onClick={() => setActiveTab('stories')}
+        >
+          {t('tabs.myStories') || 'My Stories'}
+        </a>
+        <a 
+          className={`tab ${activeTab === 'characters' ? 'tab-active' : ''}`}
+          onClick={() => setActiveTab('characters')}
+        >
+          {t('tabs.myCharacters') || 'My Characters'}
+        </a>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'stories' ? (
+        // Stories Tab Content
+        stories.length === 0 ? (
+          <div className="text-center py-16 bg-base-200 rounded-lg">
+            <div className="max-w-md mx-auto space-y-4">
+              <h2 className="text-2xl font-semibold text-base-content">
+                {t('noStories.title')}
+              </h2>
+              <p className="text-base-content/70">
+                {t('noStories.subtitle')}
+              </p>
+              <Link href="/tell-your-story/step-1" className="btn btn-primary btn-lg">
+                {t('noStories.action')}
+              </Link>
+            </div>
           </div>
-        </div>      ) : (
-        <>
-          <div className="overflow-x-auto">
-            <table className="table table-zebra w-full">
-              <thead>
-                <tr>
-                  <th>
-                    <button
-                      className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
-                      onClick={() => handleSort('createdAt')}
-                    >
-                      {t('table.date')}
-                      {getSortIcon('createdAt')}
-                    </button>
-                  </th>
-                  <th>
-                    <button
-                      className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
-                      onClick={() => handleSort('title')}
-                    >
-                      {t('table.title')}
-                      {getSortIcon('title')}
-                    </button>
-                  </th>
-                  <th>
-                    <button
-                      className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
-                      onClick={() => handleSort('status')}
-                    >
-                      {t('table.status')}
-                      {getSortIcon('status')}
-                    </button>
-                  </th>
-                  <th className="text-center">{t('table.actions')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedStories.map((story) => (
-                  <tr key={story.storyId}>
-                    <td>{formatDate(story.createdAt)}</td>
-                    <td className="font-medium">{story.title}</td>
-                    <td>
-                      <span className={getStatusBadgeClass(story.status)}>
-                        {t(`status.${story.status}`)}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="flex justify-center gap-2">
-                        <button
-                          className="btn btn-ghost btn-sm"
-                          onClick={() => handleShare(story)}
-                          title={t('actions.share')}
-                        >
-                          <FiShare2 className="w-4 h-4" />
-                        </button>
-                        <Link
-                          href={`/tell-your-story?edit=${story.storyId}`}
-                          className="btn btn-ghost btn-sm"
-                          title={t('actions.edit')}
-                        >
-                          <FiEdit3 className="w-4 h-4" />
-                        </Link>
-                        <button
-                          className="btn btn-ghost btn-sm text-error hover:bg-error hover:text-error-content"
-                          onClick={() => handleDeleteClick(story)}
-                          title={t('actions.delete')}
-                        >
-                          <FiTrash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
+        ) : (
+          <>
+            <div className="overflow-x-auto">
+              <table className="table table-zebra w-full">
+                <thead>
+                  <tr>
+                    <th>
+                      <button
+                        className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
+                        onClick={() => handleSort('createdAt')}
+                      >
+                        {t('table.date')}
+                        {getSortIcon('createdAt')}
+                      </button>
+                    </th>
+                    <th>
+                      <button
+                        className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
+                        onClick={() => handleSort('title')}
+                      >
+                        {t('table.title')}
+                        {getSortIcon('title')}
+                      </button>
+                    </th>
+                    <th>
+                      <button
+                        className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
+                        onClick={() => handleSort('status')}
+                      >
+                        {t('table.status')}
+                        {getSortIcon('status')}
+                      </button>
+                    </th>
+                    <th className="text-center">{t('table.actions')}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
+                </thead>
+                <tbody>
+                  {sortedStories.map((story) => (
+                    <tr key={story.storyId}>
+                      <td>{formatDate(story.createdAt)}</td>
+                      <td className="font-medium">{story.title}</td>
+                      <td>
+                        <span className={getStatusBadgeClass(story.status)}>
+                          {t(`status.${story.status}`)}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="flex justify-center gap-2">
+                          <button
+                            className="btn btn-ghost btn-sm"
+                            onClick={() => handleShare(story)}
+                            title={t('actions.share')}
+                          >
+                            <FiShare2 className="w-4 h-4" />
+                          </button>
+                          <Link
+                            href={`/tell-your-story?edit=${story.storyId}`}
+                            className="btn btn-ghost btn-sm"
+                            title={t('actions.edit')}
+                          >
+                            <FiEdit3 className="w-4 h-4" />
+                          </Link>
+                          <button
+                            className="btn btn-ghost btn-sm text-error hover:bg-error hover:text-error-content"
+                            onClick={() => handleDeleteClick(story)}
+                            title={t('actions.delete')}
+                          >
+                            <FiTrash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )
+      ) : (
+        // Characters Tab Content
+        <MyCharactersTable authorName={authorName} />
       )}
 
       {/* Delete Confirmation Modal */}
