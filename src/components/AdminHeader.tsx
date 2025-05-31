@@ -19,7 +19,12 @@ export default function AdminHeader() {
       </div>
       
       <div className="navbar-center">
-        {/* Empty for now, can add admin navigation items later */}
+        <ul className="menu menu-horizontal px-1">
+          <li><Link href="/portaldegestao">Dashboard</Link></li>
+          <li><Link href="/portaldegestao/users">Users</Link></li>
+          <li><Link href="/portaldegestao/stories">Stories</Link></li>
+          <li><Link href="/portaldegestao/payments">Payments</Link></li>
+        </ul>
       </div>
 
       <div className="navbar-end">

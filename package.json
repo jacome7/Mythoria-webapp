@@ -1,8 +1,7 @@
 {
   "name": "mythoria-webapp",
   "version": "0.1.1",
-  "private": true,
-  "scripts": {
+  "private": true,  "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",

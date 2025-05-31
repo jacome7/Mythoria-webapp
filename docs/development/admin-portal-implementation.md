@@ -8,6 +8,28 @@ A secure admin portal has been implemented for the Mythoria platform, accessible
 - **Location**: Outside the locale folder structure (`src/app/portaldegestao/`) so it's not translated
 - **Access Control**: Requires specific Clerk public metadata
 
+## Admin Portal Pages
+
+### 1. Dashboard (`/portaldegestao`)
+- Main admin portal landing page
+- Shows overview and main KPIs
+- Currently displays "Admin Portal - Dashboard" header
+
+### 2. Users (`/portaldegestao/users`)
+- User management interface
+- List and manage all platform users
+- Currently displays "Admin Portal - Users" header
+
+### 3. Stories (`/portaldegestao/stories`)
+- Story management interface
+- List all stories created on the platform
+- Currently displays "Admin Portal - Stories" header
+
+### 4. Payments (`/portaldegestao/payments`)
+- Payment management interface
+- Check all payments received
+- Currently displays "Admin Portal - Payments" header
+
 ## Access Requirements
 Users must meet the following criteria to access the admin portal:
 

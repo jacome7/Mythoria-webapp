@@ -77,9 +77,13 @@ export const authorService = {
     const [author] = await db.select().from(authors).where(eq(authors.email, email));
     return author;
   },
-
   async getAllAuthors() {
     return await db.select().from(authors);
+  },
+
+  async getTotalAuthorsCount() {
+    const result = await db.select({ value: count() }).from(authors);
+    return result[0]?.value || 0;
   }
 };
 
