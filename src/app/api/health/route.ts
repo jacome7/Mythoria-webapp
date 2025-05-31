@@ -1,18 +1,17 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db/index";
 import { sql } from "drizzle-orm";
+import { isVpcDirectEgress } from "@/lib/database-config";
 
 export async function GET() {
   try {
     console.log("Health check starting...");
-    
-    // Test basic database connectivity
+      // Test basic database connectivity
     const result = await db.execute(sql`SELECT 1 as test`);
     console.log("Database connection test successful:", result);
     
     // Determine connection type
-    const isVpcDirectEgress = process.env.DB_HOST === "10.19.192.3" || process.env.DB_HOST?.startsWith("10.");
-    const connectionType = isVpcDirectEgress ? "VPC Direct Egress" : "Public IP";
+    const connectionType = isVpcDirectEgress() ? "VPC Direct Egress" : "Public IP";
     
     return NextResponse.json({
       status: "healthy",
@@ -28,8 +27,7 @@ export async function GET() {
     console.error("Health check failed:", error);
     
     // Determine connection type
-    const isVpcDirectEgress = process.env.DB_HOST === "10.19.192.3" || process.env.DB_HOST?.startsWith("10.");
-    const connectionType = isVpcDirectEgress ? "VPC Direct Egress" : "Public IP";
+    const connectionType = isVpcDirectEgress() ? "VPC Direct Egress" : "Public IP";
     
     return NextResponse.json(
       {

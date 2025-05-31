@@ -10,10 +10,7 @@ export const authorService = {
     return author;
   },
 
-  async createAuthorFromClerk(authorData: { clerkUserId: string; email: string; displayName: string }) {
-    const [author] = await db.insert(authors).values(authorData).returning();
-    return author;
-  },  async syncUserOnSignIn(clerkUser: ClerkUserForSync) {
+  async syncUserOnSignIn(clerkUser: ClerkUserForSync) {
     const currentTime = new Date();
     
     // Try to find existing user

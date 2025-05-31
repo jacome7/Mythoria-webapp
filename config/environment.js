@@ -1,36 +1,10 @@
 // Environment configuration management
-export interface EnvironmentConfig {
-  nodeEnv: string;
-  isProduction: boolean;
-  isDevelopment: boolean;
-  isTest: boolean;
-  port: number;
-  database: {
-    host: string;
-    port: number;
-    name: string;
-    user: string;
-    password: string;
-    ssl: boolean;
-  };
-  auth: {
-    clerkSecretKey: string;
-    clerkPublishableKey: string;
-    nextAuthSecret: string;
-    nextAuthUrl: string;
-  };
-  app: {
-    name: string;
-    version: string;
-    url: string;
-  };
-  googleCloud: {
-    projectId: string;
-  };
-}
+// Database configuration now uses centralized config
+import { getDatabaseConfig } from '../src/lib/database-config';
 
-export const getEnvironmentConfig = (): EnvironmentConfig => {
+export const getEnvironmentConfig = () => {
   const nodeEnv = process.env.NODE_ENV || 'development';
+  const dbConfig = getDatabaseConfig();
   
   return {
     nodeEnv,
@@ -39,13 +13,14 @@ export const getEnvironmentConfig = (): EnvironmentConfig => {
     isTest: nodeEnv === 'test',
     port: parseInt(process.env.PORT || '3000'),
     
+    // Use centralized database configuration
     database: {
-      host: process.env.DB_HOST || 'localhost',
-      port: parseInt(process.env.DB_PORT || '5432'),
-      name: process.env.DB_NAME || 'mythoria_db',
-      user: process.env.DB_USER || 'postgres',
-      password: process.env.DB_PASSWORD || '',
-      ssl: nodeEnv === 'production',
+      host: dbConfig.host,
+      port: dbConfig.port,
+      name: dbConfig.database,
+      user: dbConfig.user,
+      password: dbConfig.password,
+      ssl: !!dbConfig.ssl,
     },
     
     auth: {
@@ -67,9 +42,9 @@ export const getEnvironmentConfig = (): EnvironmentConfig => {
   };
 };
 
-export const validateEnvironmentConfig = (): void => {
+export const validateEnvironmentConfig = () => {
   const config = getEnvironmentConfig();
-  const errors: string[] = [];
+  const errors = [];
   
   // Required in all environments
   if (!config.auth.nextAuthSecret) {
