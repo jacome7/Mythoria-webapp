@@ -52,6 +52,10 @@ export default function Step5Page() {
   const [error, setError] = useState<string | null>(null);
   const [currentStoryId, setCurrentStoryId] = useState<string | null>(null);
   
+  // User credits state
+  const [userCredits, setUserCredits] = useState<number>(0);
+  const [showBuyCreditsModal, setShowBuyCreditsModal] = useState(false);
+  
   // Form data
   const [selectedFeatures, setSelectedFeatures] = useState({
     ebook: true, // Default and mandatory
@@ -85,6 +89,9 @@ export default function Step5Page() {
     if (storyId) {
       fetchStoryData(storyId);
     }
+    
+    // Fetch user credits
+    fetchUserCredits();
   }, [router]);
 
   const fetchStoryData = async (storyId: string) => {
@@ -133,6 +140,23 @@ export default function Step5Page() {
     }
   };
 
+  const fetchUserCredits = async () => {
+    try {
+      const response = await fetch('/api/my-credits');
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch user credits');
+      }
+      
+      const data = await response.json();
+      setUserCredits(data.currentBalance || 0);
+      
+    } catch (error) {
+      console.error('Error fetching user credits:', error);
+      // Don't set error state for credits as it's not critical for the page to load
+    }
+  };
+
   const handleFeatureChange = (feature: 'ebook' | 'printed' | 'audiobook', checked: boolean) => {
     if (feature === 'ebook') return; // ebook is mandatory
     
@@ -176,6 +200,14 @@ export default function Step5Page() {
     return total;
   };
 
+  const hasInsufficientCredits = () => {
+    return userCredits < calculateTotalCredits();
+  };
+
+  const handleBuyMoreCredits = () => {
+    setShowBuyCreditsModal(true);
+  };
+
   const validateForm = () => {
     if (selectedFeatures.printed && showAddressForm) {
       if (!deliveryAddress.line1.trim() || 
@@ -187,7 +219,6 @@ export default function Step5Page() {
     }
     return null;
   };
-
   const handleNext = async () => {
     const validationError = validateForm();
     if (validationError) {
@@ -200,8 +231,39 @@ export default function Step5Page() {
       return;
     }
 
+    if (hasInsufficientCredits()) {
+      setError('You have insufficient credits. Please purchase more credits to continue.');
+      return;
+    }
+
     setSaving(true);
-    setError(null);    try {
+    setError(null);
+
+    try {
+      // First, deduct credits for the selected services
+      const creditsResponse = await fetch(`/api/stories/${currentStoryId}/deduct-credits`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          storyId: currentStoryId,
+          selectedFeatures: selectedFeatures
+        }),
+      });
+
+      if (!creditsResponse.ok) {
+        const creditsError = await creditsResponse.json();
+        throw new Error(creditsError.error || 'Failed to deduct credits');
+      }
+
+      const creditsResult = await creditsResponse.json();
+      console.log('Credits deducted successfully:', creditsResult);
+
+      // Update local credit balance
+      setUserCredits(creditsResult.newBalance);
+
+      // Then save the story delivery preferences
       const updateData: StoryUpdateData = {
         features: selectedFeatures,
         dedicationMessage: dedicationMessage.trim() || null,
@@ -228,8 +290,8 @@ export default function Step5Page() {
       router.push('/tell-your-story/step-6');
       
     } catch (error) {
-      console.error('Error saving delivery preferences:', error);
-      setError('Failed to save delivery preferences. Please try again.');
+      console.error('Error processing order:', error);
+      setError(`Failed to process your order: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setSaving(false);
     }
@@ -490,33 +552,80 @@ export default function Step5Page() {
                       <label className="label">
                         <span className="label-text-alt">This message will appear on the first page of your story</span>
                       </label>
-                    </div>
-
-                    {/* Total Credits */}
-                    <div className="card bg-primary text-primary-content">
-                      <div className="card-body">
-                        <div className="flex justify-between items-center">
-                          <span className="text-lg font-semibold">Total Credits Required:</span>
-                          <span className="text-2xl font-bold">{calculateTotalCredits()} credits</span>
+                    </div>                    {/* Credits Summary */}
+                    <div className="space-y-4">
+                      {/* User's Available Credits */}
+                      <div className="card bg-base-200">
+                        <div className="card-body">
+                          <div className="flex justify-between items-center">
+                            <span className="text-lg font-semibold">Your Available Credits:</span>
+                            <span className="text-2xl font-bold text-success">{userCredits} credits</span>
+                          </div>
                         </div>
                       </div>
+
+                      {/* Total Credits Required */}
+                      <div className={`card ${hasInsufficientCredits() ? 'bg-error text-error-content' : 'bg-primary text-primary-content'}`}>
+                        <div className="card-body">
+                          <div className="flex justify-between items-center">
+                            <span className="text-lg font-semibold">Total Credits Required:</span>
+                            <span className="text-2xl font-bold">{calculateTotalCredits()} credits</span>
+                          </div>
+                          {hasInsufficientCredits() && (
+                            <div className="mt-2 text-sm">
+                              You need {calculateTotalCredits() - userCredits} more credits to proceed.
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Buy More Credits Button */}
+                      {hasInsufficientCredits() && (
+                        <div className="text-center">
+                          <button 
+                            onClick={handleBuyMoreCredits}
+                            className="btn btn-warning btn-lg"
+                          >
+                            Buy More Credits
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
-                )}
-
-                <StepNavigation
+                )}                <StepNavigation
                   currentStep={5}
                   totalSteps={7}
                   nextHref="/tell-your-story/step-6"
                   prevHref="/tell-your-story/step-4"
                   onNext={handleNext}
-                  nextDisabled={saving}
-                  nextLabel={saving ? "Saving..." : "Next Chapter"}
+                  nextDisabled={saving || hasInsufficientCredits()}
+                  nextLabel={saving ? "Saving..." : hasInsufficientCredits() ? "Insufficient Credits" : "Next Chapter"}
                 />
               </div>
             </div>
           </div>
         </div>
+
+        {/* Buy More Credits Modal */}
+        {showBuyCreditsModal && (
+          <div className="modal modal-open">
+            <div className="modal-box">
+              <h3 className="font-bold text-lg">Buy More Credits</h3>
+              <p className="py-4">
+                Credit purchasing functionality is coming soon! Stay tuned for updates.
+              </p>
+              <div className="modal-action">
+                <button 
+                  className="btn" 
+                  onClick={() => setShowBuyCreditsModal(false)}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+            <div className="modal-backdrop" onClick={() => setShowBuyCreditsModal(false)}></div>
+          </div>
+        )}
       </SignedIn>
     </>
   );
