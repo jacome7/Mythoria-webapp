@@ -89,10 +89,45 @@ build_application() {
 deploy_to_cloud_run() {
     log_info "Deploying to Cloud Run..."
     
-    # Build and submit using Cloud Build
-    gcloud builds submit --config cloudbuild.yaml
+    # Option 1: Build and submit using Cloud Build with env vars file
+    log_info "Using Cloud Build for deployment..."
+    if [[ "$SERVICE_NAME" != "mythoria-webapp" ]]; then
+        # For staging or custom service names, pass substitutions
+        gcloud builds submit --config cloudbuild.yaml --substitutions "_SERVICE_NAME=${SERVICE_NAME},_REGION=${REGION}"
+    else
+        # For production, use defaults
+        gcloud builds submit --config cloudbuild.yaml
+    fi
     
     log_success "Deployment completed successfully"
+}
+
+# Alternative: Direct deployment using gcloud run deploy
+deploy_direct() {
+    log_info "Building Docker image locally..."
+    
+    # Build the image
+    docker build -t gcr.io/${PROJECT_ID}/${SERVICE_NAME} .
+    
+    # Push the image
+    log_info "Pushing image to Container Registry..."
+    docker push gcr.io/${PROJECT_ID}/${SERVICE_NAME}
+    
+    # Deploy with environment variables from .env.production.yaml
+    log_info "Deploying to Cloud Run with environment variables..."
+    gcloud run deploy ${SERVICE_NAME} \
+        --image gcr.io/${PROJECT_ID}/${SERVICE_NAME} \
+        --region ${REGION} \
+        --platform managed \
+        --allow-unauthenticated \
+        --port 3000 \
+        --memory 1Gi \
+        --cpu 1 \
+        --max-instances 10 \
+        --min-instances 0 \
+        --env-vars-file .env.production.yaml
+    
+    log_success "Direct deployment completed successfully"
 }
 
 # Verify deployment
@@ -153,6 +188,7 @@ case "${1:-}" in
         echo "  --help, -h     Show this help message"
         echo "  --no-build     Skip build step (deploy existing build)"
         echo "  --staging      Deploy to staging environment"
+        echo "  --direct       Use direct gcloud deployment instead of Cloud Build"
         echo ""
         exit 0
         ;;
@@ -166,6 +202,13 @@ case "${1:-}" in
         echo "Deploying to staging environment..."
         SERVICE_NAME="mythoria-webapp-staging"
         main
+        ;;
+    --direct)
+        echo "Using direct deployment method..."
+        check_prerequisites
+        build_application
+        deploy_direct
+        verify_deployment
         ;;
     *)
         main

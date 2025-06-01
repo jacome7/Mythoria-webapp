@@ -27,8 +27,22 @@ export function isVpcDirectEgress(): boolean {
 export function getDatabaseConfig(): DatabaseConfig {
   const isVpcConnection = isVpcDirectEgress();
   const isProduction = process.env.NODE_ENV === "production";
+  const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build';
   
-  // Validate required environment variables
+  // During build time, provide default values to prevent build failures
+  if (isBuildTime) {
+    return {
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT || '5432'),
+      database: process.env.DB_NAME || 'mythoria_db',
+      user: process.env.DB_USER || 'postgres',
+      password: process.env.DB_PASSWORD || 'build-time-placeholder',
+      ssl: false,
+      maxConnections: parseInt(process.env.DB_MAX_CONNECTIONS || '20'),
+    };
+  }
+  
+  // Validate required environment variables for runtime
   if (!process.env.DB_PASSWORD) {
     throw new Error('Database password is required');
   }

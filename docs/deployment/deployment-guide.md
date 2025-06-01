@@ -1,32 +1,39 @@
 # Deployment Guide
 
-Deploy Mythoria to Google Cloud Platform using Cloud Run and automated CI/CD.
+Deploy Mythoria to Google Cloud Platform using Cloud Run with environment variables injected at runtime.
 
 ## Quick Deploy
 
+**Linux/macOS/WSL:**
 ```bash
-# Automated deployment (recommended)
-npm run deploy:production
+./scripts/deploy.sh
 ```
 
-This triggers the Cloud Build pipeline which:
-1. Builds Docker container
+**Windows PowerShell:**
+```powershell
+.\scripts\deploy.ps1
+```
+
+This deployment method:
+1. Builds Docker container without hardcoded environment variables
 2. Pushes to Container Registry  
-3. Deploys to Cloud Run
-4. Updates traffic routing
+3. Deploys to Cloud Run with runtime environment variables
+4. Uses optimized standalone Next.js output
+
+For detailed instructions, see: [Cloud Run Deployment Guide](./cloud-run-deployment.md)
 
 ## Prerequisites
 
 - Google Cloud SDK installed and authenticated
 - Access to project: `oceanic-beach-460916-n5`
-- Environment variables configured
-- Tests passing locally
+- Environment variables configured in `.env.production.yaml`
+- Docker installed (for direct deployment method)
 
 ## Production Environment
 
 ### Infrastructure
 - **Project**: `oceanic-beach-460916-n5`
-- **Region**: `europe-west9` (Paris)
+- **Region**: `europe-southwest1` (Madrid)
 - **Service**: `mythoria-webapp`
 - **Domain**: `mythoria.pt`
 

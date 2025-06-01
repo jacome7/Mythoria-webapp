@@ -1,14 +1,12 @@
 steps:
-  # Build the container image
+  # Build the container image with NEXT_PUBLIC_ build args
   - name: 'gcr.io/cloud-builders/docker'
     args: 
       - 'build'
       - '-t'
-      - 'gcr.io/$PROJECT_ID/mythoria-webapp'
+      - 'gcr.io/$PROJECT_ID/${_SERVICE_NAME}'
       - '--build-arg'
-      - 'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_ZXhjaXRpbmctaWJleC0xMi5jbGVyay5hY2NvdW50cy5kZXYk'
-      - '--build-arg'
-      - 'CLERK_SECRET_KEY=sk_test_OzLRy8KzN94cyMmQQSWE2TYKUo8JvWdfnso4dBkbda'
+      - 'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsubXl0aG9yaWEucHQk'
       - '--build-arg'
       - 'NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in'
       - '--build-arg'
@@ -18,43 +16,47 @@ steps:
       - '--build-arg'
       - 'NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/'
       - '--build-arg'
-      - 'NEXTAUTH_SECRET=your-development-secret'
+      - 'NEXT_PUBLIC_CLERK_IS_DEVELOPMENT=false'
       - '--build-arg'
-      - 'NEXTAUTH_URL=https://mythoria-webapp-803421888801.us-central1.run.app'
-      - '--build-arg'
-      - 'DB_HOST=34.155.187.193'
-      - '--build-arg'
-      - 'DB_PORT=5432'
-      - '--build-arg'
-      - 'DB_USER=postgres'
-      - '--build-arg'
-      - 'DB_PASSWORD=Mythoria1GCould'
-      - '--build-arg'
-      - 'DB_NAME=mythoria_db'
+      - 'NEXT_PUBLIC_SHOW_SOON_PAGE=false'
       - '.'
 
   # Push the container image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
     args: 
       - 'push'
-      - 'gcr.io/$PROJECT_ID/mythoria-webapp'
-
-  # Deploy container image to Cloud Run
+      - 'gcr.io/$PROJECT_ID/${_SERVICE_NAME}'
+  # Deploy container image to Cloud Run with environment variables
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       - 'run'
       - 'deploy'
-      - 'mythoria-webapp'
+      - '${_SERVICE_NAME}'
       - '--image'
-      - 'gcr.io/$PROJECT_ID/mythoria-webapp'
+      - 'gcr.io/$PROJECT_ID/${_SERVICE_NAME}'
       - '--region'
-      - 'europe-west9'
+      - '${_REGION}'
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
+      - '--port'
+      - '3000'
+      - '--memory'
+      - '1Gi'
+      - '--cpu'
+      - '1'
+      - '--max-instances'
+      - '10'
+      - '--min-instances'
+      - '0'
       - '--set-env-vars'
-      - 'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_ZXhjaXRpbmctaWJleC0xMi5jbGVyay5hY2NvdW50cy5kZXYk,CLERK_SECRET_KEY=sk_test_OzLRy8KzN94cyMmQQSWE2TYKUo8JvWdfnso4dBkbda,NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in,NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up,NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/,NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/,NEXTAUTH_SECRET=your-development-secret,NEXTAUTH_URL=https://mythoria-webapp-803421888801.us-central1.run.app,DB_HOST=34.155.187.193,DB_PORT=5432,DB_USER=postgres,DB_PASSWORD=Mythoria1GCould,DB_NAME=mythoria_db'
+      - 'NODE_ENV=production,DB_HOST=10.19.192.3,DB_PORT=5432,DB_USER=postgres,DB_PASSWORD=Mythoria1GCould,DB_NAME=mythoria_db,NEXTAUTH_SECRET=56ec0cdd7cc9af80f35aaced38a53e120b1c5e53aef2f8be1b6d8749acf83317,NEXTAUTH_URL=https://mythoria.pt,NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsubXl0aG9yaWEucHQk,CLERK_SECRET_KEY=sk_live_8L3AhdA8zaS5FSXSZFcyJDbwlt0F2os7pXmtfNJ6mj,CLERK_WEBHOOK_SIGNING_SECRET=whsec_yC4gwWqgOTLRsPwhQMYp5ApvxfL+5lK7,NEXT_PUBLIC_CLERK_IS_DEVELOPMENT=false,NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in,NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up,NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/,NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/,INITIAL_USER_CREDITS=5,NEXT_PUBLIC_SHOW_SOON_PAGE=false'
+
+# Default substitutions
+substitutions:
+  _SERVICE_NAME: mythoria-webapp
+  _REGION: europe-west9
 
 images:
-  - 'gcr.io/$PROJECT_ID/mythoria-webapp'
+  - 'gcr.io/$PROJECT_ID/${_SERVICE_NAME}'

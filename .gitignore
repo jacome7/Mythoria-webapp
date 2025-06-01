@@ -27,9 +27,9 @@
 .env
 .env.local
 .env.production
+.env.production.yaml
 .env.development.local
 .env.test.local
-.env.production.local
 
 # IDE
 .vscode/
