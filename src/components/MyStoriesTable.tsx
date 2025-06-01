@@ -7,11 +7,9 @@ import {
   FiEdit3, 
   FiTrash2, 
   FiShare2,
-  FiPlus,
   FiChevronUp,
   FiChevronDown
 } from 'react-icons/fi';
-import CreditsDisplay from './CreditsDisplay';
 
 interface Story {
   storyId: string;
@@ -19,10 +17,6 @@ interface Story {
   status: 'draft' | 'writing' | 'published';
   createdAt: string;
   updatedAt: string;
-}
-
-interface MyStoriesTableProps {
-  // Remove authorName and credits since header is now handled in page
 }
 
 type SortField = 'title' | 'createdAt' | 'updatedAt' | 'status';

@@ -46,8 +46,9 @@ export async function generateStructuredStory(
     authorId: string | null;
     [key: string]: unknown;
   }> = [],
-  imageData?: string | null
-): Promise<StructuredStoryResult> {  try {    // Convert the schema template to use proper SchemaType enums
+  imageData?: string | null,
+  audioData?: string | null
+): Promise<StructuredStoryResult> {try {    // Convert the schema template to use proper SchemaType enums
     const responseSchema = structureStoryOutlineSchema;    // Build the system prompt from template
     const systemPrompt = promptConfig.template
       .replace('{{userDescription}}', userDescription)
@@ -62,43 +63,74 @@ export async function generateStructuredStory(
         responseMimeType: "application/json",
         responseSchema: responseSchema,
       },
-    });    // Prepare content based on whether we have image data
-    let content;    if (imageData) {
-      console.log('Processing request with image data');
-      // Extract the base64 data from data URL
-      try {
-        const base64Data = imageData.split(',')[1];
-        const mimeType = imageData.split(';')[0].split(':')[1];
-        
-        if (!base64Data || !mimeType) {
-          throw new Error('Invalid image data format');
-        }
-        
-        console.log('Image MIME type:', mimeType);
-        console.log('Base64 data length:', base64Data.length);
-        
-        content = {
-          contents: [
-            {
-              role: 'user',
-              parts: [
-                {
-                  text: systemPrompt
-                },
-                {
-                  inlineData: {
-                    mimeType: mimeType,
-                    data: base64Data
-                  }
-                }
-              ]
+    });    // Prepare content based on whether we have image data, audio data, or both
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let content: any;
+
+    if (imageData || audioData) {
+      console.log('Processing request with media data - Image:', !!imageData, 'Audio:', !!audioData);
+      
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const parts: any[] = [{ text: systemPrompt }];
+      
+      // Add image if present
+      if (imageData) {
+        try {
+          const base64Data = imageData.split(',')[1];
+          const mimeType = imageData.split(';')[0].split(':')[1];
+          
+          if (!base64Data || !mimeType) {
+            throw new Error('Invalid image data format');
+          }
+          
+          console.log('Image MIME type:', mimeType);
+          console.log('Base64 data length:', base64Data.length);
+          
+          parts.push({
+            inlineData: {
+              mimeType: mimeType,
+              data: base64Data
             }
-          ]
-        };
-      } catch (error) {
-        console.error('Error processing image data:', error);
-        throw new Error('Failed to process image data for AI analysis');
+          });
+        } catch (error) {
+          console.error('Error processing image data:', error);
+          throw new Error('Failed to process image data for AI analysis');
+        }
       }
+      
+      // Add audio if present
+      if (audioData) {
+        try {
+          const base64Data = audioData.split(',')[1];
+          const mimeType = audioData.split(';')[0].split(':')[1];
+          
+          if (!base64Data || !mimeType) {
+            throw new Error('Invalid audio data format');
+          }
+          
+          console.log('Audio MIME type:', mimeType);
+          console.log('Audio Base64 data length:', base64Data.length);
+          
+          parts.push({
+            inlineData: {
+              mimeType: mimeType,
+              data: base64Data
+            }
+          });
+        } catch (error) {
+          console.error('Error processing audio data:', error);
+          throw new Error('Failed to process audio data for AI analysis');
+        }
+      }
+      
+      content = {
+        contents: [
+          {
+            role: 'user',
+            parts: parts
+          }
+        ]
+      };
     } else {
       console.log('Processing request with text only');
       content = systemPrompt;

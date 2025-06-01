@@ -24,11 +24,9 @@ export async function POST(request: NextRequest) {
 
     if (!storyId) {
       return NextResponse.json({ error: 'Story ID is required' }, { status: 400 });
-    }
-
-    // Import pricing config
-    const pricingConfig = require('@/config/pricing.json');
-    const pricing = pricingConfig.deliveryOptions;
+    }    // Import pricing config
+    const pricingConfig = await import('@/config/pricing.json');
+    const pricing = pricingConfig.default.deliveryOptions;
 
     // Calculate total credits required
     let totalCredits = 0;

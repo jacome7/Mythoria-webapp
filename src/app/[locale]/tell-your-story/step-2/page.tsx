@@ -10,22 +10,34 @@ export default function Step2Page() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'image' | 'audio' | 'text'>('text');
   const [storyText, setStoryText] = useState('');
-  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
-  const [uploadedAudio, setUploadedAudio] = useState<File | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);  const [uploadedAudio, setUploadedAudio] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [audioPreview, setAudioPreview] = useState<string | null>(null);  const [isCapturing, setIsCapturing] = useState(false);
+  const [audioPreview, setAudioPreview] = useState<string | null>(null); const [isCapturing, setIsCapturing] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const [isCreatingStory, setIsCreatingStory] = useState(false);
-  
   // Debug modal states
-  const [showDebugModal, setShowDebugModal] = useState(false);  const [debugRequest, setDebugRequest] = useState<Record<string, unknown> | null>(null);
-  const [debugResponse, setDebugResponse] = useState<Record<string, unknown> | null>(null);
+  const [showDebugModal, setShowDebugModal] = useState(false);  const [debugRequest, setDebugRequest] = useState<{
+    userDescription: string;
+    imageData: string | null;
+    audioData: string | null;
+    storyId: string;
+    existingCharacters?: unknown[];
+  } | null>(null);
+  const [debugResponse, setDebugResponse] = useState<{
+    success?: boolean;
+    error?: boolean;
+    message?: string;
+    data?: unknown;
+    details?: unknown;
+  } | null>(null);
   const [isProcessingGenAI, setIsProcessingGenAI] = useState(false);
   const [storyId, setStoryId] = useState<string | null>(null);
-  
   const fileInputRef = useRef<HTMLInputElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -54,10 +66,10 @@ export default function Step2Page() {
   const startCamera = async () => {
     try {
       setIsCapturing(true);
-      const stream = await navigator.mediaDevices.getUserMedia({ 
+      const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment' } // Use back camera on mobile
       });
-      
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         videoRef.current.play();
@@ -74,10 +86,10 @@ export default function Step2Page() {
       const video = videoRef.current;
       const canvas = canvasRef.current;
       const context = canvas.getContext('2d');
-      
+
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-      
+
       if (context) {
         context.drawImage(video, 0, 0);
         canvas.toBlob((blob) => {
@@ -108,7 +120,6 @@ export default function Step2Page() {
       fileInputRef.current.value = '';
     }
   };
-
   const clearAudio = () => {
     setUploadedAudio(null);
     setAudioPreview(null);
@@ -116,19 +127,60 @@ export default function Step2Page() {
       audioInputRef.current.value = '';
     }
   };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+      
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+      
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+        const audioFile = new File([audioBlob], 'recorded-audio.wav', { type: 'audio/wav' });
+        
+        setUploadedAudio(audioFile);
+        const audioUrl = URL.createObjectURL(audioBlob);
+        setAudioPreview(audioUrl);
+        
+        // Stop all audio tracks
+        stream.getTracks().forEach(track => track.stop());
+      };
+      
+      mediaRecorder.start();
+      setIsRecording(true);
+    } catch (error) {
+      console.error('Error accessing microphone:', error);
+      alert('Unable to access microphone. Please check your permissions and try again.');
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
   const hasContent = () => {
     return storyText.trim() !== '' || uploadedImage !== null || uploadedAudio !== null;
-  };  const handleNextStep = async () => {
+  }; const handleNextStep = async () => {
     try {
       setIsCreatingStory(true);
-      
+
       // Get the current authenticated user
       const userResponse = await fetch('/api/auth/me');
       if (!userResponse.ok) {
         throw new Error('Failed to get user information');
       }
       const userData = await userResponse.json();
-      
+
       // Create a new story in the database
       const response = await fetch('/api/stories', {
         method: 'POST',
@@ -149,17 +201,16 @@ export default function Step2Page() {
 
       const { story } = await response.json();
       setStoryId(story.storyId);
-      
+
       // Store the story ID in localStorage for use in subsequent steps
-      localStorage.setItem('currentStoryId', story.storyId);
-        // If user provided text content OR image, show debug modal for GenAI processing
-      if (storyText.trim() || uploadedImage) {
+      localStorage.setItem('currentStoryId', story.storyId);      // If user provided text content OR image OR audio, show debug modal for GenAI processing
+      if (storyText.trim() || uploadedImage || uploadedAudio) {
         console.log('Preparing GenAI debug modal...');
-        
+
         // Get existing characters for this author
         const charactersResponse = await fetch('/api/characters');
         const existingCharacters = charactersResponse.ok ? (await charactersResponse.json()).characters || [] : [];
-        
+
         // Convert image to base64 if present
         let imageBase64 = null;
         if (uploadedImage) {
@@ -169,22 +220,33 @@ export default function Step2Page() {
             reader.readAsDataURL(uploadedImage);
           });
         }
-        
+
+        // Convert audio to base64 if present
+        let audioBase64 = null;
+        if (uploadedAudio) {
+          audioBase64 = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target?.result as string);
+            reader.readAsDataURL(uploadedAudio);
+          });
+        }
+
         // Prepare the debug request data
         const requestData = {
-          userDescription: storyText || "Analyze the image to create a story",
+          userDescription: storyText || (uploadedImage ? "Analyze the image to create a story" : "Analyze the audio to create a story"),
           imageData: imageBase64,
+          audioData: audioBase64,
           storyId: story.storyId,
           existingCharacters: existingCharacters
         };
-        
+
         setDebugRequest(requestData);
         setDebugResponse(null);
         setIsCreatingStory(false);
         setShowDebugModal(true);
         return; // Don't proceed to step 3 yet
       }
-      
+
       // Store the story content data for use in step-3
       localStorage.setItem('step2Data', JSON.stringify({
         text: storyText,
@@ -192,12 +254,12 @@ export default function Step2Page() {
         hasAudio: uploadedAudio !== null,
         activeTab: activeTab
       }));
-      
+
       console.log('Story created successfully:', story.storyId);
-      
+
       // Navigate to step 3
       router.push('/tell-your-story/step-3');
-      
+
     } catch (error) {
       console.error('Error creating story:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
@@ -210,12 +272,10 @@ export default function Step2Page() {
   // Debug modal functions
   const handleSendToGenAI = async () => {
     if (!debugRequest || !storyId) return;
-    
+
     try {
-      setIsProcessingGenAI(true);
-      
-      console.log('Sending to GenAI:', debugRequest);
-        const genaiResponse = await fetch('/api/stories/genai-structure', {
+      setIsProcessingGenAI(true);      console.log('Sending to GenAI:', debugRequest);
+      const genaiResponse = await fetch('/api/stories/genai-structure', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -223,12 +283,13 @@ export default function Step2Page() {
         body: JSON.stringify({
           userDescription: debugRequest.userDescription,
           imageData: debugRequest.imageData,
+          audioData: debugRequest.audioData,
           storyId: storyId,
         }),
       });
 
       const responseData = await genaiResponse.json();
-      
+
       if (!genaiResponse.ok) {
         console.error('GenAI processing failed:', responseData);
         setDebugResponse({
@@ -242,7 +303,7 @@ export default function Step2Page() {
           success: true,
           data: responseData
         });
-        
+
         // Store the GenAI results for potential use in subsequent steps
         localStorage.setItem('genaiResults', JSON.stringify({
           story: responseData.story,
@@ -250,7 +311,7 @@ export default function Step2Page() {
           processed: true
         }));
       }
-      
+
     } catch (error) {
       console.error('Error calling GenAI:', error);
       setDebugResponse({
@@ -271,7 +332,7 @@ export default function Step2Page() {
       hasAudio: uploadedAudio !== null,
       activeTab: activeTab
     }));
-    
+
     setShowDebugModal(false);
     router.push('/tell-your-story/step-3');
   };
@@ -284,7 +345,7 @@ export default function Step2Page() {
       hasAudio: uploadedAudio !== null,
       activeTab: activeTab
     }));
-    
+
     setShowDebugModal(false);
     router.push('/tell-your-story/step-3');
   };
@@ -294,7 +355,7 @@ export default function Step2Page() {
       <SignedOut>
         <RedirectToSignIn />
       </SignedOut>
-      
+
       <SignedIn>
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
@@ -315,225 +376,267 @@ export default function Step2Page() {
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
                 <h1 className="card-title text-3xl mb-6">Chapter 2 - The Story</h1>
-                
                 <div className="prose max-w-none mb-6">
                   <p className="text-gray-600 text-lg">
                     You can create your story by drawing it, recording it, or simply writing it down.
                   </p>
                 </div>
 
-                {/* Tab Navigation */}
-                <div className="tabs tabs-boxed justify-center mb-6">
-                  <button 
-                    className={`tab tab-lg ${activeTab === 'text' ? 'tab-active' : ''}`}
-                    onClick={() => setActiveTab('text')}
-                  >
-                    ✍️ Write
-                  </button>
-                  <button 
-                    className={`tab tab-lg ${activeTab === 'image' ? 'tab-active' : ''}`}
-                    onClick={() => setActiveTab('image')}
-                  >
-                    📸 Draw/Photo
-                  </button>
-                  <button 
-                    className={`tab tab-lg ${activeTab === 'audio' ? 'tab-active' : ''}`}
-                    onClick={() => setActiveTab('audio')}
-                  >
-                    🎤 Record
-                  </button>
-                </div>
-
-                {/* Text Area Tab */}
-                {activeTab === 'text' && (
-                  <div className="space-y-4">
-                    <div className="form-control">
-                      <label className="label">
-                        <span className="label-text font-semibold">Tell your story...</span>
-                        <span className="label-text-alt">{storyText.length} characters</span>
-                      </label>
-                      <textarea
-                        className="textarea textarea-bordered h-64 text-base leading-relaxed"
-                        placeholder="Once upon a time... Let your imagination run wild! Share your adventure, your dreams, or any story that&apos;s close to your heart."
-                        value={storyText}
-                        onChange={(e) => setStoryText(e.target.value)}
-                      />
-                      <label className="label">
-                        <span className="label-text-alt">Write as much or as little as you&apos;d like. You can always edit this later!</span>
-                      </label>
-                    </div>
+                {/* Tabs and Content Wrapper */}
+                <div>
+                  {/* Tab Navigation */}
+                  <div className="tabs">
+                    <a
+                      className={`tab tab-lifted py-3 w-48 text-center ${activeTab === 'text' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
+                      onClick={() => setActiveTab('text')}
+                    >
+                      ✍️ Write
+                    </a>
+                    <a
+                      className={`tab tab-lifted py-3 w-48 text-center ${activeTab === 'image' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
+                      onClick={() => setActiveTab('image')}
+                    >
+                      📸 Draw/Photo
+                    </a>
+                    <a
+                      className={`tab tab-lifted py-3 w-48 text-center ${activeTab === 'audio' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
+                      onClick={() => setActiveTab('audio')}
+                    >
+                      🎤 Record
+                    </a>
                   </div>
-                )}
 
-                {/* Image Upload Tab */}
-                {activeTab === 'image' && (
-                  <div className="space-y-6">
-                    {!imagePreview && !isCapturing && (
-                      <div className="text-center space-y-4">
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                          <button
-                            className="btn btn-primary btn-lg"
-                            onClick={startCamera}
-                          >
-                            📷 Take Photo
-                          </button>
-                          <button
-                            className="btn btn-outline btn-lg"
-                            onClick={() => fileInputRef.current?.click()}
-                          >
-                            🖼️ Upload Image
-                          </button>
-                        </div>
-                        <p className="text-gray-600">
-                          Draw your story, take a photo of it, or upload an existing image that tells your tale.
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Camera View */}
-                    {isCapturing && (
-                      <div className="text-center space-y-4">
-                        <video
-                          ref={videoRef}
-                          className="w-full max-w-md mx-auto rounded-lg border"
-                          autoPlay
-                          playsInline
-                          muted
-                        />
-                        <div className="flex gap-4 justify-center">
-                          <button
-                            className="btn btn-primary btn-lg"
-                            onClick={capturePhoto}
-                          >
-                            📸 Capture
-                          </button>
-                          <button
-                            className="btn btn-outline btn-lg"
-                            onClick={stopCamera}
-                          >
-                            ❌ Cancel
-                          </button>
+                  {/* Tab Content */}
+                  <div className="border border-base-300 rounded-b-md p-6 bg-base-100 shadow min-h-96">
+                    {/* Text Area Tab Content */}
+                    {activeTab === 'text' && (
+                      <div className="space-y-4">
+                        <div className="form-control">
+                          <label className="label">
+                            <span className="label-text font-semibold">Tell your story...</span>
+                            <span className="label-text-alt">{storyText.length} characters</span>
+                          </label>
+                          <textarea
+                            className="textarea textarea-bordered h-64 text-base leading-relaxed"
+                            placeholder="Once upon a time... Let your imagination run wild! Share your adventure, your dreams, or any story that&apos;s close to your heart."
+                            value={storyText}
+                            onChange={(e) => setStoryText(e.target.value)}
+                          />
+                          <label className="label">
+                            <span className="label-text-alt">Write as much or as little as you&apos;d like. You can always edit this later!</span>
+                          </label>
                         </div>
                       </div>
                     )}
 
-                    {/* Image Preview */}
-                    {imagePreview && (
-                      <div className="text-center space-y-4">                        <div className="card bg-base-200">
-                          <div className="card-body">
-                            <div className="relative w-full max-w-md mx-auto aspect-video rounded-lg overflow-hidden">
-                              <Image
-                                src={imagePreview}
-                                alt="Uploaded story image"
-                                fill
-                                className="object-cover"
-                              />
-                            </div>
-                            <div className="card-actions justify-center">
+                    {/* Image Upload Tab Content */}
+                    {activeTab === 'image' && (
+                      <div className="space-y-6">
+                        {!imagePreview && !isCapturing && (
+                          <div className="text-center space-y-4">
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
                               <button
-                                className="btn btn-outline btn-sm"
-                                onClick={clearImage}
+                                className="btn btn-primary btn-lg"
+                                onClick={startCamera}
                               >
-                                🗑️ Remove
+                                📷 Take Photo
                               </button>
                               <button
-                                className="btn btn-primary btn-sm"
+                                className="btn btn-outline btn-lg"
                                 onClick={() => fileInputRef.current?.click()}
                               >
-                                🔄 Replace
+                                🖼️ Upload Image
+                              </button>
+                            </div>
+                            <p className="text-gray-600">
+                              Draw your story, take a photo of it, or upload an existing image that tells your tale.
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Camera View */}
+                        {isCapturing && (
+                          <div className="text-center space-y-4">
+                            <video
+                              ref={videoRef}
+                              className="w-full max-w-md mx-auto rounded-lg border"
+                              autoPlay
+                              playsInline
+                              muted
+                            />
+                            <div className="flex gap-4 justify-center">
+                              <button
+                                className="btn btn-primary btn-lg"
+                                onClick={capturePhoto}
+                              >
+                                📸 Capture
+                              </button>
+                              <button
+                                className="btn btn-outline btn-lg"
+                                onClick={stopCamera}
+                              >
+                                ❌ Cancel
                               </button>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                    )}
+                        )}
 
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                    />
-                    <canvas ref={canvasRef} className="hidden" />
-                  </div>
-                )}
-
-                {/* Audio Upload Tab */}
-                {activeTab === 'audio' && (
-                  <div className="space-y-6">
-                    {!audioPreview && (
-                      <div className="text-center space-y-4">
-                        <button
-                          className="btn btn-primary btn-lg"
-                          onClick={() => audioInputRef.current?.click()}
-                        >
-                          🎤 Upload Audio
-                        </button>
-                        <p className="text-gray-600">
-                          Upload an MP3 file of your recorded story. Perfect for those who prefer to speak their tales!
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Audio Preview */}
-                    {audioPreview && (
-                      <div className="text-center space-y-4">
-                        <div className="card bg-base-200">
-                          <div className="card-body">
-                            <div className="flex items-center justify-center mb-4">
-                              <div className="text-6xl">🎵</div>
+                        {/* Image Preview */}
+                        {imagePreview && (
+                          <div className="text-center space-y-4">
+                            <div className="card bg-base-200">
+                              <div className="card-body">
+                                <div className="relative w-full max-w-md mx-auto aspect-video rounded-lg overflow-hidden">
+                                  <Image
+                                    src={imagePreview}
+                                    alt="Uploaded story image"
+                                    fill
+                                    className="object-cover"
+                                  />
+                                </div>
+                                <div className="card-actions justify-center">
+                                  <button
+                                    className="btn btn-outline btn-sm"
+                                    onClick={clearImage}
+                                  >
+                                    🗑️ Remove
+                                  </button>
+                                  <button
+                                    className="btn btn-primary btn-sm"
+                                    onClick={() => fileInputRef.current?.click()}
+                                  >
+                                    🔄 Replace
+                                  </button>
+                                </div>
+                              </div>
                             </div>
-                            <audio
-                              src={audioPreview}
-                              controls
-                              className="w-full max-w-md mx-auto"
-                            >
-                              Your browser does not support the audio element.
-                            </audio>
-                            <div className="card-actions justify-center">
+                          </div>
+                        )}
+
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                        />
+                        <canvas ref={canvasRef} className="hidden" />
+                      </div>
+                    )}                    {/* Audio Upload Tab Content */}
+                    {activeTab === 'audio' && (
+                      <div className="space-y-6">
+                        {!audioPreview && !isRecording && (
+                          <div className="text-center space-y-4">
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
                               <button
-                                className="btn btn-outline btn-sm"
-                                onClick={clearAudio}
+                                className="btn btn-primary btn-lg"
+                                onClick={startRecording}
                               >
-                                🗑️ Remove
+                                🎤 Record your voice
                               </button>
                               <button
-                                className="btn btn-primary btn-sm"
+                                className="btn btn-outline btn-lg"
                                 onClick={() => audioInputRef.current?.click()}
                               >
-                                🔄 Replace
+                                📁 Upload Audio File
+                              </button>
+                            </div>
+                            <p className="text-gray-600">
+                              Record your story directly or upload an audio file. Perfect for those who prefer to speak their tales!
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Recording View */}
+                        {isRecording && (
+                          <div className="text-center space-y-4">
+                            <div className="flex flex-col items-center space-y-4">
+                              <div className="relative">
+                                <div className="w-32 h-32 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
+                                  <div className="text-white text-4xl">🎤</div>
+                                </div>
+                                <div className="absolute inset-0 rounded-full border-4 border-red-500 animate-ping"></div>
+                              </div>
+                              <p className="text-lg font-semibold text-red-600">Recording...</p>
+                              <p className="text-gray-600">Tell your story! Speak clearly into your microphone.</p>
+                            </div>
+                            <div className="flex gap-4 justify-center">
+                              <button
+                                className="btn btn-error btn-lg"
+                                onClick={stopRecording}
+                              >
+                                ⏹️ Stop Recording
                               </button>
                             </div>
                           </div>
-                        </div>
+                        )}
+
+                        {/* Audio Preview */}
+                        {audioPreview && (
+                          <div className="text-center space-y-4">
+                            <div className="card bg-base-200">
+                              <div className="card-body">
+                                <div className="flex items-center justify-center mb-4">
+                                  <div className="text-6xl">🎵</div>
+                                </div>
+                                <audio
+                                  src={audioPreview}
+                                  controls
+                                  className="w-full max-w-md mx-auto"
+                                >
+                                  Your browser does not support the audio element.
+                                </audio>
+                                <div className="card-actions justify-center">
+                                  <button
+                                    className="btn btn-outline btn-sm"
+                                    onClick={clearAudio}
+                                  >
+                                    🗑️ Remove
+                                  </button>
+                                  <button
+                                    className="btn btn-primary btn-sm"
+                                    onClick={startRecording}
+                                  >
+                                    🔄 Record Again
+                                  </button>
+                                  <button
+                                    className="btn btn-secondary btn-sm"
+                                    onClick={() => audioInputRef.current?.click()}
+                                  >
+                                    📁 Upload File
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        <input
+                          ref={audioInputRef}
+                          type="file"
+                          accept="audio/mp3,audio/mpeg,audio/wav,audio/m4a"
+                          onChange={handleAudioUpload}
+                          className="hidden"
+                        />
                       </div>
                     )}
-
-                    <input
-                      ref={audioInputRef}
-                      type="file"
-                      accept="audio/mp3,audio/mpeg,audio/wav,audio/m4a"
-                      onChange={handleAudioUpload}
-                      className="hidden"
-                    />
                   </div>
-                )}
+                </div>
 
                 {/* Reassurance Message */}
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-8">
                   <div className="flex items-start space-x-3">
                     <div className="text-2xl">💡</div>
                     <div>                      <p className="text-blue-800 font-medium">
-                        Prefer structured guidance? Continue, and we&apos;ll use AI to analyze your story content and prompt you for each detail separately!
-                      </p>
+                      Prefer structured guidance? Continue, and we&apos;ll use AI to analyze your story content and prompt you for each detail separately!
+                    </p>
                       <p className="text-blue-600 text-sm mt-1">
                         If you&apos;ve written text or uploaded an image above, our AI will automatically extract characters, settings, and themes. Otherwise, the next steps will guide you through creating your story step by step.
                       </p>
                     </div>
                   </div>
                 </div>
-                <StepNavigation 
+                <StepNavigation
                   currentStep={2}
                   totalSteps={7}
                   nextHref={null} // We'll handle navigation programmatically
@@ -550,18 +653,18 @@ export default function Step2Page() {
         {showDebugModal && (
           <div className="modal modal-open">
             <div className="modal-box max-w-4xl">
-              <h3 className="font-bold text-lg mb-4">🔍 GenAI Debug Console</h3>
-                {/* Request Section */}
-              <div className="mb-6">
-                <h4 className="font-semibold text-md mb-2">
+              <h3 className="font-bold text-lg mb-4">🔍 GenAI Debug Console</h3>              {/* Request Section */}
+              <div className="mb-6">                <h4 className="font-semibold text-md mb-2">
                   📤 Request to GenAI:
                   {debugRequest?.imageData && <span className="text-info ml-2">📷 Image Included</span>}
+                  {debugRequest?.audioData && <span className="text-success ml-2">🎤 Audio Included</span>}
                 </h4>
                 <div className="bg-base-200 p-4 rounded-lg overflow-auto max-h-40">
                   <pre className="text-xs whitespace-pre-wrap">
                     {JSON.stringify({
                       ...debugRequest,
-                      imageData: debugRequest?.imageData ? '[Base64 Image Data - Hidden for readability]' : undefined
+                      imageData: debugRequest?.imageData ? '[Base64 Image Data - Hidden for readability]' : undefined,
+                      audioData: debugRequest?.audioData ? '[Base64 Audio Data - Hidden for readability]' : undefined
                     }, null, 2)}
                   </pre>
                 </div>
@@ -569,18 +672,19 @@ export default function Step2Page() {
 
               {/* Send Button */}
               {!debugResponse && (
-                <div className="mb-6 text-center">                  <button 
-                    className={`btn btn-primary btn-lg ${isProcessingGenAI ? 'loading' : ''}`}
-                    onClick={handleSendToGenAI}
-                    disabled={isProcessingGenAI}
-                  >
-                    {isProcessingGenAI 
-                      ? 'Processing...' 
-                      : debugRequest?.imageData 
-                        ? '🚀 Analyze Image with GenAI'
+                <div className="mb-6 text-center">                  <button
+                  className={`btn btn-primary btn-lg ${isProcessingGenAI ? 'loading' : ''}`}
+                  onClick={handleSendToGenAI}
+                  disabled={isProcessingGenAI}
+                >                  {isProcessingGenAI
+                    ? 'Processing...'
+                    : debugRequest?.imageData
+                      ? '🚀 Analyze Image with GenAI'
+                      : debugRequest?.audioData
+                        ? '🚀 Analyze Audio with GenAI'
                         : '🚀 Send to GenAI'
-                    }
-                  </button>
+                  }
+                </button>
                 </div>
               )}
 
@@ -602,22 +706,22 @@ export default function Step2Page() {
 
               {/* Action Buttons */}
               <div className="modal-action">
-                <button 
-                  className="btn btn-outline" 
+                <button
+                  className="btn btn-outline"
                   onClick={handleSkipGenAI}
                 >
                   Skip GenAI & Continue
                 </button>
                 {debugResponse && (
-                  <button 
-                    className="btn btn-primary" 
+                  <button
+                    className="btn btn-primary"
                     onClick={handleContinueToStep3}
                   >
                     Continue to Step 3
                   </button>
                 )}
-                <button 
-                  className="btn btn-ghost" 
+                <button
+                  className="btn btn-ghost"
                   onClick={() => setShowDebugModal(false)}
                 >
                   Close Debug

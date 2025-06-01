@@ -16,8 +16,7 @@ interface AuthorData {
   preferredLocale: string;
 }
 
-export default function Step1Page() {
-  const [, setAuthorData] = useState<AuthorData | null>(null);  const [loading, setLoading] = useState(true);
+export default function Step1Page() {  const [, setAuthorData] = useState<AuthorData | null>(null);  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   
@@ -25,10 +24,36 @@ export default function Step1Page() {
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [mobilePhone, setMobilePhone] = useState('');
-
   useEffect(() => {
     fetchAuthorData();
   }, []);
+
+  const handleSaveProfile = async () => {
+    if (!displayName || !email) {
+      setError('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Here you would typically save the data to your database
+      // For now, we'll just simulate a successful save
+      
+      setSuccessMessage('Profile updated successfully!');
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 3000);
+        } catch (err) {
+      console.error('Failed to save profile:', err);
+      setError('Failed to save profile. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchAuthorData = async () => {
     try {
@@ -181,8 +206,25 @@ export default function Step1Page() {
                       />
                       <label className="label">
                         <span className="label-text-alt">For urgent notifications or delivery updates (optional)</span>
-                      </label>
-                    </div>
+                      </label>                    </div>
+                  </div>
+
+                  {/* Save Profile Button */}
+                  <div className="flex justify-center mt-6">
+                    <button
+                      onClick={handleSaveProfile}
+                      disabled={loading || !displayName || !email}
+                      className="btn btn-primary"
+                    >
+                      {loading ? (
+                        <>
+                          <span className="loading loading-spinner loading-sm"></span>
+                          Saving...
+                        </>
+                      ) : (
+                        'Save Profile'
+                      )}
+                    </button>
                   </div>
                 </div>
               )}

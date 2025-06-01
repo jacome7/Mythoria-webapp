@@ -11,11 +11,11 @@ export async function POST(request: NextRequest) {
     if (!currentAuthor) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }    // Parse the request body
-    const { userDescription, imageData, storyId } = await request.json();
+    const { userDescription, imageData, audioData, storyId } = await request.json();
 
-    if (!userDescription?.trim() && !imageData) {
+    if (!userDescription?.trim() && !imageData && !audioData) {
       return NextResponse.json(
-        { error: 'Story description or image data is required' },
+        { error: 'Story description, image data, or audio data is required' },
         { status: 400 }
       );
     }
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     // Get existing characters for this author
     const existingCharacters = await characterService.getCharactersByAuthor(currentAuthor.authorId);    // Call the GenAI service to structure the story
     console.log('Calling GenAI to structure story for author:', currentAuthor.authorId);
-    const structuredResult = await generateStructuredStory(userDescription, existingCharacters, imageData);    // Update the story with the structured data
+    const structuredResult = await generateStructuredStory(userDescription, existingCharacters, imageData, audioData);// Update the story with the structured data
     const storyUpdates: Record<string, unknown> = {};
     if (structuredResult.story.title) storyUpdates.title = structuredResult.story.title;
     if (structuredResult.story.plotDescription) storyUpdates.plotDescription = structuredResult.story.plotDescription;
@@ -103,7 +103,8 @@ export async function POST(request: NextRequest) {
       story: updatedStory,
       characters: processedCharacters,
       originalInput: userDescription,
-      hasImageInput: !!imageData
+      hasImageInput: !!imageData,
+      hasAudioInput: !!audioData
     });
 
   } catch (error) {
