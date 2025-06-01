@@ -5,7 +5,6 @@ import StepNavigation from '../../../../components/StepNavigation';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getCurrentStoryId, hasValidStorySession } from '../../../../lib/story-session';
-import pricingConfig from '../../../../config/pricing.json';
 
 interface StoryData {
   storyId: string;
@@ -25,6 +24,12 @@ interface StoryData {
     phone?: string;
   };
   dedicationMessage?: string;
+}
+
+interface PricingData {
+  ebook: { name: string; credits: number; description: string; mandatory: boolean; default: boolean };
+  printed: { name: string; credits: number; description: string; mandatory: boolean; default: boolean };
+  audiobook: { name: string; credits: number; description: string; mandatory: boolean; default: boolean };
 }
 
 interface StoryUpdateData {
@@ -56,6 +61,9 @@ export default function Step5Page() {
   const [userCredits, setUserCredits] = useState<number>(0);
   const [showBuyCreditsModal, setShowBuyCreditsModal] = useState(false);
   
+  // Pricing data state
+  const [pricingData, setPricingData] = useState<PricingData | null>(null);
+  
   // Form data
   const [selectedFeatures, setSelectedFeatures] = useState({
     ebook: true, // Default and mandatory
@@ -75,7 +83,6 @@ export default function Step5Page() {
   
   const [dedicationMessage, setDedicationMessage] = useState('');
   const [showAddressForm, setShowAddressForm] = useState(false);
-
   useEffect(() => {
     // Check if we have a valid story session
     if (!hasValidStorySession()) {
@@ -86,17 +93,31 @@ export default function Step5Page() {
     const storyId = getCurrentStoryId();
     setCurrentStoryId(storyId);
     
-    if (storyId) {
-      fetchStoryData(storyId);
-    }
-    
-    // Fetch user credits
-    fetchUserCredits();
+    // Fetch pricing data and story data in parallel
+    Promise.all([
+      fetchPricingData(),
+      storyId ? fetchStoryData(storyId) : Promise.resolve(),
+      fetchUserCredits()
+    ]).finally(() => {
+      setLoading(false);
+    });
   }, [router]);
 
+  const fetchPricingData = async () => {
+    try {
+      const response = await fetch('/api/pricing');
+      if (!response.ok) {
+        throw new Error('Failed to fetch pricing data');
+      }
+      const data = await response.json();
+      setPricingData(data.deliveryOptions);
+    } catch (error) {
+      console.error('Error fetching pricing data:', error);
+      setError('Failed to load pricing information. Please try again.');
+    }
+  };
   const fetchStoryData = async (storyId: string) => {
     try {
-      setLoading(true);
       setError(null);
       
       const response = await fetch(`/api/my-stories/${storyId}`);
@@ -135,8 +156,6 @@ export default function Step5Page() {
     } catch (error) {
       console.error('Error fetching story data:', error);
       setError('Failed to load story information. Please try again.');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -188,14 +207,13 @@ export default function Step5Page() {
       [field]: value
     }));
   };
-
   const calculateTotalCredits = () => {
-    let total = 0;
-    const pricing = pricingConfig.deliveryOptions;
+    if (!pricingData) return 0;
     
-    if (selectedFeatures.ebook) total += pricing.ebook.credits;
-    if (selectedFeatures.printed) total += pricing.printed.credits;
-    if (selectedFeatures.audiobook) total += pricing.audiobook.credits;
+    let total = 0;
+    if (selectedFeatures.ebook) total += pricingData.ebook.credits;
+    if (selectedFeatures.printed) total += pricingData.printed.credits;
+    if (selectedFeatures.audiobook) total += pricingData.audiobook.credits;
     
     return total;
   };
@@ -323,14 +341,12 @@ export default function Step5Page() {
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
                 <h1 className="card-title text-3xl mb-6">Chapter 5 - The Gift</h1>
-                
-                {loading ? (
+                  {loading || !pricingData ? (
                   <div className="text-center py-12">
                     <span className="loading loading-spinner loading-lg"></span>
-                    <p className="text-lg text-gray-600 mt-4">Loading your story details...</p>
+                    <p className="text-lg text-gray-600 mt-4">Loading your story details and pricing...</p>
                   </div>
-                ) : (
-                  <div className="space-y-6">
+                ) : (<div className="space-y-6">
                     <div className="prose max-w-none mb-6">
                       <p className="text-gray-600">
                         Choose how you&apos;d like to receive your story. You can select multiple delivery formats to enjoy your story in different ways.
@@ -347,194 +363,195 @@ export default function Step5Page() {
                     )}
 
                     {/* Delivery Options */}
-                    <div className="space-y-4">
-                      <h2 className="text-xl font-semibold mb-4">Delivery Options</h2>
-                      
-                      {/* Digital (ebook) - Mandatory */}
-                      <div className="card bg-base-200">
-                        <div className="card-body">
-                          <div className="form-control">
-                            <label className="label cursor-pointer">
-                              <div className="flex-1">
-                                <span className="label-text font-semibold text-lg">
-                                  {pricingConfig.deliveryOptions.ebook.name}
-                                  <span className="badge badge-primary ml-2">Mandatory</span>
-                                </span>
-                                <p className="text-sm text-gray-600 mt-1">
-                                  {pricingConfig.deliveryOptions.ebook.description}
-                                </p>
-                              </div>
-                              <div className="flex items-center gap-3">
-                                <span className="font-semibold text-primary">{pricingConfig.deliveryOptions.ebook.credits} credits</span>
-                                <input 
-                                  type="checkbox" 
-                                  checked={true}
-                                  disabled={true}
-                                  className="checkbox checkbox-primary" 
-                                />
-                              </div>
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Printed Book */}
-                      <div className="card bg-base-100 border">
-                        <div className="card-body">
-                          <div className="form-control">
-                            <label className="label cursor-pointer">
-                              <div className="flex-1">
-                                <span className="label-text font-semibold text-lg">
-                                  {pricingConfig.deliveryOptions.printed.name}
-                                </span>
-                                <p className="text-sm text-gray-600 mt-1">
-                                  {pricingConfig.deliveryOptions.printed.description}
-                                </p>
-                              </div>
-                              <div className="flex items-center gap-3">
-                                <span className="font-semibold text-primary">{pricingConfig.deliveryOptions.printed.credits} credits</span>
-                                <input 
-                                  type="checkbox" 
-                                  checked={selectedFeatures.printed}
-                                  onChange={(e) => handleFeatureChange('printed', e.target.checked)}
-                                  className="checkbox checkbox-primary" 
-                                />
-                              </div>
-                            </label>
-                          </div>
-                          
-                          {/* Address Form - Show when printed book is selected */}
-                          {showAddressForm && selectedFeatures.printed && (
-                            <div className="mt-4 pt-4 border-t">
-                              <h3 className="font-semibold mb-3">Delivery Address</h3>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="form-control md:col-span-2">
-                                  <label className="label">
-                                    <span className="label-text">Address Line 1 *</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={deliveryAddress.line1}
-                                    onChange={(e) => handleAddressChange('line1', e.target.value)}
-                                    placeholder="Street address, P.O. box"
-                                    className="input input-bordered w-full"
-                                    required
+                    {pricingData && (
+                      <div className="space-y-4">
+                        <h2 className="text-xl font-semibold mb-4">Delivery Options</h2>
+                        
+                        {/* Digital (ebook) - Mandatory */}
+                        <div className="card bg-base-200">
+                          <div className="card-body">
+                            <div className="form-control">
+                              <label className="label cursor-pointer">
+                                <div className="flex-1">
+                                  <span className="label-text font-semibold text-lg">
+                                    {pricingData.ebook.name}
+                                    <span className="badge badge-primary ml-2">Mandatory</span>
+                                  </span>
+                                  <p className="text-sm text-gray-600 mt-1">
+                                    {pricingData.ebook.description}
+                                  </p>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  <span className="font-semibold text-primary">{pricingData.ebook.credits} credits</span>
+                                  <input 
+                                    type="checkbox" 
+                                    checked={true}
+                                    disabled={true}
+                                    className="checkbox checkbox-primary" 
                                   />
                                 </div>
-                                
-                                <div className="form-control md:col-span-2">
-                                  <label className="label">
-                                    <span className="label-text">Address Line 2</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={deliveryAddress.line2}
-                                    onChange={(e) => handleAddressChange('line2', e.target.value)}
-                                    placeholder="Apartment, suite, unit, building"
-                                    className="input input-bordered w-full"
-                                  />
-                                </div>
-                                
-                                <div className="form-control">
-                                  <label className="label">
-                                    <span className="label-text">City *</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={deliveryAddress.city}
-                                    onChange={(e) => handleAddressChange('city', e.target.value)}
-                                    placeholder="City"
-                                    className="input input-bordered w-full"
-                                    required
-                                  />
-                                </div>
-                                
-                                <div className="form-control">
-                                  <label className="label">
-                                    <span className="label-text">State/Region</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={deliveryAddress.stateRegion}
-                                    onChange={(e) => handleAddressChange('stateRegion', e.target.value)}
-                                    placeholder="State or Region"
-                                    className="input input-bordered w-full"
-                                  />
-                                </div>
-                                
-                                <div className="form-control">
-                                  <label className="label">
-                                    <span className="label-text">Postal Code *</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={deliveryAddress.postalCode}
-                                    onChange={(e) => handleAddressChange('postalCode', e.target.value)}
-                                    placeholder="Postal/ZIP code"
-                                    className="input input-bordered w-full"
-                                    required
-                                  />
-                                </div>
-                                
-                                <div className="form-control">
-                                  <label className="label">
-                                    <span className="label-text">Country *</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={deliveryAddress.country}
-                                    onChange={(e) => handleAddressChange('country', e.target.value)}
-                                    placeholder="Country"
-                                    className="input input-bordered w-full"
-                                    required
-                                  />
-                                </div>
-                                
-                                <div className="form-control md:col-span-2">
-                                  <label className="label">
-                                    <span className="label-text">Phone Number</span>
-                                  </label>
-                                  <input
-                                    type="tel"
-                                    value={deliveryAddress.phone}
-                                    onChange={(e) => handleAddressChange('phone', e.target.value)}
-                                    placeholder="Phone number for delivery contact"
-                                    className="input input-bordered w-full"
-                                  />
-                                </div>
-                              </div>
+                              </label>
                             </div>
-                          )}
+                          </div>
                         </div>
-                      </div>
 
-                      {/* Audiobook */}
-                      <div className="card bg-base-100 border">
-                        <div className="card-body">
-                          <div className="form-control">
-                            <label className="label cursor-pointer">
-                              <div className="flex-1">
-                                <span className="label-text font-semibold text-lg">
-                                  {pricingConfig.deliveryOptions.audiobook.name}
-                                </span>
-                                <p className="text-sm text-gray-600 mt-1">
-                                  {pricingConfig.deliveryOptions.audiobook.description}
-                                </p>
+                        {/* Printed Book */}
+                        <div className="card bg-base-100 border">
+                          <div className="card-body">
+                            <div className="form-control">
+                              <label className="label cursor-pointer">
+                                <div className="flex-1">
+                                  <span className="label-text font-semibold text-lg">
+                                    {pricingData.printed.name}
+                                  </span>
+                                  <p className="text-sm text-gray-600 mt-1">
+                                    {pricingData.printed.description}
+                                  </p>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  <span className="font-semibold text-primary">{pricingData.printed.credits} credits</span>
+                                  <input 
+                                    type="checkbox" 
+                                    checked={selectedFeatures.printed}
+                                    onChange={(e) => handleFeatureChange('printed', e.target.checked)}
+                                    className="checkbox checkbox-primary" 
+                                  />
+                                </div>
+                              </label>
+                            </div>                            
+                            {/* Address Form - Show when printed book is selected */}
+                            {showAddressForm && selectedFeatures.printed && (
+                              <div className="mt-4 pt-4 border-t">
+                                <h3 className="font-semibold mb-3">Delivery Address</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div className="form-control md:col-span-2">
+                                    <label className="label">
+                                      <span className="label-text">Address Line 1 *</span>
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={deliveryAddress.line1}
+                                      onChange={(e) => handleAddressChange('line1', e.target.value)}
+                                      placeholder="Street address, P.O. box"
+                                      className="input input-bordered w-full"
+                                      required
+                                    />
+                                  </div>
+                                  
+                                  <div className="form-control md:col-span-2">
+                                    <label className="label">
+                                      <span className="label-text">Address Line 2</span>
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={deliveryAddress.line2}
+                                      onChange={(e) => handleAddressChange('line2', e.target.value)}
+                                      placeholder="Apartment, suite, unit, building"
+                                      className="input input-bordered w-full"
+                                    />
+                                  </div>
+                                  
+                                  <div className="form-control">
+                                    <label className="label">
+                                      <span className="label-text">City *</span>
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={deliveryAddress.city}
+                                      onChange={(e) => handleAddressChange('city', e.target.value)}
+                                      placeholder="City"
+                                      className="input input-bordered w-full"
+                                      required
+                                    />
+                                  </div>
+                                  
+                                  <div className="form-control">
+                                    <label className="label">
+                                      <span className="label-text">State/Region</span>
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={deliveryAddress.stateRegion}
+                                      onChange={(e) => handleAddressChange('stateRegion', e.target.value)}
+                                      placeholder="State or Region"
+                                      className="input input-bordered w-full"
+                                    />
+                                  </div>
+                                  
+                                  <div className="form-control">
+                                    <label className="label">
+                                      <span className="label-text">Postal Code *</span>
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={deliveryAddress.postalCode}
+                                      onChange={(e) => handleAddressChange('postalCode', e.target.value)}
+                                      placeholder="Postal/ZIP code"
+                                      className="input input-bordered w-full"
+                                      required
+                                    />
+                                  </div>
+                                  
+                                  <div className="form-control">
+                                    <label className="label">
+                                      <span className="label-text">Country *</span>
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={deliveryAddress.country}
+                                      onChange={(e) => handleAddressChange('country', e.target.value)}
+                                      placeholder="Country"
+                                      className="input input-bordered w-full"
+                                      required
+                                    />
+                                  </div>
+                                  
+                                  <div className="form-control md:col-span-2">
+                                    <label className="label">
+                                      <span className="label-text">Phone Number</span>
+                                    </label>
+                                    <input
+                                      type="tel"
+                                      value={deliveryAddress.phone}
+                                      onChange={(e) => handleAddressChange('phone', e.target.value)}
+                                      placeholder="Phone number for delivery contact"
+                                      className="input input-bordered w-full"
+                                    />
+                                  </div>
+                                </div>
                               </div>
-                              <div className="flex items-center gap-3">
-                                <span className="font-semibold text-primary">{pricingConfig.deliveryOptions.audiobook.credits} credits</span>
-                                <input 
-                                  type="checkbox" 
-                                  checked={selectedFeatures.audiobook}
-                                  onChange={(e) => handleFeatureChange('audiobook', e.target.checked)}
-                                  className="checkbox checkbox-primary" 
-                                />
-                              </div>
-                            </label>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Audiobook */}
+                        <div className="card bg-base-100 border">
+                          <div className="card-body">
+                            <div className="form-control">
+                              <label className="label cursor-pointer">
+                                <div className="flex-1">
+                                  <span className="label-text font-semibold text-lg">
+                                    {pricingData.audiobook.name}
+                                  </span>
+                                  <p className="text-sm text-gray-600 mt-1">
+                                    {pricingData.audiobook.description}
+                                  </p>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  <span className="font-semibold text-primary">{pricingData.audiobook.credits} credits</span>
+                                  <input 
+                                    type="checkbox" 
+                                    checked={selectedFeatures.audiobook}
+                                    onChange={(e) => handleFeatureChange('audiobook', e.target.checked)}
+                                    className="checkbox checkbox-primary" 
+                                  />
+                                </div>
+                              </label>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    )}
 
                     {/* Dedication Message */}
                     <div className="form-control">

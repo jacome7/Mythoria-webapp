@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { FaShoppingCart, FaBookOpen, FaVolumeUp, FaPrint, FaGift, FaQuestionCircle, FaRocket, FaPalette, FaFileDownload } from 'react-icons/fa';
 
 const creditPackages = [
@@ -10,19 +11,51 @@ const creditPackages = [
 	{ id: 4, credits: 100, price: 49, popular: false, bestValue: false, icon: <FaShoppingCart /> },
 ];
 
-const services = [
-	{ id: 1, name: 'Generate a 10-page digital book', cost: 3, icon: <FaBookOpen className="mr-2" /> },
-	{ id: 2, name: 'Generate a 20-page digital book', cost: 4, icon: <FaBookOpen className="mr-2" /> },
-	{ id: 3, name: 'Generate a 30-page digital book', cost: 5, icon: <FaBookOpen className="mr-2" /> },
-	{ id: 4, name: 'Generate an audiobook (for any length)', cost: 2, icon: <FaVolumeUp className="mr-2" /> },
-	{ id: 5, name: 'Order a printed & shipped 10-page hardcover book', cost: 20, icon: <FaPrint className="mr-2" /> },
-	{ id: 6, name: 'Order a printed & shipped 20-page hardcover book', cost: 25, icon: <FaPrint className="mr-2" /> },
-	{ id: 7, name: 'E-book Download (EPUB/MOBI)', cost: 1, icon: <FaFileDownload className="mr-2" /> },
-	{ id: 8, name: 'Custom Illustration Pack (5 extra unique illustrations)', cost: 5, icon: <FaPalette className="mr-2" /> },
-	{ id: 9, name: 'Priority Generation Queue', cost: 2, icon: <FaRocket className="mr-2" /> },
-];
+interface Service {
+	id: string;
+	name: string;
+	cost: number;
+	icon: string;
+	serviceCode: string;
+	isActive: boolean;
+	isMandatory: boolean;
+	isDefault: boolean;
+}
+
+const iconMap = {
+	FaBookOpen: <FaBookOpen className="mr-2" />,
+	FaVolumeUp: <FaVolumeUp className="mr-2" />,
+	FaPrint: <FaPrint className="mr-2" />,
+	FaFileDownload: <FaFileDownload className="mr-2" />,
+	FaPalette: <FaPalette className="mr-2" />,
+	FaRocket: <FaRocket className="mr-2" />,
+	FaQuestionCircle: <FaQuestionCircle className="mr-2" />,
+};
 
 export default function PricingPage() {
+	const [services, setServices] = useState<Service[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		fetchServices();
+	}, []);
+
+	const fetchServices = async () => {
+		try {
+			const response = await fetch('/api/pricing/services');
+			if (!response.ok) {
+				throw new Error('Failed to fetch services');
+			}
+			const data = await response.json();
+			setServices(data.services);
+		} catch (error) {
+			console.error('Error fetching services:', error);
+			setError('Failed to load pricing information');
+		} finally {
+			setLoading(false);
+		}
+	};
 	return (
 		<div className="min-h-screen bg-base-100 text-base-content">
 			<div className="container mx-auto px-4 py-12">
@@ -59,29 +92,41 @@ export default function PricingPage() {
 					</div>
 				</section>
 
-				<div className="divider my-16"></div>
-
-				{/* Service Costs Section */}
+				<div className="divider my-16"></div>				{/* Service Costs Section */}
 				<section id="service-costs" className="my-16">
 					<h2 className="text-4xl font-bold text-center mb-10">What Your Credits Can Unlock</h2>
-					<div className="overflow-x-auto bg-base-200 p-6 rounded-lg shadow-xl">
-						<table className="table w-full">
-							<thead>
-								<tr>
-									<th className="text-lg">Service</th>
-									<th className="text-lg text-right">Cost in Credits</th>
-								</tr>
-							</thead>
-							<tbody>
-								{services.map((service) => (
-									<tr key={service.id} className="hover">
-										<td className="py-3 flex items-center">{service.icon} {service.name}</td>
-										<td className="py-3 text-right font-semibold">{service.cost} Credits</td>
+					{loading ? (
+						<div className="text-center py-12">
+							<span className="loading loading-spinner loading-lg"></span>
+							<p className="text-lg text-gray-600 mt-4">Loading pricing information...</p>
+						</div>
+					) : error ? (
+						<div className="alert alert-error">
+							<span>{error}</span>
+						</div>
+					) : (
+						<div className="overflow-x-auto bg-base-200 p-6 rounded-lg shadow-xl">
+							<table className="table w-full">
+								<thead>
+									<tr>
+										<th className="text-lg">Service</th>
+										<th className="text-lg text-right">Cost in Credits</th>
 									</tr>
-								))}
-							</tbody>
-						</table>
-					</div>
+								</thead>
+								<tbody>
+									{services.map((service) => (
+										<tr key={service.id} className="hover">
+											<td className="py-3 flex items-center">
+												{iconMap[service.icon as keyof typeof iconMap] || iconMap.FaQuestionCircle}
+												{service.name}
+											</td>
+											<td className="py-3 text-right font-semibold">{service.cost} Credits</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
+					)}
 				</section>
 
 				<div className="divider my-16"></div>

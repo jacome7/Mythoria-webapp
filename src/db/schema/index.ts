@@ -12,6 +12,7 @@ export * from './characters';
 export * from './payments';
 export * from './shipping';
 export * from './credits';
+export * from './pricing';
 
 // Relations
 export * from './relations';

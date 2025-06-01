@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
-import { creditService } from '@/db/services';
+import { creditService, pricingService } from '@/db/services';
 
 interface DeductCreditsRequest {
   storyId: string;
@@ -9,6 +9,19 @@ interface DeductCreditsRequest {
     printed: boolean;
     audiobook: boolean;
   };
+}
+
+function getServiceDescription(serviceCode: string): string {
+  switch (serviceCode) {
+    case 'eBookGeneration':
+      return 'Digital Book Generation';
+    case 'printOrder':
+      return 'Printed Book Order';
+    case 'audioBookGeneration':
+      return 'Audiobook Generation';
+    default:
+      return `Service: ${serviceCode}`;
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -24,40 +37,14 @@ export async function POST(request: NextRequest) {
 
     if (!storyId) {
       return NextResponse.json({ error: 'Story ID is required' }, { status: 400 });
-    }    // Import pricing config
-    const pricingConfig = await import('@/config/pricing.json');
-    const pricing = pricingConfig.default.deliveryOptions;
-
-    // Calculate total credits required
-    let totalCredits = 0;
-    const transactions = [];
-
-    if (selectedFeatures.ebook) {
-      totalCredits += pricing.ebook.credits;
-      transactions.push({
-        amount: pricing.ebook.credits,
-        eventType: 'eBookGeneration' as const,
-        description: 'Digital Book Generation'
-      });
-    }
-
-    if (selectedFeatures.printed) {
-      totalCredits += pricing.printed.credits;
-      transactions.push({
-        amount: pricing.printed.credits,
-        eventType: 'printOrder' as const,
-        description: 'Printed Book Order'
-      });
-    }
-
-    if (selectedFeatures.audiobook) {
-      totalCredits += pricing.audiobook.credits;
-      transactions.push({
-        amount: pricing.audiobook.credits,
-        eventType: 'audioBookGeneration' as const,
-        description: 'Audiobook Generation'
-      });
-    }
+    }    // Calculate total credits required using database pricing
+    const { total: totalCredits, breakdown } = await pricingService.calculateCreditsForFeatures(selectedFeatures);
+    
+    const transactions = breakdown.map(item => ({
+      amount: item.credits,
+      eventType: item.serviceCode as 'eBookGeneration' | 'printOrder' | 'audioBookGeneration',
+      description: getServiceDescription(item.serviceCode)
+    }));
 
     // Check if user has sufficient credits
     const currentBalance = await creditService.getAuthorCreditBalance(author.authorId);

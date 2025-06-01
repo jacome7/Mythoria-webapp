@@ -288,3 +288,6 @@ export const creditService = {  async addCreditEntry(
     return await this.addCreditEntry(authorId, amount, eventType, undefined, purchaseId);
   }
 };
+
+// Export pricing service
+export { pricingService } from './services/pricing';
