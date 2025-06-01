@@ -14,10 +14,10 @@ interface CharacterWithDate extends Character {
 }
 
 interface MyCharactersTableProps {
-  authorName: string;
+  // No props needed currently
 }
 
-export default function MyCharactersTable({ }: MyCharactersTableProps) {
+export default function MyCharactersTable({}: MyCharactersTableProps = {}) {
   const t = useTranslations('MyCharactersPage');  const [characters, setCharacters] = useState<CharacterWithDate[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface CreditHistoryEntry {
   id: string;
@@ -21,6 +21,11 @@ export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
   const [creditHistory, setCreditHistory] = useState<CreditHistoryEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentBalance, setCurrentBalance] = useState(credits);
+
+  // Sync the credits prop with internal state when it changes
+  useEffect(() => {
+    setCurrentBalance(credits);
+  }, [credits]);
 
   const handleOpenModal = async () => {
     setIsModalOpen(true);
@@ -69,12 +74,11 @@ export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
   };
 
   return (
-    <>
-      <button 
+    <>      <button 
         className="btn btn-outline btn-secondary"
         onClick={handleOpenModal}
       >
-        Credits available: {credits}
+        Credits available: {currentBalance}
       </button>
 
       {/* Credit History Modal */}
