@@ -10,7 +10,7 @@ import MyCharactersTable from '@/components/MyCharactersTable';
 import CreditsDisplay from '@/components/CreditsDisplay';
 
 export default function MyStoriesPage() {
-  const t = useTranslations('MyStoriesPage');  const [authorName, setAuthorName] = useState<string>('Storyteller');
+  const t = useTranslations('MyStoriesPage'); const [authorName, setAuthorName] = useState<string>('Storyteller');
   const [credits, setCredits] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'stories' | 'characters'>('stories');
@@ -23,7 +23,7 @@ export default function MyStoriesPage() {
           const authorData = await authorResponse.json();
           setAuthorName(authorData.displayName || 'Storyteller');
         }
-        
+
         // Fetch credits
         const creditsResponse = await fetch('/api/my-credits');
         if (creditsResponse.ok) {
@@ -72,28 +72,29 @@ export default function MyStoriesPage() {
         {/* Header Section */}
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-          <h1 className="text-4xl font-bold">
-            {t('title')}, {authorName}!
-          </h1>
-          <div className="flex items-center gap-4">
-            <CreditsDisplay credits={credits} />
-            <Link href="/tell-your-story/step-1" className="btn btn-primary">
-              <FiPlus className="w-5 h-5 mr-2" />
-              {t('writeNewStory')}
-            </Link>
-          </div>        </div>
-          
+            <h1 className="text-4xl font-bold">
+              {t('title')}, {authorName}!
+            </h1>
+            <div className="flex items-center gap-4">
+              <CreditsDisplay credits={credits} />
+              <Link href="/tell-your-story/step-1" className="btn btn-primary">
+                <FiPlus className="w-5 h-5 mr-2" />
+                {t('writeNewStory')}
+              </Link>
+            </div>
+          </div>
+
           {/* Tabs and Content Wrapper */}
           <div>
             {/* Tabs */}
             <div className="tabs">
-              <a 
+              <a
                 className={`tab tab-lifted py-3 w-52 text-center ${activeTab === 'stories' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
                 onClick={() => setActiveTab('stories')}
               >
                 {t('tabs.myStories') || 'My Stories'}
               </a>
-              <a 
+              <a
                 className={`tab tab-lifted py-3 w-52 text-center ${activeTab === 'characters' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
                 onClick={() => setActiveTab('characters')}
               >
