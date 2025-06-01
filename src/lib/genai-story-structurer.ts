@@ -45,9 +45,9 @@ export async function generateStructuredStory(
     name: string;
     authorId: string | null;
     [key: string]: unknown;
-  }> = []
-): Promise<StructuredStoryResult> {
-  try {    // Convert the schema template to use proper SchemaType enums
+  }> = [],
+  imageData?: string | null
+): Promise<StructuredStoryResult> {  try {    // Convert the schema template to use proper SchemaType enums
     const responseSchema = structureStoryOutlineSchema;    // Build the system prompt from template
     const systemPrompt = promptConfig.template
       .replace('{{userDescription}}', userDescription)
@@ -62,8 +62,50 @@ export async function generateStructuredStory(
         responseMimeType: "application/json",
         responseSchema: responseSchema,
       },
-    });// Generate content
-    const result = await model.generateContent(systemPrompt);
+    });    // Prepare content based on whether we have image data
+    let content;    if (imageData) {
+      console.log('Processing request with image data');
+      // Extract the base64 data from data URL
+      try {
+        const base64Data = imageData.split(',')[1];
+        const mimeType = imageData.split(';')[0].split(':')[1];
+        
+        if (!base64Data || !mimeType) {
+          throw new Error('Invalid image data format');
+        }
+        
+        console.log('Image MIME type:', mimeType);
+        console.log('Base64 data length:', base64Data.length);
+        
+        content = {
+          contents: [
+            {
+              role: 'user',
+              parts: [
+                {
+                  text: systemPrompt
+                },
+                {
+                  inlineData: {
+                    mimeType: mimeType,
+                    data: base64Data
+                  }
+                }
+              ]
+            }
+          ]
+        };
+      } catch (error) {
+        console.error('Error processing image data:', error);
+        throw new Error('Failed to process image data for AI analysis');
+      }
+    } else {
+      console.log('Processing request with text only');
+      content = systemPrompt;
+    }
+
+    // Generate content
+    const result = await model.generateContent(content);
     const response = result.response;
     
     // Get the text from the first candidate

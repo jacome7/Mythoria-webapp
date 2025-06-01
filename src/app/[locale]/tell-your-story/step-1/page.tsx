@@ -17,9 +17,7 @@ interface AuthorData {
 }
 
 export default function Step1Page() {
-  const [, setAuthorData] = useState<AuthorData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [, setAuthorData] = useState<AuthorData | null>(null);  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   
@@ -54,45 +52,7 @@ export default function Step1Page() {
     } catch (error) {
       console.error('Error fetching author data:', error);
       setError('Failed to load user information. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-  const updateProfileAndNavigate = async (): Promise<boolean> => {
-    if (!displayName.trim() || !email.trim()) {
-      setError('Name and email are required.');
-      return false;
-    }
-
-    setSaving(true);
-    setError(null);
-    setSuccessMessage(null);
-
-    try {
-      const response = await fetch('/api/users/update-profile', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          displayName: displayName.trim(),
-          email: email.trim(),
-          mobilePhone: mobilePhone.trim() || null,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update profile');
-      }
-
-      return true;
-
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      setError('Failed to update profile. Please try again.');
-      return false;
-    } finally {
-      setSaving(false);
+    } finally {    setLoading(false);
     }
   };
 

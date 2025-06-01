@@ -17,9 +17,8 @@ export default function Step2Page() {
   const [isCreatingStory, setIsCreatingStory] = useState(false);
   
   // Debug modal states
-  const [showDebugModal, setShowDebugModal] = useState(false);
-  const [debugRequest, setDebugRequest] = useState<any>(null);
-  const [debugResponse, setDebugResponse] = useState<any>(null);
+  const [showDebugModal, setShowDebugModal] = useState(false);  const [debugRequest, setDebugRequest] = useState<Record<string, unknown> | null>(null);
+  const [debugResponse, setDebugResponse] = useState<Record<string, unknown> | null>(null);
   const [isProcessingGenAI, setIsProcessingGenAI] = useState(false);
   const [storyId, setStoryId] = useState<string | null>(null);
   
@@ -153,18 +152,28 @@ export default function Step2Page() {
       
       // Store the story ID in localStorage for use in subsequent steps
       localStorage.setItem('currentStoryId', story.storyId);
-      
-      // If user provided text content, show debug modal for GenAI processing
-      if (storyText.trim()) {
+        // If user provided text content OR image, show debug modal for GenAI processing
+      if (storyText.trim() || uploadedImage) {
         console.log('Preparing GenAI debug modal...');
         
         // Get existing characters for this author
         const charactersResponse = await fetch('/api/characters');
         const existingCharacters = charactersResponse.ok ? (await charactersResponse.json()).characters || [] : [];
         
+        // Convert image to base64 if present
+        let imageBase64 = null;
+        if (uploadedImage) {
+          imageBase64 = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target?.result as string);
+            reader.readAsDataURL(uploadedImage);
+          });
+        }
+        
         // Prepare the debug request data
         const requestData = {
-          userDescription: storyText,
+          userDescription: storyText || "Analyze the image to create a story",
+          imageData: imageBase64,
           storyId: story.storyId,
           existingCharacters: existingCharacters
         };
@@ -206,14 +215,14 @@ export default function Step2Page() {
       setIsProcessingGenAI(true);
       
       console.log('Sending to GenAI:', debugRequest);
-      
-      const genaiResponse = await fetch('/api/stories/genai-structure', {
+        const genaiResponse = await fetch('/api/stories/genai-structure', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           userDescription: debugRequest.userDescription,
+          imageData: debugRequest.imageData,
           storyId: storyId,
         }),
       });
@@ -516,14 +525,15 @@ export default function Step2Page() {
                   <div className="flex items-start space-x-3">
                     <div className="text-2xl">💡</div>
                     <div>                      <p className="text-blue-800 font-medium">
-                        Prefer structured guidance? Continue, and we&apos;ll use AI to analyze your story and prompt you for each detail separately!
+                        Prefer structured guidance? Continue, and we&apos;ll use AI to analyze your story content and prompt you for each detail separately!
                       </p>
                       <p className="text-blue-600 text-sm mt-1">
-                        If you&apos;ve written something above, our AI will automatically extract characters, settings, and themes. Otherwise, the next steps will guide you through creating your story step by step.
+                        If you&apos;ve written text or uploaded an image above, our AI will automatically extract characters, settings, and themes. Otherwise, the next steps will guide you through creating your story step by step.
                       </p>
                     </div>
                   </div>
-                </div>                <StepNavigation 
+                </div>
+                <StepNavigation 
                   currentStep={2}
                   totalSteps={7}
                   nextHref={null} // We'll handle navigation programmatically
@@ -541,26 +551,35 @@ export default function Step2Page() {
           <div className="modal modal-open">
             <div className="modal-box max-w-4xl">
               <h3 className="font-bold text-lg mb-4">🔍 GenAI Debug Console</h3>
-              
-              {/* Request Section */}
+                {/* Request Section */}
               <div className="mb-6">
-                <h4 className="font-semibold text-md mb-2">📤 Request to GenAI:</h4>
+                <h4 className="font-semibold text-md mb-2">
+                  📤 Request to GenAI:
+                  {debugRequest?.imageData && <span className="text-info ml-2">📷 Image Included</span>}
+                </h4>
                 <div className="bg-base-200 p-4 rounded-lg overflow-auto max-h-40">
                   <pre className="text-xs whitespace-pre-wrap">
-                    {JSON.stringify(debugRequest, null, 2)}
+                    {JSON.stringify({
+                      ...debugRequest,
+                      imageData: debugRequest?.imageData ? '[Base64 Image Data - Hidden for readability]' : undefined
+                    }, null, 2)}
                   </pre>
                 </div>
               </div>
 
               {/* Send Button */}
               {!debugResponse && (
-                <div className="mb-6 text-center">
-                  <button 
+                <div className="mb-6 text-center">                  <button 
                     className={`btn btn-primary btn-lg ${isProcessingGenAI ? 'loading' : ''}`}
                     onClick={handleSendToGenAI}
                     disabled={isProcessingGenAI}
                   >
-                    {isProcessingGenAI ? 'Processing...' : '🚀 Send to GenAI'}
+                    {isProcessingGenAI 
+                      ? 'Processing...' 
+                      : debugRequest?.imageData 
+                        ? '🚀 Analyze Image with GenAI'
+                        : '🚀 Send to GenAI'
+                    }
                   </button>
                 </div>
               )}

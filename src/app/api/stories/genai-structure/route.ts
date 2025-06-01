@@ -10,14 +10,12 @@ export async function POST(request: NextRequest) {
     
     if (!currentAuthor) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+    }    // Parse the request body
+    const { userDescription, imageData, storyId } = await request.json();
 
-    // Parse the request body
-    const { userDescription, storyId } = await request.json();
-
-    if (!userDescription?.trim()) {
+    if (!userDescription?.trim() && !imageData) {
       return NextResponse.json(
-        { error: 'Story description is required' },
+        { error: 'Story description or image data is required' },
         { status: 400 }
       );
     }
@@ -39,14 +37,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Get existing characters for this author
-    const existingCharacters = await characterService.getCharactersByAuthor(currentAuthor.authorId);
-
-    // Call the GenAI service to structure the story
+    const existingCharacters = await characterService.getCharactersByAuthor(currentAuthor.authorId);    // Call the GenAI service to structure the story
     console.log('Calling GenAI to structure story for author:', currentAuthor.authorId);
-    const structuredResult = await generateStructuredStory(userDescription, existingCharacters);
-
-    // Update the story with the structured data
-    const storyUpdates: any = {};
+    const structuredResult = await generateStructuredStory(userDescription, existingCharacters, imageData);    // Update the story with the structured data
+    const storyUpdates: Record<string, unknown> = {};
     if (structuredResult.story.title) storyUpdates.title = structuredResult.story.title;
     if (structuredResult.story.plotDescription) storyUpdates.plotDescription = structuredResult.story.plotDescription;
     if (structuredResult.story.synopsis) storyUpdates.synopsis = structuredResult.story.synopsis;
@@ -95,23 +89,21 @@ export async function POST(request: NextRequest) {
           storyId, 
           characterRecord.characterId, 
           character.role || undefined
-        );
-      } catch (error) {
+        );      } catch (linkError) {
         // Character might already be linked to this story, which is fine
-        console.warn(`Character ${characterRecord.characterId} might already be linked to story ${storyId}`);
+        console.warn(`Character ${characterRecord.characterId} might already be linked to story ${storyId}:`, linkError);
       }      processedCharacters.push({
         ...characterRecord,
         role: character.role || undefined
       });
     }
 
-    console.log('Successfully structured story and processed characters');
-
-    return NextResponse.json({ 
+    console.log('Successfully structured story and processed characters');    return NextResponse.json({ 
       success: true,
       story: updatedStory,
       characters: processedCharacters,
-      originalInput: userDescription
+      originalInput: userDescription,
+      hasImageInput: !!imageData
     });
 
   } catch (error) {
