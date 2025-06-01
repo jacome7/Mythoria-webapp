@@ -1,7 +1,8 @@
 {
   "name": "mythoria-webapp",
   "version": "0.1.1",
-  "private": true,  "scripts": {
+  "private": true,
+  "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
@@ -24,7 +25,9 @@
   "dependencies": {
     "@clerk/localizations": "^3.16.3",
     "@clerk/nextjs": "^6.20.0",
+    "@google-cloud/vertexai": "^1.10.0",
     "@types/pg": "^8.15.2",
+    "@types/uuid": "^10.0.0",
     "daisyui": "^5.0.38",
     "dotenv": "^16.5.0",
     "drizzle-kit": "^0.31.1",
@@ -36,7 +39,8 @@
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
     "react-type-animation": "^3.2.0",
-    "svix": "^1.66.0"
+    "svix": "^1.66.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -1,42 +1,29 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { 
-  FiEdit3, 
-  FiTrash2,
-  FiChevronUp,
-  FiChevronDown
+  FiPlus
 } from 'react-icons/fi';
+import CharacterCard from './CharacterCard';
+import { Character } from '../lib/story-session';
 
-interface Character {
-  characterId: string;
-  name: string;
-  type: string | null;
-  passions: string | null;
-  superpowers: string | null;
-  physicalDescription: string | null;
-  photoUrl: string | null;
+// Extend Character type to include createdAt from the API response
+interface CharacterWithDate extends Character {
   createdAt: string;
 }
-
-type SortField = 'name' | 'type' | 'createdAt';
-type SortDirection = 'asc' | 'desc';
 
 interface MyCharactersTableProps {
   authorName: string;
 }
 
 export default function MyCharactersTable({ }: MyCharactersTableProps) {
-  const t = useTranslations('MyCharactersPage');
-  const [characters, setCharacters] = useState<Character[]>([]);
+  const t = useTranslations('MyCharactersPage');  const [characters, setCharacters] = useState<CharacterWithDate[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [characterToDelete, setCharacterToDelete] = useState<Character | null>(null);
-  
-  // Sorting state
-  const [sortField, setSortField] = useState<SortField>('createdAt');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [characterToDelete, setCharacterToDelete] = useState<CharacterWithDate | null>(null);
+  const [editingCharacter, setEditingCharacter] = useState<CharacterWithDate | null>(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   useEffect(() => {
     fetchCharacters();
@@ -54,9 +41,7 @@ export default function MyCharactersTable({ }: MyCharactersTableProps) {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleDeleteClick = (character: Character) => {
+  };  const handleDeleteClick = async (character: CharacterWithDate) => {
     setCharacterToDelete(character);
     setDeleteModalOpen(true);
   };
@@ -79,57 +64,59 @@ export default function MyCharactersTable({ }: MyCharactersTableProps) {
     }
   };
 
-  // Sorting functions
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('asc');
+  const handleCreateCharacter = async (characterData: Character) => {
+    try {
+      const response = await fetch('/api/characters', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(characterData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create character');
+      }
+
+      const { character } = await response.json();
+      setCharacters(prev => [...prev, character]);
+      setShowCreateForm(false);
+      
+    } catch (error) {
+      console.error('Error creating character:', error);
+      throw error;
     }
   };
 
-  const getSortIcon = (field: SortField) => {
-    if (sortField !== field) return null;
-    return sortDirection === 'asc' ? 
-      <FiChevronUp className="w-4 h-4 inline ml-1" /> : 
-      <FiChevronDown className="w-4 h-4 inline ml-1" />;
-  };
+  const handleUpdateCharacter = async (characterData: Character) => {
+    if (!characterData.characterId) return;
 
-  // Sorted characters
-  const sortedCharacters = useMemo(() => {
-    const sorted = [...characters];
+    try {
+      const response = await fetch(`/api/characters/${characterData.characterId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(characterData),
+      });
 
-    sorted.sort((a, b) => {
-      let aValue: string | number;
-      let bValue: string | number;
-
-      switch (sortField) {
-        case 'name':
-          aValue = a.name.toLowerCase();
-          bValue = b.name.toLowerCase();
-          break;
-        case 'type':
-          aValue = (a.type || '').toLowerCase();
-          bValue = (b.type || '').toLowerCase();
-          break;
-        case 'createdAt':
-          aValue = new Date(a.createdAt).getTime();
-          bValue = new Date(b.createdAt).getTime();
-          break;
-        default:
-          return 0;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update character');
       }
 
-      if (aValue < bValue) {
-        return sortDirection === 'asc' ? -1 : 1;
-      }
-      if (aValue > bValue) {
-        return sortDirection === 'asc' ? 1 : -1;
-      }
-      return 0;
-    });    return sorted;
-  }, [characters, sortField, sortDirection]);
+      const { character } = await response.json();
+      
+      setCharacters(prev => 
+        prev.map(c => c.characterId === character.characterId ? character : c)
+      );
+      setEditingCharacter(null);
+      
+    } catch (error) {
+      console.error('Error updating character:', error);
+      throw error;
+    }  };
 
   if (loading) {
     return (
@@ -138,8 +125,7 @@ export default function MyCharactersTable({ }: MyCharactersTableProps) {
       </div>
     );
   }
-
-  if (characters.length === 0) {
+  if (characters.length === 0 && !showCreateForm) {
     return (
       <div className="text-center py-16 bg-base-200 rounded-lg">
         <div className="max-w-md mx-auto space-y-4">
@@ -150,6 +136,13 @@ export default function MyCharactersTable({ }: MyCharactersTableProps) {
           <p className="text-base-content/70">
             {t('noCharacters.subtitle') || 'Start creating characters for your stories to see them here.'}
           </p>
+          <button
+            className="btn btn-primary btn-lg"
+            onClick={() => setShowCreateForm(true)}
+          >
+            <FiPlus className="w-5 h-5 mr-2" />
+            {t('createCharacter') || 'Create Character'}
+          </button>
         </div>
       </div>
     );
@@ -157,61 +150,43 @@ export default function MyCharactersTable({ }: MyCharactersTableProps) {
 
   return (
     <div className="space-y-6">
-      <div className="overflow-x-auto">
-        <table className="table table-zebra w-full">
-          <thead>
-            <tr>
-              <th>
-                <button
-                  className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
-                  onClick={() => handleSort('name')}
-                >
-                  {t('table.name') || 'Name'}
-                  {getSortIcon('name')}
-                </button>
-              </th>
-              <th>
-                <button
-                  className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
-                  onClick={() => handleSort('type')}
-                >
-                  {t('table.type') || 'Type'}
-                  {getSortIcon('type')}
-                </button>
-              </th>
-              <th className="text-center">{t('table.actions') || 'Actions'}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedCharacters.map((character) => (
-              <tr key={character.characterId}>
-                <td className="font-medium">{character.name}</td>
-                <td>{character.type || '-'}</td>
-                <td>
-                  <div className="flex justify-center gap-2">
-                    <button
-                      className="btn btn-ghost btn-sm"
-                      onClick={() => {
-                        // TODO: Implement edit functionality
-                        alert('Edit functionality coming soon!');
-                      }}
-                      title={t('actions.edit') || 'Edit'}
-                    >
-                      <FiEdit3 className="w-4 h-4" />
-                    </button>
-                    <button
-                      className="btn btn-ghost btn-sm text-error hover:bg-error hover:text-error-content"
-                      onClick={() => handleDeleteClick(character)}
-                      title={t('actions.delete') || 'Delete'}
-                    >
-                      <FiTrash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Add Character Button */}
+      {!showCreateForm && !editingCharacter && (
+        <div className="flex justify-end">
+          <button
+            className="btn btn-primary"
+            onClick={() => setShowCreateForm(true)}
+          >
+            <FiPlus className="w-5 h-5 mr-2" />
+            {t('createCharacter') || 'Create Character'}
+          </button>
+        </div>
+      )}
+
+      {/* Character Cards */}
+      <div className="space-y-6">        {/* Existing Characters */}
+        {characters.map((character) => (
+          <CharacterCard
+            key={character.characterId}
+            character={character}
+            mode={editingCharacter?.characterId === character.characterId ? 'edit' : 'view'}
+            onSave={handleUpdateCharacter}
+            onEdit={() => setEditingCharacter(character)}
+            onDelete={async () => handleDeleteClick(character)}
+            onCancel={() => setEditingCharacter(null)}
+          />
+        ))}
+
+        {/* Create New Character Form */}
+        {showCreateForm && (
+          <CharacterCard
+            mode="create"
+            onSave={handleCreateCharacter}
+            onEdit={() => {}}
+            onDelete={async () => {}}
+            onCancel={() => setShowCreateForm(false)}
+          />
+        )}
       </div>
 
       {/* Delete Confirmation Modal */}

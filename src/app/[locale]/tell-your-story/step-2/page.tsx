@@ -13,9 +13,15 @@ export default function Step2Page() {
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
   const [uploadedAudio, setUploadedAudio] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [audioPreview, setAudioPreview] = useState<string | null>(null);
-  const [isCapturing, setIsCapturing] = useState(false);
+  const [audioPreview, setAudioPreview] = useState<string | null>(null);  const [isCapturing, setIsCapturing] = useState(false);
   const [isCreatingStory, setIsCreatingStory] = useState(false);
+  
+  // Debug modal states
+  const [showDebugModal, setShowDebugModal] = useState(false);
+  const [debugRequest, setDebugRequest] = useState<any>(null);
+  const [debugResponse, setDebugResponse] = useState<any>(null);
+  const [isProcessingGenAI, setIsProcessingGenAI] = useState(false);
+  const [storyId, setStoryId] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
@@ -131,7 +137,7 @@ export default function Step2Page() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          title: 'My Story', // Default title - will be updated in later steps
+          title: 'My Story', // Default title - will be updated by GenAI if user provided text
           authorId: userData.authorId,
           plotDescription: storyText || null, // Store any initial text content
         }),
@@ -143,9 +149,32 @@ export default function Step2Page() {
       }
 
       const { story } = await response.json();
+      setStoryId(story.storyId);
       
       // Store the story ID in localStorage for use in subsequent steps
       localStorage.setItem('currentStoryId', story.storyId);
+      
+      // If user provided text content, show debug modal for GenAI processing
+      if (storyText.trim()) {
+        console.log('Preparing GenAI debug modal...');
+        
+        // Get existing characters for this author
+        const charactersResponse = await fetch('/api/characters');
+        const existingCharacters = charactersResponse.ok ? (await charactersResponse.json()).characters || [] : [];
+        
+        // Prepare the debug request data
+        const requestData = {
+          userDescription: storyText,
+          storyId: story.storyId,
+          existingCharacters: existingCharacters
+        };
+        
+        setDebugRequest(requestData);
+        setDebugResponse(null);
+        setIsCreatingStory(false);
+        setShowDebugModal(true);
+        return; // Don't proceed to step 3 yet
+      }
       
       // Store the story content data for use in step-3
       localStorage.setItem('step2Data', JSON.stringify({
@@ -167,6 +196,88 @@ export default function Step2Page() {
     } finally {
       setIsCreatingStory(false);
     }
+  };
+
+  // Debug modal functions
+  const handleSendToGenAI = async () => {
+    if (!debugRequest || !storyId) return;
+    
+    try {
+      setIsProcessingGenAI(true);
+      
+      console.log('Sending to GenAI:', debugRequest);
+      
+      const genaiResponse = await fetch('/api/stories/genai-structure', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userDescription: debugRequest.userDescription,
+          storyId: storyId,
+        }),
+      });
+
+      const responseData = await genaiResponse.json();
+      
+      if (!genaiResponse.ok) {
+        console.error('GenAI processing failed:', responseData);
+        setDebugResponse({
+          error: true,
+          message: responseData.error || 'GenAI processing failed',
+          details: responseData
+        });
+      } else {
+        console.log('GenAI processing successful:', responseData);
+        setDebugResponse({
+          success: true,
+          data: responseData
+        });
+        
+        // Store the GenAI results for potential use in subsequent steps
+        localStorage.setItem('genaiResults', JSON.stringify({
+          story: responseData.story,
+          characters: responseData.characters,
+          processed: true
+        }));
+      }
+      
+    } catch (error) {
+      console.error('Error calling GenAI:', error);
+      setDebugResponse({
+        error: true,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        details: error
+      });
+    } finally {
+      setIsProcessingGenAI(false);
+    }
+  };
+
+  const handleContinueToStep3 = () => {
+    // Store the story content data for use in step-3
+    localStorage.setItem('step2Data', JSON.stringify({
+      text: storyText,
+      hasImage: uploadedImage !== null,
+      hasAudio: uploadedAudio !== null,
+      activeTab: activeTab
+    }));
+    
+    setShowDebugModal(false);
+    router.push('/tell-your-story/step-3');
+  };
+
+  const handleSkipGenAI = () => {
+    // Store the story content data for use in step-3
+    localStorage.setItem('step2Data', JSON.stringify({
+      text: storyText,
+      hasImage: uploadedImage !== null,
+      hasAudio: uploadedAudio !== null,
+      activeTab: activeTab
+    }));
+    
+    setShowDebugModal(false);
+    router.push('/tell-your-story/step-3');
   };
 
   return (
@@ -404,11 +515,11 @@ export default function Step2Page() {
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-8">
                   <div className="flex items-start space-x-3">
                     <div className="text-2xl">💡</div>
-                    <div>
-                      <p className="text-blue-800 font-medium">                        Prefer structured guidance? Continue, and we&apos;ll prompt you for each detail separately!
+                    <div>                      <p className="text-blue-800 font-medium">
+                        Prefer structured guidance? Continue, and we&apos;ll use AI to analyze your story and prompt you for each detail separately!
                       </p>
                       <p className="text-blue-600 text-sm mt-1">
-                        Don&apos;t worry if you haven&apos;t filled everything out perfectly. The next steps will help you refine and enhance your story.
+                        If you&apos;ve written something above, our AI will automatically extract characters, settings, and themes. Otherwise, the next steps will guide you through creating your story step by step.
                       </p>
                     </div>
                   </div>
@@ -419,12 +530,83 @@ export default function Step2Page() {
                   prevHref="/tell-your-story/step-1"
                   nextDisabled={isCreatingStory}
                   onNext={handleNextStep}
-                  nextLabel={isCreatingStory ? "Creating Story..." : (hasContent() ? "Continue with Story" : "Next Chapter")}
-                />
-              </div>
+                  nextLabel={isCreatingStory ? "Processing with AI..." : (hasContent() ? "Continue with Story" : "Next Chapter")}
+                />              </div>
             </div>
           </div>
         </div>
+
+        {/* Debug Modal */}
+        {showDebugModal && (
+          <div className="modal modal-open">
+            <div className="modal-box max-w-4xl">
+              <h3 className="font-bold text-lg mb-4">🔍 GenAI Debug Console</h3>
+              
+              {/* Request Section */}
+              <div className="mb-6">
+                <h4 className="font-semibold text-md mb-2">📤 Request to GenAI:</h4>
+                <div className="bg-base-200 p-4 rounded-lg overflow-auto max-h-40">
+                  <pre className="text-xs whitespace-pre-wrap">
+                    {JSON.stringify(debugRequest, null, 2)}
+                  </pre>
+                </div>
+              </div>
+
+              {/* Send Button */}
+              {!debugResponse && (
+                <div className="mb-6 text-center">
+                  <button 
+                    className={`btn btn-primary btn-lg ${isProcessingGenAI ? 'loading' : ''}`}
+                    onClick={handleSendToGenAI}
+                    disabled={isProcessingGenAI}
+                  >
+                    {isProcessingGenAI ? 'Processing...' : '🚀 Send to GenAI'}
+                  </button>
+                </div>
+              )}
+
+              {/* Response Section */}
+              {debugResponse && (
+                <div className="mb-6">
+                  <h4 className="font-semibold text-md mb-2">
+                    📥 Response from GenAI:
+                    {debugResponse.success && <span className="text-success ml-2">✅ Success</span>}
+                    {debugResponse.error && <span className="text-error ml-2">❌ Error</span>}
+                  </h4>
+                  <div className="bg-base-200 p-4 rounded-lg overflow-auto max-h-60">
+                    <pre className="text-xs whitespace-pre-wrap">
+                      {JSON.stringify(debugResponse, null, 2)}
+                    </pre>
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="modal-action">
+                <button 
+                  className="btn btn-outline" 
+                  onClick={handleSkipGenAI}
+                >
+                  Skip GenAI & Continue
+                </button>
+                {debugResponse && (
+                  <button 
+                    className="btn btn-primary" 
+                    onClick={handleContinueToStep3}
+                  >
+                    Continue to Step 3
+                  </button>
+                )}
+                <button 
+                  className="btn btn-ghost" 
+                  onClick={() => setShowDebugModal(false)}
+                >
+                  Close Debug
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </SignedIn>
     </>
   );

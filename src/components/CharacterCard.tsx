@@ -37,13 +37,13 @@ export default function CharacterCard({
   onEdit, 
   onDelete, 
   onCancel 
-}: CharacterCardProps) {
-  const [formData, setFormData] = useState<Character>({
+}: CharacterCardProps) {  const [formData, setFormData] = useState<Character>({
     name: character?.name || '',
     type: character?.type || 'Boy',
     role: character?.role || 'Main',
     superpowers: character?.superpowers || '',
     passions: character?.passions || '',
+    physicalDescription: character?.physicalDescription || '',
     photoUrl: character?.photoUrl || '',
     ...character
   });
@@ -150,9 +150,7 @@ export default function CharacterCard({
               </label>
               <p className="text-gray-700">{formData.type}</p>
             </div>
-          </div>
-
-          {formData.superpowers && (
+          </div>          {formData.superpowers && (
             <div className="mb-4">
               <label className="label">
                 <span className="label-text font-semibold">Special Powers</span>
@@ -167,6 +165,15 @@ export default function CharacterCard({
                 <span className="label-text font-semibold">Peculiarities</span>
               </label>
               <p className="text-gray-700">{formData.passions}</p>
+            </div>
+          )}
+
+          {formData.physicalDescription && (
+            <div className="mb-4">
+              <label className="label">
+                <span className="label-text font-semibold">Physical Description</span>
+              </label>
+              <p className="text-gray-700">{formData.physicalDescription}</p>
             </div>
           )}
 
@@ -262,9 +269,7 @@ export default function CharacterCard({
             value={formData.superpowers}
             onChange={(e) => handleInputChange('superpowers', e.target.value)}
           />
-        </div>
-
-        <div className="form-control mb-4">
+        </div>        <div className="form-control mb-4">
           <label className="label">
             <span className="label-text font-semibold">Peculiarities</span>
           </label>
@@ -273,6 +278,18 @@ export default function CharacterCard({
             placeholder="Describe funny or quirky traits..."
             value={formData.passions}
             onChange={(e) => handleInputChange('passions', e.target.value)}
+          />
+        </div>
+
+        <div className="form-control mb-4">
+          <label className="label">
+            <span className="label-text font-semibold">Physical Description</span>
+          </label>
+          <textarea
+            className="textarea textarea-bordered h-24"
+            placeholder="Describe how the character looks (hair, eyes, height, clothing, etc.)..."
+            value={formData.physicalDescription}
+            onChange={(e) => handleInputChange('physicalDescription', e.target.value)}
           />
         </div>
 

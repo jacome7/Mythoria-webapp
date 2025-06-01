@@ -93,7 +93,7 @@
     "actions": {
       "edit": "Editar",
       "delete": "Eliminar"
-    },
+    },    "createCharacter": "Criar Personagem",
     "deleteConfirm": {
       "title": "Eliminar Personagem",
       "message": "Tem a certeza de que quer eliminar esta personagem? Esta ação não pode ser desfeita.",
