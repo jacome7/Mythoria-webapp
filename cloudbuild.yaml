@@ -8,6 +8,10 @@ steps:
       - '--build-arg'
       - 'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsubXl0aG9yaWEucHQk'
       - '--build-arg'
+      - 'CLERK_SECRET_KEY=sk_live_8L3AhdA8zaS5FSXSZFcyJDbwlt0F2os7pXmtfNJ6mj'
+      - '--build-arg'
+      - 'CLERK_WEBHOOK_SIGNING_SECRET=whsec_yC4gwWqgOTLRsPwhQMYp5ApvxfL+5lK7'
+      - '--build-arg'
       - 'NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in'
       - '--build-arg'
       - 'NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up'
@@ -17,6 +21,8 @@ steps:
       - 'NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/'
       - '--build-arg'
       - 'NEXT_PUBLIC_CLERK_IS_DEVELOPMENT=false'
+      - '--build-arg'
+      - 'NEXT_PUBLIC_GA_MEASUREMENT_ID=G-86D0QFW197'
       - '--build-arg'
       - 'NEXT_PUBLIC_SHOW_SOON_PAGE=false'
       - '.'
@@ -51,7 +57,7 @@ steps:
       - '--min-instances'
       - '0'
       - '--set-env-vars'
-      - 'NODE_ENV=production,DB_HOST=10.19.192.3,DB_PORT=5432,DB_USER=postgres,DB_PASSWORD=Mythoria1GCould,DB_NAME=mythoria_db,NEXTAUTH_SECRET=56ec0cdd7cc9af80f35aaced38a53e120b1c5e53aef2f8be1b6d8749acf83317,NEXTAUTH_URL=https://mythoria.pt,NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsubXl0aG9yaWEucHQk,CLERK_SECRET_KEY=sk_live_8L3AhdA8zaS5FSXSZFcyJDbwlt0F2os7pXmtfNJ6mj,CLERK_WEBHOOK_SIGNING_SECRET=whsec_yC4gwWqgOTLRsPwhQMYp5ApvxfL+5lK7,NEXT_PUBLIC_CLERK_IS_DEVELOPMENT=false,NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in,NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up,NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/,NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/,INITIAL_USER_CREDITS=5,NEXT_PUBLIC_SHOW_SOON_PAGE=false'
+      - 'NODE_ENV=production,DB_HOST=10.19.192.3,DB_PORT=5432,DB_USER=postgres,DB_PASSWORD=Mythoria1GCould,DB_NAME=mythoria_db,NEXTAUTH_SECRET=56ec0cdd7cc9af80f35aaced38a53e120b1c5e53aef2f8be1b6d8749acf83317,NEXTAUTH_URL=https://mythoria.pt,NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsubXl0aG9yaWEucHQk,CLERK_SECRET_KEY=sk_live_8L3AhdA8zaS5FSXSZFcyJDbwlt0F2os7pXmtfNJ6mj,CLERK_WEBHOOK_SIGNING_SECRET=whsec_yC4gwWqgOTLRsPwhQMYp5ApvxfL+5lK7,NEXT_PUBLIC_CLERK_IS_DEVELOPMENT=false,NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in,NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up,NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/,NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/,INITIAL_USER_CREDITS=5,NEXT_PUBLIC_GA_MEASUREMENT_ID=G-86D0QFW197,NEXT_PUBLIC_SHOW_SOON_PAGE=false'
 
 # Default substitutions
 substitutions:

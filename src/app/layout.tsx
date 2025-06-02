@@ -22,7 +22,8 @@ export default async function RootLayout({
       <html data-theme="autumn" lang="en">
         <head>
           <GoogleAnalytics measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-86D0QFW197'} />
-        </head>        <body>
+        </head>
+        <body>
           <div className="flex flex-col min-h-screen">
             <AnalyticsProvider>
               <main className="flex-grow">{children}</main>

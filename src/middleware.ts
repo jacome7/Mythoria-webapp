@@ -6,8 +6,10 @@ import { NextRequest, NextResponse } from 'next/server';
 const intlMiddleware = createMiddleware(routing);
 
 export default clerkMiddleware((auth, req: NextRequest) => {
-  // Skip internationalization for API routes and admin portal
-  if (req.nextUrl.pathname.startsWith('/api/') || req.nextUrl.pathname.startsWith('/portaldegestao')) {
+  // Skip internationalization for API routes, admin portal, and test pages
+  if (req.nextUrl.pathname.startsWith('/api/') || 
+      req.nextUrl.pathname.startsWith('/portaldegestao') ||
+      req.nextUrl.pathname.startsWith('/clerk-test')) {
     return NextResponse.next();
   }
   
