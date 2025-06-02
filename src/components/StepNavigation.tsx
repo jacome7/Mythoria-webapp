@@ -23,8 +23,8 @@ const StepNavigation = ({
   onNext,
   onPrev,
   nextDisabled = false,
-  nextLabel = 'Next Chapter',
-  prevLabel = 'Previous Chapter'
+  nextLabel = 'Next', // Changed default
+  prevLabel = 'Prev'  // Changed default
 }: StepNavigationProps) => {
   const router = useRouter();
   const handleNext = async () => {
@@ -53,10 +53,10 @@ const StepNavigation = ({
         {prevHref ? (
           <Link 
             href={prevHref} 
-            className="btn btn-outline btn-lg"
+            className="btn btn-outline btn-md md:btn-lg" // Responsive button size
             onClick={handlePrev}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 md:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"> {/* Responsive icon margin */}
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             {prevLabel}
@@ -67,27 +67,28 @@ const StepNavigation = ({
       </div>
 
       <div className="text-sm text-gray-500">
-        Step {currentStep} of {totalSteps}
-      </div>      <div>
+        {currentStep}/{totalSteps} {/* Compact step display */}
+      </div>
+      <div>
         {nextHref && onNext ? (
           <button 
             onClick={handleNext}
             disabled={nextDisabled}
-            className={`btn btn-primary btn-lg ${nextDisabled ? 'btn-disabled' : ''}`}
+            className={`btn btn-primary btn-md md:btn-lg ${nextDisabled ? 'btn-disabled' : ''}`} // Responsive button size
           >
-            {currentStep === totalSteps - 1 ? 'Finish Story' : nextLabel}
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            {currentStep === totalSteps - 1 ? 'Finish' : nextLabel} {/* Shortened "Finish Story" */}
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1 md:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"> {/* Responsive icon margin */}
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
         ) : nextHref ? (
           <Link 
             href={nextHref} 
-            className={`btn btn-primary btn-lg ${nextDisabled ? 'btn-disabled' : ''}`}
+            className={`btn btn-primary btn-md md:btn-lg ${nextDisabled ? 'btn-disabled' : ''}`} // Responsive button size
             onClick={handleNext}
           >
-            {currentStep === totalSteps - 1 ? 'Finish Story' : nextLabel}
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            {currentStep === totalSteps - 1 ? 'Finish' : nextLabel} {/* Shortened "Finish Story" */}
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1 md:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"> {/* Responsive icon margin */}
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </Link>
@@ -95,10 +96,10 @@ const StepNavigation = ({
           <button 
             onClick={handleNext}
             disabled={nextDisabled}
-            className={`btn btn-primary btn-lg ${nextDisabled ? 'btn-disabled' : ''}`}
+            className={`btn btn-primary btn-md md:btn-lg ${nextDisabled ? 'btn-disabled' : ''}`} // Responsive button size
           >
-            {currentStep === totalSteps - 1 ? 'Finish Story' : nextLabel}
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            {currentStep === totalSteps - 1 ? 'Finish' : nextLabel} {/* Shortened "Finish Story" */}
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1 md:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"> {/* Responsive icon margin */}
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>

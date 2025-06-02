@@ -11,7 +11,8 @@ const Footer = () => {
     <footer className="bg-base-200 text-base-content p-10">
       <div className="container mx-auto">
         {/* Main footer content with left and right sections */}
-        <div className="flex flex-col md:flex-row justify-between items-start mb-8">          <div className="mb-6 md:mb-0">
+        <div className="flex flex-col md:flex-row justify-between items-start mb-8">
+          <div className="mb-6 md:mb-0">
             <div className="max-w-sm">
               <p className="text-xs text-left mb-2">
                 {t('aboutFounder')}
@@ -21,10 +22,10 @@ const Footer = () => {
           </div>
 
           {/* Right section - Social icons and links */}
-          <div className="flex flex-col items-end">
+          <div className="w-full md:w-auto flex flex-col items-center md:items-end">
             {/* Social icons */}
             <div className="mb-4">
-              <div className="flex gap-4">
+              <div className="flex gap-4 justify-center md:justify-end">
                 <a href="" target="_blank" rel="noopener noreferrer" className="link link-hover">
                   <FaFacebook size={24} />
                 </a>
@@ -41,12 +42,16 @@ const Footer = () => {
                   <FaYoutube size={24} />
                 </a>
               </div>
-            </div>            {/* Links */}
-            <div className="flex flex-col items-end gap-2">
+            </div>
+            
+            {/* Links */}
+            <div className="flex flex-col items-center md:items-end gap-2">
               <Link href="/privacy-policy" className="link link-hover text-sm">{t('privacyPolicy')}</Link>
             </div>
           </div>
-        </div>        {/* Copyright at the bottom */}
+        </div>
+
+        {/* Copyright at the bottom */}
         <div className="border-t border-base-300 pt-4 text-center text-xs">
           <p className="text-xs">&copy; {currentYear} {t('copyright')}</p>
         </div>

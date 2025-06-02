@@ -360,17 +360,38 @@ export default function Step2Page() {
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             {/* Progress indicator */}
-            <div className="mb-8">
-              <ul className="steps steps-horizontal w-full">
-                <li className="step step-primary" data-content="1"></li>
-                <li className="step step-primary" data-content="2"></li>
-                <li className="step" data-content="3"></li>
-                <li className="step" data-content="4"></li>
-                <li className="step" data-content="5"></li>
-                <li className="step" data-content="6"></li>
-                <li className="step" data-content="7"></li>
-              </ul>
-            </div>
+            {(() => {
+              const currentStep = 2;
+              const totalSteps = 7;
+              return (
+                <>
+                  {/* Mobile Progress Indicator */}
+                  <div className="block md:hidden mb-8">
+                    <div className="text-center text-sm text-gray-600 mb-2">
+                      Step {currentStep} of {totalSteps}
+                    </div>
+                    <progress 
+                      className="progress progress-primary w-full" 
+                      value={currentStep} 
+                      max={totalSteps}
+                    ></progress>
+                  </div>
+
+                  {/* Desktop Progress Indicator */}
+                  <div className="hidden md:block mb-8">
+                    <ul className="steps steps-horizontal w-full">
+                      <li className="step step-primary" data-content="1"></li>
+                      <li className="step step-primary" data-content="2"></li>
+                      <li className="step" data-content="3"></li>
+                      <li className="step" data-content="4"></li>
+                      <li className="step" data-content="5"></li>
+                      <li className="step" data-content="6"></li>
+                      <li className="step" data-content="7"></li>
+                    </ul>
+                  </div>
+                </>
+              );
+            })()}
 
             {/* Step content */}
             <div className="card bg-base-100 shadow-xl">
@@ -385,21 +406,21 @@ export default function Step2Page() {
                 {/* Tabs and Content Wrapper */}
                 <div>
                   {/* Tab Navigation */}
-                  <div className="tabs">
+                  <div className="tabs w-full"> {/* Added w-full */}
                     <a
-                      className={`tab tab-lifted py-3 w-48 text-center ${activeTab === 'text' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
+                      className={`tab tab-lifted py-3 flex-1 text-center ${activeTab === 'text' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
                       onClick={() => setActiveTab('text')}
                     >
                       ✍️ Write
                     </a>
                     <a
-                      className={`tab tab-lifted py-3 w-48 text-center ${activeTab === 'image' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
+                      className={`tab tab-lifted py-3 flex-1 text-center ${activeTab === 'image' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
                       onClick={() => setActiveTab('image')}
                     >
-                      📸 Draw/Photo
+                      📸 Image
                     </a>
                     <a
-                      className={`tab tab-lifted py-3 w-48 text-center ${activeTab === 'audio' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
+                      className={`tab tab-lifted py-3 flex-1 text-center ${activeTab === 'audio' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
                       onClick={() => setActiveTab('audio')}
                     >
                       🎤 Record
@@ -407,7 +428,7 @@ export default function Step2Page() {
                   </div>
 
                   {/* Tab Content */}
-                  <div className="border border-base-300 rounded-b-md p-6 bg-base-100 shadow min-h-96">
+                  <div className="border border-base-300 rounded-b-md p-4 md:p-6 bg-base-100 shadow min-h-96"> {/* Changed p-6 to p-4 md:p-6 */}
                     {/* Text Area Tab Content */}
                     {activeTab === 'text' && (
                       <div className="space-y-4">
@@ -423,7 +444,7 @@ export default function Step2Page() {
                             onChange={(e) => setStoryText(e.target.value)}
                           />
                           <label className="label">
-                            <span className="label-text-alt">Write as much or as little as you&apos;d like. You can always edit this later!</span>
+                            <span className="label-text-alt block w-full">Write as much or as little as you&apos;d like. You can always edit this later!</span>
                           </label>
                         </div>
                       </div>
@@ -522,7 +543,9 @@ export default function Step2Page() {
                         />
                         <canvas ref={canvasRef} className="hidden" />
                       </div>
-                    )}                    {/* Audio Upload Tab Content */}
+                    )}
+                    
+                    {/* Audio Upload Tab Content */}
                     {activeTab === 'audio' && (
                       <div className="space-y-6">
                         {!audioPreview && !isRecording && (
@@ -627,10 +650,8 @@ export default function Step2Page() {
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-8">
                   <div className="flex items-start space-x-3">
                     <div className="text-2xl">💡</div>
-                    <div>                      <p className="text-blue-800 font-medium">
-                      Prefer structured guidance? Continue, and we&apos;ll use AI to analyze your story content and prompt you for each detail separately!
-                    </p>
-                      <p className="text-blue-600 text-sm mt-1">
+                    <div>
+                      <p className="text-blue-800 text-sm mt-1">
                         If you&apos;ve written text or uploaded an image above, our AI will automatically extract characters, settings, and themes. Otherwise, the next steps will guide you through creating your story step by step.
                       </p>
                     </div>
@@ -644,7 +665,8 @@ export default function Step2Page() {
                   nextDisabled={isCreatingStory}
                   onNext={handleNextStep}
                   nextLabel={isCreatingStory ? "Processing with AI..." : (hasContent() ? "Continue with Story" : "Next Chapter")}
-                />              </div>
+                />
+              </div>
             </div>
           </div>
         </div>

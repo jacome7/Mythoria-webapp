@@ -142,7 +142,9 @@ export default function MyStoriesTable() {
   }, [stories, sortField, sortDirection]);
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
+    const date = new Date(dateString);
+    // Shorter date format: M/D/YY
+    return `${date.getMonth() + 1}/${date.getDate()}/${String(date.getFullYear()).slice(-2)}`;
   };
 
   const getStatusBadgeClass = (status: string) => {
@@ -187,7 +189,7 @@ export default function MyStoriesTable() {
             <table className="table table-zebra w-full">
               <thead>
                 <tr>
-                  <th>
+                  <th className="px-2 py-1 md:px-4 md:py-2">
                     <button
                       className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
                       onClick={() => handleSort('createdAt')}
@@ -196,7 +198,7 @@ export default function MyStoriesTable() {
                       {getSortIcon('createdAt')}
                     </button>
                   </th>
-                  <th>
+                  <th className="px-2 py-1 md:px-4 md:py-2">
                     <button
                       className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
                       onClick={() => handleSort('title')}
@@ -205,7 +207,7 @@ export default function MyStoriesTable() {
                       {getSortIcon('title')}
                     </button>
                   </th>
-                  <th>
+                  <th className="px-2 py-1 md:px-4 md:py-2">
                     <button
                       className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
                       onClick={() => handleSort('status')}
@@ -214,21 +216,21 @@ export default function MyStoriesTable() {
                       {getSortIcon('status')}
                     </button>
                   </th>
-                  <th className="text-center">{t('table.actions')}</th>
+                  <th className="text-center px-2 py-1 md:px-4 md:py-2">{t('table.actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {sortedStories.map((story) => (
                   <tr key={story.storyId}>
-                    <td>{formatDate(story.createdAt)}</td>
-                    <td className="font-medium">{story.title}</td>
-                    <td>
+                    <td className="px-2 py-1 md:px-4 md:py-2">{formatDate(story.createdAt)}</td>
+                    <td className="font-medium px-2 py-1 md:px-4 md:py-2">{story.title}</td>
+                    <td className="px-2 py-1 md:px-4 md:py-2">
                       <span className={getStatusBadgeClass(story.status)}>
                         {t(`status.${story.status}`)}
                       </span>
                     </td>
-                    <td>
-                      <div className="flex justify-center gap-2">
+                    <td className="pl-2 pr-1 py-1 md:px-4 md:py-2">
+                      <div className="flex justify-center gap-0.5">
                         <button
                           className="btn btn-ghost btn-sm"
                           onClick={() => handleShare(story)}

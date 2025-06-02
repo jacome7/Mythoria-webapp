@@ -62,7 +62,7 @@ export default function PricingPage() {
 				{/* Header Section */}
 				<header className="text-center mb-16">
 					<h1 className="text-5xl font-bold text-primary">Our Pricing</h1>
-					<p className="text-xl mt-4 text-gray-300">Simple, flexible, and designed for your storytelling needs.</p>
+					<p className="text-xl mt-4 text-gray-700">Simple, flexible, and designed for your storytelling needs.</p>
 				</header>
 
 				{/* Credit Packages Section */}
@@ -137,7 +137,7 @@ export default function PricingPage() {
 						<FaGift className="text-7xl text-accent mb-6 lg:mb-0 lg:mr-10" />
 						<div>
 							<h2 className="text-3xl font-bold mb-4">Why a Credit-Based System?</h2>
-							<ul className="list-disc list-inside space-y-2 text-gray-300">
+							<ul className="list-disc list-inside space-y-2 text-gray-700">
 								<li><strong>Flexibility:</strong> Purchase credits in bundles and use them for any service, anytime.</li>
 								<li><strong>Savings:</strong> Enjoy better value with larger credit packages. The more you buy, the more you save!</li>
 								<li><strong>Gifting Made Easy:</strong> Credits can be a perfect gift for friends and family, allowing them to choose their own storytelling adventure. (Gifting feature coming soon!)</li>
@@ -192,15 +192,17 @@ export default function PricingPage() {
 				{/* Final CTA Section */}
 				<section className="my-16 text-center">
 					<h2 className="text-4xl font-bold mb-6">Ready to Start Your Storytelling Adventure?</h2>
-					<p className="mb-8 text-xl max-w-2xl mx-auto text-gray-300">
+					<p className="mb-8 text-xl max-w-2xl mx-auto text-gray-700">
 						Grab some credits and begin crafting unique, personalized stories today. Give a gift that will be cherished for a lifetime!
 					</p>
-					<Link href="/#buy-credits" className="btn btn-primary btn-lg mr-4">
-						Get Credits Now
-					</Link>
-					<Link href="/create" className="btn btn-accent btn-lg">
-						Create Your Story
-					</Link>
+					<div className="flex flex-col sm:flex-row justify-center items-center">
+						<Link href="/#buy-credits" className="btn btn-primary btn-lg mb-4 sm:mb-0 sm:mr-4 w-full sm:w-auto">
+							Get Credits Now
+						</Link>
+						<Link href="/create" className="btn btn-accent btn-lg w-full sm:w-auto">
+							Create Your Story
+						</Link>
+					</div>
 				</section>
 
 			</div>

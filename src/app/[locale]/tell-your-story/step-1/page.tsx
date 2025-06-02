@@ -104,20 +104,40 @@ export default function Step1Page() {  const [, setAuthorData] = useState<Author
         </div>
       </SignedOut>
 
-      <SignedIn>
-        <div className="max-w-4xl mx-auto">
+      <SignedIn>        <div className="max-w-4xl mx-auto">
           {/* Progress indicator */}
-          <div className="mb-8">
-            <ul className="steps steps-horizontal w-full">
-              <li className="step step-primary" data-content="1"></li>
-              <li className="step" data-content="2"></li>
-              <li className="step" data-content="3"></li>
-              <li className="step" data-content="4"></li>
-              <li className="step" data-content="5"></li>
-              <li className="step" data-content="6"></li>
-              <li className="step" data-content="7"></li>
-            </ul>
-          </div>
+          {(() => {
+            const currentStep = 1;
+            const totalSteps = 7;
+            return (
+              <>
+                {/* Mobile Progress Indicator */}
+                <div className="block md:hidden mb-8">
+                  <div className="text-center text-sm text-gray-600 mb-2">
+                    Step {currentStep} of {totalSteps}
+                  </div>
+                  <progress 
+                    className="progress progress-primary w-full" 
+                    value={currentStep} 
+                    max={totalSteps}
+                  ></progress>
+                </div>
+
+                {/* Desktop Progress Indicator */}
+                <div className="hidden md:block mb-8">
+                  <ul className="steps steps-horizontal w-full">
+                    <li className="step step-primary" data-content="1"></li>
+                    <li className="step" data-content="2"></li>
+                    <li className="step" data-content="3"></li>
+                    <li className="step" data-content="4"></li>
+                    <li className="step" data-content="5"></li>
+                    <li className="step" data-content="6"></li>
+                    <li className="step" data-content="7"></li>
+                  </ul>
+                </div>
+              </>
+            );
+          })()}
 
           {/* Step content */}
           <div className="card bg-base-100 shadow-xl">

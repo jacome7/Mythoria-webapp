@@ -71,11 +71,11 @@ export default function MyStoriesPage() {
       <SignedIn>
         {/* Header Section */}
         <div className="space-y-6">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4">
             <h1 className="text-4xl font-bold">
               {t('title')}, {authorName}!
             </h1>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-row items-center gap-2 md:gap-4">
               <CreditsDisplay credits={credits} />
               <Link href="/tell-your-story/step-1" className="btn btn-primary">
                 <FiPlus className="w-5 h-5 mr-2" />
@@ -89,13 +89,13 @@ export default function MyStoriesPage() {
             {/* Tabs */}
             <div className="tabs">
               <a
-                className={`tab tab-lifted py-3 w-52 text-center ${activeTab === 'stories' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
+                className={`tab tab-lifted py-3 flex-1 text-center ${activeTab === 'stories' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
                 onClick={() => setActiveTab('stories')}
               >
                 {t('tabs.myStories') || 'My Stories'}
               </a>
               <a
-                className={`tab tab-lifted py-3 w-52 text-center ${activeTab === 'characters' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
+                className={`tab tab-lifted py-3 flex-1 text-center ${activeTab === 'characters' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
                 onClick={() => setActiveTab('characters')}
               >
                 {t('tabs.myCharacters') || 'My Characters'}
@@ -103,7 +103,7 @@ export default function MyStoriesPage() {
             </div>
 
             {/* Tab Content */}
-            <div className="border border-base-300 rounded-b-md p-6 bg-base-100 shadow">
+            <div className="border border-base-300 rounded-b-md p-2 md:p-6 bg-base-100 shadow">
               {activeTab === 'stories' ? (
                 <MyStoriesTable />
               ) : (
