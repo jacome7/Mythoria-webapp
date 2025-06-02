@@ -17,13 +17,13 @@ export default function AdminHeader() {
           />
         </Link>
       </div>
-      
-      <div className="navbar-center">
+        <div className="navbar-center">
         <ul className="menu menu-horizontal px-1">
           <li><Link href="/portaldegestao">Dashboard</Link></li>
           <li><Link href="/portaldegestao/users">Users</Link></li>
           <li><Link href="/portaldegestao/stories">Stories</Link></li>
           <li><Link href="/portaldegestao/payments">Payments</Link></li>
+          <li><Link href="/portaldegestao/pricing">Pricing</Link></li>
         </ul>
       </div>
 

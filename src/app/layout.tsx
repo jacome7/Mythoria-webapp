@@ -3,6 +3,8 @@ import {
   ClerkProvider,
 } from "@clerk/nextjs";
 import { enUS } from '@clerk/localizations';
+import GoogleAnalytics from "../components/GoogleAnalytics";
+import AnalyticsProvider from "../components/AnalyticsProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -18,9 +20,13 @@ export default async function RootLayout({
   return (
     <ClerkProvider localization={enUS}>
       <html data-theme="autumn" lang="en">
-        <body>
+        <head>
+          <GoogleAnalytics measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-86D0QFW197'} />
+        </head>        <body>
           <div className="flex flex-col min-h-screen">
-            <main className="flex-grow">{children}</main>
+            <AnalyticsProvider>
+              <main className="flex-grow">{children}</main>
+            </AnalyticsProvider>
           </div>
         </body>
       </html>

@@ -1,12 +1,22 @@
 import { db } from '@/db';
 import { pricing, type Pricing, type NewPricing } from '@/db/schema';
-import { eq, and, inArray } from 'drizzle-orm';
+import { eq, and, inArray, desc } from 'drizzle-orm';
 
 // -----------------------------------------------------------------------------
 // Pricing Service
 // -----------------------------------------------------------------------------
 
 export class PricingService {
+  /**
+   * Get all pricing entries (including inactive ones - for admin)
+   */
+  async getAllPricing(): Promise<Pricing[]> {
+    return await db
+      .select()
+      .from(pricing)
+      .orderBy(desc(pricing.createdAt));
+  }
+
   /**
    * Get all active pricing entries
    */
