@@ -185,6 +185,212 @@
       "tagline": "A Mythoria é mais do que apenas um livro: é a sua própria história."
     }
   },
+  "PrivacyPolicy": {
+    "title": "Política de Privacidade",
+    "atAGlance": {
+      "title": "Resumo",
+      "summary1": "A Mythoria solicita apenas os dados mínimos necessários para abrir uma conta (nome, e-mail e telefone) e para criar histórias personalizadas a partir dos prompts que fornece.",
+      "summary2": "Todo o conteúdo é armazenado em centros de dados da Google Cloud baseados na UE; os prompts das histórias são retransmitidos para a API Enterprise da OpenAI, que os mantém por ≤ 30 dias apenas para detectar abuso e nunca os usa para treinar modelos públicos, a menos que opte por isso. Pode eliminar a sua conta a qualquer momento e, exceto para arquivos legais (ex.: faturas), os seus dados pessoais desaparecem dos sistemas ativos em 30 dias.",
+      "summary3": "Abaixo pode ler todas as divulgações obrigatórias do RGPD, regras de privacidade para crianças (idade de consentimento digital português 13 anos), detalhes sobre cookies e os seus direitos."
+    },
+    "section1": {
+      "title": "1. Quem somos",
+      "controller": {
+        "title": "Responsável pelo tratamento",
+        "company": "Aventuras Contemporâneas, Lda.",
+        "address": "Rua Cais do Lugan, nº 224, 2.º Direito, 4400-492 Vila Nova de Gaia, Portugal",
+        "email": "E-mail (geral): geral@mythoria.pt",
+        "privacy": "Questões de privacidade / exercício de direitos: privacy@mythoria.pt",
+        "dpo": "Encarregado da Proteção de Dados: dpo@mythoria.pt (Art. 37 RGPD)"
+      },
+      "authority": {
+        "title": "Autoridade de supervisão",
+        "contact": "Comissão Nacional de Proteção de Dados (CNPD) – Av. D. Carlos I, 134, 1º, 1200-651 Lisboa, geral@cnpd.pt"
+      }
+    },
+    "section2": {
+      "title": "2. Âmbito desta Política",
+      "content": "Este aviso aplica-se a mythoria.pt e a qualquer aplicação móvel ou de desktop com a marca \"Mythoria\". Não cobre links externos que têm os seus próprios termos de privacidade."
+    },
+    "section3": {
+      "title": "3. Que dados recolhemos",
+      "table": {
+        "category": "Categoria",
+        "examples": "Exemplos",
+        "source": "Fonte",
+        "rows": {
+          "account": {
+            "category": "Dados da conta",
+            "examples": "Nome, e-mail, telemóvel",
+            "source": "Utilizador fornece"
+          },
+          "story": {
+            "category": "Inputs das histórias",
+            "examples": "Prompts de texto, nomes de personagens, imagens que carrega",
+            "source": "Utilizador fornece"
+          },
+          "generated": {
+            "category": "Conteúdo gerado",
+            "examples": "As histórias/livros que a nossa IA lhe devolve",
+            "source": "Criado pelo serviço"
+          },
+          "usage": {
+            "category": "Logs de utilização e telemetria",
+            "examples": "Endereço IP, tipo de navegador, ID do dispositivo, timestamps",
+            "source": "Recolhido automaticamente"
+          },
+          "cookies": {
+            "category": "Cookies / armazenamento local",
+            "examples": "ver § 7",
+            "source": "Navegador"
+          }
+        }
+      },
+      "note": "Pedimos que não inclua dados de categoria especial (saúde, biometria, opiniões políticas, etc.). Se inserir dados pessoais de terceiros, confirma que tem uma base legal para o fazer (Art. 14 RGPD)."
+    },
+    "section4": {
+      "title": "4. Por que processamos os seus dados e bases legais",
+      "table": {
+        "purpose": "Finalidade",
+        "data": "Dados",
+        "legalBasis": "Base legal (Art. 6 RGPD)",
+        "rows": {
+          "stories": {
+            "purpose": "Criar e entregar histórias personalizadas",
+            "data": "Dados da conta, inputs das histórias, conteúdo gerado",
+            "legalBasis": "Contrato – para fornecer o serviço que solicitou"
+          },
+          "account": {
+            "purpose": "Administração da conta e segurança",
+            "data": "Dados da conta, logs",
+            "legalBasis": "Interesse legítimo em executar um serviço seguro (considerando 47)"
+          },
+          "abuse": {
+            "purpose": "Prevenção de abuso e filtragem de spam",
+            "data": "Inputs das histórias brevemente analisados pela OpenAI",
+            "legalBasis": "Interesse legítimo"
+          },
+          "analytics": {
+            "purpose": "Análises e melhoria do produto",
+            "data": "Logs de utilização, dados agregados de cookies",
+            "legalBasis": "Consentimento via banner de cookies (§ 7)"
+          },
+          "legal": {
+            "purpose": "Conformidade legal e faturação",
+            "data": "Dados da conta, pagamentos (se aplicável)",
+            "legalBasis": "Obrigação legal (lei fiscal)"
+          }
+        }
+      },
+      "note": "A OpenAI e o Google atuam como processadores sob o Art. 28 RGPD; detalhes no § 5."
+    },
+    "section5": {
+      "title": "5. Divulgação de IA e Nuvem",
+      "openai": {
+        "title": "API Enterprise da OpenAI",
+        "description": "Os prompts e outputs das histórias transitam para o endpoint da OpenAI na UE. São armazenados no máximo 30 dias para detectar abuso e não são usados para treinar modelos da OpenAI por padrão."
+      },
+      "google": {
+        "title": "Google Cloud",
+        "description": "Todas as bases de dados e armazenamento de ficheiros situam-se na multi-região da europa. O Google baseia-se nas Cláusulas Contratuais Padrão da Comissão para qualquer transferência fora do EEE."
+      },
+      "note": "Nenhum outro terceiro recebe dados identificáveis a menos que integre explicitamente serviços opcionais (ex.: pagamento, lista de correio), caso em que esses processadores serão listados aqui antes da ativação."
+    },
+    "section6": {
+      "title": "6. Privacidade de crianças",
+      "content": "Portugal fixou a idade de consentimento digital em 13 anos: se um utilizador for mais novo, um pai ou tutor deve autorizar o processamento (Lei 58/2019, art. 16). As histórias da Mythoria podem visar crianças, mas as contas devem ser criadas por alguém com 13+ anos e, quando necessário, com consentimento dos pais."
+    },
+    "section7": {
+      "title": "7. Cookies e tecnologias similares",
+      "table": {
+        "cookie": "Cookie / chave de armazenamento",
+        "purpose": "Finalidade",
+        "expiry": "Expiração",
+        "consent": "Consentimento necessário?",
+        "rows": {
+          "session": {
+            "cookie": "myth_session",
+            "purpose": "Mantê-lo ligado",
+            "expiry": "Sessão",
+            "consent": "Não (estritamente necessário)"
+          },
+          "auth": {
+            "cookie": "__Secure-next-auth.session-token",
+            "purpose": "Autenticar chamadas API",
+            "expiry": "1 dia",
+            "consent": "Não"
+          },
+          "analytics": {
+            "cookie": "_ga, _gid (Google Analytics)",
+            "purpose": "Estatísticas agregadas de utilização",
+            "expiry": "13 meses / 24 h",
+            "consent": "Sim"
+          },
+          "consent": {
+            "cookie": "cookie_consent",
+            "purpose": "Lembrar as suas preferências",
+            "expiry": "6 meses",
+            "consent": "Não"
+          }
+        }
+      },
+      "note": "O banner mostrado na primeira visita segue as Diretrizes de Consentimento EDPB 05/2020 e o relatório da Task-force do Cookie-Banner (caixas pré-selecionadas estão desativadas, botão de rejeição está na primeira camada)."
+    },
+    "section8": {
+      "title": "8. Por quanto tempo mantemos os seus dados",
+      "table": {
+        "dataSet": "Conjunto de dados",
+        "retention": "Regra de retenção",
+        "rows": {
+          "account": {
+            "dataSet": "Dados da conta ativa",
+            "retention": "Enquanto a conta está ativa + 30 dias, depois eliminados ou anonimizados"
+          },
+          "openai": {
+            "dataSet": "Prompts e outputs das histórias na OpenAI",
+            "retention": "≤ 30 dias (processador)"
+          },
+          "logs": {
+            "dataSet": "Logs do servidor",
+            "retention": "90 dias para auditorias de segurança"
+          },
+          "backups": {
+            "dataSet": "Cópias de segurança",
+            "retention": "Encriptadas, ciclo rotativo de 30 dias"
+          },
+          "financial": {
+            "dataSet": "Registos financeiros/Faturas",
+            "retention": "10 anos (Decreto-Lei 28/2019)"
+          }
+        }
+      }
+    },
+    "section9": {
+      "title": "9. Medidas de segurança",
+      "content": "Implementamos controlos alinhados com a ISO 27001: encriptação em trânsito (TLS 1.3) e em repouso (AES-256), acesso de menor privilégio, MFA para pessoal, atualizações automatizadas e testes de penetração anuais. A resposta a incidentes segue as regras de notificação de violação do Art. 33 RGPD."
+    },
+    "section10": {
+      "title": "10. Os seus direitos",
+      "content": "Pode aceder, corrigir, apagar, restringir, objetar ou portar os seus dados pessoais e retirar o consentimento a qualquer momento. Pedidos enviados para dpo@mythoria.pt são respondidos dentro de um mês (Art. 12 RGPD). Se acredita que os seus direitos foram infringidos, pode apresentar uma queixa junto da CNPD (contactos no § 1)."
+    },
+    "section11": {
+      "title": "11. Transferências internacionais",
+      "content1": "Quando os dados saem do EEE (ex.: para servidores de recuperação de desastres da OpenAI localizados nos EUA), as transferências são cobertas por:",
+      "list": {
+        "item1": "Cláusulas Contratuais Padrão (Google Cloud, OpenAI)",
+        "item2": "Encriptação e controlos de acesso rigorosos (§ 9)."
+      }
+    },
+    "section12": {
+      "title": "12. Alterações a esta Política",
+      "content": "Podemos atualizar este aviso para refletir mudanças legais ou técnicas. Se as mudanças forem materiais, enviaremos um e-mail aos titulares de contas e mostraremos um banner na aplicação pelo menos 15 dias antes de entrarem em vigor. O histórico de versões é mantido no topo desta página."
+    },
+    "section13": {
+      "title": "13. Contacto",
+      "content": "Questões sobre privacidade? Envie um e-mail para dpo@mythoria.pt ou escreva para o endereço no § 1. Estamos aqui para ajudar!"
+    },
+    "lastUpdated": "Última atualização: 2 de junho de 2025"
+  },
   "EmailSignup": {
     "title": "Seja Notificado Quando Lançarmos!",
     "subtitle": "Seja o primeiro a saber quando a Mythoria estiver disponível e comece a criar as suas histórias mágicas.",

@@ -7,8 +7,21 @@ export default getRequestConfig(async ({requestLocale}) => {
    // Ensure that a valid locale is used
   if (!locale || !routing.locales.includes(locale as (typeof routing.locales)[number])) {
     locale = routing.defaultLocale;
-  }  return {
+  }
+
+  // Load and merge messages from different domain files
+  const [commonMessages, publicPagesMessages, privacyPolicyMessages] = await Promise.all([
+    import(`../messages/${locale}/common.json`).then(module => module.default),
+    import(`../messages/${locale}/publicPages.json`).then(module => module.default),
+    import(`../messages/${locale}/privacy-policy.json`).then(module => module.default)
+  ]);
+
+  return {
     locale: locale as string,
-    messages: (await import(`../messages/${locale}.json`)).default
+    messages: {
+      ...commonMessages,
+      ...publicPagesMessages,
+      ...privacyPolicyMessages
+    }
   };
 });

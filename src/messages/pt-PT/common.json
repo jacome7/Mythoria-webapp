@@ -1,0 +1,44 @@
+{
+  "Header": {
+    "navigation": {
+      "homepage": "Página Inicial",
+      "getInspired": "Inspire-se",
+      "tellYourStory": "Conte a Sua História",
+      "myStories": "As Minhas Histórias",
+      "pricing": "Preços",
+      "dashboard": "Painel"
+    },
+    "auth": {
+      "signIn": "Entrar",
+      "signUp": "Registar"
+    },
+    "logoAlt": "Logótipo Mythoria"
+  },
+  "Footer": {
+    "aboutFounder": "O meu nome é Rodrigo, tenho quase 18 anos e adoro ouvir histórias desde pequeno.",
+    "readMyStory": "Leia a minha própria história",
+    "privacyPolicy": "Política de Privacidade",
+    "copyright": "Aventuras Contemporâneas, Lda - Todos os direitos reservados"
+  },
+  "EmailSignup": {
+    "title": "Seja Notificado Quando Lançarmos!",
+    "subtitle": "Seja o primeiro a saber quando a Mythoria estiver disponível e comece a criar as suas histórias mágicas.",
+    "form": {
+      "placeholder": "Introduza o seu endereço de email",
+      "button": "Notificar-me"
+    },
+    "validation": {
+      "emailRequired": "Por favor, introduza o seu endereço de email",
+      "emailInvalid": "Por favor, introduza um endereço de email válido"
+    },
+    "errors": {
+      "general": "Algo correu mal. Por favor, tente novamente.",
+      "network": "Erro de rede. Por favor, verifique a sua ligação e tente novamente."
+    },
+    "messages": {
+      "success": "Obrigado pelo seu interesse! Iremos notificá-lo assim que a Mythoria estiver disponível.",
+      "alreadyRegistered": "Uau, está mesmo ansioso para experimentar a Mythoria. Fique descansado que iremos notificá-lo quando lançarmos!"
+    },
+    "privacy": "Respeitamos a sua privacidade. Sem spam, apenas notificações de lançamento."
+  }
+}

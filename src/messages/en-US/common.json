@@ -1,0 +1,44 @@
+{
+  "Header": {
+    "navigation": {
+      "homepage": "Homepage",
+      "getInspired": "Get Inspired",
+      "tellYourStory": "Tell Your Story",
+      "myStories": "My Stories",
+      "pricing": "Pricing",
+      "dashboard": "Dashboard"
+    },
+    "auth": {
+      "signIn": "Sign In",
+      "signUp": "Sign Up"
+    },
+    "logoAlt": "Mythoria Logo"
+  },
+  "Footer": {
+    "aboutFounder": "My name is Rodrigo, I'm almost 18 years old and I love listening to stories since I was little.",
+    "readMyStory": "Read my own story",
+    "privacyPolicy": "Privacy Policy",
+    "copyright": "Aventuras Contemporâneas, Lda - All rights reserved"
+  },
+  "EmailSignup": {
+    "title": "Get Notified When We Launch!",
+    "subtitle": "Be the first to know when Mythoria becomes available and start creating your magical stories.",
+    "form": {
+      "placeholder": "Enter your email address",
+      "button": "Notify Me"
+    },
+    "validation": {
+      "emailRequired": "Please enter your email address",
+      "emailInvalid": "Please enter a valid email address"
+    },
+    "errors": {
+      "general": "Something went wrong. Please try again.",
+      "network": "Network error. Please check your connection and try again."
+    },
+    "messages": {
+      "success": "Thank you for your interest! We'll notify you as soon as Mythoria is available.",
+      "alreadyRegistered": "Wow, you are really eager to experience Mythoria. Rest assured we will notify you when we launch!"
+    },
+    "privacy": "We respect your privacy. No spam, just launch notifications."
+  }
+}

@@ -1,0 +1,217 @@
+{
+  "SignInPage": {
+    "hero": {
+      "title": "Welcome to Mythoria",
+      "subtitle": "Continue your storytelling journey. Sign in to access your magical stories and characters.",
+      "firstTimeMessage": "If this is your first time here, ",
+      "signUpLink": "sign up and join",
+      "signUpSuffix": " the Mythoria Universe today."
+    },
+    "features": {
+      "unlimitedStories": "✨ Create unlimited stories",
+      "characterLibrary": "📚 Manage your character library",
+      "customizeAdventures": "🎨 Customize your adventures"
+    },
+    "form": {
+      "title": "Sign In",
+      "subtitle": "Enter your credentials to continue your story"
+    }
+  },
+  "SignUpPage": {
+    "hero": {
+      "title": "Join the Mythoria Universe",
+      "subtitle": "Start your magical storytelling adventure. Create personalized stories that bring your imagination to life."
+    },
+    "features": {
+      "firstStoryFree": "🌟 Create your first story for free",
+      "uniqueCharacters": "👥 Build unique characters",
+      "publishedBooks": "📖 Get published books delivered",
+      "unlimitedCreativity": "🎭 Unlimited creativity"
+    },
+    "form": {
+      "title": "Create Account",
+      "subtitle": "Start your storytelling journey today"
+    }
+  },
+  "MyStoriesPage": {
+    "title": "Hello",
+    "writeNewStory": "Write New Story",
+    "tabs": {
+      "myStories": "My Stories",
+      "myCharacters": "My Characters"
+    },
+    "noStories": {
+      "title": "Your collection of stories is waiting to begin! 📚✨",
+      "subtitle": "Every great storyteller started with a single tale. Ready to write your first magical adventure?",
+      "action": "Start Your First Story"
+    },
+    "table": {
+      "date": "Date",
+      "title": "Title",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "draft": "Draft",
+      "writing": "Writing",
+      "published": "Published"
+    },
+    "actions": {
+      "share": "Share",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "deleteConfirm": {
+      "title": "Delete Story",
+      "message": "Are you sure you want to delete this story? This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    }
+  },
+  "MyCharactersPage": {
+    "noCharacters": {
+      "title": "You don't have any characters yet!",
+      "subtitle": "Start creating characters for your stories to see them here."
+    },
+    "table": {
+      "name": "Name",
+      "type": "Type",
+      "actions": "Actions"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "createCharacter": "Create Character",
+    "deleteConfirm": {
+      "title": "Delete Character",
+      "message": "Are you sure you want to delete this character? This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    }
+  },
+  "HomePage": {
+    "title": "Welcome",
+    "hero": {
+      "writeYourOwn": "Write your own",
+      "subtitle": "Create AI-powered, personalized stories that bring your imagination to life. Perfect for kids, adults, and even your company!",
+      "tryItNow": "Try it now"
+    },
+    "words": [
+      "Story", "Adventure", "Memory", "Chronicle", "Fiction", "Fable", 
+      "Odyssey", "Prose", "Book", "Novel", "Romance", 
+      "Manuscript", "Tale", "Fiction", "Myth"
+    ],
+    "comingSoon": {
+      "title": "Our story is just beginning...",
+      "subtitle": "Mythoria is crafting something magical! I'm working hard, alongside AI, to bring you a new world of personalized storytelling. Stay tuned, the adventure will be available soon! 🧙‍♂️📚✨"
+    },
+    "audiences": {
+      "kids": {
+        "title": "For Kids 🎈",
+        "description": "Turn your child, grandchild, nephew, or niece into the hero of their own magical adventure!",
+        "button": "Create for Kids"
+      },
+      "adults": {
+        "title": "For Adults ❤️",
+        "description": "Ever felt like your life could be a book? Bring your memories and adventures to life in a beautifully illustrated book. Share the story of how you met your soulmate or relive unforgettable moments with friends and family.",
+        "button": "Create for Adults"
+      },
+      "companies": {
+        "title": "For Companies 🌟",
+        "description": "Delight your employees' children with personalized storybooks that uniquely highlight your brand.",
+        "button": "Contact Us"
+      }
+    },
+    "howItWorks": {
+      "title": "With Mythoria, creating your own story is easy:",
+      "steps": {
+        "step1": {
+          "title": "Choose your character(s)",
+          "description": "Select your children, grandchildren, or any special young person in your life."
+        },
+        "step2": {
+          "title": "Tell us about their passions and superpowers",
+          "description": "What do they love? What makes them unique? This is where the magic begins!"
+        },
+        "step3": {
+          "title": "Choose your adventure",
+          "description": "Pick from our collection of magical adventures or create your own."
+        },
+        "step4": {
+          "title": "Receive your personalized book",
+          "description": "In just a few minutes, your story will be ready. You can read it digitally or order a physical copy."
+        }
+      }
+    },
+    "features": {
+      "title": "Why choose Mythoria?",
+      "feature1": {
+        "title": "100% Personalized",
+        "description": "Every story is unique and created just for you."
+      },
+      "feature2": {
+        "title": "AI-Powered",
+        "description": "Our artificial intelligence creates magical and engaging stories."
+      },
+      "feature3": {
+        "title": "Beautiful Illustrations",
+        "description": "Each story comes with stunning, custom illustrations."
+      },
+      "feature4": {
+        "title": "Physical Books",
+        "description": "Turn your digital story into a real book you can hold and treasure."
+      }
+    },
+    "testimonials": {
+      "title": "What our families are saying",
+      "testimonial1": {
+        "quote": "My daughter absolutely loved seeing herself as the main character in her adventure. It's something she'll treasure forever!",
+        "author": "Maria S., mother of 2"
+      },
+      "testimonial2": {
+        "quote": "The quality of the story and illustrations exceeded our expectations. Mythoria has created something truly special.",
+        "author": "João P., grandfather"
+      }
+    },
+    "cta": {
+      "title": "Ready to create your story?",
+      "subtitle": "Join thousands of families who have already discovered the magic of Mythoria.",
+      "button": "Start Creating"
+    }
+  },
+  "AboutUs": {
+    "title": "About Mythoria",
+    "mission": {
+      "title": "Our Mission",
+      "content": "At Mythoria, we believe every person has a unique story worth telling. Our mission is to democratize storytelling by using AI to help anyone create beautiful, personalized narratives that capture their memories, dreams, and imagination."
+    },
+    "story": {
+      "title": "Our Story",
+      "content": "Mythoria was born from a simple idea: what if we could use technology to help people become the authors of their own adventures? Founded by storytelling enthusiasts and AI experts, we're passionate about bridging the gap between imagination and reality."
+    },
+    "values": {
+      "title": "Our Values",
+      "creativity": {
+        "title": "Creativity First",
+        "description": "We believe in the power of imagination and strive to amplify human creativity through technology."
+      },
+      "personalization": {
+        "title": "Personal Touch",
+        "description": "Every story should be as unique as the person living it. We ensure each narrative is deeply personal and meaningful."
+      },
+      "quality": {
+        "title": "Quality Craftsmanship",
+        "description": "From writing to illustrations to printing, we maintain the highest standards in everything we create."
+      },
+      "accessibility": {
+        "title": "Stories for Everyone",
+        "description": "Great storytelling shouldn't be limited by technical skills or resources. We make it accessible to all."
+      }
+    },
+    "team": {
+      "title": "Meet the Team",
+      "description": "Our diverse team of writers, AI specialists, designers, and dreamers is united by a shared passion for storytelling and innovation."
+    }
+  }
+}

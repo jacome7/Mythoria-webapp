@@ -1,0 +1,217 @@
+{
+  "SignInPage": {
+    "hero": {
+      "title": "Bem-vindo à Mythoria",
+      "subtitle": "Continue a sua jornada de narrativa. Entre para aceder às suas histórias e personagens mágicas.",
+      "firstTimeMessage": "Se é a primeira vez aqui, ",
+      "signUpLink": "registe-se e junte-se",
+      "signUpSuffix": " ao Universo Mythoria hoje."
+    },
+    "features": {
+      "unlimitedStories": "✨ Crie histórias ilimitadas",
+      "characterLibrary": "📚 Gira a sua biblioteca de personagens",
+      "customizeAdventures": "🎨 Personalize as suas aventuras"
+    },
+    "form": {
+      "title": "Entrar",
+      "subtitle": "Introduza as suas credenciais para continuar a sua história"
+    }
+  },
+  "SignUpPage": {
+    "hero": {
+      "title": "Junte-se ao Universo Mythoria",
+      "subtitle": "Inicie a sua aventura mágica de narrativa. Crie histórias personalizadas que dão vida à sua imaginação."
+    },
+    "features": {
+      "firstStoryFree": "🌟 Crie a sua primeira história gratuitamente",
+      "uniqueCharacters": "👥 Construa personagens únicas",
+      "publishedBooks": "📖 Receba livros publicados entregues",
+      "unlimitedCreativity": "🎭 Criatividade ilimitada"
+    },
+    "form": {
+      "title": "Criar Conta",
+      "subtitle": "Comece hoje a sua jornada de narrativa"
+    }
+  },
+  "MyStoriesPage": {
+    "title": "Olá",
+    "writeNewStory": "Escrever Nova História",
+    "tabs": {
+      "myStories": "As Minhas Histórias",
+      "myCharacters": "As Minhas Personagens"
+    },
+    "noStories": {
+      "title": "A sua coleção de histórias está à espera de começar! 📚✨",
+      "subtitle": "Todos os grandes contadores de histórias começaram com uma única narrativa. Pronto para escrever a sua primeira aventura mágica?",
+      "action": "Comece a Sua Primeira História"
+    },
+    "table": {
+      "date": "Data",
+      "title": "Título",
+      "status": "Estado",
+      "actions": "Ações"
+    },
+    "status": {
+      "draft": "Rascunho",
+      "writing": "A Escrever",
+      "published": "Publicado"
+    },
+    "actions": {
+      "share": "Partilhar",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar História",
+      "message": "Tem a certeza de que quer eliminar esta história? Esta ação não pode ser desfeita.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar"
+    }
+  },
+  "MyCharactersPage": {
+    "noCharacters": {
+      "title": "Ainda não tem personagens!",
+      "subtitle": "Comece a criar personagens para as suas histórias para as ver aqui."
+    },
+    "table": {
+      "name": "Nome",
+      "type": "Tipo",
+      "actions": "Ações"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Eliminar"
+    },
+    "createCharacter": "Criar Personagem",
+    "deleteConfirm": {
+      "title": "Eliminar Personagem",
+      "message": "Tem a certeza de que quer eliminar esta personagem? Esta ação não pode ser desfeita.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar"
+    }
+  },
+  "HomePage": {
+    "title": "Bem-vindo",
+    "hero": {
+      "writeYourOwn": "Escreva a sua própria",
+      "subtitle": "Crie histórias personalizadas e alimentadas por IA que dão vida à sua imaginação. Perfeito para crianças, adultos e até para a sua empresa!",
+      "tryItNow": "Experimente agora"
+    },
+    "words": [
+      "História", "Aventura", "Memória", "Crónica",  "Ficção", "Fábula", 
+      "Odisseia", "Prosa", "Livro", "Romance", "Romance", 
+      "Manuscrito", "Conto", "Ficção", "Mito"
+    ],
+    "comingSoon": {
+      "title": "A nossa história está apenas a começar...",
+      "subtitle": "A Mythoria está a preparar algo mágico! Estou a trabalhar arduamente, juntamente com a IA, para lhe trazer um novo mundo de histórias personalizadas. Fique atento, a aventura estará disponível em breve! 🧙‍♂️📚✨"
+    },
+    "audiences": {
+      "kids": {
+        "title": "Para Crianças 🎈",
+        "description": "Transforme o seu filho, neto, sobrinho ou sobrinha no herói da sua própria aventura mágica!",
+        "button": "Criar para Crianças"
+      },
+      "adults": {
+        "title": "Para Adultos ❤️",
+        "description": "Alguma vez sentiu que a sua vida poderia ser um livro? Dê vida às suas memórias e aventuras num livro lindamente ilustrado. Partilhe a história de como conheceu a sua cara-metade ou reviva momentos inesquecíveis com amigos e família.",
+        "button": "Criar para Adultos"
+      },
+      "companies": {
+        "title": "Para Empresas 🌟",
+        "description": "Deleite os filhos dos seus funcionários com livros de histórias personalizadas que destacam de forma única a sua marca.",
+        "button": "Contacte-nos"
+      }
+    },
+    "howItWorks": {
+      "title": "Com a Mythoria, criar a sua própria história é fácil:",
+      "steps": {
+        "step1": {
+          "title": "Escolha a(s) sua(s) personagem(ns)",
+          "description": "Selecione os seus filhos, netos ou qualquer jovem especial na sua vida."
+        },
+        "step2": {
+          "title": "Conte-nos sobre as suas paixões e superpoderes",
+          "description": "O que eles adoram? O que os torna únicos? É aqui que a magia começa!"
+        },
+        "step3": {
+          "title": "Escolha a sua aventura",
+          "description": "Escolha da nossa coleção de aventuras mágicas ou crie a sua própria."
+        },
+        "step4": {
+          "title": "Receba o seu livro personalizado",
+          "description": "Em apenas alguns minutos, a sua história estará pronta. Pode lê-la digitalmente ou encomendar uma cópia física."
+        }
+      }
+    },
+    "features": {
+      "title": "Porquê escolher a Mythoria?",
+      "feature1": {
+        "title": "100% Personalizada",
+        "description": "Cada história é única e criada especialmente para si."
+      },
+      "feature2": {
+        "title": "Alimentada por IA",
+        "description": "A nossa inteligência artificial cria histórias mágicas e envolventes."
+      },
+      "feature3": {
+        "title": "Ilustrações Lindas",
+        "description": "Cada história vem com ilustrações personalizadas deslumbrantes."
+      },
+      "feature4": {
+        "title": "Livros Físicos",
+        "description": "Transforme a sua história digital num livro real que pode segurar e guardar."
+      }
+    },
+    "testimonials": {
+      "title": "O que as nossas famílias estão a dizer",
+      "testimonial1": {
+        "quote": "A minha filha adorou ver-se como a personagem principal na sua aventura. É algo que ela guardará para sempre!",
+        "author": "Maria S., mãe de 2"
+      },
+      "testimonial2": {
+        "quote": "A qualidade da história e das ilustrações superou as nossas expectativas. A Mythoria criou algo verdadeiramente especial.",
+        "author": "João P., avô"
+      }
+    },
+    "cta": {
+      "title": "Pronto para criar a sua história?",
+      "subtitle": "Junte-se a milhares de famílias que já descobriram a magia da Mythoria.",
+      "button": "Começar a Criar"
+    }
+  },
+  "AboutUs": {
+    "title": "Sobre a Mythoria",
+    "mission": {
+      "title": "A Nossa Missão",
+      "content": "Na Mythoria, acreditamos que cada pessoa tem uma história única que vale a pena contar. A nossa missão é democratizar a narrativa, usando IA para ajudar qualquer pessoa a criar narrativas belas e personalizadas que capturam as suas memórias, sonhos e imaginação."
+    },
+    "story": {
+      "title": "A Nossa História",
+      "content": "A Mythoria nasceu de uma ideia simples: e se pudéssemos usar a tecnologia para ajudar as pessoas a tornarem-se os autores das suas próprias aventuras? Fundada por entusiastas da narrativa e especialistas em IA, somos apaixonados por fazer a ponte entre a imaginação e a realidade."
+    },
+    "values": {
+      "title": "Os Nossos Valores",
+      "creativity": {
+        "title": "Criatividade Primeiro",
+        "description": "Acreditamos no poder da imaginação e esforçamo-nos por amplificar a criatividade humana através da tecnologia."
+      },
+      "personalization": {
+        "title": "Toque Pessoal",
+        "description": "Cada história deve ser tão única quanto a pessoa que a vive. Garantimos que cada narrativa é profundamente pessoal e significativa."
+      },
+      "quality": {
+        "title": "Artesanato de Qualidade",
+        "description": "Da escrita às ilustrações e impressão, mantemos os mais altos padrões em tudo o que criamos."
+      },
+      "accessibility": {
+        "title": "Histórias para Todos",
+        "description": "A grande narrativa não deve ser limitada por competências técnicas ou recursos. Tornamo-la acessível a todos."
+      }
+    },
+    "team": {
+      "title": "Conheça a Equipa",
+      "description": "A nossa equipa diversa de escritores, especialistas em IA, designers e sonhadores está unida por uma paixão partilhada pela narrativa e inovação."
+    }
+  }
+}

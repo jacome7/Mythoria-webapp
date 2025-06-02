@@ -1,13 +1,13 @@
 'use client';
 
 import { useUser, useAuth } from '@clerk/nextjs';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface TestResult {
   name: string;
   status: 'pending' | 'success' | 'error';
   message: string;
-  details?: any;
+  details?: Record<string, unknown> | string | number | boolean;
 }
 
 export default function ClerkCredentialsTestPage() {
@@ -15,8 +15,7 @@ export default function ClerkCredentialsTestPage() {
   const { isSignedIn, isLoaded: authLoaded } = useAuth();
   const [tests, setTests] = useState<TestResult[]>([]);
   const [isRunning, setIsRunning] = useState(false);
-
-  const updateTest = (name: string, status: TestResult['status'], message: string, details?: any) => {
+  const updateTest = (name: string, status: TestResult['status'], message: string, details?: Record<string, unknown> | string | number | boolean) => {
     setTests(prev => prev.map(test => 
       test.name === name 
         ? { ...test, status, message, details }
@@ -35,8 +34,7 @@ export default function ClerkCredentialsTestPage() {
     ];
     setTests(initialTests);
   };
-
-  const runTests = async () => {
+  const runTests = useCallback(async () => {
     setIsRunning(true);
     initializeTests();
 
@@ -68,8 +66,8 @@ export default function ClerkCredentialsTestPage() {
         lastName: user.lastName,
         emailAddresses: user.emailAddresses.length,
         phoneNumbers: user.phoneNumbers.length,
-        createdAt: user.createdAt,
-        lastSignInAt: user.lastSignInAt,
+        createdAt: user.createdAt?.toISOString(),
+        lastSignInAt: user.lastSignInAt?.toISOString(),
       };
       updateTest('User Data Retrieval', 'success', 'User data retrieved successfully', userData);
     } else {
@@ -124,13 +122,12 @@ export default function ClerkCredentialsTestPage() {
     }
 
     setIsRunning(false);
-  };
-
+  }, [userLoaded, authLoaded, isSignedIn, user]);
   useEffect(() => {
     if (userLoaded && authLoaded) {
       runTests();
     }
-  }, [userLoaded, authLoaded]);
+  }, [userLoaded, authLoaded, runTests]);
 
   const getStatusIcon = (status: TestResult['status']) => {
     switch (status) {
