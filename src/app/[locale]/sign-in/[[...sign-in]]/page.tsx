@@ -65,9 +65,8 @@ export default function SignInPage() {
               <p className="text-gray-600">
                 {t('form.subtitle')}
               </p>
-            </div>            <SignIn
-              fallbackRedirectUrl="/my-stories"
-              signUpFallbackRedirectUrl="/my-stories"
+            </div>
+            <SignIn
               appearance={{
                 elements: {
                   formButtonPrimary: 

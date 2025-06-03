@@ -36,15 +36,13 @@ export async function POST(req: NextRequest) {
     return new Response('Error occurred -- no svix headers', {
       status: 400,
     });
-  }
-  // Get the body
+  }  // Get the body
   const payload = await req.text();
 
   // Create a new Svix instance with your secret.
-  const wh = new Webhook(process.env.CLERK_WEBHOOK_SIGNING_SECRET!);
+  const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET!);
 
   let evt: WebhookEvent;
-
   // Verify the payload with the headers
   try {
     evt = wh.verify(payload, {
@@ -54,7 +52,13 @@ export async function POST(req: NextRequest) {
     }) as WebhookEvent;
   } catch (err) {
     console.error('Error verifying webhook:', err);
-    return new Response('Error occurred', {
+    console.error('Webhook verification details:', {
+      hasWebhookSecret: !!process.env.CLERK_WEBHOOK_SECRET,
+      hasWebhookSigningSecret: !!process.env.CLERK_WEBHOOK_SIGNING_SECRET,
+      payloadLength: payload.length,
+      headers: { svix_id, svix_timestamp, svix_signature }
+    });
+    return new Response(`Webhook verification failed: ${err instanceof Error ? err.message : String(err)}`, {
       status: 400,
     });
   }
