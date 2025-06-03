@@ -98,9 +98,21 @@
       "tryItNow": "Experimente agora"
     },
     "words": [
-      "História", "Aventura", "Memória", "Crónica",  "Ficção", "Fábula", 
-      "Odisseia", "Prosa", "Livro", "Romance", "Romance", 
-      "Manuscrito", "Conto", "Ficção", "Mito"
+      "História",
+      "Aventura",
+      "Memória",
+      "Crónica",
+      "Ficção",
+      "Fábula",
+      "Odisseia",
+      "Prosa",
+      "Livro",
+      "Romance",
+      "Romance",
+      "Manuscrito",
+      "Conto",
+      "Ficção",
+      "Mito"
     ],
     "comingSoon": {
       "title": "A nossa história está apenas a começar...",
@@ -141,8 +153,20 @@
         "step4": {
           "title": "Receba o seu livro personalizado",
           "description": "Em apenas alguns minutos, a sua história estará pronta. Pode lê-la digitalmente ou encomendar uma cópia física."
+        },
+        "step5": {
+          "title": "Personalize completamente com detalhes únicos!",
+          "description": "Escreva ou simplesmente fale sobre todos os pequenos detalhes que gostaria de incluir. Inclua até produtos específicos, serviços ou tradições familiares significativas."
+        },
+        "step6": {
+          "title": "Escolha o formato do seu presente",
+          "description": "Receba a sua história personalizada como um belo livro de capa dura, um ebook digital ou um audiolivro envolvente."
         }
-      }
+      },
+      "conclusion": "Nós tratamos de todo o resto, alimentado pela magia da Inteligência Artificial!"
+    },
+    "community": {
+      "title": "Junte-se à Nossa Crescente Comunidade de Contadores de Histórias!"
     },
     "features": {
       "title": "Porquê escolher a Mythoria?",
@@ -181,37 +205,21 @@
     }
   },
   "AboutUs": {
-    "title": "Sobre a Mythoria",
-    "mission": {
-      "title": "A Nossa Missão",
-      "content": "Na Mythoria, acreditamos que cada pessoa tem uma história única que vale a pena contar. A nossa missão é democratizar a narrativa, usando IA para ajudar qualquer pessoa a criar narrativas belas e personalizadas que capturam as suas memórias, sonhos e imaginação."
-    },
-    "story": {
-      "title": "A Nossa História",
-      "content": "A Mythoria nasceu de uma ideia simples: e se pudéssemos usar a tecnologia para ajudar as pessoas a tornarem-se os autores das suas próprias aventuras? Fundada por entusiastas da narrativa e especialistas em IA, somos apaixonados por fazer a ponte entre a imaginação e a realidade."
-    },
-    "values": {
-      "title": "Os Nossos Valores",
-      "creativity": {
-        "title": "Criatividade Primeiro",
-        "description": "Acreditamos no poder da imaginação e esforçamo-nos por amplificar a criatividade humana através da tecnologia."
-      },
-      "personalization": {
-        "title": "Toque Pessoal",
-        "description": "Cada história deve ser tão única quanto a pessoa que a vive. Garantimos que cada narrativa é profundamente pessoal e significativa."
-      },
-      "quality": {
-        "title": "Artesanato de Qualidade",
-        "description": "Da escrita às ilustrações e impressão, mantemos os mais altos padrões em tudo o que criamos."
-      },
-      "accessibility": {
-        "title": "Histórias para Todos",
-        "description": "A grande narrativa não deve ser limitada por competências técnicas ou recursos. Tornamo-la acessível a todos."
-      }
-    },
-    "team": {
-      "title": "Conheça a Equipa",
-      "description": "A nossa equipa diversa de escritores, especialistas em IA, designers e sonhadores está unida por uma paixão partilhada pela narrativa e inovação."
+    "title": "Olá! O meu nome é Rodrigo e tenho quase 18 anos.",
+    "imageAlt": "Rodrigo - Fundador da Mythoria",
+    "paragraphs": {
+      "p1": "Cresci fascinado pelas aventuras que o meu pai inventava, histórias que alimentaram a minha imaginação e me ensinaram que cada um de nós pode ser o herói de aventuras incríveis.",
+      "p2": "Hoje, não só gosto de ouvir histórias, como também adoro criá-las. Sou apaixonado por Inteligência Artificial e descobri que a IA pode ajudar a construir mundos fantásticos e personagens inesquecíveis. Gosto particularmente de criar histórias para contar ao meu irmão mais novo, transformando cada narrativa numa experiência única e pessoal.",
+      "p3": "Quando usei o ChatGPT pela primeira vez, fiquei espantado com o potencial desta tecnologia. Desde então, tenho explorado as infinitas possibilidades que a IA oferece para personalizar e melhorar a narrativa.",
+      "p4": "Será que um jovem de 17 anos consegue criar uma empresa inovadora usando apenas Inteligência Artificial? Impulsionado por esta ambição e curiosidade, nasceu a Mythoria—um projeto dedicado à criação de livros totalmente personalizados, onde cada criança se torna o herói da sua própria aventura.",
+      "tagline": "A Mythoria é mais do que apenas um livro: é a sua própria história."
+    }
+  },  "GetInspiredPage": {
+    "gallery": {
+      "title": "Histórias em Destaque",
+      "subtitle": "Histórias que inspiraram famílias em todo o mundo",
+      "viewStory": "Ver História",
+      "createdBy": "Criado por"
     }
   }
 }
