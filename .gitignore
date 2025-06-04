@@ -23,13 +23,25 @@
 /build
 /dist
 
-# Environment variables
+# Environment variables - ALL variations
 .env
+.env.*
+!.env.*.template
+!.env.*.example
 .env.local
 .env.production
-.env.production.yaml
-.env.development.local
-.env.test.local
+.env.production.*
+!.env.production.template
+.env.development
+.env.development.*
+.env.staging
+.env.staging.*
+.env.test
+.env.test.*
+*.env
+environment.json
+config.json
+secrets.json
 
 # IDE
 .vscode/
