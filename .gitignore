@@ -136,6 +136,34 @@ docker-compose.override.yml
 # Cloud Build
 .gcloudignore
 
+# Deployment configurations with sensitive data
+*.deployment.yaml
+*.deployment.yml
+*-deployment.yaml
+*-deployment.yml
+cloud-run-config*.yaml
+cloud-run-config*.yml
+cloudbuild*.yaml
+cloudbuild*.yml
+docker-compose*.yaml
+docker-compose*.yml
+kubernetes/*.yaml
+kubernetes/*.yml
+k8s/*.yaml
+k8s/*.yml
+helm/values*.yaml
+helm/values*.yml
+deploy/*.yaml
+deploy/*.yml
+deployment/*.yaml
+deployment/*.yml
+
+# Service account keys and configs
+service-account-key*.json
+gcp-key*.json
+aws-credentials*.json
+azure-credentials*.json
+
 # Certificates
 *.pem
 *.key

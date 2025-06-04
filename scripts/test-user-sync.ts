@@ -31,10 +31,9 @@ const mockClerkUser: ClerkUserForSync = {
 async function testUserSync() {
   console.log('🧪 Testing User Synchronization...\n');
   
-  try {
-    // Test 1: Create a new user
+  try {    // Test 1: Create a new user (with login time update)
     console.log('Test 1: Creating new user...');
-    const newUser = await authorService.syncUserOnSignIn(mockClerkUser);
+    const newUser = await authorService.syncUserOnSignIn(mockClerkUser, true);
     console.log('✅ New user created:', {
       authorId: newUser.authorId,
       clerkUserId: newUser.clerkUserId,
@@ -46,17 +45,26 @@ async function testUserSync() {
     
     // Wait a moment to see timestamp difference
     await new Promise(resolve => setTimeout(resolve, 2000));
+      // Test 2: Get existing user without updating login time (API call simulation)
+    console.log('\nTest 2: Getting existing user without login time update...');
+    const existingUser = await authorService.syncUserOnSignIn(mockClerkUser, false);
+    console.log('✅ User retrieved without login update:', {
+      authorId: existingUser.authorId,
+      lastLoginAt: existingUser.lastLoginAt,
+      loginTimeChanged: existingUser.lastLoginAt && newUser.lastLoginAt 
+        ? existingUser.lastLoginAt.getTime() !== newUser.lastLoginAt.getTime()
+        : existingUser.lastLoginAt !== newUser.lastLoginAt
+    });
     
-    // Test 2: Update existing user (should update lastLoginAt)
-    console.log('\nTest 2: Updating existing user login time...');
-    const updatedUser = await authorService.syncUserOnSignIn(mockClerkUser);
+    // Test 3: Update existing user login time (webhook simulation)
+    console.log('\nTest 3: Updating existing user login time via webhook...');
+    const updatedUser = await authorService.syncUserOnSignIn(mockClerkUser, true);
     console.log('✅ User login time updated:', {
       authorId: updatedUser.authorId,
       lastLoginAt: updatedUser.lastLoginAt
     });
-    
-    // Test 3: Test display name building
-    console.log('\nTest 3: Testing display name building...');
+      // Test 4: Test display name building
+    console.log('\nTest 4: Testing display name building...');
     
     const testCases = [
       { firstName: 'John', lastName: 'Doe', expected: 'John Doe' },

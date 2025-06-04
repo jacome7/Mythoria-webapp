@@ -5,6 +5,7 @@ import {
 import { enUS } from '@clerk/localizations';
 import GoogleAnalytics from "../components/GoogleAnalytics";
 import AnalyticsProvider from "../components/AnalyticsProvider";
+import ClerkDebugMonitor from "../components/ClerkDebugMonitor";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -17,8 +18,28 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Debugging configuration for Clerk
+  const isDebugMode = process.env.CLERK_DEBUG === 'true';
+  const telemetryDebug = process.env.NEXT_PUBLIC_CLERK_TELEMETRY_DEBUG === 'true';
+  
+  if (isDebugMode) {
+    console.log('[Clerk Debug] Environment configuration:', {
+      publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.substring(0, 20) + '...',
+      debugMode: isDebugMode,
+      logLevel: process.env.CLERK_LOG_LEVEL,
+      telemetryDisabled: process.env.NEXT_PUBLIC_CLERK_TELEMETRY_DISABLED,
+      telemetryDebug: telemetryDebug,
+      signInUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL,
+      signUpUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL,
+    });
+  }
+
   return (
-    <ClerkProvider localization={enUS}>
+    <ClerkProvider 
+      localization={enUS}
+      // Debug configuration is handled via environment variables
+      // Additional debugging props would go here if supported by the version
+    >
       <html data-theme="autumn" lang="en">
         <head>
           <GoogleAnalytics measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-86D0QFW197'} />
@@ -28,6 +49,10 @@ export default async function RootLayout({
             <AnalyticsProvider>
               <main className="flex-grow">{children}</main>
             </AnalyticsProvider>
+            {/* Only show debug monitor in development with debug mode enabled */}
+            {process.env.NODE_ENV === 'development' && isDebugMode && (
+              <ClerkDebugMonitor />
+            )}
           </div>
         </body>
       </html>
