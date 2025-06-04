@@ -137,14 +137,11 @@ docker-compose.override.yml
 .gcloudignore
 
 # Deployment configurations with sensitive data
-*.deployment.yaml
-*.deployment.yml
-*-deployment.yaml
-*-deployment.yml
-cloud-run-config-*.yaml
-cloud-run-config-*.yml
-cloudbuild*.yaml
-cloudbuild*.yml
+
+*deployment.yaml
+*deployment.yml
+cloud-run-config-*.y*
+cloudbuild*.y*
 !*.template.yaml
 !*.template.yml
 docker-compose*.yaml
