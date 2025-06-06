@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { getSession } from '@auth0/nextjs-auth0';
+import { auth0 } from '@/lib/auth0';
 import { authorService, storyService } from '@/db/services';
 
 export async function GET(request: Request) {
   try {
     // Check if user is authenticated and authorized
-    const session = await getSession(request);
+    const session = await auth0.getSession();
     if (!session || !session.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

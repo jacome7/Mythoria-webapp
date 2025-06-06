@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@auth0/nextjs-auth0';
+import { auth0 } from '@/lib/auth0';
 import { pricingService } from '@/db/services';
 
 export async function PUT(
@@ -9,7 +9,7 @@ export async function PUT(
   try {
     const { id } = await params;
     // Check if user is authenticated and authorized
-    const session = await getSession(request);
+    const session = await auth0.getSession();
     if (!session || !session.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

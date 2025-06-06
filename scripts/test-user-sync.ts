@@ -4,10 +4,10 @@
  */
 
 import { authorService } from '../src/db/services';
-import { ClerkUserForSync } from '../src/types/clerk';
+import { Auth0UserForSync } from '../src/types/auth0';
 
-// Mock Clerk user data for testing
-const mockClerkUser: ClerkUserForSync = {
+// Mock Auth0 user data for testing
+const mockAuth0User: Auth0UserForSync = {
   id: 'test_user_123',
   emailAddresses: [
     {
@@ -30,13 +30,11 @@ const mockClerkUser: ClerkUserForSync = {
 
 async function testUserSync() {
   console.log('🧪 Testing User Synchronization...\n');
-  
-  try {    // Test 1: Create a new user (with login time update)
+    try {    // Test 1: Create a new user (with login time update)
     console.log('Test 1: Creating new user...');
-    const newUser = await authorService.syncUserOnSignIn(mockClerkUser, true);
-    console.log('✅ New user created:', {
+    const newUser = await authorService.syncUserOnSignIn(mockAuth0User);    console.log('✅ New user created:', {
       authorId: newUser.authorId,
-      clerkUserId: newUser.clerkUserId,
+      clerkUserId: newUser.clerkUserId, // Currently stored as clerkUserId in schema
       displayName: newUser.displayName,
       email: newUser.email,
       mobilePhone: newUser.mobilePhone,
@@ -44,21 +42,18 @@ async function testUserSync() {
     });
     
     // Wait a moment to see timestamp difference
-    await new Promise(resolve => setTimeout(resolve, 2000));
-      // Test 2: Get existing user without updating login time (API call simulation)
-    console.log('\nTest 2: Getting existing user without login time update...');
-    const existingUser = await authorService.syncUserOnSignIn(mockClerkUser, false);
-    console.log('✅ User retrieved without login update:', {
+    await new Promise(resolve => setTimeout(resolve, 2000));    // Test 2: Sync existing user again (will update login time)
+    console.log('\nTest 2: Syncing existing user...');
+    const existingUser = await authorService.syncUserOnSignIn(mockAuth0User);    console.log('✅ User retrieved with updated login time:', {
       authorId: existingUser.authorId,
       lastLoginAt: existingUser.lastLoginAt,
       loginTimeChanged: existingUser.lastLoginAt && newUser.lastLoginAt 
         ? existingUser.lastLoginAt.getTime() !== newUser.lastLoginAt.getTime()
         : existingUser.lastLoginAt !== newUser.lastLoginAt
     });
-    
-    // Test 3: Update existing user login time (webhook simulation)
-    console.log('\nTest 3: Updating existing user login time via webhook...');
-    const updatedUser = await authorService.syncUserOnSignIn(mockClerkUser, true);
+      // Test 3: Test another sync (will update login time again)
+    console.log('\nTest 3: Syncing user again...');
+    const updatedUser = await authorService.syncUserOnSignIn(mockAuth0User);
     console.log('✅ User login time updated:', {
       authorId: updatedUser.authorId,
       lastLoginAt: updatedUser.lastLoginAt

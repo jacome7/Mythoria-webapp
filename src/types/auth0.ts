@@ -22,7 +22,7 @@ export interface Auth0UserForSync {
 }
 
 export interface AuthorSyncData {
-  clerkUserId: string; // Will contain Auth0 user ID
+  auth0UserId: string; // Auth0 user ID (renamed from clerkUserId)
   email: string;
   displayName: string;
   mobilePhone?: string;

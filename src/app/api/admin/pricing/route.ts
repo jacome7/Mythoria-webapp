@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@auth0/nextjs-auth0';
+import { auth0 } from '@/lib/auth0';
 import { pricingService } from '@/db/services';
 
 export async function GET(request: NextRequest) {
@@ -10,17 +10,17 @@ export async function GET(request: NextRequest) {
     console.log('Server time:', new Date().toISOString());
     
     // Check if user is authenticated and authorized
-    const user = await currentUser();
-    console.log('Current user:', user ? { id: user.id, publicMetadata: user.publicMetadata } : 'null');
+    const session = await auth0.getSession();
+    console.log('Current session:', session ? { user: session.user } : 'null');
     
-    if (!user) {
+    if (!session?.user) {
       console.log('No user found - returning 401');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user has admin access
-    const publicMetadata = user.publicMetadata as { [key: string]: string } | undefined;
-    if (!publicMetadata || publicMetadata['autorizaçãoDeAcesso'] !== 'Comejá') {
+    // Check if user has admin access (check for admin role in Auth0)
+    const userRoles = session.user['https://mythoria.com/roles'] || [];
+    if (!userRoles.includes('admin')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -37,14 +37,14 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Check if user is authenticated and authorized
-    const user = await currentUser();
-    if (!user) {
+    const session = await auth0.getSession();
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user has admin access
-    const publicMetadata = user.publicMetadata as { [key: string]: string } | undefined;
-    if (!publicMetadata || publicMetadata['autorizaçãoDeAcesso'] !== 'Comejá') {
+    // Check if user has admin access (check for admin role in Auth0)
+    const userRoles = session.user['https://mythoria.com/roles'] || [];
+    if (!userRoles.includes('admin')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

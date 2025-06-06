@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@auth0/nextjs-auth0';
+import { auth0 } from '@/lib/auth0';
 import { db } from '@/db';
 import { authors } from '@/db/schema';
 import { desc, asc, count, ilike, or, SQL } from 'drizzle-orm';
@@ -8,7 +8,7 @@ import { creditService } from '@/db/services';
 export async function GET(request: NextRequest) {
   try {
     // Check if user is authenticated and authorized
-    const session = await getSession(request);
+    const session = await auth0.getSession();
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

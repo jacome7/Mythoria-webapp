@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@auth0/nextjs-auth0';
+import { auth0 } from '@/lib/auth0';
 import { db } from '@/db';
 import { authors, stories, addresses, characters, storyCharacters, storyVersions, events, creditLedger, authorCreditBalances, paymentMethods } from '@/db/schema';
 import { eq } from 'drizzle-orm';
@@ -11,7 +11,7 @@ export async function GET(
 ) {
   try {
     // Check if user is authenticated and authorized
-    const session = await getSession(request);
+    const session = await auth0.getSession();
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -89,14 +89,14 @@ export async function DELETE(
 ) {
   try {
     // Check if user is authenticated and authorized
-    const user = await currentUser();
-    if (!user) {
+    const session = await auth0.getSession();
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user has admin access
-    const publicMetadata = user.publicMetadata as { [key: string]: string } | undefined;
-    if (!publicMetadata || publicMetadata['autorizaçãoDeAcesso'] !== 'Comejá') {
+    // Check if user has admin access (check for admin role in Auth0)
+    const userRoles = session.user['https://mythoria.com/roles'] || [];
+    if (!userRoles.includes('admin')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -185,17 +185,16 @@ export async function DELETE(
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
-) {
-  try {
+) {  try {
     // Check if user is authenticated and authorized
-    const user = await currentUser();
-    if (!user) {
+    const session = await auth0.getSession();
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user has admin access
-    const publicMetadata = user.publicMetadata as { [key: string]: string } | undefined;
-    if (!publicMetadata || publicMetadata['autorizaçãoDeAcesso'] !== 'Comejá') {
+    // Check if user has admin access (check for admin role in Auth0)
+    const userRoles = session.user['https://mythoria.com/roles'] || [];
+    if (!userRoles.includes('admin')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

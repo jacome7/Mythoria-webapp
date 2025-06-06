@@ -1,4 +1,4 @@
-import { useUser } from '@auth0/nextjs-auth0/client';
+import { useUser } from '@auth0/nextjs-auth0';
 import { ReactNode } from 'react';
 
 interface AuthStateProps {
