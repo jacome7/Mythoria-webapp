@@ -1,33 +1,32 @@
 import { SignUp } from "@clerk/nextjs";
-import Image from "next/image";
 
 export default function SignUpPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8">        <div className="text-center">
-          <Image
-            src="/Logo_black_transparent_256x222.png"
-            alt="Mythoria"
-            className="mx-auto h-12 w-auto"
-            width={256}
-            height={222}
-            priority
-          />
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            Create your account
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Join the Mythoria community
+    <div className="min-h-screen hero bg-base-200">
+      <div className="hero-content flex-col lg:flex-row-reverse">
+        <div className="text-center lg:text-left">
+          <h1 className="text-5xl font-bold">Join Mythoria!</h1>
+          <p className="py-6">
+            Create your account and start your journey into the world of mythical adventures. Your story begins here.
           </p>
         </div>
-        <SignUp 
-          appearance={{
-            elements: {
-              rootBox: "mx-auto",
-              card: "shadow-lg",
-            }
-          }}
-        />
+        <div className="card bg-base-100 w-full max-w-sm shadow-2xl">
+          <div className="card-body">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold mt-4">Create Account</h2>
+            </div>
+            <SignUp 
+              appearance={{
+                elements: {
+                  rootBox: "mx-auto",
+                  card: "bg-transparent shadow-none",
+                  headerTitle: "hidden",
+                  headerSubtitle: "hidden",
+                }
+              }}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
