@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { getSession } from '@auth0/nextjs-auth0';
 import { pricingService } from '@/db/services';
 
 export async function GET(request: NextRequest) {

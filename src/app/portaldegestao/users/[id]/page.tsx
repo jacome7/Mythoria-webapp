@@ -1,6 +1,6 @@
 'use client';
 
-import { useUser } from '@clerk/nextjs';
+import { useUser } from '@auth0/nextjs-auth0';
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
@@ -54,7 +54,7 @@ interface UserDetailsResponse {
 }
 
 export default function UserDetailsPage() {
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { user, isLoading: authLoading } = useUser();
   const router = useRouter();
   const params = useParams();  const [userDetails, setUserDetails] = useState<UserDetailsResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -85,12 +85,11 @@ export default function UserDetailsPage() {
       setIsLoading(false);
     }
   }, [params.id]);
-
   useEffect(() => {
-    if (isLoaded) {
+    if (!authLoading) {
       // Check if user is signed in
-      if (!isSignedIn) {
-        router.push('/');
+      if (!user) {
+        router.push('/api/auth/login');
         return;
       }
 
@@ -104,7 +103,7 @@ export default function UserDetailsPage() {
       // Fetch user details if authorized
       fetchUserDetails();
     }
-  }, [isLoaded, isSignedIn, user, router, fetchUserDetails]);
+  }, [authLoading, user, router, fetchUserDetails]);
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'Never';
@@ -196,9 +195,8 @@ export default function UserDetailsPage() {
       setIsAddingCredits(false);
     }
   };
-
   // Show loading state while checking authentication
-  if (!isLoaded) {
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="loading loading-spinner loading-lg"></div>
@@ -207,7 +205,7 @@ export default function UserDetailsPage() {
   }
   
   // Don't render content if not authorized
-  if (!isSignedIn || !user?.publicMetadata || (user.publicMetadata as { [key: string]: string })['autorizaçãoDeAcesso'] !== 'Comejá') {
+  if (!user?.publicMetadata || (user.publicMetadata as { [key: string]: string })['autorizaçãoDeAcesso'] !== 'Comejá') {
     return null;
   }
 

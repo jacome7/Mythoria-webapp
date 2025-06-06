@@ -1,10 +1,10 @@
 import { db } from "./index";
 import { authors, stories, characters, storyCharacters, creditLedger, authorCreditBalances } from "./schema";
 import { eq, and, count, desc, sql } from "drizzle-orm";
-import { ClerkUserForSync } from "@/types/clerk";
+import { Auth0UserForSync } from "@/types/auth";
 
 // Author operations
-export const authorService = {  async createAuthor(authorData: { clerkUserId: string; email: string; displayName: string }) {
+export const authorService = {  async createAuthor(authorData: { auth0UserId: string; email: string; displayName: string }) {
     const [author] = await db.insert(authors).values(authorData).returning();
     
     // Initialize credits for new author with initial credits from environment
@@ -13,30 +13,27 @@ export const authorService = {  async createAuthor(authorData: { clerkUserId: st
     
     return author;
   },
-
-  async syncUserOnSignIn(clerkUser: ClerkUserForSync) {
+  async syncUserOnSignIn(auth0User: Auth0UserForSync) {
     const currentTime = new Date();
     
     // Try to find existing user
-    const existingAuthor = await this.getAuthorByClerkId(clerkUser.id);
+    const existingAuthor = await this.getAuthorByAuth0Id(auth0User.id);
     
     if (existingAuthor) {
       // User exists, update lastLoginAt
       const [updatedAuthor] = await db
         .update(authors)
-        .set({ lastLoginAt: currentTime })
-        .where(eq(authors.clerkUserId, clerkUser.id))
+        .set({ lastLoginAt: currentTime })        .where(eq(authors.clerkUserId, auth0User.id))
         .returning();
       
       console.log('Updated existing user login time:', updatedAuthor.clerkUserId);
       return updatedAuthor;
-    } else {
-      // User doesn't exist, create new user
-      const primaryEmail = clerkUser.emailAddresses?.find((email) => email.id === clerkUser.primaryEmailAddressId);
-      const primaryPhone = clerkUser.phoneNumbers?.find((phone) => phone.id === clerkUser.primaryPhoneNumberId);      const newAuthorData = {
-        clerkUserId: clerkUser.id,
-        email: primaryEmail?.emailAddress || clerkUser.emailAddresses?.[0]?.emailAddress || '',
-        displayName: this.buildDisplayName(clerkUser),
+    } else {      // User doesn't exist, create new user
+      const primaryEmail = auth0User.emailAddresses?.find((email) => email.id === auth0User.primaryEmailAddressId);
+      const primaryPhone = auth0User.phoneNumbers?.find((phone) => phone.id === auth0User.primaryPhoneNumberId);      const newAuthorData = {
+        clerkUserId: auth0User.id,
+        email: primaryEmail?.emailAddress || auth0User.emailAddresses?.[0]?.emailAddress || '',
+        displayName: this.buildDisplayName(auth0User),
         lastLoginAt: currentTime,
         ...(primaryPhone?.phoneNumber && { mobilePhone: primaryPhone.phoneNumber })
       };      const [newAuthor] = await db.insert(authors).values(newAuthorData).returning();
@@ -49,19 +46,18 @@ export const authorService = {  async createAuthor(authorData: { clerkUserId: st
       return newAuthor;
     }
   },
-
-  buildDisplayName(clerkUser: ClerkUserForSync) {
+  buildDisplayName(auth0User: Auth0UserForSync) {
     // Try to build display name from available information
-    if (clerkUser.firstName || clerkUser.lastName) {
-      return `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim();
+    if (auth0User.firstName || auth0User.lastName) {
+      return `${auth0User.firstName || ''} ${auth0User.lastName || ''}`.trim();
     }
     
-    if (clerkUser.username) {
-      return clerkUser.username;
+    if (auth0User.username) {
+      return auth0User.username;
     }
       // Fallback to email prefix
-    const primaryEmail = clerkUser.emailAddresses?.find((email) => email.id === clerkUser.primaryEmailAddressId);
-    const email = primaryEmail?.emailAddress || clerkUser.emailAddresses?.[0]?.emailAddress;
+    const primaryEmail = auth0User.emailAddresses?.find((email) => email.id === auth0User.primaryEmailAddressId);
+    const email = primaryEmail?.emailAddress || auth0User.emailAddresses?.[0]?.emailAddress;
     
     if (email) {
       return email.split('@')[0];
@@ -74,9 +70,8 @@ export const authorService = {  async createAuthor(authorData: { clerkUserId: st
     const [author] = await db.select().from(authors).where(eq(authors.authorId, authorId));
     return author;
   },
-
-  async getAuthorByClerkId(clerkUserId: string) {
-    const [author] = await db.select().from(authors).where(eq(authors.clerkUserId, clerkUserId));
+  async getAuthorByAuth0Id(auth0UserId: string) {
+    const [author] = await db.select().from(authors).where(eq(authors.clerkUserId, auth0UserId));
     return author;
   },
 

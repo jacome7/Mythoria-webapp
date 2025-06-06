@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { getSession } from '@auth0/nextjs-auth0';
 import { pricingService } from '@/db/services';
 
 export async function PUT(
@@ -9,16 +9,16 @@ export async function PUT(
   try {
     const { id } = await params;
     // Check if user is authenticated and authorized
-    const user = await currentUser();
-    if (!user) {
+    const session = await getSession(request);
+    if (!session || !session.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user has admin access
-    const publicMetadata = user.publicMetadata as { [key: string]: string } | undefined;
-    if (!publicMetadata || publicMetadata['autorizaçãoDeAcesso'] !== 'Comejá') {
+    // Check if user has admin access (check for admin role in Auth0)
+    const userRoles = session.user['https://mythoria.com/roles'] || [];
+    if (!userRoles.includes('admin')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }    const body = await request.json();
+    }const body = await request.json();
     const { isActive, isMandatory, isDefault, credits } = body;
 
     // Only allow updating these specific fields

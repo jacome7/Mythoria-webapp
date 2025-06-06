@@ -1,18 +1,18 @@
 import { NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { getSession } from '@auth0/nextjs-auth0';
 import { authorService, storyService } from '@/db/services';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     // Check if user is authenticated and authorized
-    const user = await currentUser();
-    if (!user) {
+    const session = await getSession(request);
+    if (!session || !session.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user has admin access
-    const publicMetadata = user.publicMetadata as { [key: string]: string } | undefined;
-    if (!publicMetadata || publicMetadata['autorizaçãoDeAcesso'] !== 'Comejá') {
+    // Check if user has admin access (check for admin role in Auth0)
+    const userRoles = session.user['https://mythoria.com/roles'] || [];
+    if (!userRoles.includes('admin')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

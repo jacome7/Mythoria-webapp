@@ -38,7 +38,8 @@ Mythoria is built with a modern web development stack:
     *   [Drizzle ORM](https://orm.drizzle.team/) (TypeScript ORM for SQL databases)
     *   [PostgreSQL](https://www.postgresql.org/) (as inferred from `pg` and Drizzle usage)
 *   **Authentication:**
-    *   [@clerk/nextjs](https://clerk.com/) for user management and authentication.
+    *   [Auth0 Next.js SDK](https://auth0.com/docs/quickstart/webapp/nextjs) for user management and authentication
+    *   Previously used Clerk (migrated to Auth0 for enhanced flexibility and enterprise features)
 *   **Analytics:**
     *   [Google Analytics 4](https://analytics.google.com/) for user behavior tracking and insights
 *   **Development & Tooling:**
@@ -48,7 +49,64 @@ Mythoria is built with a modern web development stack:
 
 ## Getting Started
 
-(Instructions on how to set up and run the project locally would go here - e.g., cloning, installing dependencies, setting up .env, running database migrations, and starting the development server.)
+### Prerequisites
+
+- Node.js 20 or later
+- PostgreSQL database
+- Auth0 account
+- Google Cloud Platform account (for production deployment)
+
+### Environment Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd mythoria-webapp
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Set up Auth0:**
+   - Create an Auth0 account at [auth0.com](https://auth0.com)
+   - Create a new Application (Single Page Application type)
+   - Configure the following URLs in your Auth0 dashboard:
+     - **Allowed Callback URLs:** `http://localhost:3000/api/auth/callback`
+     - **Allowed Logout URLs:** `http://localhost:3000`
+     - **Allowed Web Origins:** `http://localhost:3000`
+
+4. **Configure environment variables:**
+   - Copy `.env.example` to `.env.local`
+   - Fill in your Auth0 configuration:
+     ```bash
+     AUTH0_SECRET='use [openssl rand -hex 32] to generate a 32 bytes value'
+     AUTH0_BASE_URL='http://localhost:3000'
+     AUTH0_ISSUER_BASE_URL='https://your-tenant.auth0.com'
+     AUTH0_CLIENT_ID='your-auth0-client-id'
+     AUTH0_CLIENT_SECRET='your-auth0-client-secret'
+     ```
+
+5. **Set up the database:**
+   ```bash
+   npm run db:setup
+   ```
+
+6. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+
+### Auth0 Migration Notes
+
+This project was migrated from Clerk to Auth0. Key changes include:
+- Authentication provider updated from `@clerk/nextjs` to `@auth0/nextjs-auth0`
+- User management adapted to Auth0's user profile structure
+- Database field `clerkUserId` temporarily retained for backward compatibility (will be renamed in future migration)
+- All authentication flows now use Auth0's standard endpoints (`/api/auth/login`, `/api/auth/logout`, `/api/auth/callback`)
+
+For production deployment, ensure all Auth0 environment variables are properly configured in your deployment environment.
 
 ```
 npm install

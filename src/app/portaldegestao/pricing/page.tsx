@@ -1,6 +1,6 @@
 'use client';
 
-import { useUser } from '@clerk/nextjs';
+import { useUser } from '@auth0/nextjs-auth0';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminHeader from '../../../components/AdminHeader';
@@ -28,7 +28,7 @@ interface EditModalData {
 }
 
 export default function PricingPage() {
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { user, isLoading: authLoading } = useUser();
   const router = useRouter();
   const [pricingEntries, setPricingEntries] = useState<PricingEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -44,14 +44,12 @@ export default function PricingPage() {
   });
 
   useEffect(() => {
-    if (isLoaded) {
+    if (!authLoading) {
       // Check if user is signed in
-      if (!isSignedIn) {
-        router.push('/');
+      if (!user) {
+        router.push('/api/auth/login');
         return;
-      }
-
-      // Check if user has the required metadata
+      }      // Check if user has the required metadata
       const publicMetadata = user?.publicMetadata as { [key: string]: string } | undefined;
       if (!publicMetadata || publicMetadata['autorizaçãoDeAcesso'] !== 'Comejá') {
         router.push('/');
@@ -61,7 +59,7 @@ export default function PricingPage() {
       // Fetch pricing data if authorized
       fetchPricingEntries();
     }
-  }, [isLoaded, isSignedIn, user, router]);
+  }, [authLoading, user, router]);
 
   const fetchPricingEntries = async () => {
     try {
@@ -178,9 +176,8 @@ export default function PricingPage() {
     });
     setShowEditModal(true);
   };
-
   // Show loading state while checking authentication
-  if (!isLoaded) {
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="loading loading-spinner loading-lg"></div>
@@ -189,7 +186,7 @@ export default function PricingPage() {
   }
   
   // Don't render content if not authorized
-  if (!isSignedIn || !user?.publicMetadata || (user.publicMetadata as { [key: string]: string })['autorizaçãoDeAcesso'] !== 'Comejá') {
+  if (!user?.publicMetadata || (user.publicMetadata as { [key: string]: string })['autorizaçãoDeAcesso'] !== 'Comejá') {
     return null;
   }
 

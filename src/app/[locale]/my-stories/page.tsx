@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { SignedIn, SignedOut } from '@clerk/nextjs';
+import { useUser } from '@auth0/nextjs-auth0';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FiPlus } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
@@ -10,7 +11,9 @@ import MyCharactersTable from '@/components/MyCharactersTable';
 import CreditsDisplay from '@/components/CreditsDisplay';
 
 export default function MyStoriesPage() {
-  const t = useTranslations('MyStoriesPage'); const [authorName, setAuthorName] = useState<string>('Storyteller');
+  const { user, isLoading: authLoading } = useUser();
+  const router = useRouter();
+  const t = useTranslations('MyStoriesPage');const [authorName, setAuthorName] = useState<string>('Storyteller');
   const [credits, setCredits] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'stories' | 'characters'>('stories');
@@ -37,10 +40,10 @@ export default function MyStoriesPage() {
       }
     };
 
-    fetchUserData();
-  }, []);
+    fetchUserData();  }, []);
 
-  if (loading) {
+  // Redirect to login if not authenticated
+  if (authLoading || loading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-center items-center min-h-96">
@@ -50,25 +53,12 @@ export default function MyStoriesPage() {
     );
   }
 
+  if (!user) {
+    router.push('/api/auth/login');
+    return null;
+  }
   return (
     <div className="container mx-auto px-4 py-8">
-      <SignedOut>
-        <div className="text-center space-y-6">
-          <h1 className="text-4xl font-bold">Welcome</h1>
-          <p className="text-lg text-gray-600">
-            You need to be signed in to view your stories.
-          </p>
-          <div className="space-x-4">
-            <Link href="/sign-in" className="btn btn-primary">
-              Sign In
-            </Link>
-            <Link href="/sign-up" className="btn btn-outline">
-              Create Account
-            </Link>
-          </div>
-        </div>
-      </SignedOut>
-      <SignedIn>
         {/* Header Section */}
         <div className="space-y-6">
           <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4">
@@ -107,12 +97,10 @@ export default function MyStoriesPage() {
               {activeTab === 'stories' ? (
                 <MyStoriesTable />
               ) : (
-                <MyCharactersTable />
-              )}
+                <MyCharactersTable />            )}
             </div>
           </div>
         </div>
-      </SignedIn>
     </div>
   );
 }

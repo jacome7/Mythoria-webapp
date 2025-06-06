@@ -1,6 +1,6 @@
 'use client';
 
-import { useUser } from '@clerk/nextjs';
+import { useUser } from '@auth0/nextjs-auth0';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -35,7 +35,7 @@ type SortField = 'displayName' | 'email' | 'createdAt' | 'lastLoginAt';
 type SortOrder = 'asc' | 'desc';
 
 export default function UsersPage() {
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { user, isLoading: authLoading } = useUser();
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [pagination, setPagination] = useState<PaginationData | null>(null);
@@ -46,10 +46,9 @@ export default function UsersPage() {
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
 
   useEffect(() => {
-    if (isLoaded) {
+    if (!authLoading) {
       // Check if user is signed in
-      if (!isSignedIn) {
-        router.push('/');
+      if (!user) {        router.push('/api/auth/login');
         return;
       }
 
@@ -62,7 +61,7 @@ export default function UsersPage() {
       fetchUsers(currentPage);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoaded, isSignedIn, user, router, currentPage, searchTerm, sortField, sortOrder]);
+  }, [authLoading, user, router, currentPage, searchTerm, sortField, sortOrder]);
 
   const fetchUsers = async (page: number) => {
     try {
@@ -143,9 +142,8 @@ export default function UsersPage() {
       day: '2-digit'
     });
   };
-
   // Show loading state while checking authentication
-  if (!isLoaded) {
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="loading loading-spinner loading-lg"></div>
@@ -154,7 +152,7 @@ export default function UsersPage() {
   }
   
   // Don't render content if not authorized
-  if (!isSignedIn || !user?.publicMetadata || (user.publicMetadata as { [key: string]: string })['autorizaçãoDeAcesso'] !== 'Comejá') {
+  if (!user?.publicMetadata || (user.publicMetadata as { [key: string]: string })['autorizaçãoDeAcesso'] !== 'Comejá') {
     return null;
   }
 

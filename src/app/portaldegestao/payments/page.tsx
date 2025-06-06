@@ -1,19 +1,19 @@
 'use client';
 
-import { useUser } from '@clerk/nextjs';
+import { useUser } from '@auth0/nextjs-auth0';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminHeader from '../../../components/AdminHeader';
 import AdminFooter from '../../../components/AdminFooter';
 
 export default function PaymentsPage() {
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { user, isLoading } = useUser();
   const router = useRouter();
 
   useEffect(() => {
-    if (isLoaded) {
+    if (!isLoading) {
       // Check if user is signed in
-      if (!isSignedIn) {
+      if (!user) {
         router.push('/');
         return;
       }

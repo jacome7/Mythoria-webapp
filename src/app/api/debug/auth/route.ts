@@ -1,30 +1,43 @@
-import { auth } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { getSession } from "@auth0/nextjs-auth0";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const authData = auth();
+    const session = await getSession(req);
     
     // Add additional debug information
     const debugInfo = {
-      ...authData,
+      isAuthenticated: !!session,
+      user: session?.user ? {
+        sub: session.user.sub,
+        email: session.user.email,
+        name: session.user.name,
+        nickname: session.user.nickname,
+        picture: session.user.picture,
+      } : null,
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV,
-      clerkPublishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.substring(0, 20) + "...",
-      hasClerkSecret: !!process.env.CLERK_SECRET_KEY,
-      hasWebhookSecret: !!process.env.CLERK_WEBHOOK_SECRET,
-      hasWebhookSigningSecret: !!process.env.CLERK_WEBHOOK_SIGNING_SECRET,
+      auth0Domain: process.env.AUTH0_DOMAIN,
+      hasAuth0Secret: !!process.env.AUTH0_SECRET,
+      hasAuth0BaseUrl: !!process.env.AUTH0_BASE_URL,
+      hasAuth0ClientSecret: !!process.env.AUTH0_CLIENT_SECRET,
       requestHeaders: {
-        host: process.env.NEXTAUTH_URL || "unknown",
-        userAgent: "server-side"
-      }
-    };
+        host: req.headers.get('host') || "unknown",
+        userAgent: req.headers.get('user-agent') || "unknown"
+      }    };
+
+    console.log("[Auth Debug] Current authentication state:", {
+      isAuthenticated: debugInfo.isAuthenticated,
+      userId: session?.user?.sub || 'none',
+      timestamp: debugInfo.timestamp
+    });
     
-    return NextResponse.json(debugInfo);
-  } catch (error) {
+    return NextResponse.json(debugInfo);  } catch (error) {
+    console.error("[Auth Debug] Error getting authentication state:", error);
     return NextResponse.json(
       { 
-        error: error instanceof Error ? error.message : String(error),
+        error: "Failed to get authentication state",
+        message: error instanceof Error ? error.message : String(error),
         timestamp: new Date().toISOString()
       },
       { status: 500 }

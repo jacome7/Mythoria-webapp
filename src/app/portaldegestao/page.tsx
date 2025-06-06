@@ -1,6 +1,6 @@
 'use client';
 
-import { useUser } from '@clerk/nextjs';
+import { useUser } from '@auth0/nextjs-auth0';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminHeader from '../../components/AdminHeader';
@@ -14,22 +14,22 @@ interface KPIData {
 }
 
 export default function AdminPortal() {
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { user, isLoading } = useUser();
   const router = useRouter();
   const [kpis, setKpis] = useState<KPIData | null>(null);
   const [isLoadingKpis, setIsLoadingKpis] = useState(true);
-
   useEffect(() => {
-    if (isLoaded) {
+    if (!isLoading) {
       // Check if user is signed in
-      if (!isSignedIn) {
+      if (!user) {
         router.push('/');
         return;
       }
 
-      // Check if user has the required metadata
-      const publicMetadata = user?.publicMetadata as { [key: string]: string } | undefined;
-      if (!publicMetadata || publicMetadata['autorizaçãoDeAcesso'] !== 'Comejá') {
+      // For Auth0, we'll check custom metadata differently
+      // This would need to be set up in Auth0 rules or actions
+      const userMetadata = user['https://mythoria.pt/authorization'] as string | undefined;
+      if (userMetadata !== 'Comejá') {
         router.push('/');
         return;
       }
@@ -37,7 +37,7 @@ export default function AdminPortal() {
       // Fetch KPI data if authorized
       fetchKPIs();
     }
-  }, [isLoaded, isSignedIn, user, router]);
+  }, [isLoading, user, router]);
 
   const fetchKPIs = async () => {
     try {
@@ -55,9 +55,8 @@ export default function AdminPortal() {
       setIsLoadingKpis(false);
     }
   };
-
   // Show loading state while checking authentication
-  if (!isLoaded) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="loading loading-spinner loading-lg"></div>
@@ -66,7 +65,7 @@ export default function AdminPortal() {
   }
   
   // Don't render content if not authorized
-  if (!isSignedIn || !user?.publicMetadata || (user.publicMetadata as { [key: string]: string })['autorizaçãoDeAcesso'] !== 'Comejá') {
+  if (!user || user['https://mythoria.pt/authorization'] !== 'Comejá') {
     return null;
   }
 

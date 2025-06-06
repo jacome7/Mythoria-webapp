@@ -1,12 +1,13 @@
 'use client';
 
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
+import { useUser } from '@auth0/nextjs-auth0';
 import Image from 'next/image';
 import StepNavigation from '../../../../components/StepNavigation';
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function Step2Page() {
+  const { user, isLoading: authLoading } = useUser();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'image' | 'audio' | 'text'>('text');
   const [storyText, setStoryText] = useState('');
@@ -349,14 +350,24 @@ export default function Step2Page() {
     setShowDebugModal(false);
     router.push('/tell-your-story/step-3');
   };
+  // Redirect to login if not authenticated
+  if (authLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-center">
+          <span className="loading loading-spinner loading-lg"></span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    router.push('/api/auth/login');
+    return null;
+  }
 
   return (
     <>
-      <SignedOut>
-        <RedirectToSignIn />
-      </SignedOut>
-
-      <SignedIn>
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             {/* Progress indicator */}
@@ -748,11 +759,9 @@ export default function Step2Page() {
                 >
                   Close Debug
                 </button>
-              </div>
-            </div>
+              </div>            </div>
           </div>
         )}
-      </SignedIn>
     </>
   );
 }

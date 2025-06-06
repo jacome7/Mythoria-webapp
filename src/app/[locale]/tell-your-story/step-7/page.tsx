@@ -1,15 +1,32 @@
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
+'use client';
+
+import { useUser } from '@auth0/nextjs-auth0';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function Step7Page() {
+  const { user, isLoading: authLoading } = useUser();
+  const router = useRouter();
+
+  // Redirect to login if not authenticated
+  if (authLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-center">
+          <span className="loading loading-spinner loading-lg"></span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    router.push('/api/auth/login');
+    return null;
+  }
 
   return (
     <>
-      <SignedOut>
-        <RedirectToSignIn />
-      </SignedOut>
-      
-      <SignedIn>        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             {/* Progress indicator */}
             {(() => {
@@ -67,11 +84,9 @@ export default function Step7Page() {
                     </Link>
                   </div>
                 </div>
-              </div>
-            </div>
+              </div>            </div>
           </div>
         </div>
-      </SignedIn>
     </>
   );
 }

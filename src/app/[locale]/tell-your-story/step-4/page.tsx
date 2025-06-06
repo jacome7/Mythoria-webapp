@@ -1,6 +1,6 @@
 'use client';
 
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
+import { useUser } from '@auth0/nextjs-auth0';
 import StepNavigation from '../../../../components/StepNavigation';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -17,7 +17,8 @@ interface StoryData {
 }
 
 export default function Step4Page() {
-  const router = useRouter();  const [loading, setLoading] = useState(true);
+  const { user, isLoading: authLoading } = useUser();
+  const router = useRouter();const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentStoryId, setCurrentStoryId] = useState<string | null>(null);
@@ -142,14 +143,24 @@ export default function Step4Page() {
       setSaving(false);
     }
   };
+  // Redirect to login if not authenticated
+  if (authLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-center">
+          <span className="loading loading-spinner loading-lg"></span>
+        </div>
+      </div>
+    );
+  }
 
+  if (!user) {
+    router.push('/api/auth/login');
+    return null;
+  }
   return (
     <>
-      <SignedOut>
-        <RedirectToSignIn />
-      </SignedOut>
-      
-      <SignedIn>        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             {/* Progress indicator */}
             {(() => {
@@ -336,11 +347,9 @@ export default function Step4Page() {
                   nextDisabled={saving}
                   nextLabel={saving ? "Saving..." : "Next Chapter"}
                 />
-              </div>
-            </div>
+              </div>        </div>
           </div>
         </div>
-      </SignedIn>
     </>
   );
 }

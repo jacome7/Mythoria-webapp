@@ -8,7 +8,7 @@ import { addressTypeEnum } from './enums';
 // Authors (formerly users)
 export const authors = pgTable("authors", {
   authorId: uuid("author_id").primaryKey().defaultRandom(),
-  clerkUserId: varchar("clerk_user_id", { length: 255 }).notNull().unique(), // Clerk User ID
+  clerkUserId: varchar("clerk_user_id", { length: 255 }).notNull().unique(), // Auth0 User ID (field name to be migrated from clerkUserId)
   displayName: varchar("display_name", { length: 120 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   fiscalNumber: varchar("fiscal_number", { length: 40 }),

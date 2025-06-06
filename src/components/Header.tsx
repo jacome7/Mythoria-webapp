@@ -2,14 +2,14 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { UserButton, useUser } from '@clerk/nextjs';
+import { useUser } from '@auth0/nextjs-auth0';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import LanguageSwitcher from './LanguageSwitcher';
 
 const Header = () => {
   const t = useTranslations('Header');
-  const { isLoaded, isSignedIn } = useUser();
+  const { user, isLoading } = useUser();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ const Header = () => {
   }, []);
 
   // Prevent hydration mismatch by not rendering auth-dependent content until client-side
-  if (!isClient || !isLoaded) {
+  if (!isClient || isLoading) {
     return (
       <header className="navbar bg-base-100 shadow-md">
         <div className="navbar-start">
@@ -63,9 +63,8 @@ const Header = () => {
           <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
             <li><Link href="/">{t('navigation.homepage')}</Link></li>
             <li><Link href="/get-inspired">{t('navigation.getInspired')}</Link></li>
-            <li><Link href="/tell-your-story/step-1">{t('navigation.tellYourStory')}</Link></li>
-            <li><Link href="/pricing">{t('navigation.pricing')}</Link></li>
-            {isSignedIn && (
+            <li><Link href="/tell-your-story/step-1">{t('navigation.tellYourStory')}</Link></li>            <li><Link href="/pricing">{t('navigation.pricing')}</Link></li>
+            {user && (
               <li><Link href="/my-stories">{t('navigation.myStories')}</Link></li>
             )}        </ul>
         </div>
@@ -78,8 +77,7 @@ const Header = () => {
           <li><Link href="/">{t('navigation.homepage')}</Link></li>
           <li><Link href="/get-inspired">{t('navigation.getInspired')}</Link></li>
           <li><Link href="/tell-your-story/step-1">{t('navigation.tellYourStory')}</Link></li>
-          <li><Link href="/pricing">{t('navigation.pricing')}</Link></li>
-          {isSignedIn && (
+          <li><Link href="/pricing">{t('navigation.pricing')}</Link></li>          {user && (
             <li><Link href="/my-stories">{t('navigation.myStories')}</Link></li>
           )}
         </ul>
@@ -89,14 +87,24 @@ const Header = () => {
         <div className="mr-4">
           <LanguageSwitcher />
         </div>
-        {!isSignedIn ? (
+        {!user ? (
           <div className="flex gap-2">
-            <Link href="/sign-in" className="btn btn-primary">
+            <a href="/api/auth/login" className="btn btn-primary">
               {t('auth.signIn')}
-            </Link>
+            </a>
           </div>
         ) : (
-          <UserButton />
+          <div className="dropdown dropdown-end">
+            <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
+              <div className="w-10 rounded-full">
+                <img src={user.picture || '/default-avatar.png'} alt={user.name || 'User'} />
+              </div>
+            </label>
+            <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+              <li><span className="font-semibold">{user.name || user.email}</span></li>
+              <li><a href="/api/auth/logout">{t('auth.signOut')}</a></li>
+            </ul>
+          </div>
         )}
       </div>
     </header>

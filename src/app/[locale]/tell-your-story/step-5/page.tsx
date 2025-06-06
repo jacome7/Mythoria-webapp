@@ -1,6 +1,6 @@
 'use client';
 
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
+import { useUser } from '@auth0/nextjs-auth0';
 import StepNavigation from '../../../../components/StepNavigation';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -51,6 +51,7 @@ interface StoryUpdateData {
 }
 
 export default function Step5Page() {
+  const { user, isLoading: authLoading } = useUser();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -314,14 +315,24 @@ export default function Step5Page() {
       setSaving(false);
     }
   };
+  // Redirect to login if not authenticated
+  if (authLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-center">
+          <span className="loading loading-spinner loading-lg"></span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    router.push('/api/auth/login');
+    return null;
+  }
 
   return (
     <>
-      <SignedOut>
-        <RedirectToSignIn />
-      </SignedOut>
-      
-      <SignedIn>
         <div className="container mx-auto px-4 py-8">        <div className="max-w-4xl mx-auto">
             {/* Progress indicator */}
             {(() => {
@@ -660,10 +671,8 @@ export default function Step5Page() {
                 </button>
               </div>
             </div>
-            <div className="modal-backdrop" onClick={() => setShowBuyCreditsModal(false)}></div>
-          </div>
+            <div className="modal-backdrop" onClick={() => setShowBuyCreditsModal(false)}></div>          </div>
         )}
-      </SignedIn>
     </>
   );
 }

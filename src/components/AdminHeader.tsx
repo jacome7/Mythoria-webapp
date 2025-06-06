@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { UserButton } from '@clerk/nextjs';
+import { Auth0UserButton } from './Auth0UserButton';
 
 export default function AdminHeader() {
   return (
@@ -25,10 +25,8 @@ export default function AdminHeader() {
           <li><Link href="/portaldegestao/payments">Payments</Link></li>
           <li><Link href="/portaldegestao/pricing">Pricing</Link></li>
         </ul>
-      </div>
-
-      <div className="navbar-end">
-        <UserButton />
+      </div>      <div className="navbar-end">
+        <Auth0UserButton />
       </div>
     </header>
   );

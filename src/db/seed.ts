@@ -61,7 +61,7 @@ async function seedDatabase() {
   const createdAuthors: NewAuthor[] = [];
   for (let i = 0; i < 10; i++) {
     createdAuthors.push({
-      clerkUserId: `clerk_test_user_${i + 1}`,
+      clerkUserId: `auth0_test_user_${i + 1}`, // Will be migrated to auth0UserId field later
       displayName: `${getRandomElement(sampleDisplayNames)}${i + 1}`,
       email: `author${i + 1}@mythoria.com`,
       fiscalNumber: `FN${Math.random().toString().slice(2, 12)}`,

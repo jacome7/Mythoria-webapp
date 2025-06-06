@@ -1,6 +1,6 @@
 'use client';
 
-import { SignedIn, SignedOut } from '@clerk/nextjs';
+import { useUser } from '@auth0/nextjs-auth0';
 import Link from 'next/link';
 import StepNavigation from '../../../../components/StepNavigation';
 import { useState, useEffect } from 'react';
@@ -16,7 +16,9 @@ interface AuthorData {
   preferredLocale: string;
 }
 
-export default function Step1Page() {  const [, setAuthorData] = useState<AuthorData | null>(null);  const [loading, setLoading] = useState(true);
+export default function Step1Page() {
+  const { user, isLoading: authLoading } = useUser();
+  const [, setAuthorData] = useState<AuthorData | null>(null);  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   
@@ -78,23 +80,31 @@ export default function Step1Page() {  const [, setAuthorData] = useState<Author
       console.error('Error fetching author data:', error);
       setError('Failed to load user information. Please try again.');
     } finally {    setLoading(false);
-    }
-  };
+    }  };
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <SignedOut>
+  if (authLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <div className="loading loading-spinner loading-lg"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="container mx-auto px-4 py-8">
         <div className="text-center space-y-6 max-w-2xl mx-auto">
-          <div className="text-6xl">📚</div>          <h1 className="text-4xl font-bold">Oops! Looks like you&apos;re trying to sneak into the author&apos;s lounge!</h1>
+          <div className="text-6xl">📚</div>
+          <h1 className="text-4xl font-bold">Oops! Looks like you&apos;re trying to sneak into the author&apos;s lounge!</h1>
           <p className="text-lg text-gray-600">
             While we appreciate your enthusiasm for storytelling, you&apos;ll need to sign in first. 
             Don&apos;t worry, it&apos;s easier than convincing a dragon to share its treasure! 🐉
           </p>
           <div className="space-x-4">
-            <Link href="/sign-in" className="btn btn-primary btn-lg">
+            <Link href="/api/auth/login" className="btn btn-primary btn-lg">
               🔐 Sign In to Start Your Adventure
             </Link>
-            <Link href="/sign-up" className="btn btn-outline btn-lg">
+            <Link href="/api/auth/login" className="btn btn-outline btn-lg">
               ✨ Create Your Author Account
             </Link>
           </div>
@@ -102,9 +112,13 @@ export default function Step1Page() {  const [, setAuthorData] = useState<Author
             Once you&apos;re signed in, you&apos;ll be ready to create magical stories that would make even Merlin jealous! 🧙‍♂️
           </p>
         </div>
-      </SignedOut>
+      </div>
+    );
+  }
 
-      <SignedIn>        <div className="max-w-4xl mx-auto">
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto">
           {/* Progress indicator */}
           {(() => {
             const currentStep = 1;
@@ -247,9 +261,7 @@ export default function Step1Page() {  const [, setAuthorData] = useState<Author
                     </button>
                   </div>
                 </div>
-              )}
-
-              <StepNavigation 
+              )}              <StepNavigation 
                 currentStep={1}
                 totalSteps={7}
                 nextHref="/tell-your-story/step-2"
@@ -258,7 +270,6 @@ export default function Step1Page() {  const [, setAuthorData] = useState<Author
             </div>
           </div>
         </div>
-      </SignedIn>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
+import { useUser } from '@auth0/nextjs-auth0';
 import StepNavigation from '../../../../components/StepNavigation';
 import CharacterCard from '../../../../components/CharacterCard';
 import { useState, useEffect } from 'react';
@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { getCurrentStoryId, setStep3Data, Character, hasValidStorySession } from '../../../../lib/story-session';
 
 export default function Step3Page() {
+  const { user, isLoading: authLoading } = useUser();
   const router = useRouter();
   const [characters, setCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);
@@ -168,14 +169,24 @@ export default function Step3Page() {
       setIsNavigating(false);
     }
   };
+  // Redirect to login if not authenticated
+  if (authLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-center">
+          <span className="loading loading-spinner loading-lg"></span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    router.push('/api/auth/login');
+    return null;
+  }
 
   return (
     <>
-      <SignedOut>
-        <RedirectToSignIn />
-      </SignedOut>
-      
-      <SignedIn>
         <div className="container mx-auto px-4 py-8">          <div className="max-w-4xl mx-auto">
             {/* Progress indicator */}
             {(() => {
@@ -306,12 +317,10 @@ export default function Step3Page() {
                   nextDisabled={isNavigating}
                   onNext={handleNextStep}
                   nextLabel={isNavigating ? "Continuing..." : "Next Chapter"}
-                />
-              </div>
+                />              </div>
             </div>
           </div>
         </div>
-      </SignedIn>
     </>
   );
 }

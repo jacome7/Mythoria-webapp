@@ -1,25 +1,27 @@
-import { NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { getSession } from '@auth0/nextjs-auth0';
 import { db } from '@/db';
 import { authors, stories, addresses, characters, storyCharacters, storyVersions, events, creditLedger, authorCreditBalances, paymentMethods } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { creditService } from '@/db/services';
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check if user is authenticated and authorized
-    const user = await currentUser();
-    if (!user) {
+    const session = await getSession(request);
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user has admin access
-    const publicMetadata = user.publicMetadata as { [key: string]: string } | undefined;
-    if (!publicMetadata || publicMetadata['autorizaçãoDeAcesso'] !== 'Comejá') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    // Check if user has admin access via Auth0 app_metadata or user_metadata
+    const userMetadata = session.user.app_metadata || session.user.user_metadata || {};
+    const roles = session.user['https://mythoria.app/roles'] || userMetadata.roles || [];
+    
+    if (!roles.includes('admin') && !roles.includes('administrator')) {
+      return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 });
     }
 
     const resolvedParams = await params;
