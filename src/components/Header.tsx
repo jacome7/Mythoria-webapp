@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { UserButton, useUser } from '@clerk/nextjs';
+import { useUser } from '@/lib/clerk-compatibility';
+import { UserButton } from '@/components/auth/AuthComponents';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import LanguageSwitcher from './LanguageSwitcher';

@@ -1,4 +1,5 @@
 import { relations } from "drizzle-orm";
+import { users, accounts, sessions, verificationTokens } from './auth';
 import { authors, addresses, events } from './authors';
 import { stories, storyVersions } from './stories';
 import { characters, storyCharacters } from './characters';
@@ -10,7 +11,36 @@ import { creditLedger, authorCreditBalances } from './credits';
 // Relations (for type safety with Drizzle ORM queries)
 // -----------------------------------------------------------------------------
 
+// NextAuth.js Relations
+export const usersRelations = relations(users, ({ many, one }) => ({
+  accounts: many(accounts),
+  sessions: many(sessions),
+  author: one(authors, {
+    fields: [users.id],
+    references: [authors.userId],
+  }),
+}));
+
+export const accountsRelations = relations(accounts, ({ one }) => ({
+  user: one(users, {
+    fields: [accounts.userId],
+    references: [users.id],
+  }),
+}));
+
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.userId],
+    references: [users.id],
+  }),
+}));
+
+// Authors Relations (updated to include user relation)
 export const authorsRelations = relations(authors, ({ one, many }) => ({
+  user: one(users, {
+    fields: [authors.userId],
+    references: [users.id],
+  }),
   paymentMethods: many(paymentMethods),
   addresses: many(addresses),
   stories: many(stories),

@@ -2,6 +2,50 @@ CREATE TYPE "public"."address_type" AS ENUM('billing', 'delivery');--> statement
 CREATE TYPE "public"."credit_event_type" AS ENUM('initialCredit', 'creditPurchase', 'eBookGeneration', 'audioBookGeneration', 'printOrder', 'refund', 'voucher', 'promotion');--> statement-breakpoint
 CREATE TYPE "public"."payment_provider" AS ENUM('stripe', 'paypal', 'revolut', 'other');--> statement-breakpoint
 CREATE TYPE "public"."story_status" AS ENUM('draft', 'writing', 'published');--> statement-breakpoint
+CREATE TABLE "accounts" (
+	"userId" text NOT NULL,
+	"type" text NOT NULL,
+	"provider" text NOT NULL,
+	"providerAccountId" text NOT NULL,
+	"refresh_token" text,
+	"access_token" text,
+	"expires_at" integer,
+	"token_type" text,
+	"scope" text,
+	"id_token" text,
+	"session_state" text,
+	"created_at" timestamp with time zone DEFAULT now(),
+	"updated_at" timestamp with time zone DEFAULT now(),
+	CONSTRAINT "accounts_provider_providerAccountId_pk" PRIMARY KEY("provider","providerAccountId")
+);
+--> statement-breakpoint
+CREATE TABLE "sessions" (
+	"sessionToken" text PRIMARY KEY NOT NULL,
+	"userId" text NOT NULL,
+	"expires" timestamp NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now(),
+	"updated_at" timestamp with time zone DEFAULT now()
+);
+--> statement-breakpoint
+CREATE TABLE "users" (
+	"id" text PRIMARY KEY NOT NULL,
+	"name" text,
+	"email" text,
+	"emailVerified" timestamp,
+	"image" text,
+	"created_at" timestamp with time zone DEFAULT now(),
+	"updated_at" timestamp with time zone DEFAULT now(),
+	CONSTRAINT "users_email_unique" UNIQUE("email")
+);
+--> statement-breakpoint
+CREATE TABLE "verificationTokens" (
+	"identifier" text NOT NULL,
+	"token" text NOT NULL,
+	"expires" timestamp NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now(),
+	CONSTRAINT "verificationTokens_identifier_token_pk" PRIMARY KEY("identifier","token")
+);
+--> statement-breakpoint
 CREATE TABLE "addresses" (
 	"address_id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"author_id" uuid NOT NULL,
@@ -18,7 +62,7 @@ CREATE TABLE "addresses" (
 --> statement-breakpoint
 CREATE TABLE "authors" (
 	"author_id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"clerk_user_id" varchar(255) NOT NULL,
+	"user_id" text NOT NULL,
 	"display_name" varchar(120) NOT NULL,
 	"email" varchar(255) NOT NULL,
 	"fiscal_number" varchar(40),
@@ -26,7 +70,7 @@ CREATE TABLE "authors" (
 	"last_login_at" timestamp with time zone,
 	"preferred_locale" varchar(5) DEFAULT 'en',
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "authors_clerk_user_id_unique" UNIQUE("clerk_user_id"),
+	CONSTRAINT "authors_user_id_unique" UNIQUE("user_id"),
 	CONSTRAINT "authors_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
@@ -153,7 +197,22 @@ CREATE TABLE "credit_ledger" (
 	"story_id" uuid
 );
 --> statement-breakpoint
+CREATE TABLE "pricing" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"service_code" varchar(50) NOT NULL,
+	"credits" integer NOT NULL,
+	"is_active" boolean DEFAULT true NOT NULL,
+	"is_mandatory" boolean DEFAULT false NOT NULL,
+	"is_default" boolean DEFAULT false NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "pricing_service_code_unique" UNIQUE("service_code")
+);
+--> statement-breakpoint
+ALTER TABLE "accounts" ADD CONSTRAINT "accounts_userId_users_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "sessions" ADD CONSTRAINT "sessions_userId_users_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "addresses" ADD CONSTRAINT "addresses_author_id_authors_author_id_fk" FOREIGN KEY ("author_id") REFERENCES "public"."authors"("author_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "authors" ADD CONSTRAINT "authors_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "events" ADD CONSTRAINT "events_author_id_authors_author_id_fk" FOREIGN KEY ("author_id") REFERENCES "public"."authors"("author_id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "stories" ADD CONSTRAINT "stories_author_id_authors_author_id_fk" FOREIGN KEY ("author_id") REFERENCES "public"."authors"("author_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "story_versions" ADD CONSTRAINT "story_versions_story_id_stories_story_id_fk" FOREIGN KEY ("story_id") REFERENCES "public"."stories"("story_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

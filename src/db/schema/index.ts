@@ -5,6 +5,9 @@
 // Enums
 export * from './enums';
 
+// Authentication tables (NextAuth.js)
+export * from './auth';
+
 // Domain tables and types
 export * from './authors';
 export * from './stories';

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { UserButton } from '@clerk/nextjs';
+import { UserButton } from '@/components/auth/AuthComponents';
 
 export default function AdminHeader() {
   return (

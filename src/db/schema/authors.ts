@@ -1,5 +1,6 @@
-import { pgTable, uuid, varchar, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, timestamp, jsonb, text } from "drizzle-orm/pg-core";
 import { addressTypeEnum } from './enums';
+import { users } from './auth';
 
 // -----------------------------------------------------------------------------
 // Authors domain
@@ -8,7 +9,7 @@ import { addressTypeEnum } from './enums';
 // Authors (formerly users)
 export const authors = pgTable("authors", {
   authorId: uuid("author_id").primaryKey().defaultRandom(),
-  clerkUserId: varchar("clerk_user_id", { length: 255 }).notNull().unique(), // Clerk User ID
+  userId: text("user_id").notNull().unique().references(() => users.id, { onDelete: 'cascade' }), // NextAuth.js User ID
   displayName: varchar("display_name", { length: 120 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   fiscalNumber: varchar("fiscal_number", { length: 40 }),

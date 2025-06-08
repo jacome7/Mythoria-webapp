@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useUser } from "@clerk/nextjs";
+import { useUser } from "@/lib/clerk-compatibility";
 
 export default function HelloWorld() {
   const { user, isLoaded } = useUser();
@@ -21,7 +21,7 @@ export default function HelloWorld() {
     );
   }
 
-  const userName = user.firstName || user.emailAddresses?.[0]?.emailAddress || 'User';
+  const userName = user.name || user.email || 'User';
   
   return (
     <main className="flex items-center justify-center min-h-screen">

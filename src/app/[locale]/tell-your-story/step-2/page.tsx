@@ -10,13 +10,13 @@ export default function Step2Page() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'image' | 'audio' | 'text'>('text');
   const [storyText, setStoryText] = useState('');
-  const [uploadedImage, setUploadedImage] = useState<File | null>(null);  const [uploadedAudio, setUploadedAudio] = useState<File | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null); const [uploadedAudio, setUploadedAudio] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [audioPreview, setAudioPreview] = useState<string | null>(null); const [isCapturing, setIsCapturing] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isCreatingStory, setIsCreatingStory] = useState(false);
   // Debug modal states
-  const [showDebugModal, setShowDebugModal] = useState(false);  const [debugRequest, setDebugRequest] = useState<{
+  const [showDebugModal, setShowDebugModal] = useState(false); const [debugRequest, setDebugRequest] = useState<{
     userDescription: string;
     imageData: string | null;
     audioData: string | null;
@@ -132,28 +132,28 @@ export default function Step2Page() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
-      
+
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
-      
+
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           audioChunksRef.current.push(event.data);
         }
       };
-      
+
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
         const audioFile = new File([audioBlob], 'recorded-audio.wav', { type: 'audio/wav' });
-        
+
         setUploadedAudio(audioFile);
         const audioUrl = URL.createObjectURL(audioBlob);
         setAudioPreview(audioUrl);
-        
+
         // Stop all audio tracks
         stream.getTracks().forEach(track => track.stop());
       };
-      
+
       mediaRecorder.start();
       setIsRecording(true);
     } catch (error) {
@@ -274,7 +274,7 @@ export default function Step2Page() {
     if (!debugRequest || !storyId) return;
 
     try {
-      setIsProcessingGenAI(true);      console.log('Sending to GenAI:', debugRequest);
+      setIsProcessingGenAI(true); console.log('Sending to GenAI:', debugRequest);
       const genaiResponse = await fetch('/api/stories/genai-structure', {
         method: 'POST',
         headers: {
@@ -370,9 +370,9 @@ export default function Step2Page() {
                     <div className="text-center text-sm text-gray-600 mb-2">
                       Step {currentStep} of {totalSteps}
                     </div>
-                    <progress 
-                      className="progress progress-primary w-full" 
-                      value={currentStep} 
+                    <progress
+                      className="progress progress-primary w-full"
+                      value={currentStep}
                       max={totalSteps}
                     ></progress>
                   </div>
@@ -544,7 +544,7 @@ export default function Step2Page() {
                         <canvas ref={canvasRef} className="hidden" />
                       </div>
                     )}
-                    
+
                     {/* Audio Upload Tab Content */}
                     {activeTab === 'audio' && (
                       <div className="space-y-6">
@@ -675,84 +675,86 @@ export default function Step2Page() {
         {showDebugModal && (
           <div className="modal modal-open">
             <div className="modal-box max-w-4xl">
-              <h3 className="font-bold text-lg mb-4">🔍 GenAI Debug Console</h3>              {/* Request Section */}
-              <div className="mb-6">                <h4 className="font-semibold text-md mb-2">
+              <h3 className="font-bold text-lg mb-4">🔍 GenAI Debug Console</h3>
+              {/* Request Section */}
+              <div className="mb-6">
+                <h4 className="font-semibold text-md mb-2">
                   📤 Request to GenAI:
                   {debugRequest?.imageData && <span className="text-info ml-2">📷 Image Included</span>}
                   {debugRequest?.audioData && <span className="text-success ml-2">🎤 Audio Included</span>}
                 </h4>
-                <div className="bg-base-200 p-4 rounded-lg overflow-auto max-h-40">
+              </div>
+              <div className="bg-base-200 p-4 rounded-lg overflow-auto max-h-40">
+                <pre className="text-xs whitespace-pre-wrap">
+                  {JSON.stringify({
+                    ...debugRequest,
+                    imageData: debugRequest?.imageData ? '[Base64 Image Data - Hidden for readability]' : undefined,
+                    audioData: debugRequest?.audioData ? '[Base64 Audio Data - Hidden for readability]' : undefined
+                  }, null, 2)}
+                </pre>
+              </div>
+            </div>
+
+            {/* Send Button */}
+            {!debugResponse && (
+              <div className="mb-6 text-center">                  <button
+                className={`btn btn-primary btn-lg ${isProcessingGenAI ? 'loading' : ''}`}
+                onClick={handleSendToGenAI}
+                disabled={isProcessingGenAI}
+              >                  {isProcessingGenAI
+                ? 'Processing...'
+                : debugRequest?.imageData
+                  ? '🚀 Analyze Image with GenAI'
+                  : debugRequest?.audioData
+                    ? '🚀 Analyze Audio with GenAI'
+                    : '🚀 Send to GenAI'
+                }
+              </button>
+              </div>
+            )}
+
+            {/* Response Section */}
+            {debugResponse && (
+              <div className="mb-6">
+                <h4 className="font-semibold text-md mb-2">
+                  📥 Response from GenAI:
+                  {debugResponse.success && <span className="text-success ml-2">✅ Success</span>}
+                  {debugResponse.error && <span className="text-error ml-2">❌ Error</span>}
+                </h4>
+                <div className="bg-base-200 p-4 rounded-lg overflow-auto max-h-60">
                   <pre className="text-xs whitespace-pre-wrap">
-                    {JSON.stringify({
-                      ...debugRequest,
-                      imageData: debugRequest?.imageData ? '[Base64 Image Data - Hidden for readability]' : undefined,
-                      audioData: debugRequest?.audioData ? '[Base64 Audio Data - Hidden for readability]' : undefined
-                    }, null, 2)}
+                    {JSON.stringify(debugResponse, null, 2)}
                   </pre>
                 </div>
               </div>
+            )}
 
-              {/* Send Button */}
-              {!debugResponse && (
-                <div className="mb-6 text-center">                  <button
-                  className={`btn btn-primary btn-lg ${isProcessingGenAI ? 'loading' : ''}`}
-                  onClick={handleSendToGenAI}
-                  disabled={isProcessingGenAI}
-                >                  {isProcessingGenAI
-                    ? 'Processing...'
-                    : debugRequest?.imageData
-                      ? '🚀 Analyze Image with GenAI'
-                      : debugRequest?.audioData
-                        ? '🚀 Analyze Audio with GenAI'
-                        : '🚀 Send to GenAI'
-                  }
-                </button>
-                </div>
-              )}
-
-              {/* Response Section */}
+            {/* Action Buttons */}
+            <div className="modal-action">
+              <button
+                className="btn btn-outline"
+                onClick={handleSkipGenAI}
+              >
+                Skip GenAI & Continue
+              </button>
               {debugResponse && (
-                <div className="mb-6">
-                  <h4 className="font-semibold text-md mb-2">
-                    📥 Response from GenAI:
-                    {debugResponse.success && <span className="text-success ml-2">✅ Success</span>}
-                    {debugResponse.error && <span className="text-error ml-2">❌ Error</span>}
-                  </h4>
-                  <div className="bg-base-200 p-4 rounded-lg overflow-auto max-h-60">
-                    <pre className="text-xs whitespace-pre-wrap">
-                      {JSON.stringify(debugResponse, null, 2)}
-                    </pre>
-                  </div>
-                </div>
+                <button
+                  className="btn btn-primary"
+                  onClick={handleContinueToStep3}
+                >
+                  Continue to Step 3
+                </button>
               )}
-
-              {/* Action Buttons */}
-              <div className="modal-action">
-                <button
-                  className="btn btn-outline"
-                  onClick={handleSkipGenAI}
-                >
-                  Skip GenAI & Continue
-                </button>
-                {debugResponse && (
-                  <button
-                    className="btn btn-primary"
-                    onClick={handleContinueToStep3}
-                  >
-                    Continue to Step 3
-                  </button>
-                )}
-                <button
-                  className="btn btn-ghost"
-                  onClick={() => setShowDebugModal(false)}
-                >
-                  Close Debug
-                </button>
-              </div>
+              <button
+                className="btn btn-ghost"
+                onClick={() => setShowDebugModal(false)}
+              >
+                Close Debug
+              </button>
             </div>
           </div>
         )}
-      </SignedIn>
+      </SignedIn >
     </>
   );
 }
