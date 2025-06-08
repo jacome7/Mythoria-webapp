@@ -38,7 +38,7 @@ Mythoria is built with a modern web development stack:
     *   [Drizzle ORM](https://orm.drizzle.team/) (TypeScript ORM for SQL databases)
     *   [PostgreSQL](https://www.postgresql.org/) (as inferred from `pg` and Drizzle usage)
 *   **Authentication:**
-    *   [@clerk/nextjs](https://clerk.com/) for user management and authentication.
+    *   Authentication features coming soon.
 *   **Analytics:**
     *   [Google Analytics 4](https://analytics.google.com/) for user behavior tracking and insights
 *   **Development & Tooling:**

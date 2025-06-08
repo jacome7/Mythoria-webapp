@@ -1,5 +1,5 @@
-import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
+import { UserMenu } from "./user-menu";
 
 export function Header() {
   return (
@@ -22,9 +22,7 @@ export function Header() {
           </div>
           <ul tabIndex={0} className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
             <li><Link href="/">Home</Link></li>
-            <SignedIn>
-              <li><Link href="/dashboard">Dashboard</Link></li>
-            </SignedIn>
+            <li><Link href="/about">About</Link></li>
           </ul>
         </div>
         <Link href="/" className="btn btn-ghost text-xl">Mythoria</Link>
@@ -32,27 +30,10 @@ export function Header() {
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
           <li><Link href="/">Home</Link></li>
-          <SignedIn>
-            <li><Link href="/dashboard">Dashboard</Link></li>
-          </SignedIn>
+          <li><Link href="/about">About</Link></li>
         </ul>
-      </div>
-      <div className="navbar-end">
-        <SignedOut>
-          <SignInButton mode="modal">
-            <button className="btn btn-outline btn-primary">Sign In</button>
-          </SignInButton>
-        </SignedOut>
-        
-        <SignedIn>
-          <UserButton 
-            appearance={{
-              elements: {
-                userButtonAvatarBox: "w-8 h-8",
-              },
-            }}
-          />
-        </SignedIn>
+      </div>      <div className="navbar-end">
+        <UserMenu />
       </div>
     </div>
   );

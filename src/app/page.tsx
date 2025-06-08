@@ -1,7 +1,6 @@
-import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
-import Link from "next/link";
 import { Header } from "./components/header";
 import { Footer } from "./components/footer";
+import Link from "next/link";
 
 export default function HomePage() {
   return (
@@ -17,22 +16,19 @@ export default function HomePage() {
                 Your adventure awaits in the mystical world of Mythoria. Create, manage, and explore your mythical adventures like never before.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <SignedIn>
-                  <Link href="/dashboard" className="btn btn-accent btn-lg">
-                    Go to Dashboard
-                  </Link>
-                </SignedIn>
-                
-                <SignedOut>
-                  <SignInButton mode="modal">
-                    <button className="btn btn-primary btn-lg">
+                <div className="space-y-4">
+                  <p className="text-primary-content/80">
+                    Sign in to start your adventure!
+                  </p>
+                  <div className="space-x-4">
+                    <Link href="/auth/signin" className="btn btn-accent">
                       Sign In
-                    </button>
-                  </SignInButton>
-                  <Link href="/sign-up" className="btn btn-outline btn-lg">
-                    Create Account
-                  </Link>
-                </SignedOut>
+                    </Link>
+                    <Link href="/about" className="btn btn-outline btn-accent">
+                      Learn More
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

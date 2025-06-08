@@ -5,7 +5,7 @@ This repository contains the **Mythoria** web application. It is a TypeScript/Ne
 ## Project Overview
 - **Frameworks**: Next.js (App Router), React 19, Tailwind CSS via `daisyui`.
 - **Backend**: Next.js API routes with PostgreSQL accessed through Drizzle ORM.
-- **Auth**: Clerk.
+- **Auth**: Authentication features coming soon.
 - **Docs**: See `docs/README.md` for an index of documentation covering development setup, deployment and architecture.
 
 ## Key Directories
@@ -20,7 +20,7 @@ This repository contains the **Mythoria** web application. It is a TypeScript/Ne
    ```bash
    npm install
    ```
-2. Create a `.env.local` file based on project documentation (variables such as database credentials and Clerk keys are required). An example production file lives at `.env.production`.
+2. Create a `.env.local` file based on project documentation (variables such as database credentials are required). An example production file lives at `.env.production`.
 3. Prepare the database (optional):
    ```bash
    npm run db:push
