@@ -30,6 +30,9 @@ function Show-Help {
     Write-Host "  -Staging     Deploy to the staging service ($BASE_SERVICE_NAME-staging)" -ForegroundColor White
     Write-Host "  -NoBuild     Skip the front-end build step (assumes ./dist already exists)" -ForegroundColor White
     Write-Host "  -Help        Show this help message" -ForegroundColor White
+    Write-Host ""
+    Write-Host "Note: This script now uses Google Secret Manager for sensitive data." -ForegroundColor Cyan
+    Write-Host "Run .\scripts\setup-secrets.ps1 first if you haven't set up secrets yet." -ForegroundColor Cyan
 }
 
 # --- Console helpers ---------------------------------------------------------

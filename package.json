@@ -10,7 +10,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx -r dotenv/config ./src/db/migrate.ts",
     "db:push": "drizzle-kit push",
-    "db:reset": "tsx -r dotenv/config ./src/db/reset.ts",    "db:setup": "npm run db:reset && npm run db:push",
+    "db:reset": "tsx -r dotenv/config ./src/db/reset.ts",
+    "db:setup": "npm run db:reset && npm run db:push",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx -r dotenv/config ./src/db/seed.ts",
     "db:seed:pricing": "tsx -r dotenv/config ./scripts/seed-pricing.ts",
@@ -23,7 +24,8 @@
     "backup:db": "bash scripts/backup-db.sh",
     "setup:env": "bash scripts/setup-env.sh",
     "health:check": "curl -f http://localhost:3000/api/health || curl -f https://mythoria.pt/api/health"
-  },  "dependencies": {
+  },
+  "dependencies": {
     "@clerk/localizations": "^3.16.3",
     "@clerk/nextjs": "^6.21.0",
     "@google-cloud/vertexai": "^1.10.0",
@@ -41,6 +43,7 @@
     "react-icons": "^5.5.0",
     "react-type-animation": "^3.2.0",
     "svix": "^1.66.0",
+    "tsx": "^4.19.4",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
