@@ -141,6 +141,14 @@ export class PricingService {
 
     return { total, breakdown };
   }
+
+  /**
+   * Get initial author credits amount from pricing table
+   */
+  async getInitialAuthorCredits(): Promise<number> {
+    const pricing = await this.getPricingByServiceCode('initialAuthorCredits');
+    return pricing?.credits || 5; // Default fallback to 5 if not found
+  }
 }
 
 // Export singleton instance

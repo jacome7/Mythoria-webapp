@@ -23,8 +23,7 @@ async function resetDatabase() {
       : { rejectUnauthorized: false },
   });
   
-  try {
-    // Drop all tables and types in the correct order (considering foreign key constraints)
+  try {    // Drop all tables and types in the correct order (considering foreign key constraints)
     const dropQueries = [
       // Drop tables that reference other tables first
       'DROP TABLE IF EXISTS story_characters CASCADE;',
@@ -38,12 +37,16 @@ async function resetDatabase() {
       'DROP TABLE IF EXISTS characters CASCADE;',
       'DROP TABLE IF EXISTS stories CASCADE;',
       'DROP TABLE IF EXISTS authors CASCADE;',
+      'DROP TABLE IF EXISTS leads CASCADE;',
+      'DROP TABLE IF EXISTS author_credit_balances CASCADE;',
+      'DROP TABLE IF EXISTS credit_ledger CASCADE;',
+      'DROP TABLE IF EXISTS pricing CASCADE;',
       'DROP TABLE IF EXISTS users CASCADE;', // Drop old users table if it exists
-      
-      // Drop custom types
+        // Drop custom types (enums)
       'DROP TYPE IF EXISTS story_status CASCADE;',
       'DROP TYPE IF EXISTS address_type CASCADE;',
       'DROP TYPE IF EXISTS payment_provider CASCADE;',
+      'DROP TYPE IF EXISTS credit_event_type CASCADE;',
       
       // Drop the drizzle migration table
       'DROP TABLE IF EXISTS __drizzle_migrations CASCADE;'

@@ -53,3 +53,29 @@ export async function requireCurrentAuthor() {
   
   return author;
 }
+
+export async function getAuthDebugInfo() {
+  try {
+    const authData = await auth();
+    const user = await currentUser();
+    
+    return {
+      auth: authData,
+      user: user ? {
+        id: user.id,
+        emailAddresses: user.emailAddresses,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      } : null,
+      timestamp: new Date().toISOString(),
+    };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : String(error),
+      timestamp: new Date().toISOString(),
+    };
+  }
+}

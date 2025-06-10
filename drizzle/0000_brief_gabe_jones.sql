@@ -153,6 +153,18 @@ CREATE TABLE "credit_ledger" (
 	"story_id" uuid
 );
 --> statement-breakpoint
+CREATE TABLE "pricing" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"service_code" varchar(50) NOT NULL,
+	"credits" integer NOT NULL,
+	"is_active" boolean DEFAULT true NOT NULL,
+	"is_mandatory" boolean DEFAULT false NOT NULL,
+	"is_default" boolean DEFAULT false NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "pricing_service_code_unique" UNIQUE("service_code")
+);
+--> statement-breakpoint
 ALTER TABLE "addresses" ADD CONSTRAINT "addresses_author_id_authors_author_id_fk" FOREIGN KEY ("author_id") REFERENCES "public"."authors"("author_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "events" ADD CONSTRAINT "events_author_id_authors_author_id_fk" FOREIGN KEY ("author_id") REFERENCES "public"."authors"("author_id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "stories" ADD CONSTRAINT "stories_author_id_authors_author_id_fk" FOREIGN KEY ("author_id") REFERENCES "public"."authors"("author_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

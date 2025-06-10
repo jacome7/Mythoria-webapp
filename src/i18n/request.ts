@@ -8,12 +8,12 @@ export default getRequestConfig(async ({requestLocale}) => {
   if (!locale || !routing.locales.includes(locale as (typeof routing.locales)[number])) {
     locale = routing.defaultLocale;
   }
-
   // Load and merge messages from different domain files
-  const [commonMessages, publicPagesMessages, privacyPolicyMessages] = await Promise.all([
+  const [commonMessages, publicPagesMessages, privacyPolicyMessages, pricingMessages] = await Promise.all([
     import(`../messages/${locale}/common.json`).then(module => module.default),
     import(`../messages/${locale}/publicPages.json`).then(module => module.default),
-    import(`../messages/${locale}/privacy-policy.json`).then(module => module.default)
+    import(`../messages/${locale}/privacy-policy.json`).then(module => module.default),
+    import(`../messages/${locale}/pricing.json`).then(module => module.default)
   ]);
 
   return {
@@ -21,7 +21,8 @@ export default getRequestConfig(async ({requestLocale}) => {
     messages: {
       ...commonMessages,
       ...publicPagesMessages,
-      ...privacyPolicyMessages
+      ...privacyPolicyMessages,
+      ...pricingMessages
     }
   };
 });

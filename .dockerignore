@@ -13,6 +13,6 @@ docker-compose*
 .nyc_output
 .vscode
 coverage
-test-connection.js
 DRIZZLE_SETUP.md
 drizzle/
+docs/*

@@ -1,0 +1,95 @@
+{
+  "PricingPage": {
+    "header": {
+      "title": "Os Nossos Preços",
+      "subtitle": "Simples, flexível e desenhado para as suas necessidades de criação de histórias."
+    },    "creditPackages": {
+      "title": "Comprar Créditos de História",
+      "badges": {
+        "bestValue": "Melhor Valor",
+        "popular": "Popular"
+      },
+      "packages": {
+        "credits5": {
+          "description": "Perfeito para experimentar."
+        },
+        "credits10": {
+          "description": "Ótimo para algumas histórias."
+        },
+        "credits30": {
+          "description": "Ideal para contadores de histórias entusiastas."
+        },
+        "credits100": {
+          "description": "Para os criadores supremos de histórias!"
+        }
+      },
+      "buyButton": "Comprar {credits} Créditos",
+      "credits": "Créditos"
+    },
+    "serviceCosts": {
+      "title": "O Que os Seus Créditos Podem Desbloquear",
+      "loading": "A carregar informação de preços...",
+      "serviceNames": {
+        "ebook": "Gerar um livro digital (eBook)",
+        "audiobook": "Gerar um audiolivro",
+        "printed_book": "Encomendar um livro impresso e enviado"
+      },
+      "tableHeaders": {
+        "service": "Serviço",
+        "cost": "Custo em Créditos"
+      },
+      "creditsUnit": "Créditos"
+    },
+    "whyCredits": {
+      "title": "Porquê um Sistema Baseado em Créditos?",
+      "benefits": {
+        "flexibility": {
+          "title": "Flexibilidade:",
+          "description": "Compre créditos em pacotes e use-os para qualquer serviço, a qualquer momento."
+        },
+        "savings": {
+          "title": "Poupanças:",
+          "description": "Desfrute de melhor valor com pacotes de créditos maiores. Quanto mais comprar, mais poupa!"
+        },
+        "gifting": {
+          "title": "Fácil de Oferecer:",
+          "description": "Os créditos podem ser um presente perfeito para amigos e família, permitindo-lhes escolher a sua própria aventura narrativa. (Funcionalidade de oferta em breve!)"
+        },
+        "simplicity": {
+          "title": "Simplicidade:",
+          "description": "Compreenda os custos antecipadamente para todos os nossos serviços criativos. Sem taxas ocultas."
+        }
+      }
+    },
+    "faq": {
+      "title": "Perguntas Frequentes",
+      "questions": {
+        "expiration": {
+          "question": "Os créditos expiram?",
+          "answer": "Não, os seus créditos Mythoria nunca expiram! Pode usá-los sempre que a inspiração surgir."
+        },
+        "refund": {
+          "question": "Posso obter um reembolso dos créditos não utilizados?",
+          "answer": "Atualmente, os créditos não são reembolsáveis. No entanto, podem ser usados para qualquer um dos nossos serviços ou oferecidos a outro utilizador no futuro."
+        },
+        "payment": {
+          "question": "Que métodos de pagamento aceitam?",
+          "answer": "Planeamos aceitar todos os principais cartões de crédito (Visa, MasterCard, American Express) e PayPal. (Integração de pagamento em breve)"
+        },
+        "shipping": {
+          "question": "Como são enviados os livros impressos?",
+          "answer": "Os livros impressos são enviados via serviços postais standard. Os tempos e custos de envio podem variar dependendo da sua localização. Verá informações detalhadas de envio no checkout ao encomendar um livro impresso."
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Pronto para Começar a Sua Aventura Narrativa?",
+      "subtitle": "Obtenha alguns créditos e comece a criar histórias únicas e personalizadas hoje. Ofereça um presente que será valorizado para toda a vida!",
+      "getCreditsButton": "Obter Créditos Agora",
+      "createStoryButton": "Criar a Sua História"
+    },
+    "errors": {
+      "loadingFailed": "Falha ao carregar informação de preços"
+    }
+  }
+}

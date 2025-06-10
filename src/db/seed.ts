@@ -1,3 +1,8 @@
+import { config } from "dotenv";
+
+// Load environment variables from .env.local
+config({ path: ".env.local" });
+
 import { db } from "./index";
 import {
   authors,
@@ -200,11 +205,12 @@ async function seedDatabase() {
       .from(creditLedger)
       .where(eq(creditLedger.authorId, author.authorId))
       .limit(1);
-    
-    if (existingCredits.length === 0) {
-      // Initialize with some starter credits (e.g., 10 credits)
-      await creditService.initializeAuthorCredits(author.authorId, 10);
-      console.log(`💰 Initialized 10 credits for author ${author.authorId}`);
+      if (existingCredits.length === 0) {
+      // Initialize with starter credits from pricing table
+      const { pricingService } = await import('./services/pricing');
+      const initialCredits = await pricingService.getInitialAuthorCredits();
+      await creditService.initializeAuthorCredits(author.authorId, initialCredits);
+      console.log(`💰 Initialized ${initialCredits} credits for author ${author.authorId}`);
     }
   }
 

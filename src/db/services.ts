@@ -2,13 +2,14 @@ import { db } from "./index";
 import { authors, stories, characters, storyCharacters, creditLedger, authorCreditBalances } from "./schema";
 import { eq, and, count, desc, sql } from "drizzle-orm";
 import { ClerkUserForSync } from "@/types/clerk";
+import { pricingService } from "./services/pricing";
 
 // Author operations
 export const authorService = {  async createAuthor(authorData: { clerkUserId: string; email: string; displayName: string }) {
     const [author] = await db.insert(authors).values(authorData).returning();
     
-    // Initialize credits for new author with initial credits from environment
-    const initialCredits = parseInt(process.env.INITIAL_USER_CREDITS || '10', 10);
+    // Initialize credits for new author with initial credits from pricing table
+    const initialCredits = await pricingService.getInitialAuthorCredits();
     await creditService.initializeAuthorCredits(author.authorId, initialCredits);
     
     return author;
@@ -41,8 +42,8 @@ export const authorService = {  async createAuthor(authorData: { clerkUserId: st
         ...(primaryPhone?.phoneNumber && { mobilePhone: primaryPhone.phoneNumber })
       };      const [newAuthor] = await db.insert(authors).values(newAuthorData).returning();
       
-      // Initialize credits for new author with initial credits from environment
-      const initialCredits = parseInt(process.env.INITIAL_USER_CREDITS || '10', 10);
+      // Initialize credits for new author with initial credits from pricing table
+      const initialCredits = await pricingService.getInitialAuthorCredits();
       await creditService.initializeAuthorCredits(newAuthor.authorId, initialCredits);
       
       console.log('Created new user on sign-in:', newAuthor.clerkUserId, `with ${initialCredits} initial credits`);

@@ -39,6 +39,25 @@ function Write-Warn     { param([string]$Msg) Write-Host "⚠️  $Msg" -Foregro
 function Write-Err      { param([string]$Msg) Write-Host "❌ $Msg" -ForegroundColor Red   }
 # -----------------------------------------------------------------------------
 
+# Helper function to get a value from .env.production file
+function Get-EnvVariable {
+    param (
+        [string]$FilePath,
+        [string]$VariableName
+    )
+    $content = Get-Content $FilePath -ErrorAction SilentlyContinue
+    if ($null -eq $content) {
+        Write-Warn "Warning: Environment file '$FilePath' not found."
+        return $null
+    }
+    foreach ($line in $content) {
+        if ($line -match "^\s*$VariableName\s*=\s*(.*)") {
+            return $matches[1].Trim()
+        }
+    }
+    return $null
+}
+
 function Test-Prerequisites {
     Write-Info "Checking prerequisites..."
 
@@ -95,34 +114,65 @@ function Build-Application {
 
 function Deploy-With-CloudBuild {
     Write-Info "Starting Cloud Build submission"
-    if ($Staging) {
-        & gcloud builds submit --config cloudbuild.yaml --substitutions "_SERVICE_NAME=$SERVICE_NAME,_REGION=$REGION"
-    } else {
-        & gcloud builds submit --config cloudbuild.yaml
-    }
+    # Pass service name and region as substitutions
+    & gcloud builds submit --config cloudbuild.yaml --substitutions "_SERVICE_NAME=$SERVICE_NAME,_REGION=$REGION"
     Write-Success "Cloud Build finished"
 }
 
 function Deploy-Direct {
     Write-Info "Building Docker image $IMAGE_NAME"
-    & docker build --tag $IMAGE_NAME .
+    
+    $envFilePath = Join-Path $PSScriptRoot "..\.env.production"
+
+    # Prepare build arguments from .env.production
+    $buildArgs = @(
+        "--build-arg", "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY')",
+        "--build-arg", "NEXT_PUBLIC_CLERK_SIGN_IN_URL=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'CLERK_SIGN_IN_URL')", # Source from CLERK_SIGN_IN_URL
+        "--build-arg", "NEXT_PUBLIC_CLERK_SIGN_UP_URL=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'CLERK_SIGN_UP_URL')", # Source from CLERK_SIGN_UP_URL
+        "--build-arg", "NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'CLERK_AFTER_SIGN_IN_URL')", # Source from CLERK_AFTER_SIGN_IN_URL
+        "--build-arg", "NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'CLERK_AFTER_SIGN_UP_URL')", # Source from CLERK_AFTER_SIGN_UP_URL
+        "--build-arg", "NEXT_PUBLIC_CLERK_IS_DEVELOPMENT=false", # Typically false for production
+        "--build-arg", "NEXT_PUBLIC_SHOW_SOON_PAGE=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'NEXT_PUBLIC_SHOW_SOON_PAGE')",
+        "--build-arg", "NEXT_PUBLIC_GA_MEASUREMENT_ID=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'NEXT_PUBLIC_GA_MEASUREMENT_ID')"
+    )
+    
+    & docker build --tag $IMAGE_NAME $buildArgs .
 
     Write-Info "Pushing image to Container Registry"
     & docker push $IMAGE_NAME
 
     Write-Info "Deploying to Cloud Run service '$SERVICE_NAME' in $REGION"
-    & gcloud run deploy $SERVICE_NAME `
-        --image $IMAGE_NAME `
-        --region $REGION `
-        --platform managed `
-        --allow-unauthenticated `
-        --port 3000 `
-        --memory 1Gi `
-        --cpu 1 `
-        --max-instances 10 `
-        --min-instances 0 `
-        --set-env-vars "NODE_ENV=production" `
-        --env-vars-file .env.production.yaml
+    
+    $envVarsFilePath = Join-Path $PSScriptRoot "..\.env.production.yaml"
+    if (-not (Test-Path $envVarsFilePath)) {
+        Write-Warn "Environment file '$envVarsFilePath' not found. Create it from '.env.production'."
+        Write-Warn "Deployment will proceed without --env-vars-file if it's missing."
+        & gcloud run deploy $SERVICE_NAME `
+            --image $IMAGE_NAME `
+            --region $REGION `
+            --platform managed `
+            --allow-unauthenticated `
+            --clear-secrets `
+            --port 3000 `
+            --memory 1Gi `
+            --cpu 1 `
+            --max-instances 10 `
+            --min-instances 0 `
+            --set-env-vars "NODE_ENV=production" # Minimal set if YAML is missing
+    } else {
+        & gcloud run deploy $SERVICE_NAME `
+            --image $IMAGE_NAME `
+            --region $REGION `
+            --platform managed `
+            --allow-unauthenticated `
+            --clear-secrets `
+            --port 3000 `
+            --memory 1Gi `
+            --cpu 1 `
+            --max-instances 10 `
+            --min-instances 0 `
+            --env-vars-file $envVarsFilePath
+    }
 
     Write-Success "Image deployed to Cloud Run"
 }

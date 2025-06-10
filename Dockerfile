@@ -1,5 +1,5 @@
-# Use the official Node.js 20 image as a base.
-FROM node:20-alpine AS builder
+# Use the official Node.js 22 image as a base.
+FROM node:22-alpine AS builder
 
 # Set the working directory in the container.
 WORKDIR /app
@@ -12,6 +12,7 @@ ARG NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL
 ARG NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL
 ARG NEXT_PUBLIC_CLERK_IS_DEVELOPMENT
 ARG NEXT_PUBLIC_SHOW_SOON_PAGE
+ARG NEXT_PUBLIC_GA_MEASUREMENT_ID
 
 # Set environment variables for build time
 ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
@@ -21,6 +22,7 @@ ENV NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=$NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL
 ENV NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=$NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL
 ENV NEXT_PUBLIC_CLERK_IS_DEVELOPMENT=$NEXT_PUBLIC_CLERK_IS_DEVELOPMENT
 ENV NEXT_PUBLIC_SHOW_SOON_PAGE=$NEXT_PUBLIC_SHOW_SOON_PAGE
+ENV NEXT_PUBLIC_GA_MEASUREMENT_ID=$NEXT_PUBLIC_GA_MEASUREMENT_ID
 
 # Copy package.json and package-lock.json (if available)
 COPY package*.json ./
@@ -35,7 +37,7 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 
 # Set the working directory in the container.
 WORKDIR /app
@@ -66,4 +68,4 @@ ENV PORT 3000
 ENV NODE_ENV production
 
 # Command to run the application.
-CMD ["npm", "start"]
+CMD npm start

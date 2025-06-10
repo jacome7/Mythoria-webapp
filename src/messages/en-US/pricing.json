@@ -1,0 +1,95 @@
+{
+  "PricingPage": {
+    "header": {
+      "title": "Our Pricing",
+      "subtitle": "Simple, flexible, and designed for your storytelling needs."
+    },    "creditPackages": {
+      "title": "Purchase Story Credits",
+      "badges": {
+        "bestValue": "Best Value",
+        "popular": "Popular"
+      },
+      "packages": {
+        "credits5": {
+          "description": "Perfect for trying things out."
+        },
+        "credits10": {
+          "description": "Great for a couple of stories."
+        },
+        "credits30": {
+          "description": "Ideal for avid storytellers."
+        },
+        "credits100": {
+          "description": "For the ultimate story creators!"
+        }
+      },
+      "buyButton": "Buy {credits} Credits",
+      "credits": "Credits"
+    },
+    "serviceCosts": {
+      "title": "What Your Credits Can Unlock",
+      "loading": "Loading pricing information...",
+      "serviceNames": {
+        "ebook": "Generate a digital book (eBook)",
+        "audiobook": "Generate an audiobook", 
+        "printed_book": "Order a printed & shipped hardcover book"
+      },
+      "tableHeaders": {
+        "service": "Service",
+        "cost": "Cost in Credits"
+      },
+      "creditsUnit": "Credits"
+    },
+    "whyCredits": {
+      "title": "Why a Credit-Based System?",
+      "benefits": {
+        "flexibility": {
+          "title": "Flexibility:",
+          "description": "Purchase credits in bundles and use them for any service, anytime."
+        },
+        "savings": {
+          "title": "Savings:",
+          "description": "Enjoy better value with larger credit packages. The more you buy, the more you save!"
+        },
+        "gifting": {
+          "title": "Gifting Made Easy:",
+          "description": "Credits can be a perfect gift for friends and family, allowing them to choose their own storytelling adventure. (Gifting feature coming soon!)"
+        },
+        "simplicity": {
+          "title": "Simplicity:",
+          "description": "Understand the costs upfront for all our creative services. No hidden fees."
+        }
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "questions": {
+        "expiration": {
+          "question": "Do credits expire?",
+          "answer": "No, your Mythoria credits never expire! You can use them whenever inspiration strikes."
+        },
+        "refund": {
+          "question": "Can I get a refund on unused credits?",
+          "answer": "Currently, credits are non-refundable. However, they can be used for any of our services or gifted to another user in the future."
+        },
+        "payment": {
+          "question": "What payment methods do you accept?",
+          "answer": "We plan to accept all major credit cards (Visa, MasterCard, American Express) and PayPal. (Payment integration coming soon)"
+        },
+        "shipping": {
+          "question": "How are printed books shipped?",
+          "answer": "Printed books are shipped via standard postal services. Shipping times and costs may vary depending on your location. You'll see detailed shipping information at checkout when ordering a printed book."
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Ready to Start Your Storytelling Adventure?",
+      "subtitle": "Grab some credits and begin crafting unique, personalized stories today. Give a gift that will be cherished for a lifetime!",
+      "getCreditsButton": "Get Credits Now",
+      "createStoryButton": "Create Your Story"
+    },
+    "errors": {
+      "loadingFailed": "Failed to load pricing information"
+    }
+  }
+}
