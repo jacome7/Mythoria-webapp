@@ -25,6 +25,7 @@
     "setup:env": "bash scripts/setup-env.sh",
     "health:check": "curl -f http://localhost:3000/api/health || curl -f https://mythoria.pt/api/health"
   },
+  "sideEffects": false,
   "dependencies": {
     "@clerk/localizations": "^3.16.3",
     "@clerk/nextjs": "^6.21.0",
@@ -34,12 +35,12 @@
     "daisyui": "^5.0.38",
     "dotenv": "^16.5.0",
     "drizzle-kit": "^0.31.1",
-    "drizzle-orm": "^0.43.1",
-    "next": "15.3.2",
+    "drizzle-orm": "^0.44.2",
+    "next": "^15.3.3",
     "next-intl": "^4.1.0",
     "pg": "^8.16.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
     "react-type-animation": "^3.2.0",
     "svix": "^1.66.0",
@@ -53,7 +54,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "15.3.2",
+    "eslint-config-next": "^15.3.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
