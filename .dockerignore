@@ -9,7 +9,6 @@ npm-debug.log
 .nyc_output
 coverage
 .env*
-!.env.production
 .DS_Store
 **/*.md
 docs/

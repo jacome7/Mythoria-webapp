@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { FaShoppingCart, FaBookOpen, FaVolumeUp, FaPrint, FaGift, FaQuestionCircle, FaRocket, FaPalette, FaFileDownload } from 'react-icons/fa';
 import { useTranslations } from 'next-intl';
 
@@ -38,11 +38,7 @@ export default function PricingPage() {
 	const [services, setServices] = useState<Service[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-
-	useEffect(() => {
-		fetchServices();
-	}, []);
-	const fetchServices = async () => {
+	const fetchServices = useCallback(async () => {
 		try {
 			const response = await fetch('/api/pricing/services');
 			if (!response.ok) {
@@ -56,7 +52,11 @@ export default function PricingPage() {
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, [t]);
+
+	useEffect(() => {
+		fetchServices();
+	}, [fetchServices]);
 
 	const getServiceName = (serviceCode: string): string => {
 		const serviceMap: { [key: string]: string } = {

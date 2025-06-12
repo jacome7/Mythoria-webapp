@@ -5,7 +5,6 @@ import {
 import { enUS } from '@clerk/localizations';
 import GoogleAnalytics from "../components/GoogleAnalytics";
 import AnalyticsProvider from "../components/AnalyticsProvider";
-import ClerkDebugMonitor from "../components/ClerkDebugMonitor";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -45,14 +44,9 @@ export default async function RootLayout({
           <GoogleAnalytics measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-86D0QFW197'} />
         </head>
         <body>
-          <div className="flex flex-col min-h-screen">
-            <AnalyticsProvider>
+          <div className="flex flex-col min-h-screen">            <AnalyticsProvider>
               <main className="flex-grow">{children}</main>
             </AnalyticsProvider>
-            {/* Only show debug monitor in development with debug mode enabled */}
-            {process.env.NODE_ENV === 'development' && isDebugMode && (
-              <ClerkDebugMonitor />
-            )}
           </div>
         </body>
       </html>
