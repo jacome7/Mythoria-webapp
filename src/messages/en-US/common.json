@@ -13,11 +13,11 @@
       "signUp": "Sign Up"
     },
     "logoAlt": "Mythoria Logo"
-  },
-  "Footer": {
-    "aboutFounder": "My name is Rodrigo, I'm almost 18 years old and I love listening to stories since I was little.",
+  },  "Footer": {
+    "aboutFounder": "My name is Rodrigo, I've just turned 18 years old and I love listening to stories since I was little.",
     "readMyStory": "Read my own story",
     "privacyPolicy": "Privacy Policy",
+    "emailAddress": "hello@mythoria.pt",
     "copyright": "Aventuras Contemporâneas, Lda - All rights reserved"
   },
   "EmailSignup": {

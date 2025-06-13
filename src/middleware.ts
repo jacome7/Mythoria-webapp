@@ -11,7 +11,9 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
       req.nextUrl.pathname.startsWith('/portaldegestao') ||
       req.nextUrl.pathname.startsWith('/v1/') ||
       req.nextUrl.pathname.startsWith('/sign-in') ||
-      req.nextUrl.pathname.startsWith('/sign-up')) {
+      req.nextUrl.pathname.startsWith('/sign-up') ||
+      req.nextUrl.pathname.match(/^\/[a-z]{2}-[A-Z]{2}\/sign-in/) ||
+      req.nextUrl.pathname.match(/^\/[a-z]{2}-[A-Z]{2}\/sign-up/)) {
     
     const response = NextResponse.next();
     response.headers.set('x-clerk-clock-skew-seconds', '600');

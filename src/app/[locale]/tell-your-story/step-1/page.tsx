@@ -4,6 +4,7 @@ import { SignedIn, SignedOut } from '@clerk/nextjs';
 import Link from 'next/link';
 import StepNavigation from '../../../../components/StepNavigation';
 import { useState, useEffect } from 'react';
+import { useLocale } from 'next-intl';
 
 interface AuthorData {
   authorId: string;
@@ -16,7 +17,10 @@ interface AuthorData {
   preferredLocale: string;
 }
 
-export default function Step1Page() {  const [, setAuthorData] = useState<AuthorData | null>(null);  const [loading, setLoading] = useState(true);
+export default function Step1Page() {
+  const locale = useLocale();
+  const [, setAuthorData] = useState<AuthorData | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   
@@ -91,10 +95,10 @@ export default function Step1Page() {  const [, setAuthorData] = useState<Author
             Don&apos;t worry, it&apos;s easier than convincing a dragon to share its treasure! 🐉
           </p>
           <div className="space-x-4">
-            <Link href="/sign-in" className="btn btn-primary btn-lg">
+            <Link href={`/${locale}/sign-in`} className="btn btn-primary btn-lg">
               🔐 Sign In to Start Your Adventure
             </Link>
-            <Link href="/sign-up" className="btn btn-outline btn-lg">
+            <Link href={`/${locale}/sign-up`} className="btn btn-outline btn-lg">
               ✨ Create Your Author Account
             </Link>
           </div>

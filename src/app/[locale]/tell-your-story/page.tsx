@@ -1,8 +1,10 @@
 import { redirect } from 'next/navigation';
 import { SignedIn, SignedOut } from '@clerk/nextjs';
 import Link from 'next/link';
+import { useLocale } from 'next-intl';
 
 export default function TellYourStoryPage() {
+  const locale = useLocale();
   return (
     <div className="container mx-auto px-4 py-8">
       <SignedOut>
@@ -12,10 +14,10 @@ export default function TellYourStoryPage() {
             Sign up to start creating your magical adventures with Mythoria.
           </p>
           <div className="space-x-4">
-            <Link href="/sign-up" className="btn btn-primary">
+            <Link href={`/${locale}/sign-up`} className="btn btn-primary">
               Get Started
             </Link>
-            <Link href="/sign-in" className="btn btn-outline">
+            <Link href={`/${locale}/sign-in`} className="btn btn-outline">
               Sign In
             </Link>
           </div>

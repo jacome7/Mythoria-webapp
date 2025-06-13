@@ -2,8 +2,12 @@
 
 import { SignUp } from '@clerk/nextjs'
 import Image from 'next/image'
+import { useTranslations, useLocale } from 'next-intl'
 
 export default function SignUpPage() {
+  const t = useTranslations('auth.signUp');
+  const locale = useLocale()
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 flex">
       {/* Left side - Logo and branding (only on desktop) */}
@@ -20,17 +24,17 @@ export default function SignUpPage() {
           </div>
           <div className="space-y-4">
             <h1 className="text-4xl font-bold text-gray-800">
-              Create Your Mythoria Account
+              {t('title')}
             </h1>
             <p className="text-lg text-gray-600 max-w-md mx-auto">
-              Join thousands of storytellers and start creating magical tales today.
+              {t('subtitle')}
             </p>
           </div>
           <div className="space-y-2 text-sm text-gray-500">
-            <p>🆓 First story absolutely free</p>
-            <p>👤 Unique character creation</p>
-            <p>📖 Published book quality</p>
-            <p>🚀 Unlimited creativity</p>
+            <p>{t('features.free')}</p>
+            <p>{t('features.character')}</p>
+            <p>{t('features.quality')}</p>
+            <p>{t('features.creativity')}</p>
           </div>
         </div>
       </div>
@@ -50,15 +54,14 @@ export default function SignUpPage() {
             </div>
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                Create Account
+                {t('pageTitle')}
               </h2>
               <p className="text-gray-600">
-                Start your storytelling journey with us today.
+                {t('pageSubtitle')}
               </p>
-            </div>
-            <SignUp 
-              fallbackRedirectUrl="/my-stories"
-              signInFallbackRedirectUrl="/my-stories"
+            </div>            <SignUp 
+              fallbackRedirectUrl={`/${locale}/my-stories`}
+              signInFallbackRedirectUrl={`/${locale}/my-stories`}
               appearance={{
                 elements: {
                   formButtonPrimary: 

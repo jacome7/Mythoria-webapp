@@ -5,12 +5,15 @@ import { SignedIn, SignedOut } from '@clerk/nextjs';
 import Link from 'next/link';
 import { FiPlus } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import MyStoriesTable from '@/components/MyStoriesTable';
 import MyCharactersTable from '@/components/MyCharactersTable';
 import CreditsDisplay from '@/components/CreditsDisplay';
 
 export default function MyStoriesPage() {
-  const t = useTranslations('MyStoriesPage'); const [authorName, setAuthorName] = useState<string>('Storyteller');
+  const t = useTranslations('MyStoriesPage');
+  const locale = useLocale();
+  const [authorName, setAuthorName] = useState<string>('Storyteller');
   const [credits, setCredits] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'stories' | 'characters'>('stories');
@@ -59,10 +62,10 @@ export default function MyStoriesPage() {
             You need to be signed in to view your stories.
           </p>
           <div className="space-x-4">
-            <Link href="/sign-in" className="btn btn-primary">
+            <Link href={`/${locale}/sign-in`} className="btn btn-primary">
               Sign In
             </Link>
-            <Link href="/sign-up" className="btn btn-outline">
+            <Link href={`/${locale}/sign-up`} className="btn btn-outline">
               Create Account
             </Link>
           </div>

@@ -3,8 +3,12 @@
 import { SignIn } from '@clerk/nextjs'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useTranslations, useLocale } from 'next-intl'
 
 export default function SignInPage() {
+  const t = useTranslations('auth.signIn');
+  const locale = useLocale();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex">
       {/* Left side - Logo and branding (only on desktop) */}
@@ -21,23 +25,23 @@ export default function SignInPage() {
           </div>
           <div className="space-y-4">
             <h1 className="text-4xl font-bold text-gray-800">
-              Welcome Back to Mythoria
+              {t('title')}
             </h1>
             <p className="text-lg text-gray-600 max-w-md mx-auto">
-              Continue your storytelling journey where you left off.
+              {t('subtitle')}
             </p>
             <p className="text-lg text-gray-600 max-w-md mx-auto">
-              First time here?{' '}
-              <Link href="/sign-up" className="text-orange-600 hover:text-orange-700 font-medium">
-                Create your account
+              {t('firstTimeText')}{' '}
+              <Link href={`/${locale}/sign-up`} className="text-orange-600 hover:text-orange-700 font-medium">
+                {t('createAccountLink')}
               </Link>
-              {' '}and start creating magical stories.
+              {' '}{t('createAccountText')}
             </p>
           </div>
           <div className="space-y-2 text-sm text-gray-500">
-            <p>✨ Unlimited story creation</p>
-            <p>📚 Character library</p>
-            <p>🎨 Customize your adventures</p>
+            <p>{t('features.unlimited')}</p>
+            <p>{t('features.library')}</p>
+            <p>{t('features.customize')}</p>
           </div>
         </div>
       </div>
@@ -56,10 +60,10 @@ export default function SignInPage() {
             </div>
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                Sign In
+                {t('pageTitle')}
               </h2>
               <p className="text-gray-600">
-                Welcome back! Please sign in to your account.
+                {t('pageSubtitle')}
               </p>
             </div>
             <SignIn

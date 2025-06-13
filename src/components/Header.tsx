@@ -6,11 +6,13 @@ import { UserButton, useUser } from '@clerk/nextjs';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import LanguageSwitcher from './LanguageSwitcher';
+import { useLocale } from 'next-intl';
 
 const Header = () => {
   const t = useTranslations('Header');
   const { isLoaded, isSignedIn } = useUser();
   const [isClient, setIsClient] = useState(false);
+  const locale = useLocale();
 
   useEffect(() => {
     setIsClient(true);
@@ -91,7 +93,7 @@ const Header = () => {
         </div>
         {!isSignedIn ? (
           <div className="flex gap-2">
-            <Link href="/sign-in" className="btn btn-primary">
+            <Link href={`/${locale}/sign-in`} className="btn btn-primary">
               {t('auth.signIn')}
             </Link>
           </div>
