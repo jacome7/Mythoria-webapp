@@ -10,6 +10,7 @@ import KPICard from '../../components/KPICard';
 interface KPIData {
   users: number;
   stories: number;
+  leads: number;
   revenue: number;
 }
 
@@ -76,9 +77,8 @@ export default function AdminPortal() {
       <main className="flex-1 container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold text-center mb-8">Dashboard</h1>
         <p className="text-center text-gray-600 mb-8">Project main indicators and KPIs</p>
-        
-        {/* KPI Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          {/* KPI Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           <KPICard
             title="Users"
             value={kpis?.users || 0}
@@ -89,6 +89,19 @@ export default function AdminPortal() {
             }
             href="/portaldegestao/users"
             description="Total registered authors"
+            isLoading={isLoadingKpis}
+          />
+          
+          <KPICard
+            title="Leads"
+            value={kpis?.leads || 0}
+            icon={
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            }
+            href="/portaldegestao/leads"
+            description="Total email leads collected"
             isLoading={isLoadingKpis}
           />
           

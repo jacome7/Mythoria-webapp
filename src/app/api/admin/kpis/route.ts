@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
-import { authorService, storyService } from '@/db/services';
+import { authorService, storyService, leadService } from '@/db/services';
 
 export async function GET() {
   try {
@@ -14,17 +14,17 @@ export async function GET() {
     const publicMetadata = user.publicMetadata as { [key: string]: string } | undefined;
     if (!publicMetadata || publicMetadata['autorizaçãoDeAcesso'] !== 'Comejá') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-
-    // Get KPI data
-    const [usersCount, storiesCount] = await Promise.all([
+    }    // Get KPI data
+    const [usersCount, storiesCount, leadsCount] = await Promise.all([
       authorService.getTotalAuthorsCount(),
-      storyService.getTotalStoriesCount()
+      storyService.getTotalStoriesCount(),
+      leadService.getTotalLeadsCount()
     ]);
 
     const kpis = {
       users: usersCount,
       stories: storiesCount,
+      leads: leadsCount,
       revenue: 6324 // Fixed value as requested
     };
 
