@@ -1,6 +1,6 @@
-import { pgTable, uuid, varchar, timestamp, text, jsonb, integer } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, timestamp, text, jsonb, integer, primaryKey } from "drizzle-orm/pg-core";
 import { authors } from './authors';
-import { storyStatusEnum } from './enums';
+import { storyStatusEnum, runStatusEnum, stepStatusEnum } from './enums';
 
 // -----------------------------------------------------------------------------
 // Stories domain
@@ -23,6 +23,9 @@ export const stories = pgTable("stories", {
   deliveryAddress: jsonb("delivery_address"), // Delivery address for printed books
   dedicationMessage: text("dedication_message"), // Personalized dedication message
   mediaLinks: jsonb("media_links"), // {"cover":"...","pdf":"...","audio":"..."}
+  // Story generation workflow convenience columns
+  storyGenerationStatus: runStatusEnum("story_generation_status"),
+  storyGenerationCompletedPercentage: integer("story_generation_completed_percentage").default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
@@ -36,6 +39,35 @@ export const storyVersions = pgTable("story_versions", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+// Story generation runs (one row per Workflows execution)
+export const storyGenerationRuns = pgTable("story_generation_runs", {
+  runId: uuid("run_id").primaryKey().defaultRandom(),
+  storyId: uuid("story_id").notNull().references(() => stories.storyId, { onDelete: 'cascade' }),
+  gcpWorkflowExecution: text("gcp_workflow_execution"), // Workflows "execution name" (projects/.../executions/...)
+  status: runStatusEnum("status").notNull().default('queued'),
+  currentStep: varchar("current_step", { length: 120 }), // e.g. generate_outline, write_chapter_3
+  errorMessage: text("error_message"),
+  startedAt: timestamp("started_at", { withTimezone: true }),
+  endedAt: timestamp("ended_at", { withTimezone: true }),
+  metadata: jsonb("metadata"), // optional scratch data (token counts, timing, etc.)
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// Story generation steps (optional, for granular auditing)
+export const storyGenerationSteps = pgTable("story_generation_steps", {
+  runId: uuid("run_id").notNull().references(() => storyGenerationRuns.runId, { onDelete: 'cascade' }),
+  stepName: varchar("step_name", { length: 120 }).notNull(),
+  status: stepStatusEnum("status").notNull().default('pending'),
+  detailJson: jsonb("detail_json"), // full LLM response, image URI, etc.
+  startedAt: timestamp("started_at", { withTimezone: true }),
+  endedAt: timestamp("ended_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+}, (table) => ({
+  pk: primaryKey({ columns: [table.runId, table.stepName] })
+}));
+
 // -----------------------------------------------------------------------------
 // Types
 // -----------------------------------------------------------------------------
@@ -44,3 +76,9 @@ export type NewStory = typeof stories.$inferInsert;
 
 export type StoryVersion = typeof storyVersions.$inferSelect;
 export type NewStoryVersion = typeof storyVersions.$inferInsert;
+
+export type StoryGenerationRun = typeof storyGenerationRuns.$inferSelect;
+export type NewStoryGenerationRun = typeof storyGenerationRuns.$inferInsert;
+
+export type StoryGenerationStep = typeof storyGenerationSteps.$inferSelect;
+export type NewStoryGenerationStep = typeof storyGenerationSteps.$inferInsert;

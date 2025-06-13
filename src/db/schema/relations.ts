@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { authors, addresses, events } from './authors';
-import { stories, storyVersions } from './stories';
+import { stories, storyVersions, storyGenerationRuns, storyGenerationSteps } from './stories';
 import { characters, storyCharacters } from './characters';
 import { paymentMethods, payments, credits } from './payments';
 import { shippingCodes } from './shipping';
@@ -49,6 +49,7 @@ export const storiesRelations = relations(stories, ({ one, many }) => ({
   storyCharacters: many(storyCharacters),
   shippingCodes: many(shippingCodes),
   storyVersions: many(storyVersions),
+  storyGenerationRuns: many(storyGenerationRuns),
   creditLedgerEntries: many(creditLedger),
 }));
 
@@ -133,5 +134,21 @@ export const authorCreditBalancesRelations = relations(authorCreditBalances, ({ 
   author: one(authors, {
     fields: [authorCreditBalances.authorId],
     references: [authors.authorId],
+  }),
+}));
+
+// Story generation workflow relations
+export const storyGenerationRunsRelations = relations(storyGenerationRuns, ({ one, many }) => ({
+  story: one(stories, {
+    fields: [storyGenerationRuns.storyId],
+    references: [stories.storyId],
+  }),
+  steps: many(storyGenerationSteps),
+}));
+
+export const storyGenerationStepsRelations = relations(storyGenerationSteps, ({ one }) => ({
+  run: one(storyGenerationRuns, {
+    fields: [storyGenerationSteps.runId],
+    references: [storyGenerationRuns.runId],
   }),
 }));
