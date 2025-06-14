@@ -56,10 +56,10 @@ export default function Step5Page() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentStoryId, setCurrentStoryId] = useState<string | null>(null);
-  
-  // User credits state
+    // User credits state
   const [userCredits, setUserCredits] = useState<number>(0);
   const [showBuyCreditsModal, setShowBuyCreditsModal] = useState(false);
+
   
   // Pricing data state
   const [pricingData, setPricingData] = useState<PricingData | null>(null);
@@ -234,9 +234,9 @@ export default function Step5Page() {
           !deliveryAddress.country.trim()) {
         return 'Please fill in all required address fields for printed book delivery.';
       }
-    }
-    return null;
+    }    return null;
   };
+
   const handleNext = async () => {
     const validationError = validateForm();
     if (validationError) {
@@ -314,7 +314,6 @@ export default function Step5Page() {
       setSaving(false);
     }
   };
-
   return (
     <>
       <SignedOut>
@@ -322,7 +321,8 @@ export default function Step5Page() {
       </SignedOut>
       
       <SignedIn>
-        <div className="container mx-auto px-4 py-8">        <div className="max-w-4xl mx-auto">
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
             {/* Progress indicator */}
             {(() => {
               const currentStep = 5;
@@ -389,20 +389,17 @@ export default function Step5Page() {
                         
                         {/* Digital (ebook) - Mandatory */}
                         <div className="card bg-base-200">
-                          <div className="card-body">
-                            <div className="form-control">
-                              <label className="label cursor-pointer">
-                                <div className="flex-1">
-                                  <span className="label-text font-semibold text-lg">
+                          <div className="card-body">                            <div className="form-control">
+                              <label className="label cursor-pointer flex-col sm:flex-row items-start sm:items-center gap-3">                                <div className="flex-1 w-full">
+                                  <span className="label-text font-semibold text-lg break-words">
                                     {pricingData.ebook.name}
-                                    <span className="badge badge-primary ml-2">Mandatory</span>
                                   </span>
-                                  <p className="text-sm text-gray-600 mt-1">
+                                  <p className="text-sm text-gray-600 mt-1 break-words text-wrap">
                                     {pricingData.ebook.description}
                                   </p>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                  <span className="font-semibold text-primary">{pricingData.ebook.credits} credits</span>
+                                <div className="flex items-center gap-3 whitespace-nowrap">
+                                  <span className="font-semibold text-primary text-sm sm:text-base">{pricingData.ebook.credits} credits</span>
                                   <input 
                                     type="checkbox" 
                                     checked={true}
@@ -417,19 +414,18 @@ export default function Step5Page() {
 
                         {/* Printed Book */}
                         <div className="card bg-base-100 border">
-                          <div className="card-body">
-                            <div className="form-control">
-                              <label className="label cursor-pointer">
-                                <div className="flex-1">
-                                  <span className="label-text font-semibold text-lg">
+                          <div className="card-body">                            <div className="form-control">
+                              <label className="label cursor-pointer flex-col sm:flex-row items-start sm:items-center gap-3">
+                                <div className="flex-1 w-full">
+                                  <span className="label-text font-semibold text-lg break-words">
                                     {pricingData.printed.name}
                                   </span>
-                                  <p className="text-sm text-gray-600 mt-1">
+                                  <p className="text-sm text-gray-600 mt-1 break-words text-wrap">
                                     {pricingData.printed.description}
                                   </p>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                  <span className="font-semibold text-primary">{pricingData.printed.credits} credits</span>
+                                <div className="flex items-center gap-3 whitespace-nowrap">
+                                  <span className="font-semibold text-primary text-sm sm:text-base">{pricingData.printed.credits} credits</span>
                                   <input 
                                     type="checkbox" 
                                     checked={selectedFeatures.printed}
@@ -438,7 +434,7 @@ export default function Step5Page() {
                                   />
                                 </div>
                               </label>
-                            </div>                            
+                            </div>
                             {/* Address Form - Show when printed book is selected */}
                             {showAddressForm && selectedFeatures.printed && (
                               <div className="mt-4 pt-4 border-t">
@@ -546,19 +542,18 @@ export default function Step5Page() {
 
                         {/* Audiobook */}
                         <div className="card bg-base-100 border">
-                          <div className="card-body">
-                            <div className="form-control">
-                              <label className="label cursor-pointer">
-                                <div className="flex-1">
-                                  <span className="label-text font-semibold text-lg">
+                          <div className="card-body">                            <div className="form-control">
+                              <label className="label cursor-pointer flex-col sm:flex-row items-start sm:items-center gap-3">
+                                <div className="flex-1 w-full">
+                                  <span className="label-text font-semibold text-lg break-words">
                                     {pricingData.audiobook.name}
                                   </span>
-                                  <p className="text-sm text-gray-600 mt-1">
+                                  <p className="text-sm text-gray-600 mt-1 break-words text-wrap">
                                     {pricingData.audiobook.description}
                                   </p>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                  <span className="font-semibold text-primary">{pricingData.audiobook.credits} credits</span>
+                                <div className="flex items-center gap-3 whitespace-nowrap">
+                                  <span className="font-semibold text-primary text-sm sm:text-base">{pricingData.audiobook.credits} credits</span>
                                   <input 
                                     type="checkbox" 
                                     checked={selectedFeatures.audiobook}
@@ -589,13 +584,15 @@ export default function Step5Page() {
                       <label className="label">
                         <span className="label-text-alt">This message will appear on the first page of your story</span>
                       </label>
-                    </div>                    {/* Credits Summary */}
+                    </div>
+                    
+                    {/* Credits Summary */}
                     <div className="space-y-4">
                       {/* User's Available Credits */}
                       <div className="card bg-base-200">
                         <div className="card-body">
                           <div className="flex justify-between items-center">
-                            <span className="text-lg font-semibold">Your Available Credits:</span>
+                            <span className="text-lg font-semibold">Available Credits:</span>
                             <span className="text-2xl font-bold text-success">{userCredits} credits</span>
                           </div>
                         </div>
@@ -605,7 +602,7 @@ export default function Step5Page() {
                       <div className={`card ${hasInsufficientCredits() ? 'bg-error text-error-content' : 'bg-primary text-primary-content'}`}>
                         <div className="card-body">
                           <div className="flex justify-between items-center">
-                            <span className="text-lg font-semibold">Total Credits Required:</span>
+                            <span className="text-lg font-semibold">Credits Required:</span>
                             <span className="text-2xl font-bold">{calculateTotalCredits()} credits</span>
                           </div>
                           {hasInsufficientCredits() && (
@@ -629,21 +626,20 @@ export default function Step5Page() {
                       )}
                     </div>
                   </div>
-                )}                <StepNavigation
+                )}
+                <StepNavigation
                   currentStep={5}
                   totalSteps={7}
                   nextHref="/tell-your-story/step-6"
                   prevHref="/tell-your-story/step-4"
                   onNext={handleNext}
                   nextDisabled={saving || hasInsufficientCredits()}
-                  nextLabel={saving ? "Saving..." : hasInsufficientCredits() ? "Insufficient Credits" : "Next Chapter"}
+                  nextLabel={saving ? "Creating..." : hasInsufficientCredits() ? "Insufficient Credits" : "Create story"}
                 />
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Buy More Credits Modal */}
+        </div>        {/* Buy More Credits Modal */}
         {showBuyCreditsModal && (
           <div className="modal modal-open">
             <div className="modal-box">
@@ -661,8 +657,7 @@ export default function Step5Page() {
               </div>
             </div>
             <div className="modal-backdrop" onClick={() => setShowBuyCreditsModal(false)}></div>
-          </div>
-        )}
+          </div>        )}
       </SignedIn>
     </>
   );

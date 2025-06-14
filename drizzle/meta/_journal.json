@@ -15,6 +15,13 @@
       "when": 1749843998805,
       "tag": "0001_brown_shriek",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1749917354976,
+      "tag": "0002_cooing_sleeper",
+      "breakpoints": true
     }
   ]
 }

@@ -43,27 +43,33 @@ export default function Step7Page() {
                   </div>
                 </>
               );
-            })()}
-
-            {/* Final step content */}
+            })()}            {/* Final step content */}
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body text-center">
-                <h1 className="card-title text-3xl mb-6 justify-center">Happy Reading!</h1>
+                <h1 className="card-title text-3xl mb-6 justify-center">Story Generation Started!</h1>
                 
                 {/* Success content */}
                 <div className="py-12 space-y-6">
-                  <div className="text-6xl">🎉</div>
-                  <h2 className="text-2xl font-bold">Congratulations!</h2>
+                  <div className="text-6xl">🚀</div>                  <h2 className="text-2xl font-bold">Your Story is Being Created!</h2>
                   <p className="text-lg text-gray-600">
-                    Your story has been created successfully. Get ready to embark on an amazing adventure!
+                    We&apos;ve started generating your personalized story. This process typically takes 5-15 minutes.
                   </p>
                   
-                  <div className="flex gap-4 justify-center mt-8">
+                  <div className="alert alert-info">
+                    <div className="flex flex-col items-center">
+                      <span className="font-semibold">📱 Track Your Progress</span>
+                      <span className="text-sm mt-2">
+                        Visit &quot;My Stories&quot; to see real-time updates on your story generation progress.
+                        We&apos;ll show you each step as it completes: outline creation, chapter writing, and illustration generation.
+                      </span>
+                    </div>
+                  </div>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
                     <Link href="/my-stories" className="btn btn-primary">
-                      View My Stories
+                      📖 View My Stories & Track Progress
                     </Link>
                     <Link href="/tell-your-story/step-1" className="btn btn-outline">
-                      Create Another Story
+                      ✨ Create Another Story
                     </Link>
                   </div>
                 </div>

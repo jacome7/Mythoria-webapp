@@ -7,6 +7,16 @@ import { useParams } from 'next/navigation';
 import AdminHeader from '../../../../components/AdminHeader';
 import AdminFooter from '../../../../components/AdminFooter';
 
+interface CreditHistoryEntry {
+  id: string;
+  amount: number;
+  creditEventType: string;
+  createdAt: string;
+  storyId: string | null;
+  purchaseId: string | null;
+  balanceAfter: number;
+}
+
 interface Address {
   addressId: string;
   type: string;
@@ -62,8 +72,10 @@ export default function UserDetailsPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showAddCreditsModal, setShowAddCreditsModal] = useState(false);
-  const [isAddingCredits, setIsAddingCredits] = useState(false);  const [creditsAmount, setCreditsAmount] = useState<number>(1);
+  const [isAddingCredits, setIsAddingCredits] = useState(false);  const [creditsAmount, setCreditsAmount] = useState<number>(0);
   const [creditsReason, setCreditsReason] = useState<'refund' | 'voucher' | 'promotion'>('voucher');
+  const [showCreditHistoryModal, setShowCreditHistoryModal] = useState(false);
+  const [creditHistory, setCreditHistory] = useState<CreditHistoryEntry[]>([]);
 
   const fetchUserDetails = useCallback(async () => {
     try {
@@ -83,6 +95,22 @@ export default function UserDetailsPage() {
       setError('An error occurred while fetching user details');
     } finally {
       setIsLoading(false);
+    }
+  }, [params.id]);
+  const fetchCreditHistory = useCallback(async () => {
+    if (!params.id) return;
+    
+    try {
+      const response = await fetch(`/api/admin/users/${params.id}/credits`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        setCreditHistory(data.creditHistory || data); // Handle both new and old API formats
+      } else {
+        console.error('Failed to fetch credit history:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error fetching credit history:', error);
     }
   }, [params.id]);
 
@@ -180,10 +208,9 @@ export default function UserDetailsPage() {
             credits: result.newBalance
           }
         } : null);
-        
-        // Close modal and reset form
+          // Close modal and reset form
         setShowAddCreditsModal(false);
-        setCreditsAmount(1);
+        setCreditsAmount(0);
         setCreditsReason('voucher');
       } else {
         const errorData = await response.json();
@@ -280,9 +307,16 @@ export default function UserDetailsPage() {
                   <div className="space-y-2">
                     <p><strong>Email:</strong> {userDetails.author.email}</p>
                     <p><strong>Mobile Phone:</strong> {userDetails.author.mobilePhone || 'Not provided'}</p>                    <p><strong>Fiscal Number:</strong> {userDetails.author.fiscalNumber || 'Not provided'}</p>
-                    <p><strong>Preferred Locale:</strong> {userDetails.author.preferredLocale || 'en'}</p>
-                    <div className="flex items-center gap-3">
-                      <p><strong>Credits:</strong> {userDetails.author.credits}</p>
+                    <p><strong>Preferred Locale:</strong> {userDetails.author.preferredLocale || 'en'}</p>                    <div className="flex items-center gap-3">
+                      <button 
+                        onClick={() => {
+                          setShowCreditHistoryModal(true);
+                          fetchCreditHistory();
+                        }}
+                        className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer font-medium"
+                      >
+                        <strong>Credits:</strong> {userDetails.author.credits}
+                      </button>
                       <button
                         onClick={() => setShowAddCreditsModal(true)}
                         className="btn btn-sm btn-success"
@@ -366,10 +400,12 @@ export default function UserDetailsPage() {
                       ))}
                     </tbody>
                   </table>
-                </div>              )}
+                </div>
+              )}
             </div>
           </div>
-        ) : null}      </main>
+        ) : null}
+      </main>
       <AdminFooter />
 
       {/* Add Credits Modal */}
@@ -385,19 +421,17 @@ export default function UserDetailsPage() {
                 <p className="text-blue-700 text-sm">
                   Current balance: {userDetails.author.credits} credits
                 </p>
-              </div>
-
-              {/* Amount Input */}
+              </div>              {/* Amount Input */}
               <div>
                 <label className="label">
-                  <span className="label-text font-semibold">Amount (1-100 credits):</span>
+                  <span className="label-text font-semibold">Amount (0-100 credits):</span>
                 </label>
                 <input
                   type="number"
-                  min="1"
+                  min="0"
                   max="100"
                   value={creditsAmount}
-                  onChange={(e) => setCreditsAmount(Math.min(100, Math.max(1, parseInt(e.target.value) || 1)))}
+                  onChange={(e) => setCreditsAmount(Math.min(100, Math.max(0, parseInt(e.target.value) || 0)))}
                   className="input input-bordered w-full"
                   disabled={isAddingCredits}
                 />
@@ -418,24 +452,25 @@ export default function UserDetailsPage() {
                   <option value="refund">Refund</option>
                   <option value="promotion">Promotion</option>
                 </select>
-              </div>
-
-              {/* Warning Message */}
+              </div>              {/* Warning Message */}
               <div className="bg-orange-50 border border-orange-200 p-3 rounded">
                 <p className="text-orange-800 font-semibold text-sm">
                   ⚠️ IMPORTANT WARNING
-                </p>                <p className="text-orange-700 text-sm mt-1">
-                  This operation CANNOT be undone. Credits will be permanently added to the user&apos;s account.
+                </p>
+                <p className="text-orange-700 text-sm mt-1">
+                  {creditsAmount === 0 
+                    ? "This operation will record a transaction with 0 credits. This action CANNOT be undone."
+                    : "This operation CANNOT be undone. Credits will be permanently added to the user's account."
+                  }
                 </p>
               </div>
             </div>
 
             <div className="modal-action">
               <button
-                className="btn btn-ghost"
-                onClick={() => {
+                className="btn btn-ghost"                onClick={() => {
                   setShowAddCreditsModal(false);
-                  setCreditsAmount(1);
+                  setCreditsAmount(0);
                   setCreditsReason('voucher');
                 }}
                 disabled={isAddingCredits}
@@ -451,9 +486,8 @@ export default function UserDetailsPage() {
                   <>
                     <span className="loading loading-spinner loading-xs"></span>
                     Adding Credits...
-                  </>
-                ) : (
-                  `Add ${creditsAmount} Credits`
+                  </>                ) : (
+                  creditsAmount === 0 ? "Record Transaction (0 Credits)" : `Add ${creditsAmount} Credits`
                 )}
               </button>
             </div>
@@ -498,7 +532,8 @@ export default function UserDetailsPage() {
                 disabled={isDeleting}
               >
                 Cancel
-              </button>              <button
+              </button>
+              <button
                 id="confirm-delete-button"
                 className="btn btn-error"
                 onClick={handleDeleteUser}
@@ -516,6 +551,60 @@ export default function UserDetailsPage() {
             </div>
           </div>
         </div>
-      )}    </div>
+      )}
+
+      {/* Credit History Modal */}
+      {showCreditHistoryModal && userDetails && (
+        <div className="modal modal-open">
+          <div className="modal-box max-w-3xl">
+            <h3 className="font-bold text-lg mb-4">Credit History for {userDetails.author.displayName}</h3>
+            <div className="overflow-x-auto">
+              <table className="table w-full">
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th className="text-left">Date</th>
+                    <th className="text-left">Amount</th>
+                    <th className="text-left">Reason</th>
+                    <th className="text-left">Balance After</th>
+                    <th className="text-left">Story ID</th>
+                    <th className="text-left">Purchase ID</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {creditHistory.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="text-center py-4 text-gray-500">
+                        No credit history found for this user.
+                      </td>
+                    </tr>
+                  ) : (                    creditHistory.map((entry) => (
+                      <tr key={entry.id} className="hover:bg-gray-50">
+                        <td>{formatDate(entry.createdAt)}</td>
+                        <td className={entry.amount > 0 ? 'text-green-600' : 'text-red-600'}>
+                          {entry.amount > 0 ? '+' : ''}{entry.amount}
+                        </td>
+                        <td>{entry.creditEventType}</td>
+                        <td>{entry.balanceAfter}</td>
+                        <td>{entry.storyId || 'N/A'}</td>
+                        <td>{entry.purchaseId || 'N/A'}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="modal-action">
+              <button
+                className="btn btn-ghost"
+                onClick={() => setShowCreditHistoryModal(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

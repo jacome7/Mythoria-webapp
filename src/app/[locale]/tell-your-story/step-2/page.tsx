@@ -5,12 +5,41 @@ import Image from 'next/image';
 import StepNavigation from '../../../../components/StepNavigation';
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
 
 export default function Step2Page() {
   const router = useRouter();
+  const locale = useLocale();
+  
+  // Language options for story creation
+  const languageOptions = [
+    { code: 'en-US', name: 'English (US)', flag: '🇺🇸' },
+    { code: 'pt-BR', name: 'Portuguese (Brazil)', flag: '🇧🇷' },
+    { code: 'pt-PT', name: 'Portuguese (Portugal)', flag: '🇵🇹' },
+    { code: 'es-ES', name: 'Spanish (Spain)', flag: '🇪🇸' },
+    { code: 'fr-FR', name: 'French (France)', flag: '🇫🇷' },
+    { code: 'de-DE', name: 'German (Germany)', flag: '🇩🇪' },
+    { code: 'it-IT', name: 'Italian (Italy)', flag: '🇮🇹' },
+    { code: 'nl-NL', name: 'Dutch (Netherlands)', flag: '🇳🇱' },
+    { code: 'sv-SE', name: 'Swedish (Sweden)', flag: '🇸🇪' },
+  ];
+
+  // Get default language based on i18n locale, fallback to en-US
+  const getDefaultLanguage = () => {
+    const supportedCodes = languageOptions.map(opt => opt.code);
+    if (supportedCodes.includes(locale)) {
+      return locale;
+    }
+    // Try to match just the language part (e.g., 'pt' from 'pt-PT')
+    const languageOnly = locale.split('-')[0];
+    const matchedOption = languageOptions.find(opt => opt.code.startsWith(languageOnly));
+    return matchedOption ? matchedOption.code : 'en-US';
+  };
+
   const [activeTab, setActiveTab] = useState<'image' | 'audio' | 'text'>('text');
   const [storyText, setStoryText] = useState('');
-  const [uploadedImage, setUploadedImage] = useState<File | null>(null);  const [uploadedAudio, setUploadedAudio] = useState<File | null>(null);
+  const [storyLanguage, setStoryLanguage] = useState(getDefaultLanguage());
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);const [uploadedAudio, setUploadedAudio] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [audioPreview, setAudioPreview] = useState<string | null>(null); const [isCapturing, setIsCapturing] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
@@ -179,9 +208,7 @@ export default function Step2Page() {
       if (!userResponse.ok) {
         throw new Error('Failed to get user information');
       }
-      const userData = await userResponse.json();
-
-      // Create a new story in the database
+      const userData = await userResponse.json();      // Create a new story in the database
       const response = await fetch('/api/stories', {
         method: 'POST',
         headers: {
@@ -191,6 +218,7 @@ export default function Step2Page() {
           title: 'My Story', // Default title - will be updated by GenAI if user provided text
           authorId: userData.authorId,
           plotDescription: storyText || null, // Store any initial text content
+          storyLanguage: storyLanguage, // Include the selected language
         }),
       });
 
@@ -243,13 +271,13 @@ export default function Step2Page() {
         setDebugRequest(requestData);
         setDebugResponse(null);
         setIsCreatingStory(false);
-        setShowDebugModal(true);
-        return; // Don't proceed to step 3 yet
+        setShowDebugModal(true);        return; // Don't proceed to step 3 yet
       }
 
       // Store the story content data for use in step-3
       localStorage.setItem('step2Data', JSON.stringify({
         text: storyText,
+        language: storyLanguage,
         hasImage: uploadedImage !== null,
         hasAudio: uploadedAudio !== null,
         activeTab: activeTab
@@ -323,11 +351,11 @@ export default function Step2Page() {
       setIsProcessingGenAI(false);
     }
   };
-
   const handleContinueToStep3 = () => {
     // Store the story content data for use in step-3
     localStorage.setItem('step2Data', JSON.stringify({
       text: storyText,
+      language: storyLanguage,
       hasImage: uploadedImage !== null,
       hasAudio: uploadedAudio !== null,
       activeTab: activeTab
@@ -336,11 +364,11 @@ export default function Step2Page() {
     setShowDebugModal(false);
     router.push('/tell-your-story/step-3');
   };
-
   const handleSkipGenAI = () => {
     // Store the story content data for use in step-3
     localStorage.setItem('step2Data', JSON.stringify({
       text: storyText,
+      language: storyLanguage,
       hasImage: uploadedImage !== null,
       hasAudio: uploadedAudio !== null,
       activeTab: activeTab
@@ -394,13 +422,35 @@ export default function Step2Page() {
             })()}
 
             {/* Step content */}
-            <div className="card bg-base-100 shadow-xl">
-              <div className="card-body">
+            <div className="card bg-base-100 shadow-xl">              <div className="card-body">
                 <h1 className="card-title text-3xl mb-6">Chapter 2 - The Story</h1>
                 <div className="prose max-w-none mb-6">
                   <p className="text-gray-600 text-lg">
                     You can create your story by drawing it, recording it, or simply writing it down.
                   </p>
+                </div>
+
+                {/* Language Selection */}
+                <div className="mb-6">
+                  <div className="form-control max-w-sm">
+                    <label className="label">
+                      <span className="label-text font-semibold">📖 Story Language</span>
+                    </label>
+                    <select 
+                      className="select select-bordered w-full"
+                      value={storyLanguage}
+                      onChange={(e) => setStoryLanguage(e.target.value)}
+                    >
+                      {languageOptions.map((lang) => (
+                        <option key={lang.code} value={lang.code}>
+                          {lang.flag} {lang.name}
+                        </option>
+                      ))}
+                    </select>
+                    <label className="label">
+                      <span className="label-text-alt">Choose the language for your story</span>
+                    </label>
+                  </div>
                 </div>
 
                 {/* Tabs and Content Wrapper */}
@@ -431,11 +481,9 @@ export default function Step2Page() {
                   <div className="border border-base-300 rounded-b-md p-4 md:p-6 bg-base-100 shadow min-h-96"> {/* Changed p-6 to p-4 md:p-6 */}
                     {/* Text Area Tab Content */}
                     {activeTab === 'text' && (
-                      <div className="space-y-4">
-                        <div className="form-control">
+                      <div className="space-y-4">                        <div className="form-control">
                           <label className="label">
                             <span className="label-text font-semibold">Tell your story...</span>
-                            <span className="label-text-alt">{storyText.length} characters</span>
                           </label>
                           <textarea
                             className="textarea textarea-bordered h-64 text-base leading-relaxed"
@@ -444,7 +492,7 @@ export default function Step2Page() {
                             onChange={(e) => setStoryText(e.target.value)}
                           />
                           <label className="label">
-                            <span className="label-text-alt block w-full">Write as much or as little as you&apos;d like. You can always edit this later!</span>
+                            <span className="label-text-alt block w-full text-wrap break-words">Write as much or as little as you&apos;d like. You can always edit this later!</span>
                           </label>
                         </div>
                       </div>
@@ -664,7 +712,7 @@ export default function Step2Page() {
                   prevHref="/tell-your-story/step-1"
                   nextDisabled={isCreatingStory}
                   onNext={handleNextStep}
-                  nextLabel={isCreatingStory ? "Processing with AI..." : (hasContent() ? "Continue with Story" : "Next Chapter")}
+                  nextLabel={isCreatingStory ? "Processing with AI..." : (hasContent() ? "Next" : "Next Chapter")}
                 />
               </div>
             </div>

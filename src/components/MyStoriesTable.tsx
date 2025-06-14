@@ -15,6 +15,8 @@ interface Story {
   storyId: string;
   title: string;
   status: 'draft' | 'writing' | 'published';
+  storyGenerationStatus?: 'queued' | 'running' | 'failed' | 'completed' | 'cancelled' | null;
+  storyGenerationCompletedPercentage?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -146,7 +148,6 @@ export default function MyStoriesTable() {
     // Shorter date format: M/D/YY
     return `${date.getMonth() + 1}/${date.getDate()}/${String(date.getFullYear()).slice(-2)}`;
   };
-
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case 'draft':
@@ -158,6 +159,27 @@ export default function MyStoriesTable() {
       default:
         return 'badge badge-ghost';
     }
+  };
+
+  const getGenerationStatusInfo = (story: Story) => {
+    if (!story.storyGenerationStatus) {
+      return null;
+    }
+
+    const statusMap = {
+      'queued': { text: 'Queued', class: 'badge-info', icon: '⏳' },
+      'running': { text: 'Generating', class: 'badge-warning', icon: '🔄' },
+      'completed': { text: 'Completed', class: 'badge-success', icon: '✅' },
+      'failed': { text: 'Failed', class: 'badge-error', icon: '❌' },
+      'cancelled': { text: 'Cancelled', class: 'badge-neutral', icon: '⏹️' },
+    };
+
+    const statusInfo = statusMap[story.storyGenerationStatus];
+    
+    return {
+      ...statusInfo,
+      percentage: story.storyGenerationCompletedPercentage || 0
+    };
   };
 
   if (loading) {
@@ -223,11 +245,35 @@ export default function MyStoriesTable() {
                 {sortedStories.map((story) => (
                   <tr key={story.storyId}>
                     <td className="px-2 py-1 md:px-4 md:py-2">{formatDate(story.createdAt)}</td>
-                    <td className="font-medium px-2 py-1 md:px-4 md:py-2">{story.title}</td>
-                    <td className="px-2 py-1 md:px-4 md:py-2">
-                      <span className={getStatusBadgeClass(story.status)}>
-                        {t(`status.${story.status}`)}
-                      </span>
+                    <td className="font-medium px-2 py-1 md:px-4 md:py-2">{story.title}</td>                    <td className="px-2 py-1 md:px-4 md:py-2">
+                      <div className="space-y-1">
+                        <span className={getStatusBadgeClass(story.status)}>
+                          {t(`status.${story.status}`)}
+                        </span>
+                        {(() => {
+                          const genStatus = getGenerationStatusInfo(story);
+                          if (genStatus && story.status === 'writing') {
+                            return (
+                              <div className="flex flex-col space-y-1">
+                                <span className={`badge badge-xs ${genStatus.class}`}>
+                                  {genStatus.icon} {genStatus.text}
+                                </span>
+                                {genStatus.percentage > 0 && genStatus.text === 'Generating' && (
+                                  <div className="w-full">
+                                    <progress 
+                                      className="progress progress-primary w-full h-2" 
+                                      value={genStatus.percentage} 
+                                      max="100"
+                                    ></progress>
+                                    <span className="text-xs text-gray-500">{genStatus.percentage}%</span>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
+                      </div>
                     </td>
                     <td className="pl-2 pr-1 py-1 md:px-4 md:py-2">
                       <div className="flex justify-center gap-0.5">

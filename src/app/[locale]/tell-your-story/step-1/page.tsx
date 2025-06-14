@@ -31,11 +31,10 @@ export default function Step1Page() {
   useEffect(() => {
     fetchAuthorData();
   }, []);
-
-  const handleSaveProfile = async () => {
+  const handleNext = async (): Promise<boolean> => {
     if (!displayName || !email) {
       setError('Please fill in all required fields');
-      return;
+      return false; // Prevent navigation
     }
 
     try {
@@ -45,15 +44,13 @@ export default function Step1Page() {
       // Here you would typically save the data to your database
       // For now, we'll just simulate a successful save
       
-      setSuccessMessage('Profile updated successfully!');
+      setSuccessMessage('Profile saved successfully!');
       
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        setSuccessMessage(null);
-      }, 3000);
-        } catch (err) {
+      return true; // Allow navigation
+    } catch (err) {
       console.error('Failed to save profile:', err);
       setError('Failed to save profile. Please try again.');
+      return false; // Prevent navigation
     } finally {
       setLoading(false);
     }
@@ -230,26 +227,7 @@ export default function Step1Page() {
                       />
                       <label className="label">
                         <span className="label-text-alt">For urgent notifications or delivery updates (optional)</span>
-                      </label>                    </div>
-                  </div>
-
-                  {/* Save Profile Button */}
-                  <div className="flex justify-center mt-6">
-                    <button
-                      onClick={handleSaveProfile}
-                      disabled={loading || !displayName || !email}
-                      className="btn btn-primary"
-                    >
-                      {loading ? (
-                        <>
-                          <span className="loading loading-spinner loading-sm"></span>
-                          Saving...
-                        </>
-                      ) : (
-                        'Save Profile'
-                      )}
-                    </button>
-                  </div>
+                      </label>                    </div>                  </div>
                 </div>
               )}
 
@@ -258,6 +236,8 @@ export default function Step1Page() {
                 totalSteps={7}
                 nextHref="/tell-your-story/step-2"
                 prevHref={null}
+                onNext={handleNext}
+                nextDisabled={loading || !displayName || !email}
               />
             </div>
           </div>

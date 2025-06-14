@@ -228,6 +228,7 @@ export const stories = pgTable("stories", {
 	authorId: uuid("author_id").notNull(),
 	title: varchar({ length: 255 }).notNull(),
 	plotDescription: text("plot_description"),
+	storyLanguage: varchar("story_language", { length: 5 }).default('en-US').notNull(),
 	synopsis: text(),
 	place: text(),
 	additionalRequests: text(),

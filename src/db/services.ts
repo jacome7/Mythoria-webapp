@@ -1,8 +1,32 @@
 import { db } from "./index";
-import { authors, stories, characters, storyCharacters, creditLedger, authorCreditBalances, leads } from "./schema";
+import { authors, stories, characters, storyCharacters, creditLedger, authorCreditBalances, leads, storyGenerationRuns } from "./schema";
 import { eq, and, count, desc, sql, like, asc } from "drizzle-orm";
 import { ClerkUserForSync } from "@/types/clerk";
 import { pricingService } from "./services/pricing";
+
+// Type definitions
+interface StoryFeatures {
+  ebook?: boolean;
+  printed?: boolean;
+  audiobook?: boolean;
+}
+
+interface DeliveryAddress {
+  line1?: string;
+  line2?: string;
+  city?: string;
+  stateRegion?: string;
+  postalCode?: string;
+  country?: string;
+  phone?: string;
+}
+
+interface StoryGenerationMetadata {
+  features?: StoryFeatures;
+  deliveryAddress?: DeliveryAddress;
+  dedicationMessage?: string;
+  [key: string]: unknown;
+}
 
 // Author operations
 export const authorService = {  async createAuthor(authorData: { clerkUserId: string; email: string; displayName: string }) {
@@ -96,8 +120,7 @@ export const authorService = {  async createAuthor(authorData: { clerkUserId: st
 };
 
 // Story operations
-export const storyService = {
-  async createStory(storyData: { title: string; authorId: string; plotDescription?: string; synopsis?: string }) {
+export const storyService = {  async createStory(storyData: { title: string; authorId: string; plotDescription?: string; storyLanguage?: string; synopsis?: string }) {
     const [story] = await db.insert(stories).values(storyData).returning();
     return story;
   },
@@ -127,7 +150,9 @@ export const storyService = {
     novelStyle: string;
     graphicalStyle: string;
     additionalRequests: string;
-    status: 'draft' | 'writing' | 'published' 
+    status: 'draft' | 'writing' | 'published';    features: StoryFeatures;
+    deliveryAddress: DeliveryAddress;
+    dedicationMessage: string;
   }>) {
     const [story] = await db.update(stories).set(updates).where(eq(stories.storyId, storyId)).returning();
     return story;
@@ -358,6 +383,52 @@ export const leadService = {
         limit
       }
     };
+  }
+};
+
+// Story Generation Run operations
+export const storyGenerationRunService = {
+  async createStoryGenerationRun(storyId: string, metadata?: StoryGenerationMetadata) {
+    const [run] = await db.insert(storyGenerationRuns).values({
+      storyId,
+      status: 'queued',
+      metadata
+    }).returning();
+    return run;
+  },
+
+  async getRunById(runId: string) {
+    const [run] = await db.select().from(storyGenerationRuns).where(eq(storyGenerationRuns.runId, runId));
+    return run;
+  },
+
+  async getRunsByStory(storyId: string) {
+    return await db.select().from(storyGenerationRuns).where(eq(storyGenerationRuns.storyId, storyId));
+  },
+
+  async getLatestRunByStory(storyId: string) {
+    const [run] = await db
+      .select()
+      .from(storyGenerationRuns)
+      .where(eq(storyGenerationRuns.storyId, storyId))
+      .orderBy(desc(storyGenerationRuns.createdAt))
+      .limit(1);
+    return run;
+  },  async updateRunStatus(runId: string, status: 'queued' | 'running' | 'failed' | 'completed' | 'cancelled', currentStep?: string, errorMessage?: string) {
+    const updates: Record<string, string | Date> = { status };
+    
+    if (currentStep) updates.currentStep = currentStep;
+    if (errorMessage) updates.errorMessage = errorMessage;
+    if (status === 'running' && !updates.startedAt) updates.startedAt = new Date();
+    if (['failed', 'completed', 'cancelled'].includes(status)) updates.endedAt = new Date();
+
+    const [updatedRun] = await db
+      .update(storyGenerationRuns)
+      .set(updates)
+      .where(eq(storyGenerationRuns.runId, runId))
+      .returning();
+    
+    return updatedRun;
   }
 };
 

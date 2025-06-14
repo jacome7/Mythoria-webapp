@@ -12,6 +12,7 @@ export const stories = pgTable("stories", {
   authorId: uuid("author_id").notNull().references(() => authors.authorId, { onDelete: 'cascade' }),
   title: varchar("title", { length: 255 }).notNull(),
   plotDescription: text("plot_description"),
+  storyLanguage: varchar("story_language", { length: 5 }).default('en-US').notNull(),
   synopsis: text("synopsis"),
   place: text("place"), // Setting of the story (real or imaginary)
   additionalRequests: text("additionalRequests"), // Optional text area for mentioning products, companies, or specific details to include.
