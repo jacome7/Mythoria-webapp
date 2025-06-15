@@ -40,5 +40,10 @@
       "alreadyRegistered": "Uau, está mesmo ansioso para experimentar a Mythoria. Fique descansado que iremos notificá-lo quando lançarmos!"
     },
     "privacy": "Respeitamos a sua privacidade. Sem spam, apenas notificações de lançamento."
+  },
+  "StepNavigation": {
+    "next": "Seguinte",
+    "prev": "Anterior",
+    "finish": "Concluir"
   }
 }

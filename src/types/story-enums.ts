@@ -116,13 +116,13 @@ export const getGraphicalStyleLabel = (value: GraphicalStyle): string =>
 
 // Helper functions to find enum value from label (useful for backward compatibility)
 export const findTargetAudienceByLabel = (label: string): TargetAudience | undefined => {
-  return Object.entries(TargetAudienceLabels).find(([_, l]) => l === label)?.[0] as TargetAudience;
+  return Object.entries(TargetAudienceLabels).find(([, l]) => l === label)?.[0] as TargetAudience;
 };
 
 export const findNovelStyleByLabel = (label: string): NovelStyle | undefined => {
-  return Object.entries(NovelStyleLabels).find(([_, l]) => l === label)?.[0] as NovelStyle;
+  return Object.entries(NovelStyleLabels).find(([, l]) => l === label)?.[0] as NovelStyle;
 };
 
 export const findGraphicalStyleByLabel = (label: string): GraphicalStyle | undefined => {
-  return Object.entries(GraphicalStyleLabels).find(([_, l]) => l === label)?.[0] as GraphicalStyle;
+  return Object.entries(GraphicalStyleLabels).find(([, l]) => l === label)?.[0] as GraphicalStyle;
 };

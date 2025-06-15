@@ -5,10 +5,12 @@ import StepNavigation from '../../../../components/StepNavigation';
 import CharacterCard from '../../../../components/CharacterCard';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { getCurrentStoryId, setStep3Data, Character, hasValidStorySession } from '../../../../lib/story-session';
 
 export default function Step3Page() {
   const router = useRouter();
+  const t = useTranslations('StorySteps.step3');
   const [characters, setCharacters] = useState<Character[]>([]);
   const [availableCharacters, setAvailableCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);  const [showCreateForm, setShowCreateForm] = useState(false);
@@ -265,13 +267,10 @@ export default function Step3Page() {
             {/* Step content */}
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
-                <h1 className="card-title text-3xl mb-6">Chapter 3 - The Characters</h1>
+                <h1 className="card-title text-3xl mb-6">{t('heading')}</h1>
                 
                 <div className="prose max-w-none mb-6">
-                  <p className="text-gray-600 text-lg">
-                    Who are the heroes, friends, and magical creatures in your story? 
-                    Create characters that will bring your adventure to life!
-                  </p>
+                  <p className="text-gray-600 text-lg">{t('intro')}</p>
                 </div>
 
                 {loading ? (
@@ -311,11 +310,11 @@ export default function Step3Page() {
                             className="btn btn-primary btn-lg"
                             onClick={() => setShowAddOptions(true)}
                           >
-                            ➕ Add Character
+                            {t('addCharacter')}
                           </button>
                         ) : (
                           <div className="space-y-4">
-                            <div className="text-lg font-semibold">Choose how to add a character:</div>
+                            <div className="text-lg font-semibold">{t('chooseMethod')}</div>
                             
                             {/* Create New Character Option */}
                             <button
@@ -325,7 +324,7 @@ export default function Step3Page() {
                                 setShowAddOptions(false);
                               }}
                             >
-                              ✨ Create New Character
+                              {t('createNew')}
                             </button>
                             
                             {/* Add Existing Character Option (only if available characters exist) */}
@@ -336,7 +335,7 @@ export default function Step3Page() {
                                 </div>
                                 <div className="dropdown dropdown-end w-full">
                                   <div tabIndex={0} role="button" className="btn btn-outline btn-lg w-full">
-                                    📚 Use Existing Character
+                                    {t('useExisting')}
                                   </div>
                                   <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow-lg border max-h-60 overflow-y-auto">
                                     {availableCharacters.map((character) => (
@@ -371,7 +370,7 @@ export default function Step3Page() {
                               className="btn btn-ghost"
                               onClick={() => setShowAddOptions(false)}
                             >
-                              Cancel
+                              {t('cancel')}
                             </button>
                           </div>
                         )}
@@ -381,11 +380,9 @@ export default function Step3Page() {
                       <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
                         <div className="text-4xl mb-4">🎭</div>
                         <h3 className="text-xl font-semibold text-blue-800 mb-2">
-                          Ready to meet your characters?
+                          {t('readyTitle')}
                         </h3>
-                        <p className="text-blue-600">                          Every great story needs amazing characters! Click &quot;Add Character&quot; to create 
-                          new heroes or add existing characters from your library to this story.
-                        </p>
+                        <p className="text-blue-600">{t('readyDescription')}</p>
                       </div>
                     )}
 
@@ -395,12 +392,8 @@ export default function Step3Page() {
                         <div className="flex items-start space-x-3">
                           <div className="text-2xl">💡</div>
                           <div>
-                            <p className="text-green-800 font-medium">
-                              Great work! You&apos;ve created {characters.length} character{characters.length === 1 ? '' : 's'}.
-                            </p>
-                            <p className="text-green-600 text-sm mt-1">
-                              You can always add more characters later or continue to the next chapter to develop your story further.
-                            </p>
+                            <p className="text-green-800 font-medium">{t('greatWork', {count: characters.length})}</p>
+                            <p className="text-green-600 text-sm mt-1">{t('youCanAlways')}</p>
                           </div>
                         </div>
                       </div>
@@ -415,7 +408,7 @@ export default function Step3Page() {
                   prevHref={null} // Disabled - don't allow going back to step 2
                   nextDisabled={isNavigating}
                   onNext={handleNextStep}
-                  nextLabel={isNavigating ? "Continuing..." : "Next Chapter"}
+                  nextLabel={isNavigating ? t('continuing') : t('nextChapter')}
                 />
               </div>
             </div>

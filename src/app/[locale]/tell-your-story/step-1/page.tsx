@@ -4,7 +4,7 @@ import { SignedIn, SignedOut } from '@clerk/nextjs';
 import Link from 'next/link';
 import StepNavigation from '../../../../components/StepNavigation';
 import { useState, useEffect } from 'react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface AuthorData {
   authorId: string;
@@ -19,10 +19,10 @@ interface AuthorData {
 
 export default function Step1Page() {
   const locale = useLocale();
+  const t = useTranslations('StorySteps.step1');
   const [, setAuthorData] = useState<AuthorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   
   // Form data
   const [displayName, setDisplayName] = useState('');
@@ -56,7 +56,7 @@ export default function Step1Page() {
   };
     const handleNext = async (): Promise<boolean> => {
     if (!displayName || !email) {
-      setError('Please fill in all required fields');
+      setError(t('messages.required'));
       return false; // Prevent navigation
     }
 
@@ -81,7 +81,7 @@ export default function Step1Page() {
       return true; // Allow navigation
     } catch (err) {
       console.error('Failed to save profile:', err);
-      setError('Failed to save profile. Please try again.');
+      setError(t('messages.saveFailed'));
       return false; // Prevent navigation
     } finally {
       setLoading(false);
@@ -95,7 +95,7 @@ export default function Step1Page() {
       const response = await fetch('/api/auth/me');
       
       if (!response.ok) {
-        throw new Error('Failed to fetch user data');
+        throw new Error(t('messages.fetchFailed'));
       }
       
       const data: AuthorData = await response.json();
@@ -122,7 +122,7 @@ export default function Step1Page() {
       
     } catch (error) {
       console.error('Error fetching author data:', error);
-      setError('Failed to load user information. Please try again.');
+      setError(t('messages.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -132,21 +132,21 @@ export default function Step1Page() {
     <div className="container mx-auto px-4 py-8">
       <SignedOut>
         <div className="text-center space-y-6 max-w-2xl mx-auto">
-          <div className="text-6xl">📚</div>          <h1 className="text-4xl font-bold">Oops! Looks like you&apos;re trying to sneak into the author&apos;s lounge!</h1>
+          <div className="text-6xl">📚</div>
+          <h1 className="text-4xl font-bold">{t('unauthenticated.title')}</h1>
           <p className="text-lg text-gray-600">
-            While we appreciate your enthusiasm for storytelling, you&apos;ll need to sign in first. 
-            Don&apos;t worry, it&apos;s easier than convincing a dragon to share its treasure! 🐉
+            {t('unauthenticated.description')}
           </p>
           <div className="space-x-4">
             <Link href={`/${locale}/sign-in`} className="btn btn-primary btn-lg">
-              🔐 Sign In to Start Your Adventure
+              {t('unauthenticated.signIn')}
             </Link>
             <Link href={`/${locale}/sign-up`} className="btn btn-outline btn-lg">
-              ✨ Create Your Author Account
+              {t('unauthenticated.signUp')}
             </Link>
           </div>
           <p className="text-sm text-gray-500">
-            Once you&apos;re signed in, you&apos;ll be ready to create magical stories that would make even Merlin jealous! 🧙‍♂️
+            {t('unauthenticated.note')}
           </p>
         </div>
       </SignedOut>
@@ -189,19 +189,16 @@ export default function Step1Page() {
           {/* Step content */}
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
-              <h1 className="card-title text-3xl mb-6">Chapter 1 - The Author</h1>
+              <h1 className="card-title text-3xl mb-6">{t('heading')}</h1>
               
               {loading ? (
                 <div className="text-center py-12">
                   <span className="loading loading-spinner loading-lg"></span>
-                  <p className="text-lg text-gray-600 mt-4">Loading your author profile...</p>
+                  <p className="text-lg text-gray-600 mt-4">{t('messages.loadingProfile')}</p>
                 </div>              ) : (
                 <div className="space-y-6">
                   <div className="prose max-w-none mb-6">
-                    <p className="text-gray-600">
-                      Welcome, storyteller! Before we dive into your magical adventure,                      let&apos;s make sure we have your correct information. This helps us 
-                      personalize your experience and keep you updated on your story&apos;s progress.
-                    </p>
+                    <p className="text-gray-600">{t('intro')}</p>
                   </div>
 
                   {error && (
@@ -211,20 +208,13 @@ export default function Step1Page() {
                       </svg>
                       <span>{error}</span>
                     </div>
-                  )}                  {successMessage && (
-                    <div className="alert alert-success">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span>{successMessage}</span>
-                    </div>
                   )}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Name Field */}
                     <div className="form-control">
                       <label className="label">
-                        <span className="label-text font-semibold">Full Name *</span>
+                        <span className="label-text font-semibold">{t('fields.fullName')}</span>
                       </label>                      <input
                         type="text"
                         value={displayName}
@@ -232,19 +222,19 @@ export default function Step1Page() {
                           setDisplayName(e.target.value);
                           checkForChanges(e.target.value, email, mobilePhone);
                         }}
-                        placeholder="Enter your full name"
+                        placeholder={t('fields.fullName')}
                         className="input input-bordered w-full"
                         required
                       />
                       <label className="label">
-                        <span className="label-text-alt">This is how you&apos;ll be credited as the author</span>
+                        <span className="label-text-alt">{t('fields.fullNameHelp')}</span>
                       </label>
                     </div>
 
                     {/* Email Field */}
                     <div className="form-control">
                       <label className="label">
-                        <span className="label-text font-semibold">Email Address *</span>
+                        <span className="label-text font-semibold">{t('fields.email')}</span>
                       </label>                      <input
                         type="email"
                         value={email}
@@ -252,19 +242,19 @@ export default function Step1Page() {
                           setEmail(e.target.value);
                           checkForChanges(displayName, e.target.value, mobilePhone);
                         }}
-                        placeholder="Enter your email address"
+                        placeholder={t('fields.email')}
                         className="input input-bordered w-full"
                         required
                       />
                       <label className="label">
-                        <span className="label-text-alt">We&apos;ll use this for important updates about your story</span>
+                        <span className="label-text-alt">{t('fields.emailHelp')}</span>
                       </label>
                     </div>
                     
                     {/* Mobile Phone Field */}
                     <div className="form-control">
                       <label className="label">
-                        <span className="label-text font-semibold">Mobile Phone</span>
+                        <span className="label-text font-semibold">{t('fields.mobile')}</span>
                       </label>                      <input
                         type="tel"
                         value={mobilePhone}
@@ -272,11 +262,11 @@ export default function Step1Page() {
                           setMobilePhone(e.target.value);
                           checkForChanges(displayName, email, e.target.value);
                         }}
-                        placeholder="Enter your mobile phone number"
+                        placeholder={t('fields.mobile')}
                         className="input input-bordered w-full"
                       />
                       <label className="label">
-                        <span className="label-text-alt">For urgent notifications or delivery updates (optional)</span>
+                        <span className="label-text-alt">{t('fields.mobileHelp')}</span>
                       </label>                    </div>                  </div>
                 </div>
               )}

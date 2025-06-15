@@ -5,11 +5,12 @@ import Image from 'next/image';
 import StepNavigation from '../../../../components/StepNavigation';
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 export default function Step2Page() {
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations('StorySteps.step2');
   
   // Language options for story creation
   const languageOptions = [
@@ -423,11 +424,9 @@ export default function Step2Page() {
 
             {/* Step content */}
             <div className="card bg-base-100 shadow-xl">              <div className="card-body">
-                <h1 className="card-title text-3xl mb-6">Chapter 2 - The Story</h1>
+                <h1 className="card-title text-3xl mb-6">{t('heading')}</h1>
                 <div className="prose max-w-none mb-6">
-                  <p className="text-gray-600 text-lg">
-                    You can create your story by drawing it, recording it, or simply writing it down.
-                  </p>
+                  <p className="text-gray-600 text-lg">{t('intro')}</p>
                 </div>
 
                 {/* Language Selection */}
@@ -517,9 +516,7 @@ export default function Step2Page() {
                                 🖼️ Upload Image
                               </button>
                             </div>
-                            <p className="text-gray-600">
-                              Draw your story, take a photo of it, or upload an existing image that tells your tale.
-                            </p>
+                            <p className="text-gray-600">{t('imageHelp')}</p>
                           </div>
                         )}
 
@@ -612,9 +609,7 @@ export default function Step2Page() {
                                 📁 Upload Audio File
                               </button>
                             </div>
-                            <p className="text-gray-600">
-                              Record your story directly or upload an audio file. Perfect for those who prefer to speak their tales!
-                            </p>
+                            <p className="text-gray-600">{t('audioHelp')}</p>
                           </div>
                         )}
 
@@ -629,7 +624,7 @@ export default function Step2Page() {
                                 <div className="absolute inset-0 rounded-full border-4 border-red-500 animate-ping"></div>
                               </div>
                               <p className="text-lg font-semibold text-red-600">Recording...</p>
-                              <p className="text-gray-600">Tell your story! Speak clearly into your microphone.</p>
+                              <p className="text-gray-600">{t('recordingHelp')}</p>
                             </div>
                             <div className="flex gap-4 justify-center">
                               <button
@@ -699,9 +694,7 @@ export default function Step2Page() {
                   <div className="flex items-start space-x-3">
                     <div className="text-2xl">💡</div>
                     <div>
-                      <p className="text-blue-800 text-sm mt-1">
-                        If you&apos;ve written text or uploaded an image above, our AI will automatically extract characters, settings, and themes. Otherwise, the next steps will guide you through creating your story step by step.
-                      </p>
+                      <p className="text-blue-800 text-sm mt-1">{t('reassurance')}</p>
                     </div>
                   </div>
                 </div>
@@ -712,7 +705,7 @@ export default function Step2Page() {
                   prevHref="/tell-your-story/step-1"
                   nextDisabled={isCreatingStory}
                   onNext={handleNextStep}
-                  nextLabel={isCreatingStory ? "Processing with AI..." : (hasContent() ? "Next" : "Next Chapter")}
+                  nextLabel={isCreatingStory ? t('processing') : (hasContent() ? t('next') : t('nextChapter'))}
                 />
               </div>
             </div>

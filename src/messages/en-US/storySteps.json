@@ -1,0 +1,89 @@
+{
+  "StorySteps": {
+    "step1": {
+      "unauthenticated": {
+        "title": "Oops! Looks like you're trying to sneak into the author's lounge!",
+        "description": "While we appreciate your enthusiasm for storytelling, you'll need to sign in first. Don't worry, it's easier than convincing a dragon to share its treasure! 🐉",
+        "signIn": "🔐 Sign In to Start Your Adventure",
+        "signUp": "✨ Create Your Author Account",
+        "note": "Once you're signed in, you'll be ready to create magical stories that would make even Merlin jealous! 🧙‍♂️"
+      },
+      "heading": "Chapter 1 - The Author",
+      "intro": "Welcome, storyteller! Before we dive into your magical adventure, let's make sure we have your correct information. This helps us personalize your experience and keep you updated on your story's progress.",
+      "fields": {
+        "fullName": "Full Name *",
+        "fullNameHelp": "This is how you'll be credited as the author",
+        "email": "Email Address *",
+        "emailHelp": "We'll use this for important updates about your story",
+        "mobile": "Mobile Phone",
+        "mobileHelp": "For urgent notifications or delivery updates (optional)"
+      },
+      "messages": {
+        "loadingProfile": "Loading your author profile...",
+        "required": "Please fill in all required fields",
+        "saveFailed": "Failed to save profile. Please try again.",
+        "fetchFailed": "Failed to fetch user data",
+        "loadFailed": "Failed to load user information. Please try again."
+      }
+    },
+    "step2": {
+      "heading": "Chapter 2 - The Story",
+      "intro": "You can create your story by drawing it, recording it, or simply writing it down.",
+      "imageHelp": "Draw your story, take a photo of it, or upload an existing image that tells your tale.",
+      "audioHelp": "Record your story directly or upload an audio file. Perfect for those who prefer to speak their tales!",
+      "recordingHelp": "Tell your story! Speak clearly into your microphone.",
+      "reassurance": "If you've written text or uploaded an image above, our AI will automatically extract characters, settings, and themes. Otherwise, the next steps will guide you through creating your story step by step.",
+      "processing": "Processing with AI...",
+      "nextChapter": "Next Chapter",
+      "next": "Next"
+    },
+    "step3": {
+      "heading": "Chapter 3 - The Characters",
+      "intro": "Who are the heroes, friends, and magical creatures in your story? Create characters that will bring your adventure to life!",
+      "addCharacter": "➕ Add Character",
+      "chooseMethod": "Choose how to add a character:",
+      "createNew": "✨ Create New Character",
+      "useExisting": "📚 Use Existing Character",
+      "cancel": "Cancel",
+      "readyTitle": "Ready to meet your characters?",
+      "readyDescription": "Every great story needs amazing characters! Click \"Add Character\" to create new heroes or add existing characters from your library to this story.",
+      "greatWork": "Great work! You've created {count} character{count === 1 ? '' : 's' }.",
+      "youCanAlways": "You can always add more characters later or continue to the next chapter to develop your story further.",
+      "continuing": "Continuing...",
+      "nextChapter": "Next Chapter"
+    },
+    "step4": {
+      "heading": "Chapter 4 - The Plot",
+      "intro": "Now let's define the core elements of your story. Tell us about the world you want to create, who you're writing for, and how you envision your story looking.",
+      "fields": {
+        "title": "Book Title *",
+        "titleHelp": "Choose a captivating title for your story",
+        "place": "Setting/Place",
+        "placeHelp": "Where does your story take place? (real or imaginary)",
+        "audience": "Target Audience",
+        "audienceHelp": "Who is this story written for?",
+        "novelStyle": "Novel Style",
+        "novelStyleHelp": "What genre/style should your story be?",
+        "graphicStyle": "Graphic Style",
+        "graphicStyleHelp": "Choose the artistic style for your story's illustrations",
+        "outline": "Story Outline",
+        "outlineHelp": "Describe your story's plot, characters, and key events",
+        "additional": "Additional Requests",
+        "additionalHelp": "Any special requests or specific elements you want included"
+      },
+      "saving": "Saving...",
+      "nextChapter": "Next Chapter"
+    },
+    "step5": {
+      "heading": "Chapter 5 - The Gift",
+      "intro": "Choose how you'd like to receive your story. You can select multiple delivery formats to enjoy your story in different ways.",
+      "deliveryOptions": "Delivery Options",
+      "creating": "Creating...",
+      "insufficientCredits": "Insufficient Credits",
+      "createStory": "Create story",
+      "buyMoreCredits": "Buy More Credits",
+      "buyMoreCreditsInfo": "Credit purchasing functionality is coming soon! Stay tuned for updates.",
+      "close": "Close"
+    }
+  }
+}
