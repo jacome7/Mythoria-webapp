@@ -40,27 +40,17 @@ function initializeDatabase() {
   pool.on('error', (err) => {
     console.error('Unexpected error on idle client', err);
   });
-
   pool.on('connect', () => {
-    if (process.env.NODE_ENV !== "production") {
-      console.log('Database client connected');
-    }
     // Log connection method for debugging
     if (isVpcDirectEgress()) {
       console.log('Using VPC Direct Egress connection to Cloud SQL');
     }
   });
-
   pool.on('acquire', () => {
-    if (process.env.NODE_ENV !== "production") {
-      console.log('Database client acquired from pool');
-    }
+    // Pool client acquired
   });
-
   pool.on('remove', () => {
-    if (process.env.NODE_ENV !== "production") {
-      console.log('Database client removed from pool');
-    }
+    // Pool client removed
   });
 
   dbInstance = drizzle(pool, { schema });

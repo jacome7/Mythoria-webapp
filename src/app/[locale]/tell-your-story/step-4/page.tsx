@@ -5,13 +5,25 @@ import StepNavigation from '../../../../components/StepNavigation';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getCurrentStoryId, hasValidStorySession } from '../../../../lib/story-session';
+import { 
+  TargetAudience, 
+  NovelStyle, 
+  GraphicalStyle,
+  TargetAudienceLabels,
+  NovelStyleLabels,
+  GraphicalStyleLabels,
+  getAllTargetAudiences,
+  getAllNovelStyles,
+  getAllGraphicalStyles
+} from '../../../../types/story-enums';
 
 interface StoryData {
   storyId: string;
   title: string;
   place: string | null;
-  targetAudience: string | null;
-  graphicalStyle: string | null;
+  targetAudience: TargetAudience | null;
+  novelStyle: NovelStyle | null;
+  graphicalStyle: GraphicalStyle | null;
   plotDescription: string | null;
   additionalRequests: string | null;
 }
@@ -21,36 +33,37 @@ export default function Step4Page() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentStoryId, setCurrentStoryId] = useState<string | null>(null);
-  
-  // Form data
+    // Form data
   const [title, setTitle] = useState('');
   const [place, setPlace] = useState('');
-  const [targetAudience, setTargetAudience] = useState('');
-  const [graphicalStyle, setGraphicalStyle] = useState('');
+  const [targetAudience, setTargetAudience] = useState<TargetAudience | ''>('');
+  const [novelStyle, setNovelStyle] = useState<NovelStyle | ''>('');
+  const [graphicalStyle, setGraphicalStyle] = useState<GraphicalStyle | ''>('');
   const [plotDescription, setPlotDescription] = useState('');
   const [additionalRequests, setAdditionalRequests] = useState('');
 
   const targetAudienceOptions = [
     { value: '', label: 'Select target audience...' },
-    { value: 'Toddlers', label: 'Toddlers (1-3 years)' },
-    { value: 'Young Kids', label: 'Young Kids (4-6 years)' },
-    { value: 'Kids', label: 'Kids (7-12 years)' },
-    { value: 'Teenagers', label: 'Teenagers (13-17 years)' },
-    { value: 'Adults', label: 'Adults (18+ years)' }
+    ...getAllTargetAudiences().map(value => ({
+      value,
+      label: TargetAudienceLabels[value]
+    }))
+  ];
+
+  const novelStyleOptions = [
+    { value: '', label: 'Select novel style...' },
+    ...getAllNovelStyles().map(value => ({
+      value,
+      label: NovelStyleLabels[value]
+    }))
   ];
 
   const graphicalStyleOptions = [
     { value: '', label: 'Select graphic style...' },
-    { value: 'Colored Book', label: 'Colored Book' },
-    { value: 'Watercolor', label: 'Watercolor' },
-    { value: 'Pixar Animation', label: 'Pixar Animation' },
-    { value: 'Disney Style', label: 'Disney Style' },
-    { value: 'Anime', label: 'Anime' },
-    { value: 'Cartoon', label: 'Cartoon' },
-    { value: 'Realistic', label: 'Realistic' },
-    { value: 'Minimalist', label: 'Minimalist' },
-    { value: 'Vintage', label: 'Vintage' },
-    { value: 'Comic Book', label: 'Comic Book' }
+    ...getAllGraphicalStyles().map(value => ({
+      value,
+      label: GraphicalStyleLabels[value]
+    }))
   ];
 
   useEffect(() => {
@@ -81,11 +94,11 @@ export default function Step4Page() {
       
       const data = await response.json();
       const story: StoryData = data.story;
-      
-      // Pre-populate form fields
+        // Pre-populate form fields
       setTitle(story.title || '');
       setPlace(story.place || '');
       setTargetAudience(story.targetAudience || '');
+      setNovelStyle(story.novelStyle || '');
       setGraphicalStyle(story.graphicalStyle || '');
       setPlotDescription(story.plotDescription || '');
       setAdditionalRequests(story.additionalRequests || '');
@@ -117,11 +130,11 @@ export default function Step4Page() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+        },        body: JSON.stringify({
           title: title.trim(),
           place: place.trim() || null,
           targetAudience: targetAudience || null,
+          novelStyle: novelStyle || null,
           graphicalStyle: graphicalStyle || null,
           plotDescription: plotDescription.trim() || null,
           additionalRequests: additionalRequests.trim() || null,
@@ -246,16 +259,14 @@ export default function Step4Page() {
                         <label className="label">
                           <span className="label-text-alt">Where does your story take place? (real or imaginary)</span>
                         </label>
-                      </div>
-
-                      {/* Target Audience Field */}
+                      </div>                      {/* Target Audience Field */}
                       <div className="form-control">
                         <label className="label">
                           <span className="label-text font-semibold">Target Audience</span>
                         </label>
                         <select
                           value={targetAudience}
-                          onChange={(e) => setTargetAudience(e.target.value)}
+                          onChange={(e) => setTargetAudience(e.target.value as TargetAudience | '')}
                           className="select select-bordered w-full"
                         >
                           {targetAudienceOptions.map((option) => (
@@ -269,6 +280,27 @@ export default function Step4Page() {
                         </label>
                       </div>
 
+                      {/* Novel Style Field */}
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text font-semibold">Novel Style</span>
+                        </label>
+                        <select
+                          value={novelStyle}
+                          onChange={(e) => setNovelStyle(e.target.value as NovelStyle | '')}
+                          className="select select-bordered w-full"
+                        >
+                          {novelStyleOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                        <label className="label">
+                          <span className="label-text-alt">What genre/style should your story be?</span>
+                        </label>
+                      </div>
+
                       {/* Graphic Style Field */}
                       <div className="form-control md:col-span-2">
                         <label className="label">
@@ -276,7 +308,7 @@ export default function Step4Page() {
                         </label>
                         <select
                           value={graphicalStyle}
-                          onChange={(e) => setGraphicalStyle(e.target.value)}
+                          onChange={(e) => setGraphicalStyle(e.target.value as GraphicalStyle | '')}
                           className="select select-bordered w-full"
                         >
                           {graphicalStyleOptions.map((option) => (

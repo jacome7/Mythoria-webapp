@@ -242,10 +242,10 @@ export default function MyStoriesTable() {
                 </tr>
               </thead>
               <tbody>
-                {sortedStories.map((story) => (
-                  <tr key={story.storyId}>
+                {sortedStories.map((story) => (<tr key={story.storyId}>
                     <td className="px-2 py-1 md:px-4 md:py-2">{formatDate(story.createdAt)}</td>
-                    <td className="font-medium px-2 py-1 md:px-4 md:py-2">{story.title}</td>                    <td className="px-2 py-1 md:px-4 md:py-2">
+                    <td className="font-medium px-2 py-1 md:px-4 md:py-2">{story.title}</td>
+                    <td className="px-2 py-1 md:px-4 md:py-2">
                       <div className="space-y-1">
                         <span className={getStatusBadgeClass(story.status)}>
                           {t(`status.${story.status}`)}

@@ -3,18 +3,68 @@
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
 import StepNavigation from '../../../../components/StepNavigation';
 import CharacterCard from '../../../../components/CharacterCard';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { getCurrentStoryId, setStep3Data, Character, hasValidStorySession } from '../../../../lib/story-session';
 
 export default function Step3Page() {
   const router = useRouter();
   const [characters, setCharacters] = useState<Character[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [availableCharacters, setAvailableCharacters] = useState<Character[]>([]);
+  const [loading, setLoading] = useState(true);  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showAddOptions, setShowAddOptions] = useState(false);
   const [editingCharacterId, setEditingCharacterId] = useState<string | null>(null);
   const [currentStoryId, setCurrentStoryId] = useState<string | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
+
+  const fetchStoryCharacters = useCallback(async (storyId?: string) => {
+    const targetStoryId = storyId || currentStoryId;
+    if (!targetStoryId) return;
+    
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/stories/${targetStoryId}/characters`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch story characters');
+      }
+      
+      const data = await response.json();
+      // Transform the data structure to match our expected format
+      const transformedCharacters = data.characters?.map((item: { character: Character; role: string }) => ({
+        ...item.character,
+        role: item.role // Use the role from the story-character relationship
+      })) || [];
+      
+      setCharacters(transformedCharacters);
+      
+    } catch (error) {
+      console.error('Error fetching story characters:', error);
+      alert('Failed to load story characters. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }, [currentStoryId]);
+
+  const fetchAvailableCharacters = useCallback(async (storyId?: string) => {
+    const targetStoryId = storyId || currentStoryId;
+    if (!targetStoryId) return;
+    
+    try {
+      const response = await fetch(`/api/stories/${targetStoryId}/available-characters`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch available characters');
+      }
+      
+      const data = await response.json();
+      setAvailableCharacters(data.characters || []);
+      
+    } catch (error) {
+      console.error('Error fetching available characters:', error);
+      // Don't show alert for this as it's not critical
+    }
+  }, [currentStoryId]);
 
   useEffect(() => {
     // Check if we have a valid story session
@@ -22,35 +72,15 @@ export default function Step3Page() {
       router.push('/tell-your-story/step-1');
       return;
     }
-
+    
     const storyId = getCurrentStoryId();
     setCurrentStoryId(storyId);
     
     if (storyId) {
-      fetchCharacters();
+      fetchStoryCharacters(storyId);
+      fetchAvailableCharacters(storyId);
     }
-  }, [router]);
-
-  const fetchCharacters = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/characters');
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch characters');
-      }
-      
-      const data = await response.json();
-      setCharacters(data.characters || []);
-      
-    } catch (error) {
-      console.error('Error fetching characters:', error);
-      alert('Failed to load characters. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  }, [router, fetchStoryCharacters, fetchAvailableCharacters]);
   const handleCreateCharacter = async (characterData: Character) => {
     try {
       const response = await fetch('/api/characters', {
@@ -73,15 +103,15 @@ export default function Step3Page() {
         await addCharacterToStory(character.characterId, characterData.role);
       }
       
-      setCharacters(prev => [...prev, character]);
+      setCharacters(prev => [...prev, { ...character, role: characterData.role }]);
       setShowCreateForm(false);
+      setShowAddOptions(false);
       
     } catch (error) {
       console.error('Error creating character:', error);
       throw error;
     }
   };
-
   const addCharacterToStory = async (characterId: string, role?: string) => {
     if (!currentStoryId) return;
 
@@ -99,6 +129,27 @@ export default function Step3Page() {
       }
     } catch (error) {
       console.warn('Error linking character to story:', error);
+    }
+  };
+
+  const handleAddExistingCharacter = async (character: Character) => {
+    try {
+      // Add character to story with their current role or default to protagonist
+      await addCharacterToStory(character.characterId!, character.role || 'protagonist');
+      
+      // Add to local state
+      setCharacters(prev => [...prev, character]);
+      
+      // Remove from available characters
+      setAvailableCharacters(prev => 
+        prev.filter(c => c.characterId !== character.characterId)
+      );
+      
+      setShowAddOptions(false);
+      
+    } catch (error) {
+      console.error('Error adding existing character:', error);
+      alert('Failed to add character to story. Please try again.');
     }
   };
 
@@ -252,29 +303,88 @@ export default function Step3Page() {
                         onDelete={async () => {}}
                         onCancel={() => setShowCreateForm(false)}
                       />
-                    )}
-
-                    {/* Add Character Button */}
+                    )}                    {/* Add Character Button/Options */}
                     {!showCreateForm && (
                       <div className="text-center">
-                        <button
-                          className="btn btn-primary btn-lg"
-                          onClick={() => setShowCreateForm(true)}
-                        >
-                          ➕ Add Character
-                        </button>
+                        {!showAddOptions ? (
+                          <button
+                            className="btn btn-primary btn-lg"
+                            onClick={() => setShowAddOptions(true)}
+                          >
+                            ➕ Add Character
+                          </button>
+                        ) : (
+                          <div className="space-y-4">
+                            <div className="text-lg font-semibold">Choose how to add a character:</div>
+                            
+                            {/* Create New Character Option */}
+                            <button
+                              className="btn btn-primary btn-lg w-full"
+                              onClick={() => {
+                                setShowCreateForm(true);
+                                setShowAddOptions(false);
+                              }}
+                            >
+                              ✨ Create New Character
+                            </button>
+                            
+                            {/* Add Existing Character Option (only if available characters exist) */}
+                            {availableCharacters.length > 0 && (
+                              <div className="space-y-2">
+                                <div className="text-sm text-gray-600">
+                                  Or choose from your existing characters:
+                                </div>
+                                <div className="dropdown dropdown-end w-full">
+                                  <div tabIndex={0} role="button" className="btn btn-outline btn-lg w-full">
+                                    📚 Use Existing Character
+                                  </div>
+                                  <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow-lg border max-h-60 overflow-y-auto">
+                                    {availableCharacters.map((character) => (
+                                      <li key={character.characterId}>
+                                        <button
+                                          className="text-left w-full p-3 hover:bg-base-200"
+                                          onClick={() => handleAddExistingCharacter(character)}
+                                        >
+                                          <div>
+                                            <div className="font-semibold">{character.name}</div>
+                                            <div className="text-sm text-gray-500">
+                                              {character.type} • Role: {character.role || 'protagonist'}
+                                            </div>
+                                            {character.passions && (
+                                              <div className="text-xs text-gray-400 mt-1">
+                                                {character.passions.length > 50 
+                                                  ? `${character.passions.substring(0, 50)}...` 
+                                                  : character.passions}
+                                              </div>
+                                            )}
+                                          </div>
+                                        </button>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* Cancel Option */}
+                            <button
+                              className="btn btn-ghost"
+                              onClick={() => setShowAddOptions(false)}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        )}
                       </div>
-                    )}
-
-                    {/* Guidance Message */}
-                    {characters.length === 0 && !showCreateForm && (
+                    )}                    {/* Guidance Message */}
+                    {characters.length === 0 && !showCreateForm && !showAddOptions && (
                       <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
                         <div className="text-4xl mb-4">🎭</div>
                         <h3 className="text-xl font-semibold text-blue-800 mb-2">
                           Ready to meet your characters?
                         </h3>
                         <p className="text-blue-600">                          Every great story needs amazing characters! Click &quot;Add Character&quot; to create 
-                          the heroes, friends, and magical beings that will make your story unforgettable.
+                          new heroes or add existing characters from your library to this story.
                         </p>
                       </div>
                     )}

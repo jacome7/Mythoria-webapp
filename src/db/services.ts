@@ -165,7 +165,16 @@ export const storyService = {  async createStory(storyData: { title: string; aut
 
 // Character operations
 export const characterService = {
-  async createCharacter(characterData: { name: string; authorId?: string; type?: string; passions?: string; superpowers?: string; physicalDescription?: string; photoUrl?: string }) {
+  async createCharacter(characterData: { 
+    name: string; 
+    authorId?: string; 
+    type?: string; 
+    role?: 'protagonist' | 'antagonist' | 'supporting' | 'mentor' | 'comic_relief' | 'love_interest' | 'sidekick' | 'narrator' | 'other' | null; 
+    passions?: string; 
+    superpowers?: string; 
+    physicalDescription?: string; 
+    photoUrl?: string 
+  }) {
     const [character] = await db.insert(characters).values(characterData).returning();
     return character;
   },
@@ -182,7 +191,11 @@ export const characterService = {
 
 // Story-Character relationship operations
 export const storyCharacterService = {
-  async addCharacterToStory(storyId: string, characterId: string, role?: string) {
+  async addCharacterToStory(
+    storyId: string, 
+    characterId: string, 
+    role?: 'protagonist' | 'antagonist' | 'supporting' | 'mentor' | 'comic_relief' | 'love_interest' | 'sidekick' | 'narrator' | 'other' | null
+  ) {
     const [relation] = await db.insert(storyCharacters).values({
       storyId,
       characterId,

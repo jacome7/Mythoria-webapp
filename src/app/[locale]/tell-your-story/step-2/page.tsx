@@ -302,8 +302,7 @@ export default function Step2Page() {
     if (!debugRequest || !storyId) return;
 
     try {
-      setIsProcessingGenAI(true);      console.log('Sending to GenAI:', debugRequest);
-      const genaiResponse = await fetch('/api/stories/genai-structure', {
+      setIsProcessingGenAI(true);      console.log('Sending to GenAI:', debugRequest);      const genaiResponse = await fetch('/api/stories/genai-structure', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -313,6 +312,7 @@ export default function Step2Page() {
           imageData: debugRequest.imageData,
           audioData: debugRequest.audioData,
           storyId: storyId,
+          userLanguage: storyLanguage, // Pass the user's selected language
         }),
       });
 
@@ -478,15 +478,15 @@ export default function Step2Page() {
                   </div>
 
                   {/* Tab Content */}
-                  <div className="border border-base-300 rounded-b-md p-4 md:p-6 bg-base-100 shadow min-h-96"> {/* Changed p-6 to p-4 md:p-6 */}
-                    {/* Text Area Tab Content */}
+                  <div className="border border-base-300 rounded-b-md p-4 md:p-6 bg-base-100 shadow min-h-96"> {/* Changed p-6 to p-4 md:p-6 */}                    {/* Text Area Tab Content */}
                     {activeTab === 'text' && (
-                      <div className="space-y-4">                        <div className="form-control">
-                          <label className="label">
-                            <span className="label-text font-semibold">Tell your story...</span>
-                          </label>
+                      <div className="w-full">
+                        <div className="mb-4">
+                          <h2 className="text-xl font-semibold text-center mb-2">Tell your story...</h2>
+                        </div>
+                        <div className="form-control w-full">
                           <textarea
-                            className="textarea textarea-bordered h-64 text-base leading-relaxed"
+                            className="textarea textarea-bordered w-full h-64 text-base leading-relaxed"
                             placeholder="Once upon a time... Let your imagination run wild! Share your adventure, your dreams, or any story that&apos;s close to your heart."
                             value={storyText}
                             onChange={(e) => setStoryText(e.target.value)}

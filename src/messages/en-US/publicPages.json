@@ -202,16 +202,48 @@
       "title": "Ready to create your story?",
       "subtitle": "Join thousands of families who have already discovered the magic of Mythoria.",
       "button": "Start Creating"
-    }  },
-  "AboutUs": {
-    "title": "Hello! My name is Rodrigo and I've just turned 18 years old.",
-    "imageAlt": "Rodrigo - Founder of Mythoria",
-    "paragraphs": {
-      "p1": "I grew up fascinated by the adventures my father invented, stories that fed my imagination and taught me that each of us can be the hero of incredible adventures.",
-      "p2": "Today, I not only love listening to stories, but I also love creating them. I'm passionate about Artificial Intelligence and discovered that AI can help build fantastic worlds and unforgettable characters. I particularly enjoy creating stories to tell my younger brother, turning each narrative into a unique and personal experience.",
-      "p3": "When I first used ChatGPT, I was amazed by the potential of this technology. Since then, I have been exploring the infinite possibilities that AI offers to personalize and enhance storytelling.",
-      "p4": "Can a 17-year-old create an innovative company using only Artificial Intelligence? Driven by this ambition and curiosity, Mythoria was born—a project dedicated to creating fully personalized books, where each child becomes the hero of their own adventure.",
-      "tagline": "Mythoria is more than just a book: it's your own story."
+    }  },  "AboutUs": {
+    "hero": {
+      "title": "Mythoria",
+      "subtitle": "Stories brewed by an 18-year-old dreamer … and a legion of AI Oompa-Loompas.",
+      "cta": "Start your own story"
+    },
+    "founder": {
+      "title": "The Young Founder",
+      "description": "Meet Rodrigo, who turned his childhood fascination with stories into an AI-powered adventure factory. At 18, he's combining artificial intelligence with imagination to create personalized tales for every child.",
+      "ageLabel": "18 years old",
+      "ageHover": "still levelling-up",
+      "imageAlt": "Rodrigo - Founder of Mythoria"
+    },
+    "aiTeam": {
+      "title": "Meet the Oompa-Loompas 2.0",
+      "subtitle": "Unlike Wonka's factory, our Oompa-Loompas are pure silicon—ethical, sleepless and endlessly scalable.",
+      "quillBot": {
+        "name": "Quill-Bot",
+        "description": "Writes plot twists faster than you can say expelliarmus"
+      },
+      "brushBot": {
+        "name": "Brush-Bot",
+        "description": "Paints worlds in Pixar, manga or water-colour at a click"
+      },
+      "voiceBot": {
+        "name": "Voice-Bot",
+        "description": "Gives every hero a unique voice—no golden ticket needed"
+      }
+    },
+    "progress": {
+      "title": "Work-in-Progress Lab",
+      "milestone1": "Beta spellbook – first 100 families already crafting tales",
+      "milestone2": "Community feedback cauldron – every suggestion pops here",
+      "milestone3": "Global release portal – scheduled for September 2025",
+      "feedbackButton": "🪄 Suggest a spell"
+    },
+    "news": {
+      "title": "News From the Realm",
+      "breaking": "Breaking Quill 🗞️ — Rodrigo wins the 2025 InovaGaia Young Innovator Award for Mythoria!"
+    },    "investors": {
+      "title": "Investors: Join the Quest",
+      "description": "Dragons love gold; we love partners. If you see the treasure too, open the scroll."
     }
   },"GetInspiredPage": {
     "gallery": {

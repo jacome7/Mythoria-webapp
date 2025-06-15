@@ -28,10 +28,33 @@ export default function Step1Page() {
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [mobilePhone, setMobilePhone] = useState('');
-  useEffect(() => {
+  
+  // Original values to track changes
+  const [originalValues, setOriginalValues] = useState<{
+    displayName: string;
+    email: string;
+    mobilePhone: string;
+  }>({
+    displayName: '',
+    email: '',
+    mobilePhone: ''
+  });
+  
+  // Flag to track if any field has been edited
+  const [hasChanges, setHasChanges] = useState(false);  useEffect(() => {
     fetchAuthorData();
   }, []);
-  const handleNext = async (): Promise<boolean> => {
+  
+  // Function to check if current values differ from original values
+  const checkForChanges = (currentDisplayName: string, currentEmail: string, currentMobilePhone: string) => {
+    const hasChanged = 
+      currentDisplayName !== originalValues.displayName ||
+      currentEmail !== originalValues.email ||
+      currentMobilePhone !== originalValues.mobilePhone;
+    
+    setHasChanges(hasChanged);
+  };
+    const handleNext = async (): Promise<boolean> => {
     if (!displayName || !email) {
       setError('Please fill in all required fields');
       return false; // Prevent navigation
@@ -41,10 +64,19 @@ export default function Step1Page() {
       setLoading(true);
       setError(null);
       
-      // Here you would typically save the data to your database
-      // For now, we'll just simulate a successful save
-      
-      setSuccessMessage('Profile saved successfully!');
+      // Only update profile if there are changes
+      if (hasChanges) {
+        // Here you would typically save the data to your database
+        // For now, we'll just simulate a successful save
+        
+        // Update original values after successful save
+        setOriginalValues({
+          displayName,
+          email,
+          mobilePhone
+        });
+        setHasChanges(false);
+      }
       
       return true; // Allow navigation
     } catch (err) {
@@ -55,7 +87,6 @@ export default function Step1Page() {
       setLoading(false);
     }
   };
-
   const fetchAuthorData = async () => {
     try {
       setLoading(true);
@@ -71,14 +102,29 @@ export default function Step1Page() {
       setAuthorData(data);
       
       // Pre-populate form fields
-      setDisplayName(data.displayName || '');
-      setEmail(data.email || '');
-      setMobilePhone(data.mobilePhone || '');
+      const initialDisplayName = data.displayName || '';
+      const initialEmail = data.email || '';
+      const initialMobilePhone = data.mobilePhone || '';
+      
+      setDisplayName(initialDisplayName);
+      setEmail(initialEmail);
+      setMobilePhone(initialMobilePhone);
+      
+      // Store original values for change tracking
+      setOriginalValues({
+        displayName: initialDisplayName,
+        email: initialEmail,
+        mobilePhone: initialMobilePhone
+      });
+      
+      // Reset changes flag
+      setHasChanges(false);
       
     } catch (error) {
       console.error('Error fetching author data:', error);
       setError('Failed to load user information. Please try again.');
-    } finally {    setLoading(false);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -165,9 +211,7 @@ export default function Step1Page() {
                       </svg>
                       <span>{error}</span>
                     </div>
-                  )}
-
-                  {successMessage && (
+                  )}                  {successMessage && (
                     <div className="alert alert-success">
                       <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -181,11 +225,13 @@ export default function Step1Page() {
                     <div className="form-control">
                       <label className="label">
                         <span className="label-text font-semibold">Full Name *</span>
-                      </label>
-                      <input
+                      </label>                      <input
                         type="text"
                         value={displayName}
-                        onChange={(e) => setDisplayName(e.target.value)}
+                        onChange={(e) => {
+                          setDisplayName(e.target.value);
+                          checkForChanges(e.target.value, email, mobilePhone);
+                        }}
                         placeholder="Enter your full name"
                         className="input input-bordered w-full"
                         required
@@ -199,11 +245,13 @@ export default function Step1Page() {
                     <div className="form-control">
                       <label className="label">
                         <span className="label-text font-semibold">Email Address *</span>
-                      </label>
-                      <input
+                      </label>                      <input
                         type="email"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                          checkForChanges(displayName, e.target.value, mobilePhone);
+                        }}
                         placeholder="Enter your email address"
                         className="input input-bordered w-full"
                         required
@@ -217,11 +265,13 @@ export default function Step1Page() {
                     <div className="form-control">
                       <label className="label">
                         <span className="label-text font-semibold">Mobile Phone</span>
-                      </label>
-                      <input
+                      </label>                      <input
                         type="tel"
                         value={mobilePhone}
-                        onChange={(e) => setMobilePhone(e.target.value)}
+                        onChange={(e) => {
+                          setMobilePhone(e.target.value);
+                          checkForChanges(displayName, email, e.target.value);
+                        }}
                         placeholder="Enter your mobile phone number"
                         className="input input-bordered w-full"
                       />

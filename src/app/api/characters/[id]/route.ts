@@ -40,14 +40,13 @@ export async function PATCH(
         { error: 'Character name is required' },
         { status: 400 }
       );
-    }
-
-    // Update the character
+    }    // Update the character
     const [updatedCharacter] = await db
       .update(characters)
       .set({
         name: characterData.name.trim(),
         type: characterData.type?.trim() || null,
+        role: characterData.role?.trim() || null,
         passions: characterData.passions?.trim() || null,
         superpowers: characterData.superpowers?.trim() || null,
         physicalDescription: characterData.physicalDescription?.trim() || null,

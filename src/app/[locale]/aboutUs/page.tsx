@@ -1,49 +1,288 @@
 'use client'; // Required for useTranslations
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
 const AboutUsPage = () => {
   const t = useTranslations('AboutUs');
+  const [showFeedbackForm, setShowFeedbackForm] = useState(false);
+  const [ageHover, setAgeHover] = useState(false);
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-20">
-      <div className="grid md:grid-cols-2 gap-12 items-center mb-12 md:mb-16">
-        <div className="md:pr-8">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-base-content leading-tight">
-            {t('title')}
-          </h1>
+    <>
+      {/* 0. Hero Banner - "Dust Jacket" */}
+      <div className="hero min-h-screen bg-gradient-to-br from-purple-900 via-violet-800 to-indigo-900 relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-10 left-10 animate-float">📖</div>
+          <div className="absolute top-32 right-20 animate-float-delayed">⚙️</div>
+          <div className="absolute bottom-20 left-1/4 animate-float">📚</div>
+          <div className="absolute top-1/3 right-1/3 animate-bounce-slow">✨</div>
         </div>
-        <div>
-          <Image 
-            src="/AboutUs.jpg"
-            alt={t('imageAlt')}
-            width={500} 
-            height={500}
-            className="rounded-lg shadow-2xl object-cover w-full h-auto md:max-h-[500px]"
-          />
+        
+        <div className="hero-content text-center z-10">
+          <div className="max-w-4xl">
+            <h1 className="text-6xl md:text-8xl font-bold text-white mb-8 drop-shadow-2xl">
+              {t('hero.title')}
+            </h1>
+            <p className="text-xl md:text-2xl text-purple-100 mb-12 italic font-light max-w-3xl mx-auto leading-relaxed">
+              {t('hero.subtitle')}
+            </p>
+            <Link href="/tell-your-story/step-1" className="btn btn-primary btn-lg text-lg px-8 py-4 rounded-full shadow-2xl hover:scale-105 transition-transform">
+              {t('hero.cta')} ✨
+            </Link>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto space-y-6 text-lg text-base-content leading-relaxed">
-        <p>
-          {t('paragraphs.p1')}
-        </p>
-        <p>
-          {t('paragraphs.p2')}
-        </p>
-        <p>
-          {t('paragraphs.p3')}
-        </p>
-        <p className="font-semibold text-base-content">
-          {t('paragraphs.p4')}
-        </p>
-        <p className="text-2xl font-bold text-center text-primary mt-10">
-          {t('paragraphs.tagline')}
-        </p>
+      {/* 1. "The Young Founder" Section */}
+      <div className="py-20 bg-base-100">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+            <div className="order-2 md:order-1 flex justify-center">
+              <div className="relative">
+                <div className="w-80 h-80 rounded-full overflow-hidden border-8 border-primary shadow-2xl relative">
+                  <Image 
+                    src="/AboutUs.jpg"
+                    alt={t('founder.imageAlt')}
+                    width={400}
+                    height={400}
+                    className="object-cover w-full h-full"
+                  />
+                  {/* Decorative sword overlay */}
+                  <div className="absolute bottom-4 right-4 text-4xl opacity-80">⚔️</div>
+                </div>
+                {/* Age badge */}
+                <div 
+                  className="absolute -top-4 -right-4 bg-secondary text-secondary-content px-4 py-2 rounded-full font-bold text-sm cursor-pointer hover:bg-accent transition-colors shadow-lg"
+                  onMouseEnter={() => setAgeHover(true)}
+                  onMouseLeave={() => setAgeHover(false)}
+                >
+                  {ageHover ? t('founder.ageHover') : t('founder.ageLabel')}
+                </div>
+              </div>
+            </div>
+            
+            <div className="order-1 md:order-2">
+              <h2 className="text-4xl md:text-5xl font-bold text-base-content mb-8 flex items-center gap-3">
+                {t('founder.title')} <span className="text-3xl">🧑‍💻</span>
+              </h2>
+              <p className="text-lg text-base-content leading-relaxed">
+                {t('founder.description')}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+
+      {/* 2. "Meet the Oompa-Loompas 2.0" Grid */}
+      <div className="py-20 bg-gradient-to-br from-orange-50 to-yellow-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-base-content mb-6">
+              {t('aiTeam.title')}
+            </h2>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-12">
+            {/* Quill-Bot Card */}
+            <div className="card bg-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-2">
+              <div className="card-body text-center p-8">
+                <div className="text-6xl mb-4">✍️</div>
+                <h3 className="card-title justify-center text-xl mb-3 text-primary">
+                  {t('aiTeam.quillBot.name')}
+                </h3>
+                <p className="text-base-content/80 text-sm leading-relaxed">
+                  {t('aiTeam.quillBot.description')}
+                </p>
+              </div>
+            </div>
+
+            {/* Brush-Bot Card */}
+            <div className="card bg-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-2">
+              <div className="card-body text-center p-8">
+                <div className="text-6xl mb-4">🎨</div>
+                <h3 className="card-title justify-center text-xl mb-3 text-primary">
+                  {t('aiTeam.brushBot.name')}
+                </h3>
+                <p className="text-base-content/80 text-sm leading-relaxed">
+                  {t('aiTeam.brushBot.description')}
+                </p>
+              </div>
+            </div>
+
+            {/* Voice-Bot Card */}
+            <div className="card bg-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-2">
+              <div className="card-body text-center p-8">
+                <div className="text-6xl mb-4">🎙️</div>
+                <h3 className="card-title justify-center text-xl mb-3 text-primary">
+                  {t('aiTeam.voiceBot.name')}
+                </h3>
+                <p className="text-base-content/80 text-sm leading-relaxed">
+                  {t('aiTeam.voiceBot.description')}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center">
+            <p className="text-base-content/70 italic max-w-2xl mx-auto">
+              {t('aiTeam.subtitle')}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. "Work-in-Progress Lab" */}
+      <div className="py-20 bg-base-200">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-base-content mb-8 flex items-center justify-center gap-3">
+              {t('progress.title')} <span className="text-4xl">🔬</span>
+            </h2>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            {/* Progress Steps */}
+            <ul className="steps steps-vertical lg:steps-horizontal w-full mb-12">
+              <li className="step step-primary">
+                <div className="text-left lg:text-center">
+                  <div className="font-semibold text-primary mb-2">✅ Beta Spellbook</div>
+                  <p className="text-sm text-base-content/70">{t('progress.milestone1')}</p>
+                </div>
+              </li>
+              <li className="step step-primary">
+                <div className="text-left lg:text-center">
+                  <div className="font-semibold text-primary mb-2">🔄 Feedback Cauldron</div>
+                  <p className="text-sm text-base-content/70">{t('progress.milestone2')}</p>
+                </div>
+              </li>
+              <li className="step">
+                <div className="text-left lg:text-center">
+                  <div className="font-semibold text-base-content/50 mb-2">🚀 Global Portal</div>
+                  <p className="text-sm text-base-content/50">{t('progress.milestone3')}</p>
+                </div>
+              </li>
+            </ul>
+
+            {/* Feedback Button */}
+            <div className="text-center">
+              <button 
+                className="btn btn-accent btn-lg rounded-full shadow-lg hover:scale-105 transition-transform"
+                onClick={() => setShowFeedbackForm(true)}
+              >
+                {t('progress.feedbackButton')}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 4. "News From the Realm" */}
+      <div className="py-16 bg-gradient-to-r from-amber-100 to-orange-100">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="card bg-white shadow-xl border-l-8 border-warning">
+              <div className="card-body">
+                <div className="flex items-center gap-4">
+                  <div className="text-3xl animate-pulse">📰</div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-warning mb-2">{t('news.title')}</h3>
+                    <p className="text-base-content animate-type">
+                      {t('news.breaking')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 5. "Investors: Join the Quest" */}
+      <div className="py-20 bg-gradient-to-br from-amber-50 to-orange-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="card bg-gradient-to-br from-amber-100 to-yellow-100 shadow-2xl border-4 border-amber-300 relative">
+              {/* Wax seal */}
+              <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
+                <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center text-white text-xl shadow-lg">
+                  🔱
+                </div>
+              </div>
+              
+              <div className="card-body p-12 pt-16">
+                <h2 className="text-3xl font-bold text-amber-800 mb-6">
+                  {t('investors.title')}
+                </h2>
+                <p className="text-lg text-amber-700 mb-8 leading-relaxed">
+                  {t('investors.description')}
+                </p>
+                <button className="btn btn-warning btn-lg rounded-full shadow-lg hover:scale-105 transition-transform">
+                  Open the Scroll 📜
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>      {/* Feedback Modal */}
+      {showFeedbackForm && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg mb-4">🪄 Cast Your Feedback Spell</h3>
+            <textarea 
+              className="textarea textarea-bordered w-full h-32 mb-4" 
+              placeholder="Share your magical suggestions..."
+            ></textarea>
+            <div className="modal-action">
+              <button className="btn btn-primary">Send Spell ✨</button>
+              <button 
+                className="btn" 
+                onClick={() => setShowFeedbackForm(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+        }
+        @keyframes float-delayed {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-15px); }
+        }
+        @keyframes bounce-slow {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+        }
+        @keyframes type {
+          from { width: 0 }
+          to { width: 100% }
+        }
+        
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+        .animate-float-delayed {
+          animation: float-delayed 4s ease-in-out infinite;
+        }
+        .animate-bounce-slow {
+          animation: bounce-slow 2s ease-in-out infinite;
+        }
+        .animate-type {
+          overflow: hidden;
+          white-space: nowrap;
+          animation: type 3s steps(60, end);
+        }
+      `}</style>
+    </>
   );
 };
 

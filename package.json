@@ -31,6 +31,7 @@
     "@clerk/nextjs": "^6.21.0",
     "@google-cloud/pubsub": "^5.1.0",
     "@google-cloud/vertexai": "^1.10.0",
+    "@google/genai": "^1.5.1",
     "@types/pg": "^8.15.2",
     "@types/uuid": "^10.0.0",
     "daisyui": "^5.0.38",

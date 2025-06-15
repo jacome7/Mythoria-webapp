@@ -20,13 +20,12 @@ export async function POST(request: NextRequest) {
         { error: 'Character name is required' },
         { status: 400 }
       );
-    }
-
-    // Create the character
+    }    // Create the character
     const character = await characterService.createCharacter({
       name: characterData.name.trim(),
       authorId: currentAuthor.authorId,
       type: characterData.type?.trim() || null,
+      role: characterData.role?.trim() || null,
       passions: characterData.passions?.trim() || null,
       superpowers: characterData.superpowers?.trim() || null,
       physicalDescription: characterData.physicalDescription?.trim() || null,

@@ -89,7 +89,7 @@ Runtime secrets are automatically injected from Secret Manager:
 ### 1. Health Check
 Verify the service is running:
 ```powershell
-curl https://your-domain.com/api/health
+curl https://mythoria.pt/api/health
 ```
 
 ### 2. Authentication Test

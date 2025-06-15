@@ -32,3 +32,61 @@ export const stepStatusEnum = pgEnum("step_status", [
   'failed',
   'completed'
 ]);
+
+export const characterRole = pgEnum("character_role", [
+  'protagonist',
+  'antagonist', 
+  'supporting',
+  'mentor',
+  'comic_relief',
+  'love_interest',
+  'sidekick',
+  'narrator',
+  'other'
+]);
+
+// Story attribute enums
+export const targetAudienceEnum = pgEnum("target_audience", [
+  'children_0-2',     // Babies/Toddlers
+  'children_3-6',     // Preschoolers
+  'children_7-10',    // Early Elementary
+  'children_11-14',   // Middle Grade
+  'young_adult_15-17', // Young Adult
+  'adult_18+',        // Adults
+  'all_ages'          // All Ages
+]);
+
+export const novelStyleEnum = pgEnum("novel_style", [
+  'adventure',
+  'fantasy',
+  'mystery',
+  'romance',
+  'science_fiction',
+  'historical',
+  'contemporary',
+  'fairy_tale',
+  'comedy',
+  'drama',
+  'horror',
+  'thriller',
+  'biography',
+  'educational',
+  'poetry'
+]);
+
+export const graphicalStyleEnum = pgEnum("graphical_style", [
+  'cartoon',
+  'realistic',
+  'watercolor',
+  'digital_art',
+  'hand_drawn',
+  'minimalist',
+  'vintage',
+  'comic_book',
+  'anime',
+  'pixar_style',
+  'disney_style',
+  'sketch',
+  'oil_painting',
+  'colored_pencil'
+]);

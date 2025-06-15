@@ -13,21 +13,38 @@ interface CharacterCardProps {
   onCancel?: () => void;
 }
 
+// Function to format role names for display
+const formatRoleName = (role: string): string => {
+  return role
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
 const CHARACTER_TYPES = [
   'Boy',
   'Girl', 
   'Baby',
   'Man',
   'Woman',
+  'Human',
   'Dog',
   'Dragon',
+  'Fantasy Creature',
+  'Animal',
   'Other'
 ];
 
 const CHARACTER_ROLES = [
-  'Main',
-  'Supporting',
-  'Sidekick'
+  'protagonist',
+  'antagonist', 
+  'supporting',
+  'mentor',
+  'comic_relief',
+  'love_interest',
+  'sidekick',
+  'narrator',
+  'other'
 ];
 
 export default function CharacterCard({ 
@@ -40,7 +57,7 @@ export default function CharacterCard({
 }: CharacterCardProps) {  const [formData, setFormData] = useState<Character>({
     name: character?.name || '',
     type: character?.type || 'Boy',
-    role: character?.role || 'Main',
+    role: character?.role || 'protagonist',
     superpowers: character?.superpowers || '',
     passions: character?.passions || '',
     physicalDescription: character?.physicalDescription || '',
@@ -138,7 +155,7 @@ export default function CharacterCard({
               )}
               <div>
                 <h3 className="card-title text-xl">{formData.name}</h3>
-                <div className="badge badge-primary badge-outline">{formData.role}</div>
+                <div className="badge badge-primary badge-outline">{formatRoleName(formData.role || 'other')}</div>
               </div>
             </div>
           </div>
@@ -215,7 +232,7 @@ export default function CharacterCard({
             onChange={(e) => handleInputChange('role', e.target.value)}
           >
             {CHARACTER_ROLES.map(role => (
-              <option key={role} value={role}>{role}</option>
+              <option key={role} value={role}>{formatRoleName(role)}</option>
             ))}
           </select>
         </div>

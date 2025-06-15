@@ -1,14 +1,14 @@
-import { VertexAI } from "@google-cloud/vertexai";
-import promptConfig from "./structureStoryOutline_prompt";
-import { structureStoryOutlineSchema } from "./structureStoryOutline_schema";
+import { GoogleGenAI } from "@google/genai";
+import { getLanguageSpecificPrompt, getLanguageSpecificSchema } from "./prompt-loader";
 
-// Initialize Vertex AI client
+// Initialize GoogleGenAI client with Vertex AI configuration
 const clientOptions = {
+  vertexai: true,
   project: process.env.GOOGLE_CLOUD_PROJECT_ID || "oceanic-beach-460916-n5",
-  location: process.env.GOOGLE_CLOUD_LOCATION || "us-central1",
+  location: process.env.GOOGLE_AI_LOCATION || "global",
 };
 
-const vertexai = new VertexAI(clientOptions);
+const ai = new GoogleGenAI(clientOptions);
 
 // Types for the structured output
 export interface StructuredCharacter {
@@ -47,25 +47,32 @@ export async function generateStructuredStory(
     [key: string]: unknown;
   }> = [],
   imageData?: string | null,
-  audioData?: string | null
-): Promise<StructuredStoryResult> {try {    // Convert the schema template to use proper SchemaType enums
-    const responseSchema = structureStoryOutlineSchema;    // Build the system prompt from template
+  audioData?: string | null,
+  userLanguage: string = 'en-US'
+): Promise<StructuredStoryResult> {
+  try {
+    // Load language-specific prompt and schema
+    const promptConfig = await getLanguageSpecificPrompt(userLanguage);
+    const responseSchema = await getLanguageSpecificSchema();
+
+    // Build the system prompt from template
     const systemPrompt = promptConfig.template
       .replace('{{userDescription}}', userDescription)
-      .replace('{{existingCharacters}}', JSON.stringify(existingCharacters));
+      .replace('{{existingCharacters}}', JSON.stringify(existingCharacters));    // Get model name from environment - use the most reliable model for structured output
+    const modelName = process.env.MODEL_ID || "gemini-1.5-pro-002";
 
-    // Get the generative model with response schema
-    const model = vertexai.getGenerativeModel({
-      model: process.env.MODEL_ID || "gemini-2.0-flash-001",
-      generationConfig: {
-        temperature: 0.3,
-        maxOutputTokens: 2048,
-        responseMimeType: "application/json",
-        responseSchema: responseSchema,
-      },
-    });    // Prepare content based on whether we have image data, audio data, or both
+    // Define generation configuration with structured output enforced
+    const generationConfig = {
+      maxOutputTokens: 8192,
+      temperature: 0.1, // Very low temperature for consistent JSON output
+      topP: 0.8,
+      responseMimeType: "application/json",
+      responseSchema: responseSchema,
+    };
+
+    // Prepare content based on whether we have image data, audio data, or both
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let content: any;
+    let contents: any[];
 
     if (imageData || audioData) {
       console.log('Processing request with media data - Image:', !!imageData, 'Audio:', !!audioData);
@@ -123,52 +130,162 @@ export async function generateStructuredStory(
         }
       }
       
-      content = {
-        contents: [
-          {
-            role: 'user',
-            parts: parts
-          }
-        ]
-      };
+      contents = [
+        {
+          role: 'user',
+          parts: parts
+        }
+      ];
     } else {
       console.log('Processing request with text only');
-      content = systemPrompt;
-    }
-
-    // Generate content
-    const result = await model.generateContent(content);
-    const response = result.response;
+      contents = [
+        {
+          role: 'user',
+          parts: [{ text: systemPrompt }]
+        }
+      ];
+    }    // Prepare the request with structured output schema
+    const req = {
+      model: modelName,
+      contents: contents,
+      generationConfig: generationConfig,
+    };    // Generate content
+    console.log("Making GenAI request with:", {
+      model: modelName,
+      contentsLength: contents.length,
+      hasResponseSchema: !!responseSchema,
+      generationConfig
+    });
     
-    // Get the text from the first candidate
-    const text = response.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!text) {
+    const result = await ai.models.generateContent(req);
+    
+    console.log("GenAI result candidates:", result.candidates?.length);
+    
+    // Get the text from the response
+    const text = result.text;
+    
+    console.log("Raw AI response:", text);
+    
+    if (!text) {
       throw new Error("No response text generated from the model");
-    }
-
-    // Clean the response text to handle potential markdown wrapping
+    }    // Clean the response text to handle potential markdown wrapping and extra text
     let cleanedText = text.trim();
     
-    // Remove markdown code block formatting if present
+    // Enhanced JSON extraction to handle responses with explanatory text
+    // First, try to find JSON within the response
+    let jsonStartIndex = -1;
+    let jsonEndIndex = -1;
+    
+    // Look for JSON starting patterns
+    const jsonStartPatterns = ['{', '```json', '```'];
+    for (const pattern of jsonStartPatterns) {
+      const index = cleanedText.indexOf(pattern);
+      if (index !== -1) {
+        if (pattern === '```json') {
+          jsonStartIndex = index + pattern.length;
+        } else if (pattern === '```') {
+          jsonStartIndex = index + pattern.length;
+        } else {
+          jsonStartIndex = index;
+        }
+        break;
+      }
+    }
+    
+    if (jsonStartIndex !== -1) {
+      // Find the end of JSON
+      let braceCount = 0;
+      let inString = false;
+      let escaped = false;
+      
+      for (let i = jsonStartIndex; i < cleanedText.length; i++) {
+        const char = cleanedText[i];
+        
+        if (escaped) {
+          escaped = false;
+          continue;
+        }
+        
+        if (char === '\\') {
+          escaped = true;
+          continue;
+        }
+        
+        if (char === '"') {
+          inString = !inString;
+          continue;
+        }
+        
+        if (!inString) {
+          if (char === '{') {
+            braceCount++;
+          } else if (char === '}') {
+            braceCount--;
+            if (braceCount === 0) {
+              jsonEndIndex = i + 1;
+              break;
+            }
+          }
+        }
+      }
+      
+      if (jsonEndIndex !== -1) {
+        cleanedText = cleanedText.substring(jsonStartIndex, jsonEndIndex);
+      }
+    }
+    
+    // Remove any remaining markdown formatting
     if (cleanedText.startsWith('```json')) {
       cleanedText = cleanedText.replace(/^```json\s*/, '').replace(/\s*```$/, '');
     } else if (cleanedText.startsWith('```')) {
       cleanedText = cleanedText.replace(/^```\s*/, '').replace(/\s*```$/, '');
     }
     
-    // Trim again after removing markdown
-    cleanedText = cleanedText.trim();    // Parse the JSON text returned by the model
+    // Final cleanup
+    cleanedText = cleanedText.trim();// Parse the JSON text returned by the model
     let parsedResult: StructuredStoryResult;
     try {
       parsedResult = JSON.parse(cleanedText);
-    } catch {
+      console.log("Parsed result structure:", JSON.stringify(parsedResult, null, 2));    } catch (parseError) {
       console.error("Failed to parse GenAI response as JSON:", cleanedText);
-      throw new Error("GenAI returned invalid JSON format");
-    }
-
-    // Validate the structure
+      console.error("Parse error:", parseError);
+      
+      // Try to extract JSON even if parsing failed - maybe there's text before/after
+      const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        try {
+          parsedResult = JSON.parse(jsonMatch[0]);
+          console.log("Successfully extracted JSON from response");
+        } catch (secondParseError) {
+          console.error("Second JSON parse attempt also failed:", secondParseError);
+          throw new Error("GenAI returned invalid JSON format");
+        }
+      } else {
+        throw new Error("GenAI returned invalid JSON format");
+      }
+    }// Validate the structure
+    console.log("Validating structure...");
+    console.log("parsedResult.story:", parsedResult.story);
+    console.log("parsedResult.characters:", parsedResult.characters);
+    console.log("Is characters array?", Array.isArray(parsedResult.characters));
+    
     if (!parsedResult.story || !Array.isArray(parsedResult.characters)) {
-      throw new Error("GenAI response missing required story or characters structure");
+      console.error("Structure validation failed:");
+      console.error("- Has story property:", !!parsedResult.story);
+      console.error("- Has characters property:", !!parsedResult.characters);
+      console.error("- Characters is array:", Array.isArray(parsedResult.characters));
+      console.error("Full parsed result:", JSON.stringify(parsedResult, null, 2));
+        // Try to create a fallback structure if the response has some usable content
+      const fallbackResult: StructuredStoryResult = {
+        story: {
+          plotDescription: userDescription,
+          title: "Generated Story"
+        },
+        characters: []
+      };
+      
+      console.log("Using fallback structure:", JSON.stringify(fallbackResult, null, 2));
+      return fallbackResult;
     }
 
     return parsedResult;

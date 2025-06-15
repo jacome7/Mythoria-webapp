@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import AdminHeader from '../../../../components/AdminHeader';
 import AdminFooter from '../../../../components/AdminFooter';
+import { getNovelStyleLabelSafe, getTargetAudienceLabelSafe, getGraphicalStyleLabelSafe } from '@/lib/story-enum-mapping';
 
 interface CreditHistoryEntry {
   id: string;
@@ -391,9 +392,8 @@ export default function UserDetailsPage() {
                             <span className={getStatusBadgeClass(story.status)}>
                               {story.status}
                             </span>
-                          </td>
-                          <td>{story.novelStyle || 'Not specified'}</td>
-                          <td>{story.targetAudience || 'Not specified'}</td>
+                          </td>                          <td>{getNovelStyleLabelSafe(story.novelStyle)}</td>
+                          <td>{getTargetAudienceLabelSafe(story.targetAudience)}</td>
                           <td>{formatDate(story.createdAt)}</td>
                           <td>{formatDate(story.updatedAt)}</td>
                         </tr>

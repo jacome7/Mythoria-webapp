@@ -2,12 +2,59 @@ import { pgTable, unique, uuid, varchar, timestamp, integer, boolean, foreignKey
 import { sql } from "drizzle-orm"
 
 export const addressType = pgEnum("address_type", ['billing', 'delivery'])
+export const characterRole = pgEnum("character_role", ['protagonist', 'antagonist', 'supporting', 'mentor', 'comic_relief', 'love_interest', 'sidekick', 'narrator', 'other'])
 export const creditEventType = pgEnum("credit_event_type", ['initialCredit', 'creditPurchase', 'eBookGeneration', 'audioBookGeneration', 'printOrder', 'refund', 'voucher', 'promotion'])
 export const paymentProvider = pgEnum("payment_provider", ['stripe', 'paypal', 'revolut', 'other'])
 export const runStatus = pgEnum("run_status", ['queued', 'running', 'failed', 'completed', 'cancelled'])
 export const stepStatus = pgEnum("step_status", ['pending', 'running', 'failed', 'completed'])
 export const storyStatus = pgEnum("story_status", ['draft', 'writing', 'published'])
 
+// New enums for story attributes
+export const targetAudience = pgEnum("target_audience", [
+  'children_0-2',     // Babies/Toddlers
+  'children_3-6',     // Preschoolers
+  'children_7-10',    // Early Elementary
+  'children_11-14',   // Middle Grade
+  'young_adult_15-17', // Young Adult
+  'adult_18+',        // Adults
+  'all_ages'          // All Ages
+])
+
+export const novelStyle = pgEnum("novel_style", [
+  'adventure',
+  'fantasy',
+  'mystery',
+  'romance',
+  'science_fiction',
+  'historical',
+  'contemporary',
+  'fairy_tale',
+  'comedy',
+  'drama',
+  'horror',
+  'thriller',
+  'biography',
+  'educational',
+  'poetry',
+  'sports_adventure'
+])
+
+export const graphicalStyle = pgEnum("graphical_style", [
+  'cartoon',
+  'realistic',
+  'watercolor',
+  'digital_art',
+  'hand_drawn',
+  'minimalist',
+  'vintage',
+  'comic_book',
+  'anime',
+  'pixar_style',
+  'disney_style',
+  'sketch',
+  'oil_painting',
+  'colored_pencil'
+])
 
 export const leads = pgTable("leads", {
 	leadId: uuid("lead_id").defaultRandom().primaryKey().notNull(),
@@ -99,6 +146,7 @@ export const characters = pgTable("characters", {
 	authorId: uuid("author_id"),
 	name: varchar({ length: 120 }).notNull(),
 	type: varchar({ length: 60 }),
+	role: characterRole(),
 	passions: text(),
 	superpowers: text(),
 	physicalDescription: text("physical_description"),
@@ -232,9 +280,9 @@ export const stories = pgTable("stories", {
 	synopsis: text(),
 	place: text(),
 	additionalRequests: text(),
-	targetAudience: varchar("target_audience", { length: 120 }),
-	novelStyle: varchar("novel_style", { length: 120 }),
-	graphicalStyle: varchar("graphical_style", { length: 120 }),
+	targetAudience: targetAudience("target_audience"),
+	novelStyle: novelStyle("novel_style"),
+	graphicalStyle: graphicalStyle("graphical_style"),
 	status: storyStatus().default('draft'),
 	features: jsonb(),
 	deliveryAddress: jsonb("delivery_address"),
@@ -275,7 +323,7 @@ export const storyGenerationRuns = pgTable("story_generation_runs", {
 export const storyCharacters = pgTable("story_characters", {
 	storyId: uuid("story_id").notNull(),
 	characterId: uuid("character_id").notNull(),
-	role: varchar({ length: 120 }),
+	role: characterRole(),
 }, (table) => [
 	foreignKey({
 			columns: [table.storyId],

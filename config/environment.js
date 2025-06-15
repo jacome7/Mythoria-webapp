@@ -38,6 +38,9 @@ export const getEnvironmentConfig = () => {
     
     googleCloud: {
       projectId: process.env.GOOGLE_CLOUD_PROJECT_ID || 'oceanic-beach-460916-n5',
+      location: process.env.GOOGLE_CLOUD_LOCATION || 'europe-west9',
+      modelId: process.env.MODEL_ID || 'gemini-2.5-pro-preview-0514',
+      pubsubTopic: process.env.PUBSUB_TOPIC || 'mythoria-story-requests',
     },
   };
 };
