@@ -40,5 +40,10 @@
       "alreadyRegistered": "Wow, you are really eager to experience Mythoria. Rest assured we will notify you when we launch!"
     },
     "privacy": "We respect your privacy. No spam, just launch notifications."
+  },
+  "StepNavigation": {
+    "next": "Next",
+    "prev": "Prev",
+    "finish": "Finish"
   }
 }

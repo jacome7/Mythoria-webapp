@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import AdminHeader from '../../../../components/AdminHeader';
 import AdminFooter from '../../../../components/AdminFooter';
-import { getNovelStyleLabelSafe, getTargetAudienceLabelSafe, getGraphicalStyleLabelSafe } from '@/lib/story-enum-mapping';
+import { getNovelStyleLabelSafe, getTargetAudienceLabelSafe } from '@/lib/story-enum-mapping';
 
 interface CreditHistoryEntry {
   id: string;
