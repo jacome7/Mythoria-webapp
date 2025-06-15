@@ -18,11 +18,10 @@ interface AuthorData {
 }
 
 export default function Step1Page() {
-  const locale = useLocale();
-  const [, setAuthorData] = useState<AuthorData | null>(null);
+  const locale = useLocale();  const [, setAuthorData] = useState<AuthorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [successMessage] = useState<string | null>(null);
   
   // Form data
   const [displayName, setDisplayName] = useState('');

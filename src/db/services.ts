@@ -141,19 +141,7 @@ export const storyService = {  async createStory(storyData: { title: string; aut
   async getTotalStoriesCount() {
     const result = await db.select({ value: count() }).from(stories);
     return result[0]?.value || 0;
-  },  async updateStory(storyId: string, updates: Partial<{ 
-    title: string; 
-    plotDescription: string; 
-    synopsis: string; 
-    place: string;
-    targetAudience: string;
-    novelStyle: string;
-    graphicalStyle: string;
-    additionalRequests: string;
-    status: 'draft' | 'writing' | 'published';    features: StoryFeatures;
-    deliveryAddress: DeliveryAddress;
-    dedicationMessage: string;
-  }>) {
+  },  async updateStory(storyId: string, updates: Partial<typeof stories.$inferInsert>) {
     const [story] = await db.update(stories).set(updates).where(eq(stories.storyId, storyId)).returning();
     return story;
   },
