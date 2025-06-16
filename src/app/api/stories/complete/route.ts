@@ -72,7 +72,9 @@ export async function POST(request: NextRequest) {
         timestamp: new Date().toISOString(),
       });
       
-      console.log(`Story generation request published for story ${validatedData.storyId}, run ${storyGenerationRun.runId}`);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`Story generation request published for story ${validatedData.storyId}, run ${storyGenerationRun.runId}`);
+      }
     } catch (pubsubError) {
       console.error('Failed to publish story request:', pubsubError);
       

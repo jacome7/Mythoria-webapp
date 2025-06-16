@@ -11,6 +11,8 @@ import { publishStoryRequest } from "@/lib/pubsub";
 import { getCurrentAuthor } from "@/lib/auth";
 import { storyGenerationRunService, storyService } from "@/db/services";
 
+const isDev = process.env.NODE_ENV === 'development';
+
 export async function POST(request: NextRequest) {
   try {
     const currentAuthor = await getCurrentAuthor();
@@ -43,7 +45,9 @@ export async function POST(request: NextRequest) {
     
     // If no runId provided, create a new run
     if (!actualRunId) {
-      console.log('📝 Creating new story generation run for test trigger...');
+      if (isDev) {
+        console.log('📝 Creating new story generation run for test trigger...');
+      }
       const storyGenerationRun = await storyGenerationRunService.createStoryGenerationRun(
         storyId,
         {
@@ -53,11 +57,15 @@ export async function POST(request: NextRequest) {
         }
       );
       actualRunId = storyGenerationRun.runId;
-      console.log('✅ Test run created:', actualRunId);
+      if (isDev) {
+        console.log('✅ Test run created:', actualRunId);
+      }
     }
 
     // Publish Pub/Sub message to trigger the workflow
-    console.log('📢 Publishing test Pub/Sub message to trigger workflow...');
+    if (isDev) {
+      console.log('📢 Publishing test Pub/Sub message to trigger workflow...');
+    }
     const messageId = await publishStoryRequest({
       storyId: storyId,
       runId: actualRunId,
@@ -65,7 +73,9 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString()
     });
 
-    console.log('✅ Test Pub/Sub message published successfully');
+    if (isDev) {
+      console.log('✅ Test Pub/Sub message published successfully');
+    }
 
     return NextResponse.json({
       success: true,

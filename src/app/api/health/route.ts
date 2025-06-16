@@ -3,12 +3,18 @@ import { db } from "@/db/index";
 import { sql } from "drizzle-orm";
 import { isVpcDirectEgress } from "@/lib/database-config";
 
+const isDev = process.env.NODE_ENV === 'development';
+
 export async function GET() {
   try {
-    console.log("Health check starting...");
+    if (isDev) {
+      console.log("Health check starting...");
+    }
       // Test basic database connectivity
     const result = await db.execute(sql`SELECT 1 as test`);
-    console.log("Database connection test successful:", result);
+    if (isDev) {
+      console.log("Database connection test successful:", result);
+    }
     
     // Determine connection type
     const connectionType = isVpcDirectEgress() ? "VPC Direct Egress" : "Public IP";

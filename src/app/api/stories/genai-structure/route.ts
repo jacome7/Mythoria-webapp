@@ -5,6 +5,8 @@ import { characterService, storyService, storyCharacterService, storyGenerationR
 import { mapStoryAttributes } from "@/lib/story-enum-mapping";
 import { publishStoryRequest } from "@/lib/pubsub";
 
+const isDev = process.env.NODE_ENV === 'development';
+
 // Type guard for character role
 function isValidCharacterRole(role: string): role is 'protagonist' | 'antagonist' | 'supporting' | 'mentor' | 'comic_relief' | 'love_interest' | 'sidekick' | 'narrator' | 'other' {
   return ['protagonist', 'antagonist', 'supporting', 'mentor', 'comic_relief', 'love_interest', 'sidekick', 'narrator', 'other'].includes(role);
@@ -45,7 +47,9 @@ export async function POST(request: NextRequest) {
 
     // Get existing characters for this author
     const existingCharacters = await characterService.getCharactersByAuthor(currentAuthor.authorId);    // Call the GenAI service to structure the story
-    console.log('Calling GenAI to structure story for author:', currentAuthor.authorId, 'with language:', userLanguage || 'en-US');
+    if (isDev) {
+      console.log('Calling GenAI to structure story for author:', currentAuthor.authorId, 'with language:', userLanguage || 'en-US');
+    }
     const structuredResult = await generateStructuredStory(userDescription, existingCharacters, imageData, audioData, userLanguage || 'en-US');    // Update the story with the structured data
     const storyUpdates: Record<string, unknown> = {};
     if (structuredResult.story.title) storyUpdates.title = structuredResult.story.title;
@@ -112,10 +116,14 @@ export async function POST(request: NextRequest) {
         role: character.role || undefined
       });    }
 
-    console.log('Successfully structured story and processed characters');
+    if (isDev) {
+      console.log('Successfully structured story and processed characters');
+    }
 
     // 🚀 CREATE STORY GENERATION RUN AND TRIGGER WORKFLOW
-    console.log('📝 Creating story generation run for workflow trigger...');
+    if (isDev) {
+      console.log('📝 Creating story generation run for workflow trigger...');
+    }
     try {
       // Create the story generation run
       const storyGenerationRun = await storyGenerationRunService.createStoryGenerationRun(
@@ -129,21 +137,27 @@ export async function POST(request: NextRequest) {
         }
       );
 
-      console.log('✅ Story generation run created:', {
-        runId: storyGenerationRun.runId,
-        storyId: storyId,
-        status: storyGenerationRun.status
-      });
+      if (isDev) {
+        console.log('✅ Story generation run created:', {
+          runId: storyGenerationRun.runId,
+          storyId: storyId,
+          status: storyGenerationRun.status
+        });
+      }
 
       // Publish Pub/Sub message to trigger the workflow
-      console.log('📢 Publishing Pub/Sub message to trigger workflow...');
+      if (isDev) {
+        console.log('📢 Publishing Pub/Sub message to trigger workflow...');
+      }
       await publishStoryRequest({
         storyId: storyId,
         runId: storyGenerationRun.runId,
         prompt: userDescription.substring(0, 1000) // Include prompt context for workflow
       });
 
-      console.log('✅ Pub/Sub message published successfully - workflow should be triggered');
+      if (isDev) {
+        console.log('✅ Pub/Sub message published successfully - workflow should be triggered');
+      }
 
       // Return success response including the run information
       return NextResponse.json({ 
