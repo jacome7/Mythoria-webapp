@@ -3,18 +3,25 @@ import { currentUser } from '@clerk/nextjs/server';
 import { pricingService } from '@/db/services';
 
 export async function GET(request: NextRequest) {
+  const isDev = process.env.NODE_ENV !== 'production';
   try {
-    console.log('=== Pricing API Request ===');
-    console.log('Request URL:', request.url);
-    console.log('Request headers:', Object.fromEntries(request.headers.entries()));
-    console.log('Server time:', new Date().toISOString());
-    
+    if (isDev) {
+      console.log('=== Pricing API Request ===');
+      console.log('Request URL:', request.url);
+      // Avoid logging potentially sensitive headers
+      console.log('Server time:', new Date().toISOString());
+    }
+
     // Check if user is authenticated and authorized
     const user = await currentUser();
-    console.log('Current user:', user ? { id: user.id, publicMetadata: user.publicMetadata } : 'null');
+    if (isDev) {
+      console.log('Current user loaded');
+    }
     
     if (!user) {
-      console.log('No user found - returning 401');
+      if (isDev) {
+        console.log('No user found - returning 401');
+      }
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
