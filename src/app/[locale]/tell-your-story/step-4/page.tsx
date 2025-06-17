@@ -4,6 +4,7 @@ import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
 import StepNavigation from '../../../../components/StepNavigation';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { getCurrentStoryId, hasValidStorySession } from '../../../../lib/story-session';
 import { 
   TargetAudience, 
@@ -29,7 +30,9 @@ interface StoryData {
 }
 
 export default function Step4Page() {
-  const router = useRouter();  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const t = useTranslations('StorySteps.step4');
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentStoryId, setCurrentStoryId] = useState<string | null>(null);
@@ -201,20 +204,17 @@ export default function Step4Page() {
             {/* Step content */}
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
-                <h1 className="card-title text-3xl mb-6">Chapter 4 - The Plot</h1>
+                <h1 className="card-title text-3xl mb-6">{t('heading')}</h1>
                 
                 {loading ? (
                   <div className="text-center py-12">
                     <span className="loading loading-spinner loading-lg"></span>
-                    <p className="text-lg text-gray-600 mt-4">Loading your story details...</p>
+                    <p className="text-lg text-gray-600 mt-4">{t('saving')}</p>
                   </div>
                 ) : (
                   <div className="space-y-6">
                     <div className="prose max-w-none mb-6">
-                      <p className="text-gray-600">
-                        Now let&apos;s define the core elements of your story. Tell us about the world you want to create, 
-                        who you&apos;re writing for, and how you envision your story looking.
-                      </p>
+                      <p className="text-gray-600">{t('intro')}</p>
                     </div>
 
                     {error && (
@@ -229,40 +229,40 @@ export default function Step4Page() {
                       {/* Title Field */}
                       <div className="form-control md:col-span-2">
                         <label className="label">
-                          <span className="label-text font-semibold">Book Title *</span>
+                          <span className="label-text font-semibold">{t('fields.title')}</span>
                         </label>
                         <input
                           type="text"
                           value={title}
                           onChange={(e) => setTitle(e.target.value)}
-                          placeholder="Enter your book title"
+                          placeholder={t('fields.title')}
                           className="input input-bordered w-full"
                           required
                         />
                         <label className="label">
-                          <span className="label-text-alt">Choose a captivating title for your story</span>
+                          <span className="label-text-alt">{t('fields.titleHelp')}</span>
                         </label>
                       </div>
 
                       {/* Place Field */}
                       <div className="form-control">
                         <label className="label">
-                          <span className="label-text font-semibold">Setting/Place</span>
+                          <span className="label-text font-semibold">{t('fields.place')}</span>
                         </label>
                         <input
                           type="text"
                           value={place}
                           onChange={(e) => setPlace(e.target.value)}
-                          placeholder="e.g., Enchanted Forest, Modern City, Space Station..."
+                          placeholder={t('fields.place')}
                           className="input input-bordered w-full"
                         />
                         <label className="label">
-                          <span className="label-text-alt">Where does your story take place? (real or imaginary)</span>
+                          <span className="label-text-alt">{t('fields.placeHelp')}</span>
                         </label>
                       </div>                      {/* Target Audience Field */}
                       <div className="form-control">
                         <label className="label">
-                          <span className="label-text font-semibold">Target Audience</span>
+                          <span className="label-text font-semibold">{t('fields.audience')}</span>
                         </label>
                         <select
                           value={targetAudience}
@@ -276,14 +276,14 @@ export default function Step4Page() {
                           ))}
                         </select>
                         <label className="label">
-                          <span className="label-text-alt">Who is this story written for?</span>
+                          <span className="label-text-alt">{t('fields.audienceHelp')}</span>
                         </label>
                       </div>
 
                       {/* Novel Style Field */}
                       <div className="form-control">
                         <label className="label">
-                          <span className="label-text font-semibold">Novel Style</span>
+                          <span className="label-text font-semibold">{t('fields.novelStyle')}</span>
                         </label>
                         <select
                           value={novelStyle}
@@ -297,14 +297,14 @@ export default function Step4Page() {
                           ))}
                         </select>
                         <label className="label">
-                          <span className="label-text-alt">What genre/style should your story be?</span>
+                          <span className="label-text-alt">{t('fields.novelStyleHelp')}</span>
                         </label>
                       </div>
 
                       {/* Graphic Style Field */}
                       <div className="form-control md:col-span-2">
                         <label className="label">
-                          <span className="label-text font-semibold">Graphic Style</span>
+                          <span className="label-text font-semibold">{t('fields.graphicStyle')}</span>
                         </label>
                         <select
                           value={graphicalStyle}
@@ -318,7 +318,7 @@ export default function Step4Page() {
                           ))}
                         </select>
                         <label className="label">
-                          <span className="label-text-alt">Choose the artistic style for your story&apos;s illustrations</span>
+                          <span className="label-text-alt">{t('fields.graphicStyleHelp')}</span>
                         </label>
                       </div>
                     </div>
@@ -326,7 +326,7 @@ export default function Step4Page() {
                     {/* Story Outline Field */}
                     <div className="form-control">
                       <label className="label">
-                        <span className="label-text font-semibold">Story Outline</span>
+                        <span className="label-text font-semibold">{t('fields.outline')}</span>
                       </label>
                       <textarea
                         value={plotDescription}
@@ -336,25 +336,25 @@ export default function Step4Page() {
                         rows={6}
                       />
                       <label className="label">
-                        <span className="label-text-alt">Describe your story&apos;s plot, characters, and key events</span>
+                        <span className="label-text-alt">{t('fields.outlineHelp')}</span>
                       </label>
                     </div>
 
                     {/* Additional Requests Field */}
                     <div className="form-control">
                       <label className="label">
-                        <span className="label-text font-semibold">Additional Requests</span>
-                        <span className="label-text-alt">Optional</span>
+                        <span className="label-text font-semibold">{t('fields.additional')}</span>
+                        <span className="label-text-alt">{t('fields.additional')}</span>
                       </label>
                       <textarea
                         value={additionalRequests}
                         onChange={(e) => setAdditionalRequests(e.target.value)}
-                        placeholder="Mention any specific products, companies, or details to include..."
+                        placeholder={t('fields.additional')}
                         className="textarea textarea-bordered h-24 w-full"
                         rows={4}
                       />
                       <label className="label">
-                        <span className="label-text-alt">Any special requests or specific elements you want included</span>
+                        <span className="label-text-alt">{t('fields.additionalHelp')}</span>
                       </label>
                     </div>                  </div>
                 )}
@@ -366,7 +366,7 @@ export default function Step4Page() {
                   prevHref="/tell-your-story/step-3"
                   onNext={handleNext}
                   nextDisabled={saving}
-                  nextLabel={saving ? "Saving..." : "Next Chapter"}
+                  nextLabel={saving ? t('saving') : t('nextChapter')}
                 />
               </div>
             </div>

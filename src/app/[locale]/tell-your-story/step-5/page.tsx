@@ -4,6 +4,7 @@ import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
 import StepNavigation from '../../../../components/StepNavigation';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { getCurrentStoryId, hasValidStorySession } from '../../../../lib/story-session';
 
 interface StoryData {
@@ -52,6 +53,7 @@ interface StoryUpdateData {
 
 export default function Step5Page() {
   const router = useRouter();
+  const t = useTranslations('StorySteps.step5');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -360,17 +362,15 @@ export default function Step5Page() {
             {/* Step content */}
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
-                <h1 className="card-title text-3xl mb-6">Chapter 5 - The Gift</h1>
+                <h1 className="card-title text-3xl mb-6">{t('heading')}</h1>
                   {loading || !pricingData ? (
                   <div className="text-center py-12">
                     <span className="loading loading-spinner loading-lg"></span>
-                    <p className="text-lg text-gray-600 mt-4">Loading your story details and pricing...</p>
+                    <p className="text-lg text-gray-600 mt-4">{t('creating')}</p>
                   </div>
                 ) : (<div className="space-y-6">
                     <div className="prose max-w-none mb-6">
-                      <p className="text-gray-600">
-                        Choose how you&apos;d like to receive your story. You can select multiple delivery formats to enjoy your story in different ways.
-                      </p>
+                      <p className="text-gray-600">{t('intro')}</p>
                     </div>
 
                     {error && (
@@ -385,7 +385,7 @@ export default function Step5Page() {
                     {/* Delivery Options */}
                     {pricingData && (
                       <div className="space-y-4">
-                        <h2 className="text-xl font-semibold mb-4">Delivery Options</h2>
+                        <h2 className="text-xl font-semibold mb-4">{t('deliveryOptions')}</h2>
                         
                         {/* Digital (ebook) - Mandatory */}
                         <div className="card bg-base-200">
@@ -620,7 +620,7 @@ export default function Step5Page() {
                             onClick={handleBuyMoreCredits}
                             className="btn btn-warning btn-lg"
                           >
-                            Buy More Credits
+                            {t('buyMoreCredits')}
                           </button>
                         </div>
                       )}
@@ -634,7 +634,7 @@ export default function Step5Page() {
                   prevHref="/tell-your-story/step-4"
                   onNext={handleNext}
                   nextDisabled={saving || hasInsufficientCredits()}
-                  nextLabel={saving ? "Creating..." : hasInsufficientCredits() ? "Insufficient Credits" : "Create story"}
+                  nextLabel={saving ? t('creating') : hasInsufficientCredits() ? t('insufficientCredits') : t('createStory')}
                 />
               </div>
             </div>
@@ -643,16 +643,16 @@ export default function Step5Page() {
         {showBuyCreditsModal && (
           <div className="modal modal-open">
             <div className="modal-box">
-              <h3 className="font-bold text-lg">Buy More Credits</h3>
+              <h3 className="font-bold text-lg">{t('buyMoreCredits')}</h3>
               <p className="py-4">
-                Credit purchasing functionality is coming soon! Stay tuned for updates.
+                {t('buyMoreCreditsInfo')}
               </p>
               <div className="modal-action">
                 <button 
                   className="btn" 
                   onClick={() => setShowBuyCreditsModal(false)}
                 >
-                  Close
+                  {t('close')}
                 </button>
               </div>
             </div>
