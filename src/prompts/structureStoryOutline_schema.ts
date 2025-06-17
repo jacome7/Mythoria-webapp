@@ -50,11 +50,10 @@ export const structureStoryOutlineSchema = {
       type: "array",
       items: {
         type: "object",
-        properties: {
-          characterId: {
+        properties: {          characterId: {
             type: "string",
             nullable: true,
-            description: "UUID of existing character if reusing, or null for new characters"
+            description: "UUID of existing character if reusing, or null for new characters. Must be null (not 'null' string) when creating new characters."
           },
           name: {
             type: "string",

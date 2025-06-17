@@ -25,10 +25,21 @@
         "fetchFailed": "Falha ao obter dados do utilizador",
         "loadFailed": "Falha ao carregar a informação do utilizador. Tenta novamente."
       }
-    },
-    "step2": {
+    },    "step2": {
       "heading": "Capítulo 2 - A História",
       "intro": "Podes criar a tua história desenhando-a, gravando-a ou simplesmente escrevendo-a.",
+      "storyLanguageLabel": "Idioma da História",
+      "storyLanguageHelp": "Escolhe o idioma para a tua história",
+      "tellYourStoryLabel": "Conta a tua história...",
+      "textPlaceholder": "Era uma vez... Deixa a tua imaginação voar! Partilha a tua aventura, os teus sonhos ou qualquer história que seja especial para ti.",
+      "textHelp": "Escreve tanto ou tão pouco quanto quiseres. Podes sempre editar isto mais tarde!",
+      "tabWrite": "Escrever",
+      "tabImage": "Imagem",
+      "tabRecord": "Gravar",
+      "takePhoto": "Tirar Foto",
+      "uploadImage": "Carregar Imagem",
+      "recordVoice": "Gravar a tua voz",
+      "uploadAudio": "Carregar Ficheiro de Áudio",
       "imageHelp": "Desenha a tua história, tira-lhe uma foto ou carrega uma imagem existente que a represente.",
       "audioHelp": "Grava a tua história diretamente ou carrega um ficheiro de áudio. Perfeito para quem prefere contar as suas histórias!",
       "recordingHelp": "Conta a tua história! Fala claramente para o microfone.",
@@ -36,15 +47,16 @@
       "processing": "A processar com IA...",
       "nextChapter": "Próximo Capítulo",
       "next": "Seguinte"
-    },
-    "step3": {
+    },    "step3": {
       "heading": "Capítulo 3 - As Personagens",
       "intro": "Quem são os heróis, amigos e criaturas mágicas da tua história? Cria personagens que darão vida à tua aventura!",
       "addCharacter": "➕ Adicionar Personagem",
       "chooseMethod": "Escolhe como adicionar uma personagem:",
       "createNew": "✨ Criar Nova Personagem",
       "useExisting": "📚 Usar Personagem Existente",
+      "orChooseExisting": "Ou escolhe das tuas personagens existentes:",
       "cancel": "Cancelar",
+      "loadingCharacters": "A carregar as tuas personagens...",
       "readyTitle": "Preparado para conhecer as tuas personagens?",
       "readyDescription": "Toda a grande história precisa de personagens incríveis! Clica em \"Adicionar Personagem\" para criar novos heróis ou adicionar personagens existentes da tua biblioteca a esta história.",
       "greatWork": "Bom trabalho! Criaste {count} personagem{count === 1 ? '' : 's' }.",

@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { Character } from '../lib/story-session';
 
 interface CharacterCardProps {
@@ -14,37 +15,43 @@ interface CharacterCardProps {
 }
 
 // Function to format role names for display
-const formatRoleName = (role: string): string => {
-  return role
-    .split('_')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+const formatRoleName = (role: string, t: (key: string) => string): string => {
+  const roleKey = `roles.${role}`;
+  const translated = t(roleKey);
+  // If no translation found, fall back to formatted version
+  if (translated === roleKey) {
+    return role
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+  return translated;
 };
 
-const CHARACTER_TYPES = [
-  'Boy',
-  'Girl', 
-  'Baby',
-  'Man',
-  'Woman',
-  'Human',
-  'Dog',
-  'Dragon',
-  'Fantasy Creature',
-  'Animal',
-  'Other'
+const getCharacterTypes = (t: (key: string) => string): Array<{value: string, label: string}> => [
+  { value: 'Boy', label: t('types.boy') },
+  { value: 'Girl', label: t('types.girl') },
+  { value: 'Baby', label: t('types.baby') },
+  { value: 'Man', label: t('types.man') },
+  { value: 'Woman', label: t('types.woman') },
+  { value: 'Human', label: t('types.human') },
+  { value: 'Dog', label: t('types.dog') },
+  { value: 'Dragon', label: t('types.dragon') },
+  { value: 'Fantasy Creature', label: t('types.fantasyCreature') },
+  { value: 'Animal', label: t('types.animal') },
+  { value: 'Other', label: t('types.other') }
 ];
 
-const CHARACTER_ROLES = [
-  'protagonist',
-  'antagonist', 
-  'supporting',
-  'mentor',
-  'comic_relief',
-  'love_interest',
-  'sidekick',
-  'narrator',
-  'other'
+const getCharacterRoles = (t: (key: string) => string): Array<{value: string, label: string}> => [
+  { value: 'protagonist', label: t('roles.protagonist') },
+  { value: 'antagonist', label: t('roles.antagonist') },
+  { value: 'supporting', label: t('roles.supporting') },
+  { value: 'mentor', label: t('roles.mentor') },
+  { value: 'comic_relief', label: t('roles.comicRelief') },
+  { value: 'love_interest', label: t('roles.loveInterest') },
+  { value: 'sidekick', label: t('roles.sidekick') },
+  { value: 'narrator', label: t('roles.narrator') },
+  { value: 'other', label: t('roles.other') }
 ];
 
 export default function CharacterCard({ 
@@ -54,7 +61,12 @@ export default function CharacterCard({
   onEdit, 
   onDelete, 
   onCancel 
-}: CharacterCardProps) {  const [formData, setFormData] = useState<Character>({
+}: CharacterCardProps) {
+  const t = useTranslations('Characters');
+  const characterTypes = getCharacterTypes(t);
+  const characterRoles = getCharacterRoles(t);
+
+  const [formData, setFormData] = useState<Character>({
     name: character?.name || '',
     type: character?.type || 'Boy',
     role: character?.role || 'protagonist',
@@ -66,7 +78,7 @@ export default function CharacterCard({
   });
   
   const [showOtherTypeInput, setShowOtherTypeInput] = useState(
-    character?.type ? !CHARACTER_TYPES.includes(character.type) : false
+    character?.type ? !characterTypes.some(ct => ct.value === character.type) : false
   );
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -105,7 +117,7 @@ export default function CharacterCard({
 
   const handleSave = async () => {
     if (!formData.name.trim()) {
-      alert('Character name is required');
+      alert(t('validation.nameRequired'));
       return;
     }
 
@@ -114,14 +126,14 @@ export default function CharacterCard({
       await onSave(formData);
     } catch (error) {
       console.error('Error saving character:', error);
-      alert('Failed to save character. Please try again.');
+      alert(t('errors.saveFailed'));
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this character? This action cannot be undone.')) {
+    if (!confirm(t('confirmDelete'))) {
       return;
     }
 
@@ -130,10 +142,16 @@ export default function CharacterCard({
       await onDelete();
     } catch (error) {
       console.error('Error deleting character:', error);
-      alert('Failed to delete character. Please try again.');
+      alert(t('errors.deleteFailed'));
     } finally {
       setDeleting(false);
     }
+  };
+
+  // Helper function to get type display value
+  const getTypeDisplayValue = (typeValue: string) => {
+    const typeOption = characterTypes.find(ct => ct.value === typeValue);
+    return typeOption ? typeOption.label : typeValue;
   };
 
   if (mode === 'view') {
@@ -143,7 +161,8 @@ export default function CharacterCard({
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center space-x-3">
               {formData.photoUrl && (
-                <div className="avatar">                  <div className="w-16 h-16 rounded-full relative overflow-hidden">
+                <div className="avatar">
+                  <div className="w-16 h-16 rounded-full relative overflow-hidden">
                     <Image 
                       src={formData.photoUrl} 
                       alt={formData.name}
@@ -155,7 +174,7 @@ export default function CharacterCard({
               )}
               <div>
                 <h3 className="card-title text-xl">{formData.name}</h3>
-                <div className="badge badge-primary badge-outline">{formatRoleName(formData.role || 'other')}</div>
+                <div className="badge badge-primary badge-outline">{formatRoleName(formData.role || 'other', t)}</div>
               </div>
             </div>
           </div>
@@ -163,14 +182,16 @@ export default function CharacterCard({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="label">
-                <span className="label-text font-semibold">Type</span>
+                <span className="label-text font-semibold">{t('fields.type')}</span>
               </label>
-              <p className="text-gray-700">{formData.type}</p>
+              <p className="text-gray-700">{getTypeDisplayValue(formData.type || '')}</p>
             </div>
-          </div>          {formData.superpowers && (
+          </div>
+
+          {formData.superpowers && (
             <div className="mb-4">
               <label className="label">
-                <span className="label-text font-semibold">Special Powers</span>
+                <span className="label-text font-semibold">{t('fields.superpowers')}</span>
               </label>
               <p className="text-gray-700">{formData.superpowers}</p>
             </div>
@@ -179,7 +200,7 @@ export default function CharacterCard({
           {formData.passions && (
             <div className="mb-4">
               <label className="label">
-                <span className="label-text font-semibold">Peculiarities</span>
+                <span className="label-text font-semibold">{t('fields.passions')}</span>
               </label>
               <p className="text-gray-700">{formData.passions}</p>
             </div>
@@ -188,7 +209,7 @@ export default function CharacterCard({
           {formData.physicalDescription && (
             <div className="mb-4">
               <label className="label">
-                <span className="label-text font-semibold">Physical Description</span>
+                <span className="label-text font-semibold">{t('fields.physicalDescription')}</span>
               </label>
               <p className="text-gray-700">{formData.physicalDescription}</p>
             </div>
@@ -200,14 +221,14 @@ export default function CharacterCard({
               onClick={onEdit}
               disabled={deleting}
             >
-              ✏️ Edit
+              ✏️ {t('actions.edit')}
             </button>
             <button
               className={`btn btn-error btn-sm ${deleting ? 'loading' : ''}`}
               onClick={handleDelete}
               disabled={deleting}
             >
-              {deleting ? '' : '🗑️ Delete'}
+              {deleting ? '' : `🗑️ ${t('actions.delete')}`}
             </button>
           </div>
         </div>
@@ -219,32 +240,32 @@ export default function CharacterCard({
     <div className="card bg-base-100 shadow-lg border">
       <div className="card-body">
         <h3 className="card-title text-xl mb-4">
-          {mode === 'create' ? '✨ Add New Character' : '✏️ Edit Character'}
+          {mode === 'create' ? `✨ ${t('titles.addNew')}` : `✏️ ${t('titles.edit')}`}
         </h3>
 
         <div className="form-control mb-4">
           <label className="label">
-            <span className="label-text font-semibold">Role</span>
+            <span className="label-text font-semibold">{t('fields.role')}</span>
           </label>
           <select
             className="select select-bordered w-full"
             value={formData.role}
             onChange={(e) => handleInputChange('role', e.target.value)}
           >
-            {CHARACTER_ROLES.map(role => (
-              <option key={role} value={role}>{formatRoleName(role)}</option>
+            {characterRoles.map(role => (
+              <option key={role.value} value={role.value}>{role.label}</option>
             ))}
           </select>
         </div>
 
         <div className="form-control mb-4">
           <label className="label">
-            <span className="label-text font-semibold">Name</span>
+            <span className="label-text font-semibold">{t('fields.name')}</span>
           </label>
           <input
             type="text"
             className="input input-bordered w-full"
-            placeholder="Enter character name"
+            placeholder={t('placeholders.name')}
             value={formData.name}
             onChange={(e) => handleInputChange('name', e.target.value)}
           />
@@ -252,15 +273,15 @@ export default function CharacterCard({
 
         <div className="form-control mb-4">
           <label className="label">
-            <span className="label-text font-semibold">Type</span>
+            <span className="label-text font-semibold">{t('fields.type')}</span>
           </label>
           <select
             className="select select-bordered w-full"
             value={showOtherTypeInput ? 'Other' : formData.type}
             onChange={(e) => handleInputChange('type', e.target.value)}
           >
-            {CHARACTER_TYPES.map(type => (
-              <option key={type} value={type}>{type}</option>
+            {characterTypes.map(type => (
+              <option key={type.value} value={type.value}>{type.label}</option>
             ))}
           </select>
           
@@ -268,7 +289,7 @@ export default function CharacterCard({
             <input
               type="text"
               className="input input-bordered w-full mt-2"
-              placeholder="Specify other type (max 32 chars)"
+              placeholder={t('placeholders.otherType')}
               maxLength={32}
               value={formData.type === 'Other' ? '' : formData.type}
               onChange={(e) => handleInputChange('type', e.target.value)}
@@ -278,21 +299,23 @@ export default function CharacterCard({
 
         <div className="form-control mb-4">
           <label className="label">
-            <span className="label-text font-semibold">Special Powers</span>
+            <span className="label-text font-semibold">{t('fields.superpowers')}</span>
           </label>
           <textarea
             className="textarea textarea-bordered h-24"
-            placeholder="e.g. invisibility, super strength, talking to animals..."
+            placeholder={t('placeholders.superpowers')}
             value={formData.superpowers}
             onChange={(e) => handleInputChange('superpowers', e.target.value)}
           />
-        </div>        <div className="form-control mb-4">
+        </div>
+
+        <div className="form-control mb-4">
           <label className="label">
-            <span className="label-text font-semibold">Peculiarities</span>
+            <span className="label-text font-semibold">{t('fields.passions')}</span>
           </label>
           <textarea
             className="textarea textarea-bordered h-24"
-            placeholder="Describe funny or quirky traits..."
+            placeholder={t('placeholders.passions')}
             value={formData.passions}
             onChange={(e) => handleInputChange('passions', e.target.value)}
           />
@@ -300,11 +323,11 @@ export default function CharacterCard({
 
         <div className="form-control mb-4">
           <label className="label">
-            <span className="label-text font-semibold">Physical Description</span>
+            <span className="label-text font-semibold">{t('fields.physicalDescription')}</span>
           </label>
           <textarea
             className="textarea textarea-bordered h-24"
-            placeholder="Describe how the character looks (hair, eyes, height, clothing, etc.)..."
+            placeholder={t('placeholders.physicalDescription')}
             value={formData.physicalDescription}
             onChange={(e) => handleInputChange('physicalDescription', e.target.value)}
           />
@@ -312,12 +335,13 @@ export default function CharacterCard({
 
         <div className="form-control mb-6">
           <label className="label">
-            <span className="label-text font-semibold">Photo (Optional)</span>
+            <span className="label-text font-semibold">{t('fields.photo')}</span>
           </label>
           
           {formData.photoUrl ? (
             <div className="flex items-center space-x-4">
-              <div className="avatar">                <div className="w-16 h-16 rounded-full relative overflow-hidden">
+              <div className="avatar">
+                <div className="w-16 h-16 rounded-full relative overflow-hidden">
                   <Image 
                     src={formData.photoUrl} 
                     alt="Character"
@@ -332,13 +356,13 @@ export default function CharacterCard({
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
                 >
-                  🔄 Change
+                  🔄 {t('actions.change')}
                 </button>
                 <button
                   className="btn btn-outline btn-sm"
                   onClick={() => setFormData(prev => ({ ...prev, photoUrl: '' }))}
                 >
-                  🗑️ Remove
+                  🗑️ {t('actions.remove')}
                 </button>
               </div>
             </div>
@@ -348,7 +372,7 @@ export default function CharacterCard({
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
             >
-              {uploading ? '' : '📸 Upload Photo'}
+              {uploading ? '' : `📸 ${t('actions.uploadPhoto')}`}
             </button>
           )}
           
@@ -368,7 +392,7 @@ export default function CharacterCard({
               onClick={onCancel}
               disabled={saving}
             >
-              Cancel
+              {t('actions.cancel')}
             </button>
           )}
           <button
@@ -376,7 +400,7 @@ export default function CharacterCard({
             onClick={handleSave}
             disabled={saving || !formData.name.trim()}
           >
-            {saving ? '' : (mode === 'create' ? '➕ Add Character' : '💾 Save Changes')}
+            {saving ? '' : (mode === 'create' ? `➕ ${t('actions.addCharacter')}` : `💾 ${t('actions.saveChanges')}`)}
           </button>
         </div>
       </div>

@@ -46,7 +46,19 @@ export async function POST(request: NextRequest) {
     // Get existing characters for this author
     const existingCharacters = await characterService.getCharactersByAuthor(currentAuthor.authorId);    // Call the GenAI service to structure the story
     console.log('Calling GenAI to structure story for author:', currentAuthor.authorId, 'with language:', userLanguage || 'en-US');
-    const structuredResult = await generateStructuredStory(userDescription, existingCharacters, imageData, audioData, userLanguage || 'en-US');    // Update the story with the structured data
+    const structuredResult = await generateStructuredStory(userDescription, existingCharacters, imageData, audioData, userLanguage || 'en-US');
+    
+    // Debug: Log the raw structured result to understand what AI is returning
+    console.log('GenAI returned structured result:', JSON.stringify(structuredResult, null, 2));
+    console.log('Characters received from GenAI:');
+    structuredResult.characters.forEach((character, index) => {
+      console.log(`Character ${index}:`, {
+        name: character.name,
+        characterId: character.characterId,
+        characterIdType: typeof character.characterId,
+        characterIdValue: JSON.stringify(character.characterId)
+      });
+    });// Update the story with the structured data
     const storyUpdates: Record<string, unknown> = {};
     if (structuredResult.story.title) storyUpdates.title = structuredResult.story.title;
     if (structuredResult.story.plotDescription) storyUpdates.plotDescription = structuredResult.story.plotDescription;
@@ -69,14 +81,15 @@ export async function POST(request: NextRequest) {
 
     // Process characters
     const processedCharacters = [];
-    
-    for (const character of structuredResult.characters) {
+      for (const character of structuredResult.characters) {
       let characterRecord;
       
-      if (character.characterId) {
+      // Check if characterId exists and is not null, "null", or empty string
+      if (character.characterId && character.characterId !== "null" && character.characterId.trim() !== "") {
         // Use existing character
         characterRecord = await characterService.getCharacterById(character.characterId);
-        if (!characterRecord) {        console.warn(`Character with ID ${character.characterId} not found, creating new one`);
+        if (!characterRecord) {
+          console.warn(`Character with ID ${character.characterId} not found, creating new one`);
           characterRecord = await characterService.createCharacter({
             name: character.name,
             authorId: currentAuthor.authorId,
@@ -88,7 +101,8 @@ export async function POST(request: NextRequest) {
             photoUrl: character.photoUrl || undefined,
           });
         }
-      } else {        // Create new character
+      } else {
+        // Create new character (characterId is null, "null", empty, or undefined)
         characterRecord = await characterService.createCharacter({
           name: character.name,
           authorId: currentAuthor.authorId,

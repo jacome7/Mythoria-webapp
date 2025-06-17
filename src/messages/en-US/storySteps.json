@@ -25,10 +25,21 @@
         "fetchFailed": "Failed to fetch user data",
         "loadFailed": "Failed to load user information. Please try again."
       }
-    },
-    "step2": {
+    },    "step2": {
       "heading": "Chapter 2 - The Story",
       "intro": "You can create your story by drawing it, recording it, or simply writing it down.",
+      "storyLanguageLabel": "Story Language",
+      "storyLanguageHelp": "Choose the language for your story",
+      "tellYourStoryLabel": "Tell your story...",
+      "textPlaceholder": "Once upon a time... Let your imagination run wild! Share your adventure, your dreams, or any story that's close to your heart.",
+      "textHelp": "Write as much or as little as you'd like. You can always edit this later!",
+      "tabWrite": "Write",
+      "tabImage": "Image", 
+      "tabRecord": "Record",
+      "takePhoto": "Take Photo",
+      "uploadImage": "Upload Image",
+      "recordVoice": "Record your voice",
+      "uploadAudio": "Upload Audio File",
       "imageHelp": "Draw your story, take a photo of it, or upload an existing image that tells your tale.",
       "audioHelp": "Record your story directly or upload an audio file. Perfect for those who prefer to speak their tales!",
       "recordingHelp": "Tell your story! Speak clearly into your microphone.",
@@ -36,15 +47,16 @@
       "processing": "Processing with AI...",
       "nextChapter": "Next Chapter",
       "next": "Next"
-    },
-    "step3": {
+    },    "step3": {
       "heading": "Chapter 3 - The Characters",
       "intro": "Who are the heroes, friends, and magical creatures in your story? Create characters that will bring your adventure to life!",
       "addCharacter": "➕ Add Character",
       "chooseMethod": "Choose how to add a character:",
       "createNew": "✨ Create New Character",
       "useExisting": "📚 Use Existing Character",
+      "orChooseExisting": "Or choose from your existing characters:",
       "cancel": "Cancel",
+      "loadingCharacters": "Loading your characters...",
       "readyTitle": "Ready to meet your characters?",
       "readyDescription": "Every great story needs amazing characters! Click \"Add Character\" to create new heroes or add existing characters from your library to this story.",
       "greatWork": "Great work! You've created {count} character{count === 1 ? '' : 's' }.",

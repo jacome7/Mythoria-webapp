@@ -3,7 +3,7 @@
 import { SignedIn, SignedOut } from '@clerk/nextjs';
 import Link from 'next/link';
 import StepNavigation from '../../../../components/StepNavigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 
 interface AuthorData {
@@ -23,7 +23,6 @@ export default function Step1Page() {
   const [, setAuthorData] = useState<AuthorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [successMessage] = useState<string | null>(null);
   
   // Form data
   const [displayName, setDisplayName] = useState('');
@@ -40,11 +39,53 @@ export default function Step1Page() {
     email: '',
     mobilePhone: ''
   });
-  
-  // Flag to track if any field has been edited
-  const [hasChanges, setHasChanges] = useState(false);  useEffect(() => {
+    // Flag to track if any field has been edited
+  const [hasChanges, setHasChanges] = useState(false);
+
+  const fetchAuthorData = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await fetch('/api/auth/me');
+      
+      if (!response.ok) {
+        throw new Error(t('messages.fetchFailed'));
+      }
+      
+      const data: AuthorData = await response.json();
+      setAuthorData(data);
+      
+      // Pre-populate form fields
+      const initialDisplayName = data.displayName || '';
+      const initialEmail = data.email || '';
+      const initialMobilePhone = data.mobilePhone || '';
+      
+      setDisplayName(initialDisplayName);
+      setEmail(initialEmail);
+      setMobilePhone(initialMobilePhone);
+      
+      // Store original values for change tracking
+      setOriginalValues({
+        displayName: initialDisplayName,
+        email: initialEmail,
+        mobilePhone: initialMobilePhone
+      });
+      
+      // Reset changes flag
+      setHasChanges(false);
+      
+    } catch (error) {
+      console.error('Error fetching author data:', error);
+      setError(t('messages.loadFailed'));
+    } finally {
+      setLoading(false);
+    }
+  }, [t]);
+
+  useEffect(() => {
     fetchAuthorData();
-  }, []);
+  }, [fetchAuthorData]);
   
   // Function to check if current values differ from original values
   const checkForChanges = (currentDisplayName: string, currentEmail: string, currentMobilePhone: string) => {
@@ -85,48 +126,7 @@ export default function Step1Page() {
       setError(t('messages.saveFailed'));
       return false; // Prevent navigation
     } finally {
-      setLoading(false);
-    }
-  };
-  const fetchAuthorData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const response = await fetch('/api/auth/me');
-      
-      if (!response.ok) {
-        throw new Error(t('messages.fetchFailed'));
-      }
-      
-      const data: AuthorData = await response.json();
-      setAuthorData(data);
-      
-      // Pre-populate form fields
-      const initialDisplayName = data.displayName || '';
-      const initialEmail = data.email || '';
-      const initialMobilePhone = data.mobilePhone || '';
-      
-      setDisplayName(initialDisplayName);
-      setEmail(initialEmail);
-      setMobilePhone(initialMobilePhone);
-      
-      // Store original values for change tracking
-      setOriginalValues({
-        displayName: initialDisplayName,
-        email: initialEmail,
-        mobilePhone: initialMobilePhone
-      });
-      
-      // Reset changes flag
-      setHasChanges(false);
-      
-    } catch (error) {
-      console.error('Error fetching author data:', error);
-      setError(t('messages.loadFailed'));
-    } finally {
-      setLoading(false);
-    }
+      setLoading(false);    }
   };
 
   return (

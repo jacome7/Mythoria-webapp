@@ -1,0 +1,66 @@
+{
+  "Characters": {
+    "titles": {
+      "addNew": "Add New Character",
+      "edit": "Edit Character"
+    },
+    "fields": {
+      "role": "Role",
+      "name": "Name",
+      "type": "Type",
+      "superpowers": "Special Powers",
+      "passions": "Peculiarities",
+      "physicalDescription": "Physical Description",
+      "photo": "Photo (Optional)"
+    },
+    "placeholders": {
+      "name": "Enter character name",
+      "otherType": "Specify other type (max 32 chars)",
+      "superpowers": "e.g. invisibility, super strength, talking to animals...",
+      "passions": "Describe funny or quirky traits...",
+      "physicalDescription": "Describe how the character looks (hair, eyes, height, clothing, etc.)..."
+    },
+    "types": {
+      "boy": "Boy",
+      "girl": "Girl",
+      "baby": "Baby",
+      "man": "Man",
+      "woman": "Woman",
+      "human": "Human",
+      "dog": "Dog",
+      "dragon": "Dragon",
+      "fantasyCreature": "Fantasy Creature",
+      "animal": "Animal",
+      "other": "Other"
+    },
+    "roles": {
+      "protagonist": "Protagonist",
+      "antagonist": "Antagonist",
+      "supporting": "Supporting",
+      "mentor": "Mentor",
+      "comicRelief": "Comic Relief",
+      "loveInterest": "Love Interest",
+      "sidekick": "Sidekick",
+      "narrator": "Narrator",
+      "other": "Other"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "change": "Change",
+      "remove": "Remove",
+      "uploadPhoto": "Upload Photo",
+      "addCharacter": "Add Character",
+      "saveChanges": "Save Changes"
+    },
+    "validation": {
+      "nameRequired": "Character name is required"
+    },
+    "errors": {
+      "saveFailed": "Failed to save character. Please try again.",
+      "deleteFailed": "Failed to delete character. Please try again."
+    },
+    "confirmDelete": "Are you sure you want to delete this character? This action cannot be undone."
+  }
+}

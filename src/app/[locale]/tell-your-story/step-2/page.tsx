@@ -66,8 +66,7 @@ export default function Step2Page() {
   const audioInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);  const audioChunksRef = useRef<Blob[]>([]);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -427,13 +426,11 @@ export default function Step2Page() {
                 <h1 className="card-title text-3xl mb-6">{t('heading')}</h1>
                 <div className="prose max-w-none mb-6">
                   <p className="text-gray-600 text-lg">{t('intro')}</p>
-                </div>
-
-                {/* Language Selection */}
+                </div>                {/* Language Selection */}
                 <div className="mb-6">
                   <div className="form-control max-w-sm">
                     <label className="label">
-                      <span className="label-text font-semibold">📖 Story Language</span>
+                      <span className="label-text font-semibold">📖 {t('storyLanguageLabel')}</span>
                     </label>
                     <select 
                       className="select select-bordered w-full"
@@ -447,32 +444,31 @@ export default function Step2Page() {
                       ))}
                     </select>
                     <label className="label">
-                      <span className="label-text-alt">Choose the language for your story</span>
+                      <span className="label-text-alt">{t('storyLanguageHelp')}</span>
                     </label>
                   </div>
                 </div>
 
                 {/* Tabs and Content Wrapper */}
-                <div>
-                  {/* Tab Navigation */}
+                <div>                  {/* Tab Navigation */}
                   <div className="tabs w-full"> {/* Added w-full */}
                     <a
                       className={`tab tab-lifted py-3 flex-1 text-center ${activeTab === 'text' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
                       onClick={() => setActiveTab('text')}
                     >
-                      ✍️ Write
+                      ✍️ {t('tabWrite')}
                     </a>
                     <a
                       className={`tab tab-lifted py-3 flex-1 text-center ${activeTab === 'image' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
                       onClick={() => setActiveTab('image')}
                     >
-                      📸 Image
+                      📸 {t('tabImage')}
                     </a>
                     <a
                       className={`tab tab-lifted py-3 flex-1 text-center ${activeTab === 'audio' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
                       onClick={() => setActiveTab('audio')}
                     >
-                      🎤 Record
+                      🎤 {t('tabRecord')}
                     </a>
                   </div>
 
@@ -481,17 +477,17 @@ export default function Step2Page() {
                     {activeTab === 'text' && (
                       <div className="w-full">
                         <div className="mb-4">
-                          <h2 className="text-xl font-semibold text-center mb-2">Tell your story...</h2>
+                          <h2 className="text-xl font-semibold text-center mb-2">{t('tellYourStoryLabel')}</h2>
                         </div>
                         <div className="form-control w-full">
                           <textarea
                             className="textarea textarea-bordered w-full h-64 text-base leading-relaxed"
-                            placeholder="Once upon a time... Let your imagination run wild! Share your adventure, your dreams, or any story that&apos;s close to your heart."
+                            placeholder={t('textPlaceholder')}
                             value={storyText}
                             onChange={(e) => setStoryText(e.target.value)}
                           />
                           <label className="label">
-                            <span className="label-text-alt block w-full text-wrap break-words">Write as much or as little as you&apos;d like. You can always edit this later!</span>
+                            <span className="label-text-alt block w-full text-wrap break-words">{t('textHelp')}</span>
                           </label>
                         </div>
                       </div>
@@ -499,21 +495,20 @@ export default function Step2Page() {
 
                     {/* Image Upload Tab Content */}
                     {activeTab === 'image' && (
-                      <div className="space-y-6">
-                        {!imagePreview && !isCapturing && (
+                      <div className="space-y-6">                        {!imagePreview && !isCapturing && (
                           <div className="text-center space-y-4">
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                               <button
                                 className="btn btn-primary btn-lg"
                                 onClick={startCamera}
                               >
-                                📷 Take Photo
+                                📷 {t('takePhoto')}
                               </button>
                               <button
                                 className="btn btn-outline btn-lg"
                                 onClick={() => fileInputRef.current?.click()}
                               >
-                                🖼️ Upload Image
+                                🖼️ {t('uploadImage')}
                               </button>
                             </div>
                             <p className="text-gray-600">{t('imageHelp')}</p>
@@ -592,21 +587,20 @@ export default function Step2Page() {
                     
                     {/* Audio Upload Tab Content */}
                     {activeTab === 'audio' && (
-                      <div className="space-y-6">
-                        {!audioPreview && !isRecording && (
+                      <div className="space-y-6">                        {!audioPreview && !isRecording && (
                           <div className="text-center space-y-4">
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                               <button
                                 className="btn btn-primary btn-lg"
                                 onClick={startRecording}
                               >
-                                🎤 Record your voice
+                                🎤 {t('recordVoice')}
                               </button>
                               <button
                                 className="btn btn-outline btn-lg"
                                 onClick={() => audioInputRef.current?.click()}
                               >
-                                📁 Upload Audio File
+                                📁 {t('uploadAudio')}
                               </button>
                             </div>
                             <p className="text-gray-600">{t('audioHelp')}</p>

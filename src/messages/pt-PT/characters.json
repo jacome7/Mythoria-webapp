@@ -1,0 +1,66 @@
+{
+  "Characters": {
+    "titles": {
+      "addNew": "Adicionar Nova Personagem",
+      "edit": "Editar Personagem"
+    },
+    "fields": {
+      "role": "Papel",
+      "name": "Nome",
+      "type": "Tipo",
+      "superpowers": "Poderes Especiais",
+      "passions": "Particularidades",
+      "physicalDescription": "Descrição Física",
+      "photo": "Foto (Opcional)"
+    },
+    "placeholders": {
+      "name": "Introduz o nome da personagem",
+      "otherType": "Especifica outro tipo (máx. 32 caracteres)",
+      "superpowers": "ex. invisibilidade, super força, falar com animais...",
+      "passions": "Descreve características engraçadas ou peculiares...",
+      "physicalDescription": "Descreve como a personagem se parece (cabelo, olhos, altura, roupa, etc.)..."
+    },
+    "types": {
+      "boy": "Rapaz",
+      "girl": "Rapariga",
+      "baby": "Bebé",
+      "man": "Homem",
+      "woman": "Mulher",
+      "human": "Humano",
+      "dog": "Cão",
+      "dragon": "Dragão",
+      "fantasyCreature": "Criatura Fantástica",
+      "animal": "Animal",
+      "other": "Outro"
+    },
+    "roles": {
+      "protagonist": "Protagonista",
+      "antagonist": "Antagonista",
+      "supporting": "Secundário",
+      "mentor": "Mentor",
+      "comicRelief": "Alívio Cómico",
+      "loveInterest": "Interesse Amoroso",
+      "sidekick": "Companheiro",
+      "narrator": "Narrador",
+      "other": "Outro"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "cancel": "Cancelar",
+      "change": "Alterar",
+      "remove": "Remover",
+      "uploadPhoto": "Carregar Foto",
+      "addCharacter": "Adicionar Personagem",
+      "saveChanges": "Guardar Alterações"
+    },
+    "validation": {
+      "nameRequired": "O nome da personagem é obrigatório"
+    },
+    "errors": {
+      "saveFailed": "Falha ao guardar personagem. Por favor, tenta novamente.",
+      "deleteFailed": "Falha ao eliminar personagem. Por favor, tenta novamente."
+    },
+    "confirmDelete": "Tens a certeza de que queres eliminar esta personagem? Esta ação não pode ser desfeita."
+  }
+}

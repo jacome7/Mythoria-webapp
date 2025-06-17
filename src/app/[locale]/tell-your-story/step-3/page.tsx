@@ -11,13 +11,63 @@ import { getCurrentStoryId, setStep3Data, Character, hasValidStorySession } from
 export default function Step3Page() {
   const router = useRouter();
   const t = useTranslations('StorySteps.step3');
+  const tChar = useTranslations('Characters');
   const [characters, setCharacters] = useState<Character[]>([]);
   const [availableCharacters, setAvailableCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);  const [showCreateForm, setShowCreateForm] = useState(false);
   const [showAddOptions, setShowAddOptions] = useState(false);
   const [editingCharacterId, setEditingCharacterId] = useState<string | null>(null);
   const [currentStoryId, setCurrentStoryId] = useState<string | null>(null);
-  const [isNavigating, setIsNavigating] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);  // Helper function to format role names for display
+  const formatRoleName = (role: string): string => {
+    const roleMap: Record<string, string> = {
+      'protagonist': 'protagonist',
+      'antagonist': 'antagonist',
+      'supporting': 'supporting',
+      'mentor': 'mentor',
+      'comic_relief': 'comicRelief',
+      'love_interest': 'loveInterest',
+      'sidekick': 'sidekick',
+      'narrator': 'narrator',
+      'other': 'other'
+    };
+    
+    const roleKey = `roles.${roleMap[role] || 'other'}`;
+    const translated = tChar(roleKey);
+    // If no translation found, fall back to formatted version
+    if (translated === roleKey) {
+      return role
+        .split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    }
+    return translated;
+  };
+
+  // Helper function to get type display value
+  const getTypeDisplayValue = (typeValue: string) => {
+    const typeMap: Record<string, string> = {
+      'Boy': 'boy',
+      'Girl': 'girl',
+      'Baby': 'baby',
+      'Man': 'man',
+      'Woman': 'woman',
+      'Human': 'human',
+      'Dog': 'dog',
+      'Dragon': 'dragon',
+      'Fantasy Creature': 'fantasyCreature',
+      'Animal': 'animal',
+      'Other': 'other'
+    };
+    
+    const typeKey = `types.${typeMap[typeValue] || 'other'}`;
+    const translated = tChar(typeKey);
+    // If no translation found, fall back to original value
+    if (translated === typeKey) {
+      return typeValue;
+    }
+    return translated;
+  };
 
   const fetchStoryCharacters = useCallback(async (storyId?: string) => {
     const targetStoryId = storyId || currentStoryId;
@@ -271,12 +321,10 @@ export default function Step3Page() {
                 
                 <div className="prose max-w-none mb-6">
                   <p className="text-gray-600 text-lg">{t('intro')}</p>
-                </div>
-
-                {loading ? (
+                </div>                {loading ? (
                   <div className="text-center py-12">
                     <span className="loading loading-spinner loading-lg"></span>
-                    <p className="text-lg text-gray-600 mt-4">Loading your characters...</p>
+                    <p className="text-lg text-gray-600 mt-4">{t('loadingCharacters')}</p>
                   </div>
                 ) : (
                   <div className="space-y-6">
@@ -327,11 +375,10 @@ export default function Step3Page() {
                               {t('createNew')}
                             </button>
                             
-                            {/* Add Existing Character Option (only if available characters exist) */}
-                            {availableCharacters.length > 0 && (
+                            {/* Add Existing Character Option (only if available characters exist) */}                            {availableCharacters.length > 0 && (
                               <div className="space-y-2">
                                 <div className="text-sm text-gray-600">
-                                  Or choose from your existing characters:
+                                  {t('orChooseExisting')}
                                 </div>
                                 <div className="dropdown dropdown-end w-full">
                                   <div tabIndex={0} role="button" className="btn btn-outline btn-lg w-full">
@@ -343,11 +390,10 @@ export default function Step3Page() {
                                         <button
                                           className="text-left w-full p-3 hover:bg-base-200"
                                           onClick={() => handleAddExistingCharacter(character)}
-                                        >
-                                          <div>
+                                        >                                          <div>
                                             <div className="font-semibold">{character.name}</div>
                                             <div className="text-sm text-gray-500">
-                                              {character.type} • Role: {character.role || 'protagonist'}
+                                              {getTypeDisplayValue(character.type || '')} • {tChar('fields.role')}: {formatRoleName(character.role || 'protagonist')}
                                             </div>
                                             {character.passions && (
                                               <div className="text-xs text-gray-400 mt-1">

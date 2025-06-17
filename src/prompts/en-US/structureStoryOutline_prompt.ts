@@ -7,7 +7,7 @@ const promptConfig = {
     "For text descriptions, identify all story components and character details",
     "Combine insights from both image and text when both are available",
     "Generate creative, engaging story titles that capture the essence of the content",
-    "For characters: Match names/traits with existing_characters and reuse characterId when appropriate, otherwise set to null",
+    "For characters: Match names/traits with existing_characters and reuse characterId when appropriate, otherwise set to null (not string 'null')",
     "Use enum values exactly as specified in the schema",
     "Provide vivid, detailed descriptions that bring the story to life",
     "Only include fields with actual extractable data",    "When reusing existing characters, provide their characterId but enhance with all new information from user input",
@@ -102,7 +102,7 @@ The response must be JSON with this exact structure:
   },
   "characters": [
     {
-      "characterId": "Match with existing_characters if applicable, otherwise null",
+      "characterId": "Match with existing_characters if applicable, otherwise null (not the string 'null')",
       "name": "Creative, fitting name (in the user's selected language or appropriate for the character's background)",
       "type": "Accurate classification (human, animal, fantasy_creature, etc.)",
       "passions": "What drives this character based on visual or textual clues (in the user's selected language)",

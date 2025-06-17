@@ -59,15 +59,16 @@ export async function generateStructuredStory(
     const systemPrompt = promptConfig.template
       .replace('{{userDescription}}', userDescription)
       .replace('{{existingCharacters}}', JSON.stringify(existingCharacters));    // Get model name from environment - use the most reliable model for structured output
-    const modelName = process.env.MODEL_ID || "gemini-1.5-pro-002";
-
-    // Define generation configuration with structured output enforced
+    // According to Google Cloud docs, these models support structured output:
+    // gemini-2.5-pro, gemini-2.5-flash, gemini-2.0-flash, gemini-2.0-flash-lite
+    const modelName = process.env.MODEL_ID || "gemini-2.5-flash";    // Define generation configuration with structured output enforced
+    // According to Google Cloud docs, these settings guarantee JSON schema compliance
     const generationConfig = {
       maxOutputTokens: 8192,
       temperature: 0.1, // Very low temperature for consistent JSON output
       topP: 0.8,
-      responseMimeType: "application/json",
-      responseSchema: responseSchema,
+      responseMimeType: "application/json", // This forces JSON output
+      responseSchema: responseSchema, // This enforces the exact schema structure
     };
 
     // Prepare content based on whether we have image data, audio data, or both
@@ -242,11 +243,19 @@ export async function generateStructuredStory(
     }
     
     // Final cleanup
-    cleanedText = cleanedText.trim();// Parse the JSON text returned by the model
+    cleanedText = cleanedText.trim();    // Parse the JSON text returned by the model
     let parsedResult: StructuredStoryResult;
     try {
       parsedResult = JSON.parse(cleanedText);
-      console.log("Parsed result structure:", JSON.stringify(parsedResult, null, 2));    } catch (parseError) {
+      console.log("Parsed result structure:", JSON.stringify(parsedResult, null, 2));
+      
+      // Debug: Check characterId values specifically
+      if (parsedResult.characters) {
+        console.log("Character ID debugging:");
+        parsedResult.characters.forEach((char, index) => {
+          console.log(`Character ${index}: characterId=${JSON.stringify(char.characterId)}, type=${typeof char.characterId}`);
+        });
+      }} catch (parseError) {
       console.error("Failed to parse GenAI response as JSON:", cleanedText);
       console.error("Parse error:", parseError);
       
