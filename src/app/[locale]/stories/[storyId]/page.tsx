@@ -99,8 +99,7 @@ export default function StoryReadingPage() {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
-  const playAudio = async (chapterIndex: number, audioUri: string) => {
+  };  const playAudio = async (chapterIndex: number) => {
     try {
       // Stop any currently playing audio
       if (currentlyPlaying !== null && audioElements[currentlyPlaying]) {
@@ -110,11 +109,14 @@ export default function StoryReadingPage() {
 
       setAudioLoading(prev => ({ ...prev, [chapterIndex]: true }));
 
+      // Use the proxy API endpoint instead of direct Google Cloud Storage URL
+      const proxyAudioUri = `/api/stories/${storyId}/audio/${chapterIndex}`;
+
       // Create new audio element if it doesn't exist
       if (!audioElements[chapterIndex]) {
         const audio = new Audio();
         audio.preload = 'metadata';
-        audio.crossOrigin = 'anonymous'; // For CORS support with Google Cloud Storage
+        // No need for crossOrigin since we're serving from same domain
         
         audio.addEventListener('loadedmetadata', () => {
           setAudioLoading(prev => ({ ...prev, [chapterIndex]: false }));
@@ -141,14 +143,14 @@ export default function StoryReadingPage() {
         setAudioElements(prev => ({ ...prev, [chapterIndex]: audio }));
         
         // Set the source and start playing
-        audio.src = audioUri;
+        audio.src = proxyAudioUri;
         await audio.play();
         setCurrentlyPlaying(chapterIndex);
       } else {
         // Use existing audio element
         const audio = audioElements[chapterIndex];
-        if (audio.src !== audioUri) {
-          audio.src = audioUri;
+        if (audio.src !== proxyAudioUri) {
+          audio.src = proxyAudioUri;
         }
         await audio.play();
         setCurrentlyPlaying(chapterIndex);
@@ -443,9 +445,8 @@ export default function StoryReadingPage() {
                                           <FiSquare className="w-3 h-3" />
                                         </button>
                                       </>
-                                    ) : (
-                                      <button
-                                        onClick={() => playAudio(index, chapter.audioUri)}
+                                    ) : (                                      <button
+                                        onClick={() => playAudio(index)}
                                         className="btn btn-sm btn-circle btn-primary"
                                         title="Play"
                                         aria-label={`Play ${chapter.chapterTitle || `Chapter ${index + 1}`}`}

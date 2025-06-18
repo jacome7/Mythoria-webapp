@@ -78,10 +78,9 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
       } else {
         console.error('Error creating share link:', data.error);
         alert(`Error creating share link: ${data.error}`);
-      }
-    } catch (error) {
+      }    } catch (error) {
       console.error('Error creating share link:', error);
-      alert(`Failed to create share link: ${error.message}`);
+      alert(`Failed to create share link: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
