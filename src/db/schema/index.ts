@@ -13,6 +13,8 @@ export * from './payments';
 export * from './shipping';
 export * from './credits';
 export * from './pricing';
+export * from './ratings';
+export * from './token-usage';
 
 // Relations
 export * from './relations';

@@ -45,6 +45,8 @@ export const characterRole = pgEnum("character_role", [
   'other'
 ]);
 
+export const storyRatingEnum = pgEnum("story_rating", ['1', '2', '3', '4', '5']);
+
 // Story attribute enums
 export const targetAudienceEnum = pgEnum("target_audience", [
   'children_0-2',     // Babies/Toddlers
@@ -89,4 +91,16 @@ export const graphicalStyleEnum = pgEnum("graphical_style", [
   'sketch',
   'oil_painting',
   'colored_pencil'
+]);
+
+export const aiActionTypeEnum = pgEnum("ai_action_type", [
+  'story_structure',
+  'story_outline',
+  'chapter_writing',
+  'image_generation',
+  'story_review',
+  'character_generation',
+  'story_enhancement',
+  'audio_generation',
+  'content_validation'
 ]);

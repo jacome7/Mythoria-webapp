@@ -5,6 +5,7 @@ import { characters, storyCharacters } from './characters';
 import { paymentMethods, payments, credits } from './payments';
 import { shippingCodes } from './shipping';
 import { creditLedger, authorCreditBalances } from './credits';
+import { storyRatings } from './ratings';
 
 // -----------------------------------------------------------------------------
 // Relations (for type safety with Drizzle ORM queries)
@@ -23,6 +24,7 @@ export const authorsRelations = relations(authors, ({ one, many }) => ({
     fields: [authors.authorId],
     references: [authorCreditBalances.authorId],
   }),
+  storyRatings: many(storyRatings),
 }));
 
 export const paymentMethodsRelations = relations(paymentMethods, ({ one, many }) => ({
@@ -51,6 +53,7 @@ export const storiesRelations = relations(stories, ({ one, many }) => ({
   storyVersions: many(storyVersions),
   storyGenerationRuns: many(storyGenerationRuns),
   creditLedgerEntries: many(creditLedger),
+  ratings: many(storyRatings),
 }));
 
 export const charactersRelations = relations(characters, ({ one, many }) => ({
@@ -150,5 +153,16 @@ export const storyGenerationStepsRelations = relations(storyGenerationSteps, ({ 
   run: one(storyGenerationRuns, {
     fields: [storyGenerationSteps.runId],
     references: [storyGenerationRuns.runId],
+  }),
+}));
+
+export const storyRatingsRelations = relations(storyRatings, ({ one }) => ({
+  story: one(stories, {
+    fields: [storyRatings.storyId],
+    references: [stories.storyId],
+  }),
+  user: one(authors, {
+    fields: [storyRatings.userId],
+    references: [authors.authorId],
   }),
 }));

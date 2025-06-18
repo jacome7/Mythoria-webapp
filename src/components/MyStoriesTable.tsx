@@ -241,11 +241,10 @@ export default function MyStoriesTable() {
                       {getSortIcon('status')}
                     </button>
                   </th>
-                  <th className="text-center px-2 py-1 md:px-4 md:py-2">{t('table.actions')}</th>
+                  <th className="text-right px-2 py-1 md:px-4 md:py-2">{t('table.actions')}</th>
                 </tr>
               </thead>
-              <tbody>
-                {sortedStories.map((story) => (
+              <tbody>{sortedStories.map((story) => (
                   <tr key={story.storyId}>
                     <td className="px-2 py-1 md:px-4 md:py-2">{formatDate(story.createdAt)}</td>
                     <td className="font-medium px-2 py-1 md:px-4 md:py-2">
@@ -291,7 +290,7 @@ export default function MyStoriesTable() {
                       </div>
                     </td>
                     <td className="pl-2 pr-1 py-1 md:px-4 md:py-2">
-                      <div className="flex justify-center gap-0.5">
+                      <div className="flex justify-end gap-0.5">
                         {story.status === 'published' && (
                           <Link
                             href={`/${locale}/stories/${story.storyId}`}
@@ -308,7 +307,15 @@ export default function MyStoriesTable() {
                         >
                           <FiShare2 className="w-4 h-4" />
                         </button>
-                        {story.status === 'draft' ? (
+                        {story.status === 'writing' ? (
+                          <button
+                            className="btn btn-ghost btn-sm btn-disabled"
+                            disabled
+                            title="Cannot edit story while it's being written"
+                          >
+                            <FiEdit3 className="w-4 h-4" />
+                          </button>
+                        ) : story.status === 'draft' ? (
                           <Link
                             href={`/${locale}/tell-your-story/step-3?edit=${story.storyId}`}
                             className="btn btn-ghost btn-sm"

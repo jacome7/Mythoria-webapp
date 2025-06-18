@@ -1,60 +1,19 @@
-import { pgTable, unique, uuid, varchar, timestamp, integer, boolean, foreignKey, jsonb, text, primaryKey, pgEnum } from "drizzle-orm/pg-core"
+import { pgTable, unique, uuid, varchar, timestamp, integer, boolean, foreignKey, jsonb, text, primaryKey, pgEnum, decimal } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 export const addressType = pgEnum("address_type", ['billing', 'delivery'])
+export const aiActionType = pgEnum("ai_action_type", ['story_structure', 'story_outline', 'chapter_writing', 'image_generation', 'story_review', 'character_generation', 'story_enhancement', 'audio_generation', 'content_validation'])
 export const characterRole = pgEnum("character_role", ['protagonist', 'antagonist', 'supporting', 'mentor', 'comic_relief', 'love_interest', 'sidekick', 'narrator', 'other'])
 export const creditEventType = pgEnum("credit_event_type", ['initialCredit', 'creditPurchase', 'eBookGeneration', 'audioBookGeneration', 'printOrder', 'refund', 'voucher', 'promotion'])
+export const graphicalStyle = pgEnum("graphical_style", ['cartoon', 'realistic', 'watercolor', 'digital_art', 'hand_drawn', 'minimalist', 'vintage', 'comic_book', 'anime', 'pixar_style', 'disney_style', 'sketch', 'oil_painting', 'colored_pencil'])
+export const novelStyle = pgEnum("novel_style", ['adventure', 'fantasy', 'mystery', 'romance', 'science_fiction', 'historical', 'contemporary', 'fairy_tale', 'comedy', 'drama', 'horror', 'thriller', 'biography', 'educational', 'poetry'])
 export const paymentProvider = pgEnum("payment_provider", ['stripe', 'paypal', 'revolut', 'other'])
 export const runStatus = pgEnum("run_status", ['queued', 'running', 'failed', 'completed', 'cancelled'])
 export const stepStatus = pgEnum("step_status", ['pending', 'running', 'failed', 'completed'])
+export const storyRating = pgEnum("story_rating", ['1', '2', '3', '4', '5'])
 export const storyStatus = pgEnum("story_status", ['draft', 'writing', 'published'])
+export const targetAudience = pgEnum("target_audience", ['children_0-2', 'children_3-6', 'children_7-10', 'children_11-14', 'young_adult_15-17', 'adult_18+', 'all_ages'])
 
-// New enums for story attributes
-export const targetAudience = pgEnum("target_audience", [
-  'children_0-2',     // Babies/Toddlers
-  'children_3-6',     // Preschoolers
-  'children_7-10',    // Early Elementary
-  'children_11-14',   // Middle Grade
-  'young_adult_15-17', // Young Adult
-  'adult_18+',        // Adults
-  'all_ages'          // All Ages
-])
-
-export const novelStyle = pgEnum("novel_style", [
-  'adventure',
-  'fantasy',
-  'mystery',
-  'romance',
-  'science_fiction',
-  'historical',
-  'contemporary',
-  'fairy_tale',
-  'comedy',
-  'drama',
-  'horror',
-  'thriller',
-  'biography',
-  'educational',
-  'poetry',
-  'sports_adventure'
-])
-
-export const graphicalStyle = pgEnum("graphical_style", [
-  'cartoon',
-  'realistic',
-  'watercolor',
-  'digital_art',
-  'hand_drawn',
-  'minimalist',
-  'vintage',
-  'comic_book',
-  'anime',
-  'pixar_style',
-  'disney_style',
-  'sketch',
-  'oil_painting',
-  'colored_pencil'
-])
 
 export const leads = pgTable("leads", {
 	leadId: uuid("lead_id").defaultRandom().primaryKey().notNull(),
@@ -138,25 +97,6 @@ export const storyVersions = pgTable("story_versions", {
 			columns: [table.storyId],
 			foreignColumns: [stories.storyId],
 			name: "story_versions_story_id_stories_story_id_fk"
-		}).onDelete("cascade"),
-]);
-
-export const characters = pgTable("characters", {
-	characterId: uuid("character_id").defaultRandom().primaryKey().notNull(),
-	authorId: uuid("author_id"),
-	name: varchar({ length: 120 }).notNull(),
-	type: varchar({ length: 60 }),
-	role: characterRole(),
-	passions: text(),
-	superpowers: text(),
-	physicalDescription: text("physical_description"),
-	photoUrl: text("photo_url"),
-	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	foreignKey({
-			columns: [table.authorId],
-			foreignColumns: [authors.authorId],
-			name: "characters_author_id_authors_author_id_fk"
 		}).onDelete("cascade"),
 ]);
 
@@ -271,31 +211,50 @@ export const creditLedger = pgTable("credit_ledger", {
 		}).onDelete("set null"),
 ]);
 
+export const characters = pgTable("characters", {
+	characterId: uuid("character_id").defaultRandom().primaryKey().notNull(),
+	authorId: uuid("author_id"),
+	name: varchar({ length: 120 }).notNull(),
+	type: varchar({ length: 60 }),
+	passions: text(),
+	superpowers: text(),
+	physicalDescription: text("physical_description"),
+	photoUrl: text("photo_url"),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	role: characterRole(),
+}, (table) => [
+	foreignKey({
+			columns: [table.authorId],
+			foreignColumns: [authors.authorId],
+			name: "characters_author_id_authors_author_id_fk"
+		}).onDelete("cascade"),
+]);
+
 export const stories = pgTable("stories", {
 	storyId: uuid("story_id").defaultRandom().primaryKey().notNull(),
 	authorId: uuid("author_id").notNull(),
 	title: varchar({ length: 255 }).notNull(),
 	plotDescription: text("plot_description"),
-	storyLanguage: varchar("story_language", { length: 5 }).default('en-US').notNull(),
 	synopsis: text(),
 	place: text(),
 	additionalRequests: text(),
-	targetAudience: targetAudience("target_audience"),
-	novelStyle: novelStyle("novel_style"),
-	graphicalStyle: graphicalStyle("graphical_style"),
-	chapterCount: integer("chapter_count").default(6).notNull(),
+	targetAudience: varchar("target_audience", { length: 120 }),
+	novelStyle: varchar("novel_style", { length: 120 }),
+	graphicalStyle: varchar("graphical_style", { length: 120 }),
 	status: storyStatus().default('draft'),
 	features: jsonb(),
 	deliveryAddress: jsonb("delivery_address"),
 	dedicationMessage: text("dedication_message"),
 	mediaLinks: jsonb("media_links"),
-	htmlUri: text("html_uri"),
-	pdfUri: text("pdf_uri"),
-	audiobookUri: jsonb("audiobook_uri"),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	storyGenerationStatus: runStatus("story_generation_status"),
 	storyGenerationCompletedPercentage: integer("story_generation_completed_percentage").default(0),
+	storyLanguage: varchar("story_language", { length: 5 }).default('en-US').notNull(),
+	htmlUri: text("html_uri"),
+	pdfUri: text("pdf_uri"),
+	audiobookUri: jsonb("audiobook_uri"),
+	chapterCount: integer("chapter_count").default(6).notNull(),
 }, (table) => [
 	foreignKey({
 			columns: [table.authorId],
@@ -323,6 +282,17 @@ export const storyGenerationRuns = pgTable("story_generation_runs", {
 			name: "story_generation_runs_story_id_stories_story_id_fk"
 		}).onDelete("cascade"),
 ]);
+
+export const storyRatings = pgTable("story_ratings", {
+	ratingId: uuid("rating_id").defaultRandom().primaryKey().notNull(),
+	storyId: uuid("story_id").notNull(),
+	userId: uuid("user_id"),
+	rating: storyRating().notNull(),
+	feedback: text(),
+	isAnonymous: boolean("is_anonymous").default(true).notNull(),
+	includeNameInFeedback: boolean("include_name_in_feedback").default(false).notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+});
 
 export const storyCharacters = pgTable("story_characters", {
 	storyId: uuid("story_id").notNull(),
@@ -359,3 +329,58 @@ export const storyGenerationSteps = pgTable("story_generation_steps", {
 		}).onDelete("cascade"),
 	primaryKey({ columns: [table.runId, table.stepName], name: "story_generation_steps_run_id_step_name_pk"}),
 ]);
+
+export const aiActions = pgTable("ai_actions", {
+	actionId: uuid("action_id").defaultRandom().primaryKey().notNull(),
+	authorId: uuid("author_id").notNull(),
+	storyId: uuid("story_id").notNull(),
+	actionType: aiActionType().notNull(),
+	inputData: jsonb("input_data").notNull(),
+	outputData: jsonb("output_data"),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	foreignKey({
+			columns: [table.authorId],
+			foreignColumns: [authors.authorId],
+			name: "ai_actions_author_id_authors_author_id_fk"
+		}).onDelete("cascade"),
+	foreignKey({
+			columns: [table.storyId],
+			foreignColumns: [stories.storyId],
+			name: "ai_actions_story_id_stories_story_id_fk"
+		}).onDelete("cascade"),
+]);
+
+export const tokenUsages = pgTable("token_usages", {
+	id: uuid().defaultRandom().primaryKey().notNull(),
+	authorId: uuid("author_id").notNull(),
+	storyId: uuid("story_id").notNull(),
+	tokensUsed: integer("tokens_used").notNull(),
+	actionType: aiActionType().notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	foreignKey({
+			columns: [table.authorId],
+			foreignColumns: [authors.authorId],
+			name: "token_usages_author_id_authors_author_id_fk"
+		}).onDelete("cascade"),
+	foreignKey({
+			columns: [table.storyId],
+			foreignColumns: [stories.storyId],
+			name: "token_usages_story_id_stories_story_id_fk"
+		}).onDelete("cascade"),
+]);
+
+export const tokenUsageTracking = pgTable("token_usage_tracking", {
+	tokenUsageId: uuid("token_usage_id").defaultRandom().primaryKey().notNull(),
+	authorId: uuid("author_id").notNull(), // Not a foreign key - keep record even if author is deleted
+	storyId: uuid("story_id").notNull(), // Not a foreign key - keep record even if story is deleted
+	action: aiActionType().notNull(),
+	aiModel: varchar("ai_model", { length: 100 }).notNull(),
+	inputTokens: integer("input_tokens").notNull(),
+	outputTokens: integer("output_tokens").notNull(),
+	estimatedCostInEuros: decimal("estimated_cost_in_euros", { precision: 10, scale: 6 }).notNull(),
+	inputPromptJson: jsonb("input_prompt_json").notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+});

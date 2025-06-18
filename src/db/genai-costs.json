@@ -1,0 +1,300 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GenAI Costs Configuration",
+  "description": "Static configuration for GenAI model costs as of mid-2025",
+  "type": "object",
+  "properties": {
+    "models": {
+      "type": "object",
+      "properties": {
+        "openai": {
+          "type": "object",
+          "properties": {
+            "gpt-4.1": {
+              "type": "object",
+              "properties": {
+                "inputCostPerKToken": {
+                  "type": "number",
+                  "description": "Cost in euros per 1K input tokens",
+                  "default": 0.00173
+                },
+                "outputCostPerKToken": {
+                  "type": "number",
+                  "description": "Cost in euros per 1K output tokens",
+                  "default": 0.00693
+                },
+                "imageCostPerImage": {
+                  "type": "number",
+                  "description": "Cost in euros per image (if applicable)",
+                  "default": null
+                }
+              },
+              "required": ["inputCostPerKToken", "outputCostPerKToken"]
+            },
+            "gpt-4.1-mini": {
+              "type": "object",
+              "properties": {
+                "inputCostPerKToken": {
+                  "type": "number",
+                  "default": 0.00035
+                },
+                "outputCostPerKToken": {
+                  "type": "number",
+                  "default": 0.00139
+                },
+                "imageCostPerImage": {
+                  "type": "number",
+                  "default": null
+                }
+              },
+              "required": ["inputCostPerKToken", "outputCostPerKToken"]
+            },
+            "o4-mini": {
+              "type": "object",
+              "properties": {
+                "inputCostPerKToken": {
+                  "type": "number",
+                  "default": 0.000952
+                },
+                "outputCostPerKToken": {
+                  "type": "number",
+                  "default": 0.003809
+                },
+                "imageCostPerImage": {
+                  "type": "number",
+                  "default": null
+                }
+              },
+              "required": ["inputCostPerKToken", "outputCostPerKToken"]
+            },
+            "o3": {
+              "type": "object",
+              "properties": {
+                "inputCostPerKToken": {
+                  "type": "number",
+                  "default": 0.001731
+                },
+                "outputCostPerKToken": {
+                  "type": "number",
+                  "default": 0.006925
+                },
+                "imageCostPerImage": {
+                  "type": "number",
+                  "default": null
+                }
+              },
+              "required": ["inputCostPerKToken", "outputCostPerKToken"]
+            }
+          }
+        },
+        "google": {
+          "type": "object",
+          "properties": {
+            "gemini-2.0-flash": {
+              "type": "object",
+              "properties": {
+                "inputCostPerKToken": {
+                  "type": "number",
+                  "default": 0.000130
+                },
+                "outputCostPerKToken": {
+                  "type": "number",
+                  "default": 0.000519
+                },
+                "imageCostPerImage": {
+                  "type": "number",
+                  "default": 0.0337
+                }
+              },
+              "required": ["inputCostPerKToken", "outputCostPerKToken"]
+            },
+            "gemini-2.0-pro": {
+              "type": "object",
+              "properties": {
+                "inputCostPerKToken": {
+                  "type": "number",
+                  "default": 0.0000866
+                },
+                "outputCostPerKToken": {
+                  "type": "number",
+                  "default": 0.000346
+                },
+                "imageCostPerImage": {
+                  "type": "number",
+                  "default": null
+                }
+              },
+              "required": ["inputCostPerKToken", "outputCostPerKToken"]
+            },
+            "gemini-2.5-flash": {
+              "type": "object",
+              "properties": {
+                "inputCostPerKToken": {
+                  "type": "number",
+                  "default": 0.000130
+                },
+                "outputCostPerKToken": {
+                  "type": "number",
+                  "default": 0.000519
+                },
+                "imageCostPerImage": {
+                  "type": "number",
+                  "default": 0.0337
+                }
+              },
+              "required": ["inputCostPerKToken", "outputCostPerKToken"]
+            },
+            "gemini-2.5-pro": {
+              "type": "object",
+              "properties": {
+                "inputCostPerKToken": {
+                  "type": "number",
+                  "default": 0.001082
+                },
+                "outputCostPerKToken": {
+                  "type": "number",
+                  "default": 0.008657
+                },
+                "imageCostPerImage": {
+                  "type": "number",
+                  "default": null
+                }
+              },
+              "required": ["inputCostPerKToken", "outputCostPerKToken"]
+            },
+            "imagen-4": {
+              "type": "object",
+              "properties": {
+                "inputCostPerKToken": {
+                  "type": "number",
+                  "default": 0
+                },
+                "outputCostPerKToken": {
+                  "type": "number",
+                  "default": 0
+                },
+                "imageCostPerImage": {
+                  "type": "number",
+                  "default": 0.0346
+                }
+              },
+              "required": ["inputCostPerKToken", "outputCostPerKToken"]
+            },
+            "imagen-4-fast": {
+              "type": "object",
+              "properties": {
+                "inputCostPerKToken": {
+                  "type": "number",
+                  "default": 0
+                },
+                "outputCostPerKToken": {
+                  "type": "number",
+                  "default": 0
+                },
+                "imageCostPerImage": {
+                  "type": "number",
+                  "default": 0.0173
+                }
+              },
+              "required": ["inputCostPerKToken", "outputCostPerKToken"]
+            },
+            "imagen-4-ultra": {
+              "type": "object",
+              "properties": {
+                "inputCostPerKToken": {
+                  "type": "number",
+                  "default": 0
+                },
+                "outputCostPerKToken": {
+                  "type": "number",
+                  "default": 0
+                },
+                "imageCostPerImage": {
+                  "type": "number",
+                  "default": 0.0520
+                }
+              },
+              "required": ["inputCostPerKToken", "outputCostPerKToken"]
+            }
+          }
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "description": "Static data for GenAI model costs",
+      "properties": {
+        "models": {
+          "type": "object",
+          "properties": {
+            "openai": {
+              "type": "object",
+              "properties": {
+                "gpt-4.1": {
+                  "inputCostPerKToken": 0.00173,
+                  "outputCostPerKToken": 0.00693,
+                  "imageCostPerImage": null
+                },
+                "gpt-4.1-mini": {
+                  "inputCostPerKToken": 0.00035,
+                  "outputCostPerKToken": 0.00139,
+                  "imageCostPerImage": null
+                },
+                "o4-mini": {
+                  "inputCostPerKToken": 0.000952,
+                  "outputCostPerKToken": 0.003809,
+                  "imageCostPerImage": null
+                },
+                "o3": {
+                  "inputCostPerKToken": 0.001731,
+                  "outputCostPerKToken": 0.006925,
+                  "imageCostPerImage": null
+                }
+              }
+            },
+            "google": {
+              "type": "object",
+              "properties": {
+                "gemini-2.0-flash": {
+                  "inputCostPerKToken": 0.000130,
+                  "outputCostPerKToken": 0.000519,
+                  "imageCostPerImage": 0.0337
+                },
+                "gemini-2.0-pro": {
+                  "inputCostPerKToken": 0.0000866,
+                  "outputCostPerKToken": 0.000346,
+                  "imageCostPerImage": null
+                },
+                "gemini-2.5-flash": {
+                  "inputCostPerKToken": 0.000130,
+                  "outputCostPerKToken": 0.000519,
+                  "imageCostPerImage": 0.0337
+                },
+                "gemini-2.5-pro": {
+                  "inputCostPerKToken": 0.001082,
+                  "outputCostPerKToken": 0.008657,
+                  "imageCostPerImage": null
+                },
+                "imagen-4": {
+                  "inputCostPerKToken": 0,
+                  "outputCostPerKToken": 0,
+                  "imageCostPerImage": 0.0346
+                },
+                "imagen-4-fast": {
+                  "inputCostPerKToken": 0,
+                  "outputCostPerKToken": 0,
+                  "imageCostPerImage": 0.0173
+                },
+                "imagen-4-ultra": {
+                  "inputCostPerKToken": 0,
+                  "outputCostPerKToken": 0,
+                  "imageCostPerImage": 0.0520
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -43,6 +43,34 @@
       "when": 1750167777870,
       "tag": "0005_powerful_lyja",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1750239292426,
+      "tag": "0006_fantastic_mimic",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1750243002342,
+      "tag": "0007_gigantic_tana_nile",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1750243063795,
+      "tag": "0008_magical_bushwacker",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1750243119358,
+      "tag": "0009_brave_morg",
+      "breakpoints": true
     }
   ]
 }

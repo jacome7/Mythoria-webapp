@@ -17,6 +17,7 @@ import {
   FiSquare 
 } from 'react-icons/fi';
 import StoryReader from '../../../../components/StoryReader';
+import StoryRating from '../../../../components/StoryRating';
 
 interface Story {
   storyId: string;
@@ -334,14 +335,28 @@ export default function StoryReadingPage() {
               </div>
             </div>            {/* Story Content */}
             {activeButton === 'read' && (
-              <StoryReader 
-                storyContent={storyContent || ''}
-                storyMetadata={{
-                  targetAudience: story.targetAudience,
-                  graphicalStyle: story.graphicalStyle,
-                  title: story.title
-                }}
-              />
+              <div>
+                <StoryReader 
+                  storyContent={storyContent || ''}
+                  storyMetadata={{
+                    targetAudience: story.targetAudience,
+                    graphicalStyle: story.graphicalStyle,
+                    title: story.title
+                  }}
+                />
+                
+                {/* Story Rating Component */}
+                <div className="container mx-auto px-4 py-8">
+                  <div className="max-w-2xl mx-auto">
+                    <StoryRating 
+                      storyId={storyId}
+                      onRatingSubmitted={(rating) => {
+                        console.log('Rating submitted:', rating);
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
             )}
 
             {/* Audio Listening Content */}

@@ -1,5 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { getLanguageSpecificPrompt, getLanguageSpecificSchema } from "./prompt-loader";
+import { calculateGenAICost, normalizeModelName } from "@/db/genai-cost-calculator";
+import { tokenUsageService } from "@/db/services/token-usage-tracking";
 
 // Initialize GoogleGenAI client with Vertex AI configuration
 const clientOptions = {
@@ -36,6 +38,12 @@ export interface StructuredStory {
 export interface StructuredStoryResult {
   story: StructuredStory;
   characters: StructuredCharacter[];
+  costInfo?: {
+    totalCost: number;
+    inputTokens: number;
+    outputTokens: number;
+    modelUsed: string;
+  };
 }
 
 export async function generateStructuredStory(
@@ -48,7 +56,9 @@ export async function generateStructuredStory(
   }> = [],
   imageData?: string | null,
   audioData?: string | null,
-  userLanguage: string = 'en-US'
+  userLanguage: string = 'en-US',
+  authorId?: string,
+  storyId?: string
 ): Promise<StructuredStoryResult> {
   try {
     // Load language-specific prompt and schema
@@ -157,10 +167,63 @@ export async function generateStructuredStory(
       hasResponseSchema: !!responseSchema,
       generationConfig
     });
-    
-    const result = await ai.models.generateContent(req);
+      const result = await ai.models.generateContent(req);
     
     console.log("GenAI result candidates:", result.candidates?.length);
+    
+    // Extract token usage information from the response
+    const inputTokens = result.usageMetadata?.promptTokenCount || 0;
+    const outputTokens = result.usageMetadata?.candidatesTokenCount || 0;
+    const totalTokens = result.usageMetadata?.totalTokenCount || 0;
+    
+    console.log("Token usage:", {
+      inputTokens,
+      outputTokens,
+      totalTokens,
+      model: modelName
+    });
+    
+    // Calculate cost for this request
+    const normalizedModelName = normalizeModelName(modelName);
+    const imageCount = imageData ? 1 : 0; // Count images if present
+    
+    const costInfo = calculateGenAICost({
+      provider: 'google',
+      modelName: normalizedModelName,
+      inputTokens,
+      outputTokens,
+      imageCount
+    });
+    
+    console.log("Cost calculation:", costInfo);
+    
+    // Track token usage if we have the required IDs
+    if (authorId && storyId && costInfo.modelFound) {
+      try {
+        await tokenUsageService.recordTokenUsage({
+          authorId,
+          storyId,
+          action: 'story_structure',
+          aiModel: modelName,
+          inputTokens,
+          outputTokens,
+          estimatedCostInEuros: costInfo.totalCost,
+          inputPromptJson: {
+            userDescription,
+            existingCharacters,
+            hasImage: !!imageData,
+            hasAudio: !!audioData,
+            userLanguage,
+            modelName,
+            timestamp: new Date().toISOString()
+          }
+        });
+        console.log("Token usage recorded successfully");
+      } catch (trackingError) {
+        console.error("Failed to record token usage:", trackingError);
+        // Don't fail the main request if tracking fails
+      }
+    }
     
     // Get the text from the response
     const text = result.text;
@@ -283,21 +346,37 @@ export async function generateStructuredStory(
       console.error("- Has story property:", !!parsedResult.story);
       console.error("- Has characters property:", !!parsedResult.characters);
       console.error("- Characters is array:", Array.isArray(parsedResult.characters));
-      console.error("Full parsed result:", JSON.stringify(parsedResult, null, 2));
-        // Try to create a fallback structure if the response has some usable content
+      console.error("Full parsed result:", JSON.stringify(parsedResult, null, 2));        // Try to create a fallback structure if the response has some usable content
       const fallbackResult: StructuredStoryResult = {
         story: {
           plotDescription: userDescription,
           title: "Generated Story"
         },
-        characters: []
+        characters: [],
+        costInfo: costInfo.modelFound ? {
+          totalCost: costInfo.totalCost,
+          inputTokens,
+          outputTokens,
+          modelUsed: modelName
+        } : undefined
       };
       
       console.log("Using fallback structure:", JSON.stringify(fallbackResult, null, 2));
       return fallbackResult;
     }
 
-    return parsedResult;
+    // Add cost information to the result
+    const resultWithCost: StructuredStoryResult = {
+      ...parsedResult,
+      costInfo: costInfo.modelFound ? {
+        totalCost: costInfo.totalCost,
+        inputTokens,
+        outputTokens,
+        modelUsed: modelName
+      } : undefined
+    };
+
+    return resultWithCost;
   } catch (error) {
     console.error("Error in generateStructuredStory:", error);
     throw new Error(`Failed to generate structured story: ${error instanceof Error ? error.message : 'Unknown error'}`);

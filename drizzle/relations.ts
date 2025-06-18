@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { authors, addresses, events, stories, storyVersions, characters, credits, paymentMethods, payments, shippingCodes, authorCreditBalances, creditLedger, storyGenerationRuns, storyCharacters, storyGenerationSteps } from "./schema";
+import { authors, addresses, events, stories, storyVersions, credits, paymentMethods, payments, shippingCodes, authorCreditBalances, creditLedger, characters, storyGenerationRuns, storyCharacters, storyGenerationSteps } from "./schema";
 
 export const addressesRelations = relations(addresses, ({one, many}) => ({
 	author: one(authors, {
@@ -12,12 +12,12 @@ export const addressesRelations = relations(addresses, ({one, many}) => ({
 export const authorsRelations = relations(authors, ({many}) => ({
 	addresses: many(addresses),
 	events: many(events),
-	characters: many(characters),
 	credits: many(credits),
 	paymentMethods: many(paymentMethods),
 	payments: many(payments),
 	authorCreditBalances: many(authorCreditBalances),
 	creditLedgers: many(creditLedger),
+	characters: many(characters),
 	stories: many(stories),
 }));
 
@@ -44,14 +44,6 @@ export const storiesRelations = relations(stories, ({one, many}) => ({
 		references: [authors.authorId]
 	}),
 	storyGenerationRuns: many(storyGenerationRuns),
-	storyCharacters: many(storyCharacters),
-}));
-
-export const charactersRelations = relations(characters, ({one, many}) => ({
-	author: one(authors, {
-		fields: [characters.authorId],
-		references: [authors.authorId]
-	}),
 	storyCharacters: many(storyCharacters),
 }));
 
@@ -108,6 +100,14 @@ export const creditLedgerRelations = relations(creditLedger, ({one}) => ({
 		fields: [creditLedger.storyId],
 		references: [stories.storyId]
 	}),
+}));
+
+export const charactersRelations = relations(characters, ({one, many}) => ({
+	author: one(authors, {
+		fields: [characters.authorId],
+		references: [authors.authorId]
+	}),
+	storyCharacters: many(storyCharacters),
 }));
 
 export const storyGenerationRunsRelations = relations(storyGenerationRuns, ({one, many}) => ({
