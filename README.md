@@ -55,3 +55,4 @@ npm install
 # (Further setup steps for database, .env, etc.)
 npm run dev
 ```
+\nFor full documentation see [docs/README.md](docs/README.md).
