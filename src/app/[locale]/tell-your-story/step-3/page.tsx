@@ -3,22 +3,42 @@
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
 import StepNavigation from '../../../../components/StepNavigation';
 import CharacterCard from '../../../../components/CharacterCard';
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { getCurrentStoryId, setStep3Data, Character, hasValidStorySession } from '../../../../lib/story-session';
+import { 
+  getCurrentStoryId, 
+  setStep3Data, 
+  Character, 
+  hasValidStorySession, 
+  loadExistingStoryData, 
+  setEditMode, 
+  isEditMode
+} from '../../../../lib/story-session';
 
-export default function Step3Page() {
+export default function Step3PageWrapper() {
+  return (
+    <Suspense>
+      <Step3Page />
+    </Suspense>
+  );
+}
+
+function Step3Page() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editStoryId = searchParams.get('edit');
   const t = useTranslations('StorySteps.step3');
   const tChar = useTranslations('Characters');
   const [characters, setCharacters] = useState<Character[]>([]);
   const [availableCharacters, setAvailableCharacters] = useState<Character[]>([]);
-  const [loading, setLoading] = useState(true);  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [showCreateForm, setShowCreateForm] = useState(false);
   const [showAddOptions, setShowAddOptions] = useState(false);
   const [editingCharacterId, setEditingCharacterId] = useState<string | null>(null);
   const [currentStoryId, setCurrentStoryId] = useState<string | null>(null);
-  const [isNavigating, setIsNavigating] = useState(false);  // Helper function to format role names for display
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [isInEditMode, setIsInEditMode] = useState(false);// Helper function to format role names for display
   const formatRoleName = (role: string): string => {
     const roleMap: Record<string, string> = {
       'protagonist': 'protagonist',
@@ -117,22 +137,58 @@ export default function Step3Page() {
       // Don't show alert for this as it's not critical
     }
   }, [currentStoryId]);
-
   useEffect(() => {
-    // Check if we have a valid story session
-    if (!hasValidStorySession()) {
-      router.push('/tell-your-story/step-1');
-      return;
-    }
+    const initializeStoryData = async () => {
+      // Check if we're in edit mode
+      if (editStoryId) {
+        try {
+          setLoading(true);
+          setIsInEditMode(true);
+          setEditMode(true);
+          
+          // Load existing story data
+          const success = await loadExistingStoryData(editStoryId);
+          if (!success) {
+            alert('Failed to load story data. Please try again.');
+            router.push('/my-stories');
+            return;
+          }
+          
+          // Set the current story ID
+          setCurrentStoryId(editStoryId);
+          
+          // Fetch the story's characters
+          await fetchStoryCharacters(editStoryId);
+          await fetchAvailableCharacters(editStoryId);
+          
+        } catch (error) {
+          console.error('Error initializing edit mode:', error);
+          alert('Failed to load story for editing. Please try again.');
+          router.push('/my-stories');
+          return;
+        }
+      } else {
+        // Normal flow - check if we have a valid story session
+        if (!hasValidStorySession()) {
+          router.push('/tell-your-story/step-1');
+          return;
+        }
+        
+        const storyId = getCurrentStoryId();
+        setCurrentStoryId(storyId);
+        setIsInEditMode(isEditMode());
+        
+        if (storyId) {
+          fetchStoryCharacters(storyId);
+          fetchAvailableCharacters(storyId);
+        }
+      }
+      
+      setLoading(false);
+    };
     
-    const storyId = getCurrentStoryId();
-    setCurrentStoryId(storyId);
-    
-    if (storyId) {
-      fetchStoryCharacters(storyId);
-      fetchAvailableCharacters(storyId);
-    }
-  }, [router, fetchStoryCharacters, fetchAvailableCharacters]);
+    initializeStoryData();
+  }, [router, editStoryId, fetchStoryCharacters, fetchAvailableCharacters]);
   const handleCreateCharacter = async (characterData: Character) => {
     try {
       const response = await fetch('/api/characters', {
@@ -253,7 +309,6 @@ export default function Step3Page() {
       throw error;
     }
   };
-
   const handleNextStep = async () => {
     try {
       setIsNavigating(true);
@@ -261,8 +316,16 @@ export default function Step3Page() {
       // Save step 3 data to localStorage
       setStep3Data({ characters });
       
-      // Navigate to step 4
-      router.push('/tell-your-story/step-4');
+      if (isInEditMode) {
+        // In edit mode, save the story and go back to my-stories
+        // For now, we'll just clear edit mode and navigate
+        // You might want to add an API call here to save any changes
+        setEditMode(false);
+        router.push('/my-stories');
+      } else {
+        // Normal flow - navigate to step 4
+        router.push('/tell-your-story/step-4');
+      }
       
     } catch (error) {
       console.error('Error navigating to next step:', error);
@@ -310,16 +373,21 @@ export default function Step3Page() {
                   </div>
                 </>
               );
-            })()}
-
-            {/* Step content */}
+            })()}            {/* Step content */}
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
-                <h1 className="card-title text-3xl mb-6">{t('heading')}</h1>
+                <div className="flex items-center justify-between mb-6">
+                  <h1 className="card-title text-3xl">{t('heading')}</h1>
+                  {isInEditMode && (
+                    <div className="badge badge-info">
+                      Editing Draft Story
+                    </div>
+                  )}
+                </div>
                 
                 <div className="prose max-w-none mb-6">
                   <p className="text-gray-600 text-lg">{t('intro')}</p>
-                </div>                {loading ? (
+                </div>{loading ? (
                   <div className="text-center py-12">
                     <span className="loading loading-spinner loading-lg"></span>
                     <p className="text-lg text-gray-600 mt-4">{t('loadingCharacters')}</p>
@@ -447,10 +515,17 @@ export default function Step3Page() {
                   currentStep={3}
                   totalSteps={6}
                   nextHref={null} // We'll handle navigation programmatically
-                  prevHref={null} // Disabled - don't allow going back to step 2
+                  prevHref={isInEditMode ? "/my-stories" : null} // In edit mode, allow going back to my-stories
                   nextDisabled={isNavigating}
                   onNext={handleNextStep}
-                  nextLabel={isNavigating ? t('continuing') : t('nextChapter')}
+                  nextLabel={
+                    isNavigating 
+                      ? t('continuing') 
+                      : isInEditMode 
+                        ? 'Save Changes' 
+                        : t('nextChapter')
+                  }
+                  prevLabel={isInEditMode ? 'Back to My Stories' : undefined}
                 />
               </div>
             </div>

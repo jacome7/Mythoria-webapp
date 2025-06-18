@@ -308,13 +308,23 @@ export default function MyStoriesTable() {
                         >
                           <FiShare2 className="w-4 h-4" />
                         </button>
-                        <Link
-                          href={`/tell-your-story?edit=${story.storyId}`}
-                          className="btn btn-ghost btn-sm"
-                          title={t('actions.edit')}
-                        >
-                          <FiEdit3 className="w-4 h-4" />
-                        </Link>
+                        {story.status === 'draft' ? (
+                          <Link
+                            href={`/${locale}/tell-your-story/step-3?edit=${story.storyId}`}
+                            className="btn btn-ghost btn-sm"
+                            title={t('actions.edit')}
+                          >
+                            <FiEdit3 className="w-4 h-4" />
+                          </Link>
+                        ) : (
+                          <Link
+                            href={`/tell-your-story?edit=${story.storyId}`}
+                            className="btn btn-ghost btn-sm"
+                            title={t('actions.edit')}
+                          >
+                            <FiEdit3 className="w-4 h-4" />
+                          </Link>
+                        )}
                         <button
                           className="btn btn-ghost btn-sm text-error hover:bg-error hover:text-error-content"
                           onClick={() => handleDeleteClick(story)}

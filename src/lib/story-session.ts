@@ -83,7 +83,55 @@ export function getStep3Data(): StorySessionData['step3Data'] | null {
 }
 
 /**
- * Clear all story session data
+ * Load existing story data for editing
+ */
+export async function loadExistingStoryData(storyId: string): Promise<boolean> {
+  if (typeof window === 'undefined') return false;
+  
+  try {
+    // Fetch story data
+    const response = await fetch(`/api/my-stories/${storyId}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch story data');
+    }
+    
+    await response.json(); // just to consume the response
+    // Set the story ID
+    setCurrentStoryId(storyId);
+    
+    // Load existing step data if available
+    // For now, we'll focus on step 3 (characters)
+    // You can extend this to load step 2 data as well
+    
+    return true;
+  } catch (error) {
+    console.error('Error loading existing story data:', error);
+    return false;
+  }
+}
+
+/**
+ * Check if we're in edit mode
+ */
+export function isEditMode(): boolean {
+  if (typeof window === 'undefined') return false;
+  return localStorage.getItem('isEditMode') === 'true';
+}
+
+/**
+ * Set edit mode
+ */
+export function setEditMode(isEdit: boolean): void {
+  if (typeof window === 'undefined') return;
+  if (isEdit) {
+    localStorage.setItem('isEditMode', 'true');
+  } else {
+    localStorage.removeItem('isEditMode');
+  }
+}
+
+/**
+ * Clear all story session data including edit mode
  */
 export function clearStorySession(): void {
   if (typeof window === 'undefined') return;
@@ -91,6 +139,7 @@ export function clearStorySession(): void {
   localStorage.removeItem('currentStoryId');
   localStorage.removeItem('step2Data');
   localStorage.removeItem('step3Data');
+  localStorage.removeItem('isEditMode');
 }
 
 /**
