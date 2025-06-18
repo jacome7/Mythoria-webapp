@@ -94,8 +94,8 @@ export default function StoryReader({ storyContent, storyMetadata }: StoryReader
       <div 
         className="story-content-wrapper"
         style={{
-          fontSize: readingSettings?.fontSize ? `${readingSettings.fontSize}px` : undefined,
-          lineHeight: readingSettings?.lineHeight || undefined
+          fontSize: readingSettings?.fontSize ? `${readingSettings.fontSize}%` : undefined,
+          lineHeight: readingSettings?.lineHeight ? `${readingSettings.lineHeight}%` : undefined
         }}
       >
         <div className="container mx-auto px-4 py-6">

@@ -10,16 +10,17 @@
   color: #2d3748;
 }
 
-.story-title {
-  font-size: 2.5rem;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 1rem;
-  color: #ff6b6b;
+.mythoria-story-title {
+  font-size: 2.5rem !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  margin-bottom: 1rem !important;
+  line-height: 1.3 !important;
+  color: #ff6b6b !important;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
 }
 
-.story-subtitle {
+.mythoria-story-subtitle {
   font-size: 1.5rem;
   text-align: center;
   margin-bottom: 2rem;
@@ -27,42 +28,43 @@
   font-weight: 600;
 }
 
-.story-author {
-  text-align: center;
-  font-size: 1.1rem;
-  margin-bottom: 3rem;
-  color: #666;
+.mythoria-author-name {
+  text-align: center !important;
+  font-size: 1.1rem !important;
+  margin-bottom: 3rem !important;
+  line-height: 1.4 !important;
+  color: #666 !important;
   font-style: italic;
 }
 
-.story-content {
+.mythoria-story-content {
   font-size: 1.4rem;
   line-height: 2;
   color: #2d3748;
 }
 
-.story-chapter {
-  margin-bottom: 3rem;
+.mythoria-mythoria-chapter {
+  margin-bottom: 3rem !important;
   padding: 2rem;
   background-color: white;
   border-radius: 20px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-.story-section {
+.mythoria-story-section {
   margin-bottom: 2rem;
   padding: 1.5rem;
   background-color: #f9f9f9;
   border-radius: 15px;
 }
 
-.story-paragraph {
+.mythoria-story-paragraph {
   margin-bottom: 1.5rem;
   font-size: 1.4rem;
   line-height: 2;
 }
 
-.story-dialogue {
+.mythoria-story-dialogue {
   margin-bottom: 1.5rem;
   padding: 1rem;
   background-color: #e8f4f8;
@@ -71,24 +73,24 @@
   font-size: 1.3rem;
 }
 
-.story-character-name {
+.mythoria-story-character-name {
   font-weight: bold;
   color: #ff6b6b;
   font-size: 1.2em;
 }
 
-.story-action {
+.mythoria-story-action {
   font-style: italic;
   color: #666;
   margin-bottom: 1rem;
 }
 
-.story-emotion {
+.mythoria-story-emotion {
   font-weight: 600;
   color: #ffa726;
 }
 
-.story-setting {
+.mythoria-story-setting {
   background-color: #f0f8e8;
   padding: 1rem;
   border-radius: 10px;
@@ -96,12 +98,12 @@
   color: #2e7d32;
 }
 
-.story-narration {
+.mythoria-story-narration {
   color: #2d3748;
   line-height: 2;
 }
 
-.story-illustration-caption {
+.mythoria-story-illustration-caption {
   text-align: center;
   font-style: italic;
   color: #666;

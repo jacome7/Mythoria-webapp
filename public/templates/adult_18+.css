@@ -10,7 +10,7 @@
   color: #1a202c;
 }
 
-.story-title {
+.mythoria-story-title {
   font-size: 1.625rem;
   font-weight: 700;
   text-align: center;
@@ -20,7 +20,7 @@
   padding-bottom: 0.5rem;
 }
 
-.story-subtitle {
+.mythoria-story-subtitle {
   font-size: 1rem;
   text-align: center;
   margin-bottom: 2rem;
@@ -28,7 +28,7 @@
   font-weight: 400;
 }
 
-.story-author {
+.mythoria-story-author {
   text-align: center;
   font-size: 0.9rem;
   margin-bottom: 2rem;
@@ -36,13 +36,13 @@
   font-style: italic;
 }
 
-.story-content {
+.mythoria-story-content {
   font-size: 1rem;
   line-height: 1.5;
   color: #1a202c;
 }
 
-.story-chapter {
+.mythoria-story-chapter {
   margin-bottom: 2rem;
   padding: 1.5rem;
   background-color: #f7fafc;
@@ -50,20 +50,20 @@
   border-left: 2px solid #e2e8f0;
 }
 
-.story-section {
+.mythoria-story-section {
   margin-bottom: 1.5rem;
   padding: 1rem;
   background-color: #edf2f7;
   border-radius: 4px;
 }
 
-.story-paragraph {
+.mythoria-story-paragraph {
   margin-bottom: 1rem;
   font-size: 1rem;
   line-height: 1.5;
 }
 
-.story-dialogue {
+.mythoria-story-dialogue {
   margin-bottom: 1rem;
   padding: 0.75rem;
   background-color: #f7fafc;
@@ -72,24 +72,24 @@
   font-size: 1rem;
 }
 
-.story-character-name {
+.mythoria-story-character-name {
   font-weight: 600;
   color: #2d3748;
   font-size: 1em;
 }
 
-.story-action {
+.mythoria-story-action {
   font-style: italic;
   color: #a0aec0;
   margin-bottom: 0.75rem;
 }
 
-.story-emotion {
+.mythoria-story-emotion {
   font-weight: 500;
   color: #744210;
 }
 
-.story-setting {
+.mythoria-story-setting {
   background-color: #f9f9f9;
   padding: 0.75rem;
   border-radius: 2px;
@@ -98,12 +98,12 @@
   border-left: 2px solid #d1d5db;
 }
 
-.story-narration {
+.mythoria-story-narration {
   color: #1a202c;
   line-height: 1.5;
 }
 
-.story-illustration-caption {
+.mythoria-story-illustration-caption {
   text-align: center;
   font-style: italic;
   color: #718096;

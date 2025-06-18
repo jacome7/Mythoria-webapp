@@ -301,7 +301,8 @@ export default function StoryReadingPage() {
                   >
                     <FiBook className="w-4 h-4 mr-2" />
                     Read
-                  </button>                  <button
+                  </button>
+                  <button
                     onClick={() => handleButtonClick('listen')}
                     className={`btn ${activeButton === 'listen' ? 'btn-primary' : 'btn-outline btn-primary'}`}
                     disabled={!story?.audiobookUri || story.audiobookUri.length === 0}
@@ -316,7 +317,8 @@ export default function StoryReadingPage() {
                   >
                     <FiPrinter className="w-4 h-4 mr-2" />
                     Print
-                  </button>                  <button
+                  </button>
+                  <button
                     onClick={() => handleButtonClick('share')}
                     className={`btn ${activeButton === 'share' ? 'btn-primary' : 'btn-outline btn-primary'}`}
                   >
@@ -333,7 +335,9 @@ export default function StoryReadingPage() {
                   </button>
                 </div>
               </div>
-            </div>            {/* Story Content */}
+            </div>
+            
+            {/* Story Content */}
             {activeButton === 'read' && (
               <div>
                 <StoryReader 
@@ -364,7 +368,8 @@ export default function StoryReadingPage() {
               <div className="container mx-auto px-4">
                 <div className="max-w-4xl mx-auto">
                   <div className="card bg-base-100 shadow-xl">
-                    <div className="card-body">                      <h2 className="card-title text-2xl mb-6">
+                    <div className="card-body">
+                      <h2 className="card-title text-2xl mb-6">
                         <FiVolume2 className="w-6 h-6 mr-2" />
                         Listen to &ldquo;{story.title}&rdquo;
                       </h2>
