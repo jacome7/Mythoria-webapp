@@ -42,11 +42,16 @@
       "uploadAudio": "Carregar Ficheiro de Áudio",
       "imageHelp": "Desenha a tua história, tira-lhe uma foto ou carrega uma imagem existente que a represente.",
       "audioHelp": "Grava a tua história diretamente ou carrega um ficheiro de áudio. Perfeito para quem prefere contar as suas histórias!",
-      "recordingHelp": "Conta a tua história! Fala claramente para o microfone.",
-      "reassurance": "Se escreveste texto ou carregaste uma imagem acima, a nossa IA irá extrair automaticamente personagens, cenários e temas. Caso contrário, os próximos passos vão guiar-te na criação da tua história passo a passo.",
+      "recordingHelp": "Conta a tua história! Fala claramente para o microfone.",      "reassurance": "Se escreveste texto ou carregaste uma imagem acima, a nossa IA irá extrair automaticamente personagens, cenários e temas. Caso contrário, os próximos passos vão guiar-te na criação da tua história passo a passo.",
       "processing": "A processar com IA...",
       "nextChapter": "Próximo Capítulo",
-      "next": "Seguinte"
+      "next": "Seguinte",
+      "loadingModal": {
+        "title": "✨ A Criar a Tua História",
+        "message": "Os nossos Oompa Loompas mágicos estão a trabalhar arduamente para preparar a tua história! Isto pode demorar um momento...",
+        "processingText": "A processar o teu conteúdo criativo...",
+        "pleaseWait": "Por favor aguarda enquanto fazemos a nossa magia! ✨"
+      }
     },    "step3": {
       "heading": "Capítulo 3 - As Personagens",
       "intro": "Quem são os heróis, amigos e criaturas mágicas da tua história? Cria personagens que darão vida à tua aventura!",

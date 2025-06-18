@@ -111,6 +111,82 @@
   text-decoration: underline;
 }
 
+/* Page breaks */
+.mythoria-page-break {
+  height: 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  margin: 2rem 0;
+}
+
+/* Covers */
+.mythoria-front-cover,
+.mythoria-back-cover {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.mythoria-cover-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+}
+
+/* Mythoria message */
+.mythoria-message {
+  text-align: center;
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin: 2rem 0;
+}
+
+.mythoria-message-text {
+  font-size: 1rem !important;
+  line-height: 1.5 !important;
+  margin-bottom: 0.5rem !important;
+  color: #4a5568 !important;
+}
+
+.mythoria-author-emphasis {
+  font-weight: 600;
+  color: #2c5aa0;
+}
+
+.mythoria-logo {
+  max-width: 200px;
+  height: auto;
+  margin-top: 1rem;
+}
+
+/* Dedicatory */
+.mythoria-dedicatory {
+  text-align: center;
+  font-style: italic;
+  font-size: 1.1rem !important;
+  line-height: 1.6 !important;
+  margin: 2rem 0 !important;
+  color: #4a5568 !important;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+}
+
+/* Credits */
+.mythoria-credits {
+  text-align: center;
+  margin-top: 3rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+}
+
+.mythoria-credits-text {
+  font-size: 0.9rem !important;
+  line-height: 1.4 !important;
+  color: #718096 !important;
+}
+
 /* Override any default styles that might be interfering */
 h1, h2, h3, h4, h5, h6 {
   margin: 0;

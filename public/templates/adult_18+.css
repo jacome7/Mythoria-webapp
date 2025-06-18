@@ -28,7 +28,7 @@
   font-weight: 400;
 }
 
-.mythoria-story-author {
+.mythoria-author-name {
   text-align: center;
   font-size: 0.9rem;
   margin-bottom: 2rem;
@@ -42,7 +42,7 @@
   color: #1a202c;
 }
 
-.mythoria-story-chapter {
+.mythoria-chapter {
   margin-bottom: 2rem;
   padding: 1.5rem;
   background-color: #f7fafc;
@@ -57,7 +57,7 @@
   border-radius: 4px;
 }
 
-.mythoria-story-paragraph {
+.mythoria-chapter-paragraph {
   margin-bottom: 1rem;
   font-size: 1rem;
   line-height: 1.5;
@@ -111,9 +111,163 @@
   font-size: 0.875rem;
 }
 
-h1, h2, h3 {
-  font-size: 1.25rem;
+/* Chapter titles */
+.mythoria-chapter-title {
+  font-size: 1.375rem !important;
+  font-weight: 600 !important;
+  margin: 2rem 0 1rem 0 !important;
+  line-height: 1.4 !important;
+  color: #2d3748 !important;
+}
+
+/* Chapter content */
+.mythoria-chapter-content {
+  margin-bottom: 1.5rem;
+}
+
+/* Chapter images */
+.mythoria-chapter-image {
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.mythoria-chapter-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+}
+
+/* Table of Contents */
+.mythoria-table-of-contents {
+  background-color: #f7fafc;
+  padding: 1.5rem;
+  border-radius: 4px;
+  margin: 2rem 0;
+  border: 1px solid #e2e8f0;
+}
+
+.mythoria-toc-title {
+  font-size: 1.125rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 1rem !important;
+  line-height: 1.4 !important;
+  color: #2d3748 !important;
+}
+
+.mythoria-toc-list {
+  list-style: none;
+  padding: 0;
+}
+
+.mythoria-toc-item {
+  margin-bottom: 0.5rem;
+}
+
+.mythoria-toc-link {
+  color: #4a5568;
+  text-decoration: none;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.mythoria-toc-link:hover {
   color: #2d3748;
-  margin-bottom: 1rem;
+  text-decoration: underline;
+}
+
+/* Page breaks */
+.mythoria-page-break {
+  height: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  margin: 2rem 0;
+}
+
+/* Covers */
+.mythoria-front-cover,
+.mythoria-back-cover {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.mythoria-cover-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+}
+
+/* Mythoria message */
+.mythoria-message {
+  text-align: center;
+  padding: 1.5rem;
+  background-color: #f7fafc;
+  border-radius: 4px;
+  margin: 2rem 0;
+  border: 1px solid #e2e8f0;
+}
+
+.mythoria-message-text {
+  font-size: 0.95rem !important;
+  line-height: 1.5 !important;
+  margin-bottom: 0.5rem !important;
+  color: #4a5568 !important;
+}
+
+.mythoria-author-emphasis {
   font-weight: 600;
+  color: #2d3748;
+}
+
+.mythoria-logo {
+  max-width: 180px;
+  height: auto;
+  margin-top: 1rem;
+}
+
+/* Dedicatory */
+.mythoria-dedicatory {
+  text-align: center;
+  font-style: italic;
+  font-size: 1rem !important;
+  line-height: 1.5 !important;
+  margin: 2rem 0 !important;
+  color: #4a5568 !important;
+  padding: 1rem;
+  background-color: #f7fafc;
+  border-radius: 4px;
+}
+
+/* Credits */
+.mythoria-credits {
+  text-align: center;
+  margin-top: 3rem;
+  padding: 1rem;
+  background-color: #f7fafc;
+  border-radius: 4px;
+}
+
+.mythoria-credits-text {
+  font-size: 0.875rem !important;
+  line-height: 1.4 !important;
+  color: #718096 !important;
+}
+
+/* Override any default styles that might be interfering */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+p {
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure our styles take precedence */
+[class*="mythoria-"] {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
 }

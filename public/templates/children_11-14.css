@@ -28,7 +28,7 @@
   font-weight: 500;
 }
 
-.mythoria-story-author {
+.mythoria-author-name {
   text-align: center;
   font-size: 1rem;
   margin-bottom: 2rem;
@@ -42,7 +42,7 @@
   color: #1a202c;
 }
 
-.mythoria-story-chapter {
+.mythoria-chapter {
   margin-bottom: 2rem;
   padding: 1.5rem;
   background-color: #f7fafc;
@@ -109,6 +109,13 @@
   color: #4a5568;
   margin: 1rem 0;
   font-size: 0.9rem;
+}
+
+/* Page breaks */
+.mythoria-page-break {
+  height: 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  margin: 2rem 0;
 }
 
 h1, h2, h3 {

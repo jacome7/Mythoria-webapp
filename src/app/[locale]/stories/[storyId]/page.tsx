@@ -198,14 +198,13 @@ export default function StoryReadingPage() {
         audio.src = '';
       });
     };  }, [audioElements]);
-
   const handleButtonClick = (button: 'read' | 'listen' | 'print' | 'share' | 'edit') => {
-    setActiveButton(button);
-    
     if (button === 'share') {
       setShowShareModal(true);
       return;
     }
+    
+    setActiveButton(button);
     
     // Stop any playing audio when switching away from listen mode
     if (button !== 'listen' && currentlyPlaying !== null) {
@@ -319,10 +318,9 @@ export default function StoryReadingPage() {
                   >
                     <FiPrinter className="w-4 h-4 mr-2" />
                     Print
-                  </button>
-                  <button
+                  </button>                  <button
                     onClick={() => handleButtonClick('share')}
-                    className={`btn ${activeButton === 'share' ? 'btn-primary' : 'btn-outline btn-primary'}`}
+                    className="btn btn-outline btn-primary"
                   >
                     <FiShare2 className="w-4 h-4 mr-2" />
                     Share

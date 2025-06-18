@@ -43,7 +43,7 @@
   color: #333;
 }
 
-.mythoria-mythoria-chapter {
+.mythoria-chapter {
   margin-bottom: 2.5rem !important;
   padding: 1.5rem;
   background-color: white;
@@ -245,4 +245,38 @@ p {
 /* Ensure our styles take precedence */
 [class*="mythoria-"] {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+/* Covers */
+.mythoria-front-cover,
+.mythoria-back-cover {
+  text-align: center;
+  margin: 2.5rem 0;
+  padding: 1.5rem;
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.mythoria-cover-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 15px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+/* Credits */
+.mythoria-credits {
+  text-align: center;
+  margin-top: 3rem;
+  padding: 1.5rem;
+  background-color: #e6fffa;
+  border-radius: 15px;
+  border: 2px solid #38b2ac;
+}
+
+.mythoria-credits-text {
+  font-size: 1rem !important;
+  line-height: 1.6 !important;
+  color: #666 !important;
 }

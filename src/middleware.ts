@@ -17,7 +17,6 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
       pathname.match(/^\/[a-z]{2}-[A-Z]{2}\/sign-up/) ||
       pathname.match(/^\/[a-z]{2}-[A-Z]{2}\/p\//)) {  // Only public story routes are excluded
     
-    console.log(`[Middleware] Skipping Clerk for: ${pathname}`);
     const response = NextResponse.next();
     response.headers.set('x-clerk-clock-skew-seconds', '600');
     return response;

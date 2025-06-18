@@ -39,29 +39,14 @@ export default function Step2Page() {
 
   const [activeTab, setActiveTab] = useState<'image' | 'audio' | 'text'>('text');
   const [storyText, setStoryText] = useState('');
-  const [storyLanguage, setStoryLanguage] = useState(getDefaultLanguage());
-  const [uploadedImage, setUploadedImage] = useState<File | null>(null);const [uploadedAudio, setUploadedAudio] = useState<File | null>(null);
+  const [storyLanguage, setStoryLanguage] = useState(getDefaultLanguage());  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+  const [uploadedAudio, setUploadedAudio] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [audioPreview, setAudioPreview] = useState<string | null>(null); const [isCapturing, setIsCapturing] = useState(false);
+  const [audioPreview, setAudioPreview] = useState<string | null>(null);
+  const [isCapturing, setIsCapturing] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isCreatingStory, setIsCreatingStory] = useState(false);
-  // Debug modal states
-  const [showDebugModal, setShowDebugModal] = useState(false);  const [debugRequest, setDebugRequest] = useState<{
-    userDescription: string;
-    imageData: string | null;
-    audioData: string | null;
-    storyId: string;
-    existingCharacters?: unknown[];
-  } | null>(null);
-  const [debugResponse, setDebugResponse] = useState<{
-    success?: boolean;
-    error?: boolean;
-    message?: string;
-    data?: unknown;
-    details?: unknown;
-  } | null>(null);
-  const [isProcessingGenAI, setIsProcessingGenAI] = useState(false);
-  const [storyId, setStoryId] = useState<string | null>(null);
+  const [showLoadingModal, setShowLoadingModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -199,16 +184,19 @@ export default function Step2Page() {
   };
   const hasContent = () => {
     return storyText.trim() !== '' || uploadedImage !== null || uploadedAudio !== null;
-  }; const handleNextStep = async () => {
+  };  const handleNextStep = async () => {
     try {
       setIsCreatingStory(true);
+      setShowLoadingModal(true);
 
       // Get the current authenticated user
       const userResponse = await fetch('/api/auth/me');
       if (!userResponse.ok) {
         throw new Error('Failed to get user information');
       }
-      const userData = await userResponse.json();      // Create a new story in the database
+      const userData = await userResponse.json();
+
+      // Create a new story in the database
       const response = await fetch('/api/stories', {
         method: 'POST',
         headers: {
@@ -228,16 +216,13 @@ export default function Step2Page() {
       }
 
       const { story } = await response.json();
-      setStoryId(story.storyId);
 
       // Store the story ID in localStorage for use in subsequent steps
-      localStorage.setItem('currentStoryId', story.storyId);      // If user provided text content OR image OR audio, show debug modal for GenAI processing
-      if (storyText.trim() || uploadedImage || uploadedAudio) {
-        console.log('Preparing GenAI debug modal...');
+      localStorage.setItem('currentStoryId', story.storyId);
 
-        // Get existing characters for this author
-        const charactersResponse = await fetch('/api/characters');
-        const existingCharacters = charactersResponse.ok ? (await charactersResponse.json()).characters || [] : [];
+      // If user provided text content OR image OR audio, process with GenAI
+      if (storyText.trim() || uploadedImage || uploadedAudio) {
+        console.log('Processing content with GenAI...');
 
         // Convert image to base64 if present
         let imageBase64 = null;
@@ -259,19 +244,36 @@ export default function Step2Page() {
           });
         }
 
-        // Prepare the debug request data
-        const requestData = {
-          userDescription: storyText || (uploadedImage ? "Analyze the image to create a story" : "Analyze the audio to create a story"),
-          imageData: imageBase64,
-          audioData: audioBase64,
-          storyId: story.storyId,
-          existingCharacters: existingCharacters
-        };
+        // Send to GenAI for processing
+        const genaiResponse = await fetch('/api/stories/genai-structure', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userDescription: storyText || (uploadedImage ? "Analyze the image to create a story" : "Analyze the audio to create a story"),
+            imageData: imageBase64,
+            audioData: audioBase64,
+            storyId: story.storyId,
+            userLanguage: storyLanguage, // Pass the user's selected language
+          }),
+        });
 
-        setDebugRequest(requestData);
-        setDebugResponse(null);
-        setIsCreatingStory(false);
-        setShowDebugModal(true);        return; // Don't proceed to step 3 yet
+        const responseData = await genaiResponse.json();
+
+        if (genaiResponse.ok) {
+          console.log('GenAI processing successful:', responseData);
+          
+          // Store the GenAI results for potential use in subsequent steps
+          localStorage.setItem('genaiResults', JSON.stringify({
+            story: responseData.story,
+            characters: responseData.characters,
+            processed: true
+          }));
+        } else {
+          console.error('GenAI processing failed:', responseData);
+          // Continue anyway - user can still create story manually
+        }
       }
 
       // Store the story content data for use in step-3
@@ -282,9 +284,6 @@ export default function Step2Page() {
         hasAudio: uploadedAudio !== null,
         activeTab: activeTab
       }));
-
-      console.log('Story created successfully:', story.storyId);
-
       // Navigate to step 3
       router.push('/tell-your-story/step-3');
 
@@ -294,88 +293,8 @@ export default function Step2Page() {
       alert(`Failed to create story: ${errorMessage}. Please try again.`);
     } finally {
       setIsCreatingStory(false);
+      setShowLoadingModal(false);
     }
-  };
-
-  // Debug modal functions
-  const handleSendToGenAI = async () => {
-    if (!debugRequest || !storyId) return;
-
-    try {
-      setIsProcessingGenAI(true);      console.log('Sending to GenAI:', debugRequest);      const genaiResponse = await fetch('/api/stories/genai-structure', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userDescription: debugRequest.userDescription,
-          imageData: debugRequest.imageData,
-          audioData: debugRequest.audioData,
-          storyId: storyId,
-          userLanguage: storyLanguage, // Pass the user's selected language
-        }),
-      });
-
-      const responseData = await genaiResponse.json();
-
-      if (!genaiResponse.ok) {
-        console.error('GenAI processing failed:', responseData);
-        setDebugResponse({
-          error: true,
-          message: responseData.error || 'GenAI processing failed',
-          details: responseData
-        });
-      } else {
-        console.log('GenAI processing successful:', responseData);
-        setDebugResponse({
-          success: true,
-          data: responseData
-        });
-
-        // Store the GenAI results for potential use in subsequent steps
-        localStorage.setItem('genaiResults', JSON.stringify({
-          story: responseData.story,
-          characters: responseData.characters,
-          processed: true
-        }));
-      }
-
-    } catch (error) {
-      console.error('Error calling GenAI:', error);
-      setDebugResponse({
-        error: true,
-        message: error instanceof Error ? error.message : 'Unknown error',
-        details: error
-      });
-    } finally {
-      setIsProcessingGenAI(false);
-    }
-  };
-  const handleContinueToStep3 = () => {
-    // Store the story content data for use in step-3
-    localStorage.setItem('step2Data', JSON.stringify({
-      text: storyText,
-      language: storyLanguage,
-      hasImage: uploadedImage !== null,
-      hasAudio: uploadedAudio !== null,
-      activeTab: activeTab
-    }));
-
-    setShowDebugModal(false);
-    router.push('/tell-your-story/step-3');
-  };
-  const handleSkipGenAI = () => {
-    // Store the story content data for use in step-3
-    localStorage.setItem('step2Data', JSON.stringify({
-      text: storyText,
-      language: storyLanguage,
-      hasImage: uploadedImage !== null,
-      hasAudio: uploadedAudio !== null,
-      activeTab: activeTab
-    }));
-
-    setShowDebugModal(false);
-    router.push('/tell-your-story/step-3');
   };
 
   return (
@@ -703,84 +622,27 @@ export default function Step2Page() {
             </div>
           </div>
         </div>
-
-        {/* Debug Modal */}
-        {showDebugModal && (
+        
+        {/* Loading Modal */}
+        {showLoadingModal && (
           <div className="modal modal-open">
-            <div className="modal-box max-w-4xl">
-              <h3 className="font-bold text-lg mb-4">🔍 GenAI Debug Console</h3>              {/* Request Section */}
-              <div className="mb-6">                <h4 className="font-semibold text-md mb-2">
-                  📤 Request to GenAI:
-                  {debugRequest?.imageData && <span className="text-info ml-2">📷 Image Included</span>}
-                  {debugRequest?.audioData && <span className="text-success ml-2">🎤 Audio Included</span>}
-                </h4>
-                <div className="bg-base-200 p-4 rounded-lg overflow-auto max-h-40">
-                  <pre className="text-xs whitespace-pre-wrap">
-                    {JSON.stringify({
-                      ...debugRequest,
-                      imageData: debugRequest?.imageData ? '[Base64 Image Data - Hidden for readability]' : undefined,
-                      audioData: debugRequest?.audioData ? '[Base64 Audio Data - Hidden for readability]' : undefined
-                    }, null, 2)}
-                  </pre>
+            <div className="modal-box max-w-md">
+              <div className="text-center space-y-6">
+                <h3 className="font-bold text-xl">{t('loadingModal.title')}</h3>
+                
+                {/* Loading Animation */}
+                <div className="flex justify-center">
+                  <span className="loading loading-spinner loading-lg text-primary"></span>
                 </div>
-              </div>
-
-              {/* Send Button */}
-              {!debugResponse && (
-                <div className="mb-6 text-center">                  <button
-                  className={`btn btn-primary btn-lg ${isProcessingGenAI ? 'loading' : ''}`}
-                  onClick={handleSendToGenAI}
-                  disabled={isProcessingGenAI}
-                >                  {isProcessingGenAI
-                    ? 'Processing...'
-                    : debugRequest?.imageData
-                      ? '🚀 Analyze Image with GenAI'
-                      : debugRequest?.audioData
-                        ? '🚀 Analyze Audio with GenAI'
-                        : '🚀 Send to GenAI'
-                  }
-                </button>
+                
+                <div className="space-y-3">
+                  <p className="text-base">{t('loadingModal.message')}</p>
+                  <p className="text-sm text-gray-600">{t('loadingModal.processingText')}</p>
+                  <p className="text-sm font-medium text-primary">{t('loadingModal.pleaseWait')}</p>
                 </div>
-              )}
-
-              {/* Response Section */}
-              {debugResponse && (
-                <div className="mb-6">
-                  <h4 className="font-semibold text-md mb-2">
-                    📥 Response from GenAI:
-                    {debugResponse.success && <span className="text-success ml-2">✅ Success</span>}
-                    {debugResponse.error && <span className="text-error ml-2">❌ Error</span>}
-                  </h4>
-                  <div className="bg-base-200 p-4 rounded-lg overflow-auto max-h-60">
-                    <pre className="text-xs whitespace-pre-wrap">
-                      {JSON.stringify(debugResponse, null, 2)}
-                    </pre>
-                  </div>
-                </div>
-              )}
-
-              {/* Action Buttons */}
-              <div className="modal-action">
-                <button
-                  className="btn btn-outline"
-                  onClick={handleSkipGenAI}
-                >
-                  Skip GenAI & Continue
-                </button>
-                {debugResponse && (
-                  <button
-                    className="btn btn-primary"
-                    onClick={handleContinueToStep3}
-                  >
-                    Continue to Step 3
-                  </button>
-                )}
-                <button
-                  className="btn btn-ghost"
-                  onClick={() => setShowDebugModal(false)}
-                >
-                  Close Debug
-                </button>
+                
+                {/* Fun Oompa Loompa visual */}
+                <div className="text-6xl animate-bounce">🍫</div>
               </div>
             </div>
           </div>
