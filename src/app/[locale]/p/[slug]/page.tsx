@@ -1,0 +1,282 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
+import { FiLoader, FiAlertCircle, FiUser, FiCalendar, FiTag } from 'react-icons/fi';
+import StoryReader from '@/components/StoryReader';
+import Head from 'next/head';
+
+interface PublicStoryData {
+  success: boolean;
+  story: {
+    storyId: string;
+    title: string;
+    synopsis?: string;
+    htmlUri?: string;
+    pdfUri?: string;
+    audiobookUri?: any;
+    targetAudience?: string;
+    graphicalStyle?: string;
+    novelStyle?: string;
+    plotDescription?: string;
+    createdAt: string;
+    isPublic: boolean;
+    author: {
+      displayName: string;
+    };
+  };
+  accessLevel: 'public';
+  error?: string;
+}
+
+export default function PublicStoryPage() {
+  const params = useParams();
+  const router = useRouter();
+  const locale = useLocale();
+  const slug = params.slug as string;
+  
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<PublicStoryData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [storyContent, setStoryContent] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!slug) return;    const fetchPublicStory = async () => {
+      try {
+        console.log('[Public Page] Fetching story for slug:', slug);
+        const response = await fetch(`/api/public/${slug}`);
+        console.log('[Public Page] Response status:', response.status);
+        console.log('[Public Page] Response ok:', response.ok);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('[Public Page] Response error:', errorText);
+          throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        }
+        
+        const result = await response.json();
+        console.log('[Public Page] Response data:', result);        if (result.success) {
+          setData(result);
+          
+          // Fetch story content through our proxy API to avoid CORS issues
+          if (result.story.htmlUri) {
+            try {
+              console.log('[Public Page] Fetching content through proxy API...');
+              const contentResponse = await fetch(`/api/public/${slug}/content`);
+              if (contentResponse.ok) {
+                const htmlContent = await contentResponse.text();
+                console.log('[Public Page] Content fetched successfully, length:', htmlContent.length);
+                setStoryContent(htmlContent);
+              } else {
+                console.error('[Public Page] Failed to fetch content through proxy:', contentResponse.status);
+                setError('Failed to load story content');
+              }
+            } catch (err) {
+              console.error('Error fetching story content through proxy:', err);
+              setError('Failed to load story content');
+            }
+          } else {
+            console.log('[Public Page] No HTML URI available');
+            setError('Story content not available');
+          }} else {
+          console.error('[Public Page] API returned error:', result.error);
+          setError(result.error || 'Story not found');
+        }      } catch (err) {
+        console.error('[Public Page] Error fetching public story:', err);
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+        setError(`Failed to load story: ${errorMessage}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPublicStory();
+  }, [slug]);
+  // Generate metadata for the page
+  useEffect(() => {
+    if (data?.story) {
+      const story = data.story;
+      document.title = `${story.title} | Mythoria`;
+      
+      // Set meta description
+      const metaDescription = document.querySelector('meta[name="description"]');
+      const description = story.synopsis || story.plotDescription || `Read "${story.title}" on Mythoria`;
+      if (metaDescription) {
+        metaDescription.setAttribute('content', description);
+      } else {
+        const meta = document.createElement('meta');
+        meta.name = 'description';
+        meta.content = description;
+        document.head.appendChild(meta);
+      }
+
+      // Set Open Graph tags
+      const setMetaTag = (property: string, content: string) => {
+        let meta = document.querySelector(`meta[property="${property}"]`);
+        if (!meta) {
+          meta = document.createElement('meta');
+          meta.setAttribute('property', property);
+          document.head.appendChild(meta);
+        }
+        meta.setAttribute('content', content);
+      };
+
+      const baseUrl = window.location.origin;
+      setMetaTag('og:title', story.title);
+      setMetaTag('og:description', description);
+      setMetaTag('og:type', 'article');
+      setMetaTag('og:url', window.location.href);
+      setMetaTag('og:site_name', 'Mythoria');
+      setMetaTag('og:image', `${baseUrl}/api/og/story/${slug}`);
+      setMetaTag('og:image:width', '1200');
+      setMetaTag('og:image:height', '630');
+      setMetaTag('og:image:alt', `Cover image for "${story.title}"`);
+
+      // Twitter Card tags
+      const setTwitterTag = (name: string, content: string) => {
+        let meta = document.querySelector(`meta[name="${name}"]`);
+        if (!meta) {
+          meta = document.createElement('meta');
+          meta.setAttribute('name', name);
+          document.head.appendChild(meta);
+        }
+        meta.setAttribute('content', content);
+      };
+
+      setTwitterTag('twitter:card', 'summary_large_image');
+      setTwitterTag('twitter:title', story.title);
+      setTwitterTag('twitter:description', description);
+      setTwitterTag('twitter:image', `${baseUrl}/api/og/story/${slug}`);
+    }
+  }, [data, slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <FiLoader className="animate-spin text-4xl text-primary mx-auto" />
+          <h2 className="text-xl font-semibold">Loading story...</h2>
+          <p className="text-gray-600">Please wait while we load the story</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4 max-w-md mx-auto px-4">
+          <FiAlertCircle className="text-4xl text-red-500 mx-auto" />
+          <h2 className="text-xl font-semibold text-gray-900">Story not found</h2>
+          <p className="text-gray-600">{error || 'The story you\'re looking for doesn\'t exist or is no longer public.'}</p>
+          
+          <div className="space-y-2">
+            <a
+              href={`/${locale}`}
+              className="btn btn-primary btn-sm"
+            >
+              Go to Homepage
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const { story } = data;
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="container mx-auto px-4 py-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h1 className="text-3xl font-bold text-gray-900">{story.title}</h1>
+              <span className="badge badge-success">Public Story</span>
+            </div>
+            
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+              <div className="flex items-center gap-1">
+                <FiUser />
+                <span>by {story.author.displayName}</span>
+              </div>
+              
+              <div className="flex items-center gap-1">
+                <FiCalendar />
+                <span>{new Date(story.createdAt).toLocaleDateString()}</span>
+              </div>
+              
+              {story.targetAudience && (
+                <div className="flex items-center gap-1">
+                  <FiTag />
+                  <span>{story.targetAudience.replace('_', ' ')}</span>
+                </div>
+              )}
+              
+              {story.novelStyle && (
+                <div className="flex items-center gap-1">
+                  <FiTag />
+                  <span className="capitalize">{story.novelStyle.replace('_', ' ')}</span>
+                </div>
+              )}
+            </div>
+
+            {(story.synopsis || story.plotDescription) && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                <h3 className="font-medium text-gray-900 mb-2">Synopsis</h3>
+                <p className="text-gray-700 leading-relaxed">
+                  {story.synopsis || story.plotDescription}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Story Content */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          {storyContent ? (            <div className="bg-white rounded-lg shadow-sm border">
+              <StoryReader 
+                storyContent={storyContent}
+                storyMetadata={{
+                  targetAudience: story.targetAudience,
+                  graphicalStyle: story.graphicalStyle,
+                  title: story.title
+                }}
+              />
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
+              <FiAlertCircle className="text-4xl text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Story content not available</h3>
+              <p className="text-gray-600">
+                The story content is not currently available for viewing.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="bg-white border-t mt-12">
+        <div className="container mx-auto px-4 py-6">
+          <div className="max-w-4xl mx-auto text-center text-sm text-gray-600">
+            <p>
+              This story was created with{' '}
+              <a 
+                href={`/${locale}`} 
+                className="text-primary hover:underline font-medium"
+              >
+                Mythoria
+              </a>
+              {' '}• Create your own magical stories today!
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

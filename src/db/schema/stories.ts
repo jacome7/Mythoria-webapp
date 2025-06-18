@@ -1,6 +1,6 @@
-import { pgTable, uuid, varchar, timestamp, text, jsonb, integer, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, timestamp, text, jsonb, integer, primaryKey, boolean } from "drizzle-orm/pg-core";
 import { authors } from './authors';
-import { storyStatusEnum, runStatusEnum, stepStatusEnum, targetAudienceEnum, novelStyleEnum, graphicalStyleEnum } from './enums';
+import { storyStatusEnum, runStatusEnum, stepStatusEnum, targetAudienceEnum, novelStyleEnum, graphicalStyleEnum, accessLevelEnum, collaboratorRoleEnum } from './enums';
 
 // -----------------------------------------------------------------------------
 // Stories domain
@@ -12,7 +12,8 @@ export const stories = pgTable("stories", {
   authorId: uuid("author_id").notNull().references(() => authors.authorId, { onDelete: 'cascade' }),
   title: varchar("title", { length: 255 }).notNull(),
   plotDescription: text("plot_description"),
-  storyLanguage: varchar("story_language", { length: 5 }).default('en-US').notNull(),  synopsis: text("synopsis"),
+  storyLanguage: varchar("story_language", { length: 5 }).default('en-US').notNull(),
+  synopsis: text("synopsis"),
   place: text("place"), // Setting of the story (real or imaginary)
   additionalRequests: text("additionalRequests"), // Optional text area for mentioning products, companies, or specific details to include.
   targetAudience: targetAudienceEnum("target_audience"),
@@ -21,10 +22,15 @@ export const stories = pgTable("stories", {
   status: storyStatusEnum("status").default('draft'),
   features: jsonb("features"), // {"ebook":true,"printed":false,"audiobook":true}
   deliveryAddress: jsonb("delivery_address"), // Delivery address for printed books
-  dedicationMessage: text("dedication_message"), // Personalized dedication message  mediaLinks: jsonb("media_links"), // {"cover":"...","pdf":"...","audio":"..."}
+  dedicationMessage: text("dedication_message"), // Personalized dedication message
+  mediaLinks: jsonb("media_links"), // {"cover":"...","pdf":"...","audio":"..."}
   htmlUri: text("html_uri"), // Internal Google Storage link to access the HTML file
   pdfUri: text("pdf_uri"), // Internal Google Storage link to access the PDF file
   audiobookUri: jsonb("audiobook_uri"), // JSON object with internal GS links to each chapter audio file
+  // Sharing functionality fields
+  slug: text("slug"), // Human-readable slug for public URLs
+  isPublic: boolean("is_public").default(false), // Whether story is publicly accessible
+  chapterCount: integer("chapter_count").default(6).notNull(),
   // Story generation workflow convenience columns
   storyGenerationStatus: runStatusEnum("story_generation_status"),
   storyGenerationCompletedPercentage: integer("story_generation_completed_percentage").default(0),
@@ -70,6 +76,27 @@ export const storyGenerationSteps = pgTable("story_generation_steps", {
   pk: primaryKey({ columns: [table.runId, table.stepName] })
 }));
 
+// Share links for private story access
+export const shareLinks = pgTable("share_links", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  storyId: uuid("story_id").notNull().references(() => stories.storyId, { onDelete: 'cascade' }),
+  accessLevel: accessLevelEnum("access_level").notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  revoked: boolean("revoked").default(false).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// Story collaborators for shared editing
+export const storyCollaborators = pgTable("story_collaborators", {
+  storyId: uuid("story_id").notNull().references(() => stories.storyId, { onDelete: 'cascade' }),
+  userId: uuid("user_id").notNull().references(() => authors.authorId, { onDelete: 'cascade' }),
+  role: collaboratorRoleEnum("role").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+}, (table) => [
+  primaryKey({ columns: [table.storyId, table.userId] }),
+]);
+
 // -----------------------------------------------------------------------------
 // Types
 // -----------------------------------------------------------------------------
@@ -79,8 +106,8 @@ export type NewStory = typeof stories.$inferInsert;
 export type StoryVersion = typeof storyVersions.$inferSelect;
 export type NewStoryVersion = typeof storyVersions.$inferInsert;
 
-export type StoryGenerationRun = typeof storyGenerationRuns.$inferSelect;
-export type NewStoryGenerationRun = typeof storyGenerationRuns.$inferInsert;
+export type ShareLink = typeof shareLinks.$inferSelect;
+export type NewShareLink = typeof shareLinks.$inferInsert;
 
-export type StoryGenerationStep = typeof storyGenerationSteps.$inferSelect;
-export type NewStoryGenerationStep = typeof storyGenerationSteps.$inferInsert;
+export type StoryCollaborator = typeof storyCollaborators.$inferSelect;
+export type NewStoryCollaborator = typeof storyCollaborators.$inferInsert;

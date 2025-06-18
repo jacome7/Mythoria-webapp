@@ -10,6 +10,13 @@ export async function publishStoryRequest(message: unknown) {
     throw new Error('PUBSUB_TOPIC environment variable is not set');
   }
   
+  // Debug logging to identify the exact configuration being used
+  console.log('🔍 DEBUG: Environment variables:');
+  console.log('  - GOOGLE_CLOUD_PROJECT_ID:', process.env.GOOGLE_CLOUD_PROJECT_ID);
+  console.log('  - PUBSUB_TOPIC:', process.env.PUBSUB_TOPIC);
+  console.log('  - Resolved topic name:', topic);
+  console.log('  - PubSub client project ID:', pubsub.projectId);
+  
   console.log('📢 PUBSUB: Publishing message to topic:', topic);
   console.log('📢 PUBSUB: Message payload:', JSON.stringify(message, null, 2));
   

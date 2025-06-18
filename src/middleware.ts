@@ -6,15 +6,18 @@ import { NextRequest, NextResponse } from 'next/server';
 const intlMiddleware = createMiddleware(routing);
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
-  // Skip internationalization for API routes, admin portal, auth pages, and test pages
-  if (req.nextUrl.pathname.startsWith('/api/') || 
-      req.nextUrl.pathname.startsWith('/portaldegestao') ||
-      req.nextUrl.pathname.startsWith('/v1/') ||
-      req.nextUrl.pathname.startsWith('/sign-in') ||
-      req.nextUrl.pathname.startsWith('/sign-up') ||
-      req.nextUrl.pathname.match(/^\/[a-z]{2}-[A-Z]{2}\/sign-in/) ||
-      req.nextUrl.pathname.match(/^\/[a-z]{2}-[A-Z]{2}\/sign-up/)) {
+  const pathname = req.nextUrl.pathname;
+    // Skip clerk middleware for certain routes
+  if (pathname.startsWith('/api/') || 
+      pathname.startsWith('/portaldegestao') ||
+      pathname.startsWith('/v1/') ||
+      pathname.startsWith('/sign-in') ||
+      pathname.startsWith('/sign-up') ||
+      pathname.match(/^\/[a-z]{2}-[A-Z]{2}\/sign-in/) ||
+      pathname.match(/^\/[a-z]{2}-[A-Z]{2}\/sign-up/) ||
+      pathname.match(/^\/[a-z]{2}-[A-Z]{2}\/p\//)) {  // Only public story routes are excluded
     
+    console.log(`[Middleware] Skipping Clerk for: ${pathname}`);
     const response = NextResponse.next();
     response.headers.set('x-clerk-clock-skew-seconds', '600');
     return response;

@@ -17,6 +17,10 @@ export const creditEventTypeEnum = pgEnum("credit_event_type", [
   'promotion'
 ]);
 
+// Sharing functionality enums
+export const accessLevelEnum = pgEnum("access_level", ['view', 'edit']);
+export const collaboratorRoleEnum = pgEnum("collaborator_role", ['editor', 'viewer']);
+
 // Story generation workflow enums
 export const runStatusEnum = pgEnum("run_status", [
   'queued',

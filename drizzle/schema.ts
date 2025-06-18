@@ -14,6 +14,10 @@ export const storyRating = pgEnum("story_rating", ['1', '2', '3', '4', '5'])
 export const storyStatus = pgEnum("story_status", ['draft', 'writing', 'published'])
 export const targetAudience = pgEnum("target_audience", ['children_0-2', 'children_3-6', 'children_7-10', 'children_11-14', 'young_adult_15-17', 'adult_18+', 'all_ages'])
 
+// Add new enums for sharing functionality
+export const accessLevel = pgEnum("access_level", ['view', 'edit'])
+export const collaboratorRole = pgEnum("collaborator_role", ['editor', 'viewer'])
+
 
 export const leads = pgTable("leads", {
 	leadId: uuid("lead_id").defaultRandom().primaryKey().notNull(),
@@ -255,6 +259,9 @@ export const stories = pgTable("stories", {
 	pdfUri: text("pdf_uri"),
 	audiobookUri: jsonb("audiobook_uri"),
 	chapterCount: integer("chapter_count").default(6).notNull(),
+	// Sharing functionality fields
+	slug: text("slug"),
+	isPublic: boolean("is_public").default(false),
 }, (table) => [
 	foreignKey({
 			columns: [table.authorId],
@@ -384,3 +391,41 @@ export const tokenUsageTracking = pgTable("token_usage_tracking", {
 	inputPromptJson: jsonb("input_prompt_json").notNull(),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 });
+
+// Sharing functionality tables
+export const shareLinks = pgTable("share_links", {
+	id: uuid("id").defaultRandom().primaryKey().notNull(),
+	storyId: uuid("story_id").notNull(),
+	accessLevel: accessLevel("access_level").notNull(),
+	expiresAt: timestamp("expires_at", { withTimezone: true, mode: 'string' }).default(sql`NOW() + INTERVAL '30 days'`).notNull(),
+	revoked: boolean("revoked").default(false).notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	foreignKey({
+		columns: [table.storyId],
+		foreignColumns: [stories.storyId],
+		name: "share_links_story_id_stories_story_id_fk"
+	}).onDelete("cascade"),
+]);
+
+export const storyCollaborators = pgTable("story_collaborators", {
+	storyId: uuid("story_id").notNull(),
+	userId: uuid("user_id").notNull(),
+	role: collaboratorRole("role").notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	primaryKey({
+		columns: [table.storyId, table.userId],
+	}),
+	foreignKey({
+		columns: [table.storyId],
+		foreignColumns: [stories.storyId],
+		name: "story_collaborators_story_id_stories_story_id_fk"
+	}).onDelete("cascade"),
+	foreignKey({
+		columns: [table.userId],
+		foreignColumns: [authors.authorId],
+		name: "story_collaborators_user_id_authors_author_id_fk"
+	}).onDelete("cascade"),
+]);

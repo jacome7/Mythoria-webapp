@@ -4,13 +4,14 @@ import { generateStructuredStory } from './genai-story-structurer';
 async function testGenAI() {
   try {
     console.log('Testing GenAI story structurer...');
-    
-    const result = await generateStructuredStory(
+      const result = await generateStructuredStory(
       "A brave princess must save her kingdom from an evil dragon that has been terrorizing the villages.",
       [],
       null,
       null,
-      'en-US'
+      'en-US',
+      'test-author-id', // Test author ID for token tracking
+      'test-story-id'   // Test story ID for token tracking
     );
     
     console.log('Success! Generated structured story:');

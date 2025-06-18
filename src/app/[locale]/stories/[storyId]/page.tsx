@@ -18,6 +18,7 @@ import {
 } from 'react-icons/fi';
 import StoryReader from '../../../../components/StoryReader';
 import StoryRating from '../../../../components/StoryRating';
+import ShareModal from '../../../../components/ShareModal';
 
 interface Story {
   storyId: string;
@@ -43,9 +44,9 @@ export default function StoryReadingPage() {
   const storyId = params.storyId as string;
   const [story, setStory] = useState<Story | null>(null);
   const [storyContent, setStoryContent] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);  const [error, setError] = useState<string | null>(null);
   const [activeButton, setActiveButton] = useState<'read' | 'listen' | 'print' | 'share' | 'edit'>('read');
+  const [showShareModal, setShowShareModal] = useState(false);
   
   // Audio playback states
   const [currentlyPlaying, setCurrentlyPlaying] = useState<number | null>(null);
@@ -194,10 +195,15 @@ export default function StoryReadingPage() {
         audio.pause();
         audio.src = '';
       });
-    };
-  }, [audioElements]);
+    };  }, [audioElements]);
+
   const handleButtonClick = (button: 'read' | 'listen' | 'print' | 'share' | 'edit') => {
     setActiveButton(button);
+    
+    if (button === 'share') {
+      setShowShareModal(true);
+      return;
+    }
     
     // Stop any playing audio when switching away from listen mode
     if (button !== 'listen' && currentlyPlaying !== null) {
@@ -218,10 +224,6 @@ export default function StoryReadingPage() {
       case 'print':
         // TODO: Implement print functionality
         console.log('Print functionality not implemented yet');
-        break;
-      case 'share':
-        // TODO: Implement sharing functionality
-        console.log('Share functionality not implemented yet');
         break;
       case 'edit':
         // TODO: Navigate to edit page
@@ -314,11 +316,9 @@ export default function StoryReadingPage() {
                   >
                     <FiPrinter className="w-4 h-4 mr-2" />
                     Print
-                  </button>
-                  <button
+                  </button>                  <button
                     onClick={() => handleButtonClick('share')}
                     className={`btn ${activeButton === 'share' ? 'btn-primary' : 'btn-outline btn-primary'}`}
-                    disabled
                   >
                     <FiShare2 className="w-4 h-4 mr-2" />
                     Share
@@ -496,11 +496,24 @@ export default function StoryReadingPage() {
                 >
                   ← Back to My Stories
                 </button>
-              </div>
-            </div>
+              </div>            </div>
           </div>
         ) : null}
       </SignedIn>
+
+      {/* Share Modal */}
+      {story && (
+        <ShareModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          storyId={story.storyId}
+          storyTitle={story.title}
+          onShareSuccess={(shareData) => {
+            console.log('Share successful:', shareData);
+            // You can add additional success handling here
+          }}
+        />
+      )}
     </div>
   );
 }

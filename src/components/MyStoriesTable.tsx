@@ -12,6 +12,7 @@ import {
   FiChevronDown,
   FiBook
 } from 'react-icons/fi';
+import ShareModal from './ShareModal';
 
 interface Story {
   storyId: string;
@@ -28,10 +29,13 @@ type SortDirection = 'asc' | 'desc';
 
 export default function MyStoriesTable() {
   const t = useTranslations('MyStoriesPage');
-  const locale = useLocale();
-  const [stories, setStories] = useState<Story[]>([]);
-  const [loading, setLoading] = useState(true);  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const tShare = useTranslations('Share');
+  const locale = useLocale();const [stories, setStories] = useState<Story[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [storyToDelete, setStoryToDelete] = useState<Story | null>(null);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [storyToShare, setStoryToShare] = useState<Story | null>(null);
   
   // Sorting state
   const [sortField, setSortField] = useState<SortField>('updatedAt');
@@ -76,17 +80,9 @@ export default function MyStoriesTable() {
     } catch (error) {
       console.error('Error deleting story:', error);
     }
-  };
-  const handleShare = async (story: Story) => {
-    // Simple share functionality - copy link to clipboard
-    const shareUrl = `${window.location.origin}/stories/${story.storyId}`;
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      // You could add a toast notification here
-      alert('Story link copied to clipboard!');
-    } catch (error) {
-      console.error('Error copying to clipboard:', error);
-    }
+  };  const handleShare = (story: Story) => {
+    setStoryToShare(story);
+    setShareModalOpen(true);
   };
   // Filtering and sorting functions
   const handleSort = (field: SortField) => {
@@ -298,15 +294,32 @@ export default function MyStoriesTable() {
                             title="Read Story"
                           >
                             <FiBook className="w-4 h-4" />
-                          </Link>
+                          </Link>                        )}
+                        {story.status === 'writing' ? (
+                          <button
+                            className="btn btn-ghost btn-sm btn-disabled"
+                            disabled
+                            title={tShare('tooltips.cannotShareWriting')}
+                          >
+                            <FiShare2 className="w-4 h-4" />
+                          </button>
+                        ) : story.status === 'draft' ? (
+                          <button
+                            className="btn btn-ghost btn-sm btn-disabled"
+                            disabled
+                            title={tShare('tooltips.cannotShareDraft')}
+                          >
+                            <FiShare2 className="w-4 h-4" />
+                          </button>
+                        ) : (
+                          <button
+                            className="btn btn-ghost btn-sm"
+                            onClick={() => handleShare(story)}
+                            title={t('actions.share')}
+                          >
+                            <FiShare2 className="w-4 h-4" />
+                          </button>
                         )}
-                        <button
-                          className="btn btn-ghost btn-sm"
-                          onClick={() => handleShare(story)}
-                          title={t('actions.share')}
-                        >
-                          <FiShare2 className="w-4 h-4" />
-                        </button>
                         {story.status === 'writing' ? (
                           <button
                             className="btn btn-ghost btn-sm btn-disabled"
@@ -368,9 +381,25 @@ export default function MyStoriesTable() {
               >
                 {t('deleteConfirm.confirm')}
               </button>
-            </div>
-          </div>
+            </div>          </div>
         </div>
+      )}
+
+      {/* Share Modal */}
+      {storyToShare && (
+        <ShareModal
+          isOpen={shareModalOpen}
+          onClose={() => {
+            setShareModalOpen(false);
+            setStoryToShare(null);
+          }}
+          storyId={storyToShare.storyId}
+          storyTitle={storyToShare.title}
+          onShareSuccess={(shareData) => {
+            console.log('Share successful:', shareData);
+            // You can add additional success handling here
+          }}
+        />
       )}
     </div>
   );

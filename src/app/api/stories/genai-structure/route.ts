@@ -45,7 +45,15 @@ export async function POST(request: NextRequest) {
     // Get existing characters for this author
     const existingCharacters = await characterService.getCharactersByAuthor(currentAuthor.authorId);    // Call the GenAI service to structure the story
     console.log('Calling GenAI to structure story for author:', currentAuthor.authorId, 'with language:', userLanguage || 'en-US');
-    const structuredResult = await generateStructuredStory(userDescription, existingCharacters, imageData, audioData, userLanguage || 'en-US');
+    const structuredResult = await generateStructuredStory(
+      userDescription, 
+      existingCharacters, 
+      imageData, 
+      audioData, 
+      userLanguage || 'en-US',
+      currentAuthor.authorId,
+      storyId
+    );
     
     // Debug: Log the raw structured result to understand what AI is returning
     console.log('GenAI returned structured result:', JSON.stringify(structuredResult, null, 2));

@@ -40,10 +40,38 @@
       "alreadyRegistered": "Uau, está mesmo ansioso para experimentar a Mythoria. Fique descansado que iremos notificá-lo quando lançarmos!"
     },
     "privacy": "Respeitamos a sua privacidade. Sem spam, apenas notificações de lançamento."
-  },
-  "StepNavigation": {
+  },  "StepNavigation": {
     "next": "Seguinte",
     "prev": "Anterior",
     "finish": "Concluir"
+  },
+  "Share": {
+    "button": "Partilhar",
+    "tooltips": {
+      "cannotShareWriting": "Não é possível partilhar a história enquanto está a ser escrita",
+      "cannotShareDraft": "Não é possível partilhar a história até estar publicada"
+    },
+    "modal": {
+      "title": "Partilhar História",
+      "allowEdit": "Permitir que o destinatário edite",
+      "makePublic": "Tornar história pública",
+      "generateLink": "Gerar Link de Partilha",
+      "shareVia": "Partilhar via:",
+      "whatsapp": "WhatsApp",
+      "facebook": "Facebook",
+      "email": "Email",
+      "copyLink": "Copiar Link",
+      "more": "Mais",
+      "createAnother": "Criar Outro",
+      "done": "Concluído",
+      "linkCopied": "Link copiado para a área de transferência!",
+      "shareSuccess": "Link de partilha criado com sucesso",
+      "privateExpires": "Link privado expira em 30 dias"
+    },
+    "types": {
+      "privateView": "Visualização Privada: Os destinatários devem iniciar sessão para ver a história",
+      "privateEdit": "Edição Privada: Os destinatários podem colaborar e editar a história",
+      "publicRead": "Público: Qualquer pessoa pode ver a história sem iniciar sessão"
+    }
   }
 }

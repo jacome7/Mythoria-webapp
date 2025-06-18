@@ -40,10 +40,37 @@
       "alreadyRegistered": "Wow, you are really eager to experience Mythoria. Rest assured we will notify you when we launch!"
     },
     "privacy": "We respect your privacy. No spam, just launch notifications."
-  },
-  "StepNavigation": {
+  },  "StepNavigation": {
     "next": "Next",
     "prev": "Prev",
     "finish": "Finish"
+  },  "Share": {
+    "button": "Share",
+    "tooltips": {
+      "cannotShareWriting": "Cannot share story while it's being written",
+      "cannotShareDraft": "Cannot share story until it's published"
+    },
+    "modal": {
+      "title": "Share Story",
+      "allowEdit": "Allow recipient to edit",
+      "makePublic": "Make story public",
+      "generateLink": "Generate Share Link",
+      "shareVia": "Share via:",
+      "whatsapp": "WhatsApp",
+      "facebook": "Facebook",
+      "email": "Email",
+      "copyLink": "Copy Link",
+      "more": "More",
+      "createAnother": "Create Another",
+      "done": "Done",
+      "linkCopied": "Link copied to clipboard!",
+      "shareSuccess": "Share link created successfully",
+      "privateExpires": "Private link expires in 30 days"
+    },
+    "types": {
+      "privateView": "Private View: Recipients must sign in to view the story",
+      "privateEdit": "Private Edit: Recipients can collaborate and edit the story", 
+      "publicRead": "Public: Anyone can view the story without signing in"
+    }
   }
 }
