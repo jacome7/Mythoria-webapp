@@ -1,0 +1,116 @@
+/* Minimalist CSS Template for Children 3-6 Years */
+
+.story-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.7;
+  background-color: #fafafa;
+  color: #333;
+}
+
+.story-title {
+  font-size: 2.25rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #e53e3e;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.story-subtitle {
+  font-size: 1.4rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #38b2ac;
+  font-weight: 600;
+}
+
+.story-author {
+  text-align: center;
+  font-size: 1rem;
+  margin-bottom: 2.5rem;
+  color: #666;
+  font-style: italic;
+}
+
+.story-content {
+  font-size: 1.25rem;
+  line-height: 1.8;
+  color: #333;
+}
+
+.story-chapter {
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.story-section {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #f7fafc;
+  border-radius: 12px;
+}
+
+.story-paragraph {
+  margin-bottom: 1.25rem;
+  font-size: 1.25rem;
+  line-height: 1.8;
+}
+
+.story-dialogue {
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  background-color: #e6fffa;
+  border-left: 3px solid #38b2ac;
+  border-radius: 8px;
+  font-size: 1.2rem;
+}
+
+.story-character-name {
+  font-weight: bold;
+  color: #e53e3e;
+  font-size: 1.1em;
+}
+
+.story-action {
+  font-style: italic;
+  color: #718096;
+  margin-bottom: 1rem;
+}
+
+.story-emotion {
+  font-weight: 600;
+  color: #ed8936;
+}
+
+.story-setting {
+  background-color: #f0fff4;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.25rem;
+  color: #276749;
+}
+
+.story-narration {
+  color: #333;
+  line-height: 1.8;
+}
+
+.story-illustration-caption {
+  text-align: center;
+  font-style: italic;
+  color: #666;
+  margin: 1rem 0;
+  font-size: 1rem;
+}
+
+h1, h2, h3 {
+  font-size: 1.8rem;
+  color: #e53e3e;
+  margin-bottom: 1rem;
+}

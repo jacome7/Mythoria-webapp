@@ -36,6 +36,13 @@
       "when": 1750009233357,
       "tag": "0004_living_energizer",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1750167777870,
+      "tag": "0005_powerful_lyja",
+      "breakpoints": true
     }
   ]
 }

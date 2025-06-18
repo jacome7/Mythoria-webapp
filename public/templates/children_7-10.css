@@ -1,0 +1,207 @@
+/* Minimalist CSS Template for Children 7-10 Years */
+
+.story-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  background-color: #ffffff;
+  color: #2d3748;
+}
+
+/* Story Title - Main heading */
+.mythoria-story-title {
+  font-size: 1.75rem !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  margin: 1rem 0 !important;
+  line-height: 1.3 !important;
+  color: #2b6cb0 !important;
+  border-bottom: 3px solid #bee3f8;
+  padding-bottom: 0.5rem;
+}
+
+/* Author name */
+.mythoria-author-name {
+  text-align: center !important;
+  font-size: 1rem !important;
+  margin: 1rem 0 2rem 0 !important;
+  line-height: 1.4 !important;
+  color: #666 !important;
+  font-style: italic;
+}
+
+/* Chapter titles */
+.mythoria-chapter-title {
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  margin: 2rem 0 1rem 0 !important;
+  line-height: 1.4 !important;
+  color: #2b6cb0 !important;
+}
+
+/* Chapter content */
+.mythoria-chapter {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: #f7fafc;
+  border-radius: 12px;
+  border-left: 4px solid #2b6cb0;
+}
+
+.mythoria-chapter-content {
+  margin-bottom: 1.5rem;
+}
+
+.mythoria-chapter-paragraph {
+  margin-bottom: 1rem !important;
+  font-size: 1.1rem !important;
+  line-height: 1.7 !important;
+  color: #2d3748 !important;
+}
+
+/* Chapter images */
+.mythoria-chapter-image {
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.mythoria-chapter-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Table of Contents */
+.mythoria-table-of-contents {
+  background-color: #f0f8e8;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 2rem 0;
+}
+
+.mythoria-toc-title {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 1rem !important;
+  line-height: 1.4 !important;
+  color: #2b6cb0 !important;
+}
+
+.mythoria-toc-list {
+  list-style: none;
+  padding: 0;
+}
+
+.mythoria-toc-item {
+  margin-bottom: 0.5rem;
+}
+
+.mythoria-toc-link {
+  color: #2c7a7b;
+  text-decoration: none;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.mythoria-toc-link:hover {
+  color: #2b6cb0;
+  text-decoration: underline;
+}
+
+/* Page breaks */
+.mythoria-page-break {
+  height: 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  margin: 2rem 0;
+}
+
+/* Covers */
+.mythoria-front-cover,
+.mythoria-back-cover {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.mythoria-cover-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+/* Mythoria message */
+.mythoria-message {
+  text-align: center;
+  padding: 1.5rem;
+  background-color: #f7fafc;
+  border-radius: 8px;
+  margin: 2rem 0;
+}
+
+.mythoria-message-text {
+  font-size: 1rem !important;
+  line-height: 1.5 !important;
+  margin-bottom: 0.5rem !important;
+  color: #4a5568 !important;
+}
+
+.mythoria-author-emphasis {
+  font-weight: bold;
+  color: #2b6cb0;
+}
+
+.mythoria-logo {
+  max-width: 200px;
+  height: auto;
+  margin-top: 1rem;
+}
+
+/* Dedicatory */
+.mythoria-dedicatory {
+  text-align: center;
+  font-style: italic;
+  font-size: 1.1rem !important;
+  line-height: 1.6 !important;
+  margin: 2rem 0 !important;
+  color: #4a5568 !important;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+}
+
+/* Credits */
+.mythoria-credits {
+  text-align: center;
+  margin-top: 3rem;
+  padding: 1rem;
+  background-color: #f7fafc;
+  border-radius: 6px;
+}
+
+.mythoria-credits-text {
+  font-size: 0.9rem !important;
+  line-height: 1.4 !important;
+  color: #718096 !important;
+}
+
+/* Override any default styles that might be interfering */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+p {
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure our styles take precedence */
+[class*="mythoria-"] {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}

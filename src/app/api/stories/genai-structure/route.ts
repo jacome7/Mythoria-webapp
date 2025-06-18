@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentAuthor } from "@/lib/auth";
 import { generateStructuredStory } from "@/lib/genai-story-structurer";
-import { characterService, storyService, storyCharacterService, storyGenerationRunService } from "@/db/services";
+import { characterService, storyService, storyCharacterService } from "@/db/services";
 import { mapStoryAttributes } from "@/lib/story-enum-mapping";
-import { publishStoryRequest } from "@/lib/pubsub";
 
 // Type guard for character role
 function isValidCharacterRole(role: string): role is 'protagonist' | 'antagonist' | 'supporting' | 'mentor' | 'comic_relief' | 'love_interest' | 'sidekick' | 'narrator' | 'other' {
@@ -124,76 +123,18 @@ export async function POST(request: NextRequest) {
       }      processedCharacters.push({
         ...characterRecord,
         role: character.role || undefined
-      });    }
+      });    }    console.log('Successfully structured story and processed characters');
 
-    console.log('Successfully structured story and processed characters');
-
-    // 🚀 CREATE STORY GENERATION RUN AND TRIGGER WORKFLOW
-    console.log('📝 Creating story generation run for workflow trigger...');
-    try {
-      // Create the story generation run
-      const storyGenerationRun = await storyGenerationRunService.createStoryGenerationRun(
-        storyId,
-        {
-          features: { ebook: true, printed: false, audiobook: false }, // Default features
-          initiatedBy: 'genai-structure',
-          originalPrompt: userDescription.substring(0, 500), // Store first 500 chars of original prompt
-          hasImageInput: !!imageData,
-          hasAudioInput: !!audioData
-        }
-      );
-
-      console.log('✅ Story generation run created:', {
-        runId: storyGenerationRun.runId,
-        storyId: storyId,
-        status: storyGenerationRun.status
-      });
-
-      // Publish Pub/Sub message to trigger the workflow
-      console.log('📢 Publishing Pub/Sub message to trigger workflow...');
-      await publishStoryRequest({
-        storyId: storyId,
-        runId: storyGenerationRun.runId,
-        prompt: userDescription.substring(0, 1000) // Include prompt context for workflow
-      });
-
-      console.log('✅ Pub/Sub message published successfully - workflow should be triggered');
-
-      // Return success response including the run information
-      return NextResponse.json({ 
-        success: true,
-        story: updatedStory,
-        characters: processedCharacters,
-        originalInput: userDescription,
-        hasImageInput: !!imageData,
-        hasAudioInput: !!audioData,
-        // Include workflow trigger information
-        workflowTrigger: {
-          runId: storyGenerationRun.runId,
-          status: 'triggered',
-          message: 'Story generation workflow has been triggered'
-        }
-      });
-
-    } catch (workflowError) {
-      console.error('❌ Failed to trigger story generation workflow:', workflowError);
-      
-      // Still return success for the story processing, but include workflow error
-      return NextResponse.json({ 
-        success: true,
-        story: updatedStory,
-        characters: processedCharacters,
-        originalInput: userDescription,
-        hasImageInput: !!imageData,
-        hasAudioInput: !!audioData,
-        // Include workflow error information
-        workflowTrigger: {
-          status: 'failed',
-          error: workflowError instanceof Error ? workflowError.message : 'Failed to trigger workflow',
-          message: 'Story was processed successfully, but workflow trigger failed'
-        }
-      });
-    }
+    // Return success response - workflow will be triggered later in step-6
+    return NextResponse.json({ 
+      success: true,
+      story: updatedStory,
+      characters: processedCharacters,
+      originalInput: userDescription,
+      hasImageInput: !!imageData,
+      hasAudioInput: !!audioData,
+      message: 'Story structure generated successfully. Complete all steps to generate your full story.'
+    });
 
   } catch (error) {
     console.error('Error in GenAI story processing:', error);

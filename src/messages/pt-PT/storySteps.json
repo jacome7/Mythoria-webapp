@@ -59,7 +59,7 @@
       "loadingCharacters": "A carregar as tuas personagens...",
       "readyTitle": "Preparado para conhecer as tuas personagens?",
       "readyDescription": "Toda a grande história precisa de personagens incríveis! Clica em \"Adicionar Personagem\" para criar novos heróis ou adicionar personagens existentes da tua biblioteca a esta história.",
-      "greatWork": "Bom trabalho! Criaste {count} personagem{count === 1 ? '' : 's' }.",
+      "greatWork": "Bom trabalho! Criaste {count, plural, =1 {# personagem} other {# personagens}}.",
       "youCanAlways": "Podes sempre adicionar mais personagens mais tarde ou avançar para o próximo capítulo para desenvolver ainda mais a tua história.",
       "continuing": "A continuar...",
       "nextChapter": "Próximo Capítulo"

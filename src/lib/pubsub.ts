@@ -3,7 +3,7 @@ import { PubSub } from '@google-cloud/pubsub';
 const pubsub = new PubSub({
   projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
 });                // picks creds from metadata
-const topic  = process.env.PUBSUB_TOPIC!;   // mythoria.story.requests
+const topic  = process.env.PUBSUB_TOPIC || 'mythoria-story-requests';   // Updated to match actual topic
 
 export async function publishStoryRequest(message: unknown) {
   if (!topic) {

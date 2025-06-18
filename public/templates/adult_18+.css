@@ -1,0 +1,119 @@
+/* Minimalist CSS Template for Adults 18+ Years */
+
+.story-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.5;
+  background-color: #ffffff;
+  color: #1a202c;
+}
+
+.story-title {
+  font-size: 1.625rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #2d3748;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.5rem;
+}
+
+.story-subtitle {
+  font-size: 1rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #4a5568;
+  font-weight: 400;
+}
+
+.story-author {
+  text-align: center;
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+  color: #718096;
+  font-style: italic;
+}
+
+.story-content {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #1a202c;
+}
+
+.story-chapter {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: #f7fafc;
+  border-radius: 4px;
+  border-left: 2px solid #e2e8f0;
+}
+
+.story-section {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #edf2f7;
+  border-radius: 4px;
+}
+
+.story-paragraph {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.story-dialogue {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: #f7fafc;
+  border-left: 2px solid #cbd5e0;
+  border-radius: 2px;
+  font-size: 1rem;
+}
+
+.story-character-name {
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 1em;
+}
+
+.story-action {
+  font-style: italic;
+  color: #a0aec0;
+  margin-bottom: 0.75rem;
+}
+
+.story-emotion {
+  font-weight: 500;
+  color: #744210;
+}
+
+.story-setting {
+  background-color: #f9f9f9;
+  padding: 0.75rem;
+  border-radius: 2px;
+  margin-bottom: 1rem;
+  color: #2d3748;
+  border-left: 2px solid #d1d5db;
+}
+
+.story-narration {
+  color: #1a202c;
+  line-height: 1.5;
+}
+
+.story-illustration-caption {
+  text-align: center;
+  font-style: italic;
+  color: #718096;
+  margin: 1rem 0;
+  font-size: 0.875rem;
+}
+
+h1, h2, h3 {
+  font-size: 1.25rem;
+  color: #2d3748;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}

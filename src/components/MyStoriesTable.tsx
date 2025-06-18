@@ -3,12 +3,14 @@
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { 
   FiEdit3, 
   FiTrash2, 
   FiShare2,
   FiChevronUp,
-  FiChevronDown
+  FiChevronDown,
+  FiBook
 } from 'react-icons/fi';
 
 interface Story {
@@ -26,6 +28,7 @@ type SortDirection = 'asc' | 'desc';
 
 export default function MyStoriesTable() {
   const t = useTranslations('MyStoriesPage');
+  const locale = useLocale();
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [storyToDelete, setStoryToDelete] = useState<Story | null>(null);
@@ -242,9 +245,21 @@ export default function MyStoriesTable() {
                 </tr>
               </thead>
               <tbody>
-                {sortedStories.map((story) => (<tr key={story.storyId}>
+                {sortedStories.map((story) => (
+                  <tr key={story.storyId}>
                     <td className="px-2 py-1 md:px-4 md:py-2">{formatDate(story.createdAt)}</td>
-                    <td className="font-medium px-2 py-1 md:px-4 md:py-2">{story.title}</td>
+                    <td className="font-medium px-2 py-1 md:px-4 md:py-2">
+                      {story.status === 'published' ? (
+                        <Link 
+                          href={`/${locale}/stories/${story.storyId}`}
+                          className="text-primary hover:text-primary-focus hover:underline cursor-pointer"
+                        >
+                          {story.title}
+                        </Link>
+                      ) : (
+                        <span>{story.title}</span>
+                      )}
+                    </td>
                     <td className="px-2 py-1 md:px-4 md:py-2">
                       <div className="space-y-1">
                         <span className={getStatusBadgeClass(story.status)}>
@@ -277,6 +292,15 @@ export default function MyStoriesTable() {
                     </td>
                     <td className="pl-2 pr-1 py-1 md:px-4 md:py-2">
                       <div className="flex justify-center gap-0.5">
+                        {story.status === 'published' && (
+                          <Link
+                            href={`/${locale}/stories/${story.storyId}`}
+                            className="btn btn-ghost btn-sm text-primary hover:bg-primary hover:text-primary-content"
+                            title="Read Story"
+                          >
+                            <FiBook className="w-4 h-4" />
+                          </Link>
+                        )}
                         <button
                           className="btn btn-ghost btn-sm"
                           onClick={() => handleShare(story)}

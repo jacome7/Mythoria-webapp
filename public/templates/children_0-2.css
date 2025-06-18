@@ -1,0 +1,122 @@
+/* Minimalist CSS Template for Children 0-2 Years */
+
+.story-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  line-height: 1.8;
+  background-color: #fef8f0;
+  color: #2d3748;
+}
+
+.story-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #ff6b6b;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.story-subtitle {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #4ecdc4;
+  font-weight: 600;
+}
+
+.story-author {
+  text-align: center;
+  font-size: 1.1rem;
+  margin-bottom: 3rem;
+  color: #666;
+  font-style: italic;
+}
+
+.story-content {
+  font-size: 1.4rem;
+  line-height: 2;
+  color: #2d3748;
+}
+
+.story-chapter {
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.story-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: #f9f9f9;
+  border-radius: 15px;
+}
+
+.story-paragraph {
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+  line-height: 2;
+}
+
+.story-dialogue {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #e8f4f8;
+  border-left: 4px solid #4ecdc4;
+  border-radius: 10px;
+  font-size: 1.3rem;
+}
+
+.story-character-name {
+  font-weight: bold;
+  color: #ff6b6b;
+  font-size: 1.2em;
+}
+
+.story-action {
+  font-style: italic;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.story-emotion {
+  font-weight: 600;
+  color: #ffa726;
+}
+
+.story-setting {
+  background-color: #f0f8e8;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  color: #2e7d32;
+}
+
+.story-narration {
+  color: #2d3748;
+  line-height: 2;
+}
+
+.story-illustration-caption {
+  text-align: center;
+  font-style: italic;
+  color: #666;
+  margin: 1rem 0;
+  font-size: 1.1rem;
+}
+
+/* Large, easy-to-read text for toddlers */
+h1, h2, h3 {
+  font-size: 2rem;
+  color: #ff6b6b;
+  margin-bottom: 1rem;
+}
+
+/* High contrast and rounded elements */
+.story-content * {
+  border-radius: 10px;
+}

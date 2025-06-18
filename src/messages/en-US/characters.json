@@ -39,7 +39,9 @@
       "supporting": "Supporting",
       "mentor": "Mentor",
       "comicRelief": "Comic Relief",
+      "comic_relief": "Comic Relief",
       "loveInterest": "Love Interest",
+      "love_interest": "Love Interest",
       "sidekick": "Sidekick",
       "narrator": "Narrator",
       "other": "Other"

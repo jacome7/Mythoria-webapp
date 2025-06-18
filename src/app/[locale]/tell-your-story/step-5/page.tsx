@@ -17,8 +17,7 @@ interface StoryData {
   };
   deliveryAddress?: {
     line1?: string;
-    line2?: string;
-    city?: string;
+    line2?: string;    city?: string;
     stateRegion?: string;
     postalCode?: string;
     country?: string;
@@ -325,10 +324,9 @@ export default function Step5Page() {
       <SignedIn>
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
-            {/* Progress indicator */}
-            {(() => {
+            {/* Progress indicator */}            {(() => {
               const currentStep = 5;
-              const totalSteps = 7;
+              const totalSteps = 6;
               return (
                 <>
                   {/* Mobile Progress Indicator */}
@@ -341,9 +339,7 @@ export default function Step5Page() {
                       value={currentStep} 
                       max={totalSteps}
                     ></progress>
-                  </div>
-
-                  {/* Desktop Progress Indicator */}
+                  </div>                  {/* Desktop Progress Indicator */}
                   <div className="hidden md:block mb-8">
                     <ul className="steps steps-horizontal w-full">
                       <li className="step step-primary" data-content="1"></li>
@@ -352,7 +348,6 @@ export default function Step5Page() {
                       <li className="step step-primary" data-content="4"></li>
                       <li className="step step-primary" data-content="5"></li>
                       <li className="step" data-content="6"></li>
-                      <li className="step" data-content="7"></li>
                     </ul>
                   </div>
                 </>
@@ -626,10 +621,9 @@ export default function Step5Page() {
                       )}
                     </div>
                   </div>
-                )}
-                <StepNavigation
+                )}                <StepNavigation
                   currentStep={5}
-                  totalSteps={7}
+                  totalSteps={6}
                   nextHref="/tell-your-story/step-6"
                   prevHref="/tell-your-story/step-4"
                   onNext={handleNext}

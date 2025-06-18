@@ -387,10 +387,9 @@ export default function Step2Page() {
       <SignedIn>
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
-            {/* Progress indicator */}
-            {(() => {
+            {/* Progress indicator */}            {(() => {
               const currentStep = 2;
-              const totalSteps = 7;
+              const totalSteps = 6;
               return (
                 <>
                   {/* Mobile Progress Indicator */}
@@ -414,7 +413,6 @@ export default function Step2Page() {
                       <li className="step" data-content="4"></li>
                       <li className="step" data-content="5"></li>
                       <li className="step" data-content="6"></li>
-                      <li className="step" data-content="7"></li>
                     </ul>
                   </div>
                 </>

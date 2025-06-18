@@ -280,10 +280,9 @@ export default function Step3Page() {
       
       <SignedIn>
         <div className="container mx-auto px-4 py-8">          <div className="max-w-4xl mx-auto">
-            {/* Progress indicator */}
-            {(() => {
+            {/* Progress indicator */}            {(() => {
               const currentStep = 3;
-              const totalSteps = 7;
+              const totalSteps = 6;
               return (
                 <>
                   {/* Mobile Progress Indicator */}
@@ -307,7 +306,6 @@ export default function Step3Page() {
                       <li className="step" data-content="4"></li>
                       <li className="step" data-content="5"></li>
                       <li className="step" data-content="6"></li>
-                      <li className="step" data-content="7"></li>
                     </ul>
                   </div>
                 </>
@@ -445,11 +443,9 @@ export default function Step3Page() {
                       </div>
                     )}
                   </div>
-                )}
-
-                <StepNavigation 
+                )}                <StepNavigation 
                   currentStep={3}
-                  totalSteps={7}
+                  totalSteps={6}
                   nextHref={null} // We'll handle navigation programmatically
                   prevHref={null} // Disabled - don't allow going back to step 2
                   nextDisabled={isNavigating}

@@ -21,8 +21,10 @@ export const stories = pgTable("stories", {
   status: storyStatusEnum("status").default('draft'),
   features: jsonb("features"), // {"ebook":true,"printed":false,"audiobook":true}
   deliveryAddress: jsonb("delivery_address"), // Delivery address for printed books
-  dedicationMessage: text("dedication_message"), // Personalized dedication message
-  mediaLinks: jsonb("media_links"), // {"cover":"...","pdf":"...","audio":"..."}
+  dedicationMessage: text("dedication_message"), // Personalized dedication message  mediaLinks: jsonb("media_links"), // {"cover":"...","pdf":"...","audio":"..."}
+  htmlUri: text("html_uri"), // Internal Google Storage link to access the HTML file
+  pdfUri: text("pdf_uri"), // Internal Google Storage link to access the PDF file
+  audiobookUri: jsonb("audiobook_uri"), // JSON object with internal GS links to each chapter audio file
   // Story generation workflow convenience columns
   storyGenerationStatus: runStatusEnum("story_generation_status"),
   storyGenerationCompletedPercentage: integer("story_generation_completed_percentage").default(0),

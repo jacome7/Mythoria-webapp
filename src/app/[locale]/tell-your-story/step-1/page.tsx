@@ -1,8 +1,8 @@
 'use client';
 
-import { SignedIn, SignedOut } from '@clerk/nextjs';
 import Link from 'next/link';
 import StepNavigation from '../../../../components/StepNavigation';
+import ClientAuthWrapper from '../../../../components/ClientAuthWrapper';
 import { useState, useEffect, useCallback } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -128,64 +128,62 @@ export default function Step1Page() {
     } finally {
       setLoading(false);    }
   };
-
   return (
     <div className="container mx-auto px-4 py-8">
-      <SignedOut>
-        <div className="text-center space-y-6 max-w-2xl mx-auto">
-          <div className="text-6xl">📚</div>
-          <h1 className="text-4xl font-bold">{t('unauthenticated.title')}</h1>
-          <p className="text-lg text-gray-600">
-            {t('unauthenticated.description')}
-          </p>
-          <div className="space-x-4">
-            <Link href={`/${locale}/sign-in`} className="btn btn-primary btn-lg">
-              {t('unauthenticated.signIn')}
-            </Link>
-            <Link href={`/${locale}/sign-up`} className="btn btn-outline btn-lg">
-              {t('unauthenticated.signUp')}
-            </Link>
+      <ClientAuthWrapper
+        signedOutFallback={
+          <div className="text-center space-y-6 max-w-2xl mx-auto">
+            <div className="text-6xl">📚</div>
+            <h1 className="text-4xl font-bold">{t('unauthenticated.title')}</h1>
+            <p className="text-lg text-gray-600">
+              {t('unauthenticated.description')}
+            </p>
+            <div className="space-x-4">
+              <Link href={`/${locale}/sign-in`} className="btn btn-primary btn-lg">
+                {t('unauthenticated.signIn')}
+              </Link>
+              <Link href={`/${locale}/sign-up`} className="btn btn-outline btn-lg">
+                {t('unauthenticated.signUp')}
+              </Link>
+            </div>
+            <p className="text-sm text-gray-500">
+              {t('unauthenticated.note')}
+            </p>
           </div>
-          <p className="text-sm text-gray-500">
-            {t('unauthenticated.note')}
-          </p>
-        </div>
-      </SignedOut>
-
-      <SignedIn>        <div className="max-w-4xl mx-auto">
-          {/* Progress indicator */}
-          {(() => {
-            const currentStep = 1;
-            const totalSteps = 7;
-            return (
-              <>
-                {/* Mobile Progress Indicator */}
-                <div className="block md:hidden mb-8">
-                  <div className="text-center text-sm text-gray-600 mb-2">
-                    Step {currentStep} of {totalSteps}
+        }
+      >
+        <div className="max-w-4xl mx-auto">
+          {/* Progress indicator */}            {(() => {
+              const currentStep = 1;
+              const totalSteps = 6;
+              return (
+                <>
+                  {/* Mobile Progress Indicator */}
+                  <div className="block md:hidden mb-8">
+                    <div className="text-center text-sm text-gray-600 mb-2">
+                      Step {currentStep} of {totalSteps}
+                    </div>
+                    <progress 
+                      className="progress progress-primary w-full" 
+                      value={currentStep} 
+                      max={totalSteps}
+                    ></progress>
                   </div>
-                  <progress 
-                    className="progress progress-primary w-full" 
-                    value={currentStep} 
-                    max={totalSteps}
-                  ></progress>
-                </div>
 
-                {/* Desktop Progress Indicator */}
-                <div className="hidden md:block mb-8">
-                  <ul className="steps steps-horizontal w-full">
-                    <li className="step step-primary" data-content="1"></li>
-                    <li className="step" data-content="2"></li>
-                    <li className="step" data-content="3"></li>
-                    <li className="step" data-content="4"></li>
-                    <li className="step" data-content="5"></li>
-                    <li className="step" data-content="6"></li>
-                    <li className="step" data-content="7"></li>
-                  </ul>
-                </div>
-              </>
-            );
-          })()}
+                  {/* Desktop Progress Indicator */}
+                  <div className="hidden md:block mb-8">
+                    <ul className="steps steps-horizontal w-full">
+                      <li className="step step-primary" data-content="1"></li>
+                      <li className="step" data-content="2"></li>
+                      <li className="step" data-content="3"></li>
+                      <li className="step" data-content="4"></li>
+                      <li className="step" data-content="5"></li>
+                      <li className="step" data-content="6"></li>
+                    </ul>
+                  </div>
+                </>
+              );
+            })()}
 
           {/* Step content */}
           <div className="card bg-base-100 shadow-xl">
@@ -280,10 +278,9 @@ export default function Step1Page() {
                 onNext={handleNext}
                 nextDisabled={loading || !displayName || !email}
               />
-            </div>
-          </div>
+            </div>          </div>
         </div>
-      </SignedIn>
+      </ClientAuthWrapper>
     </div>
   );
 }
