@@ -37,14 +37,23 @@ export default function Home() {
                 <TypeAnimation
                   sequence={sequence}
                   wrapper="span"
-                  speed={10}
+                  speed={5}
                   className="text-primary"
                   repeat={Infinity}
                 />
                 &nbsp;✨
               </h1>
               <p className="py-6 text-lg">
-                {t('hero.subtitle')}
+                {t('hero.subtitle').split(t('hero.subtitleEmphasized')).map((part, index, array) => (
+                  <span key={index}>
+                    {index === array.length - 1 ? part : (
+                      <>
+                        {part}
+                        <em>{t('hero.subtitleEmphasized')}</em>
+                      </>
+                    )}
+                  </span>
+                ))}
               </p>{/*}
               <Link href="/create" className="btn btn-primary btn-lg">
                 {t('hero.tryItNow')}
@@ -79,43 +88,78 @@ export default function Home() {
             </div>
           </section>
         ) : (
-          <>
-            {/* Audience Sections */}
-            <section className="my-16 grid md:grid-cols-3 gap-8">
-              <div className="card bg-base-200 shadow-xl">
-                <figure className="px-10 pt-10">
-                  <Image src="/SampleBooks/A_bea_tem_um_macaco_no_nariz.jpg" alt="Kids Book" width={300} height={200} className="rounded-xl" />
-                </figure>
-                <div className="card-body items-center text-center">
-                  <h2 className="card-title text-2xl">{t('audiences.kids.title')}</h2>
-                  <p>{t('audiences.kids.description')}</p>
-                  <div className="card-actions">
-                    <Link href="/create?audience=kids" className="btn btn-primary mt-4">{t('audiences.kids.button')}</Link>
+          <>            {/* Audience Sections */}
+            <section className="my-16">
+              {/* Desktop Grid */}
+              <div className="hidden md:grid md:grid-cols-3 gap-8">
+                <div className="card bg-base-200 shadow-xl">
+                  <figure className="px-10 pt-10">
+                    <Image src="/SampleBooks/A_bea_tem_um_macaco_no_nariz.jpg" alt="Kids Book" width={300} height={200} className="rounded-xl" />
+                  </figure>
+                  <div className="card-body items-center text-center">
+                    <h2 className="card-title text-2xl">{t('audiences.kids.title')}</h2>
+                    <p>{t('audiences.kids.description')}</p>
+                  </div>
+                </div>
+
+                <div className="card bg-base-200 shadow-xl">
+                  <figure className="px-10 pt-10">
+                    <Image src="/SampleBooks/How_I_met_your_mother.jpg" alt="How I met your mother" width={300} height={300} className="rounded-xl" />
+                  </figure>
+                  <div className="card-body items-center text-center">
+                    <h2 className="card-title text-2xl">{t('audiences.adults.title')}</h2>
+                    <p>{t('audiences.adults.description')}</p>
+                  </div>
+                </div>
+
+                <div className="card bg-base-200 shadow-xl">
+                  <figure className="px-10 pt-10">
+                    <Image src="/SampleBooks/CentralCasa.jpg" alt="Company Book" width={300} height={200} className="rounded-xl" />
+                  </figure>
+                  <div className="card-body items-center text-center">
+                    <h2 className="card-title text-2xl">{t('audiences.companies.title')}</h2>
+                    <p>{t('audiences.companies.description')}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="card bg-base-200 shadow-xl">
-                <figure className="px-10 pt-10">
-                  <Image src="/SampleBooks/How_I_met_your_mother.jpg" alt="How I met your mother" width={300} height={300} className="rounded-xl" />
-                </figure>                <div className="card-body items-center text-center">
-                  <h2 className="card-title text-2xl">{t('audiences.adults.title')}</h2>
-                  <p>{t('audiences.adults.description')}</p>
-                  <div className="card-actions">
-                    <Link href="/create?audience=adults" className="btn btn-accent mt-4">{t('audiences.adults.button')}</Link>
+              {/* Mobile Horizontal Gallery */}
+              <div className="md:hidden">
+                <div className="carousel carousel-center w-full p-4 space-x-4 bg-base-200 rounded-box">
+                  <div className="carousel-item w-80">
+                    <div className="card bg-base-100 shadow-xl w-full">
+                      <figure className="px-10 pt-10">
+                        <Image src="/SampleBooks/A_bea_tem_um_macaco_no_nariz.jpg" alt="Kids Book" width={300} height={200} className="rounded-xl" />
+                      </figure>
+                      <div className="card-body items-center text-center">
+                        <h2 className="card-title text-xl">{t('audiences.kids.title')}</h2>
+                        <p className="text-sm">{t('audiences.kids.description')}</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              <div className="card bg-base-200 shadow-xl">
-                <figure className="px-10 pt-10">
-                  <Image src="/SampleBooks/CentralCasa.jpg" alt="Company Book" width={300} height={200} className="rounded-xl" />
-                </figure>
-                <div className="card-body items-center text-center">
-                  <h2 className="card-title text-2xl">{t('audiences.companies.title')}</h2>
-                  <p>{t('audiences.companies.description')}</p>
-                  <div className="card-actions">
-                    <Link href="/contact?reason=company" className="btn btn-info mt-4">{t('audiences.companies.button')}</Link>
+                  <div className="carousel-item w-80">
+                    <div className="card bg-base-100 shadow-xl w-full">
+                      <figure className="px-10 pt-10">
+                        <Image src="/SampleBooks/How_I_met_your_mother.jpg" alt="How I met your mother" width={300} height={300} className="rounded-xl" />
+                      </figure>
+                      <div className="card-body items-center text-center">
+                        <h2 className="card-title text-xl">{t('audiences.adults.title')}</h2>
+                        <p className="text-sm">{t('audiences.adults.description')}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="carousel-item w-80">
+                    <div className="card bg-base-100 shadow-xl w-full">
+                      <figure className="px-10 pt-10">
+                        <Image src="/SampleBooks/CentralCasa.jpg" alt="Company Book" width={300} height={200} className="rounded-xl" />
+                      </figure>
+                      <div className="card-body items-center text-center">
+                        <h2 className="card-title text-xl">{t('audiences.companies.title')}</h2>
+                        <p className="text-sm">{t('audiences.companies.description')}</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

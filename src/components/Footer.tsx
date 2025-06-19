@@ -43,17 +43,17 @@ const Footer = () => {
                 </a>
               </div>
             </div>
-              {/* Links */}
+            
+            {/* Links */}
             <div className="flex flex-col items-center md:items-end gap-2">
-              <Link href="/privacy-policy" className="link link-hover text-sm">{t('privacyPolicy')}</Link>
               <a href="mailto:hello@mythoria.pt" className="link link-hover text-sm">{t('emailAddress')}</a>
             </div>
           </div>
         </div>
-
+        
         {/* Copyright at the bottom */}
         <div className="border-t border-base-300 pt-4 text-center text-xs">
-          <p className="text-xs">&copy; {currentYear} {t('copyright')}</p>
+          <p className="text-xs">&copy; {currentYear} {t('copyright')} | <Link href="/privacy-policy" className="link link-hover">{t('privacyPolicy')}</Link> | {t('termsConditions')}</p>
         </div>
       </div>
     </footer>

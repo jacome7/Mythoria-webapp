@@ -91,10 +91,10 @@
     }
   },
   "HomePage": {
-    "title": "Welcome",
-    "hero": {
+    "title": "Welcome",    "hero": {
       "writeYourOwn": "Write your own",
-      "subtitle": "Create AI-powered, personalized stories that bring your imagination to life. Perfect for kids, adults, and even your company!",
+      "subtitle": "Turn anyone into the hero of a beautifully illustrated book — for children, grown-ups or entire teams.",
+      "subtitleEmphasized": "anyone",
       "tryItNow": "Try it now"
     },
     "words": [
@@ -117,53 +117,47 @@
     "comingSoon": {
       "title": "Our story is just beginning...",
       "subtitle": "Mythoria is crafting something magical! I'm working hard, alongside AI, to bring you a new world of personalized storytelling. Stay tuned, the adventure will be available soon! 🧙‍♂️📚✨"
-    },
-    "audiences": {
+    },    "audiences": {
       "kids": {
         "title": "For Kids 🎈",
-        "description": "Turn your child, grandchild, nephew, or niece into the hero of their own magical adventure!",
-        "button": "Create for Kids"
+        "description": "Turn your child, grandchild, nephew, or niece into the hero of their own magical adventure!"
       },
       "adults": {
         "title": "For Adults ❤️",
-        "description": "Ever felt like your life could be a book? Bring your memories and adventures to life in a beautifully illustrated book. Share the story of how you met your soulmate or relive unforgettable moments with friends and family.",
-        "button": "Create for Adults"
+        "description": "Relive your love story or a once-in-a-lifetime trip as a stunning illustrated memoir."
       },
       "companies": {
         "title": "For Companies 🌟",
-        "description": "Delight your employees' children with personalized storybooks that uniquely highlight your brand.",
-        "button": "Contact Us"
+        "description": "Gift customers or staff families a branded, personalised storybook that keeps your logo on the bookshelf."
       }
-    },
-    "howItWorks": {
+    },    "howItWorks": {
       "title": "With Mythoria, creating your own story is easy:",
       "steps": {
         "step1": {
-          "title": "Choose your character(s)",
-          "description": "Select your children, grandchildren, or any special young person in your life."
+          "title": "The Author",
+          "description": "Log in and let Mythoria know who you are. You'll be the proud author and owner of your unique story."
         },
         "step2": {
-          "title": "Tell us about their passions and superpowers",
-          "description": "What do they love? What makes them unique? This is where the magic begins!"
+          "title": "The Story",
+          "description": "Easily share your story idea by writing, speaking, or even drawing on paper. Mythoria captures and transforms your concept into magic."
         },
         "step3": {
-          "title": "Choose your adventure",
-          "description": "Pick from our collection of magical adventures or create your own."
+          "title": "The Characters",
+          "description": "Mythoria identifies the characters automatically, but you can personalize every detail. Describe their appearance, passions, and unique traits."
         },
         "step4": {
-          "title": "Receive your personalized book",
-          "description": "In just a few minutes, your story will be ready. You can read it digitally or order a physical copy."
+          "title": "The Plot",
+          "description": "Shape your story exactly as you wish—select the graphic style, set the tone, choose your audience, and fine-tune every detail."
         },
         "step5": {
-          "title": "Fully customize with unique details!",
-          "description": "Write or simply speak about all the little details you'd like included. Even include specific products, services, or meaningful family traditions."
-        },
-        "step6": {
-          "title": "Choose your gift format",
-          "description": "Receive your personalized story as a beautiful hardcover book, a digital ebook, or an engaging audiobook."
+          "title": "The Gift",
+          "description": "Choose how you'd like to receive your masterpiece: as an eBook, an audiobook, or a beautifully printed book."
+        },        "step6": {
+          "title": "Experience the Magic",
+          "description": "Children will be captivated seeing themselves in exciting adventures, while adults delight in reliving cherished memories and sharing heartfelt moments."
         }
       },
-      "conclusion": "We'll take care of everything else, powered by the magic of Artificial Intelligence!"
+      "conclusion": "Our Story Factory Oompa-Loompas will handle everything else, bringing your story to life!"
     },
     "community": {
       "title": "Join Our Growing Community of Storytellers!"
