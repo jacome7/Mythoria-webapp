@@ -213,56 +213,15 @@
 }
 
 .mythoria-author-emphasis {
-  color: #4299e1;
+  font-weight: 600;
+  color: #38b2ac;
 }
 
 .mythoria-logo {
-  max-width: 150px;
+  max-width: 180px;
   height: auto;
-  margin-top: 1rem;
-}
-
-h1, h2, h3 {
-  font-size: 1.8rem;
-  color: #e53e3e;
-  margin-bottom: 1rem;
-}
-
-/* Override any default styles that might be interfering */
-h1, h2, h3, h4, h5, h6 {
-  margin: 0;
-  padding: 0;
-  font-size: inherit;
-  font-weight: inherit;
-  line-height: inherit;
-}
-
-p {
-  margin: 0;
-  padding: 0;
-}
-
-/* Ensure our styles take precedence */
-[class*="mythoria-"] {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
-}
-
-/* Covers */
-.mythoria-front-cover,
-.mythoria-back-cover {
-  text-align: center;
-  margin: 2.5rem 0;
-  padding: 1.5rem;
-  background-color: white;
-  border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.mythoria-cover-image {
-  max-width: 100%;
-  height: auto;
-  border-radius: 15px;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  margin: 1rem auto 0 auto;
+  display: block;
 }
 
 /* Credits */

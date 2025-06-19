@@ -4,16 +4,10 @@ import { SignIn } from '@clerk/nextjs'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations, useLocale } from 'next-intl'
-import { useSearchParams } from 'next/navigation'
 
 export default function SignInPage() {
   const t = useTranslations('auth.signIn');
   const locale = useLocale();
-  const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get('redirect_url');
-  
-  // If redirecting to a shared story, use hash routing to avoid conflicts
-  const shouldUseHashRouting = redirectUrl && (redirectUrl.includes('/s/') || redirectUrl.includes('/p/'));
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex">

@@ -234,15 +234,15 @@ h1, h2, h3 {
 }
 
 .mythoria-author-emphasis {
-  font-weight: bold;
+  font-weight: 600;
   color: #ff6b6b;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
 .mythoria-logo {
-  max-width: 250px;
+  max-width: 180px;
   height: auto;
-  margin-top: 1rem;
+  margin: 1rem auto 0 auto;
+  display: block;
 }
 
 /* Dedicatory */

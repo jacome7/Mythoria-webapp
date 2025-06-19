@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { v4 as uuidv4 } from 'uuid';
 import { db } from '@/db';
 import { stories, shareLinks, storyCollaborators, authors } from '@/db/schema';
 import { eq, and, or, gt } from 'drizzle-orm';

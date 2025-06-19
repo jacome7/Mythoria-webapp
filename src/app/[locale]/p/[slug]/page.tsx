@@ -1,11 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { FiLoader, FiAlertCircle, FiUser, FiCalendar, FiTag } from 'react-icons/fi';
 import StoryReader from '@/components/StoryReader';
-import Head from 'next/head';
 
 interface PublicStoryData {
   success: boolean;
@@ -15,7 +14,7 @@ interface PublicStoryData {
     synopsis?: string;
     htmlUri?: string;
     pdfUri?: string;
-    audiobookUri?: any;
+    audiobookUri?: unknown;
     targetAudience?: string;
     graphicalStyle?: string;
     novelStyle?: string;
@@ -32,7 +31,6 @@ interface PublicStoryData {
 
 export default function PublicStoryPage() {
   const params = useParams();
-  const router = useRouter();
   const locale = useLocale();
   const slug = params.slug as string;
   

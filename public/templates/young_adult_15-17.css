@@ -11,9 +11,9 @@
 }
 
 .mythoria-story-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  text-align: center;
+  font-size: 1.75rem !important;
+  font-weight: 700 !important;
+  text-align: center !important;
   margin-bottom: 1rem;
   color: #2d3748;
   border-bottom: 2px solid #4a5568;
@@ -223,7 +223,8 @@
 .mythoria-logo {
   max-width: 200px;
   height: auto;
-  margin-top: 1rem;
+  margin: 1rem auto 0 auto;
+  display: block;
 }
 
 /* Dedicatory */

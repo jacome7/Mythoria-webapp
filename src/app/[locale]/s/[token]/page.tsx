@@ -5,28 +5,6 @@ import { useParams, useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { FiLoader, FiAlertCircle } from 'react-icons/fi';
 
-interface SharedStoryData {
-  success: boolean;
-  story: {
-    storyId: string;
-    title: string;
-    synopsis?: string;
-    htmlUri?: string;
-    pdfUri?: string;
-    audiobookUri?: any;
-    targetAudience?: string;
-    graphicalStyle?: string;
-    createdAt: string;
-    authorId: string;
-  };
-  author: {
-    displayName: string;
-  };
-  accessLevel: 'view' | 'edit';
-  redirectUrl?: string;
-  error?: string;
-}
-
 export default function SharedStoryPage() {
   const params = useParams();
   const router = useRouter();
@@ -34,7 +12,6 @@ export default function SharedStoryPage() {
   const token = params.token as string;
   
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<SharedStoryData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {

@@ -149,14 +149,15 @@
 }
 
 .mythoria-author-emphasis {
-  font-weight: bold;
+  font-weight: 600;
   color: #2b6cb0;
 }
 
 .mythoria-logo {
-  max-width: 200px;
+  max-width: 180px;
   height: auto;
-  margin-top: 1rem;
+  margin: 1rem auto 0 auto;
+  display: block;
 }
 
 /* Dedicatory */

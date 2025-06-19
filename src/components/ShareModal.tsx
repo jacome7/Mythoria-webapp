@@ -6,7 +6,6 @@ import {
   FiShare2, 
   FiCopy, 
   FiMail, 
-  FiMessageCircle,
   FiUsers,
   FiGlobe,
   FiLock,
@@ -20,7 +19,7 @@ interface ShareModalProps {
   onClose: () => void;
   storyId: string;
   storyTitle: string;
-  onShareSuccess?: (shareData: any) => void;
+  onShareSuccess?: (shareData: ShareData) => void;
 }
 
 interface ShareData {
@@ -36,10 +35,8 @@ interface ShareData {
 export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onShareSuccess }: ShareModalProps) {
   const [allowEdit, setAllowEdit] = useState(false);
   const [makePublic, setMakePublic] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [shareData, setShareData] = useState<ShareData | null>(null);
+  const [loading, setLoading] = useState(false);  const [shareData, setShareData] = useState<ShareData | null>(null);
   const [copied, setCopied] = useState(false);
-  const [showInfo, setShowInfo] = useState(false);
 
   if (!isOpen) return null;
   const handleCreateShareLink = async () => {

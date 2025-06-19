@@ -335,10 +335,9 @@ export default function MyStoriesTable() {
                             title={t('actions.edit')}
                           >
                             <FiEdit3 className="w-4 h-4" />
-                          </Link>
-                        ) : (
+                          </Link>                        ) : (
                           <Link
-                            href={`/tell-your-story?edit=${story.storyId}`}
+                            href={`/${locale}/stories/edit/${story.storyId}`}
                             className="btn btn-ghost btn-sm"
                             title={t('actions.edit')}
                           >
