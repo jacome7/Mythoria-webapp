@@ -43,10 +43,9 @@ const Footer = () => {
                 </a>
               </div>
             </div>
-            
-            {/* Links */}
+              {/* Links */}
             <div className="flex flex-col items-center md:items-end gap-2">
-              <a href="mailto:hello@mythoria.pt" className="link link-hover text-sm">{t('emailAddress')}</a>
+              <Link href="/contactUs" className="link link-hover text-sm">{t('contactUs')}</Link>
             </div>
           </div>
         </div>

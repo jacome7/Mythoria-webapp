@@ -252,8 +252,7 @@
     "title": "Contacte a Mythoria",
     "intro": "Saudações, aventureiro! Seja da Terra Média, de Hogwarts ou de uma galáxia muito distante, estamos aqui para ajudar na sua jornada pelo maravilhoso mundo da Mythoria. O seu feedback é precioso como o Anel, mas bem mais fácil de carregar!",
     "scrollTitle": "Envie-nos a sua Coruja (ou preencha o formulário)",
-    "scrollIntro": "Escolha o pergaminho que melhor se adapta à sua missão:",
-    "categories": {
+    "scrollIntro": "Escolha o pergaminho que melhor se adapta à sua missão:",    "categories": {
       "featureIdeas": "Ideias de Funcionalidades (Inspire-nos como Tolkien)",
       "reportBug": "Reportar um Erro (Até Sherlock Holmes precisava de pistas!)",
       "troubles": "Problemas na Geração de Histórias (Quando os feitiços falham)",
@@ -261,7 +260,14 @@
       "credits": "Créditos & Pagamentos (Os duendes de Gringotes são exigentes!)",
       "general": "Encantamento Geral (Suporte)"
     },
-    "form": {
+    "categoriesShort": {
+      "featureIdeas": "Ideias de Funcionalidades",
+      "reportBug": "Reportar um Erro",
+      "troubles": "Problemas na Geração de Histórias",
+      "delivery": "Entrega de Livro Impresso",
+      "credits": "Créditos & Pagamentos",
+      "general": "Encantamento Geral"
+    },"form": {
       "title": "O Formulário Mágico",
       "name": "O Seu Nome:",
       "namePlaceholder": "Ou Alcunha de Feiticeiro",
@@ -269,6 +275,7 @@
       "emailPlaceholder": "Para as nossas pombas mensageiras",
       "category": "Selecione a Sua Missão:",
       "message": "A Sua Mensagem Mágica:",
+      "messagePlaceholder": "Partilhe os seus pensamentos, ideias ou feedback mágico...",
       "submit": "Lançar Feitiço"
     },
     "join": {

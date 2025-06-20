@@ -251,8 +251,7 @@
     "title": "Contact Mythoria",
     "intro": "Greetings, fellow adventurer! Whether you're from the Shire, Hogwarts, or a galaxy far, far away, we're here to assist you in your journey through the wonderful world of Mythoria. Your feedback is as precious as the One Ring (but easier to handle, we promise!).",
     "scrollTitle": "Send Us Your Owl (or just fill the form)",
-    "scrollIntro": "Choose the scroll that best suits your quest:",
-    "categories": {
+    "scrollIntro": "Choose the scroll that best suits your quest:",    "categories": {
       "featureIdeas": "Feature Ideas (Inspire us like Tolkien)",
       "reportBug": "Report a Bug (Even Sherlock Holmes needed clues!)",
       "troubles": "Story Generation Troubles (When the magic spells go awry)",
@@ -260,7 +259,14 @@
       "credits": "Credits & Payments (The goblins at Gringotts are strict!)",
       "general": "General Enchantment (Support)"
     },
-    "form": {
+    "categoriesShort": {
+      "featureIdeas": "Feature Ideas",
+      "reportBug": "Report a Bug",
+      "troubles": "Story Generation Troubles",
+      "delivery": "Printed Book Delivery",
+      "credits": "Credits & Payments",
+      "general": "General Enchantment"
+    },"form": {
       "title": "The Magic Form",
       "name": "Your Name:",
       "namePlaceholder": "Wizarding Alias",
@@ -268,6 +274,7 @@
       "emailPlaceholder": "So our carrier pigeons can find you",
       "category": "Select Your Quest:",
       "message": "Your Magical Message:",
+      "messagePlaceholder": "Share your thoughts, ideas, or magical feedback...",
       "submit": "Cast Spell"
     },
     "join": {
