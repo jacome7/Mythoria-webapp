@@ -786,9 +786,7 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
         </div>
       )}
       
-      {/* Toast Container */}      {/* AI Edit Modal */}
-      {storyId && (
-        <AIEditModal
+      {/* Toast Container */}      {/* AI Edit Modal */}      {storyId && (        <AIEditModal
           isOpen={showAIEditModal}
           onClose={() => setShowAIEditModal(false)}
           storyId={storyId}

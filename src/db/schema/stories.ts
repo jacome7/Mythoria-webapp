@@ -19,11 +19,9 @@ export const stories = pgTable("stories", {
   targetAudience: targetAudienceEnum("target_audience"),
   novelStyle: novelStyleEnum("novel_style"),
   graphicalStyle: graphicalStyleEnum("graphical_style"),
-  status: storyStatusEnum("status").default('draft'),
-  features: jsonb("features"), // {"ebook":true,"printed":false,"audiobook":true}
+  status: storyStatusEnum("status").default('draft'),  features: jsonb("features"), // {"ebook":true,"printed":false,"audiobook":true}
   deliveryAddress: jsonb("delivery_address"), // Delivery address for printed books
   dedicationMessage: text("dedication_message"), // Personalized dedication message
-  mediaLinks: jsonb("media_links"), // {"cover":"...","pdf":"...","audio":"..."}
   htmlUri: text("html_uri"), // Internal Google Storage link to access the HTML file
   pdfUri: text("pdf_uri"), // Internal Google Storage link to access the PDF file
   audiobookUri: jsonb("audiobook_uri"), // JSON object with internal GS links to each chapter audio file

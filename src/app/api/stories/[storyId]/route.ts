@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentAuthor } from "@/lib/auth";
 import { storyService } from "@/db/services";
+import { getStoryImagesFromStorage } from "@/utils/storageUtils";
 
 // Transform audiobookUri from database format to frontend format
 function transformAudiobookUri(audiobookUri: unknown): Array<{
@@ -103,11 +104,17 @@ export async function GET(
     const transformedStory = {
       ...story,
       audiobookUri: transformAudiobookUri(story.audiobookUri)
-    };
+    };    // Get media links from Google Cloud Storage
+    const mediaLinks = await getStoryImagesFromStorage(storyId);
+    
+    // Debug: Log the media links to see actual filenames
+    console.log('API Route - Media links for story', storyId, ':', mediaLinks);
+    console.log('API Route - Filenames:', Object.keys(mediaLinks || {}));
 
     return NextResponse.json({ 
       story: transformedStory,
-      htmlContent: storyHtmlContent 
+      htmlContent: storyHtmlContent,
+      mediaLinks: mediaLinks
     });
 
   } catch (error) {

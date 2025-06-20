@@ -21,11 +21,11 @@ interface Story {
     audioUri: string;
     duration: number;
     imageUri?: string;
-  }>;
-  targetAudience?: string;
+  }>;  targetAudience?: string;
   graphicalStyle?: string;
   createdAt: string;
   updatedAt: string;
+  [key: string]: unknown; // Add index signature for compatibility
 }
 
 export default function EditStoryPage() {
@@ -41,11 +41,20 @@ export default function EditStoryPage() {
 
   // Toast notifications
   const toast = useToast();
-
   useEffect(() => {
     const fetchStory = async () => {
       try {
-        const response = await fetch(`/api/stories/${storyId}`);
+        setLoading(true);
+        setError(null);
+        
+        const response = await fetch(`/api/stories/${storyId}`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+        });
+        
         if (response.ok) {
           const data = await response.json();
           // Only allow access to published stories
@@ -69,11 +78,20 @@ export default function EditStoryPage() {
         } else if (response.status === 403) {
           setError('You do not have permission to edit this story.');
         } else {
-          setError('Failed to load the story. Please try again.');
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+          setError(errorData.error || `Failed to load the story (Status: ${response.status}). Please try again.`);
         }
       } catch (error) {
         console.error('Error fetching story:', error);
-        setError('Failed to load the story. Please try again.');
+        
+        // More specific error handling
+        if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+          setError('Unable to connect to the server. Please check your internet connection and make sure the development server is running.');
+        } else if (error instanceof Error) {
+          setError(`Network error: ${error.message}. Please try again.`);
+        } else {
+          setError('Failed to load the story. Please try again.');
+        }
       } finally {
         setLoading(false);
       }
@@ -216,8 +234,7 @@ export default function EditStoryPage() {
                   </button>
                 </div>
               </div>
-            </div>            {/* Edit Mode */}
-            <BookEditor
+            </div>            {/* Edit Mode */}            <BookEditor
               initialContent={storyContent || ''}
               onSave={handleSaveEdit}
               onCancel={handleCancelEdit}
