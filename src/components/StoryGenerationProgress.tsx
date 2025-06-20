@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 
 interface StoryGenerationProgressProps {
   storyId: string;
@@ -10,6 +12,7 @@ interface StoryGenerationProgressProps {
 interface StoryProgress {
   storyGenerationCompletedPercentage: number;
   storyGenerationStatus: 'draft' | 'running' | 'completed' | 'failed';
+  status: 'draft' | 'writing' | 'published';
   currentStep?: string;
 }
 
@@ -93,15 +96,24 @@ const calculateEstimatedTime = (percentage: number): string => {
 };
 
 export default function StoryGenerationProgress({ storyId, onComplete }: StoryGenerationProgressProps) {
+  const router = useRouter();
+  const params = useParams();
+  const locale = params.locale || 'en';
+  
   const [progress, setProgress] = useState<StoryProgress>({
     storyGenerationCompletedPercentage: 0,
-    storyGenerationStatus: 'running'
+    storyGenerationStatus: 'running',
+    status: 'writing'
   });
   const [currentMessage, setCurrentMessage] = useState('');
   const [isAnimating, setIsAnimating] = useState(false);
-
   // Update funny message periodically
   useEffect(() => {
+    // Don't update messages if story is completed
+    if (progress.status === 'published') {
+      return;
+    }
+    
     const updateMessage = () => {
       setIsAnimating(true);
       setTimeout(() => {
@@ -117,7 +129,7 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
     const messageInterval = setInterval(updateMessage, 8000);
 
     return () => clearInterval(messageInterval);
-  }, [progress.currentStep]);  // Poll for progress updates
+  }, [progress.currentStep, progress.status]);// Poll for progress updates
   useEffect(() => {
     // eslint-disable-next-line prefer-const
     let intervalId: NodeJS.Timeout;
@@ -128,17 +140,20 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
         if (response.ok) {
           const data = await response.json();
           const story = data.story;
-          
-          setProgress({
+            setProgress({
             storyGenerationCompletedPercentage: story.storyGenerationCompletedPercentage || 0,
             storyGenerationStatus: story.storyGenerationStatus || 'running',
+            status: story.status || 'writing',
             currentStep: story.currentStep
-          });
-
-          // If completed, call onComplete callback
-          if (story.storyGenerationStatus === 'completed' && onComplete) {
+          });          // If completed, call onComplete callback
+          if (story.status === 'published' && onComplete) {
             clearInterval(intervalId);
             onComplete();
+          }
+          
+          // Also stop polling if story is published
+          if (story.status === 'published') {
+            clearInterval(intervalId);
           }
         }
       } catch (error) {
@@ -154,10 +169,82 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
 
     return () => clearInterval(intervalId);
   }, [storyId, onComplete]);
-
   const percentage = progress.storyGenerationCompletedPercentage;
   const estimatedTime = calculateEstimatedTime(percentage);
+  const isCompleted = progress.status === 'published';
 
+  // Show completion state when story is published
+  if (isCompleted) {
+    return (
+      <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-8 text-center">
+        {/* Completion Header */}
+        <div className="mb-6">
+          <div className="text-6xl mb-4">🎉</div>
+          <h2 className="text-3xl font-bold text-green-800 mb-2">
+            Your Story is Ready!
+          </h2>
+          <p className="text-green-600 text-lg">
+            Congratulations! Your magical story has been created and is ready to be read.
+          </p>
+        </div>
+
+        {/* Success Animation */}
+        <div className="mb-6">
+          <div className="w-full bg-green-200 rounded-full h-4 relative overflow-hidden">
+            <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-4 rounded-full w-full">
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-40 animate-pulse"></div>
+            </div>
+          </div>
+          <p className="text-green-800 font-bold text-lg mt-2">100% Complete!</p>
+        </div>
+
+        {/* Call to Action */}
+        <div className="mb-6">
+          <button
+            onClick={() => router.push(`/${locale}/stories/read/${storyId}`)}
+            className="btn btn-primary btn-lg bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 border-none text-white shadow-lg"
+          >
+            📖 Read Your Story Now
+          </button>
+        </div>
+
+        {/* Additional Options */}
+        <div className="p-4 bg-white/60 rounded-lg border border-green-200">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button
+              onClick={() => router.push(`/${locale}/stories`)}
+              className="btn btn-outline btn-sm border-green-500 text-green-700 hover:bg-green-500 hover:text-white"
+            >
+              📚 My Stories
+            </button>
+            <button
+              onClick={() => router.push(`/${locale}/stories/actions/${storyId}`)}
+              className="btn btn-outline btn-sm border-green-500 text-green-700 hover:bg-green-500 hover:text-white"
+            >
+              🎧 More Options
+            </button>
+          </div>
+        </div>
+
+        {/* Celebration Message */}
+        <div className="mt-6 p-4 bg-green-100 rounded-lg border border-green-300">
+          <div className="flex items-center justify-center space-x-2">
+            <span className="text-2xl">✨</span>
+            <div>
+              <p className="text-green-800 font-medium text-sm">
+                Your story is now part of the Mythoria collection!
+              </p>
+              <p className="text-green-700 text-sm">
+                Share it with friends or create another magical adventure.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show progress state when story is still being generated
   return (
     <div className="bg-gradient-to-br from-purple-50 to-blue-50 border-2 border-purple-200 rounded-xl p-8 text-center">
       {/* Header */}
