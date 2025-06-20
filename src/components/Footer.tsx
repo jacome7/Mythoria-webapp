@@ -53,7 +53,7 @@ const Footer = () => {
         
         {/* Copyright at the bottom */}
         <div className="border-t border-base-300 pt-4 text-center text-xs">
-          <p className="text-xs">&copy; {currentYear} {t('copyright')} | <Link href="/privacy-policy" className="link link-hover">{t('privacyPolicy')}</Link> | {t('termsConditions')}</p>
+          <p className="text-xs">&copy; {currentYear} {t('copyright')} | <Link href="/privacy-policy" className="link link-hover">{t('privacyPolicy')}</Link> | <Link href="/termsAndConditions" className="link link-hover">{t('termsConditions')}</Link></p>
         </div>
       </div>
     </footer>
