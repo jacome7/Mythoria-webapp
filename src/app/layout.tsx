@@ -38,7 +38,8 @@ export default async function RootLayout({
       localization={enUS}
       // Debug configuration is handled via environment variables
       // Additional debugging props would go here if supported by the version
-    >      <html data-theme="autumn">
+    >
+      <html data-theme="autumn">
         <head>
           <GoogleAnalytics measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-86D0QFW197'} />
         </head>
