@@ -7,9 +7,9 @@ import { useTranslations } from 'next-intl';
 
 const creditPackages = [
 	{ id: 1, credits: 5, price: 5, popular: false, bestValue: false, icon: <FaShoppingCart />, key: 'credits5' },
-	{ id: 2, credits: 10, price: 9, popular: true, bestValue: false, icon: <FaShoppingCart />, key: 'credits10' },
-	{ id: 3, credits: 30, price: 19, popular: false, bestValue: true, icon: <FaShoppingCart />, key: 'credits30' },
-	{ id: 4, credits: 100, price: 49, popular: false, bestValue: false, icon: <FaShoppingCart />, key: 'credits100' },
+	{ id: 2, credits: 10, price: 9, popular: false, bestValue: false, icon: <FaShoppingCart />, key: 'credits10' },
+	{ id: 3, credits: 30, price: 25, popular: false, bestValue: false, icon: <FaShoppingCart />, key: 'credits30' },
+	{ id: 4, credits: 100, price: 79, popular: false, bestValue: false, icon: <FaShoppingCart />, key: 'credits100' },
 ];
 
 interface Service {
@@ -77,7 +77,8 @@ export default function PricingPage() {
 				{/* Credit Packages Section */}
 				<section id="buy-credits" className="my-16">
 					<h2 className="text-4xl font-bold text-center mb-10">{t('creditPackages.title')}</h2>
-					<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">						{creditPackages.map((pkg) => (
+					<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+						{creditPackages.map((pkg) => (
 							<div key={pkg.id} className={`card bg-base-200 shadow-xl relative ${pkg.bestValue ? 'border-2 border-accent' : pkg.popular ? 'border-2 border-secondary' : ''}`}>
 								{pkg.bestValue && <div className="badge badge-accent absolute -top-3 -right-3 p-2">{t('creditPackages.badges.bestValue')}</div>}
 								{pkg.popular && <div className="badge badge-secondary absolute -top-3 -right-3 p-2">{t('creditPackages.badges.popular')}</div>}
@@ -97,7 +98,9 @@ export default function PricingPage() {
 					</div>
 				</section>
 
-				<div className="divider my-16"></div>				{/* Service Costs Section */}
+				<div className="divider my-16"></div>
+				
+				{/* Service Costs Section */}
 				<section id="service-costs" className="my-16">
 					<h2 className="text-4xl font-bold text-center mb-10">{t('serviceCosts.title')}</h2>
 					{loading ? (

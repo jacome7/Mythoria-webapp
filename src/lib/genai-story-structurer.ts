@@ -3,6 +3,119 @@ import { getLanguageSpecificPrompt, getLanguageSpecificSchema } from "./prompt-l
 import { calculateGenAICost, normalizeModelName } from "@/db/genai-cost-calculator";
 import { tokenUsageService } from "@/db/services/token-usage-tracking";
 
+// Define valid character type enum values that match the UI
+const VALID_CHARACTER_TYPES = [
+  "Boy", "Girl", "Baby", "Man", "Woman", "Human", 
+  "Dog", "Dragon", "Fantasy Creature", "Animal", "Other"
+] as const;
+
+// Function to normalize character type to valid enum values that match the UI
+function normalizeCharacterType(type: string | undefined): string | undefined {
+  if (!type || typeof type !== 'string') return type;
+  
+  const trimmedType = type.trim();
+    // Direct match with enum values (case-sensitive)
+  if (VALID_CHARACTER_TYPES.includes(trimmedType as typeof VALID_CHARACTER_TYPES[number])) {
+    return trimmedType;
+  }
+    // Handle common variations that AI might return and map to UI values
+  const typeMap: Record<string, string> = {
+    // Handle old enum values that might still be returned
+    'human': 'Human',
+    'animal': 'Animal',
+    'fantasy_creature': 'Fantasy Creature',
+    'robot': 'Other',
+    'alien': 'Other',
+    'mythical_being': 'Fantasy Creature',
+    'object': 'Other',
+    'other': 'Other',
+    
+    // Handle common variations (case insensitive mapping)
+    'boy': 'Boy',
+    'BOY': 'Boy',
+    'girl': 'Girl',
+    'GIRL': 'Girl',
+    'baby': 'Baby',
+    'BABY': 'Baby',
+    'infant': 'Baby',
+    'toddler': 'Baby',
+    'man': 'Man',
+    'MAN': 'Man',
+    'adult male': 'Man',
+    'male': 'Man',
+    'woman': 'Woman',
+    'WOMAN': 'Woman',
+    'adult female': 'Woman',
+    'female': 'Woman',
+    'Human': 'Human',
+    'HUMAN': 'Human',
+    'person': 'Human',
+    'people': 'Human',
+    'child': 'Human',
+    'adult': 'Human',
+    
+    'dog': 'Dog',
+    'DOG': 'Dog',
+    'puppy': 'Dog',
+    'canine': 'Dog',
+    
+    'dragon': 'Dragon',
+    'DRAGON': 'Dragon',
+    'dragons': 'Dragon',
+    
+    'fantasy creature': 'Fantasy Creature',
+    'FANTASY CREATURE': 'Fantasy Creature',
+    'magical creature': 'Fantasy Creature',
+    'mythical creature': 'Fantasy Creature',
+    'unicorn': 'Fantasy Creature',
+    'fairy': 'Fantasy Creature',
+    'elf': 'Fantasy Creature',
+    'dwarf': 'Fantasy Creature',
+    'wizard': 'Fantasy Creature',
+    'witch': 'Fantasy Creature',
+    
+    'Animal': 'Animal',
+    'ANIMAL': 'Animal',
+    'animals': 'Animal',
+    'pet': 'Animal',
+    'beast': 'Animal',
+    'creature': 'Animal',
+    'cat': 'Animal',
+    'bird': 'Animal',
+    'horse': 'Animal',
+    'rabbit': 'Animal',
+    
+    'Other': 'Other',
+    'OTHER': 'Other',
+    'robots': 'Other',
+    'android': 'Other',
+    'cyborg': 'Other',
+    'machine': 'Other',
+    'aliens': 'Other',
+    'extraterrestrial': 'Other',
+    'et': 'Other',
+    'god': 'Other',
+    'goddess': 'Other',
+    'deity': 'Other',
+    'spirit': 'Other',
+    'ghost': 'Other',
+    'objects': 'Other',
+    'item': 'Other',
+    'thing': 'Other',
+    'inanimate': 'Other'
+  };
+  
+  // Check mapped values
+  const normalizedType = typeMap[trimmedType];
+  if (normalizedType) {
+    return normalizedType;
+  }
+  
+  // If no match found, default to 'Other'
+  console.warn(`Unknown character type "${type}" normalized to "Other"`);
+  return 'Other';
+}
+
 // Initialize GoogleGenAI client with Vertex AI configuration
 const clientOptions = {
   vertexai: true,
@@ -363,6 +476,26 @@ export async function generateStructuredStory(
       
       console.log("Using fallback structure:", JSON.stringify(fallbackResult, null, 2));
       return fallbackResult;
+    }
+
+    // Normalize character types to ensure they match the enum values
+    if (Array.isArray(parsedResult.characters)) {
+      parsedResult.characters = parsedResult.characters.map(char => {
+        return {
+          ...char,
+          type: normalizeCharacterType(char.type)
+        };
+      });
+    }    // Normalize character types to ensure they match the required enum values
+    if (parsedResult.characters && Array.isArray(parsedResult.characters)) {
+      parsedResult.characters = parsedResult.characters.map(character => ({
+        ...character,
+        type: normalizeCharacterType(character.type)
+      }));
+      
+      console.log("Character types after normalization:", 
+        parsedResult.characters.map(char => ({ name: char.name, type: char.type }))
+      );
     }
 
     // Add cost information to the result

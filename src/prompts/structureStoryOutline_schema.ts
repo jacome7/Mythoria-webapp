@@ -50,7 +50,8 @@ export const structureStoryOutlineSchema = {
       type: "array",
       items: {
         type: "object",
-        properties: {          characterId: {
+        properties: {
+          characterId: {
             type: "string",
             nullable: true,
             description: "UUID of existing character if reusing, or null for new characters. Must be null (not 'null' string) when creating new characters."
@@ -61,7 +62,7 @@ export const structureStoryOutlineSchema = {
           },
           type: {
             type: "string",
-            enum: ["human", "animal", "fantasy_creature", "robot", "alien", "mythical_being", "object", "other"],
+            enum: ["Boy", "Girl", "Baby", "Man", "Woman", "Human", "Dog", "Dragon", "Fantasy Creature", "Animal", "Other"],
             description: "What type of being/entity the character is"
           },
           passions: {

@@ -8,7 +8,7 @@ const promptConfig = {
     "Combine insights from both image and text when both are available",
     "Generate creative, engaging story titles that capture the essence of the content",
     "For characters: Match names/traits with existing_characters and reuse characterId when appropriate, otherwise set to null (not string 'null')",
-    "Use enum values exactly as specified in the schema",
+    "Use enum values exactly as specified in the schema - character type must be one of: human, animal, fantasy_creature, robot, alien, mythical_being, object, other (all lowercase)",
     "Provide vivid, detailed descriptions that bring the story to life",
     "Only include fields with actual extractable data",    "When reusing existing characters, provide their characterId but enhance with all new information from user input",
     "GENERATE ALL CONTENT IN THE LANGUAGE SPECIFIED BY THE USER IN STEP-2 (found in the storyLanguage field)",
@@ -30,7 +30,7 @@ const promptConfig = {
     "targetAudience": "children_7-10 (for elementary school kids), children_3-6 (for preschoolers), young_adult_15-17 (for teens), adult_18+ (for adults)",
     "novelStyle": "fantasy (magic, dragons, wizards), adventure (quests, exploration), mystery (puzzles, secrets), fairy_tale (classic stories), contemporary (modern day)",
     "graphicalStyle": "cartoon (animated, colorful style), watercolor (soft, painterly), pixar_style (3D animation look), realistic (lifelike), hand_drawn (sketch-like)",
-    "type": "fantasy_creature (dragons, unicorns, etc.), human (normal people), animal (dogs, cats, etc.)",
+    "type": "Boy (young male), Girl (young female), Baby (infant), Man (adult male), Woman (adult female), Human (general person), Dog (canine), Dragon (mythical creature), Fantasy Creature (magical beings), Animal (non-human creatures), Other (anything else) - MUST match exactly: Boy, Girl, Baby, Man, Woman, Human, Dog, Dragon, Fantasy Creature, Animal, or Other",
     "role": "protagonist (main character), antagonist (villain), supporting (helper character)",
     "superpowers": "can breathe fire and fly or none for regular characters",
     "physicalDescription": "tall brave knight with silver armor and a red cape"
@@ -104,7 +104,7 @@ The response must be JSON with this exact structure:
     {
       "characterId": "Match with existing_characters if applicable, otherwise null (not the string 'null')",
       "name": "Creative, fitting name (in the user's selected language or appropriate for the character's background)",
-      "type": "Accurate classification (human, animal, fantasy_creature, etc.)",
+      "type": "Accurate classification - MUST be exact lowercase match: human, animal, fantasy_creature, robot, alien, mythical_being, object, or other",
       "passions": "What drives this character based on visual or textual clues (in the user's selected language)",
       "superpowers": "Special abilities evident or implied (in the user's selected language, or \"none\" for normal characters)",
       "physicalDescription": "Rich, vivid description of appearance (in the user's selected language)",
@@ -124,7 +124,7 @@ EXAMPLE OUTPUT ELEMENTS:
 • targetAudience: "children_7-10" (elementary school age)
 • novelStyle: "fantasy" (magical adventures with dragons and wizards)
 • graphicalStyle: "cartoon" (bright, animated illustration style)
-• type: "fantasy_creature" (dragons, unicorns, magical beings)
+• type: "Dragon" (mythical creature), "Boy" (young male), "Girl" (young female), "Human" (general person), "Animal" (non-human creatures)
 • role: "protagonist" (main character driving the story)
 • superpowers: "can breathe fire and fly" or "none" for ordinary characters
 • physicalDescription: "tall brave knight with silver armor and a red cape, carrying an enchanted sword"

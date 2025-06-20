@@ -8,7 +8,7 @@ const promptConfig = {
     "Combina insights tanto da imagem quanto do texto quando ambos estão disponíveis",
     "Gera títulos de história criativos e envolventes que capturam a essência do conteúdo",
     "Para personagens: Combina nomes/traços com existing_characters e reutiliza characterId quando apropriado, caso contrário define como null",
-    "Usa valores enum exatamente como especificado no esquema",
+    "Usa valores enum exatamente como especificado no esquema - tipo de personagem deve ser um dos seguintes: human, animal, fantasy_creature, robot, alien, mythical_being, object, other (todos em minúsculas)",
     "Fornece descrições vívidas e detalhadas que dão vida à história",
     "Inclui apenas campos com dados efetivamente extraíveis",
     "Ao reutilizar personagens existentes, fornece o characterId mas enriquece com toda a nova informação do input do utilizador",
@@ -30,7 +30,7 @@ const promptConfig = {
     "targetAudience": "children_7-10 (para crianças do ensino básico), children_3-6 (para pré-escolares), young_adult_15-17 (para adolescentes), adult_18+ (para adultos)",
     "novelStyle": "fantasy (magia, dragões, feiticeiros), adventure (aventuras, exploração), mystery (mistérios, segredos), fairy_tale (contos clássicos), contemporary (tempos modernos)",
     "graphicalStyle": "cartoon (estilo animado e colorido), watercolor (aquarela suave), pixar_style (estilo animação 3D), realistic (realista), hand_drawn (desenho à mão)",
-    "type": "fantasy_creature (dragões, unicórnios, etc.), human (pessoas normais), animal (cães, gatos, etc.)",
+    "type": "Boy (rapaz jovem), Girl (rapariga jovem), Baby (bebé), Man (homem adulto), Woman (mulher adulta), Human (pessoa geral), Dog (cão), Dragon (criatura mítica), Fantasy Creature (seres mágicos), Animal (criaturas não-humanas), Other (qualquer outra coisa) - DEVE corresponder exatamente: Boy, Girl, Baby, Man, Woman, Human, Dog, Dragon, Fantasy Creature, Animal, ou Other",
     "role": "protagonist (personagem principal), antagonist (vilão), supporting (personagem de apoio)",
     "superpowers": "pode cuspir fogo e voar ou none para personagens normais",
     "physicalDescription": "cavaleiro alto e corajoso com armadura prateada e uma capa vermelha"
@@ -123,7 +123,7 @@ ELEMENTOS DE OUTPUT EXEMPLO:
 • targetAudience: "children_7-10" (idade do ensino básico)
 • novelStyle: "fantasy" (aventuras mágicas com dragões e feiticeiros)
 • graphicalStyle: "cartoon" (estilo de ilustração brilhante e animado)
-• type: "human" (pessoa normal), "fantasy_creature" (dragões, unicórnios, seres mágicos), "animal" (cães, gatos, etc.)
+• type: "Dragon" (criatura mítica), "Boy" (rapaz jovem), "Girl" (rapariga jovem), "Human" (pessoa geral), "Animal" (criaturas não-humanas)
 • role: "protagonist" (personagem principal que conduz a história)
 • superpowers: "pode cuspir fogo e voar" ou "none" para personagens comuns
 • physicalDescription: "cavaleiro alto e corajoso com armadura prateada e uma capa vermelha, carregando uma espada encantada"

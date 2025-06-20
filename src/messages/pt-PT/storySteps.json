@@ -45,11 +45,9 @@
       "recordingHelp": "Conta a tua história! Fala claramente para o microfone.",      "reassurance": "Se escreveste texto ou carregaste uma imagem acima, a nossa IA irá extrair automaticamente personagens, cenários e temas. Caso contrário, os próximos passos vão guiar-te na criação da tua história passo a passo.",
       "processing": "A processar com IA...",
       "nextChapter": "Próximo Capítulo",
-      "next": "Seguinte",
-      "loadingModal": {
+      "next": "Seguinte",      "loadingModal": {
         "title": "✨ A Criar a Tua História",
         "message": "Os nossos Oompa Loompas mágicos estão a trabalhar arduamente para preparar a tua história! Isto pode demorar um momento...",
-        "processingText": "A processar o teu conteúdo criativo...",
         "pleaseWait": "Por favor aguarda enquanto fazemos a nossa magia! ✨"
       }
     },    "step3": {

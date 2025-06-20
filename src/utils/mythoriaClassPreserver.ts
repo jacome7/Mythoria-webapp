@@ -190,11 +190,9 @@ const preserveStoryStructure = (container: HTMLElement): void => {
   });
 
   // Preserve paragraph classes
-  const paragraphs = container.querySelectorAll('p');
-  paragraphs.forEach(p => {
+  const paragraphs = container.querySelectorAll('p');  paragraphs.forEach(p => {
     if (!MYTHORIA_CLASS_NAMES.some(cls => p.classList.contains(cls))) {
       const parent = p.closest('div');
-      const text = p.textContent?.toLowerCase() || '';
       
       // Message text pattern
       if (parent && parent.classList.contains('mythoria-message')) {

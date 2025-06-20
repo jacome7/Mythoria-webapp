@@ -83,10 +83,9 @@ export default function Step4Page() {
     ...getAllGraphicalStyles().map(value => ({
       value,
       label: GraphicalStyleLabels[value]
-    }))  ];
-  // Auto-update chapter count when target audience changes (unless manually overridden)
+    }))  ];  // Auto-update chapter count when target audience changes (unless manually overridden)
   useEffect(() => {
-    if (!isChapterCountManual) {
+    if (!isChapterCountManual && targetAudience) {
       const newCount = getChapterCountForAudience(targetAudience);
       setChapterCount(newCount);
     }
@@ -110,12 +109,12 @@ export default function Step4Page() {
       setNovelStyle(story.novelStyle || '');
       setGraphicalStyle(story.graphicalStyle || '');
       setPlotDescription(story.plotDescription || '');
-      setAdditionalRequests(story.additionalRequests || '');
-      
-      // Handle chapter count - if it exists, mark as manual; otherwise use audience-based default
+      setAdditionalRequests(story.additionalRequests || '');      // Handle chapter count - only mark as manual if it differs from the expected automatic value
       if (story.chapterCount !== null && story.chapterCount !== undefined) {
+        const expectedCount = getChapterCountForAudience(story.targetAudience || '');
+        const isManuallySet = story.chapterCount !== expectedCount;
         setChapterCount(story.chapterCount);
-        setIsChapterCountManual(true);
+        setIsChapterCountManual(isManuallySet);
       } else {
         const defaultCount = getChapterCountForAudience(story.targetAudience || '');
         setChapterCount(defaultCount);
@@ -293,15 +292,18 @@ export default function Step4Page() {
                           <span className="label-text-alt">{t('fields.placeHelp')}</span>
                         </label>
                       </div>
-                      
-                      {/* Target Audience Field */}
+                        {/* Target Audience Field */}
                       <div className="form-control">
                         <label className="label">
                           <span className="label-text font-semibold">{t('fields.audience')}</span>
-                        </label>
-                        <select
+                        </label>                        <select
                           value={targetAudience}
-                          onChange={(e) => setTargetAudience(e.target.value as TargetAudience | '')}
+                          onChange={(e) => {
+                            const newAudience = e.target.value as TargetAudience | '';
+                            setTargetAudience(newAudience);
+                            // Reset manual flag to allow automatic chapter count adjustment
+                            setIsChapterCountManual(false);
+                          }}
                           className="select select-bordered w-full"
                         >
                           {targetAudienceOptions.map((option) => (
@@ -313,29 +315,54 @@ export default function Step4Page() {
                         <label className="label">
                           <span className="label-text-alt">{t('fields.audienceHelp')}</span>
                         </label>
-                      </div>
-
-                      {/* Book Size Field */}
+                      </div>                      {/* Book Size Field */}
                       <div className="form-control">
                         <label className="label">
                           <span className="label-text font-semibold">{t('fields.bookSize')}</span>
                         </label>
-                        <select
-                          value={chapterCount}
-                          onChange={(e) => {
-                            setChapterCount(Number(e.target.value));
-                            setIsChapterCountManual(true);
-                          }}
-                          className="select select-bordered w-full"
-                        >
-                          {[3, 4, 5, 6, 8, 10, 12, 15, 18, 20].map((count) => (
-                            <option key={count} value={count}>
-                              {count} {count === 1 ? 'chapter' : 'chapters'}
-                            </option>
-                          ))}
-                        </select>
+                        <div className="flex gap-2">
+                          <select
+                            value={chapterCount}
+                            onChange={(e) => {
+                              setChapterCount(Number(e.target.value));
+                              setIsChapterCountManual(true);
+                            }}
+                            className="select select-bordered w-full"
+                          >
+                            {[3, 4, 5, 6, 8, 10, 12, 15, 18, 20].map((count) => (
+                              <option key={count} value={count}>
+                                {count} {count === 1 ? 'chapter' : 'chapters'}
+                              </option>
+                            ))}
+                          </select>
+                          {isChapterCountManual && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsChapterCountManual(false);
+                                const autoCount = getChapterCountForAudience(targetAudience);
+                                setChapterCount(autoCount);
+                              }}
+                              className="btn btn-outline btn-sm"
+                              title="Reset to automatic chapter count based on target audience"
+                            >
+                              🔄 Auto
+                            </button>
+                          )}
+                        </div>
                         <label className="label">
-                          <span className="label-text-alt">{t('fields.bookSizeHelp')}</span>
+                          <span className="label-text-alt">
+                            {t('fields.bookSizeHelp')}
+                            {!isChapterCountManual && (
+                              <span className="text-info block mt-1">
+                                💡 Adjusts automatically based on target audience
+                              </span>
+                            )}                            {isChapterCountManual && (
+                              <span className="text-warning block mt-1">
+                                ⚠️ Manual override active - click &quot;Auto&quot; to restore automatic adjustment
+                              </span>
+                            )}
+                          </span>
                         </label>
                       </div>
                       

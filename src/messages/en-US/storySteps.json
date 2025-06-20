@@ -45,11 +45,9 @@
       "recordingHelp": "Tell your story! Speak clearly into your microphone.",      "reassurance": "If you've written text or uploaded an image above, our AI will automatically extract characters, settings, and themes. Otherwise, the next steps will guide you through creating your story step by step.",
       "processing": "Processing with AI...",
       "nextChapter": "Next Chapter",
-      "next": "Next",
-      "loadingModal": {
+      "next": "Next",      "loadingModal": {
         "title": "✨ Creating Your Story",
         "message": "Our magical Oompa Loompas are hard at work preparing your story! This might take a moment...",
-        "processingText": "Processing your creative content...",
         "pleaseWait": "Please wait while we work our magic! ✨"
       }
     },    "step3": {

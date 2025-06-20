@@ -634,10 +634,8 @@ export default function Step2Page() {
                 <div className="flex justify-center">
                   <span className="loading loading-spinner loading-lg text-primary"></span>
                 </div>
-                
-                <div className="space-y-3">
+                  <div className="space-y-3">
                   <p className="text-base">{t('loadingModal.message')}</p>
-                  <p className="text-sm text-gray-600">{t('loadingModal.processingText')}</p>
                   <p className="text-sm font-medium text-primary">{t('loadingModal.pleaseWait')}</p>
                 </div>
                 
