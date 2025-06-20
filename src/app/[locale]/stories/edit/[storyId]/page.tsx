@@ -221,6 +221,7 @@ export default function EditStoryPage() {
               initialContent={storyContent || ''}
               onSave={handleSaveEdit}
               onCancel={handleCancelEdit}
+              storyId={storyId}
               storyMetadata={{
                 targetAudience: story?.targetAudience,
                 graphicalStyle: story?.graphicalStyle,

@@ -21,12 +21,14 @@ import {
   FiRotateCcw,
   FiRotateCw,
   FiCode,
-  FiEye
+  FiEye,
+  FiZap
 } from 'react-icons/fi';
 import { useFloating, autoUpdate, offset, flip, shift } from '@floating-ui/react';
 import { useToast } from '@/hooks/useToast';
 import ToastContainer from './ToastContainer';
 import { loadStoryCSS, removeStoryCSS } from '@/lib/story-css';
+import AIEditModal from './AIEditModal';
 
 // Custom TipTap extensions for preserving Mythoria structure
 
@@ -301,6 +303,8 @@ interface BookEditorProps {
     graphicalStyle?: string;
     title?: string;
   };
+  storyId?: string;
+  onAIEdit?: (updatedHtml: string) => void;
 }
 
 interface FindReplaceState {
@@ -311,11 +315,12 @@ interface FindReplaceState {
   totalMatches: number;
 }
 
-export default function BookEditor({ initialContent, onSave, onCancel, storyMetadata }: BookEditorProps) {
+export default function BookEditor({ initialContent, onSave, onCancel, storyMetadata, storyId, onAIEdit }: BookEditorProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [isHtmlView, setIsHtmlView] = useState(false);
   const [htmlContent, setHtmlContent] = useState(initialContent);
+  const [showAIEditModal, setShowAIEditModal] = useState(false);
   const toast = useToast();
   const [findReplace, setFindReplace] = useState<FindReplaceState>({
     isOpen: false,
@@ -510,6 +515,24 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleSave]);
 
+  // Handle AI edit success
+  const handleAIEditSuccess = useCallback((updatedHtml: string) => {
+    // Update the editor content with the AI-edited HTML
+    if (isHtmlView) {
+      setHtmlContent(updatedHtml);
+    } else if (editor) {
+      editor.commands.setContent(updatedHtml);
+    }
+    
+    setHasChanges(true);
+    toast.success('Story updated with AI improvements! Review the changes and save when ready.');
+    
+    // Call the optional callback for parent component
+    if (onAIEdit) {
+      onAIEdit(updatedHtml);
+    }
+  }, [editor, isHtmlView, onAIEdit, toast]);
+
   if (!editor) {
     return (
       <div className="flex justify-center items-center min-h-96">
@@ -637,6 +660,19 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
               <FiSearch />
             </button>
 
+            {/* AI Edit Button */}
+            {storyId && (
+              <button
+                onClick={() => setShowAIEditModal(true)}
+                className="btn btn-outline btn-primary btn-sm"
+                disabled={isHtmlView}
+                title="AI Edit - Improve your story with AI"
+              >
+                <FiZap className="w-4 h-4" />
+                AI Edit
+              </button>
+            )}
+
             {/* Save Button */}
             <button
               onClick={handleSave}
@@ -750,7 +786,17 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
         </div>
       )}
       
-      {/* Toast Container */}
+      {/* Toast Container */}      {/* AI Edit Modal */}
+      {storyId && (
+        <AIEditModal
+          isOpen={showAIEditModal}
+          onClose={() => setShowAIEditModal(false)}
+          storyId={storyId}
+          storyContent={isHtmlView ? htmlContent : (editor?.getHTML() || '')}
+          onEditSuccess={handleAIEditSuccess}
+        />
+      )}
+
       <ToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />
     </div>
   );

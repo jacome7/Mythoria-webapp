@@ -42,6 +42,10 @@ export const getEnvironmentConfig = () => {
       modelId: process.env.MODEL_ID || 'gemini-2.5-flash',
       pubsubTopic: process.env.PUBSUB_TOPIC || 'mythoria-story-requests',
     },
+    
+    storyGeneration: {
+      workflowUrl: process.env.STORY_GENERATION_WORKFLOW_URL || 'http://localhost:8080',
+    },
   };
 };
 
