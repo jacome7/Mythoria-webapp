@@ -5,6 +5,7 @@ import StepNavigation from '../../../../components/StepNavigation';
 import ClientAuthWrapper from '../../../../components/ClientAuthWrapper';
 import { useState, useEffect, useCallback } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
+import { trackStoryCreation } from '../../../../lib/analytics';
 
 interface AuthorData {
   authorId: string;
@@ -23,12 +24,12 @@ export default function Step1Page() {
   const [, setAuthorData] = useState<AuthorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Form data
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [mobilePhone, setMobilePhone] = useState('');
-  
+
   // Original values to track changes
   const [originalValues, setOriginalValues] = useState<{
     displayName: string;
@@ -39,42 +40,42 @@ export default function Step1Page() {
     email: '',
     mobilePhone: ''
   });
-    // Flag to track if any field has been edited
+  // Flag to track if any field has been edited
   const [hasChanges, setHasChanges] = useState(false);
 
   const fetchAuthorData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await fetch('/api/auth/me');
-      
+
       if (!response.ok) {
         throw new Error(t('messages.fetchFailed'));
       }
-      
+
       const data: AuthorData = await response.json();
       setAuthorData(data);
-      
+
       // Pre-populate form fields
       const initialDisplayName = data.displayName || '';
       const initialEmail = data.email || '';
       const initialMobilePhone = data.mobilePhone || '';
-      
+
       setDisplayName(initialDisplayName);
       setEmail(initialEmail);
       setMobilePhone(initialMobilePhone);
-      
+
       // Store original values for change tracking
       setOriginalValues({
         displayName: initialDisplayName,
         email: initialEmail,
         mobilePhone: initialMobilePhone
       });
-      
+
       // Reset changes flag
       setHasChanges(false);
-      
+
     } catch (error) {
       console.error('Error fetching author data:', error);
       setError(t('messages.loadFailed'));
@@ -82,21 +83,26 @@ export default function Step1Page() {
       setLoading(false);
     }
   }, [t]);
-
   useEffect(() => {
     fetchAuthorData();
+
+    // Track that user started story creation process
+    trackStoryCreation.started({
+      step: 1,
+      user_profile_exists: true // We can set this based on response later
+    });
   }, [fetchAuthorData]);
-  
+
   // Function to check if current values differ from original values
   const checkForChanges = (currentDisplayName: string, currentEmail: string, currentMobilePhone: string) => {
-    const hasChanged = 
+    const hasChanged =
       currentDisplayName !== originalValues.displayName ||
       currentEmail !== originalValues.email ||
       currentMobilePhone !== originalValues.mobilePhone;
-    
+
     setHasChanges(hasChanged);
   };
-    const handleNext = async (): Promise<boolean> => {
+  const handleNext = async (): Promise<boolean> => {
     if (!displayName || !email) {
       setError(t('messages.required'));
       return false; // Prevent navigation
@@ -105,28 +111,37 @@ export default function Step1Page() {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Only update profile if there are changes
       if (hasChanges) {
         // Here you would typically save the data to your database
         // For now, we'll just simulate a successful save
-        
+
         // Update original values after successful save
         setOriginalValues({
           displayName,
           email,
           mobilePhone
-        });
-        setHasChanges(false);
+        }); setHasChanges(false);
       }
-      
+
+      // Track step 1 completion
+      trackStoryCreation.step1Completed({
+        step: 1,
+        profile_updated: hasChanges,
+        display_name_provided: !!displayName,
+        email_provided: !!email,
+        phone_provided: !!mobilePhone
+      });
+
       return true; // Allow navigation
     } catch (err) {
       console.error('Failed to save profile:', err);
       setError(t('messages.saveFailed'));
       return false; // Prevent navigation
     } finally {
-      setLoading(false);    }
+      setLoading(false);
+    }
   };
   return (
     <div className="container mx-auto px-4 py-8">
@@ -154,47 +169,47 @@ export default function Step1Page() {
       >
         <div className="max-w-4xl mx-auto">
           {/* Progress indicator */}            {(() => {
-              const currentStep = 1;
-              const totalSteps = 6;
-              return (
-                <>
-                  {/* Mobile Progress Indicator */}
-                  <div className="block md:hidden mb-8">
-                    <div className="text-center text-sm text-gray-600 mb-2">
-                      Step {currentStep} of {totalSteps}
-                    </div>
-                    <progress 
-                      className="progress progress-primary w-full" 
-                      value={currentStep} 
-                      max={totalSteps}
-                    ></progress>
+            const currentStep = 1;
+            const totalSteps = 6;
+            return (
+              <>
+                {/* Mobile Progress Indicator */}
+                <div className="block md:hidden mb-8">
+                  <div className="text-center text-sm text-gray-600 mb-2">
+                    Step {currentStep} of {totalSteps}
                   </div>
+                  <progress
+                    className="progress progress-primary w-full"
+                    value={currentStep}
+                    max={totalSteps}
+                  ></progress>
+                </div>
 
-                  {/* Desktop Progress Indicator */}
-                  <div className="hidden md:block mb-8">
-                    <ul className="steps steps-horizontal w-full">
-                      <li className="step step-primary" data-content="1"></li>
-                      <li className="step" data-content="2"></li>
-                      <li className="step" data-content="3"></li>
-                      <li className="step" data-content="4"></li>
-                      <li className="step" data-content="5"></li>
-                      <li className="step" data-content="6"></li>
-                    </ul>
-                  </div>
-                </>
-              );
-            })()}
+                {/* Desktop Progress Indicator */}
+                <div className="hidden md:block mb-8">
+                  <ul className="steps steps-horizontal w-full">
+                    <li className="step step-primary" data-content="1"></li>
+                    <li className="step" data-content="2"></li>
+                    <li className="step" data-content="3"></li>
+                    <li className="step" data-content="4"></li>
+                    <li className="step" data-content="5"></li>
+                    <li className="step" data-content="6"></li>
+                  </ul>
+                </div>
+              </>
+            );
+          })()}
 
           {/* Step content */}
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
               <h1 className="card-title text-3xl mb-6">{t('heading')}</h1>
-              
+
               {loading ? (
                 <div className="text-center py-12">
                   <span className="loading loading-spinner loading-lg"></span>
                   <p className="text-lg text-gray-600 mt-4">{t('messages.loadingProfile')}</p>
-                </div>              ) : (
+                </div>) : (
                 <div className="space-y-6">
                   <div className="prose max-w-none mb-6">
                     <p className="text-gray-600">{t('intro')}</p>
@@ -249,7 +264,7 @@ export default function Step1Page() {
                         <span className="label-text-alt">{t('fields.emailHelp')}</span>
                       </label>
                     </div>
-                    
+
                     {/* Mobile Phone Field */}
                     <div className="form-control">
                       <label className="label">
@@ -270,7 +285,7 @@ export default function Step1Page() {
                 </div>
               )}
 
-              <StepNavigation 
+              <StepNavigation
                 currentStep={1}
                 totalSteps={7}
                 nextHref="/tell-your-story/step-2"

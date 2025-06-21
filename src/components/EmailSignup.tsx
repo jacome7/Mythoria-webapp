@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { trackAuth } from '../lib/analytics';
 
 interface EmailSignupProps {
   className?: string;
@@ -32,9 +33,14 @@ const EmailSignup = ({ className = "" }: EmailSignupProps) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email: email.trim() }),
-      });      const data = await response.json();
+      });      const data = await response.json();      if (response.ok) {
+        // Track lead capture event
+        trackAuth.leadCapture({
+          form_type: 'newsletter',
+          email_provided: !!email.trim(),
+          already_registered: data.alreadyRegistered
+        });
 
-      if (response.ok) {
         if (data.alreadyRegistered) {
           setMessage(t('messages.alreadyRegistered'));
         } else {
@@ -43,7 +49,7 @@ const EmailSignup = ({ className = "" }: EmailSignupProps) => {
         setIsSuccess(true);
         if (data.success) {
           setEmail(''); // Clear email if it's a new signup
-        }      } else {
+        }} else {
         // Handle specific API error messages
         if (data.error === 'Please enter a valid email address') {
           setMessage(t('validation.emailInvalid'));
@@ -71,7 +77,8 @@ const EmailSignup = ({ className = "" }: EmailSignupProps) => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="flex flex-col sm:flex-row gap-3">          <input
+        <div className="flex flex-col sm:flex-row gap-3">
+          <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -120,7 +127,9 @@ const EmailSignup = ({ className = "" }: EmailSignupProps) => {
             <span>{message}</span>
           </div>
         )}
-      </form>      <div className="text-center mt-4">
+      </form>
+      
+      <div className="text-center mt-4">
         <p className="text-xs text-base-content/50">
           {t('privacy')}
         </p>

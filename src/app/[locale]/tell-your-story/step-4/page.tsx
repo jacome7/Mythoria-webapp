@@ -5,10 +5,11 @@ import StepNavigation from '../../../../components/StepNavigation';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { trackStoryCreation } from '../../../../lib/analytics';
 import { getCurrentStoryId, hasValidStorySession } from '../../../../lib/story-session';
-import { 
-  TargetAudience, 
-  NovelStyle, 
+import {
+  TargetAudience,
+  NovelStyle,
   GraphicalStyle,
   TargetAudienceLabels,
   NovelStyleLabels,
@@ -49,7 +50,7 @@ export default function Step4Page() {
   // Chapter count mapping based on target audience
   const getChapterCountForAudience = useCallback((audience: TargetAudience | ''): number => {
     if (!audience) return 6;
-      const chapterMap: Record<TargetAudience, number> = {
+    const chapterMap: Record<TargetAudience, number> = {
       [TargetAudience.CHILDREN_0_2]: 5,
       [TargetAudience.CHILDREN_3_6]: 6,
       [TargetAudience.CHILDREN_7_10]: 10,
@@ -58,7 +59,7 @@ export default function Step4Page() {
       [TargetAudience.ADULT_18_PLUS]: 15,
       [TargetAudience.ALL_AGES]: 10
     };
-    
+
     return chapterMap[audience] || 6;
   }, []);
 
@@ -83,7 +84,7 @@ export default function Step4Page() {
     ...getAllGraphicalStyles().map(value => ({
       value,
       label: GraphicalStyleLabels[value]
-    }))  ];  // Auto-update chapter count when target audience changes (unless manually overridden)
+    }))];  // Auto-update chapter count when target audience changes (unless manually overridden)
   useEffect(() => {
     if (!isChapterCountManual && targetAudience) {
       const newCount = getChapterCountForAudience(targetAudience);
@@ -94,13 +95,13 @@ export default function Step4Page() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await fetch(`/api/my-stories/${storyId}`);
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch story data');
       }
-      
+
       const data = await response.json();
       const story: StoryData = data.story;        // Pre-populate form fields
       setTitle(story.title || '');
@@ -120,9 +121,10 @@ export default function Step4Page() {
         setChapterCount(defaultCount);
         setIsChapterCountManual(false);
       }
-        } catch (error) {
+    } catch (error) {
       console.error('Error fetching story data:', error);
-      setError('Failed to load story information. Please try again.');    } finally {
+      setError('Failed to load story information. Please try again.');
+    } finally {
       setLoading(false);
     }
   }, [getChapterCountForAudience]);
@@ -136,7 +138,7 @@ export default function Step4Page() {
 
     const storyId = getCurrentStoryId();
     setCurrentStoryId(storyId);
-    
+
     if (storyId) {
       fetchStoryData(storyId);
     }
@@ -173,15 +175,27 @@ export default function Step4Page() {
           additionalRequests: additionalRequests.trim() || null,
           chapterCount: chapterCount,
         }),
-      });
-
-      if (!response.ok) {
+      }); if (!response.ok) {
         throw new Error('Failed to save story details');
       }
 
+      // Track step 4 completion
+      trackStoryCreation.step4Completed({
+        step: 4,
+        story_id: currentStoryId,
+        title_provided: !!title.trim(),
+        place_provided: !!place.trim(),
+        target_audience: targetAudience || undefined,
+        novel_style: novelStyle || undefined,
+        graphical_style: graphicalStyle || undefined,
+        chapter_count: chapterCount,
+        has_plot_description: !!plotDescription.trim(),
+        has_additional_requests: !!additionalRequests.trim()
+      });
+
       // Navigate to next step after successful save
       router.push('/tell-your-story/step-5');
-      
+
     } catch (error) {
       console.error('Error saving story:', error);
       setError('Failed to save story details. Please try again.');
@@ -195,7 +209,7 @@ export default function Step4Page() {
       <SignedOut>
         <RedirectToSignIn />
       </SignedOut>
-      
+
       <SignedIn>
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
@@ -210,13 +224,13 @@ export default function Step4Page() {
                     <div className="text-center text-sm text-gray-600 mb-2">
                       Step {currentStep} of {totalSteps}
                     </div>
-                    <progress 
-                      className="progress progress-primary w-full" 
-                      value={currentStep} 
+                    <progress
+                      className="progress progress-primary w-full"
+                      value={currentStep}
                       max={totalSteps}
                     ></progress>
                   </div>
-                  
+
                   {/* Desktop Progress Indicator */}
                   <div className="hidden md:block mb-8">
                     <ul className="steps steps-horizontal w-full">
@@ -236,7 +250,7 @@ export default function Step4Page() {
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
                 <h1 className="card-title text-3xl mb-6">{t('heading')}</h1>
-                
+
                 {loading ? (
                   <div className="text-center py-12">
                     <span className="loading loading-spinner loading-lg"></span>
@@ -275,7 +289,7 @@ export default function Step4Page() {
                           <span className="label-text-alt">{t('fields.titleHelp')}</span>
                         </label>
                       </div>
-                      
+
                       {/* Place Field */}
                       <div className="form-control md:col-span-2">
                         <label className="label">
@@ -292,7 +306,7 @@ export default function Step4Page() {
                           <span className="label-text-alt">{t('fields.placeHelp')}</span>
                         </label>
                       </div>
-                        {/* Target Audience Field */}
+                      {/* Target Audience Field */}
                       <div className="form-control">
                         <label className="label">
                           <span className="label-text font-semibold">{t('fields.audience')}</span>
@@ -365,7 +379,7 @@ export default function Step4Page() {
                           </span>
                         </label>
                       </div>
-                      
+
                       {/* Novel Style Field */}
                       <div className="form-control">
                         <label className="label">
@@ -386,7 +400,7 @@ export default function Step4Page() {
                           <span className="label-text-alt">{t('fields.novelStyleHelp')}</span>
                         </label>
                       </div>
-                      
+
                       {/* Graphic Style Field */}
                       <div className="form-control">
                         <label className="label">

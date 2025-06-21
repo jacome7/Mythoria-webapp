@@ -5,6 +5,7 @@ import StepNavigation from '../../../../components/StepNavigation';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { trackStoryCreation } from '../../../../lib/analytics';
 import { getCurrentStoryId, hasValidStorySession } from '../../../../lib/story-session';
 
 interface StoryData {
@@ -17,7 +18,7 @@ interface StoryData {
   };
   deliveryAddress?: {
     line1?: string;
-    line2?: string;    city?: string;
+    line2?: string; city?: string;
     stateRegion?: string;
     postalCode?: string;
     country?: string;
@@ -57,21 +58,21 @@ export default function Step5Page() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentStoryId, setCurrentStoryId] = useState<string | null>(null);
-    // User credits state
+  // User credits state
   const [userCredits, setUserCredits] = useState<number>(0);
   const [showBuyCreditsModal, setShowBuyCreditsModal] = useState(false);
 
-  
+
   // Pricing data state
   const [pricingData, setPricingData] = useState<PricingData | null>(null);
-  
+
   // Form data
   const [selectedFeatures, setSelectedFeatures] = useState({
     ebook: true, // Default and mandatory
     printed: false,
     audiobook: false,
   });
-  
+
   const [deliveryAddress, setDeliveryAddress] = useState({
     line1: '',
     line2: '',
@@ -81,7 +82,7 @@ export default function Step5Page() {
     country: '',
     phone: '',
   });
-  
+
   const [dedicationMessage, setDedicationMessage] = useState('');
   const [showAddressForm, setShowAddressForm] = useState(false);
   useEffect(() => {
@@ -93,7 +94,7 @@ export default function Step5Page() {
 
     const storyId = getCurrentStoryId();
     setCurrentStoryId(storyId);
-    
+
     // Fetch pricing data and story data in parallel
     Promise.all([
       fetchPricingData(),
@@ -120,16 +121,16 @@ export default function Step5Page() {
   const fetchStoryData = async (storyId: string) => {
     try {
       setError(null);
-      
+
       const response = await fetch(`/api/my-stories/${storyId}`);
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch story data');
       }
-      
+
       const data = await response.json();
       const story: StoryData = data.story;
-      
+
       // Pre-populate form fields
       if (story.features) {
         setSelectedFeatures({
@@ -139,7 +140,7 @@ export default function Step5Page() {
         });
         setShowAddressForm(story.features.printed ?? false);
       }
-      
+
       if (story.deliveryAddress) {
         setDeliveryAddress({
           line1: story.deliveryAddress.line1 || '',
@@ -151,9 +152,9 @@ export default function Step5Page() {
           phone: story.deliveryAddress.phone || '',
         });
       }
-      
+
       setDedicationMessage(story.dedicationMessage || '');
-      
+
     } catch (error) {
       console.error('Error fetching story data:', error);
       setError('Failed to load story information. Please try again.');
@@ -163,14 +164,14 @@ export default function Step5Page() {
   const fetchUserCredits = async () => {
     try {
       const response = await fetch('/api/my-credits');
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch user credits');
       }
-      
+
       const data = await response.json();
       setUserCredits(data.currentBalance || 0);
-      
+
     } catch (error) {
       console.error('Error fetching user credits:', error);
       // Don't set error state for credits as it's not critical for the page to load
@@ -179,12 +180,12 @@ export default function Step5Page() {
 
   const handleFeatureChange = (feature: 'ebook' | 'printed' | 'audiobook', checked: boolean) => {
     if (feature === 'ebook') return; // ebook is mandatory
-    
+
     setSelectedFeatures(prev => ({
       ...prev,
       [feature]: checked
     }));
-    
+
     if (feature === 'printed') {
       setShowAddressForm(checked);
       if (!checked) {
@@ -210,12 +211,12 @@ export default function Step5Page() {
   };
   const calculateTotalCredits = () => {
     if (!pricingData) return 0;
-    
+
     let total = 0;
     if (selectedFeatures.ebook) total += pricingData.ebook.credits;
     if (selectedFeatures.printed) total += pricingData.printed.credits;
     if (selectedFeatures.audiobook) total += pricingData.audiobook.credits;
-    
+
     return total;
   };
 
@@ -229,13 +230,13 @@ export default function Step5Page() {
 
   const validateForm = () => {
     if (selectedFeatures.printed && showAddressForm) {
-      if (!deliveryAddress.line1.trim() || 
-          !deliveryAddress.city.trim() || 
-          !deliveryAddress.postalCode.trim() || 
-          !deliveryAddress.country.trim()) {
+      if (!deliveryAddress.line1.trim() ||
+        !deliveryAddress.city.trim() ||
+        !deliveryAddress.postalCode.trim() ||
+        !deliveryAddress.country.trim()) {
         return 'Please fill in all required address fields for printed book delivery.';
       }
-    }    return null;
+    } return null;
   };
 
   const handleNext = async () => {
@@ -299,15 +300,23 @@ export default function Step5Page() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updateData),
-      });
-
-      if (!response.ok) {
+      }); if (!response.ok) {
         throw new Error('Failed to save delivery preferences');
-      }
+      }      // Track step 5 completion
+      trackStoryCreation.step5Completed({
+        step: 5,
+        story_id: currentStoryId,
+        ebook_selected: selectedFeatures.ebook,
+        printed_selected: selectedFeatures.printed,
+        audiobook_selected: selectedFeatures.audiobook,
+        credits_deducted: creditsResult.creditsUsed,
+        has_dedication: !!dedicationMessage.trim(),
+        includes_delivery: selectedFeatures.printed && showAddressForm
+      });
 
       // Navigate to next step after successful save
       router.push('/tell-your-story/step-6');
-      
+
     } catch (error) {
       console.error('Error processing order:', error);
       setError(`Failed to process your order: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -320,7 +329,7 @@ export default function Step5Page() {
       <SignedOut>
         <RedirectToSignIn />
       </SignedOut>
-      
+
       <SignedIn>
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
@@ -334,9 +343,9 @@ export default function Step5Page() {
                     <div className="text-center text-sm text-gray-600 mb-2">
                       Step {currentStep} of {totalSteps}
                     </div>
-                    <progress 
-                      className="progress progress-primary w-full" 
-                      value={currentStep} 
+                    <progress
+                      className="progress progress-primary w-full"
+                      value={currentStep}
                       max={totalSteps}
                     ></progress>
                   </div>                  {/* Desktop Progress Indicator */}
@@ -358,270 +367,272 @@ export default function Step5Page() {
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
                 <h1 className="card-title text-3xl mb-6">{t('heading')}</h1>
-                  {loading || !pricingData ? (
+                {loading || !pricingData ? (
                   <div className="text-center py-12">
                     <span className="loading loading-spinner loading-lg"></span>
                     <p className="text-lg text-gray-600 mt-4">{t('creating')}</p>
                   </div>
                 ) : (<div className="space-y-6">
-                    <div className="prose max-w-none mb-6">
-                      <p className="text-gray-600">{t('intro')}</p>
+                  <div className="prose max-w-none mb-6">
+                    <p className="text-gray-600">{t('intro')}</p>
+                  </div>
+
+                  {error && (
+                    <div className="alert alert-error">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>{error}</span>
                     </div>
+                  )}
 
-                    {error && (
-                      <div className="alert alert-error">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span>{error}</span>
-                      </div>
-                    )}
+                  {/* Delivery Options */}
+                  {pricingData && (
+                    <div className="space-y-4">
+                      <h2 className="text-xl font-semibold mb-4">{t('deliveryOptions')}</h2>
 
-                    {/* Delivery Options */}
-                    {pricingData && (
-                      <div className="space-y-4">
-                        <h2 className="text-xl font-semibold mb-4">{t('deliveryOptions')}</h2>
-                        
-                        {/* Digital (ebook) - Mandatory */}
-                        <div className="card bg-base-200">
-                          <div className="card-body">                            <div className="form-control">
-                              <label className="label cursor-pointer flex-col sm:flex-row items-start sm:items-center gap-3">                                <div className="flex-1 w-full">
-                                  <span className="label-text font-semibold text-lg break-words">
-                                    {pricingData.ebook.name}
-                                  </span>
-                                  <p className="text-sm text-gray-600 mt-1 break-words text-wrap">
-                                    {pricingData.ebook.description}
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-3 whitespace-nowrap">
-                                  <span className="font-semibold text-primary text-sm sm:text-base">{pricingData.ebook.credits} credits</span>
-                                  <input 
-                                    type="checkbox" 
-                                    checked={true}
-                                    disabled={true}
-                                    className="checkbox checkbox-primary" 
-                                  />
-                                </div>
-                              </label>
-                            </div>
+                      {/* Digital (ebook) - Mandatory */}
+                      <div className="card bg-base-200">
+                        <div className="card-body">                            <div className="form-control">
+                          <label className="label cursor-pointer flex-col sm:flex-row items-start sm:items-center gap-3">                                <div className="flex-1 w-full">
+                            <span className="label-text font-semibold text-lg break-words">
+                              {pricingData.ebook.name}
+                            </span>
+                            <p className="text-sm text-gray-600 mt-1 break-words text-wrap">
+                              {pricingData.ebook.description}
+                            </p>
                           </div>
+                            <div className="flex items-center gap-3 whitespace-nowrap">
+                              <span className="font-semibold text-primary text-sm sm:text-base">{pricingData.ebook.credits} credits</span>
+                              <input
+                                type="checkbox"
+                                checked={true}
+                                disabled={true}
+                                className="checkbox checkbox-primary"
+                              />
+                            </div>
+                          </label>
                         </div>
+                        </div>
+                      </div>
 
-                        {/* Printed Book */}
-                        <div className="card bg-base-100 border">
-                          <div className="card-body">                            <div className="form-control">
-                              <label className="label cursor-pointer flex-col sm:flex-row items-start sm:items-center gap-3">
-                                <div className="flex-1 w-full">
-                                  <span className="label-text font-semibold text-lg break-words">
-                                    {pricingData.printed.name}
-                                  </span>
-                                  <p className="text-sm text-gray-600 mt-1 break-words text-wrap">
-                                    {pricingData.printed.description}
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-3 whitespace-nowrap">
-                                  <span className="font-semibold text-primary text-sm sm:text-base">{pricingData.printed.credits} credits</span>
-                                  <input 
-                                    type="checkbox" 
-                                    checked={selectedFeatures.printed}
-                                    onChange={(e) => handleFeatureChange('printed', e.target.checked)}
-                                    className="checkbox checkbox-primary" 
+                      {/* Printed Book */}
+                      <div className="card bg-base-100 border">
+                        <div className="card-body">                            <div className="form-control">
+                          <label className="label cursor-pointer flex-col sm:flex-row items-start sm:items-center gap-3">
+                            <div className="flex-1 w-full">
+                              <span className="label-text font-semibold text-lg break-words">
+                                {pricingData.printed.name}
+                              </span>
+                              <p className="text-sm text-gray-600 mt-1 break-words text-wrap">
+                                {pricingData.printed.description}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-3 whitespace-nowrap">
+                              <span className="font-semibold text-primary text-sm sm:text-base">{pricingData.printed.credits} credits</span>
+                              <input
+                                type="checkbox"
+                                checked={selectedFeatures.printed}
+                                onChange={(e) => handleFeatureChange('printed', e.target.checked)}
+                                className="checkbox checkbox-primary"
+                              />
+                            </div>
+                          </label>
+                        </div>
+                          {/* Address Form - Show when printed book is selected */}
+                          {showAddressForm && selectedFeatures.printed && (
+                            <div className="mt-4 pt-4 border-t">
+                              <h3 className="font-semibold mb-3">Delivery Address</h3>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="form-control md:col-span-2">
+                                  <label className="label">
+                                    <span className="label-text">Address Line 1 *</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={deliveryAddress.line1}
+                                    onChange={(e) => handleAddressChange('line1', e.target.value)}
+                                    placeholder="Street address, P.O. box"
+                                    className="input input-bordered w-full"
+                                    required
                                   />
                                 </div>
-                              </label>
-                            </div>
-                            {/* Address Form - Show when printed book is selected */}
-                            {showAddressForm && selectedFeatures.printed && (
-                              <div className="mt-4 pt-4 border-t">
-                                <h3 className="font-semibold mb-3">Delivery Address</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div className="form-control md:col-span-2">
-                                    <label className="label">
-                                      <span className="label-text">Address Line 1 *</span>
-                                    </label>
-                                    <input
-                                      type="text"
-                                      value={deliveryAddress.line1}
-                                      onChange={(e) => handleAddressChange('line1', e.target.value)}
-                                      placeholder="Street address, P.O. box"
-                                      className="input input-bordered w-full"
-                                      required
-                                    />
-                                  </div>
-                                  
-                                  <div className="form-control md:col-span-2">
-                                    <label className="label">
-                                      <span className="label-text">Address Line 2</span>
-                                    </label>
-                                    <input
-                                      type="text"
-                                      value={deliveryAddress.line2}
-                                      onChange={(e) => handleAddressChange('line2', e.target.value)}
-                                      placeholder="Apartment, suite, unit, building"
-                                      className="input input-bordered w-full"
-                                    />
-                                  </div>
-                                  
-                                  <div className="form-control">
-                                    <label className="label">
-                                      <span className="label-text">City *</span>
-                                    </label>
-                                    <input
-                                      type="text"
-                                      value={deliveryAddress.city}
-                                      onChange={(e) => handleAddressChange('city', e.target.value)}
-                                      placeholder="City"
-                                      className="input input-bordered w-full"
-                                      required
-                                    />
-                                  </div>
-                                  
-                                  <div className="form-control">
-                                    <label className="label">
-                                      <span className="label-text">State/Region</span>
-                                    </label>
-                                    <input
-                                      type="text"
-                                      value={deliveryAddress.stateRegion}
-                                      onChange={(e) => handleAddressChange('stateRegion', e.target.value)}
-                                      placeholder="State or Region"
-                                      className="input input-bordered w-full"
-                                    />
-                                  </div>
-                                  
-                                  <div className="form-control">
-                                    <label className="label">
-                                      <span className="label-text">Postal Code *</span>
-                                    </label>
-                                    <input
-                                      type="text"
-                                      value={deliveryAddress.postalCode}
-                                      onChange={(e) => handleAddressChange('postalCode', e.target.value)}
-                                      placeholder="Postal/ZIP code"
-                                      className="input input-bordered w-full"
-                                      required
-                                    />
-                                  </div>
-                                  
-                                  <div className="form-control">
-                                    <label className="label">
-                                      <span className="label-text">Country *</span>
-                                    </label>
-                                    <input
-                                      type="text"
-                                      value={deliveryAddress.country}
-                                      onChange={(e) => handleAddressChange('country', e.target.value)}
-                                      placeholder="Country"
-                                      className="input input-bordered w-full"
-                                      required
-                                    />
-                                  </div>
-                                  
-                                  <div className="form-control md:col-span-2">
-                                    <label className="label">
-                                      <span className="label-text">Phone Number</span>
-                                    </label>
-                                    <input
-                                      type="tel"
-                                      value={deliveryAddress.phone}
-                                      onChange={(e) => handleAddressChange('phone', e.target.value)}
-                                      placeholder="Phone number for delivery contact"
-                                      className="input input-bordered w-full"
-                                    />
-                                  </div>
+
+                                <div className="form-control md:col-span-2">
+                                  <label className="label">
+                                    <span className="label-text">Address Line 2</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={deliveryAddress.line2}
+                                    onChange={(e) => handleAddressChange('line2', e.target.value)}
+                                    placeholder="Apartment, suite, unit, building"
+                                    className="input input-bordered w-full"
+                                  />
+                                </div>
+
+                                <div className="form-control">
+                                  <label className="label">
+                                    <span className="label-text">City *</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={deliveryAddress.city}
+                                    onChange={(e) => handleAddressChange('city', e.target.value)}
+                                    placeholder="City"
+                                    className="input input-bordered w-full"
+                                    required
+                                  />
+                                </div>
+
+                                <div className="form-control">
+                                  <label className="label">
+                                    <span className="label-text">State/Region</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={deliveryAddress.stateRegion}
+                                    onChange={(e) => handleAddressChange('stateRegion', e.target.value)}
+                                    placeholder="State or Region"
+                                    className="input input-bordered w-full"
+                                  />
+                                </div>
+
+                                <div className="form-control">
+                                  <label className="label">
+                                    <span className="label-text">Postal Code *</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={deliveryAddress.postalCode}
+                                    onChange={(e) => handleAddressChange('postalCode', e.target.value)}
+                                    placeholder="Postal/ZIP code"
+                                    className="input input-bordered w-full"
+                                    required
+                                  />
+                                </div>
+
+                                <div className="form-control">
+                                  <label className="label">
+                                    <span className="label-text">Country *</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={deliveryAddress.country}
+                                    onChange={(e) => handleAddressChange('country', e.target.value)}
+                                    placeholder="Country"
+                                    className="input input-bordered w-full"
+                                    required
+                                  />
+                                </div>
+
+                                <div className="form-control md:col-span-2">
+                                  <label className="label">
+                                    <span className="label-text">Phone Number</span>
+                                  </label>
+                                  <input
+                                    type="tel"
+                                    value={deliveryAddress.phone}
+                                    onChange={(e) => handleAddressChange('phone', e.target.value)}
+                                    placeholder="Phone number for delivery contact"
+                                    className="input input-bordered w-full"
+                                  />
                                 </div>
                               </div>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Audiobook */}
-                        <div className="card bg-base-100 border">
-                          <div className="card-body">                            <div className="form-control">
-                              <label className="label cursor-pointer flex-col sm:flex-row items-start sm:items-center gap-3">
-                                <div className="flex-1 w-full">
-                                  <span className="label-text font-semibold text-lg break-words">
-                                    {pricingData.audiobook.name}
-                                  </span>
-                                  <p className="text-sm text-gray-600 mt-1 break-words text-wrap">
-                                    {pricingData.audiobook.description}
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-3 whitespace-nowrap">
-                                  <span className="font-semibold text-primary text-sm sm:text-base">{pricingData.audiobook.credits} credits</span>
-                                  <input 
-                                    type="checkbox" 
-                                    checked={selectedFeatures.audiobook}
-                                    onChange={(e) => handleFeatureChange('audiobook', e.target.checked)}
-                                    className="checkbox checkbox-primary" 
-                                  />
-                                </div>
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Dedication Message */}
-                    <div className="form-control">
-                      <label className="label">
-                        <span className="label-text font-semibold">Dedication Message</span>
-                        <span className="label-text-alt">Optional</span>
-                      </label>
-                      <textarea
-                        value={dedicationMessage}
-                        onChange={(e) => setDedicationMessage(e.target.value)}
-                        placeholder="Write a personalized dedication message for the first page of your book..."
-                        className="textarea textarea-bordered h-24 w-full"
-                        rows={4}
-                      />
-                      <label className="label">
-                        <span className="label-text-alt">This message will appear on the first page of your story</span>
-                      </label>
-                    </div>
-                    
-                    {/* Credits Summary */}
-                    <div className="space-y-4">
-                      {/* User's Available Credits */}
-                      <div className="card bg-base-200">
-                        <div className="card-body">
-                          <div className="flex justify-between items-center">
-                            <span className="text-lg font-semibold">Available Credits:</span>
-                            <span className="text-2xl font-bold text-success">{userCredits} credits</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Total Credits Required */}
-                      <div className={`card ${hasInsufficientCredits() ? 'bg-error text-error-content' : 'bg-primary text-primary-content'}`}>
-                        <div className="card-body">
-                          <div className="flex justify-between items-center">
-                            <span className="text-lg font-semibold">Credits Required:</span>
-                            <span className="text-2xl font-bold">{calculateTotalCredits()} credits</span>
-                          </div>
-                          {hasInsufficientCredits() && (
-                            <div className="mt-2 text-sm">
-                              You need {calculateTotalCredits() - userCredits} more credits to proceed.
                             </div>
                           )}
                         </div>
                       </div>
 
-                      {/* Buy More Credits Button */}
-                      {hasInsufficientCredits() && (
-                        <div className="text-center">
-                          <button 
-                            onClick={handleBuyMoreCredits}
-                            className="btn btn-warning btn-lg"
-                          >
-                            {t('buyMoreCredits')}
-                          </button>
+                      {/* Audiobook */}
+                      <div className="card bg-base-100 border">
+                        <div className="card-body">
+                          <div className="form-control">
+                            <label className="label cursor-pointer flex-col sm:flex-row items-start sm:items-center gap-3">
+                              <div className="flex-1 w-full">
+                                <span className="label-text font-semibold text-lg break-words">
+                                  {pricingData.audiobook.name}
+                                </span>
+                                <p className="text-sm text-gray-600 mt-1 break-words text-wrap">
+                                  {pricingData.audiobook.description}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-3 whitespace-nowrap">
+                                <span className="font-semibold text-primary text-sm sm:text-base">{pricingData.audiobook.credits} credits</span>
+                                <input
+                                  type="checkbox"
+                                  checked={selectedFeatures.audiobook}
+                                  onChange={(e) => handleFeatureChange('audiobook', e.target.checked)}
+                                  className="checkbox checkbox-primary"
+                                />
+                              </div>
+                            </label>
+                          </div>
                         </div>
-                      )}
+                      </div>
                     </div>
+                  )}
+
+                  {/* Dedication Message */}
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-semibold">Dedication Message</span>
+                      <span className="label-text-alt">Optional</span>
+                    </label>
+                    <textarea
+                      value={dedicationMessage}
+                      onChange={(e) => setDedicationMessage(e.target.value)}
+                      placeholder="Write a personalized dedication message for the first page of your book..."
+                      className="textarea textarea-bordered h-24 w-full"
+                      rows={4}
+                    />
+                    <label className="label">
+                      <span className="label-text-alt">This message will appear on the first page of your story</span>
+                    </label>
                   </div>
-                )}                <StepNavigation
+
+                  {/* Credits Summary */}
+                  <div className="space-y-4">
+                    {/* User's Available Credits */}
+                    <div className="card bg-base-200">
+                      <div className="card-body">
+                        <div className="flex justify-between items-center">
+                          <span className="text-lg font-semibold">Available Credits:</span>
+                          <span className="text-2xl font-bold text-success">{userCredits} credits</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Total Credits Required */}
+                    <div className={`card ${hasInsufficientCredits() ? 'bg-error text-error-content' : 'bg-primary text-primary-content'}`}>
+                      <div className="card-body">
+                        <div className="flex justify-between items-center">
+                          <span className="text-lg font-semibold">Credits Required:</span>
+                          <span className="text-2xl font-bold">{calculateTotalCredits()} credits</span>
+                        </div>
+                        {hasInsufficientCredits() && (
+                          <div className="mt-2 text-sm">
+                            You need {calculateTotalCredits() - userCredits} more credits to proceed.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Buy More Credits Button */}
+                    {hasInsufficientCredits() && (
+                      <div className="text-center">
+                        <button
+                          onClick={handleBuyMoreCredits}
+                          className="btn btn-warning btn-lg"
+                        >
+                          {t('buyMoreCredits')}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                )}
+                <StepNavigation
                   currentStep={5}
                   totalSteps={6}
                   nextHref="/tell-your-story/step-6"
@@ -633,7 +644,8 @@ export default function Step5Page() {
               </div>
             </div>
           </div>
-        </div>        {/* Buy More Credits Modal */}
+        </div>
+        {/* Buy More Credits Modal */}
         {showBuyCreditsModal && (
           <div className="modal modal-open">
             <div className="modal-box">
@@ -642,8 +654,8 @@ export default function Step5Page() {
                 {t('buyMoreCreditsInfo')}
               </p>
               <div className="modal-action">
-                <button 
-                  className="btn" 
+                <button
+                  className="btn"
                   onClick={() => setShowBuyCreditsModal(false)}
                 >
                   {t('close')}
@@ -651,7 +663,8 @@ export default function Step5Page() {
               </div>
             </div>
             <div className="modal-backdrop" onClick={() => setShowBuyCreditsModal(false)}></div>
-          </div>        )}
+          </div>
+        )}
       </SignedIn>
     </>
   );

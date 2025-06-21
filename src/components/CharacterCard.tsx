@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import { trackStoryCreation } from '../lib/analytics';
 import { Character } from '../lib/story-session';
 
 interface CharacterCardProps {
@@ -28,7 +29,7 @@ const formatRoleName = (role: string, t: (key: string) => string): string => {
   return translated;
 };
 
-const getCharacterTypes = (t: (key: string) => string): Array<{value: string, label: string}> => [
+const getCharacterTypes = (t: (key: string) => string): Array<{ value: string, label: string }> => [
   { value: 'Boy', label: t('types.boy') },
   { value: 'Girl', label: t('types.girl') },
   { value: 'Baby', label: t('types.baby') },
@@ -42,7 +43,7 @@ const getCharacterTypes = (t: (key: string) => string): Array<{value: string, la
   { value: 'Other', label: t('types.other') }
 ];
 
-const getCharacterRoles = (t: (key: string) => string): Array<{value: string, label: string}> => [
+const getCharacterRoles = (t: (key: string) => string): Array<{ value: string, label: string }> => [
   { value: 'protagonist', label: t('roles.protagonist') },
   { value: 'antagonist', label: t('roles.antagonist') },
   { value: 'supporting', label: t('roles.supporting') },
@@ -54,13 +55,13 @@ const getCharacterRoles = (t: (key: string) => string): Array<{value: string, la
   { value: 'other', label: t('roles.other') }
 ];
 
-export default function CharacterCard({ 
-  character, 
-  mode, 
-  onSave, 
-  onEdit, 
-  onDelete, 
-  onCancel 
+export default function CharacterCard({
+  character,
+  mode,
+  onSave,
+  onEdit,
+  onDelete,
+  onCancel
 }: CharacterCardProps) {
   const t = useTranslations('Characters');
   const characterTypes = getCharacterTypes(t);
@@ -76,7 +77,7 @@ export default function CharacterCard({
     photoUrl: character?.photoUrl || '',
     ...character
   });
-  
+
   const [showOtherTypeInput, setShowOtherTypeInput] = useState(
     character?.type ? !characterTypes.some(ct => ct.value === character.type) : false
   );
@@ -87,7 +88,7 @@ export default function CharacterCard({
 
   const handleInputChange = (field: keyof Character, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    
+
     if (field === 'type' && value === 'Other') {
       setShowOtherTypeInput(true);
     } else if (field === 'type' && value !== 'Other') {
@@ -114,7 +115,6 @@ export default function CharacterCard({
       setUploading(false);
     }
   };
-
   const handleSave = async () => {
     if (!formData.name.trim()) {
       alert(t('validation.nameRequired'));
@@ -124,6 +124,22 @@ export default function CharacterCard({
     setSaving(true);
     try {
       await onSave(formData);
+
+      // Track character creation or customization
+      if (mode === 'create') {
+        trackStoryCreation.characterAdded({
+          character_name: formData.name,
+          character_type: formData.type,
+          character_role: formData.role
+        });
+      } else if (mode === 'edit') {
+        trackStoryCreation.characterCustomized({
+          character_name: formData.name,
+          character_type: formData.type,
+          character_role: formData.role,
+          has_custom_image: !!formData.photoUrl
+        });
+      }
     } catch (error) {
       console.error('Error saving character:', error);
       alert(t('errors.saveFailed'));
@@ -163,8 +179,8 @@ export default function CharacterCard({
               {formData.photoUrl && (
                 <div className="avatar">
                   <div className="w-16 h-16 rounded-full relative overflow-hidden">
-                    <Image 
-                      src={formData.photoUrl} 
+                    <Image
+                      src={formData.photoUrl}
                       alt={formData.name}
                       fill
                       className="object-cover"
@@ -284,7 +300,7 @@ export default function CharacterCard({
               <option key={type.value} value={type.value}>{type.label}</option>
             ))}
           </select>
-          
+
           {showOtherTypeInput && (
             <input
               type="text"
@@ -337,13 +353,13 @@ export default function CharacterCard({
           <label className="label">
             <span className="label-text font-semibold">{t('fields.photo')}</span>
           </label>
-          
+
           {formData.photoUrl ? (
             <div className="flex items-center space-x-4">
               <div className="avatar">
                 <div className="w-16 h-16 rounded-full relative overflow-hidden">
-                  <Image 
-                    src={formData.photoUrl} 
+                  <Image
+                    src={formData.photoUrl}
                     alt="Character"
                     fill
                     className="object-cover"
@@ -375,7 +391,7 @@ export default function CharacterCard({
               {uploading ? '' : `📸 ${t('actions.uploadPhoto')}`}
             </button>
           )}
-          
+
           <input
             ref={fileInputRef}
             type="file"

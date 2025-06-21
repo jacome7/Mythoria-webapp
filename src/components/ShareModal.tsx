@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { 
-  FiX, 
-  FiShare2, 
-  FiCopy, 
-  FiMail, 
+import {
+  FiX,
+  FiShare2,
+  FiCopy,
+  FiMail,
   FiUsers,
   FiGlobe,
   FiLock,
@@ -13,6 +13,7 @@ import {
   FiInfo
 } from 'react-icons/fi';
 import { FaWhatsapp, FaFacebook } from 'react-icons/fa';
+import { trackStoryManagement } from '../lib/analytics';
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -35,7 +36,7 @@ interface ShareData {
 export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onShareSuccess }: ShareModalProps) {
   const [allowEdit, setAllowEdit] = useState(false);
   const [makePublic, setMakePublic] = useState(false);
-  const [loading, setLoading] = useState(false);  const [shareData, setShareData] = useState<ShareData | null>(null);
+  const [loading, setLoading] = useState(false); const [shareData, setShareData] = useState<ShareData | null>(null);
   const [copied, setCopied] = useState(false);
 
   if (!isOpen) return null;
@@ -44,7 +45,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
     try {
       console.log('Creating share link for story:', storyId);
       console.log('Request body:', { allowEdit, makePublic, expiresInDays: 30 });
-      
+
       const response = await fetch(`/api/stories/${storyId}/share`, {
         method: 'POST',
         headers: {
@@ -59,7 +60,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
 
       console.log('Response status:', response.status);
       console.log('Response ok:', response.ok);
-      
+
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Response error:', errorText);
@@ -68,14 +69,23 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
 
       const data = await response.json();
       console.log('Response data:', data);
-      
       if (data.success) {
         setShareData(data);
         onShareSuccess?.(data);
+
+        // Track story sharing
+        trackStoryManagement.shared({
+          story_id: storyId,
+          story_title: storyTitle,
+          share_type: makePublic ? 'public' : 'private',
+          allow_edit: allowEdit,
+          expires_in_days: 30
+        });
       } else {
         console.error('Error creating share link:', data.error);
         alert(`Error creating share link: ${data.error}`);
-      }    } catch (error) {
+      }
+    } catch (error) {
       console.error('Error creating share link:', error);
       alert(`Failed to create share link: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
@@ -290,7 +300,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
                 {/* Share Options */}
                 <div className="space-y-3">
                   <h4 className="font-medium text-center">Share via:</h4>
-                  
+
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       onClick={() => handleWhatsApp(getFullUrl(shareData.url))}
@@ -299,7 +309,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
                       <FaWhatsapp className="text-green-600" />
                       WhatsApp
                     </button>
-                    
+
                     <button
                       onClick={() => handleFacebook(getFullUrl(shareData.url))}
                       className="btn btn-outline btn-sm flex items-center gap-2"
@@ -307,7 +317,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
                       <FaFacebook className="text-blue-600" />
                       Facebook
                     </button>
-                    
+
                     <button
                       onClick={() => handleEmail(getFullUrl(shareData.url))}
                       className="btn btn-outline btn-sm flex items-center gap-2"
@@ -315,7 +325,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
                       <FiMail />
                       Email
                     </button>
-                    
+
                     <button
                       onClick={() => handleNativeShare(getFullUrl(shareData.url))}
                       className="btn btn-outline btn-sm flex items-center gap-2"

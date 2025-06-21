@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { FiBook, FiVolume2, FiEdit3, FiShare2, FiArrowLeft } from 'react-icons/fi';
+import { trackStoryManagement } from '../../../../../lib/analytics';
 import StoryReader from '../../../../../components/StoryReader';
 import StoryRating from '../../../../../components/StoryRating';
 import ShareModal from '../../../../../components/ShareModal';
@@ -50,6 +51,15 @@ export default function ReadStoryPage() {
             return;
           }
           setStory(data.story);
+
+          // Track story viewing
+          trackStoryManagement.viewed({
+            story_id: data.story.storyId,
+            story_title: data.story.title,
+            story_status: data.story.status,
+            target_audience: data.story.targetAudience,
+            graphical_style: data.story.graphicalStyle
+          });
 
           // Use the HTML content from the API response
           if (data.htmlContent) {

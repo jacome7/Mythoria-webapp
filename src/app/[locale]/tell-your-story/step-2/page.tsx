@@ -6,6 +6,7 @@ import StepNavigation from '../../../../components/StepNavigation';
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
+import { trackStoryCreation } from '../../../../lib/analytics';
 
 export default function Step2Page() {
   const router = useRouter();
@@ -275,7 +276,7 @@ export default function Step2Page() {
           // Continue anyway - user can still create story manually
         }
       }
-
+      
       // Store the story content data for use in step-3
       localStorage.setItem('step2Data', JSON.stringify({
         text: storyText,
@@ -284,6 +285,19 @@ export default function Step2Page() {
         hasAudio: uploadedAudio !== null,
         activeTab: activeTab
       }));
+      
+      // Track step 2 completion
+      trackStoryCreation.step2Completed({
+        step: 2,
+        story_id: story.storyId,
+        content_type: activeTab,
+        has_text: !!storyText.trim(),
+        has_image: uploadedImage !== null,
+        has_audio: uploadedAudio !== null,
+        story_language: storyLanguage,
+        processed_with_genai: !!(storyText.trim() || uploadedImage || uploadedAudio)
+      });
+      
       // Navigate to step 3
       router.push('/tell-your-story/step-3');
 
@@ -306,7 +320,8 @@ export default function Step2Page() {
       <SignedIn>
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
-            {/* Progress indicator */}            {(() => {
+            {/* Progress indicator */}
+            {(() => {
               const currentStep = 2;
               const totalSteps = 6;
               return (
@@ -339,11 +354,14 @@ export default function Step2Page() {
             })()}
 
             {/* Step content */}
-            <div className="card bg-base-100 shadow-xl">              <div className="card-body">
+            <div className="card bg-base-100 shadow-xl">
+              <div className="card-body">
                 <h1 className="card-title text-3xl mb-6">{t('heading')}</h1>
                 <div className="prose max-w-none mb-6">
                   <p className="text-gray-600 text-lg">{t('intro')}</p>
-                </div>                {/* Language Selection */}
+                </div>
+                
+                {/* Language Selection */}
                 <div className="mb-6">
                   <div className="form-control max-w-sm">
                     <label className="label">
@@ -412,7 +430,8 @@ export default function Step2Page() {
 
                     {/* Image Upload Tab Content */}
                     {activeTab === 'image' && (
-                      <div className="space-y-6">                        {!imagePreview && !isCapturing && (
+                      <div className="space-y-6">
+                        {!imagePreview && !isCapturing && (
                           <div className="text-center space-y-4">
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                               <button
@@ -504,7 +523,8 @@ export default function Step2Page() {
                     
                     {/* Audio Upload Tab Content */}
                     {activeTab === 'audio' && (
-                      <div className="space-y-6">                        {!audioPreview && !isRecording && (
+                      <div className="space-y-6">
+                        {!audioPreview && !isRecording && (
                           <div className="text-center space-y-4">
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                               <button

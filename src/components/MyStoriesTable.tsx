@@ -12,6 +12,7 @@ import {
   FiChevronDown,
   FiBook
 } from 'react-icons/fi';
+import { trackStoryManagement } from '../lib/analytics';
 import ShareModal from './ShareModal';
 
 interface Story {
@@ -70,9 +71,13 @@ export default function MyStoriesTable() {
     try {
       const response = await fetch(`/api/my-stories/${storyToDelete.storyId}`, {
         method: 'DELETE',
-      });
-
-      if (response.ok) {
+      });      if (response.ok) {        // Track story deletion
+        trackStoryManagement.deleted({
+          story_id: storyToDelete.storyId,
+          story_title: storyToDelete.title,
+          story_status: storyToDelete.status
+        });
+        
         setStories(stories.filter(s => s.storyId !== storyToDelete.storyId));
         setDeleteModalOpen(false);
         setStoryToDelete(null);

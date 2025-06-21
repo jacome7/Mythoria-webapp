@@ -5,6 +5,7 @@ import StepNavigation from '@/components/StepNavigation';
 import StoryGenerationProgress from '@/components/StoryGenerationProgress';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { trackStoryCreation } from '@/lib/analytics';
 import { getCurrentStoryId, hasValidStorySession } from '@/lib/story-session';
 
 interface StoryData {
@@ -45,7 +46,7 @@ export default function Step6Page() {
 
     const storyId = getCurrentStoryId();
     setCurrentStoryId(storyId);
-    
+
     if (storyId) {
       fetchStoryData(storyId);
     } else {
@@ -56,13 +57,13 @@ export default function Step6Page() {
   const fetchStoryData = async (storyId: string) => {
     try {
       setError(null);
-      
+
       const response = await fetch(`/api/my-stories/${storyId}`);
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch story data');
       }
-      
+
       const data = await response.json();
       setStoryData(data.story);
     } catch (error) {
@@ -98,10 +99,17 @@ export default function Step6Page() {
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to complete story');
-      }
-
-      const result = await response.json();
-      console.log('Story generation started:', result);
+      } const result = await response.json();
+      console.log('Story generation started:', result);      // Track story generation request
+      const features = storyData.features || { ebook: true, printed: false, audiobook: false };
+      trackStoryCreation.generationRequested({
+        story_id: currentStoryId,
+        ebook_requested: features.ebook || false,
+        printed_requested: features.printed || false,
+        audiobook_requested: features.audiobook || false,
+        has_delivery_address: !!storyData.deliveryAddress,
+        has_dedication: !!storyData.dedicationMessage
+      });
 
       // Show the progress component instead of navigating to step-7
       setStoryGenerationStarted(true);
@@ -122,13 +130,13 @@ export default function Step6Page() {
         </div>
       </div>
     );
-  }  return (
+  } return (
     <>
       <SignedOut>
         <RedirectToSignIn />
       </SignedOut>
-      
-      <SignedIn>        
+
+      <SignedIn>
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             {/* Show progress component if story generation has started */}
@@ -136,7 +144,8 @@ export default function Step6Page() {
               <StoryGenerationProgress storyId={currentStoryId!} />
             ) : (
               <>
-                {/* Progress indicator */}            {(() => {
+                {/* Progress indicator */}
+                {(() => {
                   const currentStep = 6;
                   const totalSteps = 6;
                   return (
@@ -146,9 +155,9 @@ export default function Step6Page() {
                         <div className="text-center text-sm text-gray-600 mb-2">
                           Step {currentStep} of {totalSteps}
                         </div>
-                        <progress 
-                          className="progress progress-primary w-full" 
-                          value={currentStep} 
+                        <progress
+                          className="progress progress-primary w-full"
+                          value={currentStep}
                           max={totalSteps}
                         ></progress>
                       </div>
@@ -172,7 +181,7 @@ export default function Step6Page() {
                 <div className="card bg-base-100 shadow-xl">
                   <div className="card-body">
                     <h1 className="card-title text-3xl mb-6">Complete Your Story</h1>
-                    
+
                     {error && (
                       <div className="alert alert-error mb-6">
                         <span>{error}</span>
@@ -186,7 +195,7 @@ export default function Step6Page() {
                           <p className="text-lg text-gray-600 mb-6">
                             We&apos;re about to start creating your personalized story: <strong>{storyData.title}</strong>
                           </p>
-                          
+
                           <div className="card bg-base-200 p-6 mb-6">
                             <h3 className="text-lg font-semibold mb-4">Story Features:</h3>
                             <div className="flex flex-wrap justify-center gap-4">
@@ -205,14 +214,14 @@ export default function Step6Page() {
                           <div className="alert alert-info mb-6">
                             <div className="flex flex-col items-center">
                               <span className="font-semibold">⏱️ Story Generation Process</span>                          <span className="text-sm mt-2">
-                                This process may take several minutes. We&apos;ll create your story chapters, 
-                                generate illustrations, and prepare all selected formats. You&apos;ll be able to 
+                                This process may take several minutes. We&apos;ll create your story chapters,
+                                generate illustrations, and prepare all selected formats. You&apos;ll be able to
                                 track the progress from your &quot;My Stories&quot; page.
                               </span>
                             </div>
                           </div>
 
-                          <button 
+                          <button
                             className={`btn btn-primary btn-lg ${submitting ? 'loading' : ''}`}
                             onClick={handleCompleteStory}
                             disabled={submitting}
@@ -225,7 +234,7 @@ export default function Step6Page() {
                       <div className="text-center py-12">
                         <p className="text-lg text-gray-600">Story data not available. Please try again.</p>
                       </div>
-                    )}                <StepNavigation 
+                    )}                <StepNavigation
                       currentStep={6}
                       totalSteps={6}
                       nextHref={null} // No next button, user must complete the story

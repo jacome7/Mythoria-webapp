@@ -9,9 +9,9 @@ import TextStyle from '@tiptap/extension-text-style';
 import { Color } from '@tiptap/extension-color';
 import TextAlign from '@tiptap/extension-text-align';
 import { Node, mergeAttributes } from '@tiptap/core';
-import { 
-  FiBold, 
-  FiItalic, 
+import {
+  FiBold,
+  FiItalic,
   FiUnderline,
   FiAlignLeft,
   FiAlignCenter,
@@ -26,6 +26,7 @@ import {
 } from 'react-icons/fi';
 import { useFloating, autoUpdate, offset, flip, shift } from '@floating-ui/react';
 import { useToast } from '@/hooks/useToast';
+import { trackStoryManagement } from '@/lib/analytics';
 import ToastContainer from './ToastContainer';
 import { loadStoryCSS, removeStoryCSS } from '@/lib/story-css';
 import AIEditModal from './AIEditModal';
@@ -39,7 +40,7 @@ const MythoriaDiv = Node.create({
   content: 'inline*',
   defining: true,
   draggable: false,
-  
+
   addAttributes() {
     return {
       class: {
@@ -93,7 +94,7 @@ const MythoriaMessage = Node.create({
   group: 'block',
   content: 'block+',
   defining: true,
-  
+
   addAttributes() {
     return {
       class: {
@@ -126,7 +127,7 @@ const MythoriaChapter = Node.create({
   group: 'block',
   content: 'block+',
   defining: true,
-  
+
   addAttributes() {
     return {
       class: {
@@ -167,7 +168,7 @@ const MythoriaTableOfContents = Node.create({
   group: 'block',
   content: 'block+',
   defining: true,
-  
+
   addAttributes() {
     return {
       class: {
@@ -200,7 +201,7 @@ const MythoriaCover = Node.create({
   group: 'block',
   content: 'inline*',
   defining: true,
-  
+
   addAttributes() {
     return {
       class: {
@@ -242,7 +243,7 @@ const MythoriaHeading = Node.create({
   group: 'block',
   content: 'inline*',
   defining: true,
-  
+
   addAttributes() {
     return {
       level: {
@@ -258,12 +259,12 @@ const MythoriaHeading = Node.create({
         renderHTML: attributes => {
           const level = attributes.level || 1;
           const existingClass = attributes.class || '';
-          
+
           // If already has a mythoria class, keep it
           if (existingClass.includes('mythoria-')) {
             return { class: existingClass };
           }
-          
+
           // Otherwise assign based on level
           const mythoriaClass = level === 1 ? 'mythoria-story-title' : 'mythoria-chapter-title';
           return { class: existingClass ? `${existingClass} ${mythoriaClass}` : mythoriaClass };
@@ -362,7 +363,7 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
         // Disable list functionality
         bulletList: false,
         orderedList: false,
-        listItem: false,        paragraph: {
+        listItem: false, paragraph: {
           HTMLAttributes: {
             class: 'mythoria-chapter-paragraph',
           },
@@ -382,8 +383,9 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
         },
       }),
       TextStyle,
-      Color,      TextAlign.configure({
-        types: ['heading', 'paragraph'],      }),
+      Color, TextAlign.configure({
+        types: ['heading', 'paragraph'],
+      }),
       // Custom Mythoria extensions for preserving structure
       MythoriaHeading,
       MythoriaDiv,
@@ -413,26 +415,35 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
     try {
       // Get content from the appropriate source
       let html = isHtmlView ? htmlContent : (editor?.getHTML() || '');
-      
+
       // Preserve Mythoria class names before saving
       html = html;
-      
       await onSave(html);
       setHasChanges(false);
-      
+
+      // Track story editing
+      if (storyId) {
+        trackStoryManagement.edited({
+          story_id: storyId,
+          story_title: storyMetadata?.title,
+          target_audience: storyMetadata?.targetAudience,
+          graphical_style: storyMetadata?.graphicalStyle,
+          edit_mode: isHtmlView ? 'html' : 'wysiwyg'
+        });
+      }
+
       // Update both states to keep them in sync
       if (!isHtmlView && editor) {
         setHtmlContent(editor.getHTML());
       }
-      
+
       toast.success('Story saved successfully! CSS styling preserved.');
     } catch (error) {
       console.error('Failed to save:', error);
-      toast.error('Failed to save story. Please try again.');
-    } finally {
+      toast.error('Failed to save story. Please try again.');    } finally {
       setIsSaving(false);
     }
-  }, [editor, hasChanges, onSave, isHtmlView, htmlContent, toast]);
+  }, [editor, hasChanges, onSave, isHtmlView, htmlContent, toast, storyId, storyMetadata?.graphicalStyle, storyMetadata?.targetAudience, storyMetadata?.title]);
 
   // Handle view toggle with class preservation
   const toggleView = useCallback(() => {
@@ -467,7 +478,7 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
     const content = editor.getText();
     const regex = new RegExp(findReplace.findText, 'gi');
     const matches = content.match(regex);
-    
+
     setFindReplace(prev => ({
       ...prev,
       totalMatches: matches ? matches.length : 0,
@@ -481,12 +492,12 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
     const content = editor.getHTML();
     const regex = new RegExp(findReplace.findText, 'gi');
     const newContent = content.replace(regex, findReplace.replaceText);
-    
+
     // Preserve Mythoria classes after replacement
     const preservedContent = newContent;
     editor.commands.setContent(preservedContent);
     setHasChanges(true);
-    
+
     setFindReplace(prev => ({
       ...prev,
       totalMatches: 0,
@@ -523,10 +534,10 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
     } else if (editor) {
       editor.commands.setContent(updatedHtml);
     }
-    
+
     setHasChanges(true);
     toast.success('Story updated with AI improvements! Review the changes and save when ready.');
-    
+
     // Call the optional callback for parent component
     if (onAIEdit) {
       onAIEdit(updatedHtml);
@@ -548,13 +559,13 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
         <div className="flex flex-wrap items-center gap-2 justify-between">
           {/* Text Formatting */}
           <div className="flex items-center gap-1">            <button
-              onClick={() => editor?.chain().focus().toggleBold().run()}
-              className={`btn btn-sm ${editor?.isActive('bold') ? 'btn-primary' : 'btn-ghost'}`}
-              disabled={isHtmlView || !editor}
-              title="Bold (Ctrl+B)"
-            >
-              <FiBold />
-            </button>
+            onClick={() => editor?.chain().focus().toggleBold().run()}
+            className={`btn btn-sm ${editor?.isActive('bold') ? 'btn-primary' : 'btn-ghost'}`}
+            disabled={isHtmlView || !editor}
+            title="Bold (Ctrl+B)"
+          >
+            <FiBold />
+          </button>
             <button
               onClick={() => editor?.chain().focus().toggleItalic().run()}
               className={`btn btn-sm ${editor?.isActive('italic') ? 'btn-primary' : 'btn-ghost'}`}
@@ -651,14 +662,14 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
 
           {/* Find & Replace */}
           <div className="flex items-center gap-2">            <button
-              ref={refs.setReference}
-              onClick={() => setFindReplace(prev => ({ ...prev, isOpen: !prev.isOpen }))}
-              className={`btn btn-sm ${findReplace.isOpen ? 'btn-primary' : 'btn-ghost'}`}
-              disabled={isHtmlView}
-              title="Find & Replace (Ctrl+F)"
-            >
-              <FiSearch />
-            </button>
+            ref={refs.setReference}
+            onClick={() => setFindReplace(prev => ({ ...prev, isOpen: !prev.isOpen }))}
+            className={`btn btn-sm ${findReplace.isOpen ? 'btn-primary' : 'btn-ghost'}`}
+            disabled={isHtmlView}
+            title="Find & Replace (Ctrl+F)"
+          >
+            <FiSearch />
+          </button>
 
             {/* AI Edit Button */}
             {storyId && (
@@ -767,11 +778,11 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
               placeholder="Enter HTML code here..."
               style={{ fontFamily: 'Monaco, Menlo, "Ubuntu Mono", monospace' }}
             />
-          </div>        ) : (
+          </div>) : (
           <div>
             <div className="story-container">
-              <EditorContent 
-                editor={editor} 
+              <EditorContent
+                editor={editor}
                 className="min-h-screen focus-within:outline-none story-content"
               />
             </div>
@@ -785,14 +796,14 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
           </div>
         </div>
       )}
-      
-      {/* Toast Container */}      {/* AI Edit Modal */}      {storyId && (        <AIEditModal
-          isOpen={showAIEditModal}
-          onClose={() => setShowAIEditModal(false)}
-          storyId={storyId}
-          storyContent={isHtmlView ? htmlContent : (editor?.getHTML() || '')}
-          onEditSuccess={handleAIEditSuccess}
-        />
+
+      {/* Toast Container */}      {/* AI Edit Modal */}      {storyId && (<AIEditModal
+        isOpen={showAIEditModal}
+        onClose={() => setShowAIEditModal(false)}
+        storyId={storyId}
+        storyContent={isHtmlView ? htmlContent : (editor?.getHTML() || '')}
+        onEditSuccess={handleAIEditSuccess}
+      />
       )}
 
       <ToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />

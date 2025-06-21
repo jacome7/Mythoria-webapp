@@ -16,6 +16,7 @@ import {
   FiSquare,
   FiArrowLeft
 } from 'react-icons/fi';
+import { trackStoryManagement } from '../../../../../lib/analytics';
 import ShareModal from '../../../../../components/ShareModal';
 
 interface Story {
@@ -130,21 +131,34 @@ export default function ListenStoryPage() {
           alert('Failed to load audio. Please check your internet connection and try again.');
         });
 
-        setAudioElements(prev => ({ ...prev, [chapterIndex]: audio }));
-
-        // Set the source and start playing
+        setAudioElements(prev => ({ ...prev, [chapterIndex]: audio }));        // Set the source and start playing
         audio.src = proxyAudioUri;
         await audio.play();
         setCurrentlyPlaying(chapterIndex);
+
+        // Track story listening
+        trackStoryManagement.listen({
+          story_id: storyId,
+          story_title: story?.title,
+          chapter_number: chapterIndex + 1,
+          total_chapters: story?.audiobookUri?.length
+        });
       } else {
         // Use existing audio element
         const audio = audioElements[chapterIndex];
         if (audio.src !== proxyAudioUri) {
           audio.src = proxyAudioUri;
-        }
-        await audio.play();
+        } await audio.play();
         setCurrentlyPlaying(chapterIndex);
         setAudioLoading(prev => ({ ...prev, [chapterIndex]: false }));
+
+        // Track story listening (for existing audio elements)
+        trackStoryManagement.listen({
+          story_id: storyId,
+          story_title: story?.title,
+          chapter_number: chapterIndex + 1,
+          total_chapters: story?.audiobookUri?.length
+        });
       }
     } catch (error) {
       console.error('Error playing audio:', error);
