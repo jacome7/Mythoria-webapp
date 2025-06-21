@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { FiBook, FiVolume2, FiEdit3, FiShare2, FiArrowLeft } from 'react-icons/fi';
 import BookEditor from '../../../../../components/BookEditor';
 import ShareModal from '../../../../../components/ShareModal';
@@ -32,6 +32,7 @@ export default function EditStoryPage() {
   const router = useRouter();
   const params = useParams();
   const locale = useLocale();
+  const tCommon = useTranslations('common');
   const storyId = params.storyId as string;
   const [story, setStory] = useState<Story | null>(null);
   const [storyContent, setStoryContent] = useState<string | null>(null);
@@ -56,10 +57,9 @@ export default function EditStoryPage() {
         });
         
         if (response.ok) {
-          const data = await response.json();
-          // Only allow access to published stories
+          const data = await response.json();          // Only allow access to published stories
           if (data.story.status !== 'published') {
-            setError('This story is not available for editing yet.');
+            setError(tCommon('Errors.storyNotAvailableYet'));
             return;
           }
           setStory(data.story);
@@ -72,25 +72,23 @@ export default function EditStoryPage() {
             setStoryContent('<p>Story content is being prepared. Please check back later.</p>');
           } else {
             setStoryContent('<p>Story content is not yet available. The story may still be generating.</p>');
-          }
-        } else if (response.status === 404) {
-          setError('Story not found.');
+          }        } else if (response.status === 404) {
+          setError(tCommon('Errors.storyNotFoundGeneric'));
         } else if (response.status === 403) {
-          setError('You do not have permission to edit this story.');
+          setError(tCommon('Errors.noPermissionEdit'));
         } else {
           const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-          setError(errorData.error || `Failed to load the story (Status: ${response.status}). Please try again.`);
+          setError(errorData.error || tCommon('Errors.failedToLoad'));
         }
       } catch (error) {
-        console.error('Error fetching story:', error);
-        
+        console.error('Error fetching story:', error);        
         // More specific error handling
         if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-          setError('Unable to connect to the server. Please check your internet connection and make sure the development server is running.');
+          setError(tCommon('Errors.failedToLoad'));
         } else if (error instanceof Error) {
-          setError(`Network error: ${error.message}. Please try again.`);
+          setError(tCommon('Errors.failedToLoad'));
         } else {
-          setError('Failed to load the story. Please try again.');
+          setError(tCommon('Errors.failedToLoad'));
         }
       } finally {
         setLoading(false);
@@ -100,7 +98,7 @@ export default function EditStoryPage() {
     if (storyId) {
       fetchStory();
     }
-  }, [storyId]);
+  }, [storyId, tCommon]);
 
   // Handle saving edited content
   const handleSaveEdit = async (html: string) => {
@@ -156,26 +154,25 @@ export default function EditStoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-base-100">
-      <SignedOut>
+    <div className="min-h-screen bg-base-100">      <SignedOut>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center space-y-6">
-            <h1 className="text-4xl font-bold">Access Restricted</h1>
+            <h1 className="text-4xl font-bold">{tCommon('Auth.accessRestricted')}</h1>
             <p className="text-lg text-gray-600">
-              You need to be signed in to edit stories.
+              {tCommon('Auth.needSignInEdit')}
             </p>
             <div className="space-x-4">
               <button
                 onClick={() => router.push(`/${locale}/sign-in`)}
                 className="btn btn-primary"
               >
-                Sign In
+                {tCommon('Auth.signIn')}
               </button>
               <button
                 onClick={() => router.push(`/${locale}/sign-up`)}
                 className="btn btn-outline"
               >
-                Create Account
+                {tCommon('Auth.createAccount')}
               </button>
             </div>
           </div>
@@ -191,12 +188,11 @@ export default function EditStoryPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span>{error}</span>
-              </div>
-              <button
+              </div>              <button
                 onClick={() => router.push(`/${locale}/my-stories`)}
                 className="btn btn-primary"
               >
-                Back to My Stories
+                {tCommon('Actions.backToMyStories')}
               </button>
             </div>
           </div>
@@ -205,13 +201,12 @@ export default function EditStoryPage() {
             <div className="container mx-auto px-4 py-6">
               <div className="text-center space-y-4">
                 {/* Navigation Buttons */}
-                <div className="flex flex-wrap justify-center gap-2">
-                  <button
+                <div className="flex flex-wrap justify-center gap-2">                  <button
                     onClick={navigateToRead}
                     className="btn btn-outline btn-primary"
                   >
                     <FiBook className="w-4 h-4 mr-2" />
-                    Read
+                    {tCommon('Actions.read')}
                   </button>
                   <button
                     onClick={navigateToListen}
@@ -219,18 +214,18 @@ export default function EditStoryPage() {
                     disabled={!story?.audiobookUri || story.audiobookUri.length === 0}
                   >
                     <FiVolume2 className="w-4 h-4 mr-2" />
-                    Listen
+                    {tCommon('Actions.listen')}
                   </button>
                   <button className="btn btn-primary">
                     <FiEdit3 className="w-4 h-4 mr-2" />
-                    Editing
+                    {tCommon('Actions.editing')}
                   </button>
                   <button
                     onClick={() => setShowShareModal(true)}
                     className="btn btn-outline btn-primary"
                   >
                     <FiShare2 className="w-4 h-4 mr-2" />
-                    Share
+                    {tCommon('Actions.share')}
                   </button>
                 </div>
               </div>
@@ -248,13 +243,12 @@ export default function EditStoryPage() {
 
             {/* Back to Stories Button */}
             <div className="container mx-auto px-4 pb-8">
-              <div className="text-center">
-                <button
+              <div className="text-center">                <button
                   onClick={() => router.push(`/${locale}/my-stories`)}
                   className="btn btn-outline"
                 >
                   <FiArrowLeft className="w-4 h-4 mr-2" />
-                  Back to My Stories
+                  {tCommon('Actions.backToMyStories')}
                 </button>
               </div>
             </div>

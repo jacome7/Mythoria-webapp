@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   FiX,
   FiShare2,
@@ -34,6 +35,7 @@ interface ShareData {
 }
 
 export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onShareSuccess }: ShareModalProps) {
+  const t = useTranslations('Components.ShareModal');
   const [allowEdit, setAllowEdit] = useState(false);
   const [makePublic, setMakePublic] = useState(false);
   const [loading, setLoading] = useState(false); const [shareData, setShareData] = useState<ShareData | null>(null);
@@ -159,10 +161,9 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between p-6 border-b">          <div className="flex items-center gap-3">
             <FiShare2 className="text-primary text-xl" />
-            <h2 className="text-xl font-semibold">Share Story</h2>
+            <h2 className="text-xl font-semibold">{t('title')}</h2>
           </div>
           <button
             onClick={handleClose}
@@ -175,10 +176,9 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
         <div className="p-6 space-y-6">
           {!shareData ? (
             <>
-              {/* Story Info */}
-              <div className="bg-gray-50 rounded-lg p-4">
+              {/* Story Info */}              <div className="bg-gray-50 rounded-lg p-4">
                 <h3 className="font-medium text-gray-900 mb-1">{storyTitle}</h3>
-                <p className="text-sm text-gray-600">Choose your sharing options below</p>
+                <p className="text-sm text-gray-600">{t('chooseOptions')}</p>
               </div>
 
               {/* Share Options */}
@@ -187,10 +187,9 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-blue-100 rounded-lg">
                       <FiUsers className="text-blue-600" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium">Allow recipient to edit</h4>
-                      <p className="text-sm text-gray-600">Recipients can collaborate and make changes</p>
+                    </div>                    <div>
+                      <h4 className="font-medium">{t('allowEdit')}</h4>
+                      <p className="text-sm text-gray-600">{t('allowEditDesc')}</p>
                     </div>
                   </div>
                   <input
@@ -206,10 +205,9 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-green-100 rounded-lg">
                       <FiGlobe className="text-green-600" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium">Make story public</h4>
-                      <p className="text-sm text-gray-600">Anyone can view without logging in</p>
+                    </div>                    <div>
+                      <h4 className="font-medium">{t('makePublic')}</h4>
+                      <p className="text-sm text-gray-600">{t('makePublicDesc')}</p>
                     </div>
                   </div>
                   <input
@@ -230,12 +228,11 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <div className="flex items-start gap-3">
                   <FiInfo className="text-blue-600 mt-0.5 flex-shrink-0" />
-                  <div className="text-sm">
-                    <p className="font-medium text-blue-900 mb-2">Sharing Options Explained:</p>
+                  <div className="text-sm">                    <p className="font-medium text-blue-900 mb-2">{t('optionsExplained')}</p>
                     <ul className="space-y-1 text-blue-700">
-                      <li><strong>Private View:</strong> Recipients must sign in to view the story</li>
-                      <li><strong>Private Edit:</strong> Recipients can collaborate and edit the story</li>
-                      <li><strong>Public:</strong> Anyone can view the story without signing in</li>
+                      <li><strong>{t('privateView')}</strong></li>
+                      <li><strong>{t('privateEdit')}</strong></li>
+                      <li><strong>{t('publicOption')}</strong></li>
                     </ul>
                   </div>
                 </div>
@@ -248,11 +245,10 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
                 className="w-full btn btn-primary"
               >
                 {loading ? (
-                  <span className="loading loading-spinner loading-sm"></span>
-                ) : (
+                  <span className="loading loading-spinner loading-sm"></span>                ) : (
                   <>
                     <FiShare2 />
-                    Generate Share Link
+                    {t('generateLink')}
                   </>
                 )}
               </button>
@@ -266,10 +262,9 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
                   <p className="text-green-800 font-medium">{shareData.message}</p>
                 </div>
 
-                {/* Share URL */}
-                <div className="bg-gray-50 rounded-lg p-4">
+                {/* Share URL */}                <div className="bg-gray-50 rounded-lg p-4">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Share URL
+                    {t('shareUrl')}
                   </label>
                   <div className="flex gap-2">
                     <input
@@ -281,33 +276,30 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
                     <button
                       onClick={() => copyToClipboard(getFullUrl(shareData.url))}
                       className="btn btn-outline btn-sm"
-                    >
-                      {copied ? (
+                    >                      {copied ? (
                         <>
                           <FiCheck className="text-green-600" />
-                          Copied!
+                          {t('copied')}
                         </>
                       ) : (
                         <>
                           <FiCopy />
-                          Copy
+                          {t('copy')}
                         </>
                       )}
                     </button>
                   </div>
                 </div>
 
-                {/* Share Options */}
-                <div className="space-y-3">
-                  <h4 className="font-medium text-center">Share via:</h4>
+                {/* Share Options */}                <div className="space-y-3">
+                  <h4 className="font-medium text-center">{t('shareVia')}</h4>
 
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       onClick={() => handleWhatsApp(getFullUrl(shareData.url))}
                       className="btn btn-outline btn-sm flex items-center gap-2"
-                    >
-                      <FaWhatsapp className="text-green-600" />
-                      WhatsApp
+                    >                      <FaWhatsapp className="text-green-600" />
+                      {t('whatsapp')}
                     </button>
 
                     <button
@@ -315,7 +307,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
                       className="btn btn-outline btn-sm flex items-center gap-2"
                     >
                       <FaFacebook className="text-blue-600" />
-                      Facebook
+                      {t('facebook')}
                     </button>
 
                     <button
@@ -323,7 +315,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
                       className="btn btn-outline btn-sm flex items-center gap-2"
                     >
                       <FiMail />
-                      Email
+                      {t('email')}
                     </button>
 
                     <button
@@ -331,35 +323,33 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
                       className="btn btn-outline btn-sm flex items-center gap-2"
                     >
                       <FiShare2 />
-                      More
+                      {t('more')}
                     </button>
                   </div>
                 </div>
 
                 {/* Link Info */}
                 {shareData.linkType === 'private' && (
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                    <div className="flex items-center gap-2 text-yellow-800 text-sm">
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">                    <div className="flex items-center gap-2 text-yellow-800 text-sm">
                       <FiLock />
-                      <span>Private link expires in 30 days</span>
+                      <span>{t('privateExpires')}</span>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Actions */}
-              <div className="flex gap-3">
+              {/* Actions */}              <div className="flex gap-3">
                 <button
                   onClick={reset}
                   className="flex-1 btn btn-outline"
                 >
-                  Create Another
+                  {t('createAnother')}
                 </button>
                 <button
                   onClick={handleClose}
                   className="flex-1 btn btn-primary"
                 >
-                  Done
+                  {t('done')}
                 </button>
               </div>
             </>

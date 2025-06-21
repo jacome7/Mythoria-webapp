@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { 
   FiMinus, 
   FiPlus, 
@@ -33,18 +34,19 @@ const DEFAULT_SETTINGS: ReadingSettings = {
 };
 
 export default function ReadingToolbar({ onSettingsChange }: ReadingToolbarProps) {
+  const t = useTranslations('readingToolbar');
   const [settings, setSettings] = useState<ReadingSettings>(DEFAULT_SETTINGS);
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Available CSS templates
   const cssTemplates = [
-    { value: 'all_ages', label: 'All Ages' },
-    { value: 'children_0-2', label: 'Children (0-2)' },
-    { value: 'children_3-6', label: 'Children (3-6)' },
-    { value: 'children_7-10', label: 'Children (7-10)' },
-    { value: 'children_11-14', label: 'Children (11-14)' },
-    { value: 'young_adult_15-17', label: 'Young Adult (15-17)' },
-    { value: 'adult_18+', label: 'Adult (18+)' },
+    { value: 'all_ages', label: t('templates.all_ages') },
+    { value: 'children_0-2', label: t('templates.children_0-2') },
+    { value: 'children_3-6', label: t('templates.children_3-6') },
+    { value: 'children_7-10', label: t('templates.children_7-10') },
+    { value: 'children_11-14', label: t('templates.children_11-14') },
+    { value: 'young_adult_15-17', label: t('templates.young_adult_15-17') },
+    { value: 'adult_18+', label: t('templates.adult_18+') },
   ];
 
   // Load settings from localStorage on mount
@@ -124,20 +126,18 @@ export default function ReadingToolbar({ onSettingsChange }: ReadingToolbarProps
     <div className="reading-toolbar bg-base-200 border-b border-base-300 sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between py-2">
-          {/* Toggle Button */}
-          <button
+          {/* Toggle Button */}          <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="btn btn-ghost btn-sm"
-            aria-label="Toggle reading settings"
+            aria-label={t('toggleLabel')}
           >
             <FiType className="w-4 h-4" />
-            <span className="hidden sm:inline ml-2">Reading Settings</span>
-          </button>          {/* Quick Actions - Always Visible */}
-          <div className="flex items-center gap-2">
-            <button
+            <span className="hidden sm:inline ml-2">{t('title')}</span>
+          </button>{/* Quick Actions - Always Visible */}
+          <div className="flex items-center gap-2">            <button
               onClick={() => updateSetting('theme', settings.theme === 'light' ? 'dark' : 'light')}
               className="btn btn-ghost btn-sm"
-              aria-label={`Switch to ${settings.theme === 'light' ? 'dark' : 'light'} theme`}
+              aria-label={t('themeSwitch', { theme: settings.theme === 'light' ? 'dark' : 'light' })}
             >
               {settings.theme === 'light' ? (
                 <FiMoon className="w-4 h-4" />
@@ -149,11 +149,10 @@ export default function ReadingToolbar({ onSettingsChange }: ReadingToolbarProps
             {/* Quick CSS Template Selector */}
             <div className="hidden sm:flex items-center gap-2">
               <FiLayers className="w-4 h-4" />
-              <select
-                value={settings.cssTemplate}
+              <select                value={settings.cssTemplate}
                 onChange={(e) => updateSetting('cssTemplate', e.target.value)}
                 className="select select-bordered select-sm"
-                aria-label="Quick CSS template selection"
+                aria-label={t('quickTemplateLabel')}
               >
                 {cssTemplates.map((template) => (
                   <option key={template.value} value={template.value}>
@@ -166,16 +165,15 @@ export default function ReadingToolbar({ onSettingsChange }: ReadingToolbarProps
         </div>        {/* Expanded Controls */}
         {isExpanded && (
           <div className="border-t border-base-300 py-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">              {/* CSS Template Selection */}
-              <div className="flex items-center gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">              {/* CSS Template Selection */}              <div className="flex items-center gap-3">
                 <FiLayers className="w-4 h-4 text-base-content/70" />
-                <span className="text-sm font-medium min-w-fit">Style</span>
+                <span className="text-sm font-medium min-w-fit">{t('controls.style')}</span>
                 <div className="flex-1">
                   <select
                     value={settings.cssTemplate}
                     onChange={(e) => updateSetting('cssTemplate', e.target.value)}
                     className="select select-bordered select-sm w-full"
-                    aria-label="Select CSS template"
+                    aria-label={t('controls.templateLabel')}
                   >
                     {cssTemplates.map((template) => (
                       <option key={template.value} value={template.value}>
@@ -186,16 +184,15 @@ export default function ReadingToolbar({ onSettingsChange }: ReadingToolbarProps
                 </div>
               </div>
 
-              {/* Font Size Control */}
-              <div className="flex items-center gap-3">
+              {/* Font Size Control */}              <div className="flex items-center gap-3">
                 <FiType className="w-4 h-4 text-base-content/70" />
-                <span className="text-sm font-medium min-w-fit">Font Size</span>
+                <span className="text-sm font-medium min-w-fit">{t('controls.fontSize')}</span>
                 <div className="flex items-center gap-2 flex-1">
                   <button
                     onClick={() => adjustValue('fontSize', -10)}
                     className="btn btn-ghost btn-xs"
                     disabled={settings.fontSize <= 50}
-                    aria-label="Decrease font size"
+                    aria-label={t('controls.decreaseFontSize')}
                   >
                     <FiMinus className="w-3 h-3" />
                   </button>
@@ -204,18 +201,17 @@ export default function ReadingToolbar({ onSettingsChange }: ReadingToolbarProps
                       type="range"
                       min="50"
                       max="200"
-                      step="10"
-                      value={settings.fontSize}
+                      step="10"                      value={settings.fontSize}
                       onChange={(e) => updateSetting('fontSize', parseInt(e.target.value))}
                       className="range range-primary range-xs"
-                      aria-label="Font size percentage"
+                      aria-label={t('controls.fontSizeLabel')}
                     />
                   </div>
                   <button
                     onClick={() => adjustValue('fontSize', 10)}
                     className="btn btn-ghost btn-xs"
                     disabled={settings.fontSize >= 200}
-                    aria-label="Increase font size"
+                    aria-label={t('controls.increaseFontSize')}
                   >
                     <FiPlus className="w-3 h-3" />
                   </button>
@@ -223,16 +219,15 @@ export default function ReadingToolbar({ onSettingsChange }: ReadingToolbarProps
                 </div>
               </div>
 
-              {/* Line Height Control */}
-              <div className="flex items-center gap-3">
+              {/* Line Height Control */}              <div className="flex items-center gap-3">
                 <FiAlignJustify className="w-4 h-4 text-base-content/70" />
-                <span className="text-sm font-medium min-w-fit">Line Height</span>
+                <span className="text-sm font-medium min-w-fit">{t('controls.lineHeight')}</span>
                 <div className="flex items-center gap-2 flex-1">
                   <button
                     onClick={() => adjustValue('lineHeight', -10)}
                     className="btn btn-ghost btn-xs"
                     disabled={settings.lineHeight <= 50}
-                    aria-label="Decrease line height"
+                    aria-label={t('controls.decreaseLineHeight')}
                   >
                     <FiMinus className="w-3 h-3" />
                   </button>
@@ -241,18 +236,17 @@ export default function ReadingToolbar({ onSettingsChange }: ReadingToolbarProps
                       type="range"
                       min="50"
                       max="200"
-                      step="10"
-                      value={settings.lineHeight}
+                      step="10"                      value={settings.lineHeight}
                       onChange={(e) => updateSetting('lineHeight', parseInt(e.target.value))}
                       className="range range-secondary range-xs"
-                      aria-label="Line height percentage"
+                      aria-label={t('controls.lineHeightLabel')}
                     />
                   </div>
                   <button
                     onClick={() => adjustValue('lineHeight', 10)}
                     className="btn btn-ghost btn-xs"
                     disabled={settings.lineHeight >= 200}
-                    aria-label="Increase line height"
+                    aria-label={t('controls.increaseLineHeight')}
                   >
                     <FiPlus className="w-3 h-3" />
                   </button>
@@ -260,16 +254,15 @@ export default function ReadingToolbar({ onSettingsChange }: ReadingToolbarProps
                 </div>
               </div>
 
-              {/* Margins Control */}
-              <div className="flex items-center gap-3">
+              {/* Margins Control */}              <div className="flex items-center gap-3">
                 <FiMaximize2 className="w-4 h-4 text-base-content/70" />
-                <span className="text-sm font-medium min-w-fit">Margins</span>
+                <span className="text-sm font-medium min-w-fit">{t('controls.margins')}</span>
                 <div className="flex items-center gap-2 flex-1">
                   <button
                     onClick={() => adjustValue('margins', -10)}
                     className="btn btn-ghost btn-xs"
                     disabled={settings.margins <= 50}
-                    aria-label="Decrease margins"
+                    aria-label={t('controls.decreaseMargins')}
                   >
                     <FiMinus className="w-3 h-3" />
                   </button>
@@ -278,18 +271,17 @@ export default function ReadingToolbar({ onSettingsChange }: ReadingToolbarProps
                       type="range"
                       min="50"
                       max="200"
-                      step="10"
-                      value={settings.margins}
+                      step="10"                      value={settings.margins}
                       onChange={(e) => updateSetting('margins', parseInt(e.target.value))}
                       className="range range-accent range-xs"
-                      aria-label="Margins percentage"
+                      aria-label={t('controls.marginsLabel')}
                     />
                   </div>
                   <button
                     onClick={() => adjustValue('margins', 10)}
                     className="btn btn-ghost btn-xs"
                     disabled={settings.margins >= 200}
-                    aria-label="Increase margins"
+                    aria-label={t('controls.increaseMargins')}
                   >
                     <FiPlus className="w-3 h-3" />
                   </button>
@@ -298,13 +290,12 @@ export default function ReadingToolbar({ onSettingsChange }: ReadingToolbarProps
               </div>
             </div>
 
-            {/* Reset Button */}
-            <div className="flex justify-end mt-3 pt-3 border-t border-base-300">
+            {/* Reset Button */}            <div className="flex justify-end mt-3 pt-3 border-t border-base-300">
               <button
                 onClick={resetSettings}
                 className="btn btn-outline btn-sm"
               >
-                Reset to Default
+                {t('resetButton')}
               </button>
             </div>
           </div>

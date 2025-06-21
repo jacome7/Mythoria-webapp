@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { FiBook, FiVolume2, FiEdit3, FiShare2, FiArrowLeft } from 'react-icons/fi';
 import { trackStoryManagement } from '../../../../../lib/analytics';
 import StoryReader from '../../../../../components/StoryReader';
@@ -32,6 +32,7 @@ export default function ReadStoryPage() {
   const router = useRouter();
   const params = useParams();
   const locale = useLocale();
+  const tCommon = useTranslations('common');
   const storyId = params.storyId as string;
   const [story, setStory] = useState<Story | null>(null);
   const [storyContent, setStoryContent] = useState<string | null>(null);
@@ -44,10 +45,9 @@ export default function ReadStoryPage() {
       try {
         const response = await fetch(`/api/stories/${storyId}`);
         if (response.ok) {
-          const data = await response.json();
-          // Only allow access to published stories
+          const data = await response.json();          // Only allow access to published stories
           if (data.story.status !== 'published') {
-            setError('This story is not available for reading yet.');
+            setError(tCommon('Errors.storyNotAvailableYet'));
             return;
           }
           setStory(data.story);
@@ -69,17 +69,16 @@ export default function ReadStoryPage() {
             setStoryContent('<p>Story content is being prepared. Please check back later.</p>');
           } else {
             setStoryContent('<p>Story content is not yet available. The story may still be generating.</p>');
-          }
-        } else if (response.status === 404) {
-          setError('Story not found.');
+          }        } else if (response.status === 404) {
+          setError(tCommon('Errors.storyNotFoundGeneric'));
         } else if (response.status === 403) {
-          setError('You do not have permission to read this story.');
+          setError(tCommon('Errors.noPermission'));
         } else {
-          setError('Failed to load the story. Please try again.');
+          setError(tCommon('Errors.failedToLoad'));
         }
       } catch (error) {
         console.error('Error fetching story:', error);
-        setError('Failed to load the story. Please try again.');
+        setError(tCommon('Errors.failedToLoad'));
       } finally {
         setLoading(false);
       }
@@ -88,7 +87,7 @@ export default function ReadStoryPage() {
     if (storyId) {
       fetchStory();
     }
-  }, [storyId]);
+  }, [storyId, tCommon]);
 
   const navigateToListen = () => {
     router.push(`/${locale}/stories/listen/${storyId}`);
@@ -109,26 +108,25 @@ export default function ReadStoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-base-100">
-      <SignedOut>
+    <div className="min-h-screen bg-base-100">      <SignedOut>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center space-y-6">
-            <h1 className="text-4xl font-bold">Access Restricted</h1>
+            <h1 className="text-4xl font-bold">{tCommon('Auth.accessRestricted')}</h1>
             <p className="text-lg text-gray-600">
-              You need to be signed in to read stories.
+              {tCommon('Auth.needSignIn')}
             </p>
             <div className="space-x-4">
               <button
                 onClick={() => router.push(`/${locale}/sign-in`)}
                 className="btn btn-primary"
               >
-                Sign In
+                {tCommon('Auth.signIn')}
               </button>
               <button
                 onClick={() => router.push(`/${locale}/sign-up`)}
                 className="btn btn-outline"
               >
-                Create Account
+                {tCommon('Auth.createAccount')}
               </button>
             </div>
           </div>

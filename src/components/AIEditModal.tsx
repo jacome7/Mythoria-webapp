@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { FiX, FiZap, FiEdit3, FiFileText, FiImage } from 'react-icons/fi';
+import { useTranslations } from 'next-intl';
 import ImageEditingTab from './ImageEditingTab';
 import { extractStoryImagesFromHtml, extractStoryImages, StoryImage } from '@/utils/imageUtils';
 
@@ -27,6 +28,7 @@ export default function AIEditModal({
   storyContent, 
   onEditSuccess 
 }: AIEditModalProps) {
+  const t = useTranslations('aiEditModal');
   const [activeTab, setActiveTab] = useState<EditTab>('text');
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [storyImages, setStoryImages] = useState<StoryImage[]>([]);
@@ -149,14 +151,13 @@ export default function AIEditModal({
   }, [storyContent, storyId]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!userRequest.trim()) {
-      setError('Please enter your editing request');
+      if (!userRequest.trim()) {
+      setError(t('errors.enterRequest'));
       return;
     }
 
     if (userRequest.length > 2000) {
-      setError('Request must be 2000 characters or less');
+      setError(t('errors.requestTooLong'));
       return;
     }
 
@@ -191,13 +192,12 @@ export default function AIEditModal({
         onEditSuccess(data.updatedHtml);
         onClose();
         setUserRequest('');
-        setSelectedChapter(null);
-      } else {
-        setError(data.error || 'Failed to edit story');
+        setSelectedChapter(null);      } else {
+        setError(data.error || t('errors.editFailed'));
       }
     } catch (error) {
       console.error('Error editing story:', error);
-      setError('Failed to edit story. Please try again.');
+      setError(t('errors.editFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -294,15 +294,7 @@ export default function AIEditModal({
       setError(null);
     }
   };
-
-  const exampleRequests = [
-    "Make the dragon more friendly and less scary for young children",
-    "Add more dialogue between the main characters",
-    "Include more descriptive details about the magical forest",
-    "Make the ending more exciting and adventurous",
-    "Fix any grammatical errors and improve sentence flow",
-    "Add a new subplot about the character's pet companion"
-  ];
+  const exampleRequests = t.raw('exampleRequests.examples');
 
   if (!isOpen) return null;
 
@@ -314,11 +306,10 @@ export default function AIEditModal({
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary bg-opacity-20 rounded-lg">
               <FiZap className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold">AI Story Editor</h2>
+            </div>            <div>
+              <h2 className="text-xl font-bold">{t('title')}</h2>
               <p className="text-sm text-base-content/70">
-                Enhance your story with AI-powered improvements
+                {t('description')}
               </p>
             </div>
           </div>
@@ -332,14 +323,13 @@ export default function AIEditModal({
         </div>        {/* Content */}
         <div className="p-6">
           {/* Tab Navigation */}
-          <div className="tabs tabs-boxed mb-6 bg-base-200">
-            <button
+          <div className="tabs tabs-boxed mb-6 bg-base-200">            <button
               className={`tab ${activeTab === 'text' ? 'tab-active' : ''}`}
               onClick={() => setActiveTab('text')}
               disabled={isLoading}
             >
               <FiFileText className="w-4 h-4 mr-2" />
-              Text
+              {t('tabs.text')}
             </button>
             <button
               className={`tab ${activeTab === 'images' ? 'tab-active' : ''}`}
@@ -347,17 +337,16 @@ export default function AIEditModal({
               disabled={isLoading}
             >
               <FiImage className="w-4 h-4 mr-2" />
-              Images
+              {t('tabs.images')}
             </button>
           </div>
 
           {/* Tab Content */}
           {activeTab === 'text' ? (
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Chapter Selection */}
-              <div>
+              {/* Chapter Selection */}              <div>
                 <label className="label">
-                  <span className="label-text font-medium">What would you like to edit?</span>
+                  <span className="label-text font-medium">{t('editSelection.label')}</span>
                 </label>
                 <select
                   value={selectedChapter === null ? 'full' : selectedChapter.toString()}
@@ -372,39 +361,43 @@ export default function AIEditModal({
                   className="select select-bordered w-full"
                   disabled={isLoading}
                 >
-                  <option value="full">Entire Story</option>
+                  <option value="full">{t('editSelection.entireStory')}</option>
                   {chapters.map((chapter) => (
                     <option key={chapter.number} value={chapter.number.toString()}>
                       {chapter.title}
                     </option>
                   ))}
-                </select>
-                {chapters.length === 0 && (
+                </select>                {chapters.length === 0 && (
                   <p className="text-sm text-base-content/70 mt-2">
-                    No chapters detected. You can edit the entire story.
+                    {t('editSelection.noChaptersDetected')}
                   </p>
                 )}
                 {chapters.length > 0 && (
                   <p className="text-sm text-base-content/70 mt-2">
-                    {chapters.length} chapter{chapters.length === 1 ? '' : 's'} detected
+                    {t('editSelection.chaptersDetected', { 
+                      count: chapters.length,
+                      plural: chapters.length === 1 ? '' : 's'
+                    })}
                   </p>
                 )}
               </div>
 
-              {/* User Request */}
-              <div>
+              {/* User Request */}              <div>
                 <label className="label">
                   <span className="label-text font-medium">
-                    What changes would you like to make?
+                    {t('editRequest.label')}
                   </span>
                   <span className="label-text-alt">
-                    {userRequest.length}/2000 characters
+                    {t('editRequest.charactersCount', { 
+                      current: userRequest.length,
+                      max: 2000
+                    })}
                   </span>
                 </label>
                 <textarea
                   value={userRequest}
                   onChange={(e) => setUserRequest(e.target.value)}
-                  placeholder="Describe the changes you'd like to make to your story..."
+                  placeholder={t('editRequest.placeholder')}
                   className="textarea textarea-bordered w-full h-32 resize-none"
                   maxLength={2000}
                   disabled={isLoading}
@@ -412,13 +405,12 @@ export default function AIEditModal({
                 />
               </div>
 
-              {/* Example Requests */}
-              <div>
+              {/* Example Requests */}              <div>
                 <label className="label">
-                  <span className="label-text font-medium">Example requests:</span>
+                  <span className="label-text font-medium">{t('exampleRequests.label')}</span>
                 </label>
                 <div className="grid grid-cols-1 gap-2">
-                  {exampleRequests.map((example, index) => (
+                  {exampleRequests.map((example: string, index: number) => (
                     <button
                       key={index}
                       type="button"
@@ -442,15 +434,14 @@ export default function AIEditModal({
                 </div>
               )}
 
-              {/* Loading State */}
-              {isLoading && (
+              {/* Loading State */}              {isLoading && (
                 <div className="bg-base-200 rounded-lg p-4">
                   <div className="flex items-center gap-3">
                     <span className="loading loading-spinner loading-sm"></span>
                     <div>
-                      <p className="font-medium">Processing your request...</p>
+                      <p className="font-medium">{t('loadingState.title')}</p>
                       <p className="text-sm text-base-content/70">
-                        This may take 5-60 seconds depending on the scope of changes.
+                        {t('loadingState.description')}
                       </p>
                     </div>
                   </div>
@@ -460,15 +451,14 @@ export default function AIEditModal({
                 </div>
               )}
 
-              {/* Actions */}
-              <div className="flex gap-3 pt-4 border-t border-base-300">
+              {/* Actions */}              <div className="flex gap-3 pt-4 border-t border-base-300">
                 <button
                   type="button"
                   onClick={handleClose}
                   className="btn btn-ghost flex-1"
                   disabled={isLoading}
                 >
-                  Cancel
+                  {t('buttons.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -478,12 +468,12 @@ export default function AIEditModal({
                   {isLoading ? (
                     <>
                       <span className="loading loading-spinner loading-xs"></span>
-                      Processing...
+                      {t('buttons.processing')}
                     </>
                   ) : (
                     <>
                       <FiEdit3 className="w-4 h-4" />
-                      Apply Changes
+                      {t('buttons.applyChanges')}
                     </>
                   )}
                 </button>
@@ -497,15 +487,14 @@ export default function AIEditModal({
                 onImageUpdated={handleImageUpdated}
               />
               
-              {/* Actions for Image Tab */}
-              <div className="flex gap-3 pt-6 border-t border-base-300 mt-6">
+              {/* Actions for Image Tab */}              <div className="flex gap-3 pt-6 border-t border-base-300 mt-6">
                 <button
                   type="button"
                   onClick={handleClose}
                   className="btn btn-ghost flex-1"
                   disabled={isLoading}
                 >
-                  Close
+                  {t('buttons.close')}
                 </button>
               </div>
             </>

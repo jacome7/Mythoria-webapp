@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { FiList, FiX } from 'react-icons/fi';
 
 interface TableOfContentsItem {
@@ -14,6 +15,8 @@ interface ReadingProgressProps {
 }
 
 export default function ReadingProgress({ storyContent }: ReadingProgressProps) {
+  const t = useTranslations('Components.ReadingProgress');
+  const tCommon = useTranslations('common');
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isTableOfContentsOpen, setIsTableOfContentsOpen] = useState(false);
   const [tableOfContents, setTableOfContents] = useState<TableOfContentsItem[]>([]);
@@ -42,10 +45,9 @@ export default function ReadingProgress({ storyContent }: ReadingProgressProps) 
 
     // Look for table of contents
     const tocSection = doc.querySelector('.mythoria-table-of-contents');
-    if (tocSection) {
-      headings.push({
+    if (tocSection) {      headings.push({
         id: 'table-of-contents',
-        title: 'Table of Contents',
+        title: t('tableOfContents'),
         level: 1
       });
     }
@@ -66,7 +68,7 @@ export default function ReadingProgress({ storyContent }: ReadingProgressProps) 
     });
 
     setTableOfContents(headings);
-  }, [storyContent]);
+  }, [storyContent, t]);
 
   // Handle scroll progress
   useEffect(() => {
@@ -127,10 +129,9 @@ export default function ReadingProgress({ storyContent }: ReadingProgressProps) 
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-base-100 border-t border-base-300 shadow-lg">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-4">
-            {/* Progress Information */}
-            <div className="flex items-center gap-3">
+            {/* Progress Information */}            <div className="flex items-center gap-3">
               <div className="text-sm font-medium text-base-content">
-                Reading Progress: {formatProgress(scrollProgress)}
+                {t('title')}: {formatProgress(scrollProgress)}
               </div>
               
               {/* Progress Bar */}
@@ -160,9 +161,8 @@ export default function ReadingProgress({ storyContent }: ReadingProgressProps) 
       {/* Table of Contents Modal */}
       {isTableOfContentsOpen && (
         <div className="modal modal-open">
-          <div className="modal-box max-w-2xl max-h-[80vh]">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold">Table of Contents</h2>
+          <div className="modal-box max-w-2xl max-h-[80vh]">            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold">{t('tableOfContents')}</h2>
               <button
                 onClick={() => setIsTableOfContentsOpen(false)}
                 className="btn btn-ghost btn-sm btn-circle"
@@ -205,14 +205,12 @@ export default function ReadingProgress({ storyContent }: ReadingProgressProps) 
                   </button>
                 ))
               )}
-            </div>
-
-            <div className="modal-action">
+            </div>            <div className="modal-action">
               <button
                 onClick={() => setIsTableOfContentsOpen(false)}
                 className="btn btn-outline"
               >
-                Close
+                {tCommon('Actions.close')}
               </button>
             </div>
           </div>

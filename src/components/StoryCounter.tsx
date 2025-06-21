@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { FaBookReader } from 'react-icons/fa';
 
 const StoryCounter = () => {
+  const t = useTranslations('storyCounter');
   const [storyCount, setStoryCount] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -65,16 +67,15 @@ const StoryCounter = () => {
       <div className="stat">
         <div className="stat-figure">
           <FaBookReader className="text-3xl" />
-        </div>
-        {isLoading && <div className="stat-value"><span className="loading loading-dots loading-md"></span></div>}
-        {error && <div className="stat-value text-error text-sm">Error loading</div>}
+        </div>        {isLoading && <div className="stat-value"><span className="loading loading-dots loading-md"></span></div>}
+        {error && <div className="stat-value text-error text-sm">{t('error')}</div>}
         {!isLoading && !error && storyCount !== null && (
           <div className="stat-value">{storyCount.toLocaleString()}</div>
         )}
         {!isLoading && !error && storyCount === null && (
-            <div className="stat-value">N/A</div>
+            <div className="stat-value">{t('notAvailable')}</div>
         )}
-        <div className="stat-desc text-primary-content">stories created and counting...</div>
+        <div className="stat-desc text-primary-content">{t('description')}</div>
       </div>
     </div>
   );

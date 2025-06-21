@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import ReadingToolbar, { ReadingSettings } from './ReadingToolbar';
 import ReadingProgress from './ReadingProgress';
 import { loadStoryCSS, removeStoryCSS } from '../lib/story-css';
@@ -15,6 +16,7 @@ interface StoryReaderProps {
 }
 
 export default function StoryReader({ storyContent, storyMetadata }: StoryReaderProps) {
+  const t = useTranslations('Components.StoryReader');
   const [readingSettings, setReadingSettings] = useState<ReadingSettings | null>(null);
   const [isContentLoaded, setIsContentLoaded] = useState(false);
   // Load appropriate CSS theme based on story metadata
@@ -99,12 +101,11 @@ export default function StoryReader({ storyContent, storyMetadata }: StoryReader
         }}
       >
         <div className="container mx-auto px-4 py-6">
-          <div className="max-w-4xl mx-auto">
-            {!isContentLoaded ? (
+          <div className="max-w-4xl mx-auto">            {!isContentLoaded ? (
               // Loading state
               <div className="flex flex-col items-center justify-center py-16">
                 <div className="loading loading-spinner loading-lg mb-4"></div>
-                <p className="text-lg text-base-content/70">Preparing your story...</p>
+                <p className="text-lg text-base-content/70">{t('preparing')}</p>
               </div>
             ) : (
               // Story content

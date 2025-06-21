@@ -54,19 +54,18 @@ export default function MyStoriesPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <SignedOut>
+    <div className="container mx-auto px-4 py-8">      <SignedOut>
         <div className="text-center space-y-6">
-          <h1 className="text-4xl font-bold">Welcome</h1>
+          <h1 className="text-4xl font-bold">{t('signedOut.welcome')}</h1>
           <p className="text-lg text-gray-600">
-            You need to be signed in to view your stories.
+            {t('signedOut.needSignIn')}
           </p>
           <div className="space-x-4">
             <Link href={`/${locale}/sign-in`} className="btn btn-primary">
-              Sign In
+              {t('signedOut.signIn')}
             </Link>
             <Link href={`/${locale}/sign-up`} className="btn btn-outline">
-              Create Account
+              {t('signedOut.createAccount')}
             </Link>
           </div>
         </div>

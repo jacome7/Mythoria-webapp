@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { FiImage, FiEdit3 } from 'react-icons/fi';
 import { StoryImage, ImageVersion, getImageDisplayName, formatVersionNumber, formatRelativeTime } from '@/utils/imageUtils';
@@ -15,9 +16,9 @@ interface ImageEditingTabProps {
 export default function ImageEditingTab({ 
   storyId, 
   storyImages, 
-  onImageEditSuccess,
-  onImageUpdated
-}: ImageEditingTabProps) {  const [selectedImage, setSelectedImage] = useState<StoryImage | null>(null);
+  onImageEditSuccess,  onImageUpdated
+}: ImageEditingTabProps) {  const t = useTranslations('imageEditingTab');
+  const [selectedImage, setSelectedImage] = useState<StoryImage | null>(null);
   const [selectedVersion, setSelectedVersion] = useState<ImageVersion | null>(null);
   const [userRequest, setUserRequest] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -41,19 +42,18 @@ export default function ImageEditingTab({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!selectedImage || !selectedVersion) {
-      setError('Please select an image to edit');
+      if (!selectedImage || !selectedVersion) {
+      setError(t('errors.selectImage'));
       return;
     }
 
     if (!userRequest.trim()) {
-      setError('Please describe the changes you want to make');
+      setError(t('errors.enterChanges'));
       return;
     }
 
     if (userRequest.length > 2000) {
-      setError('Request must be 2000 characters or less');
+      setError(t('errors.requestTooLong'));
       return;
     }
 
@@ -105,27 +105,18 @@ export default function ImageEditingTab({
         // Notify parent component about the updated images
         onImageUpdated(updatedImages);
         
-        console.log('New image generated successfully:', data.newImageUrl);
-        setUserRequest('');
+        console.log('New image generated successfully:', data.newImageUrl);        setUserRequest('');
       } else {
-        setError(data.error || 'Failed to edit image');
+        setError(data.error || t('errors.editFailed'));
       }
     } catch (error) {
       console.error('Error editing image:', error);
-      setError('Failed to edit image. Please try again.');
+      setError(t('errors.editFailed'));
     } finally {
       setIsLoading(false);
     }
   };
-
-  const exampleRequests = [
-    "Change the dragon from red to blue and add more clouds in the sky",
-    "Make the protagonist wear a golden crown and hold a magic staff",
-    "Change the forest background to a snowy mountain landscape",
-    "Add more magical sparkles and fairy lights around the characters",
-    "Make the scene darker and more mysterious with moonlight",
-    "Add a rainbow in the background and make the colors more vibrant"
-  ];
+  const exampleRequests = t.raw('exampleRequests.examples');
 
   // Helper function to generate the next version number
   const generateNextVersion = (versions: ImageVersion[]): string => {
@@ -145,7 +136,7 @@ export default function ImageEditingTab({
 
   const handleReplaceImage = async () => {
     if (!selectedImage || !selectedVersion || !newImageGenerated) {
-      setError('No new image available to replace');
+      setError(t('errors.noNewImage'));
       return;
     }
 
@@ -167,16 +158,15 @@ export default function ImageEditingTab({
         new: newImageGenerated
       });
       
-    } catch (error) {
-      console.error('Error replacing image:', error);
-      setError('Failed to replace image in story. Please try again.');
+    } catch (error) {      console.error('Error replacing image:', error);
+      setError(t('errors.replaceImageFailed'));
     } finally {
       setIsReplacing(false);
     }
   };
   const handleChangeImage = async () => {
     if (!selectedImage || !selectedVersion) {
-      setError('No image version selected to change to');
+      setError(t('errors.noVersionSelected'));
       return;
     }
 
@@ -206,7 +196,7 @@ export default function ImageEditingTab({
 
       if (originalImageToReplace === selectedVersion.url) {
         console.log('Selected version is already the current version, no change needed');
-        setError('The selected version is already the current version');
+        setError(t('errors.sameVersion'));
         return;
       }
       
@@ -215,9 +205,8 @@ export default function ImageEditingTab({
       
       console.log('Successfully called onImageEditSuccess');
       
-    } catch (error) {
-      console.error('Error changing image:', error);
-      setError('Failed to change image in story. Please try again.');
+    } catch (error) {      console.error('Error changing image:', error);
+      setError(t('errors.changeImageFailed'));
     } finally {
       setIsChangingImage(false);
     }
@@ -227,13 +216,12 @@ export default function ImageEditingTab({
   const isVersionChanged = selectedImage && selectedVersion && 
     selectedVersion.url !== selectedImage.latestVersion.url;
 
-  if (storyImages.length === 0) {
-    return (
+  if (storyImages.length === 0) {    return (
       <div className="text-center py-12">
         <FiImage className="w-12 h-12 text-base-content/40 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-base-content/70 mb-2">No Images Found</h3>
+        <h3 className="text-lg font-medium text-base-content/70 mb-2">{t('noImages.title')}</h3>
         <p className="text-base-content/50">
-          No images are available for this story yet. Images will appear here once they are generated.
+          {t('noImages.description')}
         </p>
       </div>
     );
@@ -242,10 +230,9 @@ export default function ImageEditingTab({
   return (
     <div className="space-y-6">
       {/* Image Selection */}
-      <div>
-        <label className="label">
-          <span className="label-text font-medium">Select an image to edit:</span>
-        </label>        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div>        <label className="label">
+          <span className="label-text font-medium">{t('imageSelection.label')}</span>
+        </label><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {storyImages.map((image) => (
             <div
               key={`${image.type}-${image.chapterNumber || 'cover'}`}
@@ -265,13 +252,17 @@ export default function ImageEditingTab({
                   height={400}
                 />
               </div><div className="text-center">
-                <h4 className="font-medium text-sm">{getImageDisplayName(image)}</h4>
-                <p className="text-xs text-base-content/60 mt-1">
-                  {image.versions.length} version{image.versions.length !== 1 ? 's' : ''} available
+                <h4 className="font-medium text-sm">{getImageDisplayName(image)}</h4>                <p className="text-xs text-base-content/60 mt-1">
+                  {t('imageSelection.versionsAvailable', { 
+                    count: image.versions.length,
+                    plural: image.versions.length !== 1 ? 's' : ''
+                  })}
                 </p>
                 {image.versions.length > 1 && (
                   <p className="text-xs text-primary font-medium">
-                    Latest: {formatVersionNumber(image.latestVersion.version)}
+                    {t('imageSelection.latestVersion', { 
+                      version: formatVersionNumber(image.latestVersion.version) 
+                    })}
                   </p>
                 )}
               </div>
@@ -280,9 +271,8 @@ export default function ImageEditingTab({
         </div>
       </div>      {/* Version Selection */}
       {selectedImage && selectedImage.versions.length > 1 && (
-        <div>
-          <label className="label">
-            <span className="label-text font-medium">Choose version to edit:</span>
+        <div>          <label className="label">
+            <span className="label-text font-medium">{t('versionSelection.label')}</span>
           </label>
           <select
             value={selectedVersion?.url || ''}
@@ -302,8 +292,13 @@ export default function ImageEditingTab({
                 </option>
               ))}
           </select>          <p className="text-sm text-base-content/70 mt-2">
-            {selectedImage.versions.length} version{selectedImage.versions.length !== 1 ? 's' : ''} available
-            {selectedVersion && ` • Currently selected: ${formatVersionNumber(selectedVersion.version)}`}
+            {t('versionSelection.versionsInfo', { 
+              count: selectedImage.versions.length,
+              plural: selectedImage.versions.length !== 1 ? 's' : ''
+            })}
+            {selectedVersion && ` • ${t('versionSelection.currentlySelected', { 
+              version: formatVersionNumber(selectedVersion.version) 
+            })}`}
           </p>
 
           {/* Change Image Button - Show when a different version is selected */}
@@ -314,21 +309,20 @@ export default function ImageEditingTab({
                 onClick={handleChangeImage}
                 className="btn btn-warning w-full"
                 disabled={isChangingImage}
-              >
-                {isChangingImage ? (
+              >                {isChangingImage ? (
                   <>
                     <span className="loading loading-spinner loading-xs"></span>
-                    Changing Image...
+                    {t('versionSelection.changingImage')}
                   </>
                 ) : (
                   <>
                     <FiImage className="w-4 h-4" />
-                    Change Image in Story
+                    {t('versionSelection.changeImageButton')}
                   </>
                 )}
               </button>
               <p className="text-sm text-base-content/70 mt-2">
-                This will replace the current image in your story with the selected version.
+                {t('versionSelection.changeImageDescription')}
               </p>
             </div>
           )}
@@ -337,9 +331,8 @@ export default function ImageEditingTab({
 
       {/* Image Preview */}
       {previewImage && (
-        <div>
-          <label className="label">
-            <span className="label-text font-medium">Current image:</span>
+        <div>          <label className="label">
+            <span className="label-text font-medium">{t('imagePreview.label')}</span>
           </label>
           <div className="max-w-md mx-auto">            <div className="aspect-square bg-base-200 rounded-lg overflow-hidden">
               <Image
@@ -357,19 +350,21 @@ export default function ImageEditingTab({
       {/* Edit Request */}
       {selectedImage && (
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="label">
+          <div>            <label className="label">
               <span className="label-text font-medium">
-                What changes would you like to make to this image?
+                {t('editRequest.label')}
               </span>
               <span className="label-text-alt">
-                {userRequest.length}/2000 characters
+                {t('editRequest.charactersCount', { 
+                  current: userRequest.length,
+                  max: 2000
+                })}
               </span>
             </label>
             <textarea
               value={userRequest}
               onChange={(e) => setUserRequest(e.target.value)}
-              placeholder="Describe the changes you'd like to make to the image..."
+              placeholder={t('editRequest.placeholder')}
               className="textarea textarea-bordered w-full h-32 resize-none"
               maxLength={2000}
               disabled={isLoading}
@@ -378,12 +373,11 @@ export default function ImageEditingTab({
           </div>
 
           {/* Example Requests */}
-          <div>
-            <label className="label">
-              <span className="label-text font-medium">Example requests:</span>
+          <div>            <label className="label">
+              <span className="label-text font-medium">{t('exampleRequests.label')}</span>
             </label>
             <div className="grid grid-cols-1 gap-2">
-              {exampleRequests.map((example, index) => (
+              {exampleRequests.map((example: string, index: number) => (
                 <button
                   key={index}
                   type="button"
@@ -408,13 +402,12 @@ export default function ImageEditingTab({
           )}
 
           {/* Loading State */}
-          {isLoading && (
-            <div className="bg-base-200 rounded-lg p-4">
+          {isLoading && (            <div className="bg-base-200 rounded-lg p-4">
               <div className="flex items-center gap-3">
                 <span className="loading loading-spinner loading-sm"></span>
                 <div>
-                  <p className="font-medium">Processing your image edit...</p>                  <p className="text-sm text-base-content/70">
-                    This may take up to 3 minutes depending on the complexity of changes.
+                  <p className="font-medium">{t('loadingState.title')}</p>                  <p className="text-sm text-base-content/70">
+                    {t('loadingState.description')}
                   </p>
                 </div>
               </div>
@@ -427,16 +420,15 @@ export default function ImageEditingTab({
             type="submit"
             className="btn btn-primary w-full"
             disabled={isLoading || !userRequest.trim()}
-          >
-            {isLoading ? (
+          >            {isLoading ? (
               <>
                 <span className="loading loading-spinner loading-xs"></span>
-                Editing Image...
+                {t('buttons.editingImage')}
               </>
             ) : (
               <>
                 <FiEdit3 className="w-4 h-4" />
-                Generate New Version
+                {t('buttons.generateNewVersion')}
               </>
             )}
           </button>
@@ -447,11 +439,10 @@ export default function ImageEditingTab({
               <div className="flex items-center gap-2 mb-3">
                 <svg className="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-                <span className="font-medium text-success">New image version generated successfully!</span>
+                </svg>                <span className="font-medium text-success">{t('success.title')}</span>
               </div>
               <p className="text-sm text-base-content/70 mb-3">
-                Click the button below to replace the current image in your story with the new version.
+                {t('success.description')}
               </p>
               <button
                 type="button"
@@ -462,12 +453,12 @@ export default function ImageEditingTab({
                 {isReplacing ? (
                   <>
                     <span className="loading loading-spinner loading-xs"></span>
-                    Replacing Image...
+                    {t('buttons.replacingImage')}
                   </>
                 ) : (
                   <>
                     <FiImage className="w-4 h-4" />
-                    Replace Image in Story
+                    {t('buttons.replaceImageInStory')}
                   </>
                 )}
               </button>

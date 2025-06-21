@@ -7,6 +7,8 @@ import { useTranslations } from 'next-intl';
 
 const AboutUsPage = () => {
   const t = useTranslations('AboutUs');
+  const tModal = useTranslations('AboutUsModal');
+  const tCommon = useTranslations('common');
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const [ageHover, setAgeHover] = useState(false);
 
@@ -219,9 +221,8 @@ const AboutUsPage = () => {
                 </h2>
                 <p className="text-lg text-amber-700 mb-8 leading-relaxed">
                   {t('investors.description')}
-                </p>
-                <button className="btn btn-warning btn-lg rounded-full shadow-lg hover:scale-105 transition-transform">
-                  Open the Scroll 📜
+                </p>                <button className="btn btn-warning btn-lg rounded-full shadow-lg hover:scale-105 transition-transform">
+                  {tModal('investors.button')}
                 </button>
               </div>
             </div>
@@ -230,19 +231,18 @@ const AboutUsPage = () => {
       </div>      {/* Feedback Modal */}
       {showFeedbackForm && (
         <div className="modal modal-open">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg mb-4">🪄 Cast Your Feedback Spell</h3>
+          <div className="modal-box">            <h3 className="font-bold text-lg mb-4">{tModal('feedback.title')}</h3>
             <textarea 
               className="textarea textarea-bordered w-full h-32 mb-4" 
-              placeholder="Share your magical suggestions..."
+              placeholder={tModal('feedback.placeholder')}
             ></textarea>
             <div className="modal-action">
-              <button className="btn btn-primary">Send Spell ✨</button>
+              <button className="btn btn-primary">{tModal('feedback.submit')}</button>
               <button 
                 className="btn" 
                 onClick={() => setShowFeedbackForm(false)}
               >
-                Close
+                {tCommon('Actions.close')}
               </button>
             </div>
           </div>

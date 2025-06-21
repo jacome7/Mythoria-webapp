@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { FiStar } from 'react-icons/fi';
 
 interface StoryRatingProps {
@@ -9,6 +10,7 @@ interface StoryRatingProps {
 }
 
 export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingProps) {
+  const t = useTranslations('storyRating');
   const [rating, setRating] = useState<number>(0);
   const [hoveredRating, setHoveredRating] = useState<number>(0);
   const [feedback, setFeedback] = useState<string>('');
@@ -48,18 +50,17 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
         }),
       });      if (!response.ok) {
         const errorData = await response.json();
-        
-        if (response.status === 503) {
-          throw new Error('The rating system is currently being set up. Please try again in a few minutes.');
+          if (response.status === 503) {
+          throw new Error(t('errors.serviceUnavailable'));
         }
         
-        throw new Error(errorData.error || 'Failed to submit rating');
+        throw new Error(errorData.error || t('errors.submitFailed'));
       }
 
       setSubmitted(true);
       onRatingSubmitted?.(finalRating);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : t('errors.generic'));
     } finally {
       setIsSubmitting(false);
     }
@@ -74,9 +75,8 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
     return (
       <div className="card bg-success/10 border border-success/20 shadow-lg">
         <div className="card-body text-center">
-          <div className="text-success text-4xl mb-2">✓</div>
-          <h3 className="card-title text-success justify-center">Thank you for your rating!</h3>
-          <p className="text-success/80">Your feedback helps us improve our stories.</p>
+          <div className="text-success text-4xl mb-2">✓</div>          <h3 className="card-title text-success justify-center">{t('success.title')}</h3>
+          <p className="text-success/80">{t('success.message')}</p>
         </div>
       </div>
     );
@@ -86,7 +86,7 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
     <div className="card bg-base-100 shadow-xl border-2 border-base-300">
       <div className="card-body">
         <div className="text-center">
-          <h3 className="card-title justify-center mb-4">Rate this story</h3>
+          <h3 className="card-title justify-center mb-4">{t('title')}</h3>
           
           {/* Star Rating */}
           <div className="flex justify-center gap-1 mb-4">
@@ -114,16 +114,15 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
           {/* Feedback Form for low ratings */}
           {showFeedbackForm && (
             <form onSubmit={handleFeedbackSubmit} className="mt-6 space-y-4">
-              <div className="text-left">
-                <label htmlFor="feedback" className="label">
+              <div className="text-left">                <label htmlFor="feedback" className="label">
                   <span className="label-text">
-                    What could we improve? (Optional)
+                    {t('feedback.title')}
                   </span>
                 </label>
                 <textarea
                   id="feedback"
                   className="textarea textarea-bordered w-full h-24 resize-none"
-                  placeholder="Your feedback helps us create better stories..."
+                  placeholder={t('feedback.placeholder')}
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
                   disabled={isSubmitting}
@@ -138,21 +137,19 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
                     checked={includeNameInFeedback}
                     onChange={(e) => setIncludeNameInFeedback(e.target.checked)}
                     disabled={isSubmitting}
-                  />
-                  <span className="label-text">
-                    Allow the author to see my name with this feedback
+                  />                  <span className="label-text">
+                    {t('feedback.includeNameLabel')}
                   </span>
                 </label>
               </div>
 
-              <div className="flex gap-2 justify-end">
-                <button
+              <div className="flex gap-2 justify-end">                <button
                   type="button"
                   className="btn btn-ghost"
                   onClick={() => setShowFeedbackForm(false)}
                   disabled={isSubmitting}
                 >
-                  Cancel
+                  {t('buttons.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -162,10 +159,10 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
                   {isSubmitting ? (
                     <>
                       <span className="loading loading-spinner loading-sm"></span>
-                      Submitting...
+                      {t('buttons.submitting')}
                     </>
                   ) : (
-                    'Submit Rating'
+                    t('buttons.submitRating')
                   )}
                 </button>
               </div>
@@ -180,10 +177,9 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
           )}
 
           {/* Loading state for high ratings */}
-          {isSubmitting && !showFeedbackForm && (
-            <div className="flex items-center justify-center gap-2 mt-4">
+          {isSubmitting && !showFeedbackForm && (            <div className="flex items-center justify-center gap-2 mt-4">
               <span className="loading loading-spinner loading-sm"></span>
-              <span>Submitting your rating...</span>
+              <span>{t('submittingMessage')}</span>
             </div>
           )}
         </div>

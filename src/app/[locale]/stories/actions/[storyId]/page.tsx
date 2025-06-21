@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { FiBook, FiVolume2, FiEdit3, FiArrowLeft } from 'react-icons/fi';
 
 interface Story {
@@ -27,6 +27,8 @@ export default function StoryActionsPage() {
   const router = useRouter();
   const params = useParams();
   const locale = useLocale();
+  const t = useTranslations('StoryActionsPage');
+  const tCommon = useTranslations('common');
   const storyId = params.storyId as string;
   const [story, setStory] = useState<Story | null>(null);
   const [loading, setLoading] = useState(true);
@@ -37,22 +39,21 @@ export default function StoryActionsPage() {
       try {
         const response = await fetch(`/api/stories/${storyId}`);
         if (response.ok) {
-          const data = await response.json();
-          if (data.story.status !== 'published') {
-            setError('This story is not available yet.');
+          const data = await response.json();          if (data.story.status !== 'published') {
+            setError(tCommon('Errors.storyNotAvailableYet'));
             return;
           }
           setStory(data.story);
         } else if (response.status === 404) {
-          setError('Story not found.');
+          setError(tCommon('Errors.storyNotFoundGeneric'));
         } else if (response.status === 403) {
-          setError('You do not have permission to access this story.');
+          setError(tCommon('Errors.noPermission'));
         } else {
-          setError('Failed to load the story. Please try again.');
+          setError(tCommon('Errors.failedToLoad'));
         }
       } catch (error) {
         console.error('Error fetching story:', error);
-        setError('Failed to load the story. Please try again.');
+        setError(tCommon('Errors.failedToLoad'));
       } finally {
         setLoading(false);
       }
@@ -61,7 +62,7 @@ export default function StoryActionsPage() {
     if (storyId) {
       fetchStory();
     }
-  }, [storyId]);
+  }, [storyId, tCommon]);
 
   const navigateToRead = () => {
     router.push(`/${locale}/stories/read/${storyId}`);
@@ -86,26 +87,25 @@ export default function StoryActionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-base-100">
-      <SignedOut>
+    <div className="min-h-screen bg-base-100">      <SignedOut>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center space-y-6">
-            <h1 className="text-4xl font-bold">Access Restricted</h1>
+            <h1 className="text-4xl font-bold">{tCommon('Auth.accessRestricted')}</h1>
             <p className="text-lg text-gray-600">
-              You need to be signed in to access stories.
+              {tCommon('Auth.needSignIn')}
             </p>
             <div className="space-x-4">
               <button
                 onClick={() => router.push(`/${locale}/sign-in`)}
                 className="btn btn-primary"
               >
-                Sign In
+                {tCommon('Auth.signIn')}
               </button>
               <button
                 onClick={() => router.push(`/${locale}/sign-up`)}
                 className="btn btn-outline"
               >
-                Create Account
+                {tCommon('Auth.createAccount')}
               </button>
             </div>
           </div>
@@ -121,12 +121,11 @@ export default function StoryActionsPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span>{error}</span>
-              </div>
-              <button
+              </div>              <button
                 onClick={() => router.push(`/${locale}/my-stories`)}
                 className="btn btn-primary"
               >
-                Back to My Stories
+                {tCommon('Actions.backToMyStories')}
               </button>
             </div>
           </div>
@@ -134,9 +133,8 @@ export default function StoryActionsPage() {
           <div className="container mx-auto px-4 py-8">
             <div className="max-w-4xl mx-auto">
               <div className="text-center space-y-8">
-                <div className="space-y-4">
-                  <h1 className="text-4xl font-bold text-primary">{story.title}</h1>                  <p className="text-lg text-base-content/70">
-                    Choose how you&apos;d like to experience this story
+                <div className="space-y-4">                  <h1 className="text-4xl font-bold text-primary">{story.title}</h1>                  <p className="text-lg text-base-content/70">
+                    {t('description')}
                   </p>
                 </div>
 
@@ -146,17 +144,16 @@ export default function StoryActionsPage() {
                     <div className="card-body text-center">
                       <div className="flex justify-center mb-4">
                         <FiBook className="w-16 h-16 text-primary" />
-                      </div>
-                      <h2 className="card-title justify-center text-2xl">Read</h2>
+                      </div>                      <h2 className="card-title justify-center text-2xl">{t('cards.read.title')}</h2>
                       <p className="text-base-content/70">
-                        Read the story in a beautiful, formatted layout with images and styling.
+                        {t('cards.read.description')}
                       </p>
                       <div className="card-actions justify-center mt-4">
                         <button
                           onClick={navigateToRead}
                           className="btn btn-primary btn-lg"
                         >
-                          Start Reading
+                          {tCommon('Actions.startReading')}
                         </button>
                       </div>
                     </div>
@@ -167,10 +164,9 @@ export default function StoryActionsPage() {
                     <div className="card-body text-center">
                       <div className="flex justify-center mb-4">
                         <FiVolume2 className="w-16 h-16 text-primary" />
-                      </div>
-                      <h2 className="card-title justify-center text-2xl">Listen</h2>
+                      </div>                      <h2 className="card-title justify-center text-2xl">{t('cards.listen.title')}</h2>
                       <p className="text-base-content/70">
-                        Listen to the audiobook version with professional narration.
+                        {t('cards.listen.description')}
                       </p>
                       <div className="card-actions justify-center mt-4">
                         <button
@@ -179,8 +175,8 @@ export default function StoryActionsPage() {
                           disabled={!story?.audiobookUri || story.audiobookUri.length === 0}
                         >
                           {story?.audiobookUri && story.audiobookUri.length > 0 
-                            ? 'Start Listening' 
-                            : 'Audio Not Available'}
+                            ? tCommon('Actions.startListening')
+                            : tCommon('Actions.audioNotAvailable')}
                         </button>
                       </div>
                     </div>
@@ -191,31 +187,29 @@ export default function StoryActionsPage() {
                     <div className="card-body text-center">
                       <div className="flex justify-center mb-4">
                         <FiEdit3 className="w-16 h-16 text-primary" />
-                      </div>
-                      <h2 className="card-title justify-center text-2xl">Edit</h2>
+                      </div>                      <h2 className="card-title justify-center text-2xl">{t('cards.edit.title')}</h2>
                       <p className="text-base-content/70">
-                        Make changes to the story content with our built-in editor.
+                        {t('cards.edit.description')}
                       </p>
                       <div className="card-actions justify-center mt-4">
                         <button
                           onClick={navigateToEdit}
                           className="btn btn-primary btn-lg"
                         >
-                          Start Editing
+                          {tCommon('Actions.startEditing')}
                         </button>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Back to Stories Button */}
-                <div className="pt-8">
+                {/* Back to Stories Button */}                <div className="pt-8">
                   <button
                     onClick={() => router.push(`/${locale}/my-stories`)}
                     className="btn btn-outline btn-lg"
                   >
                     <FiArrowLeft className="w-5 h-5 mr-2" />
-                    Back to My Stories
+                    {tCommon('Actions.backToMyStories')}
                   </button>
                 </div>
               </div>

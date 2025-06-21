@@ -36,6 +36,12 @@
   "MyStoriesPage": {
     "title": "Hello",
     "writeNewStory": "Write New Story",
+    "signedOut": {
+      "welcome": "Welcome",
+      "needSignIn": "You need to be signed in to view your stories.",
+      "signIn": "Sign In",
+      "createAccount": "Create Account"
+    },
     "tabs": {
       "myStories": "My Stories",
       "myCharacters": "My Characters"
@@ -286,6 +292,7 @@
       "email": "Your Email:",
       "emailPlaceholder": "So our carrier pigeons can find you",
       "category": "Select Your Quest:",
+      "selectCategory": "Choose a category...",
       "message": "Your Magical Message:",
       "messagePlaceholder": "Share your thoughts, ideas, or magical feedback...",
       "submit": "Cast Spell"
@@ -303,6 +310,71 @@
       "content": "Have a sharp eye for bugs or an imaginative mind bursting with ideas? Earn extra magical credits for every valid bug reported or inspired feature suggested.",
       "disclaimer": "(*) Final decision rests with our delightful Oompa Loompas. They're charmingly unpredictable, but they love rewarding creativity!",
       "closing": "Let's create magic together!"
+    }
+  },
+  "PublicStoryPage": {
+    "loading": {
+      "title": "Loading story...",
+      "subtitle": "Please wait while we load the story"
+    },
+    "errors": {
+      "notFound": "Story not found",
+      "notFoundDesc": "The story you're looking for doesn't exist or is no longer public.",
+      "contentNotAvailable": "Story content not available",
+      "contentNotAvailableDesc": "The story content is not currently available for viewing."
+    },
+    "labels": {
+      "publicStory": "Public Story",
+      "by": "by",
+      "synopsis": "Synopsis"
+    },
+    "footer": {
+      "createdWith": "This story was created with",
+      "cta": "Create your own magical stories today!"
+    }
+  },
+  "SharedStoryPage": {
+    "loading": {
+      "title": "Loading shared story...",
+      "subtitle": "Please wait while we verify your access"
+    },
+    "errors": {
+      "unableToAccess": "Unable to access story"
+    },
+    "redirecting": "Redirecting..."
+  },
+  "StoryActionsPage": {
+    "description": "Choose how you'd like to experience this story",
+    "cards": {
+      "read": {
+        "title": "Read",
+        "description": "Read the story in a beautiful, formatted layout with images and styling."
+      },
+      "listen": {
+        "title": "Listen", 
+        "description": "Listen to the audiobook version with professional narration."
+      },
+      "edit": {
+        "title": "Edit",
+        "description": "Make changes to the story content with our built-in editor."
+      }
+    }
+  },
+  "TellYourStoryPage": {
+    "signedOut": {
+      "title": "Ready to Tell Your Story?",
+      "subtitle": "Sign up to start creating your magical adventures with Mythoria.",
+      "getStarted": "Get Started"
+    }
+  },
+  "AboutUsModal": {
+    "feedback": {
+      "title": "🪄 Cast Your Feedback Spell",
+      "placeholder": "Share your magical suggestions...",
+      "submit": "Send Spell ✨"
+    },
+    "investors": {
+      "button": "Open the Scroll 📜"
     }
   }
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { FiLoader, FiAlertCircle, FiUser, FiCalendar, FiTag } from 'react-icons/fi';
 import StoryReader from '@/components/StoryReader';
 
@@ -32,6 +32,8 @@ interface PublicStoryData {
 export default function PublicStoryPage() {
   const params = useParams();
   const locale = useLocale();
+  const t = useTranslations('PublicStoryPage');
+  const tCommon = useTranslations('common');
   const slug = params.slug as string;
   
   const [loading, setLoading] = useState(true);
@@ -148,33 +150,31 @@ export default function PublicStoryPage() {
       setTwitterTag('twitter:image', `${baseUrl}/api/og/story/${slug}`);
     }
   }, [data, slug]);
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <FiLoader className="animate-spin text-4xl text-primary mx-auto" />
-          <h2 className="text-xl font-semibold">Loading story...</h2>
-          <p className="text-gray-600">Please wait while we load the story</p>
+          <h2 className="text-xl font-semibold">{t('loading.title')}</h2>
+          <p className="text-gray-600">{t('loading.subtitle')}</p>
         </div>
       </div>
     );
   }
-
   if (error || !data) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4 max-w-md mx-auto px-4">
           <FiAlertCircle className="text-4xl text-red-500 mx-auto" />
-          <h2 className="text-xl font-semibold text-gray-900">Story not found</h2>
-          <p className="text-gray-600">{error || 'The story you\'re looking for doesn\'t exist or is no longer public.'}</p>
+          <h2 className="text-xl font-semibold text-gray-900">{t('errors.notFound')}</h2>
+          <p className="text-gray-600">{error || t('errors.notFoundDesc')}</p>
           
           <div className="space-y-2">
             <a
               href={`/${locale}`}
               className="btn btn-primary btn-sm"
             >
-              Go to Homepage
+              {tCommon('Actions.goToHomepage')}
             </a>
           </div>
         </div>
@@ -189,16 +189,15 @@ export default function PublicStoryPage() {
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="container mx-auto px-4 py-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-center justify-between mb-4">
+          <div className="max-w-4xl mx-auto">            <div className="flex items-center justify-between mb-4">
               <h1 className="text-3xl font-bold text-gray-900">{story.title}</h1>
-              <span className="badge badge-success">Public Story</span>
+              <span className="badge badge-success">{t('labels.publicStory')}</span>
             </div>
             
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
               <div className="flex items-center gap-1">
                 <FiUser />
-                <span>by {story.author.displayName}</span>
+                <span>{t('labels.by')} {story.author.displayName}</span>
               </div>
               
               <div className="flex items-center gap-1">
@@ -219,11 +218,9 @@ export default function PublicStoryPage() {
                   <span className="capitalize">{story.novelStyle.replace('_', ' ')}</span>
                 </div>
               )}
-            </div>
-
-            {(story.synopsis || story.plotDescription) && (
+            </div>            {(story.synopsis || story.plotDescription) && (
               <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                <h3 className="font-medium text-gray-900 mb-2">Synopsis</h3>
+                <h3 className="font-medium text-gray-900 mb-2">{t('labels.synopsis')}</h3>
                 <p className="text-gray-700 leading-relaxed">
                   {story.synopsis || story.plotDescription}
                 </p>
@@ -245,13 +242,12 @@ export default function PublicStoryPage() {
                   title: story.title
                 }}
               />
-            </div>
-          ) : (
+            </div>          ) : (
             <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
               <FiAlertCircle className="text-4xl text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Story content not available</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">{t('errors.contentNotAvailable')}</h3>
               <p className="text-gray-600">
-                The story content is not currently available for viewing.
+                {t('errors.contentNotAvailableDesc')}
               </p>
             </div>
           )}
@@ -260,17 +256,16 @@ export default function PublicStoryPage() {
 
       {/* Footer */}
       <div className="bg-white border-t mt-12">
-        <div className="container mx-auto px-4 py-6">
-          <div className="max-w-4xl mx-auto text-center text-sm text-gray-600">
+        <div className="container mx-auto px-4 py-6">          <div className="max-w-4xl mx-auto text-center text-sm text-gray-600">
             <p>
-              This story was created with{' '}
+              {t('footer.createdWith')}{' '}
               <a 
                 href={`/${locale}`} 
                 className="text-primary hover:underline font-medium"
               >
                 Mythoria
               </a>
-              {' '}• Create your own magical stories today!
+              {' '}• {t('footer.cta')}
             </p>
           </div>
         </div>

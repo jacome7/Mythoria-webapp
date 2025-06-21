@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface CreditHistoryEntry {
   id: string;
@@ -17,6 +18,8 @@ interface CreditsDisplayProps {
 }
 
 export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
+  const t = useTranslations('Components.CreditsDisplay');
+  const tCommon = useTranslations('common');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [creditHistory, setCreditHistory] = useState<CreditHistoryEntry[]>([]);
   const [loading, setLoading] = useState(false);
@@ -54,17 +57,16 @@ export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
       minute: '2-digit'
     });
   };
-
   const formatEventType = (eventType: string) => {
     const eventTypes: { [key: string]: string } = {
-      'initialCredit': 'Initial Credit',
-      'creditPurchase': 'Credit Purchase',
-      'eBookGeneration': 'eBook Generation',
-      'audioBookGeneration': 'AudioBook Generation',
-      'printOrder': 'Print Order',
-      'refund': 'Refund',
-      'voucher': 'Voucher',
-      'promotion': 'Promotion'
+      'initialCredit': t('eventTypes.initialCredit'),
+      'creditPurchase': t('eventTypes.creditPurchase'),
+      'eBookGeneration': t('eventTypes.eBookGeneration'),
+      'audioBookGeneration': t('eventTypes.audioBookGeneration'),
+      'printOrder': t('eventTypes.printOrder'),
+      'refund': t('eventTypes.refund'),
+      'voucher': t('eventTypes.voucher'),
+      'promotion': t('eventTypes.promotion')
     };
     return eventTypes[eventType] || eventType;
   };
@@ -78,14 +80,13 @@ export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
         className="btn btn-outline btn-secondary"
         onClick={handleOpenModal}
       >
-        Credits available: {currentBalance}
+        {t('button').replace('{credits}', currentBalance.toString())}
       </button>
 
       {/* Credit History Modal */}
       {isModalOpen && (
-        <div className="modal modal-open">
-          <div className="modal-box max-w-4xl">
-            <h3 className="font-bold text-lg mb-4">Credit History</h3>
+        <div className="modal modal-open">          <div className="modal-box max-w-4xl">
+            <h3 className="font-bold text-lg mb-4">{t('creditHistory')}</h3>
             
             {loading ? (
               <div className="flex justify-center items-center py-8">
@@ -94,13 +95,12 @@ export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
             ) : (
               <>
                 <div className="overflow-x-auto max-h-96">
-                  <table className="table table-zebra w-full">
-                    <thead>
+                  <table className="table table-zebra w-full">                    <thead>
                       <tr>
-                        <th>Date</th>
-                        <th>Event Type</th>
-                        <th className="text-right">Amount</th>
-                        <th className="text-right">Balance</th>
+                        <th>{t('headers.date')}</th>
+                        <th>{t('headers.eventType')}</th>
+                        <th className="text-right">{t('headers.amount')}</th>
+                        <th className="text-right">{t('headers.balance')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -119,22 +119,19 @@ export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
                     </tbody>
                   </table>
                 </div>
-                
-                <div className="mt-6 p-4 bg-base-200 rounded-lg">
+                  <div className="mt-6 p-4 bg-base-200 rounded-lg">
                   <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold">Current Available Balance:</span>
-                    <span className="text-xl font-bold text-primary">{currentBalance} credits</span>
+                    <span className="text-lg font-semibold">{t('currentBalance')}</span>
+                    <span className="text-xl font-bold text-primary">{currentBalance} {t('credits')}</span>
                   </div>
                 </div>
               </>
-            )}
-
-            <div className="modal-action">
+            )}            <div className="modal-action">
               <button
                 className="btn btn-ghost"
                 onClick={() => setIsModalOpen(false)}
               >
-                Close
+                {tCommon('Actions.close')}
               </button>
             </div>
           </div>

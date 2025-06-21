@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
 import {
   FiBook,
@@ -40,6 +40,7 @@ export default function ListenStoryPage() {
   const router = useRouter();
   const params = useParams();
   const locale = useLocale();
+  const tCommon = useTranslations('common');
   const storyId = params.storyId as string;
   const [story, setStory] = useState<Story | null>(null);
   const [loading, setLoading] = useState(true);
@@ -57,23 +58,21 @@ export default function ListenStoryPage() {
       try {
         const response = await fetch(`/api/stories/${storyId}`);
         if (response.ok) {
-          const data = await response.json();
-          // Only allow access to published stories
+          const data = await response.json();          // Only allow access to published stories
           if (data.story.status !== 'published') {
-            setError('This story is not available for listening yet.');
+            setError(tCommon('Errors.storyNotAvailableYet'));
             return;
           }
-          setStory(data.story);
-        } else if (response.status === 404) {
-          setError('Story not found.');
+          setStory(data.story);        } else if (response.status === 404) {
+          setError(tCommon('Errors.storyNotFoundGeneric'));
         } else if (response.status === 403) {
-          setError('You do not have permission to access this story.');
+          setError(tCommon('Errors.noPermission'));
         } else {
-          setError('Failed to load the story. Please try again.');
+          setError(tCommon('Errors.failedToLoad'));
         }
       } catch (error) {
         console.error('Error fetching story:', error);
-        setError('Failed to load the story. Please try again.');
+        setError(tCommon('Errors.failedToLoad'));
       } finally {
         setLoading(false);
       }
@@ -82,7 +81,7 @@ export default function ListenStoryPage() {
     if (storyId) {
       fetchStory();
     }
-  }, [storyId]);
+  }, [storyId, tCommon]);
 
   // Audio playback functions
   const formatDuration = (seconds: number): string => {

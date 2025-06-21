@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
@@ -317,6 +318,7 @@ interface FindReplaceState {
 }
 
 export default function BookEditor({ initialContent, onSave, onCancel, storyMetadata, storyId, onAIEdit }: BookEditorProps) {
+  const t = useTranslations('bookEditor');
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [isHtmlView, setIsHtmlView] = useState(false);
@@ -543,7 +545,6 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
       onAIEdit(updatedHtml);
     }
   }, [editor, isHtmlView, onAIEdit, toast]);
-
   if (!editor) {
     return (
       <div className="flex justify-center items-center min-h-96">
@@ -562,7 +563,7 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
             onClick={() => editor?.chain().focus().toggleBold().run()}
             className={`btn btn-sm ${editor?.isActive('bold') ? 'btn-primary' : 'btn-ghost'}`}
             disabled={isHtmlView || !editor}
-            title="Bold (Ctrl+B)"
+            title={t('toolbar.tooltips.bold')}
           >
             <FiBold />
           </button>
@@ -570,7 +571,7 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
               onClick={() => editor?.chain().focus().toggleItalic().run()}
               className={`btn btn-sm ${editor?.isActive('italic') ? 'btn-primary' : 'btn-ghost'}`}
               disabled={isHtmlView || !editor}
-              title="Italic (Ctrl+I)"
+              title={t('toolbar.tooltips.italic')}
             >
               <FiItalic />
             </button>
@@ -578,7 +579,7 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
               onClick={() => editor?.chain().focus().toggleStrike().run()}
               className={`btn btn-sm ${editor?.isActive('strike') ? 'btn-primary' : 'btn-ghost'}`}
               disabled={isHtmlView || !editor}
-              title="Strikethrough"
+              title={t('toolbar.tooltips.strikethrough')}
             >
               <FiUnderline />
             </button>
@@ -605,37 +606,35 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
           </div>
 
           {/* Alignment */}
-          <div className="flex items-center gap-1">
-            <button
+          <div className="flex items-center gap-1">            <button
               onClick={() => editor.chain().focus().setTextAlign('left').run()}
               className={`btn btn-sm ${editor.isActive({ textAlign: 'left' }) ? 'btn-primary' : 'btn-ghost'}`}
-              title="Align Left"
+              title={t('toolbar.tooltips.alignLeft')}
             >
               <FiAlignLeft />
             </button>
             <button
               onClick={() => editor.chain().focus().setTextAlign('center').run()}
               className={`btn btn-sm ${editor.isActive({ textAlign: 'center' }) ? 'btn-primary' : 'btn-ghost'}`}
-              title="Align Center"
+              title={t('toolbar.tooltips.alignCenter')}
             >
               <FiAlignCenter />
             </button>
             <button
               onClick={() => editor.chain().focus().setTextAlign('right').run()}
               className={`btn btn-sm ${editor.isActive({ textAlign: 'right' }) ? 'btn-primary' : 'btn-ghost'}`}
-              title="Align Right"
+              title={t('toolbar.tooltips.alignRight')}
             >
               <FiAlignRight />
             </button>
           </div>
 
           {/* Undo/Redo */}
-          <div className="flex items-center gap-1">
-            <button
+          <div className="flex items-center gap-1">            <button
               onClick={() => editor.chain().focus().undo().run()}
               className="btn btn-sm btn-ghost"
               disabled={!editor.can().undo()}
-              title="Undo (Ctrl+Z)"
+              title={t('toolbar.tooltips.undo')}
             >
               <FiRotateCcw />
             </button>
@@ -643,20 +642,19 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
               onClick={() => editor.chain().focus().redo().run()}
               className="btn btn-sm btn-ghost"
               disabled={!editor.can().redo()}
-              title="Redo (Ctrl+Y)"
+              title={t('toolbar.tooltips.redo')}
             >
               <FiRotateCw />
-            </button>          </div>
+            </button></div>
 
           {/* View Toggle */}
-          <div className="flex items-center gap-1">
-            <button
+          <div className="flex items-center gap-1">            <button
               onClick={toggleView}
               className={`btn btn-sm ${isHtmlView ? 'btn-primary' : 'btn-ghost'}`}
-              title={isHtmlView ? 'Switch to Visual Editor' : 'Switch to HTML Code'}
+              title={isHtmlView ? t('toolbar.tooltips.switchToVisual') : t('toolbar.tooltips.switchToHtml')}
             >
               {isHtmlView ? <FiEye /> : <FiCode />}
-              {isHtmlView ? 'Visual' : 'HTML'}
+              {isHtmlView ? t('toolbar.buttons.visual') : t('toolbar.buttons.html')}
             </button>
           </div>
 
@@ -666,7 +664,7 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
             onClick={() => setFindReplace(prev => ({ ...prev, isOpen: !prev.isOpen }))}
             className={`btn btn-sm ${findReplace.isOpen ? 'btn-primary' : 'btn-ghost'}`}
             disabled={isHtmlView}
-            title="Find & Replace (Ctrl+F)"
+            title={t('toolbar.tooltips.findReplace')}
           >
             <FiSearch />
           </button>
@@ -677,10 +675,10 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
                 onClick={() => setShowAIEditModal(true)}
                 className="btn btn-outline btn-primary btn-sm"
                 disabled={isHtmlView}
-                title="AI Edit - Improve your story with AI"
+                title={t('toolbar.tooltips.aiEdit')}
               >
                 <FiZap className="w-4 h-4" />
-                AI Edit
+                {t('toolbar.buttons.aiEdit')}
               </button>
             )}
 
@@ -689,14 +687,14 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
               onClick={handleSave}
               className="btn btn-primary btn-sm"
               disabled={!hasChanges || isSaving}
-              title="Save (Ctrl+S)"
+              title={t('toolbar.tooltips.save')}
             >
               {isSaving ? (
                 <span className="loading loading-spinner loading-xs"></span>
               ) : (
                 <FiSave />
               )}
-              Save
+              {t('toolbar.buttons.save')}
             </button>
 
             {/* Cancel Button */}
@@ -704,7 +702,7 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
               onClick={onCancel}
               className="btn btn-ghost btn-sm"
             >
-              Cancel
+              {t('toolbar.buttons.cancel')}
             </button>
           </div>
         </div>
@@ -715,26 +713,25 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
             ref={refs.setFloating}
             style={floatingStyles}
             className="bg-base-100 border border-base-300 rounded-lg shadow-lg p-4 min-w-80"
-          >
-            <div className="space-y-3">
+          >            <div className="space-y-3">
               <div>
-                <label className="label label-text text-sm">Find</label>
+                <label className="label label-text text-sm">{t('findReplace.findLabel')}</label>
                 <input
                   type="text"
                   value={findReplace.findText}
                   onChange={(e) => setFindReplace(prev => ({ ...prev, findText: e.target.value }))}
                   className="input input-sm input-bordered w-full"
-                  placeholder="Enter text to find..."
+                  placeholder={t('findReplace.findPlaceholder')}
                 />
               </div>
               <div>
-                <label className="label label-text text-sm">Replace with</label>
+                <label className="label label-text text-sm">{t('findReplace.replaceLabel')}</label>
                 <input
                   type="text"
                   value={findReplace.replaceText}
                   onChange={(e) => setFindReplace(prev => ({ ...prev, replaceText: e.target.value }))}
                   className="input input-sm input-bordered w-full"
-                  placeholder="Enter replacement text..."
+                  placeholder={t('findReplace.replacePlaceholder')}
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -743,18 +740,18 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
                   className="btn btn-sm btn-primary"
                   disabled={!findReplace.findText}
                 >
-                  Find
+                  {t('findReplace.findButton')}
                 </button>
                 <button
                   onClick={handleReplaceAll}
                   className="btn btn-sm btn-secondary"
                   disabled={!findReplace.findText}
                 >
-                  Replace All
+                  {t('findReplace.replaceAllButton')}
                 </button>
                 {findReplace.totalMatches > 0 && (
                   <span className="text-sm text-base-content/70">
-                    {findReplace.totalMatches} matches
+                    {t('findReplace.matchesFound', { count: findReplace.totalMatches })}
                   </span>
                 )}
               </div>
@@ -764,18 +761,17 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
       </div>      {/* Editor Content */}
       <div className="container mx-auto max-w-4xl">
         {isHtmlView ? (
-          <div className="p-6">
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold mb-2">HTML Code Editor</h3>
+          <div className="p-6">            <div className="mb-4">
+              <h3 className="text-lg font-semibold mb-2">{t('htmlEditor.title')}</h3>
               <p className="text-sm text-base-content/70 mb-3">
-                Edit the raw HTML. Mythoria CSS classes (mythoria-*) will be preserved automatically when you save.
+                {t('htmlEditor.description')}
               </p>
             </div>
             <textarea
               value={htmlContent}
               onChange={handleHtmlChange}
               className="textarea textarea-bordered w-full min-h-screen font-mono text-sm"
-              placeholder="Enter HTML code here..."
+              placeholder={t('htmlEditor.placeholder')}
               style={{ fontFamily: 'Monaco, Menlo, "Ubuntu Mono", monospace' }}
             />
           </div>) : (
@@ -788,11 +784,10 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
             </div>
           </div>
         )}
-      </div>{/* Changes indicator */}
-      {hasChanges && (
+      </div>{/* Changes indicator */}      {hasChanges && (
         <div className="fixed bottom-4 right-4">
           <div className="alert alert-info shadow-lg">
-            <span>You have unsaved changes</span>
+            <span>{t('unsavedChanges')}</span>
           </div>
         </div>
       )}

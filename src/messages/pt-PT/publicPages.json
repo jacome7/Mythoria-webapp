@@ -36,6 +36,12 @@
   "MyStoriesPage": {
     "title": "Olá",
     "writeNewStory": "Escrever Nova História",
+    "signedOut": {
+      "welcome": "Bem-vindo",
+      "needSignIn": "Precisa de fazer login para ver as suas histórias.",
+      "signIn": "Entrar",
+      "createAccount": "Criar Conta"
+    },
     "tabs": {
       "myStories": "As Minhas Histórias",
       "myCharacters": "As Minhas Personagens"
@@ -286,6 +292,7 @@
       "email": "O Seu Email:",
       "emailPlaceholder": "Para as nossas pombas mensageiras",
       "category": "Selecione a Sua Missão:",
+      "selectCategory": "Escolha uma categoria...",
       "message": "A Sua Mensagem Mágica:",
       "messagePlaceholder": "Partilhe os seus pensamentos, ideias ou feedback mágico...",
       "submit": "Lançar Feitiço"
@@ -303,6 +310,71 @@
       "content": "Olhos de águia para bugs ou uma mente imaginativa cheia de ideias? Ganhe créditos mágicos extra por cada bug válido ou funcionalidade inspirada que sugerir.",
       "disclaimer": "(*) A decisão final cabe aos nossos adoráveis Oompa Loompas. São imprevisíveis, mas adoram recompensar a criatividade!",
       "closing": "Vamos criar magia juntos!"
+    }
+  },
+  "PublicStoryPage": {
+    "loading": {
+      "title": "A carregar história...",
+      "subtitle": "Por favor aguarde enquanto carregamos a história"
+    },
+    "errors": {
+      "notFound": "História não encontrada",
+      "notFoundDesc": "A história que procura não existe ou já não é pública.",
+      "contentNotAvailable": "Conteúdo da história não disponível",
+      "contentNotAvailableDesc": "O conteúdo da história não está atualmente disponível para visualização."
+    },
+    "labels": {
+      "publicStory": "História Pública",
+      "by": "por",
+      "synopsis": "Sinopse"
+    },
+    "footer": {
+      "createdWith": "Esta história foi criada com",
+      "cta": "Crie as suas próprias histórias mágicas hoje!"
+    }
+  },
+  "SharedStoryPage": {
+    "loading": {
+      "title": "A carregar história partilhada...",
+      "subtitle": "Por favor aguarde enquanto verificamos o seu acesso"
+    },
+    "errors": {
+      "unableToAccess": "Não é possível aceder à história"
+    },
+    "redirecting": "A redirecionar..."
+  },
+  "StoryActionsPage": {
+    "description": "Escolha como gostaria de experienciar esta história",
+    "cards": {
+      "read": {
+        "title": "Ler",
+        "description": "Leia a história num formato bonito e formatado com imagens e estilo."
+      },
+      "listen": {
+        "title": "Ouvir", 
+        "description": "Ouça a versão audiobook com narração profissional."
+      },
+      "edit": {
+        "title": "Editar",
+        "description": "Faça alterações ao conteúdo da história com o nosso editor integrado."
+      }
+    }
+  },
+  "TellYourStoryPage": {
+    "signedOut": {
+      "title": "Pronto para Contar a Sua História?",
+      "subtitle": "Registe-se para começar a criar as suas aventuras mágicas com a Mythoria.",
+      "getStarted": "Começar"
+    }
+  },
+  "AboutUsModal": {
+    "feedback": {
+      "title": "🪄 Lance o Seu Feitiço de Feedback",
+      "placeholder": "Partilhe as suas sugestões mágicas...",
+      "submit": "Enviar Feitiço ✨"
+    },
+    "investors": {
+      "button": "Abrir o Pergaminho 📜"
     }
   }
 }
