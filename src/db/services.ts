@@ -133,9 +133,24 @@ export const storyService = {  async createStory(storyData: { title: string; aut
   async getStoriesByAuthor(authorId: string) {
     return await db.select().from(stories).where(eq(stories.authorId, authorId));
   },
-
   async getPublishedStories() {
     return await db.select().from(stories).where(eq(stories.status, 'published'));
+  },
+
+  async getFeaturedPublicStories() {
+    return await db
+      .select({
+        storyId: stories.storyId,
+        title: stories.title,
+        slug: stories.slug,
+        featureImageUri: stories.featureImageUri,
+        author: authors.displayName,
+        createdAt: stories.createdAt
+      })
+      .from(stories)
+      .innerJoin(authors, eq(stories.authorId, authors.authorId))
+      .where(and(eq(stories.isPublic, true), eq(stories.isFeatured, true)))
+      .orderBy(desc(stories.createdAt));
   },
 
   async getTotalStoriesCount() {

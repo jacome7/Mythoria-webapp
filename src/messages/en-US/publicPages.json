@@ -91,7 +91,8 @@
     }
   },
   "HomePage": {
-    "title": "Welcome",    "hero": {
+    "title": "Welcome",
+    "hero": {
       "writeYourOwn": "Write your own",
       "subtitle": "Turn anyone into the hero of a beautifully illustrated book — for children, grown-ups or entire teams.",
       "subtitleEmphasized": "anyone",
@@ -117,7 +118,8 @@
     "comingSoon": {
       "title": "Our story is just beginning...",
       "subtitle": "Mythoria is crafting something magical! I'm working hard, alongside AI, to bring you a new world of personalized storytelling. Stay tuned, the adventure will be available soon! 🧙‍♂️📚✨"
-    },    "audiences": {
+    },
+    "audiences": {
       "kids": {
         "title": "For Kids 🎈",
         "description": "Turn your child, grandchild, nephew, or niece into the hero of their own magical adventure!"
@@ -130,7 +132,8 @@
         "title": "For Companies 🌟",
         "description": "Gift customers or staff families a branded, personalised storybook that keeps your logo on the bookshelf."
       }
-    },    "howItWorks": {
+    },
+    "howItWorks": {
       "title": "With Mythoria, creating your own story is easy:",
       "steps": {
         "step1": {
@@ -152,7 +155,8 @@
         "step5": {
           "title": "The Gift",
           "description": "Choose how you'd like to receive your masterpiece: as an eBook, an audiobook, or a beautifully printed book."
-        },        "step6": {
+        },
+        "step6": {
           "title": "Experience the Magic",
           "description": "Children will be captivated seeing themselves in exciting adventures, while adults delight in reliving cherished memories and sharing heartfelt moments."
         }
@@ -196,7 +200,9 @@
       "title": "Ready to create your story?",
       "subtitle": "Join thousands of families who have already discovered the magic of Mythoria.",
       "button": "Start Creating"
-    }  },  "AboutUs": {
+    }
+  },
+  "AboutUs": {
     "hero": {
       "title": "Mythoria",
       "subtitle": "Stories brewed by an 18-year-old dreamer … and a legion of AI Oompa-Loompas.",
@@ -235,23 +241,29 @@
     "news": {
       "title": "News From the Realm",
       "breaking": "Breaking Quill 🗞️ — Rodrigo wins the 2025 InovaGaia Young Innovator Award for Mythoria!"
-    },    "investors": {
+    },
+    "investors": {
       "title": "Investors: Join the Quest",
       "description": "Dragons love gold; we love partners. If you see the treasure too, open the scroll."
     }
-  },"GetInspiredPage": {
+  },
+  "GetInspiredPage": {
     "gallery": {
       "title": "Featured Stories",
       "subtitle": "Stories that have inspired families around the world",
       "viewStory": "View Story",
-      "createdBy": "Created by"
+      "createdBy": "Created by",
+      "emptyTitle": "No Featured Stories Yet",
+      "emptyMessage": "Create your own story and share it with the world!",
+      "createStory": "Create Your Story"
     }
-  }
-  ,"ContactUsPage": {
+  },
+  "ContactUsPage": {
     "title": "Contact Mythoria",
     "intro": "Greetings, fellow adventurer! Whether you're from the Shire, Hogwarts, or a galaxy far, far away, we're here to assist you in your journey through the wonderful world of Mythoria. Your feedback is as precious as the One Ring (but easier to handle, we promise!).",
     "scrollTitle": "Send Us Your Owl (or just fill the form)",
-    "scrollIntro": "Choose the scroll that best suits your quest:",    "categories": {
+    "scrollIntro": "Choose the scroll that best suits your quest:",
+    "categories": {
       "featureIdeas": "Feature Ideas (Inspire us like Tolkien)",
       "reportBug": "Report a Bug (Even Sherlock Holmes needed clues!)",
       "troubles": "Story Generation Troubles (When the magic spells go awry)",
@@ -266,7 +278,8 @@
       "delivery": "Printed Book Delivery",
       "credits": "Credits & Payments",
       "general": "General Enchantment"
-    },"form": {
+    },
+    "form": {
       "title": "The Magic Form",
       "name": "Your Name:",
       "namePlaceholder": "Wizarding Alias",

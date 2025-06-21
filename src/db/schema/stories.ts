@@ -24,10 +24,11 @@ export const stories = pgTable("stories", {
   dedicationMessage: text("dedication_message"), // Personalized dedication message
   htmlUri: text("html_uri"), // Internal Google Storage link to access the HTML file
   pdfUri: text("pdf_uri"), // Internal Google Storage link to access the PDF file
-  audiobookUri: jsonb("audiobook_uri"), // JSON object with internal GS links to each chapter audio file
-  // Sharing functionality fields
+  audiobookUri: jsonb("audiobook_uri"), // JSON object with internal GS links to each chapter audio file  // Sharing functionality fields
   slug: text("slug"), // Human-readable slug for public URLs
   isPublic: boolean("is_public").default(false), // Whether story is publicly accessible
+  isFeatured: boolean("is_featured").default(false), // Whether story is featured in gallery
+  featureImageUri: text("feature_image_uri"), // URL for the featured story image
   chapterCount: integer("chapter_count").default(6).notNull(),
   // Story generation workflow convenience columns
   storyGenerationStatus: runStatusEnum("story_generation_status"),

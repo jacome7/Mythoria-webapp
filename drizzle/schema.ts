@@ -256,10 +256,11 @@ export const stories = pgTable("stories", {
 	htmlUri: text("html_uri"),
 	pdfUri: text("pdf_uri"),
 	audiobookUri: jsonb("audiobook_uri"),
-	chapterCount: integer("chapter_count").default(6).notNull(),
-	// Sharing functionality fields
+	chapterCount: integer("chapter_count").default(6).notNull(),	// Sharing functionality fields
 	slug: text("slug"),
 	isPublic: boolean("is_public").default(false),
+	isFeatured: boolean("is_featured").default(false),
+	featureImageUri: text("feature_image_uri"),
 }, (table) => [
 	foreignKey({
 			columns: [table.authorId],

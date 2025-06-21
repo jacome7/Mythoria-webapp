@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { FiImage, FiEdit3 } from 'react-icons/fi';
 import { StoryImage, ImageVersion, getImageDisplayName, formatVersionNumber, formatRelativeTime } from '@/utils/imageUtils';
 
@@ -254,15 +255,16 @@ export default function ImageEditingTab({
                   : 'border-base-300 hover:border-base-400'
               }`}
               onClick={() => handleImageSelect(image)}
-            >
-              <div className="aspect-square bg-base-200 rounded-lg mb-3 overflow-hidden">
-                <img
+            >              <div className="aspect-square bg-base-200 rounded-lg mb-3 overflow-hidden">
+                <Image
                   src={image.latestVersion.url}
                   alt={getImageDisplayName(image)}
                   className="w-full h-full object-cover"
                   loading="lazy"
+                  width={400}
+                  height={400}
                 />
-              </div>              <div className="text-center">
+              </div><div className="text-center">
                 <h4 className="font-medium text-sm">{getImageDisplayName(image)}</h4>
                 <p className="text-xs text-base-content/60 mt-1">
                   {image.versions.length} version{image.versions.length !== 1 ? 's' : ''} available
@@ -339,12 +341,13 @@ export default function ImageEditingTab({
           <label className="label">
             <span className="label-text font-medium">Current image:</span>
           </label>
-          <div className="max-w-md mx-auto">
-            <div className="aspect-square bg-base-200 rounded-lg overflow-hidden">
-              <img
+          <div className="max-w-md mx-auto">            <div className="aspect-square bg-base-200 rounded-lg overflow-hidden">
+              <Image
                 src={previewImage}
                 alt="Preview"
                 className="w-full h-full object-cover"
+                width={400}
+                height={400}
               />
             </div>
           </div>

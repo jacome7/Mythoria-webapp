@@ -91,7 +91,8 @@
     }
   },
   "HomePage": {
-    "title": "Bem-vindo",    "hero": {
+    "title": "Bem-vindo",
+    "hero": {
       "writeYourOwn": "Escreva a sua própria",
       "subtitle": "Transforme qualquer pessoa no herói de um livro lindamente ilustrado — para crianças, adultos ou equipas inteiras.",
       "subtitleEmphasized": "qualquer pessoa",
@@ -117,7 +118,8 @@
     "comingSoon": {
       "title": "A nossa história está apenas a começar...",
       "subtitle": "A Mythoria está a preparar algo mágico! Estou a trabalhar arduamente, juntamente com a IA, para lhe trazer um novo mundo de histórias personalizadas. Fique atento, a aventura estará disponível em breve! 🧙‍♂️📚✨"
-    },    "audiences": {
+    },
+    "audiences": {
       "kids": {
         "title": "Para Crianças 🎈",
         "description": "Transforme o seu filho, neto, sobrinho ou sobrinha no herói da sua própria aventura mágica!"
@@ -130,7 +132,8 @@
         "title": "Para Empresas 🌟",
         "description": "Ofereça aos clientes ou às famílias dos funcionários um livro de histórias personalizado com marca que mantém o seu logótipo na estante."
       }
-    },    "howItWorks": {
+    },
+    "howItWorks": {
       "title": "Com a Mythoria, criar a sua própria história é fácil:",
       "steps": {
         "step1": {
@@ -152,7 +155,8 @@
         "step5": {
           "title": "O Presente",
           "description": "Escolha como gostaria de receber a sua obra-prima: como eBook, audiolivro ou livro lindamente impresso."
-        },        "step6": {
+        },
+        "step6": {
           "title": "Experimente a Magia",
           "description": "As crianças ficarão cativadas ao verem-se em aventuras emocionantes, enquanto os adultos se deleitam revivendo memórias queridas e partilhando momentos sinceros."
         }
@@ -197,7 +201,8 @@
       "subtitle": "Junte-se a milhares de famílias que já descobriram a magia da Mythoria.",
       "button": "Começar a Criar"
     }
-  },  "AboutUs": {
+  },
+  "AboutUs": {
     "hero": {
       "title": "Mythoria",
       "subtitle": "Histórias criadas por um sonhador de 18 anos … e uma legião de Oompa-Loompas de IA.",
@@ -236,23 +241,29 @@
     "news": {
       "title": "Notícias do Reino",
       "breaking": "Última Hora 🗞️ — Rodrigo ganha o Prémio InovaGaia 2025 de Jovem Inovador com a Mythoria!"
-    },    "investors": {
+    },
+    "investors": {
       "title": "Investidores: Juntem-se à Aventura",
       "description": "Os dragões amam ouro; nós amamos parceiros. Se também veem o tesouro, abram o pergaminho."
     }
-  },"GetInspiredPage": {
+  },
+  "GetInspiredPage": {
     "gallery": {
       "title": "Histórias em Destaque",
       "subtitle": "Histórias que inspiraram famílias em todo o mundo",
       "viewStory": "Ver História",
-      "createdBy": "Criado por"
+      "createdBy": "Criado por",
+      "emptyTitle": "Ainda Não Há Histórias em Destaque",
+      "emptyMessage": "Crie a sua própria história e partilhe-a com o mundo!",
+      "createStory": "Criar a Sua História"
     }
-  }
-  ,"ContactUsPage": {
+  },
+  "ContactUsPage": {
     "title": "Contacte a Mythoria",
     "intro": "Saudações, aventureiro! Seja da Terra Média, de Hogwarts ou de uma galáxia muito distante, estamos aqui para ajudar na sua jornada pelo maravilhoso mundo da Mythoria. O seu feedback é precioso como o Anel, mas bem mais fácil de carregar!",
     "scrollTitle": "Envie-nos a sua Coruja (ou preencha o formulário)",
-    "scrollIntro": "Escolha o pergaminho que melhor se adapta à sua missão:",    "categories": {
+    "scrollIntro": "Escolha o pergaminho que melhor se adapta à sua missão:",
+    "categories": {
       "featureIdeas": "Ideias de Funcionalidades (Inspire-nos como Tolkien)",
       "reportBug": "Reportar um Erro (Até Sherlock Holmes precisava de pistas!)",
       "troubles": "Problemas na Geração de Histórias (Quando os feitiços falham)",
@@ -267,7 +278,8 @@
       "delivery": "Entrega de Livro Impresso",
       "credits": "Créditos & Pagamentos",
       "general": "Encantamento Geral"
-    },"form": {
+    },
+    "form": {
       "title": "O Formulário Mágico",
       "name": "O Seu Nome:",
       "namePlaceholder": "Ou Alcunha de Feiticeiro",

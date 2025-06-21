@@ -11,6 +11,9 @@ interface Story {
   title: string;
   authorName: string;
   status: string;
+  isPublic: boolean;
+  isFeatured: boolean;
+  featureImageUri: string | null;
   createdAt: string;
 }
 
@@ -41,6 +44,8 @@ export default function StoriesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState<SortField>('createdAt');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+  const [isPublicFilter, setIsPublicFilter] = useState<'all' | 'public' | 'private'>('all');
+  const [isFeaturedFilter, setIsFeaturedFilter] = useState<'all' | 'featured' | 'not-featured'>('all');
 
   useEffect(() => {
     if (isLoaded) {
@@ -59,8 +64,7 @@ export default function StoriesPage() {
       fetchStories(currentPage);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoaded, isSignedIn, user, router, currentPage, searchTerm, sortField, sortOrder]);
-
+  }, [isLoaded, isSignedIn, user, router, currentPage, searchTerm, sortField, sortOrder, isPublicFilter, isFeaturedFilter]);
   const fetchStories = async (page: number) => {
     try {
       setIsLoading(true);
@@ -70,6 +74,8 @@ export default function StoriesPage() {
         ...(searchTerm && { search: searchTerm }),
         sortBy: sortField,
         sortOrder: sortOrder,
+        ...(isPublicFilter !== 'all' && { isPublic: isPublicFilter === 'public' ? 'true' : 'false' }),
+        ...(isFeaturedFilter !== 'all' && { isFeatured: isFeaturedFilter === 'featured' ? 'true' : 'false' }),
       });
       
       const response = await fetch(`/api/admin/stories?${params.toString()}`);
@@ -90,7 +96,6 @@ export default function StoriesPage() {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-
   const handleSearch = (term: string) => {
     setSearchTerm(term);
     setCurrentPage(1); // Reset to first page when searching
@@ -182,8 +187,7 @@ export default function StoriesPage() {
       <AdminHeader />
       <main className="flex-1 container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold text-center mb-8">Stories</h1>
-        
-        {/* Search Component */}
+          {/* Search Component */}
         <div className="mb-6 max-w-md mx-auto">
           <div className="relative">
             <input
@@ -209,13 +213,53 @@ export default function StoriesPage() {
           </div>
         </div>
         
+        {/* Filter Controls */}
+        <div className="mb-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Public Status</span>
+              </label>
+              <select
+                className="select select-bordered w-full"
+                value={isPublicFilter}
+                onChange={(e) => {
+                  setIsPublicFilter(e.target.value as 'all' | 'public' | 'private');
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="all">All Stories</option>
+                <option value="public">Public Only</option>
+                <option value="private">Private Only</option>
+              </select>
+            </div>
+            
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Featured Status</span>
+              </label>
+              <select
+                className="select select-bordered w-full"
+                value={isFeaturedFilter}
+                onChange={(e) => {
+                  setIsFeaturedFilter(e.target.value as 'all' | 'featured' | 'not-featured');
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="all">All Stories</option>
+                <option value="featured">Featured Only</option>
+                <option value="not-featured">Not Featured</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <div className="loading loading-spinner loading-lg"></div>
           </div>
         ) : (
-          <>
-            {/* Stories Table */}
+          <>            {/* Stories Table */}
             <div className="overflow-x-auto bg-white rounded-lg shadow">
               <table className="table w-full">
                 <thead>
@@ -237,6 +281,12 @@ export default function StoriesPage() {
                         <span>Author Name</span>
                         {getSortIcon('authorName')}
                       </div>
+                    </th>
+                    <th className="text-left">
+                      <span>Public</span>
+                    </th>
+                    <th className="text-left">
+                      <span>Featured</span>
                     </th>
                     <th 
                       className="text-left cursor-pointer hover:bg-gray-100 select-none"
@@ -261,14 +311,35 @@ export default function StoriesPage() {
                 <tbody>
                   {stories.map((story) => (
                     <tr key={story.storyId} className="hover:bg-gray-50">
-                      <td className="font-medium">{story.title}</td>
+                      <td className="font-medium">
+                        <button
+                          onClick={() => router.push(`/portaldegestao/stories/${story.storyId}`)}
+                          className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                        >
+                          {story.title}
+                        </button>
+                      </td>
                       <td>{story.authorName}</td>
+                      <td>
+                        {story.isPublic ? (
+                          <span className="badge badge-success">Public</span>
+                        ) : (
+                          <span className="badge badge-neutral">Private</span>
+                        )}
+                      </td>
+                      <td>
+                        {story.isFeatured ? (
+                          <span className="badge badge-primary">Featured</span>
+                        ) : (
+                          <span className="badge badge-ghost">Not Featured</span>
+                        )}
+                      </td>
                       <td>{formatDate(story.createdAt)}</td>
                       <td>{formatStatus(story.status)}</td>
                     </tr>
                   ))}
                 </tbody>
-              </table>              
+              </table>
               
               {stories.length === 0 && (
                 <div className="text-center py-12 text-gray-500">
