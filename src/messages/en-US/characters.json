@@ -17,7 +17,7 @@
       "name": "Enter character name",
       "otherType": "Specify other type (max 32 chars)",
       "superpowers": "e.g. invisibility, super strength, talking to animals...",
-      "passions": "Describe funny or quirky traits...",
+      "passions": "Describe funny, quirky traits or special powers...",
       "physicalDescription": "Describe how the character looks (hair, eyes, height, clothing, etc.)..."
     },
     "types": {

@@ -5,12 +5,13 @@ import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiBook, FiVolume2, FiEdit3, FiArrowLeft } from 'react-icons/fi';
+import { FiBook, FiVolume2, FiEdit3, FiArrowLeft, FiPrinter } from 'react-icons/fi';
 
 interface Story {
   storyId: string;
   title: string;
   status: 'draft' | 'writing' | 'published';
+  pdfUri?: string;
   audiobookUri?: Array<{
     chapterTitle: string;
     audioUri: string;
@@ -63,7 +64,6 @@ export default function StoryActionsPage() {
       fetchStory();
     }
   }, [storyId, tCommon]);
-
   const navigateToRead = () => {
     router.push(`/${locale}/stories/read/${storyId}`);
   };
@@ -74,6 +74,10 @@ export default function StoryActionsPage() {
 
   const navigateToEdit = () => {
     router.push(`/${locale}/stories/edit/${storyId}`);
+  };
+
+  const navigateToPrint = () => {
+    router.push(`/${locale}/stories/print/${storyId}`);
   };
 
   if (loading) {
@@ -138,7 +142,7 @@ export default function StoryActionsPage() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {/* Read Story Card */}
                   <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
                     <div className="card-body text-center">
@@ -190,13 +194,36 @@ export default function StoryActionsPage() {
                       </div>                      <h2 className="card-title justify-center text-2xl">{t('cards.edit.title')}</h2>
                       <p className="text-base-content/70">
                         {t('cards.edit.description')}
-                      </p>
-                      <div className="card-actions justify-center mt-4">
+                      </p>                      <div className="card-actions justify-center mt-4">
                         <button
                           onClick={navigateToEdit}
                           className="btn btn-primary btn-lg"
                         >
                           {tCommon('Actions.startEditing')}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Print Story Card */}
+                  <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+                    <div className="card-body text-center">
+                      <div className="flex justify-center mb-4">
+                        <FiPrinter className="w-16 h-16 text-primary" />
+                      </div>
+                      <h2 className="card-title justify-center text-2xl">{t('cards.print.title')}</h2>
+                      <p className="text-base-content/70">
+                        {t('cards.print.description')}
+                      </p>
+                      <div className="card-actions justify-center mt-4">
+                        <button
+                          onClick={navigateToPrint}
+                          className="btn btn-primary btn-lg"
+                          disabled={!story?.pdfUri}
+                        >
+                          {story?.pdfUri 
+                            ? t('cards.print.action')
+                            : t('cards.print.notAvailable')}
                         </button>
                       </div>
                     </div>

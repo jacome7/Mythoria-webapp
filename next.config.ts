@@ -6,7 +6,21 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 const nextConfig: NextConfig = {
   // Enable standalone output for better Docker performance
   output: 'standalone',
-    // Other existing configurations...
+  // Image configuration to allow external images
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**', // Allow all HTTPS hostnames
+      },
+      {
+        protocol: 'http',
+        hostname: '**', // Allow all HTTP hostnames (for local development)
+      }
+    ],
+  },
+  
+  // Other existing configurations...
   experimental: {
     // Enable optimizations - expanded for better tree shaking
     optimizePackageImports: [

@@ -109,3 +109,19 @@ export const aiActionTypeEnum = pgEnum("ai_action_type", [
   'content_validation',
   'test'
 ]);
+
+// Print request enums
+export const printRequestStatusEnum = pgEnum("print_request_status", [
+  'requested',
+  'in_printing',
+  'packing',
+  'shipped',
+  'delivered',
+  'cancelled',
+  'error'
+]);
+
+export const printProviderIntegrationEnum = pgEnum("print_provider_integration", [
+  'email',
+  'api'
+]);

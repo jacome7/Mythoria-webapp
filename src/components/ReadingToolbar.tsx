@@ -34,7 +34,7 @@ const DEFAULT_SETTINGS: ReadingSettings = {
 };
 
 export default function ReadingToolbar({ onSettingsChange }: ReadingToolbarProps) {
-  const t = useTranslations('readingToolbar');
+  const t = useTranslations('common.readingToolbar');
   const [settings, setSettings] = useState<ReadingSettings>(DEFAULT_SETTINGS);
   const [isExpanded, setIsExpanded] = useState(false);
 

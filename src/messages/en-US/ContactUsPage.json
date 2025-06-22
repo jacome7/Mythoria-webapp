@@ -1,0 +1,30 @@
+{
+	"ContactUsPage": {
+		"title": "Get in Touch",
+		"intro": "We'd love to hear from you! Whether you have questions, feedback, or need assistance, our team is here to help make your Mythoria experience magical.",
+		"scrollTitle": "What can we help you with?",
+		"scrollIntro": "Choose from the categories below to get faster support:",
+		"categories": {
+			"featureIdeas": "Feature Ideas & Suggestions",
+			"reportBug": "Report a Bug",
+			"troubles": "Technical Issues",
+			"delivery": "Printing & Delivery",
+			"credits": "Credits & Billing",
+			"general": "General Questions"
+		},
+		"bonus": {
+			"title": "Small Bonus for Your Feedback!",
+			"content": "As a thank you for taking the time to contact us, we'll add a small credit bonus to your account when we respond to genuine feedback or suggestions.",
+			"disclaimer": "(This doesn't apply to general questions or support requests, only actionable feedback that helps us improve Mythoria.)",
+			"closing": "Your voice matters in shaping the future of storytelling! ✨"
+		},
+		"join": {
+			"title": "Join Our Growing Community",
+			"intro": "Mythoria is expanding, and we're always looking for passionate people to join our mission:",
+			"printing": "🖨️ Partner with us as a local printing provider in your area",
+			"country": "🌍 Help us expand Mythoria to your country or region",
+			"developers": "💻 Talented developers interested in AI-powered storytelling",
+			"call": "Interested? Let us know in your message!"
+		}
+	}
+}

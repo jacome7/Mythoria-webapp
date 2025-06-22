@@ -9,14 +9,17 @@
         "note": "Depois de iniciares sessão, estarás pronto para criar histórias mágicas que fariam inveja ao próprio Merlin! 🧙‍♂️"
       },
       "heading": "Capítulo 1 - O Autor",
-      "intro": "Bem-vindo, contador de histórias! Antes de mergulharmos na tua aventura mágica, vamos garantir que temos a tua informação correta. Isto ajuda-nos a personalizar a tua experiência e a manter-te atualizado sobre o progresso da tua história.",
-      "fields": {
+      "intro": "Bem-vindo, contador de histórias! Antes de mergulharmos na tua aventura mágica, vamos garantir que temos a tua informação correta. Isto ajuda-nos a personalizar a tua experiência e a manter-te atualizado sobre o progresso da tua história.",      "fields": {
         "fullName": "Nome Completo *",
         "fullNameHelp": "É assim que serás creditado como autor",
         "email": "Endereço de Email *",
         "emailHelp": "Usaremos isto para atualizações importantes sobre a tua história",
         "mobile": "Telemóvel",
-        "mobileHelp": "Para notificações urgentes ou atualizações de entrega (opcional)"
+        "mobileHelp": "Para notificações urgentes ou atualizações de entrega (opcional)",
+        "dedication": "Mensagem de Dedicatória",
+        "dedicationPlaceholder": "Escreve uma mensagem de dedicatória personalizada para a primeira página do teu livro...",
+        "dedicationHelp": "Esta mensagem aparecerá na primeira página da tua história",
+        "optional": "Opcional"
       },
       "messages": {
         "loadingProfile": "A carregar o teu perfil de autor...",

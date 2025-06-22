@@ -13,7 +13,7 @@ const EmailSignup = ({ className = "" }: EmailSignupProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
-  const t = useTranslations('EmailSignup');
+  const t = useTranslations('common.EmailSignup');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

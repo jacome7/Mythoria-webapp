@@ -1,90 +1,55 @@
 'use client';
 
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
-import StepNavigation from '../../../../components/StepNavigation';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import { trackStoryCreation } from '../../../../lib/analytics';
-import { getCurrentStoryId, hasValidStorySession } from '../../../../lib/story-session';
+import StepNavigation from '@/components/StepNavigation';
+import StoryGenerationProgress from '@/components/StoryGenerationProgress';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useLocale } from 'next-intl';
+import { trackStoryCreation } from '@/lib/analytics';
+import { getCurrentStoryId, hasValidStorySession, getStep1Data } from '@/lib/story-session';
 
 interface StoryData {
   storyId: string;
   title: string;
-  features?: {
-    ebook?: boolean;
-    printed?: boolean;
-    audiobook?: boolean;
-  };
-  deliveryAddress?: {
-    line1?: string;
-    line2?: string; city?: string;
-    stateRegion?: string;
-    postalCode?: string;
-    country?: string;
-    phone?: string;
-  };
-  dedicationMessage?: string;
 }
 
-interface PricingData {
-  ebook: { name: string; credits: number; description: string; mandatory: boolean; default: boolean };
-  printed: { name: string; credits: number; description: string; mandatory: boolean; default: boolean };
-  audiobook: { name: string; credits: number; description: string; mandatory: boolean; default: boolean };
+interface EbookPricing {
+  id: string;
+  name: string;
+  cost: number;
+  serviceCode: string;
 }
 
-interface StoryUpdateData {
-  features: {
-    ebook: boolean;
-    printed: boolean;
-    audiobook: boolean;
-  };
-  dedicationMessage: string | null;
-  deliveryAddress?: {
-    line1: string;
-    line2: string;
-    city: string;
-    stateRegion: string;
-    postalCode: string;
-    country: string;
-    phone: string;
-  };
+interface ServiceResponse {
+  id: string;
+  name: string;
+  cost: number;
+  serviceCode: string;
 }
 
-export default function Step5Page() {
+export default function Step5PageWrapper() {
+  return (
+    <Suspense>
+      <Step5Page />
+    </Suspense>
+  );
+}
+
+function Step5Page() {
   const router = useRouter();
-  const t = useTranslations('StorySteps.step5');
+  const searchParams = useSearchParams();
+  const editStoryId = searchParams.get('edit');
+  const locale = useLocale();
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [storyGenerationStarted, setStoryGenerationStarted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentStoryId, setCurrentStoryId] = useState<string | null>(null);
-  // User credits state
+  const [storyData, setStoryData] = useState<StoryData | null>(null);
   const [userCredits, setUserCredits] = useState<number>(0);
-  const [showBuyCreditsModal, setShowBuyCreditsModal] = useState(false);
+  const [ebookPricing, setEbookPricing] = useState<EbookPricing | null>(null);
 
-
-  // Pricing data state
-  const [pricingData, setPricingData] = useState<PricingData | null>(null);
-
-  // Form data
-  const [selectedFeatures, setSelectedFeatures] = useState({
-    ebook: true, // Default and mandatory
-    printed: false,
-    audiobook: false,
-  });
-
-  const [deliveryAddress, setDeliveryAddress] = useState({
-    line1: '',
-    line2: '',
-    city: '',
-    stateRegion: '',
-    postalCode: '',
-    country: '',
-    phone: '',
-  });
-
-  const [dedicationMessage, setDedicationMessage] = useState('');
-  const [showAddressForm, setShowAddressForm] = useState(false);
   useEffect(() => {
     // Check if we have a valid story session
     if (!hasValidStorySession()) {
@@ -93,161 +58,69 @@ export default function Step5Page() {
     }
 
     const storyId = getCurrentStoryId();
-    setCurrentStoryId(storyId);
-
-    // Fetch pricing data and story data in parallel
-    Promise.all([
-      fetchPricingData(),
-      storyId ? fetchStoryData(storyId) : Promise.resolve(),
-      fetchUserCredits()
-    ]).finally(() => {
+    setCurrentStoryId(storyId);    if (storyId) {
+      Promise.all([
+        fetchStoryData(storyId),
+        fetchUserCredits(),
+        fetchEbookPricing()
+      ]).finally(() => {
+        setLoading(false);
+      });
+    } else {
       setLoading(false);
-    });
+    }
   }, [router]);
 
-  const fetchPricingData = async () => {
+  const fetchStoryData = async (storyId: string) => {
     try {
-      const response = await fetch('/api/pricing');
+      const response = await fetch(`/api/my-stories/${storyId}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch pricing data');
+        throw new Error('Failed to fetch story data');
       }
       const data = await response.json();
-      setPricingData(data.deliveryOptions);
+      setStoryData(data.story);
     } catch (error) {
+      console.error('Error fetching story data:', error);
+      setError('Failed to load story data. Please try again.');
+    }
+  };
+  const fetchUserCredits = async () => {
+    try {
+      const response = await fetch('/api/my-credits');
+      if (!response.ok) {
+        throw new Error('Failed to fetch user credits');
+      }
+      const data = await response.json();
+      setUserCredits(data.currentBalance || 0);
+    } catch (error) {
+      console.error('Error fetching user credits:', error);
+      setError('Failed to load credit information. Please try again.');
+    }
+  };
+
+  const fetchEbookPricing = async () => {
+    try {
+      const response = await fetch('/api/pricing/services');
+      if (!response.ok) {
+        throw new Error('Failed to fetch pricing data');
+      }      const data = await response.json();
+      const ebook = data.services.find((service: ServiceResponse) => service.serviceCode === 'eBookGeneration');
+      if (ebook) {
+        setEbookPricing(ebook);
+      }    } catch (error) {
       console.error('Error fetching pricing data:', error);
       setError('Failed to load pricing information. Please try again.');
     }
   };
-  const fetchStoryData = async (storyId: string) => {
-    try {
-      setError(null);
-
-      const response = await fetch(`/api/my-stories/${storyId}`);
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch story data');
-      }
-
-      const data = await response.json();
-      const story: StoryData = data.story;
-
-      // Pre-populate form fields
-      if (story.features) {
-        setSelectedFeatures({
-          ebook: story.features.ebook ?? true,
-          printed: story.features.printed ?? false,
-          audiobook: story.features.audiobook ?? false,
-        });
-        setShowAddressForm(story.features.printed ?? false);
-      }
-
-      if (story.deliveryAddress) {
-        setDeliveryAddress({
-          line1: story.deliveryAddress.line1 || '',
-          line2: story.deliveryAddress.line2 || '',
-          city: story.deliveryAddress.city || '',
-          stateRegion: story.deliveryAddress.stateRegion || '',
-          postalCode: story.deliveryAddress.postalCode || '',
-          country: story.deliveryAddress.country || '',
-          phone: story.deliveryAddress.phone || '',
-        });
-      }
-
-      setDedicationMessage(story.dedicationMessage || '');
-
-    } catch (error) {
-      console.error('Error fetching story data:', error);
-      setError('Failed to load story information. Please try again.');
-    }
-  };
-
-  const fetchUserCredits = async () => {
-    try {
-      const response = await fetch('/api/my-credits');
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch user credits');
-      }
-
-      const data = await response.json();
-      setUserCredits(data.currentBalance || 0);
-
-    } catch (error) {
-      console.error('Error fetching user credits:', error);
-      // Don't set error state for credits as it's not critical for the page to load
-    }
-  };
-
-  const handleFeatureChange = (feature: 'ebook' | 'printed' | 'audiobook', checked: boolean) => {
-    if (feature === 'ebook') return; // ebook is mandatory
-
-    setSelectedFeatures(prev => ({
-      ...prev,
-      [feature]: checked
-    }));
-
-    if (feature === 'printed') {
-      setShowAddressForm(checked);
-      if (!checked) {
-        // Clear address when printed book is deselected
-        setDeliveryAddress({
-          line1: '',
-          line2: '',
-          city: '',
-          stateRegion: '',
-          postalCode: '',
-          country: '',
-          phone: '',
-        });
-      }
-    }
-  };
-
-  const handleAddressChange = (field: string, value: string) => {
-    setDeliveryAddress(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-  const calculateTotalCredits = () => {
-    if (!pricingData) return 0;
-
-    let total = 0;
-    if (selectedFeatures.ebook) total += pricingData.ebook.credits;
-    if (selectedFeatures.printed) total += pricingData.printed.credits;
-    if (selectedFeatures.audiobook) total += pricingData.audiobook.credits;
-
-    return total;
-  };
-
   const hasInsufficientCredits = () => {
-    return userCredits < calculateTotalCredits();
+    // If pricing isn't loaded yet, assume insufficient credits to prevent premature actions
+    if (!ebookPricing) return true;
+    return userCredits < ebookPricing.cost;
   };
 
-  const handleBuyMoreCredits = () => {
-    setShowBuyCreditsModal(true);
-  };
-
-  const validateForm = () => {
-    if (selectedFeatures.printed && showAddressForm) {
-      if (!deliveryAddress.line1.trim() ||
-        !deliveryAddress.city.trim() ||
-        !deliveryAddress.postalCode.trim() ||
-        !deliveryAddress.country.trim()) {
-        return 'Please fill in all required address fields for printed book delivery.';
-      }
-    } return null;
-  };
-
-  const handleNext = async () => {
-    const validationError = validateForm();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-
-    if (!currentStoryId) {
-      setError('No story found. Please start from step 1.');
+  const handleCompleteStory = async () => {
+    if (!currentStoryId || !storyData || !ebookPricing) {
+      setError('Story data not available');
       return;
     }
 
@@ -256,11 +129,11 @@ export default function Step5Page() {
       return;
     }
 
-    setSaving(true);
+    setSubmitting(true);
     setError(null);
 
     try {
-      // First, deduct credits for the selected services
+      // First, deduct credits for the ebook generation
       const creditsResponse = await fetch(`/api/stories/${currentStoryId}/deduct-credits`, {
         method: 'POST',
         headers: {
@@ -268,7 +141,7 @@ export default function Step5Page() {
         },
         body: JSON.stringify({
           storyId: currentStoryId,
-          selectedFeatures: selectedFeatures
+          selectedFeatures: { ebook: true, printed: false, audiobook: false }
         }),
       });
 
@@ -283,47 +156,63 @@ export default function Step5Page() {
       // Update local credit balance
       setUserCredits(creditsResult.newBalance);
 
-      // Then save the story delivery preferences
-      const updateData: StoryUpdateData = {
-        features: selectedFeatures,
-        dedicationMessage: dedicationMessage.trim() || null,
-      };
-
-      // Only include delivery address if printed book is selected
-      if (selectedFeatures.printed && showAddressForm) {
-        updateData.deliveryAddress = deliveryAddress;
-      }
-
-      const response = await fetch(`/api/my-stories/${currentStoryId}`, {
-        method: 'PUT',
+      // Get dedication message from step 1 session data
+      const step1Data = getStep1Data();
+      const dedicationMessage = step1Data?.dedicationMessage || '';
+      
+      const response = await fetch('/api/stories/complete', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updateData),
-      }); if (!response.ok) {
-        throw new Error('Failed to save delivery preferences');
-      }      // Track step 5 completion
-      trackStoryCreation.step5Completed({
-        step: 5,
-        story_id: currentStoryId,
-        ebook_selected: selectedFeatures.ebook,
-        printed_selected: selectedFeatures.printed,
-        audiobook_selected: selectedFeatures.audiobook,
-        credits_deducted: creditsResult.creditsUsed,
-        has_dedication: !!dedicationMessage.trim(),
-        includes_delivery: selectedFeatures.printed && showAddressForm
+        body: JSON.stringify({
+          storyId: currentStoryId,
+          features: { ebook: true, printed: false, audiobook: false },
+          dedicationMessage: dedicationMessage,
+        }),
       });
 
-      // Navigate to next step after successful save
-      router.push('/tell-your-story/step-6');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to complete story');
+      }
 
+      const result = await response.json();
+      console.log('Story generation started:', result);
+
+      // Track story generation request
+      const hasDedication = !!(step1Data?.dedicationMessage);
+      
+      trackStoryCreation.generationRequested({
+        story_id: currentStoryId,
+        ebook_requested: true,
+        printed_requested: false,
+        audiobook_requested: false,
+        has_delivery_address: false,
+        has_dedication: hasDedication
+      });
+
+      // Show the progress component instead of navigating to next step
+      setStoryGenerationStarted(true);
     } catch (error) {
-      console.error('Error processing order:', error);
-      setError(`Failed to process your order: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('Error completing story:', error);
+      setError(error instanceof Error ? error.message : 'Failed to complete story');
     } finally {
-      setSaving(false);
+      setSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="loading loading-spinner loading-lg"></div>
+          <p className="mt-4">Loading story data...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <SignedOut>
@@ -333,338 +222,140 @@ export default function Step5Page() {
       <SignedIn>
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
-            {/* Progress indicator */}            {(() => {
-              const currentStep = 5;
-              const totalSteps = 6;
-              return (
-                <>
-                  {/* Mobile Progress Indicator */}
-                  <div className="block md:hidden mb-8">
-                    <div className="text-center text-sm text-gray-600 mb-2">
-                      Step {currentStep} of {totalSteps}
-                    </div>
-                    <progress
-                      className="progress progress-primary w-full"
-                      value={currentStep}
-                      max={totalSteps}
-                    ></progress>
-                  </div>                  {/* Desktop Progress Indicator */}
-                  <div className="hidden md:block mb-8">
-                    <ul className="steps steps-horizontal w-full">
-                      <li className="step step-primary" data-content="1"></li>
-                      <li className="step step-primary" data-content="2"></li>
-                      <li className="step step-primary" data-content="3"></li>
-                      <li className="step step-primary" data-content="4"></li>
-                      <li className="step step-primary" data-content="5"></li>
-                      <li className="step" data-content="6"></li>
-                    </ul>
-                  </div>
-                </>
-              );
-            })()}
-
-            {/* Step content */}
-            <div className="card bg-base-100 shadow-xl">
-              <div className="card-body">
-                <h1 className="card-title text-3xl mb-6">{t('heading')}</h1>
-                {loading || !pricingData ? (
-                  <div className="text-center py-12">
-                    <span className="loading loading-spinner loading-lg"></span>
-                    <p className="text-lg text-gray-600 mt-4">{t('creating')}</p>
-                  </div>
-                ) : (<div className="space-y-6">
-                  <div className="prose max-w-none mb-6">
-                    <p className="text-gray-600">{t('intro')}</p>
-                  </div>
-
-                  {error && (
-                    <div className="alert alert-error">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span>{error}</span>
-                    </div>
-                  )}
-
-                  {/* Delivery Options */}
-                  {pricingData && (
-                    <div className="space-y-4">
-                      <h2 className="text-xl font-semibold mb-4">{t('deliveryOptions')}</h2>
-
-                      {/* Digital (ebook) - Mandatory */}
-                      <div className="card bg-base-200">
-                        <div className="card-body">                            <div className="form-control">
-                          <label className="label cursor-pointer flex-col sm:flex-row items-start sm:items-center gap-3">                                <div className="flex-1 w-full">
-                            <span className="label-text font-semibold text-lg break-words">
-                              {pricingData.ebook.name}
-                            </span>
-                            <p className="text-sm text-gray-600 mt-1 break-words text-wrap">
-                              {pricingData.ebook.description}
-                            </p>
-                          </div>
-                            <div className="flex items-center gap-3 whitespace-nowrap">
-                              <span className="font-semibold text-primary text-sm sm:text-base">{pricingData.ebook.credits} credits</span>
-                              <input
-                                type="checkbox"
-                                checked={true}
-                                disabled={true}
-                                className="checkbox checkbox-primary"
-                              />
-                            </div>
-                          </label>
+            {/* Show progress component if story generation has started */}
+            {storyGenerationStarted ? (
+              <StoryGenerationProgress storyId={currentStoryId!} />
+            ) : (
+              <>
+                {/* Progress indicator */}
+                {(() => {
+                  const currentStep = 5;
+                  const totalSteps = 5;
+                  return (
+                    <>
+                      {/* Mobile Progress Indicator */}
+                      <div className="block md:hidden mb-8">
+                        <div className="text-center text-sm text-gray-600 mb-2">
+                          Step {currentStep} of {totalSteps}
                         </div>
-                        </div>
+                        <progress
+                          className="progress progress-primary w-full"
+                          value={currentStep}
+                          max={totalSteps}
+                        ></progress>
                       </div>
 
-                      {/* Printed Book */}
-                      <div className="card bg-base-100 border">
-                        <div className="card-body">                            <div className="form-control">
-                          <label className="label cursor-pointer flex-col sm:flex-row items-start sm:items-center gap-3">
-                            <div className="flex-1 w-full">
-                              <span className="label-text font-semibold text-lg break-words">
-                                {pricingData.printed.name}
-                              </span>
-                              <p className="text-sm text-gray-600 mt-1 break-words text-wrap">
-                                {pricingData.printed.description}
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-3 whitespace-nowrap">
-                              <span className="font-semibold text-primary text-sm sm:text-base">{pricingData.printed.credits} credits</span>
-                              <input
-                                type="checkbox"
-                                checked={selectedFeatures.printed}
-                                onChange={(e) => handleFeatureChange('printed', e.target.checked)}
-                                className="checkbox checkbox-primary"
-                              />
-                            </div>
-                          </label>
-                        </div>
-                          {/* Address Form - Show when printed book is selected */}
-                          {showAddressForm && selectedFeatures.printed && (
-                            <div className="mt-4 pt-4 border-t">
-                              <h3 className="font-semibold mb-3">Delivery Address</h3>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="form-control md:col-span-2">
-                                  <label className="label">
-                                    <span className="label-text">Address Line 1 *</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={deliveryAddress.line1}
-                                    onChange={(e) => handleAddressChange('line1', e.target.value)}
-                                    placeholder="Street address, P.O. box"
-                                    className="input input-bordered w-full"
-                                    required
-                                  />
-                                </div>
-
-                                <div className="form-control md:col-span-2">
-                                  <label className="label">
-                                    <span className="label-text">Address Line 2</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={deliveryAddress.line2}
-                                    onChange={(e) => handleAddressChange('line2', e.target.value)}
-                                    placeholder="Apartment, suite, unit, building"
-                                    className="input input-bordered w-full"
-                                  />
-                                </div>
-
-                                <div className="form-control">
-                                  <label className="label">
-                                    <span className="label-text">City *</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={deliveryAddress.city}
-                                    onChange={(e) => handleAddressChange('city', e.target.value)}
-                                    placeholder="City"
-                                    className="input input-bordered w-full"
-                                    required
-                                  />
-                                </div>
-
-                                <div className="form-control">
-                                  <label className="label">
-                                    <span className="label-text">State/Region</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={deliveryAddress.stateRegion}
-                                    onChange={(e) => handleAddressChange('stateRegion', e.target.value)}
-                                    placeholder="State or Region"
-                                    className="input input-bordered w-full"
-                                  />
-                                </div>
-
-                                <div className="form-control">
-                                  <label className="label">
-                                    <span className="label-text">Postal Code *</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={deliveryAddress.postalCode}
-                                    onChange={(e) => handleAddressChange('postalCode', e.target.value)}
-                                    placeholder="Postal/ZIP code"
-                                    className="input input-bordered w-full"
-                                    required
-                                  />
-                                </div>
-
-                                <div className="form-control">
-                                  <label className="label">
-                                    <span className="label-text">Country *</span>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={deliveryAddress.country}
-                                    onChange={(e) => handleAddressChange('country', e.target.value)}
-                                    placeholder="Country"
-                                    className="input input-bordered w-full"
-                                    required
-                                  />
-                                </div>
-
-                                <div className="form-control md:col-span-2">
-                                  <label className="label">
-                                    <span className="label-text">Phone Number</span>
-                                  </label>
-                                  <input
-                                    type="tel"
-                                    value={deliveryAddress.phone}
-                                    onChange={(e) => handleAddressChange('phone', e.target.value)}
-                                    placeholder="Phone number for delivery contact"
-                                    className="input input-bordered w-full"
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                        </div>
+                      {/* Desktop Progress Indicator */}
+                      <div className="hidden md:block mb-8">
+                        <ul className="steps steps-horizontal w-full">
+                          <li className="step step-primary" data-content="1"></li>
+                          <li className="step step-primary" data-content="2"></li>
+                          <li className="step step-primary" data-content="3"></li>
+                          <li className="step step-primary" data-content="4"></li>
+                          <li className="step step-primary" data-content="5"></li>
+                        </ul>
                       </div>
+                    </>
+                  );
+                })()}
 
-                      {/* Audiobook */}
-                      <div className="card bg-base-100 border">
-                        <div className="card-body">
-                          <div className="form-control">
-                            <label className="label cursor-pointer flex-col sm:flex-row items-start sm:items-center gap-3">
-                              <div className="flex-1 w-full">
-                                <span className="label-text font-semibold text-lg break-words">
-                                  {pricingData.audiobook.name}
-                                </span>
-                                <p className="text-sm text-gray-600 mt-1 break-words text-wrap">
-                                  {pricingData.audiobook.description}
-                                </p>
-                              </div>
-                              <div className="flex items-center gap-3 whitespace-nowrap">
-                                <span className="font-semibold text-primary text-sm sm:text-base">{pricingData.audiobook.credits} credits</span>
-                                <input
-                                  type="checkbox"
-                                  checked={selectedFeatures.audiobook}
-                                  onChange={(e) => handleFeatureChange('audiobook', e.target.checked)}
-                                  className="checkbox checkbox-primary"
-                                />
-                              </div>
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                {/* Step content */}
+                <div className="card bg-base-100 shadow-xl">
+                  <div className="card-body">
+                    <h1 className="card-title text-3xl mb-6">Complete Your Story</h1>
 
-                  {/* Dedication Message */}
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text font-semibold">Dedication Message</span>
-                      <span className="label-text-alt">Optional</span>
-                    </label>
-                    <textarea
-                      value={dedicationMessage}
-                      onChange={(e) => setDedicationMessage(e.target.value)}
-                      placeholder="Write a personalized dedication message for the first page of your book..."
-                      className="textarea textarea-bordered h-24 w-full"
-                      rows={4}
-                    />
-                    <label className="label">
-                      <span className="label-text-alt">This message will appear on the first page of your story</span>
-                    </label>
-                  </div>
-
-                  {/* Credits Summary */}
-                  <div className="space-y-4">
-                    {/* User's Available Credits */}
-                    <div className="card bg-base-200">
-                      <div className="card-body">
-                        <div className="flex justify-between items-center">
-                          <span className="text-lg font-semibold">Available Credits:</span>
-                          <span className="text-2xl font-bold text-success">{userCredits} credits</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Total Credits Required */}
-                    <div className={`card ${hasInsufficientCredits() ? 'bg-error text-error-content' : 'bg-primary text-primary-content'}`}>
-                      <div className="card-body">
-                        <div className="flex justify-between items-center">
-                          <span className="text-lg font-semibold">Credits Required:</span>
-                          <span className="text-2xl font-bold">{calculateTotalCredits()} credits</span>
-                        </div>
-                        {hasInsufficientCredits() && (
-                          <div className="mt-2 text-sm">
-                            You need {calculateTotalCredits() - userCredits} more credits to proceed.
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Buy More Credits Button */}
-                    {hasInsufficientCredits() && (
-                      <div className="text-center">
-                        <button
-                          onClick={handleBuyMoreCredits}
-                          className="btn btn-warning btn-lg"
-                        >
-                          {t('buyMoreCredits')}
-                        </button>
+                    {error && (
+                      <div className="alert alert-error mb-6">
+                        <span>{error}</span>
                       </div>
                     )}
+
+                    {storyData ? (
+                      <div className="space-y-6">
+                        <div className="text-center">
+                          <h2 className="text-2xl font-bold mb-4">Ready to Generate Your Story!</h2>
+                          <p className="text-lg text-gray-600 mb-6">
+                            We&apos;re about to start creating your personalized story: <strong>{storyData.title}</strong>
+                          </p>
+
+                          {/* Credits Information */}
+                          <div className="space-y-4 mb-6">
+                            {/* Ebook Service Info */}
+                            {ebookPricing && (
+                              <div className="card bg-base-200 p-6">
+                                <h3 className="text-lg font-semibold mb-4">📖 eBook Generation</h3>
+                                <div className="flex justify-center items-center gap-6">
+                                  <div className="text-center">
+                                    <span className="text-sm text-gray-600">Cost:</span>
+                                    <div className="text-2xl font-bold text-primary">{ebookPricing.cost} credits</div>
+                                  </div>
+                                  <div className="text-center">
+                                    <span className="text-sm text-gray-600">Your Credits:</span>
+                                    <div className={`text-2xl font-bold ${hasInsufficientCredits() ? 'text-error' : 'text-success'}`}>
+                                      {userCredits} credits
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Insufficient Credits Warning */}
+                            {hasInsufficientCredits() && (
+                              <div className="alert alert-warning">
+                                <div className="flex flex-col items-center">
+                                  <span className="font-semibold">💳 Insufficient Credits</span>
+                                  <span className="text-sm mt-2">
+                                    You need {ebookPricing ? ebookPricing.cost - userCredits : 0} more credits to generate your story.
+                                  </span>
+                                  <a 
+                                    href={`/${locale}/pricing`}
+                                    className="btn btn-outline btn-sm mt-2"
+                                  >
+                                    Get More Credits
+                                  </a>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="alert alert-info mb-6">
+                            <div className="flex flex-col items-center">
+                              <span className="font-semibold">⏱️ Story Generation Process</span>
+                              <span className="text-sm mt-2">
+                                This process may take several minutes. We&apos;ll create your story chapters,
+                                generate illustrations, and prepare your eBook. You&apos;ll be able to
+                                track the progress from your &quot;My Stories&quot; page.
+                              </span>
+                            </div>
+                          </div>
+
+                          <button
+                            className={`btn btn-primary btn-lg ${submitting ? 'loading' : ''}`}
+                            onClick={handleCompleteStory}
+                            disabled={submitting || hasInsufficientCredits()}
+                          >
+                            {submitting ? 'Starting Story Generation...' : '🚀 Generate My Story'}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-12">
+                        <p className="text-lg text-gray-600">Story data not available. Please try again.</p>
+                      </div>
+                    )}
+                    <StepNavigation
+                      currentStep={5}
+                      totalSteps={5}
+                      nextHref={null} // No next button, user must complete the story
+                      prevHref={editStoryId ? `/tell-your-story/step-4?edit=${editStoryId}` : "/tell-your-story/step-4"}
+                      nextDisabled={true}
+                    />
                   </div>
                 </div>
-                )}
-                <StepNavigation
-                  currentStep={5}
-                  totalSteps={6}
-                  nextHref="/tell-your-story/step-6"
-                  prevHref="/tell-your-story/step-4"
-                  onNext={handleNext}
-                  nextDisabled={saving || hasInsufficientCredits()}
-                  nextLabel={saving ? t('creating') : hasInsufficientCredits() ? t('insufficientCredits') : t('createStory')}
-                />
-              </div>
-            </div>
+              </>
+            )}
           </div>
         </div>
-        {/* Buy More Credits Modal */}
-        {showBuyCreditsModal && (
-          <div className="modal modal-open">
-            <div className="modal-box">
-              <h3 className="font-bold text-lg">{t('buyMoreCredits')}</h3>
-              <p className="py-4">
-                {t('buyMoreCreditsInfo')}
-              </p>
-              <div className="modal-action">
-                <button
-                  className="btn"
-                  onClick={() => setShowBuyCreditsModal(false)}
-                >
-                  {t('close')}
-                </button>
-              </div>
-            </div>
-            <div className="modal-backdrop" onClick={() => setShowBuyCreditsModal(false)}></div>
-          </div>
-        )}
       </SignedIn>
     </>
   );

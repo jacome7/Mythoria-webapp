@@ -9,14 +9,17 @@
         "note": "Once you're signed in, you'll be ready to create magical stories that would make even Merlin jealous! 🧙‍♂️"
       },
       "heading": "Chapter 1 - The Author",
-      "intro": "Welcome, storyteller! Before we dive into your magical adventure, let's make sure we have your correct information. This helps us personalize your experience and keep you updated on your story's progress.",
-      "fields": {
+      "intro": "Welcome, storyteller! Before we dive into your magical adventure, let's make sure we have your correct information. This helps us personalize your experience and keep you updated on your story's progress.",      "fields": {
         "fullName": "Full Name *",
         "fullNameHelp": "This is how you'll be credited as the author",
         "email": "Email Address *",
         "emailHelp": "We'll use this for important updates about your story",
         "mobile": "Mobile Phone",
-        "mobileHelp": "For urgent notifications or delivery updates (optional)"
+        "mobileHelp": "For urgent notifications or delivery updates (optional)",
+        "dedication": "Dedication Message",
+        "dedicationPlaceholder": "Write a personalized dedication message for the first page of your book...",
+        "dedicationHelp": "This message will appear on the first page of your story",
+        "optional": "Optional"
       },
       "messages": {
         "loadingProfile": "Loading your author profile...",

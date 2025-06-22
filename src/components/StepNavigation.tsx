@@ -28,7 +28,7 @@ const StepNavigation = ({
   prevLabel
 }: StepNavigationProps) => {
   const router = useRouter();
-  const t = useTranslations('StepNavigation');
+  const t = useTranslations('common.StepNavigation');
 
   const resolvedNextLabel = nextLabel ?? t('next');
   const resolvedPrevLabel = prevLabel ?? t('prev');
@@ -70,10 +70,7 @@ const StepNavigation = ({
           <div></div> // Empty div to maintain flex layout
         )}
       </div>
-
-      <div className="text-sm text-gray-500">
-        {currentStep}/{totalSteps} {/* Compact step display */}
-      </div>
+      <div></div>
       <div>
         {nextHref && onNext ? (
           <button 

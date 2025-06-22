@@ -1,504 +1,530 @@
 {
-  "Header": {
-    "navigation": {
-      "homepage": "Homepage",
-      "getInspired": "Get Inspired",
-      "tellYourStory": "Tell Your Story",
-      "myStories": "My Stories",
-      "pricing": "Pricing",
-      "dashboard": "Dashboard"
-    },
-    "auth": {
-      "signIn": "Sign In",
-      "signUp": "Sign Up"
-    },
-    "logoAlt": "Mythoria Logo"
-  },
-  "Footer": {
-    "aboutFounder": "My name is Rodrigo, I've just turned 18 years old and I love listening to stories since I was little.",
-    "readMyStory": "Read my own story",
-    "privacyPolicy": "Privacy & Cookies",
-    "termsConditions": "Terms & Conditions",
-    "contactUs": "Contact Us",
-    "copyright": "Aventuras Contemporâneas, Lda"
-  },
-  "EmailSignup": {
-    "title": "Get Notified When We Launch!",
-    "subtitle": "Be the first to know when Mythoria becomes available and start creating your magical stories.",
-    "form": {
-      "placeholder": "Enter your email address",
-      "button": "Notify Me"
-    },
-    "validation": {
-      "emailRequired": "Please enter your email address",
-      "emailInvalid": "Please enter a valid email address"
-    },
-    "errors": {
-      "general": "Something went wrong. Please try again.",
-      "network": "Network error. Please check your connection and try again."
-    },
-    "messages": {
-      "success": "Thank you for your interest! We'll notify you as soon as Mythoria is available.",
-      "alreadyRegistered": "Wow, you are really eager to experience Mythoria. Rest assured we will notify you when we launch!"
-    },
-    "privacy": "We respect your privacy. No spam, just launch notifications."
-  },
-  "StepNavigation": {
-    "next": "Next",
-    "prev": "Prev",
-    "finish": "Finish"
-  },
-  "Share": {
-    "button": "Share",
-    "tooltips": {
-      "cannotShareWriting": "Cannot share story while it's being written",
-      "cannotShareDraft": "Cannot share story until it's published"
-    },
-    "modal": {
-      "title": "Share Story",
-      "allowEdit": "Allow recipient to edit",
-      "makePublic": "Make story public",
-      "generateLink": "Generate Share Link",
-      "shareVia": "Share via:",
-      "whatsapp": "WhatsApp",
-      "facebook": "Facebook",
-      "email": "Email",
-      "copyLink": "Copy Link",
-      "more": "More",
-      "createAnother": "Create Another",
-      "done": "Done",
-      "linkCopied": "Link copied to clipboard!",
-      "shareSuccess": "Share link created successfully",
-      "privateExpires": "Private link expires in 30 days"
-    },
-    "types": {
-      "privateView": "Private View: Recipients must sign in to view the story",
-      "privateEdit": "Private Edit: Recipients can collaborate and edit the story",
-      "publicRead": "Public: Anyone can view the story without signing in"
-    }
-  },
-  "Auth": {
-    "signIn": "Sign In",
-    "signUp": "Sign Up",
-    "createAccount": "Create Account",
-    "accessRestricted": "Access Restricted",
-    "needSignIn": "You need to be signed in to access stories.",
-    "needSignInEdit": "You need to be signed in to edit stories.",
-    "welcome": "Welcome"
-  },
-  "Actions": {
-    "read": "Read",
-    "listen": "Listen",
-    "edit": "Edit",
-    "editing": "Editing",
-    "share": "Share",
-    "startReading": "Start Reading",
-    "startListening": "Start Listening",
-    "startEditing": "Start Editing",
-    "audioNotAvailable": "Audio Not Available",
-    "backToMyStories": "Back to My Stories",
-    "goToHomepage": "Go to Homepage",
-    "tryAgain": "Try Again",
-    "close": "Close"
-  },
-  "Loading": {
-    "story": "Loading story...",
-    "sharedStory": "Loading shared story...",
-    "redirecting": "Redirecting...",
-    "redirectingToSharedStory": "Redirecting to shared story...",
-    "pleaseWaitStory": "Please wait while we load the story",
-    "pleaseWaitAccess": "Please wait while we verify your access"
-  },
-  "Errors": {
-    "storyNotFound": "Story not found",
-    "storyNotFoundDesc": "The story you're looking for doesn't exist or is no longer public.",
-    "unableToAccess": "Unable to access story",
-    "storyContentNotAvailable": "Story content not available",
-    "storyContentNotAvailableDesc": "The story content is not currently available for viewing.",
-    "storyNotAvailableYet": "This story is not available yet.",
-    "storyNotFoundGeneric": "Story not found.",
-    "noPermission": "You do not have permission to access this story.",
-    "noPermissionEdit": "You do not have permission to edit this story.",
-    "failedToLoad": "Failed to load the story. Please try again."
-  },
-  
-  "Components": {
-    "ShareModal": {
-      "title": "Share Story",
-      "chooseOptions": "Choose your sharing options below",
-      "allowEdit": "Allow recipient to edit",
-      "allowEditDesc": "Recipients can collaborate and make changes",
-      "makePublic": "Make story public",
-      "makePublicDesc": "Anyone can view without logging in",
-      "generateLink": "Generate Share Link",
-      "shareUrl": "Share URL",
-      "copy": "Copy",
-      "copied": "Copied!",
-      "shareVia": "Share via:",
-      "whatsapp": "WhatsApp",
-      "facebook": "Facebook",
-      "email": "Email",
-      "more": "More",
-      "createAnother": "Create Another",
-      "done": "Done",
-      "optionsExplained": "Sharing Options Explained:",
-      "privateView": "Private View: Recipients must sign in to view the story",
-      "privateEdit": "Private Edit: Recipients can collaborate and edit the story",
-      "publicOption": "Public: Anyone can view the story without signing in",
-      "privateExpires": "Private link expires in 30 days"
-    },
-    "CreditsDisplay": {
-      "button": "Credits available: {credits}",
-      "creditHistory": "Credit History",
-      "currentBalance": "Current Available Balance:",
-      "credits": "credits",
-      "headers": {
-        "date": "Date",
-        "eventType": "Event Type", 
-        "amount": "Amount",
-        "balance": "Balance"
-      },
-      "eventTypes": {
-        "initialCredit": "Initial Credit",
-        "creditPurchase": "Credit Purchase",
-        "eBookGeneration": "eBook Generation",
-        "audioBookGeneration": "AudioBook Generation",
-        "printOrder": "Print Order",
-        "refund": "Refund",
-        "voucher": "Voucher",
-        "promotion": "Promotion"
-      }
-    },
-    "StoryReader": {
-      "preparing": "Preparing your story..."
-    },
-    "ReadingProgress": {
-      "title": "Reading Progress",
-      "tableOfContents": "Table of Contents"
-    },
-    "ReadingToolbar": {
-      "allAges": "All Ages",
-      "fontSize": "Font Size",
-      "resetToDefault": "Reset to Default"
-    },
-    "StoryRating": {
-      "thankYou": "Thank you for your rating!",
-      "submitRating": "Submit Rating"
-    },
-    "BookEditor": {
-      "find": "Find",
-      "replaceAll": "Replace All",
-      "unsavedChanges": "You have unsaved changes"
-    },
-    "AIEditModal": {
-      "title": "AI Story Editor",
-      "processing": "Processing your request..."
-    },
-    "ImageEditingTab": {
-      "selectImage": "Please select an image to edit",
-      "changeImage": "Change Image in Story"
-    },
-    "StoryCounter": {
-      "storiesCreated": "stories created and counting..."
-    },
-    "StoryGenerationProgress": {
-      "ready": "Your Story is Ready!"
-    },
-    "storyRating": {
-      "title": "Rate this story",
-      "feedback": {
-        "title": "What could we improve? (Optional)",
-        "placeholder": "Your feedback helps us create better stories...",
-        "includeNameLabel": "Allow the author to see my name with this feedback"
-      },
-      "buttons": {
-        "cancel": "Cancel",
-        "submitRating": "Submit Rating",
-        "submitting": "Submitting..."
-      },
-      "success": {
-        "title": "Thank you for your rating!",
-        "message": "Your feedback helps us improve our stories."
-      },
-      "submittingMessage": "Submitting your rating...",
-      "errors": {
-        "serviceUnavailable": "The rating system is currently being set up. Please try again in a few minutes.",
-        "submitFailed": "Failed to submit rating",
-        "generic": "An error occurred"
-      }
-    },
-    "aiEditModal": {
-      "title": "AI Story Editor",
-      "description": "Enhance your story with AI-powered improvements",
-      "tabs": {
-        "text": "Text",
-        "images": "Images"
-      },
-      "editSelection": {
-        "label": "What would you like to edit?",
-        "entireStory": "Entire Story",
-        "noChaptersDetected": "No chapters detected. You can edit the entire story.",
-        "chaptersDetected": "{count} chapter{plural} detected"
-      },
-      "editRequest": {
-        "label": "What changes would you like to make?",
-        "placeholder": "Describe the changes you'd like to make to your story...",
-        "charactersCount": "{current}/{max} characters"
-      },
-      "exampleRequests": {
-        "label": "Example requests:",
-        "examples": [
-          "Make the dragon more friendly and less scary for young children",
-          "Add more dialogue between the main characters",
-          "Include more descriptive details about the magical forest",
-          "Make the ending more exciting and adventurous",
-          "Fix any grammatical errors and improve sentence flow",
-          "Add a new subplot about the character's pet companion"
-        ]
-      },
-      "buttons": {
-        "cancel": "Cancel",
-        "close": "Close",
-        "applyChanges": "Apply Changes",
-        "processing": "Processing..."
-      },
-      "loadingState": {
-        "title": "Processing your request...",
-        "description": "This may take 5-60 seconds depending on the scope of changes."
-      },
-      "errors": {
-        "enterRequest": "Please enter your editing request",
-        "requestTooLong": "Request must be 2000 characters or less",
-        "editFailed": "Failed to edit story. Please try again."
-      }
-    },
-    "bookEditor": {
-      "loading": "Loading editor...",
-      "toolbar": {
-        "tooltips": {
-          "bold": "Bold (Ctrl+B)",
-          "italic": "Italic (Ctrl+I)", 
-          "strikethrough": "Strikethrough",
-          "alignLeft": "Align Left",
-          "alignCenter": "Align Center",
-          "alignRight": "Align Right",
-          "undo": "Undo (Ctrl+Z)",
-          "redo": "Redo (Ctrl+Y)",
-          "switchToVisual": "Switch to Visual Editor",
-          "switchToHtml": "Switch to HTML Code",
-          "findReplace": "Find & Replace (Ctrl+F)",
-          "aiEdit": "AI Edit - Improve your story with AI",
-          "save": "Save (Ctrl+S)"
-        },
-        "buttons": {
-          "visual": "Visual",
-          "html": "HTML",
-          "aiEdit": "AI Edit",
-          "save": "Save",
-          "cancel": "Cancel"
-        }
-      },
-      "findReplace": {
-        "findLabel": "Find",
-        "findPlaceholder": "Enter text to find...",
-        "replaceLabel": "Replace with",
-        "replacePlaceholder": "Enter replacement text...",
-        "findButton": "Find",
-        "replaceAllButton": "Replace All",
-        "matchesFound": "{count} matches"
-      },
-      "htmlEditor": {
-        "title": "HTML Code Editor",
-        "description": "Edit the raw HTML. Mythoria CSS classes (mythoria-*) will be preserved automatically when you save.",
-        "placeholder": "Enter HTML code here..."
-      },
-      "unsavedChanges": "You have unsaved changes"
-    },
-    "imageEditingTab": {
-      "noImages": {
-        "title": "No Images Found",
-        "description": "No images are available for this story yet. Images will appear here once they are generated."
-      },
-      "imageSelection": {
-        "label": "Select an image to edit:",
-        "versionsAvailable": "{count} version{plural} available",
-        "latestVersion": "Latest: {version}"
-      },
-      "versionSelection": {
-        "label": "Choose version to edit:",
-        "versionsInfo": "{count} version{plural} available",
-        "currentlySelected": "Currently selected: {version}",
-        "changeImageButton": "Change Image in Story",
-        "changingImage": "Changing Image...",
-        "changeImageDescription": "This will replace the current image in your story with the selected version."
-      },
-      "imagePreview": {
-        "label": "Current image:"
-      },
-      "editRequest": {
-        "label": "What changes would you like to make to this image?",
-        "placeholder": "Describe the changes you'd like to make to the image...",
-        "charactersCount": "{current}/{max} characters"
-      },
-      "exampleRequests": {
-        "label": "Example requests:",
-        "examples": [
-          "Change the dragon from red to blue and add more clouds in the sky",
-          "Make the protagonist wear a golden crown and hold a magic staff",
-          "Change the forest background to a snowy mountain landscape",
-          "Add more magical sparkles and fairy lights around the characters",
-          "Make the scene darker and more mysterious with moonlight",
-          "Add a rainbow in the background and make the colors more vibrant"
-        ]
-      },
-      "loadingState": {
-        "title": "Processing your image edit...",
-        "description": "This may take up to 3 minutes depending on the complexity of changes."
-      },
-      "buttons": {
-        "generateNewVersion": "Generate New Version",
-        "editingImage": "Editing Image...",
-        "replaceImageInStory": "Replace Image in Story",
-        "replacingImage": "Replacing Image..."
-      },
-      "success": {
-        "title": "New image version generated successfully!",
-        "description": "Click the button below to replace the current image in your story with the new version."
-      },
-      "errors": {
-        "selectImage": "Please select an image to edit",
-        "enterChanges": "Please describe the changes you want to make",
-        "requestTooLong": "Request must be 2000 characters or less",
-        "editFailed": "Failed to edit image. Please try again.",
-        "noNewImage": "No new image available to replace",
-        "replaceImageFailed": "Failed to replace image in story. Please try again.",
-        "noVersionSelected": "No image version selected to change to",
-        "changeImageFailed": "Failed to change image in story. Please try again.",
-        "sameVersion": "The selected version is already the current version"
-      }
-    },
-    "readingToolbar": {
-      "title": "Reading Settings",
-      "toggleLabel": "Toggle reading settings",
-      "themeSwitch": "Switch to {theme} theme",
-      "quickTemplateLabel": "Quick CSS template selection",
-      "resetButton": "Reset to Default",
-      "controls": {
-        "style": "Style",
-        "fontSize": "Font Size",
-        "lineHeight": "Line Height",
-        "margins": "Margins",
-        "templateLabel": "Select CSS template",
-        "fontSizeLabel": "Font size percentage",
-        "lineHeightLabel": "Line height percentage",
-        "marginsLabel": "Margins percentage",
-        "decreaseFontSize": "Decrease font size",
-        "increaseFontSize": "Increase font size",
-        "decreaseLineHeight": "Decrease line height",
-        "increaseLineHeight": "Increase line height",
-        "decreaseMargins": "Decrease margins",
-        "increaseMargins": "Increase margins"
-      },
-      "templates": {
-        "all_ages": "All Ages",
-        "children_0-2": "Children (0-2)",
-        "children_3-6": "Children (3-6)",
-        "children_7-10": "Children (7-10)",
-        "children_11-14": "Children (11-14)",
-        "young_adult_15-17": "Young Adult (15-17)",
-        "adult_18+": "Adult (18+)"
-      }
-    },
-    "storyCounter": {
-      "loading": "Loading...",
-      "error": "Error loading",
-      "notAvailable": "N/A",
-      "description": "stories created and counting..."
-    },
-    "storyGenerationProgress": {
-      "completion": {
-        "title": "Your Story is Ready!",
-        "description": "Congratulations! Your magical story has been created and is ready to be read.",
-        "progress": "100% Complete!",
-        "buttons": {
-          "readStory": "📖 Read Your Story Now",
-          "myStories": "📚 My Stories",
-          "moreOptions": "🎧 More Options"
-        },
-        "celebration": {
-          "title": "Your story is now part of the Mythoria collection!",
-          "description": "Share it with friends or create another magical adventure."
-        }
-      },
-      "progress": {
-        "title": "🏭 Story Factory in Action!",
-        "description": "Your story will be ready in up to 14 minutes",
-        "progressLabel": "Progress",
-        "estimatedTimeLabel": "Estimated time remaining",
-        "creatingMagic": "Creating magic...",
-        "currentlyLabel": "Currently:",
-        "tip": {
-          "title": "Pro tip!",
-          "description": "While you wait, you can visit \"My Stories\" to track progress in real-time or start creating another story!"
-        }
-      },
-      "steps": {
-        "generate_outline": "Crafting your story outline",
-        "write_chapters": "Writing magical chapters",
-        "generate_front_cover": "Designing the front cover",
-        "generate_back_cover": "Creating the back cover",
-        "generate_images": "Painting beautiful illustrations",
-        "assemble": "Binding your story together",
-        "generate_audiobook": "Recording your audiobook",
-        "done": "Finishing touches"
-      },
-      "funnyMessages": {
-        "generate_outline": [
-          "🍫 Our Oompa-Loompas are sketching your story blueprint on chocolate paper!",
-          "📋 The writing elves are mapping out your adventure with enchanted quills!",
-          "✨ Story architects are designing the perfect plot structure!"
-        ],
-        "write_chapters": [
-          "📖 Oompa-Loompas are furiously typing on their tiny typewriters!",
-          "✍️ Our literary elves are weaving your tale with golden threads!",
-          "🎭 Story scribes are bringing your characters to life with magic ink!",
-          "📚 Chapter wizards are crafting each page with literary spells!"
-        ],
-        "generate_front_cover": [
-          "🎨 Our artistic Oompa-Loompas are mixing magical paint for your cover!",
-          "🖌️ Master illustrators are sketching your cover with rainbow brushes!",
-          "🌟 Cover designers are sprinkling stardust on your book's face!"
-        ],
-        "generate_back_cover": [
-          "🎭 Back-cover poets are writing mysterious blurbs with invisible ink!",
-          "📖 Our synopsis scribes are crafting the perfect teaser!",
-          "✨ Cover completion elves are adding the final magical touches!"
-        ],
-        "generate_images": [
-          "🖼️ Illustration Oompa-Loompas are painting each scene with emotion!",
-          "🎨 Picture wizards are bringing your characters to colorful life!",
-          "🌈 Art fairies are adding magical details to every illustration!",
-          "🖌️ Visual storytellers are creating windows into your world!"
-        ],
-        "assemble": [
-          "📚 Book binding Oompa-Loompas are stitching everything together!",
-          "🔧 Assembly elves are making sure every page is perfect!",
-          "📋 Quality control wizards are checking every magical detail!"
-        ],
-        "generate_audiobook": [
-          "🎤 Voice acting Oompa-Loompas are narrating your story!",
-          "🎵 Audio wizards are adding the perfect storytelling rhythm!",
-          "🎧 Sound engineers are polishing every magical word!"
-        ],
-        "done": [
-          "🎉 Ta-da! Your magical story is ready for its grand adventure!",
-          "✨ All done! The Oompa-Loompas are taking a well-deserved cocoa break!",
-          "🏆 Mission accomplished! Your story is complete and ready to enchant!"
-        ],
-        "default": [
-          "⚡ Our magical Oompa-Loompas are working their creative wonders!"
-        ]
-      }
-    }
-  }
+	"common": {
+		"Header": {
+			"navigation": {
+				"homepage": "Homepage",
+				"getInspired": "Get Inspired",
+				"tellYourStory": "Tell Your Story",
+				"myStories": "My Stories",
+				"pricing": "Pricing",
+				"dashboard": "Dashboard"
+			},
+			"auth": {
+				"signIn": "Sign In",
+				"signUp": "Sign Up"
+			},
+			"logoAlt": "Mythoria Logo"
+		},
+		"Footer": {
+			"aboutFounder": "My name is Rodrigo, I've just turned 18 years old and I love listening to stories since I was little.",
+			"readMyStory": "Read my own story",
+			"privacyPolicy": "Privacy & Cookies",
+			"termsConditions": "Terms & Conditions",
+			"contactUs": "Contact Us",
+			"copyright": "Aventuras Contemporâneas, Lda"
+		},
+		"EmailSignup": {
+			"title": "Get Notified When We Launch!",
+			"subtitle": "Be the first to know when Mythoria becomes available and start creating your magical stories.",
+			"form": {
+				"placeholder": "Enter your email address",
+				"button": "Notify Me"
+			},
+			"validation": {
+				"emailRequired": "Please enter your email address",
+				"emailInvalid": "Please enter a valid email address"
+			},
+			"errors": {
+				"general": "Something went wrong. Please try again.",
+				"network": "Network error. Please check your connection and try again."
+			},
+			"messages": {
+				"success": "Thank you for your interest! We'll notify you as soon as Mythoria is available.",
+				"alreadyRegistered": "Wow, you are really eager to experience Mythoria. Rest assured we will notify you when we launch!"
+			},
+			"privacy": "We respect your privacy. No spam, just launch notifications."
+		},
+		"StepNavigation": {
+			"next": "Next",
+			"prev": "Prev",
+			"finish": "Finish"
+		},
+		"Share": {
+			"button": "Share",
+			"tooltips": {
+				"cannotShareWriting": "Cannot share story while it's being written",
+				"cannotShareDraft": "Cannot share story until it's published"
+			},
+			"modal": {
+				"title": "Share Story",
+				"allowEdit": "Allow recipient to edit",
+				"makePublic": "Make story public",
+				"generateLink": "Generate Share Link",
+				"shareVia": "Share via:",
+				"whatsapp": "WhatsApp",
+				"facebook": "Facebook",
+				"email": "Email",
+				"copyLink": "Copy Link",
+				"more": "More",
+				"createAnother": "Create Another",
+				"done": "Done",
+				"linkCopied": "Link copied to clipboard!",
+				"shareSuccess": "Share link created successfully",
+				"privateExpires": "Private link expires in 30 days"
+			},
+			"types": {
+				"privateView": "Private View: Recipients must sign in to view the story",
+				"privateEdit": "Private Edit: Recipients can collaborate and edit the story",
+				"publicRead": "Public: Anyone can view the story without signing in"
+			}
+		},
+		"Auth": {
+			"signIn": "Sign In",
+			"signUp": "Sign Up",
+			"createAccount": "Create Account",
+			"accessRestricted": "Access Restricted",
+			"needSignIn": "You need to be signed in to access stories.",
+			"needSignInEdit": "You need to be signed in to edit stories.",
+			"welcome": "Welcome"
+		},
+		"Actions": {
+			"read": "Read",
+			"listen": "Listen",
+			"edit": "Edit",
+			"editing": "Editing",
+			"share": "Share",
+			"startReading": "Start Reading",
+			"startListening": "Start Listening",
+			"startEditing": "Start Editing",
+			"audioNotAvailable": "Audio Not Available",
+			"backToMyStories": "Back to My Stories",
+			"goToHomepage": "Go to Homepage",
+			"tryAgain": "Try Again",
+			"close": "Close"
+		},
+		"Loading": {
+			"story": "Loading story...",
+			"sharedStory": "Loading shared story...",
+			"redirecting": "Redirecting...",
+			"redirectingToSharedStory": "Redirecting to shared story...",
+			"pleaseWaitStory": "Please wait while we load the story",
+			"pleaseWaitAccess": "Please wait while we verify your access"
+		},
+		"Errors": {
+			"storyNotFound": "Story not found",
+			"storyNotFoundDesc": "The story you're looking for doesn't exist or is no longer public.",
+			"unableToAccess": "Unable to access story",
+			"storyContentNotAvailable": "Story content not available",
+			"storyContentNotAvailableDesc": "The story content is not currently available for viewing.",
+			"storyNotAvailableYet": "This story is not available yet.",
+			"storyNotFoundGeneric": "Story not found.",
+			"noPermission": "You do not have permission to access this story.",
+			"noPermissionEdit": "You do not have permission to edit this story.",
+			"failedToLoad": "Failed to load the story. Please try again."
+		},
+		"Components": {
+			"ShareModal": {
+				"title": "Share Story",
+				"chooseOptions": "Choose your sharing options below",
+				"allowEdit": "Allow recipient to edit",
+				"allowEditDesc": "Recipients can collaborate and make changes",
+				"makePublic": "Make story public",
+				"makePublicDesc": "Anyone can view without logging in",
+				"generateLink": "Generate Share Link",
+				"shareUrl": "Share URL",
+				"copy": "Copy",
+				"copied": "Copied!",
+				"shareVia": "Share via:",
+				"whatsapp": "WhatsApp",
+				"facebook": "Facebook",
+				"email": "Email",
+				"more": "More",
+				"createAnother": "Create Another",
+				"done": "Done",
+				"optionsExplained": "Sharing Options Explained:",
+				"privateView": "Private View: Recipients must sign in to view the story",
+				"privateEdit": "Private Edit: Recipients can collaborate and edit the story",
+				"publicOption": "Public: Anyone can view the story without signing in",
+				"privateExpires": "Private link expires in 30 days"
+			},
+			"CreditsDisplay": {
+				"button": "Credits available: {credits}",
+				"creditHistory": "Credit History",
+				"currentBalance": "Available Balance:",
+				"credits": "credits",
+				"addCredits": "Add Credits",
+				"headers": {
+					"date": "Date",
+					"eventType": "Event Type",
+					"amount": "Amount",
+					"balance": "Balance"
+				},
+				"eventTypes": {
+					"initialCredit": "Initial Credit",
+					"creditPurchase": "Credit Purchase",
+					"eBookGeneration": "eBook Generation",
+					"audioBookGeneration": "AudioBook Generation",
+					"printOrder": "Print Order",
+					"refund": "Refund",
+					"voucher": "Voucher",
+					"promotion": "Promotion"
+				}
+			},
+			"StoryReader": {
+				"preparing": "Preparing your story..."
+			},
+			"ReadingProgress": {
+				"title": "Reading Progress",
+				"tableOfContents": "Table of Contents"
+			},
+			"ReadingToolbar": {
+				"allAges": "All Ages",
+				"fontSize": "Font Size",
+				"resetToDefault": "Reset to Default"
+			},
+			"StoryRating": {
+				"thankYou": "Thank you for your rating!",
+				"submitRating": "Submit Rating"
+			},
+			"BookEditor": {
+				"find": "Find",
+				"replaceAll": "Replace All",
+				"unsavedChanges": "You have unsaved changes"
+			},
+			"AIEditModal": {
+				"title": "Story Editor",
+				"processing": "Processing your request..."
+			},
+			"ImageEditingTab": {
+				"selectImage": "Please select an image to edit",
+				"changeImage": "Change Image in Story"
+			},
+			"StoryCounter": {
+				"storiesCreated": "stories created and counting..."
+			},
+			"StoryGenerationProgress": {
+				"ready": "Your Story is Ready!"
+			},
+			"storyRating": {
+				"title": "Rate this story",
+				"feedback": {
+					"title": "What could we improve? (Optional)",
+					"placeholder": "Your feedback helps us create better stories...",
+					"includeNameLabel": "Allow the author to see my name with this feedback"
+				},
+				"buttons": {
+					"cancel": "Cancel",
+					"submitRating": "Submit Rating",
+					"submitting": "Submitting..."
+				},
+				"success": {
+					"title": "Thank you for your rating!",
+					"message": "Your feedback helps us improve our stories."
+				},
+				"submittingMessage": "Submitting your rating...",
+				"errors": {
+					"serviceUnavailable": "The rating system is currently being set up. Please try again in a few minutes.",
+					"submitFailed": "Failed to submit rating",
+					"generic": "An error occurred"
+				}
+			},
+			"aiEditModal": {
+				"title": "Story Editor",
+				"description": "Enhance your story with Mythoria",
+				"tabs": {
+					"text": "Text",
+					"images": "Images"
+				},
+				"editSelection": {
+					"label": "What would you like to edit?",
+					"entireStory": "Entire Story",
+					"noChaptersDetected": "No chapters detected. You can edit the entire story.",
+					"chaptersDetected": "{count} chapter{plural} detected"
+				},
+				"editRequest": {
+					"label": "What changes would you like to make?",
+					"placeholder": "Describe the changes you'd like to make to your story...",
+					"charactersCount": "{current}/{max} characters"
+				},
+				"exampleRequests": {
+					"label": "Example requests:",
+					"examples": [
+						"Make the dragon more friendly and less scary for young children",
+						"Add more dialogue between the main characters",
+						"Include more descriptive details about the magical forest",
+						"Make the ending more exciting and adventurous",
+						"Fix any grammatical errors and improve sentence flow",
+						"Add a new subplot about the character's pet companion"
+					]
+				},
+				"buttons": {
+					"cancel": "Cancel",
+					"close": "Close",
+					"applyChanges": "Apply Changes",
+					"processing": "Processing..."
+				},
+				"loadingState": {
+					"title": "Processing your request...",
+					"description": "This may take 5-60 seconds depending on the scope of changes."
+				},
+				"errors": {
+					"enterRequest": "Please enter your editing request",
+					"requestTooLong": "Request must be 2000 characters or less",
+					"editFailed": "Failed to edit story. Please try again."
+				}
+			},
+			"bookEditor": {
+				"loading": "Loading editor...",
+				"toolbar": {
+					"tooltips": {
+						"bold": "Bold (Ctrl+B)",
+						"italic": "Italic (Ctrl+I)",
+						"strikethrough": "Strikethrough",
+						"undo": "Undo (Ctrl+Z)",
+						"redo": "Redo (Ctrl+Y)",
+						"switchToVisual": "Switch to Visual Editor",
+						"switchToHtml": "Switch to HTML Code",
+						"findReplace": "Find & Replace (Ctrl+F)",
+						"aiEdit": "⚡ Edit - Improve your story",
+						"save": "Save (Ctrl+S)"
+					},
+					"buttons": {
+						"visual": "Visual",
+						"html": "HTML",
+						"aiEdit": "Edit",
+						"save": "Save",
+						"cancel": "Cancel"
+					}
+				},
+				"findReplace": {
+					"findLabel": "Find",
+					"findPlaceholder": "Enter text to find...",
+					"replaceLabel": "Replace with",
+					"replacePlaceholder": "Enter replacement text...",
+					"findButton": "Find",
+					"replaceAllButton": "Replace All",
+					"matchesFound": "{count} matches"
+				},
+				"htmlEditor": {
+					"title": "HTML Code Editor",
+					"description": "Edit the raw HTML. Mythoria CSS classes (mythoria-*) will be preserved automatically when you save.",
+					"placeholder": "Enter HTML code here..."
+				},
+				"unsavedChanges": "You have unsaved changes"
+			},
+			"imageEditingTab": {
+				"noImages": {
+					"title": "No Images Found",
+					"description": "No images are available for this story yet. Images will appear here once they are generated."
+				},
+				"imageSelection": {
+					"label": "Select an image to edit:",
+					"versionsAvailable": "{count} version{plural} available",
+					"latestVersion": "Latest: {version}"
+				},
+				"versionSelection": {
+					"label": "Choose version to edit:",
+					"versionsInfo": "{count} version{plural} available",
+					"currentlySelected": "Currently selected: {version}",
+					"changeImageButton": "Change Image in Story",
+					"changingImage": "Changing Image...",
+					"changeImageDescription": "This will replace the current image in your story with the selected version."
+				},
+				"imagePreview": {
+					"label": "Current image:"
+				},
+				"editRequest": {
+					"label": "What changes would you like to make to this image?",
+					"placeholder": "Describe the changes you'd like to make to the image...",
+					"charactersCount": "{current}/{max} characters"
+				},
+				"exampleRequests": {
+					"label": "Example requests:",
+					"examples": [
+						"Change the dragon from red to blue and add more clouds in the sky",
+						"Make the protagonist wear a golden crown and hold a magic staff",
+						"Change the forest background to a snowy mountain landscape",
+						"Add more magical sparkles and fairy lights around the characters",
+						"Make the scene darker and more mysterious with moonlight",
+						"Add a rainbow in the background and make the colors more vibrant"
+					]
+				},
+				"loadingState": {
+					"title": "Processing your image edit...",
+					"description": "This may take up to 3 minutes depending on the complexity of changes."
+				},
+				"buttons": {
+					"generateNewVersion": "Generate New Version",
+					"editingImage": "Editing Image...",
+					"replaceImageInStory": "Replace Image in Story",
+					"replacingImage": "Replacing Image..."
+				},
+				"success": {
+					"title": "New image version generated successfully!",
+					"description": "Click the button below to replace the current image in your story with the new version."
+				},
+				"errors": {
+					"selectImage": "Please select an image to edit",
+					"enterChanges": "Please describe the changes you want to make",
+					"requestTooLong": "Request must be 2000 characters or less",
+					"editFailed": "Failed to edit image. Please try again.",
+					"noNewImage": "No new image available to replace",
+					"replaceImageFailed": "Failed to replace image in story. Please try again.",
+					"noVersionSelected": "No image version selected to change to",
+					"changeImageFailed": "Failed to change image in story. Please try again.",
+					"sameVersion": "The selected version is already the current version"
+				}
+			},
+			"readingToolbar": {
+				"title": "Reading Settings",
+				"toggleLabel": "Toggle reading settings",
+				"themeSwitch": "Switch to {theme} theme",
+				"quickTemplateLabel": "Quick CSS template selection",
+				"resetButton": "Reset to Default",
+				"controls": {
+					"style": "Style",
+					"fontSize": "Font Size",
+					"lineHeight": "Line Height",
+					"margins": "Margins",
+					"templateLabel": "Select CSS template",
+					"fontSizeLabel": "Font size percentage",
+					"lineHeightLabel": "Line height percentage",
+					"marginsLabel": "Margins percentage",
+					"decreaseFontSize": "Decrease font size",
+					"increaseFontSize": "Increase font size",
+					"decreaseLineHeight": "Decrease line height",
+					"increaseLineHeight": "Increase line height",
+					"decreaseMargins": "Decrease margins",
+					"increaseMargins": "Increase margins"
+				},
+				"templates": {
+					"all_ages": "All Ages",
+					"children_0-2": "Children (0-2)",
+					"children_3-6": "Children (3-6)",
+					"children_7-10": "Children (7-10)",
+					"children_11-14": "Children (11-14)",
+					"young_adult_15-17": "Young Adult (15-17)",
+					"adult_18+": "Adult (18+)"
+				}
+			},
+			"storyCounter": {
+				"loading": "Loading...",
+				"error": "Error loading",
+				"notAvailable": "N/A",
+				"description": "stories created and counting..."
+			},
+			"storyGenerationProgress": {
+				"completion": {
+					"title": "Your Story is Ready!",
+					"description": "Congratulations! Your magical story has been created and is ready to be read.",
+					"progress": "100% Complete!",
+					"buttons": {
+						"readStory": "📖 Read Your Story Now",
+						"myStories": "📚 My Stories",
+						"moreOptions": "🎧 More Options"
+					},
+					"celebration": {
+						"title": "Your story is now part of the Mythoria collection!",
+						"description": "Share it with friends or create another magical adventure."
+					}
+				},
+				"progress": {
+					"title": "🏭 Story Factory in Action!",
+					"description": "Your story will be ready in up to 14 minutes",
+					"progressLabel": "Progress",
+					"estimatedTimeLabel": "Estimated time remaining",
+					"creatingMagic": "Creating magic...",
+					"currentlyLabel": "Currently:",
+					"tip": {
+						"title": "Pro tip!",
+						"description": "While you wait, you can visit \"My Stories\" to track progress in real-time or start creating another story!"
+					}
+				},
+				"steps": {
+					"generate_outline": "Crafting your story outline",
+					"write_chapters": "Writing magical chapters",
+					"generate_front_cover": "Designing the front cover",
+					"generate_back_cover": "Creating the back cover",
+					"generate_images": "Painting beautiful illustrations",
+					"assemble": "Binding your story together",
+					"generate_audiobook": "Recording your audiobook",
+					"done": "Finishing touches"
+				},
+				"funnyMessages": {
+					"generate_outline": [
+						"🍫 Our Oompa-Loompas are sketching your story blueprint on chocolate paper!",
+						"📋 The writing elves are mapping out your adventure with enchanted quills!",
+						"✨ Story architects are designing the perfect plot structure!"
+					],
+					"write_chapters": [
+						"📖 Oompa-Loompas are furiously typing on their tiny typewriters!",
+						"✍️ Our literary elves are weaving your tale with golden threads!",
+						"🎭 Story scribes are bringing your characters to life with magic ink!",
+						"📚 Chapter wizards are crafting each page with literary spells!"
+					],
+					"generate_front_cover": [
+						"🎨 Our artistic Oompa-Loompas are mixing magical paint for your cover!",
+						"🖌️ Master illustrators are sketching your cover with rainbow brushes!",
+						"🌟 Cover designers are sprinkling stardust on your book's face!"
+					],
+					"generate_back_cover": [
+						"🎭 Back-cover poets are writing mysterious blurbs with invisible ink!",
+						"📖 Our synopsis scribes are crafting the perfect teaser!",
+						"✨ Cover completion elves are adding the final magical touches!"
+					],
+					"generate_images": [
+						"🖼️ Illustration Oompa-Loompas are painting each scene with emotion!",
+						"🎨 Picture wizards are bringing your characters to colorful life!",
+						"🌈 Art fairies are adding magical details to every illustration!",
+						"🖌️ Visual storytellers are creating windows into your world!"
+					],
+					"assemble": [
+						"📚 Book binding Oompa-Loompas are stitching everything together!",
+						"🔧 Assembly elves are making sure every page is perfect!",
+						"📋 Quality control wizards are checking every magical detail!"
+					],
+					"generate_audiobook": [
+						"🎤 Voice acting Oompa-Loompas are narrating your story!",
+						"🎵 Audio wizards are adding the perfect storytelling rhythm!",
+						"🎧 Sound engineers are polishing every magical word!"
+					],
+					"done": [
+						"🎉 Ta-da! Your magical story is ready for its grand adventure!",
+						"✨ All done! The Oompa-Loompas are taking a well-deserved cocoa break!",
+						"🏆 Mission accomplished! Your story is complete and ready to enchant!"
+					],
+					"default": [
+						"⚡ Our magical Oompa-Loompas are working their creative wonders!"
+					]
+				}
+			},
+			"NotFound": {
+				"title": "404 - Page Lost in the Enchanted Forest",
+				"mainHeading": "Oops! This Page is Lost in the Storybook",
+				"description": "It seems the page you're looking for has wandered off into an unwritten chapter! Maybe it's hiding in a fairy tale, or perhaps it got caught up in an adventure of its own.",
+				"funnyMessage": "Our literary elves are searching through every book in the magical library, but this page seems to have gone on its own quest!",
+				"suggestions": {
+					"title": "While we search for your lost page, you could:",
+					"items": [
+						"📖 Return to the Homepage and start a new adventure",
+						"✨ Create your own magical story",
+						"📚 Browse your existing stories",
+						"🎯 Check if the URL is spelled correctly (even magic has rules!)"
+					]
+				},
+				"actions": {
+					"goHome": "Return to Homepage",
+					"createStory": "Create a New Story",
+					"myStories": "My Stories"
+				},
+        "quote": "\"Not all those who wander are lost... but this page definitely is!\" - A confused Hobbit"
+			}
+		},
+		"storyCounter": {
+			"loading": "Loading...",
+			"error": "Error loading",
+			"notAvailable": "N/A",
+			"description": "stories created and counting..."
+		}
+	}
 }

@@ -2,8 +2,8 @@
 
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
 import StepNavigation from '../../../../components/StepNavigation';
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { trackStoryCreation } from '../../../../lib/analytics';
 import { getCurrentStoryId, hasValidStorySession } from '../../../../lib/story-session';
@@ -31,21 +31,31 @@ interface StoryData {
   chapterCount?: number | null;
 }
 
-export default function Step4Page() {
+export default function Step4PageWrapper() {
+  return (
+    <Suspense>
+      <Step4Page />
+    </Suspense>
+  );
+}
+
+function Step4Page() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editStoryId = searchParams.get('edit');
   const t = useTranslations('StorySteps.step4');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentStoryId, setCurrentStoryId] = useState<string | null>(null);    // Form data
+  const [currentStoryId, setCurrentStoryId] = useState<string | null>(null);  // Form data
   const [title, setTitle] = useState('');
   const [place, setPlace] = useState('');
-  const [targetAudience, setTargetAudience] = useState<TargetAudience | ''>('');
+  const [targetAudience, setTargetAudience] = useState<TargetAudience | ''>(TargetAudience.CHILDREN_3_6);
   const [novelStyle, setNovelStyle] = useState<NovelStyle | ''>('');
   const [graphicalStyle, setGraphicalStyle] = useState<GraphicalStyle | ''>('');
   const [plotDescription, setPlotDescription] = useState('');
   const [additionalRequests, setAdditionalRequests] = useState('');
-  const [chapterCount, setChapterCount] = useState<number>(6);
+  const [chapterCount, setChapterCount] = useState<number>(6); // Default matches CHILDREN_3_6
   const [isChapterCountManual, setIsChapterCountManual] = useState(false);
   // Chapter count mapping based on target audience
   const getChapterCountForAudience = useCallback((audience: TargetAudience | ''): number => {
@@ -191,10 +201,14 @@ export default function Step4Page() {
         chapter_count: chapterCount,
         has_plot_description: !!plotDescription.trim(),
         has_additional_requests: !!additionalRequests.trim()
-      });
-
-      // Navigate to next step after successful save
-      router.push('/tell-your-story/step-5');
+      });      // Navigate to next step after successful save
+      if (editStoryId) {
+        // In edit mode, pass the edit parameter to the next step
+        router.push(`/tell-your-story/step-5?edit=${editStoryId}`);
+      } else {
+        // Normal flow - navigate to step 5
+        router.push('/tell-your-story/step-5');
+      }
 
     } catch (error) {
       console.error('Error saving story:', error);
@@ -214,9 +228,8 @@ export default function Step4Page() {
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             {/* Progress indicator */}
-            {(() => {
-              const currentStep = 4;
-              const totalSteps = 6;
+            {(() => {              const currentStep = 4;
+              const totalSteps = 5;
               return (
                 <>
                   {/* Mobile Progress Indicator */}
@@ -232,14 +245,12 @@ export default function Step4Page() {
                   </div>
 
                   {/* Desktop Progress Indicator */}
-                  <div className="hidden md:block mb-8">
-                    <ul className="steps steps-horizontal w-full">
+                  <div className="hidden md:block mb-8">                    <ul className="steps steps-horizontal w-full">
                       <li className="step step-primary" data-content="1"></li>
                       <li className="step step-primary" data-content="2"></li>
                       <li className="step step-primary" data-content="3"></li>
                       <li className="step step-primary" data-content="4"></li>
                       <li className="step" data-content="5"></li>
-                      <li className="step" data-content="6"></li>
                     </ul>
                   </div>
                 </>
@@ -334,49 +345,22 @@ export default function Step4Page() {
                         <label className="label">
                           <span className="label-text font-semibold">{t('fields.bookSize')}</span>
                         </label>
-                        <div className="flex gap-2">
-                          <select
-                            value={chapterCount}
-                            onChange={(e) => {
-                              setChapterCount(Number(e.target.value));
-                              setIsChapterCountManual(true);
-                            }}
-                            className="select select-bordered w-full"
-                          >
-                            {[3, 4, 5, 6, 8, 10, 12, 15, 18, 20].map((count) => (
-                              <option key={count} value={count}>
-                                {count} {count === 1 ? 'chapter' : 'chapters'}
-                              </option>
-                            ))}
-                          </select>
-                          {isChapterCountManual && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setIsChapterCountManual(false);
-                                const autoCount = getChapterCountForAudience(targetAudience);
-                                setChapterCount(autoCount);
-                              }}
-                              className="btn btn-outline btn-sm"
-                              title="Reset to automatic chapter count based on target audience"
-                            >
-                              🔄 Auto
-                            </button>
-                          )}
-                        </div>
+                        <select
+                          value={chapterCount}
+                          onChange={(e) => {
+                            setChapterCount(Number(e.target.value));
+                            setIsChapterCountManual(true);
+                          }}
+                          className="select select-bordered w-full"
+                        >
+                          {[3, 4, 5, 6, 8, 10, 12, 15, 18, 20].map((count) => (
+                            <option key={count} value={count}>
+                              {count} {count === 1 ? 'chapter' : 'chapters'}
+                            </option>
+                          ))}
+                        </select>
                         <label className="label">
-                          <span className="label-text-alt">
-                            {t('fields.bookSizeHelp')}
-                            {!isChapterCountManual && (
-                              <span className="text-info block mt-1">
-                                💡 Adjusts automatically based on target audience
-                              </span>
-                            )}                            {isChapterCountManual && (
-                              <span className="text-warning block mt-1">
-                                ⚠️ Manual override active - click &quot;Auto&quot; to restore automatic adjustment
-                              </span>
-                            )}
-                          </span>
+                          <span className="label-text-alt">{t('fields.bookSizeHelp')}</span>
                         </label>
                       </div>
 
@@ -458,12 +442,11 @@ export default function Step4Page() {
                       </label>
                     </div>
                   </div>
-                )}
-                <StepNavigation
+                )}                <StepNavigation
                   currentStep={4}
-                  totalSteps={6}
-                  nextHref="/tell-your-story/step-5"
-                  prevHref="/tell-your-story/step-3"
+                  totalSteps={5}
+                  nextHref={editStoryId ? `/tell-your-story/step-5?edit=${editStoryId}` : "/tell-your-story/step-5"}
+                  prevHref={editStoryId ? `/tell-your-story/step-3?edit=${editStoryId}` : "/tell-your-story/step-3"}
                   onNext={handleNext}
                   nextDisabled={saving}
                   nextLabel={saving ? t('saving') : t('nextChapter')}

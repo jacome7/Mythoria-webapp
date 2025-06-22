@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const t = useTranslations('Footer');
+  const t = useTranslations('common.Footer');
   return (
     <footer className="bg-base-200 text-base-content p-10">
       <div className="container mx-auto">

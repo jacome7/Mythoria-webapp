@@ -6,6 +6,7 @@ import { paymentMethods, payments, credits } from './payments';
 import { shippingCodes } from './shipping';
 import { creditLedger, authorCreditBalances } from './credits';
 import { storyRatings } from './ratings';
+import { printProviders, printRequests } from './print';
 
 // -----------------------------------------------------------------------------
 // Relations (for type safety with Drizzle ORM queries)
@@ -41,6 +42,7 @@ export const addressesRelations = relations(addresses, ({ one, many }) => ({
     references: [authors.authorId],
   }),
   shippingCodes: many(shippingCodes),
+  printRequests: many(printRequests),
 }));
 
 export const storiesRelations = relations(stories, ({ one, many }) => ({
@@ -164,5 +166,21 @@ export const storyRatingsRelations = relations(storyRatings, ({ one }) => ({
   user: one(authors, {
     fields: [storyRatings.userId],
     references: [authors.authorId],
+  }),
+}));
+
+// Print Relations
+export const printProvidersRelations = relations(printProviders, ({ many }) => ({
+  printRequests: many(printRequests),
+}));
+
+export const printRequestsRelations = relations(printRequests, ({ one }) => ({
+  printProvider: one(printProviders, {
+    fields: [printRequests.printProviderId],
+    references: [printProviders.id],
+  }),
+  shippingAddress: one(addresses, {
+    fields: [printRequests.shippingId],
+    references: [addresses.addressId],
   }),
 }));

@@ -15,7 +15,7 @@ interface ReadingProgressProps {
 }
 
 export default function ReadingProgress({ storyContent }: ReadingProgressProps) {
-  const t = useTranslations('Components.ReadingProgress');
+  const t = useTranslations('common.Components.ReadingProgress');
   const tCommon = useTranslations('common');
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isTableOfContentsOpen, setIsTableOfContentsOpen] = useState(false);

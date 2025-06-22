@@ -16,7 +16,7 @@ interface StoryReaderProps {
 }
 
 export default function StoryReader({ storyContent, storyMetadata }: StoryReaderProps) {
-  const t = useTranslations('Components.StoryReader');
+  const t = useTranslations('common.Components.StoryReader');
   const [readingSettings, setReadingSettings] = useState<ReadingSettings | null>(null);
   const [isContentLoaded, setIsContentLoaded] = useState(false);
   // Load appropriate CSS theme based on story metadata

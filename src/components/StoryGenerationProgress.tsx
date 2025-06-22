@@ -37,7 +37,7 @@ const calculateEstimatedTime = (percentage: number): string => {
 };
 
 export default function StoryGenerationProgress({ storyId, onComplete }: StoryGenerationProgressProps) {
-  const t = useTranslations('storyGenerationProgress');
+  const t = useTranslations('common.storyGenerationProgress');
   const router = useRouter();
   const params = useParams();
   const locale = params.locale || 'en';

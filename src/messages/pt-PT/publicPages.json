@@ -35,7 +35,7 @@
   },
   "MyStoriesPage": {
     "title": "Olá",
-    "writeNewStory": "Escrever Nova História",
+    "writeNewStory": "Nova História",
     "signedOut": {
       "welcome": "Bem-vindo",
       "needSignIn": "Precisa de fazer login para ver as suas histórias.",
@@ -61,11 +61,12 @@
       "draft": "Rascunho",
       "writing": "A Escrever",
       "published": "Publicado"
-    },
-    "actions": {
+    },    "actions": {
       "share": "Partilhar",
       "edit": "Editar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "print": "Encomendar Impressão",
+      "printNotAvailable": "Impressão não disponível para esta história"
     },
     "deleteConfirm": {
       "title": "Eliminar História",
@@ -353,10 +354,15 @@
       "listen": {
         "title": "Ouvir", 
         "description": "Ouça a versão audiobook com narração profissional."
-      },
-      "edit": {
+      },      "edit": {
         "title": "Editar",
         "description": "Faça alterações ao conteúdo da história com o nosso editor integrado."
+      },
+      "print": {
+        "title": "Encomendar Impressão",
+        "description": "Encomende uma cópia física impressa profissionalmente da sua história.",
+        "action": "Encomendar Cópia Impressa",
+        "notAvailable": "Impressão Não Disponível"
       }
     }
   },
@@ -372,9 +378,108 @@
       "title": "🪄 Lance o Seu Feitiço de Feedback",
       "placeholder": "Partilhe as suas sugestões mágicas...",
       "submit": "Enviar Feitiço ✨"
-    },
-    "investors": {
+    },    "investors": {
       "button": "Abrir o Pergaminho 📜"
+    }
+  },
+  "PrintOrder": {
+    "title": "Encomendar Cópia Impressa",
+    "backToStories": "Voltar às Minhas Histórias",
+    "steps": {
+      "story": "História",
+      "address": "Morada de Envio",
+      "provider": "Fornecedor de Impressão",
+      "payment": "Pagamento",
+      "confirmation": "Confirmação"
+    },    "errors": {
+      "storyNotFound": "História não encontrada",
+      "storyNotPublished": "Apenas histórias publicadas podem ser impressas",
+      "pdfNotAvailable": "PDF não disponível para esta história",
+      "loadingFailed": "Falha ao carregar dados da história",
+      "missingRequiredFields": "Por favor complete todos os campos obrigatórios",
+      "orderFailed": "Falha ao efetuar encomenda de impressão",
+      "insufficientCredits": "Créditos insuficientes."
+    },"addressInfo": {
+      "selectShipping": "Por favor selecione uma morada de envio para o seu livro impresso.",
+      "noAddresses": "Não tem moradas guardadas. Por favor adicione uma morada de envio para continuar.",
+      "addNewAddress": "Adicionar Nova Morada"
+    },
+    "providerInfo": {
+      "selectProvider": "Escolha um fornecedor de impressão e formato do livro."
+    },
+    "formats": {
+      "paperback": "Capa Mole",
+      "hardcover": "Capa Dura"
+    },    "payment": {
+      "orderSummary": "Resumo da Encomenda",
+      "shipping": "Envio",
+      "printOrderFee": "Processamento de Encomenda",
+      "total": "Total",
+      "credits": "créditos",
+      "method": "Método de Pagamento",
+      "creditsInfo": "O pagamento será deduzido do seu saldo de créditos quando efetuar a encomenda."
+    },
+    "confirmation": {
+      "title": "Encomenda Realizada com Sucesso!",
+      "message": "O seu pedido de impressão foi submetido. Receberá atualizações sobre o estado da impressão e envio por email."
+    },
+    "buttons": {
+      "continue": "Continuar",
+      "back": "Voltar",
+      "placeOrder": "Efetuar Encomenda",
+      "backToStories": "Voltar às Minhas Histórias"
+    }
+  },
+  "Addresses": {
+    "addAddress": "Adicionar Nova Morada",
+    "editAddress": "Editar Morada",
+    "confirmDelete": "Tem a certeza que quer eliminar esta morada?",
+    "validation": {
+      "requiredFields": "Por favor preencha todos os campos obrigatórios (Linha de Morada 1, Cidade, País)"
+    },
+    "errors": {
+      "saveFailed": "Falha ao guardar morada. Por favor tente novamente.",
+      "deleteFailed": "Falha ao eliminar morada. Por favor tente novamente."
+    },
+    "fields": {
+      "type": "Tipo de Morada",
+      "line1": "Linha de Morada 1",
+      "line2": "Linha de Morada 2",
+      "city": "Cidade",
+      "stateRegion": "Estado/Região",
+      "postalCode": "Código Postal",
+      "country": "País",
+      "phone": "Número de Telefone"
+    },
+    "placeholders": {
+      "line1": "Insira o endereço da rua",
+      "line2": "Apartamento, andar, etc. (opcional)",
+      "city": "Insira a cidade",
+      "stateRegion": "Insira estado ou região",
+      "postalCode": "Insira o código postal",
+      "phone": "Insira o número de telefone"
+    },    "types": {
+      "delivery": "Entrega",
+      "billing": "Faturação"
+    },
+    "countries": {
+      "us": "Estados Unidos",
+      "gb": "Reino Unido",
+      "de": "Alemanha",
+      "fr": "França",
+      "es": "Espanha",
+      "it": "Itália",
+      "pt": "Portugal",
+      "nl": "Países Baixos",
+      "be": "Bélgica",
+      "ca": "Canadá",
+      "au": "Austrália",
+      "jp": "Japão",
+      "br": "Brasil"
+    },
+    "buttons": {
+      "save": "Guardar Morada",
+      "cancel": "Cancelar"
     }
   }
 }

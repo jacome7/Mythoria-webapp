@@ -9,18 +9,22 @@ function transformAudiobookUri(audiobookUri: unknown): Array<{
   audioUri: string;
   duration: number;
   imageUri?: string;
-}> | undefined {  if (!audiobookUri || typeof audiobookUri !== 'object' || audiobookUri === null) {
+}> | undefined {
+  if (!audiobookUri || typeof audiobookUri !== 'object' || audiobookUri === null) {
     return undefined;
   }
 
   // Type assertion after validation
   const audiobookData = audiobookUri as Record<string, unknown>;
 
-  // Database stores as: {"chapter_1": "url", "chapter_2": "url", ...}
+  // Database can store in two formats:
+  // Format 1: {"chapter_1": "url", "chapter_2": "url", ...}
+  // Format 2: {"1": "url", "2": "url", "3": "url", ...}
   // Frontend expects: [{chapterTitle: "Chapter 1", audioUri: "url", duration: 180}, ...]
   const chapters = [];
-    // Sort chapter keys to ensure proper order
-  const chapterKeys = Object.keys(audiobookData)
+  
+  // First, try to find chapter_ keys (Format 1)
+  let chapterKeys = Object.keys(audiobookData)
     .filter(key => key.startsWith('chapter_'))
     .sort((a, b) => {
       const aNum = parseInt(a.replace('chapter_', ''));
@@ -28,8 +32,24 @@ function transformAudiobookUri(audiobookUri: unknown): Array<{
       return aNum - bNum;
     });
 
+  // If no chapter_ keys found, try numeric keys (Format 2)
+  if (chapterKeys.length === 0) {
+    chapterKeys = Object.keys(audiobookData)
+      .filter(key => /^\d+$/.test(key)) // Only numeric keys
+      .sort((a, b) => parseInt(a) - parseInt(b)); // Sort numerically
+  }
+
   for (const chapterKey of chapterKeys) {
-    const chapterNumber = parseInt(chapterKey.replace('chapter_', ''));
+    let chapterNumber: number;
+    
+    if (chapterKey.startsWith('chapter_')) {
+      // Format 1: chapter_1, chapter_2, etc.
+      chapterNumber = parseInt(chapterKey.replace('chapter_', ''));
+    } else {
+      // Format 2: 1, 2, 3, etc.
+      chapterNumber = parseInt(chapterKey);
+    }
+    
     const audioUri = audiobookData[chapterKey];
     
     if (audioUri && typeof audioUri === 'string') {
@@ -104,7 +124,7 @@ export async function GET(
     const transformedStory = {
       ...story,
       audiobookUri: transformAudiobookUri(story.audiobookUri)
-    };    // Get media links from Google Cloud Storage
+    };// Get media links from Google Cloud Storage
     const mediaLinks = await getStoryImagesFromStorage(storyId);
     
     // Debug: Log the media links to see actual filenames

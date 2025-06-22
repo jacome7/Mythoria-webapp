@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { trackStoryCreation } from '../lib/analytics';
@@ -65,27 +65,19 @@ export default function CharacterCard({
 }: CharacterCardProps) {
   const t = useTranslations('Characters');
   const characterTypes = getCharacterTypes(t);
-  const characterRoles = getCharacterRoles(t);
-
-  const [formData, setFormData] = useState<Character>({
+  const characterRoles = getCharacterRoles(t);  const [formData, setFormData] = useState<Character>({
     name: character?.name || '',
     type: character?.type || 'Boy',
     role: character?.role || 'protagonist',
-    superpowers: character?.superpowers || '',
     passions: character?.passions || '',
     physicalDescription: character?.physicalDescription || '',
-    photoUrl: character?.photoUrl || '',
     ...character
   });
-
   const [showOtherTypeInput, setShowOtherTypeInput] = useState(
     character?.type ? !characterTypes.some(ct => ct.value === character.type) : false
   );
-  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   const handleInputChange = (field: keyof Character, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
 
@@ -96,25 +88,6 @@ export default function CharacterCard({
     }
   };
 
-  const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-    try {
-      // In a real app, you'd upload to a service like S3 or Cloudinary
-      // For now, we'll just create a local URL
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setFormData(prev => ({ ...prev, photoUrl: e.target?.result as string }));
-        setUploading(false);
-      };
-      reader.readAsDataURL(file);
-    } catch (error) {
-      console.error('Error uploading photo:', error);
-      setUploading(false);
-    }
-  };
   const handleSave = async () => {
     if (!formData.name.trim()) {
       alert(t('validation.nameRequired'));
@@ -131,13 +104,11 @@ export default function CharacterCard({
           character_name: formData.name,
           character_type: formData.type,
           character_role: formData.role
-        });
-      } else if (mode === 'edit') {
+        });      } else if (mode === 'edit') {
         trackStoryCreation.characterCustomized({
           character_name: formData.name,
           character_type: formData.type,
-          character_role: formData.role,
-          has_custom_image: !!formData.photoUrl
+          character_role: formData.role
         });
       }
     } catch (error) {
@@ -147,12 +118,7 @@ export default function CharacterCard({
       setSaving(false);
     }
   };
-
   const handleDelete = async () => {
-    if (!confirm(t('confirmDelete'))) {
-      return;
-    }
-
     setDeleting(true);
     try {
       await onDelete();
@@ -202,18 +168,7 @@ export default function CharacterCard({
               </label>
               <p className="text-gray-700">{getTypeDisplayValue(formData.type || '')}</p>
             </div>
-          </div>
-
-          {formData.superpowers && (
-            <div className="mb-4">
-              <label className="label">
-                <span className="label-text font-semibold">{t('fields.superpowers')}</span>
-              </label>
-              <p className="text-gray-700">{formData.superpowers}</p>
-            </div>
-          )}
-
-          {formData.passions && (
+          </div>          {formData.passions && (
             <div className="mb-4">
               <label className="label">
                 <span className="label-text font-semibold">{t('fields.passions')}</span>
@@ -311,26 +266,12 @@ export default function CharacterCard({
               onChange={(e) => handleInputChange('type', e.target.value)}
             />
           )}
-        </div>
-
-        <div className="form-control mb-4">
-          <label className="label">
-            <span className="label-text font-semibold">{t('fields.superpowers')}</span>
-          </label>
-          <textarea
-            className="textarea textarea-bordered h-24"
-            placeholder={t('placeholders.superpowers')}
-            value={formData.superpowers}
-            onChange={(e) => handleInputChange('superpowers', e.target.value)}
-          />
-        </div>
-
-        <div className="form-control mb-4">
+        </div>        <div className="form-control mb-4">
           <label className="label">
             <span className="label-text font-semibold">{t('fields.passions')}</span>
           </label>
           <textarea
-            className="textarea textarea-bordered h-24"
+            className="textarea textarea-bordered h-24 w-full"
             placeholder={t('placeholders.passions')}
             value={formData.passions}
             onChange={(e) => handleInputChange('passions', e.target.value)}
@@ -342,66 +283,12 @@ export default function CharacterCard({
             <span className="label-text font-semibold">{t('fields.physicalDescription')}</span>
           </label>
           <textarea
-            className="textarea textarea-bordered h-24"
+            className="textarea textarea-bordered h-24 w-full"
             placeholder={t('placeholders.physicalDescription')}
             value={formData.physicalDescription}
             onChange={(e) => handleInputChange('physicalDescription', e.target.value)}
           />
-        </div>
-
-        <div className="form-control mb-6">
-          <label className="label">
-            <span className="label-text font-semibold">{t('fields.photo')}</span>
-          </label>
-
-          {formData.photoUrl ? (
-            <div className="flex items-center space-x-4">
-              <div className="avatar">
-                <div className="w-16 h-16 rounded-full relative overflow-hidden">
-                  <Image
-                    src={formData.photoUrl}
-                    alt="Character"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              </div>
-              <div className="flex space-x-2">
-                <button
-                  className="btn btn-outline btn-sm"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploading}
-                >
-                  🔄 {t('actions.change')}
-                </button>
-                <button
-                  className="btn btn-outline btn-sm"
-                  onClick={() => setFormData(prev => ({ ...prev, photoUrl: '' }))}
-                >
-                  🗑️ {t('actions.remove')}
-                </button>
-              </div>
-            </div>
-          ) : (
-            <button
-              className={`btn btn-outline w-full ${uploading ? 'loading' : ''}`}
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-            >
-              {uploading ? '' : `📸 ${t('actions.uploadPhoto')}`}
-            </button>
-          )}
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handlePhotoUpload}
-            className="hidden"
-          />
-        </div>
-
-        <div className="card-actions justify-end">
+        </div>        <div className="card-actions justify-end">
           {onCancel && (
             <button
               className="btn btn-outline"

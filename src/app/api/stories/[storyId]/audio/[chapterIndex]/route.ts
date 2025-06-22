@@ -58,13 +58,19 @@ export async function GET(
         { error: "No audiobook available for this story" },
         { status: 404 }
       );
+    }    const audiobookData = story.audiobookUri as Record<string, unknown>;
+
+    // Get the chapter audio URI - handle both key formats
+    // Format 1: chapter_1, chapter_2, etc.
+    // Format 2: 1, 2, 3, etc.
+    let chapterKey = `chapter_${chapterIdx + 1}`;
+    let audioUri = audiobookData[chapterKey];
+    
+    // If not found with chapter_ format, try numeric format
+    if (!audioUri) {
+      chapterKey = String(chapterIdx + 1);
+      audioUri = audiobookData[chapterKey];
     }
-
-    const audiobookData = story.audiobookUri as Record<string, unknown>;
-
-    // Get the chapter audio URI
-    const chapterKey = `chapter_${chapterIdx + 1}`;
-    const audioUri = audiobookData[chapterKey];
 
     if (!audioUri || typeof audioUri !== 'string') {
       return NextResponse.json(

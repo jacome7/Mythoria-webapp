@@ -1,5 +1,7 @@
-import { getTranslations } from 'next-intl/server';
-import { setRequestLocale } from 'next-intl/server';
+'use client';
+
+import { useTranslations, useLocale } from 'next-intl';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -12,38 +14,30 @@ interface FeaturedStory {
   createdAt: string;
 }
 
-async function getFeaturedStories(): Promise<FeaturedStory[]> {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/stories/featured`, {
-      cache: 'no-store' // Ensure fresh data
-    });
-    
-    if (!response.ok) {
-      console.error('Failed to fetch featured stories:', response.statusText);
-      return [];
-    }
-    
-    const data = await response.json();
-    return data.stories || [];
-  } catch (error) {
-    console.error('Error fetching featured stories:', error);
-    return [];
-  }
-}
+export default function GetInspiredPage() {
+  const locale = useLocale();
+  const t = useTranslations('GetInspiredPage');
+  const [featuredStories, setFeaturedStories] = useState<FeaturedStory[]>([]);
+  const [loading, setLoading] = useState(true);
 
-interface GetInspiredPageProps {
-  params: Promise<{ locale: string }>;
-}
+  useEffect(() => {
+    const loadFeaturedStories = async () => {
+      try {
+        const response = await fetch('/api/stories/featured');
+        if (response.ok) {
+          const data = await response.json();
+          setFeaturedStories(data.stories || []);
+        }
+      } catch (error) {
+        console.error('Error fetching featured stories:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-export default async function GetInspiredPage({ params }: GetInspiredPageProps) {
-  const { locale } = await params;
-  setRequestLocale(locale);
-  
-  const t = await getTranslations('GetInspiredPage');
-  const featuredStories = await getFeaturedStories();
-  
-  return (
+    loadFeaturedStories();
+  }, []);
+    return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
       {/* Gallery Section */}
       <div className="container mx-auto px-4 py-16">
@@ -56,7 +50,12 @@ export default async function GetInspiredPage({ params }: GetInspiredPageProps) 
           </p>
         </div>
 
-        {featuredStories.length > 0 ? (
+        {loading ? (
+          /* Loading State */
+          <div className="flex justify-center items-center py-16">
+            <span className="loading loading-spinner loading-lg"></span>
+          </div>
+        ) : featuredStories.length > 0 ? (
           /* Featured Stories Gallery */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto mb-12">
             {featuredStories.map((story) => (

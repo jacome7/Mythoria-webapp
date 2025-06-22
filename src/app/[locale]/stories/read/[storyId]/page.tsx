@@ -108,7 +108,8 @@ export default function ReadStoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-base-100">      <SignedOut>
+    <div className="min-h-screen bg-base-100">
+      <SignedOut>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center space-y-6">
             <h1 className="text-4xl font-bold">{tCommon('Auth.accessRestricted')}</h1>
@@ -152,36 +153,37 @@ export default function ReadStoryPage() {
             </div>
           </div>
         ) : story ? (
-          <div className="space-y-6">            {/* Story Header */}
+          <div className="space-y-6">
+            {/* Story Header */}
             <div className="container mx-auto px-4 py-6">
               <div className="text-center space-y-4">
+                
                 {/* Navigation Buttons */}
                 <div className="flex flex-wrap justify-center gap-2">
                   <button className="btn btn-primary">
-                    <FiBook className="w-4 h-4 mr-2" />
-                    Reading
+                    <FiBook className="w-4 h-4 md:mr-2" />
+                    <span className="hidden md:inline">Reading</span>
                   </button>
                   <button
                     onClick={navigateToListen}
                     className="btn btn-outline btn-primary"
-                    disabled={!story?.audiobookUri || story.audiobookUri.length === 0}
                   >
-                    <FiVolume2 className="w-4 h-4 mr-2" />
-                    Listen
+                    <FiVolume2 className="w-4 h-4" />
+                    <span className="hidden md:inline md:ml-2">Listen</span>
                   </button>
                   <button
                     onClick={navigateToEdit}
                     className="btn btn-outline btn-primary"
                   >
-                    <FiEdit3 className="w-4 h-4 mr-2" />
-                    Edit
+                    <FiEdit3 className="w-4 h-4" />
+                    <span className="hidden md:inline md:ml-2">Edit</span>
                   </button>
                   <button
                     onClick={() => setShowShareModal(true)}
                     className="btn btn-outline btn-primary"
                   >
-                    <FiShare2 className="w-4 h-4 mr-2" />
-                    Share
+                    <FiShare2 className="w-4 h-4" />
+                    <span className="hidden md:inline md:ml-2">Share</span>
                   </button>
                 </div>
               </div>

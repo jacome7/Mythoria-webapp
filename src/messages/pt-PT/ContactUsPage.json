@@ -1,0 +1,30 @@
+{
+	"ContactUsPage": {
+		"title": "Entre em Contacto",
+		"intro": "Adoraríamos ouvir de si! Se tem questões, feedback ou precisa de assistência, a nossa equipa está aqui para tornar a sua experiência Mythoria mágica.",
+		"scrollTitle": "Em que podemos ajudá-lo?",
+		"scrollIntro": "Escolha das categorias abaixo para obter suporte mais rápido:",
+		"categories": {
+			"featureIdeas": "Ideias de Funcionalidades e Sugestões",
+			"reportBug": "Reportar um Bug",
+			"troubles": "Problemas Técnicos",
+			"delivery": "Impressão e Entrega",
+			"credits": "Créditos e Faturação",
+			"general": "Questões Gerais"
+		},
+		"bonus": {
+			"title": "Pequeno Bónus pelo Seu Feedback!",
+			"content": "Como agradecimento por dedicar tempo a contactar-nos, adicionaremos um pequeno bónus de créditos à sua conta quando respondermos a feedback ou sugestões genuínas.",
+			"disclaimer": "(Isto não se aplica a questões gerais ou pedidos de suporte, apenas feedback acionável que nos ajude a melhorar a Mythoria.)",
+			"closing": "A sua voz importa na formação do futuro da narrativa! ✨"
+		},
+		"join": {
+			"title": "Junte-se à Nossa Comunidade Crescente",
+			"intro": "A Mythoria está a expandir, e estamos sempre à procura de pessoas apaixonadas para se juntarem à nossa missão:",
+			"printing": "🖨️ Seja nosso parceiro como fornecedor de impressão local na sua área",
+			"country": "🌍 Ajude-nos a expandir a Mythoria para o seu país ou região",
+			"developers": "💻 Programadores talentosos interessados em narrativa alimentada por IA",
+			"call": "Interessado? Deixe-nos saber na sua mensagem!"
+		}
+	}
+}

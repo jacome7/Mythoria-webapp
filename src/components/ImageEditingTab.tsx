@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { FiImage, FiEdit3 } from 'react-icons/fi';
@@ -17,16 +17,39 @@ export default function ImageEditingTab({
   storyId, 
   storyImages, 
   onImageEditSuccess,  onImageUpdated
-}: ImageEditingTabProps) {  const t = useTranslations('imageEditingTab');
+}: ImageEditingTabProps) {
+  const t = useTranslations('common.imageEditingTab');
   const [selectedImage, setSelectedImage] = useState<StoryImage | null>(null);
   const [selectedVersion, setSelectedVersion] = useState<ImageVersion | null>(null);
   const [userRequest, setUserRequest] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [newImageGenerated, setNewImageGenerated] = useState<string | null>(null);
-  const [isReplacing, setIsReplacing] = useState(false);
-  const [isChangingImage, setIsChangingImage] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);  const [newImageGenerated, setNewImageGenerated] = useState<string | null>(null);
+  const [isReplacing, setIsReplacing] = useState(false);  const [isChangingImage, setIsChangingImage] = useState(false);
+  const [optimisticUpdate, setOptimisticUpdate] = useState<{
+    inProgress: boolean;
+    originalUrl: string;
+    newUrl: string;
+  } | null>(null);
+  // Clear optimistic update state when error changes (success or failure)
+  useEffect(() => {
+    if (error && optimisticUpdate) {
+      // Error occurred, clear optimistic update
+      setOptimisticUpdate(null);
+    }
+  }, [error, optimisticUpdate]);
+
+  // Add a timeout to clear optimistic update after 5 seconds (backup in case save completes without clearing)
+  useEffect(() => {
+    if (optimisticUpdate?.inProgress) {
+      const timeout = setTimeout(() => {
+        console.log('Clearing optimistic update after timeout - assuming save completed');
+        setOptimisticUpdate(null);
+      }, 5000);
+      
+      return () => clearTimeout(timeout);
+    }
+  }, [optimisticUpdate]);
   const handleImageSelect = (image: StoryImage) => {
     setSelectedImage(image);
     // Always select the most recent version by default (latestVersion is already the newest)
@@ -173,8 +196,7 @@ export default function ImageEditingTab({
     setIsChangingImage(true);
     setError(null);
 
-    try {
-      console.log('handleChangeImage called with:', {
+    try {      console.log('handleChangeImage called with:', {
         selectedImage: selectedImage.type,
         chapterNumber: selectedImage.chapterNumber,
         currentLatestVersion: selectedImage.latestVersion.url,
@@ -192,21 +214,30 @@ export default function ImageEditingTab({
         original: originalImageToReplace,
         new: selectedVersion.url,
         willActuallyChange: originalImageToReplace !== selectedVersion.url
-      });
-
-      if (originalImageToReplace === selectedVersion.url) {
+      });      if (originalImageToReplace === selectedVersion.url) {
         console.log('Selected version is already the current version, no change needed');
         setError(t('errors.sameVersion'));
         return;
       }
       
+      // Set optimistic update state
+      setOptimisticUpdate({
+        inProgress: true,
+        originalUrl: originalImageToReplace,
+        newUrl: selectedVersion.url
+      });
+      
       // Call the parent callback to handle the HTML replacement
       onImageEditSuccess(originalImageToReplace, selectedVersion.url);
       
-      console.log('Successfully called onImageEditSuccess');
+      console.log('Successfully called onImageEditSuccess with URLs:', {
+        originalUrl: originalImageToReplace,
+        newUrl: selectedVersion.url
+      });
       
     } catch (error) {      console.error('Error changing image:', error);
       setError(t('errors.changeImageFailed'));
+      setOptimisticUpdate(null); // Clear optimistic update on error
     } finally {
       setIsChangingImage(false);
     }
@@ -303,13 +334,18 @@ export default function ImageEditingTab({
 
           {/* Change Image Button - Show when a different version is selected */}
           {isVersionChanged && (
-            <div className="mt-4">
-              <button
+            <div className="mt-4">              <button
                 type="button"
                 onClick={handleChangeImage}
-                className="btn btn-warning w-full"
-                disabled={isChangingImage}
-              >                {isChangingImage ? (
+                className={`btn w-full ${optimisticUpdate?.inProgress ? 'btn-success' : 'btn-warning'}`}
+                disabled={isChangingImage || optimisticUpdate?.inProgress}
+              >
+                {optimisticUpdate?.inProgress ? (
+                  <>
+                    <span className="loading loading-spinner loading-xs"></span>
+                    Saving image change...
+                  </>
+                ) : isChangingImage ? (
                   <>
                     <span className="loading loading-spinner loading-xs"></span>
                     {t('versionSelection.changingImage')}

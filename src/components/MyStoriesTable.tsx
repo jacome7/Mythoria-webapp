@@ -10,7 +10,9 @@ import {
   FiShare2,
   FiChevronUp,
   FiChevronDown,
-  FiBook
+  FiBook,
+  FiPrinter,
+  FiMoreVertical
 } from 'react-icons/fi';
 import { trackStoryManagement } from '../lib/analytics';
 import ShareModal from './ShareModal';
@@ -30,21 +32,33 @@ type SortDirection = 'asc' | 'desc';
 
 export default function MyStoriesTable() {
   const t = useTranslations('MyStoriesPage');
-  const tShare = useTranslations('Share');
-  const locale = useLocale();const [stories, setStories] = useState<Story[]>([]);
+  const tShare = useTranslations('common.Share');
+  const locale = useLocale();  const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [storyToDelete, setStoryToDelete] = useState<Story | null>(null);
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [storyToShare, setStoryToShare] = useState<Story | null>(null);
+  const [openActionMenu, setOpenActionMenu] = useState<string | null>(null);
   
   // Sorting state
   const [sortField, setSortField] = useState<SortField>('updatedAt');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
-
   useEffect(() => {
     fetchStories();
   }, []);
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (openActionMenu && !(event.target as Element).closest('.relative')) {
+        setOpenActionMenu(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [openActionMenu]);
 
   const fetchStories = async () => {
     try {
@@ -89,6 +103,12 @@ export default function MyStoriesTable() {
     setStoryToShare(story);
     setShareModalOpen(true);
   };
+
+  const handlePrint = (story: Story) => {
+    // Navigate to the print order page
+    window.location.href = `/${locale}/stories/print/${story.storyId}`;
+  };
+
   // Filtering and sorting functions
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -245,8 +265,8 @@ export default function MyStoriesTable() {
                   <th className="text-right px-2 py-1 md:px-4 md:py-2">{t('table.actions')}</th>
                 </tr>
               </thead>
-              <tbody>{sortedStories.map((story) => (
-                  <tr key={story.storyId}>
+              <tbody>
+                {sortedStories.map((story) => (<tr key={story.storyId}>
                     <td className="px-2 py-1 md:px-4 md:py-2">{formatDate(story.createdAt)}</td>
                     <td className="font-medium px-2 py-1 md:px-4 md:py-2">
                       {story.status === 'published' ? (
@@ -291,7 +311,8 @@ export default function MyStoriesTable() {
                       </div>
                     </td>
                     <td className="pl-2 pr-1 py-1 md:px-4 md:py-2">
-                      <div className="flex justify-end gap-0.5">
+                      {/* Desktop Actions - Hidden on Mobile */}
+                      <div className="hidden md:flex justify-end gap-0.5">
                         {story.status === 'published' && (
                           <Link
                             href={`/${locale}/stories/${story.storyId}`}
@@ -299,7 +320,8 @@ export default function MyStoriesTable() {
                             title="Read Story"
                           >
                             <FiBook className="w-4 h-4" />
-                          </Link>                        )}
+                          </Link>
+                        )}
                         {story.status === 'writing' ? (
                           <button
                             className="btn btn-ghost btn-sm btn-disabled"
@@ -325,6 +347,24 @@ export default function MyStoriesTable() {
                             <FiShare2 className="w-4 h-4" />
                           </button>
                         )}
+                        {/* Print button - only for published stories */}
+                        {story.status === 'published' ? (
+                          <button
+                            className="btn btn-ghost btn-sm"
+                            onClick={() => handlePrint(story)}
+                            title={t('actions.print')}
+                          >
+                            <FiPrinter className="w-4 h-4" />
+                          </button>
+                        ) : (
+                          <button
+                            className="btn btn-ghost btn-sm btn-disabled"
+                            disabled
+                            title={t('actions.printNotAvailable')}
+                          >
+                            <FiPrinter className="w-4 h-4" />
+                          </button>
+                        )}
                         {story.status === 'writing' ? (
                           <button
                             className="btn btn-ghost btn-sm btn-disabled"
@@ -340,7 +380,8 @@ export default function MyStoriesTable() {
                             title={t('actions.edit')}
                           >
                             <FiEdit3 className="w-4 h-4" />
-                          </Link>                        ) : (
+                          </Link>
+                        ) : (
                           <Link
                             href={`/${locale}/stories/edit/${story.storyId}`}
                             className="btn btn-ghost btn-sm"
@@ -357,9 +398,108 @@ export default function MyStoriesTable() {
                           <FiTrash2 className="w-4 h-4" />
                         </button>
                       </div>
+
+                      {/* Mobile Actions - Dropdown Menu */}
+                      <div className="md:hidden relative">
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          onClick={() => setOpenActionMenu(openActionMenu === story.storyId ? null : story.storyId)}
+                        >
+                          <FiMoreVertical className="w-4 h-4" />
+                        </button>
+                        
+                        {openActionMenu === story.storyId && (
+                          <div className="absolute right-0 top-full mt-1 z-50 bg-base-100 border border-base-300 rounded-lg shadow-lg min-w-48">
+                            <div className="p-2 space-y-1">
+                              {story.status === 'published' && (
+                                <Link
+                                  href={`/${locale}/stories/${story.storyId}`}
+                                  className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
+                                  onClick={() => setOpenActionMenu(null)}
+                                >
+                                  <FiBook className="w-4 h-4" />
+                                  {t('actions.read')}
+                                </Link>
+                              )}
+                              
+                              {story.status === 'published' ? (
+                                <button
+                                  className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
+                                  onClick={() => {
+                                    handleShare(story);
+                                    setOpenActionMenu(null);
+                                  }}
+                                >
+                                  <FiShare2 className="w-4 h-4" />
+                                  {t('actions.share')}
+                                </button>
+                              ) : (
+                                <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
+                                  <FiShare2 className="w-4 h-4" />
+                                  {t('actions.share')} (Disabled)
+                                </div>
+                              )}
+                              
+                              {story.status === 'published' ? (
+                                <button
+                                  className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
+                                  onClick={() => {
+                                    handlePrint(story);
+                                    setOpenActionMenu(null);
+                                  }}
+                                >
+                                  <FiPrinter className="w-4 h-4" />
+                                  {t('actions.print')}
+                                </button>
+                              ) : (
+                                <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
+                                  <FiPrinter className="w-4 h-4" />
+                                  {t('actions.print')} (Not Available)
+                                </div>
+                              )}
+                              
+                              {story.status === 'writing' ? (
+                                <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
+                                  <FiEdit3 className="w-4 h-4" />
+                                  {t('actions.edit')} (Disabled)
+                                </div>
+                              ) : story.status === 'draft' ? (
+                                <Link
+                                  href={`/${locale}/tell-your-story/step-3?edit=${story.storyId}`}
+                                  className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
+                                  onClick={() => setOpenActionMenu(null)}
+                                >
+                                  <FiEdit3 className="w-4 h-4" />
+                                  {t('actions.edit')}
+                                </Link>
+                              ) : (
+                                <Link
+                                  href={`/${locale}/stories/edit/${story.storyId}`}
+                                  className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
+                                  onClick={() => setOpenActionMenu(null)}
+                                >
+                                  <FiEdit3 className="w-4 h-4" />
+                                  {t('actions.edit')}
+                                </Link>
+                              )}
+                              
+                              <div className="border-t border-base-300 my-1"></div>
+                              
+                              <button
+                                className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-error hover:text-error-content rounded-md w-full text-left text-error"
+                                onClick={() => {
+                                  handleDeleteClick(story);
+                                  setOpenActionMenu(null);
+                                }}
+                              >
+                                <FiTrash2 className="w-4 h-4" />
+                                {t('actions.delete')}
+                              </button>
+                            </div>
+                          </div>                        )}
+                      </div>
                     </td>
-                  </tr>
-                ))}
+                  </tr>))}
               </tbody>
             </table>
           </div>
@@ -385,7 +525,8 @@ export default function MyStoriesTable() {
               >
                 {t('deleteConfirm.confirm')}
               </button>
-            </div>          </div>
+            </div>
+          </div>
         </div>
       )}
 

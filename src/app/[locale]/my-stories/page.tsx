@@ -54,7 +54,8 @@ export default function MyStoriesPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">      <SignedOut>
+    <div className="container mx-auto px-4 py-8">
+      <SignedOut>
         <div className="text-center space-y-6">
           <h1 className="text-4xl font-bold">{t('signedOut.welcome')}</h1>
           <p className="text-lg text-gray-600">

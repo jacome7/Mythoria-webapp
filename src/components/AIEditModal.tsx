@@ -11,7 +11,9 @@ interface AIEditModalProps {
   onClose: () => void;
   storyId: string;
   storyContent: string;
-  onEditSuccess: (updatedHtml: string) => void;
+  onEditSuccess: (updatedHtml: string, autoSave?: boolean) => void;
+  onOptimisticUpdate: (updatedHtml: string) => void;
+  onRevertUpdate: (originalHtml: string) => void;
 }
 
 interface Chapter {
@@ -26,9 +28,11 @@ export default function AIEditModal({
   onClose, 
   storyId, 
   storyContent, 
-  onEditSuccess 
+  onEditSuccess,
+  onOptimisticUpdate,
+  onRevertUpdate
 }: AIEditModalProps) {
-  const t = useTranslations('aiEditModal');
+  const t = useTranslations('common.aiEditModal');
   const [activeTab, setActiveTab] = useState<EditTab>('text');
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [storyImages, setStoryImages] = useState<StoryImage[]>([]);
@@ -205,33 +209,57 @@ export default function AIEditModal({
   const handleImageUpdated = (updatedImages: StoryImage[]) => {
     setStoryImages(updatedImages);
     console.log('Images updated in AIEditModal:', updatedImages);
-  };
-  const handleImageEditSuccess = async (originalUrl: string, newUrl: string) => {
-    console.log('handleImageEditSuccess called with:', { originalUrl, newUrl });
+  };  const handleImageEditSuccess = async (originalUrl: string, newUrl: string) => {
+    console.log('handleImageEditSuccess called with optimistic updates:', { originalUrl, newUrl });
+    
+    // Store original content for potential revert
+    const originalContent = storyContent;
     
     try {
-      // Update the HTML content by replacing the old image URL with the new one
+      // Step 1: Optimistically update the UI immediately
       if (storyContent) {
-        console.log('Original story content length:', storyContent.length);
-        console.log('Looking for originalUrl in content:', originalUrl);
+        console.log('Starting optimistic update...');
         
-        // Check if the original URL exists in the content
+        let updatedHtml = storyContent;
         const urlExists = storyContent.includes(originalUrl);
         console.log('Original URL exists in content:', urlExists);
         
-        if (!urlExists) {
-          console.warn('Original URL not found in story content. This might indicate the URL format has changed.');
-          // Try to find any version of this image type in the content
-          const urlParts = originalUrl.split('/');
-          const filename = urlParts[urlParts.length - 1];
-          const baseFilename = filename.replace(/\.[^/.]+$/, ''); // Remove extension
-          console.log('Searching for variations of filename:', baseFilename);
+        if (urlExists) {
+          // Direct replacement if URL exists exactly
+          updatedHtml = storyContent.replace(
+            new RegExp(originalUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
+            newUrl
+          );
+          console.log('Direct URL replacement successful');
+        } else {
+          console.warn('Original URL not found in story content. Attempting fallback strategies...');
+          
+          // Fallback 1: Try to find and replace URLs in src attributes
+          const srcRegex = /src\s*=\s*["']([^"']*)['"]/gi;
+          updatedHtml = storyContent.replace(srcRegex, (match, url) => {
+            if (url === originalUrl || url.includes(originalUrl.split('/').pop() || '')) {
+              console.log('Found URL in src attribute, replacing:', url, '→', newUrl);
+              return match.replace(url, newUrl);
+            }
+            return match;
+          });
+          
+          // Fallback 2: If still no changes, try filename-based replacement
+          if (updatedHtml === storyContent) {
+            const originalFilename = originalUrl.split('/').pop();
+            const newFilename = newUrl.split('/').pop();
+            
+            if (originalFilename && newFilename && originalFilename !== newFilename) {
+              // Try replacing just the filename part in all URLs
+              const filenameRegex = new RegExp(
+                originalFilename.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 
+                'g'
+              );
+              updatedHtml = storyContent.replace(filenameRegex, newFilename);
+              console.log('Attempted filename-based replacement:', originalFilename, '→', newFilename);
+            }
+          }
         }
-        
-        const updatedHtml = storyContent.replace(
-          new RegExp(originalUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
-          newUrl
-        );
         
         console.log('Replacement result:', {
           originalLength: storyContent.length,
@@ -241,23 +269,65 @@ export default function AIEditModal({
         });
         
         if (updatedHtml !== storyContent) {
-          console.log('HTML content updated, calling onEditSuccess');
-          onEditSuccess(updatedHtml);
+          console.log('Optimistic update: immediately updating UI');
+          onOptimisticUpdate(updatedHtml);
+          
+          // Step 2: Attempt to save to backend
+          console.log('Attempting to save changes to backend...');
+          
+          try {
+            const saveResponse = await fetch(`/api/books/${storyId}/save`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                html: updatedHtml,
+                source: 'image_change'
+              }),
+            });
+            
+            if (saveResponse.ok) {
+              console.log('Backend save successful - keeping optimistic update');
+              // The UI is already updated, so no need to call onEditSuccess again
+            } else {
+              const error = await saveResponse.json();
+              throw new Error(error.error || 'Failed to save');
+            }
+            
+          } catch (saveError) {
+            console.error('Backend save failed, reverting optimistic update:', saveError);
+            
+            // Step 3: Revert the optimistic update on save failure
+            onRevertUpdate(originalContent);
+            
+            // Show error message
+            setError('Failed to save image change. The change has been reverted.');
+            return;
+          }
+          
         } else {
-          console.warn('No changes made to HTML content - URL might not have been found');
+          console.warn('No changes made to HTML content - URL replacement failed');
+          setError('Failed to update image in story. Please try again.');
+          return;
         }
       } else {
         console.warn('No story content available to update');
+        setError('No story content available to update.');
+        return;
       }
 
-      // Refresh the story data to get updated media links
+      // Step 4: Refresh the story data to get updated media links
       console.log('Refreshing story data...');
       await refreshStoryData();
       console.log('Story data refresh completed');
       
     } catch (error) {
-      console.error('Error updating story with new image:', error);
-      setError('Failed to update story with new image. Please refresh the page.');
+      console.error('Error in optimistic image update:', error);
+      
+      // Revert optimistic update on any error
+      onRevertUpdate(originalContent);
+      setError('Failed to update image. Please try again.');
     }
   };
   const refreshStoryData = async () => {

@@ -154,7 +154,8 @@ export default function EditStoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-base-100">      <SignedOut>
+    <div className="min-h-screen bg-base-100">
+      <SignedOut>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center space-y-6">
             <h1 className="text-4xl font-bold">{tCommon('Auth.accessRestricted')}</h1>
@@ -197,39 +198,42 @@ export default function EditStoryPage() {
             </div>
           </div>
         ) : story ? (
-          <div className="space-y-6">            {/* Story Header */}
+          <div className="space-y-6">
+            {/* Story Header */}
             <div className="container mx-auto px-4 py-6">
               <div className="text-center space-y-4">
-                {/* Navigation Buttons */}
-                <div className="flex flex-wrap justify-center gap-2">                  <button
+                {/* Navigation Buttons */}                <div className="flex flex-wrap justify-center gap-2">
+                  <button
                     onClick={navigateToRead}
                     className="btn btn-outline btn-primary"
                   >
-                    <FiBook className="w-4 h-4 mr-2" />
-                    {tCommon('Actions.read')}
+                    <FiBook className="w-4 h-4" />
+                    <span className="hidden md:inline md:ml-2">{tCommon('Actions.read')}</span>
                   </button>
                   <button
                     onClick={navigateToListen}
                     className="btn btn-outline btn-primary"
-                    disabled={!story?.audiobookUri || story.audiobookUri.length === 0}
                   >
-                    <FiVolume2 className="w-4 h-4 mr-2" />
-                    {tCommon('Actions.listen')}
+                    <FiVolume2 className="w-4 h-4" />
+                    <span className="hidden md:inline md:ml-2">{tCommon('Actions.listen')}</span>
                   </button>
                   <button className="btn btn-primary">
-                    <FiEdit3 className="w-4 h-4 mr-2" />
-                    {tCommon('Actions.editing')}
+                    <FiEdit3 className="w-4 h-4 md:mr-2" />
+                    <span className="hidden md:inline">{tCommon('Actions.editing')}</span>
                   </button>
                   <button
                     onClick={() => setShowShareModal(true)}
                     className="btn btn-outline btn-primary"
                   >
-                    <FiShare2 className="w-4 h-4 mr-2" />
-                    {tCommon('Actions.share')}
+                    <FiShare2 className="w-4 h-4" />
+                    <span className="hidden md:inline md:ml-2">{tCommon('Actions.share')}</span>
                   </button>
                 </div>
               </div>
-            </div>            {/* Edit Mode */}            <BookEditor
+            </div>
+            
+            {/* Edit Mode */}
+            <BookEditor
               initialContent={storyContent || ''}
               onSave={handleSaveEdit}
               onCancel={handleCancelEdit}

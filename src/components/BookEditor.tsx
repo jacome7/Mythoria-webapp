@@ -14,9 +14,6 @@ import {
   FiBold,
   FiItalic,
   FiUnderline,
-  FiAlignLeft,
-  FiAlignCenter,
-  FiAlignRight,
   FiSave,
   FiSearch,
   FiRotateCcw,
@@ -318,12 +315,12 @@ interface FindReplaceState {
 }
 
 export default function BookEditor({ initialContent, onSave, onCancel, storyMetadata, storyId, onAIEdit }: BookEditorProps) {
-  const t = useTranslations('bookEditor');
-  const [isSaving, setIsSaving] = useState(false);
-  const [hasChanges, setHasChanges] = useState(false);
-  const [isHtmlView, setIsHtmlView] = useState(false);
+  const t = useTranslations('common.bookEditor');
+  const [isSaving, setIsSaving] = useState(false);  const [hasChanges, setHasChanges] = useState(false);  const [isHtmlView, setIsHtmlView] = useState(false);
   const [htmlContent, setHtmlContent] = useState(initialContent);
   const [showAIEditModal, setShowAIEditModal] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [contentHistory, setContentHistory] = useState<string[]>([initialContent]); // For optimistic updates
   const toast = useToast();
   const [findReplace, setFindReplace] = useState<FindReplaceState>({
     isOpen: false,
@@ -527,9 +524,8 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleSave]);
-
   // Handle AI edit success
-  const handleAIEditSuccess = useCallback((updatedHtml: string) => {
+  const handleAIEditSuccess = useCallback(async (updatedHtml: string, autoSave: boolean = false) => {
     // Update the editor content with the AI-edited HTML
     if (isHtmlView) {
       setHtmlContent(updatedHtml);
@@ -538,13 +534,70 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
     }
 
     setHasChanges(true);
-    toast.success('Story updated with AI improvements! Review the changes and save when ready.');
 
-    // Call the optional callback for parent component
+    // Auto-save for image changes, manual save for text edits
+    if (autoSave) {
+      try {
+        await onSave(updatedHtml);
+        setHasChanges(false);
+        toast.success('Image updated and saved successfully!');
+        
+        // Track story editing
+        if (storyId) {
+          trackStoryManagement.edited({
+            story_id: storyId,
+            story_title: storyMetadata?.title,
+            target_audience: storyMetadata?.targetAudience,
+            graphical_style: storyMetadata?.graphicalStyle,
+            edit_mode: 'image_change'
+          });
+        }
+      } catch (error) {
+        console.error('Failed to auto-save after image change:', error);
+        toast.error('Image updated but failed to save. Please save manually.');
+      }
+    } else {
+      toast.success('Story updated with AI improvements! Review the changes and save when ready.');
+    }    // Call the optional callback for parent component
     if (onAIEdit) {
       onAIEdit(updatedHtml);
     }
-  }, [editor, isHtmlView, onAIEdit, toast]);
+  }, [editor, isHtmlView, onAIEdit, onSave, toast, storyId, storyMetadata]);
+
+  // Handle optimistic updates - immediately update UI without waiting for save
+  const handleOptimisticUpdate = useCallback((updatedHtml: string) => {
+    console.log('Applying optimistic update to editor');
+    
+    // Store current content for potential revert
+    const currentContent = isHtmlView ? htmlContent : (editor?.getHTML() || '');
+    setContentHistory(prev => [...prev, currentContent]);
+    
+    // Update the editor content immediately
+    if (isHtmlView) {
+      setHtmlContent(updatedHtml);
+    } else if (editor) {
+      editor.commands.setContent(updatedHtml);
+    }    setHasChanges(true);
+    toast.success('Image updated! Saving...');
+  }, [editor, isHtmlView, htmlContent, toast]);
+
+  // Handle reverting optimistic updates on save failure
+  const handleRevertUpdate = useCallback((originalHtml: string) => {
+    console.log('Reverting optimistic update');
+    
+    // Revert to the original content
+    if (isHtmlView) {
+      setHtmlContent(originalHtml);
+    } else if (editor) {
+      editor.commands.setContent(originalHtml);
+    }
+
+    // Remove the failed update from history
+    setContentHistory(prev => prev.slice(0, -1));
+    
+    toast.error('Failed to save image change. Reverted to previous version.');
+  }, [editor, isHtmlView, toast]);
+
   if (!editor) {
     return (
       <div className="flex justify-center items-center min-h-96">
@@ -581,52 +634,7 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
               disabled={isHtmlView || !editor}
               title={t('toolbar.tooltips.strikethrough')}
             >
-              <FiUnderline />
-            </button>
-          </div>          {/* Headings */}
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-              className={`btn btn-sm ${editor.isActive('mythoriaHeading', { level: 1 }) ? 'btn-primary' : 'btn-ghost'}`}
-            >
-              H1
-            </button>
-            <button
-              onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-              className={`btn btn-sm ${editor.isActive('mythoriaHeading', { level: 2 }) ? 'btn-primary' : 'btn-ghost'}`}
-            >
-              H2
-            </button>
-            <button
-              onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-              className={`btn btn-sm ${editor.isActive('mythoriaHeading', { level: 3 }) ? 'btn-primary' : 'btn-ghost'}`}
-            >
-              H3
-            </button>
-          </div>
-
-          {/* Alignment */}
-          <div className="flex items-center gap-1">            <button
-              onClick={() => editor.chain().focus().setTextAlign('left').run()}
-              className={`btn btn-sm ${editor.isActive({ textAlign: 'left' }) ? 'btn-primary' : 'btn-ghost'}`}
-              title={t('toolbar.tooltips.alignLeft')}
-            >
-              <FiAlignLeft />
-            </button>
-            <button
-              onClick={() => editor.chain().focus().setTextAlign('center').run()}
-              className={`btn btn-sm ${editor.isActive({ textAlign: 'center' }) ? 'btn-primary' : 'btn-ghost'}`}
-              title={t('toolbar.tooltips.alignCenter')}
-            >
-              <FiAlignCenter />
-            </button>
-            <button
-              onClick={() => editor.chain().focus().setTextAlign('right').run()}
-              className={`btn btn-sm ${editor.isActive({ textAlign: 'right' }) ? 'btn-primary' : 'btn-ghost'}`}
-              title={t('toolbar.tooltips.alignRight')}
-            >
-              <FiAlignRight />
-            </button>
+              <FiUnderline />            </button>
           </div>
 
           {/* Undo/Redo */}
@@ -798,6 +806,8 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
         storyId={storyId}
         storyContent={isHtmlView ? htmlContent : (editor?.getHTML() || '')}
         onEditSuccess={handleAIEditSuccess}
+        onOptimisticUpdate={handleOptimisticUpdate}
+        onRevertUpdate={handleRevertUpdate}
       />
       )}
 

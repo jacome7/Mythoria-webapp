@@ -13,6 +13,9 @@ export interface Character {
 
 export interface StorySessionData {
   storyId: string;
+  step1Data?: {
+    dedicationMessage: string;
+  };
   step2Data?: {
     text: string;
     hasImage: boolean;
@@ -38,6 +41,31 @@ export function getCurrentStoryId(): string | null {
 export function setCurrentStoryId(storyId: string): void {
   if (typeof window === 'undefined') return;
   localStorage.setItem('currentStoryId', storyId);
+}
+
+/**
+ * Set step 1 data in localStorage
+ */
+export function setStep1Data(data: StorySessionData['step1Data']): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem('step1Data', JSON.stringify(data));
+}
+
+/**
+ * Get step 1 data from localStorage
+ */
+export function getStep1Data(): StorySessionData['step1Data'] | null {
+  if (typeof window === 'undefined') return null;
+  
+  const data = localStorage.getItem('step1Data');
+  if (!data) return null;
+  
+  try {
+    return JSON.parse(data);
+  } catch (error) {
+    console.error('Error parsing step1Data:', error);
+    return null;
+  }
 }
 
 /**
@@ -137,6 +165,7 @@ export function clearStorySession(): void {
   if (typeof window === 'undefined') return;
   
   localStorage.removeItem('currentStoryId');
+  localStorage.removeItem('step1Data');
   localStorage.removeItem('step2Data');
   localStorage.removeItem('step3Data');
   localStorage.removeItem('isEditMode');

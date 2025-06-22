@@ -291,22 +291,33 @@ function Step3Page() {
       throw error;
     }
   };
-
   const handleDeleteCharacter = async (characterId: string) => {
+    if (!currentStoryId) {
+      console.error('No current story ID available');
+      return;
+    }
+
     try {
-      const response = await fetch(`/api/characters/${characterId}`, {
+      const response = await fetch(`/api/stories/${currentStoryId}/characters/${characterId}`, {
         method: 'DELETE',
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete character');
+        throw new Error(errorData.error || 'Failed to remove character from story');
       }
 
+      // Remove character from the current story's character list
       setCharacters(prev => prev.filter(c => c.characterId !== characterId));
 
+      // Add the character back to available characters list (since it's no longer associated with this story)
+      const removedCharacter = characters.find(c => c.characterId === characterId);
+      if (removedCharacter) {
+        setAvailableCharacters(prev => [...prev, removedCharacter]);
+      }
+
     } catch (error) {
-      console.error('Error deleting character:', error);
+      console.error('Error removing character from story:', error);
       throw error;
     }
   };
@@ -321,15 +332,11 @@ function Step3Page() {
         step: 3,
         story_id: storyId || undefined,
         character_count: characters.length,
-        edit_mode: isInEditMode
-      });
-
-      if (isInEditMode) {
-        // In edit mode, save the story and go back to my-stories
-        // For now, we'll just clear edit mode and navigate
-        // You might want to add an API call here to save any changes
-        setEditMode(false);
-        router.push('/my-stories');
+        edit_mode: isInEditMode      });
+      
+      if (isInEditMode && editStoryId) {
+        // In edit mode, pass the edit parameter to the next step
+        router.push(`/tell-your-story/step-4?edit=${editStoryId}`);
       } else {
         // Normal flow - navigate to step 4
         router.push('/tell-your-story/step-4');
@@ -350,10 +357,13 @@ function Step3Page() {
       </SignedOut>
 
       <SignedIn>
-        <div className="container mx-auto px-4 py-8">          <div className="max-w-4xl mx-auto">
-          {/* Progress indicator */}            {(() => {
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+
+          {/* Progress indicator */}
+          {(() => {
             const currentStep = 3;
-            const totalSteps = 6;
+            const totalSteps = 5;
             return (
               <>
                 {/* Mobile Progress Indicator */}
@@ -376,12 +386,13 @@ function Step3Page() {
                     <li className="step step-primary" data-content="3"></li>
                     <li className="step" data-content="4"></li>
                     <li className="step" data-content="5"></li>
-                    <li className="step" data-content="6"></li>
                   </ul>
                 </div>
               </>
             );
-          })()}            {/* Step content */}
+          })()}
+          
+          {/* Step content */}
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
               <div className="flex items-center justify-between mb-6">
@@ -424,7 +435,9 @@ function Step3Page() {
                       onDelete={async () => { }}
                       onCancel={() => setShowCreateForm(false)}
                     />
-                  )}                    {/* Add Character Button/Options */}
+                  )}
+                  
+                  {/* Add Character Button/Options */}
                   {!showCreateForm && (
                     <div className="text-center">
                       {!showAddOptions ? (
@@ -495,7 +508,9 @@ function Step3Page() {
                         </div>
                       )}
                     </div>
-                  )}                    {/* Guidance Message */}
+                  )}
+                  
+                  {/* Guidance Message */}
                   {characters.length === 0 && !showCreateForm && !showAddOptions && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
                       <div className="text-4xl mb-4">🎭</div>
@@ -519,9 +534,11 @@ function Step3Page() {
                     </div>
                   )}
                 </div>
-              )}                <StepNavigation
+              )}
+              
+              <StepNavigation
                 currentStep={3}
-                totalSteps={6}
+                totalSteps={5}
                 nextHref={null} // We'll handle navigation programmatically
                 prevHref={isInEditMode ? "/my-stories" : null} // In edit mode, allow going back to my-stories
                 nextDisabled={isNavigating}
@@ -530,7 +547,7 @@ function Step3Page() {
                   isNavigating
                     ? t('continuing')
                     : isInEditMode
-                      ? 'Save Changes'
+                      ? t('nextChapter')
                       : t('nextChapter')
                 }
                 prevLabel={isInEditMode ? 'Back to My Stories' : undefined}

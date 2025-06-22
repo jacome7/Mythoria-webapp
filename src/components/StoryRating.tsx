@@ -10,7 +10,7 @@ interface StoryRatingProps {
 }
 
 export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingProps) {
-  const t = useTranslations('storyRating');
+  const t = useTranslations('common.storyRating');
   const [rating, setRating] = useState<number>(0);
   const [hoveredRating, setHoveredRating] = useState<number>(0);
   const [feedback, setFeedback] = useState<string>('');

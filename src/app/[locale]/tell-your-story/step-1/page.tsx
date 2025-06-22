@@ -6,6 +6,7 @@ import ClientAuthWrapper from '../../../../components/ClientAuthWrapper';
 import { useState, useEffect, useCallback } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { trackStoryCreation } from '../../../../lib/analytics';
+import { setStep1Data, getStep1Data } from '../../../../lib/story-session';
 
 interface AuthorData {
   authorId: string;
@@ -24,21 +25,22 @@ export default function Step1Page() {
   const [, setAuthorData] = useState<AuthorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   // Form data
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [mobilePhone, setMobilePhone] = useState('');
-
+  const [dedicationMessage, setDedicationMessage] = useState('');
   // Original values to track changes
   const [originalValues, setOriginalValues] = useState<{
     displayName: string;
     email: string;
     mobilePhone: string;
+    dedicationMessage: string;
   }>({
     displayName: '',
     email: '',
-    mobilePhone: ''
+    mobilePhone: '',
+    dedicationMessage: ''
   });
   // Flag to track if any field has been edited
   const [hasChanges, setHasChanges] = useState(false);
@@ -55,22 +57,26 @@ export default function Step1Page() {
       }
 
       const data: AuthorData = await response.json();
-      setAuthorData(data);
-
-      // Pre-populate form fields
+      setAuthorData(data);      // Pre-populate form fields
       const initialDisplayName = data.displayName || '';
       const initialEmail = data.email || '';
       const initialMobilePhone = data.mobilePhone || '';
 
+      // Load dedication message from session storage if available
+      const step1Data = getStep1Data();
+      const initialDedicationMessage = step1Data?.dedicationMessage || '';
+
       setDisplayName(initialDisplayName);
       setEmail(initialEmail);
       setMobilePhone(initialMobilePhone);
+      setDedicationMessage(initialDedicationMessage);
 
       // Store original values for change tracking
       setOriginalValues({
         displayName: initialDisplayName,
         email: initialEmail,
-        mobilePhone: initialMobilePhone
+        mobilePhone: initialMobilePhone,
+        dedicationMessage: initialDedicationMessage
       });
 
       // Reset changes flag
@@ -92,13 +98,13 @@ export default function Step1Page() {
       user_profile_exists: true // We can set this based on response later
     });
   }, [fetchAuthorData]);
-
   // Function to check if current values differ from original values
-  const checkForChanges = (currentDisplayName: string, currentEmail: string, currentMobilePhone: string) => {
+  const checkForChanges = (currentDisplayName: string, currentEmail: string, currentMobilePhone: string, currentDedicationMessage: string) => {
     const hasChanged =
       currentDisplayName !== originalValues.displayName ||
       currentEmail !== originalValues.email ||
-      currentMobilePhone !== originalValues.mobilePhone;
+      currentMobilePhone !== originalValues.mobilePhone ||
+      currentDedicationMessage !== originalValues.dedicationMessage;
 
     setHasChanges(hasChanged);
   };
@@ -115,14 +121,19 @@ export default function Step1Page() {
       // Only update profile if there are changes
       if (hasChanges) {
         // Here you would typically save the data to your database
-        // For now, we'll just simulate a successful save
-
-        // Update original values after successful save
+        // For now, we'll just simulate a successful save        // Update original values after successful save
         setOriginalValues({
           displayName,
           email,
-          mobilePhone
-        }); setHasChanges(false);
+          mobilePhone,
+          dedicationMessage
+        });
+        setHasChanges(false);
+
+        // Save step 1 data to session storage
+        setStep1Data({
+          dedicationMessage
+        });
       }
 
       // Track step 1 completion
@@ -168,9 +179,8 @@ export default function Step1Page() {
         }
       >
         <div className="max-w-4xl mx-auto">
-          {/* Progress indicator */}            {(() => {
-            const currentStep = 1;
-            const totalSteps = 6;
+          {/* Progress indicator */}            {(() => {              const currentStep = 1;
+              const totalSteps = 5;
             return (
               <>
                 {/* Mobile Progress Indicator */}
@@ -186,14 +196,12 @@ export default function Step1Page() {
                 </div>
 
                 {/* Desktop Progress Indicator */}
-                <div className="hidden md:block mb-8">
-                  <ul className="steps steps-horizontal w-full">
+                <div className="hidden md:block mb-8">                  <ul className="steps steps-horizontal w-full">
                     <li className="step step-primary" data-content="1"></li>
                     <li className="step" data-content="2"></li>
                     <li className="step" data-content="3"></li>
                     <li className="step" data-content="4"></li>
                     <li className="step" data-content="5"></li>
-                    <li className="step" data-content="6"></li>
                   </ul>
                 </div>
               </>
@@ -234,7 +242,7 @@ export default function Step1Page() {
                         value={displayName}
                         onChange={(e) => {
                           setDisplayName(e.target.value);
-                          checkForChanges(e.target.value, email, mobilePhone);
+                          checkForChanges(e.target.value, email, mobilePhone, dedicationMessage);
                         }}
                         placeholder={t('fields.fullName')}
                         className="input input-bordered w-full"
@@ -254,7 +262,7 @@ export default function Step1Page() {
                         value={email}
                         onChange={(e) => {
                           setEmail(e.target.value);
-                          checkForChanges(displayName, e.target.value, mobilePhone);
+                          checkForChanges(displayName, e.target.value, mobilePhone, dedicationMessage);
                         }}
                         placeholder={t('fields.email')}
                         className="input input-bordered w-full"
@@ -274,26 +282,47 @@ export default function Step1Page() {
                         value={mobilePhone}
                         onChange={(e) => {
                           setMobilePhone(e.target.value);
-                          checkForChanges(displayName, email, e.target.value);
+                          checkForChanges(displayName, email, e.target.value, dedicationMessage);
                         }}
                         placeholder={t('fields.mobile')}
                         className="input input-bordered w-full"
+                      />                      <label className="label">
+                        <span className="label-text-alt">{t('fields.mobileHelp')}</span>
+                      </label>
+                    </div>
+                    
+                    {/* Dedication Message Field */}
+                    <div className="form-control md:col-span-2">
+                      <label className="label">
+                        <span className="label-text font-semibold">{t('fields.dedication')}</span>
+                        <span className="label-text-alt">{t('fields.optional')}</span>
+                      </label>
+                      <textarea
+                        value={dedicationMessage}
+                        onChange={(e) => {
+                          setDedicationMessage(e.target.value);
+                          checkForChanges(displayName, email, mobilePhone, e.target.value);
+                        }}
+                        placeholder={t('fields.dedicationPlaceholder')}
+                        className="textarea textarea-bordered h-24 w-full"
+                        rows={4}
                       />
                       <label className="label">
-                        <span className="label-text-alt">{t('fields.mobileHelp')}</span>
-                      </label>                    </div>                  </div>
+                        <span className="label-text-alt">{t('fields.dedicationHelp')}</span>
+                      </label>
+                    </div></div>
                 </div>
               )}
-
               <StepNavigation
                 currentStep={1}
-                totalSteps={7}
+                totalSteps={5}
                 nextHref="/tell-your-story/step-2"
                 prevHref={null}
                 onNext={handleNext}
                 nextDisabled={loading || !displayName || !email}
               />
-            </div>          </div>
+            </div>
+          </div>
         </div>
       </ClientAuthWrapper>
     </div>

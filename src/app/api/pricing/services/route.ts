@@ -1,8 +1,29 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { pricingService } from '@/db/services';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
+        const { searchParams } = new URL(request.url);
+        const serviceCode = searchParams.get('serviceCode');
+
+        if (serviceCode) {
+            // Get pricing for specific service code
+            const pricing = await pricingService.getPricingByServiceCode(serviceCode);
+            
+            if (!pricing) {
+                return NextResponse.json({
+                    success: false,
+                    error: `Pricing not found for service code: ${serviceCode}`
+                }, { status: 404 });
+            }
+
+            return NextResponse.json({
+                success: true,
+                pricing
+            });
+        }
+
+        // Get all active pricing
         const activePricing = await pricingService.getActivePricing();
 
         // Transform the database pricing into the format expected by the pricing page
