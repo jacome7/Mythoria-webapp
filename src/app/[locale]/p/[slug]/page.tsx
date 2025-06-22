@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiLoader, FiAlertCircle, FiUser, FiCalendar, FiTag } from 'react-icons/fi';
+import { FiLoader, FiAlertCircle, FiUser, FiCalendar, FiTag, FiImage, FiEye, FiPrinter } from 'react-icons/fi';
 import StoryReader from '@/components/StoryReader';
 
 interface PublicStoryData {
@@ -189,9 +189,19 @@ export default function PublicStoryPage() {
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="container mx-auto px-4 py-6">
-          <div className="max-w-4xl mx-auto">            <div className="flex items-center justify-between mb-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center justify-between mb-4">
               <h1 className="text-3xl font-bold text-gray-900">{story.title}</h1>
-              <span className="badge badge-success">{t('labels.publicStory')}</span>
+              <div className="flex items-center gap-3">
+                <span className="badge badge-success">{t('labels.publicStory')}</span>
+                <a
+                  href={`/${locale}/stories/print/${story.storyId}`}
+                  className="btn btn-primary btn-sm flex items-center gap-2"
+                >
+                  <FiPrinter />
+                  {t('actions.orderPrint')}
+                </a>
+              </div>
             </div>
             
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
@@ -199,16 +209,19 @@ export default function PublicStoryPage() {
                 <FiUser />
                 <span>{t('labels.by')} {story.author.displayName}</span>
               </div>
-              
-              <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1">
                 <FiCalendar />
-                <span>{new Date(story.createdAt).toLocaleDateString()}</span>
-              </div>
-              
+                <span>{new Date(story.createdAt).toLocaleDateString(locale)}</span>
+              </div>              
               {story.targetAudience && (
                 <div className="flex items-center gap-1">
                   <FiTag />
                   <span>{story.targetAudience.replace('_', ' ')}</span>
+                </div>
+              )}              {story.graphicalStyle && (
+                <div className="flex items-center gap-1">
+                  <FiEye />
+                  <span className="capitalize">{story.graphicalStyle.replace('_', ' ')}</span>
                 </div>
               )}
               
@@ -220,8 +233,8 @@ export default function PublicStoryPage() {
               )}
             </div>            {(story.synopsis || story.plotDescription) && (
               <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                <h3 className="font-medium text-gray-900 mb-2">{t('labels.synopsis')}</h3>
-                <p className="text-gray-700 leading-relaxed">
+                <h3 className="font-bold text-gray-900 mb-2">{t('labels.synopsis')}</h3>
+                <p className="text-gray-700 leading-relaxed text-sm">
                   {story.synopsis || story.plotDescription}
                 </p>
               </div>
@@ -256,7 +269,8 @@ export default function PublicStoryPage() {
 
       {/* Footer */}
       <div className="bg-white border-t mt-12">
-        <div className="container mx-auto px-4 py-6">          <div className="max-w-4xl mx-auto text-center text-sm text-gray-600">
+        <div className="container mx-auto px-4 py-6">
+          <div className="max-w-4xl mx-auto text-center text-sm text-gray-600">
             <p>
               {t('footer.createdWith')}{' '}
               <a 

@@ -332,6 +332,9 @@
     "footer": {
       "createdWith": "This story was created with",
       "cta": "Create your own magical stories today!"
+    },
+    "actions": {
+      "orderPrint": "Order printed copy"
     }
   },
   "SharedStoryPage": {
@@ -381,10 +384,13 @@
     },
     "investors": {
       "button": "Open the Scroll 📜"
-    }  },
-  "PrintOrder": {
+    }  },  "PrintOrder": {
     "title": "Order Printed Copy",
     "backToStories": "Back to My Stories",
+    "signInToContinue": "Sign in to continue",
+    "signInOrCreateAccount": "You need to sign in or create an account to place a print order.",
+    "signIn": "Sign In",
+    "createAccount": "Create Account",
     "steps": {
       "story": "Story",
       "address": "Shipping Address",

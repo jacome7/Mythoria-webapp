@@ -332,6 +332,9 @@
     "footer": {
       "createdWith": "Esta história foi criada com",
       "cta": "Crie as suas próprias histórias mágicas hoje!"
+    },
+    "actions": {
+      "orderPrint": "Encomendar Impressão"
     }
   },
   "SharedStoryPage": {
@@ -381,17 +384,21 @@
     },    "investors": {
       "button": "Abrir o Pergaminho 📜"
     }
-  },
-  "PrintOrder": {
+  },  "PrintOrder": {
     "title": "Encomendar Cópia Impressa",
     "backToStories": "Voltar às Minhas Histórias",
+    "signInToContinue": "Inicie sessão para continuar",
+    "signInOrCreateAccount": "Precisa de iniciar sessão ou criar uma conta para fazer um pedido de impressão.",
+    "signIn": "Iniciar Sessão",
+    "createAccount": "Criar Conta",
     "steps": {
       "story": "História",
       "address": "Morada de Envio",
       "provider": "Fornecedor de Impressão",
       "payment": "Pagamento",
       "confirmation": "Confirmação"
-    },    "errors": {
+    },
+    "errors": {
       "storyNotFound": "História não encontrada",
       "storyNotPublished": "Apenas histórias publicadas podem ser impressas",
       "pdfNotAvailable": "PDF não disponível para esta história",
