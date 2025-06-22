@@ -9,7 +9,8 @@
         "note": "Once you're signed in, you'll be ready to create magical stories that would make even Merlin jealous! 🧙‍♂️"
       },
       "heading": "Chapter 1 - The Author",
-      "intro": "Welcome, storyteller! Before we dive into your magical adventure, let's make sure we have your correct information. This helps us personalize your experience and keep you updated on your story's progress.",      "fields": {
+      "intro": "Welcome, storyteller! Before we dive into your magical adventure, let's make sure we have your correct information. This helps us personalize your experience and keep you updated on your story's progress.",
+      "fields": {
         "fullName": "Full Name *",
         "fullNameHelp": "This is how you'll be credited as the author",
         "email": "Email Address *",
@@ -28,7 +29,8 @@
         "fetchFailed": "Failed to fetch user data",
         "loadFailed": "Failed to load user information. Please try again."
       }
-    },    "step2": {
+    },
+    "step2": {
       "heading": "Chapter 2 - The Story",
       "intro": "You can create your story by drawing it, recording it, or simply writing it down.",
       "storyLanguageLabel": "Story Language",
@@ -37,7 +39,7 @@
       "textPlaceholder": "Once upon a time... Let your imagination run wild! Share your adventure, your dreams, or any story that's close to your heart.",
       "textHelp": "Write as much or as little as you'd like. You can always edit this later!",
       "tabWrite": "Write",
-      "tabImage": "Image", 
+      "tabImage": "Image",
       "tabRecord": "Record",
       "takePhoto": "Take Photo",
       "uploadImage": "Upload Image",
@@ -45,15 +47,18 @@
       "uploadAudio": "Upload Audio File",
       "imageHelp": "Draw your story, take a photo of it, or upload an existing image that tells your tale.",
       "audioHelp": "Record your story directly or upload an audio file. Perfect for those who prefer to speak their tales!",
-      "recordingHelp": "Tell your story! Speak clearly into your microphone.",      "reassurance": "If you've written text or uploaded an image above, our AI will automatically extract characters, settings, and themes. Otherwise, the next steps will guide you through creating your story step by step.",
+      "recordingHelp": "Tell your story! Speak clearly into your microphone.",
+      "reassurance": "If you've written text or uploaded an image above, our AI will automatically extract characters, settings, and themes. Otherwise, the next steps will guide you through creating your story step by step.",
       "processing": "Processing with AI...",
       "nextChapter": "Next Chapter",
-      "next": "Next",      "loadingModal": {
+      "next": "Next",
+      "loadingModal": {
         "title": "✨ Creating Your Story",
         "message": "Our magical Oompa Loompas are hard at work preparing your story! This might take a moment...",
         "pleaseWait": "Please wait while we work our magic! ✨"
       }
-    },    "step3": {
+    },
+    "step3": {
       "heading": "Chapter 3 - The Characters",
       "intro": "Who are the heroes, friends, and magical creatures in your story? Create characters that will bring your adventure to life!",
       "addCharacter": "➕ Add Character",
@@ -81,7 +86,8 @@
         "audience": "Target Audience",
         "audienceHelp": "Who is this story written for?",
         "novelStyle": "Novel Style",
-        "novelStyleHelp": "What genre/style should your story be?",        "graphicStyle": "Graphic Style",
+        "novelStyleHelp": "What genre/style should your story be?",
+        "graphicStyle": "Graphic Style",
         "graphicStyleHelp": "Choose the artistic style for your story's illustrations",
         "bookSize": "Book Size",
         "bookSizeHelp": "Number of chapters/paragraphs in your story",
@@ -94,7 +100,7 @@
       "nextChapter": "Next Chapter"
     },
     "step5": {
-      "heading": "Chapter 5 - The Gift",
+      "heading": "Chapter 5 - The Finale",
       "intro": "Choose how you'd like to receive your story. You can select multiple delivery formats to enjoy your story in different ways.",
       "deliveryOptions": "Delivery Options",
       "creating": "Creating...",
@@ -102,7 +108,21 @@
       "createStory": "Create story",
       "buyMoreCredits": "Buy More Credits",
       "buyMoreCreditsInfo": "Credit purchasing functionality is coming soon! Stay tuned for updates.",
-      "close": "Close"
+      "close": "Close",
+      "loadingStoryData": "Loading story data...",
+      "readyToGenerate": "Ready to Generate Your Story!",
+      "aboutToStart": "We're about to start creating your personalized story:",
+      "ebookGeneration": "📖 eBook Generation",
+      "cost": "Cost:",
+      "yourCredits": "Your Credits:",
+      "credits": "credits",
+      "insufficientCreditsTitle": "💳 Insufficient Credits",
+      "needMoreCredits": "You need {count} more credits to generate your story.",
+      "getMoreCredits": "Get More Credits",
+      "startingGeneration": "Starting Story Generation...",
+      "generateMyStory": "🚀 Generate My Story",
+      "storyDataNotAvailable": "Story data not available. Please try again.",
+      "stepProgress": "Step {currentStep} of {totalSteps}"
     }
   }
 }

@@ -187,7 +187,7 @@ export async function generateStructuredStory(
     const modelName = process.env.MODEL_ID || "gemini-2.5-flash";    // Define generation configuration with structured output enforced
     // According to Google Cloud docs, these settings guarantee JSON schema compliance
     const generationConfig = {
-      maxOutputTokens: 8192,
+      maxOutputTokens: 16384,
       temperature: 0.1, // Very low temperature for consistent JSON output
       topP: 0.8,
       responseMimeType: "application/json", // This forces JSON output

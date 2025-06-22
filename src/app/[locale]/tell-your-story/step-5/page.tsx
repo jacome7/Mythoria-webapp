@@ -5,7 +5,7 @@ import StepNavigation from '@/components/StepNavigation';
 import StoryGenerationProgress from '@/components/StoryGenerationProgress';
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { trackStoryCreation } from '@/lib/analytics';
 import { getCurrentStoryId, hasValidStorySession, getStep1Data } from '@/lib/story-session';
 
@@ -38,9 +38,9 @@ export default function Step5PageWrapper() {
 
 function Step5Page() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const editStoryId = searchParams.get('edit');
+  const searchParams = useSearchParams(); const editStoryId = searchParams.get('edit');
   const locale = useLocale();
+  const t = useTranslations('StorySteps.step5');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [storyGenerationStarted, setStoryGenerationStarted] = useState(false);
@@ -58,7 +58,7 @@ function Step5Page() {
     }
 
     const storyId = getCurrentStoryId();
-    setCurrentStoryId(storyId);    if (storyId) {
+    setCurrentStoryId(storyId); if (storyId) {
       Promise.all([
         fetchStoryData(storyId),
         fetchUserCredits(),
@@ -103,11 +103,12 @@ function Step5Page() {
       const response = await fetch('/api/pricing/services');
       if (!response.ok) {
         throw new Error('Failed to fetch pricing data');
-      }      const data = await response.json();
+      } const data = await response.json();
       const ebook = data.services.find((service: ServiceResponse) => service.serviceCode === 'eBookGeneration');
       if (ebook) {
         setEbookPricing(ebook);
-      }    } catch (error) {
+      }
+    } catch (error) {
       console.error('Error fetching pricing data:', error);
       setError('Failed to load pricing information. Please try again.');
     }
@@ -159,7 +160,7 @@ function Step5Page() {
       // Get dedication message from step 1 session data
       const step1Data = getStep1Data();
       const dedicationMessage = step1Data?.dedicationMessage || '';
-      
+
       const response = await fetch('/api/stories/complete', {
         method: 'POST',
         headers: {
@@ -182,7 +183,7 @@ function Step5Page() {
 
       // Track story generation request
       const hasDedication = !!(step1Data?.dedicationMessage);
-      
+
       trackStoryCreation.generationRequested({
         story_id: currentStoryId,
         ebook_requested: true,
@@ -204,11 +205,10 @@ function Step5Page() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="loading loading-spinner loading-lg"></div>
-          <p className="mt-4">Loading story data...</p>
-        </div>
+      <div className="container mx-auto px-4 py-8">        <div className="max-w-4xl mx-auto text-center">
+        <div className="loading loading-spinner loading-lg"></div>
+        <p className="mt-4">{t('loadingStoryData')}</p>
+      </div>
       </div>
     );
   }
@@ -236,7 +236,7 @@ function Step5Page() {
                       {/* Mobile Progress Indicator */}
                       <div className="block md:hidden mb-8">
                         <div className="text-center text-sm text-gray-600 mb-2">
-                          Step {currentStep} of {totalSteps}
+                          {t('stepProgress', { currentStep, totalSteps })}
                         </div>
                         <progress
                           className="progress progress-primary w-full"
@@ -262,7 +262,7 @@ function Step5Page() {
                 {/* Step content */}
                 <div className="card bg-base-100 shadow-xl">
                   <div className="card-body">
-                    <h1 className="card-title text-3xl mb-6">Complete Your Story</h1>
+                    <h1 className="card-title text-3xl mb-6">{t('heading')}</h1>
 
                     {error && (
                       <div className="alert alert-error mb-6">
@@ -273,9 +273,9 @@ function Step5Page() {
                     {storyData ? (
                       <div className="space-y-6">
                         <div className="text-center">
-                          <h2 className="text-2xl font-bold mb-4">Ready to Generate Your Story!</h2>
+                          <h2 className="text-2xl font-bold mb-4">{t('readyToGenerate')}</h2>
                           <p className="text-lg text-gray-600 mb-6">
-                            We&apos;re about to start creating your personalized story: <strong>{storyData.title}</strong>
+                            {t('aboutToStart')} <strong>{storyData.title}</strong>
                           </p>
 
                           {/* Credits Information */}
@@ -283,16 +283,16 @@ function Step5Page() {
                             {/* Ebook Service Info */}
                             {ebookPricing && (
                               <div className="card bg-base-200 p-6">
-                                <h3 className="text-lg font-semibold mb-4">📖 eBook Generation</h3>
+                                <h3 className="text-lg font-semibold mb-4">{t('ebookGeneration')}</h3>
                                 <div className="flex justify-center items-center gap-6">
                                   <div className="text-center">
-                                    <span className="text-sm text-gray-600">Cost:</span>
-                                    <div className="text-2xl font-bold text-primary">{ebookPricing.cost} credits</div>
+                                    <span className="text-sm text-gray-600">{t('cost')}</span>
+                                    <div className="text-2xl font-bold text-primary">{ebookPricing.cost} {t('credits')}</div>
                                   </div>
                                   <div className="text-center">
-                                    <span className="text-sm text-gray-600">Your Credits:</span>
+                                    <span className="text-sm text-gray-600">{t('yourCredits')}</span>
                                     <div className={`text-2xl font-bold ${hasInsufficientCredits() ? 'text-error' : 'text-success'}`}>
-                                      {userCredits} credits
+                                      {userCredits} {t('credits')}
                                     </div>
                                   </div>
                                 </div>
@@ -303,44 +303,32 @@ function Step5Page() {
                             {hasInsufficientCredits() && (
                               <div className="alert alert-warning">
                                 <div className="flex flex-col items-center">
-                                  <span className="font-semibold">💳 Insufficient Credits</span>
+                                  <span className="font-semibold">{t('insufficientCreditsTitle')}</span>
                                   <span className="text-sm mt-2">
-                                    You need {ebookPricing ? ebookPricing.cost - userCredits : 0} more credits to generate your story.
+                                    {t('needMoreCredits', { count: ebookPricing ? ebookPricing.cost - userCredits : 0 })}
                                   </span>
-                                  <a 
+                                  <a
                                     href={`/${locale}/pricing`}
                                     className="btn btn-outline btn-sm mt-2"
                                   >
-                                    Get More Credits
+                                    {t('getMoreCredits')}
                                   </a>
                                 </div>
                               </div>
                             )}
                           </div>
-
-                          <div className="alert alert-info mb-6">
-                            <div className="flex flex-col items-center">
-                              <span className="font-semibold">⏱️ Story Generation Process</span>
-                              <span className="text-sm mt-2">
-                                This process may take several minutes. We&apos;ll create your story chapters,
-                                generate illustrations, and prepare your eBook. You&apos;ll be able to
-                                track the progress from your &quot;My Stories&quot; page.
-                              </span>
-                            </div>
-                          </div>
-
                           <button
                             className={`btn btn-primary btn-lg ${submitting ? 'loading' : ''}`}
                             onClick={handleCompleteStory}
                             disabled={submitting || hasInsufficientCredits()}
                           >
-                            {submitting ? 'Starting Story Generation...' : '🚀 Generate My Story'}
+                            {submitting ? t('startingGeneration') : t('generateMyStory')}
                           </button>
                         </div>
                       </div>
                     ) : (
                       <div className="text-center py-12">
-                        <p className="text-lg text-gray-600">Story data not available. Please try again.</p>
+                        <p className="text-lg text-gray-600">{t('storyDataNotAvailable')}</p>
                       </div>
                     )}
                     <StepNavigation

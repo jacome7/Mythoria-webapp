@@ -55,19 +55,18 @@ function Step4Page() {
   const [graphicalStyle, setGraphicalStyle] = useState<GraphicalStyle | ''>('');
   const [plotDescription, setPlotDescription] = useState('');
   const [additionalRequests, setAdditionalRequests] = useState('');
-  const [chapterCount, setChapterCount] = useState<number>(6); // Default matches CHILDREN_3_6
-  const [isChapterCountManual, setIsChapterCountManual] = useState(false);
-  // Chapter count mapping based on target audience
+  const [chapterCount, setChapterCount] = useState<number>(4); // Default matches CHILDREN_3_6
+  const [isChapterCountManual, setIsChapterCountManual] = useState(false);  // Chapter count mapping based on target audience
   const getChapterCountForAudience = useCallback((audience: TargetAudience | ''): number => {
     if (!audience) return 6;
     const chapterMap: Record<TargetAudience, number> = {
-      [TargetAudience.CHILDREN_0_2]: 5,
-      [TargetAudience.CHILDREN_3_6]: 6,
-      [TargetAudience.CHILDREN_7_10]: 10,
-      [TargetAudience.CHILDREN_11_14]: 12,
-      [TargetAudience.YOUNG_ADULT_15_17]: 15,
-      [TargetAudience.ADULT_18_PLUS]: 15,
-      [TargetAudience.ALL_AGES]: 10
+      [TargetAudience.CHILDREN_0_2]: 2,
+      [TargetAudience.CHILDREN_3_6]: 4,
+      [TargetAudience.CHILDREN_7_10]: 6,
+      [TargetAudience.CHILDREN_11_14]: 6,
+      [TargetAudience.YOUNG_ADULT_15_17]: 8,
+      [TargetAudience.ADULT_18_PLUS]: 10,
+      [TargetAudience.ALL_AGES]: 6
     };
 
     return chapterMap[audience] || 6;
@@ -153,11 +152,25 @@ function Step4Page() {
       fetchStoryData(storyId);
     }
   }, [router, fetchStoryData]);
-
   const handleNext = async () => {
     // Auto-save before navigating
     if (!title.trim()) {
       setError('Title is required before proceeding to the next step.');
+      return;
+    }
+
+    if (!targetAudience) {
+      setError('Target audience is required before proceeding to the next step.');
+      return;
+    }
+
+    if (!novelStyle) {
+      setError('Novel style is required before proceeding to the next step.');
+      return;
+    }
+
+    if (!graphicalStyle) {
+      setError('Graphic style is required before proceeding to the next step.');
       return;
     }
 
@@ -316,11 +329,10 @@ function Step4Page() {
                         <label className="label">
                           <span className="label-text-alt">{t('fields.placeHelp')}</span>
                         </label>
-                      </div>
-                      {/* Target Audience Field */}
+                      </div>                      {/* Target Audience Field */}
                       <div className="form-control">
                         <label className="label">
-                          <span className="label-text font-semibold">{t('fields.audience')}</span>
+                          <span className="label-text font-semibold">{t('fields.audience')} *</span>
                         </label>                        <select
                           value={targetAudience}
                           onChange={(e) => {
@@ -330,6 +342,7 @@ function Step4Page() {
                             setIsChapterCountManual(false);
                           }}
                           className="select select-bordered w-full"
+                          required
                         >
                           {targetAudienceOptions.map((option) => (
                             <option key={option.value} value={option.value}>
@@ -340,12 +353,11 @@ function Step4Page() {
                         <label className="label">
                           <span className="label-text-alt">{t('fields.audienceHelp')}</span>
                         </label>
-                      </div>                      {/* Book Size Field */}
+                      </div>{/* Book Size Field */}
                       <div className="form-control">
                         <label className="label">
                           <span className="label-text font-semibold">{t('fields.bookSize')}</span>
-                        </label>
-                        <select
+                        </label>                        <select
                           value={chapterCount}
                           onChange={(e) => {
                             setChapterCount(Number(e.target.value));
@@ -353,7 +365,7 @@ function Step4Page() {
                           }}
                           className="select select-bordered w-full"
                         >
-                          {[3, 4, 5, 6, 8, 10, 12, 15, 18, 20].map((count) => (
+                          {[2, 4, 6, 8, 10].map((count) => (
                             <option key={count} value={count}>
                               {count} {count === 1 ? 'chapter' : 'chapters'}
                             </option>
@@ -362,17 +374,16 @@ function Step4Page() {
                         <label className="label">
                           <span className="label-text-alt">{t('fields.bookSizeHelp')}</span>
                         </label>
-                      </div>
-
-                      {/* Novel Style Field */}
+                      </div>                      {/* Novel Style Field */}
                       <div className="form-control">
                         <label className="label">
-                          <span className="label-text font-semibold">{t('fields.novelStyle')}</span>
+                          <span className="label-text font-semibold">{t('fields.novelStyle')} *</span>
                         </label>
                         <select
                           value={novelStyle}
                           onChange={(e) => setNovelStyle(e.target.value as NovelStyle | '')}
                           className="select select-bordered w-full"
+                          required
                         >
                           {novelStyleOptions.map((option) => (
                             <option key={option.value} value={option.value}>
@@ -388,12 +399,13 @@ function Step4Page() {
                       {/* Graphic Style Field */}
                       <div className="form-control">
                         <label className="label">
-                          <span className="label-text font-semibold">{t('fields.graphicStyle')}</span>
+                          <span className="label-text font-semibold">{t('fields.graphicStyle')} *</span>
                         </label>
                         <select
                           value={graphicalStyle}
                           onChange={(e) => setGraphicalStyle(e.target.value as GraphicalStyle | '')}
                           className="select select-bordered w-full"
+                          required
                         >
                           {graphicalStyleOptions.map((option) => (
                             <option key={option.value} value={option.value}>

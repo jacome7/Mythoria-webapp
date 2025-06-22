@@ -99,7 +99,6 @@ export default function EditStoryPage() {
       fetchStory();
     }
   }, [storyId, tCommon]);
-
   // Handle saving edited content
   const handleSaveEdit = async (html: string) => {
     try {
@@ -115,11 +114,23 @@ export default function EditStoryPage() {
       });
 
       if (response.ok) {
-        await response.json(); // Parse response but don't need to store result
+        const result = await response.json();
+        console.log(`Story saved as version ${result.version}:`, result.filename);
+        
         // Update the story content with the new HTML
         setStoryContent(html);
-        // Show success message
-        toast.success('Story saved successfully!');
+        
+        // Update the story URI with the new versioned URI
+        if (story) {
+          setStory({
+            ...story,
+            htmlUri: result.htmlUri,
+            updatedAt: new Date().toISOString()
+          });
+        }
+        
+        // Show success message with version info
+        toast.success(`Story saved successfully as version ${result.version}!`);
       } else {
         const error = await response.json();
         throw new Error(error.error || 'Failed to save story');

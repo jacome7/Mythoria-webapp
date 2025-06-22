@@ -38,11 +38,10 @@ export const authorService = {  async createAuthor(authorData: { clerkUserId: st
     
     return author;
   },
-
   async syncUserOnSignIn(clerkUser: ClerkUserForSync) {
     const currentTime = new Date();
     
-    // Try to find existing user
+    // Try to find existing user by clerkUserId first
     const existingAuthor = await this.getAuthorByClerkId(clerkUser.id);
     
     if (existingAuthor) {
@@ -56,22 +55,73 @@ export const authorService = {  async createAuthor(authorData: { clerkUserId: st
       console.log('Updated existing user login time:', updatedAuthor.clerkUserId);
       return updatedAuthor;
     } else {
-      // User doesn't exist, create new user
+      // User doesn't exist, try to create new user
       const primaryEmail = clerkUser.emailAddresses?.find((email) => email.id === clerkUser.primaryEmailAddressId);
-      const primaryPhone = clerkUser.phoneNumbers?.find((phone) => phone.id === clerkUser.primaryPhoneNumberId);      const newAuthorData = {
+      const primaryPhone = clerkUser.phoneNumbers?.find((phone) => phone.id === clerkUser.primaryPhoneNumberId);
+
+      const newAuthorData = {
         clerkUserId: clerkUser.id,
         email: primaryEmail?.emailAddress || clerkUser.emailAddresses?.[0]?.emailAddress || '',
         displayName: this.buildDisplayName(clerkUser),
         lastLoginAt: currentTime,
+        createdAt: currentTime,
         ...(primaryPhone?.phoneNumber && { mobilePhone: primaryPhone.phoneNumber })
-      };      const [newAuthor] = await db.insert(authors).values(newAuthorData).returning();
-      
-      // Initialize credits for new author with initial credits from pricing table
-      const initialCredits = await pricingService.getInitialAuthorCredits();
-      await creditService.initializeAuthorCredits(newAuthor.authorId, initialCredits);
-      
-      console.log('Created new user on sign-in:', newAuthor.clerkUserId, `with ${initialCredits} initial credits`);
-      return newAuthor;
+      };
+
+      try {
+        // Try to insert new user
+        const [newAuthor] = await db.insert(authors).values(newAuthorData).returning();
+        
+        // Initialize credits for new author with initial credits from pricing table
+        const initialCredits = await pricingService.getInitialAuthorCredits();
+        await creditService.initializeAuthorCredits(newAuthor.authorId, initialCredits);
+          console.log('Created new user on sign-in:', newAuthor.clerkUserId, `with ${initialCredits} initial credits`);
+        return newAuthor;
+      } catch (error: unknown) {
+        // Type guard for error object
+        const isDbError = (err: unknown): err is { cause?: { code?: string; constraint?: string }; message?: string } => {
+          return typeof err === 'object' && err !== null;
+        };
+
+        if (isDbError(error)) {
+          // Check if it's a duplicate email constraint violation
+          const isDuplicateEmail = (
+            error.cause?.code === '23505' && error.cause?.constraint === 'authors_email_unique'
+          ) || (
+            error.message?.includes('duplicate key value violates unique constraint "authors_email_unique"')
+          );          if (isDuplicateEmail) {
+            console.log('Duplicate email detected in syncUserOnSignIn, updating existing user with new clerkUserId:', clerkUser.id);
+            
+            try {
+              // Update existing user with new clerkUserId (user signed in with different OAuth provider)
+              const [updatedAuthor] = await db
+                .update(authors)
+                .set({
+                  clerkUserId: clerkUser.id, // Update to new clerkId
+                  displayName: this.buildDisplayName(clerkUser),
+                  lastLoginAt: currentTime,
+                  ...(primaryPhone?.phoneNumber && { mobilePhone: primaryPhone.phoneNumber })
+                })
+                .where(eq(authors.email, newAuthorData.email))
+                .returning();
+
+              console.log('User updated (clerkUserId changed) in syncUserOnSignIn for email:', newAuthorData.email);
+              return updatedAuthor;
+            } catch (updateError) {
+              console.error('Error updating user after duplicate email in syncUserOnSignIn:', updateError);
+              throw updateError;
+            }
+          } else {
+            // Re-throw other errors
+            console.error('Error creating user in syncUserOnSignIn:', error);
+            throw error;
+          }
+        } else {
+          // If error doesn't match expected structure, re-throw
+          console.error('Unexpected error creating user in syncUserOnSignIn:', error);
+          throw error;
+        }
+      }
     }
   },
 

@@ -1,25 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentAuthor } from "@/lib/auth";
 import { storyService } from "@/db/services";
-import { Storage } from '@google-cloud/storage';
 import { preserveMythoriaClasses, validateMythoriaClasses } from "@/utils/mythoriaClassPreserver";
-
-// Initialize Google Cloud Storage
-const storage = new Storage();
-const bucketName = process.env.GOOGLE_CLOUD_STORAGE_BUCKET || 'mythoria-generated-stories';
-
-async function uploadToGCS(filename: string, content: string): Promise<string> {
-  const bucket = storage.bucket(bucketName);
-  const file = bucket.file(filename);
-
-  await file.save(Buffer.from(content, 'utf-8'), {
-    metadata: {
-      contentType: 'text/html; charset=utf-8'
-    }
-  });
-
-  return `https://storage.googleapis.com/${bucketName}/${filename}`;
-}
+import { uploadNewVersion } from "@/utils/htmlVersioning";
 
 export async function POST(
   request: NextRequest,
@@ -86,26 +69,26 @@ export async function POST(
       if (validation.warnings.length > 0) {
         console.warn(`Story ${storyId}: CSS class warnings:`, validation.warnings);
       }
-    }
+    }    // Generate filename for the updated story
+    // Use versioning system to create a new version
+    try {
+      // Upload the edited HTML with preserved CSS classes using versioning system
+      const versionResult = await uploadNewVersion(storyId, preservedHtml);
 
-    // Generate filename for the updated story
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const filename = `${storyId}/story-edited-${timestamp}.html`;    try {
-      // Upload the edited HTML with preserved CSS classes to Google Cloud Storage
-      const newHtmlUri = await uploadToGCS(filename, preservedHtml);
-
-      // Update the story record with the new HTML URI
+      // Update the story record with the new versioned HTML URI
       await storyService.updateStory(storyId, {
-        htmlUri: newHtmlUri,
+        htmlUri: versionResult.uri,
         updatedAt: new Date()
       });
 
-      console.log(`Story ${storyId} manually edited and saved to ${newHtmlUri}`);
+      console.log(`Story ${storyId} manually edited and saved as version ${versionResult.version} at ${versionResult.uri}`);
 
       return NextResponse.json({ 
         success: true,
         message: "Story saved successfully",
-        htmlUri: newHtmlUri
+        htmlUri: versionResult.uri,
+        version: versionResult.version,
+        filename: versionResult.filename
       });
 
     } catch (uploadError) {

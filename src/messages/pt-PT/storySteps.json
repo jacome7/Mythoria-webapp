@@ -9,7 +9,8 @@
         "note": "Depois de iniciares sessão, estarás pronto para criar histórias mágicas que fariam inveja ao próprio Merlin! 🧙‍♂️"
       },
       "heading": "Capítulo 1 - O Autor",
-      "intro": "Bem-vindo, contador de histórias! Antes de mergulharmos na tua aventura mágica, vamos garantir que temos a tua informação correta. Isto ajuda-nos a personalizar a tua experiência e a manter-te atualizado sobre o progresso da tua história.",      "fields": {
+      "intro": "Bem-vindo, contador de histórias! Antes de mergulharmos na tua aventura mágica, vamos garantir que temos a tua informação correta. Isto ajuda-nos a personalizar a tua experiência e a manter-te atualizado sobre o progresso da tua história.",
+      "fields": {
         "fullName": "Nome Completo *",
         "fullNameHelp": "É assim que serás creditado como autor",
         "email": "Endereço de Email *",
@@ -28,7 +29,8 @@
         "fetchFailed": "Falha ao obter dados do utilizador",
         "loadFailed": "Falha ao carregar a informação do utilizador. Tenta novamente."
       }
-    },    "step2": {
+    },
+    "step2": {
       "heading": "Capítulo 2 - A História",
       "intro": "Podes criar a tua história desenhando-a, gravando-a ou simplesmente escrevendo-a.",
       "storyLanguageLabel": "Idioma da História",
@@ -45,15 +47,18 @@
       "uploadAudio": "Carregar Ficheiro de Áudio",
       "imageHelp": "Desenha a tua história, tira-lhe uma foto ou carrega uma imagem existente que a represente.",
       "audioHelp": "Grava a tua história diretamente ou carrega um ficheiro de áudio. Perfeito para quem prefere contar as suas histórias!",
-      "recordingHelp": "Conta a tua história! Fala claramente para o microfone.",      "reassurance": "Se escreveste texto ou carregaste uma imagem acima, a nossa IA irá extrair automaticamente personagens, cenários e temas. Caso contrário, os próximos passos vão guiar-te na criação da tua história passo a passo.",
+      "recordingHelp": "Conta a tua história! Fala claramente para o microfone.",
+      "reassurance": "Se escreveste texto ou carregaste uma imagem acima, a nossa IA irá extrair automaticamente personagens, cenários e temas. Caso contrário, os próximos passos vão guiar-te na criação da tua história passo a passo.",
       "processing": "A processar com IA...",
       "nextChapter": "Próximo Capítulo",
-      "next": "Seguinte",      "loadingModal": {
+      "next": "Seguinte",
+      "loadingModal": {
         "title": "✨ A Criar a Tua História",
         "message": "Os nossos Oompa Loompas mágicos estão a trabalhar arduamente para preparar a tua história! Isto pode demorar um momento...",
         "pleaseWait": "Por favor aguarda enquanto fazemos a nossa magia! ✨"
       }
-    },    "step3": {
+    },
+    "step3": {
       "heading": "Capítulo 3 - As Personagens",
       "intro": "Quem são os heróis, amigos e criaturas mágicas da tua história? Cria personagens que darão vida à tua aventura!",
       "addCharacter": "➕ Adicionar Personagem",
@@ -81,7 +86,8 @@
         "audience": "Público-Alvo",
         "audienceHelp": "Para quem é escrita esta história?",
         "novelStyle": "Estilo do Romance",
-        "novelStyleHelp": "Que género/estilo deve ter a tua história?",        "graphicStyle": "Estilo Gráfico",
+        "novelStyleHelp": "Que género/estilo deve ter a tua história?",
+        "graphicStyle": "Estilo Gráfico",
         "graphicStyleHelp": "Escolhe o estilo artístico das ilustrações da tua história",
         "bookSize": "Tamanho do Livro",
         "bookSizeHelp": "Número de capítulos/parágrafos na tua história",
@@ -94,7 +100,7 @@
       "nextChapter": "Próximo Capítulo"
     },
     "step5": {
-      "heading": "Capítulo 5 - O Presente",
+      "heading": "Capítulo 5 - O Final",
       "intro": "Escolhe como gostarias de receber a tua história. Podes selecionar vários formatos de entrega para desfrutares dela de diferentes maneiras.",
       "deliveryOptions": "Opções de Entrega",
       "creating": "A criar...",
@@ -102,7 +108,21 @@
       "createStory": "Criar história",
       "buyMoreCredits": "Comprar Mais Créditos",
       "buyMoreCreditsInfo": "A funcionalidade de compra de créditos chegará em breve! Fica atento às novidades.",
-      "close": "Fechar"
+      "close": "Fechar",
+      "loadingStoryData": "A carregar dados da história...",
+      "readyToGenerate": "Pronto para Gerar a Tua História!",
+      "aboutToStart": "Estamos prestes a começar a criar a tua história personalizada:",
+      "ebookGeneration": "📖 Geração de eBook",
+      "cost": "Custo:",
+      "yourCredits": "Os Teus Créditos:",
+      "credits": "créditos",
+      "insufficientCreditsTitle": "💳 Créditos Insuficientes",
+      "needMoreCredits": "Precisas de mais {count} créditos para gerar a tua história.",
+      "getMoreCredits": "Obter Mais Créditos",
+      "startingGeneration": "A Iniciar Geração da História...",
+      "generateMyStory": "🚀 Gerar a Minha História",
+      "storyDataNotAvailable": "Dados da história não disponíveis. Tenta novamente.",
+      "stepProgress": "Passo {currentStep} de {totalSteps}"
     }
   }
 }

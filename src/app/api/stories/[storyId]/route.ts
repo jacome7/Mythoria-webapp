@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentAuthor } from "@/lib/auth";
 import { storyService } from "@/db/services";
 import { getStoryImagesFromStorage } from "@/utils/storageUtils";
+import { getLatestVersionUri } from "@/utils/htmlVersioning";
 
 // Transform audiobookUri from database format to frontend format
 function transformAudiobookUri(audiobookUri: unknown): Array<{
@@ -109,13 +110,37 @@ export async function GET(
     
     // Fetch story HTML content from Google Cloud Storage if htmlUri is available
     let storyHtmlContent = null;
+    let latestHtmlUri = story.htmlUri;
+    
     if (story.htmlUri) {
       try {
-        const contentResponse = await fetch(story.htmlUri);
+        // Ensure we're using the latest version URI
+        latestHtmlUri = await getLatestVersionUri(storyId);
+        
+        // If the database URI is different from the latest, migrate it
+        if (story.htmlUri !== latestHtmlUri) {
+          // Update the database with the latest URI
+          await storyService.updateStory(storyId, {
+            htmlUri: latestHtmlUri,
+            updatedAt: new Date()
+          });
+          console.log(`Migrated story ${storyId} URI from ${story.htmlUri} to ${latestHtmlUri}`);
+        }
+        
+        const contentResponse = await fetch(latestHtmlUri);
         if (contentResponse.ok) {
           storyHtmlContent = await contentResponse.text();
         } else {
-          console.warn(`Failed to fetch story content from ${story.htmlUri}:`, contentResponse.status);
+          console.warn(`Failed to fetch story content from ${latestHtmlUri}:`, contentResponse.status);
+          
+          // Fallback: try the original URI if the latest version fails
+          if (story.htmlUri !== latestHtmlUri) {
+            console.log(`Falling back to original URI: ${story.htmlUri}`);
+            const fallbackResponse = await fetch(story.htmlUri);
+            if (fallbackResponse.ok) {
+              storyHtmlContent = await fallbackResponse.text();
+            }
+          }
         }
       } catch (contentError) {
         console.warn('Error fetching story content from Google Cloud Storage:', contentError);
@@ -123,6 +148,7 @@ export async function GET(
     }    // Transform audiobookUri from database format to frontend format
     const transformedStory = {
       ...story,
+      htmlUri: latestHtmlUri, // Use the latest version URI
       audiobookUri: transformAudiobookUri(story.audiobookUri)
     };// Get media links from Google Cloud Storage
     const mediaLinks = await getStoryImagesFromStorage(storyId);
