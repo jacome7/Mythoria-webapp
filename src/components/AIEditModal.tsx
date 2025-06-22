@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { FiX, FiZap, FiEdit3, FiFileText, FiImage } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import ImageEditingTab from './ImageEditingTab';
 import { extractStoryImagesFromHtml, extractStoryImages, StoryImage } from '@/utils/imageUtils';
 
@@ -33,13 +34,14 @@ export default function AIEditModal({
   onRevertUpdate
 }: AIEditModalProps) {
   const t = useTranslations('common.aiEditModal');
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<EditTab>('text');
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [storyImages, setStoryImages] = useState<StoryImage[]>([]);
-  const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
-  const [userRequest, setUserRequest] = useState('');
+  const [selectedChapter, setSelectedChapter] = useState<number | null>(null);  const [userRequest, setUserRequest] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);  // Extract chapters from story content
+  const [error, setError] = useState<string | null>(null);
+  const [isSavingImage, setIsSavingImage] = useState(false);// Extract chapters from story content
   useEffect(() => {
     if (!storyContent) return;
 
@@ -234,68 +236,141 @@ export default function AIEditModal({
         } else {
           console.warn('Original URL not found in story content. Attempting fallback strategies...');
           
-          // Fallback 1: Try to find and replace URLs in src attributes
+          // Fallback 1: Try to find and replace URLs in src attributes with more flexible matching
           const srcRegex = /src\s*=\s*["']([^"']*)['"]/gi;
+          let foundMatch = false;
           updatedHtml = storyContent.replace(srcRegex, (match, url) => {
-            if (url === originalUrl || url.includes(originalUrl.split('/').pop() || '')) {
-              console.log('Found URL in src attribute, replacing:', url, '→', newUrl);
+            // Direct match
+            if (url === originalUrl) {
+              console.log('Found exact URL match in src attribute:', url, '→', newUrl);
+              foundMatch = true;
               return match.replace(url, newUrl);
             }
+            
+            // Filename match (handles cases where paths might differ)
+            const originalFilename = originalUrl.split('/').pop();
+            const urlFilename = url.split('/').pop();
+            if (originalFilename && urlFilename && originalFilename === urlFilename) {
+              console.log('Found filename match in src attribute:', url, '→', newUrl);
+              foundMatch = true;
+              return match.replace(url, newUrl);
+            }
+            
+            // Partial match (handles cases where URL has query parameters or fragments)
+            if (originalFilename && url.includes(originalFilename)) {
+              console.log('Found partial filename match in src attribute:', url, '→', newUrl);
+              foundMatch = true;
+              return match.replace(url, newUrl);
+            }
+            
             return match;
           });
           
-          // Fallback 2: If still no changes, try filename-based replacement
-          if (updatedHtml === storyContent) {
+          // Fallback 2: If still no changes, try more aggressive filename-based replacement
+          if (!foundMatch && updatedHtml === storyContent) {
             const originalFilename = originalUrl.split('/').pop();
             const newFilename = newUrl.split('/').pop();
             
-            if (originalFilename && newFilename && originalFilename !== newFilename) {
-              // Try replacing just the filename part in all URLs
+            if (originalFilename && newFilename) {
+              // Try replacing the filename in any context (not just URLs)
               const filenameRegex = new RegExp(
                 originalFilename.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 
                 'g'
               );
+              const beforeReplace = updatedHtml;
               updatedHtml = storyContent.replace(filenameRegex, newFilename);
-              console.log('Attempted filename-based replacement:', originalFilename, '→', newFilename);
+              if (updatedHtml !== beforeReplace) {
+                console.log('Attempted aggressive filename-based replacement:', originalFilename, '→', newFilename);
+                foundMatch = true;
+              }
+            }
+          }
+          
+          // Fallback 3: Try to find any similar image URLs and replace the most likely candidate
+          if (!foundMatch && updatedHtml === storyContent) {
+            console.log('Attempting heuristic URL matching...');
+            
+            // Extract all image URLs from the content
+            const allImageUrls = [];
+            const imageRegex = /src\s*=\s*["']([^"']*\.(jpg|jpeg|png|gif|webp|svg))['"]/gi;
+            let imageMatch;
+            while ((imageMatch = imageRegex.exec(storyContent)) !== null) {
+              allImageUrls.push(imageMatch[1]);
+            }
+            
+            console.log('Found image URLs in content:', allImageUrls);
+            console.log('Looking for URL similar to:', originalUrl);
+            
+            // Try to find the most similar URL (this handles cases where the version might be different)
+            const originalPath = originalUrl.split('/').slice(0, -1).join('/');
+            const originalBasename = originalUrl.split('/').pop()?.replace(/\.[^.]*$/, ''); // filename without extension
+            
+            for (const candidateUrl of allImageUrls) {
+              const candidatePath = candidateUrl.split('/').slice(0, -1).join('/');
+              const candidateBasename = candidateUrl.split('/').pop()?.replace(/\.[^.]*$/, '');
+              
+              // If paths match and basenames are similar (handles version differences)
+              if (originalPath === candidatePath && originalBasename && candidateBasename && 
+                  (originalBasename.includes(candidateBasename) || candidateBasename.includes(originalBasename))) {
+                console.log('Found similar URL to replace:', candidateUrl, '→', newUrl);
+                updatedHtml = storyContent.replace(
+                  new RegExp(candidateUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
+                  newUrl
+                );
+                foundMatch = true;
+                break;
+              }
             }
           }
         }
-        
-        console.log('Replacement result:', {
+          console.log('Replacement result:', {
+          originalUrl,
+          newUrl,
           originalLength: storyContent.length,
           updatedLength: updatedHtml.length,
           contentChanged: updatedHtml !== storyContent,
-          replacementsCount: (storyContent.match(new RegExp(originalUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length
+          originalUrlFound: storyContent.includes(originalUrl),
+          replacementsCount: (storyContent.match(new RegExp(originalUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length,
+          htmlPreview: storyContent.substring(0, 500) + '...'
         });
         
         if (updatedHtml !== storyContent) {
           console.log('Optimistic update: immediately updating UI');
           onOptimisticUpdate(updatedHtml);
-          
-          // Step 2: Attempt to save to backend
+            // Step 2: Attempt to save to backend
           console.log('Attempting to save changes to backend...');
+          setIsSavingImage(true);
           
           try {
             const saveResponse = await fetch(`/api/books/${storyId}/save`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
+              },              body: JSON.stringify({
                 html: updatedHtml,
-                source: 'image_change'
+                source: 'manual'
               }),
-            });
-            
-            if (saveResponse.ok) {
-              console.log('Backend save successful - keeping optimistic update');
-              // The UI is already updated, so no need to call onEditSuccess again
+            });            if (saveResponse.ok) {
+              console.log('Backend save successful - image change completed');
+              setIsSavingImage(false);
+              
+              // Close the modal immediately
+              onClose();
+              
+              // Add a small delay to ensure modal closes, then redirect to force refresh
+              setTimeout(() => {
+                // Redirect to the current page to force a fresh load of the updated HTML
+                window.location.reload();
+              }, 100);
+              
             } else {
+              setIsSavingImage(false);
               const error = await saveResponse.json();
               throw new Error(error.error || 'Failed to save');
             }
             
           } catch (saveError) {
+            setIsSavingImage(false);
             console.error('Backend save failed, reverting optimistic update:', saveError);
             
             // Step 3: Revert the optimistic update on save failure
@@ -305,15 +380,32 @@ export default function AIEditModal({
             setError('Failed to save image change. The change has been reverted.');
             return;
           }
-          
-        } else {
+            } else {
           console.warn('No changes made to HTML content - URL replacement failed');
-          setError('Failed to update image in story. Please try again.');
+          console.error('Failed to find and replace image URL:', {
+            originalUrl,
+            searchPatterns: [
+              'Direct URL match',
+              'Filename in src attributes', 
+              'Aggressive filename replacement',
+              'Heuristic URL matching'
+            ],
+            allImageUrlsInContent: (() => {
+              const urls = [];
+              const regex = /src\s*=\s*["']([^"']*\.(jpg|jpeg|png|gif|webp|svg))['"]/gi;
+              let match;
+              while ((match = regex.exec(storyContent)) !== null) {
+                urls.push(match[1]);
+              }
+              return urls;
+            })()
+          });          setError('Failed to update image in story. The image URL could not be found in the content. Please try again.');
+          setIsSavingImage(false);
           return;
         }
-      } else {
-        console.warn('No story content available to update');
+      } else {        console.warn('No story content available to update');
         setError('No story content available to update.');
+        setIsSavingImage(false);
         return;
       }
 
@@ -321,9 +413,9 @@ export default function AIEditModal({
       console.log('Refreshing story data...');
       await refreshStoryData();
       console.log('Story data refresh completed');
-      
-    } catch (error) {
+        } catch (error) {
       console.error('Error in optimistic image update:', error);
+      setIsSavingImage(false);
       
       // Revert optimistic update on any error
       onRevertUpdate(originalContent);
@@ -354,14 +446,14 @@ export default function AIEditModal({
       console.error('Error refreshing story data:', error);
     }
   };
-
   const handleClose = () => {
-    if (!isLoading) {
+    if (!isLoading && !isSavingImage) {
       onClose();
       setUserRequest('');
       setSelectedChapter(null);
       setActiveTab('text');
       setError(null);
+      setIsSavingImage(false);
     }
   };
   const exampleRequests = t.raw('exampleRequests.examples');
@@ -382,21 +474,22 @@ export default function AIEditModal({
                 {t('description')}
               </p>
             </div>
-          </div>
-          <button
+          </div>          <button
             onClick={handleClose}
             className="btn btn-ghost btn-sm btn-circle"
-            disabled={isLoading}
+            disabled={isLoading || isSavingImage}
           >
             <FiX className="w-4 h-4" />
           </button>
-        </div>        {/* Content */}
+        </div>
+        {/* Content */}
         <div className="p-6">
           {/* Tab Navigation */}
-          <div className="tabs tabs-boxed mb-6 bg-base-200">            <button
+          <div className="tabs tabs-boxed mb-6 bg-base-200">
+            <button
               className={`tab ${activeTab === 'text' ? 'tab-active' : ''}`}
               onClick={() => setActiveTab('text')}
-              disabled={isLoading}
+              disabled={isLoading || isSavingImage}
             >
               <FiFileText className="w-4 h-4 mr-2" />
               {t('tabs.text')}
@@ -404,7 +497,7 @@ export default function AIEditModal({
             <button
               className={`tab ${activeTab === 'images' ? 'tab-active' : ''}`}
               onClick={() => setActiveTab('images')}
-              disabled={isLoading}
+              disabled={isLoading || isSavingImage}
             >
               <FiImage className="w-4 h-4 mr-2" />
               {t('tabs.images')}
@@ -414,7 +507,8 @@ export default function AIEditModal({
           {/* Tab Content */}
           {activeTab === 'text' ? (
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Chapter Selection */}              <div>
+              {/* Chapter Selection */}
+              <div>
                 <label className="label">
                   <span className="label-text font-medium">{t('editSelection.label')}</span>
                 </label>
@@ -437,22 +531,11 @@ export default function AIEditModal({
                       {chapter.title}
                     </option>
                   ))}
-                </select>                {chapters.length === 0 && (
-                  <p className="text-sm text-base-content/70 mt-2">
-                    {t('editSelection.noChaptersDetected')}
-                  </p>
-                )}
-                {chapters.length > 0 && (
-                  <p className="text-sm text-base-content/70 mt-2">
-                    {t('editSelection.chaptersDetected', { 
-                      count: chapters.length,
-                      plural: chapters.length === 1 ? '' : 's'
-                    })}
-                  </p>
-                )}
+                </select>
               </div>
 
-              {/* User Request */}              <div>
+              {/* User Request */}
+              <div>
                 <label className="label">
                   <span className="label-text font-medium">
                     {t('editRequest.label')}
@@ -555,22 +638,38 @@ export default function AIEditModal({
                 storyImages={storyImages}
                 onImageEditSuccess={handleImageEditSuccess}
                 onImageUpdated={handleImageUpdated}
+                storyContent={storyContent}
               />
               
-              {/* Actions for Image Tab */}              <div className="flex gap-3 pt-6 border-t border-base-300 mt-6">
-                <button
+              {/* Actions for Image Tab */}              <div className="flex gap-3 pt-6 border-t border-base-300 mt-6">                <button
                   type="button"
                   onClick={handleClose}
                   className="btn btn-ghost flex-1"
-                  disabled={isLoading}
+                  disabled={isLoading || isSavingImage}
                 >
                   {t('buttons.close')}
                 </button>
               </div>
-            </>
-          )}
+            </>          )}
         </div>
       </div>
+      
+      {/* Image Save Loading Modal */}
+      {isSavingImage && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[60]">
+          <div className="bg-base-100 rounded-lg p-8 max-w-sm w-full mx-4 text-center">
+            <div className="flex flex-col items-center gap-4">
+              <span className="loading loading-spinner loading-lg text-primary"></span>
+              <div>
+                <h3 className="text-lg font-semibold">Saving Image Changes</h3>
+                <p className="text-sm text-base-content/70 mt-2">
+                  Please wait while we save your image changes to the story...
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

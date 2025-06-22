@@ -238,9 +238,7 @@
 			},
 			"editSelection": {
 				"label": "What would you like to edit?",
-				"entireStory": "Entire Story",
-				"noChaptersDetected": "No chapters detected. You can edit the entire story.",
-				"chaptersDetected": "{count} chapter{plural} detected"
+				"entireStory": "Entire Story"
 			},
 			"editRequest": {
 				"label": "What changes would you like to make?",
@@ -333,22 +331,10 @@
 			},
 			"imagePreview": {
 				"label": "Current image:"
-			},
-			"editRequest": {
+			},			"editRequest": {
 				"label": "What changes would you like to make to this image?",
 				"placeholder": "Describe the changes you'd like to make to the image...",
 				"charactersCount": "{current}/{max} characters"
-			},
-			"exampleRequests": {
-				"label": "Example requests:",
-				"examples": [
-					"Change the dragon from red to blue and add more clouds in the sky",
-					"Make the protagonist wear a golden crown and hold a magic staff",
-					"Change the forest background to a snowy mountain landscape",
-					"Add more magical sparkles and fairy lights around the characters",
-					"Make the scene darker and more mysterious with moonlight",
-					"Add a rainbow in the background and make the colors more vibrant"
-				]
 			},
 			"loadingState": {
 				"title": "Processing your image edit...",

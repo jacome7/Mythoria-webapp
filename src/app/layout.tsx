@@ -10,7 +10,7 @@ import "./globals.css";
 // Base metadata for non-localized routes only
 export const metadata: Metadata = {
   title: "Mythoria",
-  description: "AI-Powered Personalized Books Creator",
+  description: "Personalized Books Creator",
 };
 
 export default async function RootLayout({

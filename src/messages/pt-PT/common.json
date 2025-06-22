@@ -238,9 +238,7 @@
       },
       "editSelection": {
         "label": "O que gostaria de editar?",
-        "entireStory": "História Completa",
-        "noChaptersDetected": "Nenhum capítulo detetado. Pode editar a história completa.",
-        "chaptersDetected": "{count} capítulo{plural} detetado{plural}"
+        "entireStory": "História Completa"
       },
       "editRequest": {
         "label": "Que alterações gostaria de fazer?",
@@ -333,22 +331,10 @@
       },
       "imagePreview": {
         "label": "Imagem atual:"
-      },
-      "editRequest": {
+      },      "editRequest": {
         "label": "Que alterações gostaria de fazer a esta imagem?",
         "placeholder": "Descreva as alterações que gostaria de fazer à imagem...",
         "charactersCount": "{current}/{max} caracteres"
-      },
-      "exampleRequests": {
-        "label": "Exemplos de pedidos:",
-        "examples": [
-          "Mudar o dragão de vermelho para azul e adicionar mais nuvens no céu",
-          "Fazer o protagonista usar uma coroa dourada e segurar um cajado mágico",
-          "Mudar o fundo da floresta para uma paisagem de montanha nevada",
-          "Adicionar mais brilhos mágicos e luzes de fada ao redor dos personagens",
-          "Tornar a cena mais escura e misteriosa com luar",
-          "Adicionar um arco-íris no fundo e tornar as cores mais vibrantes"
-        ]
       },
       "loadingState": {
         "title": "Processando a sua edição de imagem...",

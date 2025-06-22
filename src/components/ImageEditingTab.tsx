@@ -11,12 +11,14 @@ interface ImageEditingTabProps {
   storyImages: StoryImage[];
   onImageEditSuccess: (originalUrl: string, newUrl: string) => void;
   onImageUpdated: (updatedImages: StoryImage[]) => void;
+  storyContent?: string; // Add story content to find which image version is currently in use
 }
 
-export default function ImageEditingTab({ 
-  storyId, 
-  storyImages, 
-  onImageEditSuccess,  onImageUpdated
+export default function ImageEditingTab({
+  storyId,
+  storyImages,
+  onImageEditSuccess, onImageUpdated,
+  storyContent
 }: ImageEditingTabProps) {
   const t = useTranslations('common.imageEditingTab');
   const [selectedImage, setSelectedImage] = useState<StoryImage | null>(null);
@@ -24,8 +26,8 @@ export default function ImageEditingTab({
   const [userRequest, setUserRequest] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [previewImage, setPreviewImage] = useState<string | null>(null);  const [newImageGenerated, setNewImageGenerated] = useState<string | null>(null);
-  const [isReplacing, setIsReplacing] = useState(false);  const [isChangingImage, setIsChangingImage] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null); const [newImageGenerated, setNewImageGenerated] = useState<string | null>(null);
+  const [isReplacing, setIsReplacing] = useState(false); const [isChangingImage, setIsChangingImage] = useState(false);
   const [optimisticUpdate, setOptimisticUpdate] = useState<{
     inProgress: boolean;
     originalUrl: string;
@@ -46,16 +48,76 @@ export default function ImageEditingTab({
         console.log('Clearing optimistic update after timeout - assuming save completed');
         setOptimisticUpdate(null);
       }, 5000);
-      
+
       return () => clearTimeout(timeout);
+    }  }, [optimisticUpdate]);
+  // Helper function to find which version of an image is currently used in the story content
+  const findCurrentVersionInStory = (image: StoryImage): ImageVersion => {
+    if (!storyContent) {
+      // If no story content provided, default to latest version
+      console.log(`No story content provided, defaulting to latest version for ${image.type}`);
+      return image.latestVersion;
     }
-  }, [optimisticUpdate]);
+
+    // Check each version of the image to see which one is in the story content
+    // Start with the latest versions first as they're more likely to be in use
+    const sortedVersions = [...image.versions].sort((a, b) => {
+      // Extract version numbers for sorting (e.g., "v001" -> 1)
+      const getVersionNumber = (version: string) => {
+        const match = version.match(/v(\d+)/);
+        return match ? parseInt(match[1]) : 0;
+      };
+      return getVersionNumber(b.version) - getVersionNumber(a.version);
+    });
+
+    // 1. Direct URL match
+    for (const version of sortedVersions) {
+      if (storyContent.includes(version.url)) {
+        console.log(`Found version ${version.version} of ${image.type} in story content (direct URL match):`, version.url);
+        return version;
+      }
+    }
+
+    // 2. Filename match (handles URL differences like domain changes)
+    for (const version of sortedVersions) {
+      const filename = version.url.split('/').pop();
+      if (filename && storyContent.includes(filename)) {
+        console.log(`Found version ${version.version} of ${image.type} in story content (filename match):`, filename);
+        return version;
+      }
+    }
+
+    // 3. Partial URL match (handles protocol or domain differences)
+    for (const version of sortedVersions) {
+      // Extract the path part of the URL (everything after the domain)
+      const urlParts = version.url.split('/');
+      if (urlParts.length > 3) {
+        const pathPart = urlParts.slice(3).join('/'); // Skip protocol and domain
+        if (storyContent.includes(pathPart)) {
+          console.log(`Found version ${version.version} of ${image.type} in story content (partial URL match):`, pathPart);
+          return version;
+        }
+      }
+    }
+
+    console.log(`No version of ${image.type} found in story content, defaulting to latest version`);
+    // If no version found in content, default to latest version
+    return image.latestVersion;
+  };
   const handleImageSelect = (image: StoryImage) => {
     setSelectedImage(image);
-    // Always select the most recent version by default (latestVersion is already the newest)
-    setSelectedVersion(image.latestVersion);
-    setPreviewImage(image.latestVersion.url);
+    // Find the version that's currently being used in the story content
+    const currentVersionInStory = findCurrentVersionInStory(image);
+    setSelectedVersion(currentVersionInStory);
+    setPreviewImage(currentVersionInStory.url);
     setError(null);
+    
+    console.log('Selected image:', {
+      type: image.type,
+      chapterNumber: image.chapterNumber,
+      selectedVersion: currentVersionInStory.version,
+      isLatestVersion: currentVersionInStory.url === image.latestVersion.url
+    });
   };
 
   const handleVersionSelect = (version: ImageVersion) => {
@@ -65,7 +127,7 @@ export default function ImageEditingTab({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-      if (!selectedImage || !selectedVersion) {
+    if (!selectedImage || !selectedVersion) {
       setError(t('errors.selectImage'));
       return;
     }
@@ -94,12 +156,12 @@ export default function ImageEditingTab({
           imageUrl: selectedVersion.url,
           userRequest: userRequest.trim()
         }),
-      });      const data = await response.json();
+      }); const data = await response.json();
 
       if (response.ok && data.success) {
         // Store the new image URL for potential replacement
         setNewImageGenerated(data.newImageUrl);
-        
+
         // Create a new version for the selected image
         const newVersion: ImageVersion = {
           url: data.newImageUrl,
@@ -116,7 +178,7 @@ export default function ImageEditingTab({
         };
 
         // Update the images array with the updated selected image
-        const updatedImages = storyImages.map(img => 
+        const updatedImages = storyImages.map(img =>
           img === selectedImage ? updatedSelectedImage : img
         );
 
@@ -124,11 +186,11 @@ export default function ImageEditingTab({
         setSelectedImage(updatedSelectedImage);
         setSelectedVersion(newVersion);
         setPreviewImage(newVersion.url);
-        
+
         // Notify parent component about the updated images
         onImageUpdated(updatedImages);
-        
-        console.log('New image generated successfully:', data.newImageUrl);        setUserRequest('');
+
+        console.log('New image generated successfully:', data.newImageUrl); setUserRequest('');
       } else {
         setError(data.error || t('errors.editFailed'));
       }
@@ -139,7 +201,6 @@ export default function ImageEditingTab({
       setIsLoading(false);
     }
   };
-  const exampleRequests = t.raw('exampleRequests.examples');
 
   // Helper function to generate the next version number
   const generateNextVersion = (versions: ImageVersion[]): string => {
@@ -147,7 +208,7 @@ export default function ImageEditingTab({
       const match = v.version.match(/v(\d+)/);
       return match ? parseInt(match[1]) : 0;
     });
-    
+
     const maxVersion = Math.max(...versionNumbers);
     return `v${(maxVersion + 1).toString().padStart(3, '0')}`;
   };
@@ -166,22 +227,57 @@ export default function ImageEditingTab({
     setIsReplacing(true);
     setError(null);
 
-    try {
-      // Find the original image URL that should be replaced in the HTML
-      const originalImageToReplace = selectedImage.latestVersion.url;
-      
+    try {      // Instead of assuming latestVersion.url is in the HTML, use the originally selected version URL      // This is the URL that was used to generate the new image
+      const originalImageToReplace = selectedVersion.url;
+
+      console.log('Replacing image in story:', {
+        original: originalImageToReplace,
+        new: newImageGenerated,
+        selectedImageType: selectedImage.type,
+        selectedImageChapter: selectedImage.chapterNumber
+      });
+
       // Call the parent callback to handle the HTML replacement
       onImageEditSuccess(originalImageToReplace, newImageGenerated);
-      
+
       // Clear the new image generated state since it's now been used
       setNewImageGenerated(null);
-      
-      console.log('Successfully replaced image in story:', {
-        original: originalImageToReplace,
-        new: newImageGenerated
-      });
-      
-    } catch (error) {      console.error('Error replacing image:', error);
+
+      // Update the selectedImage to show the new image as the latest version
+      if (selectedImage) {
+        // Create a new version for the generated image
+        const newVersion: ImageVersion = {
+          url: newImageGenerated,
+          version: generateNextVersion(selectedImage.versions),
+          timestamp: new Date().toISOString(),
+          filename: extractFilenameFromUrl(newImageGenerated)
+        };
+
+        // Update the selected image with the new version as the latest
+        const updatedSelectedImage = {
+          ...selectedImage,
+          versions: [...selectedImage.versions, newVersion],
+          latestVersion: newVersion
+        };
+
+        // Update the images array
+        const updatedImages = storyImages.map(img =>
+          img === selectedImage ? updatedSelectedImage : img
+        );
+
+        // Update local state
+        setSelectedImage(updatedSelectedImage);
+        setSelectedVersion(newVersion);
+        setPreviewImage(newVersion.url);
+
+        // Notify parent component about the updated images
+        onImageUpdated(updatedImages);
+      }
+
+      console.log('Successfully called onImageEditSuccess for image replacement');
+
+    } catch (error) {
+      console.error('Error replacing image:', error);
       setError(t('errors.replaceImageFailed'));
     } finally {
       setIsReplacing(false);
@@ -196,58 +292,61 @@ export default function ImageEditingTab({
     setIsChangingImage(true);
     setError(null);
 
-    try {      console.log('handleChangeImage called with:', {
+    try {
+      console.log('handleChangeImage called with:', {
         selectedImage: selectedImage.type,
         chapterNumber: selectedImage.chapterNumber,
         currentLatestVersion: selectedImage.latestVersion.url,
         selectedVersionUrl: selectedVersion.url,
         selectedVersionVersion: selectedVersion.version,
         allVersions: selectedImage.versions.map(v => ({ version: v.version, url: v.url }))
+      });      // Find the version that's currently in the story content
+      const currentVersionInStory = findCurrentVersionInStory(selectedImage);
+      const originalImageToReplace = currentVersionInStory.url;
+
+      console.log('Attempting to replace:', {
+        currentVersionInStory: currentVersionInStory.version,
+        currentVersionUrl: currentVersionInStory.url,
+        selectedVersion: selectedVersion.version,
+        selectedVersionUrl: selectedVersion.url,
+        willActuallyChange: originalImageToReplace !== selectedVersion.url
       });
 
-      // The URL to replace should be the latest version URL since that's what's shown by default
-      // However, if this image has been changed before, we might need to replace a different version
-      // For now, we'll assume the latest version is what's currently in the HTML
-      const originalImageToReplace = selectedImage.latestVersion.url;
-      
-      console.log('Attempting to replace:', {
-        original: originalImageToReplace,
-        new: selectedVersion.url,
-        willActuallyChange: originalImageToReplace !== selectedVersion.url
-      });      if (originalImageToReplace === selectedVersion.url) {
+      if (originalImageToReplace === selectedVersion.url) {
         console.log('Selected version is already the current version, no change needed');
         setError(t('errors.sameVersion'));
         return;
       }
-      
+
       // Set optimistic update state
       setOptimisticUpdate({
         inProgress: true,
         originalUrl: originalImageToReplace,
         newUrl: selectedVersion.url
       });
-      
+
       // Call the parent callback to handle the HTML replacement
       onImageEditSuccess(originalImageToReplace, selectedVersion.url);
-      
+
       console.log('Successfully called onImageEditSuccess with URLs:', {
         originalUrl: originalImageToReplace,
         newUrl: selectedVersion.url
       });
-      
-    } catch (error) {      console.error('Error changing image:', error);
+
+    } catch (error) {
+      console.error('Error changing image:', error);
       setError(t('errors.changeImageFailed'));
       setOptimisticUpdate(null); // Clear optimistic update on error
     } finally {
       setIsChangingImage(false);
     }
   };
+  // Check if the selected version is different from the version currently in the story
+  const isVersionChanged = selectedImage && selectedVersion && storyContent &&
+    selectedVersion.url !== findCurrentVersionInStory(selectedImage).url;
 
-  // Check if the selected version is different from the latest version
-  const isVersionChanged = selectedImage && selectedVersion && 
-    selectedVersion.url !== selectedImage.latestVersion.url;
-
-  if (storyImages.length === 0) {    return (
+  if (storyImages.length === 0) {
+    return (
       <div className="text-center py-12">
         <FiImage className="w-12 h-12 text-base-content/40 mx-auto mb-4" />
         <h3 className="text-lg font-medium text-base-content/70 mb-2">{t('noImages.title')}</h3>
@@ -262,16 +361,15 @@ export default function ImageEditingTab({
     <div className="space-y-6">
       {/* Image Selection */}
       <div>        <label className="label">
-          <span className="label-text font-medium">{t('imageSelection.label')}</span>
-        </label><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <span className="label-text font-medium">{t('imageSelection.label')}</span>
+      </label><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {storyImages.map((image) => (
             <div
               key={`${image.type}-${image.chapterNumber || 'cover'}`}
-              className={`cursor-pointer border-2 rounded-lg p-3 transition-colors ${
-                selectedImage === image
+              className={`cursor-pointer border-2 rounded-lg p-3 transition-colors ${selectedImage === image
                   ? 'border-primary bg-primary/10'
                   : 'border-base-300 hover:border-base-400'
-              }`}
+                }`}
               onClick={() => handleImageSelect(image)}
             >              <div className="aspect-square bg-base-200 rounded-lg mb-3 overflow-hidden">
                 <Image
@@ -284,17 +382,30 @@ export default function ImageEditingTab({
                 />
               </div><div className="text-center">
                 <h4 className="font-medium text-sm">{getImageDisplayName(image)}</h4>                <p className="text-xs text-base-content/60 mt-1">
-                  {t('imageSelection.versionsAvailable', { 
+                  {t('imageSelection.versionsAvailable', {
                     count: image.versions.length,
                     plural: image.versions.length !== 1 ? 's' : ''
                   })}
-                </p>
-                {image.versions.length > 1 && (
-                  <p className="text-xs text-primary font-medium">
-                    {t('imageSelection.latestVersion', { 
-                      version: formatVersionNumber(image.latestVersion.version) 
-                    })}
-                  </p>
+                </p>                {image.versions.length > 1 && (
+                  <div className="space-y-1">
+                    <p className="text-xs text-primary font-medium">
+                      {t('imageSelection.latestVersion', {
+                        version: formatVersionNumber(image.latestVersion.version)
+                      })}
+                    </p>
+                    {(() => {
+                      const currentVersion = findCurrentVersionInStory(image);
+                      const isCurrentLatest = currentVersion.url === image.latestVersion.url;
+                      if (!isCurrentLatest) {
+                        return (
+                          <p className="text-xs text-warning font-medium">
+                            Currently in story: {formatVersionNumber(currentVersion.version)}
+                          </p>
+                        );
+                      }
+                      return null;
+                    })()}
+                  </div>
                 )}
               </div>
             </div>
@@ -303,8 +414,8 @@ export default function ImageEditingTab({
       </div>      {/* Version Selection */}
       {selectedImage && selectedImage.versions.length > 1 && (
         <div>          <label className="label">
-            <span className="label-text font-medium">{t('versionSelection.label')}</span>
-          </label>
+          <span className="label-text font-medium">{t('versionSelection.label')}</span>
+        </label>
           <select
             value={selectedVersion?.url || ''}
             onChange={(e) => {
@@ -316,47 +427,53 @@ export default function ImageEditingTab({
             className="select select-bordered w-full"
             disabled={isLoading}
           >            {selectedImage.versions
-              .slice()
-              .reverse() // Show newest versions first in dropdown
-              .map((version) => (                <option key={version.url} value={version.url}>
+            .slice()
+            .reverse() // Show newest versions first in dropdown
+            .map((version) => {
+              const isCurrentInStory = storyContent ? storyContent.includes(version.url) || 
+                (version.url.split('/').pop() && storyContent.includes(version.url.split('/').pop()!)) : false;
+              return (
+                <option key={version.url} value={version.url}>
                   {formatVersionNumber(version.version)} ({formatRelativeTime(version.timestamp)})
+                  {isCurrentInStory ? ' • In Story' : ''}
                 </option>
-              ))}
+              );
+            })}
           </select>          <p className="text-sm text-base-content/70 mt-2">
-            {t('versionSelection.versionsInfo', { 
+            {t('versionSelection.versionsInfo', {
               count: selectedImage.versions.length,
               plural: selectedImage.versions.length !== 1 ? 's' : ''
             })}
-            {selectedVersion && ` • ${t('versionSelection.currentlySelected', { 
-              version: formatVersionNumber(selectedVersion.version) 
+            {selectedVersion && ` • ${t('versionSelection.currentlySelected', {
+              version: formatVersionNumber(selectedVersion.version)
             })}`}
           </p>
 
           {/* Change Image Button - Show when a different version is selected */}
           {isVersionChanged && (
             <div className="mt-4">              <button
-                type="button"
-                onClick={handleChangeImage}
-                className={`btn w-full ${optimisticUpdate?.inProgress ? 'btn-success' : 'btn-warning'}`}
-                disabled={isChangingImage || optimisticUpdate?.inProgress}
-              >
-                {optimisticUpdate?.inProgress ? (
-                  <>
-                    <span className="loading loading-spinner loading-xs"></span>
-                    Saving image change...
-                  </>
-                ) : isChangingImage ? (
-                  <>
-                    <span className="loading loading-spinner loading-xs"></span>
-                    {t('versionSelection.changingImage')}
-                  </>
-                ) : (
-                  <>
-                    <FiImage className="w-4 h-4" />
-                    {t('versionSelection.changeImageButton')}
-                  </>
-                )}
-              </button>
+              type="button"
+              onClick={handleChangeImage}
+              className={`btn w-full ${optimisticUpdate?.inProgress ? 'btn-success' : 'btn-warning'}`}
+              disabled={isChangingImage || optimisticUpdate?.inProgress}
+            >
+              {optimisticUpdate?.inProgress ? (
+                <>
+                  <span className="loading loading-spinner loading-xs"></span>
+                  Saving image change...
+                </>
+              ) : isChangingImage ? (
+                <>
+                  <span className="loading loading-spinner loading-xs"></span>
+                  {t('versionSelection.changingImage')}
+                </>
+              ) : (
+                <>
+                  <FiImage className="w-4 h-4" />
+                  {t('versionSelection.changeImageButton')}
+                </>
+              )}
+            </button>
               <p className="text-sm text-base-content/70 mt-2">
                 {t('versionSelection.changeImageDescription')}
               </p>
@@ -368,17 +485,17 @@ export default function ImageEditingTab({
       {/* Image Preview */}
       {previewImage && (
         <div>          <label className="label">
-            <span className="label-text font-medium">{t('imagePreview.label')}</span>
-          </label>
+          <span className="label-text font-medium">{t('imagePreview.label')}</span>
+        </label>
           <div className="max-w-md mx-auto">            <div className="aspect-square bg-base-200 rounded-lg overflow-hidden">
-              <Image
-                src={previewImage}
-                alt="Preview"
-                className="w-full h-full object-cover"
-                width={400}
-                height={400}
-              />
-            </div>
+            <Image
+              src={previewImage}
+              alt="Preview"
+              className="w-full h-full object-cover"
+              width={400}
+              height={400}
+            />
+          </div>
           </div>
         </div>
       )}
@@ -387,16 +504,16 @@ export default function ImageEditingTab({
       {selectedImage && (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>            <label className="label">
-              <span className="label-text font-medium">
-                {t('editRequest.label')}
-              </span>
-              <span className="label-text-alt">
-                {t('editRequest.charactersCount', { 
-                  current: userRequest.length,
-                  max: 2000
-                })}
-              </span>
-            </label>
+            <span className="label-text font-medium">
+              {t('editRequest.label')}
+            </span>
+            <span className="label-text-alt">
+              {t('editRequest.charactersCount', {
+                current: userRequest.length,
+                max: 2000
+              })}
+            </span>
+          </label>
             <textarea
               value={userRequest}
               onChange={(e) => setUserRequest(e.target.value)}
@@ -405,27 +522,7 @@ export default function ImageEditingTab({
               maxLength={2000}
               disabled={isLoading}
               required
-            />
-          </div>
-
-          {/* Example Requests */}
-          <div>            <label className="label">
-              <span className="label-text font-medium">{t('exampleRequests.label')}</span>
-            </label>
-            <div className="grid grid-cols-1 gap-2">
-              {exampleRequests.map((example: string, index: number) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => setUserRequest(example)}
-                  className="text-left p-3 bg-base-200 hover:bg-base-300 rounded-lg text-sm transition-colors"
-                  disabled={isLoading}
-                >
-                  &quot;{example}&quot;
-                </button>
-              ))}
-            </div>
-          </div>
+            />          </div>
 
           {/* Error Message */}
           {error && (
@@ -438,35 +535,35 @@ export default function ImageEditingTab({
           )}
 
           {/* Loading State */}
-          {isLoading && (            <div className="bg-base-200 rounded-lg p-4">
-              <div className="flex items-center gap-3">
-                <span className="loading loading-spinner loading-sm"></span>
-                <div>
-                  <p className="font-medium">{t('loadingState.title')}</p>                  <p className="text-sm text-base-content/70">
-                    {t('loadingState.description')}
-                  </p>
-                </div>
-              </div>
-              <div className="mt-3">
-                <progress className="progress progress-primary w-full"></progress>
+          {isLoading && (<div className="bg-base-200 rounded-lg p-4">
+            <div className="flex items-center gap-3">
+              <span className="loading loading-spinner loading-sm"></span>
+              <div>
+                <p className="font-medium">{t('loadingState.title')}</p>                  <p className="text-sm text-base-content/70">
+                  {t('loadingState.description')}
+                </p>
               </div>
             </div>
+            <div className="mt-3">
+              <progress className="progress progress-primary w-full"></progress>
+            </div>
+          </div>
           )}          {/* Submit Button */}
           <button
             type="submit"
             className="btn btn-primary w-full"
             disabled={isLoading || !userRequest.trim()}
           >            {isLoading ? (
-              <>
-                <span className="loading loading-spinner loading-xs"></span>
-                {t('buttons.editingImage')}
-              </>
-            ) : (
-              <>
-                <FiEdit3 className="w-4 h-4" />
-                {t('buttons.generateNewVersion')}
-              </>
-            )}
+            <>
+              <span className="loading loading-spinner loading-xs"></span>
+              {t('buttons.editingImage')}
+            </>
+          ) : (
+            <>
+              <FiEdit3 className="w-4 h-4" />
+              {t('buttons.generateNewVersion')}
+            </>
+          )}
           </button>
 
           {/* Replace Image Button - Show when new image is generated */}

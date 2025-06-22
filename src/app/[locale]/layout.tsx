@@ -77,7 +77,7 @@ export async function generateMetadata({
   const baseUrl = 'https://mythoria.pt';
   const currentUrl = `${baseUrl}/${locale}/`;
   return {
-    title: metadata.title || 'Mythoria | AI-Powered Personalized Books Creator',
+    title: metadata.title || 'Mythoria |  Personalized Books Creator',
     description: metadata.description || 'Create unique, fully illustrated books with Mythoria\'s generative-AI.',
     robots: 'index,follow,max-snippet:-1,max-image-preview:large',
     alternates: {
@@ -91,21 +91,21 @@ export async function generateMetadata({
       type: 'website',
       siteName: 'Mythoria',
       url: currentUrl,
-      title: metadata.openGraph?.title || metadata.title || 'Mythoria | AI-Powered Personalized Books Creator',
+      title: metadata.openGraph?.title || metadata.title || 'Mythoria | Personalized Books Creator',
       description: metadata.openGraph?.description || metadata.description || 'Turn your ideas into personalised, beautifully illustrated books with AI.',
       images: [
         {
           url: metadata.openGraph?.image || 'https://mythoria.pt/assets/og/mythoria_en.jpg',
           width: 1200,
           height: 630,
-          alt: 'Mythoria - AI-Powered Personalized Books Creator'
+          alt: 'Mythoria - Personalized Books Creator'
         }
       ],
       locale: locale,
     },
     twitter: {
       card: 'summary_large_image',
-      title: metadata.openGraph?.title || metadata.title || 'Mythoria | AI-Powered Personalized Books Creator',
+      title: metadata.openGraph?.title || metadata.title || 'Mythoria | Personalized Books Creator',
       description: metadata.openGraph?.description || metadata.description || 'Turn your ideas into personalised, beautifully illustrated books with AI.',
       images: [metadata.openGraph?.image || 'https://mythoria.pt/assets/og/mythoria_en.jpg'],
     }
