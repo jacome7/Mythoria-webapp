@@ -1,6 +1,6 @@
 import { db } from "./index";
-import { authors, stories, characters, storyCharacters, creditLedger, authorCreditBalances, leads, storyGenerationRuns } from "./schema";
-import { eq, and, count, desc, sql, like, asc } from "drizzle-orm";
+import { authors, stories, characters, storyCharacters, creditLedger, authorCreditBalances, leads, storyGenerationRuns, storyRatings } from "./schema";
+import { eq, and, count, desc, sql, like, asc, avg } from "drizzle-orm";
 import { ClerkUserForSync } from "@/types/clerk";
 import { pricingService } from "./services/pricing";
 
@@ -185,22 +185,57 @@ export const storyService = {  async createStory(storyData: { title: string; aut
   },
   async getPublishedStories() {
     return await db.select().from(stories).where(eq(stories.status, 'published'));
-  },
+  },  async getFeaturedPublicStories(filters?: {
+    targetAudience?: string;
+    graphicalStyle?: string;
+    storyLanguage?: string;
+  }) {
+    let conditions = [eq(stories.isPublic, true), eq(stories.isFeatured, true)];
+    
+    if (filters) {
+      if (filters.targetAudience) {
+        conditions.push(eq(stories.targetAudience, filters.targetAudience as any));
+      }
+      if (filters.graphicalStyle) {
+        conditions.push(eq(stories.graphicalStyle, filters.graphicalStyle as any));
+      }
+      if (filters.storyLanguage) {
+        conditions.push(eq(stories.storyLanguage, filters.storyLanguage));
+      }    }
 
-  async getFeaturedPublicStories() {
-    return await db
+    // First get the stories with their average ratings
+    const ratingsSubquery = db
+      .select({
+        storyId: storyRatings.storyId,
+        averageRating: sql<number>`ROUND(AVG(CAST(${storyRatings.rating}::text AS INTEGER)), 1)`.as('average_rating'),
+        ratingCount: count(storyRatings.ratingId).as('rating_count')
+      })
+      .from(storyRatings)
+      .groupBy(storyRatings.storyId)
+      .as('ratings_data');    const result = await db
       .select({
         storyId: stories.storyId,
         title: stories.title,
         slug: stories.slug,
         featureImageUri: stories.featureImageUri,
         author: authors.displayName,
-        createdAt: stories.createdAt
+        createdAt: stories.createdAt,
+        targetAudience: stories.targetAudience,
+        graphicalStyle: stories.graphicalStyle,
+        storyLanguage: stories.storyLanguage,
+        averageRating: ratingsSubquery.averageRating,
+        ratingCount: ratingsSubquery.ratingCount
       })
       .from(stories)
       .innerJoin(authors, eq(stories.authorId, authors.authorId))
-      .where(and(eq(stories.isPublic, true), eq(stories.isFeatured, true)))
-      .orderBy(desc(stories.createdAt));
+      .leftJoin(ratingsSubquery, eq(stories.storyId, ratingsSubquery.storyId))
+      .where(and(...conditions))
+      .orderBy(desc(stories.createdAt));    // Convert string rating to number and ensure proper types
+    return result.map(story => ({
+      ...story,
+      averageRating: story.averageRating ? parseFloat(story.averageRating as unknown as string) : null,
+      ratingCount: story.ratingCount || 0
+    }));
   },
 
   async getTotalStoriesCount() {

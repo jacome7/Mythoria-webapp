@@ -254,8 +254,46 @@
       "title": "Investidores: Juntem-se à Aventura",
       "description": "Os dragões amam ouro; nós amamos parceiros. Se também veem o tesouro, abram o pergaminho."
     }
-  },
-  "GetInspiredPage": {
+  },  "GetInspiredPage": {    "filters": {
+      "title": "Filtrar Histórias",
+      "targetAudience": "Público-Alvo",
+      "graphicalStyle": "Estilo Artístico",
+      "storyLanguage": "Idioma",
+      "clearAll": "Limpar Filtros",
+      "showingAll": "Mostrar Todas as Histórias"
+    },
+    "targetAudience": {
+      "all": "Todas as Idades",
+      "children_0-2": "Bebés e Crianças (0-2)",
+      "children_3-6": "Pré-escolares (3-6)",
+      "children_7-10": "Ensino Primário (7-10)",
+      "children_11-14": "Ensino Preparatório (11-14)",
+      "young_adult_15-17": "Jovens Adultos (15-17)",
+      "adult_18+": "Adultos (18+)",
+      "all_ages": "Todas as Idades"
+    },
+    "graphicalStyle": {
+      "all": "Todos os Estilos",
+      "cartoon": "Desenho Animado",
+      "realistic": "Realista",
+      "watercolor": "Aguarela",
+      "digital_art": "Arte Digital",
+      "hand_drawn": "Desenho à Mão",
+      "minimalist": "Minimalista",
+      "vintage": "Vintage",
+      "comic_book": "Banda Desenhada",
+      "anime": "Anime",
+      "pixar_style": "Estilo Pixar",
+      "disney_style": "Estilo Disney",
+      "sketch": "Esboço",
+      "oil_painting": "Pintura a Óleo",
+      "colored_pencil": "Lápis de Cor"
+    },
+    "storyLanguage": {
+      "all": "Todos os Idiomas",
+      "en-US": "Inglês",
+      "pt-PT": "Português"
+    },
     "gallery": {
       "title": "Histórias em Destaque",
       "subtitle": "Histórias que inspiraram famílias em todo o mundo",

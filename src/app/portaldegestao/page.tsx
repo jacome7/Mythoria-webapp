@@ -11,6 +11,7 @@ interface KPIData {
   users: number;
   stories: number;
   leads: number;
+  printRequests: number;
   revenue: number;
 }
 
@@ -76,9 +77,8 @@ export default function AdminPortal() {
       <AdminHeader />
       <main className="flex-1 container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold text-center mb-8">Dashboard</h1>
-        <p className="text-center text-gray-600 mb-8">Project main indicators and KPIs</p>
-          {/* KPI Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <p className="text-center text-gray-600 mb-8">Project main indicators and KPIs</p>          {/* KPI Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 max-w-7xl mx-auto">
           <KPICard
             title="Users"
             value={kpis?.users || 0}
@@ -104,8 +104,7 @@ export default function AdminPortal() {
             description="Total email leads collected"
             isLoading={isLoadingKpis}
           />
-          
-          <KPICard
+            <KPICard
             title="Stories"
             value={kpis?.stories || 0}
             icon={
@@ -115,6 +114,19 @@ export default function AdminPortal() {
             }
             href="/portaldegestao/stories"
             description="Total created stories"
+            isLoading={isLoadingKpis}
+          />
+          
+          <KPICard
+            title="Print Requests"
+            value={kpis?.printRequests || 0}
+            icon={
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+              </svg>
+            }
+            href="/portaldegestao/print-requests"
+            description="Total print requests"
             isLoading={isLoadingKpis}
           />
           

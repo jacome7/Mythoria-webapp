@@ -102,6 +102,7 @@ export const aiActionTypeEnum = pgEnum("ai_action_type", [
   'story_outline',
   'chapter_writing',
   'image_generation',
+  'image_edit',
   'story_review',
   'character_generation',
   'story_enhancement',

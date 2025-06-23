@@ -205,9 +205,12 @@
       "StoryGenerationProgress": {
         "ready": "A Sua História Está Pronta!"
       }
-    },
-    "storyRating": {
+    },    "storyRating": {
       "title": "Avalie esta história",
+      "titleUpdate": "Atualize a Sua Avaliação",
+      "currentRating": "Avaliação Atual",
+      "averageRating": "Avaliação Média",
+      "totalRatings": "Total de Avaliações",
       "feedback": {
         "title": "O que podemos melhorar? (Opcional)",
         "placeholder": "O seu feedback ajuda-nos a criar melhores histórias...",
@@ -216,11 +219,14 @@
       "buttons": {
         "cancel": "Cancelar",
         "submitRating": "Enviar Avaliação",
+        "updateRating": "Atualizar Avaliação",
         "submitting": "Enviando..."
       },
       "success": {
         "title": "Obrigado pela sua avaliação!",
-        "message": "O seu feedback ajuda-nos a melhorar as nossas histórias."
+        "titleUpdated": "Avaliação Atualizada!",
+        "message": "O seu feedback ajuda-nos a melhorar as nossas histórias.",
+        "messageUpdated": "A sua avaliação foi atualizada com sucesso!"
       },
       "submittingMessage": "Enviando a sua avaliação...",
       "errors": {

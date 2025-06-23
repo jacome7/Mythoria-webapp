@@ -184,6 +184,7 @@ export async function POST(request: NextRequest) {
       );
     }    // Create the print request
     const newRequest = await db.insert(printRequests).values({
+      authorId: author.authorId,
       storyId: body.storyId,
       pdfUrl: body.pdfUrl,
       printProviderId: suitableProvider.id,

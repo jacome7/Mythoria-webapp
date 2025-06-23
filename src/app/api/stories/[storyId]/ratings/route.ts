@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db';
 import { storyRatings, authors, stories } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 
 export async function POST(
   request: NextRequest,
@@ -54,23 +54,51 @@ export async function POST(
       if (author.length > 0) {
         authorId = author[0].authorId;
       }
+    }    // For ratings 1-3, feedback is optional but might be provided
+    // For ratings 4-5, feedback is not expected but we'll accept it if provided
+    const isAnonymous = !userId || !includeNameInFeedback;    // Check if user already has a rating for this story
+    let existingRating = null;
+    if (authorId) {
+      const existing = await db.select()
+        .from(storyRatings)
+        .where(and(
+          eq(storyRatings.storyId, storyId),
+          eq(storyRatings.userId, authorId)
+        ))
+        .limit(1);
+      
+      if (existing.length > 0) {
+        existingRating = existing[0];
+      }
     }
 
-    // For ratings 1-3, feedback is optional but might be provided
-    // For ratings 4-5, feedback is not expected but we'll accept it if provided
-    const isAnonymous = !userId || !includeNameInFeedback;    const newRating = await db.insert(storyRatings).values({
-      storyId,
-      userId: authorId,
-      rating: rating as '1' | '2' | '3' | '4' | '5',
-      feedback: feedback || null,
-      isAnonymous,
-      includeNameInFeedback: includeNameInFeedback || false,
-    }).returning();
-
-    return NextResponse.json({
+    let resultRating;
+    
+    if (existingRating) {
+      // Update existing rating
+      resultRating = await db.update(storyRatings)
+        .set({
+          rating: rating as '1' | '2' | '3' | '4' | '5',
+          feedback: feedback || null,
+          isAnonymous,
+          includeNameInFeedback: includeNameInFeedback || false,
+        })
+        .where(eq(storyRatings.ratingId, existingRating.ratingId))
+        .returning();
+    } else {
+      // Insert new rating
+      resultRating = await db.insert(storyRatings).values({
+        storyId,
+        userId: authorId,
+        rating: rating as '1' | '2' | '3' | '4' | '5',
+        feedback: feedback || null,
+        isAnonymous,
+        includeNameInFeedback: includeNameInFeedback || false,
+      }).returning();
+    }    return NextResponse.json({
       success: true,
-      rating: newRating[0],
-      message: 'Rating submitted successfully'
+      rating: resultRating[0],
+      message: existingRating ? 'Rating updated successfully' : 'Rating submitted successfully'
     });
 
   } catch (error) {
@@ -96,6 +124,7 @@ export async function GET(
   { params }: { params: Promise<{ storyId: string }> }
 ) {
   try {
+    const { userId } = await auth();
     const { storyId } = await params;
     
     if (!storyId) {
@@ -103,6 +132,19 @@ export async function GET(
         { error: 'Story ID is required' },
         { status: 400 }
       );
+    }
+
+    // Get current user's author ID if authenticated
+    let currentUserAuthorId = null;
+    if (userId) {
+      const author = await db.select()
+        .from(authors)
+        .where(eq(authors.clerkUserId, userId))
+        .limit(1);
+      
+      if (author.length > 0) {
+        currentUserAuthorId = author[0].authorId;
+      }
     }
 
     // Get all ratings for the story (for statistics)
@@ -114,11 +156,17 @@ export async function GET(
       includeNameInFeedback: storyRatings.includeNameInFeedback,
       createdAt: storyRatings.createdAt,
       displayName: authors.displayName,
+      userId: storyRatings.userId,
     })
     .from(storyRatings)
     .leftJoin(authors, eq(storyRatings.userId, authors.authorId))
     .where(eq(storyRatings.storyId, storyId))
     .orderBy(storyRatings.createdAt);
+
+    // Find current user's rating if they're authenticated
+    const userRating = currentUserAuthorId 
+      ? ratings.find(rating => rating.userId === currentUserAuthorId)
+      : null;
 
     // Calculate statistics
     const totalRatings = ratings.length;
@@ -145,13 +193,17 @@ export async function GET(
         ? rating.displayName 
         : null,
       createdAt: rating.createdAt,
-    }));
-
-    return NextResponse.json({
+    }));    return NextResponse.json({
       totalRatings,
       averageRating: Math.round(averageRating * 100) / 100,
       ratingDistribution,
       ratings: publicRatings,
+      userRating: userRating ? {
+        ratingId: userRating.ratingId,
+        rating: userRating.rating,
+        feedback: userRating.feedback,
+        createdAt: userRating.createdAt,
+      } : null,
     });
   } catch (error) {
     console.error('Error fetching story ratings:', error);

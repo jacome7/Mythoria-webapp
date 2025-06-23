@@ -1,12 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { FiStar } from 'react-icons/fi';
 
 interface StoryRatingProps {
   storyId: string;
   onRatingSubmitted?: (rating: number) => void;
+}
+
+interface UserRating {
+  ratingId: string;
+  rating: string;
+  feedback: string | null;
+  createdAt: string;
 }
 
 export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingProps) {
@@ -19,6 +26,31 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [existingRating, setExistingRating] = useState<UserRating | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // Fetch existing rating on component mount
+  useEffect(() => {
+    const fetchExistingRating = async () => {
+      try {
+        const response = await fetch(`/api/stories/${storyId}/ratings`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.userRating) {
+            setExistingRating(data.userRating);
+            setRating(parseInt(data.userRating.rating));
+            setFeedback(data.userRating.feedback || '');
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching existing rating:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExistingRating();
+  }, [storyId]);
 
   const handleStarClick = (starRating: number) => {
     setRating(starRating);
@@ -48,17 +80,29 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
           feedback: finalFeedback || null,
           includeNameInFeedback,
         }),
-      });      if (!response.ok) {
+      });
+
+      if (!response.ok) {
         const errorData = await response.json();
-          if (response.status === 503) {
+        if (response.status === 503) {
           throw new Error(t('errors.serviceUnavailable'));
         }
         
         throw new Error(errorData.error || t('errors.submitFailed'));
       }
 
+      const result = await response.json();
+      setExistingRating({
+        ratingId: result.rating.ratingId,
+        rating: result.rating.rating,
+        feedback: result.rating.feedback,
+        createdAt: result.rating.createdAt,
+      });
       setSubmitted(true);
       onRatingSubmitted?.(finalRating);
+      
+      // Reset form state after successful submission
+      setShowFeedbackForm(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : t('errors.generic'));
     } finally {
@@ -71,12 +115,39 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
     handleSubmitRating(rating, feedback);
   };
 
+  if (loading) {
+    return (
+      <div className="card bg-base-100 shadow-xl border-2 border-base-300">
+        <div className="card-body text-center">
+          <span className="loading loading-spinner loading-lg"></span>
+        </div>
+      </div>
+    );
+  }
+
   if (submitted) {
     return (
       <div className="card bg-success/10 border border-success/20 shadow-lg">
         <div className="card-body text-center">
-          <div className="text-success text-4xl mb-2">✓</div>          <h3 className="card-title text-success justify-center">{t('success.title')}</h3>
-          <p className="text-success/80">{t('success.message')}</p>
+          <div className="text-success text-4xl mb-2">✓</div>          
+          <h3 className="card-title text-success justify-center">
+            {existingRating ? (t('success.titleUpdated') || 'Rating Updated!') : t('success.title')}
+          </h3>
+          <p className="text-success/80">
+            {existingRating ? (t('success.messageUpdated') || 'Your rating has been updated successfully!') : t('success.message')}
+          </p>
+          
+          {/* Allow user to submit another rating */}
+          <button
+            onClick={() => {
+              setSubmitted(false);
+              setShowFeedbackForm(false);
+              setError(null);
+            }}
+            className="btn btn-outline btn-success mt-4"
+          >
+            Update Rating
+          </button>
         </div>
       </div>
     );
@@ -86,7 +157,27 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
     <div className="card bg-base-100 shadow-xl border-2 border-base-300">
       <div className="card-body">
         <div className="text-center">
-          <h3 className="card-title justify-center mb-4">{t('title')}</h3>
+          <h3 className="card-title justify-center mb-4">
+            {existingRating ? (t('titleUpdate') || 'Update Your Rating') : t('title')}
+          </h3>
+          
+          {/* Show existing rating info */}
+          {existingRating && !submitted && (
+            <div className="mb-4 p-3 bg-info/10 rounded-lg border border-info/20">
+              <p className="text-sm text-info">
+                {t('currentRating') || 'Current Rating'}: {existingRating.rating} ⭐ 
+                {existingRating.createdAt && (
+                  <span className="ml-2 text-xs">
+                    ({new Date(existingRating.createdAt).toLocaleDateString()})
+                  </span>
+                )}
+              </p>              {existingRating.feedback && (
+                <p className="text-xs text-base-content/70 mt-1">
+                  &ldquo;{existingRating.feedback}&rdquo;
+                </p>
+              )}
+            </div>
+          )}
           
           {/* Star Rating */}
           <div className="flex justify-center gap-1 mb-4">
@@ -114,7 +205,8 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
           {/* Feedback Form for low ratings */}
           {showFeedbackForm && (
             <form onSubmit={handleFeedbackSubmit} className="mt-6 space-y-4">
-              <div className="text-left">                <label htmlFor="feedback" className="label">
+              <div className="text-left">
+                <label htmlFor="feedback" className="label">
                   <span className="label-text">
                     {t('feedback.title')}
                   </span>
@@ -137,13 +229,15 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
                     checked={includeNameInFeedback}
                     onChange={(e) => setIncludeNameInFeedback(e.target.checked)}
                     disabled={isSubmitting}
-                  />                  <span className="label-text">
+                  />
+                  <span className="label-text">
                     {t('feedback.includeNameLabel')}
                   </span>
                 </label>
               </div>
 
-              <div className="flex gap-2 justify-end">                <button
+              <div className="flex gap-2 justify-end">
+                <button
                   type="button"
                   className="btn btn-ghost"
                   onClick={() => setShowFeedbackForm(false)}
@@ -162,7 +256,7 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
                       {t('buttons.submitting')}
                     </>
                   ) : (
-                    t('buttons.submitRating')
+                    existingRating ? (t('buttons.updateRating') || 'Update Rating') : t('buttons.submitRating')
                   )}
                 </button>
               </div>
@@ -177,7 +271,8 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
           )}
 
           {/* Loading state for high ratings */}
-          {isSubmitting && !showFeedbackForm && (            <div className="flex items-center justify-center gap-2 mt-4">
+          {isSubmitting && !showFeedbackForm && (
+            <div className="flex items-center justify-center gap-2 mt-4">
               <span className="loading loading-spinner loading-sm"></span>
               <span>{t('submittingMessage')}</span>
             </div>

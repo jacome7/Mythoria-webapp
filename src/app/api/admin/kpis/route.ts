@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 import { authorService, storyService, leadService } from '@/db/services';
+import { db } from '@/db';
+import { printRequests } from '@/db/schema';
+import { count } from 'drizzle-orm';
 
 export async function GET() {
   try {
@@ -15,16 +18,18 @@ export async function GET() {
     if (!publicMetadata || publicMetadata['autorizaçãoDeAcesso'] !== 'Comejá') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }    // Get KPI data
-    const [usersCount, storiesCount, leadsCount] = await Promise.all([
+    const [usersCount, storiesCount, leadsCount, printRequestsCount] = await Promise.all([
       authorService.getTotalAuthorsCount(),
       storyService.getTotalStoriesCount(),
-      leadService.getTotalLeadsCount()
+      leadService.getTotalLeadsCount(),
+      db.select({ value: count() }).from(printRequests).then(result => result[0]?.value || 0)
     ]);
 
     const kpis = {
       users: usersCount,
       stories: storiesCount,
       leads: leadsCount,
+      printRequests: printRequestsCount,
       revenue: 6324 // Fixed value as requested
     };
 

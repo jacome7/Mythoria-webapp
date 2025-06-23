@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { FiLoader, FiAlertCircle, FiUser, FiCalendar, FiTag, FiEye, FiPrinter } from 'react-icons/fi';
 import StoryReader from '@/components/StoryReader';
+import PublicStoryRating from '@/components/PublicStoryRating';
 
 interface PublicStoryData {
   success: boolean;
@@ -264,6 +265,16 @@ export default function PublicStoryPage() {
               </p>
             </div>
           )}
+          
+          {/* Story Rating Section */}
+          <div className="mt-8">
+            <PublicStoryRating
+              storyId={story.storyId}
+              onRatingSubmitted={(rating) => {
+                console.log('Rating submitted:', rating);
+              }}
+            />
+          </div>
         </div>
       </div>
 

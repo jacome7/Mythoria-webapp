@@ -30,6 +30,7 @@ export const printProviders = pgTable("print_providers", {
 export const printRequests = pgTable("print_requests", {
   id: uuid("id").primaryKey().defaultRandom(),
   storyId: uuid("story_id").notNull(), // Not FK - story can be deleted but print request persists
+  authorId: uuid("author_id").notNull(), // Author who placed the request - for admin tracking
   pdfUrl: text("pdf_url").notNull(), // Public accessible URL to download PDF
   status: printRequestStatusEnum("status").notNull().default('requested'),
   shippingId: uuid("shipping_id").references(() => addresses.addressId, { onDelete: 'set null' }), // FK to addresses table

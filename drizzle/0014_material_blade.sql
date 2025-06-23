@@ -1,0 +1,1 @@
+ALTER TABLE "print_requests" ADD COLUMN "author_id" uuid NOT NULL;

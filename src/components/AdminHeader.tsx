@@ -16,12 +16,13 @@ export default function AdminHeader() {
             height={34} 
           />
         </Link>
-      </div>        <div className="navbar-center">
+      </div>      <div className="navbar-center">
         <ul className="menu menu-horizontal px-1">
           <li><Link href="/portaldegestao">Dashboard</Link></li>
           <li><Link href="/portaldegestao/users">Users</Link></li>
           <li><Link href="/portaldegestao/leads">Leads</Link></li>
           <li><Link href="/portaldegestao/stories">Stories</Link></li>
+          <li><Link href="/portaldegestao/print-requests">Print Requests</Link></li>
           <li><Link href="/portaldegestao/payments">Payments</Link></li>
           <li><Link href="/portaldegestao/pricing">Pricing</Link></li>
         </ul>

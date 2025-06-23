@@ -205,9 +205,12 @@
 			"StoryGenerationProgress": {
 				"ready": "Your Story is Ready!"
 			}
-		},
-		"storyRating": {
+		},		"storyRating": {
 			"title": "Rate this story",
+			"titleUpdate": "Update Your Rating",
+			"currentRating": "Current Rating",
+			"averageRating": "Average Rating",
+			"totalRatings": "Total Ratings",
 			"feedback": {
 				"title": "What could we improve? (Optional)",
 				"placeholder": "Your feedback helps us create better stories...",
@@ -216,11 +219,14 @@
 			"buttons": {
 				"cancel": "Cancel",
 				"submitRating": "Submit Rating",
+				"updateRating": "Update Rating",
 				"submitting": "Submitting..."
 			},
 			"success": {
 				"title": "Thank you for your rating!",
-				"message": "Your feedback helps us improve our stories."
+				"titleUpdated": "Rating Updated!",
+				"message": "Your feedback helps us improve our stories.",
+				"messageUpdated": "Your rating has been updated successfully!"
 			},
 			"submittingMessage": "Submitting your rating...",
 			"errors": {
