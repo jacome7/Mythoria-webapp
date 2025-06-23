@@ -113,6 +113,20 @@
       "when": 1750674422532,
       "tag": "0015_magenta_jackpot",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1750690230149,
+      "tag": "0016_minor_red_wolf",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1750690679215,
+      "tag": "0017_flawless_frog_thor",
+      "breakpoints": true
     }
   ]
 }

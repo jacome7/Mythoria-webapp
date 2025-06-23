@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { FiImage, FiEdit3 } from 'react-icons/fi';
+import CreditConfirmationModal from './CreditConfirmationModal';
 import { StoryImage, ImageVersion, getImageDisplayName, formatVersionNumber, formatRelativeTime } from '@/utils/imageUtils';
 
 interface ImageEditingTabProps {
@@ -27,11 +28,25 @@ export default function ImageEditingTab({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null); const [newImageGenerated, setNewImageGenerated] = useState<string | null>(null);
-  const [isReplacing, setIsReplacing] = useState(false); const [isChangingImage, setIsChangingImage] = useState(false);
-  const [optimisticUpdate, setOptimisticUpdate] = useState<{
+  const [isReplacing, setIsReplacing] = useState(false); const [isChangingImage, setIsChangingImage] = useState(false);  const [optimisticUpdate, setOptimisticUpdate] = useState<{
     inProgress: boolean;
     originalUrl: string;
     newUrl: string;
+  } | null>(null);
+  
+  // Credit confirmation state
+  const [showCreditConfirmation, setShowCreditConfirmation] = useState(false);
+  const [creditInfo, setCreditInfo] = useState<{
+    canEdit: boolean;
+    requiredCredits: number;
+    currentBalance: number;
+    editCount: number;
+    nextThreshold: number;
+    isFree: boolean;
+  } | null>(null);
+  const [pendingImageEditData, setPendingImageEditData] = useState<{
+    imageUrl: string;
+    userRequest: string;
   } | null>(null);
   // Clear optimistic update state when error changes (success or failure)
   useEffect(() => {
@@ -124,7 +139,6 @@ export default function ImageEditingTab({
     setSelectedVersion(version);
     setPreviewImage(version.url);
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedImage || !selectedVersion) {
@@ -142,6 +156,59 @@ export default function ImageEditingTab({
       return;
     }
 
+    // Check credit requirements before proceeding
+    try {
+      const creditCheckResponse = await fetch('/api/ai-edit/check-credits', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'imageEdit',
+          storyId
+        }),
+      });
+
+      const creditData = await creditCheckResponse.json();
+
+      if (!creditCheckResponse.ok) {
+        setError(creditData.error || 'Failed to check credit requirements');
+        return;
+      }
+
+      if (!creditData.canEdit) {
+        setError(creditData.message || 'Insufficient credits for this edit');
+        return;
+      }
+
+      // Store the edit data for later execution
+      setPendingImageEditData({
+        imageUrl: selectedVersion.url,
+        userRequest: userRequest.trim()
+      });
+
+      // Store credit info and show confirmation modal
+      setCreditInfo({
+        canEdit: creditData.canEdit,
+        requiredCredits: creditData.requiredCredits,
+        currentBalance: creditData.currentBalance,
+        editCount: creditData.editCount,
+        nextThreshold: creditData.nextThreshold,
+        isFree: creditData.isFree
+      });
+
+      setShowCreditConfirmation(true);
+
+    } catch (error) {
+      console.error('Error checking credits:', error);
+      setError('Failed to check credit requirements. Please try again.');
+    }
+  };
+
+  const handleCreditConfirmation = async () => {
+    if (!pendingImageEditData) return;
+
+    setShowCreditConfirmation(false);
     setIsLoading(true);
     setError(null);
 
@@ -153,12 +220,17 @@ export default function ImageEditingTab({
         },
         body: JSON.stringify({
           storyId,
-          imageUrl: selectedVersion.url,
-          userRequest: userRequest.trim()
+          imageUrl: pendingImageEditData.imageUrl,
+          userRequest: pendingImageEditData.userRequest
         }),
-      }); const data = await response.json();
+      });      const data = await response.json();
 
       if (response.ok && data.success) {
+        if (!selectedImage) {
+          setError('Image selection lost during processing');
+          return;
+        }
+        
         // Store the new image URL for potential replacement
         setNewImageGenerated(data.newImageUrl);
 
@@ -171,7 +243,7 @@ export default function ImageEditingTab({
         };
 
         // Update the selected image with the new version
-        const updatedSelectedImage = {
+        const updatedSelectedImage: StoryImage = {
           ...selectedImage,
           versions: [...selectedImage.versions, newVersion],
           latestVersion: newVersion
@@ -190,7 +262,10 @@ export default function ImageEditingTab({
         // Notify parent component about the updated images
         onImageUpdated(updatedImages);
 
-        console.log('New image generated successfully:', data.newImageUrl); setUserRequest('');
+        console.log('New image generated successfully:', data.newImageUrl);
+        setUserRequest('');
+        setPendingImageEditData(null);
+        setCreditInfo(null);
       } else {
         setError(data.error || t('errors.editFailed'));
       }
@@ -596,8 +671,27 @@ export default function ImageEditingTab({
                 )}
               </button>
             </div>
-          )}
-        </form>
+          )}        </form>
+      )}
+      
+      {/* Credit Confirmation Modal */}
+      {showCreditConfirmation && creditInfo && (
+        <CreditConfirmationModal
+          isOpen={showCreditConfirmation}
+          onClose={() => {
+            setShowCreditConfirmation(false);
+            setPendingImageEditData(null);
+            setCreditInfo(null);
+          }}
+          onConfirm={handleCreditConfirmation}
+          action="imageEdit"
+          requiredCredits={creditInfo.requiredCredits}
+          currentBalance={creditInfo.currentBalance}
+          editCount={creditInfo.editCount}
+          nextThreshold={creditInfo.nextThreshold}
+          isFree={creditInfo.isFree}
+          isLoading={isLoading}
+        />
       )}
     </div>
   );

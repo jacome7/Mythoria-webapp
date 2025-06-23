@@ -253,19 +253,7 @@
 			"editRequest": {
 				"label": "What changes would you like to make?",
 				"placeholder": "Describe the changes you'd like to make to your story...",
-				"charactersCount": "{current}/{max} characters"
-			},
-			"exampleRequests": {
-				"label": "Example requests:",
-				"examples": [
-					"Make the dragon more friendly and less scary for young children",
-					"Add more dialogue between the main characters",
-					"Include more descriptive details about the magical forest",
-					"Make the ending more exciting and adventurous",
-					"Fix any grammatical errors and improve sentence flow",
-					"Add a new subplot about the character's pet companion"
-				]
-			},
+				"charactersCount": "{current}/{max} characters"			},
 			"buttons": {
 				"cancel": "Cancel",
 				"close": "Close",
@@ -275,12 +263,34 @@
 			"loadingState": {
 				"title": "Processing your request...",
 				"description": "This may take 5-60 seconds depending on the scope of changes."
-			},
-			"errors": {
+			},			"errors": {
 				"enterRequest": "Please enter your editing request",
 				"requestTooLong": "Request must be 2000 characters or less",
 				"editFailed": "Failed to edit story. Please try again."
 			}
+		},
+		"creditConfirmation": {
+			"textEdit": "Text Edit",
+			"imageEdit": "Image Edit",
+			"freeEditTitle": "Free Edit Available",
+			"confirmEditTitle": "Confirm Edit",
+			"editProgress": "Edit Progress",
+			"editsCompleted": "edits completed",
+			"textEditFreeRemaining": "{remaining} free text edits remaining",
+			"textEditPaidMode": "You're in paid mode - 1 credit per 5 edits",
+			"imageEditFirstFree": "Your first image edit is free!",
+			"imageEditPaidMode": "1 credit per image edit",
+			"creditBalance": "Credit Balance",
+			"thisEditCosts": "This edit costs:",
+			"remainingBalance": "Remaining balance:",
+			"freeEdit": "This edit is free!",
+			"lowCreditsWarning": "Low Credits",
+			"lowCreditsMessage": "Consider purchasing more credits to continue editing.",
+			"cancel": "Cancel",
+			"processing": "Processing...",
+			"proceedFree": "Proceed (Free)",
+			"proceedWithCredits": "Use {credits} Credits",
+			"buyCredits": "Buy Credits"
 		},
 		"bookEditor": {
 			"loading": "Loading editor...",

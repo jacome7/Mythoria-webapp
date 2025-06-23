@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentAuthor } from "@/lib/auth";
 import { storyService } from "@/db/services";
 import { preserveMythoriaClasses, validateMythoriaClasses } from "@/utils/mythoriaClassPreserver";
-import { uploadNewVersion } from "@/utils/htmlVersioning";
+import { uploadNewVersion, rollbackUploadedFile, verifyStoryFileExists } from "@/utils/htmlVersioning";
 
 export async function POST(
   request: NextRequest,
@@ -70,29 +70,63 @@ export async function POST(
         console.warn(`Story ${storyId}: CSS class warnings:`, validation.warnings);
       }
     }    // Generate filename for the updated story
-    // Use versioning system to create a new version
+    // Use versioning system to create a new version with atomic operation
+    let versionResult: { version: number; uri: string; filename: string } | undefined;
+    let rollbackRequired = false;
+    
     try {
       // Upload the edited HTML with preserved CSS classes using versioning system
-      const versionResult = await uploadNewVersion(storyId, preservedHtml);
+      console.log(`Starting atomic save operation for story ${storyId}`);
+      versionResult = await uploadNewVersion(storyId, preservedHtml);
+      rollbackRequired = true; // Mark that we may need to cleanup the uploaded file
+      
+      console.log(`Successfully uploaded ${versionResult.filename} to GCS`);
 
       // Update the story record with the new versioned HTML URI
-      await storyService.updateStory(storyId, {
+      const updatedStory = await storyService.updateStory(storyId, {
         htmlUri: versionResult.uri,
         updatedAt: new Date()
       });
 
-      console.log(`Story ${storyId} manually edited and saved as version ${versionResult.version} at ${versionResult.uri}`);
+      if (!updatedStory) {
+        throw new Error('Database update failed - story not found or update returned null');
+      }      console.log(`Story ${storyId} manually edited and saved as version ${versionResult.version} at ${versionResult.uri}`);
+      rollbackRequired = false; // Success - no cleanup needed
+
+      // Final verification: ensure the file actually exists and database is consistent
+      const verification = await verifyStoryFileExists(storyId, versionResult.uri);
+      if (!verification.exists) {
+        console.error(`CRITICAL: Database updated but file verification failed for ${versionResult.uri}:`, verification.error);
+        // This is a critical inconsistency that should be logged for monitoring
+      } else {
+        console.log(`Verification successful: File exists in GCS (${verification.size} bytes)`);
+      }
 
       return NextResponse.json({ 
         success: true,
         message: "Story saved successfully",
         htmlUri: versionResult.uri,
         version: versionResult.version,
-        filename: versionResult.filename
+        filename: versionResult.filename,
+        verified: verification.exists
       });
 
     } catch (uploadError) {
-      console.error('Error uploading edited story to GCS:', uploadError);
+      console.error('Error in atomic save operation for story', storyId, ':', uploadError);
+      
+      // If we successfully uploaded to GCS but failed to update the database,
+      // we should attempt to clean up the uploaded file
+      if (rollbackRequired && versionResult) {
+        try {
+          console.log(`Attempting to rollback uploaded file: ${versionResult.filename}`);
+          await rollbackUploadedFile(storyId, versionResult.filename);
+          console.log(`Successfully rolled back uploaded file: ${versionResult.filename}`);
+        } catch (rollbackError) {
+          console.error(`Failed to rollback uploaded file ${versionResult.filename}:`, rollbackError);
+          // Log this for manual cleanup but don't fail the original error
+        }
+      }
+      
       return NextResponse.json(
         { error: "Failed to save story content" },
         { status: 500 }

@@ -16,6 +16,7 @@ export * from './pricing';
 export * from './ratings';
 export * from './token-usage';
 export * from './print';
+export * from './ai-edits';
 
 // Relations
 export * from './relations';

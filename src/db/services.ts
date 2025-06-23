@@ -1,5 +1,5 @@
 import { db } from "./index";
-import { authors, stories, characters, storyCharacters, creditLedger, authorCreditBalances, leads, storyGenerationRuns, storyRatings } from "./schema";
+import { authors, stories, characters, storyCharacters, creditLedger, authorCreditBalances, leads, storyGenerationRuns, storyRatings, aiEdits } from "./schema";
 import { eq, and, count, desc, sql, like, asc } from "drizzle-orm";
 import { ClerkUserForSync } from "@/types/clerk";
 import { pricingService } from "./services/pricing";
@@ -326,7 +326,7 @@ export const storyCharacterService = {
 export const creditService = {  async addCreditEntry(
     authorId: string, 
     amount: number, 
-    creditEventType: 'initialCredit' | 'creditPurchase' | 'eBookGeneration' | 'audioBookGeneration' | 'printOrder' | 'refund' | 'voucher' | 'promotion',
+    creditEventType: 'initialCredit' | 'creditPurchase' | 'eBookGeneration' | 'audioBookGeneration' | 'printOrder' | 'refund' | 'voucher' | 'promotion' | 'textEdit' | 'imageEdit',
     storyId?: string,
     purchaseId?: string
   ) {
@@ -392,11 +392,10 @@ export const creditService = {  async addCreditEntry(
     const balance = await this.getAuthorCreditBalance(authorId);
     return balance >= amount;
   },
-
   async deductCredits(
     authorId: string, 
     amount: number, 
-    eventType: 'eBookGeneration' | 'audioBookGeneration' | 'printOrder',
+    eventType: 'eBookGeneration' | 'audioBookGeneration' | 'printOrder' | 'textEdit' | 'imageEdit',
     storyId?: string
   ) {
     const canAfford = await this.canAfford(authorId, amount);
@@ -528,7 +527,114 @@ export const storyGenerationRunService = {
       .where(eq(storyGenerationRuns.runId, runId))
       .returning();
     
-    return updatedRun;
+    return updatedRun;  }
+};
+
+// AI Edit operations
+export const aiEditService = {
+  async getEditCount(authorId: string, action: 'textEdit' | 'imageEdit'): Promise<number> {
+    const result = await db
+      .select({ count: count() })
+      .from(aiEdits)
+      .where(and(
+        eq(aiEdits.authorId, authorId),
+        eq(aiEdits.action, action)
+      ));
+    
+    return result[0]?.count || 0;
+  },
+
+  async calculateRequiredCredits(authorId: string, action: 'textEdit' | 'imageEdit'): Promise<number> {
+    const editCount = await this.getEditCount(authorId, action);
+    
+    if (action === 'textEdit') {
+      // First 5 edits are free, then 1 credit per 5 edits
+      if (editCount < 5) {
+        return 0; // Still in free tier
+      }
+      
+      // Check if we need to charge for this edit (every 5th edit after the free ones)
+      const paidEdits = editCount - 4; // editCount 5 becomes paidEdits 1, etc.
+      return paidEdits % 5 === 0 ? 1 : 0;
+    } else if (action === 'imageEdit') {
+      // First image edit is free, then 1 credit per edit
+      return editCount === 0 ? 0 : 1;
+    }
+    
+    return 0;
+  },
+
+  async checkEditPermission(authorId: string, action: 'textEdit' | 'imageEdit'): Promise<{
+    canEdit: boolean;
+    requiredCredits: number;
+    currentBalance: number;
+    editCount: number;
+    message?: string;
+  }> {
+    const requiredCredits = await this.calculateRequiredCredits(authorId, action);
+    const currentBalance = await creditService.getAuthorCreditBalance(authorId);
+    const editCount = await this.getEditCount(authorId, action);
+
+    const canEdit = requiredCredits === 0 || currentBalance >= requiredCredits;
+    
+    let message;
+    if (!canEdit) {
+      message = `Insufficient credits. You need ${requiredCredits} credit(s) but have ${currentBalance}.`;
+    } else if (requiredCredits > 0) {
+      message = `This edit will cost ${requiredCredits} credit(s). Your balance: ${currentBalance}.`;
+    }
+
+    return {
+      canEdit,
+      requiredCredits,
+      currentBalance,
+      editCount,
+      message
+    };
+  },
+
+  async recordSuccessfulEdit(
+    authorId: string, 
+    storyId: string, 
+    action: 'textEdit' | 'imageEdit',
+    metadata?: Record<string, unknown>
+  ): Promise<void> {
+    // Check if credits need to be deducted
+    const requiredCredits = await this.calculateRequiredCredits(authorId, action);
+    
+    // Deduct credits if required
+    if (requiredCredits > 0) {
+      await creditService.deductCredits(authorId, requiredCredits, action, storyId);
+    }
+    
+    // Record the edit action
+    await db.insert(aiEdits).values({
+      authorId,
+      storyId,
+      action,
+      metadata
+    });
+  },
+
+  async getEditHistory(authorId: string, limit: number = 50): Promise<Array<{
+    id: string;
+    storyId: string;
+    action: 'textEdit' | 'imageEdit';
+    requestedAt: Date;
+    metadata: unknown;
+  }>> {
+    return await db
+      .select({
+        id: aiEdits.id,
+        storyId: aiEdits.storyId,
+        action: aiEdits.action,
+        requestedAt: aiEdits.requestedAt,
+        metadata: aiEdits.metadata
+      })
+      .from(aiEdits)
+      .where(eq(aiEdits.authorId, authorId))
+      .orderBy(desc(aiEdits.requestedAt))
+      .limit(limit);
   }
 };
 

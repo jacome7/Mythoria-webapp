@@ -1,0 +1,1 @@
+ALTER TYPE "public"."novel_style" ADD VALUE 'sports_adventure';

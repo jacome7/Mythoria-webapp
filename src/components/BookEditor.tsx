@@ -434,12 +434,24 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
       // Update both states to keep them in sync
       if (!isHtmlView && editor) {
         setHtmlContent(editor.getHTML());
-      }
-
-      toast.success('Story saved successfully! CSS styling preserved.');
+      }      toast.success('Story saved successfully! CSS styling preserved.');
     } catch (error) {
       console.error('Failed to save:', error);
-      toast.error('Failed to save story. Please try again.');    } finally {
+      
+      // Provide more specific error messages based on the error type
+      if (error instanceof Error) {
+        if (error.message.includes('Failed to upload new version after')) {
+          toast.error('Storage upload failed. Please check your connection and try again.');
+        } else if (error.message.includes('Database update failed')) {
+          toast.error('Database update failed. Your changes may not be saved properly.');
+        } else if (error.message.includes('File size mismatch')) {
+          toast.error('File upload verification failed. Please try saving again.');
+        } else {
+          toast.error(`Save failed: ${error.message}`);
+        }
+      } else {
+        toast.error('Failed to save story. Please try again.');
+      }} finally {
       setIsSaving(false);
     }
   }, [editor, hasChanges, onSave, isHtmlView, htmlContent, toast, storyId, storyMetadata?.graphicalStyle, storyMetadata?.targetAudience, storyMetadata?.title]);

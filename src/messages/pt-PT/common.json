@@ -253,19 +253,7 @@
       "editRequest": {
         "label": "Que alterações gostaria de fazer?",
         "placeholder": "Descreva as alterações que gostaria de fazer à sua história...",
-        "charactersCount": "{current}/{max} caracteres"
-      },
-      "exampleRequests": {
-        "label": "Exemplos de pedidos:",
-        "examples": [
-          "Tornar o dragão mais amigável e menos assustador para crianças pequenas",
-          "Adicionar mais diálogo entre os personagens principais",
-          "Incluir mais detalhes descritivos sobre a floresta mágica",
-          "Tornar o final mais emocionante e aventureiro",
-          "Corrigir erros gramaticais e melhorar o fluxo das frases",
-          "Adicionar um novo subargumento sobre o animal de estimação do personagem"
-        ]
-      },
+        "charactersCount": "{current}/{max} caracteres"      },
       "buttons": {
         "cancel": "Cancelar",
         "close": "Fechar",
@@ -275,12 +263,34 @@
       "loadingState": {
         "title": "Processando o seu pedido...",
         "description": "Isto pode demorar 5-60 segundos dependendo do âmbito das alterações."
-      },
-      "errors": {
+      },      "errors": {
         "enterRequest": "Por favor, insira o seu pedido de edição",
         "requestTooLong": "O pedido deve ter 2000 caracteres ou menos",
         "editFailed": "Falha ao editar a história. Tente novamente."
       }
+    },
+    "creditConfirmation": {
+      "textEdit": "Edição de Texto",
+      "imageEdit": "Edição de Imagem",
+      "freeEditTitle": "Edição Gratuita Disponível",
+      "confirmEditTitle": "Confirmar Edição",
+      "editProgress": "Progresso de Edições",
+      "editsCompleted": "edições concluídas",
+      "textEditFreeRemaining": "{remaining} edições de texto gratuitas restantes",
+      "textEditPaidMode": "Está no modo pago - 1 crédito por 5 edições",
+      "imageEditFirstFree": "A sua primeira edição de imagem é gratuita!",
+      "imageEditPaidMode": "1 crédito por edição de imagem",
+      "creditBalance": "Saldo de Créditos",
+      "thisEditCosts": "Esta edição custa:",
+      "remainingBalance": "Saldo restante:",
+      "freeEdit": "Esta edição é gratuita!",
+      "lowCreditsWarning": "Créditos Baixos",
+      "lowCreditsMessage": "Considere comprar mais créditos para continuar a editar.",
+      "cancel": "Cancelar",
+      "processing": "Processando...",
+      "proceedFree": "Prosseguir (Gratuito)",
+      "proceedWithCredits": "Usar {credits} Créditos",
+      "buyCredits": "Comprar Créditos"
     },
     "bookEditor": {
       "loading": "Carregando editor...",

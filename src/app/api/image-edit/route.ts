@@ -1,15 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { getEnvironmentConfig } from '../../../../config/environment';
+import { authorService, aiEditService } from '@/db/services';
 
 export async function POST(request: NextRequest) {
-  try {
-    // Check authentication
+  try {    // Check authentication
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    // Get the current user
+    const author = await authorService.getAuthorByClerkId(userId);
+    if (!author) {
+      return NextResponse.json(
+        { success: false, error: 'Author not found' },
+        { status: 404 }
       );
     }
 
@@ -74,10 +83,27 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify(workflowRequestBody),
     });
 
-    const workflowData = await workflowResponse.json();
-
-    // Return the response from the workflow service
+    const workflowData = await workflowResponse.json();    // Return the response from the workflow service
     if (workflowResponse.ok) {
+      // Only record the edit and deduct credits if the workflow was successful
+      try {
+        await aiEditService.recordSuccessfulEdit(
+          author.authorId,
+          storyId,
+          'imageEdit',
+          {
+            imageUrl,
+            userRequest: workflowRequestBody.userRequest,
+            timestamp: new Date().toISOString()
+          }
+        );
+        console.log('Successfully recorded image edit for author:', author.authorId);
+      } catch (creditError) {
+        console.error('Error recording edit or deducting credits:', creditError);
+        // Note: We don't fail the request here since the edit was successful
+        // This ensures the user gets their edit even if credit recording fails
+      }
+      
       return NextResponse.json(workflowData);
     } else {
       return NextResponse.json(

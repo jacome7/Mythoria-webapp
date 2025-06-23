@@ -14,7 +14,9 @@ export const creditEventTypeEnum = pgEnum("credit_event_type", [
   'printOrder',
   'refund',
   'voucher',
-  'promotion'
+  'promotion',
+  'textEdit',
+  'imageEdit'
 ]);
 
 // Sharing functionality enums
@@ -77,7 +79,8 @@ export const novelStyleEnum = pgEnum("novel_style", [
   'thriller',
   'biography',
   'educational',
-  'poetry'
+  'poetry',
+  'sports_adventure'
 ]);
 
 export const graphicalStyleEnum = pgEnum("graphical_style", [

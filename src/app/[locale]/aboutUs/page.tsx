@@ -7,7 +7,6 @@ import { useTranslations } from 'next-intl';
 
 const AboutUsPage = () => {  const t = useTranslations('AboutUs');
   const tModal = useTranslations('AboutUsModal');
-  const tCommon = useTranslations('common');
   const [ageHover, setAgeHover] = useState(false);
 
   return (

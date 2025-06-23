@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { FiX, FiZap, FiEdit3, FiFileText, FiImage } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
 import ImageEditingTab from './ImageEditingTab';
+import CreditConfirmationModal from './CreditConfirmationModal';
 import { extractStoryImagesFromHtml, extractStoryImages, StoryImage } from '@/utils/imageUtils';
 
 interface AIEditModalProps {
@@ -39,7 +40,22 @@ export default function AIEditModal({
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);  const [userRequest, setUserRequest] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isSavingImage, setIsSavingImage] = useState(false);// Extract chapters from story content
+  const [isSavingImage, setIsSavingImage] = useState(false);
+  
+  // Credit confirmation state
+  const [showCreditConfirmation, setShowCreditConfirmation] = useState(false);
+  const [creditInfo, setCreditInfo] = useState<{
+    canEdit: boolean;
+    requiredCredits: number;
+    currentBalance: number;
+    editCount: number;
+    nextThreshold: number;
+    isFree: boolean;
+  } | null>(null);
+  const [pendingEditData, setPendingEditData] = useState<{
+    userRequest: string;
+    chapterNumber?: number;
+  } | null>(null);// Extract chapters from story content
   useEffect(() => {
     if (!storyContent) return;
 
@@ -152,10 +168,10 @@ export default function AIEditModal({
     };
 
     loadImages();
-  }, [storyContent, storyId]);
-  const handleSubmit = async (e: React.FormEvent) => {
+  }, [storyContent, storyId]);  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-      if (!userRequest.trim()) {
+    
+    if (!userRequest.trim()) {
       setError(t('errors.enterRequest'));
       return;
     }
@@ -165,6 +181,59 @@ export default function AIEditModal({
       return;
     }
 
+    // Check credit requirements before proceeding
+    try {
+      const creditCheckResponse = await fetch('/api/ai-edit/check-credits', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'textEdit',
+          storyId
+        }),
+      });
+
+      const creditData = await creditCheckResponse.json();
+
+      if (!creditCheckResponse.ok) {
+        setError(creditData.error || 'Failed to check credit requirements');
+        return;
+      }
+
+      if (!creditData.canEdit) {
+        setError(creditData.message || 'Insufficient credits for this edit');
+        return;
+      }
+
+      // Store the edit data for later execution
+      setPendingEditData({
+        userRequest: userRequest.trim(),
+        chapterNumber: selectedChapter || undefined
+      });
+
+      // Store credit info and show confirmation modal
+      setCreditInfo({
+        canEdit: creditData.canEdit,
+        requiredCredits: creditData.requiredCredits,
+        currentBalance: creditData.currentBalance,
+        editCount: creditData.editCount,
+        nextThreshold: creditData.nextThreshold,
+        isFree: creditData.isFree
+      });
+
+      setShowCreditConfirmation(true);
+
+    } catch (error) {
+      console.error('Error checking credits:', error);
+      setError('Failed to check credit requirements. Please try again.');
+    }
+  };
+
+  const handleCreditConfirmation = async () => {
+    if (!pendingEditData) return;
+
+    setShowCreditConfirmation(false);
     setIsLoading(true);
     setError(null);
 
@@ -175,11 +244,11 @@ export default function AIEditModal({
         chapterNumber?: number;
       } = {
         storyId,
-        userRequest: userRequest.trim()
+        userRequest: pendingEditData.userRequest
       };
 
-      if (selectedChapter !== null) {
-        requestBody.chapterNumber = selectedChapter;
+      if (pendingEditData.chapterNumber) {
+        requestBody.chapterNumber = pendingEditData.chapterNumber;
       }
 
       const response = await fetch('/api/story-edit', {
@@ -196,7 +265,10 @@ export default function AIEditModal({
         onEditSuccess(data.updatedHtml);
         onClose();
         setUserRequest('');
-        setSelectedChapter(null);      } else {
+        setSelectedChapter(null);
+        setPendingEditData(null);
+        setCreditInfo(null);
+      } else {
         setError(data.error || t('errors.editFailed'));
       }
     } catch (error) {
@@ -350,6 +422,16 @@ export default function AIEditModal({
               }),
             });            if (saveResponse.ok) {
               console.log('Backend save successful - image change completed');
+              const saveResult = await saveResponse.json();
+              
+              // Verify the save was actually successful
+              if (saveResult.verified === false) {
+                console.error('WARNING: Save completed but file verification failed. This may indicate a storage inconsistency.');
+                setError('Image saved but there may be a storage issue. Please refresh the page to verify your changes.');
+                setIsSavingImage(false);
+                return;
+              }
+              
               setIsSavingImage(false);
               
               // Close the modal immediately
@@ -443,8 +525,7 @@ export default function AIEditModal({
     } catch (error) {
       console.error('Error refreshing story data:', error);
     }
-  };
-  const handleClose = () => {
+  };  const handleClose = () => {
     if (!isLoading && !isSavingImage) {
       onClose();
       setUserRequest('');
@@ -452,9 +533,10 @@ export default function AIEditModal({
       setActiveTab('text');
       setError(null);
       setIsSavingImage(false);
-    }
-  };
-  const exampleRequests = t.raw('exampleRequests.examples');
+      setShowCreditConfirmation(false);
+      setCreditInfo(null);
+      setPendingEditData(null);
+    }  };
 
   if (!isOpen) return null;
 
@@ -553,27 +635,7 @@ export default function AIEditModal({
                   maxLength={2000}
                   disabled={isLoading}
                   required
-                />
-              </div>
-
-              {/* Example Requests */}              <div>
-                <label className="label">
-                  <span className="label-text font-medium">{t('exampleRequests.label')}</span>
-                </label>
-                <div className="grid grid-cols-1 gap-2">
-                  {exampleRequests.map((example: string, index: number) => (
-                    <button
-                      key={index}
-                      type="button"
-                      onClick={() => setUserRequest(example)}
-                      className="text-left p-3 bg-base-200 hover:bg-base-300 rounded-lg text-sm transition-colors"
-                      disabled={isLoading}
-                    >
-                      &quot;{example}&quot;
-                    </button>
-                  ))}
-                </div>
-              </div>
+                />              </div>
 
               {/* Error Message */}
               {error && (
@@ -602,7 +664,8 @@ export default function AIEditModal({
                 </div>
               )}
 
-              {/* Actions */}              <div className="flex gap-3 pt-4 border-t border-base-300">
+              {/* Actions */}
+              <div className="flex gap-3 pt-4 border-t border-base-300">
                 <button
                   type="button"
                   onClick={handleClose}
@@ -639,7 +702,9 @@ export default function AIEditModal({
                 storyContent={storyContent}
               />
               
-              {/* Actions for Image Tab */}              <div className="flex gap-3 pt-6 border-t border-base-300 mt-6">                <button
+              {/* Actions for Image Tab */}
+              <div className="flex gap-3 pt-6 border-t border-base-300 mt-6">
+                <button
                   type="button"
                   onClick={handleClose}
                   className="btn btn-ghost flex-1"
@@ -666,7 +731,26 @@ export default function AIEditModal({
               </div>
             </div>
           </div>
-        </div>
+        </div>      )}
+      
+      {/* Credit Confirmation Modal */}
+      {showCreditConfirmation && creditInfo && (
+        <CreditConfirmationModal
+          isOpen={showCreditConfirmation}
+          onClose={() => {
+            setShowCreditConfirmation(false);
+            setPendingEditData(null);
+            setCreditInfo(null);
+          }}
+          onConfirm={handleCreditConfirmation}
+          action="textEdit"
+          requiredCredits={creditInfo.requiredCredits}
+          currentBalance={creditInfo.currentBalance}
+          editCount={creditInfo.editCount}
+          nextThreshold={creditInfo.nextThreshold}
+          isFree={creditInfo.isFree}
+          isLoading={isLoading}
+        />
       )}
     </div>
   );
