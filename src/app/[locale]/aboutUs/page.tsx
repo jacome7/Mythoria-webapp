@@ -5,35 +5,24 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
-const AboutUsPage = () => {
-  const t = useTranslations('AboutUs');
+const AboutUsPage = () => {  const t = useTranslations('AboutUs');
   const tModal = useTranslations('AboutUsModal');
   const tCommon = useTranslations('common');
-  const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const [ageHover, setAgeHover] = useState(false);
 
   return (
-    <>
-      {/* 0. Hero Banner - "Dust Jacket" */}
-      <div className="hero min-h-screen bg-gradient-to-br from-purple-900 via-violet-800 to-indigo-900 relative overflow-hidden">
-        {/* Animated background elements */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-10 left-10 animate-float">📖</div>
-          <div className="absolute top-32 right-20 animate-float-delayed">⚙️</div>
-          <div className="absolute bottom-20 left-1/4 animate-float">📚</div>
-          <div className="absolute top-1/3 right-1/3 animate-bounce-slow">✨</div>
-        </div>
-        
-        <div className="hero-content text-center z-10">
-          <div className="max-w-4xl">
-            <h1 className="text-6xl md:text-8xl font-bold text-white mb-8 drop-shadow-2xl">
+    <>      {/* 0. Simple Header */}
+      <div className="py-20 bg-base-100">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-4xl md:text-6xl font-bold text-base-content mb-6">
               {t('hero.title')}
             </h1>
-            <p className="text-xl md:text-2xl text-purple-100 mb-12 italic font-light max-w-3xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-base-content/80 mb-8 max-w-3xl mx-auto leading-relaxed">
               {t('hero.subtitle')}
             </p>
-            <Link href="/tell-your-story/step-1" className="btn btn-primary btn-lg text-lg px-8 py-4 rounded-full shadow-2xl hover:scale-105 transition-transform">
-              {t('hero.cta')} ✨
+            <Link href="/tell-your-story/step-1" className="btn btn-primary btn-lg">
+              {t('hero.cta')}
             </Link>
           </div>
         </div>
@@ -146,8 +135,7 @@ const AboutUsPage = () => {
             </h2>
           </div>
 
-          <div className="max-w-4xl mx-auto">
-            {/* Progress Steps */}
+          <div className="max-w-4xl mx-auto">            {/* Progress Steps */}
             <ul className="steps steps-vertical lg:steps-horizontal w-full mb-12">
               <li className="step step-primary">
                 <div className="text-left lg:text-center">
@@ -155,10 +143,10 @@ const AboutUsPage = () => {
                   <p className="text-sm text-base-content/70">{t('progress.milestone1')}</p>
                 </div>
               </li>
-              <li className="step step-primary">
+              <li className="step">
                 <div className="text-left lg:text-center">
-                  <div className="font-semibold text-primary mb-2">🔄 Feedback Cauldron</div>
-                  <p className="text-sm text-base-content/70">{t('progress.milestone2')}</p>
+                  <div className="font-semibold text-base-content/50 mb-2">🔄 Feedback Cauldron</div>
+                  <p className="text-sm text-base-content/50">{t('progress.milestone2')}</p>
                 </div>
               </li>
               <li className="step">
@@ -167,16 +155,14 @@ const AboutUsPage = () => {
                   <p className="text-sm text-base-content/50">{t('progress.milestone3')}</p>
                 </div>
               </li>
-            </ul>
-
-            {/* Feedback Button */}
+            </ul>            {/* Feedback Button */}
             <div className="text-center">
-              <button 
+              <Link 
+                href="/contactUs?category=general"
                 className="btn btn-accent btn-lg rounded-full shadow-lg hover:scale-105 transition-transform"
-                onClick={() => setShowFeedbackForm(true)}
               >
                 {t('progress.feedbackButton')}
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -221,33 +207,16 @@ const AboutUsPage = () => {
                 </h2>
                 <p className="text-lg text-amber-700 mb-8 leading-relaxed">
                   {t('investors.description')}
-                </p>                <button className="btn btn-warning btn-lg rounded-full shadow-lg hover:scale-105 transition-transform">
+                </p>                <Link 
+                  href="/contactUs?category=business_partnership"
+                  className="btn btn-warning btn-lg rounded-full shadow-lg hover:scale-105 transition-transform"
+                >
                   {tModal('investors.button')}
-                </button>
+                </Link>
               </div>
             </div>
-          </div>
-        </div>
-      </div>      {/* Feedback Modal */}
-      {showFeedbackForm && (
-        <div className="modal modal-open">
-          <div className="modal-box">            <h3 className="font-bold text-lg mb-4">{tModal('feedback.title')}</h3>
-            <textarea 
-              className="textarea textarea-bordered w-full h-32 mb-4" 
-              placeholder={tModal('feedback.placeholder')}
-            ></textarea>
-            <div className="modal-action">
-              <button className="btn btn-primary">{tModal('feedback.submit')}</button>
-              <button 
-                className="btn" 
-                onClick={() => setShowFeedbackForm(false)}
-              >
-                {tCommon('Actions.close')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          </div>        </div>
+      </div>
 
       <style jsx>{`
         @keyframes float {

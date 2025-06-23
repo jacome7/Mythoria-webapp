@@ -3,13 +3,13 @@
 		"title": "Get in Touch",
 		"intro": "We'd love to hear from you! Whether you have questions, feedback, or need assistance, our team is here to help make your Mythoria experience magical.",
 		"scrollTitle": "What can we help you with?",
-		"scrollIntro": "Choose from the categories below to get faster support:",
-		"categories": {
+		"scrollIntro": "Choose from the categories below to get faster support:",		"categories": {
 			"featureIdeas": "Feature Ideas & Suggestions",
 			"reportBug": "Report a Bug",
 			"troubles": "Technical Issues",
 			"delivery": "Printing & Delivery",
 			"credits": "Credits & Billing",
+			"businessPartnership": "Business Partnership",
 			"general": "General Questions"
 		},
 		"bonus": {

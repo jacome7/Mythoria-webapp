@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { FaBug, FaCogs, FaTruck, FaCoins, FaComments, FaLightbulb, FaUsers, FaHeart } from 'react-icons/fa';
+import { FaBug, FaCogs, FaTruck, FaCoins, FaComments, FaLightbulb, FaUsers, FaHeart, FaHandshake } from 'react-icons/fa';
 import ContactForm from '../../../components/ContactForm';
 
 interface ContactUsPageProps {
@@ -52,10 +52,13 @@ export default async function ContactUsPage({ params }: ContactUsPageProps) {
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-base-200/50 hover:bg-base-200 transition-colors">
                     <FaTruck className="text-success text-lg" />
                     <span className="text-sm">{t('categories.delivery')}</span>
-                  </div>
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-base-200/50 hover:bg-base-200 transition-colors">
+                  </div>                  <div className="flex items-center gap-3 p-3 rounded-lg bg-base-200/50 hover:bg-base-200 transition-colors">
                     <FaCoins className="text-accent text-lg" />
                     <span className="text-sm">{t('categories.credits')}</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-base-200/50 hover:bg-base-200 transition-colors">
+                    <FaHandshake className="text-secondary text-lg" />
+                    <span className="text-sm">{t('categories.businessPartnership')}</span>
                   </div>
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-base-200/50 hover:bg-base-200 transition-colors">
                     <FaComments className="text-primary text-lg" />

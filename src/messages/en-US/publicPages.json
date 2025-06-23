@@ -316,13 +316,13 @@
       "delivery": "Printed Book Delivery (Our owls might need directions)",
       "credits": "Credits & Payments (The goblins at Gringotts are strict!)",
       "general": "General Enchantment (Support)"
-    },
-    "categoriesShort": {
+    },    "categoriesShort": {
       "featureIdeas": "Feature Ideas",
       "reportBug": "Report a Bug",
       "troubles": "Story Generation Troubles",
       "delivery": "Printed Book Delivery",
       "credits": "Credits & Payments",
+      "businessPartnership": "Business Partnership",
       "general": "General Enchantment"
     },
     "form": {

@@ -3,13 +3,13 @@
 		"title": "Entre em Contacto",
 		"intro": "Adoraríamos ouvir de si! Se tem questões, feedback ou precisa de assistência, a nossa equipa está aqui para tornar a sua experiência Mythoria mágica.",
 		"scrollTitle": "Em que podemos ajudá-lo?",
-		"scrollIntro": "Escolha das categorias abaixo para obter suporte mais rápido:",
-		"categories": {
+		"scrollIntro": "Escolha das categorias abaixo para obter suporte mais rápido:",		"categories": {
 			"featureIdeas": "Ideias de Funcionalidades e Sugestões",
 			"reportBug": "Reportar um Bug",
 			"troubles": "Problemas Técnicos",
 			"delivery": "Impressão e Entrega",
 			"credits": "Créditos e Faturação",
+			"businessPartnership": "Parceria de Negócios",
 			"general": "Questões Gerais"
 		},
 		"bonus": {

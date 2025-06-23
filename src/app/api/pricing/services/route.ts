@@ -24,25 +24,39 @@ export async function GET(request: NextRequest) {
         }
 
         // Get all active pricing
-        const activePricing = await pricingService.getActivePricing();
-
-        // Transform the database pricing into the format expected by the pricing page
+        const activePricing = await pricingService.getActivePricing();        // Transform the database pricing into the format expected by the pricing page
         const services = activePricing.map(pricing => {
             let name: string;
             let icon: string;
 
             switch (pricing.serviceCode) {
+                case 'initialAuthorCredits':
+                    name = 'Initial Author Credits';
+                    icon = 'FaGift';
+                    break;
                 case 'eBookGeneration':
                     name = 'Generate a digital book (eBook)';
                     icon = 'FaBookOpen';
                     break;
-                case 'printOrder':
-                    name = 'Order a printed & shipped hardcover book';
-                    icon = 'FaPrint';
-                    break;
                 case 'audioBookGeneration':
                     name = 'Generate an audiobook';
                     icon = 'FaVolumeUp';
+                    break;
+                case 'manualEditing':
+                    name = 'Manual editing';
+                    icon = 'FaPalette';
+                    break;
+                case 'printedSoftCover':
+                    name = 'Printed Soft Cover';
+                    icon = 'FaPrint';
+                    break;
+                case 'printedHardcover':
+                    name = 'Printed Hard Cover';
+                    icon = 'FaPrint';
+                    break;
+                case 'extraChapterCost':
+                    name = 'Extra Chapter Cost';
+                    icon = 'FaFileDownload';
                     break;
                 default:
                     name = `Service: ${pricing.serviceCode}`;

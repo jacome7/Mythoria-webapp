@@ -25,10 +25,11 @@
       },
       "buyButton": "Comprar {credits} Créditos",
       "credits": "Créditos"
-    },
-    "serviceCosts": {
+    },    "serviceCosts": {
       "title": "O Que os Seus Créditos Podem Desbloquear",
       "loading": "A carregar informação de preços...",
+      "availableServices": "Os nossos serviços atuais são:",
+      "creditsHeader": "Créditos",
       "serviceNames": {
         "ebook": "Gerar um livro digital (eBook)",
         "audiobook": "Gerar um audiolivro",
@@ -39,6 +40,12 @@
         "cost": "Custo em Créditos"
       },
       "creditsUnit": "Créditos"
+    },
+    "newUserMessage": "Todos os novos utilizadores recebem 5 créditos. A sua primeira história é por nossa conta!",
+    "infoTexts": {
+      "textReview": "As primeiras 5 edições são gratuitas. Apenas cobramos por cada grupo de 5 alterações de texto.",
+      "imageGeneration": "A primeira edição de imagem é gratuita.",
+      "printedBooks": "Tanto a capa mole como a capa dura incluem os primeiros 4 capítulos sem custos adicionais."
     },
     "whyCredits": {
       "title": "Porquê um Sistema Baseado em Créditos?",
@@ -87,9 +94,43 @@
       "subtitle": "Obtenha alguns créditos e comece a criar histórias únicas e personalizadas hoje. Ofereça um presente que será valorizado para toda a vida!",
       "getCreditsButton": "Obter Créditos Agora",
       "createStoryButton": "Criar a Sua História"
-    },
-    "errors": {
+    },    "errors": {
       "loadingFailed": "Falha ao carregar informação de preços"
+    }
+  },
+  "BuyCreditsPage": {
+    "header": {
+      "title": "Comprar Créditos",
+      "subtitle": "Escolha os seus pacotes de créditos e complete a sua compra"
+    },
+    "packages": {
+      "title": "Pacotes de Créditos Disponíveis",
+      "addToCart": "Adicionar ao Carrinho"
+    },
+    "cart": {
+      "title": "A Sua Encomenda",
+      "empty": "O seu carrinho está vazio",
+      "each": "cada"
+    },
+    "summary": {
+      "title": "Resumo da Encomenda",
+      "subtotal": "Subtotal:",
+      "vat": "IVA (6% incluído):",
+      "total": "Total:"
+    },
+    "payment": {
+      "title": "Método de Pagamento",
+      "mbway": "MBWay",
+      "creditCards": "Cartões de Crédito/Débito",
+      "comingSoon": "Em Breve"
+    },
+    "actions": {
+      "placeOrder": "Fazer Encomenda",
+      "backToPricing": "← Voltar aos Preços"
+    },
+    "badges": {
+      "bestValue": "Melhor Valor",
+      "popular": "Popular"
     }
   }
 }

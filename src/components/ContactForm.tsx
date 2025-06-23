@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 import { FaEnvelope } from 'react-icons/fa';
 import { trackContact } from '../lib/analytics';
 
@@ -11,6 +12,7 @@ interface ContactFormProps {
 
 const ContactForm = ({ className = "" }: ContactFormProps) => {
   const t = useTranslations('ContactUsPage');
+  const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -20,6 +22,17 @@ const ContactForm = ({ className = "" }: ContactFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [responseMessage, setResponseMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
+
+  // Pre-select category based on URL parameter
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    if (categoryParam) {
+      setFormData(prev => ({
+        ...prev,
+        category: categoryParam
+      }));
+    }
+  }, [searchParams]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -129,12 +142,12 @@ const ContactForm = ({ className = "" }: ContactFormProps) => {
               className="select select-bordered select-primary w-full h-10 focus:outline-none focus:ring-2 focus:ring-primary/20"
               disabled={isLoading}
             >
-              <option value="">{t('form.selectCategory')}</option>
-              <option value="feature_ideas">{t('categoriesShort.featureIdeas')}</option>
+              <option value="">{t('form.selectCategory')}</option>              <option value="feature_ideas">{t('categoriesShort.featureIdeas')}</option>
               <option value="bug_report">{t('categoriesShort.reportBug')}</option>
               <option value="technical_issues">{t('categoriesShort.troubles')}</option>
               <option value="delivery">{t('categoriesShort.delivery')}</option>
               <option value="credits">{t('categoriesShort.credits')}</option>
+              <option value="business_partnership">{t('categoriesShort.businessPartnership')}</option>
               <option value="general">{t('categoriesShort.general')}</option>
             </select>
           </div>

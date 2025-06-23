@@ -25,10 +25,11 @@
       },
       "buyButton": "Buy {credits} Credits",
       "credits": "Credits"
-    },
-    "serviceCosts": {
+    },    "serviceCosts": {
       "title": "What Your Credits Can Unlock",
       "loading": "Loading pricing information...",
+      "availableServices": "Our current services are:",
+      "creditsHeader": "Credits",
       "serviceNames": {
         "ebook": "Generate a digital book (eBook)",
         "audiobook": "Generate an audiobook", 
@@ -39,6 +40,12 @@
         "cost": "Cost in Credits"
       },
       "creditsUnit": "Credits"
+    },
+    "newUserMessage": "Every new user gets 5 credits. Your first story is on us!",
+    "infoTexts": {
+      "textReview": "The first 5 edits are free. We only charge per group of 5 text changes.",
+      "imageGeneration": "The first image editing is free.",
+      "printedBooks": "Both printed soft and hard cover include the first 4 chapters at no additional costs."
     },
     "whyCredits": {
       "title": "Why a Credit-Based System?",
@@ -87,9 +94,43 @@
       "subtitle": "Grab some credits and begin crafting unique, personalized stories today. Give a gift that will be cherished for a lifetime!",
       "getCreditsButton": "Get Credits Now",
       "createStoryButton": "Create Your Story"
-    },
-    "errors": {
+    },    "errors": {
       "loadingFailed": "Failed to load pricing information"
+    }
+  },
+  "BuyCreditsPage": {
+    "header": {
+      "title": "Buy Credits",
+      "subtitle": "Choose your credit packages and complete your purchase"
+    },
+    "packages": {
+      "title": "Available Credit Packages",
+      "addToCart": "Add to Cart"
+    },
+    "cart": {
+      "title": "Your Order",
+      "empty": "Your cart is empty",
+      "each": "each"
+    },
+    "summary": {
+      "title": "Order Summary",
+      "subtotal": "Subtotal:",
+      "vat": "VAT (6% included):",
+      "total": "Total:"
+    },
+    "payment": {
+      "title": "Payment Method",
+      "mbway": "MBWay",
+      "creditCards": "Credit/Debit Cards",
+      "comingSoon": "Coming Soon"
+    },
+    "actions": {
+      "placeOrder": "Place Order",
+      "backToPricing": "← Back to Pricing"
+    },
+    "badges": {
+      "bestValue": "Best Value",
+      "popular": "Popular"
     }
   }
 }

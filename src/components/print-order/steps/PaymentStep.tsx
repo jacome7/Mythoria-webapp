@@ -97,10 +97,6 @@ export default function PaymentStep({
             title = t('payment.hardcoverTitle');
             description = t('payment.hardcoverDescription');
             break;
-          case 'printedPremium':
-            title = t('payment.premiumTitle');
-            description = t('payment.premiumDescription');
-            break;
           default:
             title = service.name;
             description = service.name;
@@ -226,7 +222,7 @@ export default function PaymentStep({
                 : 'border-base-300 hover:border-primary/50'
             }`}
             onClick={() => onSelectPrintingOption(option)}
-          >            <div className="card-body p-4">
+          > <div className="card-body p-4">
               <div className="flex flex-col h-full">
                 <div className="flex-1">
                   <h3 className="font-bold text-lg mb-2">{option.title}</h3>
@@ -246,11 +242,14 @@ export default function PaymentStep({
             </div>
           </div>
         ))}
-      </div>      {/* Price Notes */}
+      </div>
+      
+      {/* Price Notes */}
       <div className="alert alert-info mb-6">
         <div className="text-sm">
           <p className="font-semibold mb-1">{t('payment.priceNote')}</p>
-          <p>{t('payment.extraChapterNote')}</p>          <p className="mt-2">
+          <p>{t('payment.extraChapterNote')}</p>
+          <p className="mt-2">
             <strong>{t('payment.yourStory')}:</strong> {story.chapterCount} chapters
             {calculateExtraChapters() > 0 && (
               <span> ({calculateExtraChapters()} {t('payment.extraChaptersNote')})</span>
