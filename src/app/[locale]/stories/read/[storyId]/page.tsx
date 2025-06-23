@@ -24,6 +24,8 @@ interface Story {
   }>;
   targetAudience?: string;
   graphicalStyle?: string;
+  isPublic?: boolean;
+  slug?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -228,7 +230,7 @@ export default function ReadStoryPage() {
           </div>
         ) : null}
       </SignedIn>
-
+      
       {/* Share Modal */}
       {story && (
         <ShareModal
@@ -236,8 +238,26 @@ export default function ReadStoryPage() {
           onClose={() => setShowShareModal(false)}
           storyId={story.storyId}
           storyTitle={story.title}
+          isPublic={story.isPublic}
+          slug={story.slug}
           onShareSuccess={(shareData) => {
             console.log('Share successful:', shareData);
+            // Refresh story data to get updated isPublic status
+            if (shareData.success) {
+              // Refetch the story data
+              const refetchStory = async () => {
+                try {
+                  const response = await fetch(`/api/stories/${story.storyId}`);
+                  if (response.ok) {
+                    const updatedStory = await response.json();
+                    setStory(updatedStory);
+                  }
+                } catch (error) {
+                  console.error('Error refreshing story:', error);
+                }
+              };
+              refetchStory();
+            }
           }}
         />
       )}

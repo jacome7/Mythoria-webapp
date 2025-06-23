@@ -141,11 +141,15 @@
 				"more": "More",
 				"createAnother": "Create Another",
 				"done": "Done",
-				"optionsExplained": "Sharing Options Explained:",
-				"privateView": "Private View: Recipients must sign in to view the story",
+				"optionsExplained": "Sharing Options Explained:",				"privateView": "Private View: Recipients must sign in to view the story",
 				"privateEdit": "Private Edit: Recipients can collaborate and edit the story",
 				"publicOption": "Public: Anyone can view the story without signing in",
-				"privateExpires": "Private link expires in 30 days"
+				"privateExpires": "Private link expires in 30 days",
+				"publicStoryTitle": "Public Story",
+				"publicStoryDesc": "This story is currently public and can be viewed by anyone.",
+				"publicUrl": "Public URL",
+				"makePrivate": "Make story private",
+				"makePrivateDesc": "Remove public access and make the story private"
 			},
 			"CreditsDisplay": {
 				"button": "Credits available: {credits}",

@@ -72,10 +72,14 @@
         "shareSuccess": "Link de partilha criado com sucesso",
         "privateExpires": "Link privado expira em 30 dias"
       },
-      "types": {
-        "privateView": "Visualização Privada: Os destinatários devem iniciar sessão para ver a história",
+      "types": {        "privateView": "Visualização Privada: Os destinatários devem iniciar sessão para ver a história",
         "privateEdit": "Edição Privada: Os destinatários podem colaborar e editar a história",
-        "publicRead": "Público: Qualquer pessoa pode ver a história sem iniciar sessão"
+        "publicRead": "Público: Qualquer pessoa pode ver a história sem iniciar sessão",
+        "publicStoryTitle": "História Pública",
+        "publicStoryDesc": "Esta história está atualmente pública e pode ser vista por qualquer pessoa.",
+        "publicUrl": "URL Público",
+        "makePrivate": "Tornar história privada",
+        "makePrivateDesc": "Remover acesso público e tornar a história privada"
       }
     },
     "Auth": {

@@ -92,6 +92,24 @@ export async function POST(
         url: `/p/${slug}`,
         message: 'Story is now publicly accessible'
       });
+    }
+
+    // Handle making story private (when makePublic is false but story was previously public)
+    if (makePublic === false && storyData.isPublic) {
+      await db
+        .update(stories)
+        .set({ 
+          isPublic: false,
+          updatedAt: new Date()
+        })
+        .where(eq(stories.storyId, storyId));
+
+      return NextResponse.json({
+        success: true,
+        linkType: 'private',
+        url: '',
+        message: 'Story is now private'
+      });
     }    // Handle private sharing
     const accessLevel = allowEdit ? 'edit' : 'view';
     const expiresAt = new Date();

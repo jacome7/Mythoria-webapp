@@ -23,6 +23,8 @@ interface Story {
   status: 'draft' | 'writing' | 'published';
   storyGenerationStatus?: 'queued' | 'running' | 'failed' | 'completed' | 'cancelled' | null;
   storyGenerationCompletedPercentage?: number;
+  isPublic?: boolean;
+  slug?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -528,9 +530,7 @@ export default function MyStoriesTable() {
             </div>
           </div>
         </div>
-      )}
-
-      {/* Share Modal */}
+      )}      {/* Share Modal */}
       {storyToShare && (
         <ShareModal
           isOpen={shareModalOpen}
@@ -540,9 +540,23 @@ export default function MyStoriesTable() {
           }}
           storyId={storyToShare.storyId}
           storyTitle={storyToShare.title}
+          isPublic={storyToShare.isPublic}
+          slug={storyToShare.slug}
           onShareSuccess={(shareData) => {
             console.log('Share successful:', shareData);
-            // You can add additional success handling here
+            // Refresh stories to get updated isPublic status
+            const fetchStories = async () => {
+              try {
+                const response = await fetch('/api/my-stories');
+                if (response.ok) {
+                  const data = await response.json();
+                  setStories(data.stories);
+                }
+              } catch (error) {
+                console.error('Error refreshing stories:', error);
+              }
+            };
+            fetchStories();
           }}
         />
       )}

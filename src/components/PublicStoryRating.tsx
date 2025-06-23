@@ -64,10 +64,10 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
 
     fetchRatingData();
   }, [storyId]);
-
   const handleStarClick = (starRating: number) => {
     setUserRating(starRating);
     setError(null);
+    setHoveredRating(0); // Reset hover state after click
     
     // Show feedback form for ratings 1-3
     if (starRating <= 3) {
@@ -149,33 +149,37 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
     e.preventDefault();
     handleSubmitRating(userRating, feedback);
   };
-
-  const renderStars = (rating: number, interactive: boolean = false) => {
+  const renderUnifiedStars = () => {
     return [1, 2, 3, 4, 5].map((star) => {
-      const isFilled = star <= rating;
-      const isHalfFilled = !isFilled && star - 0.5 <= rating;
+      // Determine what rating to show:
+      // 1. If hovering, show hovered rating
+      // 2. Otherwise show average rating
+      const displayRating = hoveredRating || (ratingData?.averageRating || 0);
+      const isFilled = star <= displayRating;
+      const isHalfFilled = !isFilled && star - 0.5 <= displayRating;
+      
+      // Determine colors based on state
+      let colorClass = 'text-base-300'; // default empty
+      if (hoveredRating && star <= hoveredRating) {
+        colorClass = 'text-warning brightness-110'; // brighter when hovering
+      } else if (isFilled || isHalfFilled) {
+        colorClass = 'text-warning'; // normal filled
+      }
       
       return (
         <button
           key={star}
           type="button"
-          className={`${interactive ? 'btn btn-ghost p-1' : 'p-1'} text-2xl transition-colors ${
-            interactive && star <= (hoveredRating || userRating)
-              ? 'text-warning'
-              : isFilled || isHalfFilled
-              ? 'text-warning'
-              : 'text-base-300'
-          } ${interactive ? 'cursor-pointer' : 'cursor-default'}`}
-          onClick={interactive ? () => handleStarClick(star) : undefined}
-          onMouseEnter={interactive ? () => setHoveredRating(star) : undefined}
-          onMouseLeave={interactive ? () => setHoveredRating(0) : undefined}
-          disabled={interactive && isSubmitting}
+          className={`btn btn-ghost p-1 text-3xl transition-all duration-200 hover:scale-110 ${colorClass} cursor-pointer`}
+          onClick={() => handleStarClick(star)}
+          onMouseEnter={() => setHoveredRating(star)}
+          onMouseLeave={() => setHoveredRating(0)}
+          disabled={isSubmitting}
+          title={`Rate ${star} star${star !== 1 ? 's' : ''}`}
         >
           <FiStar 
             className={
-              interactive && star <= (hoveredRating || userRating)
-                ? 'fill-current'
-                : isFilled || isHalfFilled
+              (hoveredRating && star <= hoveredRating) || isFilled || isHalfFilled
                 ? 'fill-current'
                 : ''
             } 
@@ -200,7 +204,6 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
       setSubmitted(false);
     }, 100);
   }
-
   return (
     <div className="card bg-base-100 shadow-xl border-2 border-base-300">
       <div className="card-body">
@@ -209,28 +212,45 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
             {t('title') || 'Rate this Story'}
           </h3>
 
-          {/* Overall Rating Display */}
-          {ratingData && ratingData.totalRatings > 0 && (
-            <div className="mb-6 p-4 bg-base-50 rounded-lg">
-              <div className="flex justify-center items-center gap-2 mb-2">
-                <div className="flex">
-                  {renderStars(ratingData.averageRating, false)}
-                </div>
-                <span className="text-lg font-semibold">
-                  {ratingData.averageRating.toFixed(1)}
-                </span>
-              </div>
-              <p className="text-sm text-base-content/70">
-                Based on {ratingData.totalRatings} rating{ratingData.totalRatings !== 1 ? 's' : ''}
-              </p>
+          {/* Unified Star Rating Display */}
+          <div className="mb-6">
+            {/* Stars with average rating display and interaction */}
+            <div className="flex justify-center items-center gap-1 mb-3">
+              {renderUnifiedStars()}
             </div>
-          )}
-          
-          {/* Show existing user rating info
+            
+            {/* Rating Information */}
+            {ratingData && ratingData.totalRatings > 0 ? (
+              <div className="text-center">
+                <p className="text-lg font-semibold mb-1">
+                  {ratingData.averageRating.toFixed(1)}/5
+                </p>
+                <p className="text-sm text-base-content/70">
+                  Based on {ratingData.totalRatings} rating{ratingData.totalRatings !== 1 ? 's' : ''}
+                </p>
+                {hoveredRating > 0 && (
+                  <p className="text-sm text-info mt-2">
+                    Click to rate {hoveredRating} star{hoveredRating !== 1 ? 's' : ''}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="text-center">
+                <p className="text-base-content/70 mb-2">No ratings yet</p>
+                {hoveredRating > 0 && (
+                  <p className="text-sm text-info">
+                    Click to rate {hoveredRating} star{hoveredRating !== 1 ? 's' : ''}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Show existing user rating info if exists */}
           {ratingData?.userRating && !submitted && (
             <div className="mb-4 p-3 bg-info/10 rounded-lg border border-info/20">
               <p className="text-sm text-info">
-                {t('currentRating') || 'Your Rating'}: {ratingData.userRating.rating} ⭐ 
+                Your current rating: {ratingData.userRating.rating} ⭐ 
                 {ratingData.userRating.createdAt && (
                   <span className="ml-2 text-xs">
                     ({new Date(ratingData.userRating.createdAt).toLocaleDateString()})
@@ -243,96 +263,87 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
                 </p>
               )}
             </div>
-          )}
-           */}
+          )}          {/* Feedback Form for low ratings */}
+          {showFeedbackForm && (
+            <form onSubmit={handleFeedbackSubmit} className="mt-6 space-y-4 border-t pt-4">
+              <div className="text-center mb-4">
+                <p className="text-sm text-base-content/70">
+                  You selected: <span className="font-semibold">{userRating} star{userRating !== 1 ? 's' : ''}</span>
+                </p>
+              </div>
+              
+              <div className="text-left">
+                <label htmlFor="feedback" className="label">
+                  <span className="label-text">
+                    {t('feedback.title')}
+                  </span>
+                </label>
+                <textarea
+                  id="feedback"
+                  className="textarea textarea-bordered w-full h-24 resize-none"
+                  placeholder={t('feedback.placeholder')}
+                  value={feedback}
+                  onChange={(e) => setFeedback(e.target.value)}
+                  disabled={isSubmitting}
+                />
+              </div>
 
-          {/* User Rating Section */}
-          <div className="border-t pt-4">
-            <h4 className="text-lg font-medium mb-3">
-              {ratingData?.userRating ? 'Update Your Rating' : 'Rate This Story'}
-            </h4>
-            
-            {/* Interactive Star Rating */}
-            <div className="flex justify-center gap-1 mb-4">
-              {renderStars(userRating, true)}
-            </div>
-
-            {/* Feedback Form for low ratings */}
-            {showFeedbackForm && (
-              <form onSubmit={handleFeedbackSubmit} className="mt-6 space-y-4">
-                <div className="text-left">
-                  <label htmlFor="feedback" className="label">
-                    <span className="label-text">
-                      {t('feedback.title')}
-                    </span>
-                  </label>
-                  <textarea
-                    id="feedback"
-                    className="textarea textarea-bordered w-full h-24 resize-none"
-                    placeholder={t('feedback.placeholder')}
-                    value={feedback}
-                    onChange={(e) => setFeedback(e.target.value)}
+              <div className="form-control">
+                <label className="label cursor-pointer justify-start gap-3">
+                  <input
+                    type="checkbox"
+                    className="checkbox checkbox-primary"
+                    checked={includeNameInFeedback}
+                    onChange={(e) => setIncludeNameInFeedback(e.target.checked)}
                     disabled={isSubmitting}
                   />
-                </div>
-
-                <div className="form-control">
-                  <label className="label cursor-pointer justify-start gap-3">
-                    <input
-                      type="checkbox"
-                      className="checkbox checkbox-primary"
-                      checked={includeNameInFeedback}
-                      onChange={(e) => setIncludeNameInFeedback(e.target.checked)}
-                      disabled={isSubmitting}
-                    />
-                    <span className="label-text">
-                      {t('feedback.includeNameLabel')}
-                    </span>
-                  </label>
-                </div>
-
-                <div className="flex gap-2 justify-end">
-                  <button
-                    type="button"
-                    className="btn btn-ghost"
-                    onClick={() => setShowFeedbackForm(false)}
-                    disabled={isSubmitting}
-                  >
-                    {t('buttons.cancel')}
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn btn-primary"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <span className="loading loading-spinner loading-sm"></span>
-                        {t('buttons.submitting')}
-                      </>
-                    ) : (
-                      ratingData?.userRating ? (t('buttons.updateRating') || 'Update Rating') : t('buttons.submitRating')
-                    )}
-                  </button>
-                </div>
-              </form>
-            )}
-
-            {/* Error Message */}
-            {error && (
-              <div className="alert alert-error mt-4">
-                <span>{error}</span>
+                  <span className="label-text">
+                    {t('feedback.includeNameLabel')}
+                  </span>
+                </label>
               </div>
-            )}
 
-            {/* Loading state for high ratings */}
-            {isSubmitting && !showFeedbackForm && (
-              <div className="flex items-center justify-center gap-2 mt-4">
-                <span className="loading loading-spinner loading-sm"></span>
-                <span>{t('submittingMessage')}</span>
+              <div className="flex gap-2 justify-end">
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={() => setShowFeedbackForm(false)}
+                  disabled={isSubmitting}
+                >
+                  {t('buttons.cancel')}
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <span className="loading loading-spinner loading-sm"></span>
+                      {t('buttons.submitting')}
+                    </>
+                  ) : (
+                    ratingData?.userRating ? (t('buttons.updateRating') || 'Update Rating') : t('buttons.submitRating')
+                  )}
+                </button>
               </div>
-            )}
-          </div>
+            </form>
+          )}
+
+          {/* Error Message */}
+          {error && (
+            <div className="alert alert-error mt-4">
+              <span>{error}</span>
+            </div>
+          )}
+
+          {/* Loading state for high ratings */}
+          {isSubmitting && !showFeedbackForm && (
+            <div className="flex items-center justify-center gap-2 mt-4">
+              <span className="loading loading-spinner loading-sm"></span>
+              <span>{t('submittingMessage')}</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

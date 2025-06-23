@@ -68,7 +68,8 @@ export default function PricingPage() {
 	};
 	return (
 		<div className="min-h-screen bg-base-100 text-base-content">
-			<div className="container mx-auto px-4 py-12">				{/* Header Section */}
+			<div className="container mx-auto px-4 py-12">
+				{/* Header Section */}
 				<header className="text-center mb-16">
 					<h1 className="text-5xl font-bold text-primary">{t('header.title')}</h1>
 					<p className="text-xl mt-4 text-gray-700">{t('header.subtitle')}</p>
@@ -76,7 +77,6 @@ export default function PricingPage() {
 
 				{/* Credit Packages Section */}
 				<section id="buy-credits" className="my-16">
-					<h2 className="text-4xl font-bold text-center mb-10">{t('creditPackages.title')}</h2>
 					<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
 						{creditPackages.map((pkg) => (
 							<div key={pkg.id} className={`card bg-base-200 shadow-xl relative ${pkg.bestValue ? 'border-2 border-accent' : pkg.popular ? 'border-2 border-secondary' : ''}`}>

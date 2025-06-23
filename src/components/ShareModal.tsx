@@ -21,6 +21,8 @@ interface ShareModalProps {
   onClose: () => void;
   storyId: string;
   storyTitle: string;
+  isPublic?: boolean;
+  slug?: string;
   onShareSuccess?: (shareData: ShareData) => void;
 }
 
@@ -34,14 +36,17 @@ interface ShareData {
   message: string;
 }
 
-export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onShareSuccess }: ShareModalProps) {
+export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPublic = false, slug, onShareSuccess }: ShareModalProps) {
   const t = useTranslations('common.Components.ShareModal');
   const [allowEdit, setAllowEdit] = useState(false);
-  const [makePublic, setMakePublic] = useState(false);
+  const [makePublic, setMakePublic] = useState(isPublic);
   const [loading, setLoading] = useState(false); const [shareData, setShareData] = useState<ShareData | null>(null);
   const [copied, setCopied] = useState(false);
-
   if (!isOpen) return null;
+
+  // If the story is already public, show the public link
+  const isCurrentlyPublic = isPublic && slug;
+
   const handleCreateShareLink = async () => {
     setLoading(true);
     try {
@@ -144,11 +149,10 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
     const body = encodeURIComponent(`I wanted to share this story with you:\n\n"${storyTitle}"\n\n${url}\n\nEnjoy reading! 📚`);
     window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
   };
-
   const reset = () => {
     setShareData(null);
     setAllowEdit(false);
-    setMakePublic(false);
+    setMakePublic(isPublic);
     setCopied(false);
   };
 
@@ -171,10 +175,125 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, onSha
           >
             <FiX className="text-xl" />
           </button>
-        </div>
+        </div>        <div className="p-6 space-y-6">
+          {isCurrentlyPublic && !shareData ? (
+            <>
+              {/* Public Story Display */}
+              <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                <h3 className="font-medium text-green-900 mb-2">{t('publicStoryTitle') || 'Public Story'}</h3>
+                <p className="text-sm text-green-700 mb-3">{t('publicStoryDesc') || 'This story is currently public and can be viewed by anyone.'}</p>
+                
+                {/* Public URL */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-green-800">
+                    {t('publicUrl') || 'Public URL'}
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={getFullUrl(`/p/${slug}`)}
+                      readOnly
+                      className="flex-1 input input-bordered text-sm bg-white"
+                    />
+                    <button
+                      onClick={() => copyToClipboard(getFullUrl(`/p/${slug}`))}
+                      className="btn btn-outline btn-sm"
+                    >
+                      {copied ? (
+                        <>
+                          <FiCheck className="text-green-600" />
+                          {t('copied')}
+                        </>
+                      ) : (
+                        <>
+                          <FiCopy />
+                          {t('copy')}
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
 
-        <div className="p-6 space-y-6">
-          {!shareData ? (
+              {/* Toggle to Make Private */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-red-100 rounded-lg">
+                      <FiLock className="text-red-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium">{t('makePrivate') || 'Make story private'}</h4>
+                      <p className="text-sm text-gray-600">{t('makePrivateDesc') || 'Remove public access and make the story private'}</p>
+                    </div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-primary"
+                    checked={makePublic}
+                    onChange={(e) => setMakePublic(e.target.checked)}
+                  />
+                </div>
+              </div>
+
+              {/* Share Options for Public Story */}
+              <div className="space-y-3">
+                <h4 className="font-medium text-center">{t('shareVia')}</h4>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => handleWhatsApp(getFullUrl(`/p/${slug}`))}
+                    className="btn btn-outline btn-sm flex items-center gap-2"
+                  >
+                    <FaWhatsapp className="text-green-600" />
+                    {t('whatsapp')}
+                  </button>
+
+                  <button
+                    onClick={() => handleFacebook(getFullUrl(`/p/${slug}`))}
+                    className="btn btn-outline btn-sm flex items-center gap-2"
+                  >
+                    <FaFacebook className="text-blue-600" />
+                    {t('facebook')}
+                  </button>
+
+                  <button
+                    onClick={() => handleEmail(getFullUrl(`/p/${slug}`))}
+                    className="btn btn-outline btn-sm flex items-center gap-2"
+                  >
+                    <FiMail />
+                    {t('email')}
+                  </button>
+
+                  <button
+                    onClick={() => handleNativeShare(getFullUrl(`/p/${slug}`))}
+                    className="btn btn-outline btn-sm flex items-center gap-2"
+                  >
+                    <FiShare2 />
+                    {t('more')}
+                  </button>
+                </div>
+              </div>
+
+              {/* Update Button */}
+              {!makePublic && (
+                <button
+                  onClick={handleCreateShareLink}
+                  disabled={loading}
+                  className="w-full btn btn-primary"
+                >
+                  {loading ? (
+                    <span className="loading loading-spinner loading-sm"></span>
+                  ) : (
+                    <>
+                      <FiLock />
+                      {t('makePrivate') || 'Make Private'}
+                    </>
+                  )}
+                </button>
+              )}
+            </>
+          ) : !shareData ? (
             <>
               {/* Story Info */}              <div className="bg-gray-50 rounded-lg p-4">
                 <h3 className="font-medium text-gray-900 mb-1">{storyTitle}</h3>

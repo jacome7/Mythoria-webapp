@@ -1,6 +1,6 @@
 import { db } from "./index";
 import { authors, stories, characters, storyCharacters, creditLedger, authorCreditBalances, leads, storyGenerationRuns, storyRatings } from "./schema";
-import { eq, and, count, desc, sql, like, asc, avg } from "drizzle-orm";
+import { eq, and, count, desc, sql, like, asc } from "drizzle-orm";
 import { ClerkUserForSync } from "@/types/clerk";
 import { pricingService } from "./services/pricing";
 
@@ -190,14 +190,13 @@ export const storyService = {  async createStory(storyData: { title: string; aut
     graphicalStyle?: string;
     storyLanguage?: string;
   }) {
-    let conditions = [eq(stories.isPublic, true), eq(stories.isFeatured, true)];
+    const conditions = [eq(stories.isPublic, true), eq(stories.isFeatured, true)];
     
     if (filters) {
       if (filters.targetAudience) {
-        conditions.push(eq(stories.targetAudience, filters.targetAudience as any));
-      }
-      if (filters.graphicalStyle) {
-        conditions.push(eq(stories.graphicalStyle, filters.graphicalStyle as any));
+        conditions.push(eq(stories.targetAudience, filters.targetAudience as 'children_0-2' | 'children_3-6' | 'children_7-10' | 'children_11-14' | 'young_adult_15-17' | 'adult_18+' | 'all_ages'));
+      }      if (filters.graphicalStyle) {
+        conditions.push(eq(stories.graphicalStyle, filters.graphicalStyle as 'cartoon' | 'realistic' | 'watercolor' | 'digital_art' | 'hand_drawn' | 'minimalist' | 'vintage' | 'comic_book' | 'anime' | 'pixar_style' | 'disney_style' | 'sketch' | 'oil_painting' | 'colored_pencil'));
       }
       if (filters.storyLanguage) {
         conditions.push(eq(stories.storyLanguage, filters.storyLanguage));
