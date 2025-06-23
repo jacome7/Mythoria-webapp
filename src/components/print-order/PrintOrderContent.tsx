@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiArrowLeft, FiMapPin, FiCreditCard, FiBook } from 'react-icons/fi';
+import { FiArrowLeft, FiMapPin, FiPrinter, FiBook } from 'react-icons/fi';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { type Address as AddressType } from '@/components/AddressCard';
@@ -162,7 +162,7 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
   };  const steps = [
     { id: 'story', title: t('steps.story'), icon: FiBook },
     { id: 'address', title: t('steps.address'), icon: FiMapPin },
-    { id: 'payment', title: t('steps.payment'), icon: FiCreditCard },
+    { id: 'payment', title: t('steps.payment'), icon: FiPrinter },
   ];
 
   const getCurrentStepIndex = () => steps.findIndex(step => step.id === currentStep);
@@ -284,28 +284,36 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
           )}
         </div>
       </div>
-
+      
       {/* Progress Steps */}
       <div className="mb-8">
-        <ul className="steps steps-horizontal w-full">
+        <div className="flex justify-center items-center w-full space-x-12">
           {steps.map((step, index) => {
             const isActive = step.id === currentStep;
             const isCompleted = index < getCurrentStepIndex();
             const Icon = step.icon;
             
             return (
-              <li 
+              <div 
                 key={step.id}
-                className={`step ${isCompleted || isActive ? 'step-primary' : ''}`}
+                className="flex flex-col items-center gap-3"
               >
-                <div className="flex flex-col items-center gap-2">
+                <div className={`flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all duration-200 ${
+                  isCompleted || isActive 
+                    ? 'bg-primary border-primary text-primary-content shadow-lg' 
+                    : 'bg-base-200 border-base-300 text-base-content'
+                }`}>
                   <Icon className="w-5 h-5" />
-                  <span className="text-sm">{step.title}</span>
                 </div>
-              </li>
+                <span className={`text-sm font-medium text-center ${
+                  isCompleted || isActive ? 'text-primary' : 'text-base-content/70'
+                }`}>
+                  {step.title}
+                </span>
+              </div>
             );
           })}
-        </ul>
+        </div>
       </div>
 
       {/* Step Content */}

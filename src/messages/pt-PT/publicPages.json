@@ -397,8 +397,8 @@
     "createAccount": "Criar Conta",
     "steps": {
       "story": "História",
-      "address": "Morada de Envio",
-      "payment": "Pagamento",
+      "address": "Morada",
+      "payment": "Impressão",
       "confirmation": "Confirmação"
     },
     "errors": {

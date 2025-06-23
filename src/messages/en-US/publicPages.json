@@ -394,11 +394,10 @@
     "signInToContinue": "Sign in to continue",
     "signInOrCreateAccount": "You need to sign in or create an account to place a print order.",
     "signIn": "Sign In",
-    "createAccount": "Create Account",
-    "steps": {
+    "createAccount": "Create Account",    "steps": {
       "story": "Story",
       "address": "Shipping Address",
-      "payment": "Payment",
+      "payment": "Print Options",
       "confirmation": "Confirmation"
     },
     "errors": {
