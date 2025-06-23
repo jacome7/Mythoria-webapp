@@ -1,1 +1,0 @@
-ALTER TABLE "stories" ADD COLUMN "story_language" varchar(5) DEFAULT 'en-US' NOT NULL;

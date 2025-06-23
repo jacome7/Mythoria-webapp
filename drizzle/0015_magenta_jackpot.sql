@@ -1,1 +1,0 @@
-ALTER TYPE "public"."ai_action_type" ADD VALUE 'image_edit' BEFORE 'story_review';
