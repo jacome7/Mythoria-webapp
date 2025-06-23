@@ -34,6 +34,7 @@ export const printRequests = pgTable("print_requests", {
   status: printRequestStatusEnum("status").notNull().default('requested'),
   shippingId: uuid("shipping_id").references(() => addresses.addressId, { onDelete: 'set null' }), // FK to addresses table
   printProviderId: uuid("print_provider_id").notNull().references(() => printProviders.id, { onDelete: 'restrict' }),
+  printingOptions: jsonb("printing_options").notNull(), // JSON with selected printing options (serviceCode, credits, title, chapterCount, etc.)
   requestedAt: timestamp("requested_at", { withTimezone: true }).defaultNow().notNull(),
   printedAt: timestamp("printed_at", { withTimezone: true }),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),

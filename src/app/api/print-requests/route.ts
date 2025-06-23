@@ -3,7 +3,7 @@ import { db } from '@/db';
 import { printRequests, printProviders, stories, addresses } from '@/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { getCurrentAuthor } from '@/lib/auth';
-import { creditService, pricingService } from '@/db/services';
+import { creditService } from '@/db/services';
 
 export async function GET(request: NextRequest) {
   try {
@@ -86,11 +86,10 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    
-    // Validate required fields
-    if (!body.storyId || !body.pdfUrl || !body.printProviderId) {
+      // Validate required fields
+    if (!body.storyId || !body.pdfUrl) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields: storyId, pdfUrl, printProviderId' },
+        { success: false, error: 'Missing required fields: storyId, pdfUrl' },
         { status: 400 }
       );
     }
@@ -115,43 +114,56 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify the print provider exists and is active
-    const provider = await db
+    // Get shipping address to determine country for print provider selection
+    let shippingCountry = 'PT'; // Default to Portugal
+    if (body.shippingId) {
+      const shippingAddress = await db
+        .select({ country: addresses.country })
+        .from(addresses)
+        .where(eq(addresses.addressId, body.shippingId))
+        .limit(1);
+      
+      if (shippingAddress.length > 0) {
+        shippingCountry = shippingAddress[0].country;
+      }
+    }
+
+    // Auto-select the first active print provider available for the shipping country
+    const availableProviders = await db
       .select()
       .from(printProviders)
-      .where(
-        and(
-          eq(printProviders.id, body.printProviderId),
-          eq(printProviders.isActive, true)
-        )
-      )
-      .limit(1);
+      .where(eq(printProviders.isActive, true));
 
-    if (provider.length === 0) {
+    const suitableProvider = availableProviders.find(provider => {
+      const availableCountries = provider.availableCountries as string[];
+      return availableCountries.includes(shippingCountry);
+    });    if (!suitableProvider) {
       return NextResponse.json(
-        { success: false, error: 'Print provider not found or inactive' },
+        { success: false, error: `No print provider available for country: ${shippingCountry}` },
         { status: 404 }
       );
     }    // Check and deduct credits for print order
     try {
-      const printOrderPricing = await pricingService.getPricingByServiceCode('printOrder');
-      if (!printOrderPricing) {
+      // Calculate total cost based on printing option and extra chapters
+      const totalCost = body.totalCost || 0;
+      
+      if (!totalCost) {
         return NextResponse.json(
-          { success: false, error: 'Print order pricing not configured' },
-          { status: 500 }
+          { success: false, error: 'Total cost not provided' },
+          { status: 400 }
         );
       }
 
       // Check if user has sufficient credits
       const currentBalance = await creditService.getAuthorCreditBalance(author.authorId);
-      if (currentBalance < printOrderPricing.credits) {
+      if (currentBalance < totalCost) {
         return NextResponse.json(
           { 
             success: false,
             error: 'Insufficient credits',
-            required: printOrderPricing.credits,
+            required: totalCost,
             available: currentBalance,
-            shortfall: printOrderPricing.credits - currentBalance
+            shortfall: totalCost - currentBalance
           }, 
           { status: 402 } // Payment Required
         );
@@ -160,8 +172,8 @@ export async function POST(request: NextRequest) {
       // Deduct credits for print order
       await creditService.deductCredits(
         author.authorId,
-        printOrderPricing.credits,
-        'printOrder',
+        totalCost,
+        body.printingOption?.serviceCode || 'printOrder',
         body.storyId
       );
     } catch (error) {
@@ -170,14 +182,20 @@ export async function POST(request: NextRequest) {
         { success: false, error: 'Failed to process payment. Please try again.' },
         { status: 500 }
       );
-    }
-
-    // Create the print request
+    }    // Create the print request
     const newRequest = await db.insert(printRequests).values({
       storyId: body.storyId,
       pdfUrl: body.pdfUrl,
-      printProviderId: body.printProviderId,
+      printProviderId: suitableProvider.id,
       shippingId: body.shippingId || null,
+      printingOptions: {
+        serviceCode: body.printingOption?.serviceCode,
+        credits: body.printingOption?.credits,
+        title: body.printingOption?.title,
+        chapterCount: body.chapterCount,
+        totalCost: body.totalCost,
+        extraChapters: Math.max(0, (body.chapterCount || 4) - 4),
+      },
       status: 'requested',
     }).returning();
 

@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { FiX, FiZap, FiEdit3, FiFileText, FiImage } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import ImageEditingTab from './ImageEditingTab';
 import { extractStoryImagesFromHtml, extractStoryImages, StoryImage } from '@/utils/imageUtils';
 
@@ -34,7 +33,6 @@ export default function AIEditModal({
   onRevertUpdate
 }: AIEditModalProps) {
   const t = useTranslations('common.aiEditModal');
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState<EditTab>('text');
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [storyImages, setStoryImages] = useState<StoryImage[]>([]);

@@ -1,0 +1,1 @@
+ALTER TABLE "print_requests" ADD COLUMN "printing_options" jsonb NOT NULL;

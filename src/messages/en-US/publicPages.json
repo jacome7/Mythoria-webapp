@@ -61,7 +61,8 @@
       "draft": "Draft",
       "writing": "Writing",
       "published": "Published"
-    },    "actions": {
+    },
+    "actions": {
       "share": "Share",
       "edit": "Edit",
       "delete": "Delete",
@@ -355,9 +356,10 @@
         "description": "Read the story in a beautiful, formatted layout with images and styling."
       },
       "listen": {
-        "title": "Listen", 
+        "title": "Listen",
         "description": "Listen to the audiobook version with professional narration."
-      },      "edit": {
+      },
+      "edit": {
         "title": "Edit",
         "description": "Make changes to the story content with our built-in editor."
       },
@@ -384,7 +386,9 @@
     },
     "investors": {
       "button": "Open the Scroll 📜"
-    }  },  "PrintOrder": {
+    }
+  },
+  "PrintOrder": {
     "title": "Order Printed Copy",
     "backToStories": "Back to My Stories",
     "signInToContinue": "Sign in to continue",
@@ -394,10 +398,10 @@
     "steps": {
       "story": "Story",
       "address": "Shipping Address",
-      "provider": "Print Provider",
       "payment": "Payment",
       "confirmation": "Confirmation"
-    },    "errors": {
+    },
+    "errors": {
       "storyNotFound": "Story not found",
       "storyNotPublished": "Only published stories can be printed",
       "pdfNotAvailable": "PDF not available for this story",
@@ -405,25 +409,47 @@
       "missingRequiredFields": "Please complete all required fields",
       "orderFailed": "Failed to place print order",
       "insufficientCredits": "Insufficient credits."
-    },"addressInfo": {
+    },
+    "addressInfo": {
       "selectShipping": "Please select a shipping address for your printed book.",
       "noAddresses": "You don't have any saved addresses. Please add a shipping address to continue.",
       "addNewAddress": "Add New Address"
     },
-    "providerInfo": {
-      "selectProvider": "Choose a print provider and book format."
-    },
     "formats": {
       "paperback": "Paperback",
       "hardcover": "Hardcover"
-    },    "payment": {
+    },
+    "payment": {
+      "selectBookType": "Select Your Book Type",
+      "chooseQuality": "Choose the printing quality that suits you best:",
+      "softcoverTitle": "📖 Softcover",
+      "softcoverDescription": "Flexible paperback with a glossy finish. Ideal for daily reading and handling.",
+      "hardcoverTitle": "📚 Hardcover",
+      "hardcoverDescription": "Rigid cover, sturdy binding. Perfect as a gift or to keep for a long time.",
+      "premiumTitle": "🌟 Premium",
+      "premiumDescription": "Deluxe hardcover edition with premium materials. Exceptional quality for special occasions.",
+      "priceNote": "All prices include 4 chapter printing in full-color printing and delivery.",
+      "extraChapterNote": "Each additional chapter costs 2 credits.",
+      "yourStory": "Your story",
+      "extraChaptersNote": "extra chapters",
       "orderSummary": "Order Summary",
+      "selectedOption": "Selected Option",
+      "basePrice": "Base Price",
+      "extraChapters": "Extra Chapters",
       "shipping": "Shipping",
       "printOrderFee": "Print Order Processing",
       "total": "Total",
       "credits": "credits",
+      "cost": "Cost",
+      "yourCredits": "Your Credits",
+      "insufficientCreditsTitle": "Insufficient Credits",
+      "needMoreCredits": "You need {count} more credits to place this order.",
+      "getMoreCredits": "Get More Credits",
       "method": "Payment Method",
-      "creditsInfo": "Payment will be deducted from your credits balance when you place the order."
+      "creditsInfo": "Payment will be deducted from your credits balance when you place the order.",
+      "pleaseSelectOption": "Please select a printing option to continue.",
+      "confirmOrder": "Confirm Your Print Order",
+      "confirmOrderDescription": "Due to high demand, the delivery can take up to 4 weeks. Are you sure you want to proceed with your order?"
     },
     "confirmation": {
       "title": "Order Placed Successfully!",
@@ -433,7 +459,9 @@
       "continue": "Continue",
       "back": "Back",
       "placeOrder": "Place Order",
-      "backToStories": "Back to My Stories"
+      "backToStories": "Back to My Stories",
+      "confirm": "Confirm Order",
+      "cancel": "Cancel"
     }
   },
   "Addresses": {
@@ -464,7 +492,8 @@
       "stateRegion": "Enter state or region",
       "postalCode": "Enter postal code",
       "phone": "Enter phone number"
-    },    "types": {
+    },
+    "types": {
       "delivery": "Delivery",
       "billing": "Billing"
     },

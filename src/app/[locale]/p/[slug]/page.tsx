@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiLoader, FiAlertCircle, FiUser, FiCalendar, FiTag, FiImage, FiEye, FiPrinter } from 'react-icons/fi';
+import { FiLoader, FiAlertCircle, FiUser, FiCalendar, FiTag, FiEye, FiPrinter } from 'react-icons/fi';
 import StoryReader from '@/components/StoryReader';
 
 interface PublicStoryData {

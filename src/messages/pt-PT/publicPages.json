@@ -61,7 +61,8 @@
       "draft": "Rascunho",
       "writing": "A Escrever",
       "published": "Publicado"
-    },    "actions": {
+    },
+    "actions": {
       "share": "Partilhar",
       "edit": "Editar",
       "delete": "Eliminar",
@@ -355,9 +356,10 @@
         "description": "Leia a história num formato bonito e formatado com imagens e estilo."
       },
       "listen": {
-        "title": "Ouvir", 
+        "title": "Ouvir",
         "description": "Ouça a versão audiobook com narração profissional."
-      },      "edit": {
+      },
+      "edit": {
         "title": "Editar",
         "description": "Faça alterações ao conteúdo da história com o nosso editor integrado."
       },
@@ -381,10 +383,12 @@
       "title": "🪄 Lance o Seu Feitiço de Feedback",
       "placeholder": "Partilhe as suas sugestões mágicas...",
       "submit": "Enviar Feitiço ✨"
-    },    "investors": {
+    },
+    "investors": {
       "button": "Abrir o Pergaminho 📜"
     }
-  },  "PrintOrder": {
+  },
+  "PrintOrder": {
     "title": "Encomendar Cópia Impressa",
     "backToStories": "Voltar às Minhas Histórias",
     "signInToContinue": "Inicie sessão para continuar",
@@ -394,7 +398,6 @@
     "steps": {
       "story": "História",
       "address": "Morada de Envio",
-      "provider": "Fornecedor de Impressão",
       "payment": "Pagamento",
       "confirmation": "Confirmação"
     },
@@ -406,25 +409,47 @@
       "missingRequiredFields": "Por favor complete todos os campos obrigatórios",
       "orderFailed": "Falha ao efetuar encomenda de impressão",
       "insufficientCredits": "Créditos insuficientes."
-    },"addressInfo": {
+    },
+    "addressInfo": {
       "selectShipping": "Por favor selecione uma morada de envio para o seu livro impresso.",
       "noAddresses": "Não tem moradas guardadas. Por favor adicione uma morada de envio para continuar.",
       "addNewAddress": "Adicionar Nova Morada"
     },
-    "providerInfo": {
-      "selectProvider": "Escolha um fornecedor de impressão e formato do livro."
-    },
     "formats": {
       "paperback": "Capa Mole",
       "hardcover": "Capa Dura"
-    },    "payment": {
+    },
+    "payment": {
+      "selectBookType": "Escolha o Tipo de Livro",
+      "chooseQuality": "Escolha a qualidade de impressão mais adequada para si:",
+      "softcoverTitle": "📖 Capa Mole",
+      "softcoverDescription": "Capa flexível com acabamento brilhante. Ideal para leitura frequente e fácil manuseamento.",
+      "hardcoverTitle": "📚 Capa Dura",
+      "hardcoverDescription": "Capa rígida com encadernação resistente. Perfeito para oferta ou para guardar por muito tempo.",
+      "premiumTitle": "🌟 Premium",
+      "premiumDescription": "Edição de luxo com capa rígida e materiais premium. Qualidade excecional para ocasiões especiais.",
+      "priceNote": "Todos os preços incluem impressão de 4 capítulos a cores e entrega.",
+      "extraChapterNote": "Cada capítulo adicional tem um custo de 2 créditos.",
+      "yourStory": "A sua história",
+      "extraChaptersNote": "capítulos extra",
       "orderSummary": "Resumo da Encomenda",
+      "selectedOption": "Opção Selecionada",
+      "basePrice": "Preço Base",
+      "extraChapters": "Capítulos Extra",
       "shipping": "Envio",
       "printOrderFee": "Processamento de Encomenda",
       "total": "Total",
       "credits": "créditos",
+      "cost": "Custo",
+      "yourCredits": "Os Seus Créditos",
+      "insufficientCreditsTitle": "Créditos Insuficientes",
+      "needMoreCredits": "Precisa de mais {count} créditos para efetuar esta encomenda.",
+      "getMoreCredits": "Obter Mais Créditos",
       "method": "Método de Pagamento",
-      "creditsInfo": "O pagamento será deduzido do seu saldo de créditos quando efetuar a encomenda."
+      "creditsInfo": "O pagamento será deduzido do seu saldo de créditos quando efetuar a encomenda.",
+      "pleaseSelectOption": "Por favor selecione uma opção de impressão para continuar.",
+      "confirmOrder": "Confirmar a Sua Encomenda de Impressão",
+      "confirmOrderDescription": "Devido à elevada procura, a entrega pode demorar até 4 semanas. Tem a certeza que quer prosseguir com a sua encomenda?"
     },
     "confirmation": {
       "title": "Encomenda Realizada com Sucesso!",
@@ -434,7 +459,9 @@
       "continue": "Continuar",
       "back": "Voltar",
       "placeOrder": "Efetuar Encomenda",
-      "backToStories": "Voltar às Minhas Histórias"
+      "backToStories": "Voltar às Minhas Histórias",
+      "confirm": "Confirmar Encomenda",
+      "cancel": "Cancelar"
     }
   },
   "Addresses": {
@@ -465,7 +492,8 @@
       "stateRegion": "Insira estado ou região",
       "postalCode": "Insira o código postal",
       "phone": "Insira o número de telefone"
-    },    "types": {
+    },
+    "types": {
       "delivery": "Entrega",
       "billing": "Faturação"
     },
