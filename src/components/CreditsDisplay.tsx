@@ -54,8 +54,19 @@ export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
     } finally {
       setLoading(false);
     }
-  };  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(locale, {
+  };  const formatDate = (dateString: string, isMobile = false) => {
+    const date = new Date(dateString);
+    
+    if (isMobile) {
+      // Mobile format: "Jun 17" (no year, no time)
+      return date.toLocaleDateString(locale, {
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+    
+    // Desktop format: full date with time
+    return date.toLocaleDateString(locale, {
       year: '2-digit',
       month: 'short',
       day: 'numeric',
@@ -114,7 +125,12 @@ export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
                     <tbody>
                       {creditHistory.map((entry) => (
                         <tr key={entry.id}>
-                          <td className="text-sm">{formatDate(entry.createdAt)}</td>
+                          <td className="text-sm">
+                            {/* Mobile: Short date format */}
+                            <span className="md:hidden">{formatDate(entry.createdAt, true)}</span>
+                            {/* Desktop: Full date format */}
+                            <span className="hidden md:inline">{formatDate(entry.createdAt, false)}</span>
+                          </td>
                           <td>{formatEventType(entry.creditEventType)}</td>
                           <td className={`text-right font-mono ${getAmountColor(entry.amount)}`}>
                             {entry.amount > 0 ? '+' : ''}{entry.amount}

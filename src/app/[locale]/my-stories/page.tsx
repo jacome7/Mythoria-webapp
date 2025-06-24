@@ -86,9 +86,8 @@ export default function MyStoriesPage() {
               </Link>
             </div>
           </div>
-
           {/* Tabs and Content Wrapper */}
-          <div>
+          <div className="-mx-4 md:mx-0">
             {/* Tabs */}
             <div className="tabs">
               <a

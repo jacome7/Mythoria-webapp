@@ -35,7 +35,8 @@ type SortDirection = 'asc' | 'desc';
 export default function MyStoriesTable() {
   const t = useTranslations('MyStoriesPage');
   const tShare = useTranslations('common.Share');
-  const locale = useLocale();  const [stories, setStories] = useState<Story[]>([]);
+  const tActions = useTranslations('common.Actions');
+  const locale = useLocale();const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [storyToDelete, setStoryToDelete] = useState<Story | null>(null);
@@ -232,8 +233,7 @@ export default function MyStoriesTable() {
           </div>
         </div>
       ) : (
-        <>
-          <div className="overflow-x-auto">
+        <>          <div className="overflow-x-auto overflow-y-visible">
             <table className="table table-zebra w-full">
               <thead>
                 <tr>
@@ -405,22 +405,21 @@ export default function MyStoriesTable() {
                       <div className="md:hidden relative">
                         <button
                           className="btn btn-ghost btn-sm"
+                          data-story-menu={story.storyId}
                           onClick={() => setOpenActionMenu(openActionMenu === story.storyId ? null : story.storyId)}
                         >
                           <FiMoreVertical className="w-4 h-4" />
                         </button>
-                        
                         {openActionMenu === story.storyId && (
-                          <div className="absolute right-0 top-full mt-1 z-50 bg-base-100 border border-base-300 rounded-lg shadow-lg min-w-48">
+                          <div className="absolute right-0 top-full mt-1 z-[9999] bg-base-100 border border-base-300 rounded-lg shadow-xl min-w-48">
                             <div className="p-2 space-y-1">
-                              {story.status === 'published' && (
-                                <Link
+                              {story.status === 'published' && (                                <Link
                                   href={`/${locale}/stories/${story.storyId}`}
                                   className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
                                   onClick={() => setOpenActionMenu(null)}
                                 >
                                   <FiBook className="w-4 h-4" />
-                                  {t('actions.read')}
+                                  {tActions('read')}
                                 </Link>
                               )}
                               
