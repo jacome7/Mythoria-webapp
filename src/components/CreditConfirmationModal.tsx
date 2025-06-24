@@ -12,7 +12,6 @@ interface CreditConfirmationModalProps {
   requiredCredits: number;
   currentBalance: number;
   editCount: number;
-  nextThreshold: number;
   isFree: boolean;
   isLoading?: boolean;
 }
@@ -25,7 +24,6 @@ export default function CreditConfirmationModal({
   requiredCredits,
   currentBalance,
   editCount,
-  nextThreshold,
   isFree,
   isLoading = false
 }: CreditConfirmationModalProps) {

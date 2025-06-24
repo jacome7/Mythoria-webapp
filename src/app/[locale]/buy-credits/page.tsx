@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FaShoppingCart, FaPlus, FaMinus, FaTrash, FaCreditCard, FaMobile, FaApple, FaGoogle } from 'react-icons/fa';
@@ -19,7 +19,8 @@ interface CartItem {
 	quantity: number;
 }
 
-export default function BuyCreditsPage() {
+// Separate component for search params to handle suspense
+function BuyCreditsContent() {
 	const searchParams = useSearchParams();
 	const t = useTranslations('BuyCreditsPage');
 	const tPricing = useTranslations('PricingPage');
@@ -94,13 +95,15 @@ export default function BuyCreditsPage() {
 
 	return (
 		<div className="min-h-screen bg-base-100 text-base-content">
-			<div className="container mx-auto px-4 py-12">				{/* Header */}
+			<div className="container mx-auto px-4 py-12">
+				{/* Header */}
 				<header className="text-center mb-12">
 					<h1 className="text-4xl font-bold text-primary mb-4">{t('header.title')}</h1>
-					<p className="text-xl text-gray-700">{t('header.subtitle')}</p>
+					<p className="text-lg text-gray-600">{t('header.subtitle')}</p>
 				</header>
 
-				<div className="grid lg:grid-cols-2 gap-12">					{/* Left Side - Available Packages */}
+				<div className="grid lg:grid-cols-2 gap-12">
+					{/* Left Side - Available Packages */}
 					<div>
 						<h2 className="text-2xl font-bold mb-6">{t('packages.title')}</h2>
 						<div className="space-y-4">
@@ -128,7 +131,9 @@ export default function BuyCreditsPage() {
 								</div>
 							))}
 						</div>
-					</div>					{/* Right Side - Shopping Cart */}
+					</div>
+
+					{/* Right Side - Shopping Cart */}
 					<div>
 						<h2 className="text-2xl font-bold mb-6">{t('cart.title')}</h2>
 						
@@ -179,7 +184,9 @@ export default function BuyCreditsPage() {
 									})}
 								</div>
 							)}
-						</div>						{/* Pricing Summary */}
+						</div>
+
+						{/* Pricing Summary */}
 						{cart.length > 0 && (
 							<div className="bg-base-200 rounded-lg p-6 mb-6">
 								<h3 className="text-lg font-bold mb-4">{t('summary.title')}</h3>
@@ -199,7 +206,9 @@ export default function BuyCreditsPage() {
 									</div>
 								</div>
 							</div>
-						)}						{/* Payment Options */}
+						)}
+
+						{/* Payment Options */}
 						{cart.length > 0 && (
 							<div className="bg-base-200 rounded-lg p-6 mb-6">
 								<h3 className="text-lg font-bold mb-4">{t('payment.title')}</h3>
@@ -244,7 +253,9 @@ export default function BuyCreditsPage() {
 									</div>
 								</div>
 							</div>
-						)}						{/* Place Order Button */}
+						)}
+
+						{/* Place Order Button */}
 						{cart.length > 0 && (
 							<button
 								disabled={!selectedPayment}
@@ -264,5 +275,13 @@ export default function BuyCreditsPage() {
 				</div>
 			</div>
 		</div>
+	);
+}
+
+export default function BuyCreditsPage() {
+	return (
+		<Suspense fallback={<div>Loading...</div>}>
+			<BuyCreditsContent />
+		</Suspense>
 	);
 }

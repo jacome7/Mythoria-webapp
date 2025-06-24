@@ -681,14 +681,12 @@ export default function ImageEditingTab({
           onClose={() => {
             setShowCreditConfirmation(false);
             setPendingImageEditData(null);
-            setCreditInfo(null);
-          }}
+            setCreditInfo(null);          }}
           onConfirm={handleCreditConfirmation}
           action="imageEdit"
           requiredCredits={creditInfo.requiredCredits}
           currentBalance={creditInfo.currentBalance}
           editCount={creditInfo.editCount}
-          nextThreshold={creditInfo.nextThreshold}
           isFree={creditInfo.isFree}
           isLoading={isLoading}
         />

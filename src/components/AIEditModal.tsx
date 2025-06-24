@@ -741,13 +741,11 @@ export default function AIEditModal({
             setShowCreditConfirmation(false);
             setPendingEditData(null);
             setCreditInfo(null);
-          }}
-          onConfirm={handleCreditConfirmation}
+          }}          onConfirm={handleCreditConfirmation}
           action="textEdit"
           requiredCredits={creditInfo.requiredCredits}
           currentBalance={creditInfo.currentBalance}
           editCount={creditInfo.editCount}
-          nextThreshold={creditInfo.nextThreshold}
           isFree={creditInfo.isFree}
           isLoading={isLoading}
         />

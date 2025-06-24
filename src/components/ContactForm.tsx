@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { FaEnvelope } from 'react-icons/fa';
@@ -10,7 +10,8 @@ interface ContactFormProps {
   className?: string;
 }
 
-const ContactForm = ({ className = "" }: ContactFormProps) => {
+// Separate component for search params to handle suspense
+function ContactFormContent({ className = "" }: ContactFormProps) {
   const t = useTranslations('ContactUsPage');
   const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
@@ -205,14 +206,21 @@ const ContactForm = ({ className = "" }: ContactFormProps) => {
                   strokeLinejoin="round"
                   strokeWidth="2"
                   d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              )}
+                />              )}
             </svg>
             <span>{responseMessage}</span>
           </div>
         )}
       </div>
     </div>
+  );
+}
+
+const ContactForm = ({ className = "" }: ContactFormProps) => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ContactFormContent className={className} />
+    </Suspense>
   );
 };
 
