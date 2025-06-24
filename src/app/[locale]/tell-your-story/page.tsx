@@ -23,7 +23,8 @@ export default function TellYourStoryPage() {
   };
   
   return (
-    <div className="container mx-auto px-4 py-8">      <ClientAuthWrapper
+    <div className="container mx-auto px-4 py-8">
+      <ClientAuthWrapper
         signedOutFallback={
           <div className="text-center space-y-6">
             <h1 className="text-4xl font-bold">{t('signedOut.title')}</h1>

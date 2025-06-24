@@ -178,14 +178,14 @@
           }
         }
       }
-    },
-    "section9": {
+    },    "section9": {
       "title": "9. Medidas de segurança",
       "content": "Implementamos controlos alinhados com a ISO 27001: encriptação em trânsito (TLS 1.3) e em repouso (AES-256), acesso por mínimo privilégio, MFA para colaboradores, correções automáticas e testes de intrusão anuais. A resposta a incidentes segue as regras de notificação de violação do Art.º 33 RGPD."
     },
     "section10": {
       "title": "10. Os seus direitos",
-      "content": "Pode aceder, retificar, apagar, restringir, opor-se ou portar os seus dados pessoais e retirar consentimento a qualquer momento. Pedidos enviados para dpo@mythoria.pt são respondidos no prazo de um mês (Art.º 12 RGPD). Se considerar que os seus direitos foram violados, pode apresentar reclamação à CNPD (contactos no § 1)."
+      "content": "Pode aceder, retificar, apagar, restringir, opor-se ou portar os seus dados pessoais e retirar consentimento a qualquer momento. Pedidos enviados para dpo@mythoria.pt são respondidos no prazo de um mês (Art.º 12 RGPD). Se considerar que os seus direitos foram violados, pode apresentar reclamação à CNPD (contactos no § 1).",
+      "deleteAccount": "Se pretender exercer o seu direito ao apagamento (Art.º 17 RGPD) e eliminar permanentemente a sua conta, pode fazê-lo através da nossa página dedicada de eliminação de conta."
     },
     "section11": {
       "title": "11. Transferências internacionais",

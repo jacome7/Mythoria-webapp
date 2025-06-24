@@ -1,0 +1,46 @@
+{
+  "DeleteAccount": {
+    "title": "Delete Account",
+    "subtitle": "Permanently remove your account and all associated data from Mythoria",
+    "notLoggedIn": {
+      "title": "Account Deletion Instructions",
+      "description": "To delete your account, you need to be logged in first.",
+      "steps": {
+        "title": "How to Delete Your Account:",
+        "step1": "Click on the user icon in the top-right corner of the page",
+        "step2": "Select 'Manage Account' from the dropdown menu",
+        "step3": "In the left sidebar, choose 'Security'",
+        "step4": "Click the 'Delete Account' button and follow the confirmation process"
+      }
+    },
+    "loggedIn": {
+      "title": "Delete Your Account",
+      "description": "This action will permanently delete your account and cannot be undone.",
+      "consequences": {
+        "title": "What will be deleted:",
+        "item1": "Your profile and personal information",
+        "item2": "All your created books and stories",
+        "item3": "Any pending credits in your account",
+        "item4": "Your account history and preferences"
+      },
+      "deleteButton": "Delete My Account"
+    },
+    "confirmation": {
+      "title": "Confirm Account Deletion",
+      "description": "This action cannot be undone. To confirm, please enter your email address below.",
+      "emailLabel": "Email",
+      "emailMismatch": "Email address does not match your account email",
+      "cancel": "Cancel",
+      "confirmDelete": "Delete Account",
+      "deleting": "Deleting..."
+    },
+    "warning": {
+      "title": "Warning: This action is irreversible",
+      "description": "Once your account is deleted, all your data including created books, pending credits, and personal information will be permanently removed and cannot be recovered."
+    },
+    "legal": {
+      "title": "Legal Compliance",
+      "description": "This deletion process complies with GDPR Article 17 (Right to Erasure) and Facebook Platform Terms Section 3(d)(i), ensuring your right to have your personal data removed."
+    }
+  }
+}

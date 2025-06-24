@@ -34,9 +34,15 @@ const Header = () => {
             <li><Link href="/pricing">{t('navigation.pricing')}</Link></li>
           </ul>
           </div>
-          <Link href="/" className="btn btn-ghost normal-case text-xl px-1 py-0.5">
-            <Image src="/Mythoria-logo-lanscape-transparent.png" alt={t('logoAlt')} width={120} height={45} />
-          </Link>
+          <div className="flex items-center">
+            <Link href="/" className="btn btn-ghost normal-case text-xl px-1 py-0.5">
+              <Image src="/Mythoria-logo-lanscape-transparent.png" alt={t('logoAlt')} width={120} height={45} />
+            </Link>            <div className="ml-1 sm:ml-2">
+              <span className="badge badge-outline badge-warning badge-xs sm:badge-sm text-xs font-semibold">
+                ALPHA
+              </span>
+            </div>
+          </div>
         </div>
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">
@@ -74,9 +80,15 @@ const Header = () => {
             )}
           </ul>
         </div>
-        <Link href="/" className="btn btn-ghost normal-case text-xl px-1 py-0.5">
-          <Image src="/Mythoria-logo-lanscape-transparent.png" alt={t('logoAlt')} width={120} height={45} />
-        </Link>
+        <div className="flex items-center">
+          <Link href="/" className="btn btn-ghost normal-case text-xl px-1 py-0.5">
+            <Image src="/Mythoria-logo-lanscape-transparent.png" alt={t('logoAlt')} width={120} height={45} />
+          </Link>          <div className="ml-1 sm:ml-2">
+            <span className="badge badge-outline badge-warning badge-xs sm:badge-sm text-xs font-semibold">
+              ALPHA
+            </span>
+          </div>
+        </div>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">

@@ -1,0 +1,46 @@
+{
+  "DeleteAccount": {
+    "title": "Eliminar Conta",
+    "subtitle": "Remover permanentemente a sua conta e todos os dados associados da Mythoria",
+    "notLoggedIn": {
+      "title": "Instruções para Eliminar Conta",
+      "description": "Para eliminar a sua conta, precisa de fazer login primeiro.",
+      "steps": {
+        "title": "Como Eliminar a Sua Conta:",
+        "step1": "Clique no ícone do utilizador no canto superior direito da página",
+        "step2": "Selecione 'Gerir Conta' no menu suspenso",
+        "step3": "Na barra lateral esquerda, escolha 'Segurança'",
+        "step4": "Clique no botão 'Eliminar Conta' e siga o processo de confirmação"
+      }
+    },
+    "loggedIn": {
+      "title": "Eliminar a Sua Conta",
+      "description": "Esta ação eliminará permanentemente a sua conta e não pode ser desfeita.",
+      "consequences": {
+        "title": "O que será eliminado:",
+        "item1": "O seu perfil e informações pessoais",
+        "item2": "Todos os seus livros e histórias criados",
+        "item3": "Quaisquer créditos pendentes na sua conta",
+        "item4": "O seu histórico de conta e preferências"
+      },
+      "deleteButton": "Eliminar a Minha Conta"
+    },
+    "confirmation": {
+      "title": "Confirmar Eliminação de Conta",
+      "description": "Esta ação não pode ser desfeita. Para confirmar, insira o seu endereço de email abaixo.",
+      "emailLabel": "Email",
+      "emailMismatch": "O endereço de email não corresponde ao email da sua conta",
+      "cancel": "Cancelar",
+      "confirmDelete": "Eliminar Conta",
+      "deleting": "A eliminar..."
+    },
+    "warning": {
+      "title": "Aviso: Esta ação é irreversível",
+      "description": "Uma vez eliminada a sua conta, todos os seus dados incluindo livros criados, créditos pendentes e informações pessoais serão permanentemente removidos e não podem ser recuperados."
+    },
+    "legal": {
+      "title": "Conformidade Legal",
+      "description": "Este processo de eliminação está em conformidade com o Artigo 17 do RGPD (Direito ao Apagamento) e a Secção 3(d)(i) dos Termos da Plataforma Facebook, garantindo o seu direito de ter os seus dados pessoais removidos."
+    }
+  }
+}

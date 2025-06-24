@@ -3,13 +3,18 @@
 import Image from "next/image";
 import { TypeAnimation } from 'react-type-animation';
 import { useTranslations } from 'next-intl';
-import { useMemo } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import StoryCounter from "@/components/StoryCounter";
 import QuoteOfTheDay from "@/components/QuoteOfTheDay";
 import EmailSignup from "@/components/EmailSignup";
 
 export default function Home() {
   const t = useTranslations('HomePage');
+  
+  // Carousel state
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const totalSlides = 3; // Number of carousel items
   
   // Get the words array from translations
   const words = t.raw('words') as string[];
@@ -24,6 +29,31 @@ export default function Home() {
   }, [words]);
 
   const showSoonPage = process.env.NEXT_PUBLIC_SHOW_SOON_PAGE === 'true';
+
+  // Carousel navigation functions
+  const scrollToSlide = (slideIndex: number) => {
+    if (carouselRef.current) {
+      const slideWidth = 320; // w-80 = 320px
+      const scrollPosition = slideIndex * slideWidth;
+      carouselRef.current.scrollTo({
+        left: scrollPosition,
+        behavior: 'smooth'
+      });
+      setCurrentSlide(slideIndex);
+    }
+  };
+
+  const nextSlide = () => {
+    if (currentSlide < totalSlides - 1) {
+      scrollToSlide(currentSlide + 1);
+    }
+  };
+
+  const prevSlide = () => {
+    if (currentSlide > 0) {
+      scrollToSlide(currentSlide - 1);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-base-100 text-base-content">
@@ -87,7 +117,8 @@ export default function Home() {
             </div>
           </section>
         ) : (
-          <>            {/* Audience Sections */}
+          <>
+          {/* Audience Sections */}
             <section className="my-16">
               {/* Desktop Grid */}
               <div className="hidden md:grid md:grid-cols-3 gap-8">
@@ -121,10 +152,13 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-
+              
               {/* Mobile Horizontal Gallery */}
-              <div className="md:hidden">
-                <div className="carousel carousel-center w-full p-4 space-x-4 bg-base-200 rounded-box">
+              <div className="md:hidden relative">
+                <div 
+                  ref={carouselRef}
+                  className="carousel carousel-center w-full space-x-4 overflow-x-auto scrollbar-hide"
+                >
                   <div className="carousel-item w-80">
                     <div className="card bg-base-100 shadow-xl w-full">
                       <figure className="px-10 pt-10">
@@ -161,6 +195,29 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
+                
+                {/* Navigation Arrows */}
+                {currentSlide > 0 && (
+                  <button 
+                    onClick={prevSlide}
+                    className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-base-100 rounded-full shadow-lg p-2 opacity-70 hover:opacity-100 transition-opacity"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-base-content" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                )}
+                
+                {currentSlide < totalSlides - 1 && (
+                  <button 
+                    onClick={nextSlide}
+                    className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-base-100 rounded-full shadow-lg p-2 opacity-70 hover:opacity-100 transition-opacity"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-base-content" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                )}
               </div>
             </section>
 

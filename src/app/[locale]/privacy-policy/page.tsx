@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 
 export default function PrivacyPolicyPage() {
   const t = useTranslations('PrivacyPolicy');
@@ -258,13 +259,22 @@ export default function PrivacyPolicyPage() {
                 {t('section9.title')}
               </h2>
               <p>{t('section9.content')}</p>
-            </section>
-
-            <section className="mb-8">
+            </section>            <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4 text-primary">
                 {t('section10.title')}
               </h2>
-              <p>{t('section10.content')}</p>
+              <div className="space-y-4">
+                <p>{t('section10.content')}</p>
+                <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                  <p className="text-blue-700 mb-2">{t('section10.deleteAccount')}</p>
+                  <Link 
+                    href="/privacy-policy/delete-account"
+                    className="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors duration-200"
+                  >
+                    Delete Account / Eliminar Conta
+                  </Link>
+                </div>
+              </div>
             </section>
 
             <section className="mb-8">

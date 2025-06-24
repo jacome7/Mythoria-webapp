@@ -44,12 +44,10 @@ export default function SignInPage() {
             <p>{t('features.customize')}</p>
           </div>
         </div>
-      </div>
-
-      {/* Right side - Sign-in form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
+      </div>      {/* Right side - Sign-in form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-2 sm:p-4 lg:p-8">
         <div className="w-full max-w-md">
-          <div className="bg-white rounded-2xl shadow-2xl p-8 border border-orange-100">
+          <div className="bg-white rounded-2xl shadow-2xl p-2 sm:p-4 lg:p-8 border border-orange-100">
             <div className="lg:hidden flex justify-center mb-6">
               <Image 
                 src="/Mythoria-logo-white-transparent-256x168.png" 

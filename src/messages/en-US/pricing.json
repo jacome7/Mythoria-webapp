@@ -111,12 +111,47 @@
       "title": "Your Order",
       "empty": "Your cart is empty",
       "each": "each"
-    },
-    "summary": {
+    },    "summary": {
       "title": "Order Summary",
       "subtotal": "Subtotal:",
       "vat": "VAT (6% included):",
       "total": "Total:"
+    },
+    "billing": {
+      "title": "Billing Information",
+      "subtitle": "Optional invoicing details",
+      "expand": "Add billing information",
+      "collapse": "Hide billing information",
+      "personalDetails": "Personal Details",
+      "billingAddress": "Billing Address",
+      "fields": {
+        "fullName": "Full Name",
+        "email": "Email Address",
+        "vatNumber": "VAT Number",
+        "vatNumberOptional": "VAT Number (optional)",
+        "phone": "Phone Number",
+        "phoneOptional": "Phone (optional)",
+        "addressLine1": "Address Line 1",
+        "addressLine2": "Address Line 2",
+        "addressLine2Optional": "Address Line 2 (optional)",
+        "city": "City",
+        "stateRegion": "State/Region",
+        "postalCode": "Postal Code",
+        "country": "Country"
+      },      "vatValidation": {
+        "valid": "Valid VAT number",
+        "invalid": "Invalid VAT number format",
+        "help": "Enter a valid EU VAT number (e.g., DE123456789)",
+        "errors": {
+          "tooShort": "VAT number is too short",
+          "unsupportedCountry": "Unsupported country code. Please use an EU VAT number.",
+          "invalidFormat": "Invalid VAT number format for {country}. Expected format: {format}"
+        }
+      },
+      "status": {
+        "provided": "Billing information provided",
+        "notProvided": "No billing information"
+      }
     },
     "payment": {
       "title": "Payment Method",

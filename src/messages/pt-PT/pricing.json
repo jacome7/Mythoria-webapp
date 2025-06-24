@@ -104,19 +104,54 @@
       "subtitle": "Escolha os seus pacotes de créditos e complete a sua compra"
     },
     "packages": {
-      "title": "Pacotes de Créditos Disponíveis",
-      "addToCart": "Adicionar ao Carrinho"
+      "title": "Pacotes de Créditos",
+      "addToCart": "Adicionar"
     },
     "cart": {
       "title": "A Sua Encomenda",
       "empty": "O seu carrinho está vazio",
       "each": "cada"
-    },
-    "summary": {
+    },    "summary": {
       "title": "Resumo da Encomenda",
       "subtotal": "Subtotal:",
       "vat": "IVA (6% incluído):",
       "total": "Total:"
+    },
+    "billing": {
+      "title": "Informações de Faturação",
+      "subtitle": "Detalhes de faturação opcionais",
+      "expand": "Adicionar informações de faturação",
+      "collapse": "Ocultar informações de faturação",
+      "personalDetails": "Detalhes Pessoais",
+      "billingAddress": "Morada de Faturação",
+      "fields": {
+        "fullName": "Nome Completo",
+        "email": "Email",
+        "vatNumber": "Número de IVA",
+        "vatNumberOptional": "Número de IVA (opcional)",
+        "phone": "Telefone",
+        "phoneOptional": "Telefone (opcional)",
+        "addressLine1": "Morada - Linha 1",
+        "addressLine2": "Morada - Linha 2",
+        "addressLine2Optional": "Morada - Linha 2 (opcional)",
+        "city": "Cidade",
+        "stateRegion": "Distrito/Região",
+        "postalCode": "Código Postal",
+        "country": "País"
+      },      "vatValidation": {
+        "valid": "Número de IVA válido",
+        "invalid": "Formato de número de IVA inválido",
+        "help": "Insira um número de IVA válido da UE (ex: PT123456789)",
+        "errors": {
+          "tooShort": "Número de IVA muito curto",
+          "unsupportedCountry": "Código de país não suportado. Use um número de IVA da UE.",
+          "invalidFormat": "Formato de número de IVA inválido para {country}. Formato esperado: {format}"
+        }
+      },
+      "status": {
+        "provided": "Informações de faturação fornecidas",
+        "notProvided": "Sem informações de faturação"
+      }
     },
     "payment": {
       "title": "Método de Pagamento",

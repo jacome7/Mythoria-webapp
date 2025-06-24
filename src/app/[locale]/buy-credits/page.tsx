@@ -4,8 +4,11 @@ import Link from 'next/link';
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
+import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { FaShoppingCart, FaPlus, FaMinus, FaTrash, FaCreditCard, FaMobile, FaApple, FaGoogle } from 'react-icons/fa';
 import { SiVisa, SiMastercard } from 'react-icons/si';
+import BillingInformation, { type BillingInfo } from '@/components/BillingInformation';
 
 const creditPackages = [
 	{ id: 1, credits: 5, price: 5, popular: false, bestValue: false, icon: <FaShoppingCart />, key: 'credits5' },
@@ -23,9 +26,15 @@ interface CartItem {
 function BuyCreditsContent() {
 	const searchParams = useSearchParams();
 	const t = useTranslations('BuyCreditsPage');
-	const tPricing = useTranslations('PricingPage');
-	const [cart, setCart] = useState<CartItem[]>([]);
+	const tPricing = useTranslations('PricingPage');	const tMyStories = useTranslations('MyStoriesPage');	const locale = useLocale();const [cart, setCart] = useState<CartItem[]>([]);
 	const [selectedPayment, setSelectedPayment] = useState<string>('');
+	const [billingInfo, setBillingInfo] = useState<BillingInfo | null>(null);
+	const [isMounted, setIsMounted] = useState(false);
+
+	// Handle client-side mounting to prevent hydration issues
+	useEffect(() => {
+		setIsMounted(true);
+	}, []);
 
 	// Pre-select package if coming from pricing page
 	useEffect(() => {
@@ -90,17 +99,58 @@ function BuyCreditsContent() {
 	};
 
 	const subtotal = calculateSubtotal();
-	const vatAmount = calculateVAT(subtotal);
-	const total = subtotal;
+	const vatAmount = calculateVAT(subtotal);	const total = subtotal;
 
-	return (
+	const handlePlaceOrder = () => {
+		// TODO: Implement order placement logic
+		console.log('Placing order with:', {
+			cart,
+			total,
+			paymentMethod: selectedPayment,
+			billingInfo
+		});
+		
+		// For now, show an alert - in a real implementation, this would:
+		// 1. Validate billing information
+		// 2. Process payment
+		// 3. Save billing info to database
+		// 4. Redirect to confirmation page
+		alert('Order placement functionality will be implemented here. Check console for order details.');
+	};	return (
 		<div className="min-h-screen bg-base-100 text-base-content">
 			<div className="container mx-auto px-4 py-12">
-				{/* Header */}
-				<header className="text-center mb-12">
-					<h1 className="text-4xl font-bold text-primary mb-4">{t('header.title')}</h1>
-					<p className="text-lg text-gray-600">{t('header.subtitle')}</p>
-				</header>
+				{!isMounted ? (
+					// Loading state to prevent hydration mismatch
+					<div className="text-center">
+						<h1 className="text-4xl font-bold text-primary mb-4">{t('header.title')}</h1>
+						<div className="flex justify-center items-center min-h-96">
+							<span className="loading loading-spinner loading-lg"></span>
+						</div>
+					</div>
+				) : (
+					<>
+						<SignedOut>
+							<div className="text-center space-y-6">
+								<h1 className="text-4xl font-bold">{t('header.title')}</h1>
+								<p className="text-lg text-gray-600">
+									{tMyStories('signedOut.needSignIn')}
+								</p>
+								<div className="space-x-4">
+									<Link href={`/${locale}/sign-in`} className="btn btn-primary">
+										{tMyStories('signedOut.signIn')}
+									</Link>
+									<Link href={`/${locale}/sign-up`} className="btn btn-outline">
+										{tMyStories('signedOut.createAccount')}
+									</Link>
+								</div>
+							</div>
+						</SignedOut>
+						<SignedIn>
+							{/* Header */}
+							<header className="text-center mb-12">
+								<h1 className="text-4xl font-bold text-primary mb-4">{t('header.title')}</h1>
+								<p className="text-lg text-gray-600">{t('header.subtitle')}</p>
+							</header>
 
 				<div className="grid lg:grid-cols-2 gap-12">
 					{/* Left Side - Available Packages */}
@@ -208,6 +258,13 @@ function BuyCreditsContent() {
 							</div>
 						)}
 
+						{/* Billing Information */}
+						{cart.length > 0 && (
+							<BillingInformation 
+								onBillingInfoChange={(info) => setBillingInfo(info)}
+							/>
+						)}
+
 						{/* Payment Options */}
 						{cart.length > 0 && (
 							<div className="bg-base-200 rounded-lg p-6 mb-6">
@@ -253,19 +310,16 @@ function BuyCreditsContent() {
 									</div>
 								</div>
 							</div>
-						)}
-
-						{/* Place Order Button */}
+						)}						{/* Place Order Button */}
 						{cart.length > 0 && (
 							<button
 								disabled={!selectedPayment}
+								onClick={handlePlaceOrder}
 								className="btn btn-primary btn-lg w-full"
 							>
 								{t('actions.placeOrder')} - €{total.toFixed(2)}
 							</button>
-						)}
-
-						{/* Back to Pricing */}
+						)}						{/* Back to Pricing */}
 						<div className="mt-6 text-center">
 							<Link href="/pricing" className="btn btn-outline">
 								{t('actions.backToPricing')}
@@ -273,6 +327,9 @@ function BuyCreditsContent() {
 						</div>
 					</div>
 				</div>
+				</SignedIn>
+				</>
+				)}
 			</div>
 		</div>
 	);
