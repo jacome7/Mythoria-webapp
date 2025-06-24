@@ -1,0 +1,35 @@
+# Mythoria - AI-Powered Storytelling Platform
+# Robots.txt file for search engine optimization
+
+User-agent: *
+Allow: /
+
+# Allow all pages by default, but add specific directives for better SEO
+Allow: /en-US/
+Allow: /pt-PT/
+
+# Disallow admin and private areas
+Disallow: /portaldegestao/
+Disallow: /api/
+Disallow: /sign-in
+Disallow: /sign-up
+
+# Disallow private user areas
+Disallow: /*/my-stories/
+Disallow: /*/buy-credits/
+
+# Allow important public pages
+Allow: /*/stories/
+Allow: /*/tell-your-story/
+Allow: /*/aboutUs/
+Allow: /*/contactUs/
+Allow: /*/pricing/
+Allow: /*/privacy-policy/
+Allow: /*/termsAndConditions/
+Allow: /*/get-inspired/
+
+# Sitemap location
+Sitemap: https://mythoria.pt/sitemap.xml
+
+# Crawl delay to be respectful
+Crawl-delay: 1

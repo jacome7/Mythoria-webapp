@@ -90,9 +90,11 @@ export default function StoryReader({ storyContent, storyMetadata }: StoryReader
   const processedContent = processStoryContent(storyContent);
 
   return (
-    <div className="story-reader min-h-screen bg-base-100">
+    <div className="story-reader min-h-screen px-0 bg-base-100">
       {/* Reading Toolbar */}
-      <ReadingToolbar onSettingsChange={handleReadingSettingsChange} />      {/* Story Content */}
+      <ReadingToolbar onSettingsChange={handleReadingSettingsChange} />
+      
+      {/* Story Content */}
       <div 
         className="story-content-wrapper"
         style={{
@@ -100,8 +102,9 @@ export default function StoryReader({ storyContent, storyMetadata }: StoryReader
           lineHeight: readingSettings?.lineHeight ? `${readingSettings.lineHeight}%` : undefined
         }}
       >
-        <div className="container mx-auto px-4 py-6">
-          <div className="max-w-4xl mx-auto">            {!isContentLoaded ? (
+        <div className="w-full md:container md:mx-auto px-0 md:px-4 py-6">
+          <div className="w-full md:max-w-4xl md:mx-auto">
+            {!isContentLoaded ? (
               // Loading state
               <div className="flex flex-col items-center justify-center py-16">
                 <div className="loading loading-spinner loading-lg mb-4"></div>
@@ -182,16 +185,40 @@ export default function StoryReader({ storyContent, storyMetadata }: StoryReader
         /* Dark theme adjustments */
         :global([data-theme="dark"]) .story-reader {
           background-color: var(--story-bg-color, #1a1a1a);
-        }
-        
-        /* Responsive adjustments */
+        }          /* Responsive adjustments */
         @media (max-width: 768px) {
           .story-content-wrapper {
-            padding: 1rem 0;
+            padding: 0.5rem 0;
           }
           
-          .container {
-            padding: 0 1rem;
+          /* Override template container styles for mobile */
+          :global(.story-container) {
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0.5rem !important;
+          }
+          
+          /* Reduce chapter padding on mobile */
+          :global(.mythoria-chapter) {
+            padding: 0.75rem !important;
+            margin-bottom: 1rem !important;
+          }
+          
+          /* Reduce table of contents padding on mobile */
+          :global(.mythoria-table-of-contents) {
+            padding: 0.75rem !important;
+            margin: 1rem 0 !important;
+          }
+          
+          /* Reduce story title margins */
+          :global(.mythoria-story-title) {
+            margin: 0.5rem 0 !important;
+            padding-bottom: 0.25rem !important;
+          }
+          
+          /* Reduce author name margins */
+          :global(.mythoria-author-name) {
+            margin: 0.5rem 0 1rem 0 !important;
           }
         }
         

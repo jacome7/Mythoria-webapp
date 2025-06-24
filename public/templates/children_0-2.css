@@ -219,10 +219,10 @@ h1, h2, h3 {
 /* Mythoria message */
 .mythoria-message {
   text-align: center;
-  padding: 2rem;
+  padding: 0 !important;
   background-color: #e8f4f8;
   border-radius: 20px;
-  margin: 3rem 0;
+  margin: 0 !important;
   border: 3px solid #4ecdc4;
 }
 

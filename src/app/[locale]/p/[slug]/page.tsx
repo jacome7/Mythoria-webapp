@@ -242,32 +242,40 @@ export default function PublicStoryPage() {
             )}
           </div>
         </div>
-      </div>
-
-      {/* Story Content */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {storyContent ? (            <div className="bg-white rounded-lg shadow-sm border">
-              <StoryReader 
-                storyContent={storyContent}
-                storyMetadata={{
-                  targetAudience: story.targetAudience,
-                  graphicalStyle: story.graphicalStyle,
-                  title: story.title
-                }}
-              />
-            </div>          ) : (
-            <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
-              <FiAlertCircle className="text-4xl text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">{t('errors.contentNotAvailable')}</h3>
-              <p className="text-gray-600">
-                {t('errors.contentNotAvailableDesc')}
-              </p>
+      </div>      {/* Story Content */}
+      <div className="py-8">
+        {storyContent ? (
+          <div className="w-full md:container md:mx-auto md:px-4">
+            <div className="md:max-w-4xl md:mx-auto">
+              <div className="bg-white md:rounded-lg md:shadow-sm md:border">
+                <StoryReader 
+                  storyContent={storyContent}
+                  storyMetadata={{
+                    targetAudience: story.targetAudience,
+                    graphicalStyle: story.graphicalStyle,
+                    title: story.title
+                  }}
+                />
+              </div>
             </div>
-          )}
-          
-          {/* Story Rating Section */}
-          <div className="mt-8">
+          </div>
+        ) : (
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
+                <FiAlertCircle className="text-4xl text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">{t('errors.contentNotAvailable')}</h3>
+                <p className="text-gray-600">
+                  {t('errors.contentNotAvailableDesc')}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Story Rating Section */}
+        <div className="container mx-auto px-4 mt-8">
+          <div className="max-w-4xl mx-auto">
             <PublicStoryRating
               storyId={story.storyId}
               onRatingSubmitted={(rating) => {

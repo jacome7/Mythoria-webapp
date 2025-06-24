@@ -201,8 +201,8 @@
 /* Mythoria message */
 .mythoria-message {
   text-align: center;
-  margin: 2rem 0;
-  padding: 1.5rem;
+  margin: 0 !important;
+  padding: 0 !important;
   background-color: #2d3748;
   color: white;
   border-radius: 8px;
