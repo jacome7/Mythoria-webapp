@@ -7,12 +7,10 @@ const intlMiddleware = createMiddleware(routing);
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   const pathname = req.nextUrl.pathname;
-    // Skip clerk middleware for certain routes
+    // Skip clerk middleware for certain routes, but keep internationalization for auth routes
   if (pathname.startsWith('/api/') || 
       pathname.startsWith('/portaldegestao') ||
       pathname.startsWith('/v1/') ||
-      pathname.startsWith('/sign-in') ||
-      pathname.startsWith('/sign-up') ||
       pathname.match(/^\/[a-z]{2}-[A-Z]{2}\/sign-in/) ||
       pathname.match(/^\/[a-z]{2}-[A-Z]{2}\/sign-up/) ||
       pathname.match(/^\/[a-z]{2}-[A-Z]{2}\/p\//)) {  // Only public story routes are excluded
@@ -21,7 +19,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     response.headers.set('x-clerk-clock-skew-seconds', '600');
     return response;
   }
-    // Run the internationalization middleware for non-API routes
+    // Run the internationalization middleware for non-API routes (including base /sign-in and /sign-up)
   const response = intlMiddleware(req);
   
   // Add the pathname to headers so we can access it in the root layout

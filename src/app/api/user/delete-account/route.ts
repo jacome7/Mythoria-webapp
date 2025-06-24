@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import { db } from '@/db';
 import { authors, stories, credits, tokenUsageTracking, addresses, events, storyGenerationRuns, storyGenerationSteps, shareLinks, storyCollaborators, storyVersions } from '@/db/schema';
 import { eq, inArray } from 'drizzle-orm';
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE() {
   try {
     const { userId } = await auth();
       if (!userId) {
