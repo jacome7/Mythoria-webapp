@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, timestamp, jsonb, boolean, integer } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, timestamp, jsonb, boolean, integer, index } from "drizzle-orm/pg-core";
 import { authors } from './authors';
 import { paymentProviderEnum } from './enums';
 
@@ -19,7 +19,12 @@ export const paymentMethods = pgTable("payment_methods", {
   billingDetails: jsonb("billing_details"),
   isDefault: boolean("is_default").default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-});
+}, (table) => ({
+  // Indexes for performance optimization
+  authorIdIdx: index("payment_methods_author_id_idx").on(table.authorId),
+  providerIdx: index("payment_methods_provider_idx").on(table.provider),
+  isDefaultIdx: index("payment_methods_is_default_idx").on(table.isDefault),
+}));
 
 // Credits
 export const credits = pgTable("credits", {
@@ -41,7 +46,13 @@ export const payments = pgTable("payments", {
   providerPaymentId: varchar("provider_payment_id", { length: 255 }), // Stripe Payment Intent ID, etc.
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-});
+}, (table) => ({
+  // Indexes for performance optimization
+  authorIdIdx: index("payments_author_id_idx").on(table.authorId),
+  statusIdx: index("payments_status_idx").on(table.status),
+  createdAtIdx: index("payments_created_at_idx").on(table.createdAt),
+  authorIdCreatedAtIdx: index("payments_author_id_created_at_idx").on(table.authorId, table.createdAt),
+}));
 
 // -----------------------------------------------------------------------------
 // Types

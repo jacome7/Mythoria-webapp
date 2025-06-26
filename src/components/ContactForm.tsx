@@ -20,9 +20,9 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
     category: '',
     message: ''
   });
-  const [isLoading, setIsLoading] = useState(false);
-  const [responseMessage, setResponseMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);  const [responseMessage, setResponseMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   // Pre-select category based on URL parameter
   useEffect(() => {
@@ -42,7 +42,6 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
       [name]: value
     }));
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -65,24 +64,48 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
         has_message: !!formData.message.trim()
       });
 
-      // For now, simulate sending (you would implement actual contact API here)
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setResponseMessage('Thank you for your message! We\'ll get back to you soon.');
-      setIsSuccess(true);
-      
-      // Clear form
-      setFormData({
-        name: '',
-        email: '',
-        category: '',
-        message: ''
+      // Call the contact API
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          category: formData.category,
+          message: formData.message.trim()
+        })
       });
-      
-    } catch (error) {
+
+      const result = await response.json();      if (result.success) {
+        setResponseMessage('🚀 Message on the way! We will get back to you as soon as possible.');
+        setIsSuccess(true);
+        setShowModal(true);
+        
+        // Clear form
+        setFormData({
+          name: '',
+          email: '',
+          category: '',
+          message: ''
+        });
+
+        // Redirect to homepage after 4 seconds
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 4000);
+        
+      } else {
+        setResponseMessage(result.error || 'Failed to send message. Please try again.');
+        setIsSuccess(false);
+        setShowModal(true);
+      }
+        } catch (error) {
       console.error('Contact form error:', error);
       setResponseMessage('Failed to send message. Please try again.');
       setIsSuccess(false);
+      setShowModal(true);
     } finally {
       setIsLoading(false);
     }
@@ -182,33 +205,49 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
                 {t('form.submit')}
               </>
             )}
-          </button>
-        </form>
+          </button>        </form>
         
-        {responseMessage && (
-          <div className={`alert ${isSuccess ? 'alert-success' : 'alert-error'} text-sm mt-4`}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="stroke-current shrink-0 h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              {isSuccess ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />              )}
-            </svg>
-            <span>{responseMessage}</span>
+        {/* Success/Error Modal */}
+        {showModal && (
+          <div className="modal modal-open">
+            <div className="modal-box">
+              <div className="flex items-center justify-center mb-4">
+                {isSuccess ? (
+                  <div className="text-6xl">🚀</div>
+                ) : (
+                  <div className="text-6xl">❌</div>
+                )}
+              </div>
+              <h3 className="font-bold text-lg text-center mb-4">
+                {isSuccess ? 'Message Sent!' : 'Oops!'}
+              </h3>
+              <p className="text-center text-base-content/80">
+                {responseMessage}
+              </p>
+              {isSuccess && (
+                <p className="text-center text-sm text-base-content/60 mt-2">
+                  Redirecting to homepage in a few seconds...
+                </p>
+              )}
+              <div className="modal-action">
+                {!isSuccess && (
+                  <button 
+                    className="btn btn-primary" 
+                    onClick={() => setShowModal(false)}
+                  >
+                    Try Again
+                  </button>
+                )}
+                {isSuccess && (
+                  <button 
+                    className="btn btn-primary" 
+                    onClick={() => window.location.href = '/'}
+                  >
+                    Go to Homepage
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </div>

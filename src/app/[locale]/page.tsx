@@ -16,15 +16,29 @@ export default function Home() {
   const carouselRef = useRef<HTMLDivElement>(null);
   const totalSlides = 3; // Number of carousel items
   
-  // Get the words array from translations
-  const words = t.raw('words') as string[];
+  // Get the words array from translations with proper error handling
+  const wordsRaw = t.raw('words');
+  
+  // Memoize the words array to prevent dependency changes
+  const words = useMemo(() => {
+    return Array.isArray(wordsRaw) ? wordsRaw : [];
+  }, [wordsRaw]);
 
   // Create sequence for TypeAnimation - memoized to prevent hydration issues
   const sequence = useMemo(() => {
     const seq: (string | number)[] = [];
-    words.forEach(word => {
-      seq.push(word, 1500);
-    });
+    // Add safety check
+    if (Array.isArray(words) && words.length > 0) {
+      words.forEach(word => {
+        seq.push(word, 1500);
+      });
+    } else {
+      // Fallback words if translation is missing
+      const fallbackWords = ['Adventure', 'Love Story', 'Mystery', 'Fairy Tale'];
+      fallbackWords.forEach(word => {
+        seq.push(word, 1500);
+      });
+    }
     return seq;
   }, [words]);
 

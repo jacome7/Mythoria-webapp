@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, timestamp, jsonb, index } from "drizzle-orm/pg-core";
 import { addressTypeEnum } from './enums';
 
 // -----------------------------------------------------------------------------
@@ -16,7 +16,13 @@ export const authors = pgTable("authors", {
   lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
   preferredLocale: varchar("preferred_locale", { length: 5 }).default('en'), // CHAR(5)
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-});
+}, (table) => ({
+  // Indexes for performance optimization - unique constraints already create indexes
+  clerkUserIdIdx: index("authors_clerk_user_id_idx").on(table.clerkUserId),
+  emailIdx: index("authors_email_idx").on(table.email),
+  lastLoginAtIdx: index("authors_last_login_at_idx").on(table.lastLoginAt),
+  createdAtIdx: index("authors_created_at_idx").on(table.createdAt),
+}));
 
 // Leads (email collection for app launch notifications)
 export const leads = pgTable("leads", {
@@ -39,7 +45,11 @@ export const addresses = pgTable("addresses", {
   country: varchar("country", { length: 2 }).notNull(), // CHAR(2)
   phone: varchar("phone", { length: 30 }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-});
+}, (table) => ({
+  // Indexes for performance optimization
+  authorIdIdx: index("addresses_author_id_idx").on(table.authorId),
+  typeIdx: index("addresses_type_idx").on(table.type),
+}));
 
 // Events
 export const events = pgTable("events", {
@@ -48,7 +58,12 @@ export const events = pgTable("events", {
   eventType: varchar("event_type", { length: 100 }).notNull(), // e.g., 'story.created', 'user.login'
   payload: jsonb("payload"), // Event-specific data
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-});
+}, (table) => ({
+  // Indexes for performance optimization
+  authorIdIdx: index("events_author_id_idx").on(table.authorId),
+  eventTypeIdx: index("events_event_type_idx").on(table.eventType),
+  createdAtIdx: index("events_created_at_idx").on(table.createdAt),
+}));
 
 // -----------------------------------------------------------------------------
 // Types

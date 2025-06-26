@@ -41,6 +41,7 @@ export async function generateViewport(): Promise<Viewport> {
     initialScale: 1,
     maximumScale: 5,
     userScalable: true,
+    themeColor: '#8B5CF6',
   };
 }
 
@@ -49,18 +50,128 @@ async function getMessages(locale: string): Promise<Messages> {
     const messagesDir = path.join(process.cwd(), 'src', 'messages', locale);
     const files = await readdir(messagesDir);
     let messages: Messages = {};
+    
     for (const file of files) {
       if (file.endsWith('.json')) {
         const filePath = path.join(messagesDir, file);
-        const fileContent = await readFile(filePath, 'utf8');
-        const json = JSON.parse(fileContent);
-        messages = { ...messages, ...json };
+        try {
+          const fileContent = await readFile(filePath, 'utf8');
+          const json = JSON.parse(fileContent);
+          messages = { ...messages, ...json };
+        } catch (parseError) {
+          console.error(`Failed to parse ${file} for locale ${locale}:`, parseError);
+        }
       }
     }
+    
+    // Add validation
+    if (Object.keys(messages).length === 0) {
+      console.warn(`No messages found for locale: ${locale}`);
+      // Return fallback messages
+      return await getFallbackMessages();
+    }
+    
     return messages;
-  } catch {
-    return {};
+  } catch (error) {
+    console.error(`Failed to load messages for locale ${locale}:`, error);
+    // Return fallback messages
+    return await getFallbackMessages();
   }
+}
+
+async function getFallbackMessages(): Promise<Messages> {
+  try {
+    // Try to load default English messages
+    const fallbackDir = path.join(process.cwd(), 'src', 'messages', 'en-US');
+    const files = await readdir(fallbackDir);
+    let messages: Messages = {};
+    
+    for (const file of files) {
+      if (file.endsWith('.json')) {
+        const filePath = path.join(fallbackDir, file);
+        try {
+          const content = await readFile(filePath, 'utf8');
+          const json = JSON.parse(content);
+          messages = { ...messages, ...json };
+        } catch (parseError) {
+          console.error(`Failed to parse fallback file ${file}:`, parseError);
+        }
+      }
+    }
+    
+    if (Object.keys(messages).length > 0) {
+      return messages;
+    }
+  } catch (fallbackError) {
+    console.error('Failed to load fallback messages:', fallbackError);
+  }
+  
+  // Return minimal fallback structure
+  return {
+    common: {
+      Header: {
+        navigation: {
+          homepage: "Homepage",
+          getInspired: "Get Inspired",
+          tellYourStory: "Tell Your Story",
+          myStories: "My Stories",
+          pricing: "Pricing",
+          dashboard: "Dashboard"
+        },
+        auth: {
+          signIn: "Sign In",
+          signUp: "Sign Up"
+        },
+        logoAlt: "Mythoria Logo"
+      },
+      Footer: {
+        aboutFounder: "About the founder",
+        readMyStory: "Read my story",
+        privacyPolicy: "Privacy & Cookies",
+        termsConditions: "Terms & Conditions",
+        contactUs: "Contact Us",
+        copyright: "© 2024 Mythoria"
+      }
+    },
+    HomePage: {
+      words: ['Adventure', 'Love Story', 'Mystery', 'Fairy Tale'],
+      hero: {
+        writeYourOwn: "Write Your Own",
+        subtitle: "Create unique, fully illustrated books with AI",
+        subtitleEmphasized: "AI",
+        tryItNow: "Try It Now"
+      },
+      audiences: {
+        kids: {
+          title: "For Kids 🎈",
+          description: "Turn your child into the hero of their own magical adventure!"
+        },
+        adults: {
+          title: "For Adults ❤️",
+          description: "Relive your memories as a stunning illustrated story."
+        },
+        companies: {
+          title: "For Companies 🌟",
+          description: "Create personalized storybooks for your team."
+        }
+      },
+      howItWorks: {
+        title: "How It Works",
+        steps: {
+          step1: { title: "The Author", description: "Start your journey" },
+          step2: { title: "The Story", description: "Share your idea" },
+          step3: { title: "The Characters", description: "Personalize details" },
+          step4: { title: "The Plot", description: "Shape your story" },
+          step5: { title: "The Gift", description: "Choose your format" },
+          step6: { title: "Experience", description: "Enjoy your story" }
+        },
+        conclusion: "Our Story Factory will handle the rest!"
+      },
+      community: {
+        title: "Join Our Growing Community!"
+      }
+    }
+  };
 }
 
 export async function generateMetadata({
@@ -80,6 +191,12 @@ export async function generateMetadata({
     title: metadata.title || 'Mythoria |  Personalized Books Creator',
     description: metadata.description || 'Create unique, fully illustrated books with Mythoria\'s generative-AI.',
     robots: 'index,follow,max-snippet:-1,max-image-preview:large',
+    manifest: '/manifest.json',
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: 'default',
+      title: 'Mythoria',
+    },
     alternates: {
       canonical: currentUrl,
       languages: {
@@ -120,8 +237,14 @@ export default async function LocaleLayout({
   params: Promise<{locale: string}>;
 }) {
   const {locale} = await params;
-  if (!routing.locales.includes(locale as (typeof routing.locales)[number])) notFound();
+  
+  if (!routing.locales.includes(locale as (typeof routing.locales)[number])) {
+    console.error('[LocaleLayout] Invalid locale:', locale);
+    notFound();
+  }
+  
   setRequestLocale(locale);
+  
   // Get messages using the helper function
   const messages = await getMessages(locale);
   const metadata = messages?.metadata || {};

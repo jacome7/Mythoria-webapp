@@ -132,8 +132,8 @@ function Deploy-Direct {
         "--build-arg", "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY')",
         "--build-arg", "NEXT_PUBLIC_CLERK_SIGN_IN_URL=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'CLERK_SIGN_IN_URL')", # Source from CLERK_SIGN_IN_URL
         "--build-arg", "NEXT_PUBLIC_CLERK_SIGN_UP_URL=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'CLERK_SIGN_UP_URL')", # Source from CLERK_SIGN_UP_URL
-        "--build-arg", "NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'CLERK_AFTER_SIGN_IN_URL')", # Source from CLERK_AFTER_SIGN_IN_URL
-        "--build-arg", "NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'CLERK_AFTER_SIGN_UP_URL')", # Source from CLERK_AFTER_SIGN_UP_URL
+        "--build-arg", "NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'CLERK_SIGN_IN_FALLBACK_REDIRECT_URL')", # Source from CLERK_SIGN_IN_FALLBACK_REDIRECT_URL
+        "--build-arg", "NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'CLERK_SIGN_UP_FALLBACK_REDIRECT_URL')", # Source from CLERK_SIGN_UP_FALLBACK_REDIRECT_URL
         "--build-arg", "NEXT_PUBLIC_CLERK_IS_DEVELOPMENT=false", # Typically false for production
         "--build-arg", "NEXT_PUBLIC_SHOW_SOON_PAGE=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'NEXT_PUBLIC_SHOW_SOON_PAGE')",
         "--build-arg", "NEXT_PUBLIC_GA_MEASUREMENT_ID=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'NEXT_PUBLIC_GA_MEASUREMENT_ID')"

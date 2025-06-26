@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, timestamp, text, jsonb, integer, primaryKey, boolean } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, timestamp, text, jsonb, integer, primaryKey, boolean, index } from "drizzle-orm/pg-core";
 import { authors } from './authors';
 import { storyStatusEnum, runStatusEnum, stepStatusEnum, targetAudienceEnum, novelStyleEnum, graphicalStyleEnum, accessLevelEnum, collaboratorRoleEnum } from './enums';
 
@@ -35,7 +35,17 @@ export const stories = pgTable("stories", {
   storyGenerationCompletedPercentage: integer("story_generation_completed_percentage").default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-});
+}, (table) => ({
+  // Indexes for performance optimization
+  statusIdx: index("stories_status_idx").on(table.status),
+  statusCreatedAtIdx: index("stories_status_created_at_idx").on(table.status, table.createdAt),
+  authorIdUpdatedAtIdx: index("stories_author_id_updated_at_idx").on(table.authorId, table.updatedAt),
+  authorIdCreatedAtIdx: index("stories_author_id_created_at_idx").on(table.authorId, table.createdAt),
+  authorIdStatusIdx: index("stories_author_id_status_idx").on(table.authorId, table.status),
+  isPublicIdx: index("stories_is_public_idx").on(table.isPublic),
+  isFeaturedIdx: index("stories_is_featured_idx").on(table.isFeatured),
+  slugIdx: index("stories_slug_idx").on(table.slug),
+}));
 
 // Story versions
 export const storyVersions = pgTable("story_versions", {
@@ -59,7 +69,13 @@ export const storyGenerationRuns = pgTable("story_generation_runs", {
   metadata: jsonb("metadata"), // optional scratch data (token counts, timing, etc.)
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-});
+}, (table) => ({
+  // Indexes for performance optimization
+  storyIdIdx: index("story_gen_runs_story_id_idx").on(table.storyId),
+  statusIdx: index("story_gen_runs_status_idx").on(table.status),
+  storyIdStatusIdx: index("story_gen_runs_story_id_status_idx").on(table.storyId, table.status),
+  createdAtIdx: index("story_gen_runs_created_at_idx").on(table.createdAt),
+}));
 
 // Story generation steps (optional, for granular auditing)
 export const storyGenerationSteps = pgTable("story_generation_steps", {
@@ -84,7 +100,12 @@ export const shareLinks = pgTable("share_links", {
   revoked: boolean("revoked").default(false).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-});
+}, (table) => ({
+  // Indexes for performance optimization
+  storyIdIdx: index("share_links_story_id_idx").on(table.storyId),
+  expiresAtIdx: index("share_links_expires_at_idx").on(table.expiresAt),
+  revokedIdx: index("share_links_revoked_idx").on(table.revoked),
+}));
 
 // Story collaborators for shared editing
 export const storyCollaborators = pgTable("story_collaborators", {
@@ -92,9 +113,11 @@ export const storyCollaborators = pgTable("story_collaborators", {
   userId: uuid("user_id").notNull().references(() => authors.authorId, { onDelete: 'cascade' }),
   role: collaboratorRoleEnum("role").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-}, (table) => [
-  primaryKey({ columns: [table.storyId, table.userId] }),
-]);
+}, (table) => ({
+  pk: primaryKey({ columns: [table.storyId, table.userId] }),
+  // Additional indexes for performance
+  userIdIdx: index("story_collaborators_user_id_idx").on(table.userId),
+}));
 
 // -----------------------------------------------------------------------------
 // Types

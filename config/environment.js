@@ -46,6 +46,10 @@ export const getEnvironmentConfig = () => {
     storyGeneration: {
       workflowUrl: process.env.STORY_GENERATION_WORKFLOW_URL || 'http://localhost:8080',
     },
+    
+    notification: {
+      engineUrl: process.env.NOTIFICATION_ENGINE_URL || 'http://localhost:8081',
+    },
   };
 };
 
@@ -60,6 +64,15 @@ export const validateEnvironmentConfig = () => {
   
   if (!config.database.password) {
     errors.push('DB_PASSWORD is required');
+  }
+  
+  // Validate external service URLs
+  if (!config.notification.engineUrl) {
+    errors.push('NOTIFICATION_ENGINE_URL is required');
+  }
+  
+  if (!config.storyGeneration.workflowUrl) {
+    errors.push('STORY_GENERATION_WORKFLOW_URL is required');
   }
   
   // Required in production

@@ -1,4 +1,4 @@
-import { pgTable, uuid, timestamp, integer } from "drizzle-orm/pg-core";
+import { pgTable, uuid, timestamp, integer, index } from "drizzle-orm/pg-core";
 import { authors } from './authors';
 import { stories } from './stories';
 import { creditEventTypeEnum } from './enums';
@@ -16,7 +16,14 @@ export const creditLedger = pgTable("credit_ledger", {
   creditEventType: creditEventTypeEnum("credit_event_type").notNull(),
   purchaseId: uuid("purchase_id"), // FK to purchases table (to be created later)
   storyId: uuid("story_id").references(() => stories.storyId, { onDelete: 'set null' }), // Can be null
-});
+}, (table) => ({
+  // Indexes for performance optimization
+  authorIdIdx: index("credit_ledger_author_id_idx").on(table.authorId),
+  authorIdCreatedAtIdx: index("credit_ledger_author_id_created_at_idx").on(table.authorId, table.createdAt),
+  creditEventTypeIdx: index("credit_ledger_event_type_idx").on(table.creditEventType),
+  createdAtIdx: index("credit_ledger_created_at_idx").on(table.createdAt),
+  storyIdIdx: index("credit_ledger_story_id_idx").on(table.storyId),
+}));
 
 // Materialized view for author credit balances
 // This will be auto-refreshed and provides fast access to current credit balances

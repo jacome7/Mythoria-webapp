@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, timestamp, text, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, timestamp, text, primaryKey, index } from "drizzle-orm/pg-core";
 import { authors } from './authors';
 import { stories } from './stories';
 import { characterRole } from './enums';
@@ -19,7 +19,12 @@ export const characters = pgTable("characters", {
   physicalDescription: text("physical_description"),
   photoUrl: text("photo_url"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-});
+}, (table) => ({
+  // Indexes for performance optimization
+  authorIdIdx: index("characters_author_id_idx").on(table.authorId),
+  createdAtIdx: index("characters_created_at_idx").on(table.createdAt),
+  roleIdx: index("characters_role_idx").on(table.role),
+}));
 
 // Junction table: story ↔ characters (many-to-many)
 export const storyCharacters = pgTable("story_characters", {
@@ -29,6 +34,8 @@ export const storyCharacters = pgTable("story_characters", {
 }, (table) => {
   return {
     pk: primaryKey({ columns: [table.storyId, table.characterId] }),
+    // Additional indexes for performance
+    characterIdIdx: index("story_characters_character_id_idx").on(table.characterId),
   };
 });
 

@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from 'next-intl/plugin';
+import withPWA from 'next-pwa';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
@@ -89,4 +90,36 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+// PWA Configuration
+const withPWAConfig = withPWA({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development',
+  runtimeCaching: [
+    {
+      urlPattern: /^https?.*\.(png|jpg|jpeg|webp|svg|gif|ico)$/,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'mythoria-images',
+        expiration: {
+          maxEntries: 64,
+          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+        },
+      },
+    },
+    {
+      urlPattern: /^https?.*\.(js|css|woff|woff2|otf|ttf)$/,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'mythoria-static',
+        expiration: {
+          maxEntries: 32,
+          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+        },
+      },
+    },
+  ],
+});
+
+export default withPWAConfig(withNextIntl(nextConfig) as any);

@@ -7,12 +7,15 @@ const intlMiddleware = createMiddleware(routing);
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   const pathname = req.nextUrl.pathname;
+  
+  // Handle the internationalization first for root auth routes
+  if (pathname === '/sign-in' || pathname === '/sign-up') {
+    return intlMiddleware(req);
+  }
     // Skip clerk middleware for certain routes, but keep internationalization for auth routes
   if (pathname.startsWith('/api/') || 
       pathname.startsWith('/portaldegestao') ||
       pathname.startsWith('/v1/') ||
-      pathname.match(/^\/[a-z]{2}-[A-Z]{2}\/sign-in/) ||
-      pathname.match(/^\/[a-z]{2}-[A-Z]{2}\/sign-up/) ||
       pathname.match(/^\/[a-z]{2}-[A-Z]{2}\/p\//)) {  // Only public story routes are excluded
     
     const response = NextResponse.next();
@@ -40,7 +43,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
 export const config = {
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params
-    "/((?!_next|[^?]*\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|txt|pdf|webmanifest)).*)",
+    "/((?!_next|[^?]*\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|txt|pdf|webmanifest|xml)).*)",
     // Always run for API routes
     "/(api|trpc)(.*)",
   ],
