@@ -20,7 +20,8 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
     category: '',
     message: ''
   });
-  const [isLoading, setIsLoading] = useState(false);  const [responseMessage, setResponseMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [responseMessage, setResponseMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
@@ -78,7 +79,9 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
         })
       });
 
-      const result = await response.json();      if (result.success) {
+      const result = await response.json();
+      
+      if (result.success) {
         setResponseMessage('🚀 Message on the way! We will get back to you as soon as possible.');
         setIsSuccess(true);
         setShowModal(true);
@@ -205,7 +208,8 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
                 {t('form.submit')}
               </>
             )}
-          </button>        </form>
+          </button>
+        </form>
         
         {/* Success/Error Modal */}
         {showModal && (

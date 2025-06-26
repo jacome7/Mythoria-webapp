@@ -1,0 +1,36 @@
+{
+  "MyStoriesPage": {
+    "title": "As Minhas Histórias",
+    "description": "Veja e gira todas as suas histórias criadas",
+    "noStories": {
+      "title": "Ainda Não Há Histórias",
+      "subtitle": "Ainda não criou nenhuma história. Comece a sua jornada de contar histórias agora!",
+      "action": "Criar a Sua Primeira História"
+    },
+    "table": {
+      "date": "Data",
+      "title": "Título", 
+      "status": "Estado",
+      "actions": "Ações"
+    },
+    "status": {
+      "draft": "Rascunho",
+      "writing": "A Escrever",
+      "published": "Publicada"
+    },
+    "actions": {
+      "read": "Ler",
+      "edit": "Editar",
+      "share": "Partilhar",
+      "print": "Imprimir",
+      "delete": "Eliminar",
+      "printNotAvailable": "Impressão Não Disponível"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar História",
+      "message": "Tem a certeza de que quer eliminar esta história? Esta ação não pode ser desfeita.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar"
+    }
+  }
+}

@@ -19,12 +19,33 @@
 			"closing": "A sua voz importa na formação do futuro da narrativa! ✨"
 		},
 		"join": {
-			"title": "Junte-se à Nossa Comunidade Crescente",
-			"intro": "A Mythoria está a expandir, e estamos sempre à procura de pessoas apaixonadas para se juntarem à nossa missão:",
-			"printing": "🖨️ Seja nosso parceiro como fornecedor de impressão local na sua área",
+			"title": "Junte-se à Nossa Comunidade em Crescimento",
+			"intro": "A Mythoria está a expandir-se, e estamos sempre à procura de pessoas apaixonadas para se juntarem à nossa missão:",
+			"printing": "🖨️ Faça parceria connosco como fornecedor de impressão local na sua área",
 			"country": "🌍 Ajude-nos a expandir a Mythoria para o seu país ou região",
 			"developers": "💻 Programadores talentosos interessados em narrativa alimentada por IA",
-			"call": "Interessado? Deixe-nos saber na sua mensagem!"
+			"call": "Interessado? Diga-nos na sua mensagem!"
+		},
+		"form": {
+			"validation": {
+				"allFieldsRequired": "Por favor, preencha todos os campos obrigatórios",
+				"nameRequired": "O nome é obrigatório",
+				"emailRequired": "O e-mail é obrigatório",
+				"emailInvalid": "Por favor, insira um endereço de e-mail válido",
+				"messageRequired": "A mensagem é obrigatória"
+			},
+			"success": {
+				"title": "Obrigado pela sua mensagem!",
+				"message": "Recebemos a sua mensagem e entraremos em contacto consigo o mais breve possível. Se forneceu feedback ou sugestões, também adicionaremos um pequeno bónus de créditos à sua conta como agradecimento!"
+			},
+			"errors": {
+				"sendFailed": "Falha ao enviar mensagem. Por favor, tente novamente.",
+				"networkError": "Erro de rede. Por favor, verifique a sua ligação e tente novamente."
+			}
+		},
+		"loading": {
+			"default": "A carregar...",
+			"form": "A carregar formulário de contacto..."
 		}
 	}
 }

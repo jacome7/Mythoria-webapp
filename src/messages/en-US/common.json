@@ -149,7 +149,10 @@
 				"publicStoryDesc": "This story is currently public and can be viewed by anyone.",
 				"publicUrl": "Public URL",
 				"makePrivate": "Make story private",
-				"makePrivateDesc": "Remove public access and make the story private"
+				"makePrivateDesc": "Remove public access and make the story private",
+				"errors": {
+					"createLinkFailed": "Error creating share link: Please try again later."
+				}
 			},
 			"CreditsDisplay": {
 				"button": "Credits available: {credits}",
@@ -179,7 +182,10 @@
 			},
 			"ReadingProgress": {
 				"title": "Reading Progress",
-				"tableOfContents": "Table of Contents"
+				"tableOfContents": "Table of Contents",
+				"noTableOfContents": "No table of contents available for this story.",
+				"currentlyReading": "Currently Reading",
+				"contents": "Contents"
 			},
 			"ReadingToolbar": {
 				"allAges": "All Ages",
@@ -207,7 +213,37 @@
 				"storiesCreated": "stories created and counting..."
 			},
 			"StoryGenerationProgress": {
-				"ready": "Your Story is Ready!"
+				"ready": "Your Story is Ready!",
+				"timeUnits": {
+					"seconds": "seconds",
+					"minutes": "minutes"
+				}
+			},
+			"MyStoriesTable": {
+				"generationStatus": {
+					"queued": "Queued",
+					"generating": "Generating", 
+					"completed": "Completed",
+					"failed": "Failed",
+					"cancelled": "Cancelled"
+				},
+				"tooltips": {
+					"readStory": "Read Story",
+					"cannotEditWriting": "Cannot edit story while it's being written",
+					"printNotAvailable": "(Not Available)"
+				}
+			},
+			"ReadStoryPageNavigation": {
+				"reading": "Reading",
+				"listen": "Listen", 
+				"edit": "Edit",
+				"share": "Share",
+				"backToMyStories": "Back to My Stories"
+			},
+			"ListenStoryPageErrors": {
+				"audioLoadFailed": "Failed to load audio. Please check your internet connection and try again.",
+				"audioGenerationFailed": "Audio generation failed. Please try again later.",
+				"audioPlaybackError": "An error occurred during audio playback. Please refresh the page and try again."
 			}
 		},		"storyRating": {
 			"title": "Rate this story",

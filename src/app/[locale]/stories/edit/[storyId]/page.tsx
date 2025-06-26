@@ -5,7 +5,7 @@ import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiBook, FiVolume2, FiEdit3, FiShare2, FiArrowLeft } from 'react-icons/fi';
+import { FiBook, FiVolume2, FiEdit3, FiShare2, FiArrowLeft, FiPrinter } from 'react-icons/fi';
 import BookEditor from '../../../../../components/BookEditor';
 import ShareModal from '../../../../../components/ShareModal';
 import ToastContainer from '../../../../../components/ToastContainer';
@@ -154,6 +154,10 @@ export default function EditStoryPage() {
     router.push(`/${locale}/stories/listen/${storyId}`);
   };
 
+  const navigateToPrint = () => {
+    router.push(`/${locale}/stories/print/${storyId}`);
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -231,6 +235,13 @@ export default function EditStoryPage() {
                   <button className="btn btn-primary">
                     <FiEdit3 className="w-4 h-4 md:mr-2" />
                     <span className="hidden md:inline">{tCommon('Actions.editing')}</span>
+                  </button>
+                  <button
+                    onClick={navigateToPrint}
+                    className="btn btn-outline btn-primary"
+                  >
+                    <FiPrinter className="w-4 h-4" />
+                    <span className="hidden md:inline md:ml-2">Print</span>
                   </button>
                   <button
                     onClick={() => setShowShareModal(true)}

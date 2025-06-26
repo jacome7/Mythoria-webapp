@@ -149,7 +149,15 @@
         "privateView": "Visualização Privada: Os destinatários devem fazer login para ver a história",
         "privateEdit": "Edição Privada: Os destinatários podem colaborar e editar a história",
         "publicOption": "Público: Qualquer pessoa pode ver a história sem fazer login",
-        "privateExpires": "Link privado expira em 30 dias"
+        "privateExpires": "Link privado expira em 30 dias",
+        "publicStoryTitle": "História Pública",
+        "publicStoryDesc": "Esta história está atualmente pública e pode ser vista por qualquer pessoa.",
+        "publicUrl": "URL Público",
+        "makePrivate": "Tornar história privada",
+        "makePrivateDesc": "Remover acesso público e tornar a história privada",
+        "errors": {
+          "createLinkFailed": "Erro ao criar link de partilha: Tente novamente mais tarde."
+        }
       },
       "CreditsDisplay": {
         "button": "Créditos disponíveis: {credits}",
@@ -179,7 +187,10 @@
       },
       "ReadingProgress": {
         "title": "Progresso de Leitura",
-        "tableOfContents": "Índice"
+        "tableOfContents": "Índice",
+        "noTableOfContents": "Não há índice disponível para esta história.",
+        "currentlyReading": "Lendo Atualmente",
+        "contents": "Conteúdos"
       },
       "ReadingToolbar": {
         "allAges": "Todas as Idades",
@@ -207,7 +218,39 @@
         "storiesCreated": "histórias criadas e a contar..."
       },
       "StoryGenerationProgress": {
-        "ready": "A Sua História Está Pronta!"
+        "ready": "A Sua História Está Pronta!",
+        "timeUnits": {
+          "seconds": "segundos",
+          "minutes": "minutos"
+        }
+      },
+      "MyStoriesTable": {
+        "generationStatus": {
+          "queued": "Em Fila",
+          "generating": "A Gerar", 
+          "completed": "Concluída",
+          "failed": "Falhada",
+          "cancelled": "Cancelada"
+        },
+        "tooltips": {
+          "readStory": "Ler História",
+          "cannotEditWriting": "Não é possível editar história enquanto está a ser escrita",
+          "printNotAvailable": "(Não Disponível)"
+        }
+      },
+      "ReadStoryPageNavigation": {
+        "reading": "A Ler",
+        "listen": "Ouvir", 
+        "edit": "Editar",
+        "share": "Partilhar",
+        "backToMyStories": "Voltar às Minhas Histórias"
+      },
+      "ListenStoryPage": {
+        "errors": {
+          "audioLoadFailed": "Falha ao carregar áudio. Verifique a sua ligação à internet e tente novamente.",
+          "audioGenerationFailed": "Falha na geração de áudio. Tente novamente mais tarde.",
+          "audioPlaybackError": "Ocorreu um erro durante a reprodução de áudio. Atualize a página e tente novamente."
+        }
       }
     },    "storyRating": {
       "title": "Avalie esta história",

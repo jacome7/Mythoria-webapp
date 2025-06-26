@@ -266,19 +266,21 @@ export default function GetInspiredPage() {
                 </div>
               </div>
               <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow-lg max-h-64 overflow-y-auto">
-                {graphicalStyleOptions.map((option) => (
-                  <li key={option}>
-                    <label className="cursor-pointer label justify-start gap-3">
-                      <input
-                        type="checkbox"
-                        className="checkbox checkbox-sm"
-                        checked={filters.graphicalStyle.includes(option)}
-                        onChange={() => handleFilterToggle('graphicalStyle', option)}
-                      />
-                      <span className="label-text">{t(`graphicalStyle.${option}`)}</span>
-                    </label>
-                  </li>
-                ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
+                  {graphicalStyleOptions.map((option) => (
+                    <li key={option} className="w-full">
+                      <label className="cursor-pointer label justify-start gap-3 w-full">
+                        <input
+                          type="checkbox"
+                          className="checkbox checkbox-sm"
+                          checked={filters.graphicalStyle.includes(option)}
+                          onChange={() => handleFilterToggle('graphicalStyle', option)}
+                        />
+                        <span className="label-text">{t(`graphicalStyle.${option}`)}</span>
+                      </label>
+                    </li>
+                  ))}
+                </div>
               </ul>
             </div>
 
@@ -413,17 +415,17 @@ export default function GetInspiredPage() {
                   {/* Story metadata badges */}
                   <div className="flex flex-wrap justify-center gap-1 mb-4">
                     {story.targetAudience && (
-                      <div className="badge badge-primary badge-xs">
+                      <div className="badge badge-outline badge-primary badge-xs">
                         {t(`targetAudience.${story.targetAudience}`)}
                       </div>
                     )}
                     {story.graphicalStyle && (
-                      <div className="badge badge-secondary badge-xs">
+                      <div className="badge badge-outline badge-secondary badge-xs">
                         {t(`graphicalStyle.${story.graphicalStyle}`)}
                       </div>
                     )}
                     {story.storyLanguage && (
-                      <div className="badge badge-accent badge-xs">
+                      <div className="badge badge-outline badge-accent badge-xs">
                         {t(`storyLanguage.${story.storyLanguage}`)}
                       </div>
                     )}

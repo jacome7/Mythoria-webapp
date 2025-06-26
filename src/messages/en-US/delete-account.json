@@ -41,6 +41,10 @@
     "legal": {
       "title": "Legal Compliance",
       "description": "This deletion process complies with GDPR Article 17 (Right to Erasure) and Facebook Platform Terms Section 3(d)(i), ensuring your right to have your personal data removed."
+    },
+    "errors": {
+      "deletionFailed": "Account deletion failed. Please try again or contact support if the problem persists.",
+      "networkError": "Network error occurred. Please check your connection and try again."
     }
   }
 }

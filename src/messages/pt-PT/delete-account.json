@@ -40,7 +40,11 @@
     },
     "legal": {
       "title": "Conformidade Legal",
-      "description": "Este processo de eliminação está em conformidade com o Artigo 17 do RGPD (Direito ao Apagamento) e a Secção 3(d)(i) dos Termos da Plataforma Facebook, garantindo o seu direito de ter os seus dados pessoais removidos."
+      "description": "Este processo de eliminação está em conformidade com o Artigo 17 do RGPD (Direito ao Apagamento) e com os Termos da Plataforma Facebook Secção 3(d)(i), garantindo o seu direito de remoção dos seus dados pessoais."
+    },
+    "errors": {
+      "deletionFailed": "Falha na eliminação da conta. Tente novamente ou contacte o suporte se o problema persistir.",
+      "networkError": "Ocorreu um erro de rede. Verifique a sua ligação e tente novamente."
     }
   }
 }

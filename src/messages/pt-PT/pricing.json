@@ -27,12 +27,12 @@
       "credits": "Créditos"
     },    "serviceCosts": {
       "title": "O Que os Seus Créditos Podem Desbloquear",
-      "loading": "A carregar informação de preços...",
+      "loading": "A carregar informações de preços...",
       "availableServices": "Os nossos serviços atuais são:",
       "creditsHeader": "Créditos",
       "serviceNames": {
         "ebook": "Gerar um livro digital (eBook)",
-        "audiobook": "Gerar um audiolivro",
+        "audiobook": "Gerar um audiolivro", 
         "printed_book": "Encomendar um livro impresso e enviado"
       },
       "tableHeaders": {
@@ -40,6 +40,31 @@
         "cost": "Custo em Créditos"
       },
       "creditsUnit": "Créditos"
+    },
+    "infoModal": {
+      "header": "Informações do Serviço",
+      "button": "Mais Informações",
+      "services": {
+        "ebook": {
+          "title": "Gerar um eBook digital",
+          "description": "Crie um livro digital personalizado que pode ser lido em qualquer dispositivo."
+        },
+        "audiobook": {
+          "title": "Narrar um livro (audiolivro)",
+          "description": "Transforme a sua história num audiolivro envolvente com narração profissional."
+        },
+        "printedBook": {
+          "title": "Encomendar livro impresso e enviado",
+          "description": "Receba um belo livro físico de capa dura entregue na sua porta.",
+          "printingOptions": [
+            "Encadernação premium de capa dura",
+            "Papel e impressão de alta qualidade",
+            "Design de capa profissional",
+            "Envio mundial disponível"
+          ]
+        }
+      },
+      "close": "Fechar"
     },
     "newUserMessage": "Todos os novos utilizadores recebem 5 créditos. A sua primeira história é por nossa conta!",
     "infoTexts": {

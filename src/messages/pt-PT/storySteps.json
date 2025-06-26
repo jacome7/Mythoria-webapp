@@ -52,6 +52,15 @@
       "processing": "A processar com IA...",
       "nextChapter": "Próximo Capítulo",
       "next": "Seguinte",
+      "buttons": {
+        "capture": "📸 Capturar",
+        "cancel": "❌ Cancelar"
+      },
+      "alerts": {
+        "uploadError": "Falha ao carregar ficheiro. Por favor, tente novamente.",
+        "recordingError": "Falha ao iniciar gravação. Por favor, verifique as permissões do microfone.",
+        "processingError": "Falha ao processar a sua história. Por favor, tente novamente."
+      },
       "loadingModal": {
         "title": "✨ A Criar a Tua História",
         "message": "Os nossos Oompa Loompas mágicos estão a trabalhar arduamente para preparar a tua história! Isto pode demorar um momento...",
@@ -73,7 +82,13 @@
       "greatWork": "Bom trabalho! Criaste {count, plural, =1 {# personagem} other {# personagens}}.",
       "youCanAlways": "Podes sempre adicionar mais personagens mais tarde ou avançar para o próximo capítulo para desenvolver ainda mais a tua história.",
       "continuing": "A continuar...",
-      "nextChapter": "Próximo Capítulo"
+      "nextChapter": "Próximo Capítulo",
+      "badges": {
+        "editingDraft": "A Editar Rascunho da História"
+      },
+      "navigation": {
+        "backToMyStories": "Voltar às Minhas Histórias"
+      }
     },
     "step4": {
       "heading": "Capítulo 4 - O Enredo",
@@ -95,6 +110,16 @@
         "outlineHelp": "Descreve o enredo, as personagens e os acontecimentos principais da tua história",
         "additional": "Pedidos Adicionais",
         "additionalHelp": "Algum pedido especial ou elementos específicos que queiras incluir"
+      },
+      "placeholders": {
+        "selectAudience": "Selecionar público-alvo...",
+        "selectNovelStyle": "Selecionar estilo de romance...",
+        "outlinePlaceholder": "Descreva o enredo, personagens e eventos principais da sua história. O que acontece na sua história? Qual é o conflito principal ou aventura?"
+      },
+      "chapterCounts": {
+        "short": "Curta (3-5 capítulos)",
+        "medium": "Média (6-8 capítulos)", 
+        "long": "Longa (9-12 capítulos)"
       },
       "saving": "A guardar...",
       "nextChapter": "Próximo Capítulo"

@@ -16,7 +16,8 @@ import {
   FiSquare,
   FiArrowLeft,
   FiCreditCard,
-  FiLoader
+  FiLoader,
+  FiPrinter
 } from 'react-icons/fi';
 import { trackStoryManagement } from '../../../../../lib/analytics';
 import ShareModal from '../../../../../components/ShareModal';
@@ -420,6 +421,10 @@ export default function ListenStoryPage() {
     router.push(`/${locale}/stories/edit/${storyId}`);
   };
 
+  const navigateToPrint = () => {
+    router.push(`/${locale}/stories/print/${storyId}`);
+  };
+
   const navigateToPricing = () => {
     router.push(`/${locale}/pricing`);
   };
@@ -504,6 +509,13 @@ export default function ListenStoryPage() {
                   >
                     <FiEdit3 className="w-4 h-4" />
                     <span className="hidden md:inline md:ml-2">Edit</span>
+                  </button>
+                  <button
+                    onClick={navigateToPrint}
+                    className="btn btn-outline btn-primary"
+                  >
+                    <FiPrinter className="w-4 h-4" />
+                    <span className="hidden md:inline md:ml-2">Print</span>
                   </button>
                   <button
                     onClick={() => setShowShareModal(true)}

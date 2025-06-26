@@ -1,6 +1,12 @@
 {
   "title": "Mythoria | Personalized Books Creator",
   "description": "Create unique, fully illustrated books with Mythoria's generative-AI. Turn any story into an e-book, audiobook or printed gift in minutes.",
+  "defaultTitle": "Mythoria",
+  "defaultDescription": "Personalized Books Creator",
+  "brand": {
+    "name": "Mythoria",
+    "tagline": "Personalized Books Creator"
+  },
   "openGraph": {
     "title": "Mythoria | Personalized Books Creator",
     "description": "Turn your ideas into personalised, beautifully illustrated books — read, listen or print.",

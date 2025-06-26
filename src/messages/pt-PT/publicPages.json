@@ -35,7 +35,7 @@
   },
   "MyStoriesPage": {
     "title": "Olá",
-    "writeNewStory": "Nova História",
+    "writeNewStory": "História",
     "signedOut": {
       "welcome": "Bem-vindo",
       "needSignIn": "Precisa de fazer login para ver as suas histórias.",
@@ -43,8 +43,8 @@
       "createAccount": "Criar Conta"
     },
     "tabs": {
-      "myStories": "As Minhas Histórias",
-      "myCharacters": "As Minhas Personagens"
+      "myStories": "Histórias",
+      "myCharacters": "Personagens"
     },
     "noStories": {
       "title": "A sua coleção de histórias está à espera de começar! 📚✨",
@@ -475,6 +475,7 @@
       "basePrice": "Preço Base",
       "extraChapters": "Capítulos Extra",
       "shipping": "Envio",
+      "included": "Incluído",
       "printOrderFee": "Processamento de Encomenda",
       "total": "Total",
       "credits": "créditos",

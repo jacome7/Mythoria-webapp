@@ -28,16 +28,17 @@ const Header = () => {
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
             </label>
             <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-            <li><Link href="/">{t('navigation.homepage')}</Link></li>
-            <li><Link href="/get-inspired">{t('navigation.getInspired')}</Link></li>
-            <li><Link href="/tell-your-story/step-1">{t('navigation.tellYourStory')}</Link></li>
-            <li><Link href="/pricing">{t('navigation.pricing')}</Link></li>
+            <li><Link href="/" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.homepage')}</Link></li>
+            <li><Link href="/get-inspired" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.getInspired')}</Link></li>
+            <li><Link href="/tell-your-story/step-1" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.tellYourStory')}</Link></li>
+            <li><Link href="/pricing" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.pricing')}</Link></li>
           </ul>
           </div>
           <div className="flex items-center">
             <Link href="/" className="btn btn-ghost normal-case text-xl px-1 py-0.5">
               <Image src="/Mythoria-logo-lanscape-transparent.png" alt={t('logoAlt')} width={120} height={45} />
-            </Link>            <div className="ml-1 sm:ml-2">
+            </Link>
+            <div className="ml-1 sm:ml-2">
               <span className="badge badge-outline badge-warning badge-xs sm:badge-sm text-xs font-semibold">
                 ALPHA
               </span>
@@ -71,19 +72,20 @@ const Header = () => {
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
           </label>
           <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-            <li><Link href="/">{t('navigation.homepage')}</Link></li>
-            <li><Link href="/get-inspired">{t('navigation.getInspired')}</Link></li>
-            <li><Link href="/tell-your-story/step-1">{t('navigation.tellYourStory')}</Link></li>
-            <li><Link href="/pricing">{t('navigation.pricing')}</Link></li>
+            <li><Link href="/" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.homepage')}</Link></li>
+            <li><Link href="/get-inspired" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.getInspired')}</Link></li>
+            <li><Link href="/tell-your-story/step-1" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.tellYourStory')}</Link></li>
+            <li><Link href="/pricing" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.pricing')}</Link></li>
             {isSignedIn && (
-              <li><Link href="/my-stories">{t('navigation.myStories')}</Link></li>
+              <li><Link href="/my-stories" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.myStories')}</Link></li>
             )}
           </ul>
         </div>
         <div className="flex items-center">
           <Link href="/" className="btn btn-ghost normal-case text-xl px-1 py-0.5">
             <Image src="/Mythoria-logo-lanscape-transparent.png" alt={t('logoAlt')} width={120} height={45} />
-          </Link>          <div className="ml-1 sm:ml-2">
+          </Link>
+          <div className="ml-1 sm:ml-2">
             <span className="badge badge-outline badge-warning badge-xs sm:badge-sm text-xs font-semibold">
               ALPHA
             </span>

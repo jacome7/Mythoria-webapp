@@ -5,7 +5,7 @@ import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiBook, FiVolume2, FiEdit3, FiShare2, FiArrowLeft } from 'react-icons/fi';
+import { FiBook, FiVolume2, FiEdit3, FiShare2, FiArrowLeft, FiPrinter } from 'react-icons/fi';
 import { trackStoryManagement } from '../../../../../lib/analytics';
 import StoryReader from '../../../../../components/StoryReader';
 import StoryRating from '../../../../../components/StoryRating';
@@ -99,6 +99,10 @@ export default function ReadStoryPage() {
     router.push(`/${locale}/stories/edit/${storyId}`);
   };
 
+  const navigateToPrint = () => {
+    router.push(`/${locale}/stories/print/${storyId}`);
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -179,6 +183,13 @@ export default function ReadStoryPage() {
                   >
                     <FiEdit3 className="w-4 h-4" />
                     <span className="hidden md:inline md:ml-2">Edit</span>
+                  </button>
+                  <button
+                    onClick={navigateToPrint}
+                    className="btn btn-outline btn-primary"
+                  >
+                    <FiPrinter className="w-4 h-4" />
+                    <span className="hidden md:inline md:ml-2">Print</span>
                   </button>
                   <button
                     onClick={() => setShowShareModal(true)}

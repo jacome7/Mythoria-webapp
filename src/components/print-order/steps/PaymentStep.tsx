@@ -56,7 +56,8 @@ export default function PaymentStep({
   const locale = useLocale();
   const [printingOptions, setPrintingOptions] = useState<PrintingOption[]>([]);
   const [extraChapterCost, setExtraChapterCost] = useState<number>(0);
-  const [userCredits, setUserCredits] = useState<number>(0);  const [loadingData, setLoadingData] = useState(true);
+  const [userCredits, setUserCredits] = useState<number>(0);
+  const [loadingData, setLoadingData] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
@@ -280,7 +281,7 @@ export default function PaymentStep({
               )}
               <div className="flex justify-between">
                 <span>{t('payment.shipping')}:</span>
-                <span className="text-success">Included</span>
+                <span className="text-success">{t('payment.included')}</span>
               </div>
               <div className="divider"></div>
               <div className="flex justify-between font-bold text-lg">

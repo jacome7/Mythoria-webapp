@@ -44,11 +44,26 @@ export default function MyStoriesTable() {
   const [storyToShare, setStoryToShare] = useState<Story | null>(null);
   const [openActionMenu, setOpenActionMenu] = useState<string | null>(null);
   
+  // Mobile detection
+  const [isMobile, setIsMobile] = useState(false);
+  
   // Sorting state
-  const [sortField, setSortField] = useState<SortField>('updatedAt');
+  const [sortField, setSortField] = useState<SortField>('createdAt');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   useEffect(() => {
     fetchStories();
+  }, []);
+
+  // Mobile detection effect
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   // Close mobile menu when clicking outside
@@ -172,7 +187,16 @@ export default function MyStoriesTable() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    // Shorter date format: M/D/YY
+    
+    if (isMobile) {
+      // Mobile format: "Jun 17" (no year, no time)
+      return date.toLocaleDateString(locale, {
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+    
+    // Desktop format: M/D/YY
     return `${date.getMonth() + 1}/${date.getDate()}/${String(date.getFullYear()).slice(-2)}`;
   };
   const getStatusBadgeClass = (status: string) => {
@@ -284,7 +308,7 @@ export default function MyStoriesTable() {
                     </td>
                     <td className="px-2 py-1 md:px-4 md:py-2">
                       <div className="space-y-1">
-                        <span className={getStatusBadgeClass(story.status)}>
+                        <span className={`${getStatusBadgeClass(story.status)} badge-sm text-xs`}>
                           {t(`status.${story.status}`)}
                         </span>
                         {(() => {

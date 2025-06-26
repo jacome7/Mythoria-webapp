@@ -52,6 +52,15 @@
       "processing": "Processing with AI...",
       "nextChapter": "Next Chapter",
       "next": "Next",
+      "buttons": {
+        "capture": "📸 Capture",
+        "cancel": "❌ Cancel"
+      },
+      "alerts": {
+        "uploadError": "Failed to upload file. Please try again.",
+        "recordingError": "Failed to start recording. Please check your microphone permissions.",
+        "processingError": "Failed to process your story. Please try again."
+      },
       "loadingModal": {
         "title": "✨ Creating Your Story",
         "message": "Our magical Oompa Loompas are hard at work preparing your story! This might take a moment...",
@@ -73,7 +82,13 @@
       "greatWork": "Great work! You've created {count, plural, =1 {# character} other {# characters}}.",
       "youCanAlways": "You can always add more characters later or continue to the next chapter to develop your story further.",
       "continuing": "Continuing...",
-      "nextChapter": "Next Chapter"
+      "nextChapter": "Next Chapter",
+      "badges": {
+        "editingDraft": "Editing Draft Story"
+      },
+      "navigation": {
+        "backToMyStories": "Back to My Stories"
+      }
     },
     "step4": {
       "heading": "Chapter 4 - The Plot",
@@ -95,6 +110,16 @@
         "outlineHelp": "Describe your story's plot, characters, and key events",
         "additional": "Additional Requests",
         "additionalHelp": "Any special requests or specific elements you want included"
+      },
+      "placeholders": {
+        "selectAudience": "Select target audience...",
+        "selectNovelStyle": "Select novel style...",
+        "outlinePlaceholder": "Describe your story's plot, characters, and key events. What happens in your story? What's the main conflict or adventure?"
+      },
+      "chapterCounts": {
+        "short": "Short (3-5 chapters)",
+        "medium": "Medium (6-8 chapters)", 
+        "long": "Long (9-12 chapters)"
       },
       "saving": "Saving...",
       "nextChapter": "Next Chapter"
