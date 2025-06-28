@@ -50,9 +50,7 @@ export async function POST(request: NextRequest) {
       existingCharacters, 
       imageData, 
       audioData, 
-      userLanguage || 'en-US',
-      currentAuthor.authorId,
-      storyId
+      userLanguage || 'en-US'
     );
     
     // Debug: Log the raw structured result to understand what AI is returning

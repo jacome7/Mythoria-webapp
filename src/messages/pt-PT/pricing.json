@@ -25,11 +25,23 @@
       },
       "buyButton": "Comprar {credits} Créditos",
       "credits": "Créditos"
-    },    "serviceCosts": {
-      "title": "O Que os Seus Créditos Podem Desbloquear",
+    },
+    "serviceCosts": {
       "loading": "A carregar informações de preços...",
       "availableServices": "Os nossos serviços atuais são:",
       "creditsHeader": "Créditos",
+      "services": {
+        "generateEbook": "Gerar um eBook digital",
+        "narrateAudiobook": "Narrar um livro (audiolivro)",
+        "editBook": "Editar um livro:",
+        "manualEditing": "Edição manual",
+        "textReviewAI": "Revisão de texto com IA",
+        "generateNewImages": "Gerar novas imagens",
+        "printShipBook": "Imprimir e enviar livro:",
+        "softCover": "Capa mole",
+        "hardCover": "Capa dura",
+        "extraChapterCost": "Custo de capítulo extra"
+      },
       "serviceNames": {
         "ebook": "Gerar um livro digital (eBook)",
         "audiobook": "Gerar um audiolivro", 
@@ -113,12 +125,6 @@
           "answer": "Os livros impressos são enviados via serviços postais standard. Os tempos e custos de envio podem variar dependendo da sua localização. Verá informações detalhadas de envio no checkout ao encomendar um livro impresso."
         }
       }
-    },
-    "finalCta": {
-      "title": "Pronto para Começar a Sua Aventura Narrativa?",
-      "subtitle": "Obtenha alguns créditos e comece a criar histórias únicas e personalizadas hoje. Ofereça um presente que será valorizado para toda a vida!",
-      "getCreditsButton": "Obter Créditos Agora",
-      "createStoryButton": "Criar a Sua História"
     },    "errors": {
       "loadingFailed": "Falha ao carregar informação de preços"
     }

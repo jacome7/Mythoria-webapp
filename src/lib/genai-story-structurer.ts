@@ -1,7 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { getLanguageSpecificPrompt, getLanguageSpecificSchema } from "./prompt-loader";
 import { calculateGenAICost, normalizeModelName } from "@/db/genai-cost-calculator";
-import { tokenUsageService } from "@/db/services/token-usage-tracking";
 
 // Define valid character type enum values that match the UI
 const VALID_CHARACTER_TYPES = [
@@ -169,9 +168,8 @@ export async function generateStructuredStory(
   }> = [],
   imageData?: string | null,
   audioData?: string | null,
-  userLanguage: string = 'en-US',
-  authorId?: string,
-  storyId?: string
+  userLanguage: string = 'en-US'
+  // Note: authorId and storyId parameters removed as token tracking moved to workflows service
 ): Promise<StructuredStoryResult> {
   try {
     // Load language-specific prompt and schema
@@ -310,33 +308,8 @@ export async function generateStructuredStory(
     
     console.log("Cost calculation:", costInfo);
     
-    // Track token usage if we have the required IDs
-    if (authorId && storyId && costInfo.modelFound) {
-      try {
-        await tokenUsageService.recordTokenUsage({
-          authorId,
-          storyId,
-          action: 'story_structure',
-          aiModel: modelName,
-          inputTokens,
-          outputTokens,
-          estimatedCostInEuros: costInfo.totalCost,
-          inputPromptJson: {
-            userDescription,
-            existingCharacters,
-            hasImage: !!imageData,
-            hasAudio: !!audioData,
-            userLanguage,
-            modelName,
-            timestamp: new Date().toISOString()
-          }
-        });
-        console.log("Token usage recorded successfully");
-      } catch (trackingError) {
-        console.error("Failed to record token usage:", trackingError);
-        // Don't fail the main request if tracking fails
-      }
-    }
+    // Note: Token usage tracking has been moved to the story-generation-workflow service
+    // and will be handled there for consistency.
     
     // Get the text from the response
     const text = result.text;

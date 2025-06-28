@@ -84,7 +84,6 @@ export default function Home() {
                   className="text-primary"
                   repeat={Infinity}
                 />
-                &nbsp;✨
               </h1>
               <p className="py-6 text-lg">
                 {t('hero.subtitle').split(t('hero.subtitleEmphasized')).map((part, index, array) => (
@@ -105,10 +104,10 @@ export default function Home() {
             {/* Right Side: Logo */}
             <div className="lg:w-1/2 flex justify-center lg:justify-end mt-8 lg:mt-0">
               <Image 
-                src="/Logo_black_512x444.png" 
+                src="/images/logo/digital_art.png" 
                 alt="Mythoria Logo" 
                 width={390}
-                height={338}
+                height={390}
                 className="rounded-lg"
               />
             </div>
@@ -118,7 +117,8 @@ export default function Home() {
         {/* Quote of the Day Section */}
         <section className="my-16">
           <QuoteOfTheDay />
-        </section>        {showSoonPage ? (
+        </section>
+        {showSoonPage ? (
           <section className="my-16 text-center">
             <h2 className="text-3xl font-bold mb-4">{t('comingSoon.title')}</h2>            
             <p className="text-xl text-gray-600 mb-12">

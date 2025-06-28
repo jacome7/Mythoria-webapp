@@ -9,9 +9,7 @@ async function testGenAI() {
       [],
       null,
       null,
-      'en-US',
-      'test-author-id', // Test author ID for token tracking
-      'test-story-id'   // Test story ID for token tracking
+      'en-US'
     );
     
     console.log('Success! Generated structured story:');

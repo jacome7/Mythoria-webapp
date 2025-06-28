@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm/relations";
-import { authors, addresses, events, stories, storyVersions, credits, paymentMethods, payments, shippingCodes, authorCreditBalances, creditLedger, characters, storyGenerationRuns, storyCharacters, storyGenerationSteps } from "./schema";
+import { authors, addresses, events, stories, storyVersions, credits, paymentMethods, payments, shippingCodes, authorCreditBalances, creditLedger, characters, storyCharacters } from "./schema";
+// Note: storyGenerationRuns and storyGenerationSteps moved to workflows database
 
 export const addressesRelations = relations(addresses, ({one, many}) => ({
 	author: one(authors, {
@@ -43,7 +44,7 @@ export const storiesRelations = relations(stories, ({one, many}) => ({
 		fields: [stories.authorId],
 		references: [authors.authorId]
 	}),
-	storyGenerationRuns: many(storyGenerationRuns),
+	// storyGenerationRuns: many(storyGenerationRuns), // MOVED TO WORKFLOWS_DB
 	storyCharacters: many(storyCharacters),
 }));
 
@@ -110,13 +111,14 @@ export const charactersRelations = relations(characters, ({one, many}) => ({
 	storyCharacters: many(storyCharacters),
 }));
 
-export const storyGenerationRunsRelations = relations(storyGenerationRuns, ({one, many}) => ({
-	story: one(stories, {
-		fields: [storyGenerationRuns.storyId],
-		references: [stories.storyId]
-	}),
-	storyGenerationSteps: many(storyGenerationSteps),
-}));
+// MOVED TO WORKFLOWS_DB - Relations moved to workflows database
+// export const storyGenerationRunsRelations = relations(storyGenerationRuns, ({one, many}) => ({
+// 	story: one(stories, {
+// 		fields: [storyGenerationRuns.storyId],
+// 		references: [stories.storyId]
+// 	}),
+// 	storyGenerationSteps: many(storyGenerationSteps),
+// }));
 
 export const storyCharactersRelations = relations(storyCharacters, ({one}) => ({
 	story: one(stories, {
@@ -129,9 +131,10 @@ export const storyCharactersRelations = relations(storyCharacters, ({one}) => ({
 	}),
 }));
 
-export const storyGenerationStepsRelations = relations(storyGenerationSteps, ({one}) => ({
-	storyGenerationRun: one(storyGenerationRuns, {
-		fields: [storyGenerationSteps.runId],
-		references: [storyGenerationRuns.runId]
-	}),
-}));
+// MOVED TO WORKFLOWS_DB - Relations moved to workflows database
+// export const storyGenerationStepsRelations = relations(storyGenerationSteps, ({one}) => ({
+// 	storyGenerationRun: one(storyGenerationRuns, {
+// 		fields: [storyGenerationSteps.runId],
+// 		references: [storyGenerationRuns.runId]
+// 	}),
+// }));

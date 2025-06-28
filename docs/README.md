@@ -1,28 +1,49 @@
-# Mythoria Documentation
+# Documentation Structure
 
-Mythoria is a Next.js web application for interactive storytelling and character management, deployed on Google Cloud Run with Clerk authentication and PostgreSQL database.
+This directory contains comprehensive documentation for the Mythoria WebApp frontend application.
 
-## Quick Start
+## Main Documentation
 
-1. **Install dependencies**: `npm install`
-2. **Configure environment**: Copy `.env.example` to `.env.local` and fill in values
-3. **Setup database**: Run `npm run db:push` and `npm run db:seed`
-4. **Start development**: `npm run dev`
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - System architecture, technology stack, and frontend patterns
+- **[features.md](./features.md)** - Complete feature list and user interface capabilities
+- **[api-reference.md](./api-reference.md)** - Frontend API integration and backend communication
+- **[deployment.md](./deployment.md)** - Production deployment guide for Google Cloud Platform
+- **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Local development setup and contribution guide
 
-## Documentation
+## Archive
 
-- **[Architecture & Tech Stack](ARCHITECTURE.md)** – High-level system design and technology choices
-- **[Database Schema](DATABASE.md)** – Data model and relationships
-- **[Deployment Guide](DEPLOYMENT.md)** – Production deployment on Google Cloud
-- **[Development Setup](DEVELOPMENT.md)** – Local development environment and tools
+The `archive/` folder contains historical implementation documents, feature specifications, and configuration guides that have been consolidated into the main documentation files above. These files are preserved for reference but are no longer actively maintained.
 
-## Key Features
+## Documentation Standards
 
-- Interactive story creation and management
-- Character development tools
-- AI-powered story structuring (Google Vertex AI)
-- Credit-based payment system
-- Multi-language support
-- Google Analytics integration
+All documentation follows these standards:
+- **Markdown format** with consistent formatting
+- **Version information** included in each document
+- **Last updated dates** maintained
+- **Cross-references** to related documentation
+- **Code examples** with proper syntax highlighting
+- **Clear section structure** with descriptive headings
 
-*Last updated: June 2025*
+## For Developers
+
+When contributing to this service:
+1. Update relevant documentation when making changes
+2. Follow the existing documentation structure and style
+3. Include code examples for new UI components or features
+4. Update version information and last updated dates
+5. Cross-reference related documentation sections
+
+## For AI Agents
+
+This documentation is structured for both human and AI agent consumption:
+- **AGENTS.md** in the service root contains AI-readable technical specifications
+- **Structured metadata** in YAML format where appropriate
+- **Consistent terminology** across all documentation
+- **Complete API specifications** with integration examples
+- **Component architecture** with detailed implementation patterns
+
+---
+
+**Documentation Version**: 1.0.0  
+**Last Updated**: June 27, 2025  
+**Service**: Mythoria WebApp v0.1.1+

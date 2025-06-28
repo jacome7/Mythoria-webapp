@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import { db } from '@/db';
-import { authors, stories, credits, tokenUsageTracking, addresses, events, storyGenerationRuns, storyGenerationSteps, shareLinks, storyCollaborators, storyVersions } from '@/db/schema';
+import { authors, stories, credits, addresses, events, shareLinks, storyCollaborators, storyVersions } from '@/db/schema';
 import { eq, inArray } from 'drizzle-orm';
 
 export async function DELETE() {
@@ -41,22 +41,23 @@ export async function DELETE() {
 
       // Delete related data if there are stories
       if (storyIds.length > 0) {
-        // Get all run IDs for these stories
-        const storyRuns = await tx.select({ runId: storyGenerationRuns.runId })
-          .from(storyGenerationRuns)
-          .where(inArray(storyGenerationRuns.storyId, storyIds));
-        
-        const runIds = storyRuns.map(r => r.runId);
-
-        // Delete story generation steps for all runs
-        if (runIds.length > 0) {
-          await tx.delete(storyGenerationSteps)
-            .where(inArray(storyGenerationSteps.runId, runIds));
-        }
-
-        // Delete story generation runs
-        await tx.delete(storyGenerationRuns)
-          .where(inArray(storyGenerationRuns.storyId, storyIds));
+        // MOVED TO WORKFLOWS_DB - Story generation runs and steps are now in workflows database
+        // These tables will need to be cleaned up via the story-generation-workflow service
+        // const storyRuns = await tx.select({ runId: storyGenerationRuns.runId })
+        //   .from(storyGenerationRuns)
+        //   .where(inArray(storyGenerationRuns.storyId, storyIds));
+        // 
+        // const runIds = storyRuns.map(r => r.runId);
+        // 
+        // // Delete story generation steps for all runs
+        // if (runIds.length > 0) {
+        //   await tx.delete(storyGenerationSteps)
+        //     .where(inArray(storyGenerationSteps.runId, runIds));
+        // }
+        // 
+        // // Delete story generation runs
+        // await tx.delete(storyGenerationRuns)
+        //   .where(inArray(storyGenerationRuns.storyId, storyIds));
 
         // Delete share links
         await tx.delete(shareLinks)
@@ -83,9 +84,10 @@ export async function DELETE() {
       await tx.delete(stories)
         .where(eq(stories.authorId, author.authorId));
 
-      // Delete token usage tracking
-      await tx.delete(tokenUsageTracking)
-        .where(eq(tokenUsageTracking.authorId, author.authorId));
+      // MOVED TO WORKFLOWS_DB - Token usage tracking is now in workflows database
+      // This table will need to be cleaned up via the story-generation-workflow service
+      // await tx.delete(tokenUsageTracking)
+      //   .where(eq(tokenUsageTracking.authorId, author.authorId));
 
       // Delete credits
       await tx.delete(credits)

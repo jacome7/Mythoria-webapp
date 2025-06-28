@@ -1,189 +1,228 @@
-# Deployment Guide
+# Mythoria Web App - Deployment Guide
 
-Mythoria is deployed to Google Cloud Run with automated CI/CD using Cloud Build and secrets managed through Google Secret Manager.
+## Overview
+
+This guide covers deploying the Mythoria Web App to Google Cloud Platform using Cloud Run. The deployment process includes container building, environment configuration, and service deployment with automated CI/CD pipelines.
 
 ## Prerequisites
 
-- Google Cloud Project with billing enabled
-- Clerk application configured
-- PostgreSQL database (Cloud SQL recommended)
-- Domain configured with SSL certificate
+### Required Tools
+- **Google Cloud SDK**: Latest version with authentication
+- **Docker**: For local container building and testing
+- **Node.js**: Version 18+ for local development
+- **Git**: Version control access to the repository
 
-## Environment Setup
+### Google Cloud Setup
+- **Project ID**: `oceanic-beach-460916-n5`
+- **Region**: `europe-west9` (Paris)
+- **Service Account**: Configured with necessary permissions
+- **APIs Enabled**: Cloud Run, Cloud Build, Secret Manager, Cloud SQL
 
-### 1. Google Cloud Services
-Enable the following APIs in your Google Cloud Console:
-- Cloud Run API
-- Cloud Build API
-- Secret Manager API
-- Cloud SQL Admin API
-- Vertex AI API
-
-### 2. Secrets Management
-All sensitive configuration is stored in Google Secret Manager. Run the setup script:
-
-```powershell
-.\scripts\setup-secrets.ps1
+### Required Permissions
+```bash
+# Enable required Google Cloud APIs
+gcloud services enable cloudbuild.googleapis.com
+gcloud services enable run.googleapis.com
+gcloud services enable secretmanager.googleapis.com
+gcloud services enable sql-component.googleapis.com
+gcloud services enable artifactregistry.googleapis.com
 ```
 
-This creates the following secrets:
-- `mythoria-db-host`
-- `mythoria-db-user`
-- `mythoria-db-password`
-- `mythoria-clerk-publishable-key`
-- `mythoria-clerk-secret-key`
-- `mythoria-clerk-webhook-secret`
-- `mythoria-ga-measurement-id`
+## Environment Configuration
 
-### 3. Clerk Configuration
-In your Clerk Dashboard:
+### Production Environment Variables
+```yaml
+# Database Configuration
+DATABASE_URL: "postgresql://username:password@host:port/database"
+DB_HOST: "10.94.208.3"  # Cloud SQL private IP
+DB_PORT: "5432"
+DB_NAME: "mythoria_production"
+DB_USER: "mythoria_user"
 
-**Domain Settings:**
-- Add your production domain (e.g., `mythoria.pt`)
-- Set as primary domain
-- Configure CORS origins
+# Authentication (Clerk)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_live_..."
+CLERK_SECRET_KEY: "sk_live_..."
+CLERK_WEBHOOK_SECRET: "whsec_..."
 
-**Webhook Setup:**
-- Create webhook endpoint: `https://your-domain.com/api/webhooks`
-- Enable events: `user.created`, `user.updated`, `user.deleted`, `session.created`
-- Copy webhook signing secret to Google Secret Manager
+# External Services
+NEXT_PUBLIC_SGW_API_URL: "https://story-generation-workflow-803421888801.europe-west9.run.app"
+NOTIFICATION_ENGINE_URL: "https://notification-engine-803421888801.europe-west9.run.app"
 
-## Deployment Process
+# Google Cloud
+GOOGLE_CLOUD_PROJECT_ID: "oceanic-beach-460916-n5"
+GOOGLE_APPLICATION_CREDENTIALS: "/app/service-account-key.json"
 
-### Automated Deployment (Recommended)
-Deploy using Cloud Build:
+# Analytics & Monitoring
+NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: "G-XXXXXXXXXX"
+SENTRY_DSN: "https://..."
 
-```powershell
-gcloud builds submit --config cloudbuild.yaml
+# Feature Flags
+NEXT_PUBLIC_FEATURE_FLAGS: '{"ai_generation": true, "audiobooks": true}'
+
+# Security
+NEXTAUTH_SECRET: "your-secret-key"
+NEXTAUTH_URL: "https://app.mythoria.com"
 ```
 
-### Manual Deployment
-Alternative deployment using the script:
+## Google Secret Manager Configuration
 
-```powershell
-.\scripts\deploy.ps1
+### Storing Secrets
+```bash
+# Database credentials
+gcloud secrets create mythoria-webapp-database-url --data-file=db-url.txt
+
+# Clerk authentication
+gcloud secrets create mythoria-webapp-clerk-secret --data-file=clerk-secret.txt
+
+# Service account key
+gcloud secrets create mythoria-webapp-service-account --data-file=service-account.json
 ```
 
-## Build Configuration
+## Container Configuration
 
-### Docker Multi-Stage Build
-1. **Dependencies**: Install Node.js packages
-2. **Build**: Compile Next.js application with standalone output
-3. **Runtime**: Minimal Alpine image with only production dependencies
+### Dockerfile
+```dockerfile
+# Multi-stage build for optimization
+FROM node:18-alpine AS base
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
 
-### Cloud Run Configuration
-- **CPU**: 1 vCPU allocated per instance
-- **Memory**: 2 GiB per instance
-- **Concurrency**: 100 requests per instance
-- **Scaling**: 0 to 10 instances (auto-scaling)
-- **Region**: europe-west9 (Paris)
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
 
-### Environment Variables
-Runtime secrets are automatically injected from Secret Manager:
-- Database connection strings
-- Clerk authentication keys
-- API tokens and webhook secrets
+FROM node:18-alpine AS runner
+WORKDIR /app
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 
-## Post-Deployment Verification
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-### 1. Health Check
-Verify the service is running:
-```powershell
-curl https://mythoria.pt/api/health
+USER nextjs
+EXPOSE 3000
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
+
+CMD ["node", "server.js"]
 ```
 
-### 2. Authentication Test
-Test user authentication flow:
-- Sign up/in functionality
-- Protected API endpoints
-- Database user synchronization
+## Cloud Run Deployment
 
-### 3. Database Connectivity
-Verify database operations:
-- Story creation and retrieval
-- Character management
-- Payment processing
+### Deployment Commands
+```bash
+# Deploy to Cloud Run
+gcloud run deploy mythoria-webapp \
+  --image europe-west9-docker.pkg.dev/oceanic-beach-460916-n5/mythoria/mythoria-webapp:latest \
+  --region europe-west9 \
+  --platform managed \
+  --allow-unauthenticated \
+  --service-account mythoria-webapp-sa@oceanic-beach-460916-n5.iam.gserviceaccount.com \
+  --set-env-vars NODE_ENV=production \
+  --set-secrets DATABASE_URL=mythoria-webapp-database-url:latest \
+  --set-secrets CLERK_SECRET_KEY=mythoria-webapp-clerk-secret:latest \
+  --memory 4Gi \
+  --cpu 2 \
+  --max-instances 100 \
+  --min-instances 1 \
+  --timeout 300
+```
 
-### 4. AI Integration
-Test GenAI story structuring:
-- Story outline processing
-- Character extraction
-- Structured data generation
+## CI/CD Pipeline
 
-## Monitoring & Logging
+### Cloud Build Configuration
+```yaml
+# cloudbuild.yaml
+steps:
+# Build dependencies
+- name: 'node:18'
+  entrypoint: npm
+  args: ['ci']
 
-### Cloud Run Logs
-Monitor application logs in Google Cloud Console:
-- Request/response logs
-- Error tracking
-- Performance metrics
+# Run tests
+- name: 'node:18'
+  entrypoint: npm
+  args: ['run', 'test']
 
-### Database Monitoring
-Monitor PostgreSQL performance:
-- Connection pool status
-- Query performance
-- Storage utilization
+# Build Next.js application
+- name: 'node:18'
+  entrypoint: npm
+  args: ['run', 'build']
 
-### Clerk Dashboard
-Monitor authentication metrics:
-- User registration rates
-- Login success/failure rates
-- Webhook delivery status
+# Build container image
+- name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'build',
+    '-t',
+    'europe-west9-docker.pkg.dev/${PROJECT_ID}/mythoria/mythoria-webapp:${COMMIT_SHA}',
+    '-t',
+    'europe-west9-docker.pkg.dev/${PROJECT_ID}/mythoria/mythoria-webapp:latest',
+    '.'
+  ]
 
-## Troubleshooting
+# Deploy to Cloud Run
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args: [
+    'run', 'deploy', 'mythoria-webapp',
+    '--image', 'europe-west9-docker.pkg.dev/${PROJECT_ID}/mythoria/mythoria-webapp:${COMMIT_SHA}',
+    '--region', 'europe-west9',
+    '--platform', 'managed',
+    '--allow-unauthenticated'
+  ]
+```
+
+## Monitoring & Troubleshooting
+
+### Health Checks
+```typescript
+// pages/api/health.ts
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  const health = {
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    version: process.env.npm_package_version,
+    environment: process.env.NODE_ENV,
+    uptime: process.uptime()
+  };
+  
+  res.status(200).json(health);
+}
+```
 
 ### Common Issues
 
-**Authentication Problems:**
-- Verify Clerk domain configuration
-- Check webhook secret in Secret Manager
-- Ensure cookies are properly configured
+#### Deployment Failures
+```bash
+# Check build logs
+gcloud builds list --limit 10
+gcloud builds log [BUILD_ID]
 
-**Database Connection:**
-- Verify Cloud SQL instance is running
-- Check database credentials in Secret Manager
-- Ensure database migrations are applied
-
-**Build Failures:**
-- Check Cloud Build logs for specific errors
-- Verify all required secrets exist
-- Ensure Docker base image is accessible
-
-### Useful Commands
-
-**View logs:**
-```powershell
-gcloud logs read "resource.type=cloud_run_revision" --limit=50
+# Check service status
+gcloud run services describe mythoria-webapp --region europe-west9
 ```
 
-**Check service status:**
-```powershell
-gcloud run services describe mythoria --region=europe-west9
+#### Database Connection Issues
+```bash
+# Test database connectivity
+gcloud sql connect mythoria-postgres --user mythoria_user
 ```
 
-**Rollback deployment:**
-```powershell
-gcloud run services update-traffic mythoria --to-revisions=PREVIOUS_REVISION=100 --region=europe-west9
+### Recovery Procedures
+```bash
+# Rollback to previous version
+gcloud run services update mythoria-webapp \
+  --image europe-west9-docker.pkg.dev/oceanic-beach-460916-n5/mythoria/mythoria-webapp:previous-tag \
+  --region europe-west9
 ```
 
-## Development Tools
+---
 
-### ngrok for Local Testing
-For testing webhooks locally:
-
-```powershell
-ngrok http 3000
-```
-
-Use the ngrok URL in your Clerk webhook configuration during development.
-
-### Database Management
-Access database locally:
-```powershell
-npm run db:studio
-```
-
-Apply schema changes:
-```powershell
-npm run db:push
-```
+**Last Updated**: June 27, 2025  
+**Deployment Version**: 1.0.0  
+**Component Version**: 0.1.1

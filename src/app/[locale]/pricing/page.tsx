@@ -29,7 +29,7 @@ export default function PricingPage() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [selectedInfo, setSelectedInfo] = useState<string | null>(null);
-		const infoTexts = {
+	const infoTexts = {
 		textReview: t('infoTexts.textReview'),
 		imageGeneration: t('infoTexts.imageGeneration'),
 		printedBooks: t('infoTexts.printedBooks')
@@ -74,6 +74,124 @@ export default function PricingPage() {
 					<p className="text-xl mt-4 text-gray-700">{t('header.subtitle')}</p>
 				</header>
 
+				{/* Service Costs Section */}
+				<section id="service-costs" className="my-16">
+					{loading ? (
+						<div className="text-center py-12">
+							<span className="loading loading-spinner loading-lg"></span>
+							<p className="text-lg text-gray-600 mt-4">{t('serviceCosts.loading')}</p>
+						</div>
+					) : error ? (
+						<div className="alert alert-error">
+							<span>{error}</span>
+						</div>
+					) : (<div className="bg-base-200 p-6 rounded-lg shadow-xl max-w-4xl mx-auto">
+						<div className="text-lg leading-relaxed">
+						<div className="flex justify-between items-center mb-4">
+							<p className="font-semibold">{t('serviceCosts.availableServices')}</p>
+							<p className="font-semibold text-right">{t('serviceCosts.creditsHeader')}</p>
+						</div>
+						<ul className="space-y-3">
+							<li className="flex items-center justify-between">
+								<span className="flex items-center">
+									<FaBookOpen className="mr-2 text-primary" />
+									{t('serviceCosts.services.generateEbook')}
+								</span>
+								<span className="font-semibold">{getServiceCost('eBookGeneration')}</span>
+							</li>
+
+							<li className="flex items-center justify-between">
+								<span className="flex items-center">
+									<FaVolumeUp className="mr-2 text-primary" />
+									{t('serviceCosts.services.narrateAudiobook')}
+								</span>
+								<span className="font-semibold">{getServiceCost('audioBookGeneration')}</span>
+							</li>
+
+							<li>
+								<div className="flex items-center justify-between">
+									<span className="flex items-center">
+										<FaPalette className="mr-2 text-primary" />
+										{t('serviceCosts.services.editBook')}
+									</span>
+								</div>										<ul className="ml-8 mt-2 space-y-2">
+									<li className="flex items-center justify-between">
+										<span>* {t('serviceCosts.services.manualEditing')}</span>
+										<span className="font-semibold">0</span>
+									</li>
+									<li className="flex items-center justify-between">
+										<span className="flex items-center">
+											* {t('serviceCosts.services.textReviewAI')}
+											<button
+												onClick={() => handleInfoClick('textReview')}
+												className="ml-2 text-info hover:text-info-focus"
+											>
+												<FaInfoCircle className="text-sm" />
+											</button>
+										</span>
+										<span className="font-semibold">1</span>
+									</li>
+									<li className="flex items-center justify-between">
+										<span className="flex items-center">
+											* {t('serviceCosts.services.generateNewImages')}
+											<button
+												onClick={() => handleInfoClick('imageGeneration')}
+												className="ml-2 text-info hover:text-info-focus"
+											>
+												<FaInfoCircle className="text-sm" />
+											</button>
+										</span>
+										<span className="font-semibold">1</span>
+									</li>
+								</ul>
+							</li>
+
+							<li>
+								<div className="flex items-center justify-between">
+									<span className="flex items-center">
+										<FaPrint className="mr-2 text-primary" />
+										{t('serviceCosts.services.printShipBook')}
+									</span>
+								</div>
+								<ul className="ml-8 mt-2 space-y-2">
+									<li className="flex items-center justify-between">
+										<span className="flex items-center">
+											* {t('serviceCosts.services.softCover')}
+											<button
+												onClick={() => handleInfoClick('printedBooks')}
+												className="ml-2 text-info hover:text-info-focus"
+											>
+												<FaInfoCircle className="text-sm" />
+											</button>
+										</span>
+										<span className="font-semibold">{getServiceCost('printedSoftCover')}</span>
+									</li>
+									<li className="flex items-center justify-between">
+										<span className="flex items-center">
+											* {t('serviceCosts.services.hardCover')}
+											<button
+												onClick={() => handleInfoClick('printedBooks')}
+												className="ml-2 text-info hover:text-info-focus"
+											>
+												<FaInfoCircle className="text-sm" />
+											</button>
+										</span>
+										<span className="font-semibold">{getServiceCost('printedHardcover')}</span>
+									</li>
+									<li className="flex items-center justify-between">
+										<span>* {t('serviceCosts.services.extraChapterCost')}</span>
+										<span className="font-semibold">{getServiceCost('extraChapterCost')}</span>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+					</div>
+					)}
+				</section>
+
+				<div className="divider my-16"></div>
+
 				{/* Credit Packages Section */}
 				<section id="buy-credits" className="my-16">
 					<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -87,146 +205,31 @@ export default function PricingPage() {
 									<p className="text-2xl font-semibold my-2">€{pkg.price}</p>
 									<p className="text-sm text-gray-400 mb-4">
 										{t(`creditPackages.packages.${pkg.key}.description`)}
-									</p>									<div className="card-actions">
+									</p>
+									<div className="card-actions">
 										<Link href={`/buy-credits?package=${pkg.id}`} className="btn btn-primary w-full">
 											{t('creditPackages.buyButton', { credits: pkg.credits })}
 										</Link>
 									</div>
 								</div>
-						</div>
-					))}
-				</div>
-			</section>			{/* New User Credits Message */}
-			<div className="text-center mt-8 mb-4">
-				<p className="text-lg text-primary font-semibold">
-					<FaGift className="inline mr-2" />
-					{t('newUserMessage')}
-				</p>
-			</div>
-
-			<div className="divider my-16"></div>
-				
-				{/* Service Costs Section */}
-				<section id="service-costs" className="my-16">
-					<h2 className="text-4xl font-bold text-center mb-10">{t('serviceCosts.title')}</h2>
-					{loading ? (
-						<div className="text-center py-12">
-							<span className="loading loading-spinner loading-lg"></span>
-							<p className="text-lg text-gray-600 mt-4">{t('serviceCosts.loading')}</p>
-						</div>
-					) : error ? (
-						<div className="alert alert-error">
-							<span>{error}</span>
-						</div>
-					) : (<div className="bg-base-200 p-6 rounded-lg shadow-xl max-w-4xl mx-auto">							<div className="text-lg leading-relaxed">
-								<div className="flex justify-between items-center mb-4">
-									<p className="font-semibold">{t('serviceCosts.availableServices')}</p>
-									<p className="font-semibold text-right">{t('serviceCosts.creditsHeader')}</p>
-								</div>
-								<ul className="space-y-3">
-									<li className="flex items-center justify-between">
-										<span className="flex items-center">
-											<FaBookOpen className="mr-2 text-primary" />
-											Generate a digital eBook
-										</span>
-										<span className="font-semibold">{getServiceCost('eBookGeneration')}</span>
-									</li>
-									
-									<li className="flex items-center justify-between">
-										<span className="flex items-center">
-											<FaVolumeUp className="mr-2 text-primary" />
-											Narrate a book (audio-book)
-										</span>
-										<span className="font-semibold">{getServiceCost('audioBookGeneration')}</span>
-									</li>
-									
-									<li>
-										<div className="flex items-center justify-between">
-											<span className="flex items-center">
-												<FaPalette className="mr-2 text-primary" />
-												Edit a book:
-											</span>
-										</div>										<ul className="ml-8 mt-2 space-y-2">
-											<li className="flex items-center justify-between">
-												<span>* Manual editing</span>
-												<span className="font-semibold">0</span>
-											</li>
-											<li className="flex items-center justify-between">
-												<span className="flex items-center">
-													* Text review with AI 
-													<button 
-														onClick={() => handleInfoClick('textReview')}
-														className="ml-2 text-info hover:text-info-focus"
-													>
-														<FaInfoCircle className="text-sm" />
-													</button>
-												</span>
-												<span className="font-semibold">1</span>
-											</li>
-											<li className="flex items-center justify-between">
-												<span className="flex items-center">
-													* Generate new images 
-													<button 
-														onClick={() => handleInfoClick('imageGeneration')}
-														className="ml-2 text-info hover:text-info-focus"
-													>
-														<FaInfoCircle className="text-sm" />
-													</button>
-												</span>
-												<span className="font-semibold">1</span>
-											</li>
-										</ul>
-									</li>
-									
-									<li>
-										<div className="flex items-center justify-between">
-											<span className="flex items-center">
-												<FaPrint className="mr-2 text-primary" />
-												Print and ship book:
-											</span>
-										</div>
-										<ul className="ml-8 mt-2 space-y-2">
-											<li className="flex items-center justify-between">
-												<span className="flex items-center">
-													* Soft cover 
-													<button 
-														onClick={() => handleInfoClick('printedBooks')}
-														className="ml-2 text-info hover:text-info-focus"
-													>
-														<FaInfoCircle className="text-sm" />
-													</button>
-												</span>
-												<span className="font-semibold">{getServiceCost('printedSoftCover')}</span>
-											</li>
-											<li className="flex items-center justify-between">
-												<span className="flex items-center">
-													* Hard Cover 
-													<button 
-														onClick={() => handleInfoClick('printedBooks')}
-														className="ml-2 text-info hover:text-info-focus"
-													>
-														<FaInfoCircle className="text-sm" />
-													</button>
-												</span>
-												<span className="font-semibold">{getServiceCost('printedHardcover')}</span>
-											</li>
-											<li className="flex items-center justify-between">
-												<span>* Extra chapter Cost</span>
-												<span className="font-semibold">{getServiceCost('extraChapterCost')}</span>
-											</li>
-										</ul>
-									</li>
-								</ul>
 							</div>
-						</div>
-					)}
+						))}
+					</div>
 				</section>
 
+				{/* New User Credits Message */}
+				<div className="text-center mt-8 mb-4">
+					<p className="text-lg text-primary font-semibold">
+						<FaGift className="inline mr-2" />
+						{t('newUserMessage')}
+					</p>
+				</div>
+
 				<div className="divider my-16"></div>
-				
+
 				{/* Why Credits Section */}
-				<section id="why-credits" className="my-16 hero bg-base-200 rounded-box p-10">
-					<div className="hero-content flex-col lg:flex-row">
+				<section id="why-credits" className="my-16 hero bg-base-200 rounded-box p-4 sm:p-6 lg:p-10">
+					<div className="hero-content flex-col lg:flex-row max-w-none w-full px-0 sm:px-2">
 						<FaGift className="text-7xl text-accent mb-6 lg:mb-0 lg:mr-10" />
 						<div>
 							<h2 className="text-3xl font-bold mb-4">{t('whyCredits.title')}</h2>
@@ -241,11 +244,11 @@ export default function PricingPage() {
 				</section>
 
 				<div className="divider my-16"></div>
-				
+
 				{/* FAQ Section */}
-				<section id="faq" className="my-16">
+				<section id="faq" className="my-16 px-2 sm:px-4">
 					<h2 className="text-4xl font-bold text-center mb-10">{t('faq.title')}</h2>
-					<div className="space-y-4 max-w-3xl mx-auto">
+					<div className="space-y-4 max-w-4xl mx-auto px-0 sm:px-4">
 						<div tabIndex={0} className="collapse collapse-plus border border-base-300 bg-base-200 rounded-box">
 							<div className="collapse-title text-xl font-medium flex items-center">
 								<FaQuestionCircle className="mr-2 text-primary" /> {t('faq.questions.expiration.question')}
@@ -273,29 +276,14 @@ export default function PricingPage() {
 						<div tabIndex={3} className="collapse collapse-plus border border-base-300 bg-base-200 rounded-box">
 							<div className="collapse-title text-xl font-medium flex items-center">
 								<FaQuestionCircle className="mr-2 text-primary" /> {t('faq.questions.shipping.question')}
-							</div>							<div className="collapse-content">
+							</div>
+							<div className="collapse-content">
 								<p>{t('faq.questions.shipping.answer')}</p>
 							</div>
 						</div>
 					</div>
 				</section>
 
-				<div className="divider my-16"></div>
-				
-				{/* Final CTA Section */}
-				<section className="my-16 text-center">
-					<h2 className="text-4xl font-bold mb-6">{t('finalCta.title')}</h2>
-					<p className="mb-8 text-xl max-w-2xl mx-auto text-gray-700">
-						{t('finalCta.subtitle')}
-					</p>					<div className="flex flex-col sm:flex-row justify-center items-center">
-						<Link href="/buy-credits" className="btn btn-primary btn-lg mb-4 sm:mb-0 sm:mr-4 w-full sm:w-auto">
-							{t('finalCta.getCreditsButton')}
-						</Link>
-						<Link href="/create" className="btn btn-accent btn-lg w-full sm:w-auto">
-							{t('finalCta.createStoryButton')}
-						</Link>
-					</div>
-				</section>
 			</div>
 
 			{/* Info Modal */}

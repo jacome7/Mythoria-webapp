@@ -25,11 +25,23 @@
       },
       "buyButton": "Buy {credits} Credits",
       "credits": "Credits"
-    },    "serviceCosts": {
-      "title": "What Your Credits Can Unlock",
+    },
+    "serviceCosts": {
       "loading": "Loading pricing information...",
-      "availableServices": "Our current services are:",
+      "availableServices": "Our services:",
       "creditsHeader": "Credits",
+      "services": {
+        "generateEbook": "Generate a digital eBook",
+        "narrateAudiobook": "Narrate a book (audio-book)",
+        "editBook": "Edit a book:",
+        "manualEditing": "Manual editing",
+        "textReviewAI": "Text review with AI",
+        "generateNewImages": "Generate new images",
+        "printShipBook": "Print and ship book:",
+        "softCover": "Soft cover",
+        "hardCover": "Hard Cover",
+        "extraChapterCost": "Extra chapter Cost"
+      },
       "serviceNames": {
         "ebook": "Generate a digital book (eBook)",
         "audiobook": "Generate an audiobook", 
@@ -113,12 +125,6 @@
           "answer": "Printed books are shipped via standard postal services. Shipping times and costs may vary depending on your location. You'll see detailed shipping information at checkout when ordering a printed book."
         }
       }
-    },
-    "finalCta": {
-      "title": "Ready to Start Your Storytelling Adventure?",
-      "subtitle": "Grab some credits and begin crafting unique, personalized stories today. Give a gift that will be cherished for a lifetime!",
-      "getCreditsButton": "Get Credits Now",
-      "createStoryButton": "Create Your Story"
     },    "errors": {
       "loadingFailed": "Failed to load pricing information"
     }

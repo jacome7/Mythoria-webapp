@@ -269,25 +269,26 @@ export const stories = pgTable("stories", {
 		}).onDelete("cascade"),
 ]);
 
-export const storyGenerationRuns = pgTable("story_generation_runs", {
-	runId: uuid("run_id").defaultRandom().primaryKey().notNull(),
-	storyId: uuid("story_id").notNull(),
-	gcpWorkflowExecution: text("gcp_workflow_execution"),
-	status: runStatus().default('queued').notNull(),
-	currentStep: varchar("current_step", { length: 120 }),
-	errorMessage: text("error_message"),
-	startedAt: timestamp("started_at", { withTimezone: true, mode: 'string' }),
-	endedAt: timestamp("ended_at", { withTimezone: true, mode: 'string' }),
-	metadata: jsonb(),
-	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	foreignKey({
-			columns: [table.storyId],
-			foreignColumns: [stories.storyId],
-			name: "story_generation_runs_story_id_stories_story_id_fk"
-		}).onDelete("cascade"),
-]);
+// MOVED TO WORKFLOWS_DB - Tables moved to workflows database
+// export const storyGenerationRuns = pgTable("story_generation_runs", {
+// 	runId: uuid("run_id").defaultRandom().primaryKey().notNull(),
+// 	storyId: uuid("story_id").notNull(),
+// 	gcpWorkflowExecution: text("gcp_workflow_execution"),
+// 	status: runStatus().default('queued').notNull(),
+// 	currentStep: varchar("current_step", { length: 120 }),
+// 	errorMessage: text("error_message"),
+// 	startedAt: timestamp("started_at", { withTimezone: true, mode: 'string' }),
+// 	endedAt: timestamp("ended_at", { withTimezone: true, mode: 'string' }),
+// 	metadata: jsonb(),
+// 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+// 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+// }, (table) => [
+// 	foreignKey({
+// 			columns: [table.storyId],
+// 			foreignColumns: [stories.storyId],
+// 			name: "story_generation_runs_story_id_stories_story_id_fk"
+// 		}).onDelete("cascade"),
+// ]);
 
 export const storyRatings = pgTable("story_ratings", {
 	ratingId: uuid("rating_id").defaultRandom().primaryKey().notNull(),
@@ -318,23 +319,24 @@ export const storyCharacters = pgTable("story_characters", {
 	primaryKey({ columns: [table.storyId, table.characterId], name: "story_characters_story_id_character_id_pk"}),
 ]);
 
-export const storyGenerationSteps = pgTable("story_generation_steps", {
-	runId: uuid("run_id").notNull(),
-	stepName: varchar("step_name", { length: 120 }).notNull(),
-	status: stepStatus().default('pending').notNull(),
-	detailJson: jsonb("detail_json"),
-	startedAt: timestamp("started_at", { withTimezone: true, mode: 'string' }),
-	endedAt: timestamp("ended_at", { withTimezone: true, mode: 'string' }),
-	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	foreignKey({
-			columns: [table.runId],
-			foreignColumns: [storyGenerationRuns.runId],
-			name: "story_generation_steps_run_id_story_generation_runs_run_id_fk"
-		}).onDelete("cascade"),
-	primaryKey({ columns: [table.runId, table.stepName], name: "story_generation_steps_run_id_step_name_pk"}),
-]);
+// MOVED TO WORKFLOWS_DB - Tables moved to workflows database
+// export const storyGenerationSteps = pgTable("story_generation_steps", {
+// 	runId: uuid("run_id").notNull(),
+// 	stepName: varchar("step_name", { length: 120 }).notNull(),
+// 	status: stepStatus().default('pending').notNull(),
+// 	detailJson: jsonb("detail_json"),
+// 	startedAt: timestamp("started_at", { withTimezone: true, mode: 'string' }),
+// 	endedAt: timestamp("ended_at", { withTimezone: true, mode: 'string' }),
+// 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+// 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+// }, (table) => [
+// 	foreignKey({
+// 			columns: [table.runId],
+// 			foreignColumns: [storyGenerationRuns.runId],
+// 			name: "story_generation_steps_run_id_story_generation_runs_run_id_fk"
+// 		}).onDelete("cascade"),
+// 	primaryKey({ columns: [table.runId, table.stepName], name: "story_generation_steps_run_id_step_name_pk"}),
+// ]);
 
 export const aiActions = pgTable("ai_actions", {
 	actionId: uuid("action_id").defaultRandom().primaryKey().notNull(),

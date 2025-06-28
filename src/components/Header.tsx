@@ -36,7 +36,7 @@ const Header = () => {
           </div>
           <div className="flex items-center">
             <Link href="/" className="btn btn-ghost normal-case text-xl px-1 py-0.5">
-              <Image src="/Mythoria-logo-lanscape-transparent.png" alt={t('logoAlt')} width={120} height={45} />
+              <Image src="/images/logo/just_lettering.png" alt={t('logoAlt')} width={150} height={49} />
             </Link>
             <div className="ml-1 sm:ml-2">
               <span className="badge badge-outline badge-warning badge-xs sm:badge-sm text-xs font-semibold">
@@ -83,7 +83,7 @@ const Header = () => {
         </div>
         <div className="flex items-center">
           <Link href="/" className="btn btn-ghost normal-case text-xl px-1 py-0.5">
-            <Image src="/Mythoria-logo-lanscape-transparent.png" alt={t('logoAlt')} width={120} height={45} />
+            <Image src="/images/logo/just_lettering.png" alt={t('logoAlt')} width={140} height={45} />
           </Link>
           <div className="ml-1 sm:ml-2">
             <span className="badge badge-outline badge-warning badge-xs sm:badge-sm text-xs font-semibold">
