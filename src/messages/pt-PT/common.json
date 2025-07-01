@@ -568,6 +568,22 @@
         "myStories": "As Minhas Histórias"
       },
       "quote": "\"Nem todos os que vagueiam estão perdidos... mas esta página definitivamente está!\" - Um Hobbit confuso"
+    },
+    "voices": {
+      "selectVoice": "Selecionar Voz",
+      "descriptions": {
+        "alloy": "Uma voz neutra e equilibrada adequada para narração geral e entrega de informação.",
+        "ash": "Uma voz clara e precisa, ideal para instruções e explicações técnicas.",
+        "ballad": "Uma voz melódica e suave que se presta bem à narração de histórias e conteúdo narrativo.",
+        "coral": "Uma voz calorosa e amigável, perfeita para interfaces conversacionais e diálogo com o cliente.",
+        "echo": "Uma voz ressonante e profunda, oferecendo uma forte presença para anúncios e mensagens formais.",
+        "fable": "Uma voz calorosa e envolvente com qualidade narrativa, desenhada para narrativas imersivas.",
+        "nova": "Uma voz brilhante e energética, ótima para conteúdo animado e entregas entusiasmadas.",
+        "onyx": "Uma voz profunda e autoritária que transmite gravitas e confiabilidade.",
+        "sage": "Uma voz calma e pensativa, bem adequada para conteúdo reflexivo e orientação.",
+        "shimmer": "Uma voz brilhante e energética, adicionando brilho e dinamismo ao seu áudio.",
+        "verse": "Uma voz versátil e expressiva que se adapta bem a uma ampla gama de requisitos tonais."
+      }
     }
   }
 }

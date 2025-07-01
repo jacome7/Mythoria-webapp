@@ -1,6 +1,6 @@
 import { pgTable, uuid, varchar, timestamp, text, jsonb, integer, primaryKey, boolean, index } from "drizzle-orm/pg-core";
 import { authors } from './authors';
-import { storyStatusEnum, runStatusEnum, stepStatusEnum, targetAudienceEnum, novelStyleEnum, graphicalStyleEnum, accessLevelEnum, collaboratorRoleEnum } from './enums';
+import { storyStatusEnum, runStatusEnum, stepStatusEnum, targetAudienceEnum, novelStyleEnum, graphicalStyleEnum, accessLevelEnum, collaboratorRoleEnum, audiobookStatusEnum } from './enums';
 
 // -----------------------------------------------------------------------------
 // Stories domain
@@ -24,7 +24,10 @@ export const stories = pgTable("stories", {
   dedicationMessage: text("dedication_message"), // Personalized dedication message
   htmlUri: text("html_uri"), // Internal Google Storage link to access the HTML file
   pdfUri: text("pdf_uri"), // Internal Google Storage link to access the PDF file
-  audiobookUri: jsonb("audiobook_uri"), // JSON object with internal GS links to each chapter audio file  // Sharing functionality fields
+  audiobookUri: jsonb("audiobook_uri"), // JSON object with internal GS links to each chapter audio file
+  audiobookStatus: audiobookStatusEnum("audiobook_status"), // Status of audiobook generation
+
+  // Sharing functionality fields
   slug: text("slug"), // Human-readable slug for public URLs
   isPublic: boolean("is_public").default(false), // Whether story is publicly accessible
   isFeatured: boolean("is_featured").default(false), // Whether story is featured in gallery

@@ -5,8 +5,6 @@ import { useTranslations } from 'next-intl';
 import { 
   FiMinus, 
   FiPlus, 
-  FiSun, 
-  FiMoon,
   FiType,
   FiAlignJustify,
   FiMaximize2,
@@ -21,7 +19,6 @@ export interface ReadingSettings {
   fontSize: number;
   lineHeight: number;
   margins: number;
-  theme: 'light' | 'dark';
   cssTemplate: string;
 }
 
@@ -29,7 +26,6 @@ const DEFAULT_SETTINGS: ReadingSettings = {
   fontSize: 100, // percentage
   lineHeight: 100, // percentage  
   margins: 100, // percentage
-  theme: 'light',
   cssTemplate: 'all_ages' // default template
 };
 
@@ -68,13 +64,6 @@ export default function ReadingToolbar({ onSettingsChange }: ReadingToolbarProps
     root.style.setProperty('--reading-font-scale', `${settings.fontSize / 100}`);
     root.style.setProperty('--reading-line-height-scale', `${settings.lineHeight / 100}`);
     root.style.setProperty('--reading-margin-scale', `${settings.margins / 100}`);
-    
-    // Apply theme
-    if (settings.theme === 'dark') {
-      root.setAttribute('data-theme', 'dark');
-    } else {
-      root.removeAttribute('data-theme');
-    }
 
     // Apply CSS template
     const existingTemplate = document.getElementById('mythoria-template-css');
@@ -133,20 +122,8 @@ export default function ReadingToolbar({ onSettingsChange }: ReadingToolbarProps
           >
             <FiType className="w-4 h-4" />
             <span className="hidden sm:inline ml-2">{t('title')}</span>
-          </button>{/* Quick Actions - Always Visible */}
-          <div className="flex items-center gap-2">            <button
-              onClick={() => updateSetting('theme', settings.theme === 'light' ? 'dark' : 'light')}
-              className="btn btn-ghost btn-sm"
-              aria-label={t('themeSwitch', { theme: settings.theme === 'light' ? 'dark' : 'light' })}
-            >
-              {settings.theme === 'light' ? (
-                <FiMoon className="w-4 h-4" />
-              ) : (
-                <FiSun className="w-4 h-4" />
-              )}
-            </button>
-            
-            {/* Quick CSS Template Selector */}
+          </button>          {/* Quick Actions - Always Visible */}
+          <div className="flex items-center gap-2">{/* Quick CSS Template Selector */}
             <div className="hidden sm:flex items-center gap-2">
               <FiLayers className="w-4 h-4" />
               <select                value={settings.cssTemplate}

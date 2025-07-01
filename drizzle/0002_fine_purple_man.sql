@@ -1,0 +1,1 @@
+--DROP TABLE "token_usage_tracking" CASCADE;

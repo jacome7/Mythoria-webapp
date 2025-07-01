@@ -57,6 +57,45 @@ interface AudiobookCost {
   description: string;
 }
 
+interface VoiceSelectorProps {
+  selectedVoice: string;
+  onVoiceChange: (voice: string) => void;
+  voiceOptions: Array<{ value: string; label: string }>;
+  tCommon: (key: string) => string;
+}
+
+function VoiceSelector({ selectedVoice, onVoiceChange, voiceOptions, tCommon }: VoiceSelectorProps) {
+  return (
+    <div className="space-y-4">
+      <div className="form-control w-full">
+        <label className="label">
+          <span className="label-text font-medium">{tCommon('voices.selectVoice')}</span>
+        </label>
+        <select
+          className="select select-bordered w-full"
+          value={selectedVoice}
+          onChange={(e) => onVoiceChange(e.target.value)}
+        >
+          {voiceOptions.map((voice) => (
+            <option key={voice.value} value={voice.value}>
+              {voice.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      
+      {selectedVoice && (
+        <div className="alert alert-info">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span className="text-sm">{tCommon(`voices.descriptions.${selectedVoice}`)}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ListenStoryPage() {
   const router = useRouter();
   const params = useParams();
@@ -71,12 +110,28 @@ export default function ListenStoryPage() {
   const [audiobookCost, setAudiobookCost] = useState<AudiobookCost | null>(null);
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
   const [audioGenerationProgress, setAudioGenerationProgress] = useState<string>('');
+  const [selectedVoice, setSelectedVoice] = useState<string>('coral');
 
   // Audio playback states (for when audio is available)
   const [currentlyPlaying, setCurrentlyPlaying] = useState<number | null>(null);
   const [audioElements, setAudioElements] = useState<{ [key: number]: HTMLAudioElement }>({});
   const [audioProgress, setAudioProgress] = useState<{ [key: number]: number }>({});
-  const [audioLoading, setAudioLoading] = useState<{ [key: number]: boolean }>({});  // Check if story has audiobook
+  const [audioLoading, setAudioLoading] = useState<{ [key: number]: boolean }>({});
+
+  // Voice options for narration
+  const voiceOptions = [
+    { value: 'alloy', label: 'Alloy' },
+    { value: 'ash', label: 'Ash' },
+    { value: 'ballad', label: 'Ballad' },
+    { value: 'coral', label: 'Coral' },
+    { value: 'echo', label: 'Echo' },
+    { value: 'fable', label: 'Fable' },
+    { value: 'nova', label: 'Nova' },
+    { value: 'onyx', label: 'Onyx' },
+    { value: 'sage', label: 'Sage' },
+    { value: 'shimmer', label: 'Shimmer' },
+    { value: 'verse', label: 'Verse' }
+  ];  // Check if story has audiobook
   const hasAudiobook = () => {
     if (!story?.audiobookUri) return false;
     if (Array.isArray(story.audiobookUri)) {
@@ -166,7 +221,9 @@ export default function ListenStoryPage() {
           fetch(`/api/stories/${storyId}`),
           fetch('/api/my-credits'),
           fetch('/api/pricing')
-        ]);        // Handle story
+        ]);
+        
+        // Handle story
         if (storyResponse.ok) {
           const storyData = await storyResponse.json();
           if (storyData.story.status !== 'published') {
@@ -254,7 +311,7 @@ export default function ListenStoryPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          voice: 'coral' // Hardcoded for now as requested
+          voice: selectedVoice
         })
       });
 
@@ -633,67 +690,77 @@ export default function ListenStoryPage() {
                         <div className="divider"></div>
                         <div className="card bg-base-200 shadow-md">
                           <div className="card-body">
-                            <h3 className="card-title text-lg mb-4">
-                              <FiVolume2 className="w-5 h-5 mr-2" />
-                              Want a New Narration?
-                            </h3>
-                            <p className="text-base-content/70 mb-4">
-                              You can generate a new narration of your story with different voice characteristics.
-                            </p>
-                            
-                            {audiobookCost && userCredits && (
-                              <div className="space-y-4">
-                                <div className="stats stats-horizontal shadow">
-                                  <div className="stat">
-                                    <div className="stat-title">Cost</div>
-                                    <div className="stat-value text-lg">{audiobookCost.credits} credits</div>
-                                  </div>
-                                  <div className="stat">
-                                    <div className="stat-title">Your Balance</div>
-                                    <div className="stat-value text-lg">{userCredits.currentBalance} credits</div>
-                                  </div>
-                                </div>
-                                
-                                {userCredits.currentBalance >= audiobookCost.credits ? (
-                                  <div className="space-y-2">
-                                    <button
-                                      onClick={handleGenerateAudiobook}
-                                      className="btn btn-secondary btn-wide"
-                                      disabled={isGeneratingAudio}
-                                    >
-                                      <FiVolume2 className="w-4 h-4 mr-2" />
-                                      Narrate Story Again
-                                    </button>
-                                    <p className="text-sm text-base-content/60">
-                                      This will replace your current narration
-                                    </p>
-                                  </div>
-                                ) : (
-                                  <div className="space-y-2">
-                                    <div className="alert alert-warning">
-                                      <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                                      </svg>
-                                      <span>You need {audiobookCost.credits - userCredits.currentBalance} more credits to generate a new narration.</span>
+                            <div className="text-center space-y-4">
+                              <h3 className="card-title text-lg mb-4 justify-center">
+                                <FiVolume2 className="w-5 h-5 mr-2" />
+                                Want a New Narration?
+                              </h3>
+                              <p className="text-base-content/70 mb-4">
+                                You can generate a new narration of your story with different voice characteristics.
+                              </p>
+                              
+                              {audiobookCost && userCredits && (
+                                <div className="space-y-6 max-w-md mx-auto">
+                                  {/* Voice Selection */}
+                                  <VoiceSelector
+                                    selectedVoice={selectedVoice}
+                                    onVoiceChange={setSelectedVoice}
+                                    voiceOptions={voiceOptions}
+                                    tCommon={tCommon}
+                                  />
+                                  
+                                  <div className="stats stats-horizontal shadow">
+                                    <div className="stat">
+                                      <div className="stat-title">Cost</div>
+                                      <div className="stat-value text-lg">{audiobookCost.credits} credits</div>
                                     </div>
-                                    <button
-                                      onClick={navigateToPricing}
-                                      className="btn btn-secondary btn-wide"
-                                    >
-                                      <FiCreditCard className="w-4 h-4 mr-2" />
-                                      Buy More Credits
-                                    </button>
+                                    <div className="stat">
+                                      <div className="stat-title">Your Balance</div>
+                                      <div className="stat-value text-lg">{userCredits.currentBalance} credits</div>
+                                    </div>
                                   </div>
-                                )}
-                              </div>
-                            )}
+                                  
+                                  {userCredits.currentBalance >= audiobookCost.credits ? (
+                                    <div className="space-y-2">
+                                      <button
+                                        onClick={handleGenerateAudiobook}
+                                        className="btn btn-secondary btn-wide"
+                                        disabled={isGeneratingAudio}
+                                      >
+                                        <FiVolume2 className="w-4 h-4 mr-2" />
+                                        Narrate Story Again
+                                      </button>
+                                      <p className="text-sm text-base-content/60">
+                                        This will replace your current narration
+                                      </p>
+                                    </div>
+                                  ) : (
+                                    <div className="space-y-2">
+                                      <div className="alert alert-warning">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                        </svg>
+                                        <span>You need {audiobookCost.credits - userCredits.currentBalance} more credits to generate a new narration.</span>
+                                      </div>
+                                      <button
+                                        onClick={navigateToPricing}
+                                        className="btn btn-secondary btn-wide"
+                                      >
+                                        <FiCreditCard className="w-4 h-4 mr-2" />
+                                        Buy More Credits
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
 
-                            {(!audiobookCost || !userCredits) && (
-                              <div className="alert alert-info">
-                                <span className="loading loading-spinner loading-sm"></span>
-                                <span>Loading pricing information...</span>
-                              </div>
-                            )}
+                              {(!audiobookCost || !userCredits) && (
+                                <div className="alert alert-info max-w-md mx-auto">
+                                  <span className="loading loading-spinner loading-sm"></span>
+                                  <span>Loading pricing information...</span>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -723,7 +790,15 @@ export default function ListenStoryPage() {
                         
                         {/* Show pricing and action */}
                         {audiobookCost && userCredits && (
-                          <div className="max-w-md mx-auto space-y-4">
+                          <div className="max-w-md mx-auto space-y-6">
+                            {/* Voice Selection */}
+                            <VoiceSelector
+                              selectedVoice={selectedVoice}
+                              onVoiceChange={setSelectedVoice}
+                              voiceOptions={voiceOptions}
+                              tCommon={tCommon}
+                            />
+                            
                             <div className="card bg-base-200 shadow-md">
                               <div className="card-body p-4">
                                 <h4 className="font-semibold">{audiobookCost.name}</h4>

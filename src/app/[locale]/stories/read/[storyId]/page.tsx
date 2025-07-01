@@ -71,7 +71,8 @@ export default function ReadStoryPage() {
             setStoryContent('<p>Story content is being prepared. Please check back later.</p>');
           } else {
             setStoryContent('<p>Story content is not yet available. The story may still be generating.</p>');
-          }        } else if (response.status === 404) {
+          }
+        } else if (response.status === 404) {
           setError(tCommon('Errors.storyNotFoundGeneric'));
         } else if (response.status === 403) {
           setError(tCommon('Errors.noPermission'));

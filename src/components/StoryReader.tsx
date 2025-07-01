@@ -181,11 +181,7 @@ export default function StoryReader({ storyContent, storyMetadata }: StoryReader
         :global(.story-content) {
           animation: fadeIn 0.6s ease-in-out;
         }
-        
-        /* Dark theme adjustments */
-        :global([data-theme="dark"]) .story-reader {
-          background-color: var(--story-bg-color, #1a1a1a);
-        }          /* Responsive adjustments */
+          /* Responsive adjustments */
         @media (max-width: 768px) {
           .story-content-wrapper {
             padding: 0.5rem 0;
@@ -219,26 +215,6 @@ export default function StoryReader({ storyContent, storyMetadata }: StoryReader
           /* Reduce author name margins */
           :global(.mythoria-author-name) {
             margin: 0.5rem 0 1rem 0 !important;
-          }
-        }
-        
-        /* Print styles */
-        @media print {
-          :global(.reading-toolbar),
-          :global(.fixed.bottom-0) {
-            display: none !important;
-          }
-          
-          .story-content-wrapper {
-            padding: 0;
-          }
-          
-          :global(.story-content) {
-            animation: none;
-          }
-          
-          :global(body) {
-            padding-bottom: 0 !important;
           }
         }
       `}</style>

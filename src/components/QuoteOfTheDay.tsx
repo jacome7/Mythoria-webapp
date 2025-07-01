@@ -83,9 +83,11 @@ export default function QuoteOfTheDay() {
 
   return (
     <section className="my-16">
-      <div className="container mx-auto px-4">        <div className={`card bg-gradient-to-br from-primary/10 to-secondary/10 shadow-xl border border-primary/20 transition-all duration-1000 transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+      <div className="container mx-auto px-4">
+        <div className={`card bg-gradient-to-br from-primary/10 to-secondary/10 shadow-xl border border-primary/20 transition-all duration-1000 transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           <div className="card-body items-center text-center py-12 px-8">
-            <blockquote className="max-w-4xl mx-auto">              <p className="text-lg md:text-xl italic text-base-content/90 leading-relaxed mb-6 font-medium">
+            <blockquote className="max-w-4xl mx-auto">
+              <p className="text-lg md:text-xl italic text-base-content/90 leading-relaxed mb-6 font-medium">
                 &ldquo;{currentQuote.text}&rdquo;
               </p>
               <footer className="text-primary font-semibold text-lg">

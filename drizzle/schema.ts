@@ -3,6 +3,7 @@ import { sql } from "drizzle-orm"
 
 export const addressType = pgEnum("address_type", ['billing', 'delivery'])
 export const aiActionType = pgEnum("ai_action_type", ['story_structure', 'story_outline', 'chapter_writing', 'image_generation', 'story_review', 'character_generation', 'story_enhancement', 'audio_generation', 'content_validation'])
+export const audiobookStatus = pgEnum("audiobook_status", ['generating', 'completed', 'failed'])
 export const characterRole = pgEnum("character_role", ['protagonist', 'antagonist', 'supporting', 'mentor', 'comic_relief', 'love_interest', 'sidekick', 'narrator', 'other'])
 export const creditEventType = pgEnum("credit_event_type", ['initialCredit', 'creditPurchase', 'eBookGeneration', 'audioBookGeneration', 'printOrder', 'refund', 'voucher', 'promotion'])
 export const graphicalStyle = pgEnum("graphical_style", ['cartoon', 'realistic', 'watercolor', 'digital_art', 'hand_drawn', 'minimalist', 'vintage', 'comic_book', 'anime', 'pixar_style', 'disney_style', 'sketch', 'oil_painting', 'colored_pencil'])
@@ -256,6 +257,7 @@ export const stories = pgTable("stories", {
 	htmlUri: text("html_uri"),
 	pdfUri: text("pdf_uri"),
 	audiobookUri: jsonb("audiobook_uri"),
+	audiobookStatus: audiobookStatus("audiobook_status"),
 	chapterCount: integer("chapter_count").default(6).notNull(),	// Sharing functionality fields
 	slug: text("slug"),
 	isPublic: boolean("is_public").default(false),

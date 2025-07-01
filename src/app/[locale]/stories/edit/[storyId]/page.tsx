@@ -5,7 +5,7 @@ import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiBook, FiVolume2, FiEdit3, FiShare2, FiArrowLeft, FiPrinter } from 'react-icons/fi';
+import { FiBook, FiVolume2, FiEdit3, FiShare2, FiArrowLeft, FiPrinter, FiEdit2, FiCheck, FiX } from 'react-icons/fi';
 import BookEditor from '../../../../../components/BookEditor';
 import ShareModal from '../../../../../components/ShareModal';
 import ToastContainer from '../../../../../components/ToastContainer';
@@ -39,6 +39,8 @@ export default function EditStoryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState('');
 
   // Toast notifications
   const toast = useToast();
@@ -142,6 +144,56 @@ export default function EditStoryPage() {
     }
   };
 
+  // Handle title editing
+  const handleStartEditTitle = () => {
+    setEditedTitle(story?.title || '');
+    setIsEditingTitle(true);
+  };
+
+  const handleCancelEditTitle = () => {
+    setIsEditingTitle(false);
+    setEditedTitle('');
+  };
+
+  const handleSaveTitle = async () => {
+    if (!editedTitle.trim() || !story) {
+      toast.error('Title cannot be empty');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/stories/${storyId}/title`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: editedTitle.trim()
+        }),
+      });
+
+      if (response.ok) {
+        // Update the story title in state
+        setStory({
+          ...story,
+          title: editedTitle.trim(),
+          updatedAt: new Date().toISOString()
+        });
+        
+        setIsEditingTitle(false);
+        setEditedTitle('');
+        
+        toast.success('Title updated successfully!');
+      } else {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to update title');
+      }
+    } catch (error) {
+      console.error('Error updating title:', error);
+      toast.error('Failed to update title. Please try again.');
+    }
+  };
+
   const handleCancelEdit = () => {
     router.push(`/${locale}/stories/read/${storyId}`);
   };
@@ -217,6 +269,54 @@ export default function EditStoryPage() {
             {/* Story Header */}
             <div className="container mx-auto px-4 py-6">
               <div className="text-center space-y-4">
+                {/* Story Title */}
+                <div className="flex items-center justify-center gap-2 mb-6">
+                  {isEditingTitle ? (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={editedTitle}
+                        onChange={(e) => setEditedTitle(e.target.value)}
+                        className="input input-bordered text-lg font-bold text-center max-w-md"
+                        placeholder="Story title"
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleSaveTitle();
+                          } else if (e.key === 'Escape') {
+                            handleCancelEditTitle();
+                          }
+                        }}
+                      />
+                      <button
+                        onClick={handleSaveTitle}
+                        className="btn btn-sm btn-outline btn-circle border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white"
+                        title="Save title"
+                      >
+                        <FiCheck className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={handleCancelEditTitle}
+                        className="btn btn-sm btn-outline btn-circle border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white"
+                        title="Cancel editing"
+                      >
+                        <FiX className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <h1 className="text-2xl font-bold">{story.title}</h1>
+                      <button
+                        onClick={handleStartEditTitle}
+                        className="btn btn-ghost btn-sm btn-circle"
+                        title="Edit title"
+                      >
+                        <FiEdit2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
                 {/* Navigation Buttons */}                <div className="flex flex-wrap justify-center gap-2">
                   <button
                     onClick={navigateToRead}

@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { FiLoader, FiAlertCircle, FiUser, FiCalendar, FiTag, FiEye, FiPrinter } from 'react-icons/fi';
 import StoryReader from '@/components/StoryReader';
 import PublicStoryRating from '@/components/PublicStoryRating';
+import StoryAudioPlayer from '@/components/StoryAudioPlayer';
 
 interface PublicStoryData {
   success: boolean;
@@ -15,7 +16,12 @@ interface PublicStoryData {
     synopsis?: string;
     htmlUri?: string;
     pdfUri?: string;
-    audiobookUri?: unknown;
+    audiobookUri?: Array<{
+      chapterTitle: string;
+      audioUri: string;
+      duration: number;
+      imageUri?: string;
+    }> | Record<string, string>;
     targetAudience?: string;
     graphicalStyle?: string;
     novelStyle?: string;
@@ -191,21 +197,38 @@ export default function PublicStoryPage() {
       <div className="bg-white shadow-sm border-b">
         <div className="container mx-auto px-4 py-6">
           <div className="max-w-4xl mx-auto">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col gap-4">
+              {/* Title */}
               <h1 className="text-3xl font-bold text-gray-900">{story.title}</h1>
-              <div className="flex items-center gap-3">
-                <span className="badge badge-success">{t('labels.publicStory')}</span>
-                <a
-                  href={`/${locale}/stories/print/${story.storyId}`}
-                  className="btn btn-primary btn-sm flex items-center gap-2"
-                >
-                  <FiPrinter />
-                  {t('actions.orderPrint')}
-                </a>
+              
+              {/* Actions - Mobile responsive layout */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                {/* Tags and Print Button */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="badge badge-success text-xs sm:text-sm">{t('labels.publicStory')}</span>
+                  <a
+                    href={`/${locale}/stories/print/${story.storyId}`}
+                    className="btn btn-primary btn-sm flex items-center gap-2 text-xs sm:text-sm"
+                  >
+                    <FiPrinter className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden min-[480px]:inline">{t('actions.orderPrint')}</span>
+                    <span className="min-[480px]:hidden">Print</span>
+                  </a>
+                </div>
+                
+                {/* Audio Player */}
+                {story.audiobookUri && (
+                  <StoryAudioPlayer
+                    audiobookUri={story.audiobookUri}
+                    storyId={story.storyId}
+                    storyTitle={story.title}
+                    isPublic={true}
+                  />
+                )}
               </div>
             </div>
             
-            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mt-4">
               <div className="flex items-center gap-1">
                 <FiUser />
                 <span>{t('labels.by')} {story.author.displayName}</span>
@@ -286,23 +309,20 @@ export default function PublicStoryPage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="bg-white border-t mt-12">
-        <div className="container mx-auto px-4 py-6">
-          <div className="max-w-4xl mx-auto text-center text-sm text-gray-600">
-            <p>
-              {t('footer.createdWith')}{' '}
-              <a 
-                href={`/${locale}`} 
-                className="text-primary hover:underline font-medium"
-              >
-                Mythoria
-              </a>
-              {' '}• {t('footer.cta')}
-            </p>
-          </div>
-        </div>
-      </div>
+      {/* Custom CSS for responsive design */}
+      <style jsx>{`
+        @media (max-width: 480px) {
+          .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+          }
+          
+          .badge {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+          }
+        }
+      `}</style>
     </div>
   );
 }

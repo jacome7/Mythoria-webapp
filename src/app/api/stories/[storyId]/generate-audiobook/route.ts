@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
-import { creditService, pricingService } from '@/db/services';
+import { creditService, pricingService, storyService } from '@/db/services';
+import { publishAudiobookRequest } from '@/lib/pubsub';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(
   request: NextRequest,
@@ -17,20 +19,15 @@ export async function POST(
     const body = await request.json();
     const { voice = 'coral' } = body;
 
-    // Validate that the story belongs to the user (optional security check)
-    const storyResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/stories/${storyId}`, {
-      headers: {
-        'Cookie': request.headers.get('cookie') || '',
-      },
-    });
-
-    if (!storyResponse.ok) {
+    // Validate that the story belongs to the user and get story data
+    const story = await storyService.getStoryById(storyId);
+    
+    if (!story || story.authorId !== author.authorId) {
       return NextResponse.json({ error: 'Story not found or access denied' }, { status: 404 });
     }
 
-    const storyData = await storyResponse.json();
-    if (storyData.story.status !== 'published') {
-      return NextResponse.json({ error: 'Story must be published to generate audiobook' }, { status: 400 });
+    if (story.status !== 'published') {
+      return NextResponse.json({ error: 'Story must be completed to generate audiobook' }, { status: 400 });
     }
 
     // Get audiobook pricing
@@ -63,75 +60,58 @@ export async function POST(
       return NextResponse.json({ error: 'Failed to deduct credits' }, { status: 500 });
     }
 
-    // Call the story generation workflow service
-    const workflowUrl = process.env.STORY_GENERATION_WORKFLOW_URL;
-    if (!workflowUrl) {
-      // If workflow is not configured, refund the credits
-      await creditService.addCredits(
-        author.authorId,
-        audiobookPricing.credits,
-        'refund'
-      );
-      return NextResponse.json({ error: 'Story generation service not configured' }, { status: 500 });
-    }
+    // Generate a unique run ID for this audiobook generation
+    const runId = uuidv4();
 
+    // Update story status to indicate audiobook generation is in progress
+    await storyService.updateStory(storyId, {
+      audiobookStatus: 'generating' as const,
+    });
+
+    // Publish the Pub/Sub message to trigger the audiobook generation workflow
     try {
-      const workflowResponse = await fetch(`${workflowUrl}/audio/create-audiobook`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          storyId,
-          voice,
-        }),
+      await publishAudiobookRequest({
+        storyId: storyId,
+        runId: runId,
+        voice: voice,
+        timestamp: new Date().toISOString(),
       });
-
-      if (!workflowResponse.ok) {
-        const errorText = await workflowResponse.text();
-        console.error('Workflow service error:', errorText);
-        
-        // Refund credits if workflow call fails
-        await creditService.addCredits(
-          author.authorId,
-          audiobookPricing.credits,
-          'refund'
-        );
-
-        return NextResponse.json(
-          { error: 'Failed to start audiobook generation' },
-          { status: workflowResponse.status }
-        );
-      }
-
-      const result = await workflowResponse.json();
-
-      // Get updated balance
-      const newBalance = await creditService.getAuthorCreditBalance(author.authorId);
-
-      return NextResponse.json({
-        success: true,
-        message: 'Audiobook generation started successfully',
-        data: result,
-        creditsDeducted: audiobookPricing.credits,
-        newBalance,
-      });
-
-    } catch (workflowError) {
-      console.error('Workflow service error:', workflowError);
       
-      // Refund credits if workflow call fails
+      console.log(`Audiobook generation request published for story ${storyId}, run ${runId}`);
+    } catch (pubsubError) {
+      console.error('Failed to publish audiobook request:', pubsubError);
+      
+      // Revert story status and refund credits since we couldn't trigger the workflow
+      await storyService.updateStory(storyId, {
+        audiobookStatus: null,
+      });
+      
       await creditService.addCredits(
         author.authorId,
         audiobookPricing.credits,
         'refund'
       );
-
+      
       return NextResponse.json(
-        { error: 'Failed to connect to audiobook generation service' },
-        { status: 503 }
+        { error: "Failed to start audiobook generation workflow" },
+        { status: 500 }
       );
     }
+
+    // Get updated balance
+    const newBalance = await creditService.getAuthorCreditBalance(author.authorId);
+
+    // Return 202 Accepted to indicate async processing
+    return NextResponse.json({
+      success: true,
+      message: 'Audiobook generation started successfully',
+      storyId: storyId,
+      runId: runId,
+      voice: voice,
+      status: "queued",
+      creditsDeducted: audiobookPricing.credits,
+      newBalance,
+    }, { status: 202 });
 
   } catch (error) {
     console.error('Error generating audiobook:', error);
