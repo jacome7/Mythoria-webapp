@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useTranslations } from 'next-intl';
 import { FaChevronDown, FaChevronUp, FaUser, FaMapMarkerAlt, FaFileInvoice } from 'react-icons/fa';
@@ -39,8 +39,16 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
     country: '',
     phone: ''
   });
-    const [vatValidation, setVatValidation] = useState<VATValidationResult>({ isValid: true });
+  const [vatValidation, setVatValidation] = useState<VATValidationResult>({ isValid: true });
   const [isLoadingUserData, setIsLoadingUserData] = useState(false);
+  
+  // Use ref to store the latest callback to avoid dependency issues
+  const onBillingInfoChangeRef = useRef(onBillingInfoChange);
+  onBillingInfoChangeRef.current = onBillingInfoChange;
+
+  // Use ref to store the latest billing info to avoid dependency issues
+  const billingInfoRef = useRef(billingInfo);
+  billingInfoRef.current = billingInfo;
 
   const loadUserBillingData = useCallback(async () => {
     if (!user) return;
@@ -49,12 +57,19 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
     try {
       // For now, we'll use the data from Clerk and local state
       // In a full implementation, you might fetch from your database
-      setBillingInfo(prev => ({
-        ...prev,
+      const updatedInfo = {
+        ...billingInfoRef.current,
         displayName: user.fullName || user.firstName + ' ' + user.lastName || '',
         email: user.primaryEmailAddress?.emailAddress || '',
         // Other fields would come from your database if you store them
-      }));
+      };
+      
+      setBillingInfo(updatedInfo);
+      
+      // Notify parent component after state update, not during
+      setTimeout(() => {
+        onBillingInfoChangeRef.current?.(updatedInfo);
+      }, 0);
     } catch (error) {
       console.error('Failed to load user billing data:', error);
     } finally {
@@ -68,6 +83,16 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
       loadUserBillingData();
     }
   }, [isLoaded, user, loadUserBillingData]);
+
+  // Notify parent about initial empty billing info state only once when component mounts
+  useEffect(() => {
+    if (isLoaded) {
+      // Use setTimeout to avoid calling during render
+      setTimeout(() => {
+        onBillingInfoChangeRef.current?.(billingInfoRef.current);
+      }, 0);
+    }
+  }, [isLoaded]); // Only depend on isLoaded, not on billingInfo to avoid loops
   const handleInputChange = (field: keyof BillingInfo, value: string) => {
     const updatedInfo = { ...billingInfo, [field]: value };
     setBillingInfo(updatedInfo);
@@ -107,8 +132,11 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
       }
     }
     
-    // Notify parent component
-    onBillingInfoChange?.(updatedInfo);
+    // Notify parent component using ref to avoid dependency issues
+    // Use setTimeout to avoid calling during render
+    setTimeout(() => {
+      onBillingInfoChangeRef.current?.(updatedInfo);
+    }, 0);
   };
 
   const handleVATBlur = () => {
@@ -135,9 +163,6 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
         </div>
         
         <div className="flex items-center space-x-2">
-          {!isExpanded && (billingInfo.displayName || billingInfo.fiscalNumber) && (
-            <span className="badge badge-primary badge-sm">{t('status.provided')}</span>
-          )}
           {isExpanded ? (
             <FaChevronUp className="text-gray-500" />
           ) : (
@@ -148,7 +173,8 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
 
       {/* Expanded Content */}
       {isExpanded && (
-        <div className="px-6 pb-6 border-t border-base-300">          {isLoadingUserData && (
+        <div className="px-6 pb-6 border-t border-base-300">
+          {isLoadingUserData && (
             <div className="py-4 text-center">
               <span className="loading loading-spinner loading-sm"></span>
               <span className="ml-2">Loading your information...</span>
@@ -216,7 +242,7 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
                   </label>
                 )}
                 <label className="label">
-                  <span className="label-text-alt text-gray-500 break-words">
+                  <span className="label-text-alt text-gray-500 text-xs break-words">
                     {t('vatValidation.help')}
                   </span>
                 </label>
@@ -272,7 +298,8 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">{t('fields.city')}</span>
-                  </label>                  <input
+                  </label>
+                  <input
                     type="text"
                     className="input input-bordered"
                     value={billingInfo.city}
@@ -370,12 +397,12 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
           </div>
 
           <div className="mt-6 p-4 bg-info/10 rounded-lg">
-            <h5 className="font-medium text-info mb-2">ℹ️ Billing Information</h5>
+            <h5 className="font-medium text-info mb-2">ℹ️ {t('info.title')}</h5>
             <ul className="text-sm text-gray-600 space-y-1">
-              <li>• This information will be used for your invoice and payment processing</li>
-              <li>• VAT number is optional but helps with business tax reporting</li>
-              <li>• All information is stored securely and only used for billing purposes</li>
-              <li>• You can update this information anytime in your account settings</li>
+              <li>• {t('info.description1')}</li>
+              <li>• {t('info.description2')}</li>
+              <li>• {t('info.description3')}</li>
+              <li>• {t('info.description4')}</li>
             </ul>
           </div>
         </div>

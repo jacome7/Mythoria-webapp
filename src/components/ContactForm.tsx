@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { FaEnvelope } from 'react-icons/fa';
+import { FaTicketAlt } from 'react-icons/fa';
 import { trackContact } from '../lib/analytics';
 
 interface ContactFormProps {
@@ -58,14 +58,13 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
     try {
       // Track contact request
       trackContact.request({
-        form_type: 'contact_us',
+        form_type: 'contact_us_ticket',
         inquiry_type: formData.category || 'general',
         has_name: !!formData.name.trim(),
         has_email: !!formData.email.trim(),
         has_message: !!formData.message.trim()
       });
 
-      // Call the contact API
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
@@ -82,7 +81,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
       const result = await response.json();
       
       if (result.success) {
-        setResponseMessage('🚀 Message on the way! We will get back to you as soon as possible.');
+        setResponseMessage('🎫 Support ticket created! We will review your request and get back to you as soon as possible.');
         setIsSuccess(true);
         setShowModal(true);
         
@@ -100,13 +99,13 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
         }, 4000);
         
       } else {
-        setResponseMessage(result.error || 'Failed to send message. Please try again.');
+        setResponseMessage(result.error || 'Failed to create support ticket. Please try again.');
         setIsSuccess(false);
         setShowModal(true);
       }
         } catch (error) {
       console.error('Contact form error:', error);
-      setResponseMessage('Failed to send message. Please try again.');
+      setResponseMessage('Failed to create support ticket. Please try again.');
       setIsSuccess(false);
       setShowModal(true);
     } finally {
@@ -118,7 +117,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
     <div className={`card bg-base-100 shadow-xl ${className}`}>
       <div className="card-body p-6">
         <div className="flex items-center gap-3 mb-4">
-          <FaEnvelope className="text-xl text-primary" />
+          <FaTicketAlt className="text-xl text-primary" />
           <h2 className="text-xl font-semibold">{t('form.title')}</h2>
         </div>
         
@@ -204,7 +203,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
               <span className="loading loading-spinner loading-sm"></span>
             ) : (
               <>
-                <FaEnvelope className="mr-2" />
+                <FaTicketAlt className="mr-2" />
                 {t('form.submit')}
               </>
             )}
@@ -223,7 +222,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
                 )}
               </div>
               <h3 className="font-bold text-lg text-center mb-4">
-                {isSuccess ? 'Message Sent!' : 'Oops!'}
+                {isSuccess ? 'Ticket Created!' : 'Oops!'}
               </h3>
               <p className="text-center text-base-content/80">
                 {responseMessage}

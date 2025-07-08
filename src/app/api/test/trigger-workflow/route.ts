@@ -9,7 +9,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { publishStoryRequest } from "@/lib/pubsub";
 import { getCurrentAuthor } from "@/lib/auth";
-import { storyGenerationRunService, storyService } from "@/db/services";
+import { storyService } from "@/db/services";
 
 export async function POST(request: NextRequest) {
   try {
@@ -41,19 +41,12 @@ export async function POST(request: NextRequest) {
 
     let actualRunId = runId;
     
-    // If no runId provided, create a new run
+    // If no runId provided, generate a test runId
     if (!actualRunId) {
-      console.log('📝 Creating new story generation run for test trigger...');
-      const storyGenerationRun = await storyGenerationRunService.createStoryGenerationRun(
-        storyId,
-        {
-          features: { ebook: true, printed: false, audiobook: false },
-          initiatedBy: 'manual-test-trigger',
-          testTrigger: true
-        }
-      );
-      actualRunId = storyGenerationRun.runId;
-      console.log('✅ Test run created:', actualRunId);
+      console.log('📝 Generating test runId for test trigger...');
+      // Since storyGenerationRuns table was removed, generate a temporary test ID
+      actualRunId = `test-run-${Date.now()}`;
+      console.log('✅ Test runId generated:', actualRunId);
     }
 
     // Publish Pub/Sub message to trigger the workflow

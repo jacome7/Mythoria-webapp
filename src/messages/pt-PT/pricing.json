@@ -28,7 +28,7 @@
     },
     "serviceCosts": {
       "loading": "A carregar informações de preços...",
-      "availableServices": "Os nossos serviços atuais são:",
+      "availableServices": "Os nossos serviços:",
       "creditsHeader": "Créditos",
       "services": {
         "generateEbook": "Gerar um eBook digital",
@@ -179,24 +179,53 @@
           "invalidFormat": "Formato de número de IVA inválido para {country}. Formato esperado: {format}"
         }
       },
-      "status": {
-        "provided": "Informações de faturação fornecidas",
-        "notProvided": "Sem informações de faturação"
+      "info": {
+        "title": "Informações de Faturação",
+        "description1": "Esta informação será utilizada para a sua fatura e processamento de pagamento",
+        "description2": "O número de IVA é opcional mas ajuda na declaração fiscal empresarial",
+        "description3": "Toda a informação é armazenada com segurança e apenas utilizada para faturação",
+        "description4": "Pode atualizar esta informação a qualquer momento nas definições da sua conta"
       }
     },
     "payment": {
       "title": "Método de Pagamento",
+      "revolutPay": "Revolut Pay e Cartões",
+      "revolutDescription": "Pague com Revolut Pay ou qualquer cartão de crédito/débito com segurança",
       "mbway": "MBWay",
+      "mbwayDescription": "Envie dinheiro instantaneamente usando a sua app MB Way. Receberá instruções de pagamento por email.",
       "creditCards": "Cartões de Crédito/Débito",
-      "comingSoon": "Em Breve"
+      "comingSoon": "Em Breve",
+      "completePayment": "Completar Pagamento",
+      "creatingOrder": "Criando pedido...",
+      "orderCreated": "Pedido criado com sucesso",
+      "success": "Pagamento bem-sucedido! Redirecionando para as suas histórias..."
     },
     "actions": {
       "placeOrder": "Fazer Encomenda",
+      "proceedToPayment": "Prosseguir para Pagamento",
+      "creatingOrder": "Criando Pedido...",
+      "tryAgain": "Tentar Novamente",
+      "cancel": "Cancelar",
       "backToPricing": "← Voltar aos Preços"
+    },
+    "errors": {
+      "billingRequired": "Por favor forneça as informações de faturação",
+      "emptyCart": "Por favor adicione itens ao seu carrinho",
+      "orderCreationFailed": "Falha ao criar pedido. Tente novamente.",
+      "paymentFailed": "Pagamento falhado. Tente novamente."
     },
     "badges": {
       "bestValue": "Melhor Valor",
       "popular": "Popular"
+    }
+  },
+  "RevolutPayment": {
+    "loading": "Carregando opções de pagamento...",
+    "securityNote": "O seu pagamento é protegido pela encriptação da Revolut",
+    "encryptionNote": "Encriptação SSL de 256 bits",
+    "errors": {
+      "sdkLoadFailed": "Falha ao carregar o serviço de pagamento. Por favor atualize a página.",
+      "initializationFailed": "Falha ao inicializar o pagamento. Por favor tente novamente."
     }
   }
 }

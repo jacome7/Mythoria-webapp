@@ -1,21 +1,22 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl';
-import { SignedIn, SignedOut } from '@clerk/nextjs';
-import { FaShoppingCart, FaPlus, FaMinus, FaTrash, FaCreditCard, FaMobile, FaApple, FaGoogle } from 'react-icons/fa';
-import { SiVisa, SiMastercard } from 'react-icons/si';
-import BillingInformation, { type BillingInfo } from '@/components/BillingInformation';
+import { SignedIn, SignedOut, useUser } from '@clerk/nextjs';
+import { FaShoppingCart, FaPlus, FaMinus, FaTrash, FaCreditCard, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
+import BillingInformation from '@/components/BillingInformation';
+import RevolutPayment from '@/components/RevolutPayment';
 
 const creditPackages = [
 	{ id: 1, credits: 5, price: 5, popular: false, bestValue: false, icon: <FaShoppingCart />, key: 'credits5' },
 	{ id: 2, credits: 10, price: 9, popular: false, bestValue: false, icon: <FaShoppingCart />, key: 'credits10' },
 	{ id: 3, credits: 30, price: 25, popular: false, bestValue: false, icon: <FaShoppingCart />, key: 'credits30' },
 	{ id: 4, credits: 100, price: 79, popular: false, bestValue: false, icon: <FaShoppingCart />, key: 'credits100' },
-];
+].sort((a, b) => a.price - b.price); // Sort by price ascending
 
 interface CartItem {
 	packageId: number;
@@ -26,10 +27,18 @@ interface CartItem {
 function BuyCreditsContent() {
 	const searchParams = useSearchParams();
 	const t = useTranslations('BuyCreditsPage');
-	const tPricing = useTranslations('PricingPage');	const tMyStories = useTranslations('MyStoriesPage');	const locale = useLocale();const [cart, setCart] = useState<CartItem[]>([]);
-	const [selectedPayment, setSelectedPayment] = useState<string>('');
-	const [billingInfo, setBillingInfo] = useState<BillingInfo | null>(null);
+	const tPricing = useTranslations('PricingPage');
+	const tMyStories = useTranslations('MyStoriesPage');
+	const locale = useLocale();
+	const { user } = useUser();
+	console.log('User:', user); // TODO: Remove this log
+	const [cart, setCart] = useState<CartItem[]>([]);
+	const [selectedPayment, setSelectedPayment] = useState<string>('revolut');
 	const [isMounted, setIsMounted] = useState(false);
+	const [orderToken, setOrderToken] = useState<string | null>(null);
+	const [isCreatingOrder, setIsCreatingOrder] = useState(false);
+	const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
+	const [paymentMessage, setPaymentMessage] = useState<string>('');
 
 	// Handle client-side mounting to prevent hydration issues
 	useEffect(() => {
@@ -101,21 +110,140 @@ function BuyCreditsContent() {
 	const subtotal = calculateSubtotal();
 	const vatAmount = calculateVAT(subtotal);	const total = subtotal;
 
-	const handlePlaceOrder = () => {
-		// TODO: Implement order placement logic
-		console.log('Placing order with:', {
-			cart,
-			total,
-			paymentMethod: selectedPayment,
-			billingInfo
-		});
+	const handlePlaceOrder = async () => {
+		if (cart.length === 0) {
+			alert(t('errors.emptyCart'));
+			return;
+		}
+
+		setIsCreatingOrder(true);
+		setPaymentMessage(t('payment.creatingOrder'));
+
+		try {
+			// Prepare credit packages for API
+			const creditPackages = cart.map(item => ({
+				packageId: item.packageId,
+				quantity: item.quantity,
+			}));
+
+			let response;
+			
+			if (selectedPayment === 'mbway') {
+				// Create MB Way payment request
+				response = await fetch('/api/payments/mbway', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						creditPackages,
+						locale: locale,
+					}),
+				});
+			} else {
+				// Create payment order for other methods
+				response = await fetch('/api/payments/order', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						creditPackages,
+					}),
+				});
+			}
+
+			const data = await response.json();
+
+			if (!response.ok) {
+				throw new Error(data.error || 'Failed to create order');
+			}
+
+			console.log('Order created successfully:', data);
+
+			if (selectedPayment === 'mbway') {
+				// For MB Way, show success message and redirect
+				setPaymentStatus('success');
+				setPaymentMessage(t('payment.mbwaySuccess'));
+				
+				// Clear cart and reset form
+				setCart([]);
+				
+				// Redirect to my stories page after a short delay
+				setTimeout(() => {
+					window.location.href = `/${locale}/my-stories`;
+				}, 3000);
+			} else {
+				// Store order details for other payment methods
+				setOrderToken(data.orderToken);
+				setPaymentMessage(t('payment.orderCreated'));
+			}
+
+		} catch (error) {
+			console.error('Order creation failed:', error);
+			setPaymentStatus('error');
+			
+			let errorMessage = error instanceof Error ? error.message : t('errors.orderCreationFailed');
+			let contactUrl = '';
+			
+			// Check if the error includes a contact URL (for MB Way failures)
+			if (error instanceof Error && error.message.includes('contactUrl')) {
+				try {
+					const errorData = JSON.parse(error.message);
+					contactUrl = errorData.contactUrl;
+					errorMessage = errorData.error || errorMessage;
+				} catch {
+					// If parsing fails, use the original error message
+				}
+			}
+			
+			setPaymentMessage(
+				contactUrl 
+					? `${errorMessage} ${t('errors.contactSupport')} `
+					: errorMessage
+			);
+			
+			// Store contact URL for the "Contact Support" button
+			if (contactUrl) {
+				(window as Window & { mbwayErrorContactUrl?: string }).mbwayErrorContactUrl = contactUrl;
+			}
+		} finally {
+			setIsCreatingOrder(false);
+		}
+	};
+
+	const handlePaymentSuccess = (result: Record<string, unknown>) => {
+		console.log('Payment successful:', result);
+		setPaymentStatus('success');
+		setPaymentMessage(t('payment.success'));
 		
-		// For now, show an alert - in a real implementation, this would:
-		// 1. Validate billing information
-		// 2. Process payment
-		// 3. Save billing info to database
-		// 4. Redirect to confirmation page
-		alert('Order placement functionality will be implemented here. Check console for order details.');
+		// Clear cart and reset form
+		setCart([]);
+		setOrderToken(null);
+		
+		// Redirect to my stories page after a short delay
+		setTimeout(() => {
+			window.location.href = `/${locale}/my-stories`;
+		}, 3000);
+	};
+
+	const handlePaymentError = (error: Record<string, unknown>) => {
+		console.error('Payment failed:', error);
+		setPaymentStatus('error');
+		setPaymentMessage((error.message as string) || t('errors.paymentFailed'));
+	};
+
+	const handlePaymentCancel = () => {
+		console.log('Payment cancelled');
+		setPaymentStatus('idle');
+		setPaymentMessage('');
+		setOrderToken(null);
+	};
+
+	const resetPayment = () => {
+		setPaymentStatus('idle');
+		setPaymentMessage('');
+		setOrderToken(null);
 	};	return (
 		<div className="min-h-screen bg-base-100 text-base-content">
 			<div className="container mx-auto px-4 py-12">
@@ -260,66 +388,139 @@ function BuyCreditsContent() {
 
 						{/* Billing Information */}
 						{cart.length > 0 && (
-							<BillingInformation 
-								onBillingInfoChange={(info) => setBillingInfo(info)}
-							/>
+							<BillingInformation />
 						)}
 
-						{/* Payment Options */}
-						{cart.length > 0 && (
+						{/* Payment Status Messages */}
+						{paymentStatus !== 'idle' && (
+							<div className={`alert mb-6 ${
+								paymentStatus === 'success' ? 'alert-success' : 
+								paymentStatus === 'error' ? 'alert-error' : 
+								'alert-info'
+							}`}>
+								<div className="flex items-center space-x-2">
+									{paymentStatus === 'success' && <FaCheckCircle />}
+									{paymentStatus === 'error' && <FaExclamationTriangle />}
+									{paymentStatus === 'processing' && <span className="loading loading-spinner loading-sm"></span>}
+									<span>{paymentMessage}</span>
+								</div>
+								{paymentStatus === 'error' && (
+									<div className="flex space-x-2">
+										<button onClick={resetPayment} className="btn btn-sm btn-outline">
+											{t('actions.tryAgain')}
+										</button>
+										{(window as Window & { mbwayErrorContactUrl?: string }).mbwayErrorContactUrl && (
+											<a 
+												href={(window as Window & { mbwayErrorContactUrl?: string }).mbwayErrorContactUrl} 
+												className="btn btn-sm btn-secondary"
+												target="_blank"
+												rel="noopener noreferrer"
+											>
+												{t('actions.contactSupport')}
+											</a>
+										)}
+									</div>
+								)}
+							</div>
+						)}
+
+						{/* Payment Section */}
+						{cart.length > 0 && paymentStatus !== 'success' && (
 							<div className="bg-base-200 rounded-lg p-6 mb-6">
 								<h3 className="text-lg font-bold mb-4">{t('payment.title')}</h3>
 								
-								{/* MBWay Option */}
-								<div className="space-y-3">
-									<label className="flex items-center space-x-3 cursor-pointer">
-										<input
-											type="radio"
-											name="payment"
-											value="mbway"
-											checked={selectedPayment === 'mbway'}
-											onChange={(e) => setSelectedPayment(e.target.value)}
-											className="radio radio-primary"
-										/>
-										<div className="flex items-center space-x-2">
-											<FaMobile className="text-primary" />
-											<span className="font-semibold">{t('payment.mbway')}</span>
-										</div>
-									</label>
-									
-									{/* Credit Cards - Coming Soon */}
-									<div className="opacity-50">
-										<div className="flex items-center space-x-3 mb-2">
+								{!orderToken ? (
+									// Payment method selection
+									<div className="space-y-3">
+										<label className="flex items-center space-x-3 cursor-pointer">
 											<input
 												type="radio"
-												disabled
+												name="payment"
+												value="revolut"
+												checked={selectedPayment === 'revolut'}
+												onChange={(e) => setSelectedPayment(e.target.value)}
 												className="radio radio-primary"
 											/>
 											<div className="flex items-center space-x-2">
-												<FaCreditCard className="text-gray-400" />
-												<span className="font-semibold text-gray-400">{t('payment.creditCards')}</span>
-												<span className="badge badge-outline text-xs">{t('payment.comingSoon')}</span>
+												<FaCreditCard className="text-primary" />
+												<span className="font-semibold">{t('payment.revolutPay')}</span>
 											</div>
-										</div>
-										<div className="ml-8 flex items-center space-x-2 opacity-60">
-											<SiVisa className="text-2xl" />
-											<SiMastercard className="text-2xl" />
-											<FaGoogle className="text-xl" />
-											<FaApple className="text-xl" />
-										</div>
-									</div>
-								</div>
+										</label>
+										<p className="text-sm text-gray-600 ml-8">
+											{t('payment.revolutDescription')}
+										</p>
+						{/* MBWay Option */}
+						<label className="flex items-center space-x-3 cursor-pointer">
+							<input
+								type="radio"
+								name="payment"
+								value="mbway"
+								checked={selectedPayment === 'mbway'}
+								onChange={(e) => setSelectedPayment(e.target.value)}
+								className="radio radio-primary"
+							/>
+							<div className="flex items-center space-x-2">
+								<Image 
+									src="/images/mbway.png" 
+									alt="MB Way" 
+									width={24}
+									height={24}
+									className="object-contain" 
+								/>
+								<span className="font-semibold">{t('payment.mbway')}</span>
 							</div>
-						)}						{/* Place Order Button */}
-						{cart.length > 0 && (
+						</label>
+						<p className="text-sm text-gray-600 ml-8">
+							{t('payment.mbwayDescription')}
+						</p>
+									</div>
+								) : (
+									// Revolut Payment Widget
+									<div className="space-y-4">
+										<div className="flex items-center justify-between">
+											<h4 className="font-semibold">{t('payment.completePayment')}</h4>
+											<button 
+												onClick={resetPayment}
+												className="btn btn-sm btn-outline"
+												disabled={paymentStatus === 'processing'}
+											>
+												{t('actions.cancel')}
+											</button>
+										</div>
+										
+										<RevolutPayment
+											orderToken={orderToken}
+											onPaymentSuccess={handlePaymentSuccess}
+											onPaymentError={handlePaymentError}
+											onPaymentCancel={handlePaymentCancel}
+											disabled={paymentStatus === 'processing'}
+										/>
+									</div>
+								)}
+							</div>
+						)}
+						
+						{/* Place Order Button */}
+						{cart.length > 0 && !orderToken && paymentStatus !== 'success' && (
 							<button
-								disabled={!selectedPayment}
+								disabled={!selectedPayment || isCreatingOrder}
 								onClick={handlePlaceOrder}
 								className="btn btn-primary btn-lg w-full"
 							>
-								{t('actions.placeOrder')} - €{total.toFixed(2)}
+								{isCreatingOrder ? (
+									<>
+										<span className="loading loading-spinner loading-sm"></span>
+										{t('actions.creatingOrder')}
+									</>
+								) : (
+									<>
+										{t('actions.proceedToPayment')} - €{total.toFixed(2)}
+									</>
+								)}
 							</button>
-						)}						{/* Back to Pricing */}
+						)}
+						
+						{/* Back to Pricing */}
 						<div className="mt-6 text-center">
 							<Link href="/pricing" className="btn btn-outline">
 								{t('actions.backToPricing')}

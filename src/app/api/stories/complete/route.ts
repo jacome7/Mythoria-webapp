@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentAuthor } from "@/lib/auth";
-import { storyService, storyGenerationRunService } from "@/db/services";
+import { storyService } from "@/db/services";
 import { publishStoryRequest } from "@/lib/pubsub";
 import { z } from "zod";
 
@@ -54,35 +54,24 @@ export async function POST(request: NextRequest) {
       dedicationMessage: validatedData.dedicationMessage || undefined,
     });
 
-    // Create the story generation run
-    const storyGenerationRun = await storyGenerationRunService.createStoryGenerationRun(
-      validatedData.storyId,
-      {
-        features: validatedData.features,
-        deliveryAddress: validatedData.deliveryAddress || undefined,
-        dedicationMessage: validatedData.dedicationMessage || undefined,
-      }
-    );
+    // Generate a temporary runId for workflow tracking
+    const { randomUUID } = await import('crypto');
+    const runId = randomUUID();
 
     // Publish the Pub/Sub message to trigger the workflow
     try {
       await publishStoryRequest({
         storyId: validatedData.storyId,
-        runId: storyGenerationRun.runId,
+        runId: runId,
         timestamp: new Date().toISOString(),
       });
       
-      console.log(`Story generation request published for story ${validatedData.storyId}, run ${storyGenerationRun.runId}`);
+      console.log(`Story generation request published for story ${validatedData.storyId}, run ${runId}`);
     } catch (pubsubError) {
       console.error('Failed to publish story request:', pubsubError);
       
-      // Update the run status to failed since we couldn't trigger the workflow
-      await storyGenerationRunService.updateRunStatus(
-        storyGenerationRun.runId, 
-        'failed', 
-        'publish_request', 
-        `Failed to publish story request: ${pubsubError}`
-      );
+      // Note: Story generation run tracking has been disabled
+      console.log(`Run ${runId} failed - could not publish to workflow`);
       
       return NextResponse.json(
         { error: "Failed to start story generation workflow" },
@@ -95,7 +84,7 @@ export async function POST(request: NextRequest) {
       { 
         message: "Story generation started successfully",
         storyId: validatedData.storyId,
-        runId: storyGenerationRun.runId,
+        runId: runId,
         status: "queued" 
       },
       { status: 202 }

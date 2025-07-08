@@ -62,11 +62,11 @@ export default async function RootLayout({
           <meta name="apple-mobile-web-app-title" content="Mythoria" />
           <meta name="format-detection" content="telephone=no" />
           <meta name="mobile-web-app-capable" content="yes" />
-          <meta name="msapplication-TileColor" content="#8B5CF6" />
+          <meta name="msapplication-TileColor" content="#014a70" />
           <meta name="msapplication-config" content="/browserconfig.xml" />
           <meta name="msapplication-tap-highlight" content="no" />
           <link rel="apple-touch-icon" href="/icon-192.png" />
-          <link rel="mask-icon" href="/icon-192.png" color="#8B5CF6" />
+          <link rel="mask-icon" href="/icon-192.png" />
         </head>
         <body suppressHydrationWarning={true}>
           <div className="flex flex-col min-h-screen"><AnalyticsProvider>

@@ -70,8 +70,6 @@ export async function GET(request: NextRequest) {
                 icon,
                 serviceCode: pricing.serviceCode,
                 isActive: pricing.isActive,
-                isMandatory: pricing.isMandatory,
-                isDefault: pricing.isDefault,
             };
         });
 

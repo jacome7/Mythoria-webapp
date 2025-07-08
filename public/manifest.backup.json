@@ -1,12 +1,12 @@
 {
   "name": "Mythoria - Personalized Books Creator",
   "short_name": "Mythoria",
-  "description": "Create unique, fully illustrated books with AI",
+  "description": "Create unique, fully illustrated books",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "theme_color": "#8B5CF6",
-  "background_color": "#1F2937",
+  "theme_color": "#014A70",
+  "background_color": "#FFFFFF",
   "lang": "en",
   "scope": "/",
   "icons": [

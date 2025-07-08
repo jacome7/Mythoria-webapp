@@ -9,8 +9,6 @@ export const pricing = pgTable("pricing", {
   serviceCode: varchar("service_code", { length: 50 }).notNull().unique(),
   credits: integer("credits").notNull(),
   isActive: boolean("is_active").notNull().default(true),
-  isMandatory: boolean("is_mandatory").notNull().default(false),
-  isDefault: boolean("is_default").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });

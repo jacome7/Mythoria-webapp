@@ -11,22 +11,22 @@ export async function GET() {
         name: 'Digital (eBook)',
         credits: pricingData.ebook?.credits || 5,
         description: 'Receive your story as a digital eBook',
-        mandatory: pricingData.ebook?.isMandatory || true,
-        default: pricingData.ebook?.isDefault || true,
+        mandatory: true,
+        default: true,
       },
       printed: {
         name: 'Printed Book',
         credits: pricingData.printed?.credits || 15,
         description: 'Receive a beautifully printed physical copy of your story',
-        mandatory: pricingData.printed?.isMandatory || false,
-        default: pricingData.printed?.isDefault || false,
+        mandatory: false,
+        default: false,
       },
       audiobook: {
         name: 'Audiobook',
         credits: pricingData.audiobook?.credits || 3,
         description: 'Receive your story as a narrated audiobook',
-        mandatory: pricingData.audiobook?.isMandatory || false,
-        default: pricingData.audiobook?.isDefault || false,
+        mandatory: false,
+        default: false,
       },
     };
 

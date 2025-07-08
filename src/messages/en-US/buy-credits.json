@@ -1,0 +1,63 @@
+{
+  "BuyCreditsPage": {
+    "header": {
+      "title": "Buy Credits",
+      "subtitle": "Purchase credits to unlock premium features and create amazing stories."
+    },
+    "packages": {
+      "title": "Available Credit Packages",
+      "addToCart": "Add to Cart"
+    },
+    "badges": {
+      "bestValue": "Best Value",
+      "popular": "Popular"
+    },
+    "cart": {
+      "title": "Shopping Cart",
+      "empty": "Your cart is empty. Add some credit packages to get started!",
+      "each": "each"
+    },
+    "summary": {
+      "title": "Order Summary",
+      "subtotal": "Subtotal",
+      "vat": "VAT (6%)",
+      "total": "Total"
+    },
+    "payment": {
+      "title": "Payment Method",
+      "revolutPay": "Revolut Pay",
+      "revolutDescription": "Fast and secure payment with Revolut. Pay with your bank card or Revolut account.",
+      "mbway": "MB Way",
+      "comingSoon": "Coming Soon",
+      "completePayment": "Complete Your Payment",
+      "creatingOrder": "Creating your order...",
+      "orderCreated": "Order created successfully",
+      "success": "Payment successful! Redirecting to your stories...",
+      "mbwaySuccess": "MB Way payment request created! Check your email for payment instructions. Redirecting to your stories...",
+      "processing": "Processing payment..."
+    },
+    "actions": {
+      "proceedToPayment": "Proceed to Payment",
+      "creatingOrder": "Creating Order...",
+      "cancel": "Cancel",
+      "tryAgain": "Try Again",
+      "contactSupport": "Contact Support",
+      "backToPricing": "Back to Pricing"
+    },
+    "errors": {
+      "emptyCart": "Your cart is empty. Please add some credit packages first.",
+      "orderCreationFailed": "Failed to create order. Please try again.",
+      "paymentFailed": "Payment failed. Please try again.",
+      "contactSupport": "Please contact our support team for assistance."
+    }
+  },
+  "RevolutPayment": {
+    "loading": "Loading payment options...",
+    "securityNote": "Your payment information is secure and encrypted.",
+    "encryptionNote": "Protected by 256-bit SSL encryption",
+    "errors": {
+      "sdkLoadFailed": "Failed to load payment system. Please refresh the page.",
+      "initializationFailed": "Failed to initialize payment. Please try again."
+    }
+  }
+}

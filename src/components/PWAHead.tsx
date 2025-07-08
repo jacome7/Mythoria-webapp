@@ -11,7 +11,7 @@ export default function PWAHead() {
       <meta name="format-detection" content="telephone=no" />
       <meta name="mobile-web-app-capable" content="yes" />
       <meta name="msapplication-config" content="/browserconfig.xml" />
-      <meta name="msapplication-TileColor" content="#8B5CF6" />
+      <meta name="msapplication-TileColor" content="#014A70" />
       <meta name="msapplication-tap-highlight" content="no" />
       
       {/* Apple Touch Icons */}
@@ -24,7 +24,7 @@ export default function PWAHead() {
       <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico" />
       <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico" />
       <link rel="manifest" href="/manifest.json" />
-      <link rel="mask-icon" href="/icon-192.png" color="#8B5CF6" />
+      <link rel="mask-icon" href="/icon-192.png" color="#014A70" />
       <link rel="shortcut icon" href="/favicon.ico" />
       
       {/* Splash Screens for iOS */}

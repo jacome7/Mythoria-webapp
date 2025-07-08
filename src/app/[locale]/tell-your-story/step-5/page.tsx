@@ -113,6 +113,7 @@ function Step5Page() {
       setError('Failed to load pricing information. Please try again.');
     }
   };
+  
   const hasInsufficientCredits = () => {
     // If pricing isn't loaded yet, assume insufficient credits to prevent premature actions
     if (!ebookPricing) return true;

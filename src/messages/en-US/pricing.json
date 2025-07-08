@@ -169,7 +169,8 @@
         "stateRegion": "State/Region",
         "postalCode": "Postal Code",
         "country": "Country"
-      },      "vatValidation": {
+      },
+      "vatValidation": {
         "valid": "Valid VAT number",
         "invalid": "Invalid VAT number format",
         "help": "Enter a valid EU VAT number (e.g., DE123456789)",
@@ -179,24 +180,53 @@
           "invalidFormat": "Invalid VAT number format for {country}. Expected format: {format}"
         }
       },
-      "status": {
-        "provided": "Billing information provided",
-        "notProvided": "No billing information"
+      "info": {
+        "title": "Billing Information",
+        "description1": "This information will be used for your invoice and payment processing",
+        "description2": "VAT number is optional but helps with business tax reporting",
+        "description3": "All information is stored securely and only used for billing purposes",
+        "description4": "You can update this information anytime in your account settings"
       }
     },
     "payment": {
       "title": "Payment Method",
+      "revolutPay": "Revolut Pay & Cards",
+      "revolutDescription": "Pay with Revolut Pay or any credit/debit card securely",
       "mbway": "MBWay",
+      "mbwayDescription": "Send money instantly using your MB Way app. You'll receive payment instructions via email.",
       "creditCards": "Credit/Debit Cards",
-      "comingSoon": "Coming Soon"
+      "comingSoon": "Coming Soon",
+      "completePayment": "Complete Payment",
+      "creatingOrder": "Creating order...",
+      "orderCreated": "Order created successfully",
+      "success": "Payment successful! Redirecting to your stories..."
     },
     "actions": {
       "placeOrder": "Place Order",
+      "proceedToPayment": "Proceed to Payment",
+      "creatingOrder": "Creating Order...",
+      "tryAgain": "Try Again",
+      "cancel": "Cancel",
       "backToPricing": "← Back to Pricing"
+    },
+    "errors": {
+      "billingRequired": "Please provide billing information",
+      "emptyCart": "Please add items to your cart",
+      "orderCreationFailed": "Failed to create order. Please try again.",
+      "paymentFailed": "Payment failed. Please try again."
     },
     "badges": {
       "bestValue": "Best Value",
       "popular": "Popular"
+    }
+  },
+  "RevolutPayment": {
+    "loading": "Loading payment options...",
+    "securityNote": "Your payment is secured by Revolut's encryption",
+    "encryptionNote": "256-bit SSL encryption",
+    "errors": {
+      "sdkLoadFailed": "Failed to load payment service. Please refresh the page.",
+      "initializationFailed": "Failed to initialize payment. Please try again."
     }
   }
 }

@@ -32,64 +32,55 @@ export async function POST(request: NextRequest) {
 
     const { name, email, category, message } = validationResult.data;
 
-    // Prepare data for notification engine
-    const workflowData = {
-      data: {
-        type: 'email',
-        recipients: ['rodrigovieirajacome@gmail.com', 'andrejacomesilva@hotmail.com'],
-        template: 'contact-form',
-        variables: {
-          userName: name,
-          userEmail: email,
-          category: category || 'general',
-          message: message,
-          submissionTime: new Date().toISOString()
-        },
-        subject: `New Contact Form Submission from ${name}`,
-        correlationId: `contact-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-      }
+    // Map category values to match backend expectations
+    const categoryMapping: Record<string, string> = {
+      'feature_ideas': 'Feature request',
+      'bug_report': 'Bug',
+      'technical_issues': 'Story failure',
+      'delivery': 'Delivery',
+      'credits': 'Credits',
+      'business_partnership': 'Business partner',
+      'general': 'General'
     };
 
-    console.log('Sending contact form to notification engine:', {
-      url: `${config.notification.engineUrl}/test/workflow-direct`,
-      recipients: workflowData.data.recipients,
-      from: email
-    });
-
-    // Call notification engine directly
-    const response = await fetch(`${config.notification.engineUrl}/test/workflow-direct`, {
+    // Create ticket in admin system with API key authentication
+    const ticketResponse = await fetch(`${config.admin.apiUrl}/api/tickets`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-API-Key': config.admin.apiKey, // Use API key authentication
       },
-      body: JSON.stringify(workflowData)
+      body: JSON.stringify({
+        category: 'contact',
+        email: email,
+        name: name,
+        type: categoryMapping[category || ''] || 'General',
+        message: message,
+        // Note: userId will be null for anonymous contacts - this is handled in the API
+      })
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Notification engine error:', {
-        status: response.status,
-        statusText: response.statusText,
-        error: errorText
-      });
-
+    if (!ticketResponse.ok) {
+      const errorText = await ticketResponse.text();
+      console.error('Failed to create ticket:', errorText);
+      
       return NextResponse.json(
         {
           success: false,
-          error: 'Failed to send email notification',
-          details: `Notification service error: ${response.status}`
+          error: 'Failed to create support ticket',
+          details: `Ticket creation error: ${ticketResponse.status}`
         },
         { status: 500 }
       );
     }
 
-    const result = await response.json();
-    console.log('Notification engine response:', result);
+    const ticketData = await ticketResponse.json();
+    console.log('Ticket created successfully:', ticketData.id);
 
     return NextResponse.json({
       success: true,
-      message: 'Contact form submitted successfully',
-      correlationId: workflowData.data.correlationId
+      message: 'Support ticket created successfully',
+      ticketId: ticketData.id
     });
 
   } catch (error) {

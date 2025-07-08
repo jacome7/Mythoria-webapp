@@ -9,6 +9,7 @@ import LanguageAttribute from '@/components/LanguageAttribute';
 import { readdir, readFile } from 'fs/promises';
 import path from 'path';
 import { Metadata, Viewport } from 'next';
+import { getManifestUrl } from '@/lib/manifest';
 
 interface MetadataMessages {
   title?: string;
@@ -41,7 +42,7 @@ export async function generateViewport(): Promise<Viewport> {
     initialScale: 1,
     maximumScale: 5,
     userScalable: true,
-    themeColor: '#8B5CF6',
+    themeColor: '#014A70',
   };
 }
 
@@ -191,7 +192,7 @@ export async function generateMetadata({
     title: metadata.title || 'Mythoria |  Personalized Books Creator',
     description: metadata.description || 'Create unique, fully illustrated books with Mythoria\'s generative-AI.',
     robots: 'index,follow,max-snippet:-1,max-image-preview:large',
-    manifest: '/manifest.json',
+    manifest: getManifestUrl(locale),
     appleWebApp: {
       capable: true,
       statusBarStyle: 'default',

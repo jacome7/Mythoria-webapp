@@ -94,7 +94,7 @@ export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
 
   return (
     <>      <button
-      className="btn btn-outline btn-secondary"
+      className="btn btn-outline btn-primary"
       onClick={handleOpenModal}
     >
       {t('button', { credits: currentBalance.toString() })}

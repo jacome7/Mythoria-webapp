@@ -22,22 +22,16 @@ const PRICING_DATA = [
     serviceCode: 'eBookGeneration',
     credits: 5,
     isActive: true,
-    isMandatory: true,
-    isDefault: true,
   },
   {
     serviceCode: 'printOrder',
     credits: 15,
     isActive: true,
-    isMandatory: false,
-    isDefault: false,
   },
   {
     serviceCode: 'audioBookGeneration',
     credits: 3,
     isActive: true,
-    isMandatory: false,
-    isDefault: false,
   },
 ];
 
@@ -85,8 +79,6 @@ async function updateExistingPricing() {
         .set({
           credits: pricingEntry.credits,
           isActive: pricingEntry.isActive,
-          isMandatory: pricingEntry.isMandatory,
-          isDefault: pricingEntry.isDefault,
           updatedAt: new Date(),
         })
         .where(eq(pricing.serviceCode, pricingEntry.serviceCode))
@@ -130,8 +122,6 @@ async function listCurrentPricing() {
       serviceCode: p.serviceCode,
       credits: p.credits,
       isActive: p.isActive,
-      isMandatory: p.isMandatory,
-      isDefault: p.isDefault,
     })));
 
   } catch (error) {

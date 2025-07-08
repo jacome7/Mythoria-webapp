@@ -96,6 +96,8 @@ const withPWAConfig = withPWA({
   register: true,
   skipWaiting: true,
   disable: process.env.NODE_ENV === 'development',
+  // Disable auto-generation of manifest since we're handling it dynamically
+  buildExcludes: [/manifest$/, /\.map$/, /^manifest\.json$/],
   runtimeCaching: [
     {
       urlPattern: /^https?.*\.(png|jpg|jpeg|webp|svg|gif|ico)$/,
@@ -116,6 +118,17 @@ const withPWAConfig = withPWA({
         expiration: {
           maxEntries: 32,
           maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+        },
+      },
+    },
+    {
+      urlPattern: /^https?.*\/api\/manifest/,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'mythoria-manifest',
+        expiration: {
+          maxEntries: 4,
+          maxAgeSeconds: 60 * 60, // 1 hour
         },
       },
     },

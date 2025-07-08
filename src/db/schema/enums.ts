@@ -33,13 +33,6 @@ export const runStatusEnum = pgEnum("run_status", [
   'cancelled'
 ]);
 
-export const stepStatusEnum = pgEnum("step_status", [
-  'pending',
-  'running',
-  'failed',
-  'completed'
-]);
-
 export const characterRole = pgEnum("character_role", [
   'protagonist',
   'antagonist', 
@@ -129,4 +122,50 @@ export const printRequestStatusEnum = pgEnum("print_request_status", [
 export const printProviderIntegrationEnum = pgEnum("print_provider_integration", [
   'email',
   'api'
+]);
+
+// Payment order and event enums
+export const paymentOrderStatusEnum = pgEnum("payment_order_status", [
+  'pending',
+  'processing', 
+  'completed',
+  'failed',
+  'cancelled',
+  'expired'
+]);
+
+export const paymentEventTypeEnum = pgEnum("payment_event_type", [
+  'order_created',
+  'order_updated',
+  'payment_initiated',
+  'payment_completed',
+  'payment_failed',
+  'payment_cancelled',
+  'webhook_received',
+  'credits_added',
+  'refund_initiated',
+  'refund_completed'
+]);
+
+// Add missing payment enums that exist in database
+export const paymentMethodTypeEnum = pgEnum("payment_method_type", [
+  'card',
+  'revolut_pay', 
+  'apple_pay',
+  'google_pay'
+]);
+
+export const paymentStatusEnum = pgEnum("payment_status", [
+  'pending',
+  'processing',
+  'completed', 
+  'failed',
+  'cancelled',
+  'expired'
+]);
+
+export const transactionTypeEnum = pgEnum("transaction_type", [
+  'purchase',
+  'bonus', 
+  'refund'
 ]);

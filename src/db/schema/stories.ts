@@ -1,6 +1,6 @@
 import { pgTable, uuid, varchar, timestamp, text, jsonb, integer, primaryKey, boolean, index } from "drizzle-orm/pg-core";
 import { authors } from './authors';
-import { storyStatusEnum, runStatusEnum, stepStatusEnum, targetAudienceEnum, novelStyleEnum, graphicalStyleEnum, accessLevelEnum, collaboratorRoleEnum, audiobookStatusEnum } from './enums';
+import { storyStatusEnum, runStatusEnum, targetAudienceEnum, novelStyleEnum, graphicalStyleEnum, accessLevelEnum, collaboratorRoleEnum, audiobookStatusEnum } from './enums';
 
 // -----------------------------------------------------------------------------
 // Stories domain
@@ -58,41 +58,6 @@ export const storyVersions = pgTable("story_versions", {
   textJsonb: jsonb("text_jsonb").notNull(), // Store story content snapshot
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
-
-// Story generation runs (one row per Workflows execution)
-export const storyGenerationRuns = pgTable("story_generation_runs", {
-  runId: uuid("run_id").primaryKey().defaultRandom(),
-  storyId: uuid("story_id").notNull().references(() => stories.storyId, { onDelete: 'cascade' }),
-  gcpWorkflowExecution: text("gcp_workflow_execution"), // Workflows "execution name" (projects/.../executions/...)
-  status: runStatusEnum("status").notNull().default('queued'),
-  currentStep: varchar("current_step", { length: 120 }), // e.g. generate_outline, write_chapter_3
-  errorMessage: text("error_message"),
-  startedAt: timestamp("started_at", { withTimezone: true }),
-  endedAt: timestamp("ended_at", { withTimezone: true }),
-  metadata: jsonb("metadata"), // optional scratch data (token counts, timing, etc.)
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-}, (table) => ({
-  // Indexes for performance optimization
-  storyIdIdx: index("story_gen_runs_story_id_idx").on(table.storyId),
-  statusIdx: index("story_gen_runs_status_idx").on(table.status),
-  storyIdStatusIdx: index("story_gen_runs_story_id_status_idx").on(table.storyId, table.status),
-  createdAtIdx: index("story_gen_runs_created_at_idx").on(table.createdAt),
-}));
-
-// Story generation steps (optional, for granular auditing)
-export const storyGenerationSteps = pgTable("story_generation_steps", {
-  runId: uuid("run_id").notNull().references(() => storyGenerationRuns.runId, { onDelete: 'cascade' }),
-  stepName: varchar("step_name", { length: 120 }).notNull(),
-  status: stepStatusEnum("status").notNull().default('pending'),
-  detailJson: jsonb("detail_json"), // full LLM response, image URI, etc.
-  startedAt: timestamp("started_at", { withTimezone: true }),
-  endedAt: timestamp("ended_at", { withTimezone: true }),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-}, (table) => ({
-  pk: primaryKey({ columns: [table.runId, table.stepName] })
-}));
 
 // Share links for private story access
 export const shareLinks = pgTable("share_links", {

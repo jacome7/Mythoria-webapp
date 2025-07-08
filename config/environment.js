@@ -47,6 +47,11 @@ export const getEnvironmentConfig = () => {
       workflowUrl: process.env.STORY_GENERATION_WORKFLOW_URL || 'http://localhost:8080',
     },
     
+    admin: {
+      apiUrl: process.env.ADMIN_API_URL || 'http://localhost:3001',
+      apiKey: process.env.ADMIN_API_KEY || '',
+    },
+    
     notification: {
       engineUrl: process.env.NOTIFICATION_ENGINE_URL || 'http://localhost:8081',
     },

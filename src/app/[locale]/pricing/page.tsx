@@ -5,12 +5,16 @@ import { useState, useEffect, useCallback } from 'react';
 import { FaShoppingCart, FaBookOpen, FaVolumeUp, FaPrint, FaGift, FaQuestionCircle, FaPalette, FaInfoCircle } from 'react-icons/fa';
 import { useTranslations } from 'next-intl';
 
-const creditPackages = [
-	{ id: 1, credits: 5, price: 5, popular: false, bestValue: false, icon: <FaShoppingCart />, key: 'credits5' },
-	{ id: 2, credits: 10, price: 9, popular: false, bestValue: false, icon: <FaShoppingCart />, key: 'credits10' },
-	{ id: 3, credits: 30, price: 25, popular: false, bestValue: false, icon: <FaShoppingCart />, key: 'credits30' },
-	{ id: 4, credits: 100, price: 79, popular: false, bestValue: false, icon: <FaShoppingCart />, key: 'credits100' },
-];
+interface CreditPackage {
+	id: number;
+	credits: number;
+	price: number;
+	popular: boolean;
+	bestValue: boolean;
+	icon: string;
+	key: string;
+	dbId: string;
+}
 
 interface Service {
 	id: string;
@@ -19,15 +23,16 @@ interface Service {
 	icon: string;
 	serviceCode: string;
 	isActive: boolean;
-	isMandatory: boolean;
-	isDefault: boolean;
 }
 
 export default function PricingPage() {
 	const t = useTranslations('PricingPage');
 	const [services, setServices] = useState<Service[]>([]);
+	const [creditPackages, setCreditPackages] = useState<CreditPackage[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [packagesLoading, setPackagesLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const [packagesError, setPackagesError] = useState<string | null>(null);
 	const [selectedInfo, setSelectedInfo] = useState<string | null>(null);
 	const infoTexts = {
 		textReview: t('infoTexts.textReview'),
@@ -58,12 +63,40 @@ export default function PricingPage() {
 		}
 	}, [t]);
 
+	const fetchCreditPackages = useCallback(async () => {
+		try {
+			const response = await fetch('/api/pricing/credit-packages');
+			if (!response.ok) {
+				throw new Error('Failed to fetch credit packages');
+			}
+			const data = await response.json();
+			// Sort packages by price ascending
+			const sortedPackages = data.packages.sort((a: CreditPackage, b: CreditPackage) => a.price - b.price);
+			setCreditPackages(sortedPackages);
+		} catch (error) {
+			console.error('Error fetching credit packages:', error);
+			setPackagesError(t('errors.loadingFailed'));
+		} finally {
+			setPackagesLoading(false);
+		}
+	}, [t]);
+
 	useEffect(() => {
 		fetchServices();
-	}, [fetchServices]);
+		fetchCreditPackages();
+	}, [fetchServices, fetchCreditPackages]);
 	const getServiceCost = (serviceCode: string): number => {
 		const service = services.find(s => s.serviceCode === serviceCode);
 		return service ? service.cost : 0;
+	};
+
+	const getIconComponent = (iconName: string) => {
+		// For now, all packages use FaShoppingCart, but this can be extended
+		switch (iconName) {
+			case 'FaShoppingCart':
+			default:
+				return <FaShoppingCart />;
+		}
 	};
 	return (
 		<div className="min-h-screen bg-base-100 text-base-content">
@@ -114,10 +147,11 @@ export default function PricingPage() {
 										<FaPalette className="mr-2 text-primary" />
 										{t('serviceCosts.services.editBook')}
 									</span>
-								</div>										<ul className="ml-8 mt-2 space-y-2">
+								</div>
+								<ul className="ml-8 mt-2 space-y-2">
 									<li className="flex items-center justify-between">
 										<span>* {t('serviceCosts.services.manualEditing')}</span>
-										<span className="font-semibold">0</span>
+										<span className="font-semibold">{getServiceCost('manualEditing')}</span>
 									</li>
 									<li className="flex items-center justify-between">
 										<span className="flex items-center">
@@ -194,27 +228,38 @@ export default function PricingPage() {
 
 				{/* Credit Packages Section */}
 				<section id="buy-credits" className="my-16">
-					<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-						{creditPackages.map((pkg) => (
-							<div key={pkg.id} className={`card bg-base-200 shadow-xl relative ${pkg.bestValue ? 'border-2 border-accent' : pkg.popular ? 'border-2 border-secondary' : ''}`}>
-								{pkg.bestValue && <div className="badge badge-accent absolute -top-3 -right-3 p-2">{t('creditPackages.badges.bestValue')}</div>}
-								{pkg.popular && <div className="badge badge-secondary absolute -top-3 -right-3 p-2">{t('creditPackages.badges.popular')}</div>}
-								<div className="card-body items-center text-center">
-									<div className="text-4xl text-primary mb-2">{pkg.icon}</div>
-									<h3 className="card-title text-3xl">{pkg.credits} {t('creditPackages.credits')}</h3>
-									<p className="text-2xl font-semibold my-2">€{pkg.price}</p>
-									<p className="text-sm text-gray-400 mb-4">
-										{t(`creditPackages.packages.${pkg.key}.description`)}
-									</p>
-									<div className="card-actions">
-										<Link href={`/buy-credits?package=${pkg.id}`} className="btn btn-primary w-full">
-											{t('creditPackages.buyButton', { credits: pkg.credits })}
-										</Link>
+					{packagesLoading ? (
+						<div className="text-center py-12">
+							<span className="loading loading-spinner loading-lg"></span>
+							<p className="text-lg text-gray-600 mt-4">{t('serviceCosts.loading')}</p>
+						</div>
+					) : packagesError ? (
+						<div className="alert alert-error">
+							<span>{packagesError}</span>
+						</div>
+					) : (
+						<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+							{creditPackages.map((pkg: CreditPackage) => (
+								<div key={pkg.id} className={`card bg-base-200 shadow-xl relative ${pkg.bestValue ? 'border-2 border-accent' : pkg.popular ? 'border-2 border-secondary' : ''}`}>
+									{pkg.bestValue && <div className="badge badge-accent absolute -top-3 -right-3 p-2">{t('creditPackages.badges.bestValue')}</div>}
+									{pkg.popular && <div className="badge badge-secondary absolute -top-3 -right-3 p-2">{t('creditPackages.badges.popular')}</div>}
+									<div className="card-body items-center text-center">
+										<div className="text-4xl text-primary mb-2">{getIconComponent(pkg.icon)}</div>
+										<h3 className="card-title text-3xl">{pkg.credits} {t('creditPackages.credits')}</h3>
+										<p className="text-2xl font-semibold my-2">€{pkg.price}</p>
+										<p className="text-sm text-gray-400 mb-4">
+											{t(`creditPackages.packages.${pkg.key}.description`)}
+										</p>
+										<div className="card-actions">
+											<Link href={`/buy-credits?package=${pkg.id}`} className="btn btn-primary w-full">
+												{t('creditPackages.buyButton', { credits: pkg.credits })}
+											</Link>
+										</div>
 									</div>
 								</div>
-							</div>
-						))}
-					</div>
+							))}
+						</div>
+					)}
 				</section>
 
 				{/* New User Credits Message */}

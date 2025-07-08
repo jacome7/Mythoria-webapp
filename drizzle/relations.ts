@@ -1,13 +1,28 @@
 import { relations } from "drizzle-orm/relations";
-import { authors, addresses, events, stories, storyVersions, credits, paymentMethods, payments, shippingCodes, authorCreditBalances, creditLedger, characters, storyCharacters } from "./schema";
-// Note: storyGenerationRuns and storyGenerationSteps moved to workflows database
+import { addresses, printRequests, printProviders, authors, events, stories, storyVersions, credits, paymentMethods, payments, shippingCodes, authorCreditBalances, creditLedger, characters, aiEdits, paymentOrders, paymentEvents, storyCharacters } from "./schema";
+
+export const printRequestsRelations = relations(printRequests, ({one}) => ({
+	address: one(addresses, {
+		fields: [printRequests.shippingId],
+		references: [addresses.addressId]
+	}),
+	printProvider: one(printProviders, {
+		fields: [printRequests.printProviderId],
+		references: [printProviders.id]
+	}),
+}));
 
 export const addressesRelations = relations(addresses, ({one, many}) => ({
+	printRequests: many(printRequests),
 	author: one(authors, {
 		fields: [addresses.authorId],
 		references: [authors.authorId]
 	}),
 	shippingCodes: many(shippingCodes),
+}));
+
+export const printProvidersRelations = relations(printProviders, ({many}) => ({
+	printRequests: many(printRequests),
 }));
 
 export const authorsRelations = relations(authors, ({many}) => ({
@@ -20,6 +35,8 @@ export const authorsRelations = relations(authors, ({many}) => ({
 	creditLedgers: many(creditLedger),
 	characters: many(characters),
 	stories: many(stories),
+	aiEdits: many(aiEdits),
+	paymentOrders: many(paymentOrders),
 }));
 
 export const eventsRelations = relations(events, ({one}) => ({
@@ -44,7 +61,7 @@ export const storiesRelations = relations(stories, ({one, many}) => ({
 		fields: [stories.authorId],
 		references: [authors.authorId]
 	}),
-	// storyGenerationRuns: many(storyGenerationRuns), // MOVED TO WORKFLOWS_DB
+	aiEdits: many(aiEdits),
 	storyCharacters: many(storyCharacters),
 }));
 
@@ -111,14 +128,31 @@ export const charactersRelations = relations(characters, ({one, many}) => ({
 	storyCharacters: many(storyCharacters),
 }));
 
-// MOVED TO WORKFLOWS_DB - Relations moved to workflows database
-// export const storyGenerationRunsRelations = relations(storyGenerationRuns, ({one, many}) => ({
-// 	story: one(stories, {
-// 		fields: [storyGenerationRuns.storyId],
-// 		references: [stories.storyId]
-// 	}),
-// 	storyGenerationSteps: many(storyGenerationSteps),
-// }));
+export const aiEditsRelations = relations(aiEdits, ({one}) => ({
+	author: one(authors, {
+		fields: [aiEdits.authorId],
+		references: [authors.authorId]
+	}),
+	story: one(stories, {
+		fields: [aiEdits.storyId],
+		references: [stories.storyId]
+	}),
+}));
+
+export const paymentOrdersRelations = relations(paymentOrders, ({one, many}) => ({
+	author: one(authors, {
+		fields: [paymentOrders.authorId],
+		references: [authors.authorId]
+	}),
+	paymentEvents: many(paymentEvents),
+}));
+
+export const paymentEventsRelations = relations(paymentEvents, ({one}) => ({
+	paymentOrder: one(paymentOrders, {
+		fields: [paymentEvents.orderId],
+		references: [paymentOrders.orderId]
+	}),
+}));
 
 export const storyCharactersRelations = relations(storyCharacters, ({one}) => ({
 	story: one(stories, {
@@ -130,11 +164,3 @@ export const storyCharactersRelations = relations(storyCharacters, ({one}) => ({
 		references: [characters.characterId]
 	}),
 }));
-
-// MOVED TO WORKFLOWS_DB - Relations moved to workflows database
-// export const storyGenerationStepsRelations = relations(storyGenerationSteps, ({one}) => ({
-// 	storyGenerationRun: one(storyGenerationRuns, {
-// 		fields: [storyGenerationSteps.runId],
-// 		references: [storyGenerationRuns.runId]
-// 	}),
-// }));

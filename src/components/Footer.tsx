@@ -17,7 +17,7 @@ const Footer = () => {
               <p className="text-xs text-left mb-2">
                 {t('aboutFounder')}
               </p>
-              <Link href="/aboutUs" className="link link-hover text-xs">{t('readMyStory')}</Link>
+              <Link href="/aboutUs" className="link link-hover text-xs underline">{t('readMyStory')}</Link>
             </div>
           </div>
 

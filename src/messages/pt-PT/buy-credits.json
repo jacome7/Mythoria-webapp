@@ -1,0 +1,63 @@
+{
+  "BuyCreditsPage": {
+    "header": {
+      "title": "Comprar Créditos",
+      "subtitle": "Compre créditos para desbloquear funcionalidades premium e criar histórias incríveis."
+    },
+    "packages": {
+      "title": "Pacotes de Créditos Disponíveis",
+      "addToCart": "Adicionar ao Carrinho"
+    },
+    "badges": {
+      "bestValue": "Melhor Valor",
+      "popular": "Popular"
+    },
+    "cart": {
+      "title": "Carrinho de Compras",
+      "empty": "O seu carrinho está vazio. Adicione alguns pacotes de créditos para começar!",
+      "each": "cada"
+    },
+    "summary": {
+      "title": "Resumo do Pedido",
+      "subtotal": "Subtotal",
+      "vat": "IVA (6%)",
+      "total": "Total"
+    },
+    "payment": {
+      "title": "Método de Pagamento",
+      "revolutPay": "Revolut Pay",
+      "revolutDescription": "Pagamento rápido e seguro com Revolut. Pague com o seu cartão bancário ou conta Revolut.",
+      "mbway": "MB Way",
+      "comingSoon": "Em Breve",
+      "completePayment": "Complete o Seu Pagamento",
+      "creatingOrder": "A criar o seu pedido...",
+      "orderCreated": "Pedido criado com sucesso",
+      "success": "Pagamento bem-sucedido! A redireccionar para as suas histórias...",
+      "mbwaySuccess": "Pedido de pagamento MB Way criado! Verifique o seu email para instruções de pagamento. A redireccionar para as suas histórias...",
+      "processing": "A processar pagamento..."
+    },
+    "actions": {
+      "proceedToPayment": "Prosseguir para Pagamento",
+      "creatingOrder": "A Criar Pedido...",
+      "cancel": "Cancelar",
+      "tryAgain": "Tentar Novamente",
+      "contactSupport": "Contactar Suporte",
+      "backToPricing": "Voltar aos Preços"
+    },
+    "errors": {
+      "emptyCart": "O seu carrinho está vazio. Por favor adicione alguns pacotes de créditos primeiro.",
+      "orderCreationFailed": "Falha ao criar pedido. Por favor tente novamente.",
+      "paymentFailed": "Pagamento falhou. Por favor tente novamente.",
+      "contactSupport": "Por favor contacte a nossa equipa de suporte para assistência."
+    }
+  },
+  "RevolutPayment": {
+    "loading": "A carregar opções de pagamento...",
+    "securityNote": "A sua informação de pagamento é segura e encriptada.",
+    "encryptionNote": "Protegido por encriptação SSL de 256 bits",
+    "errors": {
+      "sdkLoadFailed": "Falha ao carregar sistema de pagamento. Por favor recarregue a página.",
+      "initializationFailed": "Falha ao inicializar pagamento. Por favor tente novamente."
+    }
+  }
+}

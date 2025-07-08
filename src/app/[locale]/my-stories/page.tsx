@@ -91,13 +91,13 @@ export default function MyStoriesPage() {
             {/* Tabs */}
             <div className="tabs">
               <a
-                className={`tab tab-lifted py-3 flex-1 text-center ${activeTab === 'stories' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
+                className={`tab tab-lifted py-1 flex-1 text-center ${activeTab === 'stories' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
                 onClick={() => setActiveTab('stories')}
               >
                 {t('tabs.myStories') || 'My Stories'}
               </a>
               <a
-                className={`tab tab-lifted py-3 flex-1 text-center ${activeTab === 'characters' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
+                className={`tab tab-lifted py-1 flex-1 text-center ${activeTab === 'characters' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
                 onClick={() => setActiveTab('characters')}
               >
                 {t('tabs.myCharacters') || 'My Characters'}

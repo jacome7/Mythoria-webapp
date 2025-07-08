@@ -17,5 +17,17 @@
     "name": "Mythoria",
     "description": "A Mythoria permite a qualquer pessoa criar e personalizr livros totalmente ilustrados usando IA generativa.",
     "inLanguage": "pt-PT"
+  },
+  "manifest": {
+    "name": "Mythoria - Criador de Livros Personalizados",
+    "short_name": "Mythoria",
+    "description": "Crie livros únicos e totalmente ilustrados",
+    "shortcuts": {
+      "createStory": {
+        "name": "Criar História",
+        "short_name": "Criar",
+        "description": "Comece a criar uma nova história"
+      }
+    }
   }
 }

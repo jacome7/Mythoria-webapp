@@ -12,6 +12,7 @@ export * from './characters';
 export * from './payments';
 export * from './shipping';
 export * from './credits';
+export * from './credit-packages';
 export * from './pricing';
 export * from './ratings';
 // export * from './token-usage'; // MOVED TO WORKFLOWS_DB
