@@ -362,7 +362,7 @@
 			},
 			"htmlEditor": {
 				"title": "HTML Code Editor",
-				"description": "Edit the raw HTML. Mythoria CSS classes (mythoria-*) will be preserved automatically when you save.",
+				"description": "Edit the raw HTML. Mythoria styles will be preserved automatically when you save.",
 				"placeholder": "Enter HTML code here..."
 			},
 			"unsavedChanges": "You have unsaved changes"

@@ -151,7 +151,7 @@ export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
                   </div>
                 </div>
                 <div className="mt-4">
-                  <Link href={`/${locale}/pricing`} className="btn btn-primary w-full">
+                  <Link href={`/${locale}/buy-credits`} className="btn btn-primary w-full">
                     {t('addCredits')}
                   </Link>
                 </div>

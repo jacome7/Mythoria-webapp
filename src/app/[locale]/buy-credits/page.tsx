@@ -2,21 +2,28 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState, useEffect, Suspense } from 'react';
+import { Suspense } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import { useLocale } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { SignedIn, SignedOut, useUser } from '@clerk/nextjs';
+
 import { FaShoppingCart, FaPlus, FaMinus, FaTrash, FaCreditCard, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 import BillingInformation from '@/components/BillingInformation';
 import RevolutPayment from '@/components/RevolutPayment';
 
-const creditPackages = [
-	{ id: 1, credits: 5, price: 5, popular: false, bestValue: false, icon: <FaShoppingCart />, key: 'credits5' },
-	{ id: 2, credits: 10, price: 9, popular: false, bestValue: false, icon: <FaShoppingCart />, key: 'credits10' },
-	{ id: 3, credits: 30, price: 25, popular: false, bestValue: false, icon: <FaShoppingCart />, key: 'credits30' },
-	{ id: 4, credits: 100, price: 79, popular: false, bestValue: false, icon: <FaShoppingCart />, key: 'credits100' },
-].sort((a, b) => a.price - b.price); // Sort by price ascending
+interface CreditPackage {
+	   id: number;
+	   credits: number;
+	   price: number;
+	   popular: boolean;
+	   bestValue: boolean;
+	   icon: string;
+	   key: string;
+	   dbId: string;
+}
+
+// ...existing code...
 
 interface CartItem {
 	packageId: number;
@@ -25,90 +32,117 @@ interface CartItem {
 
 // Separate component for search params to handle suspense
 function BuyCreditsContent() {
-	const searchParams = useSearchParams();
-	const t = useTranslations('BuyCreditsPage');
-	const tPricing = useTranslations('PricingPage');
-	const tMyStories = useTranslations('MyStoriesPage');
-	const locale = useLocale();
-	const { user } = useUser();
-	console.log('User:', user); // TODO: Remove this log
-	const [cart, setCart] = useState<CartItem[]>([]);
-	const [selectedPayment, setSelectedPayment] = useState<string>('revolut');
-	const [isMounted, setIsMounted] = useState(false);
-	const [orderToken, setOrderToken] = useState<string | null>(null);
-	const [isCreatingOrder, setIsCreatingOrder] = useState(false);
-	const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
-	const [paymentMessage, setPaymentMessage] = useState<string>('');
+	   const searchParams = useSearchParams();
+	   const t = useTranslations('BuyCreditsPage');
+	   const tPricing = useTranslations('PricingPage');
+	   const tMyStories = useTranslations('MyStoriesPage');
+	   const locale = useLocale();
+	   const { user } = useUser();
+	   const [cart, setCart] = useState<CartItem[]>([]);
+	   const [selectedPayment, setSelectedPayment] = useState<string>('revolut');
+	   const [isMounted, setIsMounted] = useState(false);
+	   const [orderToken, setOrderToken] = useState<string | null>(null);
+	   const [orderAmount, setOrderAmount] = useState<number | null>(null);
+	   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
+	   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
+	   const [paymentMessage, setPaymentMessage] = useState<string>('');
+	   const [creditPackages, setCreditPackages] = useState<CreditPackage[]>([]);
+	   const [packagesLoading, setPackagesLoading] = useState(true);
+	   const [packagesError, setPackagesError] = useState<string | null>(null);
 
-	// Handle client-side mounting to prevent hydration issues
-	useEffect(() => {
-		setIsMounted(true);
-	}, []);
+	   // Handle client-side mounting to prevent hydration issues
+	   useEffect(() => {
+			   setIsMounted(true);
+	   }, []);
 
-	// Pre-select package if coming from pricing page
-	useEffect(() => {
-		const packageId = searchParams.get('package');
-		if (packageId) {
-			const id = parseInt(packageId);
-			if (creditPackages.find(pkg => pkg.id === id)) {
-				setCart([{ packageId: id, quantity: 1 }]);
-			}
-		}
-	}, [searchParams]);
+	   // Fetch credit packages from API (like pricing page)
+	   const fetchCreditPackages = useCallback(async () => {
+			   try {
+					   const response = await fetch('/api/pricing/credit-packages');
+					   if (!response.ok) {
+							   throw new Error('Failed to fetch credit packages');
+					   }
+					   const data = await response.json();
+					   // Sort packages by price ascending
+					   const sortedPackages = data.packages.sort((a: CreditPackage, b: CreditPackage) => a.price - b.price);
+					   setCreditPackages(sortedPackages);
+			   } catch (error) {
+					   console.error('Error fetching credit packages:', error);
+					   setPackagesError(tPricing('errors.loadingFailed'));
+			   } finally {
+					   setPackagesLoading(false);
+			   }
+	   }, [tPricing]);
 
-	const addToCart = (packageId: number) => {
-		setCart(prev => {
-			const existing = prev.find(item => item.packageId === packageId);
-			if (existing) {
-				return prev.map(item =>
-					item.packageId === packageId
-						? { ...item, quantity: item.quantity + 1 }
-						: item
-				);
-			} else {
-				return [...prev, { packageId, quantity: 1 }];
-			}
-		});
-	};
+	   useEffect(() => {
+			   fetchCreditPackages();
+	   }, [fetchCreditPackages]);
 
-	const updateQuantity = (packageId: number, quantity: number) => {
-		if (quantity <= 0) {
-			removeFromCart(packageId);
-			return;
-		}
-		setCart(prev =>
-			prev.map(item =>
-				item.packageId === packageId
-					? { ...item, quantity }
-					: item
-			)
-		);
-	};
+	   // Pre-select package if coming from pricing page
+	   useEffect(() => {
+			   const packageId = searchParams.get('package');
+			   if (packageId) {
+					   const id = parseInt(packageId);
+					   if (creditPackages.find(pkg => pkg.id === id)) {
+							   setCart([{ packageId: id, quantity: 1 }]);
+					   }
+			   }
+	   }, [searchParams, creditPackages]);
 
-	const removeFromCart = (packageId: number) => {
-		setCart(prev => prev.filter(item => item.packageId !== packageId));
-	};
+	   const addToCart = (packageId: number) => {
+			   setCart(prev => {
+					   const existing = prev.find(item => item.packageId === packageId);
+					   if (existing) {
+							   return prev.map(item =>
+									   item.packageId === packageId
+											   ? { ...item, quantity: item.quantity + 1 }
+											   : item
+							   );
+					   } else {
+							   return [...prev, { packageId, quantity: 1 }];
+					   }
+			   });
+	   };
 
-	const getPackageById = (id: number) => {
-		return creditPackages.find(pkg => pkg.id === id);
-	};
+	   const updateQuantity = (packageId: number, quantity: number) => {
+			   if (quantity <= 0) {
+					   removeFromCart(packageId);
+					   return;
+			   }
+			   setCart(prev =>
+					   prev.map(item =>
+							   item.packageId === packageId
+									   ? { ...item, quantity }
+									   : item
+					   )
+			   );
+	   };
 
-	const calculateSubtotal = () => {
-		return cart.reduce((total, item) => {
-			const pkg = getPackageById(item.packageId);
-			return total + (pkg ? pkg.price * item.quantity : 0);
-		}, 0);
-	};
+	   const removeFromCart = (packageId: number) => {
+			   setCart(prev => prev.filter(item => item.packageId !== packageId));
+	   };
 
-	const calculateVAT = (subtotal: number) => {
-		// Since prices include VAT, calculate the VAT portion
-		// VAT = (Price with VAT / 1.06) * 0.06
-		const priceWithoutVAT = subtotal / 1.06;
-		return subtotal - priceWithoutVAT;
-	};
+	   const getPackageById = (id: number) => {
+			   return creditPackages.find(pkg => pkg.id === id);
+	   };
 
-	const subtotal = calculateSubtotal();
-	const vatAmount = calculateVAT(subtotal);	const total = subtotal;
+	   const calculateSubtotal = () => {
+			   return cart.reduce((total, item) => {
+					   const pkg = getPackageById(item.packageId);
+					   return total + (pkg ? pkg.price * item.quantity : 0);
+			   }, 0);
+	   };
+
+	   const calculateVAT = (subtotal: number) => {
+			   // Since prices include VAT, calculate the VAT portion
+			   // VAT = (Price with VAT / 1.06) * 0.06
+			   const priceWithoutVAT = subtotal / 1.06;
+			   return subtotal - priceWithoutVAT;
+	   };
+
+	   const subtotal = calculateSubtotal();
+	   const vatAmount = calculateVAT(subtotal);
+	   const total = subtotal;
 
 	const handlePlaceOrder = async () => {
 		if (cart.length === 0) {
@@ -176,6 +210,7 @@ function BuyCreditsContent() {
 			} else {
 				// Store order details for other payment methods
 				setOrderToken(data.orderToken);
+				setOrderAmount(data.amount);
 				setPaymentMessage(t('payment.orderCreated'));
 			}
 
@@ -238,12 +273,14 @@ function BuyCreditsContent() {
 		setPaymentStatus('idle');
 		setPaymentMessage('');
 		setOrderToken(null);
+		setOrderAmount(null);
 	};
 
 	const resetPayment = () => {
 		setPaymentStatus('idle');
 		setPaymentMessage('');
 		setOrderToken(null);
+		setOrderAmount(null);
 	};	return (
 		<div className="min-h-screen bg-base-100 text-base-content">
 			<div className="container mx-auto px-4 py-12">
@@ -260,10 +297,10 @@ function BuyCreditsContent() {
 						<SignedOut>
 							<div className="text-center space-y-6">
 								<h1 className="text-4xl font-bold">{t('header.title')}</h1>
-								<p className="text-lg text-gray-600">
+								<p className="text-lg text-gray-600 max-w-2xl mx-auto">
 									{tMyStories('signedOut.needSignIn')}
 								</p>
-								<div className="space-x-4">
+								<div className="flex flex-col sm:flex-row gap-4 justify-center">
 									<Link href={`/${locale}/sign-in`} className="btn btn-primary">
 										{tMyStories('signedOut.signIn')}
 									</Link>
@@ -490,6 +527,7 @@ function BuyCreditsContent() {
 										
 										<RevolutPayment
 											orderToken={orderToken}
+											orderAmount={orderAmount || undefined}
 											onPaymentSuccess={handlePaymentSuccess}
 											onPaymentError={handlePaymentError}
 											onPaymentCancel={handlePaymentCancel}

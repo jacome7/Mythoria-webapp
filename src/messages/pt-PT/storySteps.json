@@ -4,9 +4,8 @@
       "unauthenticated": {
         "title": "Ops! Parece que estás a tentar entrar no lounge dos autores!",
         "description": "Embora apreciemos o teu entusiasmo pela narração, tens de iniciar sessão primeiro. Não te preocupes, é mais fácil do que convencer um dragão a partilhar o seu tesouro! 🐉",
-        "signIn": "🔐 Iniciar Sessão para Começar a Aventura",
-        "signUp": "✨ Criar Conta de Autor",
-        "note": "Depois de iniciares sessão, estarás pronto para criar histórias mágicas que fariam inveja ao próprio Merlin! 🧙‍♂️"
+        "signIn": "🔐 Iniciar Sessão",
+        "signUp": "✨ Criar Conta de Autor"
       },
       "heading": "Capítulo 1 - O Autor",
       "intro": "Bem-vindo, contador de histórias! Antes de mergulharmos na tua aventura mágica, vamos garantir que temos a tua informação correta. Isto ajuda-nos a personalizar a tua experiência e a manter-te atualizado sobre o progresso da tua história.",

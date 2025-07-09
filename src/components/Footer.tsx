@@ -17,7 +17,7 @@ const Footer = () => {
               <p className="text-xs text-left mb-2">
                 {t('aboutFounder')}
               </p>
-              <Link href="/aboutUs" className="link link-hover text-xs underline">{t('readMyStory')}</Link>
+              <Link href="/aboutUs" className="link link-hover text-xs underline text-primary">{t('readMyStory')}</Link>
             </div>
           </div>
 
@@ -45,7 +45,7 @@ const Footer = () => {
             </div>
               {/* Links */}
             <div className="flex flex-col items-center md:items-end gap-2">
-              <Link href="/contactUs" className="link link-hover text-sm">{t('contactUs')}</Link>
+              <Link href="/contactUs" className="link link-hover text-sm underline text-primary">{t('contactUs')}</Link>
             </div>
           </div>
         </div>

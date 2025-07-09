@@ -31,6 +31,11 @@
       "message": "Tem a certeza de que quer eliminar esta história? Esta ação não pode ser desfeita.",
       "cancel": "Cancelar",
       "confirm": "Eliminar"
+    },
+    "signedOut": {
+      "needSignIn": "Todo contador precisa de uma conta para guardar os seus créditos mágicos!",
+      "signIn": "Entrar",
+      "createAccount": "Criar Conta"
     }
   }
 }

@@ -23,29 +23,25 @@ export interface RevolutOrderResponse {
   id: string;
   token: string;
   state: string;
-  amount: {
-    value: number;
-    currency: string;
-  };
+  amount: number; // ✅ Updated: amount is a direct number, not an object
+  currency: string; // ✅ Updated: currency is at the top level
 }
 
 export interface WebhookPayload {
   event: string;
-  timestamp: string;
-  data: {
-    id: string;
-    state: string;
-    amount?: {
-      value: number;
-      currency: string;
-    };
-    payment_method?: {
-      type: string;
-      brand?: string;
-      last4?: string;
-      exp_month?: string;
-      exp_year?: string;
-    };
+  order_id: string;
+  timestamp?: string;
+  state?: string;
+  amount?: {
+    value: number;
+    currency: string;
+  };
+  payment_method?: {
+    type: string;
+    brand?: string;
+    last4?: string;
+    exp_month?: string;
+    exp_year?: string;
   };
 }
 
@@ -106,19 +102,11 @@ export const paymentService = {
     // Calculate order totals
     const orderTotals = this.calculateOrderTotal(orderData.creditPackages);
     
-    // Debug logging
-    console.log('PaymentService: Order totals calculated:', {
-      totalCredits: orderTotals.totalCredits,
-      totalAmount: orderTotals.totalAmount, // This should be in euros (e.g., 5.00)
-      totalAmountInCents: Math.round(orderTotals.totalAmount * 100), // This should be in cents (e.g., 500)
-    });
-
     // Determine API base URL based on environment
-    const apiBaseUrl = process.env.NODE_ENV === 'production' 
-      ? 'https://merchant.revolut.com' 
-      : 'https://sandbox-merchant.revolut.com';
-    
-    console.log('PaymentService: Using API base URL:', apiBaseUrl);
+    const apiBaseUrl = process.env.REVOLUT_API_URL || 
+      (process.env.NODE_ENV === 'production' 
+        ? 'https://merchant.revolut.com' 
+        : 'https://sandbox-merchant.revolut.com');
 
     // Create order in Revolut
     const revolutOrderPayload = {
@@ -130,6 +118,12 @@ export const paymentService = {
     };
     
     console.log('PaymentService: Revolut order payload:', revolutOrderPayload);
+    console.log('PaymentService: Amount breakdown:', {
+      totalAmountEuros: orderTotals.totalAmount,
+      totalAmountCents: Math.round(orderTotals.totalAmount * 100),
+      currency: 'EUR',
+      description: `Mythoria Credits Purchase - ${orderTotals.totalCredits} credits`,
+    });
 
     const revolutResponse = await fetch(`${apiBaseUrl}/api/orders`, {
       method: 'POST',
@@ -144,10 +138,29 @@ export const paymentService = {
 
     if (!revolutResponse.ok) {
       const errorText = await revolutResponse.text();
+      console.error('PaymentService: Revolut API error:', {
+        status: revolutResponse.status,
+        statusText: revolutResponse.statusText,
+        errorText,
+        requestPayload: revolutOrderPayload,
+      });
       throw new Error(`Revolut API error: ${revolutResponse.status} - ${errorText}`);
     }
 
     const revolutOrder: RevolutOrderResponse = await revolutResponse.json();
+    
+    // Verify the order amount matches what we requested
+    const returnedAmount = revolutOrder.amount;
+    const requestedAmount = Math.round(orderTotals.totalAmount * 100);
+    
+    if (returnedAmount !== requestedAmount) {
+      console.warn('PaymentService: Amount mismatch detected:', {
+        requestedAmount: requestedAmount,
+        returnedAmount: returnedAmount,
+        requestedCurrency: 'EUR',
+        returnedCurrency: revolutOrder.currency,
+      });
+    }
 
     // Save order to database
     const [order] = await db.insert(paymentOrders).values({
@@ -218,13 +231,13 @@ export const paymentService = {
   async processWebhook(payload: WebhookPayload): Promise<{ success: boolean; message: string }> {
     try {
       // Find order by Revolut order ID
-      const order = await this.getOrderByRevolutId(payload.data.id);
+      const order = await this.getOrderByRevolutId(payload.order_id);
       
       if (!order) {
-        return { success: false, message: `Order not found: ${payload.data.id}` };
+        return { success: false, message: `Order not found: ${payload.order_id}` };
       }
 
-      // Create event record
+      // Create event record (idempotent - will help prevent duplicate processing)
       await db.insert(paymentEvents).values({
         orderId: order.orderId,
         eventType: 'webhook_received',
@@ -234,24 +247,30 @@ export const paymentService = {
 
       // Process the event based on type
       switch (payload.event) {
+        case 'ORDER_COMPLETED':
+          // This is the main event we care about - payment successful
+          await this.handleOrderCompleted(order, payload);
+          return { success: true, message: `Order ${order.orderId} completed successfully` };
+          
         case 'order.cancelled':
           await this.updateOrderStatus(order.orderId, 'cancelled');
-          break;
+          return { success: true, message: `Order ${order.orderId} cancelled` };
+          
         case 'order.failed':
+        case 'ORDER_PAYMENT_FAILED':
           await this.updateOrderStatus(order.orderId, 'failed');
-          break;
-        case 'payment.failed':
-          await this.updateOrderStatus(order.orderId, 'failed');
-          break;
+          return { success: true, message: `Order ${order.orderId} failed` };
+          
         case 'dispute.opened':
           // Handle dispute - could send notification to admin
           console.log(`Dispute opened for order ${order.orderId}`);
-          break;
+          return { success: true, message: `Dispute opened for order ${order.orderId}` };
+          
         default:
           console.log(`Unhandled webhook event: ${payload.event}`);
+          return { success: true, message: `Unhandled event: ${payload.event}` };
       }
 
-      return { success: true, message: 'Webhook processed successfully' };
     } catch (error) {
       console.error('Webhook processing error:', error);
       return { success: false, message: error instanceof Error ? error.message : 'Unknown error' };
@@ -260,20 +279,41 @@ export const paymentService = {
 
   // Handle completed order
   async handleOrderCompleted(order: PaymentOrder, payload: WebhookPayload) {
-    // Update order status
-    await this.updateOrderStatus(order.orderId, 'completed');
-
-    // Add credits to user's balance
-    const creditBundle = order.creditBundle as { credits: number; price: number };
-    const { creditService } = await import('../services');
-    await creditService.addCredits(order.authorId, creditBundle.credits, 'creditPurchase', order.orderId);
-
-    // Save payment method if it's a new card
-    if (payload.data.payment_method && payload.data.payment_method.type === 'card') {
-      await this.savePaymentMethod(order.authorId, payload.data.payment_method);
+    // Check if order is already completed to prevent duplicate processing
+    if (order.status === 'completed') {
+      console.log(`Order ${order.orderId} already completed, skipping duplicate processing`);
+      return;
     }
 
-    console.log(`Order ${order.orderId} completed - ${creditBundle.credits} credits added to user ${order.authorId}`);
+    // Use database transaction to ensure atomicity
+    await db.transaction(async (tx) => {
+      // Update order status
+      await tx.update(paymentOrders)
+        .set({ 
+          status: 'completed',
+          updatedAt: new Date()
+        })
+        .where(eq(paymentOrders.orderId, order.orderId));
+
+      // Add credits to user's balance
+      const creditBundle = order.creditBundle as { credits: number; price: number };
+      const { creditService } = await import('../services');
+      
+      // Add credits using the credit service
+      await creditService.addCredits(order.authorId, creditBundle.credits, 'creditPurchase', order.orderId);
+
+      console.log(`Order ${order.orderId} completed - ${creditBundle.credits} credits added to user ${order.authorId}`);
+    });
+
+    // Save payment method if it's a new card (outside transaction - not critical)
+    if (payload.payment_method && payload.payment_method.type === 'card') {
+      try {
+        await this.savePaymentMethod(order.authorId, payload.payment_method);
+      } catch (error) {
+        console.error('Error saving payment method:', error);
+        // Don't fail the whole process if payment method saving fails
+      }
+    }
   },
 
   // Save payment method for future use
@@ -329,9 +369,73 @@ export const paymentService = {
   },
 
   // Verify webhook signature (Revolut sends this in the header)
-  verifyWebhookSignature(payload: string, signature: string): boolean {
-    // In production, you would verify the signature using your webhook secret
-    // For now, we'll just check that both exist
-    return !!(payload && signature);
+  async verifyWebhookSignature(payload: string, signature: string, timestamp: string): Promise<boolean> {
+    // Check if signature and timestamp exist
+    if (!payload || !signature || !timestamp) {
+      console.error('Missing required parameters for signature verification');
+      return false;
+    }
+    
+    // Check timestamp to prevent replay attacks (5 minute window)
+    const now = Math.floor(Date.now() / 1000); // Current time in seconds
+    
+    // Revolut sends timestamp in milliseconds, convert to seconds
+    const requestTime = Math.floor(parseInt(timestamp) / 1000);
+    const timeWindow = 5 * 60; // 5 minutes in seconds
+    const timeDiff = Math.abs(now - requestTime);
+    
+    if (timeDiff > timeWindow) {
+      return false;
+    }
+    
+    // Get webhook secret from environment
+    const webhookSecret = process.env.REVOLUT_WEBHOOK_SECRET;
+    
+    if (!webhookSecret) {
+      console.error('REVOLUT_WEBHOOK_SECRET not found in environment variables');
+      return false;
+    }
+    
+    try {
+      const crypto = await import('crypto');
+      
+      // According to Revolut docs, the payload to sign is: v1.<timestamp>.<rawPayload>
+      const payloadToSign = `v1.${timestamp}.${payload}`;
+      
+      // Compute HMAC-SHA256, hex-encoded
+      const digest = crypto
+        .createHmac('sha256', webhookSecret)
+        .update(payloadToSign, 'utf8')
+        .digest('hex');
+      
+      // The expected signature format is: v1=<hex_digest>
+      const expectedSignature = `v1=${digest}`;
+      
+      // Support signature rotation by checking every comma-separated value
+      const signatureValues = signature.split(',').map(sig => sig.trim());
+      
+      // Constant-time comparison against any signature in the header
+      for (const sig of signatureValues) {
+        try {
+          const isMatch = crypto.timingSafeEqual(
+            Buffer.from(sig, 'utf8'),
+            Buffer.from(expectedSignature, 'utf8')
+          );
+          
+          if (isMatch) {
+            return true;
+          }
+        } catch {
+          // Continue checking other signatures
+        }
+      }
+      
+      console.error('Webhook signature verification failed');
+      return false;
+      
+    } catch (error) {
+      console.error('Error verifying webhook signature:', error);
+      return false;
+    }
   },
 };

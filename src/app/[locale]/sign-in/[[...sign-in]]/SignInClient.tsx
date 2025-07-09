@@ -46,7 +46,10 @@ export default function SignInClient({ locale, translations }: SignInClientProps
             </p>
             <p className="text-lg text-gray-600 max-w-md mx-auto">
               {translations.firstTimeText}{' '}
-              <Link href={`/${locale}/sign-up`} className="text-orange-600 hover:text-orange-700 font-medium">
+              <Link 
+                href={`/${locale}/sign-up`} 
+                className="font-medium underline text-primary"
+              >
                 {translations.createAccountLink}
               </Link>
               {' '}{translations.createAccountText}

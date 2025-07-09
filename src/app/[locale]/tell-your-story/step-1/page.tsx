@@ -159,12 +159,11 @@ export default function Step1Page() {
       <ClientAuthWrapper
         signedOutFallback={
           <div className="text-center space-y-6 max-w-2xl mx-auto">
-            <div className="text-6xl">📚</div>
             <h1 className="text-4xl font-bold">{t('unauthenticated.title')}</h1>
             <p className="text-lg text-gray-600">
               {t('unauthenticated.description')}
             </p>
-            <div className="space-x-4">
+            <div className="space-y-4 sm:space-y-0 sm:space-x-4">
               <Link href={`/${locale}/sign-in`} className="btn btn-primary btn-lg">
                 {t('unauthenticated.signIn')}
               </Link>
@@ -172,15 +171,14 @@ export default function Step1Page() {
                 {t('unauthenticated.signUp')}
               </Link>
             </div>
-            <p className="text-sm text-gray-500">
-              {t('unauthenticated.note')}
-            </p>
           </div>
         }
       >
         <div className="max-w-4xl mx-auto">
-          {/* Progress indicator */}            {(() => {              const currentStep = 1;
-              const totalSteps = 5;
+          {/* Progress indicator */}
+          {(() => {
+            const currentStep = 1;
+            const totalSteps = 5;
             return (
               <>
                 {/* Mobile Progress Indicator */}
@@ -196,7 +194,8 @@ export default function Step1Page() {
                 </div>
 
                 {/* Desktop Progress Indicator */}
-                <div className="hidden md:block mb-8">                  <ul className="steps steps-horizontal w-full">
+                <div className="hidden md:block mb-8">
+                  <ul className="steps steps-horizontal w-full">
                     <li className="step step-primary" data-content="1"></li>
                     <li className="step" data-content="2"></li>
                     <li className="step" data-content="3"></li>
@@ -237,7 +236,8 @@ export default function Step1Page() {
                     <div className="form-control">
                       <label className="label">
                         <span className="label-text font-semibold">{t('fields.fullName')}</span>
-                      </label>                      <input
+                      </label>
+                      <input
                         type="text"
                         value={displayName}
                         onChange={(e) => {
@@ -257,7 +257,8 @@ export default function Step1Page() {
                     <div className="form-control">
                       <label className="label">
                         <span className="label-text font-semibold">{t('fields.email')}</span>
-                      </label>                      <input
+                      </label>
+                      <input
                         type="email"
                         value={email}
                         onChange={(e) => {
@@ -277,7 +278,8 @@ export default function Step1Page() {
                     <div className="form-control">
                       <label className="label">
                         <span className="label-text font-semibold">{t('fields.mobile')}</span>
-                      </label>                      <input
+                      </label>
+                      <input
                         type="tel"
                         value={mobilePhone}
                         onChange={(e) => {
@@ -286,7 +288,8 @@ export default function Step1Page() {
                         }}
                         placeholder={t('fields.mobile')}
                         className="input input-bordered w-full"
-                      />                      <label className="label">
+                      />
+                      <label className="label">
                         <span className="label-text-alt">{t('fields.mobileHelp')}</span>
                       </label>
                     </div>

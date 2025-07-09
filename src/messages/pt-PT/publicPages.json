@@ -38,7 +38,7 @@
     "writeNewStory": "História",
     "signedOut": {
       "welcome": "Bem-vindo",
-      "needSignIn": "Precisa de fazer login para ver as suas histórias.",
+      "needSignIn": "Todo contador precisa de uma conta para guardar os seus créditos mágicos!",
       "signIn": "Entrar",
       "createAccount": "Criar Conta"
     },
@@ -154,7 +154,7 @@
         },
         "step3": {
           "title": "As Personagens",
-          "description": "A Mythoria identifica as personagens automaticamente, mas pode personalizar cada detalhe. Descreva a sua aparência, paixões e características únicas."
+          "description": "A Mythoria identifica as personagens, mas pode personalizar cada detalhe. Descreva a sua aparência, paixões e características únicas."
         },
         "step4": {
           "title": "O Enredo",
@@ -213,12 +213,12 @@
   "AboutUs": {
     "hero": {
       "title": "Mythoria",
-      "subtitle": "Histórias criadas por um sonhador de 18 anos … e uma legião de Oompa-Loompas de IA.",
+      "subtitle": "Histórias criadas por um sonhador de 18 anos … e uma legião de Oompa-Loompas.",
       "cta": "Comece a sua própria história"
     },
     "founder": {
       "title": "O Jovem Fundador",
-      "description": "Conheça o Rodrigo, que transformou o seu fascínio de infância por histórias numa fábrica de aventuras com IA. Aos 18 anos, combina inteligência artificial com imaginação para criar contos personalizados para cada criança.",
+      "description": "Conheça o Rodrigo, que transformou o seu fascínio de infância por histórias numa fábrica de aventuras. Aos 18 anos, combina uma enorme imaginação com uma pitada de inteligência artificial para criar contos personalizados para cada criança ou adulto.",
       "ageLabel": "18 anos",
       "ageHover": "ainda a evoluir",
       "imageAlt": "Rodrigo - Fundador da Mythoria"

@@ -6,14 +6,20 @@ export async function POST(request: NextRequest) {
     // Get the raw body for signature verification
     const body = await request.text();
     const signature = request.headers.get('revolut-signature');
+    const timestamp = request.headers.get('revolut-request-timestamp');
 
     if (!signature) {
       console.error('Missing Revolut signature header');
       return NextResponse.json({ error: 'Missing signature' }, { status: 400 });
     }
 
-    // Verify webhook signature
-    if (!paymentService.verifyWebhookSignature(body, signature)) {
+    if (!timestamp) {
+      console.error('Missing Revolut timestamp header');
+      return NextResponse.json({ error: 'Missing timestamp' }, { status: 400 });
+    }
+
+    // Verify webhook signature with timestamp
+    if (!(await paymentService.verifyWebhookSignature(body, signature, timestamp))) {
       console.error('Invalid webhook signature');
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
@@ -27,13 +33,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
     }
 
-    // Validate required fields
-    if (!webhookPayload.event || !webhookPayload.data || !webhookPayload.data.id) {
+    // Validate required fields - Revolut sends order_id at top level, not in data object
+    if (!webhookPayload.event || !webhookPayload.order_id) {
       console.error('Missing required webhook fields:', webhookPayload);
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
-
-    console.log(`Processing webhook: ${webhookPayload.event} for order ${webhookPayload.data.id}`);
 
     // Process the webhook
     const result = await paymentService.processWebhook(webhookPayload);
@@ -42,8 +46,6 @@ export async function POST(request: NextRequest) {
       console.error('Webhook processing failed:', result.message);
       return NextResponse.json({ error: result.message }, { status: 400 });
     }
-
-    console.log('Webhook processed successfully:', result.message);
 
     return NextResponse.json({ 
       success: true, 

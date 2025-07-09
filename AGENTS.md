@@ -282,6 +282,22 @@ documentation:
   contributing: ../CONTRIBUTING.md
 ```
 
+## Coding Style
+
+- Use 2 spaces for indentation.
+- Use single 'quotes' for strings, double "quotes" for JSX props.
+- Always use semicolons.
+- Interface names should be descriptive without prefixes (e.g., `Address`, `StoryOutlineParams`).
+- Enum values should use UPPER_SNAKE_CASE (e.g., `CHILDREN_0_2`, `SCIENCE_FICTION`).
+- Always use strict equality (`===` and `!==`).
+- Use JSDoc-style comments for functions and complex logic.
+- Organize imports: external packages first, then internal imports with `@/` path mapping.
+- Prefer arrow functions for inline callbacks, regular functions for main declarations.
+- Use async/await over promises for better readability.
+- Always use trailing commas in objects and arrays.
+- Use descriptive variable names and avoid abbreviations.
+- Export interfaces and types from dedicated files in `/types/` directory.
+
 ---
 
 **Agent Documentation Version**: 1.0.0  
