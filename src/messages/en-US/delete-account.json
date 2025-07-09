@@ -44,7 +44,9 @@
     },
     "errors": {
       "deletionFailed": "Account deletion failed. Please try again or contact support if the problem persists.",
-      "networkError": "Network error occurred. Please check your connection and try again."
+      "networkError": "Network error occurred. Please check your connection and try again.",
+      "failedToDeleteAccount": "Failed to delete account. Please try again later.",
+      "deletionError": "An error occurred while deleting your account. Please contact support for assistance."
     }
   }
 }

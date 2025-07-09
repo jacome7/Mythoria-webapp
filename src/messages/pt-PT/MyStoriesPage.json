@@ -36,6 +36,13 @@
       "needSignIn": "Todo contador precisa de uma conta para guardar os seus créditos mágicos!",
       "signIn": "Entrar",
       "createAccount": "Criar Conta"
+    },
+    "defaults": {
+      "authorName": "Contador de Histórias"
+    },
+    "tabs": {
+      "myStories": "As Minhas Histórias",
+      "myCharacters": "As Minhas Personagens"
     }
   }
 }

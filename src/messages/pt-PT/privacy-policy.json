@@ -203,6 +203,9 @@
       "title": "13. Contacto",
       "content": "Dúvidas sobre privacidade? Envie-nos um e-mail para dpo@mythoria.pt ou escreva para o endereço indicado no § 1. Estamos aqui para ajudar!"
     },
+    "links": {
+      "deleteAccount": "Delete Account / Eliminar Conta"
+    },
     "lastUpdated": "Última atualização: 2 de junho de 2025"
   }
 }

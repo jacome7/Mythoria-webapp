@@ -39,9 +39,16 @@ export default function RevolutPayment({
         setIsLoading(true);
         setError(null);
 
-        // Get environment variables
-        const publicToken = process.env.NEXT_PUBLIC_REVOLUT_API_PUBLIC_KEY;
-        const isProduction = process.env.NODE_ENV === 'production';
+        // Fetch Revolut configuration from API
+        console.log('RevolutPayment: Fetching configuration...');
+        const configResponse = await fetch('/api/revolut-config');
+        if (!configResponse.ok) {
+          throw new Error('Failed to fetch Revolut configuration');
+        }
+        
+        const config = await configResponse.json();
+        const { publicKey: publicToken, environment: envMode } = config;
+        const isProduction = envMode === 'prod';
         
         console.log('RevolutPayment: Environment:', {
           isProduction,

@@ -58,7 +58,13 @@
       "alerts": {
         "uploadError": "Falha ao carregar ficheiro. Por favor, tente novamente.",
         "recordingError": "Falha ao iniciar gravação. Por favor, verifique as permissões do microfone.",
-        "processingError": "Falha ao processar a sua história. Por favor, tente novamente."
+        "processingError": "Falha ao processar a sua história. Por favor, tente novamente.",
+        "cameraPermissionError": "Permissão de câmara negada. Por favor permita o acesso à câmara para tirar fotografias.",
+        "microphonePermissionError": "Permissão de microfone negada. Por favor permita o acesso ao microfone para gravar áudio.",
+        "analyzeImageRequest": "Analise a imagem e descreva o que vê...",
+        "genAIError": "Pedido GenAI falhou. Por favor tente novamente.",
+        "cameraIssue": "Problema no acesso à câmara. Por favor verifique as permissões da câmara.",
+        "microphoneIssue": "Problema no acesso ao microfone. Por favor verifique as permissões do microfone."
       },
       "loadingModal": {
         "title": "✨ A Criar a Tua História",
@@ -87,6 +93,10 @@
       },
       "navigation": {
         "backToMyStories": "Voltar às Minhas Histórias"
+      },
+      "alerts": {
+        "failedToLoadStoryCharacters": "Falha ao carregar personagens da história. Por favor tente novamente.",
+        "characterLoadError": "Erro ao carregar personagens. Por favor atualize a página."
       }
     },
     "step4": {
@@ -120,6 +130,10 @@
         "medium": "Média (6-8 capítulos)", 
         "long": "Longa (9-12 capítulos)"
       },
+      "plurals": {
+        "chapter": "capítulo",
+        "chapters": "capítulos"
+      },
       "saving": "A guardar...",
       "nextChapter": "Próximo Capítulo"
     },
@@ -146,7 +160,12 @@
       "startingGeneration": "A Iniciar Geração da História...",
       "generateMyStory": "🚀 Gerar a Minha História",
       "storyDataNotAvailable": "Dados da história não disponíveis. Tenta novamente.",
-      "stepProgress": "Passo {currentStep} de {totalSteps}"
+      "stepProgress": "Passo {currentStep} de {totalSteps}",
+      "alerts": {
+        "failedToFetchData": "Falha ao obter dados da história. Por favor tente novamente.",
+        "failedToDeductCredits": "Falha ao deduzir créditos. Por favor tente novamente.",
+        "dataFetchError": "Erro ao obter dados. Por favor verifique a sua ligação e tente novamente."
+      }
     }
   }
 }

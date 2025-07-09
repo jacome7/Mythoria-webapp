@@ -454,13 +454,13 @@ export default function GetInspiredPage() {
               </div>
               <h3 className="text-xl font-semibold text-gray-800 mb-4">
                 {hasActiveFilters 
-                  ? 'No stories match your filters' 
+                  ? t('emptyState.noStoriesMatch') 
                   : t('gallery.emptyTitle', { default: 'No Featured Stories Yet' })
                 }
               </h3>
               <p className="text-gray-600 mb-8">
                 {hasActiveFilters 
-                  ? 'Try adjusting your filters to see more stories.'
+                  ? t('emptyState.tryAdjustingFilters')
                   : t('gallery.emptyMessage', { default: 'Create your own story and share it with the world!' })
                 }
               </p>

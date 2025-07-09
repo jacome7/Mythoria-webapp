@@ -6,7 +6,7 @@ import { Suspense } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { SignedIn, SignedOut, useUser } from '@clerk/nextjs';
+import { SignedIn, SignedOut } from '@clerk/nextjs';
 
 import { FaShoppingCart, FaPlus, FaMinus, FaTrash, FaCreditCard, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 import BillingInformation from '@/components/BillingInformation';
@@ -23,12 +23,19 @@ interface CreditPackage {
 	   dbId: string;
 }
 
-// ...existing code...
-
 interface CartItem {
 	packageId: number;
 	quantity: number;
 }
+
+// Helper function to convert icon string to React component
+const getIconComponent = (iconName: string) => {
+	switch (iconName) {
+		case 'FaShoppingCart':
+		default:
+			return <FaShoppingCart />;
+	}
+};
 
 // Separate component for search params to handle suspense
 function BuyCreditsContent() {
@@ -37,7 +44,6 @@ function BuyCreditsContent() {
 	   const tPricing = useTranslations('PricingPage');
 	   const tMyStories = useTranslations('MyStoriesPage');
 	   const locale = useLocale();
-	   const { user } = useUser();
 	   const [cart, setCart] = useState<CartItem[]>([]);
 	   const [selectedPayment, setSelectedPayment] = useState<string>('revolut');
 	   const [isMounted, setIsMounted] = useState(false);
@@ -321,31 +327,42 @@ function BuyCreditsContent() {
 					{/* Left Side - Available Packages */}
 					<div>
 						<h2 className="text-2xl font-bold mb-6">{t('packages.title')}</h2>
-						<div className="space-y-4">
-							{creditPackages.map((pkg) => (
-								<div key={pkg.id} className={`card bg-base-200 shadow-lg border-2 ${pkg.bestValue ? 'border-accent' : pkg.popular ? 'border-secondary' : 'border-transparent'}`}>
-									{pkg.bestValue && <div className="badge badge-accent absolute -top-3 -right-3 p-2">{t('badges.bestValue')}</div>}
-									{pkg.popular && <div className="badge badge-secondary absolute -top-3 -right-3 p-2">{t('badges.popular')}</div>}
-									<div className="card-body">
-										<div className="flex items-center justify-between">
-											<div className="flex items-center space-x-4">
-												<div className="text-3xl text-primary">{pkg.icon}</div>
-												<div>
-													<h3 className="text-xl font-bold">{pkg.credits} {tPricing('creditPackages.credits')}</h3>
-													<p className="text-lg font-semibold text-primary">€{pkg.price.toFixed(2)}</p>
+						{packagesLoading ? (
+							<div className="flex justify-center items-center py-12">
+								<span className="loading loading-spinner loading-lg"></span>
+							</div>
+						) : packagesError ? (
+							<div className="alert alert-error">
+								<FaExclamationTriangle />
+								<span>{packagesError}</span>
+							</div>
+						) : (
+							<div className="space-y-4">
+								{creditPackages.map((pkg) => (
+									<div key={pkg.id} className={`card bg-base-200 shadow-lg border-2 ${pkg.bestValue ? 'border-accent' : pkg.popular ? 'border-secondary' : 'border-transparent'}`}>
+										{pkg.bestValue && <div className="badge badge-accent absolute -top-3 -right-3 p-2">{t('badges.bestValue')}</div>}
+										{pkg.popular && <div className="badge badge-secondary absolute -top-3 -right-3 p-2">{t('badges.popular')}</div>}
+										<div className="card-body">
+											<div className="flex items-center justify-between">
+												<div className="flex items-center space-x-4">
+													<div className="text-3xl text-primary">{getIconComponent(pkg.icon)}</div>
+													<div>
+														<h3 className="text-xl font-bold">{pkg.credits} {tPricing('creditPackages.credits')}</h3>
+														<p className="text-lg font-semibold text-primary">€{pkg.price.toFixed(2)}</p>
+													</div>
 												</div>
+												<button
+													onClick={() => addToCart(pkg.id)}
+													className="btn btn-primary"
+												>
+													{t('packages.addToCart')}
+												</button>
 											</div>
-											<button
-												onClick={() => addToCart(pkg.id)}
-												className="btn btn-primary"
-											>
-												{t('packages.addToCart')}
-											</button>
 										</div>
 									</div>
-								</div>
-							))}
-						</div>
+								))}
+							</div>
+						)}
 					</div>
 
 					{/* Right Side - Shopping Cart */}
@@ -365,7 +382,7 @@ function BuyCreditsContent() {
 										return (
 											<div key={item.packageId} className="flex items-center justify-between border-b border-base-300 pb-4">
 												<div className="flex items-center space-x-3">
-													<div className="text-2xl text-primary">{pkg.icon}</div>
+													<div className="text-2xl text-primary">{getIconComponent(pkg.icon)}</div>
 													<div>
 														<h4 className="font-semibold">{pkg.credits} {tPricing('creditPackages.credits')}</h4>
 														<p className="text-sm text-gray-600">€{pkg.price.toFixed(2)} {t('cart.each')}</p>
@@ -576,8 +593,13 @@ function BuyCreditsContent() {
 
 export default function BuyCreditsPage() {
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
+		<Suspense fallback={<LoadingFallback />}>
 			<BuyCreditsContent />
 		</Suspense>
 	);
+}
+
+function LoadingFallback() {
+	const t = useTranslations('common.Loading');
+	return <div>{t('buyCredits')}</div>;
 }

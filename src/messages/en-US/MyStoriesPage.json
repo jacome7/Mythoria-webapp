@@ -36,6 +36,13 @@
       "needSignIn": "Every storyteller needs an account to keep their magical credits safe!",
       "signIn": "Sign In",
       "createAccount": "Create Account"
+    },
+    "defaults": {
+      "authorName": "Storyteller"
+    },
+    "tabs": {
+      "myStories": "My Stories",
+      "myCharacters": "My Characters"
     }
   }
 }

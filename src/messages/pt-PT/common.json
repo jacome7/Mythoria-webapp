@@ -112,7 +112,10 @@
       "redirecting": "A redirecionar...",
       "redirectingToSharedStory": "A redirecionar para a história partilhada...",
       "pleaseWaitStory": "Por favor aguarde enquanto carregamos a história",
-      "pleaseWaitAccess": "Por favor aguarde enquanto verificamos o seu acesso"
+      "pleaseWaitAccess": "Por favor aguarde enquanto verificamos o seu acesso",
+      "default": "A carregar...",
+      "buyCredits": "A carregar...",
+      "processing": "A processar..."
     },
     "Errors": {
       "storyNotFound": "História não encontrada",
@@ -124,7 +127,19 @@
       "storyNotFoundGeneric": "História não encontrada.",
       "noPermission": "Não tem permissão para aceder a esta história.",
       "noPermissionEdit": "Não tem permissão para editar esta história.",
-      "failedToLoad": "Falha ao carregar a história. Por favor tente novamente."
+      "failedToLoad": "Falha ao carregar a história. Por favor tente novamente.",
+      "failedToCreateOrder": "Falha ao criar pedido",
+      "failedToAccessSharedStory": "Falha ao aceder à história partilhada",
+      "failedToLoadStoryContent": "Falha ao carregar conteúdo da história",
+      "failedToLoadStoryData": "Falha ao carregar dados da história",
+      "failedToDeleteAccount": "Falha ao eliminar conta. Por favor tente mais tarde.",
+      "failedToLoadStoryCharacters": "Falha ao carregar personagens da história",
+      "failedToFetchData": "Falha ao obter dados",
+      "failedToDeductCredits": "Falha ao deduzir créditos",
+      "audiobookGenerationError": "Falha ao gerar audiolivro",
+      "audioPlaybackError": "Erro na reprodução de áudio",
+      "audioLoadError": "Falha ao carregar áudio",
+      "shareLinkCreationFailed": "Falha ao criar ligação de partilha"
     },
     "Components": {
       "ShareModal": {
@@ -156,7 +171,8 @@
         "makePrivate": "Tornar história privada",
         "makePrivateDesc": "Remover acesso público e tornar a história privada",
         "errors": {
-          "createLinkFailed": "Erro ao criar link de partilha: Tente novamente mais tarde."
+          "createLinkFailed": "Erro ao criar link de partilha: Tente novamente mais tarde.",
+          "shareLinkCreationFailed": "Falha ao criar ligação de partilha. Por favor tente novamente."
         }
       },
       "CreditsDisplay": {
@@ -246,6 +262,18 @@
         "backToMyStories": "Voltar às Minhas Histórias"
       },
       "ListenStoryPage": {
+        "errors": {
+          "audioLoadFailed": "Falha ao carregar áudio. Verifique a sua ligação à internet e tente novamente.",
+          "audioGenerationFailed": "Falha na geração de áudio. Tente novamente mais tarde.",
+          "audioPlaybackError": "Ocorreu um erro durante a reprodução de áudio. Atualize a página e tente novamente."
+        }
+      },
+      "ListenStoryPageErrors": {
+        "audioLoadFailed": "Falha ao carregar áudio. Verifique a sua ligação à internet e tente novamente.",
+        "audioGenerationFailed": "Falha na geração de áudio. Tente novamente mais tarde.",
+        "audioPlaybackError": "Ocorreu um erro durante a reprodução de áudio. Atualize a página e tente novamente."
+      },
+      "StoryAudioPlayer": {
         "errors": {
           "audioLoadFailed": "Falha ao carregar áudio. Verifique a sua ligação à internet e tente novamente.",
           "audioGenerationFailed": "Falha na geração de áudio. Tente novamente mais tarde.",

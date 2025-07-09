@@ -63,9 +63,9 @@ const AboutUsPage = () => {
                   {t('founder.description')}
                 </p>
                 <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-                  <div className="badge badge-outline">Founder</div>
-                  <div className="badge badge-outline">AI Enthusiast</div>
-                  <div className="badge badge-outline">Storyteller</div>
+                  <div className="badge badge-outline">{t('founder.badges.founder')}</div>
+                  <div className="badge badge-outline">{t('founder.badges.aiEnthusiast')}</div>
+                  <div className="badge badge-outline">{t('founder.badges.storyteller')}</div>
                 </div>
               </div>
             </div>
@@ -144,19 +144,19 @@ const AboutUsPage = () => {
             <div className="steps steps-vertical lg:steps-horizontal w-full mb-12">
               <div className="step step-primary">
                 <div className="text-center lg:text-left ml-4 lg:ml-0">
-                  <div className="font-semibold text-primary mb-2">✅ Beta Spellbook</div>
+                  <div className="font-semibold text-primary mb-2">✅ {t('progress.milestoneLabels.betaSpellbook')}</div>
                   <p className="text-sm text-base-content/70">{t('progress.milestone1')}</p>
                 </div>
               </div>
               <div className="step">
                 <div className="text-center lg:text-left ml-4 lg:ml-0">
-                  <div className="font-semibold text-base-content/50 mb-2">🔄 Feedback Cauldron</div>
+                  <div className="font-semibold text-base-content/50 mb-2">🔄 {t('progress.milestoneLabels.feedbackCauldron')}</div>
                   <p className="text-sm text-base-content/50">{t('progress.milestone2')}</p>
                 </div>
               </div>
               <div className="step">
                 <div className="text-center lg:text-left ml-4 lg:ml-0">
-                  <div className="font-semibold text-base-content/50 mb-2">🚀 Global Portal</div>
+                  <div className="font-semibold text-base-content/50 mb-2">🚀 {t('progress.milestoneLabels.globalPortal')}</div>
                   <p className="text-sm text-base-content/50">{t('progress.milestone3')}</p>
                 </div>
               </div>

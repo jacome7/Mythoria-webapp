@@ -90,11 +90,11 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
         });
       } else {
         console.error('Error creating share link:', data.error);
-        alert(`Error creating share link: ${data.error}`);
+        alert(t('errors.createLinkFailed'));
       }
     } catch (error) {
       console.error('Error creating share link:', error);
-      alert(`Failed to create share link: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      alert(t('errors.shareLinkCreationFailed'));
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { FiPlay, FiPause, FiVolume2, FiLoader } from 'react-icons/fi';
 
 interface AudioChapter {
@@ -23,6 +24,7 @@ export default function StoryAudioPlayer({
   storyTitle, 
   isPublic = false 
 }: StoryAudioPlayerProps) {
+  const t = useTranslations('common.Components.StoryAudioPlayer');
   const [currentlyPlaying, setCurrentlyPlaying] = useState<number | null>(null);
   const [audioElements, setAudioElements] = useState<{ [key: number]: HTMLAudioElement }>({});
   const [audioProgress, setAudioProgress] = useState<{ [key: number]: number }>({});
@@ -125,7 +127,7 @@ export default function StoryAudioPlayer({
         audio.addEventListener('error', (e) => {
           console.error('Audio playback error:', e);
           setAudioLoading(prev => ({ ...prev, [chapterIndex]: false }));
-          alert('Failed to load audio. Please check your internet connection and try again.');
+          alert(t('errors.audioLoadFailed'));
         });
 
         setAudioElements(prev => ({ ...prev, [chapterIndex]: audio }));
@@ -147,9 +149,9 @@ export default function StoryAudioPlayer({
       setAudioLoading(prev => ({ ...prev, [chapterIndex]: false }));
       
       if (error instanceof Error && error.name === 'NotAllowedError') {
-        alert('Audio playback requires user interaction. Please try clicking the play button again.');
+        alert(t('errors.audioPlaybackError'));
       } else {
-        alert('Failed to play audio. Please try again.');
+        alert(t('errors.audioPlaybackError'));
       }
     }
   };

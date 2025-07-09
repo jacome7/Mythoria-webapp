@@ -162,16 +162,29 @@ function New-Webhook {
 Write-Host "Revolut Webhook Setup Script" -ForegroundColor Magenta
 Write-Host "============================" -ForegroundColor Magenta
 
-# Load environment variables
-if (Test-Path ".env.local") {
-    Write-Host "Loading environment variables from .env.local..." -ForegroundColor Yellow
-    Get-Content ".env.local" | ForEach-Object {
-        if ($_ -match "^([^#][^=]+)=(.*)$") {
-            [Environment]::SetEnvironmentVariable($matches[1], $matches[2], "Process")
+# Load environment variables based on environment
+if ($Environment -eq "production") {
+    if (Test-Path ".env.production") {
+        Write-Host "Loading environment variables from .env.production..." -ForegroundColor Yellow
+        Get-Content ".env.production" | ForEach-Object {
+            if ($_ -match "^([^#][^=]+)=(.*)$") {
+                [Environment]::SetEnvironmentVariable($matches[1], $matches[2], "Process")
+            }
         }
+    } else {
+        Write-Host "Warning: .env.production not found. Make sure environment variables are set." -ForegroundColor Yellow
     }
 } else {
-    Write-Host "Warning: .env.local not found. Make sure environment variables are set." -ForegroundColor Yellow
+    if (Test-Path ".env.local") {
+        Write-Host "Loading environment variables from .env.local..." -ForegroundColor Yellow
+        Get-Content ".env.local" | ForEach-Object {
+            if ($_ -match "^([^#][^=]+)=(.*)$") {
+                [Environment]::SetEnvironmentVariable($matches[1], $matches[2], "Process")
+            }
+        }
+    } else {
+        Write-Host "Warning: .env.local not found. Make sure environment variables are set." -ForegroundColor Yellow
+    }
 }
 
 # Get API credentials based on environment
@@ -182,7 +195,8 @@ if ($Environment -eq "sandbox") {
 } else {
     $ApiUrl = $ProductionApiUrl
     $WebhookUrl = $ProductionWebhookUrl
-    $SecretKey = [Environment]::GetEnvironmentVariable("REVOLUT_API_SECRET_KEY_PROD")
+    # For production, use the same variable name as in .env.production
+    $SecretKey = [Environment]::GetEnvironmentVariable("REVOLUT_API_SECRET_KEY")
 }
 
 if (-not $SecretKey) {
@@ -190,7 +204,7 @@ if (-not $SecretKey) {
     if ($Environment -eq "sandbox") {
         Write-Host "Make sure REVOLUT_API_SECRET_KEY is set in .env.local" -ForegroundColor Red
     } else {
-        Write-Host "Make sure REVOLUT_API_SECRET_KEY_PROD is set in .env.local" -ForegroundColor Red
+        Write-Host "Make sure REVOLUT_API_SECRET_KEY is set in .env.production" -ForegroundColor Red
     }
     exit 1
 }

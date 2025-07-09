@@ -221,7 +221,12 @@
       "description": "Conheça o Rodrigo, que transformou o seu fascínio de infância por histórias numa fábrica de aventuras. Aos 18 anos, combina uma enorme imaginação com uma pitada de inteligência artificial para criar contos personalizados para cada criança ou adulto.",
       "ageLabel": "18 anos",
       "ageHover": "ainda a evoluir",
-      "imageAlt": "Rodrigo - Fundador da Mythoria"
+      "imageAlt": "Rodrigo - Fundador da Mythoria",
+      "badges": {
+        "founder": "Fundador",
+        "aiEnthusiast": "Entusiasta de IA",
+        "storyteller": "Contador de Histórias"
+      }
     },
     "aiTeam": {
       "title": "Conheça os Oompa-Loompas 2.0",
@@ -244,7 +249,12 @@
       "milestone1": "Livro de feitiços beta – primeiras 100 famílias já criando contos",
       "milestone2": "Caldeirão de feedback da comunidade – cada sugestão aparece aqui",
       "milestone3": "Portal de lançamento global – agendado para setembro de 2025",
-      "feedbackButton": "🪄 Sugira um feitiço"
+      "feedbackButton": "🪄 Sugira um feitiço",
+      "milestoneLabels": {
+        "betaSpellbook": "Livro de Feitiços Beta",
+        "feedbackCauldron": "Caldeirão de Feedback",
+        "globalPortal": "Portal Global"
+      }
     },
     "news": {
       "title": "Notícias do Reino",
@@ -302,6 +312,12 @@
       "emptyTitle": "Ainda Não Há Histórias em Destaque",
       "emptyMessage": "Crie a sua própria história e partilhe-a com o mundo!",
       "createStory": "Criar a Sua História"
+    },
+    "emptyState": {
+      "noStoriesMatch": "Nenhuma história corresponde aos seus filtros",
+      "tryAdjustingFilters": "Tente ajustar os seus filtros ou explore todas as histórias para descobrir novas aventuras.",
+      "noStoriesAvailable": "Nenhuma história disponível",
+      "browseAllStories": "Explorar Todas as Histórias"
     }
   },
   "ContactUsPage": {

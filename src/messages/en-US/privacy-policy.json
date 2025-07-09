@@ -203,6 +203,9 @@
       "title": "13. Contact",
       "content": "Questions about privacy? E-mail dpo@mythoria.pt or write to the address in § 1. We're here to help!"
     },
+    "links": {
+      "deleteAccount": "Delete Account / Eliminar Conta"
+    },
     "lastUpdated": "Last updated: 2 June 2025"
   }
 }

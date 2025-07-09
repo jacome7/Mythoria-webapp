@@ -58,7 +58,13 @@
       "alerts": {
         "uploadError": "Failed to upload file. Please try again.",
         "recordingError": "Failed to start recording. Please check your microphone permissions.",
-        "processingError": "Failed to process your story. Please try again."
+        "processingError": "Failed to process your story. Please try again.",
+        "cameraPermissionError": "Camera permission denied. Please allow camera access to take photos.",
+        "microphonePermissionError": "Microphone permission denied. Please allow microphone access to record audio.",
+        "analyzeImageRequest": "Analyze the image and describe what you see...",
+        "genAIError": "GenAI request failed. Please try again.",
+        "cameraIssue": "Camera access issue. Please check your camera permissions.",
+        "microphoneIssue": "Microphone access issue. Please check your microphone permissions."
       },
       "loadingModal": {
         "title": "✨ Creating Your Story",
@@ -87,6 +93,10 @@
       },
       "navigation": {
         "backToMyStories": "Back to My Stories"
+      },
+      "alerts": {
+        "failedToLoadStoryCharacters": "Failed to load story characters. Please try again.",
+        "characterLoadError": "Error loading characters. Please refresh the page."
       }
     },
     "step4": {
@@ -120,6 +130,10 @@
         "medium": "Medium (6-8 chapters)", 
         "long": "Long (9-12 chapters)"
       },
+      "plurals": {
+        "chapter": "chapter",
+        "chapters": "chapters"
+      },
       "saving": "Saving...",
       "nextChapter": "Next Chapter"
     },
@@ -146,7 +160,12 @@
       "startingGeneration": "Starting Story Generation...",
       "generateMyStory": "🚀 Generate My Story",
       "storyDataNotAvailable": "Story data not available. Please try again.",
-      "stepProgress": "Step {currentStep} of {totalSteps}"
+      "stepProgress": "Step {currentStep} of {totalSteps}",
+      "alerts": {
+        "failedToFetchData": "Failed to fetch story data. Please try again.",
+        "failedToDeductCredits": "Failed to deduct credits. Please try again.",
+        "dataFetchError": "Error fetching data. Please check your connection and try again."
+      }
     }
   }
 }

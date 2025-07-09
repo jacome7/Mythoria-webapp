@@ -108,7 +108,10 @@
 			"redirecting": "Redirecting...",
 			"redirectingToSharedStory": "Redirecting to shared story...",
 			"pleaseWaitStory": "Please wait while we load the story",
-			"pleaseWaitAccess": "Please wait while we verify your access"
+			"pleaseWaitAccess": "Please wait while we verify your access",
+			"default": "Loading...",
+			"buyCredits": "Loading...",
+			"processing": "Processing..."
 		},
 		"Errors": {
 			"storyNotFound": "Story not found",
@@ -120,7 +123,19 @@
 			"storyNotFoundGeneric": "Story not found.",
 			"noPermission": "You do not have permission to access this story.",
 			"noPermissionEdit": "You do not have permission to edit this story.",
-			"failedToLoad": "Failed to load the story. Please try again."
+			"failedToLoad": "Failed to load the story. Please try again.",
+			"failedToCreateOrder": "Failed to create order",
+			"failedToAccessSharedStory": "Failed to access shared story",
+			"failedToLoadStoryContent": "Failed to load story content",
+			"failedToLoadStoryData": "Failed to load story data",
+			"failedToDeleteAccount": "Failed to delete account. Please try again later.",
+			"failedToLoadStoryCharacters": "Failed to load story characters",
+			"failedToFetchData": "Failed to fetch data",
+			"failedToDeductCredits": "Failed to deduct credits",
+			"audiobookGenerationError": "Failed to generate audiobook",
+			"audioPlaybackError": "Audio playback error",
+			"audioLoadError": "Failed to load audio",
+			"shareLinkCreationFailed": "Failed to create share link"
 		},
 		"Components": {
 			"ShareModal": {
@@ -151,7 +166,8 @@
 				"makePrivate": "Make story private",
 				"makePrivateDesc": "Remove public access and make the story private",
 				"errors": {
-					"createLinkFailed": "Error creating share link: Please try again later."
+					"createLinkFailed": "Error creating share link: Please try again later.",
+					"shareLinkCreationFailed": "Failed to create share link. Please try again."
 				}
 			},
 			"CreditsDisplay": {
@@ -244,6 +260,13 @@
 				"audioLoadFailed": "Failed to load audio. Please check your internet connection and try again.",
 				"audioGenerationFailed": "Audio generation failed. Please try again later.",
 				"audioPlaybackError": "An error occurred during audio playback. Please refresh the page and try again."
+			},
+			"StoryAudioPlayer": {
+				"errors": {
+					"audioLoadFailed": "Failed to load audio. Please check your internet connection and try again.",
+					"audioGenerationFailed": "Audio generation failed. Please try again later.",
+					"audioPlaybackError": "An error occurred during audio playback. Please refresh the page and try again."
+				}
 			}
 		},		"storyRating": {
 			"title": "Rate this story",

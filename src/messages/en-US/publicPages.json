@@ -221,7 +221,12 @@
       "description": "Meet Rodrigo, who turned his childhood fascination with stories into an adventure factory. At 18, he combines a huge imagination with a dash of artificial intelligence to create personalized tales for every child or adult.",
       "ageLabel": "18 years old",
       "ageHover": "still levelling-up",
-      "imageAlt": "Rodrigo - Founder of Mythoria"
+      "imageAlt": "Rodrigo - Founder of Mythoria",
+      "badges": {
+        "founder": "Founder",
+        "aiEnthusiast": "AI Enthusiast",
+        "storyteller": "Storyteller"
+      }
     },
     "aiTeam": {
       "title": "Meet the Oompa-Loompas 2.0",
@@ -244,7 +249,12 @@
       "milestone1": "Beta spellbook – first 100 families already crafting tales",
       "milestone2": "Community feedback cauldron – every suggestion pops here",
       "milestone3": "Global release portal – scheduled for September 2025",
-      "feedbackButton": "🪄 Suggest a spell"
+      "feedbackButton": "🪄 Suggest a spell",
+      "milestoneLabels": {
+        "betaSpellbook": "Beta Spellbook",
+        "feedbackCauldron": "Feedback Cauldron", 
+        "globalPortal": "Global Portal"
+      }
     },
     "news": {
       "title": "News From the Realm",
@@ -302,6 +312,12 @@
       "emptyTitle": "No Featured Stories Yet",
       "emptyMessage": "Create your own story and share it with the world!",
       "createStory": "Create Your Story"
+    },
+    "emptyState": {
+      "noStoriesMatch": "No stories match your filters",
+      "tryAdjustingFilters": "Try adjusting your filters or browse all stories to discover new adventures.",
+      "noStoriesAvailable": "No stories available",
+      "browseAllStories": "Browse All Stories"
     }
   },
   "ContactUsPage": {
