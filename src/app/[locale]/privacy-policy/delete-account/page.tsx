@@ -178,7 +178,7 @@ export default function DeleteAccountPage() {
                     />
                     {emailConfirmation && !isEmailValid && (
                       <label className="label">
-                        <span className="label-text-alt text-error">
+                        <span className="label-text-alt text-error break-words">
                           {t('confirmation.emailMismatch')}
                         </span>
                       </label>

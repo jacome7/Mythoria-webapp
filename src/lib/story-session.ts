@@ -14,6 +14,7 @@ export interface Character {
 export interface StorySessionData {
   storyId: string;
   step1Data?: {
+    customAuthor: string;
     dedicationMessage: string;
   };
   step2Data?: {

@@ -4,44 +4,38 @@ import { getLanguageSpecificPrompt, getLanguageSpecificSchema } from '../lib/pro
 // Test function to verify prompt loading
 export async function testPromptLoading() {
   try {
-    console.log('Testing English (en-US) prompt loading...');
-    const enPrompt = await getLanguageSpecificPrompt('en-US');
+    console.log('Testing English (en-US) prompt loading (now used for all languages with AI language detection)...');
+    const enPrompt = await getLanguageSpecificPrompt();
     const enSchema = await getLanguageSpecificSchema();
     
     console.log('✓ English prompt loaded successfully:', !!enPrompt);
-    console.log('✓ English schema loaded successfully:', !!enSchema);
+    console.log('✓ Schema loaded successfully:', !!enSchema);
     
-    console.log('Testing Portuguese (pt-PT) prompt loading...');
-    const ptPrompt = await getLanguageSpecificPrompt('pt-PT');
-    const ptSchema = await getLanguageSpecificSchema();
+    console.log('Testing that all language requests use English prompt with AI detection...');
+    const ptPrompt = await getLanguageSpecificPrompt();
     
-    console.log('✓ Portuguese prompt loaded successfully:', !!ptPrompt);
-    console.log('✓ Portuguese schema loaded successfully:', !!ptSchema);
+    console.log('✓ Portuguese request uses English prompt with AI detection:', !!ptPrompt);
     
-    console.log('Testing fallback for unsupported language...');
-    const fallbackPrompt = await getLanguageSpecificPrompt('fr-FR');
-    const fallbackSchema = await getLanguageSpecificSchema();
+    // Verify that the prompt contains language detection instructions
+    const hasLanguageDetection = enPrompt.systemPrompt.includes('language') || 
+                                   enPrompt.template.includes('language') ||
+                                   enPrompt.instructions.some(i => i.includes('language'));
     
-    console.log('✓ Fallback prompt loaded successfully:', !!fallbackPrompt);
-    console.log('✓ Fallback schema loaded successfully:', !!fallbackSchema);
+    console.log('✓ Prompt contains language detection instructions:', hasLanguageDetection);
     
-    // Verify content differences
-    const enInstruction = enPrompt.systemPrompt;
-    const ptInstruction = ptPrompt.systemPrompt;
-    
-    if (enInstruction.includes('English') && ptInstruction.includes('Português')) {
-      console.log('✓ Language-specific content verified');
+    // Verify that the same prompt is returned for different language requests
+    if (enPrompt === ptPrompt) {
+      console.log('✓ All language requests return the same prompt with AI language detection');
     } else {
-      console.warn('⚠ Language content may not be properly differentiated');
+      console.warn('⚠ Different prompts returned - this may indicate an issue');
     }
     
     return {
       success: true,
-      message: 'All prompt loading tests passed successfully!',
+      message: 'All prompt loading tests passed successfully! System now uses AI language detection.',
       results: {
         english: { prompt: !!enPrompt, schema: !!enSchema },
-        portuguese: { prompt: !!ptPrompt, schema: !!ptSchema },
-        fallback: { prompt: !!fallbackPrompt, schema: !!fallbackSchema }
+        aiLanguageDetection: { prompt: !!ptPrompt, sameAsEnglish: enPrompt === ptPrompt }
       }
     };
     

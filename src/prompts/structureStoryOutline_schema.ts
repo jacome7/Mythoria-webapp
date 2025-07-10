@@ -1,5 +1,7 @@
 // Centralized schema for story outline structure
 // Used across all languages to maintain consistency
+import { CHARACTER_TYPES, CHARACTER_ROLES } from '../types/character-enums';
+
 export const structureStoryOutlineSchema = {
   type: "object",
   properties: {
@@ -25,15 +27,17 @@ export const structureStoryOutlineSchema = {
         additionalRequests: {
           type: "string",
           description: "Any special requirements or preferences mentioned by the user"
-        },        targetAudience: {
+        }, targetAudience: {
           type: "string",
           enum: ["children_0-2", "children_3-6", "children_7-10", "children_11-14", "young_adult_15-17", "adult_18+", "all_ages"],
           description: "Target age group for the story"
-        },        novelStyle: {
+        },
+        novelStyle: {
           type: "string",
           enum: ["adventure", "fantasy", "mystery", "romance", "science_fiction", "historical", "contemporary", "fairy_tale", "comedy", "drama", "horror", "thriller", "biography", "educational", "poetry", "sports_adventure"],
           description: "Literary genre and style of the story"
-        },graphicalStyle: {
+        },
+        graphicalStyle: {
           type: "string",
           enum: ["cartoon", "realistic", "watercolor", "digital_art", "hand_drawn", "minimalist", "vintage", "comic_book", "anime", "pixar_style", "disney_style", "sketch", "oil_painting", "colored_pencil"],
           description: "Visual art style for illustrations"
@@ -62,7 +66,7 @@ export const structureStoryOutlineSchema = {
           },
           type: {
             type: "string",
-            enum: ["Boy", "Girl", "Baby", "Man", "Woman", "Human", "Dog", "Dragon", "Fantasy Creature", "Animal", "Other"],
+            enum: CHARACTER_TYPES,
             description: "What type of being/entity the character is"
           },
           passions: {
@@ -77,19 +81,14 @@ export const structureStoryOutlineSchema = {
             type: "string",
             description: "Appearance details (e.g., 'tall with golden hair and blue eyes', 'small purple dragon with silver wings')"
           },
-          photoUrl: {
-            type: "string",
-            nullable: true,
-            description: "URL to character image (usually null for new characters)"
-          },
           role: {
             type: "string",
-            enum: ["protagonist", "antagonist", "supporting", "mentor", "comic_relief", "love_interest", "sidekick", "narrator", "other"],
+            enum: CHARACTER_ROLES,
             description: "Character's narrative role in the story"
           }
         },
         required: ["name"],
-        propertyOrdering: ["characterId", "name", "type", "passions", "superpowers", "physicalDescription", "photoUrl", "role"]
+        propertyOrdering: ["characterId", "name", "type", "passions", "superpowers", "physicalDescription", "role"]
       }
     }
   },

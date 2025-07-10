@@ -1,119 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { getLanguageSpecificPrompt, getLanguageSpecificSchema } from "./prompt-loader";
 import { calculateGenAICost, normalizeModelName } from "@/db/genai-cost-calculator";
-
-// Define valid character type enum values that match the UI
-const VALID_CHARACTER_TYPES = [
-  "Boy", "Girl", "Baby", "Man", "Woman", "Human", 
-  "Dog", "Dragon", "Fantasy Creature", "Animal", "Other"
-] as const;
-
-// Function to normalize character type to valid enum values that match the UI
-function normalizeCharacterType(type: string | undefined): string | undefined {
-  if (!type || typeof type !== 'string') return type;
-  
-  const trimmedType = type.trim();
-    // Direct match with enum values (case-sensitive)
-  if (VALID_CHARACTER_TYPES.includes(trimmedType as typeof VALID_CHARACTER_TYPES[number])) {
-    return trimmedType;
-  }
-    // Handle common variations that AI might return and map to UI values
-  const typeMap: Record<string, string> = {
-    // Handle old enum values that might still be returned
-    'human': 'Human',
-    'animal': 'Animal',
-    'fantasy_creature': 'Fantasy Creature',
-    'robot': 'Other',
-    'alien': 'Other',
-    'mythical_being': 'Fantasy Creature',
-    'object': 'Other',
-    'other': 'Other',
-    
-    // Handle common variations (case insensitive mapping)
-    'boy': 'Boy',
-    'BOY': 'Boy',
-    'girl': 'Girl',
-    'GIRL': 'Girl',
-    'baby': 'Baby',
-    'BABY': 'Baby',
-    'infant': 'Baby',
-    'toddler': 'Baby',
-    'man': 'Man',
-    'MAN': 'Man',
-    'adult male': 'Man',
-    'male': 'Man',
-    'woman': 'Woman',
-    'WOMAN': 'Woman',
-    'adult female': 'Woman',
-    'female': 'Woman',
-    'Human': 'Human',
-    'HUMAN': 'Human',
-    'person': 'Human',
-    'people': 'Human',
-    'child': 'Human',
-    'adult': 'Human',
-    
-    'dog': 'Dog',
-    'DOG': 'Dog',
-    'puppy': 'Dog',
-    'canine': 'Dog',
-    
-    'dragon': 'Dragon',
-    'DRAGON': 'Dragon',
-    'dragons': 'Dragon',
-    
-    'fantasy creature': 'Fantasy Creature',
-    'FANTASY CREATURE': 'Fantasy Creature',
-    'magical creature': 'Fantasy Creature',
-    'mythical creature': 'Fantasy Creature',
-    'unicorn': 'Fantasy Creature',
-    'fairy': 'Fantasy Creature',
-    'elf': 'Fantasy Creature',
-    'dwarf': 'Fantasy Creature',
-    'wizard': 'Fantasy Creature',
-    'witch': 'Fantasy Creature',
-    
-    'Animal': 'Animal',
-    'ANIMAL': 'Animal',
-    'animals': 'Animal',
-    'pet': 'Animal',
-    'beast': 'Animal',
-    'creature': 'Animal',
-    'cat': 'Animal',
-    'bird': 'Animal',
-    'horse': 'Animal',
-    'rabbit': 'Animal',
-    
-    'Other': 'Other',
-    'OTHER': 'Other',
-    'robots': 'Other',
-    'android': 'Other',
-    'cyborg': 'Other',
-    'machine': 'Other',
-    'aliens': 'Other',
-    'extraterrestrial': 'Other',
-    'et': 'Other',
-    'god': 'Other',
-    'goddess': 'Other',
-    'deity': 'Other',
-    'spirit': 'Other',
-    'ghost': 'Other',
-    'objects': 'Other',
-    'item': 'Other',
-    'thing': 'Other',
-    'inanimate': 'Other'
-  };
-  
-  // Check mapped values
-  const normalizedType = typeMap[trimmedType];
-  if (normalizedType) {
-    return normalizedType;
-  }
-  
-  // If no match found, default to 'Other'
-  console.warn(`Unknown character type "${type}" normalized to "Other"`);
-  return 'Other';
-}
+import { normalizeCharacterType } from "@/types/character-enums";
 
 // Initialize GoogleGenAI client with Vertex AI configuration
 const clientOptions = {
@@ -145,6 +33,7 @@ export interface StructuredStory {
   targetAudience?: string;
   novelStyle?: string;
   graphicalStyle?: string;
+  storyLanguage?: string;
 }
 
 export interface StructuredStoryResult {
@@ -168,25 +57,28 @@ export async function generateStructuredStory(
   }> = [],
   imageData?: string | null,
   audioData?: string | null,
-  userLanguage: string = 'en-US'
+  authorName?: string
   // Note: authorId and storyId parameters removed as token tracking moved to workflows service
 ): Promise<StructuredStoryResult> {
   try {
-    // Load language-specific prompt and schema
-    const promptConfig = await getLanguageSpecificPrompt(userLanguage);
+    // Load language-specific prompt and schema - using English by default
+    // since the AI will now infer the target language from user content
+    const promptConfig = await getLanguageSpecificPrompt();
     const responseSchema = await getLanguageSpecificSchema();
 
     // Build the system prompt from template
     const systemPrompt = promptConfig.template
       .replace('{{userDescription}}', userDescription)
-      .replace('{{existingCharacters}}', JSON.stringify(existingCharacters));    // Get model name from environment - use the most reliable model for structured output
+      .replace('{{existingCharacters}}', JSON.stringify(existingCharacters))
+      .replace('{{authorName}}', authorName || '');
+    // Get model name from environment - use the most reliable model for structured output
     // According to Google Cloud docs, these models support structured output:
     // gemini-2.5-pro, gemini-2.5-flash, gemini-2.0-flash, gemini-2.0-flash-lite
-    const modelName = process.env.MODEL_ID || "gemini-2.5-flash";    // Define generation configuration with structured output enforced
-    // According to Google Cloud docs, these settings guarantee JSON schema compliance
+    const modelName = process.env.MODEL_ID || "gemini-2.5-flash";
+    
     const generationConfig = {
       maxOutputTokens: 16384,
-      temperature: 0.1, // Very low temperature for consistent JSON output
+      temperature: 0.8,
       topP: 0.8,
       responseMimeType: "application/json", // This forces JSON output
       responseSchema: responseSchema, // This enforces the exact schema structure
@@ -197,8 +89,6 @@ export async function generateStructuredStory(
     let contents: any[];
 
     if (imageData || audioData) {
-      console.log('Processing request with media data - Image:', !!imageData, 'Audio:', !!audioData);
-      
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const parts: any[] = [{ text: systemPrompt }];
       
@@ -212,17 +102,13 @@ export async function generateStructuredStory(
             throw new Error('Invalid image data format');
           }
           
-          console.log('Image MIME type:', mimeType);
-          console.log('Base64 data length:', base64Data.length);
-          
           parts.push({
             inlineData: {
               mimeType: mimeType,
               data: base64Data
             }
           });
-        } catch (error) {
-          console.error('Error processing image data:', error);
+        } catch {
           throw new Error('Failed to process image data for AI analysis');
         }
       }
@@ -237,17 +123,13 @@ export async function generateStructuredStory(
             throw new Error('Invalid audio data format');
           }
           
-          console.log('Audio MIME type:', mimeType);
-          console.log('Audio Base64 data length:', base64Data.length);
-          
           parts.push({
             inlineData: {
               mimeType: mimeType,
               data: base64Data
             }
           });
-        } catch (error) {
-          console.error('Error processing audio data:', error);
+        } catch {
           throw new Error('Failed to process audio data for AI analysis');
         }
       }
@@ -259,40 +141,27 @@ export async function generateStructuredStory(
         }
       ];
     } else {
-      console.log('Processing request with text only');
       contents = [
         {
           role: 'user',
           parts: [{ text: systemPrompt }]
         }
       ];
-    }    // Prepare the request with structured output schema
+    }
+    
+    // Prepare the request with structured output schema
     const req = {
       model: modelName,
       contents: contents,
       generationConfig: generationConfig,
-    };    // Generate content
-    console.log("Making GenAI request with:", {
-      model: modelName,
-      contentsLength: contents.length,
-      hasResponseSchema: !!responseSchema,
-      generationConfig
-    });
-      const result = await ai.models.generateContent(req);
+    }
     
-    console.log("GenAI result candidates:", result.candidates?.length);
+    // Generate content
+    const result = await ai.models.generateContent(req);
     
     // Extract token usage information from the response
     const inputTokens = result.usageMetadata?.promptTokenCount || 0;
     const outputTokens = result.usageMetadata?.candidatesTokenCount || 0;
-    const totalTokens = result.usageMetadata?.totalTokenCount || 0;
-    
-    console.log("Token usage:", {
-      inputTokens,
-      outputTokens,
-      totalTokens,
-      model: modelName
-    });
     
     // Calculate cost for this request
     const normalizedModelName = normalizeModelName(modelName);
@@ -306,15 +175,11 @@ export async function generateStructuredStory(
       imageCount
     });
     
-    console.log("Cost calculation:", costInfo);
-    
     // Note: Token usage tracking has been moved to the story-generation-workflow service
     // and will be handled there for consistency.
     
     // Get the text from the response
     const text = result.text;
-    
-    console.log("Raw AI response:", text);
     
     if (!text) {
       throw new Error("No response text generated from the model");
@@ -396,43 +261,23 @@ export async function generateStructuredStory(
     let parsedResult: StructuredStoryResult;
     try {
       parsedResult = JSON.parse(cleanedText);
-      console.log("Parsed result structure:", JSON.stringify(parsedResult, null, 2));
-      
-      // Debug: Check characterId values specifically
-      if (parsedResult.characters) {
-        console.log("Character ID debugging:");
-        parsedResult.characters.forEach((char, index) => {
-          console.log(`Character ${index}: characterId=${JSON.stringify(char.characterId)}, type=${typeof char.characterId}`);
-        });
-      }} catch (parseError) {
-      console.error("Failed to parse GenAI response as JSON:", cleanedText);
-      console.error("Parse error:", parseError);
-      
+    } catch {
       // Try to extract JSON even if parsing failed - maybe there's text before/after
       const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         try {
           parsedResult = JSON.parse(jsonMatch[0]);
-          console.log("Successfully extracted JSON from response");
-        } catch (secondParseError) {
-          console.error("Second JSON parse attempt also failed:", secondParseError);
+        } catch {
           throw new Error("GenAI returned invalid JSON format");
         }
       } else {
         throw new Error("GenAI returned invalid JSON format");
       }
-    }// Validate the structure
-    console.log("Validating structure...");
-    console.log("parsedResult.story:", parsedResult.story);
-    console.log("parsedResult.characters:", parsedResult.characters);
-    console.log("Is characters array?", Array.isArray(parsedResult.characters));
-    
+    }
+
+    // Validate the structure
     if (!parsedResult.story || !Array.isArray(parsedResult.characters)) {
-      console.error("Structure validation failed:");
-      console.error("- Has story property:", !!parsedResult.story);
-      console.error("- Has characters property:", !!parsedResult.characters);
-      console.error("- Characters is array:", Array.isArray(parsedResult.characters));
-      console.error("Full parsed result:", JSON.stringify(parsedResult, null, 2));        // Try to create a fallback structure if the response has some usable content
+      // Try to create a fallback structure if the response has some usable content
       const fallbackResult: StructuredStoryResult = {
         story: {
           plotDescription: userDescription,
@@ -447,28 +292,15 @@ export async function generateStructuredStory(
         } : undefined
       };
       
-      console.log("Using fallback structure:", JSON.stringify(fallbackResult, null, 2));
       return fallbackResult;
     }
 
-    // Normalize character types to ensure they match the enum values
-    if (Array.isArray(parsedResult.characters)) {
-      parsedResult.characters = parsedResult.characters.map(char => {
-        return {
-          ...char,
-          type: normalizeCharacterType(char.type)
-        };
-      });
-    }    // Normalize character types to ensure they match the required enum values
+    // Normalize character types to ensure they match the required enum values
     if (parsedResult.characters && Array.isArray(parsedResult.characters)) {
       parsedResult.characters = parsedResult.characters.map(character => ({
         ...character,
         type: normalizeCharacterType(character.type)
       }));
-      
-      console.log("Character types after normalization:", 
-        parsedResult.characters.map(char => ({ name: char.name, type: char.type }))
-      );
     }
 
     // Add cost information to the result
@@ -484,7 +316,6 @@ export async function generateStructuredStory(
 
     return resultWithCost;
   } catch (error) {
-    console.error("Error in generateStructuredStory:", error);
     throw new Error(`Failed to generate structured story: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

@@ -21,6 +21,7 @@ export const stories = pgTable("stories", {
   graphicalStyle: graphicalStyleEnum("graphical_style"),
   status: storyStatusEnum("status").default('draft'),  features: jsonb("features"), // {"ebook":true,"printed":false,"audiobook":true}
   deliveryAddress: jsonb("delivery_address"), // Delivery address for printed books
+  customAuthor: text("custom_author"), // Custom author name(s) for the story
   dedicationMessage: text("dedication_message"), // Personalized dedication message
   htmlUri: text("html_uri"), // Internal Google Storage link to access the HTML file
   pdfUri: text("pdf_uri"), // Internal Google Storage link to access the PDF file

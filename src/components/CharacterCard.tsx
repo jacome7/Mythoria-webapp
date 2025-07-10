@@ -5,6 +5,11 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { trackStoryCreation } from '../lib/analytics';
 import { Character } from '../lib/story-session';
+import { 
+  getCharacterTypeOptions, 
+  getCharacterRoleOptions, 
+  isValidCharacterType 
+} from '../types/character-enums';
 
 interface CharacterCardProps {
   character?: Character;
@@ -29,32 +34,6 @@ const formatRoleName = (role: string, t: (key: string) => string): string => {
   return translated;
 };
 
-const getCharacterTypes = (t: (key: string) => string): Array<{ value: string, label: string }> => [
-  { value: 'Boy', label: t('types.boy') },
-  { value: 'Girl', label: t('types.girl') },
-  { value: 'Baby', label: t('types.baby') },
-  { value: 'Man', label: t('types.man') },
-  { value: 'Woman', label: t('types.woman') },
-  { value: 'Human', label: t('types.human') },
-  { value: 'Dog', label: t('types.dog') },
-  { value: 'Dragon', label: t('types.dragon') },
-  { value: 'Fantasy Creature', label: t('types.fantasyCreature') },
-  { value: 'Animal', label: t('types.animal') },
-  { value: 'Other', label: t('types.other') }
-];
-
-const getCharacterRoles = (t: (key: string) => string): Array<{ value: string, label: string }> => [
-  { value: 'protagonist', label: t('roles.protagonist') },
-  { value: 'antagonist', label: t('roles.antagonist') },
-  { value: 'supporting', label: t('roles.supporting') },
-  { value: 'mentor', label: t('roles.mentor') },
-  { value: 'comic_relief', label: t('roles.comicRelief') },
-  { value: 'love_interest', label: t('roles.loveInterest') },
-  { value: 'sidekick', label: t('roles.sidekick') },
-  { value: 'narrator', label: t('roles.narrator') },
-  { value: 'other', label: t('roles.other') }
-];
-
 export default function CharacterCard({
   character,
   mode,
@@ -64,8 +43,8 @@ export default function CharacterCard({
   onCancel
 }: CharacterCardProps) {
   const t = useTranslations('Characters');
-  const characterTypes = getCharacterTypes(t);
-  const characterRoles = getCharacterRoles(t);  const [formData, setFormData] = useState<Character>({
+  const characterTypes = getCharacterTypeOptions(t);
+  const characterRoles = getCharacterRoleOptions(t);  const [formData, setFormData] = useState<Character>({
     name: character?.name || '',
     type: character?.type || 'Boy',
     role: character?.role || 'protagonist',
@@ -74,7 +53,7 @@ export default function CharacterCard({
     ...character
   });
   const [showOtherTypeInput, setShowOtherTypeInput] = useState(
-    character?.type ? !characterTypes.some(ct => ct.value === character.type) : false
+    character?.type ? !isValidCharacterType(character.type) : false
   );
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -132,7 +111,7 @@ export default function CharacterCard({
 
   // Helper function to get type display value
   const getTypeDisplayValue = (typeValue: string) => {
-    const typeOption = characterTypes.find(ct => ct.value === typeValue);
+    const typeOption = characterTypes.find((ct: {value: string, label: string}) => ct.value === typeValue);
     return typeOption ? typeOption.label : typeValue;
   };
 
@@ -223,7 +202,7 @@ export default function CharacterCard({
             value={formData.role}
             onChange={(e) => handleInputChange('role', e.target.value)}
           >
-            {characterRoles.map(role => (
+            {characterRoles.map((role: {value: string, label: string}) => (
               <option key={role.value} value={role.value}>{role.label}</option>
             ))}
           </select>
@@ -251,7 +230,7 @@ export default function CharacterCard({
             value={showOtherTypeInput ? 'Other' : formData.type}
             onChange={(e) => handleInputChange('type', e.target.value)}
           >
-            {characterTypes.map(type => (
+            {characterTypes.map((type: {value: string, label: string}) => (
               <option key={type.value} value={type.value}>{type.label}</option>
             ))}
           </select>

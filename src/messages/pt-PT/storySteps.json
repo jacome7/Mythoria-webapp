@@ -8,14 +8,11 @@
         "signUp": "✨ Criar Conta de Autor"
       },
       "heading": "Capítulo 1 - O Autor",
-      "intro": "Bem-vindo, contador de histórias! Antes de mergulharmos na tua aventura mágica, vamos garantir que temos a tua informação correta. Isto ajuda-nos a personalizar a tua experiência e a manter-te atualizado sobre o progresso da tua história.",
+      "intro": "Bem-vindo, contador de histórias! Antes de mergulharmos na tua aventura mágica, vamos configurar a informação do autor para a tua história. Podes usar o teu próprio nome ou criar um nome de autor personalizado para este conto.",
       "fields": {
-        "fullName": "Nome Completo *",
-        "fullNameHelp": "É assim que serás creditado como autor",
-        "email": "Endereço de Email *",
-        "emailHelp": "Usaremos isto para atualizações importantes sobre a tua história",
-        "mobile": "Telemóvel",
-        "mobileHelp": "Para notificações urgentes ou atualizações de entrega (opcional)",
+        "authorName": "Nome do Autor(es) *",
+        "authorNameHelp": "Quem deve ser creditado como autor desta história?",
+        "authorNamePlaceholder": "ex: André e Matilde",
         "dedication": "Mensagem de Dedicatória",
         "dedicationPlaceholder": "Escreve uma mensagem de dedicatória personalizada para a primeira página do teu livro...",
         "dedicationHelp": "Esta mensagem aparecerá na primeira página da tua história",
@@ -23,8 +20,8 @@
       },
       "messages": {
         "loadingProfile": "A carregar o teu perfil de autor...",
-        "required": "Por favor, preenche todos os campos obrigatórios",
-        "saveFailed": "Falha ao guardar o perfil. Tenta novamente.",
+        "required": "Por favor, fornece um nome de autor para a tua história",
+        "saveFailed": "Falha ao guardar informação do autor. Tenta novamente.",
         "fetchFailed": "Falha ao obter dados do utilizador",
         "loadFailed": "Falha ao carregar a informação do utilizador. Tenta novamente."
       }
@@ -32,8 +29,6 @@
     "step2": {
       "heading": "Capítulo 2 - A História",
       "intro": "Podes criar a tua história desenhando-a, gravando-a ou simplesmente escrevendo-a.",
-      "storyLanguageLabel": "Idioma da História",
-      "storyLanguageHelp": "Escolhe o idioma para a tua história",
       "tellYourStoryLabel": "Conta a tua história...",
       "textPlaceholder": "Era uma vez... Deixa a tua imaginação voar! Partilha a tua aventura, os teus sonhos ou qualquer história que seja especial para ti.",
       "textHelp": "Escreve tanto ou tão pouco quanto quiseres. Podes sempre editar isto mais tarde!",
@@ -42,14 +37,13 @@
       "tabRecord": "Gravar",
       "takePhoto": "Tirar Foto",
       "uploadImage": "Carregar Imagem",
-      "recordVoice": "Gravar a tua voz",
-      "uploadAudio": "Carregar Ficheiro de Áudio",
+      "recordVoice": "Gravar voz",
+      "uploadAudio": "Carregar Áudio",
       "imageHelp": "Desenha a tua história, tira-lhe uma foto ou carrega uma imagem existente que a represente.",
       "audioHelp": "Grava a tua história diretamente ou carrega um ficheiro de áudio. Perfeito para quem prefere contar as suas histórias!",
       "recordingHelp": "Conta a tua história! Fala claramente para o microfone.",
-      "reassurance": "Se escreveste texto ou carregaste uma imagem acima, a nossa IA irá extrair automaticamente personagens, cenários e temas. Caso contrário, os próximos passos vão guiar-te na criação da tua história passo a passo.",
+      "reassurance": "Se escreveste texto ou carregaste uma imagem acima, os nossos Umpa Lumpas irão trabalhar arduamente para identificar as personagens, cenários e temas. Caso contrário, os próximos passos vão guiar-te na criação da tua história passo a passo.",
       "processing": "A processar com IA...",
-      "nextChapter": "Próximo Capítulo",
       "next": "Seguinte",
       "buttons": {
         "capture": "📸 Capturar",
@@ -87,7 +81,6 @@
       "greatWork": "Bom trabalho! Criaste {count, plural, =1 {# personagem} other {# personagens}}.",
       "youCanAlways": "Podes sempre adicionar mais personagens mais tarde ou avançar para o próximo capítulo para desenvolver ainda mais a tua história.",
       "continuing": "A continuar...",
-      "nextChapter": "Próximo Capítulo",
       "badges": {
         "editingDraft": "A Editar Rascunho da História"
       },
@@ -97,7 +90,8 @@
       "alerts": {
         "failedToLoadStoryCharacters": "Falha ao carregar personagens da história. Por favor tente novamente.",
         "characterLoadError": "Erro ao carregar personagens. Por favor atualize a página."
-      }
+      },
+      "next": "Seguinte"
     },
     "step4": {
       "heading": "Capítulo 4 - O Enredo",
@@ -115,6 +109,8 @@
         "graphicStyleHelp": "Escolhe o estilo artístico das ilustrações da tua história",
         "bookSize": "Tamanho do Livro",
         "bookSizeHelp": "Número de capítulos/parágrafos na tua história",
+        "storyLanguage": "Idioma da História",
+        "storyLanguageHelp": "O idioma do conteúdo da tua história. Foi detetado a partir da tua entrada ou podes alterá-lo aqui.",
         "outline": "Esboço da História",
         "outlineHelp": "Descreve o enredo, as personagens e os acontecimentos principais da tua história",
         "additional": "Pedidos Adicionais",
@@ -134,8 +130,7 @@
         "chapter": "capítulo",
         "chapters": "capítulos"
       },
-      "saving": "A guardar...",
-      "nextChapter": "Próximo Capítulo"
+      "saving": "A guardar..."
     },
     "step5": {
       "heading": "Capítulo 5 - O Final",

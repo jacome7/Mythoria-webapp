@@ -1,0 +1,2 @@
+CREATE TYPE "public"."character_type" AS ENUM('Boy', 'Girl', 'Baby', 'Man', 'Woman', 'Dog', 'Dragon', 'Fantasy Creature', 'Animal', 'Other');--> statement-breakpoint
+ALTER TABLE "characters" ALTER COLUMN "type" SET DATA TYPE character_type USING "type"::character_type;

@@ -546,9 +546,7 @@ function Step3Page() {
                 nextLabel={
                   isNavigating
                     ? t('continuing')
-                    : isInEditMode
-                      ? t('nextChapter')
-                      : t('nextChapter')
+                    : t('next')
                 }
                 prevLabel={isInEditMode ? 'Back to My Stories' : undefined}
               />

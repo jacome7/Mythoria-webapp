@@ -22,6 +22,7 @@ const completeStorySchema = z.object({
     phone: z.string().optional(),
   }).nullable().optional(),
   dedicationMessage: z.string().nullable().optional(),
+  customAuthor: z.string().nullable().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -52,6 +53,7 @@ export async function POST(request: NextRequest) {
       features: validatedData.features,
       deliveryAddress: validatedData.deliveryAddress || undefined,
       dedicationMessage: validatedData.dedicationMessage || undefined,
+      customAuthor: validatedData.customAuthor || undefined,
     });
 
     // Generate a temporary runId for workflow tracking

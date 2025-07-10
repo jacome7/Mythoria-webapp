@@ -158,9 +158,10 @@ function Step5Page() {
       // Update local credit balance
       setUserCredits(creditsResult.newBalance);
 
-      // Get dedication message from step 1 session data
+      // Get step 1 data from session 
       const step1Data = getStep1Data();
       const dedicationMessage = step1Data?.dedicationMessage || '';
+      const customAuthor = step1Data?.customAuthor || '';
 
       const response = await fetch('/api/stories/complete', {
         method: 'POST',
@@ -171,6 +172,7 @@ function Step5Page() {
           storyId: currentStoryId,
           features: { ebook: true, printed: false, audiobook: false },
           dedicationMessage: dedicationMessage,
+          customAuthor: customAuthor,
         }),
       });
 

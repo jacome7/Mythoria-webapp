@@ -3,7 +3,7 @@
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
 import StepNavigation from '../../../../components/StepNavigation';
 import { useState, useEffect, useCallback, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { trackStoryCreation } from '../../../../lib/analytics';
 import { getCurrentStoryId, hasValidStorySession } from '../../../../lib/story-session';
@@ -29,6 +29,7 @@ interface StoryData {
   plotDescription: string | null;
   additionalRequests: string | null;
   chapterCount?: number | null;
+  storyLanguage?: string | null;
 }
 
 export default function Step4PageWrapper() {
@@ -42,8 +43,11 @@ export default function Step4PageWrapper() {
 function Step4Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const params = useParams();
+  const locale = params.locale as string || 'en-US';
   const editStoryId = searchParams.get('edit');
   const t = useTranslations('StorySteps.step4');
+  const publicT = useTranslations('PublicPages');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +60,14 @@ function Step4Page() {
   const [plotDescription, setPlotDescription] = useState('');
   const [additionalRequests, setAdditionalRequests] = useState('');
   const [chapterCount, setChapterCount] = useState<number>(4); // Default matches CHILDREN_3_6
-  const [isChapterCountManual, setIsChapterCountManual] = useState(false);  // Chapter count mapping based on target audience
+  const [isChapterCountManual, setIsChapterCountManual] = useState(false);
+  const [storyLanguage, setStoryLanguage] = useState<string>(locale);
+
+  // Language options
+  const languageOptions = [
+    { value: 'en-US', label: publicT('storyLanguage.en-US') },
+    { value: 'pt-PT', label: publicT('storyLanguage.pt-PT') }
+  ];  // Chapter count mapping based on target audience
   const getChapterCountForAudience = useCallback((audience: TargetAudience | ''): number => {
     if (!audience) return 6;
     const chapterMap: Record<TargetAudience, number> = {
@@ -119,7 +130,10 @@ function Step4Page() {
       setNovelStyle(story.novelStyle || '');
       setGraphicalStyle(story.graphicalStyle || '');
       setPlotDescription(story.plotDescription || '');
-      setAdditionalRequests(story.additionalRequests || '');      // Handle chapter count - only mark as manual if it differs from the expected automatic value
+      setAdditionalRequests(story.additionalRequests || '');
+      
+      // Set story language - prefer the one from the story, fallback to current locale
+      setStoryLanguage(story.storyLanguage || locale);      // Handle chapter count - only mark as manual if it differs from the expected automatic value
       if (story.chapterCount !== null && story.chapterCount !== undefined) {
         const expectedCount = getChapterCountForAudience(story.targetAudience || '');
         const isManuallySet = story.chapterCount !== expectedCount;
@@ -136,7 +150,7 @@ function Step4Page() {
     } finally {
       setLoading(false);
     }
-  }, [getChapterCountForAudience]);
+  }, [getChapterCountForAudience, locale]);
 
   useEffect(() => {
     // Check if we have a valid story session
@@ -197,6 +211,7 @@ function Step4Page() {
           plotDescription: plotDescription.trim() || null,
           additionalRequests: additionalRequests.trim() || null,
           chapterCount: chapterCount,
+          storyLanguage: storyLanguage,
         }),
       }); if (!response.ok) {
         throw new Error('Failed to save story details');
@@ -310,7 +325,7 @@ function Step4Page() {
                           required
                         />
                         <label className="label">
-                          <span className="label-text-alt">{t('fields.titleHelp')}</span>
+                          <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.titleHelp')}</span>
                         </label>
                       </div>
 
@@ -327,7 +342,7 @@ function Step4Page() {
                           className="input input-bordered w-full"
                         />
                         <label className="label">
-                          <span className="label-text-alt">{t('fields.placeHelp')}</span>
+                          <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.placeHelp')}</span>
                         </label>
                       </div>                      {/* Target Audience Field */}
                       <div className="form-control">
@@ -351,7 +366,7 @@ function Step4Page() {
                           ))}
                         </select>
                         <label className="label">
-                          <span className="label-text-alt">{t('fields.audienceHelp')}</span>
+                          <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.audienceHelp')}</span>
                         </label>
                       </div>{/* Book Size Field */}
                       <div className="form-control">
@@ -372,7 +387,7 @@ function Step4Page() {
                           ))}
                         </select>
                         <label className="label">
-                          <span className="label-text-alt">{t('fields.bookSizeHelp')}</span>
+                          <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.bookSizeHelp')}</span>
                         </label>
                       </div>                      {/* Novel Style Field */}
                       <div className="form-control">
@@ -392,7 +407,7 @@ function Step4Page() {
                           ))}
                         </select>
                         <label className="label">
-                          <span className="label-text-alt">{t('fields.novelStyleHelp')}</span>
+                          <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.novelStyleHelp')}</span>
                         </label>
                       </div>
 
@@ -414,7 +429,28 @@ function Step4Page() {
                           ))}
                         </select>
                         <label className="label">
-                          <span className="label-text-alt">{t('fields.graphicStyleHelp')}</span>
+                          <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.graphicStyleHelp')}</span>
+                        </label>
+                      </div>
+
+                      {/* Story Language Field */}
+                      <div className="form-control md:col-span-2">
+                        <label className="label">
+                          <span className="label-text font-semibold">{t('fields.storyLanguage')}</span>
+                        </label>
+                        <select
+                          value={storyLanguage}
+                          onChange={(e) => setStoryLanguage(e.target.value)}
+                          className="select select-bordered w-full"
+                        >
+                          {languageOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                        <label className="label">
+                          <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.storyLanguageHelp')}</span>
                         </label>
                       </div>
                     </div>
@@ -432,7 +468,7 @@ function Step4Page() {
                         rows={6}
                       />
                       <label className="label">
-                        <span className="label-text-alt">{t('fields.outlineHelp')}</span>
+                        <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.outlineHelp')}</span>
                       </label>
                     </div>
 
@@ -440,7 +476,7 @@ function Step4Page() {
                     <div className="form-control">
                       <label className="label">
                         <span className="label-text font-semibold">{t('fields.additional')}</span>
-                        <span className="label-text-alt">{t('fields.additional')}</span>
+                        <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.additional')}</span>
                       </label>
                       <textarea
                         value={additionalRequests}
@@ -450,7 +486,7 @@ function Step4Page() {
                         rows={4}
                       />
                       <label className="label">
-                        <span className="label-text-alt">{t('fields.additionalHelp')}</span>
+                        <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.additionalHelp')}</span>
                       </label>
                     </div>
                   </div>
@@ -461,7 +497,7 @@ function Step4Page() {
                   prevHref={editStoryId ? `/tell-your-story/step-3?edit=${editStoryId}` : "/tell-your-story/step-3"}
                   onNext={handleNext}
                   nextDisabled={saving}
-                  nextLabel={saving ? t('saving') : t('nextChapter')}
+                  nextLabel={saving ? t('saving') : t('next')}
                 />
               </div>
             </div>

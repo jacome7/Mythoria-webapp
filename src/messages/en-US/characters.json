@@ -30,6 +30,7 @@
       "dog": "Dog",
       "dragon": "Dragon",
       "fantasyCreature": "Fantasy Creature",
+      "fantasy_creature": "Fantasy Creature",
       "animal": "Animal",
       "other": "Other"
     },

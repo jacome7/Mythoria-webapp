@@ -5,42 +5,19 @@ import Image from 'next/image';
 import StepNavigation from '../../../../components/StepNavigation';
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { trackStoryCreation } from '../../../../lib/analytics';
 
 export default function Step2Page() {
   const router = useRouter();
-  const locale = useLocale();
   const t = useTranslations('StorySteps.step2');
   
-  // Language options for story creation
-  const languageOptions = [
-    { code: 'en-US', name: 'English (US)', flag: '🇺🇸' },
-    { code: 'pt-BR', name: 'Portuguese (Brazil)', flag: '🇧🇷' },
-    { code: 'pt-PT', name: 'Portuguese (Portugal)', flag: '🇵🇹' },
-    { code: 'es-ES', name: 'Spanish (Spain)', flag: '🇪🇸' },
-    { code: 'fr-FR', name: 'French (France)', flag: '🇫🇷' },
-    { code: 'de-DE', name: 'German (Germany)', flag: '🇩🇪' },
-    { code: 'it-IT', name: 'Italian (Italy)', flag: '🇮🇹' },
-    { code: 'nl-NL', name: 'Dutch (Netherlands)', flag: '🇳🇱' },
-    { code: 'sv-SE', name: 'Swedish (Sweden)', flag: '🇸🇪' },
-  ];
-
-  // Get default language based on i18n locale, fallback to en-US
-  const getDefaultLanguage = () => {
-    const supportedCodes = languageOptions.map(opt => opt.code);
-    if (supportedCodes.includes(locale)) {
-      return locale;
-    }
-    // Try to match just the language part (e.g., 'pt' from 'pt-PT')
-    const languageOnly = locale.split('-')[0];
-    const matchedOption = languageOptions.find(opt => opt.code.startsWith(languageOnly));
-    return matchedOption ? matchedOption.code : 'en-US';
-  };
+  // Removed language selection from Step-2 - now handled in Step-4
 
   const [activeTab, setActiveTab] = useState<'image' | 'audio' | 'text'>('text');
   const [storyText, setStoryText] = useState('');
-  const [storyLanguage, setStoryLanguage] = useState(getDefaultLanguage());  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+  // Story language will be determined by GenAI from user content, then set in Step-4
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
   const [uploadedAudio, setUploadedAudio] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [audioPreview, setAudioPreview] = useState<string | null>(null);
@@ -183,9 +160,8 @@ export default function Step2Page() {
       setIsRecording(false);
     }
   };
-  const hasContent = () => {
-    return storyText.trim() !== '' || uploadedImage !== null || uploadedAudio !== null;
-  };  const handleNextStep = async () => {
+
+  const handleNextStep = async () => {
     try {
       setIsCreatingStory(true);
       setShowLoadingModal(true);
@@ -207,7 +183,7 @@ export default function Step2Page() {
           title: 'My Story', // Default title - will be updated by GenAI if user provided text
           authorId: userData.authorId,
           plotDescription: storyText || null, // Store any initial text content
-          storyLanguage: storyLanguage, // Include the selected language
+          // storyLanguage will be determined by GenAI and set in Step-4
         }),
       });
 
@@ -256,7 +232,7 @@ export default function Step2Page() {
             imageData: imageBase64,
             audioData: audioBase64,
             storyId: story.storyId,
-            userLanguage: storyLanguage, // Pass the user's selected language
+            // Let GenAI extract the language from the provided content
           }),
         });
 
@@ -280,7 +256,6 @@ export default function Step2Page() {
       // Store the story content data for use in step-3
       localStorage.setItem('step2Data', JSON.stringify({
         text: storyText,
-        language: storyLanguage,
         hasImage: uploadedImage !== null,
         hasAudio: uploadedAudio !== null,
         activeTab: activeTab
@@ -294,7 +269,6 @@ export default function Step2Page() {
         has_text: !!storyText.trim(),
         has_image: uploadedImage !== null,
         has_audio: uploadedAudio !== null,
-        story_language: storyLanguage,
         processed_with_genai: !!(storyText.trim() || uploadedImage || uploadedAudio)
       });
       
@@ -361,32 +335,12 @@ export default function Step2Page() {
                   <p className="text-gray-600 text-lg">{t('intro')}</p>
                 </div>
                 
-                {/* Language Selection */}
-                <div className="mb-6">
-                  <div className="form-control max-w-sm">
-                    <label className="label">
-                      <span className="label-text font-semibold">📖 {t('storyLanguageLabel')}</span>
-                    </label>
-                    <select 
-                      className="select select-bordered w-full"
-                      value={storyLanguage}
-                      onChange={(e) => setStoryLanguage(e.target.value)}
-                    >
-                      {languageOptions.map((lang) => (
-                        <option key={lang.code} value={lang.code}>
-                          {lang.flag} {lang.name}
-                        </option>
-                      ))}
-                    </select>
-                    <label className="label">
-                      <span className="label-text-alt">{t('storyLanguageHelp')}</span>
-                    </label>
-                  </div>
-                </div>
+                {/* Language selection removed - now handled in Step 4 */}
 
                 {/* Tabs and Content Wrapper */}
-                <div>                  {/* Tab Navigation */}
-                  <div className="tabs w-full"> {/* Added w-full */}
+                <div>
+                  {/* Tab Navigation */}
+                  <div className="tabs w-full">
                     <a
                       className={`tab tab-lifted py-3 flex-1 text-center ${activeTab === 'text' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
                       onClick={() => setActiveTab('text')}
@@ -408,7 +362,8 @@ export default function Step2Page() {
                   </div>
 
                   {/* Tab Content */}
-                  <div className="border border-base-300 rounded-b-md p-4 md:p-6 bg-base-100 shadow min-h-96"> {/* Changed p-6 to p-4 md:p-6 */}                    {/* Text Area Tab Content */}
+                  <div className="border border-base-300 rounded-b-md p-4 md:p-6 bg-base-100 shadow min-h-96">
+                    {/* Text Area Tab Content */}
                     {activeTab === 'text' && (
                       <div className="w-full">
                         <div className="mb-4">
@@ -422,7 +377,7 @@ export default function Step2Page() {
                             onChange={(e) => setStoryText(e.target.value)}
                           />
                           <label className="label">
-                            <span className="label-text-alt block w-full text-wrap break-words">{t('textHelp')}</span>
+                            <span className="label-text-alt break-words max-w-full whitespace-normal">{t('textHelp')}</span>
                           </label>
                         </div>
                       </div>
@@ -636,7 +591,7 @@ export default function Step2Page() {
                   prevHref="/tell-your-story/step-1"
                   nextDisabled={isCreatingStory}
                   onNext={handleNextStep}
-                  nextLabel={isCreatingStory ? t('processing') : (hasContent() ? t('next') : t('nextChapter'))}
+                  nextLabel={isCreatingStory ? t('processing') : t('next')}
                 />
               </div>
             </div>

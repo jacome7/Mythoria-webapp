@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { title, authorId, plotDescription, storyLanguage, synopsis } = await request.json();
+    const { title, authorId, plotDescription, storyLanguage, synopsis, customAuthor, dedicationMessage } = await request.json();
     
     if (!title || !authorId) {
       return NextResponse.json(
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const story = await storyService.createStory({ title, authorId, plotDescription, storyLanguage, synopsis });
+    const story = await storyService.createStory({ title, authorId, plotDescription, storyLanguage, synopsis, customAuthor, dedicationMessage });
     return NextResponse.json({ story }, { status: 201 });
   } catch (error) {
     console.error("Error creating story:", error);
