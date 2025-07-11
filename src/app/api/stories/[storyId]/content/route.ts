@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db';
-import { stories, authors, storyCollaborators } from '@/db/schema';
+import { stories, storyCollaborators } from '@/db/schema';
 import { eq, and, or } from 'drizzle-orm';
 import { authorService } from '@/db/services';
 
