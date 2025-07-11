@@ -14,23 +14,52 @@ export function loadStoryCSS(targetAudience: string): void {
   const cssPath = getStoryCSSPath(targetAudience);
   
   // Remove any existing story CSS
-  const existingLink = document.querySelector('link[data-story-css]');
-  if (existingLink) {
-    existingLink.remove();
+  const existingStyle = document.querySelector('style[data-story-css]');
+  if (existingStyle) {
+    existingStyle.remove();
   }
   
-  // Create and append new CSS link
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = cssPath;
-  link.setAttribute('data-story-css', 'true');
-  document.head.appendChild(link);
+  // Load and scope the CSS
+  fetch(cssPath)
+    .then(response => response.text())
+    .then(css => {
+      // Scope the CSS to only apply within .mythoria-story-scope
+      const scopedCSS = css.replace(
+        /([^{}]+)\s*\{/g,
+        (match, selector) => {
+          // Skip @media queries and other at-rules
+          if (selector.trim().startsWith('@')) {
+            return match;
+          }
+          
+          // Clean up selector
+          const cleanSelector = selector.trim();
+          
+          // Add scoping prefix
+          const scopedSelector = cleanSelector
+            .split(',')
+            .map((s: string) => `.mythoria-story-scope ${s.trim()}`)
+            .join(', ');
+          
+          return `${scopedSelector} {`;
+        }
+      );
+      
+      // Create and append scoped CSS
+      const style = document.createElement('style');
+      style.textContent = scopedCSS;
+      style.setAttribute('data-story-css', 'true');
+      document.head.appendChild(style);
+    })
+    .catch(error => {
+      console.warn('Failed to load story CSS:', error);
+    });
 }
 
 export function removeStoryCSS(): void {
-  const existingLink = document.querySelector('link[data-story-css]');
-  if (existingLink) {
-    existingLink.remove();
+  const existingStyle = document.querySelector('style[data-story-css]');
+  if (existingStyle) {
+    existingStyle.remove();
   }
 }
 

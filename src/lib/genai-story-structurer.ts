@@ -2,6 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 import { getLanguageSpecificPrompt, getLanguageSpecificSchema } from "./prompt-loader";
 import { calculateGenAICost, normalizeModelName } from "@/db/genai-cost-calculator";
 import { normalizeCharacterType } from "@/types/character-enums";
+import { normalizeStoryEnums } from "@/utils/enum-normalizers";
 
 // Initialize GoogleGenAI client with Vertex AI configuration
 const clientOptions = {
@@ -17,8 +18,9 @@ export interface StructuredCharacter {
   characterId: string | null;
   name: string;
   type?: string;
-  passions?: string;
-  superpowers?: string;
+  age?: string;
+  traits?: string[];
+  characteristics?: string;
   physicalDescription?: string;
   photoUrl?: string;
   role?: string;
@@ -66,6 +68,11 @@ export async function generateStructuredStory(
     const promptConfig = await getLanguageSpecificPrompt();
     const responseSchema = await getLanguageSpecificSchema();
 
+    // DEBUG: Log the schema being sent to GenAI
+    console.log('=== DEBUG: GenAI Response Schema ===');
+    console.log(JSON.stringify(responseSchema, null, 2));
+    console.log('=== END DEBUG SCHEMA ===');
+
     // Build the system prompt from template
     const systemPrompt = promptConfig.template
       .replace('{{userDescription}}', userDescription)
@@ -83,6 +90,11 @@ export async function generateStructuredStory(
       responseMimeType: "application/json", // This forces JSON output
       responseSchema: responseSchema, // This enforces the exact schema structure
     };
+
+    // DEBUG: Log the generation config being sent to GenAI
+    console.log('=== DEBUG: GenAI Generation Config ===');
+    console.log(JSON.stringify(generationConfig, null, 2));
+    console.log('=== END DEBUG GENERATION CONFIG ===');
 
     // Prepare content based on whether we have image data, audio data, or both
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -301,6 +313,12 @@ export async function generateStructuredStory(
         ...character,
         type: normalizeCharacterType(character.type)
       }));
+    }
+
+    // Normalize story enum fields to ensure they match the required enum values
+    if (parsedResult.story) {
+      const normalized = normalizeStoryEnums(parsedResult.story as Record<string, unknown>);
+      parsedResult.story = normalized as StructuredStory;
     }
 
     // Add cost information to the result

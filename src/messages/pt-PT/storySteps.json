@@ -30,7 +30,7 @@
       "heading": "Capítulo 2 - A História",
       "intro": "Podes criar a tua história desenhando-a, gravando-a ou simplesmente escrevendo-a.",
       "tellYourStoryLabel": "Conta a tua história...",
-      "textPlaceholder": "Era uma vez... Deixa a tua imaginação voar! Partilha a tua aventura, os teus sonhos ou qualquer história que seja especial para ti.",
+      "textPlaceholder": "Deixa a tua imaginação voar! Partilha uma memória, aventura, os teus sonhos ou qualquer história que seja especial.",
       "textHelp": "Escreve tanto ou tão pouco quanto quiseres. Podes sempre editar isto mais tarde!",
       "tabWrite": "Escrever",
       "tabImage": "Imagem",
@@ -62,7 +62,7 @@
       },
       "loadingModal": {
         "title": "✨ A Criar a Tua História",
-        "message": "Os nossos Oompa Loompas mágicos estão a trabalhar arduamente para preparar a tua história! Isto pode demorar um momento...",
+        "message": "Os nossos Oompa Loompas estão a trabalhar arduamente para preparar a tua história! Isto pode demorar um momento...",
         "pleaseWait": "Por favor aguarda enquanto fazemos a nossa magia! ✨"
       }
     },
@@ -119,7 +119,8 @@
       "placeholders": {
         "selectAudience": "Selecionar público-alvo...",
         "selectNovelStyle": "Selecionar estilo de romance...",
-        "outlinePlaceholder": "Descreva o enredo, personagens e eventos principais da sua história. O que acontece na sua história? Qual é o conflito principal ou aventura?"
+        "outlinePlaceholder": "Descreva todos os detalhes que gostaria na história...",
+        "storyLanguageHelp": "A tua história será escrita e gerada no idioma selecionado."
       },
       "chapterCounts": {
         "short": "Curta (3-5 capítulos)",
@@ -130,7 +131,37 @@
         "chapter": "capítulo",
         "chapters": "capítulos"
       },
-      "saving": "A guardar..."
+      "sections": {
+        "storyBasics": "Informações Básicas da História",
+        "styleSetting": "Estilo e Cenário",
+        "contentDetails": "Detalhes do Conteúdo",
+        "required": "Obrigatório"
+      },
+      "previews": {
+        "storyOutlineProvided": "Esboço da história fornecido",
+        "additionalRequestsProvided": "Pedidos adicionais fornecidos"
+      },
+      "modal": {
+        "title": "Amostras de Estilos Gráficos",
+        "close": "Fechar",
+        "selected": "Selecionado",
+        "samples": "Amostras",
+        "altText": "Amostra de {style}"
+      },
+      "progress": {
+        "stepLabel": "Passo {currentStep} de {totalSteps}"
+      },
+      "errors": {
+        "titleRequired": "O título é obrigatório antes de prosseguir para o próximo passo.",
+        "audienceRequired": "O público-alvo é obrigatório antes de prosseguir para o próximo passo.",
+        "novelStyleRequired": "O estilo do romance é obrigatório antes de prosseguir para o próximo passo. Por favor, abra a secção \"Estilo e Cenário\".",
+        "graphicStyleRequired": "O estilo gráfico é obrigatório antes de prosseguir para o próximo passo. Por favor, abra a secção \"Estilo e Cenário\".",
+        "noStoryFound": "Nenhuma história encontrada. Por favor, comece pelo passo 1.",
+        "saveFailed": "Falha ao guardar detalhes da história",
+        "saveFailedTryAgain": "Falha ao guardar detalhes da história. Por favor, tente novamente."
+      },
+      "saving": "A guardar...",
+      "next": "Próximo"
     },
     "step5": {
       "heading": "Capítulo 5 - O Final",

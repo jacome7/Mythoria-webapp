@@ -265,7 +265,7 @@ function Step5Page() {
                 {/* Step content */}
                 <div className="card bg-base-100 shadow-xl">
                   <div className="card-body">
-                    <h1 className="card-title text-3xl mb-6">{t('heading')}</h1>
+                    <h1 className="card-title text-3xl mb-6 text-gray-800">{t('heading')}</h1>
 
                     {error && (
                       <div className="alert alert-error mb-6">
@@ -276,9 +276,9 @@ function Step5Page() {
                     {storyData ? (
                       <div className="space-y-6">
                         <div className="text-center">
-                          <h2 className="text-2xl font-bold mb-4">{t('readyToGenerate')}</h2>
+                          <h2 className="text-2xl font-bold mb-4 text-gray-800">{t('readyToGenerate')}</h2>
                           <p className="text-lg text-gray-600 mb-6">
-                            {t('aboutToStart')} <strong>{storyData.title}</strong>
+                            {t('aboutToStart')} <strong className="text-gray-800">{storyData.title}</strong>
                           </p>
 
                           {/* Credits Information */}
@@ -286,7 +286,7 @@ function Step5Page() {
                             {/* Ebook Service Info */}
                             {ebookPricing && (
                               <div className="card bg-base-200 p-6">
-                                <h3 className="text-lg font-semibold mb-4">{t('ebookGeneration')}</h3>
+                                <h3 className="text-lg font-semibold mb-4 text-gray-800">{t('ebookGeneration')}</h3>
                                 <div className="flex justify-center items-center gap-6">
                                   <div className="text-center">
                                     <span className="text-sm text-gray-600">{t('cost')}</span>
@@ -306,8 +306,8 @@ function Step5Page() {
                             {hasInsufficientCredits() && (
                               <div className="alert alert-warning">
                                 <div className="flex flex-col items-center">
-                                  <span className="font-semibold">{t('insufficientCreditsTitle')}</span>
-                                  <span className="text-sm mt-2">
+                                  <span className="font-semibold text-gray-800">{t('insufficientCreditsTitle')}</span>
+                                  <span className="text-sm mt-2 text-gray-700">
                                     {t('needMoreCredits', { count: ebookPricing ? ebookPricing.cost - userCredits : 0 })}
                                   </span>
                                   <a

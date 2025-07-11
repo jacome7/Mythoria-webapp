@@ -119,7 +119,8 @@
       "placeholders": {
         "selectAudience": "Select target audience...",
         "selectNovelStyle": "Select novel style...",
-        "outlinePlaceholder": "Describe your story's plot, characters, and key events. What happens in your story? What's the main conflict or adventure?"
+        "outlinePlaceholder": "Describe all the details you'd like in the story...",
+        "storyLanguageHelp": "Your story will be written and generated in the selected language."
       },
       "chapterCounts": {
         "short": "Short (3-5 chapters)",
@@ -130,7 +131,37 @@
         "chapter": "chapter",
         "chapters": "chapters"
       },
-      "saving": "Saving..."
+      "sections": {
+        "storyBasics": "Story Basics",
+        "styleSetting": "Style & Setting",
+        "contentDetails": "Content Details",
+        "required": "Required"
+      },
+      "previews": {
+        "storyOutlineProvided": "Story outline provided",
+        "additionalRequestsProvided": "Additional requests provided"
+      },
+      "modal": {
+        "title": "Graphical Style Samples",
+        "close": "Close",
+        "selected": "Selected",
+        "samples": "Samples",
+        "altText": "{style} sample"
+      },
+      "progress": {
+        "stepLabel": "Step {currentStep} of {totalSteps}"
+      },
+      "errors": {
+        "titleRequired": "Title is required before proceeding to the next step.",
+        "audienceRequired": "Target audience is required before proceeding to the next step.",
+        "novelStyleRequired": "Novel style is required before proceeding to the next step. Please open the \"Style & Setting\" section.",
+        "graphicStyleRequired": "Graphic style is required before proceeding to the next step. Please open the \"Style & Setting\" section.",
+        "noStoryFound": "No story found. Please start from step 1.",
+        "saveFailed": "Failed to save story details",
+        "saveFailedTryAgain": "Failed to save story details. Please try again."
+      },
+      "saving": "Saving...",
+      "next": "Next"
     },
     "step5": {
       "heading": "Chapter 5 - The Finale",

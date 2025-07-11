@@ -8,17 +8,22 @@
       "role": "Papel",
       "name": "Nome",
       "type": "Tipo",
-      "superpowers": "Poderes Especiais",
-      "passions": "Particularidades",
+      "age": "Idade",
+      "traits": "Personalidade",
+      "characteristics": "Características",
       "physicalDescription": "Descrição Física",
       "photo": "Foto (Opcional)"
     },
     "placeholders": {
       "name": "Introduz o nome da personagem",
+      "type": "Seleciona o tipo de personagem...",
+      "age": "Selecionar idade",
       "otherType": "Especifica outro tipo (máx. 32 caracteres)",
-      "superpowers": "ex. invisibilidade, super força, falar com animais...",
-      "passions": "Descreve características engraçadas, peculiares ou poderes especiais...",
-      "physicalDescription": "Descreve como a personagem se parece (cabelo, olhos, altura, roupa, etc.)..."
+      "characteristics": "Descreve poderes especiais, paixões, peculiaridades ou traços únicos...",
+      "physicalDescription": "Descreve como a personagem se parece (cabelo, olhos, altura, roupa, etc.)...",
+      "maxTraits": "máx. 5",
+      "searchTraits": "Definir a personalidade...",
+      "noTraitsSelected": "Nenhum traço selecionado"
     },
     "types": {
       "boy": "Rapaz",
@@ -47,6 +52,34 @@
       "narrator": "Narrador",
       "other": "Outro"
     },
+    "ages": {
+      "newborn": "Recém-nascido",
+      "newborn_description": "Novo no mundo; totalmente dependente e em rápido desenvolvimento (0-1 mês).",
+      "infant": "Bebé",
+      "infant_description": "Aprendendo a comer, padrões de sono—e talvez primeiras palavras ou passos (1-12 meses).",
+      "toddler": "Criança Pequena",
+      "toddler_description": "Instintivamente móvel, vocal e testando limites (1-3 anos).",
+      "preschool": "Pré-escolar",
+      "preschool_description": "Primeiros saltos sociais e imaginativos—preparação para o jardim de infância (3-5 anos).",
+      "school_age": "Idade Escolar",
+      "school_age_description": "Aprendizagem, amizades e crescente independência (6-11 anos).",
+      "teenage": "Adolescente",
+      "teenage_description": "Metamorfose emocional e social—puberdade e identidade própria (12-17 anos).",
+      "emerging_adult": "Adulto Emergente",
+      "emerging_adult_description": "Encontrando o seu lugar—educação, carreiras, relacionamentos (18-24 anos).",
+      "seasoned_adult": "Adulto Experiente",
+      "seasoned_adult_description": "Anos de construção de vida: família, carreira, identidade mais profunda (25-39 anos).",
+      "midlife_mentor": "Mentor de Meia-idade",
+      "midlife_mentor_description": "Experiente, possivelmente criando a próxima geração (40-59 anos).",
+      "elder": "Ancião",
+      "elder_description": "Maturidade reflexiva: aposentadoria, construção de legado e sabedoria de vida (60+ anos).",
+      "youngling": "Jovem",
+      "youngling_description": "Crescimento rápido e alta energia—aprendendo ambiente e limites (~0-2 anos).",
+      "adult": "Adulto",
+      "adult_description": "Totalmente maduro, fisicamente no auge—estável e socialmente confiante (~2-7 anos).",
+      "senior": "Sénior",
+      "senior_description": "Mais lento, possivelmente mostrando sinais de envelhecimento—ideal para arcos de sabedoria ou fragilidade (~7+ anos)."
+    },
     "actions": {
       "edit": "Editar",
       "delete": "Eliminar",
@@ -55,7 +88,8 @@
       "remove": "Remover",
       "uploadPhoto": "Carregar Foto",
       "addCharacter": "Adicionar Personagem",
-      "saveChanges": "Guardar Alterações"
+      "saveChanges": "Guardar Alterações",
+      "close": "Fechar"
     },
     "validation": {
       "nameRequired": "O nome da personagem é obrigatório"
@@ -63,6 +97,55 @@
     "errors": {
       "saveFailed": "Falha ao guardar personagem. Por favor, tenta novamente.",
       "deleteFailed": "Falha ao eliminar personagem. Por favor, tenta novamente."
+    },
+    "traitCategories": {
+      "positive": "Traços Positivos",
+      "negative": "Traços Negativos",
+      "neutral": "Traços Neutros"
+    },
+    "messages": {
+      "noTraitsFound": "Nenhum traço encontrado para \"{searchTerm}\""
+    },
+    "traits": {
+      "adaptable": "Adaptável",
+      "brave": "Corajoso",
+      "compassionate": "Compassivo",
+      "curious": "Curioso",
+      "decisive": "Decisivo",
+      "empathetic": "Empático",
+      "generous": "Generoso",
+      "honest": "Honesto",
+      "imaginative": "Imaginativo",
+      "loyal": "Leal",
+      "optimistic": "Otimista",
+      "patient": "Paciente",
+      "practical": "Prático",
+      "resourceful": "Engenhoso",
+      "self-disciplined": "Auto-disciplinado",
+      "sincere": "Sincero",
+      "witty": "Espirituoso",
+      "kind": "Bondoso",
+      "conscientious": "Consciencioso",
+      "energetic": "Enérgico",
+      "arrogant": "Arrogante",
+      "callous": "Insensível",
+      "cowardly": "Cobarde",
+      "cynical": "Cínico",
+      "deceitful": "Enganador",
+      "impulsive": "Impulsivo",
+      "jealous": "Ciumento",
+      "lazy": "Preguiçoso",
+      "manipulative": "Manipulador",
+      "moody": "Temperamental",
+      "reckless": "Imprudente",
+      "selfish": "Egoísta",
+      "vengeful": "Vingativo",
+      "aloof": "Distante",
+      "blunt": "Direto",
+      "cautious": "Cauteloso",
+      "methodical": "Metódico",
+      "courageous": "Corajoso",
+      "pragmatic": "Pragmático"
     },
     "confirmDelete": "Tens a certeza de que queres eliminar esta personagem? Esta ação não pode ser desfeita."
   }

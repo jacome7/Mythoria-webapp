@@ -3,7 +3,7 @@ import { authors, stories, characters, storyCharacters, creditLedger, authorCred
 import { eq, and, count, desc, sql, like, asc } from "drizzle-orm";
 import { ClerkUserForSync } from "@/types/clerk";
 import { pricingService } from "./services/pricing";
-import { CharacterRole, CharacterType, isValidCharacterType } from "../types/character-enums";
+import { CharacterRole, CharacterAge, isValidCharacterAge } from "../types/character-enums";
 
 // Export payment service
 export { paymentService } from "./services/payment";
@@ -246,16 +246,18 @@ export const characterService = {
     authorId?: string; 
     type?: string; 
     role?: CharacterRole | null; 
-    passions?: string; 
-    superpowers?: string; 
+    age?: string | null;
+    traits?: string[];
+    characteristics?: string; 
     physicalDescription?: string; 
     photoUrl?: string 
   }) {
-    // Only validate that the type is valid, don't normalize it (already done by GenAI structurer)
+    // Only validate age, type is now free text
     const validatedData = {
       ...characterData,
-      type: characterData.type && isValidCharacterType(characterData.type) 
-        ? characterData.type as CharacterType 
+      type: characterData.type || undefined, // Accept any string for type
+      age: characterData.age && isValidCharacterAge(characterData.age)
+        ? characterData.age as CharacterAge
         : undefined
     };
     

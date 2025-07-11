@@ -129,15 +129,19 @@
     },
     "audiences": {
       "kids": {
-        "title": "For Kids 🎈",
+        "title": "Kids",
         "description": "Turn your child, grandchild, nephew, or niece into the hero of their own magical adventure!"
       },
+      "groups": {
+        "title": "Groups & Yearbooks",
+        "description": "Immortalize your team spirit and your group's memories!"
+      },
       "adults": {
-        "title": "For Adults ❤️",
+        "title": "Adults",
         "description": "Relive your love story or a once-in-a-lifetime trip as a stunning illustrated memoir."
       },
       "companies": {
-        "title": "For Companies 🌟",
+        "title": "Companies",
         "description": "Gift customers or staff families a branded, personalised storybook that keeps your logo on the bookshelf."
       }
     },
@@ -331,8 +335,10 @@
       "troubles": "Story Generation Troubles (When the magic spells go awry)",
       "delivery": "Printed Book Delivery (Our owls might need directions)",
       "credits": "Credits & Payments (The goblins at Gringotts are strict!)",
-      "general": "General Enchantment (Support)"
-    },    "categoriesShort": {
+      "general": "General Enchantment (Support)",
+      "businessPartnership": "Business Partnership"
+    },
+    "categoriesShort": {
       "featureIdeas": "Feature Ideas",
       "reportBug": "Report a Bug",
       "troubles": "Story Generation Troubles",
@@ -401,29 +407,6 @@
       "unableToAccess": "Unable to access story"
     },
     "redirecting": "Redirecting..."
-  },
-  "StoryActionsPage": {
-    "description": "Choose how you'd like to experience this story",
-    "cards": {
-      "read": {
-        "title": "Read",
-        "description": "Read the story in a beautiful, formatted layout with images and styling."
-      },
-      "listen": {
-        "title": "Listen",
-        "description": "Listen to the audiobook version with professional narration."
-      },
-      "edit": {
-        "title": "Edit",
-        "description": "Make changes to the story content with our built-in editor."
-      },
-      "print": {
-        "title": "Order Print",
-        "description": "Order a professionally printed physical copy of your story.",
-        "action": "Order Print Copy",
-        "notAvailable": "Print Not Available"
-      }
-    }
   },
   "TellYourStoryPage": {
     "signedOut": {

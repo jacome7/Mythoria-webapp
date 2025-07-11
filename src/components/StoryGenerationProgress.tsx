@@ -154,12 +154,6 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
             >
               {t('completion.buttons.myStories')}
             </button>
-            <button
-              onClick={() => router.push(`/${locale}/stories/actions/${storyId}`)}
-              className="btn btn-outline btn-sm border-green-500 text-green-700 hover:bg-green-500 hover:text-white"
-            >
-              {t('completion.buttons.moreOptions')}
-            </button>
           </div>
         </div>
 
@@ -182,12 +176,13 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
 
   // Show progress state when story is still being generated
   return (
-    <div className="bg-gradient-to-br from-purple-50 to-blue-50 border-2 border-purple-200 rounded-xl p-8 text-center">
+    <div className="bg-gradient-to-br from-base-200 to-base-100 border-2 border-base-300 rounded-xl p-8 text-center">
       {/* Header */}
-      <div className="mb-6">        <h2 className="text-2xl font-bold text-purple-800 mb-2">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-base-content mb-2">
           {t('progress.title')}
         </h2>
-        <p className="text-purple-600">
+        <p className="text-base-content/70">
           {t('progress.description')}
         </p>
       </div>
@@ -195,12 +190,12 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
       {/* Progress Bar */}
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-purple-700">{t('progress.progressLabel')}</span>
-          <span className="text-sm font-bold text-purple-900">{percentage}%</span>
+          <span className="text-sm font-medium text-base-content">{t('progress.progressLabel')}</span>
+          <span className="text-sm font-bold text-primary">{percentage}%</span>
         </div>
-        <div className="w-full bg-purple-200 rounded-full h-4 relative overflow-hidden">
+        <div className="w-full bg-base-300 rounded-full h-4 relative overflow-hidden">
           <div 
-            className="bg-gradient-to-r from-purple-500 to-blue-500 h-4 rounded-full transition-all duration-1000 ease-out relative"
+            className="bg-gradient-to-r from-primary to-primary-focus h-4 rounded-full transition-all duration-1000 ease-out relative"
             style={{ width: `${percentage}%` }}
           >
             {/* Animated shimmer effect */}
@@ -210,12 +205,12 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
       </div>
 
       {/* Estimated Time */}
-      <div className="mb-6 p-4 bg-white/60 rounded-lg border border-purple-200">
+      <div className="mb-6 p-4 bg-base-100 rounded-lg border border-base-300">
         <div className="flex items-center justify-center space-x-2">
           <span className="text-2xl">⏱️</span>
           <div>
-            <p className="text-sm text-purple-600">{t('progress.estimatedTimeLabel')}</p>
-            <p className="text-lg font-bold text-purple-900">{estimatedTime}</p>
+            <p className="text-sm text-base-content/70">{t('progress.estimatedTimeLabel')}</p>
+            <p className="text-lg font-bold text-primary">{estimatedTime}</p>
           </div>
         </div>
       </div>
@@ -223,8 +218,8 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
       {/* Animated Message */}
       <div className="mb-6 min-h-[80px] flex items-center justify-center">
         <div className={`transition-all duration-300 transform ${isAnimating ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
-          <div className="bg-white/80 rounded-lg p-4 border border-purple-200 shadow-sm">
-            <p className="text-purple-800 font-medium text-lg leading-relaxed">
+          <div className="bg-base-100 rounded-lg p-4 border border-base-300 shadow-sm">
+            <p className="text-base-content font-medium text-lg leading-relaxed">
               {currentMessage}
             </p>
           </div>
@@ -235,25 +230,27 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
       <div className="flex justify-center items-center space-x-1 mb-6">
         <span className="text-2xl">✍️</span>
         <div className="flex space-x-1">
-          <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-          <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-          <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
         </div>
-        <span className="text-purple-600 ml-2 font-medium">{t('progress.creatingMagic')}</span>
+        <span className="text-base-content/70 ml-2 font-medium">{t('progress.creatingMagic')}</span>
       </div>
 
       {/* Current Step Info */}
       {progress.currentStep && (
-        <div className="text-sm text-purple-600">
+        <div className="text-sm text-base-content/70">
           <p>{t('progress.currentlyLabel')} <span className="font-semibold">{t(`steps.${progress.currentStep}`) || progress.currentStep}</span></p>
         </div>
       )}
 
       {/* Tips */}
-      <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+      <div className="mt-6 p-4 bg-neutral rounded-lg border border-neutral-focus">
         <div className="flex items-start space-x-2">
           <span className="text-xl">💡</span>
-          <div className="text-left">            <p className="text-blue-800 font-medium text-sm mb-1">{t('progress.tip.title')}</p>            <p className="text-blue-700 text-sm">
+          <div className="text-left">
+            <p className="text-neutral-content font-medium text-sm mb-1">{t('progress.tip.title')}</p>
+            <p className="text-neutral-content/80 text-sm">
               {t('progress.tip.description')}
             </p>
           </div>

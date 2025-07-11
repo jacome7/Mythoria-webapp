@@ -8,7 +8,7 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   const t = useTranslations('common.Footer');
   return (
-    <footer className="bg-base-200 text-base-content p-10">
+    <footer className="bg-base-200 text-base-content p-6">
       <div className="container mx-auto">
         {/* Main footer content with left and right sections */}
         <div className="flex flex-col md:flex-row justify-between items-start mb-8">

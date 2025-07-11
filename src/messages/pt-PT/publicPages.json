@@ -129,15 +129,19 @@
     },
     "audiences": {
       "kids": {
-        "title": "Para Crianças 🎈",
+        "title": "Crianças",
         "description": "Transforme o seu filho, neto, sobrinho ou sobrinha no herói da sua própria aventura mágica!"
       },
+      "groups": {
+        "title": "Grupos & Álbuns",
+        "description": "Imortalize o espírito da sua equipa e as memórias do seu grupo!"
+      },
       "adults": {
-        "title": "Para Adultos ❤️",
+        "title": "Adultos",
         "description": "Reviva a sua história de amor ou uma viagem única como uma memória ilustrada deslumbrante."
       },
       "companies": {
-        "title": "Para Empresas 🌟",
+        "title": "Empresas",
         "description": "Ofereça aos clientes ou às famílias dos funcionários um livro de histórias personalizado com marca que mantém o seu logótipo na estante."
       }
     },
@@ -331,8 +335,10 @@
       "troubles": "Problemas na Geração de Histórias (Quando os feitiços falham)",
       "delivery": "Entrega de Livro Impresso (As nossas corujas podem precisar de direções)",
       "credits": "Créditos & Pagamentos (Os duendes de Gringotes são exigentes!)",
-      "general": "Encantamento Geral (Suporte)"
-    },    "categoriesShort": {
+      "general": "Encantamento Geral (Suporte)",
+      "businessPartnership": "Parceria de Negócios"
+    },
+    "categoriesShort": {
       "featureIdeas": "Ideias de Funcionalidades",
       "reportBug": "Reportar um Erro",
       "troubles": "Problemas na Geração de Histórias",
@@ -356,9 +362,9 @@
     "join": {
       "title": "Junte-se à Irmandade",
       "intro": "A Mythoria está numa missão épica para conquistar novos reinos e procura bravos aventureiros para se juntarem à nossa irmandade!",
-      "printing": "Parceiros de Impressão & Logística: preparados para atravessar a Terra Média ou Westeros para entregar histórias inesquecíveis? Juntem-se a nós e espalhem a magia da narração personalizada.",
+      "printing": "Parceiros de Impressão & Logística: preparados para atravessar a Terra Média ou Westeros para entregar histórias inesquecíveis.",
       "country": "Gestores de País & Feiticeiros Locais: ajudem a Mythoria a conquistar o mundo (pacificamente, prometemos). Levem a alegria da narração ao vosso reino e além!",
-      "developers": "Programadores que Vibrem Código & Falem IA: dominam a linguagem binária e conversam facilmente com IA? Precisamos de programadores que vibrem com tecnologia inovadora e inteligência artificial para aprimorar a experiência Mythoria.",
+      "developers": "Programadores que dominam a linguagem binária e conversam facilmente com IA?",
       "call": "Interessado em tornar-se Mythoriano? Envie-nos os seus dados através do formulário encantado acima e indique a sua área de interesse."
     },
     "bonus": {
@@ -401,29 +407,6 @@
       "unableToAccess": "Não é possível aceder à história"
     },
     "redirecting": "A redirecionar..."
-  },
-  "StoryActionsPage": {
-    "description": "Escolha como gostaria de experienciar esta história",
-    "cards": {
-      "read": {
-        "title": "Ler",
-        "description": "Leia a história num formato bonito e formatado com imagens e estilo."
-      },
-      "listen": {
-        "title": "Ouvir",
-        "description": "Ouça a versão audiobook com narração profissional."
-      },
-      "edit": {
-        "title": "Editar",
-        "description": "Faça alterações ao conteúdo da história com o nosso editor integrado."
-      },
-      "print": {
-        "title": "Encomendar Impressão",
-        "description": "Encomende uma cópia física impressa profissionalmente da sua história.",
-        "action": "Encomendar Cópia Impressa",
-        "notAvailable": "Impressão Não Disponível"
-      }
-    }
   },
   "TellYourStoryPage": {
     "signedOut": {

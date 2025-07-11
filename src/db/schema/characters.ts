@@ -1,7 +1,7 @@
-import { pgTable, uuid, varchar, timestamp, text, primaryKey, index } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, timestamp, text, primaryKey, index, json } from "drizzle-orm/pg-core";
 import { authors } from './authors';
 import { stories } from './stories';
-import { characterTypeEnum, characterRoleEnum } from './enums';
+import { characterRoleEnum, characterAgeEnum } from './enums';
 
 // -----------------------------------------------------------------------------
 // Characters domain
@@ -12,10 +12,11 @@ export const characters = pgTable("characters", {
   characterId: uuid("character_id").primaryKey().defaultRandom(),
   authorId: uuid("author_id").references(() => authors.authorId, { onDelete: 'cascade' }), // Can be null if character is generic
   name: varchar("name", { length: 120 }).notNull(),
-  type: characterTypeEnum("type"),
+  type: varchar("type", { length: 50 }),
   role: characterRoleEnum("role"),
-  passions: text("passions"),
-  superpowers: text("superpowers"),
+  age: characterAgeEnum("age"), // New age field
+  traits: json("traits").$type<string[]>().default([]), // Array of character traits (max 5)
+  characteristics: text("characteristics"),
   physicalDescription: text("physical_description"),
   photoUrl: text("photo_url"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
@@ -24,6 +25,7 @@ export const characters = pgTable("characters", {
   authorIdIdx: index("characters_author_id_idx").on(table.authorId),
   createdAtIdx: index("characters_created_at_idx").on(table.createdAt),
   roleIdx: index("characters_role_idx").on(table.role),
+  ageIdx: index("characters_age_idx").on(table.age), // Index for age field
 }));
 
 // Junction table: story ↔ characters (many-to-many)

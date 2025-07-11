@@ -72,16 +72,30 @@ export default function StoryReader({ storyContent, storyMetadata }: StoryReader
     );
 
     // Ensure chapters have IDs if they don't already
+    let chapterCounter = 0;
     processedContent = processedContent.replace(
-      /<div([^>]*class="mythoria-chapter"[^>]*?)(?:id="([^"]*)")?([^>]*)>/g,
-      (match, beforeId, existingId, afterId) => {
-        if (existingId) {
-          return match; // Already has an ID
+      /<div([^>]*class="mythoria-chapter"[^>]*?)>/g,
+      (match, attributes) => {
+        // Check if this div already has an id attribute
+        if (attributes.includes('id=')) {
+          return match; // Already has an ID, don't modify
         }
-        // Generate an ID based on content or position
-        const chapterNumber = (processedContent.match(/<div[^>]*class="mythoria-chapter"/g) || []).length;
-        return `<div${beforeId} id="chapter-${chapterNumber}"${afterId}>`;
+        // Generate a new ID for chapters without one
+        chapterCounter++;
+        return `<div${attributes} id="chapter-${chapterCounter}">`;
       }
+    );
+
+    // Remove target="_blank" from table of contents links to enable smooth scrolling
+    processedContent = processedContent.replace(
+      /<a([^>]*class="[^"]*mythoria-toc-link[^"]*"[^>]*)\s+target="_blank"([^>]*)>/g,
+      '<a$1$2>'
+    );
+
+    // Also remove rel attributes that are typically used with target="_blank"
+    processedContent = processedContent.replace(
+      /<a([^>]*class="[^"]*mythoria-toc-link[^"]*"[^>]*)\s+rel="[^"]*"([^>]*)>/g,
+      '<a$1$2>'
     );
 
     return processedContent;
@@ -94,16 +108,15 @@ export default function StoryReader({ storyContent, storyMetadata }: StoryReader
       {/* Reading Toolbar */}
       <ReadingToolbar onSettingsChange={handleReadingSettingsChange} />
       
-      {/* Story Content */}
+      {/* Story Content - Wrap in a scoped container */}
       <div 
-        className="story-content-wrapper"
+        className="story-content-wrapper mythoria-story-scope"
         style={{
           fontSize: readingSettings?.fontSize ? `${readingSettings.fontSize}%` : undefined,
           lineHeight: readingSettings?.lineHeight ? `${readingSettings.lineHeight}%` : undefined
         }}
       >
-        <div className="w-full md:container md:mx-auto px-0 md:px-4 py-6">
-          <div className="w-full md:max-w-4xl md:mx-auto">
+        <div className="w-full px-0 md:px-0 py-0">
             {!isContentLoaded ? (
               // Loading state
               <div className="flex flex-col items-center justify-center py-16">
@@ -113,11 +126,10 @@ export default function StoryReader({ storyContent, storyMetadata }: StoryReader
             ) : (
               // Story content
               <article 
-                className="story-content prose prose-lg max-w-none"
+                className="story-content prose prose-lg max-w-none p-1 md:p-0 m-0"
                 dangerouslySetInnerHTML={{ __html: processedContent }}
               />
             )}
-          </div>
         </div>
       </div>
 
@@ -138,6 +150,10 @@ export default function StoryReader({ storyContent, storyMetadata }: StoryReader
           color: inherit;
           font-size: inherit;
           line-height: inherit;
+          margin-left: 5px !important;
+          margin-right: 5px !important;
+          margin-top: 10 !important;
+          margin-bottom: 10 !important;
         }
         
         :global(.story-content.prose h1),
@@ -149,16 +165,25 @@ export default function StoryReader({ storyContent, storyMetadata }: StoryReader
           font-family: inherit;
           font-size: inherit;
           line-height: inherit;
-          margin: inherit;
+          margin: 0.25rem 0;
+        }
+        
+        /* Reduce spacing for prose elements */
+        :global(.story-content.prose > *:first-child) {
+          margin-top: 0;
+        }
+        
+        :global(.story-content.prose > *:last-child) {
+          margin-bottom: 0;
         }
         
         /* Ensure smooth scrolling and proper spacing */
         :global(.story-content) {
-          scroll-margin-top: 80px;
+          scroll-margin-top: 60px;
         }
         
         :global(.story-content *[id]) {
-          scroll-margin-top: 80px;
+          scroll-margin-top: 60px;
         }
         
         /* Loading animation */
@@ -184,37 +209,110 @@ export default function StoryReader({ storyContent, storyMetadata }: StoryReader
           /* Responsive adjustments */
         @media (max-width: 768px) {
           .story-content-wrapper {
-            padding: 0.5rem 0;
+            padding: 0.1rem 0;
           }
           
           /* Override template container styles for mobile */
-          :global(.story-container) {
+          :global(.mythoria-story-scope .story-container) {
             max-width: none !important;
             margin: 0 !important;
-            padding: 0.5rem !important;
+            padding: 0.1rem !important;
           }
           
           /* Reduce chapter padding on mobile */
-          :global(.mythoria-chapter) {
-            padding: 0.75rem !important;
-            margin-bottom: 1rem !important;
+          :global(.mythoria-story-scope .mythoria-chapter) {
+            padding: 0.1rem !important;
+            margin-bottom: 0.5rem !important;
           }
           
           /* Reduce table of contents padding on mobile */
-          :global(.mythoria-table-of-contents) {
-            padding: 0.75rem !important;
-            margin: 1rem 0 !important;
+          :global(.mythoria-story-scope .mythoria-table-of-contents) {
+            padding: 0.1rem !important;
+            margin: 0.5rem 0 !important;
           }
           
           /* Reduce story title margins */
-          :global(.mythoria-story-title) {
-            margin: 0.5rem 0 !important;
-            padding-bottom: 0.25rem !important;
+          :global(.mythoria-story-scope .mythoria-story-title) {
+            margin: 0.1rem 0 !important;
+            padding-bottom: 0.125rem !important;
           }
           
           /* Reduce author name margins */
-          :global(.mythoria-author-name) {
-            margin: 0.5rem 0 1rem 0 !important;
+          :global(.mythoria-story-scope .mythoria-author-name) {
+            margin: 0.1rem 0 0.5rem 0 !important;
+          }
+        }
+        
+        /* Desktop adjustments for narrower margins */
+        @media (min-width: 769px) {
+          /* Override template container styles for desktop */
+          :global(.mythoria-story-scope .story-container) {
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0.2rem !important;
+          }
+          
+          /* Reduce chapter padding on desktop */
+          :global(.mythoria-story-scope .mythoria-chapter) {
+            padding: 0.2rem !important;
+            margin-bottom: 1rem !important;
+          }
+          
+          /* Reduce table of contents padding on desktop */
+          :global(.mythoria-story-scope .mythoria-table-of-contents) {
+            padding: 0.2rem !important;
+            margin: 1rem 0 !important;
+          }
+          
+          /* Center front cover images on desktop */
+          :global(.mythoria-story-scope .mythoria-front-cover) {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            text-align: center !important;
+            margin: 2rem auto !important;
+            padding: 1rem !important;
+          }
+          
+          :global(.mythoria-story-scope .mythoria-front-cover img) {
+            max-width: 100% !important;
+            height: auto !important;
+            display: block !important;
+            margin: 0 auto !important;
+          }
+          
+          /* Center back cover images on desktop */
+          :global(.mythoria-story-scope .mythoria-back-cover) {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            text-align: center !important;
+            margin: 2rem auto !important;
+            padding: 1rem !important;
+          }
+          
+          :global(.mythoria-story-scope .mythoria-back-cover img) {
+            max-width: 100% !important;
+            height: auto !important;
+            display: block !important;
+            margin: 0 auto !important;
+          }
+          
+          /* Center chapter images on desktop */
+          :global(.mythoria-story-scope .mythoria-chapter-image) {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            text-align: center !important;
+            margin: 1.5rem auto !important;
+            padding: 0.5rem !important;
+          }
+          
+          :global(.mythoria-story-scope .mythoria-chapter-image img) {
+            max-width: 100% !important;
+            height: auto !important;
+            display: block !important;
+            margin: 0 auto !important;
           }
         }
       `}</style>

@@ -26,8 +26,9 @@ export async function POST(request: NextRequest) {
       authorId: currentAuthor.authorId,
       type: characterData.type?.trim() || null,
       role: characterData.role?.trim() || null,
-      passions: characterData.passions?.trim() || null,
-      superpowers: characterData.superpowers?.trim() || null,
+      age: characterData.age?.trim() || null,
+      traits: characterData.traits || [],
+      characteristics: characterData.characteristics?.trim() || null,
       physicalDescription: characterData.physicalDescription?.trim() || null,
       photoUrl: characterData.photoUrl?.trim() || null,
     });

@@ -43,6 +43,7 @@ function BuyCreditsContent() {
 	   const t = useTranslations('BuyCreditsPage');
 	   const tPricing = useTranslations('PricingPage');
 	   const tMyStories = useTranslations('MyStoriesPage');
+	   const tRevolut = useTranslations('RevolutPayment');
 	   const locale = useLocale();
 	   const [cart, setCart] = useState<CartItem[]>([]);
 	   const [selectedPayment, setSelectedPayment] = useState<string>('revolut');
@@ -60,6 +61,142 @@ function BuyCreditsContent() {
 	   useEffect(() => {
 			   setIsMounted(true);
 	   }, []);
+
+	   // Check for Revolut error parameters in URL
+	   useEffect(() => {
+			   if (!isMounted) return;
+
+			   const revolutOrderId = searchParams.get('_rp_oid');
+			   const revolutFailureReason = searchParams.get('_rp_fr');
+			   const paymentStatus = searchParams.get('payment');
+			   
+			   if (revolutOrderId && revolutFailureReason) {
+					   console.log('Revolut error parameters:', { revolutOrderId, revolutFailureReason });
+					   
+					   // Create a mapping of common error messages to error codes
+					   const errorMessageToCode: { [key: string]: string } = {
+							   'Expired card. Please double check the expiration date or try another card': 'expired_card',
+							   'Insufficient funds': 'insufficient_funds',
+							   'Invalid card number': 'invalid_card',
+							   'Invalid CVV': 'invalid_cvv',
+							   'Invalid expiry date': 'invalid_expiry',
+							   'Card reported lost or stolen': 'pick_up_card',
+							   'Payment declined due to suspected fraud': 'suspected_fraud',
+							   'Technical error occurred': 'technical_error',
+							   'Card issuer declined the payment': 'issuer_decline',
+							   'Payment was cancelled by the cardholder': 'rejected_by_customer',
+							   'This transaction is not allowed': 'transaction_not_allowed',
+							   'Authentication required': 'authentication_required',
+							   'Invalid billing address': 'invalid_address',
+							   'Invalid phone number': 'invalid_phone',
+							   'Invalid email address': 'invalid_email'
+					   };
+					   
+					   // Try to map the error message to a known error code first
+					   let errorCode = errorMessageToCode[revolutFailureReason];
+					   
+					   // If no direct match, try to find if it's already an error code
+					   if (!errorCode) {
+							   // Check if it matches any of our error code keys directly
+							   const errorKeys = [
+									   '3ds_challenge_failed_manually', 'insufficient_funds', 'transaction_not_allowed_for_cardholder',
+									   'high_risk', 'cardholder_name_missing', 'unknown_card', 'customer_challenge_abandoned',
+									   'customer_challenge_failed', 'customer_name_mismatch', 'do_not_honour', 'expired_card',
+									   'invalid_address', 'invalid_amount', 'invalid_card', 'invalid_email', 'invalid_country',
+									   'invalid_cvv', 'invalid_expiry', 'invalid_merchant', 'invalid_phone', 'invalid_pin',
+									   'issuer_not_available', 'pick_up_card', 'rejected_by_customer', 'restricted_card',
+									   'technical_error', 'withdrawal_limit_exceeded', 'issuer_decline', 'suspected_fraud',
+									   'lost_card', 'stolen_card', 'security_violation', 'law_violation', 'transaction_not_allowed',
+									   'authentication_required', 'invalid_account', 'invalid_transaction', 'no_such_issuer',
+									   'currency_not_supported', 'new_card_not_unblocked', 'withdrawal_frequency_exceeded',
+									   'pin_try_exceeded', 'pin_required', 'customer_verification_failed',
+									   'card_not_enrolled_to_three_ds', 'no_common_supported_three_ds_version',
+									   'payment_attempt_blocked', 'unknown'
+							   ];
+							   
+							   if (errorKeys.includes(revolutFailureReason)) {
+									   errorCode = revolutFailureReason;
+							   } else {
+									   errorCode = 'unknown';
+							   }
+					   }
+					   
+					   console.log('Mapped error code:', errorCode);
+					   
+					   // Get the localized error message
+					   let errorMessage: string;
+					   
+					   try {
+							   // Use a safe translation lookup with fallback
+							   if (errorCode && errorCode !== 'unknown') {
+									   try {
+											   const translatedMessage = tRevolut(`errors.${errorCode}`);
+											   // Check if translation was successful (doesn't contain the key path)
+											   if (!translatedMessage.includes('RevolutPayment.errors.')) {
+													   errorMessage = translatedMessage;
+											   } else {
+													   throw new Error('Translation not found');
+											   }
+									   } catch {
+											   // Fallback to the original error message if translation fails
+											   errorMessage = revolutFailureReason;
+									   }
+							   } else {
+									   // Use unknown error translation or fallback to original message
+									   try {
+											   const unknownMessage = tRevolut('errors.unknown');
+											   errorMessage = unknownMessage.includes('RevolutPayment.errors.') 
+													   ? revolutFailureReason 
+													   : unknownMessage;
+									   } catch {
+											   errorMessage = revolutFailureReason;
+									   }
+							   }
+					   } catch (error) {
+							   console.warn('Translation lookup failed for error:', errorCode, error);
+							   // Ultimate fallback to the original error message
+							   errorMessage = revolutFailureReason;
+					   }
+					   
+					   setPaymentStatus('error');
+					   setPaymentMessage(errorMessage);
+					   
+					   // Clean up the URL parameters
+					   const newUrl = new URL(window.location.href);
+					   newUrl.searchParams.delete('_rp_oid');
+					   newUrl.searchParams.delete('_rp_fr');
+					   newUrl.searchParams.delete('payment');
+					   window.history.replaceState({}, '', newUrl.toString());
+			   } else if (paymentStatus === 'success') {
+					   // Handle successful payment redirect
+					   setPaymentStatus('success');
+					   setPaymentMessage(t('payment.success'));
+					   
+					   // Clear cart and redirect
+					   setCart([]);
+					   setOrderToken(null);
+					   
+					   // Clean up URL and redirect after short delay
+					   const newUrl = new URL(window.location.href);
+					   newUrl.searchParams.delete('payment');
+					   window.history.replaceState({}, '', newUrl.toString());
+					   
+					   setTimeout(() => {
+							   window.location.href = `/${locale}/my-stories`;
+					   }, 3000);
+			   } else if (paymentStatus === 'cancel') {
+					   // Handle payment cancellation
+					   setPaymentStatus('idle');
+					   setPaymentMessage('');
+					   setOrderToken(null);
+					   setOrderAmount(null);
+					   
+					   // Clean up URL
+					   const newUrl = new URL(window.location.href);
+					   newUrl.searchParams.delete('payment');
+					   window.history.replaceState({}, '', newUrl.toString());
+			   }
+	   }, [isMounted, searchParams, tRevolut, t, locale]);
 
 	   // Fetch credit packages from API (like pricing page)
 	   const fetchCreditPackages = useCallback(async () => {
@@ -447,19 +584,19 @@ function BuyCreditsContent() {
 
 						{/* Payment Status Messages */}
 						{paymentStatus !== 'idle' && (
-							<div className={`alert mb-6 ${
-								paymentStatus === 'success' ? 'alert-success' : 
-								paymentStatus === 'error' ? 'alert-error' : 
-								'alert-info'
+							<div className={`mb-6 ${
+								paymentStatus === 'success' ? 'alert alert-success' : 
+								paymentStatus === 'error' ? 'bg-error/10 border border-error/20 rounded-lg p-4' : 
+								'alert alert-info'
 							}`}>
 								<div className="flex items-center space-x-2">
 									{paymentStatus === 'success' && <FaCheckCircle />}
-									{paymentStatus === 'error' && <FaExclamationTriangle />}
+									{paymentStatus === 'error' && <FaExclamationTriangle className="text-error" />}
 									{paymentStatus === 'processing' && <span className="loading loading-spinner loading-sm"></span>}
-									<span>{paymentMessage}</span>
+									<span className={paymentStatus === 'error' ? 'text-error' : ''}>{paymentMessage}</span>
 								</div>
 								{paymentStatus === 'error' && (
-									<div className="flex space-x-2">
+									<div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-3">
 										<button onClick={resetPayment} className="btn btn-sm btn-outline">
 											{t('actions.tryAgain')}
 										</button>
@@ -477,6 +614,8 @@ function BuyCreditsContent() {
 								)}
 							</div>
 						)}
+
+
 
 						{/* Payment Section */}
 						{cart.length > 0 && paymentStatus !== 'success' && (

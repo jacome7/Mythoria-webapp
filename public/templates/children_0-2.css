@@ -3,11 +3,12 @@
 .story-container {
   max-width: 800px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0rem;
   font-family: 'Comic Sans MS', cursive, sans-serif;
   line-height: 1.8;
   background-color: #fef8f0;
   color: #2d3748;
+  border: 1px solid #444444;
 }
 
 .mythoria-story-title {

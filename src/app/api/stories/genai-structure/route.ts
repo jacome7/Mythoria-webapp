@@ -104,8 +104,9 @@ export async function POST(request: NextRequest) {
             authorId: currentAuthor.authorId,
             type: character.type || undefined,
             role: character.role && isValidCharacterRole(character.role) ? character.role : undefined,
-            passions: character.passions || undefined,
-            superpowers: character.superpowers || undefined,
+            age: character.age || undefined,
+            traits: character.traits || [],
+            characteristics: character.characteristics || undefined,
             physicalDescription: character.physicalDescription || undefined,
             photoUrl: character.photoUrl || undefined,
           });
@@ -117,8 +118,9 @@ export async function POST(request: NextRequest) {
           authorId: currentAuthor.authorId,
           type: character.type || undefined,
           role: character.role && isValidCharacterRole(character.role) ? character.role : undefined,
-          passions: character.passions || undefined,
-          superpowers: character.superpowers || undefined,
+          age: character.age || undefined,
+          traits: character.traits || [],
+          characteristics: character.characteristics || undefined,
           physicalDescription: character.physicalDescription || undefined,
           photoUrl: character.photoUrl || undefined,
         });
