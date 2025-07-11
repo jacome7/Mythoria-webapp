@@ -30,7 +30,9 @@
 }
 
 .mythoria-author-name {
-  text-align: center;
+  text-align: right;
+  margin-top: 16px;
+  margin-right: 32px;
   font-size: 0.9rem;
   margin-bottom: 2rem;
   color: #718096;
