@@ -168,7 +168,7 @@ export default function Home() {
 
                 <div className="card bg-base-200 shadow-xl">
                   <figure className="px-10 pt-10">
-                    <Image src="/SampleBooks/CentralCasa.jpg" alt="Company Book" width={300} height={200} className="rounded-xl" />
+                    <Image src="/SampleBooks/caravanconcierge.jpg" alt="Company Book" width={300} height={340} className="rounded-xl" />
                   </figure>
                   <div className="card-body items-center text-center">
                     <h2 className="card-title text-2xl">{t('audiences.companies.title')}</h2>
