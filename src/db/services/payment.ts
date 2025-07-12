@@ -1,6 +1,7 @@
 import { db } from "../index";
 import { paymentOrders, paymentEvents, paymentMethods, type PaymentOrder } from "../schema";
 import { eq, and, desc } from "drizzle-orm";
+import { creditPackagesService } from "./credit-packages";
 
 export interface CreditPackage {
   id: number;
@@ -8,6 +9,8 @@ export interface CreditPackage {
   price: number;
   popular?: boolean;
   bestValue?: boolean;
+  key?: string;
+  dbId?: string;
 }
 
 export interface CreateOrderRequest {
@@ -45,32 +48,41 @@ export interface WebhookPayload {
   };
 }
 
-// Credit packages from the buy-credits page
-export const CREDIT_PACKAGES: CreditPackage[] = [
-  { id: 1, credits: 5, price: 5, popular: false, bestValue: false },
-  { id: 2, credits: 10, price: 9, popular: false, bestValue: false },
-  { id: 3, credits: 30, price: 25, popular: false, bestValue: false },
-  { id: 4, credits: 100, price: 79, popular: false, bestValue: false },
-];
-
 export const paymentService = {
-  // Get credit package by ID
-  getCreditPackage(id: number): CreditPackage | undefined {
-    return CREDIT_PACKAGES.find(pkg => pkg.id === id);
+  // Get credit packages from database with frontend-compatible IDs
+  async getCreditPackages(): Promise<CreditPackage[]> {
+    const dbPackages = await creditPackagesService.getActiveCreditPackages();
+    
+    // Transform the data to match the frontend expectations (same as in API)
+    return dbPackages.map((pkg, index) => ({
+      id: index + 1, // Use incremental ID for frontend compatibility
+      credits: pkg.credits,
+      price: parseFloat(pkg.price),
+      popular: pkg.popular,
+      bestValue: pkg.bestValue,
+      key: pkg.key,
+      dbId: pkg.id, // Keep the database ID for reference
+    }));
+  },
+
+  // Get credit package by frontend ID
+  async getCreditPackage(id: number): Promise<CreditPackage | undefined> {
+    const packages = await this.getCreditPackages();
+    return packages.find(pkg => pkg.id === id);
   },
 
   // Calculate total for order
-  calculateOrderTotal(packages: Array<{ packageId: number; quantity: number }>): {
+  async calculateOrderTotal(packages: Array<{ packageId: number; quantity: number }>): Promise<{
     totalCredits: number;
     totalAmount: number;
     itemsBreakdown: Array<{ packageId: number; quantity: number; credits: number; unitPrice: number; totalPrice: number }>;
-  } {
+  }> {
     let totalCredits = 0;
     let totalAmount = 0;
     const itemsBreakdown = [];
 
     for (const item of packages) {
-      const pkg = this.getCreditPackage(item.packageId);
+      const pkg = await this.getCreditPackage(item.packageId);
       if (!pkg) {
         throw new Error(`Invalid package ID: ${item.packageId}`);
       }
@@ -100,7 +112,7 @@ export const paymentService = {
   // Create Revolut order
   async createRevolutOrder(orderData: CreateOrderRequest): Promise<{ order: PaymentOrder; revolutOrder: RevolutOrderResponse }> {
     // Calculate order totals
-    const orderTotals = this.calculateOrderTotal(orderData.creditPackages);
+    const orderTotals = await this.calculateOrderTotal(orderData.creditPackages);
     
     // Determine API base URL based on environment
     const apiBaseUrl = process.env.REVOLUT_API_URL || 
@@ -117,14 +129,6 @@ export const paymentService = {
       ...(orderData.idempotencyKey && { idempotency_key: orderData.idempotencyKey }),
     };
     
-    console.log('PaymentService: Revolut order payload:', revolutOrderPayload);
-    console.log('PaymentService: Amount breakdown:', {
-      totalAmountEuros: orderTotals.totalAmount,
-      totalAmountCents: Math.round(orderTotals.totalAmount * 100),
-      currency: 'EUR',
-      description: `Mythoria Credits Purchase - ${orderTotals.totalCredits} credits`,
-    });
-
     const revolutResponse = await fetch(`${apiBaseUrl}/api/orders`, {
       method: 'POST',
       headers: {

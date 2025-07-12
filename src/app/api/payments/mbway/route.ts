@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Check if package exists
-      const creditPackage = paymentService.getCreditPackage(pkg.packageId);
+      const creditPackage = await paymentService.getCreditPackage(pkg.packageId);
       if (!creditPackage) {
         return NextResponse.json(
           { error: `Invalid package ID: ${pkg.packageId}` },
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate order totals
-    const orderTotals = paymentService.calculateOrderTotal(creditPackages);
+    const orderTotals = await paymentService.calculateOrderTotal(creditPackages);
 
     // Create ticket in admin system
     const adminApiKey = process.env.ADMIN_API_KEY;
