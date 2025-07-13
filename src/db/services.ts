@@ -1,9 +1,10 @@
 import { db } from "./index";
-import { authors, stories, characters, storyCharacters, creditLedger, authorCreditBalances, leads, storyRatings, aiEdits } from "./schema";
-import { eq, and, count, desc, sql, like, asc } from "drizzle-orm";
+import { authors, stories, characters, storyCharacters, creditLedger, authorCreditBalances, leads, storyRatings, aiEdits, chapters } from "./schema";
+import { eq, and, count, desc, sql, like, asc, max } from "drizzle-orm";
 import { ClerkUserForSync } from "@/types/clerk";
 import { pricingService } from "./services/pricing";
 import { CharacterRole, CharacterAge, isValidCharacterAge } from "../types/character-enums";
+import { toAbsoluteImageUrl, toRelativeImagePath } from "../utils/image-url";
 
 // Export payment service
 export { paymentService } from "./services/payment";
@@ -166,11 +167,21 @@ export const storyService = {  async createStory(storyData: {
 
   async getStoryById(storyId: string) {
     const [story] = await db.select().from(stories).where(eq(stories.storyId, storyId));
-    return story;
+    if (!story) return story;
+    
+    return {
+      ...story,
+      featureImageUri: toAbsoluteImageUrl(story.featureImageUri),
+    };
   },
 
   async getStoriesByAuthor(authorId: string) {
-    return await db.select().from(stories).where(eq(stories.authorId, authorId));
+    const storyResults = await db.select().from(stories).where(eq(stories.authorId, authorId));
+    
+    return storyResults.map(story => ({
+      ...story,
+      featureImageUri: toAbsoluteImageUrl(story.featureImageUri),
+    }));
   },
   async getPublishedStories() {
     return await db.select().from(stories).where(eq(stories.status, 'published'));
@@ -221,6 +232,7 @@ export const storyService = {  async createStory(storyData: {
       .orderBy(desc(stories.createdAt));    // Convert string rating to number and ensure proper types
     return result.map(story => ({
       ...story,
+      featureImageUri: toAbsoluteImageUrl(story.featureImageUri),
       averageRating: story.averageRating ? parseFloat(story.averageRating as unknown as string) : null,
       ratingCount: story.ratingCount || 0
     }));
@@ -230,8 +242,18 @@ export const storyService = {  async createStory(storyData: {
     const result = await db.select({ value: count() }).from(stories);
     return result[0]?.value || 0;
   },  async updateStory(storyId: string, updates: Partial<typeof stories.$inferInsert>) {
-    const [story] = await db.update(stories).set(updates).where(eq(stories.storyId, storyId)).returning();
-    return story;
+    // Convert any image URLs to relative paths for storage
+    const processedUpdates = {
+      ...updates,
+      ...(updates.featureImageUri !== undefined && { featureImageUri: toRelativeImagePath(updates.featureImageUri) }),
+    };
+    
+    const [story] = await db.update(stories).set(processedUpdates).where(eq(stories.storyId, storyId)).returning();
+    
+    return {
+      ...story,
+      featureImageUri: toAbsoluteImageUrl(story.featureImageUri),
+    };
   },
 
   async deleteStory(storyId: string) {
@@ -258,7 +280,8 @@ export const characterService = {
       type: characterData.type || undefined, // Accept any string for type
       age: characterData.age && isValidCharacterAge(characterData.age)
         ? characterData.age as CharacterAge
-        : undefined
+        : undefined,
+      photoUrl: toRelativeImagePath(characterData.photoUrl),
     };
     
     console.log('[characterService.createCharacter] Input type:', characterData.type);
@@ -266,16 +289,30 @@ export const characterService = {
     
     const [character] = await db.insert(characters).values(validatedData).returning();
     console.log('[characterService.createCharacter] Created character with type:', character.type);
-    return character;
+    
+    return {
+      ...character,
+      photoUrl: toAbsoluteImageUrl(character.photoUrl),
+    };
   },
 
   async getCharactersByAuthor(authorId: string) {
-    return await db.select().from(characters).where(eq(characters.authorId, authorId));
+    const characterResults = await db.select().from(characters).where(eq(characters.authorId, authorId));
+    
+    return characterResults.map(character => ({
+      ...character,
+      photoUrl: toAbsoluteImageUrl(character.photoUrl),
+    }));
   },
 
   async getCharacterById(characterId: string) {
     const [character] = await db.select().from(characters).where(eq(characters.characterId, characterId));
-    return character;
+    if (!character) return character;
+    
+    return {
+      ...character,
+      photoUrl: toAbsoluteImageUrl(character.photoUrl),
+    };
   }
 };
 
@@ -295,7 +332,7 @@ export const storyCharacterService = {
   },
 
   async getCharactersByStory(storyId: string) {
-    return await db
+    const results = await db
       .select({
         character: characters,
         role: storyCharacters.role
@@ -303,10 +340,18 @@ export const storyCharacterService = {
       .from(storyCharacters)
       .innerJoin(characters, eq(storyCharacters.characterId, characters.characterId))
       .where(eq(storyCharacters.storyId, storyId));
+
+    return results.map(result => ({
+      ...result,
+      character: {
+        ...result.character,
+        photoUrl: toAbsoluteImageUrl(result.character.photoUrl),
+      }
+    }));
   },
 
   async getStoriesByCharacter(characterId: string) {
-    return await db
+    const results = await db
       .select({
         story: stories,
         role: storyCharacters.role
@@ -314,6 +359,14 @@ export const storyCharacterService = {
       .from(storyCharacters)
       .innerJoin(stories, eq(storyCharacters.storyId, stories.storyId))
       .where(eq(storyCharacters.characterId, characterId));
+
+    return results.map(result => ({
+      ...result,
+      story: {
+        ...result.story,
+        featureImageUri: toAbsoluteImageUrl(result.story.featureImageUri),
+      }
+    }));
   },
   async removeCharacterFromStory(storyId: string, characterId: string) {
     await db
@@ -593,6 +646,320 @@ export const aiEditService = {
       .where(eq(aiEdits.authorId, authorId))
       .orderBy(desc(aiEdits.requestedAt))
       .limit(limit);
+  }
+};
+
+// Chapter operations
+export const chapterService = {
+  async createChapter(chapterData: { 
+    storyId: string; 
+    authorId: string;
+    title: string; 
+    htmlContent: string; 
+    chapterNumber: number;
+    version?: number;
+    imageUri?: string;
+    imageThumbnailUri?: string;
+    audioUri?: string;
+  }) {
+    const [chapter] = await db.insert(chapters).values({
+      storyId: chapterData.storyId,
+      authorId: chapterData.authorId,
+      title: chapterData.title,
+      htmlContent: chapterData.htmlContent,
+      chapterNumber: chapterData.chapterNumber,
+      version: chapterData.version || 1,
+      imageUri: toRelativeImagePath(chapterData.imageUri),
+      imageThumbnailUri: toRelativeImagePath(chapterData.imageThumbnailUri),
+      audioUri: chapterData.audioUri,
+    }).returning();
+    
+    // Convert relative paths back to absolute URLs for response
+    return {
+      ...chapter,
+      imageUri: toAbsoluteImageUrl(chapter.imageUri),
+      imageThumbnailUri: toAbsoluteImageUrl(chapter.imageThumbnailUri),
+    };
+  },
+
+  async getChapterById(chapterId: string) {
+    const [chapter] = await db.select().from(chapters).where(eq(chapters.id, chapterId));
+    if (!chapter) return chapter;
+    
+    return {
+      ...chapter,
+      imageUri: toAbsoluteImageUrl(chapter.imageUri),
+      imageThumbnailUri: toAbsoluteImageUrl(chapter.imageThumbnailUri),
+    };
+  },
+
+  async getChaptersByStory(storyId: string) {
+    const chapterResults = await db.select().from(chapters).where(eq(chapters.storyId, storyId)).orderBy(asc(chapters.chapterNumber));
+    
+    return chapterResults.map(chapter => ({
+      ...chapter,
+      imageUri: toAbsoluteImageUrl(chapter.imageUri),
+      imageThumbnailUri: toAbsoluteImageUrl(chapter.imageThumbnailUri),
+    }));
+  },
+
+  async updateChapter(chapterId: string, updates: Partial<typeof chapters.$inferInsert>) {
+    // Convert any image URLs to relative paths for storage
+    const processedUpdates = {
+      ...updates,
+      ...(updates.imageUri !== undefined && { imageUri: toRelativeImagePath(updates.imageUri) }),
+      ...(updates.imageThumbnailUri !== undefined && { imageThumbnailUri: toRelativeImagePath(updates.imageThumbnailUri) }),
+    };
+    
+    const [chapter] = await db.update(chapters).set(processedUpdates).where(eq(chapters.id, chapterId)).returning();
+    
+    return {
+      ...chapter,
+      imageUri: toAbsoluteImageUrl(chapter.imageUri),
+      imageThumbnailUri: toAbsoluteImageUrl(chapter.imageThumbnailUri),
+    };
+  },
+
+  async deleteChapter(chapterId: string) {
+    await db.delete(chapters).where(eq(chapters.id, chapterId));
+  },
+
+  async getStoryChapters(storyId: string): Promise<Array<{
+    id: string;
+    chapterNumber: number;
+    title: string;
+    imageUri: string | null;
+    imageThumbnailUri: string | null;
+    htmlContent: string;
+    audioUri: string | null;
+    version: number;
+    createdAt: Date;
+    updatedAt: Date;
+  }>> {
+    // Get the latest version for each chapter
+    const latestVersionsSubquery = db
+      .select({
+        storyId: chapters.storyId,
+        chapterNumber: chapters.chapterNumber,
+        latestVersion: max(chapters.version).as('latest_version')
+      })
+      .from(chapters)
+      .where(eq(chapters.storyId, storyId))
+      .groupBy(chapters.storyId, chapters.chapterNumber)
+      .as('latest_versions');
+
+    const chapterResults = await db
+      .select({
+        id: chapters.id,
+        chapterNumber: chapters.chapterNumber,
+        title: chapters.title,
+        imageUri: chapters.imageUri,
+        imageThumbnailUri: chapters.imageThumbnailUri,
+        htmlContent: chapters.htmlContent,
+        audioUri: chapters.audioUri,
+        version: chapters.version,
+        createdAt: chapters.createdAt,
+        updatedAt: chapters.updatedAt
+      })
+      .from(chapters)
+      .innerJoin(latestVersionsSubquery, and(
+        eq(chapters.storyId, latestVersionsSubquery.storyId),
+        eq(chapters.chapterNumber, latestVersionsSubquery.chapterNumber),
+        eq(chapters.version, latestVersionsSubquery.latestVersion)
+      ))
+      .where(eq(chapters.storyId, storyId))
+      .orderBy(asc(chapters.chapterNumber));
+
+    return chapterResults.map(chapter => ({
+      ...chapter,
+      imageUri: toAbsoluteImageUrl(chapter.imageUri),
+      imageThumbnailUri: toAbsoluteImageUrl(chapter.imageThumbnailUri),
+    }));
+  },
+
+  async getStoryChapter(storyId: string, chapterNumber: number): Promise<{
+    id: string;
+    chapterNumber: number;
+    title: string;
+    imageUri: string | null;
+    imageThumbnailUri: string | null;
+    htmlContent: string;
+    audioUri: string | null;
+    version: number;
+    createdAt: Date;
+    updatedAt: Date;
+  } | null> {
+    // Get the latest version of the specific chapter
+    const latestVersionResult = await db
+      .select({ latestVersion: max(chapters.version) })
+      .from(chapters)
+      .where(and(
+        eq(chapters.storyId, storyId),
+        eq(chapters.chapterNumber, chapterNumber)
+      ));
+
+    const latestVersion = latestVersionResult[0]?.latestVersion;
+    if (!latestVersion) return null;
+
+    const [chapter] = await db
+      .select({
+        id: chapters.id,
+        chapterNumber: chapters.chapterNumber,
+        title: chapters.title,
+        imageUri: chapters.imageUri,
+        imageThumbnailUri: chapters.imageThumbnailUri,
+        htmlContent: chapters.htmlContent,
+        audioUri: chapters.audioUri,
+        version: chapters.version,
+        createdAt: chapters.createdAt,
+        updatedAt: chapters.updatedAt
+      })
+      .from(chapters)
+      .where(and(
+        eq(chapters.storyId, storyId),
+        eq(chapters.chapterNumber, chapterNumber),
+        eq(chapters.version, latestVersion)
+      ));
+
+    if (!chapter) return null;
+
+    return {
+      ...chapter,
+      imageUri: toAbsoluteImageUrl(chapter.imageUri),
+      imageThumbnailUri: toAbsoluteImageUrl(chapter.imageThumbnailUri),
+    };
+  },
+
+  async getTotalChaptersCount(storyId: string): Promise<number> {
+    const result = await db
+      .select({ count: count() })
+      .from(chapters)
+      .where(eq(chapters.storyId, storyId));
+    
+    return result[0]?.count || 0;
+  },
+
+  async getChapterTableOfContents(storyId: string): Promise<Array<{
+    chapterNumber: number;
+    title: string;
+  }>> {
+    // Get the latest version for each chapter for table of contents
+    const latestVersionsSubquery = db
+      .select({
+        storyId: chapters.storyId,
+        chapterNumber: chapters.chapterNumber,
+        latestVersion: max(chapters.version).as('latest_version')
+      })
+      .from(chapters)
+      .where(eq(chapters.storyId, storyId))
+      .groupBy(chapters.storyId, chapters.chapterNumber)
+      .as('latest_versions');
+
+    return await db
+      .select({
+        chapterNumber: chapters.chapterNumber,
+        title: chapters.title
+      })
+      .from(chapters)
+      .innerJoin(latestVersionsSubquery, and(
+        eq(chapters.storyId, latestVersionsSubquery.storyId),
+        eq(chapters.chapterNumber, latestVersionsSubquery.chapterNumber),
+        eq(chapters.version, latestVersionsSubquery.latestVersion)
+      ))
+      .where(eq(chapters.storyId, storyId))
+      .orderBy(asc(chapters.chapterNumber));
+  },
+
+  async updateChapterContent(storyId: string, chapterNumber: number, htmlContent: string): Promise<void> {
+    // Find the maximum version number for this chapter
+    const maxVersionResult = await db
+      .select({ 
+        maxVersion: max(chapters.version) 
+      })
+      .from(chapters)
+      .where(and(
+        eq(chapters.storyId, storyId),
+        eq(chapters.chapterNumber, chapterNumber)
+      ));
+
+    const maxVersion = maxVersionResult[0]?.maxVersion || 0;
+    if (maxVersion === 0) {
+      throw new Error(`Chapter ${chapterNumber} not found for story ${storyId}`);
+    }
+
+    // Get the full chapter details for the latest version
+    const [chapterToUpdate] = await db
+      .select()
+      .from(chapters)
+      .where(and(
+        eq(chapters.storyId, storyId),
+        eq(chapters.chapterNumber, chapterNumber),
+        eq(chapters.version, maxVersion)
+      ));
+
+    if (!chapterToUpdate) {
+      throw new Error(`Chapter ${chapterNumber} not found for story ${storyId}`);
+    }
+
+    // Create a new version with updated content
+    const newVersion = maxVersion + 1;
+    await db.insert(chapters).values({
+      storyId: chapterToUpdate.storyId,
+      authorId: chapterToUpdate.authorId,
+      title: chapterToUpdate.title,
+      htmlContent: htmlContent,
+      chapterNumber: chapterToUpdate.chapterNumber,
+      version: newVersion,
+      imageUri: chapterToUpdate.imageUri,
+      imageThumbnailUri: chapterToUpdate.imageThumbnailUri,
+      audioUri: chapterToUpdate.audioUri,
+    });
+  },
+
+  async updateChapterImage(storyId: string, chapterNumber: number, imageUri: string): Promise<void> {
+    // Find the maximum version number for this chapter
+    const maxVersionResult = await db
+      .select({ 
+        maxVersion: max(chapters.version) 
+      })
+      .from(chapters)
+      .where(and(
+        eq(chapters.storyId, storyId),
+        eq(chapters.chapterNumber, chapterNumber)
+      ));
+
+    const maxVersion = maxVersionResult[0]?.maxVersion || 0;
+    if (maxVersion === 0) {
+      throw new Error(`Chapter ${chapterNumber} not found for story ${storyId}`);
+    }
+
+    // Get the full chapter details for the latest version
+    const [chapterToUpdate] = await db
+      .select()
+      .from(chapters)
+      .where(and(
+        eq(chapters.storyId, storyId),
+        eq(chapters.chapterNumber, chapterNumber),
+        eq(chapters.version, maxVersion)
+      ));
+
+    if (!chapterToUpdate) {
+      throw new Error(`Chapter ${chapterNumber} not found for story ${storyId}`);
+    }
+
+    // Create a new version with updated image
+    const newVersion = maxVersion + 1;
+    await db.insert(chapters).values({
+      storyId: chapterToUpdate.storyId,
+      authorId: chapterToUpdate.authorId,
+      title: chapterToUpdate.title,
+      htmlContent: chapterToUpdate.htmlContent,
+      chapterNumber: chapterToUpdate.chapterNumber,
+      version: newVersion,
+      imageUri: imageUri,
+      imageThumbnailUri: chapterToUpdate.imageThumbnailUri,
+      audioUri: chapterToUpdate.audioUri,
+    });
   }
 };
 

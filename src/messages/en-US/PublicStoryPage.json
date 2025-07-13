@@ -1,0 +1,13 @@
+{
+  "storyNotFound": "Story Not Found",
+  "storyNotAvailable": "This story is not available for public reading.",
+  "chapterNotFound": "Chapter Not Found",
+  "chapterNotAvailable": "This chapter is not available.",
+  "aboutStory": "About This Story",
+  "author": "Author",
+  "targetAudience": "Target Audience",
+  "graphicalStyle": "Graphical Style",
+  "chapters": "Chapters",
+  "synopsis": "Synopsis",
+  "notSpecified": "Not specified"
+}

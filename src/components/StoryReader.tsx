@@ -2,28 +2,58 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import ReadingToolbar, { ReadingSettings } from './ReadingToolbar';
-import ReadingProgress from './ReadingProgress';
 import { loadStoryCSS, removeStoryCSS } from '../lib/story-css';
+import { getLogoForGraphicalStyle } from '../utils/logo-mapping';
+import { toAbsoluteImageUrl } from '../utils/image-url';
 
-interface StoryReaderProps {
-  storyContent: string;
-  storyMetadata?: {
-    targetAudience?: string;
-    graphicalStyle?: string;
-    title?: string;
-  };
+interface Chapter {
+  id: string;
+  chapterNumber: number;
+  title: string;
+  imageUri: string | null;
+  imageThumbnailUri: string | null;
+  htmlContent: string;
+  audioUri: string | null;
+  version: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export default function StoryReader({ storyContent, storyMetadata }: StoryReaderProps) {
+interface StoryReaderProps {
+  storyId: string;
+  story: {
+    title: string;
+    authorName: string;
+    dedicationMessage?: string;
+    targetAudience?: string;
+    graphicalStyle?: string;
+    coverUri?: string;
+    backcoverUri?: string;
+  };
+  chapters: Chapter[];
+  currentChapter?: number;
+}
+
+export default function StoryReader({ storyId, story, chapters, currentChapter }: StoryReaderProps) {
   const t = useTranslations('common.Components.StoryReader');
+  const router = useRouter();
   const [readingSettings, setReadingSettings] = useState<ReadingSettings | null>(null);
   const [isContentLoaded, setIsContentLoaded] = useState(false);
+  const [showTableOfContents, setShowTableOfContents] = useState(false);
+
+  // Determine what to show based on current chapter
+  const isFirstPage = !currentChapter || currentChapter === 0;
+  const currentChapterData = currentChapter ? chapters.find(ch => ch.chapterNumber === currentChapter) : null;
+  const totalChapters = chapters.length;
+
   // Load appropriate CSS theme based on story metadata
   useEffect(() => {
-    if (storyMetadata?.targetAudience) {
+    if (story?.targetAudience) {
       try {
-        loadStoryCSS(storyMetadata.targetAudience);
+        loadStoryCSS(story.targetAudience);
       } catch (error) {
         console.warn('Failed to load story CSS, using default styles:', error);
         // Fall back to a default audience style
@@ -35,7 +65,7 @@ export default function StoryReader({ storyContent, storyMetadata }: StoryReader
       // Clean up CSS when component unmounts
       removeStoryCSS();
     };
-  }, [storyMetadata]);
+  }, [story]);
 
   // Mark content as loaded after a short delay to ensure CSS is applied
   useEffect(() => {
@@ -44,99 +74,304 @@ export default function StoryReader({ storyContent, storyMetadata }: StoryReader
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [storyContent]);
+  }, []);
+
   // Handle reading settings changes
   const handleReadingSettingsChange = (settings: ReadingSettings) => {
     setReadingSettings(settings);
-    // TODO: Apply reading settings to the story content display
-    console.log('Reading settings updated:', settings);
   };
 
-  // Process story content to ensure proper IDs for navigation
-  const processStoryContent = (content: string): string => {
-    if (!content) return '';
-
-    // Add IDs to elements that might not have them for navigation
-    let processedContent = content;
-
-    // Ensure story title has an ID
-    processedContent = processedContent.replace(
-      /<h1([^>]*class="mythoria-story-title"[^>]*)>/,
-      '<h1$1 id="story-title">'
-    );
-
-    // Ensure table of contents has an ID
-    processedContent = processedContent.replace(
-      /<div([^>]*class="mythoria-table-of-contents"[^>]*)>/,
-      '<div$1 id="table-of-contents">'
-    );
-
-    // Ensure chapters have IDs if they don't already
-    let chapterCounter = 0;
-    processedContent = processedContent.replace(
-      /<div([^>]*class="mythoria-chapter"[^>]*?)>/g,
-      (match, attributes) => {
-        // Check if this div already has an id attribute
-        if (attributes.includes('id=')) {
-          return match; // Already has an ID, don't modify
-        }
-        // Generate a new ID for chapters without one
-        chapterCounter++;
-        return `<div${attributes} id="chapter-${chapterCounter}">`;
+  // Navigation functions
+  const navigateToChapter = (chapterNumber: number) => {
+    if (chapterNumber === 0) {
+      // Navigate to first page
+      if (window.location.pathname.includes('/p/')) {
+        // Public story navigation
+        const slug = window.location.pathname.split('/p/')[1].split('/')[0];
+        router.push(`/p/${slug}`);
+      } else {
+        // Private story navigation
+        router.push(`/stories/read/${storyId}`);
       }
-    );
-
-    // Remove target="_blank" from table of contents links to enable smooth scrolling
-    processedContent = processedContent.replace(
-      /<a([^>]*class="[^"]*mythoria-toc-link[^"]*"[^>]*)\s+target="_blank"([^>]*)>/g,
-      '<a$1$2>'
-    );
-
-    // Also remove rel attributes that are typically used with target="_blank"
-    processedContent = processedContent.replace(
-      /<a([^>]*class="[^"]*mythoria-toc-link[^"]*"[^>]*)\s+rel="[^"]*"([^>]*)>/g,
-      '<a$1$2>'
-    );
-
-    return processedContent;
+    } else {
+      // Navigate to specific chapter
+      if (window.location.pathname.includes('/p/')) {
+        // Public story navigation
+        const slug = window.location.pathname.split('/p/')[1].split('/')[0];
+        router.push(`/p/${slug}/chapter/${chapterNumber}`);
+      } else {
+        // Private story navigation
+        router.push(`/stories/read/${storyId}/chapter/${chapterNumber}`);
+      }
+    }
   };
 
-  const processedContent = processStoryContent(storyContent);
+  const navigateToNextChapter = () => {
+    if (isFirstPage) {
+      navigateToChapter(1);
+    } else if (currentChapter && currentChapter < totalChapters) {
+      navigateToChapter(currentChapter + 1);
+    }
+  };
+
+  const navigateToPreviousChapter = () => {
+    if (currentChapter && currentChapter > 1) {
+      navigateToChapter(currentChapter - 1);
+    } else if (currentChapter === 1) {
+      navigateToChapter(0); // Go to first page
+    }
+  };
+
+  // Get logo URL based on graphical style
+  const logoUrl = getLogoForGraphicalStyle(story.graphicalStyle);
+
+  // Render first page content
+  const renderFirstPage = () => (
+    <div className="story-container">
+      <h1 className="mythoria-story-title">{story.title}</h1>
+      
+      {/* Front Cover */}
+      {story.coverUri && toAbsoluteImageUrl(story.coverUri) && (
+        <>
+          <div className="mythoria-front-cover">
+            <Image 
+              src={toAbsoluteImageUrl(story.coverUri)!} 
+              alt="Book Front Cover" 
+              className="mythoria-cover-image"
+              width={400}
+              height={600}
+            />
+          </div>
+          <div className="mythoria-page-break"></div>
+        </>
+      )}
+      
+      {/* Author Dedicatory */}
+      {story.dedicationMessage && (
+        <div className="mythoria-dedicatory">{story.dedicationMessage}</div>
+      )}
+      
+      {/* Author Name */}
+      <div className="mythoria-author-name">by {story.authorName}</div>
+
+      {/* Mythoria Message */}
+      <div className="mythoria-message">
+        <p className="mythoria-message-text">
+          This story was imagined by <i className="mythoria-author-emphasis">{story.authorName}</i>.
+        </p>
+        <p className="mythoria-message-text">Crafted with:</p>
+        <Image 
+          src={logoUrl} 
+          alt="Mythoria Logo" 
+          className="mythoria-logo"
+          width={200}
+          height={50}
+        />
+      </div>
+
+      <div className="mythoria-page-break"></div>
+
+      {/* Table of Contents */}
+      <div className="mythoria-table-of-contents">
+        <h2 className="mythoria-toc-title">Table of Contents</h2>
+        <ul className="mythoria-toc-list">
+          {chapters.map((chapter) => (
+            <li key={chapter.id} className="mythoria-toc-item">
+              <button
+                onClick={() => navigateToChapter(chapter.chapterNumber)}
+                className="mythoria-toc-link"
+              >
+                {chapter.chapterNumber}. {chapter.title}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="mythoria-page-break"></div>
+
+      {/* Start Reading Button */}
+      <div className="text-center py-8">
+        <button
+          onClick={() => navigateToChapter(1)}
+          className="btn btn-primary btn-lg"
+          disabled={chapters.length === 0}
+        >
+          {t('startReading')}
+        </button>
+      </div>
+    </div>
+  );
+
+  // Render chapter content
+  const renderChapter = () => {
+    if (!currentChapterData) {
+      return (
+        <div className="story-container">
+          <div className="text-center py-16">
+            <h2 className="text-2xl font-bold mb-4">Chapter not found</h2>
+            <p className="text-lg text-base-content/70 mb-6">
+              The requested chapter could not be found.
+            </p>
+            <button
+              onClick={() => navigateToChapter(0)}
+              className="btn btn-primary"
+            >
+              Back to Story
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="story-container">
+        <div className="mythoria-chapter" id={`chapter-${currentChapterData.chapterNumber}`}>
+          <h2 className="mythoria-chapter-title">{currentChapterData.title}</h2>
+          
+          {/* Chapter Image */}
+          {currentChapterData.imageUri && toAbsoluteImageUrl(currentChapterData.imageUri) && (
+            <div className="mythoria-chapter-image">
+              <Image 
+                src={toAbsoluteImageUrl(currentChapterData.imageUri)!} 
+                alt={`Chapter ${currentChapterData.chapterNumber} illustration`} 
+                className="mythoria-chapter-img"
+                width={600}
+                height={400}
+              />
+            </div>
+          )}
+          
+          {/* Chapter Content */}
+          <div 
+            className="mythoria-chapter-content"
+            dangerouslySetInnerHTML={{ __html: currentChapterData.htmlContent }}
+          />
+        </div>
+
+        <div className="mythoria-page-break"></div>
+
+        {/* Navigation Controls */}
+        <div className="flex justify-between items-center py-8">
+          <div>
+            {(currentChapter && currentChapter > 1) || currentChapter === 1 ? (
+              <button
+                onClick={navigateToPreviousChapter}
+                className="btn btn-outline btn-sm"
+              >
+                {currentChapter === 1 ? '← Back to Story' : `← Chapter ${currentChapter - 1}`}
+              </button>
+            ) : (
+              <div></div>
+            )}
+          </div>
+          
+          <div className="text-center">
+            <span className="text-sm text-base-content/70">
+              Chapter {currentChapter} of {totalChapters}
+            </span>
+          </div>
+          
+          <div>
+            {currentChapter && currentChapter < totalChapters ? (
+              <button
+                onClick={navigateToNextChapter}
+                className="btn btn-primary btn-sm"
+              >
+                Chapter {currentChapter + 1} →
+              </button>
+            ) : (
+              <div></div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Table of Contents Modal
+  const renderTableOfContentsModal = () => (
+    showTableOfContents && (
+      <div className="modal modal-open">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg mb-4">Table of Contents</h3>
+          <ul className="space-y-2">
+            <li>
+              <button
+                onClick={() => {
+                  navigateToChapter(0);
+                  setShowTableOfContents(false);
+                }}
+                className="btn btn-ghost btn-sm w-full justify-start"
+              >
+                Cover & Introduction
+              </button>
+            </li>
+            {chapters.map((chapter) => (
+              <li key={chapter.id}>
+                <button
+                  onClick={() => {
+                    navigateToChapter(chapter.chapterNumber);
+                    setShowTableOfContents(false);
+                  }}
+                  className={`btn btn-ghost btn-sm w-full justify-start ${
+                    currentChapter === chapter.chapterNumber ? 'bg-primary/20' : ''
+                  }`}
+                >
+                  {chapter.chapterNumber}. {chapter.title}
+                </button>
+              </li>
+            ))}
+          </ul>
+          <div className="modal-action">
+            <button
+              onClick={() => setShowTableOfContents(false)}
+              className="btn btn-sm"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  );
 
   return (
     <div className="story-reader min-h-screen px-0 bg-base-100">
       {/* Reading Toolbar */}
-      <ReadingToolbar onSettingsChange={handleReadingSettingsChange} />
+      <ReadingToolbar 
+        onSettingsChange={handleReadingSettingsChange}
+        chapters={chapters}
+        currentChapter={currentChapter || 0}
+        onChapterChange={navigateToChapter}
+      />
       
-      {/* Story Content - Wrap in a scoped container */}
+      {/* Story Content */}
       <div 
-        className="story-content-wrapper mythoria-story-scope"
+        className="story-content-wrapper mythoria-story-scope border border-red-400"
         style={{
           fontSize: readingSettings?.fontSize ? `${readingSettings.fontSize}%` : undefined,
           lineHeight: readingSettings?.lineHeight ? `${readingSettings.lineHeight}%` : undefined
         }}
       >
         <div className="w-full px-0 md:px-0 py-0">
-            {!isContentLoaded ? (
-              // Loading state
-              <div className="flex flex-col items-center justify-center py-16">
-                <div className="loading loading-spinner loading-lg mb-4"></div>
-                <p className="text-lg text-base-content/70">{t('preparing')}</p>
-              </div>
-            ) : (
-              // Story content
-              <article 
-                className="story-content prose prose-lg max-w-none p-1 md:p-0 m-0"
-                dangerouslySetInnerHTML={{ __html: processedContent }}
-              />
-            )}
+          {!isContentLoaded ? (
+            // Loading state
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="loading loading-spinner loading-lg mb-4"></div>
+              <p className="text-lg text-base-content/70">{t('preparing')}</p>
+            </div>
+          ) : (
+            // Story content
+            <article className="story-content prose prose-lg max-w-none p-1 md:p-0 m-0">
+              {isFirstPage ? renderFirstPage() : renderChapter()}
+            </article>
+          )}
         </div>
       </div>
 
-      {/* Reading Progress & Table of Contents */}
-      {isContentLoaded && processedContent && (
-        <ReadingProgress storyContent={processedContent} />
-      )}
+      {/* Table of Contents Modal */}
+      {renderTableOfContentsModal()}
 
       <style jsx>{`
         /* Base story reader styles */
@@ -148,172 +383,26 @@ export default function StoryReader({ storyContent, storyMetadata }: StoryReader
         :global(.story-content.prose) {
           max-width: none;
           color: inherit;
-          font-size: inherit;
-          line-height: inherit;
-          margin-left: 5px !important;
-          margin-right: 5px !important;
-          margin-top: 10 !important;
-          margin-bottom: 10 !important;
         }
         
-        :global(.story-content.prose h1),
-        :global(.story-content.prose h2),
-        :global(.story-content.prose h3),
-        :global(.story-content.prose p),
-        :global(.story-content.prose div) {
+        /* Ensure mythoria styles take precedence */
+        :global(.mythoria-story-scope) {
+          /* This will scope our story-specific styles */
+        }
+        
+        /* Custom button styles for TOC links */
+        .mythoria-toc-link {
+          background: none;
+          border: none;
           color: inherit;
-          font-family: inherit;
-          font-size: inherit;
-          line-height: inherit;
-          margin: 0.25rem 0;
+          text-decoration: underline;
+          cursor: pointer;
+          padding: 0;
+          font: inherit;
         }
         
-        /* Reduce spacing for prose elements */
-        :global(.story-content.prose > *:first-child) {
-          margin-top: 0;
-        }
-        
-        :global(.story-content.prose > *:last-child) {
-          margin-bottom: 0;
-        }
-        
-        /* Ensure smooth scrolling and proper spacing */
-        :global(.story-content) {
-          scroll-margin-top: 60px;
-        }
-        
-        :global(.story-content *[id]) {
-          scroll-margin-top: 60px;
-        }
-        
-        /* Loading animation */
-        .loading-content {
-          animation: fadeIn 0.5s ease-in-out;
-        }
-        
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        /* Content fade-in when loaded */
-        :global(.story-content) {
-          animation: fadeIn 0.6s ease-in-out;
-        }
-          /* Responsive adjustments */
-        @media (max-width: 768px) {
-          .story-content-wrapper {
-            padding: 0.1rem 0;
-          }
-          
-          /* Override template container styles for mobile */
-          :global(.mythoria-story-scope .story-container) {
-            max-width: none !important;
-            margin: 0 !important;
-            padding: 0.1rem !important;
-          }
-          
-          /* Reduce chapter padding on mobile */
-          :global(.mythoria-story-scope .mythoria-chapter) {
-            padding: 0.1rem !important;
-            margin-bottom: 0.5rem !important;
-          }
-          
-          /* Reduce table of contents padding on mobile */
-          :global(.mythoria-story-scope .mythoria-table-of-contents) {
-            padding: 0.1rem !important;
-            margin: 0.5rem 0 !important;
-          }
-          
-          /* Reduce story title margins */
-          :global(.mythoria-story-scope .mythoria-story-title) {
-            margin: 0.1rem 0 !important;
-            padding-bottom: 0.125rem !important;
-          }
-          
-          /* Reduce author name margins */
-          :global(.mythoria-story-scope .mythoria-author-name) {
-            margin: 0.1rem 0 0.5rem 0 !important;
-          }
-        }
-        
-        /* Desktop adjustments for narrower margins */
-        @media (min-width: 769px) {
-          /* Override template container styles for desktop */
-          :global(.mythoria-story-scope .story-container) {
-            max-width: none !important;
-            margin: 0 !important;
-            padding: 0.2rem !important;
-          }
-          
-          /* Reduce chapter padding on desktop */
-          :global(.mythoria-story-scope .mythoria-chapter) {
-            padding: 0.2rem !important;
-            margin-bottom: 1rem !important;
-          }
-          
-          /* Reduce table of contents padding on desktop */
-          :global(.mythoria-story-scope .mythoria-table-of-contents) {
-            padding: 0.2rem !important;
-            margin: 1rem 0 !important;
-          }
-          
-          /* Center front cover images on desktop */
-          :global(.mythoria-story-scope .mythoria-front-cover) {
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            text-align: center !important;
-            margin: 2rem auto !important;
-            padding: 1rem !important;
-          }
-          
-          :global(.mythoria-story-scope .mythoria-front-cover img) {
-            max-width: 100% !important;
-            height: auto !important;
-            display: block !important;
-            margin: 0 auto !important;
-          }
-          
-          /* Center back cover images on desktop */
-          :global(.mythoria-story-scope .mythoria-back-cover) {
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            text-align: center !important;
-            margin: 2rem auto !important;
-            padding: 1rem !important;
-          }
-          
-          :global(.mythoria-story-scope .mythoria-back-cover img) {
-            max-width: 100% !important;
-            height: auto !important;
-            display: block !important;
-            margin: 0 auto !important;
-          }
-          
-          /* Center chapter images on desktop */
-          :global(.mythoria-story-scope .mythoria-chapter-image) {
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            text-align: center !important;
-            margin: 1.5rem auto !important;
-            padding: 0.5rem !important;
-          }
-          
-          :global(.mythoria-story-scope .mythoria-chapter-image img) {
-            max-width: 100% !important;
-            height: auto !important;
-            display: block !important;
-            margin: 0 auto !important;
-          }
+        .mythoria-toc-link:hover {
+          color: #0066cc;
         }
       `}</style>
     </div>

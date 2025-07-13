@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
     // Parse request body
     const body = await request.json();
-    const { storyId, imageUrl, userRequest } = body;
+    const { storyId, imageUrl, userRequest, imageType, chapterNumber } = body;
 
     // Validate required fields
     if (!storyId) {
@@ -55,6 +55,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate image type
+    if (imageType && !['chapter', 'cover', 'backcover', 'frontcover'].includes(imageType)) {
+      return NextResponse.json(
+        { success: false, error: 'Image type must be "chapter", "cover", "backcover", or "frontcover"' },
+        { status: 400 }
+      );
+    }
+
+    // Map frontend image types to backend image types
+    let mappedImageType = imageType;
+    if (imageType === 'frontcover') {
+      mappedImageType = 'cover';
+    }
+
+    // Validate chapter number for chapter images
+    if (mappedImageType === 'chapter' && (!chapterNumber || typeof chapterNumber !== 'number')) {
+      return NextResponse.json(
+        { success: false, error: 'Chapter number is required for chapter images' },
+        { status: 400 }
+      );
+    }
+
     // Validate image URL format
     if (!imageUrl.startsWith('gs://') && !imageUrl.startsWith('https://storage.googleapis.com/')) {
       return NextResponse.json(
@@ -67,25 +89,42 @@ export async function POST(request: NextRequest) {
     const config = getEnvironmentConfig();
     const workflowUrl = config.storyGeneration.workflowUrl;
 
-    // Prepare request body for story generation workflow
+    // Determine the appropriate endpoint based on image type
+    let endpoint: string;
+    const method = 'PATCH';
+    
+    if (mappedImageType === 'cover') {
+      endpoint = `${workflowUrl}/image-edit/stories/${storyId}/images/front-cover`;
+    } else if (mappedImageType === 'backcover') {
+      endpoint = `${workflowUrl}/image-edit/stories/${storyId}/images/back-cover`;
+    } else if (mappedImageType === 'chapter' && chapterNumber) {
+      endpoint = `${workflowUrl}/image-edit/stories/${storyId}/chapters/${chapterNumber}/image`;
+    } else {
+      return NextResponse.json(
+        { success: false, error: 'Invalid image type or missing chapter number' },
+        { status: 400 }
+      );
+    }
+
+    // Prepare request body for the new RESTful API
     const workflowRequestBody = {
-      storyId,
-      imageUrl,
       userRequest: userRequest.trim()
     };
 
-    // Make request to story generation workflow image-edit endpoint
-    const workflowResponse = await fetch(`${workflowUrl}/image-edit`, {
-      method: 'POST',
+    // Make request to story generation workflow using new RESTful endpoint
+    const workflowResponse = await fetch(endpoint, {
+      method,
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(workflowRequestBody),
     });
 
-    const workflowData = await workflowResponse.json();    // Return the response from the workflow service
-    if (workflowResponse.ok) {
-      // Only record the edit and deduct credits if the workflow was successful
+    const workflowData = await workflowResponse.json();
+
+    // Handle successful response
+    if (workflowResponse.ok && workflowData.success) {
+      // Record the edit and deduct credits
       try {
         await aiEditService.recordSuccessfulEdit(
           author.authorId,
@@ -93,7 +132,9 @@ export async function POST(request: NextRequest) {
           'imageEdit',
           {
             imageUrl,
-            userRequest: workflowRequestBody.userRequest,
+            imageType: mappedImageType,
+            chapterNumber: mappedImageType === 'chapter' ? chapterNumber : undefined,
+            userRequest: userRequest.trim(),
             timestamp: new Date().toISOString()
           }
         );
@@ -101,10 +142,17 @@ export async function POST(request: NextRequest) {
       } catch (creditError) {
         console.error('Error recording edit or deducting credits:', creditError);
         // Note: We don't fail the request here since the edit was successful
-        // This ensures the user gets their edit even if credit recording fails
       }
-      
-      return NextResponse.json(workflowData);
+
+      // Return success response with new image URL for user approval
+      // NOTE: Database is NOT updated here - that happens in /api/image-replace after user confirms
+      return NextResponse.json({
+        success: true,
+        newImageUrl: workflowData.newImageUrl,
+        imageType: workflowData.imageType,
+        metadata: workflowData.metadata,
+        storyId: workflowData.storyId
+      });
     } else {
       return NextResponse.json(
         workflowData,

@@ -1,220 +1,233 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { SignedIn, SignedOut } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
-import { useParams } from 'next/navigation';
-import { useLocale, useTranslations } from 'next-intl';
-import { FiBook, FiVolume2, FiEdit3, FiShare2, FiArrowLeft, FiPrinter, FiEdit2, FiCheck, FiX } from 'react-icons/fi';
-import BookEditor from '../../../../../components/BookEditor';
-import ShareModal from '../../../../../components/ShareModal';
+import AITextStoryEditor from '../../../../../components/AITextStoryEditor';
+import AIImageEditor from '../../../../../components/AIImageEditor';
+import { useEffect, useState, useCallback } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
+import { useTranslations } from 'next-intl';
+import { FiArrowLeft } from 'react-icons/fi';
+
+// Components
+import ChapterNavigation from '../../../../../components/ChapterNavigation';
+import StoryInfoEditor from '../../../../../components/StoryInfoEditor';
 import ToastContainer from '../../../../../components/ToastContainer';
+
+// Hooks
 import { useToast } from '../../../../../hooks/useToast';
 
-interface Story {
+// API types (matching the route response)
+interface ApiStory {
   storyId: string;
   title: string;
-  status: 'draft' | 'writing' | 'published';
-  htmlUri?: string;
-  audiobookUri?: Array<{
-    chapterTitle: string;
-    audioUri: string;
-    duration: number;
-    imageUri?: string;
-  }>;  targetAudience?: string;
+  synopsis?: string;
+  dedicationMessage?: string;
+  customAuthor?: string;
+  coverUri?: string;
+  backcoverUri?: string;
+  targetAudience?: string;
   graphicalStyle?: string;
   createdAt: string;
   updatedAt: string;
-  [key: string]: unknown; // Add index signature for compatibility
 }
 
-export default function EditStoryPage() {
-  const router = useRouter();
+interface ApiChapter {
+  id: string;
+  chapterNumber: number;
+  title: string;
+  imageUri: string | null;
+  imageThumbnailUri: string | null;
+  htmlContent: string;
+  audioUri: string | null;
+  version: number;
+  hasNextVersion: boolean;
+  hasPreviousVersion: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface ApiResponse {
+  success: boolean;
+  story: ApiStory;
+  chapters: ApiChapter[];
+}
+
+export default function StoryEditPage() {
   const params = useParams();
-  const locale = useLocale();
+  const router = useRouter();
+  const { user } = useUser();
   const tCommon = useTranslations('common');
+
   const storyId = params.storyId as string;
-  const [story, setStory] = useState<Story | null>(null);
-  const [storyContent, setStoryContent] = useState<string | null>(null);
+  const locale = params.locale as string;
+
+  // Convert API data to component-compatible format
+  const convertApiChaptersToChapters = (apiChapters: ApiChapter[]) => {
+    return apiChapters.map(chapter => ({
+      ...chapter,
+      createdAt: new Date(chapter.createdAt),
+      updatedAt: new Date(chapter.updatedAt)
+    }));
+  };
+
+  // State
+  const [storyData, setStoryData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [showShareModal, setShowShareModal] = useState(false);
-  const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [editedTitle, setEditedTitle] = useState('');
-
+  const [saving, setSaving] = useState(false);
+  const [showAITextEditor, setShowAITextEditor] = useState(false);
+  const [showAIImageEditor, setShowAIImageEditor] = useState(false);
+  const [selectedImageData, setSelectedImageData] = useState<{
+    imageUri: string;
+    imageType: 'cover' | 'backcover' | 'chapter';
+    chapterNumber?: number;
+    title?: string;
+  } | null>(null);
+  
   // Toast notifications
-  const toast = useToast();
-  useEffect(() => {
-    const fetchStory = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        const response = await fetch(`/api/stories/${storyId}`, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-        });
-        
-        if (response.ok) {
-          const data = await response.json();          // Only allow access to published stories
-          if (data.story.status !== 'published') {
-            setError(tCommon('Errors.storyNotAvailableYet'));
-            return;
-          }
-          setStory(data.story);
+  const { toasts, addToast, removeToast } = useToast();
 
-          // Use the HTML content from the API response
-          if (data.htmlContent) {
-            setStoryContent(data.htmlContent);
-          } else if (data.story.htmlUri) {
-            // Fallback message if content couldn't be fetched
-            setStoryContent('<p>Story content is being prepared. Please check back later.</p>');
-          } else {
-            setStoryContent('<p>Story content is not yet available. The story may still be generating.</p>');
-          }        } else if (response.status === 404) {
-          setError(tCommon('Errors.storyNotFoundGeneric'));
-        } else if (response.status === 403) {
-          setError(tCommon('Errors.noPermissionEdit'));
-        } else {
-          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-          setError(errorData.error || tCommon('Errors.failedToLoad'));
-        }
-      } catch (error) {
-        console.error('Error fetching story:', error);        
-        // More specific error handling
-        if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-          setError(tCommon('Errors.failedToLoad'));
-        } else if (error instanceof Error) {
-          setError(tCommon('Errors.failedToLoad'));
-        } else {
-          setError(tCommon('Errors.failedToLoad'));
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Load story data
+  const loadStoryData = useCallback(async () => {
+    if (!storyId || !user) return;
 
-    if (storyId) {
-      fetchStory();
-    }
-  }, [storyId, tCommon]);
-  // Handle saving edited content
-  const handleSaveEdit = async (html: string) => {
     try {
-      const response = await fetch(`/api/books/${storyId}/save`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          html,
-          source: 'manual'
-        }),
-      });
+      setLoading(true);
+      const response = await fetch(`/api/stories/${storyId}/edit`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to load story data');
+      }
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log(`Story saved as version ${result.version}:`, result.filename);
-        
-        // Update the story content with the new HTML
-        setStoryContent(html);
-        
-        // Update the story URI with the new versioned URI
-        if (story) {
-          setStory({
-            ...story,
-            htmlUri: result.htmlUri,
-            updatedAt: new Date().toISOString()
-          });
-        }
-        
-        // Show success message with version info
-        toast.success(`Story saved successfully as version ${result.version}!`);
+      const data: ApiResponse = await response.json();
+      if (data.success) {
+        setStoryData(data);
       } else {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to save story');
+        throw new Error('Failed to load story');
       }
     } catch (error) {
-      console.error('Error saving story:', error);
-      toast.error('Failed to save story. Please try again.');
-      throw error;
+      console.error('Error loading story:', error);
+      addToast('Failed to load story data', 'error');
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [storyId, user, addToast]);
 
-  // Handle title editing
-  const handleStartEditTitle = () => {
-    setEditedTitle(story?.title || '');
-    setIsEditingTitle(true);
-  };
-
-  const handleCancelEditTitle = () => {
-    setIsEditingTitle(false);
-    setEditedTitle('');
-  };
-
-  const handleSaveTitle = async () => {
-    if (!editedTitle.trim() || !story) {
-      toast.error('Title cannot be empty');
-      return;
-    }
+  // Update story info
+  const updateStoryInfo = async (updates: Partial<ApiStory>) => {
+    if (!storyData) return;
 
     try {
-      const response = await fetch(`/api/stories/${storyId}/title`, {
+      setSaving(true);
+      const response = await fetch(`/api/stories/${storyId}/edit`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          title: editedTitle.trim()
-        }),
+        body: JSON.stringify(updates),
       });
 
-      if (response.ok) {
-        // Update the story title in state
-        setStory({
-          ...story,
-          title: editedTitle.trim(),
-          updatedAt: new Date().toISOString()
+      if (!response.ok) {
+        throw new Error('Failed to update story info');
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        // Update local state
+        setStoryData(prev => {
+          if (!prev) return prev;
+          return { ...prev, story: result.story };
         });
-        
-        setIsEditingTitle(false);
-        setEditedTitle('');
-        
-        toast.success('Title updated successfully!');
-      } else {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to update title');
+
+        addToast('Story info updated successfully', 'success');
       }
     } catch (error) {
-      console.error('Error updating title:', error);
-      toast.error('Failed to update title. Please try again.');
+      console.error('Error updating story info:', error);
+      addToast('Failed to update story info', 'error');
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleCancelEdit = () => {
+  // Handle go back navigation
+  const handleGoBack = () => {
+    // Navigate to general story reading page
     router.push(`/${locale}/stories/read/${storyId}`);
   };
 
-  const navigateToRead = () => {
-    router.push(`/${locale}/stories/read/${storyId}`);
+  // Handle chapter navigation
+  const handleChapterChange = (chapterNumber: number) => {
+    if (chapterNumber === 0) {
+      // Stay on story info page (current page)
+      return;
+    } else {
+      // Navigate to chapter edit page
+      router.push(`/${locale}/stories/edit/${storyId}/chapter/${chapterNumber}`);
+    }
   };
 
-  const navigateToListen = () => {
-    router.push(`/${locale}/stories/listen/${storyId}`);
+  // Handle AI edit success
+  const handleAIEditSuccess = async (updatedData: Record<string, unknown>) => {
+    console.log('AI Edit Success - Updated Data:', updatedData);
+    
+    // Update the story content immediately with the returned data
+    if (updatedData.updatedHtml && updatedData.chaptersUpdated) {
+      // For story-wide edits, reload data to get all updated chapters
+      await loadStoryData();
+    } else if (updatedData.updatedHtml) {
+      // For single chapter edits, we could update directly but currently
+      // this page doesn't show individual chapter content, so reload
+      await loadStoryData();
+    } else {
+      // Fallback: reload story data to get the latest changes
+      await loadStoryData();
+    }
+    
+    addToast('Content updated successfully', 'success');
   };
 
-  const navigateToPrint = () => {
-    router.push(`/${locale}/stories/print/${storyId}`);
+  // Handle AI edit optimistic update
+  const handleAIEditOptimisticUpdate = (_updatedData: Record<string, unknown>) => { // eslint-disable-line @typescript-eslint/no-unused-vars
+    // This could be used for optimistic UI updates if needed
   };
 
+  // Handle AI edit revert
+  const handleAIEditRevertUpdate = (_originalData: Record<string, unknown>) => { // eslint-disable-line @typescript-eslint/no-unused-vars
+    // This could be used to revert optimistic updates
+  };
+
+  // Load data on mount
+  useEffect(() => {
+    loadStoryData();
+  }, [loadStoryData]);
+
+  // Loading state
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-center items-center min-h-96">
-          <span className="loading loading-spinner loading-lg"></span>
+      <div className="min-h-screen bg-base-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="loading loading-spinner loading-lg text-primary mb-4"></div>
+          <p className="text-lg font-medium">{tCommon('Loading.default')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (!storyData) {
+    return (
+      <div className="min-h-screen bg-base-100 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <div className="text-6xl mb-4">😞</div>
+          <h1 className="text-2xl font-bold mb-2">{tCommon('Errors.generic')}</h1>
+          <p className="text-base-content/70 mb-6">Failed to load story data</p>
+          <button
+            onClick={() => router.push(`/${locale}/stories`)}
+            className="btn btn-primary"
+          >
+            <FiArrowLeft className="w-4 h-4 mr-2" />
+            {tCommon('Actions.goBack')}
+          </button>
         </div>
       </div>
     );
@@ -222,181 +235,117 @@ export default function EditStoryPage() {
 
   return (
     <div className="min-h-screen bg-base-100">
-      <SignedOut>
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center space-y-6">
-            <h1 className="text-4xl font-bold">{tCommon('Auth.accessRestricted')}</h1>
-            <p className="text-lg text-gray-600">
-              {tCommon('Auth.needSignInEdit')}
-            </p>
-            <div className="space-x-4">
-              <button
-                onClick={() => router.push(`/${locale}/sign-in`)}
-                className="btn btn-primary"
-              >
-                {tCommon('Auth.signIn')}
-              </button>
-              <button
-                onClick={() => router.push(`/${locale}/sign-up`)}
-                className="btn btn-outline"
-              >
-                {tCommon('Auth.createAccount')}
-              </button>
-            </div>
+      {/* Header */}
+      <div className="bg-base-200 border-b border-base-300 px-4 py-3">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleGoBack}
+              className="btn btn-ghost btn-sm"
+            >
+              <FiArrowLeft className="w-4 h-4" />
+              <span className="hidden sm:inline ml-2">{tCommon('Actions.goBack')}</span>
+            </button>
+            
+            <h1 className="text-xl font-bold">{storyData.story.title}</h1>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {/* Navigation */}
+            <ChapterNavigation
+              chapters={convertApiChaptersToChapters(storyData.chapters)}
+              currentChapter={0}
+              onChapterChange={handleChapterChange}
+            />
           </div>
         </div>
-      </SignedOut>
+      </div>
 
-      <SignedIn>
-        {error ? (
-          <div className="container mx-auto px-4 py-8">
-            <div className="text-center space-y-6">
-              <div className="alert alert-error">
-                <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>{error}</span>
-              </div>              <button
-                onClick={() => router.push(`/${locale}/my-stories`)}
-                className="btn btn-primary"
-              >
-                {tCommon('Actions.backToMyStories')}
-              </button>
-            </div>
-          </div>
-        ) : story ? (
-          <div className="space-y-6">
-            {/* Story Header */}
-            <div className="container mx-auto px-4 py-6">
-              <div className="text-center space-y-4">
-                {/* Story Title */}
-                <div className="flex items-center justify-center gap-2 mb-6">
-                  {isEditingTitle ? (
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="text"
-                        value={editedTitle}
-                        onChange={(e) => setEditedTitle(e.target.value)}
-                        className="input input-bordered text-lg font-bold text-center max-w-md"
-                        placeholder="Story title"
-                        autoFocus
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            handleSaveTitle();
-                          } else if (e.key === 'Escape') {
-                            handleCancelEditTitle();
-                          }
-                        }}
-                      />
-                      <button
-                        onClick={handleSaveTitle}
-                        className="btn btn-sm btn-outline btn-circle border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white"
-                        title="Save title"
-                      >
-                        <FiCheck className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={handleCancelEditTitle}
-                        className="btn btn-sm btn-outline btn-circle border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white"
-                        title="Cancel editing"
-                      >
-                        <FiX className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <h1 className="text-2xl font-bold">{story.title}</h1>
-                      <button
-                        onClick={handleStartEditTitle}
-                        className="btn btn-ghost btn-sm btn-circle"
-                        title="Edit title"
-                      >
-                        <FiEdit2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  )}
-                </div>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto p-4">
+        <div className="space-y-6">
+          {/* Story Info Editor */}
+          <StoryInfoEditor
+            story={storyData.story}
+            onSave={updateStoryInfo}
+            onEditCover={() => {
+              if (storyData.story.coverUri) {
+                setSelectedImageData({
+                  imageUri: storyData.story.coverUri,
+                  imageType: 'cover',
+                  title: 'Front Cover'
+                });
+                setShowAIImageEditor(true);
+              }
+            }}
+            onEditBackcover={() => {
+              if (storyData.story.backcoverUri) {
+                setSelectedImageData({
+                  imageUri: storyData.story.backcoverUri,
+                  imageType: 'backcover',
+                  title: 'Back Cover'
+                });
+                setShowAIImageEditor(true);
+              }
+            }}
+            isLoading={saving}
+          />
 
-                {/* Navigation Buttons */}                <div className="flex flex-wrap justify-center gap-2">
-                  <button
-                    onClick={navigateToRead}
-                    className="btn btn-outline btn-primary"
-                  >
-                    <FiBook className="w-4 h-4" />
-                    <span className="hidden md:inline md:ml-2">{tCommon('Actions.read')}</span>
-                  </button>
-                  <button
-                    onClick={navigateToListen}
-                    className="btn btn-outline btn-primary"
-                  >
-                    <FiVolume2 className="w-4 h-4" />
-                    <span className="hidden md:inline md:ml-2">{tCommon('Actions.listen')}</span>
-                  </button>
-                  <button className="btn btn-primary">
-                    <FiEdit3 className="w-4 h-4 md:mr-2" />
-                    <span className="hidden md:inline">{tCommon('Actions.editing')}</span>
-                  </button>
-                  <button
-                    onClick={navigateToPrint}
-                    className="btn btn-outline btn-primary"
-                  >
-                    <FiPrinter className="w-4 h-4" />
-                    <span className="hidden md:inline md:ml-2">Print</span>
-                  </button>
-                  <button
-                    onClick={() => setShowShareModal(true)}
-                    className="btn btn-outline btn-primary"
-                  >
-                    <FiShare2 className="w-4 h-4" />
-                    <span className="hidden md:inline md:ml-2">{tCommon('Actions.share')}</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-            
-            {/* Edit Mode */}
-            <BookEditor
-              initialContent={storyContent || ''}
-              onSave={handleSaveEdit}
-              onCancel={handleCancelEdit}
-              storyId={storyId}
-              storyMetadata={{
-                targetAudience: story?.targetAudience,
-                graphicalStyle: story?.graphicalStyle,
-                title: story?.title
+          {/* AI Text Editor Modal */}
+          <AITextStoryEditor
+            isOpen={showAITextEditor}
+            onClose={() => setShowAITextEditor(false)}
+            story={{
+              storyId: storyData.story.storyId,
+              title: storyData.story.title,
+              coverUri: storyData.story.coverUri,
+              backcoverUri: storyData.story.backcoverUri,
+              targetAudience: storyData.story.targetAudience,
+              graphicalStyle: storyData.story.graphicalStyle
+            }}
+            chapters={storyData.chapters.map(chapter => ({
+              id: chapter.id,
+              chapterNumber: chapter.chapterNumber,
+              title: chapter.title,
+              imageUri: chapter.imageUri,
+              imageThumbnailUri: chapter.imageThumbnailUri,
+              htmlContent: chapter.htmlContent,
+              audioUri: chapter.audioUri,
+              version: chapter.version
+            }))}
+            onEditSuccess={handleAIEditSuccess}
+            onOptimisticUpdate={handleAIEditOptimisticUpdate}
+            onRevertUpdate={handleAIEditRevertUpdate}
+          />
+
+          {/* AI Image Editor Modal */}
+          {selectedImageData && (
+            <AIImageEditor
+              isOpen={showAIImageEditor}
+              onClose={() => {
+                setShowAIImageEditor(false);
+                setSelectedImageData(null);
               }}
+              story={{
+                storyId: storyData.story.storyId,
+                title: storyData.story.title,
+                coverUri: storyData.story.coverUri,
+                backcoverUri: storyData.story.backcoverUri,
+                targetAudience: storyData.story.targetAudience,
+                graphicalStyle: storyData.story.graphicalStyle
+              }}
+              imageData={selectedImageData}
+              onImageEditSuccess={handleAIEditSuccess}
+              onOptimisticUpdate={handleAIEditOptimisticUpdate}
+              onRevertUpdate={handleAIEditRevertUpdate}
             />
-
-            {/* Back to Stories Button */}
-            <div className="container mx-auto px-4 pb-8">
-              <div className="text-center">                <button
-                  onClick={() => router.push(`/${locale}/my-stories`)}
-                  className="btn btn-outline"
-                >
-                  <FiArrowLeft className="w-4 h-4 mr-2" />
-                  {tCommon('Actions.backToMyStories')}
-                </button>
-              </div>
-            </div>
-          </div>
-        ) : null}
-      </SignedIn>
-
-      {/* Share Modal */}
-      {story && (
-        <ShareModal
-          isOpen={showShareModal}
-          onClose={() => setShowShareModal(false)}
-          storyId={story.storyId}
-          storyTitle={story.title}
-          onShareSuccess={(shareData) => {
-            console.log('Share successful:', shareData);
-          }}
-        />
-      )}
+          )}
+        </div>
+      </div>
 
       {/* Toast Container */}
-      <ToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 }
+

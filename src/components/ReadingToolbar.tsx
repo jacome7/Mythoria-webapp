@@ -7,11 +7,29 @@ import {
   FiPlus, 
   FiType,
   FiAlignJustify,
-  FiMaximize2
+  FiMaximize2,
+  FiChevronDown,
+  FiBook
 } from 'react-icons/fi';
+
+interface Chapter {
+  id: string;
+  chapterNumber: number;
+  title: string;
+  imageUri: string | null;
+  imageThumbnailUri: string | null;
+  htmlContent: string;
+  audioUri: string | null;
+  version: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 interface ReadingToolbarProps {
   onSettingsChange?: (settings: ReadingSettings) => void;
+  chapters?: Chapter[];
+  currentChapter?: number;
+  onChapterChange?: (chapterNumber: number) => void;
 }
 
 export interface ReadingSettings {
@@ -26,7 +44,12 @@ const DEFAULT_SETTINGS: ReadingSettings = {
   margins: 100, // percentage
 };
 
-export default function ReadingToolbar({ onSettingsChange }: ReadingToolbarProps) {
+export default function ReadingToolbar({ 
+  onSettingsChange, 
+  chapters = [], 
+  currentChapter = 0, 
+  onChapterChange 
+}: ReadingToolbarProps) {
   const t = useTranslations('common.readingToolbar');
   const [settings, setSettings] = useState<ReadingSettings>(DEFAULT_SETTINGS);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -77,16 +100,54 @@ export default function ReadingToolbar({ onSettingsChange }: ReadingToolbarProps
     <div className="reading-toolbar bg-base-200 border-b border-base-300 sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between py-2">
-          {/* Toggle Button */}          <button
+          {/* Toggle Button */}
+          <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="btn btn-ghost btn-sm"
             aria-label={t('toggleLabel')}
           >
             <FiType className="w-4 h-4" />
             <span className="hidden sm:inline ml-2">{t('title')}</span>
-          </button>          {/* Quick Actions - Always Visible */}
+          </button>
+          
+          {/* Quick Actions - Always Visible */}
           <div className="flex items-center gap-2">
-            {/* Quick actions can be added here if needed */}
+            {/* Chapters Dropdown */}
+            {chapters.length > 0 && (
+              <div className="dropdown dropdown-end">
+                <div tabIndex={0} role="button" className="btn btn-ghost btn-sm">
+                  <FiBook className="w-4 h-4" />
+                  <span className="hidden sm:inline ml-2">
+                    {currentChapter === 0 ? 'Cover' : `Chapter ${currentChapter}`}
+                  </span>
+                  <span className="sm:hidden ml-1">
+                    {currentChapter === 0 ? 'Cover' : `Ch. ${currentChapter}`}
+                  </span>
+                  <FiChevronDown className="w-3 h-3 ml-1" />
+                </div>
+                <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow border border-base-300">
+                  <li>
+                    <button
+                      onClick={() => onChapterChange?.(0)}
+                      className={`${currentChapter === 0 ? 'bg-primary/20' : ''}`}
+                    >
+                      Cover & Table of Contents
+                    </button>
+                  </li>
+                  {chapters.map((chapter) => (
+                    <li key={chapter.id}>
+                      <button
+                        onClick={() => onChapterChange?.(chapter.chapterNumber)}
+                        className={`${currentChapter === chapter.chapterNumber ? 'bg-primary/20' : ''}`}
+                      >
+                        <span className="font-medium">Ch. {chapter.chapterNumber}</span>
+                        <span className="text-sm opacity-70 truncate">{chapter.title}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>        {/* Expanded Controls */}
         {isExpanded && (

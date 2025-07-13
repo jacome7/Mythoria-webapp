@@ -100,7 +100,13 @@
 			"backToMyStories": "Back to My Stories",
 			"goToHomepage": "Go to Homepage",
 			"tryAgain": "Try Again",
-			"close": "Close"
+			"close": "Close",
+			"goBack": "Go Back",
+			"print": "Print",
+			"signIn": "Sign In"
+		},
+		"placeholder": {
+			"chapterContent": "Start writing your chapter content here..."
 		},
 		"Loading": {
 			"story": "Loading story...",
@@ -135,6 +141,9 @@
 			"audiobookGenerationError": "Failed to generate audiobook",
 			"audioPlaybackError": "Audio playback error",
 			"audioLoadError": "Failed to load audio",
+			"oops": "Oops!",
+			"authRequired": "Authentication Required",
+			"pleaseSignIn": "Please sign in to continue",
 			"shareLinkCreationFailed": "Failed to create share link"
 		},
 		"Components": {
@@ -194,7 +203,8 @@
 				}
 			},
 			"StoryReader": {
-				"preparing": "Preparing your story..."
+				"preparing": "Preparing your story...",
+				"startReading": "Start Reading"
 			},
 			"ReadingProgress": {
 				"title": "Reading Progress",
@@ -312,12 +322,22 @@
 			"editRequest": {
 				"label": "What changes would you like to make?",
 				"placeholder": "Describe the changes you'd like to make to your story...",
-				"charactersCount": "{current}/{max} characters"			},
+				"charactersCount": "{current}/{max} characters"
+			},
+			"userRequest": {
+				"label": "What changes would you like to make?",
+				"placeholder": "Describe the changes you'd like to make to your story..."
+			},
 			"buttons": {
 				"cancel": "Cancel",
 				"close": "Close",
 				"applyChanges": "Apply Changes",
 				"processing": "Processing..."
+			},
+			"actions": {
+				"cancel": "Cancel",
+				"edit": "Edit",
+				"editing": "Editing..."
 			},
 			"loadingState": {
 				"title": "Processing your request...",
@@ -447,6 +467,7 @@
 			"themeSwitch": "Switch to {theme} theme",
 			"quickTemplateLabel": "Quick CSS template selection",
 			"resetButton": "Reset to Default",
+			"chapters": "Chapters",
 			"controls": {
 				"style": "Style",
 				"fontSize": "Font Size",

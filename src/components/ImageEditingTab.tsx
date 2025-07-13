@@ -221,7 +221,9 @@ export default function ImageEditingTab({
         body: JSON.stringify({
           storyId,
           imageUrl: pendingImageEditData.imageUrl,
-          userRequest: pendingImageEditData.userRequest
+          userRequest: pendingImageEditData.userRequest,
+          imageType: selectedImage?.type,
+          chapterNumber: selectedImage?.chapterNumber
         }),
       });      const data = await response.json();
 

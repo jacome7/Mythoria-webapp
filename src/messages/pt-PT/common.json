@@ -106,6 +106,9 @@
       "tryAgain": "Tentar Novamente",
       "close": "Fechar"
     },
+    "placeholder": {
+      "chapterContent": "Comece a escrever o conteúdo do seu capítulo aqui..."
+    },
     "Loading": {
       "story": "A carregar história...",
       "sharedStory": "A carregar história partilhada...",
@@ -324,12 +327,22 @@
       "editRequest": {
         "label": "Que alterações gostaria de fazer?",
         "placeholder": "Descreva as alterações que gostaria de fazer à sua história...",
-        "charactersCount": "{current}/{max} caracteres"      },
+        "charactersCount": "{current}/{max} caracteres"
+      },
+      "userRequest": {
+        "label": "Que alterações gostaria de fazer?",
+        "placeholder": "Descreva as alterações que gostaria de fazer à sua história..."
+      },
       "buttons": {
         "cancel": "Cancelar",
         "close": "Fechar",
         "applyChanges": "Aplicar Alterações",
         "processing": "Processando..."
+      },
+      "actions": {
+        "cancel": "Cancelar",
+        "edit": "Editar",
+        "editing": "Editando..."
       },
       "loadingState": {
         "title": "Processando o seu pedido...",

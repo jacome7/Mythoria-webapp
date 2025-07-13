@@ -6,10 +6,10 @@ import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { FiVolume2, FiEdit3, FiShare2, FiArrowLeft, FiPrinter } from 'react-icons/fi';
-import { trackStoryManagement } from '../../../../../lib/analytics';
-import StoryReader from '../../../../../components/StoryReader';
-import StoryRating from '../../../../../components/StoryRating';
-import ShareModal from '../../../../../components/ShareModal';
+import { trackStoryManagement } from '../../../../../../../lib/analytics';
+import StoryReader from '../../../../../../../components/StoryReader';
+import StoryRating from '../../../../../../../components/StoryRating';
+import ShareModal from '../../../../../../../components/ShareModal';
 
 interface Chapter {
   id: string;
@@ -34,26 +34,29 @@ interface Story {
   backcoverUri?: string;
 }
 
-export default function ReadStoryPage() {
+export default function ReadChapterPage() {
   const router = useRouter();
   const params = useParams();
   const locale = useLocale();
   const tCommon = useTranslations('common');
   const storyId = params.storyId as string;
+  const chapterNumber = parseInt(params.chapterNumber as string);
   const [story, setStory] = useState<Story | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
+  const [currentChapter, setCurrentChapter] = useState<Chapter | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
-    const fetchStory = async () => {
+    const fetchChapter = async () => {
       try {
-        const response = await fetch(`/api/stories/${storyId}/chapters`);
+        const response = await fetch(`/api/stories/${storyId}/chapters/${chapterNumber}`);
         if (response.ok) {
           const data = await response.json();
           setStory(data.story);
           setChapters(data.chapters);
+          setCurrentChapter(data.currentChapter);
 
           // Track story viewing
           trackStoryManagement.viewed({
@@ -61,7 +64,8 @@ export default function ReadStoryPage() {
             story_title: data.story.title,
             story_status: 'published',
             target_audience: data.story.targetAudience,
-            graphical_style: data.story.graphicalStyle
+            graphical_style: data.story.graphicalStyle,
+            chapter_number: chapterNumber
           });
         } else if (response.status === 404) {
           setError(tCommon('Errors.storyNotFoundGeneric'));
@@ -71,24 +75,24 @@ export default function ReadStoryPage() {
           setError(tCommon('Errors.failedToLoad'));
         }
       } catch (error) {
-        console.error('Error fetching story:', error);
+        console.error('Error fetching story chapter:', error);
         setError(tCommon('Errors.failedToLoad'));
       } finally {
         setLoading(false);
       }
     };
 
-    if (storyId) {
-      fetchStory();
+    if (storyId && chapterNumber) {
+      fetchChapter();
     }
-  }, [storyId, tCommon]);
+  }, [storyId, chapterNumber, tCommon]);
 
   const navigateToListen = () => {
     router.push(`/${locale}/stories/listen/${storyId}`);
   };
 
   const navigateToEdit = () => {
-    router.push(`/${locale}/stories/edit/${storyId}`);
+    router.push(`/${locale}/stories/edit/${storyId}/chapter/${chapterNumber}`);
   };
 
   const navigateToMyStories = () => {
@@ -132,18 +136,18 @@ export default function ReadStoryPage() {
     );
   }
 
-  if (!story || chapters.length === 0) {
+  if (!story || !currentChapter) {
     return (
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">📚</div>
-          <h1 className="text-3xl font-bold mb-4">No Chapters Found</h1>
-          <p className="text-lg mb-6">This story doesn&apos;t have any chapters yet.</p>
+          <h1 className="text-3xl font-bold mb-4">Chapter Not Found</h1>
+          <p className="text-lg mb-6">The requested chapter could not be found.</p>
           <button
-            onClick={() => router.push(`/${locale}/my-stories`)}
+            onClick={() => router.push(`/${locale}/stories/read/${storyId}`)}
             className="btn btn-primary"
           >
-            Back to My Stories
+            Back to Story
           </button>
         </div>
       </div>
@@ -152,31 +156,6 @@ export default function ReadStoryPage() {
 
   return (
     <div className="min-h-screen bg-base-100">
-      <SignedOut>
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center space-y-6">
-            <h1 className="text-4xl font-bold">{tCommon('Auth.accessRestricted')}</h1>
-            <p className="text-lg text-gray-600">
-              {tCommon('Auth.needSignIn')}
-            </p>
-            <div className="space-x-4">
-              <button
-                onClick={() => router.push(`/${locale}/sign-in`)}
-                className="btn btn-primary"
-              >
-                {tCommon('Auth.signIn')}
-              </button>
-              <button
-                onClick={() => router.push(`/${locale}/sign-up`)}
-                className="btn btn-outline"
-              >
-                {tCommon('Auth.createAccount')}
-              </button>
-            </div>
-          </div>
-        </div>
-      </SignedOut>
-
       <SignedIn>
         {/* Action Bar */}
         <div className="bg-base-200 border-b border-base-300 p-4 print:hidden">
@@ -225,12 +204,12 @@ export default function ReadStoryPage() {
           </div>
         </div>
 
-        {/* Story Reader - First page with cover and table of contents */}
+        {/* Story Reader */}
         <StoryReader
           storyId={storyId}
           story={story}
           chapters={chapters}
-          currentChapter={0} // 0 = first page
+          currentChapter={chapterNumber}
         />
 
         {/* Story Rating */}

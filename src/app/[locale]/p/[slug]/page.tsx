@@ -4,15 +4,29 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { FiLoader, FiAlertCircle, FiUser, FiCalendar, FiTag, FiEye, FiPrinter } from 'react-icons/fi';
-import StoryReader from '@/components/StoryReader';
 import PublicStoryRating from '@/components/PublicStoryRating';
 import StoryAudioPlayer from '@/components/StoryAudioPlayer';
+import StoryReader from '@/components/StoryReader';
+
+interface Chapter {
+  id: string;
+  chapterNumber: number;
+  title: string;
+  imageUri: string | null;
+  imageThumbnailUri: string | null;
+  htmlContent: string;
+  audioUri: string | null;
+  version: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 interface PublicStoryData {
   success: boolean;
   story: {
     storyId: string;
     title: string;
+    authorName: string;
     synopsis?: string;
     htmlUri?: string;
     pdfUri?: string;
@@ -28,10 +42,12 @@ interface PublicStoryData {
     plotDescription?: string;
     createdAt: string;
     isPublic: boolean;
-    author: {
-      displayName: string;
-    };
+    dedicationMessage?: string;
+    coverUri?: string;
+    backcoverUri?: string;
+    slug?: string;
   };
+  chapters: Chapter[];
   accessLevel: 'public';
   error?: string;
 }
@@ -46,13 +62,12 @@ export default function PublicStoryPage() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<PublicStoryData | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [storyContent, setStoryContent] = useState<string | null>(null);
 
   useEffect(() => {
     if (!slug) return;    const fetchPublicStory = async () => {
       try {
         console.log('[Public Page] Fetching story for slug:', slug);
-        const response = await fetch(`/api/public/${slug}`);
+        const response = await fetch(`/api/p/${slug}`);
         console.log('[Public Page] Response status:', response.status);
         console.log('[Public Page] Response ok:', response.ok);
         
@@ -66,27 +81,8 @@ export default function PublicStoryPage() {
         console.log('[Public Page] Response data:', result);        if (result.success) {
           setData(result);
           
-          // Fetch story content through our proxy API to avoid CORS issues
-          if (result.story.htmlUri) {
-            try {
-              console.log('[Public Page] Fetching content through proxy API...');
-              const contentResponse = await fetch(`/api/public/${slug}/content`);
-              if (contentResponse.ok) {
-                const htmlContent = await contentResponse.text();
-                console.log('[Public Page] Content fetched successfully, length:', htmlContent.length);
-                setStoryContent(htmlContent);
-              } else {
-                console.error('[Public Page] Failed to fetch content through proxy:', contentResponse.status);
-                setError('Failed to load story content');
-              }
-            } catch (err) {
-              console.error('Error fetching story content through proxy:', err);
-              setError('Failed to load story content');
-            }
-          } else {
-            console.log('[Public Page] No HTML URI available');
-            setError('Story content not available');
-          }} else {
+          // Story data fetched successfully
+          console.log('[Public Page] Story and chapters loaded successfully');} else {
           console.error('[Public Page] API returned error:', result.error);
           setError(result.error || 'Story not found');
         }      } catch (err) {
@@ -231,7 +227,7 @@ export default function PublicStoryPage() {
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mt-4">
               <div className="flex items-center gap-1">
                 <FiUser />
-                <span>{t('labels.by')} {story.author.displayName}</span>
+                <span>{t('labels.by')} {story.authorName || 'Unknown Author'}</span>
               </div>
                 <div className="flex items-center gap-1">
                 <FiCalendar />
@@ -242,7 +238,9 @@ export default function PublicStoryPage() {
                   <FiTag />
                   <span>{story.targetAudience.replace('_', ' ')}</span>
                 </div>
-              )}              {story.graphicalStyle && (
+              )}
+              
+              {story.graphicalStyle && (
                 <div className="flex items-center gap-1">
                   <FiEye />
                   <span className="capitalize">{story.graphicalStyle.replace('_', ' ')}</span>
@@ -255,7 +253,9 @@ export default function PublicStoryPage() {
                   <span className="capitalize">{story.novelStyle.replace('_', ' ')}</span>
                 </div>
               )}
-            </div>            {(story.synopsis || story.plotDescription) && (
+            </div>
+            
+            {(story.synopsis || story.plotDescription) && (
               <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                 <h3 className="font-bold text-gray-900 mb-2">{t('labels.synopsis')}</h3>
                 <p className="text-gray-700 leading-relaxed text-sm">
@@ -265,23 +265,25 @@ export default function PublicStoryPage() {
             )}
           </div>
         </div>
-      </div>      {/* Story Content */}
-      <div className="py-8">
-        {storyContent ? (
-          <div className="w-full md:container md:mx-auto md:px-4">
-            <div className="md:max-w-4xl md:mx-auto">
-              <div className="bg-white md:rounded-lg md:shadow-sm md:border">
-                <StoryReader 
-                  storyContent={storyContent}
-                  storyMetadata={{
-                    targetAudience: story.targetAudience,
-                    graphicalStyle: story.graphicalStyle,
-                    title: story.title
-                  }}
-                />
-              </div>
-            </div>
-          </div>
+      </div>
+      
+      {/* Story Content */}
+      <div className="py-6">
+        {data?.chapters && data.chapters.length > 0 ? (
+          <StoryReader
+            storyId={story.storyId}
+            story={{
+              title: story.title,
+              authorName: story.authorName,
+              dedicationMessage: story.dedicationMessage,
+              targetAudience: story.targetAudience,
+              graphicalStyle: story.graphicalStyle,
+              coverUri: story.coverUri,
+              backcoverUri: story.backcoverUri,
+            }}
+            chapters={data.chapters}
+            currentChapter={0} // Start at first page/cover
+          />
         ) : (
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
