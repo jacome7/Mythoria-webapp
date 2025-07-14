@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { FiImage, FiEdit3 } from 'react-icons/fi';
 import CreditConfirmationModal from './CreditConfirmationModal';
+import EditCreditInfo from './EditCreditInfo';
 import { StoryImage, ImageVersion, getImageDisplayName, formatVersionNumber, formatRelativeTime } from '@/utils/imageUtils';
 
 interface ImageEditingTabProps {
@@ -48,6 +49,17 @@ export default function ImageEditingTab({
     imageUrl: string;
     userRequest: string;
   } | null>(null);
+  
+  // Credit info for display (before submission)
+  const [imageEditCreditInfo, setImageEditCreditInfo] = useState<{
+    canEdit: boolean;
+    requiredCredits: number;
+    currentBalance: number;
+    editCount: number;
+    message?: string;
+    nextThreshold?: number;
+    isFree?: boolean;
+  } | null>(null);
   // Clear optimistic update state when error changes (success or failure)
   useEffect(() => {
     if (error && optimisticUpdate) {
@@ -66,6 +78,46 @@ export default function ImageEditingTab({
 
       return () => clearTimeout(timeout);
     }  }, [optimisticUpdate]);
+
+  // Load credit info for image editing when image is selected
+  useEffect(() => {
+    const loadImageEditCreditInfo = async () => {
+      if (!selectedImage || !storyId) {
+        setImageEditCreditInfo(null);
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/ai-edit/check-credits', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'imageEdit',
+            storyId
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setImageEditCreditInfo({
+            canEdit: data.canEdit,
+            requiredCredits: data.requiredCredits,
+            currentBalance: data.currentBalance,
+            editCount: data.editCount,
+            message: data.message,
+            nextThreshold: data.nextThreshold,
+            isFree: data.isFree
+          });
+        }
+      } catch (error) {
+        console.error('Error loading image edit credit info:', error);
+      }
+    };
+
+    loadImageEditCreditInfo();
+  }, [selectedImage, storyId]);
   // Helper function to find which version of an image is currently used in the story content
   const findCurrentVersionInStory = (image: StoryImage): ImageVersion => {
     if (!storyContent) {
@@ -625,7 +677,23 @@ export default function ImageEditingTab({
               <progress className="progress progress-primary w-full"></progress>
             </div>
           </div>
-          )}          {/* Submit Button */}
+          )}
+
+          {/* Credit Information */}
+          {imageEditCreditInfo && (
+            <EditCreditInfo
+              canEdit={imageEditCreditInfo.canEdit}
+              requiredCredits={imageEditCreditInfo.requiredCredits}
+              currentBalance={imageEditCreditInfo.currentBalance}
+              editCount={imageEditCreditInfo.editCount}
+              message={imageEditCreditInfo.message}
+              nextThreshold={imageEditCreditInfo.nextThreshold}
+              isFree={imageEditCreditInfo.isFree}
+              action="imageEdit"
+            />
+          )}
+
+          {/* Submit Button */}
           <button
             type="submit"
             className="btn btn-primary w-full"

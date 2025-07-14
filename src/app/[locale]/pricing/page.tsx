@@ -163,7 +163,7 @@ export default function PricingPage() {
 												<FaInfoCircle className="text-sm" />
 											</button>
 										</span>
-										<span className="font-semibold">1</span>
+										<span className="font-semibold">{getServiceCost('AiTextEditing')}</span>
 									</li>
 									<li className="flex items-center justify-between">
 										<span className="flex items-center">
@@ -175,7 +175,7 @@ export default function PricingPage() {
 												<FaInfoCircle className="text-sm" />
 											</button>
 										</span>
-										<span className="font-semibold">1</span>
+										<span className="font-semibold">{getServiceCost('AiImageEditing')}</span>
 									</li>
 								</ul>
 							</li>
@@ -334,9 +334,9 @@ export default function PricingPage() {
 			{/* Info Modal */}
 			{selectedInfo && (
 				<div className="modal modal-open">
-					<div className="modal-box">
+					<div className="modal-box w-10/12 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-4">
 						<h3 className="font-bold text-lg mb-4">Information</h3>
-						<p className="py-4">{infoTexts[selectedInfo as keyof typeof infoTexts]}</p>
+						<p className="py-2">{infoTexts[selectedInfo as keyof typeof infoTexts]}</p>
 						<div className="modal-action">
 							<button className="btn" onClick={closeModal}>Close</button>
 						</div>

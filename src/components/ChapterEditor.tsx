@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
@@ -39,7 +40,8 @@ import {
   FiAlertCircle,
   FiZap,
   FiImage,
-  FiType
+  FiType,
+  FiX
 } from 'react-icons/fi';
 import { toAbsoluteImageUrl } from '../utils/image-url';
 
@@ -201,9 +203,9 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
   };
 
   return (
-    <div className="bg-base-200 border-b border-base-300 p-3">
-      <div className="flex items-center gap-2 justify-between">
-        <div className="flex items-center gap-2">
+    <div className="bg-base-200 border-b border-base-300 p-2">
+      <div className="flex items-left gap-1 justify-between">
+        <div className="flex items-left gap-0">
           <button
             onClick={() => formatText('bold')}
             className={`btn btn-sm ${isBold ? 'btn-primary' : 'btn-ghost'}`}
@@ -227,7 +229,6 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
           </button>
           
           {/* Text Size Dropdown */}
-          <div className="divider divider-horizontal"></div>
           <div className="dropdown">
             <div 
               tabIndex={0} 
@@ -259,7 +260,6 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
         
         {onAIEdit && (
           <div className="flex items-center gap-2">
-            <div className="divider divider-horizontal"></div>
             <button
               onClick={onAIEdit}
               className="btn btn-sm btn-primary"
@@ -421,6 +421,8 @@ interface ChapterEditorProps {
   chapterTitle?: string;
   chapterImageUri?: string | null;
   chapterNumber?: number;
+  storyId?: string;
+  locale?: string;
   onContentChange?: (content: string) => void;
   onTitleChange?: (title: string) => void;
   onSave?: (content: string, title: string) => void;
@@ -438,6 +440,8 @@ export default function ChapterEditor({
   chapterTitle = '',
   chapterImageUri = null,
   chapterNumber = 1,
+  storyId,
+  locale = 'en',
   onContentChange,
   onTitleChange,
   onSave,
@@ -445,10 +449,22 @@ export default function ChapterEditor({
   onImageEdit,
   isLoading = false,
 }: ChapterEditorProps) {
+  const router = useRouter();
   const [currentTitle, setCurrentTitle] = useState(chapterTitle);
   const [currentContent, setCurrentContent] = useState(initialContent);
   const [hasChanges, setHasChanges] = useState(false);
   const t = useTranslations('common');
+
+  // Debug logging for props
+  useEffect(() => {
+    console.log('🔧 ChapterEditor props:', {
+      storyId,
+      chapterNumber,
+      chapterTitle,
+      locale,
+      hasInitialContent: !!initialContent
+    });
+  }, [storyId, chapterNumber, chapterTitle, locale, initialContent]);
 
   // Sync props changes
   useEffect(() => {
@@ -474,6 +490,21 @@ export default function ChapterEditor({
   const handleSave = () => {
     if (onSave && hasChanges) {
       onSave(currentContent, currentTitle);
+    }
+  };
+
+  // Handle cancel - navigate to reading page
+  const handleCancel = () => {
+    console.log('🔍 Cancel button clicked with:', { storyId, chapterNumber, locale });
+    
+    if (storyId && chapterNumber) {
+      const readingUrl = `/${locale}/stories/read/${storyId}/chapter/${chapterNumber}`;
+      console.log('📍 Navigating to:', readingUrl);
+      router.push(readingUrl);
+    } else {
+      // Fallback: go back in browser history
+      console.log('⚠️ Missing storyId or chapterNumber, using browser back');
+      router.back();
     }
   };
 
@@ -583,18 +614,31 @@ export default function ChapterEditor({
                   </div>
                 )}
               </div>
-              <button
-                onClick={handleSave}
-                disabled={isLoading || !hasChanges}
-                className="btn btn-primary"
-              >
-                {isLoading ? (
-                  <span className="loading loading-spinner loading-sm"></span>
-                ) : (
-                  <FiSave className="w-4 h-4" />
+              <div className="flex items-center gap-3">
+                {/* Cancel button - always show if we have a chapterNumber */}
+                {chapterNumber && (
+                  <button
+                    onClick={handleCancel}
+                    className="btn btn-ghost"
+                    title={storyId ? `Go to reading page for Chapter ${chapterNumber}` : 'Go back'}
+                  >
+                    <FiX className="w-4 h-4" />
+                    Cancel
+                  </button>
                 )}
-                {isLoading ? 'Saving...' : 'Save Chapter'}
-              </button>
+                <button
+                  onClick={handleSave}
+                  disabled={isLoading || !hasChanges}
+                  className="btn btn-primary"
+                >
+                  {isLoading ? (
+                    <span className="loading loading-spinner loading-sm"></span>
+                  ) : (
+                    <FiSave className="w-4 h-4" />
+                  )}
+                  {isLoading ? 'Saving...' : 'Save Chapter'}
+                </button>
+              </div>
             </div>
           </div>
         </LexicalComposer>

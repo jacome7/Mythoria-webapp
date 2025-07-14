@@ -559,17 +559,37 @@ export const aiEditService = {
     const editCount = await this.getEditCount(authorId, action);
     
     if (action === 'textEdit') {
-      // First 5 edits are free, then 1 credit per 5 edits
+      // First 5 edits are free, then charge every 5th edit (6th, 11th, 16th, etc.)
       if (editCount < 5) {
         return 0; // Still in free tier
       }
       
       // Check if we need to charge for this edit (every 5th edit after the free ones)
       const paidEdits = editCount - 4; // editCount 5 becomes paidEdits 1, etc.
-      return paidEdits % 5 === 0 ? 1 : 0;
+      if (paidEdits % 5 === 0) {
+        // Get pricing from database with fallback
+        try {
+          const pricing = await pricingService.getPricingByServiceCode('AiTextEditing');
+          return pricing?.credits || 1; // Fallback to 1 credit
+        } catch (error) {
+          console.error('Error fetching AiTextEditing pricing:', error);
+          return 1; // Fallback to 1 credit
+        }
+      }
+      return 0;
     } else if (action === 'imageEdit') {
-      // First image edit is free, then 1 credit per edit
-      return editCount === 0 ? 0 : 1;
+      // First image edit is free, then charge for every edit after
+      if (editCount === 0) {
+        return 0; // First edit is free
+      }
+      // Get pricing from database with fallback
+      try {
+        const pricing = await pricingService.getPricingByServiceCode('AiImageEditing');
+        return pricing?.credits || 1; // Fallback to 1 credit
+      } catch (error) {
+        console.error('Error fetching AiImageEditing pricing:', error);
+        return 1; // Fallback to 1 credit
+      }
     }
     
     return 0;
@@ -581,6 +601,8 @@ export const aiEditService = {
     currentBalance: number;
     editCount: number;
     message?: string;
+    nextThreshold?: number;
+    isFree?: boolean;
   }> {
     const requiredCredits = await this.calculateRequiredCredits(authorId, action);
     const currentBalance = await creditService.getAuthorCreditBalance(authorId);
@@ -589,10 +611,35 @@ export const aiEditService = {
     const canEdit = requiredCredits === 0 || currentBalance >= requiredCredits;
     
     let message;
-    if (!canEdit) {
+    let nextThreshold;
+    const isFree = requiredCredits === 0;
+
+    if (action === 'textEdit') {
+      if (editCount < 5) {
+        const remaining = 5 - editCount;
+        message = `${remaining} free edits remaining`;
+        nextThreshold = 5;
+      } else {
+        const nextChargeAt = Math.ceil((editCount - 4) / 5) * 5 + 5;
+        const editsUntilCharge = nextChargeAt - editCount;
+        if (editsUntilCharge > 1) {
+          message = `${editsUntilCharge - 1} free edits remaining`;
+        } else if (requiredCredits > 0) {
+          message = `Next edit will cost ${requiredCredits} credit(s)`;
+        }
+        nextThreshold = nextChargeAt;
+      }
+    } else if (action === 'imageEdit') {
+      if (editCount === 0) {
+        message = `1 free edit remaining`;
+        nextThreshold = 1;
+      } else if (requiredCredits > 0) {
+        message = `Next edit will cost ${requiredCredits} credit(s)`;
+      }
+    }
+
+    if (!canEdit && requiredCredits > 0) {
       message = `Insufficient credits. You need ${requiredCredits} credit(s) but have ${currentBalance}.`;
-    } else if (requiredCredits > 0) {
-      message = `This edit will cost ${requiredCredits} credit(s). Your balance: ${currentBalance}.`;
     }
 
     return {
@@ -600,7 +647,9 @@ export const aiEditService = {
       requiredCredits,
       currentBalance,
       editCount,
-      message
+      message,
+      nextThreshold,
+      isFree
     };
   },
 

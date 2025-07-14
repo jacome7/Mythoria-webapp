@@ -5,6 +5,7 @@ import { FiX, FiZap, FiEdit3, FiFileText, FiImage } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
 import ImageEditingTab from './ImageEditingTab';
 import CreditConfirmationModal from './CreditConfirmationModal';
+import EditCreditInfo from './EditCreditInfo';
 import { extractStoryImagesFromHtml, extractStoryImages, StoryImage } from '@/utils/imageUtils';
 
 interface AIEditModalProps {
@@ -55,6 +56,17 @@ export default function AIEditModal({
   const [pendingEditData, setPendingEditData] = useState<{
     userRequest: string;
     chapterNumber?: number;
+  } | null>(null);
+  
+  // Credit info for display (before submission)
+  const [textEditCreditInfo, setTextEditCreditInfo] = useState<{
+    canEdit: boolean;
+    requiredCredits: number;
+    currentBalance: number;
+    editCount: number;
+    message?: string;
+    nextThreshold?: number;
+    isFree?: boolean;
   } | null>(null);// Extract chapters from story content
   useEffect(() => {
     if (!storyContent) return;
@@ -168,7 +180,47 @@ export default function AIEditModal({
     };
 
     loadImages();
-  }, [storyContent, storyId]);  const handleSubmit = async (e: React.FormEvent) => {
+  }, [storyContent, storyId]);
+
+  // Load credit info for text editing when modal opens
+  useEffect(() => {
+    const loadTextEditCreditInfo = async () => {
+      if (!isOpen || !storyId) {
+        setTextEditCreditInfo(null);
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/ai-edit/check-credits', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'textEdit',
+            storyId
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setTextEditCreditInfo({
+            canEdit: data.canEdit,
+            requiredCredits: data.requiredCredits,
+            currentBalance: data.currentBalance,
+            editCount: data.editCount,
+            message: data.message,
+            nextThreshold: data.nextThreshold,
+            isFree: data.isFree
+          });
+        }
+      } catch (error) {
+        console.error('Error loading text edit credit info:', error);
+      }
+    };
+
+    loadTextEditCreditInfo();
+  }, [isOpen, storyId]);  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!userRequest.trim()) {
@@ -662,6 +714,20 @@ export default function AIEditModal({
                     <progress className="progress progress-primary w-full"></progress>
                   </div>
                 </div>
+              )}
+
+              {/* Credit Information */}
+              {textEditCreditInfo && (
+                <EditCreditInfo
+                  canEdit={textEditCreditInfo.canEdit}
+                  requiredCredits={textEditCreditInfo.requiredCredits}
+                  currentBalance={textEditCreditInfo.currentBalance}
+                  editCount={textEditCreditInfo.editCount}
+                  message={textEditCreditInfo.message}
+                  nextThreshold={textEditCreditInfo.nextThreshold}
+                  isFree={textEditCreditInfo.isFree}
+                  action="textEdit"
+                />
               )}
 
               {/* Actions */}

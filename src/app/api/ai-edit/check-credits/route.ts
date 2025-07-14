@@ -67,11 +67,8 @@ export async function POST(request: NextRequest) {
       currentBalance: permission.currentBalance,
       editCount: permission.editCount,
       message: permission.message,
-      // Provide additional context for the UI
-      isFree: permission.requiredCredits === 0,
-      nextThreshold: action === 'textEdit' 
-        ? Math.ceil((permission.editCount + 1) / 5) * 5 
-        : permission.editCount === 0 ? 1 : permission.editCount + 1
+      nextThreshold: permission.nextThreshold,
+      isFree: permission.isFree
     });
 
   } catch (error) {

@@ -45,7 +45,7 @@ export default function ImageEditButton({
         <button
           onClick={handleEdit}
           className="absolute top-2 right-2 z-10 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-2 shadow-lg transition-all duration-200 transform hover:scale-105"
-          title="Edit this image with AI"
+          title="Edit this image with Mythoria"
         >
           <FiEdit3 className="w-4 h-4" />
         </button>

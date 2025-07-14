@@ -449,6 +449,8 @@ export default function EditChapterPage() {
             chapterTitle={currentChapterData.title}
             chapterImageUri={currentChapterData.imageUri}
             chapterNumber={chapterNumber}
+            storyId={storyId}
+            locale={locale}
             onContentChange={handleContentChange}
             onTitleChange={handleTitleChange}
             onSave={saveChapterContent}

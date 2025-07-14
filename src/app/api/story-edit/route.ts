@@ -76,18 +76,57 @@ export async function POST(request: NextRequest) {
     };
 
     // Make request to story generation workflow using new RESTful endpoint
-    const workflowResponse = await fetch(endpoint, {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(workflowRequestBody),
-    });
+    let workflowResponse: Response;
+    let workflowData: unknown;
+    
+    try {
+      workflowResponse = await fetch(endpoint, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(workflowRequestBody),
+        // Add timeout to prevent hanging requests
+        signal: AbortSignal.timeout(30000) // 30 second timeout
+      });
 
-    const workflowData = await workflowResponse.json();
+      workflowData = await workflowResponse.json();
+    } catch (error: unknown) {
+      console.error('Error connecting to story generation workflow:', error);
+      
+      // Check if this is a connection error
+      const errorWithCode = error as { code?: string; name?: string };
+      if (errorWithCode.code === 'ECONNREFUSED' || errorWithCode.name === 'ConnectTimeoutError' || errorWithCode.name === 'TimeoutError') {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'Story editing service is currently unavailable. Please try again later.',
+            details: config.isDevelopment ? `Connection refused to ${workflowUrl}. Make sure the story generation workflow service is running.` : undefined
+          },
+          { status: 503 } // Service Unavailable
+        );
+      }
+      
+      // For other errors, return generic error
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Failed to process story edit request. Please try again.',
+          details: config.isDevelopment ? (error as Error).message : undefined
+        },
+        { status: 500 }
+      );
+    }
 
     // Handle successful response
-    if (workflowResponse.ok && workflowData.success) {
+    const workflowResult = workflowData as {
+      success?: boolean;
+      editedContent?: string;
+      editedChapters?: Array<{ number: number; content: string }>;
+      metadata?: { tokensUsed?: number };
+    };
+
+    if (workflowResponse.ok && workflowResult.success) {
       // Record the edit and deduct credits
       try {
         await aiEditService.recordSuccessfulEdit(
@@ -110,24 +149,24 @@ export async function POST(request: NextRequest) {
       try {
         if (scope === 'story' || (!chapterNumber && !scope)) {
           // Update all chapters
-          if (workflowData.editedChapters && Array.isArray(workflowData.editedChapters)) {
-            for (const chapter of workflowData.editedChapters) {
-              if (chapter.editedContent && !chapter.error) {
+          if (workflowResult.editedChapters && Array.isArray(workflowResult.editedChapters)) {
+            for (const chapter of workflowResult.editedChapters) {
+              if (chapter.content && typeof chapter.content === 'string') {
                 await chapterService.updateChapterContent(
                   storyId, 
-                  chapter.chapterNumber, 
-                  chapter.editedContent
+                  chapter.number, 
+                  chapter.content
                 );
               }
             }
           }
         } else {
           // Update single chapter
-          if (workflowData.editedContent) {
+          if (workflowResult.editedContent) {
             await chapterService.updateChapterContent(
               storyId, 
               chapterNumber, 
-              workflowData.editedContent
+              workflowResult.editedContent
             );
           }
         }
@@ -135,9 +174,9 @@ export async function POST(request: NextRequest) {
         // Return success response with updated content information
         return NextResponse.json({
           success: true,
-          updatedHtml: workflowData.editedContent || 'Content updated successfully',
-          tokensUsed: workflowData.metadata?.tokensUsed || 0,
-          chaptersUpdated: workflowData.editedChapters?.length || 1
+          updatedHtml: workflowResult.editedContent || 'Content updated successfully',
+          tokensUsed: workflowResult.metadata?.tokensUsed || 0,
+          chaptersUpdated: workflowResult.editedChapters?.length || 1
         });
 
       } catch (dbError) {

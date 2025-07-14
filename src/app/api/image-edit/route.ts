@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { getEnvironmentConfig } from '../../../../config/environment';
-import { authorService, aiEditService } from '@/db/services';
+import { authorService, aiEditService, storyService } from '@/db/services';
 
 export async function POST(request: NextRequest) {
   try {    // Check authentication
@@ -85,6 +85,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get the story to retrieve graphical style
+    const story = await storyService.getStoryById(storyId);
+    if (!story) {
+      return NextResponse.json(
+        { success: false, error: 'Story not found' },
+        { status: 404 }
+      );
+    }
+
     // Get environment configuration
     const config = getEnvironmentConfig();
     const workflowUrl = config.storyGeneration.workflowUrl;
@@ -106,10 +115,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Prepare request body for the new RESTful API
+    // Prepare request body for the external API with required fields
     const workflowRequestBody = {
-      userRequest: userRequest.trim()
+      userRequest: userRequest.trim(),
+      originalImageUri: imageUrl,
+      graphicalStyle: story.graphicalStyle || 'artistic'
     };
+
+    console.log('Sending image edit request to external API:', {
+      endpoint,
+      userRequest: userRequest.trim(),
+      originalImageUri: imageUrl,
+      graphicalStyle: story.graphicalStyle || 'artistic'
+    });
 
     // Make request to story generation workflow using new RESTful endpoint
     const workflowResponse = await fetch(endpoint, {
