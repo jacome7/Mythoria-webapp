@@ -81,10 +81,15 @@ export default function RevolutPayment({
             console.log('RevolutPayment: createOrder called with token:', orderToken);
             return { publicId: orderToken };
           },
+          redirectUrls: {
+            success: `${window.location.origin}${window.location.pathname}?payment=success`,
+            failure: `${window.location.origin}${window.location.pathname}?payment=failure`,
+            cancel: `${window.location.origin}${window.location.pathname}?payment=cancel`,
+          },
           mobileRedirectUrls: {
-            success: `${window.location.origin}/payment-success`,
-            failure: `${window.location.origin}/payment-failure`,
-            cancel: `${window.location.origin}/payment-cancel`,
+            success: `${window.location.origin}${window.location.pathname}?payment=success`,
+            failure: `${window.location.origin}${window.location.pathname}?payment=failure`,
+            cancel: `${window.location.origin}${window.location.pathname}?payment=cancel`,
           },
         };
 

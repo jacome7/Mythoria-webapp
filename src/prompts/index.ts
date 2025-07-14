@@ -7,4 +7,3 @@ export { structureStoryOutlineSchema } from './structureStoryOutline_schema';
 
 // Direct exports for compatibility
 export { default as enUSPrompt } from '../prompts/en-US/structureStoryOutline_prompt';
-export { default as ptPTPrompt } from '../prompts/pt-PT/structureStoryOutline_prompt';

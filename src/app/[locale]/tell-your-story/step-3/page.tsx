@@ -482,11 +482,11 @@ function Step3Page() {
                                           <div className="text-sm text-gray-500">
                                             {getTypeDisplayValue(character.type || '')} • {tChar('fields.role')}: {formatRoleName(character.role || 'protagonist')}
                                           </div>
-                                          {character.passions && (
+                                          {character.characteristics && (
                                             <div className="text-xs text-gray-400 mt-1">
-                                              {character.passions.length > 50
-                                                ? `${character.passions.substring(0, 50)}...`
-                                                : character.passions}
+                                              {character.characteristics.length > 50
+                                                ? `${character.characteristics.substring(0, 50)}...`
+                                                : character.characteristics}
                                             </div>
                                           )}
                                         </div>
@@ -546,9 +546,7 @@ function Step3Page() {
                 nextLabel={
                   isNavigating
                     ? t('continuing')
-                    : isInEditMode
-                      ? t('nextChapter')
-                      : t('nextChapter')
+                    : t('next')
                 }
                 prevLabel={isInEditMode ? 'Back to My Stories' : undefined}
               />

@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db';
 import { stories, authors, storyCollaborators } from '@/db/schema';
 import { eq, and, or } from 'drizzle-orm';
+import { authorService } from '@/db/services';
 
 export async function GET(
   request: Request,
@@ -19,6 +20,13 @@ export async function GET(
     
     if (userId) {
       // If user is authenticated, check ownership, collaboration, or public access
+      // Get the current user's author record
+      const author = await authorService.getAuthorByClerkId(userId);
+      if (!author) {
+        console.log('[Story Content API] Author not found');
+        return NextResponse.json({ error: 'Author not found' }, { status: 404 });
+      }
+      
       story = await db
         .select({
           storyId: stories.storyId,
@@ -28,17 +36,16 @@ export async function GET(
           isPublic: stories.isPublic,
         })
         .from(stories)
-        .leftJoin(authors, eq(authors.authorId, stories.authorId))
         .leftJoin(storyCollaborators, eq(storyCollaborators.storyId, stories.storyId))
         .where(
           and(
             eq(stories.storyId, storyId),
             or(
               // User is the author
-              eq(authors.clerkUserId, userId),
+              eq(stories.authorId, author.authorId),
               // User is a collaborator
               and(
-                eq(storyCollaborators.userId, stories.authorId),
+                eq(storyCollaborators.userId, author.authorId),
                 or(
                   eq(storyCollaborators.role, 'editor'),
                   eq(storyCollaborators.role, 'viewer')

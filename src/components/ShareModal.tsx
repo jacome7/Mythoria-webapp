@@ -40,8 +40,10 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
   const t = useTranslations('common.Components.ShareModal');
   const [allowEdit, setAllowEdit] = useState(false);
   const [makePublic, setMakePublic] = useState(isPublic);
-  const [loading, setLoading] = useState(false); const [shareData, setShareData] = useState<ShareData | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [shareData, setShareData] = useState<ShareData | null>(null);
   const [copied, setCopied] = useState(false);
+  
   if (!isOpen) return null;
 
   // If the story is already public, show the public link
@@ -51,7 +53,18 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
     setLoading(true);
     try {
       console.log('Creating share link for story:', storyId);
+      console.log('typeof storyId:', typeof storyId);
+      console.log('storyId value:', storyId);
+      console.log('storyId === undefined:', storyId === undefined);
+      console.log('storyId === "undefined":', storyId === "undefined");
       console.log('Request body:', { allowEdit, makePublic, expiresInDays: 30 });
+
+      if (!storyId || storyId === 'undefined') {
+        console.error('Invalid storyId:', storyId);
+        alert('Invalid story ID');
+        setLoading(false);
+        return;
+      }
 
       const response = await fetch(`/api/stories/${storyId}/share`, {
         method: 'POST',

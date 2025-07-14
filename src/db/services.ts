@@ -3,6 +3,7 @@ import { authors, stories, characters, storyCharacters, creditLedger, authorCred
 import { eq, and, count, desc, sql, like, asc } from "drizzle-orm";
 import { ClerkUserForSync } from "@/types/clerk";
 import { pricingService } from "./services/pricing";
+import { CharacterRole, CharacterAge, isValidCharacterAge } from "../types/character-enums";
 
 // Export payment service
 export { paymentService } from "./services/payment";
@@ -150,7 +151,15 @@ export const authorService = {  async createAuthor(authorData: { clerkUserId: st
 };
 
 // Story operations
-export const storyService = {  async createStory(storyData: { title: string; authorId: string; plotDescription?: string; storyLanguage?: string; synopsis?: string }) {
+export const storyService = {  async createStory(storyData: { 
+    title: string; 
+    authorId: string; 
+    plotDescription?: string; 
+    storyLanguage?: string; 
+    synopsis?: string;
+    customAuthor?: string;
+    dedicationMessage?: string;
+  }) {
     const [story] = await db.insert(stories).values(storyData).returning();
     return story;
   },
@@ -236,13 +245,27 @@ export const characterService = {
     name: string; 
     authorId?: string; 
     type?: string; 
-    role?: 'protagonist' | 'antagonist' | 'supporting' | 'mentor' | 'comic_relief' | 'love_interest' | 'sidekick' | 'narrator' | 'other' | null; 
-    passions?: string; 
-    superpowers?: string; 
+    role?: CharacterRole | null; 
+    age?: string | null;
+    traits?: string[];
+    characteristics?: string; 
     physicalDescription?: string; 
     photoUrl?: string 
   }) {
-    const [character] = await db.insert(characters).values(characterData).returning();
+    // Only validate age, type is now free text
+    const validatedData = {
+      ...characterData,
+      type: characterData.type || undefined, // Accept any string for type
+      age: characterData.age && isValidCharacterAge(characterData.age)
+        ? characterData.age as CharacterAge
+        : undefined
+    };
+    
+    console.log('[characterService.createCharacter] Input type:', characterData.type);
+    console.log('[characterService.createCharacter] Validated type:', validatedData.type);
+    
+    const [character] = await db.insert(characters).values(validatedData).returning();
+    console.log('[characterService.createCharacter] Created character with type:', character.type);
     return character;
   },
 

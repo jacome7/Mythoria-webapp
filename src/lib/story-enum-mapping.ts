@@ -6,6 +6,7 @@ import {
   NovelStyleLabels,
   GraphicalStyleLabels 
 } from '../types/story-enums';
+import { CharacterAge } from '../types/character-enums';
 
 /**
  * Smart mapping functions to convert AI output or user input to proper enum values
@@ -72,7 +73,8 @@ const novelStyleMap: Record<string, NovelStyle> = {
   'dramatic': NovelStyle.DRAMA,
   'scary': NovelStyle.HORROR,
   'spooky': NovelStyle.HORROR,
-  'suspense': NovelStyle.THRILLER,  'bio': NovelStyle.BIOGRAPHY,
+  'suspense': NovelStyle.THRILLER,
+  'bio': NovelStyle.BIOGRAPHY,
   'learn': NovelStyle.EDUCATIONAL,
   'learning': NovelStyle.EDUCATIONAL,
 };
@@ -113,6 +115,63 @@ const graphicalStyleMap: Record<string, GraphicalStyle> = {
   'classic': GraphicalStyle.VINTAGE,
 };
 
+// Mapping from common AI outputs to CharacterAge enum
+const characterAgeMap: Record<string, CharacterAge> = {
+  // Direct enum matches - Human ages
+  'infant': 'infant',
+  'toddler': 'toddler',
+  'preschool': 'preschool',
+  'school_age': 'school_age',
+  'teenage': 'teenage',
+  'emerging_adult': 'emerging_adult',
+  'seasoned_adult': 'seasoned_adult',
+  'midlife_mentor': 'midlife_mentor',
+  'elder': 'elder',
+  
+  // Direct enum matches - Non-human ages
+  'youngling': 'youngling',
+  'adult': 'adult',
+  'senior': 'senior',
+  
+  // Common AI variations for human ages
+  'baby': 'infant',
+  'newborn': 'infant',
+  'neonate': 'infant',
+  'child': 'toddler',
+  'preschooler': 'preschool',
+  'kindergarten': 'preschool',
+  'schoolage': 'school_age',
+  'school-age': 'school_age',
+  'elementary': 'school_age',
+  'kid': 'school_age',
+  'teen': 'teenage',
+  'teenager': 'teenage',
+  'adolescent': 'teenage',
+  'young_adult': 'emerging_adult',
+  'youngadult': 'emerging_adult',
+  'young-adult': 'emerging_adult',
+  'college': 'emerging_adult',
+  'university': 'emerging_adult',
+  'middle_aged': 'seasoned_adult',
+  'middleaged': 'seasoned_adult',
+  'middle-aged': 'seasoned_adult',
+  'midlife': 'midlife_mentor',
+  'middle-life': 'midlife_mentor',
+  'elderly': 'elder',
+  'senior_citizen': 'elder',
+  
+  // Common AI variations for non-human ages
+  'young': 'youngling',
+  'juvenile': 'youngling',
+  'puppy': 'youngling',
+  'kitten': 'youngling',
+  'cub': 'youngling',
+  'mature': 'adult',
+  'grown': 'adult',
+  'fully_grown': 'adult',
+  'aged': 'senior',
+};
+
 /**
  * Maps AI output or user input to the correct TargetAudience enum value
  */
@@ -144,6 +203,16 @@ export function mapToGraphicalStyle(input: string | null | undefined): Graphical
 }
 
 /**
+ * Maps AI output or user input to the correct CharacterAge enum value
+ */
+export function mapToCharacterAge(input: string | null | undefined): CharacterAge | null {
+  if (!input) return null;
+  
+  const normalized = input.toLowerCase().trim().replace(/[^a-z0-9_-]/g, '');
+  return characterAgeMap[normalized] || null;
+}
+
+/**
  * Validates if a string is a valid TargetAudience enum value
  */
 export function isValidTargetAudience(value: string): value is TargetAudience {
@@ -165,6 +234,18 @@ export function isValidGraphicalStyle(value: string): value is GraphicalStyle {
 }
 
 /**
+ * Validates if a string is a valid CharacterAge enum value
+ */
+export function isValidCharacterAge(value: string): value is CharacterAge {
+  const ages: CharacterAge[] = [
+    'infant', 'toddler', 'preschool', 'school_age', 'teenage', 
+    'emerging_adult', 'seasoned_adult', 'midlife_mentor', 'elder',
+    'youngling', 'adult', 'senior'
+  ];
+  return ages.includes(value as CharacterAge);
+}
+
+/**
  * Smart mapping function that handles AI output for story attributes
  * Used in the GenAI processing pipeline
  */
@@ -176,7 +257,19 @@ export function mapStoryAttributes(aiOutput: {
   return {
     targetAudience: mapToTargetAudience(aiOutput.targetAudience),
     novelStyle: mapToNovelStyle(aiOutput.novelStyle),
-    graphicalStyle: mapToGraphicalStyle(aiOutput.graphicalStyle),
+    graphicalStyle: mapToGraphicalStyle(aiOutput.graphicalStyle)
+  };
+}
+
+/**
+ * Smart mapping function that handles AI output for character attributes
+ * Used in the GenAI processing pipeline
+ */
+export function mapCharacterAttributes(aiOutput: {
+  age?: string;
+}) {
+  return {
+    age: mapToCharacterAge(aiOutput.age)
   };
 }
 
@@ -184,25 +277,32 @@ export function mapStoryAttributes(aiOutput: {
  * Gets human-readable label for enum value, with fallback for invalid values
  */
 export function getTargetAudienceLabelSafe(value: string | null | undefined): string {
-  if (!value) return 'Not specified';
-  if (isValidTargetAudience(value)) {
-    return TargetAudienceLabels[value];
-  }
-  return value; // Return original value if not a valid enum
+  if (!value) return 'Unknown';
+  const targetAudience = mapToTargetAudience(value);
+  return targetAudience ? TargetAudienceLabels[targetAudience] : value;
 }
 
 export function getNovelStyleLabelSafe(value: string | null | undefined): string {
-  if (!value) return 'Not specified';
-  if (isValidNovelStyle(value)) {
-    return NovelStyleLabels[value];
-  }
-  return value; // Return original value if not a valid enum
+  if (!value) return 'Unknown';
+  const novelStyle = mapToNovelStyle(value);
+  return novelStyle ? NovelStyleLabels[novelStyle] : value;
 }
 
 export function getGraphicalStyleLabelSafe(value: string | null | undefined): string {
-  if (!value) return 'Not specified';
-  if (isValidGraphicalStyle(value)) {
-    return GraphicalStyleLabels[value];
-  }
-  return value; // Return original value if not a valid enum
+  if (!value) return 'Unknown';
+  const graphicalStyle = mapToGraphicalStyle(value);
+  return graphicalStyle ? GraphicalStyleLabels[graphicalStyle] : value;
+}
+
+export function getCharacterAgeLabelSafe(value: string | null | undefined): string {
+  if (!value) return 'Unknown';
+  // Since we don't have labels for character ages, return formatted version
+  const age = mapToCharacterAge(value);
+  if (!age) return value;
+  
+  // Convert snake_case to Title Case
+  return age
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }

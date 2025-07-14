@@ -26,6 +26,10 @@
       "delete": "Delete",
       "printNotAvailable": "Print Not Available"
     },
+    "sharing": {
+      "publicAccessible": "Story is now publicly accessible",
+      "nowPrivate": "Story is now private"
+    },
     "deleteConfirm": {
       "title": "Delete Story",
       "message": "Are you sure you want to delete this story? This action cannot be undone.",

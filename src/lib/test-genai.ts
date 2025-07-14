@@ -8,8 +8,7 @@ async function testGenAI() {
       "A brave princess must save her kingdom from an evil dragon that has been terrorizing the villages.",
       [],
       null,
-      null,
-      'en-US'
+      null
     );
     
     console.log('Success! Generated structured story:');

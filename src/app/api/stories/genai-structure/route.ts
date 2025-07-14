@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     if (!currentAuthor) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }    // Parse the request body
-    const { userDescription, imageData, audioData, storyId, userLanguage } = await request.json();
+    const { userDescription, imageData, audioData, storyId } = await request.json();
 
     if (!userDescription?.trim() && !imageData && !audioData) {
       return NextResponse.json(
@@ -44,13 +44,12 @@ export async function POST(request: NextRequest) {
 
     // Get existing characters for this author
     const existingCharacters = await characterService.getCharactersByAuthor(currentAuthor.authorId);    // Call the GenAI service to structure the story
-    console.log('Calling GenAI to structure story for author:', currentAuthor.authorId, 'with language:', userLanguage || 'en-US');
+    console.log('Calling GenAI to structure story for author:', currentAuthor.authorId);
     const structuredResult = await generateStructuredStory(
       userDescription, 
       existingCharacters, 
       imageData, 
-      audioData, 
-      userLanguage || 'en-US'
+      audioData
     );
     
     // Debug: Log the raw structured result to understand what AI is returning
@@ -63,13 +62,18 @@ export async function POST(request: NextRequest) {
         characterIdType: typeof character.characterId,
         characterIdValue: JSON.stringify(character.characterId)
       });
-    });// Update the story with the structured data
+    });    // Update the story with the structured data
     const storyUpdates: Record<string, unknown> = {};
     if (structuredResult.story.title) storyUpdates.title = structuredResult.story.title;
     if (structuredResult.story.plotDescription) storyUpdates.plotDescription = structuredResult.story.plotDescription;
     if (structuredResult.story.synopsis) storyUpdates.synopsis = structuredResult.story.synopsis;
     if (structuredResult.story.place) storyUpdates.place = structuredResult.story.place;
     if (structuredResult.story.additionalRequests) storyUpdates.additionalRequests = structuredResult.story.additionalRequests;
+    
+    // Add storyLanguage from AI detection
+    if (structuredResult.story.storyLanguage) {
+      storyUpdates.storyLanguage = structuredResult.story.storyLanguage;
+    }
     
     // Use smart mapping for enum fields
     const mappedAttributes = mapStoryAttributes({
@@ -100,8 +104,9 @@ export async function POST(request: NextRequest) {
             authorId: currentAuthor.authorId,
             type: character.type || undefined,
             role: character.role && isValidCharacterRole(character.role) ? character.role : undefined,
-            passions: character.passions || undefined,
-            superpowers: character.superpowers || undefined,
+            age: character.age || undefined,
+            traits: character.traits || [],
+            characteristics: character.characteristics || undefined,
             physicalDescription: character.physicalDescription || undefined,
             photoUrl: character.photoUrl || undefined,
           });
@@ -113,8 +118,9 @@ export async function POST(request: NextRequest) {
           authorId: currentAuthor.authorId,
           type: character.type || undefined,
           role: character.role && isValidCharacterRole(character.role) ? character.role : undefined,
-          passions: character.passions || undefined,
-          superpowers: character.superpowers || undefined,
+          age: character.age || undefined,
+          traits: character.traits || [],
+          characteristics: character.characteristics || undefined,
           physicalDescription: character.physicalDescription || undefined,
           photoUrl: character.photoUrl || undefined,
         });

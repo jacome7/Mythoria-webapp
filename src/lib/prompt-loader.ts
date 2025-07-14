@@ -7,18 +7,17 @@ export interface PromptConfig {
   template: string;
 }
 
-export async function getLanguageSpecificPrompt(language: string): Promise<PromptConfig> {
-  // Fallback to en-US if the specific language is not supported
-  const supportedLanguages = ['en-US', 'pt-PT'];
-  const targetLanguage = supportedLanguages.includes(language) ? language : 'en-US';
+export async function getLanguageSpecificPrompt(): Promise<PromptConfig> {
+  // Since the AI now auto-detects language and generates content in the detected language,
+  // we always use the English prompt which contains language detection instructions
+  const targetLanguage = 'en-US'; // Always use English prompt for language detection
   
   try {
     const promptModule = await import(`@/prompts/${targetLanguage}/structureStoryOutline_prompt`);
     return promptModule.default as PromptConfig;
   } catch (error) {
-    console.warn(`Failed to load prompt for language ${targetLanguage}, falling back to en-US:`, error);
-    const fallbackModule = await import('@/prompts/en-US/structureStoryOutline_prompt');
-    return fallbackModule.default as PromptConfig;
+    console.warn(`Failed to load prompt for language ${targetLanguage}:`, error);
+    throw error; // Re-throw since there's no other fallback
   }
 }
 

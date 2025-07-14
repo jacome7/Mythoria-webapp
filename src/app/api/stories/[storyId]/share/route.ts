@@ -4,6 +4,52 @@ import { db } from '@/db';
 import { stories, shareLinks, storyCollaborators, authors } from '@/db/schema';
 import { eq, and, or, gt } from 'drizzle-orm';
 import { generateSlug, ensureUniqueSlug } from '@/lib/slug';
+import { routing, isValidLocale } from '@/i18n/routing';
+import { authorService } from '@/db/services';
+
+// Helper function to get locale and translations
+async function getTranslations(request: Request) {
+  const acceptLanguage = request.headers.get('accept-language') || '';
+  const locale = request.headers.get('x-locale') || 
+    acceptLanguage.split(',')[0]?.split('-').slice(0, 2).join('-') || 
+    routing.defaultLocale;
+  
+  const validLocale = locale && isValidLocale(locale) 
+    ? locale 
+    : routing.defaultLocale;
+
+  try {
+    const messages = await import(`@/messages/${validLocale}/MyStoriesPage.json`);
+    return {
+      locale: validLocale,
+      t: (key: string) => {
+        const keys = key.split('.');
+        let value = messages.default;
+        for (const k of keys) {
+          value = value[k];
+          if (value === undefined) return key;
+        }
+        return value;
+      }
+    };
+  } catch (error) {
+    // Fallback to default locale if locale-specific messages fail to load
+    console.warn('Failed to load locale-specific messages, falling back to default locale:', error);
+    const messages = await import(`@/messages/${routing.defaultLocale}/MyStoriesPage.json`);
+    return {
+      locale: routing.defaultLocale,
+      t: (key: string) => {
+        const keys = key.split('.');
+        let value = messages.default;
+        for (const k of keys) {
+          value = value[k];
+          if (value === undefined) return key;
+        }
+        return value;
+      }
+    };
+  }
+}
 
 export async function POST(
   request: Request,
@@ -12,6 +58,7 @@ export async function POST(
   console.log('[Share API] POST request received');
   try {
     const { userId } = await auth();
+    const { t } = await getTranslations(request);
     console.log('[Share API] User ID:', userId);
     if (!userId) {
       console.log('[Share API] No user ID, returning 401');
@@ -20,11 +67,26 @@ export async function POST(
 
     const { storyId } = await context.params;
     console.log('[Share API] Story ID:', storyId);
+    console.log('[Share API] Context params:', context.params);
+    
+    // Validate storyId
+    if (!storyId || storyId === 'undefined') {
+      console.log('[Share API] Invalid story ID');
+      return NextResponse.json({ error: 'Invalid story ID' }, { status: 400 });
+    }
     
     const body = await request.json();
     console.log('[Share API] Request body:', body);
     const { allowEdit, makePublic, expiresInDays = 30 } = body;    // Check if user owns the story or is a collaborator with edit permissions
     console.log('[Share API] Checking story ownership...');
+    
+    // Get the current user's author record
+    const author = await authorService.getAuthorByClerkId(userId);
+    if (!author) {
+      console.log('[Share API] Author not found');
+      return NextResponse.json({ error: 'Author not found' }, { status: 404 });
+    }
+    
     const story = await db
       .select({
         storyId: stories.storyId,
@@ -34,15 +96,16 @@ export async function POST(
         slug: stories.slug,
       })
       .from(stories)
-      .leftJoin(authors, eq(authors.authorId, stories.authorId))
       .leftJoin(storyCollaborators, eq(storyCollaborators.storyId, stories.storyId))
       .where(
         and(
           eq(stories.storyId, storyId),
           or(
-            eq(authors.clerkUserId, userId),
+            // User is the story owner
+            eq(stories.authorId, author.authorId),
+            // User is a collaborator with edit permissions
             and(
-              eq(storyCollaborators.userId, stories.authorId),
+              eq(storyCollaborators.userId, author.authorId),
               eq(storyCollaborators.role, 'editor')
             )
           )
@@ -90,7 +153,7 @@ export async function POST(
         success: true,
         linkType: 'public',
         url: `/p/${slug}`,
-        message: 'Story is now publicly accessible'
+        message: t('MyStoriesPage.sharing.publicAccessible')
       });
     }
 
@@ -108,7 +171,7 @@ export async function POST(
         success: true,
         linkType: 'private',
         url: '',
-        message: 'Story is now private'
+        message: t('MyStoriesPage.sharing.nowPrivate')
       });
     }    // Handle private sharing
     const accessLevel = allowEdit ? 'edit' : 'view';
@@ -154,6 +217,47 @@ export async function GET(
     }
 
     const { storyId } = await context.params;
+    
+    // Validate storyId
+    if (!storyId || storyId === 'undefined') {
+      return NextResponse.json({ error: 'Invalid story ID' }, { status: 400 });
+    }
+
+    // First get the current user's authorId
+    const currentUser = await db
+      .select({ authorId: authors.authorId })
+      .from(authors)
+      .where(eq(authors.clerkUserId, userId))
+      .limit(1);
+    
+    if (!currentUser.length) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+    
+    const currentAuthorId = currentUser[0].authorId;
+    
+    // Check if user owns the story or is a collaborator with edit permissions
+    const story = await db
+      .select({ storyId: stories.storyId })
+      .from(stories)
+      .leftJoin(storyCollaborators, eq(storyCollaborators.storyId, stories.storyId))
+      .where(
+        and(
+          eq(stories.storyId, storyId),
+          or(
+            eq(stories.authorId, currentAuthorId),
+            and(
+              eq(storyCollaborators.userId, currentAuthorId),
+              eq(storyCollaborators.role, 'editor')
+            )
+          )
+        )
+      )
+      .limit(1);
+
+    if (!story.length) {
+      return NextResponse.json({ error: 'Story not found or access denied' }, { status: 404 });
+    }
 
     // Get all active share links for this story
     const links = await db
@@ -193,9 +297,51 @@ export async function DELETE(
     }
 
     const { storyId } = await context.params;
+    
+    // Validate storyId
+    if (!storyId || storyId === 'undefined') {
+      return NextResponse.json({ error: 'Invalid story ID' }, { status: 400 });
+    }
+    
     const { searchParams } = new URL(request.url);
     const linkId = searchParams.get('linkId');
     const revokeAll = searchParams.get('revokeAll') === 'true';
+
+    // First get the current user's authorId
+    const currentUser = await db
+      .select({ authorId: authors.authorId })
+      .from(authors)
+      .where(eq(authors.clerkUserId, userId))
+      .limit(1);
+    
+    if (!currentUser.length) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+    
+    const currentAuthorId = currentUser[0].authorId;
+    
+    // Check if user owns the story or is a collaborator with edit permissions
+    const story = await db
+      .select({ storyId: stories.storyId })
+      .from(stories)
+      .leftJoin(storyCollaborators, eq(storyCollaborators.storyId, stories.storyId))
+      .where(
+        and(
+          eq(stories.storyId, storyId),
+          or(
+            eq(stories.authorId, currentAuthorId),
+            and(
+              eq(storyCollaborators.userId, currentAuthorId),
+              eq(storyCollaborators.role, 'editor')
+            )
+          )
+        )
+      )
+      .limit(1);
+
+    if (!story.length) {
+      return NextResponse.json({ error: 'Story not found or access denied' }, { status: 404 });
+    }
 
     if (revokeAll) {      // Revoke all share links for this story
       await db

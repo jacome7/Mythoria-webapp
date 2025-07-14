@@ -486,8 +486,7 @@
 				"progress": "100% Complete!",
 				"buttons": {
 					"readStory": "📖 Read Your Story Now",
-					"myStories": "📚 My Stories",
-					"moreOptions": "🎧 More Options"
+					"myStories": "📚 My Stories"
 				},
 				"celebration": {
 					"title": "Your story is now part of the Mythoria collection!",
@@ -502,7 +501,7 @@
 				"creatingMagic": "Creating magic...",
 				"currentlyLabel": "Currently:",
 				"tip": {
-					"title": "Pro tip!",
+					"title": "Tip:",
 					"description": "While you wait, you can visit \"My Stories\" to track progress in real-time or start creating another story!"
 				}
 			},

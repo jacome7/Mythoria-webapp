@@ -26,20 +26,14 @@ export default function Step1Page() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   // Form data
-  const [displayName, setDisplayName] = useState('');
-  const [email, setEmail] = useState('');
-  const [mobilePhone, setMobilePhone] = useState('');
+  const [customAuthor, setCustomAuthor] = useState('');
   const [dedicationMessage, setDedicationMessage] = useState('');
   // Original values to track changes
   const [originalValues, setOriginalValues] = useState<{
-    displayName: string;
-    email: string;
-    mobilePhone: string;
+    customAuthor: string;
     dedicationMessage: string;
   }>({
-    displayName: '',
-    email: '',
-    mobilePhone: '',
+    customAuthor: '',
     dedicationMessage: ''
   });
   // Flag to track if any field has been edited
@@ -57,25 +51,19 @@ export default function Step1Page() {
       }
 
       const data: AuthorData = await response.json();
-      setAuthorData(data);      // Pre-populate form fields
-      const initialDisplayName = data.displayName || '';
-      const initialEmail = data.email || '';
-      const initialMobilePhone = data.mobilePhone || '';
+      setAuthorData(data);
 
-      // Load dedication message from session storage if available
+      // Load existing step 1 data from session storage
       const step1Data = getStep1Data();
+      const initialCustomAuthor = step1Data?.customAuthor || data.displayName || '';
       const initialDedicationMessage = step1Data?.dedicationMessage || '';
 
-      setDisplayName(initialDisplayName);
-      setEmail(initialEmail);
-      setMobilePhone(initialMobilePhone);
+      setCustomAuthor(initialCustomAuthor);
       setDedicationMessage(initialDedicationMessage);
 
       // Store original values for change tracking
       setOriginalValues({
-        displayName: initialDisplayName,
-        email: initialEmail,
-        mobilePhone: initialMobilePhone,
+        customAuthor: initialCustomAuthor,
         dedicationMessage: initialDedicationMessage
       });
 
@@ -99,17 +87,15 @@ export default function Step1Page() {
     });
   }, [fetchAuthorData]);
   // Function to check if current values differ from original values
-  const checkForChanges = (currentDisplayName: string, currentEmail: string, currentMobilePhone: string, currentDedicationMessage: string) => {
+  const checkForChanges = (currentCustomAuthor: string, currentDedicationMessage: string) => {
     const hasChanged =
-      currentDisplayName !== originalValues.displayName ||
-      currentEmail !== originalValues.email ||
-      currentMobilePhone !== originalValues.mobilePhone ||
+      currentCustomAuthor !== originalValues.customAuthor ||
       currentDedicationMessage !== originalValues.dedicationMessage;
 
     setHasChanges(hasChanged);
   };
   const handleNext = async (): Promise<boolean> => {
-    if (!displayName || !email) {
+    if (!customAuthor) {
       setError(t('messages.required'));
       return false; // Prevent navigation
     }
@@ -118,20 +104,18 @@ export default function Step1Page() {
       setLoading(true);
       setError(null);
 
-      // Only update profile if there are changes
+      // Only update step data if there are changes
       if (hasChanges) {
-        // Here you would typically save the data to your database
-        // For now, we'll just simulate a successful save        // Update original values after successful save
+        // Update original values after successful save
         setOriginalValues({
-          displayName,
-          email,
-          mobilePhone,
+          customAuthor,
           dedicationMessage
         });
         setHasChanges(false);
 
         // Save step 1 data to session storage
         setStep1Data({
+          customAuthor,
           dedicationMessage
         });
       }
@@ -140,14 +124,13 @@ export default function Step1Page() {
       trackStoryCreation.step1Completed({
         step: 1,
         profile_updated: hasChanges,
-        display_name_provided: !!displayName,
-        email_provided: !!email,
-        phone_provided: !!mobilePhone
+        custom_author_provided: !!customAuthor,
+        dedication_provided: !!dedicationMessage
       });
 
       return true; // Allow navigation
     } catch (err) {
-      console.error('Failed to save profile:', err);
+      console.error('Failed to save author data:', err);
       setError(t('messages.saveFailed'));
       return false; // Prevent navigation
     } finally {
@@ -231,87 +214,46 @@ export default function Step1Page() {
                     </div>
                   )}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Name Field */}
+                  <div className="grid grid-cols-1 gap-6">
+                    {/* Author Name Field */}
                     <div className="form-control">
                       <label className="label">
-                        <span className="label-text font-semibold">{t('fields.fullName')}</span>
+                        <span className="label-text font-semibold">{t('fields.authorName')}</span>
                       </label>
                       <input
                         type="text"
-                        value={displayName}
+                        value={customAuthor}
                         onChange={(e) => {
-                          setDisplayName(e.target.value);
-                          checkForChanges(e.target.value, email, mobilePhone, dedicationMessage);
+                          setCustomAuthor(e.target.value);
+                          checkForChanges(e.target.value, dedicationMessage);
                         }}
-                        placeholder={t('fields.fullName')}
+                        placeholder={t('fields.authorNamePlaceholder')}
                         className="input input-bordered w-full"
                         required
                       />
                       <label className="label">
-                        <span className="label-text-alt">{t('fields.fullNameHelp')}</span>
-                      </label>
-                    </div>
-
-                    {/* Email Field */}
-                    <div className="form-control">
-                      <label className="label">
-                        <span className="label-text font-semibold">{t('fields.email')}</span>
-                      </label>
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => {
-                          setEmail(e.target.value);
-                          checkForChanges(displayName, e.target.value, mobilePhone, dedicationMessage);
-                        }}
-                        placeholder={t('fields.email')}
-                        className="input input-bordered w-full"
-                        required
-                      />
-                      <label className="label">
-                        <span className="label-text-alt">{t('fields.emailHelp')}</span>
-                      </label>
-                    </div>
-
-                    {/* Mobile Phone Field */}
-                    <div className="form-control">
-                      <label className="label">
-                        <span className="label-text font-semibold">{t('fields.mobile')}</span>
-                      </label>
-                      <input
-                        type="tel"
-                        value={mobilePhone}
-                        onChange={(e) => {
-                          setMobilePhone(e.target.value);
-                          checkForChanges(displayName, email, e.target.value, dedicationMessage);
-                        }}
-                        placeholder={t('fields.mobile')}
-                        className="input input-bordered w-full"
-                      />
-                      <label className="label">
-                        <span className="label-text-alt">{t('fields.mobileHelp')}</span>
+                        <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.authorNameHelp')}</span>
                       </label>
                     </div>
                     
                     {/* Dedication Message Field */}
-                    <div className="form-control md:col-span-2">
+                    <div className="form-control">
                       <label className="label">
                         <span className="label-text font-semibold">{t('fields.dedication')}</span>
-                        <span className="label-text-alt">{t('fields.optional')}</span>
+                        <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.optional')}</span>
                       </label>
                       <textarea
                         value={dedicationMessage}
                         onChange={(e) => {
                           setDedicationMessage(e.target.value);
-                          checkForChanges(displayName, email, mobilePhone, e.target.value);
+                          checkForChanges(customAuthor, e.target.value);
                         }}
                         placeholder={t('fields.dedicationPlaceholder')}
                         className="textarea textarea-bordered h-24 w-full"
                         rows={4}
                       />
                       <label className="label">
-                        <span className="label-text-alt">{t('fields.dedicationHelp')}</span>
+                        <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.dedicationHelp')}</span>
                       </label>
                     </div></div>
                 </div>
@@ -322,7 +264,7 @@ export default function Step1Page() {
                 nextHref="/tell-your-story/step-2"
                 prevHref={null}
                 onNext={handleNext}
-                nextDisabled={loading || !displayName || !email}
+                nextDisabled={loading || !customAuthor}
               />
             </div>
           </div>

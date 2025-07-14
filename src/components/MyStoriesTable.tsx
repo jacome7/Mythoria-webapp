@@ -554,7 +554,7 @@ export default function MyStoriesTable() {
           </div>
         </div>
       )}      {/* Share Modal */}
-      {storyToShare && (
+      {storyToShare && storyToShare.storyId && (
         <ShareModal
           isOpen={shareModalOpen}
           onClose={() => {
@@ -574,6 +574,14 @@ export default function MyStoriesTable() {
                 if (response.ok) {
                   const data = await response.json();
                   setStories(data.stories);
+                  
+                  // Update storyToShare if it exists to keep it in sync
+                  if (storyToShare) {
+                    const updatedStory = data.stories.find((s: Story) => s.storyId === storyToShare.storyId);
+                    if (updatedStory) {
+                      setStoryToShare(updatedStory);
+                    }
+                  }
                 }
               } catch (error) {
                 console.error('Error refreshing stories:', error);

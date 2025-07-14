@@ -8,3 +8,4 @@ If you need to make assumptions, state them clearly.
 The database schema is located within \src\db.
 Always user Powershell to run commands.
 When creating powershell scripts NEVER use emojies or special characters.
+Unless specified, never create a documentation file on the end.

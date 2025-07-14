@@ -620,7 +620,7 @@ export default function AIEditModal({
                   <span className="label-text font-medium">
                     {t('editRequest.label')}
                   </span>
-                  <span className="label-text-alt">
+                  <span className="label-text-alt break-words max-w-full whitespace-normal">
                     {t('editRequest.charactersCount', { 
                       current: userRequest.length,
                       max: 2000

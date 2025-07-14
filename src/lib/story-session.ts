@@ -5,8 +5,9 @@ export interface Character {
   name: string;
   type: string;
   role?: string;
-  passions?: string;
-  superpowers?: string;
+  age?: string; // New age field
+  traits?: string[]; // Array of character traits (max 5)
+  characteristics?: string;
   physicalDescription?: string;
   photoUrl?: string;
 }
@@ -14,6 +15,7 @@ export interface Character {
 export interface StorySessionData {
   storyId: string;
   step1Data?: {
+    customAuthor: string;
     dedicationMessage: string;
   };
   step2Data?: {

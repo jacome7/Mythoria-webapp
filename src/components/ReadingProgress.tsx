@@ -56,7 +56,15 @@ export default function ReadingProgress({ storyContent }: ReadingProgressProps) 
     const chapters = doc.querySelectorAll('.mythoria-chapter');
     chapters.forEach((chapter, index) => {
       const chapterTitle = chapter.querySelector('.mythoria-chapter-title');
-      const chapterId = chapter.id || `chapter-${index + 1}`;
+      // Use existing ID if available, otherwise generate a unique one
+      let chapterId = chapter.id;
+      if (!chapterId) {
+        chapterId = `chapter-${index + 1}`;
+        // Ensure uniqueness in case of duplicates
+        while (headings.some(h => h.id === chapterId)) {
+          chapterId = `chapter-${index + 1}-${Date.now()}`;
+        }
+      }
       
       if (chapterTitle) {
         headings.push({

@@ -26,6 +26,10 @@
       "delete": "Eliminar",
       "printNotAvailable": "Impressão Não Disponível"
     },
+    "sharing": {
+      "publicAccessible": "A história está agora publicamente acessível",
+      "nowPrivate": "A história está agora privada"
+    },
     "deleteConfirm": {
       "title": "Eliminar História",
       "message": "Tem a certeza de que quer eliminar esta história? Esta ação não pode ser desfeita.",

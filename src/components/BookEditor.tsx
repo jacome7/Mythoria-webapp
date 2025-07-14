@@ -293,6 +293,47 @@ const MythoriaHeading = Node.create({
   },
 })
 
+// Custom Link extension that handles internal anchor links properly
+const MythoriaLink = Link.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      href: {
+        default: null,
+        parseHTML: element => element.getAttribute('href'),
+        renderHTML: attributes => {
+          if (!attributes.href) return {}
+          return { href: attributes.href }
+        },
+      },
+      target: {
+        default: null,
+        parseHTML: element => element.getAttribute('target'),
+        renderHTML: attributes => {
+          const { href } = attributes;
+          // Only add target="_blank" for external links, not internal anchors
+          if (href && href.startsWith('#')) {
+            return {}; // No target attribute for internal links
+          }
+          return { target: '_blank' };
+        },
+      },
+      rel: {
+        default: null,
+        parseHTML: element => element.getAttribute('rel'),
+        renderHTML: attributes => {
+          const { href } = attributes;
+          // Only add rel for external links, not internal anchors
+          if (href && href.startsWith('#')) {
+            return {}; // No rel attribute for internal links
+          }
+          return { rel: 'noopener noreferrer nofollow' };
+        },
+      },
+    };
+  },
+});
+
 interface BookEditorProps {
   initialContent: string;
   onSave: (html: string) => Promise<void>;
@@ -370,7 +411,7 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
         // Disable default heading to use our custom one
         heading: false,
       }),
-      Link.configure({
+      MythoriaLink.configure({
         openOnClick: false,
         HTMLAttributes: {
           class: 'text-primary underline mythoria-toc-link',
@@ -434,7 +475,7 @@ export default function BookEditor({ initialContent, onSave, onCancel, storyMeta
       // Update both states to keep them in sync
       if (!isHtmlView && editor) {
         setHtmlContent(editor.getHTML());
-      }      toast.success('Story saved successfully! CSS styling preserved.');
+      }
     } catch (error) {
       console.error('Failed to save:', error);
       

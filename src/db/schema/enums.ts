@@ -1,8 +1,15 @@
 import { pgEnum } from "drizzle-orm/pg-core";
+import { CHARACTER_ROLES, CHARACTER_AGES, CHARACTER_TRAITS } from '../../types/character-enums';
 
 // -----------------------------------------------------------------------------
 // Enumerated types
 // -----------------------------------------------------------------------------
+
+// Character enums using centralized definitions (type is now free text)
+export const characterRoleEnum = pgEnum("character_role", CHARACTER_ROLES);
+export const characterAgeEnum = pgEnum("character_age", CHARACTER_AGES);
+export const characterTraitEnum = pgEnum("character_trait", CHARACTER_TRAITS);
+
 export const storyStatusEnum = pgEnum("story_status", ['draft', 'writing', 'published']);
 export const audiobookStatusEnum = pgEnum("audiobook_status", ['generating', 'completed', 'failed']);
 export const addressTypeEnum = pgEnum("address_type", ['billing', 'delivery']);
@@ -31,18 +38,6 @@ export const runStatusEnum = pgEnum("run_status", [
   'failed',
   'completed',
   'cancelled'
-]);
-
-export const characterRole = pgEnum("character_role", [
-  'protagonist',
-  'antagonist', 
-  'supporting',
-  'mentor',
-  'comic_relief',
-  'love_interest',
-  'sidekick',
-  'narrator',
-  'other'
 ]);
 
 export const storyRatingEnum = pgEnum("story_rating", ['1', '2', '3', '4', '5']);

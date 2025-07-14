@@ -7,8 +7,7 @@ import {
   FiPlus, 
   FiType,
   FiAlignJustify,
-  FiMaximize2,
-  FiLayers
+  FiMaximize2
 } from 'react-icons/fi';
 
 interface ReadingToolbarProps {
@@ -19,31 +18,18 @@ export interface ReadingSettings {
   fontSize: number;
   lineHeight: number;
   margins: number;
-  cssTemplate: string;
 }
 
 const DEFAULT_SETTINGS: ReadingSettings = {
   fontSize: 100, // percentage
   lineHeight: 100, // percentage  
   margins: 100, // percentage
-  cssTemplate: 'all_ages' // default template
 };
 
 export default function ReadingToolbar({ onSettingsChange }: ReadingToolbarProps) {
   const t = useTranslations('common.readingToolbar');
   const [settings, setSettings] = useState<ReadingSettings>(DEFAULT_SETTINGS);
   const [isExpanded, setIsExpanded] = useState(false);
-
-  // Available CSS templates
-  const cssTemplates = [
-    { value: 'all_ages', label: t('templates.all_ages') },
-    { value: 'children_0-2', label: t('templates.children_0-2') },
-    { value: 'children_3-6', label: t('templates.children_3-6') },
-    { value: 'children_7-10', label: t('templates.children_7-10') },
-    { value: 'children_11-14', label: t('templates.children_11-14') },
-    { value: 'young_adult_15-17', label: t('templates.young_adult_15-17') },
-    { value: 'adult_18+', label: t('templates.adult_18+') },
-  ];
 
   // Load settings from localStorage on mount
   useEffect(() => {
@@ -65,36 +51,12 @@ export default function ReadingToolbar({ onSettingsChange }: ReadingToolbarProps
     root.style.setProperty('--reading-line-height-scale', `${settings.lineHeight / 100}`);
     root.style.setProperty('--reading-margin-scale', `${settings.margins / 100}`);
 
-    // Apply CSS template
-    const existingTemplate = document.getElementById('mythoria-template-css');
-    if (existingTemplate) {
-      existingTemplate.remove();
-    }
-
-    if (settings.cssTemplate) {
-      const link = document.createElement('link');
-      link.id = 'mythoria-template-css';
-      link.rel = 'stylesheet';
-      link.href = `/templates/${settings.cssTemplate}.css`;
-      document.head.appendChild(link);
-    }
-
     // Save to localStorage
     localStorage.setItem('mythoria-reading-settings', JSON.stringify(settings));
     
     // Notify parent component
     onSettingsChange?.(settings);
   }, [settings, onSettingsChange]);
-
-  // Cleanup effect
-  useEffect(() => {
-    return () => {
-      const existingTemplate = document.getElementById('mythoria-template-css');
-      if (existingTemplate) {
-        existingTemplate.remove();
-      }
-    };
-  }, []);
 
   const updateSetting = (key: keyof ReadingSettings, value: number | string) => {
     setSettings(prev => ({ ...prev, [key]: value }));
@@ -123,45 +85,15 @@ export default function ReadingToolbar({ onSettingsChange }: ReadingToolbarProps
             <FiType className="w-4 h-4" />
             <span className="hidden sm:inline ml-2">{t('title')}</span>
           </button>          {/* Quick Actions - Always Visible */}
-          <div className="flex items-center gap-2">{/* Quick CSS Template Selector */}
-            <div className="hidden sm:flex items-center gap-2">
-              <FiLayers className="w-4 h-4" />
-              <select                value={settings.cssTemplate}
-                onChange={(e) => updateSetting('cssTemplate', e.target.value)}
-                className="select select-bordered select-sm"
-                aria-label={t('quickTemplateLabel')}
-              >
-                {cssTemplates.map((template) => (
-                  <option key={template.value} value={template.value}>
-                    {template.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className="flex items-center gap-2">
+            {/* Quick actions can be added here if needed */}
           </div>
         </div>        {/* Expanded Controls */}
         {isExpanded && (
           <div className="border-t border-base-300 py-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">              {/* CSS Template Selection */}              <div className="flex items-center gap-3">
-                <FiLayers className="w-4 h-4 text-base-content/70" />
-                <span className="text-sm font-medium min-w-fit">{t('controls.style')}</span>
-                <div className="flex-1">
-                  <select
-                    value={settings.cssTemplate}
-                    onChange={(e) => updateSetting('cssTemplate', e.target.value)}
-                    className="select select-bordered select-sm w-full"
-                    aria-label={t('controls.templateLabel')}
-                  >
-                    {cssTemplates.map((template) => (
-                      <option key={template.value} value={template.value}>
-                        {template.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Font Size Control */}              <div className="flex items-center gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Font Size Control */}
+              <div className="flex items-center gap-3">
                 <FiType className="w-4 h-4 text-base-content/70" />
                 <span className="text-sm font-medium min-w-fit">{t('controls.fontSize')}</span>
                 <div className="flex items-center gap-2 flex-1">
@@ -178,7 +110,8 @@ export default function ReadingToolbar({ onSettingsChange }: ReadingToolbarProps
                       type="range"
                       min="50"
                       max="200"
-                      step="10"                      value={settings.fontSize}
+                      step="10"
+                      value={settings.fontSize}
                       onChange={(e) => updateSetting('fontSize', parseInt(e.target.value))}
                       className="range range-primary range-xs"
                       aria-label={t('controls.fontSizeLabel')}

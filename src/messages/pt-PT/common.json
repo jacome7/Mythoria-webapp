@@ -359,7 +359,7 @@
       "lowCreditsMessage": "Considere comprar mais créditos para continuar a editar.",
       "cancel": "Cancelar",
       "processing": "Processando...",
-      "proceedFree": "Prosseguir (Gratuito)",
+      "proceedFree": "Gerar (Gratuito)",
       "proceedWithCredits": "Usar {credits} Créditos",
       "buyCredits": "Comprar Créditos"
     },
@@ -498,8 +498,7 @@
         "progress": "100% Completo!",
         "buttons": {
           "readStory": "📖 Ler a Sua História Agora",
-          "myStories": "📚 As Minhas Histórias",
-          "moreOptions": "🎧 Mais Opções"
+          "myStories": "📚 As Minhas Histórias"
         },
         "celebration": {
           "title": "A sua história agora faz parte da coleção Mythoria!",
@@ -514,7 +513,7 @@
         "creatingMagic": "Criando magia...",
         "currentlyLabel": "Atualmente:",
         "tip": {
-          "title": "Dica profissional!",
+          "title": "Dica:",
           "description": "Enquanto espera, pode visitar \"As Minhas Histórias\" para acompanhar o progresso em tempo real ou começar a criar outra história!"
         }
       },

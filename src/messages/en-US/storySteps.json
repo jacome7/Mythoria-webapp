@@ -8,14 +8,11 @@
         "signUp": "✨ Create Your Author Account"
       },
       "heading": "Chapter 1 - The Author",
-      "intro": "Welcome, storyteller! Before we dive into your magical adventure, let's make sure we have your correct information. This helps us personalize your experience and keep you updated on your story's progress.",
+      "intro": "Welcome, storyteller! Before we dive into your magical adventure, let's set up the author information for your story. You can use your own name or create a custom author name for this tale.",
       "fields": {
-        "fullName": "Full Name *",
-        "fullNameHelp": "This is how you'll be credited as the author",
-        "email": "Email Address *",
-        "emailHelp": "We'll use this for important updates about your story",
-        "mobile": "Mobile Phone",
-        "mobileHelp": "For urgent notifications or delivery updates (optional)",
+        "authorName": "Author Name(s) *",
+        "authorNameHelp": "Who should be credited as the author of this story?",
+        "authorNamePlaceholder": "e.g., André and Matilde",
         "dedication": "Dedication Message",
         "dedicationPlaceholder": "Write a personalized dedication message for the first page of your book...",
         "dedicationHelp": "This message will appear on the first page of your story",
@@ -23,8 +20,8 @@
       },
       "messages": {
         "loadingProfile": "Loading your author profile...",
-        "required": "Please fill in all required fields",
-        "saveFailed": "Failed to save profile. Please try again.",
+        "required": "Please provide an author name for your story",
+        "saveFailed": "Failed to save author information. Please try again.",
         "fetchFailed": "Failed to fetch user data",
         "loadFailed": "Failed to load user information. Please try again."
       }
@@ -32,8 +29,6 @@
     "step2": {
       "heading": "Chapter 2 - The Story",
       "intro": "You can create your story by drawing it, recording it, or simply writing it down.",
-      "storyLanguageLabel": "Story Language",
-      "storyLanguageHelp": "Choose the language for your story",
       "tellYourStoryLabel": "Tell your story...",
       "textPlaceholder": "Once upon a time... Let your imagination run wild! Share your adventure, your dreams, or any story that's close to your heart.",
       "textHelp": "Write as much or as little as you'd like. You can always edit this later!",
@@ -47,9 +42,8 @@
       "imageHelp": "Draw your story, take a photo of it, or upload an existing image that tells your tale.",
       "audioHelp": "Record your story directly or upload an audio file. Perfect for those who prefer to speak their tales!",
       "recordingHelp": "Tell your story! Speak clearly into your microphone.",
-      "reassurance": "If you've written text or uploaded an image above, our AI will automatically extract characters, settings, and themes. Otherwise, the next steps will guide you through creating your story step by step.",
+      "reassurance": "If you've written text or uploaded an image above, our Oompa-Loompas will work hard to extract characters, settings, and themes. Otherwise, the next steps will guide you through creating your story step by step.",
       "processing": "Processing with AI...",
-      "nextChapter": "Next Chapter",
       "next": "Next",
       "buttons": {
         "capture": "📸 Capture",
@@ -87,7 +81,6 @@
       "greatWork": "Great work! You've created {count, plural, =1 {# character} other {# characters}}.",
       "youCanAlways": "You can always add more characters later or continue to the next chapter to develop your story further.",
       "continuing": "Continuing...",
-      "nextChapter": "Next Chapter",
       "badges": {
         "editingDraft": "Editing Draft Story"
       },
@@ -97,7 +90,8 @@
       "alerts": {
         "failedToLoadStoryCharacters": "Failed to load story characters. Please try again.",
         "characterLoadError": "Error loading characters. Please refresh the page."
-      }
+      },
+      "next": "Next"
     },
     "step4": {
       "heading": "Chapter 4 - The Plot",
@@ -115,6 +109,8 @@
         "graphicStyleHelp": "Choose the artistic style for your story's illustrations",
         "bookSize": "Book Size",
         "bookSizeHelp": "Number of chapters/paragraphs in your story",
+        "storyLanguage": "Story Language",
+        "storyLanguageHelp": "The language for your story content. This was detected from your input or you can change it here.",
         "outline": "Story Outline",
         "outlineHelp": "Describe your story's plot, characters, and key events",
         "additional": "Additional Requests",
@@ -123,7 +119,8 @@
       "placeholders": {
         "selectAudience": "Select target audience...",
         "selectNovelStyle": "Select novel style...",
-        "outlinePlaceholder": "Describe your story's plot, characters, and key events. What happens in your story? What's the main conflict or adventure?"
+        "outlinePlaceholder": "Describe all the details you'd like in the story...",
+        "storyLanguageHelp": "Your story will be written and generated in the selected language."
       },
       "chapterCounts": {
         "short": "Short (3-5 chapters)",
@@ -134,8 +131,37 @@
         "chapter": "chapter",
         "chapters": "chapters"
       },
+      "sections": {
+        "storyBasics": "Story Basics",
+        "styleSetting": "Style & Setting",
+        "contentDetails": "Content Details",
+        "required": "Required"
+      },
+      "previews": {
+        "storyOutlineProvided": "Story outline provided",
+        "additionalRequestsProvided": "Additional requests provided"
+      },
+      "modal": {
+        "title": "Graphical Style Samples",
+        "close": "Close",
+        "selected": "Selected",
+        "samples": "Samples",
+        "altText": "{style} sample"
+      },
+      "progress": {
+        "stepLabel": "Step {currentStep} of {totalSteps}"
+      },
+      "errors": {
+        "titleRequired": "Title is required before proceeding to the next step.",
+        "audienceRequired": "Target audience is required before proceeding to the next step.",
+        "novelStyleRequired": "Novel style is required before proceeding to the next step. Please open the \"Style & Setting\" section.",
+        "graphicStyleRequired": "Graphic style is required before proceeding to the next step. Please open the \"Style & Setting\" section.",
+        "noStoryFound": "No story found. Please start from step 1.",
+        "saveFailed": "Failed to save story details",
+        "saveFailedTryAgain": "Failed to save story details. Please try again."
+      },
       "saving": "Saving...",
-      "nextChapter": "Next Chapter"
+      "next": "Next"
     },
     "step5": {
       "heading": "Chapter 5 - The Finale",

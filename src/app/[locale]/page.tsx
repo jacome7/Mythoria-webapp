@@ -14,7 +14,7 @@ export default function Home() {
   // Carousel state
   const [currentSlide, setCurrentSlide] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
-  const totalSlides = 3; // Number of carousel items
+  const totalSlides = 4; // Number of carousel items
   
   // Get the words array from translations with proper error handling
   const wordsRaw = t.raw('words');
@@ -132,10 +132,10 @@ export default function Home() {
           </section>
         ) : (
           <>
-          {/* Audience Sections */}
+            {/* Audience Sections */}
             <section className="my-16">
               {/* Desktop Grid */}
-              <div className="hidden md:grid md:grid-cols-3 gap-8">
+              <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <div className="card bg-base-200 shadow-xl">
                   <figure className="px-10 pt-10">
                     <Image src="/SampleBooks/A_bea_tem_um_macaco_no_nariz.jpg" alt="Kids Book" width={300} height={200} className="rounded-xl" />
@@ -143,6 +143,16 @@ export default function Home() {
                   <div className="card-body items-center text-center">
                     <h2 className="card-title text-2xl">{t('audiences.kids.title')}</h2>
                     <p>{t('audiences.kids.description')}</p>
+                  </div>
+                </div>
+
+                <div className="card bg-base-200 shadow-xl">
+                  <figure className="px-10 pt-10">
+                    <Image src="/SampleBooks/juventude_gaia.jpg" alt="Groups & Yearbooks" width={300} height={200} className="rounded-xl" />
+                  </figure>
+                  <div className="card-body items-center text-center">
+                    <h2 className="card-title text-2xl">{t('audiences.groups.title')}</h2>
+                    <p>{t('audiences.groups.description')}</p>
                   </div>
                 </div>
 
@@ -181,6 +191,18 @@ export default function Home() {
                       <div className="card-body items-center text-center">
                         <h2 className="card-title text-xl">{t('audiences.kids.title')}</h2>
                         <p className="text-sm">{t('audiences.kids.description')}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="carousel-item w-80">
+                    <div className="card bg-base-100 shadow-xl w-full">
+                      <figure className="px-10 pt-10">
+                        <Image src="/SampleBooks/juventude_gaia.jpg" alt="Groups & Yearbooks" width={300} height={200} className="rounded-xl" />
+                      </figure>
+                      <div className="card-body items-center text-center">
+                        <h2 className="card-title text-xl">{t('audiences.groups.title')}</h2>
+                        <p className="text-sm">{t('audiences.groups.description')}</p>
                       </div>
                     </div>
                   </div>
@@ -267,7 +289,8 @@ export default function Home() {
                   <hr/>
                   <div className="timeline-middle">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>
-                  </div>                  <div className="timeline-start md:text-end mb-10">
+                  </div>
+                  <div className="timeline-start md:text-end mb-10">
                     <time className="font-mono italic">Step 3</time>
                     <div className="text-lg font-black">{t('howItWorks.steps.step3.title')}</div>
                     {t('howItWorks.steps.step3.description')}
@@ -280,7 +303,8 @@ export default function Home() {
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>
                   </div>
                   <div className="timeline-end mb-10">
-                    <time className="font-mono italic">Step 4</time>                    <div className="text-lg font-black">{t('howItWorks.steps.step4.title')}</div>
+                    <time className="font-mono italic">Step 4</time>
+                    <div className="text-lg font-black">{t('howItWorks.steps.step4.title')}</div>
                     {t('howItWorks.steps.step4.description')}
                   </div>
                   <hr/>
@@ -291,7 +315,8 @@ export default function Home() {
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>
                   </div>
                   <div className="timeline-start md:text-end mb-10">
-                    <time className="font-mono italic">Step 5</time>                    <div className="text-lg font-black">{t('howItWorks.steps.step5.title')}</div>
+                    <time className="font-mono italic">Step 5</time>
+                    <div className="text-lg font-black">{t('howItWorks.steps.step5.title')}</div>
                     {t('howItWorks.steps.step5.description')}
                   </div>
                   <hr/>
