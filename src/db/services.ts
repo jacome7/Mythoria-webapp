@@ -148,7 +148,11 @@ export const authorService = {  async createAuthor(authorData: { clerkUserId: st
   async getTotalAuthorsCount() {
     const result = await db.select({ value: count() }).from(authors);
     return result[0]?.value || 0;
-  }
+  },
+
+  async getAuthorCreditBalance(authorId: string) {
+    return await creditService.getAuthorCreditBalance(authorId);
+  },
 };
 
 // Story operations
@@ -593,6 +597,80 @@ export const aiEditService = {
     }
     
     return 0;
+  },
+
+  async calculateMultipleEditCredits(
+    authorId: string, 
+    action: 'textEdit' | 'imageEdit', 
+    editCount: number
+  ): Promise<{
+    totalCredits: number;
+    freeEdits: number;
+    paidEdits: number;
+    breakdown: Array<{ editNumber: number; credits: number; isFree: boolean }>;
+  }> {
+    const currentEditCount = await this.getEditCount(authorId, action);
+    const breakdown: Array<{ editNumber: number; credits: number; isFree: boolean }> = [];
+    let totalCredits = 0;
+    let freeEdits = 0;
+    let paidEdits = 0;
+
+    for (let i = 0; i < editCount; i++) {
+      const editNumber = currentEditCount + i + 1;
+      let credits = 0;
+      let isFree = true;
+
+      if (action === 'textEdit') {
+        if (editNumber <= 5) {
+          credits = 0;
+          isFree = true;
+        } else {
+          const paidEditNumber = editNumber - 5;
+          if (paidEditNumber % 5 === 0) {
+            try {
+              const pricing = await pricingService.getPricingByServiceCode('AiTextEditing');
+              credits = pricing?.credits || 1;
+              isFree = false;
+            } catch (error) {
+              console.error('Error fetching AiTextEditing pricing:', error);
+              credits = 1;
+              isFree = false;
+            }
+          }
+        }
+      } else if (action === 'imageEdit') {
+        if (editNumber === 1) {
+          credits = 0;
+          isFree = true;
+        } else {
+          try {
+            const pricing = await pricingService.getPricingByServiceCode('AiImageEditing');
+            credits = pricing?.credits || 1;
+            isFree = false;
+          } catch (error) {
+            console.error('Error fetching AiImageEditing pricing:', error);
+            credits = 1;
+            isFree = false;
+          }
+        }
+      }
+
+      breakdown.push({ editNumber, credits, isFree });
+      totalCredits += credits;
+      
+      if (isFree) {
+        freeEdits++;
+      } else {
+        paidEdits++;
+      }
+    }
+
+    return {
+      totalCredits,
+      freeEdits,
+      paidEdits,
+      breakdown
+    };
   },
 
   async checkEditPermission(authorId: string, action: 'textEdit' | 'imageEdit'): Promise<{

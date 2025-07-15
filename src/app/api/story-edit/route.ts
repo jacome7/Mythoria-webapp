@@ -122,62 +122,117 @@ export async function POST(request: NextRequest) {
     const workflowResult = workflowData as {
       success?: boolean;
       editedContent?: string;
-      editedChapters?: Array<{ number: number; content: string }>;
-      metadata?: { tokensUsed?: number };
+      editedChapters?: Array<{ 
+        chapterNumber: number; 
+        editedContent: string; 
+        originalLength: number; 
+        editedLength: number; 
+        error?: string;
+      }>;
+      metadata?: { tokensUsed?: number; totalChapters?: number; successfulEdits?: number };
     };
 
     if (workflowResponse.ok && workflowResult.success) {
-      // Record the edit and deduct credits
+      // Update database with new content and record edits
       try {
-        await aiEditService.recordSuccessfulEdit(
-          author.authorId,
-          storyId,
-          'textEdit',
-          {
-            chapterNumber: chapterNumber,
-            userRequest: userRequest.trim(),
-            timestamp: new Date().toISOString()
-          }
-        );
-        console.log('Successfully recorded text edit for author:', author.authorId);
-      } catch (creditError) {
-        console.error('Error recording edit or deducting credits:', creditError);
-        // Note: We don't fail the request here since the edit was successful
-      }
+        const updatedChapters: Array<{
+          chapterNumber: number;
+          success: boolean;
+          error?: string;
+        }> = [];
 
-      // Update database with new content
-      try {
         if (scope === 'story' || (!chapterNumber && !scope)) {
-          // Update all chapters
+          // Handle full story edit - update all chapters and record individual edits
           if (workflowResult.editedChapters && Array.isArray(workflowResult.editedChapters)) {
             for (const chapter of workflowResult.editedChapters) {
-              if (chapter.content && typeof chapter.content === 'string') {
-                await chapterService.updateChapterContent(
-                  storyId, 
-                  chapter.number, 
-                  chapter.content
-                );
+              try {
+                if (chapter.editedContent && typeof chapter.editedContent === 'string' && !chapter.error) {
+                  // Update chapter content in database
+                  await chapterService.updateChapterContent(
+                    storyId, 
+                    chapter.chapterNumber, 
+                    chapter.editedContent
+                  );
+
+                  // Record successful edit for this chapter
+                  await aiEditService.recordSuccessfulEdit(
+                    author.authorId,
+                    storyId,
+                    'textEdit',
+                    {
+                      chapterNumber: chapter.chapterNumber,
+                      userRequest: userRequest.trim(),
+                      timestamp: new Date().toISOString(),
+                      originalLength: chapter.originalLength,
+                      editedLength: chapter.editedLength
+                    }
+                  );
+
+                  updatedChapters.push({
+                    chapterNumber: chapter.chapterNumber,
+                    success: true
+                  });
+                } else {
+                  // Chapter had an error during editing
+                  updatedChapters.push({
+                    chapterNumber: chapter.chapterNumber,
+                    success: false,
+                    error: chapter.error || 'Unknown error during editing'
+                  });
+                }
+              } catch (chapterError) {
+                console.error(`Error updating chapter ${chapter.chapterNumber}:`, chapterError);
+                updatedChapters.push({
+                  chapterNumber: chapter.chapterNumber,
+                  success: false,
+                  error: 'Failed to save chapter to database'
+                });
               }
             }
           }
+
+          // Return full story edit response
+          return NextResponse.json({
+            success: true,
+            scope: 'story',
+            updatedChapters,
+            totalChapters: workflowResult.metadata?.totalChapters || updatedChapters.length,
+            successfulEdits: updatedChapters.filter(ch => ch.success).length,
+            failedEdits: updatedChapters.filter(ch => !ch.success).length,
+            tokensUsed: workflowResult.metadata?.tokensUsed || 0,
+            timestamp: new Date().toISOString()
+          });
         } else {
-          // Update single chapter
+          // Handle single chapter edit
           if (workflowResult.editedContent) {
             await chapterService.updateChapterContent(
               storyId, 
               chapterNumber, 
               workflowResult.editedContent
             );
-          }
-        }
 
-        // Return success response with updated content information
-        return NextResponse.json({
-          success: true,
-          updatedHtml: workflowResult.editedContent || 'Content updated successfully',
-          tokensUsed: workflowResult.metadata?.tokensUsed || 0,
-          chaptersUpdated: workflowResult.editedChapters?.length || 1
-        });
+            // Record the single edit
+            await aiEditService.recordSuccessfulEdit(
+              author.authorId,
+              storyId,
+              'textEdit',
+              {
+                chapterNumber: chapterNumber,
+                userRequest: userRequest.trim(),
+                timestamp: new Date().toISOString()
+              }
+            );
+          }
+
+          // Return single chapter edit response
+          return NextResponse.json({
+            success: true,
+            scope: 'chapter',
+            updatedHtml: workflowResult.editedContent || 'Content updated successfully',
+            tokensUsed: workflowResult.metadata?.tokensUsed || 0,
+            chapterNumber: chapterNumber
+          });
+        }
 
       } catch (dbError) {
         console.error('Error updating database:', dbError);

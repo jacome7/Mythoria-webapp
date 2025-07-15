@@ -299,7 +299,48 @@ export default function EditChapterPage() {
   const handleAIEditSuccess = async (updatedData: Record<string, unknown>) => {
     console.log('AI Edit Success - Updated Data:', updatedData);
     
-    // Check if we have updated content to use directly
+    // Handle full story edit - redirect to main story page
+    if (updatedData.scope === 'story') {
+      const storyEditData = updatedData as {
+        scope: 'story';
+        updatedChapters: Array<{
+          chapterNumber: number;
+          success: boolean;
+          error?: string;
+        }>;
+        totalChapters: number;
+        successfulEdits: number;
+        failedEdits: number;
+        autoSaved: boolean;
+      };
+      
+      // Show toast with results
+      const successCount = storyEditData.successfulEdits;
+      const failCount = storyEditData.failedEdits;
+      
+      if (failCount > 0) {
+        const failedChapters = storyEditData.updatedChapters
+          .filter(ch => !ch.success)
+          .map(ch => ch.chapterNumber)
+          .join(', ');
+        
+        addToast(
+          `${successCount} chapters updated successfully. Chapter ${failedChapters} failed to edit.`,
+          'warning'
+        );
+      } else {
+        addToast(
+          `All ${successCount} chapters updated successfully. Changes have been saved automatically.`,
+          'success'
+        );
+      }
+      
+      // Redirect to main story edit page
+      router.push(`/${locale}/stories/edit/${storyId}`);
+      return;
+    }
+    
+    // Handle single chapter edit
     if (updatedData.updatedHtml && typeof updatedData.updatedHtml === 'string') {
       // Update the specific chapter content immediately
       setStoryData(prev => {
@@ -319,7 +360,7 @@ export default function EditChapterPage() {
         return { ...prev, chapters: updatedChapters };
       });
       
-      addToast('Content updated successfully', 'success');
+      addToast('Chapter updated successfully', 'success');
     } else {
       // Fallback: reload story data to get the latest changes
       await loadStoryData();
