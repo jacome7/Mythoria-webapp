@@ -66,6 +66,12 @@ export default function AITextStoryEditor({
     editCount: number;
     nextThreshold: number;
     isFree: boolean;
+    // Full story edit specific fields
+    chapterCount?: number;
+    totalCredits?: number;
+    freeEdits?: number;
+    paidEdits?: number;
+    message?: string;
   } | null>(null);
 
   // Reset state when modal opens/closes
@@ -81,14 +87,21 @@ export default function AITextStoryEditor({
   // Check edit credits
   const checkEditCredits = async () => {
     try {
-      console.log('🔍 Checking edit credits for storyId:', story.storyId);
-      const response = await fetch('/api/ai-edit/check-credits', {
+      console.log('🔍 Checking edit credits for storyId:', story.storyId, 'scope:', editScope);
+      
+      // Use different endpoints based on edit scope
+      const endpoint = editScope === 'story' 
+        ? '/api/ai-edit/check-full-story-credits'
+        : '/api/ai-edit/check-credits';
+      
+      const requestBody = editScope === 'story'
+        ? { storyId: story.storyId }
+        : { action: 'textEdit', storyId: story.storyId };
+      
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          action: 'textEdit',
-          storyId: story.storyId 
-        })
+        body: JSON.stringify(requestBody)
       });
       
       console.log('📊 Credit check response status:', response.status);
@@ -96,8 +109,32 @@ export default function AITextStoryEditor({
       if (response.ok) {
         const data = await response.json();
         console.log('✅ Credit check successful:', data);
-        setCreditInfo(data);
-        return data;
+        
+        // Normalize the response format
+        const normalizedData = editScope === 'story' ? {
+          canEdit: data.canEdit,
+          requiredCredits: data.totalCredits,
+          currentBalance: data.currentBalance,
+          editCount: 0, // Not relevant for full story
+          nextThreshold: 0, // Not relevant for full story
+          isFree: data.totalCredits === 0,
+          chapterCount: data.chapterCount,
+          totalCredits: data.totalCredits,
+          freeEdits: data.freeEdits,
+          paidEdits: data.paidEdits,
+          message: data.message
+        } : {
+          canEdit: data.canEdit,
+          requiredCredits: data.requiredCredits,
+          currentBalance: data.currentBalance,
+          editCount: data.editCount,
+          nextThreshold: data.nextThreshold,
+          isFree: data.isFree,
+          message: data.message
+        };
+        
+        setCreditInfo(normalizedData);
+        return normalizedData;
       } else {
         const errorData = await response.json();
         console.error('❌ Credit check failed:', response.status, errorData);
@@ -159,7 +196,26 @@ export default function AITextStoryEditor({
       const data = await response.json();
 
       if (response.ok && data.success) {
-        onEditSuccess(data);
+        // Handle different response types based on edit scope
+        if (editScope === 'story') {
+          // Full story edit - show results and redirect
+          const storyEditData = {
+            scope: 'story',
+            updatedChapters: data.updatedChapters,
+            totalChapters: data.totalChapters,
+            successfulEdits: data.successfulEdits,
+            failedEdits: data.failedEdits,
+            tokensUsed: data.tokensUsed,
+            timestamp: data.timestamp,
+            autoSaved: true // Indicate that changes were automatically saved
+          };
+          
+          onEditSuccess(storyEditData);
+        } else {
+          // Single chapter edit
+          onEditSuccess(data);
+        }
+        
         onClose();
       } else {
         setError(data.error || 'Failed to edit content');
@@ -274,6 +330,53 @@ export default function AITextStoryEditor({
               </div>
             </div>
 
+            {/* Full Story Edit Explanation */}
+            {editScope === 'story' && (
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div className="flex items-center space-x-2 mb-2">
+                  <FiEdit3 className="w-4 h-4 text-gray-600" />
+                  <span className="text-sm font-medium text-gray-900">
+                    How Full Story Edit Works
+                  </span>
+                </div>
+                <div className="text-sm text-gray-700 space-y-1">
+                  <p>• AI will apply your request to all chapters in the story</p>
+                  <p>• Each chapter edit counts as one edit towards your credit usage</p>
+                  <p>• All successful changes will be automatically saved</p>
+                  <p>• You can review the changes after the edit is complete</p>
+                  <p>• If some chapters fail to edit, the successful ones will still be saved</p>
+                </div>
+              </div>
+            )}
+
+            {/* Cost Estimation for Full Story Edit */}
+            {editScope === 'story' && creditInfo && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-center space-x-2 mb-2">
+                  <FiAlertCircle className="w-4 h-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-900">
+                    Cost Estimation
+                  </span>
+                </div>
+                <div className="text-sm text-blue-800">
+                  <p className="mb-1">{creditInfo.message}</p>
+                  {creditInfo.freeEdits && creditInfo.freeEdits > 0 && (
+                    <p className="text-blue-600">
+                      • {creditInfo.freeEdits} free chapter edits
+                    </p>
+                  )}
+                  {creditInfo.paidEdits && creditInfo.paidEdits > 0 && (
+                    <p className="text-blue-600">
+                      • {creditInfo.paidEdits} paid chapter edits
+                    </p>
+                  )}
+                  <p className="text-blue-600">
+                    • Current balance: {creditInfo.currentBalance} credits
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Error Display */}
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
@@ -325,6 +428,10 @@ export default function AITextStoryEditor({
           currentBalance={creditInfo.currentBalance}
           editCount={creditInfo.editCount}
           isFree={creditInfo.isFree}
+          // Full story edit specific props
+          isFullStory={editScope === 'story'}
+          chapterCount={creditInfo.chapterCount}
+          message={creditInfo.message}
         />
       )}
     </div>

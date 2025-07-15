@@ -14,6 +14,10 @@ interface CreditConfirmationModalProps {
   editCount: number;
   isFree: boolean;
   isLoading?: boolean;
+  // Full story edit specific props
+  isFullStory?: boolean;
+  chapterCount?: number;
+  message?: string;
 }
 
 export default function CreditConfirmationModal({
@@ -25,7 +29,10 @@ export default function CreditConfirmationModal({
   currentBalance,
   editCount,
   isFree,
-  isLoading = false
+  isLoading = false,
+  isFullStory = false,
+  chapterCount,
+  message
 }: CreditConfirmationModalProps) {
   const t = useTranslations('common.creditConfirmation');
 
@@ -63,40 +70,60 @@ export default function CreditConfirmationModal({
 
         {/* Content */}
         <div className="p-6 space-y-4">
-          {/* Edit Count and Progress */}
-          <div className="bg-base-200 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium">{t('editProgress')}</span>
-              <span className="text-xs text-base-content/70">
-                {editCount} {t('editsCompleted')}
-              </span>
+          {/* Full Story Edit Information */}
+          {isFullStory && message && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <FiZap className="w-4 h-4 text-blue-600" />
+                <span className="text-sm font-medium text-blue-900">
+                  Full Story Edit
+                </span>
+              </div>
+              <p className="text-sm text-blue-800 mb-2">{message}</p>
+              {chapterCount && (
+                <p className="text-xs text-blue-600">
+                  Editing {chapterCount} chapters
+                </p>
+              )}
             </div>
-            
-            {action === 'textEdit' ? (
-              <div>
-                <progress 
-                  className="progress progress-primary w-full" 
-                  value={editCount % 5} 
-                  max={5}
-                ></progress>
-                <p className="text-xs text-base-content/60 mt-1">
-                  {editCount < 5 
-                    ? t('textEditFreeRemaining', { remaining: 5 - editCount })
-                    : t('textEditPaidMode')
-                  }
-                </p>
+          )}
+
+          {/* Edit Count and Progress - Only show for single chapter edits */}
+          {!isFullStory && (
+            <div className="bg-base-200 rounded-lg p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium">{t('editProgress')}</span>
+                <span className="text-xs text-base-content/70">
+                  {editCount} {t('editsCompleted')}
+                </span>
               </div>
-            ) : (
-              <div>
-                <p className="text-xs text-base-content/60">
-                  {editCount === 0 
-                    ? t('imageEditFirstFree')
-                    : t('imageEditPaidMode')
-                  }
-                </p>
-              </div>
-            )}
-          </div>
+              
+              {action === 'textEdit' ? (
+                <div>
+                  <progress 
+                    className="progress progress-primary w-full" 
+                    value={editCount % 5} 
+                    max={5}
+                  ></progress>
+                  <p className="text-xs text-base-content/60 mt-1">
+                    {editCount < 5 
+                      ? t('textEditFreeRemaining', { remaining: 5 - editCount })
+                      : t('textEditPaidMode')
+                    }
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-xs text-base-content/60">
+                    {editCount === 0 
+                      ? t('imageEditFirstFree')
+                      : t('imageEditPaidMode')
+                    }
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Credit Information */}
           <div className="bg-base-200 rounded-lg p-4">

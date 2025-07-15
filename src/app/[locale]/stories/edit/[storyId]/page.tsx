@@ -170,20 +170,58 @@ export default function StoryEditPage() {
   const handleAIEditSuccess = async (updatedData: Record<string, unknown>) => {
     console.log('AI Edit Success - Updated Data:', updatedData);
     
-    // Update the story content immediately with the returned data
-    if (updatedData.updatedHtml && updatedData.chaptersUpdated) {
-      // For story-wide edits, reload data to get all updated chapters
+    // Handle full story edit
+    if (updatedData.scope === 'story') {
+      const storyEditData = updatedData as {
+        scope: 'story';
+        updatedChapters: Array<{
+          chapterNumber: number;
+          success: boolean;
+          error?: string;
+        }>;
+        totalChapters: number;
+        successfulEdits: number;
+        failedEdits: number;
+        autoSaved: boolean;
+      };
+      
+      // Reload story data to get all updated chapters
       await loadStoryData();
+      
+      // Show detailed results
+      const successCount = storyEditData.successfulEdits;
+      const failCount = storyEditData.failedEdits;
+      
+      if (failCount > 0) {
+        const failedChapters = storyEditData.updatedChapters
+          .filter(ch => !ch.success)
+          .map(ch => ch.chapterNumber)
+          .join(', ');
+        
+        addToast(
+          `${successCount} chapters updated successfully. Chapter ${failedChapters} failed to edit.`,
+          'warning'
+        );
+      } else {
+        addToast(
+          `All ${successCount} chapters updated successfully. Changes have been saved automatically.`,
+          'success'
+        );
+      }
+    } else if (updatedData.updatedHtml && updatedData.chaptersUpdated) {
+      // For story-wide edits (legacy format), reload data to get all updated chapters
+      await loadStoryData();
+      addToast('Story updated successfully', 'success');
     } else if (updatedData.updatedHtml) {
       // For single chapter edits, we could update directly but currently
       // this page doesn't show individual chapter content, so reload
       await loadStoryData();
+      addToast('Chapter updated successfully', 'success');
     } else {
       // Fallback: reload story data to get the latest changes
       await loadStoryData();
+      addToast('Content updated successfully', 'success');
     }
-    
-    addToast('Content updated successfully', 'success');
   };
 
   // Handle AI edit optimistic update
