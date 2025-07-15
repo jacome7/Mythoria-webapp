@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { FiX, FiZap, FiEdit3, FiAlertCircle } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
 import CreditConfirmationModal from './CreditConfirmationModal';
@@ -74,18 +74,8 @@ export default function AITextStoryEditor({
     message?: string;
   } | null>(null);
 
-  // Reset state when modal opens/closes
-  useEffect(() => {
-    if (isOpen) {
-      setUserRequest('');
-      setError(null);
-      setEditScope(currentChapter ? 'chapter' : 'story');
-      setSelectedChapter(currentChapter ? currentChapter.chapterNumber : null);
-    }
-  }, [isOpen, currentChapter]);
-
   // Check edit credits
-  const checkEditCredits = async () => {
+  const checkEditCredits = useCallback(async () => {
     try {
       console.log('🔍 Checking edit credits for storyId:', story.storyId, 'scope:', editScope);
       
@@ -143,7 +133,24 @@ export default function AITextStoryEditor({
       console.error('💥 Error checking credits:', error);
     }
     return null;
-  };
+  }, [story.storyId, editScope]);
+
+  // Reset state when modal opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      setUserRequest('');
+      setError(null);
+      setEditScope(currentChapter ? 'chapter' : 'story');
+      setSelectedChapter(currentChapter ? currentChapter.chapterNumber : null);
+    }
+  }, [isOpen, currentChapter]);
+
+  // Check credits automatically when scope changes
+  useEffect(() => {
+    if (isOpen) {
+      checkEditCredits();
+    }
+  }, [isOpen, editScope, story.storyId, selectedChapter, checkEditCredits]);
 
   // Handle text edit
   const handleTextEdit = async () => {
@@ -349,8 +356,8 @@ export default function AITextStoryEditor({
               </div>
             )}
 
-            {/* Cost Estimation for Full Story Edit */}
-            {editScope === 'story' && creditInfo && (
+            {/* Cost Estimation */}
+            {creditInfo && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <div className="flex items-center space-x-2 mb-2">
                   <FiAlertCircle className="w-4 h-4 text-blue-600" />
@@ -359,20 +366,48 @@ export default function AITextStoryEditor({
                   </span>
                 </div>
                 <div className="text-sm text-blue-800">
-                  <p className="mb-1">{creditInfo.message}</p>
-                  {creditInfo.freeEdits && creditInfo.freeEdits > 0 && (
-                    <p className="text-blue-600">
-                      • {creditInfo.freeEdits} free chapter edits
-                    </p>
+                  {editScope === 'story' ? (
+                    // Full story edit cost info
+                    <>
+                      <p className="mb-1">{creditInfo.message}</p>
+                      {creditInfo.freeEdits && creditInfo.freeEdits > 0 && (
+                        <p className="text-blue-600">
+                          • {creditInfo.freeEdits} free chapter edits
+                        </p>
+                      )}
+                      {creditInfo.paidEdits && creditInfo.paidEdits > 0 && (
+                        <p className="text-blue-600">
+                          • {creditInfo.paidEdits} paid chapter edits
+                        </p>
+                      )}
+                      <p className="text-blue-600">
+                        • Current balance: {creditInfo.currentBalance} credits
+                      </p>
+                    </>
+                  ) : (
+                    // Single chapter edit cost info
+                    <>
+                      <p className="mb-1">
+                        {creditInfo.isFree 
+                          ? "This edit is free!" 
+                          : `This edit will cost ${creditInfo.requiredCredits} credit${creditInfo.requiredCredits === 1 ? '' : 's'}`
+                        }
+                      </p>
+                      <p className="text-blue-600">
+                        • Current balance: {creditInfo.currentBalance} credits
+                      </p>
+                      {!creditInfo.isFree && (
+                        <p className="text-blue-600">
+                          • Edit count: {creditInfo.editCount} (next threshold: {creditInfo.nextThreshold})
+                        </p>
+                      )}
+                      {creditInfo.message && (
+                        <p className="text-blue-600 mt-1">
+                          • {creditInfo.message}
+                        </p>
+                      )}
+                    </>
                   )}
-                  {creditInfo.paidEdits && creditInfo.paidEdits > 0 && (
-                    <p className="text-blue-600">
-                      • {creditInfo.paidEdits} paid chapter edits
-                    </p>
-                  )}
-                  <p className="text-blue-600">
-                    • Current balance: {creditInfo.currentBalance} credits
-                  </p>
                 </div>
               </div>
             )}

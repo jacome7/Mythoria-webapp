@@ -348,7 +348,7 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
       
       {/* Story Content */}
       <div 
-        className="story-content-wrapper mythoria-story-scope border border-red-400"
+        className="mythoria-story-scope"
         style={{
           fontSize: readingSettings?.fontSize ? `${readingSettings.fontSize}%` : undefined,
           lineHeight: readingSettings?.lineHeight ? `${readingSettings.lineHeight}%` : undefined
@@ -363,7 +363,7 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
             </div>
           ) : (
             // Story content
-            <article className="story-content prose prose-lg max-w-none p-1 md:p-0 m-0">
+            <article className="mythoria-story-content prose prose-lg max-w-none p-0 md:p-0 m-0">
               {isFirstPage ? renderFirstPage() : renderChapter()}
             </article>
           )}

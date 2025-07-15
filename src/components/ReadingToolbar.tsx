@@ -98,7 +98,7 @@ export default function ReadingToolbar({
 
   return (
     <div className="reading-toolbar bg-base-200 border-b border-base-300 sticky top-0 z-50">
-      <div className="container mx-auto px-4">
+      <div className="w-full max-w-[1200px] mx-auto">
         <div className="flex items-center justify-between py-2">
           {/* Toggle Button */}
           <button

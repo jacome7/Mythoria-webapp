@@ -30,7 +30,9 @@ import {
   COMMAND_PRIORITY_EDITOR,
   createCommand,
   LexicalCommand,
-  TextNode
+  TextNode,
+  DOMConversionMap,
+  DOMConversionOutput
 } from 'lexical';
 import { 
   FiBold, 
@@ -95,6 +97,31 @@ function normalizeHtmlContent(content: string): string {
   }
 }
 
+// DOM converter for font-size spans
+// Converts <span style="font-size: …">text</span> → TextNode with preserved style
+const fontSizeSpanConversion: DOMConversionMap = {
+  span: (domNode: HTMLElement) => {
+    const fontSize = domNode.style.fontSize;
+    if (!fontSize) return null; // let the default importer handle it
+
+    return {
+      priority: 2, // higher than the default span converter (priority 1)
+      conversion: (node: HTMLElement): DOMConversionOutput => {
+        const textNode = $createTextNode(node.textContent ?? '');
+        
+        // Preserve the font-size style
+        const existingStyle = textNode.getStyle();
+        const newStyle = existingStyle 
+          ? `${existingStyle}; font-size: ${fontSize}` 
+          : `font-size: ${fontSize}`;
+        textNode.setStyle(newStyle);
+        
+        return { node: textNode };
+      },
+    };
+  },
+};
+
 // Editor configuration
 const initialConfig = {
   namespace: 'ChapterEditor',
@@ -112,6 +139,9 @@ const initialConfig = {
     },
   },
   nodes: [HeadingNode, QuoteNode],
+  html: {
+    import: fontSizeSpanConversion,
+  },
   onError: (error: Error) => {
     console.error('Lexical editor error:', error);
   },
@@ -135,17 +165,38 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
           setIsItalic(selection.hasFormat('italic'));
           setIsUnderline(selection.hasFormat('underline'));
           
-          // For text size, we'll use style instead of classes for simplicity
-          const nodes = selection.getNodes();
+          // Detect text size from selection
           let detectedSize: TextSize = 'medium';
           
+          const nodes = selection.getNodes();
           if (nodes.length > 0) {
-            const firstNode = nodes[0];
-            if (firstNode instanceof TextNode) {
-              const style = firstNode.getStyle();
-              if (style.includes('font-size: 0.875em')) detectedSize = 'small';
-              else if (style.includes('font-size: 1.25em')) detectedSize = 'large';
-              else if (style.includes('font-size: 1.5em')) detectedSize = 'xlarge';
+            // Check the first text node for font-size
+            const firstTextNode = nodes.find(node => node instanceof TextNode) as TextNode;
+            if (firstTextNode) {
+              const style = firstTextNode.getStyle();
+              const fontSizeMatch = style.match(/font-size:\s*([^;]+)/);
+              if (fontSizeMatch) {
+                const fontSize = fontSizeMatch[1].trim();
+                // Find matching size option
+                const sizeOption = TEXT_SIZE_OPTIONS.find(opt => opt.em === fontSize);
+                if (sizeOption) {
+                  detectedSize = sizeOption.value;
+                }
+              }
+            }
+          } else {
+            // No nodes selected, check the node at cursor
+            const anchorNode = selection.anchor.getNode();
+            if (anchorNode instanceof TextNode) {
+              const style = anchorNode.getStyle();
+              const fontSizeMatch = style.match(/font-size:\s*([^;]+)/);
+              if (fontSizeMatch) {
+                const fontSize = fontSizeMatch[1].trim();
+                const sizeOption = TEXT_SIZE_OPTIONS.find(opt => opt.em === fontSize);
+                if (sizeOption) {
+                  detectedSize = sizeOption.value;
+                }
+              }
             }
           }
           
@@ -165,23 +216,135 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
         const selection = $getSelection();
         if ($isRangeSelection(selection)) {
           editor.update(() => {
-            const nodes = selection.getNodes();
+            const styleValue = size && size !== 'medium' 
+              ? TEXT_SIZE_OPTIONS.find(opt => opt.value === size)?.em 
+              : '';
             
+            // Get selected nodes
+            const nodes = selection.getNodes();
+            const anchor = selection.anchor;
+            const focus = selection.focus;
+            
+            // Handle collapsed selection (cursor position)
+            if (selection.isCollapsed()) {
+              // For collapsed selection, apply to the word at cursor or create a new styled node
+              const anchorNode = anchor.getNode();
+              if (anchorNode instanceof TextNode) {
+                // Apply style to entire text node at cursor
+                let currentStyle = anchorNode.getStyle();
+                currentStyle = currentStyle.replace(/font-size:\s*[^;]+;?/g, '').trim();
+                
+                if (styleValue) {
+                  const newStyle = currentStyle 
+                    ? `${currentStyle}; font-size: ${styleValue}` 
+                    : `font-size: ${styleValue}`;
+                  anchorNode.setStyle(newStyle);
+                } else {
+                  anchorNode.setStyle(currentStyle || '');
+                }
+              }
+              return true;
+            }
+            
+            // Handle range selection
             nodes.forEach((node) => {
               if (node instanceof TextNode) {
-                // Remove existing font-size from style
-                let style = node.getStyle();
-                style = style.replace(/font-size:\s*[^;]+;?/g, '').trim();
+                const textContent = node.getTextContent();
+                const nodeKey = node.getKey();
                 
-                // Add new font-size if not medium (default)
-                if (size && size !== 'medium') {
-                  const sizeOption = TEXT_SIZE_OPTIONS.find(opt => opt.value === size);
-                  if (sizeOption) {
-                    style = `${style}; font-size: ${sizeOption.em}`.replace(/^;\s*/, '');
-                  }
+                // Determine selection boundaries for this node
+                let startOffset = 0;
+                let endOffset = textContent.length;
+                
+                if (anchor.getNode().getKey() === nodeKey) {
+                  startOffset = anchor.offset;
+                }
+                if (focus.getNode().getKey() === nodeKey) {
+                  endOffset = focus.offset;
                 }
                 
-                node.setStyle(style || '');
+                // Ensure correct order
+                if (startOffset > endOffset) {
+                  [startOffset, endOffset] = [endOffset, startOffset];
+                }
+                
+                // If partial selection within the node, split it
+                if (startOffset > 0 || endOffset < textContent.length) {
+                  const beforeText = textContent.slice(0, startOffset);
+                  const selectedText = textContent.slice(startOffset, endOffset);
+                  const afterText = textContent.slice(endOffset);
+                  
+                  // Preserve original formatting
+                  const originalFormat = {
+                    bold: node.hasFormat('bold'),
+                    italic: node.hasFormat('italic'),
+                    underline: node.hasFormat('underline'),
+                    strikethrough: node.hasFormat('strikethrough'),
+                    code: node.hasFormat('code'),
+                    subscript: node.hasFormat('subscript'),
+                    superscript: node.hasFormat('superscript')
+                  };
+                  
+                  const originalStyle = node.getStyle();
+                  const baseStyle = originalStyle.replace(/font-size:\s*[^;]+;?/g, '').trim();
+                  
+                  // Create replacement nodes
+                  const newNodes = [];
+                  
+                  // Before text (unchanged)
+                  if (beforeText) {
+                    const beforeNode = $createTextNode(beforeText);
+                    Object.entries(originalFormat).forEach(([format, hasFormat]) => {
+                      if (hasFormat) beforeNode.toggleFormat(format as TextFormatType);
+                    });
+                    beforeNode.setStyle(baseStyle);
+                    newNodes.push(beforeNode);
+                  }
+                  
+                  // Selected text (with new font-size)
+                  if (selectedText) {
+                    const selectedNode = $createTextNode(selectedText);
+                    Object.entries(originalFormat).forEach(([format, hasFormat]) => {
+                      if (hasFormat) selectedNode.toggleFormat(format as TextFormatType);
+                    });
+                    
+                    const newStyle = styleValue 
+                      ? (baseStyle ? `${baseStyle}; font-size: ${styleValue}` : `font-size: ${styleValue}`)
+                      : baseStyle;
+                    selectedNode.setStyle(newStyle);
+                    newNodes.push(selectedNode);
+                  }
+                  
+                  // After text (unchanged)
+                  if (afterText) {
+                    const afterNode = $createTextNode(afterText);
+                    Object.entries(originalFormat).forEach(([format, hasFormat]) => {
+                      if (hasFormat) afterNode.toggleFormat(format as TextFormatType);
+                    });
+                    afterNode.setStyle(baseStyle);
+                    newNodes.push(afterNode);
+                  }
+                  
+                  // Replace the original node
+                  newNodes.forEach(newNode => {
+                    node.insertBefore(newNode);
+                  });
+                  node.remove();
+                  
+                } else {
+                  // Entire node is selected
+                  let currentStyle = node.getStyle();
+                  currentStyle = currentStyle.replace(/font-size:\s*[^;]+;?/g, '').trim();
+                  
+                  if (styleValue) {
+                    const newStyle = currentStyle 
+                      ? `${currentStyle}; font-size: ${styleValue}` 
+                      : `font-size: ${styleValue}`;
+                    node.setStyle(newStyle);
+                  } else {
+                    node.setStyle(currentStyle || '');
+                  }
+                }
               }
             });
           });

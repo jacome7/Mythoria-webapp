@@ -121,11 +121,6 @@ h1, h2, h3 {
   margin-bottom: 1rem;
 }
 
-/* High contrast and rounded elements */
-.story-content * {
-  border-radius: 10px;
-}
-
 /* Chapter titles */
 .mythoria-chapter-title {
   font-size: 2rem !important;

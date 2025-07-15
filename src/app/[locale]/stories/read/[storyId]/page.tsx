@@ -136,9 +136,8 @@ export default function ReadStoryPage() {
     return (
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4">📚</div>
           <h1 className="text-3xl font-bold mb-4">No Chapters Found</h1>
-          <p className="text-lg mb-6">This story doesn&apos;t have any chapters yet.</p>
+          <p className="text-lg mb-6">This story doesn&apos;t have any chapters!</p>
           <button
             onClick={() => router.push(`/${locale}/my-stories`)}
             className="btn btn-primary"
