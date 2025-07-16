@@ -441,7 +441,6 @@
     "errors": {
       "storyNotFound": "História não encontrada",
       "storyNotPublished": "Apenas histórias publicadas podem ser impressas",
-      "pdfNotAvailable": "PDF não disponível para esta história",
       "loadingFailed": "Falha ao carregar dados da história",
       "missingRequiredFields": "Por favor complete todos os campos obrigatórios",
       "orderFailed": "Falha ao efetuar encomenda de impressão",

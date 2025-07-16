@@ -440,7 +440,6 @@
     "errors": {
       "storyNotFound": "Story not found",
       "storyNotPublished": "Only published stories can be printed",
-      "pdfNotAvailable": "PDF not available for this story",
       "loadingFailed": "Failed to load story data",
       "missingRequiredFields": "Please complete all required fields",
       "orderFailed": "Failed to place print order",

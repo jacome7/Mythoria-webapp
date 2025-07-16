@@ -19,7 +19,7 @@ interface Story {
   storyId: string;
   title: string;
   synopsis: string;
-  pdfUri: string;
+  pdfUri?: string;
   authorId: string;
   frontCoverImageUrl?: string;
   chapterCount: number;
@@ -81,10 +81,6 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
         const storyData = data.story;
         if (storyData.status !== 'published') {
           setError(t('errors.storyNotPublished'));
-          return;
-        }
-        if (!storyData.pdfUri) {
-          setError(t('errors.pdfNotAvailable'));
           return;
         }
         setStory(storyData);
@@ -168,7 +164,7 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
         },
         body: JSON.stringify({
           storyId: story.storyId,
-          pdfUrl: story.pdfUri,
+          pdfUrl: story.pdfUri || null,
           shippingId: selectedAddress.addressId,
           printingOption: {
             serviceCode: selectedPrintingOption.serviceCode,

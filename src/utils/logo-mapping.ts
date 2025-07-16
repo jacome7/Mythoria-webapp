@@ -24,7 +24,7 @@ export type GraphicalStyle =
 const GRAPHICAL_STYLE_TO_LOGO: Record<GraphicalStyle, string> = {
   cartoon: 'cartoon.jpg',
   realistic: 'realistic.jpg',
-  watercolor: 'Logo.jpg', // fallback to default
+  watercolor: 'watercolor.jpg',
   digital_art: 'digital_art.jpg',
   hand_drawn: 'hand_drawn.jpg',
   minimalist: 'minimalist.jpg',

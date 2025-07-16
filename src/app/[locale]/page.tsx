@@ -7,6 +7,7 @@ import { useMemo, useState, useRef } from 'react';
 import StoryCounter from "@/components/StoryCounter";
 import QuoteOfTheDay from "@/components/QuoteOfTheDay";
 import EmailSignup from "@/components/EmailSignup";
+import AnimatedLogo from "@/components/AnimatedLogo";
 
 export default function Home() {
   const t = useTranslations('HomePage');
@@ -103,13 +104,7 @@ export default function Home() {
             </div>
             {/* Right Side: Logo */}
             <div className="lg:w-1/2 flex justify-center lg:justify-end mt-8 lg:mt-0">
-              <Image 
-                src="/images/logo/digital_art.png" 
-                alt="Mythoria Logo" 
-                width={390}
-                height={390}
-                className="rounded-lg"
-              />
+              <AnimatedLogo />
             </div>
           </div>
         </header>
