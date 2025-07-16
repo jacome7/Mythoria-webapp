@@ -67,6 +67,17 @@ export default function AIEditModal({
     message?: string;
     nextThreshold?: number;
     isFree?: boolean;
+  } | null>(null);
+
+  // Credit info for image editing
+  const [imageEditCreditInfo, setImageEditCreditInfo] = useState<{
+    canEdit: boolean;
+    requiredCredits: number;
+    currentBalance: number;
+    editCount: number;
+    message?: string;
+    nextThreshold?: number;
+    isFree?: boolean;
   } | null>(null);// Extract chapters from story content
   useEffect(() => {
     if (!storyContent) return;
@@ -220,6 +231,46 @@ export default function AIEditModal({
     };
 
     loadTextEditCreditInfo();
+  }, [isOpen, storyId]);
+
+  // Load credit info for image editing when modal opens
+  useEffect(() => {
+    const loadImageEditCreditInfo = async () => {
+      if (!isOpen || !storyId) {
+        setImageEditCreditInfo(null);
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/ai-edit/check-credits', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'imageEdit',
+            storyId
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setImageEditCreditInfo({
+            canEdit: data.canEdit,
+            requiredCredits: data.requiredCredits,
+            currentBalance: data.currentBalance,
+            editCount: data.editCount,
+            message: data.message,
+            nextThreshold: data.nextThreshold,
+            isFree: data.isFree
+          });
+        }
+      } catch (error) {
+        console.error('Error loading image edit credit info:', error);
+      }
+    };
+
+    loadImageEditCreditInfo();
   }, [isOpen, storyId]);  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -588,6 +639,8 @@ export default function AIEditModal({
       setShowCreditConfirmation(false);
       setCreditInfo(null);
       setPendingEditData(null);
+      setTextEditCreditInfo(null);
+      setImageEditCreditInfo(null);
     }  };
 
   if (!isOpen) return null;
@@ -767,6 +820,22 @@ export default function AIEditModal({
                 onImageUpdated={handleImageUpdated}
                 storyContent={storyContent}
               />
+              
+              {/* Credit Information for Image Editing */}
+              {imageEditCreditInfo && (
+                <div className="mt-6">
+                  <EditCreditInfo
+                    canEdit={imageEditCreditInfo.canEdit}
+                    requiredCredits={imageEditCreditInfo.requiredCredits}
+                    currentBalance={imageEditCreditInfo.currentBalance}
+                    editCount={imageEditCreditInfo.editCount}
+                    message={imageEditCreditInfo.message}
+                    nextThreshold={imageEditCreditInfo.nextThreshold}
+                    isFree={imageEditCreditInfo.isFree}
+                    action="imageEdit"
+                  />
+                </div>
+              )}
               
               {/* Actions for Image Tab */}
               <div className="flex gap-3 pt-6 border-t border-base-300 mt-6">

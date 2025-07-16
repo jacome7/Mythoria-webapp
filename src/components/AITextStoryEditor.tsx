@@ -365,7 +365,7 @@ export default function AITextStoryEditor({
                 onChange={(e) => setUserRequest(e.target.value)}
                 placeholder={t('userRequest.placeholder')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-                rows={4}
+                rows={8}
                 maxLength={2000}
               />
               <div className="flex justify-between text-xs text-gray-500">
