@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { FiX, FiZap, FiEdit3, FiAlertCircle } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
 import CreditConfirmationModal from './CreditConfirmationModal';
+import JobProgressModal from './JobProgressModal';
+import { createTextEditJob } from '@/utils/async-job-api';
 
 interface Chapter {
   id: string;
@@ -73,6 +75,10 @@ export default function AITextStoryEditor({
     paidEdits?: number;
     message?: string;
   } | null>(null);
+
+  // Job progress state
+  const [showJobProgress, setShowJobProgress] = useState(false);
+  const [currentJobId, setCurrentJobId] = useState<string | null>(null);
 
   // Check edit credits
   const checkEditCredits = useCallback(async () => {
@@ -179,10 +185,11 @@ export default function AITextStoryEditor({
     setError(null);
 
     try {
-      const requestBody: {
+      // Prepare job parameters
+      const jobParams: {
         storyId: string;
         userRequest: string;
-        scope: string;
+        scope: 'chapter' | 'story';
         chapterNumber?: number;
       } = {
         storyId: story.storyId,
@@ -190,49 +197,78 @@ export default function AITextStoryEditor({
         scope: editScope
       };
 
+      // Add chapter number only if editing a specific chapter
       if (editScope === 'chapter' && selectedChapter) {
-        requestBody.chapterNumber = selectedChapter;
+        jobParams.chapterNumber = selectedChapter;
       }
 
-      const response = await fetch('/api/story-edit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody)
-      });
+      // Create async job
+      const jobResponse = await createTextEditJob(jobParams);
+      console.log('🚀 Text edit job created:', jobResponse);
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        // Handle different response types based on edit scope
-        if (editScope === 'story') {
-          // Full story edit - show results and redirect
-          const storyEditData = {
-            scope: 'story',
-            updatedChapters: data.updatedChapters,
-            totalChapters: data.totalChapters,
-            successfulEdits: data.successfulEdits,
-            failedEdits: data.failedEdits,
-            tokensUsed: data.tokensUsed,
-            timestamp: data.timestamp,
-            autoSaved: true // Indicate that changes were automatically saved
-          };
-          
-          onEditSuccess(storyEditData);
-        } else {
-          // Single chapter edit
-          onEditSuccess(data);
-        }
-        
-        onClose();
+      if (jobResponse.success && jobResponse.jobId) {
+        // Show progress modal and start tracking
+        setCurrentJobId(jobResponse.jobId);
+        setShowJobProgress(true);
+        setIsLoading(false);
       } else {
-        setError(data.error || 'Failed to edit content');
+        throw new Error('Failed to create text edit job');
       }
+
     } catch (error) {
-      console.error('Error editing content:', error);
-      setError('An error occurred while editing');
-    } finally {
+      console.error('Error creating text edit job:', error);
+      setError(error instanceof Error ? error.message : 'Failed to start editing job');
       setIsLoading(false);
     }
+  };
+
+  const handleJobComplete = (result: { 
+    updatedChapters?: unknown[]; 
+    totalChapters?: number; 
+    successfulEdits?: number; 
+    failedEdits?: number; 
+    tokensUsed?: number; 
+    timestamp?: string; 
+    [key: string]: unknown; 
+  }) => {
+    console.log('✅ Text edit job completed:', result);
+    setShowJobProgress(false);
+    setCurrentJobId(null);
+    
+    // Handle different response types based on edit scope
+    if (editScope === 'story') {
+      // Full story edit - show results and redirect
+      const storyEditData = {
+        scope: 'story',
+        updatedChapters: result.updatedChapters || [],
+        totalChapters: result.totalChapters || 0,
+        successfulEdits: result.successfulEdits || 0,
+        failedEdits: result.failedEdits || 0,
+        tokensUsed: result.tokensUsed || 0,
+        timestamp: result.timestamp || new Date().toISOString(),
+        autoSaved: true // Indicate that changes were automatically saved
+      };
+      
+      onEditSuccess(storyEditData);
+    } else {
+      // Single chapter edit
+      onEditSuccess(result);
+    }
+    
+    onClose();
+  };
+
+  const handleJobError = (error: string) => {
+    console.error('❌ Text edit job failed:', error);
+    setShowJobProgress(false);
+    setCurrentJobId(null);
+    setError(error || 'Text editing job failed');
+  };
+
+  const handleJobProgressClose = () => {
+    // Only allow closing if job is completed or failed
+    setShowJobProgress(false);
+    setCurrentJobId(null);
   };
 
   if (!isOpen) return null;
@@ -467,6 +503,18 @@ export default function AITextStoryEditor({
           isFullStory={editScope === 'story'}
           chapterCount={creditInfo.chapterCount}
           message={creditInfo.message}
+        />
+      )}
+
+      {/* Job Progress Modal */}
+      {showJobProgress && (
+        <JobProgressModal
+          isOpen={showJobProgress}
+          onClose={handleJobProgressClose}
+          jobId={currentJobId}
+          jobType="text_edit"
+          onComplete={handleJobComplete}
+          onError={handleJobError}
         />
       )}
     </div>

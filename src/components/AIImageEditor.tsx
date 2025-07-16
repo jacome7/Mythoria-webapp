@@ -5,7 +5,9 @@ import Image from 'next/image';
 import { FiX, FiImage, FiAlertCircle, FiZap } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
 import CreditConfirmationModal from './CreditConfirmationModal';
+import JobProgressModal from './JobProgressModal';
 import { toAbsoluteImageUrl } from '../utils/image-url';
+import { createImageEditJob } from '@/utils/async-job-api';
 
 interface Story {
   storyId: string;
@@ -63,6 +65,10 @@ export default function AIImageEditor({
     chapterNumber?: number;
     userRequest: string;
   } | null>(null);
+
+  // Job progress state
+  const [showJobProgress, setShowJobProgress] = useState(false);
+  const [currentJobId, setCurrentJobId] = useState<string | null>(null);
 
   // Reset state when modal opens/closes
   useEffect(() => {
@@ -137,6 +143,7 @@ export default function AIImageEditor({
     setError(null);
 
     try {
+      // Prepare job parameters
       const requestData = pendingImageEditData || {
         imageUrl: imageData.imageUri,
         imageType: imageData.imageType,
@@ -144,45 +151,76 @@ export default function AIImageEditor({
         userRequest: userRequest.trim()
       };
 
-      const requestBody: {
+      const jobParams: {
         storyId: string;
         imageUrl: string;
-        imageType: string;
+        imageType: 'cover' | 'backcover' | 'chapter';
         userRequest: string;
         chapterNumber?: number;
+        graphicalStyle?: string;
       } = {
         storyId: story.storyId,
         imageUrl: requestData.imageUrl,
-        imageType: requestData.imageType,
+        imageType: requestData.imageType as 'cover' | 'backcover' | 'chapter',
         userRequest: requestData.userRequest
       };
 
+      // Add chapter number only if provided
       if (requestData.chapterNumber) {
-        requestBody.chapterNumber = requestData.chapterNumber;
+        jobParams.chapterNumber = requestData.chapterNumber;
       }
 
-      const response = await fetch('/api/image-edit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody)
-      });
+      // Add graphical style if available
+      if (story.graphicalStyle) {
+        jobParams.graphicalStyle = story.graphicalStyle;
+      }
 
-      const data = await response.json();
+      // Create async job
+      const jobResponse = await createImageEditJob(jobParams);
+      console.log('🚀 Image edit job created:', jobResponse);
 
-      if (response.ok && data.success) {
-        setNewImageGenerated(data.newImageUrl);
-        setError(null);
-        console.log('✅ Image edited successfully:', data.newImageUrl);
+      if (jobResponse.success && jobResponse.jobId) {
+        // Show progress modal and start tracking
+        setCurrentJobId(jobResponse.jobId);
+        setShowJobProgress(true);
+        setIsLoading(false);
+        setPendingImageEditData(null);
       } else {
-        setError(data.error || 'Failed to edit image');
+        throw new Error('Failed to create image edit job');
       }
+
     } catch (error) {
-      console.error('💥 Error editing image:', error);
-      setError('An error occurred while editing the image');
-    } finally {
+      console.error('Error creating image edit job:', error);
+      setError(error instanceof Error ? error.message : 'Failed to start image editing job');
       setIsLoading(false);
       setPendingImageEditData(null);
     }
+  };
+
+  const handleJobComplete = (result: { newImageUrl?: string; [key: string]: unknown }) => {
+    console.log('✅ Image edit job completed:', result);
+    setShowJobProgress(false);
+    setCurrentJobId(null);
+    
+    if (result && result.newImageUrl) {
+      setNewImageGenerated(result.newImageUrl);
+      setError(null);
+    } else {
+      setError('Job completed but no image was generated');
+    }
+  };
+
+  const handleJobError = (error: string) => {
+    console.error('❌ Image edit job failed:', error);
+    setShowJobProgress(false);
+    setCurrentJobId(null);
+    setError(error || 'Image editing job failed');
+  };
+
+  const handleJobProgressClose = () => {
+    // Only allow closing if job is completed or failed
+    setShowJobProgress(false);
+    setCurrentJobId(null);
   };
 
   const handleReplaceImage = async () => {
@@ -391,6 +429,18 @@ export default function AIImageEditor({
           currentBalance={creditInfo.currentBalance}
           editCount={creditInfo.editCount}
           isFree={creditInfo.isFree}
+        />
+      )}
+
+      {/* Job Progress Modal */}
+      {showJobProgress && (
+        <JobProgressModal
+          isOpen={showJobProgress}
+          onClose={handleJobProgressClose}
+          jobId={currentJobId}
+          jobType="image_edit"
+          onComplete={handleJobComplete}
+          onError={handleJobError}
         />
       )}
     </div>
