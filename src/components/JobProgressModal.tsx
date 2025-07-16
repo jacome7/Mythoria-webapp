@@ -264,38 +264,6 @@ export default function JobProgressModal({
             </div>
           )}
 
-          {/* Operation Details */}
-          {jobStatus?.metadata && (
-            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-              <div className="text-xs text-gray-600 space-y-1">
-                {jobStatus.metadata.operationType && (
-                  <div>
-                    <span className="font-medium">Type:</span>{' '}
-                    {jobStatus.metadata.operationType}
-                  </div>
-                )}
-                {jobStatus.metadata.chapterCount && (
-                  <div>
-                    <span className="font-medium">Chapters:</span>{' '}
-                    {jobStatus.metadata.chapterCount}
-                  </div>
-                )}
-                {jobStatus.metadata.chapterNumber && (
-                  <div>
-                    <span className="font-medium">Chapter:</span>{' '}
-                    {jobStatus.metadata.chapterNumber}
-                  </div>
-                )}
-                {jobStatus.metadata.imageType && (
-                  <div>
-                    <span className="font-medium">Image Type:</span>{' '}
-                    {jobStatus.metadata.imageType}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
           {/* Error Message */}
           {jobStatus?.status === 'failed' && jobStatus.error && (
             <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">

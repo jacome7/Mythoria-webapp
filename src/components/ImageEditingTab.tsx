@@ -713,11 +713,11 @@ export default function ImageEditingTab({
 
           {/* Replace Image Button - Show when new image is generated */}
           {newImageGenerated && selectedVersion && (
-            <div className="mt-4 p-4 bg-success/10 border border-success/20 rounded-lg">
+            <div className="mt-4 p-4 bg-primary/10 border border-primary/20 rounded-lg">
               <div className="flex items-center gap-2 mb-3">
-                <svg className="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                </svg>                <span className="font-medium text-success">{t('success.title')}</span>
+                </svg>                <span className="font-medium text-primary">{t('success.title')}</span>
               </div>
               <p className="text-sm text-base-content/70 mb-3">
                 {t('success.description')}
@@ -725,7 +725,7 @@ export default function ImageEditingTab({
               <button
                 type="button"
                 onClick={handleReplaceImage}
-                className="btn btn-success w-full"
+                className="btn btn-primary w-full"
                 disabled={isReplacing}
               >
                 {isReplacing ? (
