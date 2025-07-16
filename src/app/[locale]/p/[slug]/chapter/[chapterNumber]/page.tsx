@@ -121,22 +121,6 @@ export default function PublicChapterPage() {
                 Chapter {chapterNumber}: {data.currentChapter.title}
               </p>
             </div>
-            <div className="flex items-center gap-4 text-sm text-base-content/70">
-              <div className="flex items-center gap-1">
-                <FiUser className="w-4 h-4" />
-                {story.authorName}
-              </div>
-              <div className="flex items-center gap-1">
-                <FiCalendar className="w-4 h-4" />
-                {new Date(story.createdAt).toLocaleDateString()}
-              </div>
-              {story.targetAudience && (
-                <div className="flex items-center gap-1">
-                  <FiTag className="w-4 h-4" />
-                  {story.targetAudience.replace('_', ' ')}
-                </div>
-              )}
-            </div>
           </div>
         </div>
       </div>

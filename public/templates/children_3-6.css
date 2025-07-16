@@ -150,7 +150,8 @@
   background-color: #f0f8e8;
   padding: 1rem !important;
   border-radius: 8px;
-  margin: 2rem 0;
+  margin: 10px;
+  padding: 10px;
 }
 
 .mythoria-toc-title {
@@ -203,10 +204,11 @@
 /* Mythoria message */
 .mythoria-message {
   text-align: center;
+  text-size-adjust: 80%;
   margin: 10px;
   padding: 10px;
   background-color: #f0f0f0;
-  color: white;
+  color: rgb(44, 44, 44);
   border-radius: 8px;
 }
 
@@ -242,4 +244,20 @@
   font-size: 1rem !important;
   line-height: 1.6 !important;
   color: #666 !important;
+}
+
+/* Front cover styling */
+.mythoria-front-cover {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.mythoria-cover-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }

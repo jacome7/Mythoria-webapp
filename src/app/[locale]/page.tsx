@@ -72,8 +72,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-base-100 text-base-content">
-      <div className="container mx-auto px-4 py-8">
-        <header className="hero min-h-[60vh] bg-base-200 rounded-box my-12">
+      <div className="container mx-auto px-4 py-4">
+        <header className="hero min-h-[40vh] bg-base-200 rounded-box my-4">
           <div className="hero-content flex-col lg:flex-row w-full">
             <div className="lg:w-1/2 text-center lg:text-left">
               <h1 className="text-4xl md:text-5xl font-bold">
@@ -86,7 +86,7 @@ export default function Home() {
                   repeat={Infinity}
                 />
               </h1>
-              <p className="py-6 text-lg">
+              <p className="py-3 text-lg">
                 {t('hero.subtitle').split(t('hero.subtitleEmphasized')).map((part, index, array) => (
                   <span key={index}>
                     {index === array.length - 1 ? part : (
@@ -103,14 +103,14 @@ export default function Home() {
               </Link>*/}
             </div>
             {/* Right Side: Logo */}
-            <div className="lg:w-1/2 flex justify-center lg:justify-end mt-8 lg:mt-0">
+            <div className="lg:w-1/2 flex justify-center lg:justify-end mt-4 lg:mt-0">
               <AnimatedLogo />
             </div>
           </div>
         </header>
 
         {/* Quote of the Day Section */}
-        <section className="my-16">
+        <section className="my-8">
           <QuoteOfTheDay />
         </section>
         {showSoonPage ? (
@@ -163,7 +163,7 @@ export default function Home() {
 
                 <div className="card bg-base-200 shadow-xl">
                   <figure className="px-10 pt-10">
-                    <Image src="/SampleBooks/caravanconcierge.jpg" alt="Company Book" width={300} height={340} className="rounded-xl" />
+                    <Image src="/SampleBooks/CaravanConcierge.jpg" alt="Company Book" width={300} height={340} className="rounded-xl" />
                   </figure>
                   <div className="card-body items-center text-center">
                     <h2 className="card-title text-2xl">{t('audiences.companies.title')}</h2>
@@ -217,7 +217,7 @@ export default function Home() {
                   <div className="carousel-item w-80">
                     <div className="card bg-base-100 shadow-xl w-full">
                       <figure className="px-10 pt-10">
-                        <Image src="/SampleBooks/CentralCasa.jpg" alt="Company Book" width={300} height={200} className="rounded-xl" />
+                        <Image src="/SampleBooks/CaravanConcierge.jpg" alt="Company Book" width={300} height={300} className="rounded-xl" />
                       </figure>
                       <div className="card-body items-center text-center">
                         <h2 className="card-title text-xl">{t('audiences.companies.title')}</h2>
