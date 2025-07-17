@@ -10,6 +10,12 @@
   color: #333;
 }
 
+.story-container .prose p {
+  margin-bottom: 1.5rem;
+  text-align: justify;
+  text-indent: 2rem;
+}
+
 .mythoria-story-title {
   font-size: 2.25rem !important;
   font-weight: bold !important;
@@ -65,7 +71,8 @@
   margin-bottom: 1.5rem;
 }
 
-.mythoria-chapter-paragraph {
+.mythoria-chapter-content p {
+  text-indent: 1rem;
   margin-bottom: 1.25rem !important;
   font-size: 1.25rem !important;
   line-height: 1.8 !important;
