@@ -1,6 +1,6 @@
 'use client';
 
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 interface EditCreditInfoProps {
@@ -24,6 +24,7 @@ export default function EditCreditInfo({
   action
 }: EditCreditInfoProps) {
   const locale = useLocale();
+  const t = useTranslations('components.editCreditInfo');
 
   if (!message) return null;
 
@@ -40,7 +41,7 @@ export default function EditCreditInfo({
         <div className="flex items-center justify-between">
           <span className="font-medium">{message}</span>
           <span className="text-xs opacity-75">
-            Edit #{editCount + 1}
+            {t('editLabel', { number: editCount + 1 })}
           </span>
         </div>
         
@@ -48,12 +49,12 @@ export default function EditCreditInfo({
         {!canEdit && (
           <div className="mt-2 pt-2 border-t border-red-200">
             <div className="flex items-center justify-between text-xs">
-              <span>Your balance: {currentBalance} credits</span>
+              <span>{t('balanceLabel', { credits: currentBalance })}</span>
               <Link 
                 href={`/${locale}/buy-credits`}
                 className="text-red-600 hover:text-red-800 underline font-medium"
               >
-                Buy credits
+                {t('buyCreditsButton')}
               </Link>
             </div>
           </div>
@@ -63,7 +64,7 @@ export default function EditCreditInfo({
         {action === 'textEdit' && canEdit && nextThreshold && (
           <div className="mt-2 pt-2 border-t border-current border-opacity-20">
             <div className="flex items-center justify-between text-xs opacity-75">
-              <span>Progress:</span>
+              <span>{t('progressLabel')}</span>
               <div className="flex items-center space-x-2">
                 <div className="w-16 bg-current bg-opacity-20 rounded-full h-1">
                   <div 

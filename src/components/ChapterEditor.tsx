@@ -616,7 +616,7 @@ export default function ChapterEditor({
   const [currentTitle, setCurrentTitle] = useState(chapterTitle);
   const [currentContent, setCurrentContent] = useState(initialContent);
   const [hasChanges, setHasChanges] = useState(false);
-  const t = useTranslations('common');
+  const t = useTranslations('components.chapterEditor');
 
   // Debug logging for props
   useEffect(() => {
@@ -687,7 +687,7 @@ export default function ChapterEditor({
           value={currentTitle}
           onChange={(e) => handleTitleChange(e.target.value)}
           className="input input-bordered w-full text-lg font-semibold"
-          placeholder={`Chapter ${chapterNumber}`}
+          placeholder={t('titlePlaceholder')}
         />
       </div>
 
@@ -695,7 +695,7 @@ export default function ChapterEditor({
       {chapterImageUri && (
         <div className="space-y-2">
           <label className="block text-sm font-medium text-base-content">
-            Chapter {chapterNumber} Image
+            {t('imagePlaceholder', { number: chapterNumber })}
           </label>
           <div className="border-2 border-dashed border-base-300 rounded-lg p-6 text-center w-full">
             <div className="space-y-4">
@@ -718,7 +718,7 @@ export default function ChapterEditor({
                   className="btn btn-sm btn-outline"
                 >
                   <FiImage className="w-4 h-4" />
-                  Edit Chapter Image
+                  {t('editImageButton')}
                 </button>
               )}
             </div>
@@ -746,7 +746,7 @@ export default function ChapterEditor({
               }
               placeholder={
                 <div className="absolute top-4 left-4 text-base-content/50 pointer-events-none">
-                  {t('placeholder.chapterContent')}
+                  {t('contentPlaceholder')}
                 </div>
               }
               ErrorBoundary={LexicalErrorBoundary}
@@ -783,7 +783,7 @@ export default function ChapterEditor({
                   <button
                     onClick={handleCancel}
                     className="btn btn-ghost"
-                    title={storyId ? `Go to reading page for Chapter ${chapterNumber}` : 'Go back'}
+                    title={storyId ? `Go to reading page for Chapter ${chapterNumber}` : t('goBackButton')}
                   >
                     <FiX className="w-4 h-4" />
                     Cancel
@@ -799,7 +799,7 @@ export default function ChapterEditor({
                   ) : (
                     <FiSave className="w-4 h-4" />
                   )}
-                  {isLoading ? 'Saving...' : 'Save Chapter'}
+                  {isLoading ? 'Saving...' : t('saveButton')}
                 </button>
               </div>
             </div>

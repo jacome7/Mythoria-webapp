@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { FiX, FiClock, FiCheckCircle, FiAlertCircle, FiLoader } from 'react-icons/fi';
+import { useTranslations } from 'next-intl';
 
 interface JobProgressModalProps {
   isOpen: boolean;
@@ -39,6 +40,7 @@ export default function JobProgressModal({
   onComplete,
   onError
 }: JobProgressModalProps) {
+  const t = useTranslations('components.jobProgressModal');
   const [jobStatus, setJobStatus] = useState<JobStatus | null>(null);
   const [polling, setPolling] = useState(false);
   const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
@@ -156,9 +158,9 @@ export default function JobProgressModal({
   const getJobTypeDisplay = () => {
     switch (jobType) {
       case 'text_edit':
-        return 'Text Editing';
+        return t('steps.textEditing');
       case 'image_edit':
-        return 'Image Editing';
+        return t('steps.imageEditing');
       default:
         return 'Processing';
     }
@@ -186,15 +188,15 @@ export default function JobProgressModal({
 
     switch (jobStatus.status) {
       case 'pending':
-        return 'Waiting to start...';
+        return t('status.waitingToStart');
       case 'processing':
-        return 'Processing...';
+        return t('status.inProgress');
       case 'completed':
-        return 'Completed successfully!';
+        return t('status.completed');
       case 'failed':
-        return jobStatus.error || 'Failed';
+        return jobStatus.error || t('status.failed');
       default:
-        return 'Processing...';
+        return t('status.inProgress');
     }
   };
 
@@ -213,7 +215,7 @@ export default function JobProgressModal({
             {getStatusIcon()}
             <div>
               <h2 className="text-lg font-semibold text-gray-900">
-                {getJobTypeDisplay()}
+                {t('title')}
               </h2>
               <p className="text-sm text-gray-600">
                 {getStatusText()}

@@ -15,7 +15,7 @@ interface ReadingProgressProps {
 }
 
 export default function ReadingProgress({ storyContent }: ReadingProgressProps) {
-  const t = useTranslations('common.Components.ReadingProgress');
+  const t = useTranslations('components.readingProgress');
   const tCommon = useTranslations('common');
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isTableOfContentsOpen, setIsTableOfContentsOpen] = useState(false);
@@ -38,7 +38,7 @@ export default function ReadingProgress({ storyContent }: ReadingProgressProps) 
     if (storyTitle) {
       headings.push({
         id: 'story-title',
-        title: storyTitle.textContent?.trim() || 'Story Title',
+        title: storyTitle.textContent?.trim() || t('fallbacks.storyTitle'),
         level: 1
       });
     }
@@ -69,7 +69,7 @@ export default function ReadingProgress({ storyContent }: ReadingProgressProps) 
       if (chapterTitle) {
         headings.push({
           id: chapterId,
-          title: chapterTitle.textContent?.trim() || `Chapter ${index + 1}`,
+          title: chapterTitle.textContent?.trim() || t('fallbacks.chapterTitle', { number: index + 1 }),
           level: 2
         });
       }

@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FiChevronDown, FiChevronRight } from 'react-icons/fi';
 import { CHARACTER_TYPE_GROUPS, findCharacterTypeGroup, getCharacterTypeLabel } from '@/types/character-types';
+import { useTranslations } from 'next-intl';
 
 interface GroupedCharacterTypeSelectProps {
   value: string;
@@ -17,9 +18,18 @@ export default function GroupedCharacterTypeSelect({
   placeholder = "Select character type...",
   className = ""
 }: GroupedCharacterTypeSelectProps) {
+  const t = useTranslations('components.groupedCharacterTypeSelect');
   const [isOpen, setIsOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const getGroupLabel = (groupKey: string) => {
+    return t(`groups.${groupKey}`);
+  };
+
+  const getDisplayPlaceholder = () => {
+    return placeholder === "Select character type..." ? t('placeholder') : placeholder;
+  };
 
   // Initialize expanded groups based on current value or default to 'human'
   useEffect(() => {
@@ -58,7 +68,7 @@ export default function GroupedCharacterTypeSelect({
     setIsOpen(false);
   };
 
-  const displayValue = value ? getCharacterTypeLabel(value) : placeholder;
+  const displayValue = value ? getCharacterTypeLabel(value) : getDisplayPlaceholder();
 
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
@@ -89,7 +99,7 @@ export default function GroupedCharacterTypeSelect({
                 onClick={() => toggleGroup(group.key)}
                 className="w-full flex items-center justify-between px-3 py-2 text-left text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
               >
-                <span>{group.label}</span>
+                <span>{getGroupLabel(group.key)}</span>
                 {expandedGroups[group.key] ? (
                   <FiChevronDown className="h-4 w-4 text-gray-500" />
                 ) : (

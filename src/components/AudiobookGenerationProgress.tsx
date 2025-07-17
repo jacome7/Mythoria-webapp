@@ -38,7 +38,7 @@ const calculateEstimatedTime = (percentage: number): string => {
 };
 
 export default function AudiobookGenerationProgress({ storyId, onComplete }: AudiobookGenerationProgressProps) {
-  const t = useTranslations('common.audiobookGenerationProgress');
+  const t = useTranslations('components.audiobookGenerationProgress');
   const router = useRouter();
   const params = useParams();
   const locale = params.locale || 'en';
@@ -55,15 +55,15 @@ export default function AudiobookGenerationProgress({ storyId, onComplete }: Aud
     try {
       const response = await fetch(`/api/stories/${storyId}/audiobook-progress`);
       if (!response.ok) {
-        throw new Error('Failed to fetch audiobook progress');
+        throw new Error(t('errors.failedToFetch'));
       }
       const data = await response.json();
       setProgress(data);
     } catch (error) {
       console.error('Error fetching audiobook progress:', error);
-      setError('Failed to load audiobook generation progress');
+      setError(t('errors.failedToLoad'));
     }
-  }, [storyId]);
+  }, [storyId, t]);
 
   // Update funny message based on current step
   useEffect(() => {

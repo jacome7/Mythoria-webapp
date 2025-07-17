@@ -2,6 +2,7 @@
  * Shared utility functions for AI edit credit management
  */
 import { aiEditService, creditService } from '@/db/services';
+import { getLibTranslations } from '@/utils/lib-translations';
 
 export interface EditCreditResult {
   success: boolean;
@@ -18,7 +19,8 @@ export interface EditCreditResult {
  */
 export async function checkEditCredits(
   authorId: string,
-  action: 'textEdit' | 'imageEdit'
+  action: 'textEdit' | 'imageEdit',
+  locale?: string
 ): Promise<EditCreditResult> {
   try {
     const permission = await aiEditService.checkEditPermission(authorId, action);
@@ -33,13 +35,14 @@ export async function checkEditCredits(
     };
   } catch (error) {
     console.error(`Error checking edit credits for ${action}:`, error);
+    const { t } = await getLibTranslations(locale);
     return {
       success: false,
       canEdit: false,
       requiredCredits: 0,
       currentBalance: 0,
       editCount: 0,
-      error: error instanceof Error ? error.message : 'Failed to check edit credits'
+      error: error instanceof Error ? error.message : t('editCredits.errors.failedToCheck')
     };
   }
 }
@@ -51,7 +54,8 @@ export async function recordEditAndDeductCredits(
   authorId: string,
   storyId: string,
   action: 'textEdit' | 'imageEdit',
-  metadata?: Record<string, unknown>
+  metadata?: Record<string, unknown>,
+  locale?: string
 ): Promise<{ success: boolean; error?: string; newBalance?: number }> {
   try {
     // This function handles both credit deduction and edit recording
@@ -66,9 +70,10 @@ export async function recordEditAndDeductCredits(
     };
   } catch (error) {
     console.error(`Error recording edit and deducting credits for ${action}:`, error);
+    const { t } = await getLibTranslations(locale);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to record edit and deduct credits'
+      error: error instanceof Error ? error.message : t('editCredits.errors.failedToRecord')
     };
   }
 }
@@ -76,29 +81,37 @@ export async function recordEditAndDeductCredits(
 /**
  * Get user-friendly message for edit count status
  */
-export function getEditCountMessage(
+export async function getEditCountMessage(
   action: 'textEdit' | 'imageEdit',
   editCount: number,
-  requiredCredits: number
-): string {
+  requiredCredits: number,
+  locale?: string
+): Promise<string> {
+  const { t } = await getLibTranslations(locale);
+  
   if (action === 'textEdit') {
     if (editCount < 5) {
       const remaining = 5 - editCount;
-      return `${remaining} free edit${remaining !== 1 ? 's' : ''} remaining`;
+      const key = remaining === 1 ? 'editCredits.messages.freeEditsRemaining' : 'editCredits.messages.freeEditsRemainingPlural';
+      return t(key, { count: remaining.toString() });
     } else {
       const nextChargeAt = Math.ceil((editCount - 4) / 5) * 5 + 5;
       const editsUntilCharge = nextChargeAt - editCount;
       if (editsUntilCharge > 1) {
-        return `${editsUntilCharge - 1} free edit${editsUntilCharge - 1 !== 1 ? 's' : ''} remaining`;
+        const remaining = editsUntilCharge - 1;
+        const key = remaining === 1 ? 'editCredits.messages.freeEditsRemaining' : 'editCredits.messages.freeEditsRemainingPlural';
+        return t(key, { count: remaining.toString() });
       } else if (requiredCredits > 0) {
-        return `Next edit will cost ${requiredCredits} credit${requiredCredits !== 1 ? 's' : ''}`;
+        const key = requiredCredits === 1 ? 'editCredits.messages.nextEditCost' : 'editCredits.messages.nextEditCostPlural';
+        return t(key, { credits: requiredCredits.toString() });
       }
     }
   } else if (action === 'imageEdit') {
     if (editCount === 0) {
-      return '1 free edit remaining';
+      return t('editCredits.messages.oneFreeEditRemaining');
     } else if (requiredCredits > 0) {
-      return `Next edit will cost ${requiredCredits} credit${requiredCredits !== 1 ? 's' : ''}`;
+      const key = requiredCredits === 1 ? 'editCredits.messages.nextEditCost' : 'editCredits.messages.nextEditCostPlural';
+      return t(key, { credits: requiredCredits.toString() });
     }
   }
   

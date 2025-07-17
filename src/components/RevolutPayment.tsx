@@ -21,7 +21,7 @@ export default function RevolutPayment({
   onPaymentCancel,
   disabled = false,
 }: RevolutPaymentProps) {
-  const t = useTranslations('RevolutPayment');
+  const t = useTranslations('components.revolutPayment');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const revolutPayRef = useRef<HTMLDivElement>(null);
@@ -130,7 +130,7 @@ export default function RevolutPayment({
       } catch (error) {
         console.error('RevolutPayment: Initialization failed:', error);
         if (isMounted) {
-          setError(error instanceof Error ? error.message : 'Failed to initialize payment');
+          setError(error instanceof Error ? error.message : t('errors.initializeFailed'));
           setIsLoading(false);
         }
       }
