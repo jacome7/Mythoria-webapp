@@ -7,6 +7,7 @@ import {
   GraphicalStyleLabels 
 } from '../types/story-enums';
 import { CharacterAge } from '../types/character-enums';
+import { getLibTranslations } from '@/utils/lib-translations';
 
 /**
  * Smart mapping functions to convert AI output or user input to proper enum values
@@ -276,26 +277,38 @@ export function mapCharacterAttributes(aiOutput: {
 /**
  * Gets human-readable label for enum value, with fallback for invalid values
  */
-export function getTargetAudienceLabelSafe(value: string | null | undefined): string {
-  if (!value) return 'Unknown';
+export async function getTargetAudienceLabelSafe(value: string | null | undefined, locale?: string): Promise<string> {
+  if (!value) {
+    const { t } = await getLibTranslations(locale);
+    return t('storyEnumMapping.fallbacks.unknown');
+  }
   const targetAudience = mapToTargetAudience(value);
   return targetAudience ? TargetAudienceLabels[targetAudience] : value;
 }
 
-export function getNovelStyleLabelSafe(value: string | null | undefined): string {
-  if (!value) return 'Unknown';
+export async function getNovelStyleLabelSafe(value: string | null | undefined, locale?: string): Promise<string> {
+  if (!value) {
+    const { t } = await getLibTranslations(locale);
+    return t('storyEnumMapping.fallbacks.unknown');
+  }
   const novelStyle = mapToNovelStyle(value);
   return novelStyle ? NovelStyleLabels[novelStyle] : value;
 }
 
-export function getGraphicalStyleLabelSafe(value: string | null | undefined): string {
-  if (!value) return 'Unknown';
+export async function getGraphicalStyleLabelSafe(value: string | null | undefined, locale?: string): Promise<string> {
+  if (!value) {
+    const { t } = await getLibTranslations(locale);
+    return t('storyEnumMapping.fallbacks.unknown');
+  }
   const graphicalStyle = mapToGraphicalStyle(value);
   return graphicalStyle ? GraphicalStyleLabels[graphicalStyle] : value;
 }
 
-export function getCharacterAgeLabelSafe(value: string | null | undefined): string {
-  if (!value) return 'Unknown';
+export async function getCharacterAgeLabelSafe(value: string | null | undefined, locale?: string): Promise<string> {
+  if (!value) {
+    const { t } = await getLibTranslations(locale);
+    return t('storyEnumMapping.fallbacks.unknown');
+  }
   // Since we don't have labels for character ages, return formatted version
   const age = mapToCharacterAge(value);
   if (!age) return value;

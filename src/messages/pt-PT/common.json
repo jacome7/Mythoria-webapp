@@ -624,6 +624,170 @@
         "shimmer": "Uma voz brilhante e energética, adicionando brilho e dinamismo ao seu áudio.",
         "verse": "Uma voz versátil e expressiva que se adapta bem a uma ampla gama de requisitos tonais."
       }
+    },
+    "ComponentTranslations": {
+      "AIImageEditor": {
+        "errors": {
+          "describeChanges": "Por favor descreva as alterações que pretende fazer à imagem",
+          "unableToCheckCredits": "Não foi possível verificar os créditos. Tente novamente.",
+          "imageEditFailed": "Falha na edição da imagem. Tente novamente.",
+          "processingFailed": "Falha no processamento. Tente novamente."
+        }
+      },
+      "AITextStoryEditor": {
+        "title": "Editor de Texto IA - {storyTitle}",
+        "scope": {
+          "fullStory": "História Completa",
+          "singleChapter": "Capítulo {chapterNumber}"
+        },
+        "errors": {
+          "enterEditingRequest": "Por favor introduza o seu pedido de edição",
+          "unableToCheckCredits": "Não foi possível verificar os créditos. Tente novamente.",
+          "editingFailed": "Falha na edição de texto. Tente novamente."
+        },
+        "explanations": {
+          "fullStoryTitle": "Como Funciona a Edição de História Completa",
+          "fullStoryDescription": "Isto irá analisar e melhorar toda a sua história mantendo a consistência em todos os capítulos."
+        }
+      },
+      "AudiobookGenerationProgress": {
+        "errors": {
+          "failedToFetchProgress": "Falha ao obter progresso do audiolivro",
+          "failedToLoadProgress": "Falha ao carregar progresso de geração do audiolivro"
+        }
+      },
+      "AudiobookGenerationTrigger": {
+        "errors": {
+          "failedToStart": "Falha ao iniciar geração do audiolivro"
+        }
+      },
+      "ChapterEditor": {
+        "labels": {
+          "chapterImage": "Imagem do Capítulo {chapterNumber}",
+          "editChapterImage": "Editar Imagem do Capítulo",
+          "saveChapter": "Guardar Capítulo",
+          "saving": "Guardando...",
+          "cancel": "Cancelar",
+          "goBack": "Voltar",
+          "goToReadingPage": "Ir para página de leitura do Capítulo {chapterNumber}"
+        },
+        "placeholders": {
+          "chapterTitle": "Capítulo {chapterNumber}",
+          "chapterImageAlt": "Capítulo {chapterNumber}"
+        }
+      },
+      "ChapterNavigation": {
+        "labels": {
+          "storyInformation": "Informação da História",
+          "info": "Info",
+          "chapterNumber": "Capítulo {chapterNumber}"
+        }
+      },
+      "CharacterCard": {
+        "alerts": {
+          "maxTraits": "Máximo de 5 características permitidas. Remova uma característica primeiro."
+        }
+      },
+      "ContactForm": {
+        "responses": {
+          "fillRequiredFields": "Por favor preencha todos os campos obrigatórios",
+          "ticketCreated": "Ticket de suporte criado com sucesso! Entraremos em contacto consigo dentro de 24 horas.",
+          "ticketCreationFailed": "Falha ao criar ticket de suporte. Tente novamente mais tarde."
+        }
+      },
+      "EditCreditInfo": {
+        "labels": {
+          "editNumber": "Edição #{editNumber}",
+          "yourBalance": "O seu saldo: {credits} créditos",
+          "buyCredits": "Comprar créditos",
+          "progress": "Progresso:"
+        }
+      },
+      "GroupedCharacterTypeSelect": {
+        "placeholder": "Selecionar tipo de personagem...",
+        "groups": {
+          "human": "Humano",
+          "animals": "Animais",
+          "fantasy": "Fantasia",
+          "other": "Outro"
+        }
+      },
+      "ImageEditButton": {
+        "tooltip": "Editar esta imagem com Mythoria"
+      },
+      "JobProgressModal": {
+        "statusLabels": {
+          "textEditing": "Edição de Texto",
+          "imageEditing": "Edição de Imagem",
+          "waitingToStart": "Aguardando para iniciar...",
+          "processing": "Processando...",
+          "completedSuccessfully": "Concluído com sucesso!",
+          "failed": "Falhado",
+          "cancelled": "Cancelado",
+          "queued": "Em fila",
+          "generating": "Gerando",
+          "analyzing": "Analisando",
+          "enhancing": "Melhorando",
+          "finalizing": "Finalizando"
+        }
+      },
+      "ReadingProgress": {
+        "fallbackTitles": {
+          "storyTitle": "Título da História",
+          "chapterNumber": "Capítulo {chapterNumber}"
+        }
+      },
+      "ReadingToolbar": {
+        "labels": {
+          "cover": "Capa",
+          "coverAndContents": "Capa e Índice",
+          "chapterNumber": "Capítulo {chapterNumber}"
+        }
+      },
+      "RevolutPayment": {
+        "errors": {
+          "failedToInitialize": "Falha ao inicializar pagamento"
+        }
+      },
+      "ShareModal": {
+        "alerts": {
+          "invalidStoryId": "ID de história inválido"
+        },
+        "shareMessages": {
+          "checkOut": "Veja \"{storyTitle}\" no Mythoria",
+          "shareText": "Criei esta história incrível no Mythoria! Veja: {storyTitle}"
+        }
+      },
+      "StoryAudioPlayer": {
+        "defaultChapterTitle": "Capítulo {chapterNumber}"
+      },
+      "StoryInfoEditor": {
+        "labels": {
+          "storyInformation": "Informação da História",
+          "storyTitle": "Título da História",
+          "saveChanges": "Guardar Alterações",
+          "saving": "Guardando...",
+          "cancel": "Cancelar"
+        },
+        "placeholders": {
+          "enterStoryTitle": "Introduza o título da história",
+          "storyDescription": "Introduza a descrição da história..."
+        }
+      },
+      "PrintOrder": {
+        "PaymentStep": {
+          "errors": {
+            "failedToLoadPricing": "Falha ao carregar informações de preços",
+            "failedToFetchPricing": "Falha ao obter dados de preços"
+          }
+        },
+        "PrintOrderContent": {
+          "errors": {
+            "failedToSaveAddress": "Falha ao guardar endereço",
+            "failedToDeleteAddress": "Falha ao eliminar endereço"
+          }
+        }
+      }
     }
   }
 }

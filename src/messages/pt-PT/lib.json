@@ -1,0 +1,51 @@
+{
+  "lib": {
+    "auth": {
+      "errors": {
+        "authenticationRequired": "Autenticação necessária",
+        "authorNotFound": "Autor não encontrado na base de dados"
+      }
+    },
+    "editCredits": {
+      "errors": {
+        "failedToCheck": "Falha ao verificar créditos de edição",
+        "failedToRecord": "Falha ao registar edição e deduzir créditos"
+      },
+      "messages": {
+        "freeEditsRemaining": "{count} edição gratuita restante",
+        "freeEditsRemainingPlural": "{count} edições gratuitas restantes",
+        "nextEditCost": "A próxima edição custará {credits} crédito",
+        "nextEditCostPlural": "A próxima edição custará {credits} créditos",
+        "oneFreeEditRemaining": "1 edição gratuita restante"
+      }
+    },
+    "genaiStoryStructurer": {
+      "errors": {
+        "invalidImageFormat": "Formato de dados de imagem inválido",
+        "failedToProcessImage": "Falha ao processar dados de imagem para análise de IA",
+        "invalidAudioFormat": "Formato de dados de áudio inválido",
+        "failedToProcessAudio": "Falha ao processar dados de áudio para análise de IA",
+        "noResponseText": "Nenhum texto de resposta gerado pelo modelo",
+        "invalidJsonFormat": "GenAI retornou formato JSON inválido",
+        "failedToGenerate": "Falha ao gerar história estruturada: {error}"
+      },
+      "fallbacks": {
+        "generatedStoryTitle": "História Gerada"
+      }
+    },
+    "metadata": {
+      "descriptions": {
+        "storyFallback": "Leia \"{title}\" por {author} no Mythoria - Crie histórias mágicas para crianças.",
+        "sharedStoryFallback": "\"{title}\" por {author} - Uma história mágica criada com Mythoria."
+      },
+      "titles": {
+        "sharedStory": "{title} - Partilhado no Mythoria"
+      }
+    },
+    "storyEnumMapping": {
+      "fallbacks": {
+        "unknown": "Desconhecido"
+      }
+    }
+  }
+}

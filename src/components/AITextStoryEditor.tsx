@@ -50,7 +50,7 @@ export default function AITextStoryEditor({
   onOptimisticUpdate, // eslint-disable-line @typescript-eslint/no-unused-vars
   onRevertUpdate // eslint-disable-line @typescript-eslint/no-unused-vars
 }: AITextStoryEditorProps) {
-  const t = useTranslations('common.aiEditModal');
+  const t = useTranslations('components.aiTextStoryEditor');
   const [editScope, setEditScope] = useState<EditScope>(currentChapter ? 'chapter' : 'story');
   const [selectedChapter, setSelectedChapter] = useState<number | null>(
     currentChapter ? currentChapter.chapterNumber : null
@@ -161,14 +161,14 @@ export default function AITextStoryEditor({
   // Handle text edit
   const handleTextEdit = async () => {
     if (!userRequest.trim()) {
-      setError('Please enter your editing request');
+      setError(t('errors.enterRequest'));
       return;
     }
 
     // Check credits first
     const credits = await checkEditCredits();
     if (!credits) {
-      setError('Unable to check credits. Please try again.');
+      setError(t('errors.unableToCheckCredits'));
       return;
     }
 
@@ -217,7 +217,7 @@ export default function AITextStoryEditor({
 
     } catch (error) {
       console.error('Error creating text edit job:', error);
-      setError(error instanceof Error ? error.message : 'Failed to start editing job');
+      setError(error instanceof Error ? error.message : t('errors.failedToEdit'));
       setIsLoading(false);
     }
   };
@@ -284,12 +284,12 @@ export default function AITextStoryEditor({
             </div>
             <div>
               <h2 className="text-xl font-semibold text-gray-900">
-                AI Text Editor - {story.title}
+                {t('title', { storyTitle: story.title })}
               </h2>
               <p className="text-sm text-gray-600">
                 {currentChapter 
                   ? `Chapter ${currentChapter.chapterNumber}: ${currentChapter.title}`
-                  : 'Full Story'
+                  : t('fullStoryTitle')
                 }
               </p>
             </div>
@@ -358,18 +358,18 @@ export default function AITextStoryEditor({
             {/* User Request */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-700">
-                {t('userRequest.label')}
+                Edit Request
               </label>
               <textarea
                 value={userRequest}
                 onChange={(e) => setUserRequest(e.target.value)}
-                placeholder={t('userRequest.placeholder')}
+                placeholder={t('requestPlaceholder')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
                 rows={8}
                 maxLength={2000}
               />
               <div className="flex justify-between text-xs text-gray-500">
-                <span>{userRequest.length}/2000 characters</span>
+                <span>{t('characterCount', { count: userRequest.length, max: 2000 })}</span>
               </div>
             </div>
 
@@ -464,7 +464,7 @@ export default function AITextStoryEditor({
                 onClick={onClose}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
               >
-                {t('actions.cancel')}
+                {t('cancelButton')}
               </button>
               <button
                 onClick={handleTextEdit}
@@ -474,12 +474,12 @@ export default function AITextStoryEditor({
                 {isLoading ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>{t('actions.editing')}</span>
+                    <span>{t('loading')}</span>
                   </>
                 ) : (
                   <>
                     <FiZap className="w-4 h-4" />
-                    <span>{t('actions.edit')}</span>
+                    <span>{t('editButton')}</span>
                   </>
                 )}
               </button>

@@ -50,7 +50,7 @@ export default function ReadingToolbar({
   currentChapter = 0, 
   onChapterChange 
 }: ReadingToolbarProps) {
-  const t = useTranslations('common.readingToolbar');
+  const t = useTranslations('components.readingToolbar');
   const [settings, setSettings] = useState<ReadingSettings>(DEFAULT_SETTINGS);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -118,10 +118,10 @@ export default function ReadingToolbar({
                 <div tabIndex={0} role="button" className="btn btn-ghost btn-sm">
                   <FiBook className="w-4 h-4" />
                   <span className="hidden sm:inline ml-2">
-                    {currentChapter === 0 ? 'Cover' : `Chapter ${currentChapter}`}
+                    {currentChapter === 0 ? t('cover') : t('chapterLabel', { number: currentChapter })}
                   </span>
                   <span className="sm:hidden ml-1">
-                    {currentChapter === 0 ? 'Cover' : `Ch. ${currentChapter}`}
+                    {currentChapter === 0 ? t('cover') : t('chapterLabel', { number: currentChapter })}
                   </span>
                   <FiChevronDown className="w-3 h-3 ml-1" />
                 </div>
@@ -131,7 +131,7 @@ export default function ReadingToolbar({
                       onClick={() => onChapterChange?.(0)}
                       className={`${currentChapter === 0 ? 'bg-primary/20' : ''}`}
                     >
-                      Cover & Table of Contents
+                      {t('coverAndToc')}
                     </button>
                   </li>
                   {chapters.map((chapter) => (

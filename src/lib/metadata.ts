@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { getLibTranslations } from '@/utils/lib-translations';
 
 interface StoryMetadata {
   title: string;
@@ -10,9 +11,13 @@ interface StoryMetadata {
   slug: string;
 }
 
-export function generateStoryMetadata(story: StoryMetadata): Metadata {
+export async function generateStoryMetadata(story: StoryMetadata, locale?: string): Promise<Metadata> {
+  const { t } = await getLibTranslations(locale);
   const title = `${story.title} | Mythoria`;
-  const description = story.synopsis || story.plotDescription || `Read "${story.title}" by ${story.author.displayName} on Mythoria - Create magical stories for children.`;
+  const description = story.synopsis || story.plotDescription || t('metadata.descriptions.storyFallback', {
+    title: story.title,
+    author: story.author.displayName
+  });
   const url = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://mythoria.com'}/p/${story.slug}`;
   
   return {
@@ -48,9 +53,13 @@ export function generateStoryMetadata(story: StoryMetadata): Metadata {
   };
 }
 
-export function generateSharedStoryMetadata(story: StoryMetadata): Metadata {
-  const title = `${story.title} - Shared on Mythoria`;
-  const description = story.synopsis || story.plotDescription || `"${story.title}" by ${story.author.displayName} - A magical story created with Mythoria.`;
+export async function generateSharedStoryMetadata(story: StoryMetadata, locale?: string): Promise<Metadata> {
+  const { t } = await getLibTranslations(locale);
+  const title = t('metadata.titles.sharedStory', { title: story.title });
+  const description = story.synopsis || story.plotDescription || t('metadata.descriptions.sharedStoryFallback', {
+    title: story.title,
+    author: story.author.displayName
+  });
   
   return {
     title,

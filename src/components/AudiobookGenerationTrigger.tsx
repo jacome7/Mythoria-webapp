@@ -19,7 +19,7 @@ export default function AudiobookGenerationTrigger({
   onGenerationStart,
   onGenerationComplete
 }: AudiobookGenerationTriggerProps) {
-  const t = useTranslations('stories.audioGeneration');
+  const t = useTranslations('components.audiobookGenerationTrigger');
   const [isGeneratingLocal, setIsGeneratingLocal] = useState(isGenerating);
   const [error, setError] = useState<string | null>(null);
   const [selectedVoice, setSelectedVoice] = useState('nova');
@@ -45,7 +45,7 @@ export default function AudiobookGenerationTrigger({
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to start audiobook generation');
+        throw new Error(errorData.error || t('errors.failedToStart'));
       }
 
       // The response will be 202 Accepted, and the workflow will process asynchronously

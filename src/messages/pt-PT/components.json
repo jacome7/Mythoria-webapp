@@ -1,0 +1,170 @@
+{
+  "components": {
+    "aiImageEditor": {
+      "title": "Editor de Imagem IA - {imageType}",
+      "currentImage": "Imagem Atual:",
+      "requestPlaceholder": "Descreva como quer modificar esta imagem...",
+      "characterCount": "{count}/{max} caracteres",
+      "generateButton": "Gerar Nova Imagem",
+      "replaceButton": "Substituir Original",
+      "cancelButton": "Cancelar",
+      "loading": "A gerar...",
+      "errors": {
+        "describeChanges": "Por favor descreva as alterações que quer fazer à imagem",
+        "unableToCheckCredits": "Não foi possível verificar os créditos. Tente novamente.",
+        "failedToGenerate": "Falha ao gerar nova imagem. Tente novamente.",
+        "failedToReplace": "Falha ao substituir imagem. Tente novamente."
+      },
+      "imageTypes": {
+        "cover": "Capa",
+        "backcover": "Contracapa",
+        "chapter": "Capítulo {number}"
+      }
+    },
+    "aiTextStoryEditor": {
+      "title": "Editor de Texto IA - {storyTitle}",
+      "fullStoryTitle": "História Completa",
+      "requestPlaceholder": "Introduza o seu pedido de edição...",
+      "characterCount": "{count}/{max} caracteres",
+      "editButton": "Editar História",
+      "cancelButton": "Cancelar",
+      "loading": "A processar...",
+      "errors": {
+        "enterRequest": "Por favor introduza o seu pedido de edição",
+        "unableToCheckCredits": "Não foi possível verificar os créditos. Tente novamente.",
+        "failedToEdit": "Falha ao editar história. Tente novamente."
+      }
+    },
+    "audiobookGenerationProgress": {
+      "title": "Progresso da Geração do Audiolivro",
+      "status": {
+        "pending": "Pendente",
+        "inProgress": "Em Progresso",
+        "completed": "Concluído",
+        "failed": "Falhou"
+      },
+      "errors": {
+        "failedToFetch": "Falha ao obter progresso do audiolivro",
+        "failedToLoad": "Falha ao carregar progresso da geração do audiolivro"
+      }
+    },
+    "audiobookGenerationTrigger": {
+      "generateButton": "Gerar Audiolivro",
+      "errors": {
+        "failedToStart": "Falha ao iniciar geração do audiolivro"
+      }
+    },
+    "chapterEditor": {
+      "editImageButton": "Editar Imagem do Capítulo",
+      "saveButton": "Guardar Capítulo",
+      "goBackButton": "Voltar",
+      "imagePlaceholder": "Imagem do Capítulo {number}",
+      "titlePlaceholder": "Introduza o título do capítulo...",
+      "contentPlaceholder": "Escreva o conteúdo do seu capítulo aqui..."
+    },
+    "chapterNavigation": {
+      "storyInformation": "Informação da História",
+      "info": "Info",
+      "chapterLabel": "Capítulo {number}"
+    },
+    "characterCard": {
+      "errors": {
+        "maxTraits": "Máximo de 5 características permitidas. Remova uma característica primeiro."
+      }
+    },
+    "contactForm": {
+      "errors": {
+        "fillRequired": "Por favor preencha todos os campos obrigatórios",
+        "createFailed": "Falha ao criar ticket de suporte. Tente novamente."
+      },
+      "success": {
+        "ticketCreated": "Ticket de suporte criado com sucesso! Entraremos em contacto em breve."
+      }
+    },
+    "editCreditInfo": {
+      "editLabel": "Edição #{number}",
+      "balanceLabel": "O seu saldo: {credits} créditos",
+      "buyCreditsButton": "Comprar créditos",
+      "progressLabel": "Progresso:"
+    },
+    "groupedCharacterTypeSelect": {
+      "placeholder": "Selecionar tipo de personagem...",
+      "groups": {
+        "human": "Humano",
+        "animals": "Animais",
+        "fantasy": "Fantasia",
+        "other": "Outro"
+      }
+    },
+    "imageEditButton": {
+      "tooltip": "Editar esta imagem com Mythoria"
+    },
+    "jobProgressModal": {
+      "title": "A Processar o Seu Pedido",
+      "steps": {
+        "textEditing": "Edição de Texto",
+        "imageEditing": "Edição de Imagem",
+        "audioGeneration": "Geração de Áudio",
+        "finalizing": "A Finalizar"
+      },
+      "status": {
+        "waitingToStart": "À espera de iniciar...",
+        "inProgress": "Em progresso...",
+        "completed": "Concluído com sucesso!",
+        "failed": "Falhado"
+      }
+    },
+    "readingProgress": {
+      "fallbacks": {
+        "storyTitle": "Título da História",
+        "chapterTitle": "Capítulo {number}"
+      }
+    },
+    "readingToolbar": {
+      "cover": "Capa",
+      "coverAndToc": "Capa e Índice",
+      "chapterLabel": "Capítulo {number}"
+    },
+    "revolutPayment": {
+      "errors": {
+        "initializeFailed": "Falha ao inicializar pagamento"
+      }
+    },
+    "shareModal": {
+      "errors": {
+        "invalidStoryId": "ID da história inválido"
+      },
+      "messages": {
+        "checkOut": "Confira \"{title}\" no Mythoria"
+      }
+    },
+    "storyAudioPlayer": {
+      "defaultChapterTitle": "Capítulo {number}"
+    },
+    "storyInfoEditor": {
+      "title": "Informação da História",
+      "storyTitle": "Título da História",
+      "titlePlaceholder": "Introduza o título da história",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Introduza a descrição da história",
+      "targetAudience": "Público-Alvo",
+      "graphicalStyle": "Estilo Gráfico",
+      "saveButton": "Guardar Alterações",
+      "cancelButton": "Cancelar"
+    },
+    "printOrder": {
+      "paymentStep": {
+        "errors": {
+          "loadPricingFailed": "Falha ao carregar informação de preços",
+          "fetchPricingFailed": "Falha ao obter dados de preços"
+        }
+      },
+      "printOrderContent": {
+        "errors": {
+          "saveAddressFailed": "Falha ao guardar endereço",
+          "deleteAddressFailed": "Falha ao eliminar endereço"
+        }
+      }
+    }
+  }
+}

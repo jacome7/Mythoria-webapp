@@ -12,7 +12,7 @@ interface ContactFormProps {
 
 // Separate component for search params to handle suspense
 function ContactFormContent({ className = "" }: ContactFormProps) {
-  const t = useTranslations('ContactUsPage');
+  const t = useTranslations('components.contactForm');
   const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
     name: '',
@@ -47,7 +47,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
     e.preventDefault();
     
     if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
-      setResponseMessage('Please fill in all required fields');
+      setResponseMessage(t('errors.fillRequired'));
       setIsSuccess(false);
       return;
     }
@@ -81,7 +81,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
       const result = await response.json();
       
       if (result.success) {
-        setResponseMessage('🎫 Support ticket created! We will review your request and get back to you as soon as possible.');
+        setResponseMessage(t('success.ticketCreated'));
         setIsSuccess(true);
         setShowModal(true);
         
@@ -99,13 +99,13 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
         }, 4000);
         
       } else {
-        setResponseMessage(result.error || 'Failed to create support ticket. Please try again.');
+        setResponseMessage(result.error || t('errors.createFailed'));
         setIsSuccess(false);
         setShowModal(true);
       }
         } catch (error) {
       console.error('Contact form error:', error);
-      setResponseMessage('Failed to create support ticket. Please try again.');
+      setResponseMessage(t('errors.createFailed'));
       setIsSuccess(false);
       setShowModal(true);
     } finally {

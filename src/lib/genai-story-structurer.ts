@@ -3,6 +3,7 @@ import { getLanguageSpecificPrompt, getLanguageSpecificSchema } from "./prompt-l
 import { calculateGenAICost, normalizeModelName } from "@/db/genai-cost-calculator";
 import { normalizeCharacterType } from "@/types/character-enums";
 import { normalizeStoryEnums } from "@/utils/enum-normalizers";
+import { getLibTranslations } from '@/utils/lib-translations';
 
 // Initialize GoogleGenAI client with Vertex AI configuration
 const clientOptions = {
@@ -59,7 +60,8 @@ export async function generateStructuredStory(
   }> = [],
   imageData?: string | null,
   audioData?: string | null,
-  authorName?: string
+  authorName?: string,
+  locale?: string
   // Note: authorId and storyId parameters removed as token tracking moved to workflows service
 ): Promise<StructuredStoryResult> {
   try {
@@ -67,6 +69,9 @@ export async function generateStructuredStory(
     // since the AI will now infer the target language from user content
     const promptConfig = await getLanguageSpecificPrompt();
     const responseSchema = await getLanguageSpecificSchema();
+    
+    // Get translations for error messages
+    const { t } = await getLibTranslations(locale);
 
     // DEBUG: Log the schema being sent to GenAI
     console.log('=== DEBUG: GenAI Response Schema ===');
@@ -111,7 +116,7 @@ export async function generateStructuredStory(
           const mimeType = imageData.split(';')[0].split(':')[1];
           
           if (!base64Data || !mimeType) {
-            throw new Error('Invalid image data format');
+            throw new Error(t('genaiStoryStructurer.errors.invalidImageFormat'));
           }
           
           parts.push({
@@ -121,7 +126,7 @@ export async function generateStructuredStory(
             }
           });
         } catch {
-          throw new Error('Failed to process image data for AI analysis');
+          throw new Error(t('genaiStoryStructurer.errors.failedToProcessImage'));
         }
       }
       
@@ -132,7 +137,7 @@ export async function generateStructuredStory(
           const mimeType = audioData.split(';')[0].split(':')[1];
           
           if (!base64Data || !mimeType) {
-            throw new Error('Invalid audio data format');
+            throw new Error(t('genaiStoryStructurer.errors.invalidAudioFormat'));
           }
           
           parts.push({
@@ -142,7 +147,7 @@ export async function generateStructuredStory(
             }
           });
         } catch {
-          throw new Error('Failed to process audio data for AI analysis');
+          throw new Error(t('genaiStoryStructurer.errors.failedToProcessAudio'));
         }
       }
       
@@ -194,7 +199,7 @@ export async function generateStructuredStory(
     const text = result.text;
     
     if (!text) {
-      throw new Error("No response text generated from the model");
+      throw new Error(t('genaiStoryStructurer.errors.noResponseText'));
     }    // Clean the response text to handle potential markdown wrapping and extra text
     let cleanedText = text.trim();
     
@@ -280,10 +285,10 @@ export async function generateStructuredStory(
         try {
           parsedResult = JSON.parse(jsonMatch[0]);
         } catch {
-          throw new Error("GenAI returned invalid JSON format");
+          throw new Error(t('genaiStoryStructurer.errors.invalidJsonFormat'));
         }
       } else {
-        throw new Error("GenAI returned invalid JSON format");
+        throw new Error(t('genaiStoryStructurer.errors.invalidJsonFormat'));
       }
     }
 
@@ -293,7 +298,7 @@ export async function generateStructuredStory(
       const fallbackResult: StructuredStoryResult = {
         story: {
           plotDescription: userDescription,
-          title: "Generated Story"
+          title: t('genaiStoryStructurer.fallbacks.generatedStoryTitle')
         },
         characters: [],
         costInfo: costInfo.modelFound ? {
@@ -334,7 +339,10 @@ export async function generateStructuredStory(
 
     return resultWithCost;
   } catch (error) {
-    throw new Error(`Failed to generate structured story: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    const { t } = await getLibTranslations(locale);
+    throw new Error(t('genaiStoryStructurer.errors.failedToGenerate', { 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    }));
   }
 }
 
