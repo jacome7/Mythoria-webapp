@@ -190,15 +190,18 @@
 /* Covers */
 .mythoria-front-cover,
 .mythoria-back-cover {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  margin: 2rem 0;
+  margin: 1rem 0;
 }
 
 .mythoria-cover-image {
   max-width: 100%;
   height: auto;
-  border-radius: 4px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 /* Mythoria message */

@@ -164,8 +164,8 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
           src={logoUrl} 
           alt="Mythoria Logo" 
           className="mythoria-logo"
-          width={200}
-          height={50}
+          width={400}
+          height={200}
         />
       </div>
 
@@ -252,33 +252,33 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
         <div className="mythoria-page-break"></div>
 
         {/* Navigation Controls */}
-        <div className="flex justify-between items-center py-8">
-          <div>
+        <div className="flex justify-between items-center py-2 px-4 md:px-0 gap-2">
+          <div className="flex-shrink-0">
             {(currentChapter && currentChapter > 1) || currentChapter === 1 ? (
               <button
                 onClick={navigateToPreviousChapter}
-                className="btn btn-outline btn-sm"
+                className="btn btn-outline btn-sm text-xs md:text-sm"
               >
-                {currentChapter === 1 ? '← Back to Story' : `← Chapter ${currentChapter - 1}`}
+                {currentChapter === 1 ? '← Back' : `← Ch. ${currentChapter - 1}`}
               </button>
             ) : (
               <div></div>
             )}
           </div>
           
-          <div className="text-center">
-            <span className="text-sm text-base-content/70">
-              Chapter {currentChapter} of {totalChapters}
+          <div className="text-center flex-shrink-0 min-w-0">
+            <span className="text-xs md:text-sm text-base-content/70 whitespace-nowrap">
+              Ch. {currentChapter} of {totalChapters}
             </span>
           </div>
           
-          <div>
+          <div className="flex-shrink-0">
             {currentChapter && currentChapter < totalChapters ? (
               <button
                 onClick={navigateToNextChapter}
-                className="btn btn-primary btn-sm"
+                className="btn btn-primary btn-sm text-xs md:text-sm"
               >
-                Chapter {currentChapter + 1} →
+                Ch. {currentChapter + 1} →
               </button>
             ) : (
               <div></div>
