@@ -16,6 +16,7 @@ export const stories = pgTable("stories", {
   synopsis: text("synopsis"),
   place: text("place"), // Setting of the story (real or imaginary)
   additionalRequests: text("additionalRequests"), // Optional text area for mentioning products, companies, or specific details to include.
+  imageGenerationInstructions: text("image_generation_instructions"), // Custom instructions for AI image generation
   targetAudience: targetAudienceEnum("target_audience"),
   novelStyle: novelStyleEnum("novel_style"),
   graphicalStyle: graphicalStyleEnum("graphical_style"),

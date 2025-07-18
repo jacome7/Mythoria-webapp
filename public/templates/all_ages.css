@@ -3,11 +3,18 @@
 .story-container {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 0rem !important;
+  padding: 0.5rem !important;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
   background-color: #ffffff;
   color: #333333;
+}
+
+.mythoria-story-content {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #1a202c;
+  margin-left: 5px;
 }
 
 /* Story Title - Main heading */
@@ -66,7 +73,7 @@
 /* Chapter images */
 .mythoria-chapter-image {
   text-align: center;
-  margin: 1.5rem 0;
+  margin: 1rem 0;
 }
 
 .mythoria-chapter-img {

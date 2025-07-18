@@ -3,9 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiLoader, FiAlertCircle, FiUser, FiCalendar, FiTag, FiEye, FiPrinter } from 'react-icons/fi';
+import { FiLoader, FiAlertCircle, FiUser, FiCalendar, FiTag, FiEye, FiPrinter, FiVolume2 } from 'react-icons/fi';
 import PublicStoryRating from '@/components/PublicStoryRating';
-import StoryAudioPlayer from '@/components/StoryAudioPlayer';
 import StoryReader from '@/components/StoryReader';
 
 interface Chapter {
@@ -46,6 +45,7 @@ interface PublicStoryData {
     coverUri?: string;
     backcoverUri?: string;
     slug?: string;
+    hasAudio?: boolean;
   };
   chapters: Chapter[];
   accessLevel: 'public';
@@ -199,7 +199,7 @@ export default function PublicStoryPage() {
               
               {/* Actions - Mobile responsive layout */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                {/* Tags and Print Button */}
+                {/* Tags and Action Buttons */}
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="badge badge-success text-xs sm:text-sm">{t('labels.publicStory')}</span>
                   <a
@@ -210,17 +210,17 @@ export default function PublicStoryPage() {
                     <span className="hidden min-[480px]:inline">{t('actions.orderPrint')}</span>
                     <span className="min-[480px]:hidden">Print</span>
                   </a>
+                  {story.hasAudio && (
+                    <a
+                      href={`/${locale}/p/${slug}/listen`}
+                      className="btn btn-secondary btn-sm flex items-center gap-2 text-xs sm:text-sm"
+                    >
+                      <FiVolume2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span className="hidden min-[480px]:inline">{t('actions.listen')}</span>
+                      <span className="min-[480px]:hidden">Listen</span>
+                    </a>
+                  )}
                 </div>
-                
-                {/* Audio Player */}
-                {story.audiobookUri && (
-                  <StoryAudioPlayer
-                    audiobookUri={story.audiobookUri}
-                    storyId={story.storyId}
-                    storyTitle={story.title}
-                    isPublic={true}
-                  />
-                )}
               </div>
             </div>
             

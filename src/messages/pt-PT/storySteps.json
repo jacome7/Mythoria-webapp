@@ -1,5 +1,9 @@
 {
   "StorySteps": {
+    "common": {
+      "stepProgress": "Passo {currentStep} de {totalSteps}",
+      "saving": "A guardar..."
+    },
     "step1": {
       "unauthenticated": {
         "title": "Ops! Parece que estás a tentar entrar no lounge dos autores!",
@@ -49,6 +53,54 @@
         "capture": "📸 Capturar",
         "cancel": "❌ Cancelar"
       },
+      "writingTips": [
+        {
+          "text": "Onde se desenrola a tua história? Descreve o mundo - é um reino mágico, uma cidade acolhedora ou algum lugar além da imaginação?"
+        },
+        {
+          "text": "Quem são as personagens principais? O que as torna especiais ou únicas? Quais são os seus sonhos e medos?"
+        },
+        {
+          "text": "Esboça o enredo básico da tua história."
+        },
+        {
+          "text": "Simplesmente escreve o que está no teu coração."
+        },
+        {
+          "text": "Escreve sobre uma memória de infância ou um evento futuro!"
+        },
+        {
+          "text": "O que querem as tuas personagens alcançar? Dá-lhes um objetivo claro para trabalharem."
+        },
+        {
+          "text": "O que torna a tua história única? Adiciona elementos especiais que só existem no teu mundo!"
+        }
+      ],
+      "badgeLabels": {
+        "added": "Adicionado",
+        "image": "imagem",
+        "images": "imagens"
+      },
+      "recordingTips": {
+        "title": "Dicas de Gravação",
+        "tips": [
+          "Fala claramente e a um ritmo confortável",
+          "Descreve a tua história como se a contasses a um amigo",
+          "Inclui detalhes sobre personagens, cenários e eventos",
+          "Não te preocupes em ser perfeito - apenas conta a tua história!"
+        ]
+      },
+      "writingTipsTitle": "Dicas de Escrita",
+      "actions": {
+        "done": "Feito",
+        "remove": "Remover",
+        "recordAgain": "Gravar Novamente",
+        "stopRecording": "Parar Gravação",
+        "recording": "A gravar..."
+      },
+      "audioSupport": {
+        "notSupported": "O teu navegador não suporta o elemento de áudio."
+      },
       "alerts": {
         "uploadError": "Falha ao carregar ficheiro. Por favor, tente novamente.",
         "recordingError": "Falha ao iniciar gravação. Por favor, verifique as permissões do microfone.",
@@ -58,7 +110,8 @@
         "analyzeImageRequest": "Analise a imagem e descreva o que vê...",
         "genAIError": "Pedido GenAI falhou. Por favor tente novamente.",
         "cameraIssue": "Problema no acesso à câmara. Por favor verifique as permissões da câmara.",
-        "microphoneIssue": "Problema no acesso ao microfone. Por favor verifique as permissões do microfone."
+        "microphoneIssue": "Problema no acesso ao microfone. Por favor verifique as permissões do microfone.",
+        "failedToCreateStory": "Falha ao criar história: {errorMessage}. Por favor tente novamente."
       },
       "loadingModal": {
         "title": "✨ A Criar a Tua História",
@@ -89,7 +142,9 @@
       },
       "alerts": {
         "failedToLoadStoryCharacters": "Falha ao carregar personagens da história. Por favor tente novamente.",
-        "characterLoadError": "Erro ao carregar personagens. Por favor atualize a página."
+        "characterLoadError": "Erro ao carregar personagens. Por favor atualize a página.",
+        "failedToLoadStoryData": "Falha ao carregar dados da história. Por favor tente novamente.",
+        "failedToLoadStoryForEditing": "Falha ao carregar história para edição. Por favor tente novamente."
       },
       "next": "Seguinte"
     },
@@ -119,9 +174,21 @@
       "placeholders": {
         "selectAudience": "Selecionar público-alvo...",
         "selectNovelStyle": "Selecionar estilo de romance...",
+        "selectGraphicStyle": "Selecionar estilo gráfico...",
         "outlinePlaceholder": "Descreva todos os detalhes que gostaria na história...",
         "storyLanguageHelp": "A tua história será escrita e gerada no idioma selecionado."
       },
+      "languageOptions": [
+        { "value": "nl-NL", "label": "Holandês (Nederlands)" },
+        { "value": "en-US", "label": "Inglês" },
+        { "value": "fr-FR", "label": "Francês (Français)" },
+        { "value": "de-DE", "label": "Alemão (Deutsch)" },
+        { "value": "it-IT", "label": "Italiano (Italiano)" },
+        { "value": "pl-PL", "label": "Polaco (Polski)" },
+        { "value": "pt-BR", "label": "Português (Brasil)" },
+        { "value": "pt-PT", "label": "Português (Portugal)" },
+        { "value": "es-ES", "label": "Espanhol (Español)" }
+      ],
       "chapterCounts": {
         "short": "Curta (3-5 capítulos)",
         "medium": "Média (6-8 capítulos)", 
@@ -190,7 +257,9 @@
       "alerts": {
         "failedToFetchData": "Falha ao obter dados da história. Por favor tente novamente.",
         "failedToDeductCredits": "Falha ao deduzir créditos. Por favor tente novamente.",
-        "dataFetchError": "Erro ao obter dados. Por favor verifique a sua ligação e tente novamente."
+        "dataFetchError": "Erro ao obter dados. Por favor verifique a sua ligação e tente novamente.",
+        "failedToLoadCreditInformation": "Falha ao carregar informação de créditos. Por favor tente novamente.",
+        "failedToLoadPricingInformation": "Falha ao carregar informação de preços. Por favor tente novamente."
       }
     }
   }

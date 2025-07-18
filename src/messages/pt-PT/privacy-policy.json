@@ -185,7 +185,8 @@
     "section10": {
       "title": "10. Os seus direitos",
       "content": "Pode aceder, retificar, apagar, restringir, opor-se ou portar os seus dados pessoais e retirar consentimento a qualquer momento. Pedidos enviados para dpo@mythoria.pt são respondidos no prazo de um mês (Art.º 12 RGPD). Se considerar que os seus direitos foram violados, pode apresentar reclamação à CNPD (contactos no § 1).",
-      "deleteAccount": "Se pretender exercer o seu direito ao apagamento (Art.º 17 RGPD) e eliminar permanentemente a sua conta, pode fazê-lo através da nossa página dedicada de eliminação de conta."
+      "deleteAccount": "Se pretender exercer o seu direito ao apagamento (Art.º 17 RGPD) e eliminar permanentemente a sua conta, pode fazê-lo através da nossa página dedicada de eliminação de conta.",
+      "deleteAccountButton": "Eliminar Conta"
     },
     "section11": {
       "title": "11. Transferências internacionais",

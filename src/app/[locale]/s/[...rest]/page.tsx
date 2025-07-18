@@ -2,12 +2,13 @@
 
 import { useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 export default function SharedStoryRouteHandler() {
   const params = useParams();
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations('SharedStoryPage');
   
   useEffect(() => {
     if (params.rest && Array.isArray(params.rest)) {
@@ -28,7 +29,7 @@ export default function SharedStoryRouteHandler() {
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center space-y-4">
         <div className="loading loading-spinner loading-lg text-primary"></div>
-        <h2 className="text-xl font-semibold">Redirecting...</h2>
+        <h2 className="text-xl font-semibold">{t('redirecting')}</h2>
       </div>
     </div>
   );

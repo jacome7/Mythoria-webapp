@@ -36,7 +36,7 @@ export default function JobProgressModal({
   isOpen,
   onClose,
   jobId,
-  jobType,
+  jobType, // eslint-disable-line @typescript-eslint/no-unused-vars
   onComplete,
   onError
 }: JobProgressModalProps) {
@@ -153,17 +153,6 @@ export default function JobProgressModal({
       return `${minutes}m ${remainingSeconds}s`;
     }
     return `${remainingSeconds}s`;
-  };
-
-  const getJobTypeDisplay = () => {
-    switch (jobType) {
-      case 'text_edit':
-        return t('steps.textEditing');
-      case 'image_edit':
-        return t('steps.imageEditing');
-      default:
-        return 'Processing';
-    }
   };
 
   const getStatusIcon = () => {

@@ -46,7 +46,8 @@
       "deletionFailed": "Falha na eliminação da conta. Tente novamente ou contacte o suporte se o problema persistir.",
       "networkError": "Ocorreu um erro de rede. Verifique a sua ligação e tente novamente.",
       "failedToDeleteAccount": "Falha ao eliminar conta. Por favor tente mais tarde.",
-      "deletionError": "Ocorreu um erro ao eliminar a sua conta. Por favor contacte o suporte para assistência."
+      "deletionError": "Ocorreu um erro ao eliminar a sua conta. Por favor contacte o suporte para assistência.",
+      "deletionAlert": "Ocorreu um erro ao eliminar a sua conta. Tente novamente ou contacte o suporte."
     }
   }
 }

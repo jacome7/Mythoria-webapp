@@ -39,6 +39,7 @@ interface StoryReaderProps {
 
 export default function StoryReader({ storyId, story, chapters, currentChapter }: StoryReaderProps) {
   const t = useTranslations('common.Components.StoryReader');
+  const tCommon = useTranslations('common');
   const router = useRouter();
   const [readingSettings, setReadingSettings] = useState<ReadingSettings | null>(null);
   const [isContentLoaded, setIsContentLoaded] = useState(false);
@@ -152,14 +153,14 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
       )}
       
       {/* Author Name */}
-      <div className="mythoria-author-name">by {story.authorName}</div>
+      <div className="mythoria-author-name">{t('byAuthor', { authorName: story.authorName })}</div>
 
       {/* Mythoria Message */}
       <div className="mythoria-message">
         <p className="mythoria-message-text">
-          This story was imagined by <i className="mythoria-author-emphasis">{story.authorName}</i>.
+          {t('storyImaginedBy')} <i className="mythoria-author-emphasis">{story.authorName}</i>{t('storyImaginedByEnd')}
         </p>
-        <p className="mythoria-message-text">Crafted with:</p>
+        <p className="mythoria-message-text">{t('craftedWith')}</p>
         <Image 
           src={logoUrl} 
           alt="Mythoria Logo" 
@@ -173,7 +174,7 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
 
       {/* Table of Contents */}
       <div className="mythoria-table-of-contents">
-        <h2 className="mythoria-toc-title">Table of Contents</h2>
+        <h2 className="mythoria-toc-title">{t('tableOfContents')}</h2>
         <ul className="mythoria-toc-list">
           {chapters.map((chapter) => (
             <li key={chapter.id} className="mythoria-toc-item">
@@ -209,15 +210,15 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
       return (
         <div className="story-container">
           <div className="text-center py-16">
-            <h2 className="text-2xl font-bold mb-4">Chapter not found</h2>
+            <h2 className="text-2xl font-bold mb-4">{t('chapterNotFound')}</h2>
             <p className="text-lg text-base-content/70 mb-6">
-              The requested chapter could not be found.
+              {t('chapterNotFoundDescription')}
             </p>
             <button
               onClick={() => navigateToChapter(0)}
               className="btn btn-primary"
             >
-              Back to Story
+              {t('backToStory')}
             </button>
           </div>
         </div>
@@ -234,7 +235,7 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
             <div className="mythoria-chapter-image">
               <Image 
                 src={toAbsoluteImageUrl(currentChapterData.imageUri)!} 
-                alt={`Chapter ${currentChapterData.chapterNumber} illustration`} 
+                alt={tCommon('altTexts.chapterIllustration', { number: currentChapterData.chapterNumber })} 
                 className="mythoria-chapter-img"
                 width={600}
                 height={400}
@@ -252,7 +253,7 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
         <div className="mythoria-page-break"></div>
 
         {/* Navigation Controls */}
-        <div className="flex justify-between items-center py-2 px-4 md:px-0 gap-2">
+        <div className="flex justify-between items-center py-2 px-4 md:px-2 gap-2">
           <div className="flex-shrink-0">
             {(currentChapter && currentChapter > 1) || currentChapter === 1 ? (
               <button
@@ -294,7 +295,7 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
     showTableOfContents && (
       <div className="modal modal-open">
         <div className="modal-box">
-          <h3 className="font-bold text-lg mb-4">Table of Contents</h3>
+          <h3 className="font-bold text-lg mb-4">{t('tableOfContents')}</h3>
           <ul className="space-y-2">
             <li>
               <button
@@ -304,7 +305,7 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
                 }}
                 className="btn btn-ghost btn-sm w-full justify-start"
               >
-                Cover & Introduction
+                {t('coverAndIntroduction')}
               </button>
             </li>
             {chapters.map((chapter) => (
@@ -328,7 +329,7 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
               onClick={() => setShowTableOfContents(false)}
               className="btn btn-sm"
             >
-              Close
+              {tCommon('Actions.close')}
             </button>
           </div>
         </div>

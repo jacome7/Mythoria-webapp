@@ -123,6 +123,18 @@
       "Ficção",
       "Mito"
     ],
+    "fallbackWords": [
+      "Aventura",
+      "História de Amor",
+      "Mistério",
+      "Conto de Fadas"
+    ],
+    "altTexts": {
+      "kidsBook": "Livro Infantil",
+      "groupsYearbooks": "Grupos & Álbuns",
+      "adultBook": "Como Conheci a Vossa Mãe",
+      "companyBook": "Livro da Empresa"
+    },
     "comingSoon": {
       "title": "A nossa história está apenas a começar...",
       "subtitle": "A Mythoria está a preparar algo mágico! Estou a trabalhar arduamente, juntamente com a IA, para lhe trazer um novo mundo de histórias personalizadas. Fique atento, a aventura estará disponível em breve! 🧙‍♂️📚✨"
@@ -315,7 +327,9 @@
       "createdBy": "Criado por",
       "emptyTitle": "Ainda Não Há Histórias em Destaque",
       "emptyMessage": "Crie a sua própria história e partilhe-a com o mundo!",
-      "createStory": "Criar a Sua História"
+      "createStory": "Criar a Sua História",
+      "storyCoverAlt": "Capa da história",
+      "filterResults": "{count} de {total} histórias mostradas"
     },
     "emptyState": {
       "noStoriesMatch": "Nenhuma história corresponde aos seus filtros",
@@ -395,7 +409,8 @@
       "cta": "Crie as suas próprias histórias mágicas hoje!"
     },
     "actions": {
-      "orderPrint": "Encomendar Impressão"
+      "orderPrint": "Encomendar Impressão",
+      "listen": "Ouvir"
     }
   },
   "SharedStoryPage": {

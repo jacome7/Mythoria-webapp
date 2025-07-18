@@ -10,13 +10,13 @@ import { trackStoryCreation } from '../../../../lib/analytics';
 
 // Writing tips that rotate
 const WRITING_TIPS = [
-  { icon: '🌍', key: 'setting', text: 'Where does your story take place? Describe the world - is it a magical kingdom, a cozy town, or somewhere beyond imagination?' },
-  { icon: '👥', key: 'characters', text: 'Who are the main characters? What makes them special or unique? What are their dreams and fears?' },
-  { icon: '⚔️', key: 'conflict', text: 'Outline the basic plot for your story.' },
-  { icon: '❤️', key: 'emotion', text: 'Just write what is in your heart.' },
-  { icon: '🎭', key: 'twist', text: 'Write about a child memory or upcoming event!' },
-  { icon: '🎯', key: 'goal', text: 'What do your characters want to achieve? Give them a clear goal to work towards.' },
-  { icon: '✨', key: 'magic', text: 'What makes your story unique? Add special elements that only exist in your world!' }
+  { icon: '🌍', key: 'setting' },
+  { icon: '👥', key: 'characters' },
+  { icon: '⚔️', key: 'conflict' },
+  { icon: '❤️', key: 'emotion' },
+  { icon: '🎭', key: 'twist' },
+  { icon: '🎯', key: 'goal' },
+  { icon: '✨', key: 'magic' }
 ];
 
 type ContentType = 'text' | 'images' | 'audio';
@@ -31,6 +31,7 @@ interface SessionData {
 export default function Step2Page() {
   const router = useRouter();
   const t = useTranslations('StorySteps.step2');
+  const tCommon = useTranslations('StorySteps.common');
   
   // Modal states
   const [activeModal, setActiveModal] = useState<ContentType | null>(null);
@@ -369,7 +370,7 @@ export default function Step2Page() {
     } catch (error) {
       console.error('Error creating story:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      alert(`Failed to create story: ${errorMessage}. Please try again.`);
+      alert(t('alerts.failedToCreateStory', { errorMessage }));
     } finally {
       setIsCreatingStory(false);
       setShowLoadingModal(false);
@@ -396,7 +397,7 @@ export default function Step2Page() {
                   {/* Mobile Progress Indicator */}
                   <div className="block md:hidden mb-8">
                     <div className="text-center text-sm text-gray-600 mb-2">
-                      Step {currentStep} of {totalSteps}
+                      {tCommon('stepProgress', { currentStep, totalSteps })}
                     </div>
                     <progress 
                       className="progress progress-primary w-full" 
@@ -457,7 +458,7 @@ export default function Step2Page() {
                     <span className="text-base font-semibold">{t('tabImage')}</span>
                     {uploadedImages.length > 0 && (
                       <span className="badge badge-primary badge-sm">
-                        {uploadedImages.length} {uploadedImages.length === 1 ? 'image' : 'images'}
+                        {uploadedImages.length} {uploadedImages.length === 1 ? t('badgeLabels.image') : t('badgeLabels.images')}
                       </span>
                     )}
                   </button>
@@ -472,7 +473,7 @@ export default function Step2Page() {
                     <span className="text-2xl">🎤</span>
                     <span className="text-base font-semibold">{t('tabRecord')}</span>
                     {uploadedAudio && (
-                      <span className="badge badge-primary badge-sm">✓ Added</span>
+                      <span className="badge badge-primary badge-sm">{t('badgeLabels.added')}</span>
                     )}
                   </button>
                 </div>
@@ -490,7 +491,7 @@ export default function Step2Page() {
                 {/* Auto-save indicator */}
                 {isSaving && (
                   <div className="text-center text-sm text-gray-500 mt-2">
-                    <span className="loading loading-spinner loading-xs"></span> Saving...
+                    <span className="loading loading-spinner loading-xs"></span> {tCommon('saving')}
                   </div>
                 )}
 
@@ -604,10 +605,10 @@ export default function Step2Page() {
                   <div className="p-4 bg-base-200 rounded-lg">
                     <h4 className="font-semibold mb-2 flex items-center gap-2">
                       <span className="text-xl">{currentTip.icon}</span>
-                      <span className="text-sm">Writing Tips</span>
+                      <span className="text-sm">{t('writingTipsTitle')}</span>
                     </h4>
                     <p className="text-sm leading-relaxed animate-fade-in">
-                      {currentTip.text}
+                      {t(`writingTips.${currentTipIndex}.text`)}
                     </p>
                   </div>
                 </div>
@@ -621,7 +622,7 @@ export default function Step2Page() {
                     saveToSession();
                   }}
                 >
-                  Done
+                  {t('actions.done')}
                 </button>
               </div>
             </div>
@@ -805,7 +806,7 @@ export default function Step2Page() {
                         </div>
                         <div className="absolute inset-0 rounded-full border-4 border-red-500 animate-ping"></div>
                       </div>
-                      <p className="text-lg font-semibold text-red-600">Recording...</p>
+                      <p className="text-lg font-semibold text-red-600">{t('actions.recording')}</p>
                       <p className="text-gray-600">{t('recordingHelp')}</p>
                     </div>
                     <div className="flex gap-4 justify-center">
@@ -813,7 +814,7 @@ export default function Step2Page() {
                         className="btn btn-error btn-lg"
                         onClick={stopRecording}
                       >
-                        ⏹️ Stop Recording
+                        ⏹️ {t('actions.stopRecording')}
                       </button>
                     </div>
                   </div>
@@ -832,20 +833,20 @@ export default function Step2Page() {
                           controls
                           className="w-full max-w-md mx-auto"
                         >
-                          Your browser does not support the audio element.
+                          {t('audioSupport.notSupported')}
                         </audio>
                         <div className="card-actions justify-center">
                           <button
                             className="btn btn-outline btn-sm"
                             onClick={clearAudio}
                           >
-                            🗑️ Remove
+                            🗑️ {t('actions.remove')}
                           </button>
                           <button
                             className="btn btn-primary btn-sm"
                             onClick={startRecording}
                           >
-                            🔄 Record Again
+                            🔄 {t('actions.recordAgain')}
                           </button>
                         </div>
                       </div>
@@ -863,12 +864,11 @@ export default function Step2Page() {
 
                 {/* Audio Tips */}
                 <div className="mt-6 p-4 bg-base-200 rounded-lg">
-                  <h4 className="font-semibold mb-3">🎤 Recording Tips</h4>
+                  <h4 className="font-semibold mb-3">🎤 {t('recordingTips.title')}</h4>
                   <ul className="text-sm space-y-1 list-disc list-inside">
-                    <li>Speak clearly and at a comfortable pace</li>
-                    <li>Describe your story as if telling it to a friend</li>
-                    <li>Include details about characters, settings, and events</li>
-                    <li>Don&apos;t worry about being perfect - just tell your story!</li>
+                    {(t.raw('recordingTips.tips') as string[]).map((tip: string, index: number) => (
+                      <li key={index}>{tip}</li>
+                    ))}
                   </ul>
                 </div>
               </div>
@@ -881,7 +881,7 @@ export default function Step2Page() {
                     saveToSession();
                   }}
                 >
-                  Done
+                  {t('actions.done')}
                 </button>
               </div>
             </div>

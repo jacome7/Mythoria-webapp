@@ -3,11 +3,18 @@
 .story-container {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0.5rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
   background-color: #ffffff;
   color: #2d3748;
+}
+
+.mythoria-story-content {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #1a202c;
+  margin-left: 0px;
 }
 
 /* Story Title - Main heading */
@@ -38,15 +45,15 @@
 .mythoria-chapter-title {
   font-size: 1.5rem !important;
   font-weight: 600 !important;
-  margin: 2rem 0 1rem 0 !important;
+  margin: 0rem 0 1rem 0 !important;
   line-height: 1.4 !important;
   color: #2b6cb0 !important;
 }
 
 /* Chapter content */
 .mythoria-chapter {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
+  margin: 0px!important;
+  padding: 10px!important;
   background-color: #f7fafc;
   border-radius: 12px;
   border-left: 4px solid #2b6cb0;
@@ -54,6 +61,14 @@
 
 .mythoria-chapter-content {
   margin-bottom: 1.5rem;
+}
+
+.mythoria-chapter-content p {
+  text-indent: 1rem;
+  margin-bottom: 1.25rem !important;
+  font-size: 1rem !important;
+  line-height: 1.8 !important;
+  color: #111 !important;
 }
 
 .mythoria-chapter-paragraph {
@@ -159,10 +174,13 @@
 }
 
 .mythoria-logo {
-  max-width: 180px;
+  max-width: 360px;
   height: auto;
   margin: 1rem auto 0 auto;
   display: block;
+  border: 1px solid #9e9e9e;
+  border-radius: 8px;
+  margin-bottom: 16px;
 }
 
 /* Dedicatory */

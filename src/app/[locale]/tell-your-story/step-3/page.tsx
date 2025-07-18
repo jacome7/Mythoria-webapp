@@ -113,11 +113,11 @@ function Step3Page() {
 
     } catch (error) {
       console.error('Error fetching story characters:', error);
-      alert('Failed to load story characters. Please try again.');
+      alert(t('alerts.failedToLoadStoryCharacters'));
     } finally {
       setLoading(false);
     }
-  }, [currentStoryId]);
+  }, [currentStoryId, t]);
 
   const fetchAvailableCharacters = useCallback(async (storyId?: string) => {
     const targetStoryId = storyId || currentStoryId;
@@ -150,7 +150,7 @@ function Step3Page() {
           // Load existing story data
           const success = await loadExistingStoryData(editStoryId);
           if (!success) {
-            alert('Failed to load story data. Please try again.');
+            alert(t('alerts.failedToLoadStoryData'));
             router.push('/my-stories');
             return;
           }
@@ -164,7 +164,7 @@ function Step3Page() {
 
         } catch (error) {
           console.error('Error initializing edit mode:', error);
-          alert('Failed to load story for editing. Please try again.');
+          alert(t('alerts.failedToLoadStoryForEditing'));
           router.push('/my-stories');
           return;
         }
@@ -189,7 +189,7 @@ function Step3Page() {
     };
 
     initializeStoryData();
-  }, [router, editStoryId, fetchStoryCharacters, fetchAvailableCharacters]);
+  }, [router, editStoryId, fetchStoryCharacters, fetchAvailableCharacters, t]);
   const handleCreateCharacter = async (characterData: Character) => {
     try {
       const response = await fetch('/api/characters', {

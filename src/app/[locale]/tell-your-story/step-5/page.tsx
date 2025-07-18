@@ -69,7 +69,7 @@ function Step5Page() {
     } else {
       setLoading(false);
     }
-  }, [router]);
+  }, [router]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchStoryData = async (storyId: string) => {
     try {
@@ -81,7 +81,7 @@ function Step5Page() {
       setStoryData(data.story);
     } catch (error) {
       console.error('Error fetching story data:', error);
-      setError('Failed to load story data. Please try again.');
+      setError(t('alerts.failedToFetchData'));
     }
   };
   const fetchUserCredits = async () => {
@@ -94,7 +94,7 @@ function Step5Page() {
       setUserCredits(data.currentBalance || 0);
     } catch (error) {
       console.error('Error fetching user credits:', error);
-      setError('Failed to load credit information. Please try again.');
+      setError(t('alerts.failedToLoadCreditInformation'));
     }
   };
 
@@ -110,7 +110,7 @@ function Step5Page() {
       }
     } catch (error) {
       console.error('Error fetching pricing data:', error);
-      setError('Failed to load pricing information. Please try again.');
+      setError(t('alerts.failedToLoadPricingInformation'));
     }
   };
   

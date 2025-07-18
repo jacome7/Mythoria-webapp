@@ -3,7 +3,7 @@
 .story-container {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0.5rem;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
   background-color: #ffffff;
@@ -52,6 +52,19 @@
   align-items: center;
   text-align: center;
   margin: 1rem 0;
+}
+
+/* Chapter images */
+.mythoria-chapter-image {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.mythoria-chapter-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 .mythoria-cover-image {
@@ -166,8 +179,11 @@ h1, h2, h3 {
 }
 
 .mythoria-logo {
-  max-width: 180px;
+  max-width: 360px;
   height: auto;
   margin: 1rem auto 0 auto;
   display: block;
+  border: 1px solid #9e9e9e;
+  border-radius: 8px;
+  margin-bottom: 16px;
 }

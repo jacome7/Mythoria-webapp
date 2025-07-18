@@ -141,7 +141,7 @@ export default function RevolutPayment({
     return () => {
       isMounted = false;
     };
-  }, [orderToken, orderAmount, disabled, onPaymentSuccess, onPaymentError, onPaymentCancel]);
+  }, [orderToken, orderAmount, disabled, onPaymentSuccess, onPaymentError, onPaymentCancel, t]);
 
   if (error) {
     return (

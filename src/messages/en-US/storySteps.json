@@ -1,5 +1,9 @@
 {
   "StorySteps": {
+    "common": {
+      "stepProgress": "Step {currentStep} of {totalSteps}",
+      "saving": "Saving..."
+    },
     "step1": {
       "unauthenticated": {
         "title": "Oops! Looks like you're trying to sneak into the author's lounge!",
@@ -49,6 +53,54 @@
         "capture": "📸 Capture",
         "cancel": "❌ Cancel"
       },
+      "writingTips": [
+        {
+          "text": "Where does your story take place? Describe the world - is it a magical kingdom, a cozy town, or somewhere beyond imagination?"
+        },
+        {
+          "text": "Who are the main characters? What makes them special or unique? What are their dreams and fears?"
+        },
+        {
+          "text": "Outline the basic plot for your story."
+        },
+        {
+          "text": "Just write what is in your heart."
+        },
+        {
+          "text": "Write about a child memory or upcoming event!"
+        },
+        {
+          "text": "What do your characters want to achieve? Give them a clear goal to work towards."
+        },
+        {
+          "text": "What makes your story unique? Add special elements that only exist in your world!"
+        }
+      ],
+      "badgeLabels": {
+        "added": "Added",
+        "image": "image",
+        "images": "images"
+      },
+      "recordingTips": {
+        "title": "Recording Tips",
+        "tips": [
+          "Speak clearly and at a comfortable pace",
+          "Describe your story as if telling it to a friend",
+          "Include details about characters, settings, and events",
+          "Don't worry about being perfect - just tell your story!"
+        ]
+      },
+      "writingTipsTitle": "Writing Tips",
+      "actions": {
+        "done": "Done",
+        "remove": "Remove",
+        "recordAgain": "Record Again",
+        "stopRecording": "Stop Recording",
+        "recording": "Recording..."
+      },
+      "audioSupport": {
+        "notSupported": "Your browser does not support the audio element."
+      },
       "alerts": {
         "uploadError": "Failed to upload file. Please try again.",
         "recordingError": "Failed to start recording. Please check your microphone permissions.",
@@ -58,7 +110,8 @@
         "analyzeImageRequest": "Analyze the image and describe what you see...",
         "genAIError": "GenAI request failed. Please try again.",
         "cameraIssue": "Camera access issue. Please check your camera permissions.",
-        "microphoneIssue": "Microphone access issue. Please check your microphone permissions."
+        "microphoneIssue": "Microphone access issue. Please check your microphone permissions.",
+        "failedToCreateStory": "Failed to create story: {errorMessage}. Please try again."
       },
       "loadingModal": {
         "title": "✨ Creating Your Story",
@@ -89,7 +142,9 @@
       },
       "alerts": {
         "failedToLoadStoryCharacters": "Failed to load story characters. Please try again.",
-        "characterLoadError": "Error loading characters. Please refresh the page."
+        "characterLoadError": "Error loading characters. Please refresh the page.",
+        "failedToLoadStoryData": "Failed to load story data. Please try again.",
+        "failedToLoadStoryForEditing": "Failed to load story for editing. Please try again."
       },
       "next": "Next"
     },
@@ -119,9 +174,21 @@
       "placeholders": {
         "selectAudience": "Select target audience...",
         "selectNovelStyle": "Select novel style...",
+        "selectGraphicStyle": "Select graphic style...",
         "outlinePlaceholder": "Describe all the details you'd like in the story...",
         "storyLanguageHelp": "Your story will be written and generated in the selected language."
       },
+      "languageOptions": [
+        { "value": "nl-NL", "label": "Dutch (Nederlands)" },
+        { "value": "en-US", "label": "English" },
+        { "value": "fr-FR", "label": "French (Français)" },
+        { "value": "de-DE", "label": "German (Deutsch)" },
+        { "value": "it-IT", "label": "Italian (Italiano)" },
+        { "value": "pl-PL", "label": "Polish (Polski)" },
+        { "value": "pt-BR", "label": "Portuguese (Brazil)" },
+        { "value": "pt-PT", "label": "Portuguese (Portugal)" },
+        { "value": "es-ES", "label": "Spanish (Español)" }
+      ],
       "chapterCounts": {
         "short": "Short (3-5 chapters)",
         "medium": "Medium (6-8 chapters)", 
@@ -190,7 +257,9 @@
       "alerts": {
         "failedToFetchData": "Failed to fetch story data. Please try again.",
         "failedToDeductCredits": "Failed to deduct credits. Please try again.",
-        "dataFetchError": "Error fetching data. Please check your connection and try again."
+        "dataFetchError": "Error fetching data. Please check your connection and try again.",
+        "failedToLoadCreditInformation": "Failed to load credit information. Please try again.",
+        "failedToLoadPricingInformation": "Failed to load pricing information. Please try again."
       }
     }
   }

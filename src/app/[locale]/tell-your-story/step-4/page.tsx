@@ -29,6 +29,7 @@ interface StoryData {
   graphicalStyle: GraphicalStyle | null;
   plotDescription: string | null;
   additionalRequests: string | null;
+  imageGenerationInstructions: string | null;
   chapterCount?: number | null;
   storyLanguage?: string | null;
 }
@@ -59,6 +60,7 @@ function Step4Page() {
   const [graphicalStyle, setGraphicalStyle] = useState<GraphicalStyle | ''>('');
   const [plotDescription, setPlotDescription] = useState('');
   const [additionalRequests, setAdditionalRequests] = useState('');
+  const [imageGenerationInstructions, setImageGenerationInstructions] = useState('');
   const [chapterCount, setChapterCount] = useState<number>(4); // Default matches CHILDREN_3_6
   const [isChapterCountManual, setIsChapterCountManual] = useState(false);
   const [storyLanguage, setStoryLanguage] = useState<string>(locale);
@@ -70,10 +72,10 @@ function Step4Page() {
   // Modal state
   const [showStyleSamples, setShowStyleSamples] = useState(false);
 
-  // Language options
-  // Helper functions for validation and display
+  // Language options from translation
+  const languageOptions = t.raw('languageOptions') as Array<{value: string, label: string}>;
   const hasStyleSettingData = () => {
-    return place.trim() || novelStyle || graphicalStyle;
+    return place.trim() || novelStyle || graphicalStyle || imageGenerationInstructions.trim();
   };
 
   const hasContentDetailsData = () => {
@@ -85,6 +87,7 @@ function Step4Page() {
     if (novelStyle) parts.push(NovelStyleLabels[novelStyle]);
     if (graphicalStyle) parts.push(GraphicalStyleLabels[graphicalStyle]);
     if (place.trim()) parts.push(place.trim());
+    if (imageGenerationInstructions.trim()) parts.push('Custom image instructions');
     return parts.join(', ');
   };
 
@@ -102,17 +105,7 @@ function Step4Page() {
     return true; // Content details are optional
   };
 
-  const languageOptions = [
-    { value: 'nl-NL', label: 'Dutch (Nederlands)' },
-    { value: 'en-US', label: 'English' },
-    { value: 'fr-FR', label: 'French (Français)' },
-    { value: 'de-DE', label: 'German (Deutsch)' },
-    { value: 'it-IT', label: 'Italian (Italiano)' },
-    { value: 'pl-PL', label: 'Polish (Polski)' },
-    { value: 'pt-BR', label: 'Portuguese (Brazil)' },
-    { value: 'pt-PT', label: 'Portuguese (Portugal)' },
-    { value: 'es-ES', label: 'Spanish (Español)' }
-  ];
+
   
   // Chapter count mapping based on target audience
   const getChapterCountForAudience = useCallback((audience: TargetAudience | ''): number => {
@@ -131,7 +124,7 @@ function Step4Page() {
   }, []);
 
   const targetAudienceOptions = [
-    { value: '', label: 'Select target audience...' },
+    { value: '', label: t('placeholders.selectAudience') },
     ...getAllTargetAudiences().map(value => ({
       value,
       label: TargetAudienceLabels[value]
@@ -139,7 +132,7 @@ function Step4Page() {
   ];
 
   const novelStyleOptions = [
-    { value: '', label: 'Select novel style...' },
+    { value: '', label: t('placeholders.selectNovelStyle') },
     ...getAllNovelStyles().map(value => ({
       value,
       label: NovelStyleLabels[value]
@@ -147,7 +140,7 @@ function Step4Page() {
   ];
 
   const graphicalStyleOptions = [
-    { value: '', label: 'Select graphic style...' },
+    { value: '', label: t('placeholders.selectGraphicStyle') },
     ...getAllGraphicalStyles().map(value => ({
       value,
       label: GraphicalStyleLabels[value]
@@ -178,6 +171,7 @@ function Step4Page() {
       setGraphicalStyle(story.graphicalStyle || '');
       setPlotDescription(story.plotDescription || '');
       setAdditionalRequests(story.additionalRequests || '');
+      setImageGenerationInstructions(story.imageGenerationInstructions || '');
       
       // Set story language - prefer the one from the story, fallback to current locale
       setStoryLanguage(story.storyLanguage || locale);      // Handle chapter count - only mark as manual if it differs from the expected automatic value
@@ -259,6 +253,7 @@ function Step4Page() {
           graphicalStyle: graphicalStyle || null,
           plotDescription: plotDescription.trim() || null,
           additionalRequests: additionalRequests.trim() || null,
+          imageGenerationInstructions: imageGenerationInstructions.trim() || null,
           chapterCount: chapterCount,
           storyLanguage: storyLanguage,
         }),
@@ -277,7 +272,8 @@ function Step4Page() {
         graphical_style: graphicalStyle || undefined,
         chapter_count: chapterCount,
         has_plot_description: !!plotDescription.trim(),
-        has_additional_requests: !!additionalRequests.trim()
+        has_additional_requests: !!additionalRequests.trim(),
+        has_image_generation_instructions: !!imageGenerationInstructions.trim()
       });      // Navigate to next step after successful save
       if (editStoryId) {
         // In edit mode, pass the edit parameter to the next step
@@ -552,6 +548,29 @@ function Step4Page() {
                             </select>
                             <label className="label">
                               <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.graphicStyleHelp')}</span>
+                            </label>
+                          </div>
+
+                          {/* Custom Image Instructions Field */}
+                          <div className="form-control md:col-span-2">
+                            <label className="label">
+                              <span className="label-text font-semibold">Custom Image Instructions</span>
+                            </label>
+                            <textarea
+                              value={imageGenerationInstructions}
+                              onChange={(e) => setImageGenerationInstructions(e.target.value)}
+                              placeholder="Describe how you&apos;d like the characters to look, specific visual elements, colors, or artistic details for your story images..."
+                              className="textarea textarea-bordered h-24 w-full"
+                              rows={4}
+                              maxLength={1000}
+                            />
+                            <label className="label">
+                              <span className="label-text-alt break-words max-w-full whitespace-normal">
+                                Provide specific instructions to customize the AI-generated images. Describe character appearances, visual style preferences, or any special elements you&apos;d like included.
+                                {imageGenerationInstructions.length > 0 && (
+                                  <span className="ml-2 text-sm">({imageGenerationInstructions.length}/1000)</span>
+                                )}
+                              </span>
                             </label>
                           </div>
                         </div>

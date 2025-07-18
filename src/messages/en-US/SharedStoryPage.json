@@ -1,0 +1,11 @@
+{
+  "loading": {
+    "title": "Loading shared story...",
+    "subtitle": "Please wait while we load the story"
+  },
+  "redirecting": "Redirecting...",
+  "errors": {
+    "unableToAccess": "Unable to access shared story",
+    "failedToAccess": "Failed to access shared story"
+  }
+}

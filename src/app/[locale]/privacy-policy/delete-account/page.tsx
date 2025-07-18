@@ -34,7 +34,7 @@ export default function DeleteAccountPage() {
       }
     } catch (error) {
       console.error('Error deleting account:', error);
-      alert('An error occurred while deleting your account. Please try again or contact support.');
+      alert(t('errors.deletionAlert'));
     } finally {
       setIsDeleting(false);
       setIsDialogOpen(false);

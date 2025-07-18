@@ -51,7 +51,9 @@
     "audiobookGenerationTrigger": {
       "generateButton": "Generate Audiobook",
       "errors": {
-        "failedToStart": "Failed to start audiobook generation"
+        "failedToStart": "Failed to start audiobook generation",
+        "failedToStartWithReason": "Failed to start audiobook generation: {reason}",
+        "failedToPlayAudio": "Failed to play audio. Please try again."
       }
     },
     "chapterEditor": {
@@ -79,6 +81,13 @@
       },
       "success": {
         "ticketCreated": "Support ticket created successfully! We'll get back to you soon."
+      },
+      "modal": {
+        "ticketCreated": "Ticket Created!",
+        "oops": "Oops!",
+        "tryAgain": "Try Again",
+        "goToHomepage": "Go to Homepage",
+        "redirectingMessage": "Redirecting to homepage in a few seconds..."
       }
     },
     "editCreditInfo": {
@@ -121,9 +130,26 @@
       }
     },
     "readingToolbar": {
+      "title": "Reading Settings",
+      "toggleLabel": "Toggle reading settings",
       "cover": "Cover",
       "coverAndToc": "Cover & Table of Contents",
-      "chapterLabel": "Chapter {number}"
+      "chapterLabel": "Chapter {number}",
+      "resetButton": "Reset to Default",
+      "controls": {
+        "fontSize": "Text Size",
+        "lineHeight": "Line Height",
+        "margins": "Margins",
+        "fontSizeLabel": "Adjust text size",
+        "lineHeightLabel": "Adjust line height",
+        "marginsLabel": "Adjust margins",
+        "decreaseFontSize": "Decrease text size",
+        "increaseFontSize": "Increase text size",
+        "decreaseLineHeight": "Decrease line height",
+        "increaseLineHeight": "Increase line height",
+        "decreaseMargins": "Decrease margins",
+        "increaseMargins": "Increase margins"
+      }
     },
     "revolutPayment": {
       "errors": {
@@ -138,9 +164,6 @@
         "checkOut": "Check out \"{title}\" on Mythoria"
       }
     },
-    "storyAudioPlayer": {
-      "defaultChapterTitle": "Chapter {number}"
-    },
     "storyInfoEditor": {
       "title": "Story Information",
       "storyTitle": "Story Title",
@@ -150,7 +173,19 @@
       "targetAudience": "Target Audience",
       "graphicalStyle": "Graphical Style",
       "saveButton": "Save Changes",
-      "cancelButton": "Cancel"
+      "cancelButton": "Cancel",
+      "messages": {
+        "storyInfoUpdated": "Story info updated successfully",
+        "chapterSaved": "Chapter saved successfully",
+        "chapterSavedWithVersion": "Chapter saved as version {version}",
+        "failedToSaveChapter": "Failed to save chapter",
+        "noPreviousVersion": "No previous version available",
+        "revertedToVersion": "Reverted to version {version}",
+        "advancedToVersion": "Advanced to version {version}",
+        "failedToUndoChapter": "Failed to undo chapter",
+        "chapterUpdatedSuccessfully": "Chapter updated successfully",
+        "contentUpdatedSuccessfully": "Content updated successfully"
+      }
     },
     "printOrder": {
       "paymentStep": {

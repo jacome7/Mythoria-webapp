@@ -65,6 +65,8 @@ export async function GET(
       createdAt: story.createdAt,
       isPublic: story.isPublic,
       slug: story.slug,
+      hasAudio: story.hasAudio,
+      audiobookUri: story.audiobookUri,
     };
 
     return NextResponse.json({ 

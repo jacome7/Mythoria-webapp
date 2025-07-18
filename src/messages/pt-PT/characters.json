@@ -96,7 +96,8 @@
     },
     "errors": {
       "saveFailed": "Falha ao guardar personagem. Por favor, tenta novamente.",
-      "deleteFailed": "Falha ao eliminar personagem. Por favor, tenta novamente."
+      "deleteFailed": "Falha ao eliminar personagem. Por favor, tenta novamente.",
+      "maxTraits": "Máximo de 5 características permitidas. Remova uma característica primeiro."
     },
     "traitCategories": {
       "positive": "Traços Positivos",
@@ -145,7 +146,17 @@
       "cautious": "Cauteloso",
       "methodical": "Metódico",
       "courageous": "Corajoso",
-      "pragmatic": "Pragmático"
+      "pragmatic": "Pragmático",
+      "smart": "Inteligente",
+      "funny": "Divertido",
+      "creative": "Criativo",
+      "gentle": "Gentil",
+      "stubborn": "Teimoso",
+      "shy": "Tímido",
+      "confident": "Confiante",
+      "playful": "Brincalhão",
+      "serious": "Sério",
+      "adventurous": "Aventureiro"
     },
     "confirmDelete": "Tens a certeza de que queres eliminar esta personagem? Esta ação não pode ser desfeita."
   }

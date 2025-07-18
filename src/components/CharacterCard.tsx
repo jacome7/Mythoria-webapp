@@ -95,7 +95,7 @@ export default function CharacterCard({
   onDelete,
   onCancel
 }: CharacterCardProps) {
-  const t = useTranslations('components.characterCard');
+  const t = useTranslations('Characters');
   const characterRoles = getCharacterRoleOptions(t);
   
   // Get age options based on character type

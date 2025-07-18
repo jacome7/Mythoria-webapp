@@ -88,10 +88,12 @@
 			"welcome": "Welcome"
 		},
 		"Actions": {
+			"signIn": "Sign In",
 			"read": "Read",
 			"listen": "Listen",
 			"edit": "Edit",
 			"editing": "Editing",
+			"print": "Print",
 			"share": "Share",
 			"startReading": "Start Reading",
 			"startListening": "Start Listening",
@@ -103,10 +105,19 @@
 			"close": "Close",
 			"goBack": "Go Back",
 			"print": "Print",
-			"signIn": "Sign In"
+			"signIn": "Sign In",
+			"backToStory": "Back to Story",
+			"listening": "Listening",
+			"pause": "Pause",
+			"play": "Play",
+			"stop": "Stop",
+			"createAccount": "Create Account"
 		},
 		"placeholder": {
 			"chapterContent": "Start writing your chapter content here..."
+		},
+		"altTexts": {
+			"chapterIllustration": "Chapter {number} illustration"
 		},
 		"Loading": {
 			"story": "Loading story...",
@@ -120,6 +131,8 @@
 			"processing": "Processing..."
 		},
 		"Errors": {
+			"authRequired": "Authentication Required",
+			"pleaseSignIn": "Please sign in to continue",
 			"storyNotFound": "Story not found",
 			"storyNotFoundDesc": "The story you're looking for doesn't exist or is no longer public.",
 			"unableToAccess": "Unable to access story",
@@ -144,7 +157,16 @@
 			"oops": "Oops!",
 			"authRequired": "Authentication Required",
 			"pleaseSignIn": "Please sign in to continue",
-			"shareLinkCreationFailed": "Failed to create share link"
+			"shareLinkCreationFailed": "Failed to create share link",
+			"noChaptersFound": "No Chapters Found",
+			"noChaptersFoundDesc": "This story doesn't have any chapters!",
+			"chapterNotFound": "Chapter Not Found",
+			"chapterNotFoundDesc": "The requested chapter could not be found.",
+			"failedToStartAudiobook": "Failed to start audiobook generation",
+			"failedToPlayAudio": "Failed to play audio. Please try again.",
+			"failedToLoadAudio": "Failed to load audio. Please check your internet connection and try again.",
+			"audioPlaybackInteractionRequired": "Audio playback requires user interaction. Please try clicking the play button again.",
+			"audioFormatNotSupported": "This audio format is not supported by your browser."
 		},
 		"Components": {
 			"ShareModal": {
@@ -165,7 +187,8 @@
 				"more": "More",
 				"createAnother": "Create Another",
 				"done": "Done",
-				"optionsExplained": "Sharing Options Explained:",				"privateView": "Private View: Recipients must sign in to view the story",
+				"optionsExplained": "Sharing Options Explained:",
+				"privateView": "Private View: Recipients must sign in to view the story",
 				"privateEdit": "Private Edit: Recipients can collaborate and edit the story",
 				"publicOption": "Public: Anyone can view the story without signing in",
 				"privateExpires": "Private link expires in 30 days",
@@ -204,7 +227,16 @@
 			},
 			"StoryReader": {
 				"preparing": "Preparing your story...",
-				"startReading": "Start Reading"
+				"startReading": "Start Reading",
+				"chapterNotFound": "Chapter not found",
+				"chapterNotFoundDescription": "The requested chapter could not be found.",
+				"backToStory": "Back to Story",
+				"storyImaginedBy": "This story was imagined by",
+				"storyImaginedByEnd": ".",
+				"craftedWith": "Crafted with:",
+				"byAuthor": "by {authorName}",
+				"tableOfContents": "Table of Contents",
+				"coverAndIntroduction": "Cover & Introduction"
 			},
 			"ReadingProgress": {
 				"title": "Reading Progress",
@@ -248,7 +280,7 @@
 			"MyStoriesTable": {
 				"generationStatus": {
 					"queued": "Queued",
-					"generating": "Generating", 
+					"generating": "Generating",
 					"completed": "Completed",
 					"failed": "Failed",
 					"cancelled": "Cancelled"
@@ -261,7 +293,7 @@
 			},
 			"ReadStoryPageNavigation": {
 				"reading": "Reading",
-				"listen": "Listen", 
+				"listen": "Listen",
 				"edit": "Edit",
 				"share": "Share",
 				"backToMyStories": "Back to My Stories"
@@ -270,15 +302,9 @@
 				"audioLoadFailed": "Failed to load audio. Please check your internet connection and try again.",
 				"audioGenerationFailed": "Audio generation failed. Please try again later.",
 				"audioPlaybackError": "An error occurred during audio playback. Please refresh the page and try again."
-			},
-			"StoryAudioPlayer": {
-				"errors": {
-					"audioLoadFailed": "Failed to load audio. Please check your internet connection and try again.",
-					"audioGenerationFailed": "Audio generation failed. Please try again later.",
-					"audioPlaybackError": "An error occurred during audio playback. Please refresh the page and try again."
-				}
 			}
-		},		"storyRating": {
+		},
+		"storyRating": {
 			"title": "Rate this story",
 			"titleUpdate": "Update Your Rating",
 			"currentRating": "Current Rating",
@@ -342,7 +368,8 @@
 			"loadingState": {
 				"title": "Processing your request...",
 				"description": "This may take 5-60 seconds depending on the scope of changes."
-			},			"errors": {
+			},
+			"errors": {
 				"enterRequest": "Please enter your editing request",
 				"requestTooLong": "Request must be 2000 characters or less",
 				"editFailed": "Failed to edit story. Please try again.",
@@ -455,11 +482,6 @@
 				"checkOutStory": "Check out \"{title}\" on Mythoria"
 			}
 		},
-		"storyAudioPlayer": {
-			"fallbacks": {
-				"chapterX": "Chapter {number}"
-			}
-		},
 		"storyInfoEditor": {
 			"labels": {
 				"storyInformation": "Story Information",
@@ -564,7 +586,8 @@
 			},
 			"imagePreview": {
 				"label": "Current image:"
-			},			"editRequest": {
+			},
+			"editRequest": {
 				"label": "What changes would you like to make to this image?",
 				"placeholder": "Describe the changes you'd like to make to the image...",
 				"charactersCount": "{current}/{max} characters"
@@ -760,6 +783,35 @@
 				"verse": "A versatile and expressive voice that adapts well to a wide range of tonal requirements."
 			}
 		},
+		"ListenStory": {
+			"accessRestricted": "Access Restricted",
+			"needSignInToListen": "You need to be signed in to listen to stories.",
+			"listenToStory": "Listen to \"{title}\"",
+			"duration": "Duration",
+			"wantNewNarration": "Want a New Narration?",
+			"newNarrationDescription": "You can generate a new narration of your story with different voice characteristics.",
+			"cost": "Cost",
+			"yourBalance": "Your Balance",
+			"narrateStoryAgain": "Narrate Story Again",
+			"replaceCurrentNarration": "This will replace your current narration",
+			"needMoreCredits": "You need {credits} more credits to generate a new narration.",
+			"buyMoreCredits": "Buy More Credits",
+			"loadingPricing": "Loading pricing information...",
+			"convertYourStory": "Convert Your Story",
+			"convertDescription": "Convert your story into a beautifully narrated story with the help of Mythoria elfs",
+			"narrateYourStory": "Narrate Your Story",
+			"generatingAudiobook": "Generating Your Audiobook",
+			"narrationProgress": "The Mythoria elfs will take around 5 minutes to narrate all the story.",
+			"checkingUpdates": "We're checking for updates every 15 seconds. Please keep this page open.",
+			"generationCompleted": "Audiobook generation completed!",
+			"chapterTitle": "Chapter {number}",
+			"playbackProgress": "Playback progress for {title}: {progress}%",
+			"startingGeneration": "Starting audiobook generation...",
+			"generationStarted": "Audiobook generation started! The Mythoria elfs will take around 5 minutes to narrate all the story.",
+			"needMoreCreditsGenerate": "You need {shortfall} more credits to generate an audiobook.",
+			"generationFailed": "Failed to start audiobook generation",
+			"tryAgainLater": "Please try again later."
+		},
 		"ComponentTranslations": {
 			"AIImageEditor": {
 				"errors": {
@@ -892,9 +944,6 @@
 					"checkOut": "Check out \"{storyTitle}\" on Mythoria",
 					"shareText": "I created this amazing story on Mythoria! Check it out: {storyTitle}"
 				}
-			},
-			"StoryAudioPlayer": {
-				"defaultChapterTitle": "Chapter {chapterNumber}"
 			},
 			"StoryInfoEditor": {
 				"labels": {

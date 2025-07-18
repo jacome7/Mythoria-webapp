@@ -51,7 +51,9 @@
     "audiobookGenerationTrigger": {
       "generateButton": "Gerar Audiolivro",
       "errors": {
-        "failedToStart": "Falha ao iniciar geração do audiolivro"
+        "failedToStart": "Falha ao iniciar geração do audiolivro",
+        "failedToStartWithReason": "Falha ao iniciar geração do audiolivro: {reason}",
+        "failedToPlayAudio": "Falha ao reproduzir áudio. Por favor tente novamente."
       }
     },
     "chapterEditor": {
@@ -79,6 +81,13 @@
       },
       "success": {
         "ticketCreated": "Ticket de suporte criado com sucesso! Entraremos em contacto em breve."
+      },
+      "modal": {
+        "ticketCreated": "Ticket Criado!",
+        "oops": "Ops!",
+        "tryAgain": "Tentar Novamente",
+        "goToHomepage": "Ir para Página Inicial",
+        "redirectingMessage": "A redirecionar para a página inicial em alguns segundos..."
       }
     },
     "editCreditInfo": {
@@ -121,9 +130,26 @@
       }
     },
     "readingToolbar": {
+      "title": "Configurações de Leitura",
+      "toggleLabel": "Alternar configurações de leitura",
       "cover": "Capa",
       "coverAndToc": "Capa e Índice",
-      "chapterLabel": "Capítulo {number}"
+      "chapterLabel": "Capítulo {number}",
+      "resetButton": "Repor Predefinições",
+      "controls": {
+        "fontSize": "Tamanho do Texto",
+        "lineHeight": "Altura da Linha",
+        "margins": "Margens",
+        "fontSizeLabel": "Ajustar tamanho do texto",
+        "lineHeightLabel": "Ajustar altura da linha",
+        "marginsLabel": "Ajustar margens",
+        "decreaseFontSize": "Diminuir tamanho do texto",
+        "increaseFontSize": "Aumentar tamanho do texto",
+        "decreaseLineHeight": "Diminuir altura da linha",
+        "increaseLineHeight": "Aumentar altura da linha",
+        "decreaseMargins": "Diminuir margens",
+        "increaseMargins": "Aumentar margens"
+      }
     },
     "revolutPayment": {
       "errors": {
@@ -138,9 +164,6 @@
         "checkOut": "Confira \"{title}\" no Mythoria"
       }
     },
-    "storyAudioPlayer": {
-      "defaultChapterTitle": "Capítulo {number}"
-    },
     "storyInfoEditor": {
       "title": "Informação da História",
       "storyTitle": "Título da História",
@@ -150,7 +173,19 @@
       "targetAudience": "Público-Alvo",
       "graphicalStyle": "Estilo Gráfico",
       "saveButton": "Guardar Alterações",
-      "cancelButton": "Cancelar"
+      "cancelButton": "Cancelar",
+      "messages": {
+        "storyInfoUpdated": "Informação da história atualizada com sucesso",
+        "chapterSaved": "Capítulo guardado com sucesso",
+        "chapterSavedWithVersion": "Capítulo guardado como versão {version}",
+        "failedToSaveChapter": "Falha ao guardar capítulo",
+        "noPreviousVersion": "Nenhuma versão anterior disponível",
+        "revertedToVersion": "Revertido para a versão {version}",
+        "advancedToVersion": "Avançado para a versão {version}",
+        "failedToUndoChapter": "Falha ao desfazer capítulo",
+        "chapterUpdatedSuccessfully": "Capítulo atualizado com sucesso",
+        "contentUpdatedSuccessfully": "Conteúdo atualizado com sucesso"
+      }
     },
     "printOrder": {
       "paymentStep": {

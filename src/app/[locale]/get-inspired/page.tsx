@@ -189,7 +189,7 @@ export default function GetInspiredPage() {
 
   const hasActiveFilters = Object.values(filters).some(filterArray => filterArray.length > 0);
 
-  return (    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+  return (<div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
       {/* Gallery Section */}
       <div className="container mx-auto px-4 pt-16 pb-16">
         <div className="text-center mb-12">
@@ -363,7 +363,7 @@ export default function GetInspiredPage() {
         {hasActiveFilters && (
           <div className="text-center mb-8">
             <p className="text-sm text-gray-500">
-              {filteredStories.length} of {featuredStories.length} stories shown
+              {t('gallery.filterResults', { count: filteredStories.length, total: featuredStories.length })}
             </p>
           </div>
         )}
@@ -382,7 +382,7 @@ export default function GetInspiredPage() {
                   <div className="relative w-full h-80 rounded-xl overflow-hidden">
                     <Image
                       src={story.featureImageUri || '/Mythoria-logo-white-512x336.jpg'}
-                      alt={`${story.title} - Story cover`}
+                      alt={t('gallery.storyCoverAlt')}
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -455,13 +455,13 @@ export default function GetInspiredPage() {
               <h3 className="text-xl font-semibold text-gray-800 mb-4">
                 {hasActiveFilters 
                   ? t('emptyState.noStoriesMatch') 
-                  : t('gallery.emptyTitle', { default: 'No Featured Stories Yet' })
+                  : t('gallery.emptyTitle')
                 }
               </h3>
               <p className="text-gray-600 mb-8">
                 {hasActiveFilters 
                   ? t('emptyState.tryAdjustingFilters')
-                  : t('gallery.emptyMessage', { default: 'Create your own story and share it with the world!' })
+                  : t('gallery.emptyMessage')
                 }
               </p>
               {hasActiveFilters ? (
@@ -476,7 +476,7 @@ export default function GetInspiredPage() {
                   href={`/${locale}/dashboard`}
                   className="btn btn-primary"
                 >
-                  {t('gallery.createStory', { default: 'Create Your Story' })}
+                  {t('gallery.createStory')}
                 </Link>
               )}
             </div>

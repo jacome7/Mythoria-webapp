@@ -271,7 +271,7 @@ export default function PrivacyPolicyPage() {
                     href="/privacy-policy/delete-account"
                     className="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors duration-200"
                   >
-                    Delete Account / Eliminar Conta
+                    {t('section10.deleteAccountButton')}
                   </Link>
                 </div>
               </div>

@@ -222,14 +222,14 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
                 )}
               </div>
               <h3 className="font-bold text-lg text-center mb-4">
-                {isSuccess ? 'Ticket Created!' : 'Oops!'}
+                {isSuccess ? t('modal.ticketCreated') : t('modal.oops')}
               </h3>
               <p className="text-center text-base-content/80">
                 {responseMessage}
               </p>
               {isSuccess && (
                 <p className="text-center text-sm text-base-content/60 mt-2">
-                  Redirecting to homepage in a few seconds...
+                  {t('modal.redirectingMessage')}
                 </p>
               )}
               <div className="modal-action">
@@ -238,7 +238,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
                     className="btn btn-primary" 
                     onClick={() => setShowModal(false)}
                   >
-                    Try Again
+                    {t('modal.tryAgain')}
                   </button>
                 )}
                 {isSuccess && (
@@ -246,7 +246,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
                     className="btn btn-primary" 
                     onClick={() => window.location.href = '/'}
                   >
-                    Go to Homepage
+                    {t('modal.goToHomepage')}
                   </button>
                 )}
               </div>
@@ -260,7 +260,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
 
 const ContactForm = ({ className = "" }: ContactFormProps) => {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div className="loading loading-spinner loading-lg"></div>}>
       <ContactFormContent className={className} />
     </Suspense>
   );

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { FiLoader, FiAlertCircle, FiUser, FiCalendar, FiTag } from 'react-icons/fi';
+import { FiLoader, FiAlertCircle } from 'react-icons/fi';
 import StoryReader from '@/components/StoryReader';
 import PublicStoryRating from '@/components/PublicStoryRating';
 

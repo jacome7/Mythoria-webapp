@@ -123,6 +123,18 @@
       "Fiction",
       "Myth"
     ],
+    "fallbackWords": [
+      "Adventure",
+      "Love Story",
+      "Mystery",
+      "Fairy Tale"
+    ],
+    "altTexts": {
+      "kidsBook": "Kids Book",
+      "groupsYearbooks": "Groups & Yearbooks",
+      "adultBook": "How I met your mother",
+      "companyBook": "Company Book"
+    },
     "comingSoon": {
       "title": "Our story is just beginning...",
       "subtitle": "Mythoria is crafting something magical! I'm working hard, alongside AI, to bring you a new world of personalized storytelling. Stay tuned, the adventure will be available soon! 🧙‍♂️📚✨"
@@ -315,7 +327,9 @@
       "createdBy": "Created by",
       "emptyTitle": "No Featured Stories Yet",
       "emptyMessage": "Create your own story and share it with the world!",
-      "createStory": "Create Your Story"
+      "createStory": "Create Your Story",
+      "storyCoverAlt": "Story cover",
+      "filterResults": "{count} of {total} stories shown"
     },
     "emptyState": {
       "noStoriesMatch": "No stories match your filters",
@@ -395,7 +409,8 @@
       "cta": "Create your own magical stories today!"
     },
     "actions": {
-      "orderPrint": "Order printed copy"
+      "orderPrint": "Order printed copy",
+      "listen": "Listen"
     }
   },
   "SharedStoryPage": {

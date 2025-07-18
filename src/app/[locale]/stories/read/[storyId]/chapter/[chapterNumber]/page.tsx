@@ -141,13 +141,13 @@ export default function ReadChapterPage() {
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">📚</div>
-          <h1 className="text-3xl font-bold mb-4">Chapter Not Found</h1>
-          <p className="text-lg mb-6">The requested chapter could not be found.</p>
+          <h1 className="text-3xl font-bold mb-4">{tCommon('Errors.chapterNotFound')}</h1>
+          <p className="text-lg mb-6">{tCommon('Errors.chapterNotFoundDesc')}</p>
           <button
             onClick={() => router.push(`/${locale}/stories/read/${storyId}`)}
             className="btn btn-primary"
           >
-            Back to Story
+            {tCommon('Actions.backToStory')}
           </button>
         </div>
       </div>

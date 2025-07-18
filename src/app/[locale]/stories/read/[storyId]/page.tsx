@@ -5,7 +5,7 @@ import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiVolume2, FiEdit3, FiShare2, FiArrowLeft, FiPrinter } from 'react-icons/fi';
+import { FiVolume2, FiEdit3, FiShare2, FiArrowLeft, FiPrinter, FiBook } from 'react-icons/fi';
 import { trackStoryManagement } from '../../../../../lib/analytics';
 import StoryReader from '../../../../../components/StoryReader';
 import StoryRating from '../../../../../components/StoryRating';
@@ -87,6 +87,12 @@ export default function ReadStoryPage() {
     router.push(`/${locale}/stories/listen/${storyId}`);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const navigateToRead = () => {
+    // Already on read page, do nothing
+    return;
+  };
+
   const navigateToEdit = () => {
     router.push(`/${locale}/stories/edit/${storyId}`);
   };
@@ -136,13 +142,13 @@ export default function ReadStoryPage() {
     return (
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-3xl font-bold mb-4">No Chapters Found</h1>
-          <p className="text-lg mb-6">This story doesn&apos;t have any chapters!</p>
+          <h1 className="text-3xl font-bold mb-4">{tCommon('Errors.noChaptersFound')}</h1>
+          <p className="text-lg mb-6">{tCommon('Errors.noChaptersFoundDesc')}</p>
           <button
             onClick={() => router.push(`/${locale}/my-stories`)}
             className="btn btn-primary"
           >
-            Back to My Stories
+            {tCommon('Actions.backToMyStories')}
           </button>
         </div>
       </div>
@@ -189,6 +195,13 @@ export default function ReadStoryPage() {
             </button>
             
             <div className="flex items-center gap-2">
+              <button
+                className="btn btn-ghost btn-sm btn-active"
+              >
+                <FiBook className="w-4 h-4" />
+                <span className="hidden sm:inline sm:ml-2">{tCommon('Actions.read')}</span>
+              </button>
+              
               <button
                 onClick={navigateToListen}
                 className="btn btn-ghost btn-sm"

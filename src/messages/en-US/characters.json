@@ -93,7 +93,8 @@
     },
     "errors": {
       "saveFailed": "Failed to save character. Please try again.",
-      "deleteFailed": "Failed to delete character. Please try again."
+      "deleteFailed": "Failed to delete character. Please try again.",
+      "maxTraits": "Maximum 5 traits allowed. Remove a trait first."
     },
     "traitCategories": {
       "positive": "Positive Traits",

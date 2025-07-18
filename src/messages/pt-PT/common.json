@@ -72,7 +72,8 @@
         "shareSuccess": "Link de partilha criado com sucesso",
         "privateExpires": "Link privado expira em 30 dias"
       },
-      "types": {        "privateView": "Visualização Privada: Os destinatários devem iniciar sessão para ver a história",
+      "types": {
+        "privateView": "Visualização Privada: Os destinatários devem iniciar sessão para ver a história",
         "privateEdit": "Edição Privada: Os destinatários podem colaborar e editar a história",
         "publicRead": "Público: Qualquer pessoa pode ver a história sem iniciar sessão",
         "publicStoryTitle": "História Pública",
@@ -92,10 +93,12 @@
       "welcome": "Bem-vindo"
     },
     "Actions": {
+      "signIn": "Entrar",
       "read": "Ler",
       "listen": "Ouvir",
       "edit": "Editar",
       "editing": "A Editar",
+      "print": "Imprimir",
       "share": "Partilhar",
       "startReading": "Começar a Ler",
       "startListening": "Começar a Ouvir",
@@ -104,10 +107,19 @@
       "backToMyStories": "Voltar às Minhas Histórias",
       "goToHomepage": "Ir para a Página Inicial",
       "tryAgain": "Tentar Novamente",
-      "close": "Fechar"
+      "close": "Fechar",
+      "backToStory": "Voltar à História",
+      "listening": "A Ouvir",
+      "pause": "Pausar",
+      "play": "Reproduzir",
+      "stop": "Parar",
+      "createAccount": "Criar Conta"
     },
     "placeholder": {
       "chapterContent": "Comece a escrever o conteúdo do seu capítulo aqui..."
+    },
+    "altTexts": {
+      "chapterIllustration": "Ilustração do Capítulo {number}"
     },
     "Loading": {
       "story": "A carregar história...",
@@ -121,6 +133,8 @@
       "processing": "A processar..."
     },
     "Errors": {
+      "authRequired": "Autenticação Necessária",
+      "pleaseSignIn": "Por favor, inicie sessão para continuar",
       "storyNotFound": "História não encontrada",
       "storyNotFoundDesc": "A história que procura não existe ou já não é pública.",
       "unableToAccess": "Não é possível aceder à história",
@@ -142,7 +156,16 @@
       "audiobookGenerationError": "Falha ao gerar audiolivro",
       "audioPlaybackError": "Erro na reprodução de áudio",
       "audioLoadError": "Falha ao carregar áudio",
-      "shareLinkCreationFailed": "Falha ao criar ligação de partilha"
+      "shareLinkCreationFailed": "Falha ao criar ligação de partilha",
+      "noChaptersFound": "Nenhum Capítulo Encontrado",
+      "noChaptersFoundDesc": "Esta história não tem capítulos!",
+      "chapterNotFound": "Capítulo Não Encontrado",
+      "chapterNotFoundDesc": "O capítulo solicitado não foi encontrado.",
+      "failedToStartAudiobook": "Falha ao iniciar geração do audiolivro",
+      "failedToPlayAudio": "Falha ao reproduzir áudio. Por favor tente novamente.",
+      "failedToLoadAudio": "Falha ao carregar áudio. Por favor verifique a sua ligação à internet e tente novamente.",
+      "audioPlaybackInteractionRequired": "A reprodução de áudio requer interação do utilizador. Por favor tente clicar novamente no botão de reprodução.",
+      "audioFormatNotSupported": "Este formato de áudio não é suportado pelo seu navegador."
     },
     "Components": {
       "ShareModal": {
@@ -202,7 +225,17 @@
         }
       },
       "StoryReader": {
-        "preparing": "A preparar a sua história..."
+        "preparing": "A preparar a sua história...",
+        "startReading": "Começar a Ler",
+        "chapterNotFound": "Capítulo não encontrado",
+        "chapterNotFoundDescription": "O capítulo solicitado não foi encontrado.",
+        "backToStory": "Voltar à História",
+        "storyImaginedBy": "Esta história foi imaginada por",
+        "storyImaginedByEnd": ".",
+        "craftedWith": "Criada com:",
+        "byAuthor": "por {authorName}",
+        "tableOfContents": "Índice",
+        "coverAndIntroduction": "Capa e Introdução"
       },
       "ReadingProgress": {
         "title": "Progresso de Leitura",
@@ -246,7 +279,7 @@
       "MyStoriesTable": {
         "generationStatus": {
           "queued": "Em Fila",
-          "generating": "A Gerar", 
+          "generating": "A Gerar",
           "completed": "Concluída",
           "failed": "Falhada",
           "cancelled": "Cancelada"
@@ -259,7 +292,7 @@
       },
       "ReadStoryPageNavigation": {
         "reading": "A Ler",
-        "listen": "Ouvir", 
+        "listen": "Ouvir",
         "edit": "Editar",
         "share": "Partilhar",
         "backToMyStories": "Voltar às Minhas Histórias"
@@ -275,15 +308,9 @@
         "audioLoadFailed": "Falha ao carregar áudio. Verifique a sua ligação à internet e tente novamente.",
         "audioGenerationFailed": "Falha na geração de áudio. Tente novamente mais tarde.",
         "audioPlaybackError": "Ocorreu um erro durante a reprodução de áudio. Atualize a página e tente novamente."
-      },
-      "StoryAudioPlayer": {
-        "errors": {
-          "audioLoadFailed": "Falha ao carregar áudio. Verifique a sua ligação à internet e tente novamente.",
-          "audioGenerationFailed": "Falha na geração de áudio. Tente novamente mais tarde.",
-          "audioPlaybackError": "Ocorreu um erro durante a reprodução de áudio. Atualize a página e tente novamente."
-        }
       }
-    },    "storyRating": {
+    },
+    "storyRating": {
       "title": "Avalie esta história",
       "titleUpdate": "Atualize a Sua Avaliação",
       "currentRating": "Avaliação Atual",
@@ -347,7 +374,8 @@
       "loadingState": {
         "title": "Processando o seu pedido...",
         "description": "Isto pode demorar 5-60 segundos dependendo do âmbito das alterações."
-      },      "errors": {
+      },
+      "errors": {
         "enterRequest": "Por favor, insira o seu pedido de edição",
         "requestTooLong": "O pedido deve ter 2000 caracteres ou menos",
         "editFailed": "Falha ao editar a história. Tente novamente."
@@ -435,7 +463,8 @@
       },
       "imagePreview": {
         "label": "Imagem atual:"
-      },      "editRequest": {
+      },
+      "editRequest": {
         "label": "Que alterações gostaria de fazer a esta imagem?",
         "placeholder": "Descreva as alterações que gostaria de fazer à imagem...",
         "charactersCount": "{current}/{max} caracteres"
@@ -625,6 +654,35 @@
         "verse": "Uma voz versátil e expressiva que se adapta bem a uma ampla gama de requisitos tonais."
       }
     },
+    "ListenStory": {
+      "accessRestricted": "Acesso Restrito",
+      "needSignInToListen": "Precisa de estar autenticado para ouvir histórias.",
+      "listenToStory": "Ouvir \"{title}\"",
+      "duration": "Duração",
+      "wantNewNarration": "Quer uma Nova Narração?",
+      "newNarrationDescription": "Pode gerar uma nova narração da sua história com características de voz diferentes.",
+      "cost": "Custo",
+      "yourBalance": "O Seu Saldo",
+      "narrateStoryAgain": "Narrar História Novamente",
+      "replaceCurrentNarration": "Isto irá substituir a sua narração atual",
+      "needMoreCredits": "Precisa de mais {credits} créditos para gerar uma nova narração.",
+      "buyMoreCredits": "Comprar Mais Créditos",
+      "loadingPricing": "A carregar informações de preços...",
+      "convertYourStory": "Converta a Sua História",
+      "convertDescription": "Converta a sua história numa história lindamente narrada com a ajuda dos elfos da Mythoria",
+      "narrateYourStory": "Narrar a Sua História",
+      "generatingAudiobook": "A Gerar o Seu Audiolivro",
+      "narrationProgress": "Os elfos da Mythoria vão demorar cerca de 5 minutos para narrar toda a história.",
+      "checkingUpdates": "Estamos a verificar atualizações a cada 15 segundos. Mantenha esta página aberta.",
+      "generationCompleted": "Geração do audiolivro concluída!",
+      "chapterTitle": "Capítulo {number}",
+      "playbackProgress": "Progresso da reprodução para {title}: {progress}%",
+      "startingGeneration": "A iniciar geração do audiolivro...",
+      "generationStarted": "Geração do audiolivro iniciada! Os elfos da Mythoria vão demorar cerca de 5 minutos para narrar toda a história.",
+      "needMoreCreditsGenerate": "Precisa de mais {shortfall} créditos para gerar um audiolivro.",
+      "generationFailed": "Falha ao iniciar geração do audiolivro",
+      "tryAgainLater": "Por favor tente novamente mais tarde."
+    },
     "ComponentTranslations": {
       "AIImageEditor": {
         "errors": {
@@ -757,9 +815,6 @@
           "checkOut": "Veja \"{storyTitle}\" no Mythoria",
           "shareText": "Criei esta história incrível no Mythoria! Veja: {storyTitle}"
         }
-      },
-      "StoryAudioPlayer": {
-        "defaultChapterTitle": "Capítulo {chapterNumber}"
       },
       "StoryInfoEditor": {
         "labels": {

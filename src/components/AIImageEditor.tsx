@@ -264,7 +264,7 @@ export default function AIImageEditor({
       case 'backcover':
         return t('imageTypes.backcover');
       case 'chapter':
-        return t('imageTypes.chapter', { number: imageData.chapterNumber });
+        return t('imageTypes.chapter', { number: imageData.chapterNumber ?? 0 });
       default:
         return 'Image';
     }

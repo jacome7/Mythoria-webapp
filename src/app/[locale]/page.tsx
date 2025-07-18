@@ -35,13 +35,13 @@ export default function Home() {
       });
     } else {
       // Fallback words if translation is missing
-      const fallbackWords = ['Adventure', 'Love Story', 'Mystery', 'Fairy Tale'];
-      fallbackWords.forEach(word => {
+      const fallbackWords = t.raw('fallbackWords') || ['Adventure', 'Love Story', 'Mystery', 'Fairy Tale'];
+      fallbackWords.forEach((word: string) => {
         seq.push(word, 1500);
       });
     }
     return seq;
-  }, [words]);
+  }, [words, t]);
 
   const showSoonPage = process.env.NEXT_PUBLIC_SHOW_SOON_PAGE === 'true';
 
@@ -133,7 +133,7 @@ export default function Home() {
               <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <div className="card bg-base-200 shadow-xl">
                   <figure className="px-10 pt-10">
-                    <Image src="/SampleBooks/A_bea_tem_um_macaco_no_nariz.jpg" alt="Kids Book" width={300} height={200} className="rounded-xl" />
+                    <Image src="/SampleBooks/A_bea_tem_um_macaco_no_nariz.jpg" alt={t('altTexts.kidsBook')} width={300} height={200} className="rounded-xl" />
                   </figure>
                   <div className="card-body items-center text-center">
                     <h2 className="card-title text-2xl">{t('audiences.kids.title')}</h2>
@@ -143,7 +143,7 @@ export default function Home() {
 
                 <div className="card bg-base-200 shadow-xl">
                   <figure className="px-10 pt-10">
-                    <Image src="/SampleBooks/juventude_gaia.jpg" alt="Groups & Yearbooks" width={300} height={200} className="rounded-xl" />
+                    <Image src="/SampleBooks/juventude_gaia.jpg" alt={t('altTexts.groupsYearbooks')} width={300} height={200} className="rounded-xl" />
                   </figure>
                   <div className="card-body items-center text-center">
                     <h2 className="card-title text-2xl">{t('audiences.groups.title')}</h2>
@@ -153,7 +153,7 @@ export default function Home() {
 
                 <div className="card bg-base-200 shadow-xl">
                   <figure className="px-10 pt-10">
-                    <Image src="/SampleBooks/How_I_met_your_mother.jpg" alt="How I met your mother" width={300} height={300} className="rounded-xl" />
+                    <Image src="/SampleBooks/How_I_met_your_mother.jpg" alt={t('altTexts.adultBook')} width={300} height={300} className="rounded-xl" />
                   </figure>
                   <div className="card-body items-center text-center">
                     <h2 className="card-title text-2xl">{t('audiences.adults.title')}</h2>
@@ -163,7 +163,7 @@ export default function Home() {
 
                 <div className="card bg-base-200 shadow-xl">
                   <figure className="px-10 pt-10">
-                    <Image src="/SampleBooks/CaravanConcierge.jpg" alt="Company Book" width={300} height={340} className="rounded-xl" />
+                    <Image src="/SampleBooks/CaravanConcierge.jpg" alt={t('altTexts.companyBook')} width={300} height={340} className="rounded-xl" />
                   </figure>
                   <div className="card-body items-center text-center">
                     <h2 className="card-title text-2xl">{t('audiences.companies.title')}</h2>
@@ -181,7 +181,7 @@ export default function Home() {
                   <div className="carousel-item w-80">
                     <div className="card bg-base-100 shadow-xl w-full">
                       <figure className="px-10 pt-10">
-                        <Image src="/SampleBooks/A_bea_tem_um_macaco_no_nariz.jpg" alt="Kids Book" width={300} height={200} className="rounded-xl" />
+                        <Image src="/SampleBooks/A_bea_tem_um_macaco_no_nariz.jpg" alt={t('altTexts.kidsBook')} width={300} height={200} className="rounded-xl" />
                       </figure>
                       <div className="card-body items-center text-center">
                         <h2 className="card-title text-xl">{t('audiences.kids.title')}</h2>
@@ -193,7 +193,7 @@ export default function Home() {
                   <div className="carousel-item w-80">
                     <div className="card bg-base-100 shadow-xl w-full">
                       <figure className="px-10 pt-10">
-                        <Image src="/SampleBooks/juventude_gaia.jpg" alt="Groups & Yearbooks" width={300} height={200} className="rounded-xl" />
+                        <Image src="/SampleBooks/juventude_gaia.jpg" alt={t('altTexts.groupsYearbooks')} width={300} height={200} className="rounded-xl" />
                       </figure>
                       <div className="card-body items-center text-center">
                         <h2 className="card-title text-xl">{t('audiences.groups.title')}</h2>
@@ -205,7 +205,7 @@ export default function Home() {
                   <div className="carousel-item w-80">
                     <div className="card bg-base-100 shadow-xl w-full">
                       <figure className="px-10 pt-10">
-                        <Image src="/SampleBooks/How_I_met_your_mother.jpg" alt="How I met your mother" width={300} height={300} className="rounded-xl" />
+                        <Image src="/SampleBooks/How_I_met_your_mother.jpg" alt={t('altTexts.adultBook')} width={300} height={300} className="rounded-xl" />
                       </figure>
                       <div className="card-body items-center text-center">
                         <h2 className="card-title text-xl">{t('audiences.adults.title')}</h2>
@@ -217,7 +217,7 @@ export default function Home() {
                   <div className="carousel-item w-80">
                     <div className="card bg-base-100 shadow-xl w-full">
                       <figure className="px-10 pt-10">
-                        <Image src="/SampleBooks/CaravanConcierge.jpg" alt="Company Book" width={300} height={300} className="rounded-xl" />
+                        <Image src="/SampleBooks/CaravanConcierge.jpg" alt={t('altTexts.companyBook')} width={300} height={300} className="rounded-xl" />
                       </figure>
                       <div className="card-body items-center text-center">
                         <h2 className="card-title text-xl">{t('audiences.companies.title')}</h2>
