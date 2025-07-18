@@ -113,7 +113,8 @@
       "pause": "Pausar",
       "play": "Reproduzir",
       "stop": "Parar",
-      "createAccount": "Criar Conta"
+      "createAccount": "Criar Conta",
+      "goBack": "Voltar"
     },
     "placeholder": {
       "chapterContent": "Comece a escrever o conteúdo do seu capítulo aqui..."
