@@ -175,7 +175,10 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
           onMouseEnter={() => setHoveredRating(star)}
           onMouseLeave={() => setHoveredRating(0)}
           disabled={isSubmitting}
-          title={`Rate ${star} star${star !== 1 ? 's' : ''}`}
+          title={t('starTooltip', {
+            count: star,
+            plural: star !== 1 ? 's' : '',
+          })}
         >
           <FiStar 
             className={
@@ -209,7 +212,7 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
       <div className="card-body">
         <div className="text-center">
           <h3 className="card-title justify-center mb-4">
-            {t('title') || 'Rate this Story'}
+            {t('title')}
           </h3>
 
           {/* Unified Star Rating Display */}
@@ -226,20 +229,29 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
                   {ratingData.averageRating.toFixed(1)}/5
                 </p>
                 <p className="text-sm text-base-content/70">
-                  Based on {ratingData.totalRatings} rating{ratingData.totalRatings !== 1 ? 's' : ''}
+                  {t('basedOnRatings', {
+                    count: ratingData.totalRatings,
+                    plural: ratingData.totalRatings !== 1 ? 's' : '',
+                  })}
                 </p>
                 {hoveredRating > 0 && (
                   <p className="text-sm text-info mt-2">
-                    Click to rate {hoveredRating} star{hoveredRating !== 1 ? 's' : ''}
+                    {t('clickToRate', {
+                      count: hoveredRating,
+                      plural: hoveredRating !== 1 ? 's' : '',
+                    })}
                   </p>
                 )}
               </div>
             ) : (
               <div className="text-center">
-                <p className="text-base-content/70 mb-2">No ratings yet</p>
+                <p className="text-base-content/70 mb-2">{t('noRatingsYet')}</p>
                 {hoveredRating > 0 && (
                   <p className="text-sm text-info">
-                    Click to rate {hoveredRating} star{hoveredRating !== 1 ? 's' : ''}
+                    {t('clickToRate', {
+                      count: hoveredRating,
+                      plural: hoveredRating !== 1 ? 's' : '',
+                    })}
                   </p>
                 )}
               </div>
@@ -250,7 +262,7 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
           {ratingData?.userRating && !submitted && (
             <div className="mb-4 p-3 bg-info/10 rounded-lg border border-info/20">
               <p className="text-sm text-info">
-                Your current rating: {ratingData.userRating.rating} ⭐ 
+                {t('yourCurrentRating')}: {ratingData.userRating.rating} ⭐
                 {ratingData.userRating.createdAt && (
                   <span className="ml-2 text-xs">
                     ({new Date(ratingData.userRating.createdAt).toLocaleDateString()})
@@ -268,7 +280,7 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
             <form onSubmit={handleFeedbackSubmit} className="mt-6 space-y-4 border-t pt-4">
               <div className="text-center mb-4">
                 <p className="text-sm text-base-content/70">
-                  You selected: <span className="font-semibold">{userRating} star{userRating !== 1 ? 's' : ''}</span>
+                  {t('youSelected')} <span className="font-semibold">{userRating} star{userRating !== 1 ? 's' : ''}</span>
                 </p>
               </div>
               
@@ -323,7 +335,7 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
                       {t('buttons.submitting')}
                     </>
                   ) : (
-                    ratingData?.userRating ? (t('buttons.updateRating') || 'Update Rating') : t('buttons.submitRating')
+                    ratingData?.userRating ? t('buttons.updateRating') : t('buttons.submitRating')
                   )}
                 </button>
               </div>
