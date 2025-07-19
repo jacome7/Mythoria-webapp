@@ -9,5 +9,52 @@
   "graphicalStyle": "Graphical Style",
   "chapters": "Chapters",
   "synopsis": "Synopsis",
-  "notSpecified": "Not specified"
+  "notSpecified": "Not specified",
+  "loading": {
+    "title": "Loading Story",
+    "subtitle": "Please wait while we load your story..."
+  },
+  "errors": {
+    "notFound": "Story Not Found",
+    "notFoundDesc": "The story you're looking for doesn't exist or is no longer public.",
+    "contentNotAvailable": "Content Not Available",
+    "contentNotAvailableDesc": "The story content is not currently available for reading."
+  },
+  "actions": {
+    "orderPrint": "Order Print",
+    "listen": "Listen",
+    "print": "Print",
+    "listenMobile": "Listen",
+    "createOwnStory": "Create Your Own Story",
+    "orderPrintedBook": "Order Printed Book"
+  },
+  "labels": {
+    "by": "by",
+    "synopsis": "Synopsis",
+    "unknownAuthor": "Unknown Author"
+  },
+  "metadata": {
+    "defaultDescription": "Read \"{title}\" on Mythoria",
+    "coverImageAlt": "Cover image for \"{title}\""
+  },
+  "listen": {
+    "title": "Listen to \"{title}\"",
+    "backMobile": "Back",
+    "audioNotAvailable": "This story does not have audio narration available.",
+    "audioNotAvailableTitle": "Audio not available",
+    "audioNotAvailableDesc": "This story does not have audio narration available yet.",
+    "backToStory": "Back to Story",
+    "duration": "Duration: {duration}",
+    "chapterFallback": "Chapter {number}",
+    "chapterImageAlt": "Chapter {number} illustration",
+    "controls": {
+      "play": "Play",
+      "pause": "Pause",
+      "stop": "Stop"
+    }
+  },
+  "lastChapter": {
+    "enjoyedTitle": "Enjoyed this story?",
+    "enjoyedDesc": "Create your own personalized story or order a beautiful printed copy!"
+  }
 }

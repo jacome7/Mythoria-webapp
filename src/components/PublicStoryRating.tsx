@@ -206,16 +206,16 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
   }
   return (
     <div className="card bg-base-100 shadow-xl border-2 border-base-300">
-      <div className="card-body">
+      <div className="card-body py-2">
         <div className="text-center">
-          <h3 className="card-title justify-center mb-4">
+          <h3 className="card-title justify-center mb-2">
             {t('title') || 'Rate this Story'}
           </h3>
 
           {/* Unified Star Rating Display */}
-          <div className="mb-6">
+          <div className="mb-4">
             {/* Stars with average rating display and interaction */}
-            <div className="flex justify-center items-center gap-1 mb-3">
+            <div className="flex justify-center items-center gap-1 mb-1">
               {renderUnifiedStars()}
             </div>
             
@@ -248,7 +248,7 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
 
           {/* Show existing user rating info if exists */}
           {ratingData?.userRating && !submitted && (
-            <div className="mb-4 p-3 bg-info/10 rounded-lg border border-info/20">
+            <div className="mb-3 p-2 bg-info/10 rounded-lg border border-info/20">
               <p className="text-sm text-info">
                 Your current rating: {ratingData.userRating.rating} ⭐ 
                 {ratingData.userRating.createdAt && (
@@ -263,10 +263,12 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
                 </p>
               )}
             </div>
-          )}          {/* Feedback Form for low ratings */}
+          )}
+          
+          {/* Feedback Form for low ratings */}
           {showFeedbackForm && (
-            <form onSubmit={handleFeedbackSubmit} className="mt-6 space-y-4 border-t pt-4">
-              <div className="text-center mb-4">
+            <form onSubmit={handleFeedbackSubmit} className="mt-4 space-y-3 border-t pt-3">
+              <div className="text-center mb-3">
                 <p className="text-sm text-base-content/70">
                   You selected: <span className="font-semibold">{userRating} star{userRating !== 1 ? 's' : ''}</span>
                 </p>
@@ -280,7 +282,7 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
                 </label>
                 <textarea
                   id="feedback"
-                  className="textarea textarea-bordered w-full h-24 resize-none"
+                  className="textarea textarea-bordered w-full h-20 resize-none"
                   placeholder={t('feedback.placeholder')}
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}

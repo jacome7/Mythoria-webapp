@@ -410,7 +410,9 @@
     },
     "actions": {
       "orderPrint": "Encomendar Impressão",
-      "listen": "Ouvir"
+      "print": "Imprimir",
+      "listen": "Ouvir",
+      "listenMobile": "Ouvir"
     }
   },
   "SharedStoryPage": {

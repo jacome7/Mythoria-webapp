@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
 import Image from 'next/image';
+import { FiEdit3, FiPrinter } from 'react-icons/fi';
 import ReadingToolbar, { ReadingSettings } from './ReadingToolbar';
 import { loadStoryCSS, removeStoryCSS } from '../lib/story-css';
 import { getLogoForGraphicalStyle } from '../utils/logo-mapping';
@@ -39,14 +41,17 @@ interface StoryReaderProps {
 
 export default function StoryReader({ storyId, story, chapters, currentChapter }: StoryReaderProps) {
   const t = useTranslations('common.Components.StoryReader');
+  const tPublic = useTranslations('PublicStoryPage');
   const tCommon = useTranslations('common');
   const router = useRouter();
+  const locale = useLocale();
   const [readingSettings, setReadingSettings] = useState<ReadingSettings | null>(null);
   const [isContentLoaded, setIsContentLoaded] = useState(false);
   const [showTableOfContents, setShowTableOfContents] = useState(false);
 
   // Determine what to show based on current chapter
   const isFirstPage = !currentChapter || currentChapter === 0;
+  const isLastChapter = currentChapter === chapters.length;
   const currentChapterData = currentChapter ? chapters.find(ch => ch.chapterNumber === currentChapter) : null;
   const totalChapters = chapters.length;
 
@@ -248,6 +253,38 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
             className="mythoria-chapter-content"
             dangerouslySetInnerHTML={{ __html: currentChapterData.htmlContent }}
           />
+
+          {/* Last Chapter CTAs */}
+          {isLastChapter && (
+            <div className="mythoria-chapter-ctas">
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 mt-8 border border-blue-200">
+                <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">
+                  {tPublic('lastChapter.enjoyedTitle')}
+                </h3>
+                <p className="text-gray-700 text-center mb-6">
+                  {tPublic('lastChapter.enjoyedDesc')}
+                </p>
+                
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <a
+                    href={`/${locale}`}
+                    className="btn btn-primary flex items-center gap-2"
+                  >
+                    <FiEdit3 className="w-4 h-4" />
+                    {tPublic('actions.createOwnStory')}
+                  </a>
+                  
+                  <a
+                    href={`/${locale}/stories/print/${storyId}`}
+                    className="btn btn-secondary flex items-center gap-2"
+                  >
+                    <FiPrinter className="w-4 h-4" />
+                    {tPublic('actions.orderPrintedBook')}
+                  </a>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="mythoria-page-break"></div>

@@ -84,7 +84,7 @@ export default function PublicListenPage() {
           
           // Check if story has audio
           if (!result.story.hasAudio) {
-            setError('This story does not have audio narration available.');
+            setError(t('listen.audioNotAvailable'));
           }
           
           console.log('[Public Listen Page] Story loaded successfully');
@@ -176,7 +176,7 @@ export default function PublicListenPage() {
         
         if (audioUri && typeof audioUri === 'string') {
           audioChapters.push({
-            chapterTitle: dbChapter?.title || `Chapter ${chapterNumber}`,
+            chapterTitle: dbChapter?.title || t('listen.chapterFallback', { number: chapterNumber }),
             audioUri: audioUri,
             duration: 0, // We don't have duration for object format
             imageUri: dbChapter?.imageUri || undefined
@@ -348,12 +348,12 @@ export default function PublicListenPage() {
               >
                 <FiArrowLeft className="w-4 h-4 mr-2" />
                 <span className="hidden sm:inline">{tCommon('Actions.backToStory')}</span>
-                <span className="sm:hidden">Back</span>
+                <span className="sm:hidden">{t('listen.backMobile')}</span>
               </button>
               
               <h1 className="text-xl font-semibold text-gray-900 text-center flex-1 mx-4">
                 <FiVolume2 className="w-5 h-5 inline mr-2" />
-                Listen to &ldquo;{story.title}&rdquo;
+                {t('listen.title', { title: story.title })}
               </h1>
               
               <div className="w-20"></div> {/* Spacer for centering */}
@@ -375,7 +375,7 @@ export default function PublicListenPage() {
                       {chapter.imageUri ? (
                         <Image
                           src={chapter.imageUri}
-                          alt={`Chapter ${index + 1} illustration`}
+                          alt={t('listen.chapterImageAlt', { number: index + 1 })}
                           className="w-16 h-16 object-cover rounded-lg"
                           width={64}
                           height={64}
@@ -398,7 +398,7 @@ export default function PublicListenPage() {
                       </h3>
                       {chapter.duration > 0 && (
                         <p className="text-sm text-gray-600">
-                          Duration: {formatDuration(chapter.duration)}
+                          {t('listen.duration', { duration: formatDuration(chapter.duration) })}
                         </p>
                       )}
 
@@ -426,14 +426,14 @@ export default function PublicListenPage() {
                           <button
                             onClick={() => pauseAudio(index)}
                             className="btn btn-circle btn-primary btn-sm"
-                            title="Pause"
+                            title={t('listen.controls.pause')}
                           >
                             <FiPause className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => stopAudio(index)}
                             className="btn btn-circle btn-outline btn-sm"
-                            title="Stop"
+                            title={t('listen.controls.stop')}
                           >
                             <FiSquare className="w-3 h-3" />
                           </button>
@@ -442,7 +442,7 @@ export default function PublicListenPage() {
                         <button
                           onClick={() => playAudio(index)}
                           className="btn btn-circle btn-primary btn-sm"
-                          title="Play"
+                          title={t('listen.controls.play')}
                         >
                           <FiPlay className="w-4 h-4 ml-0.5" />
                         </button>
@@ -455,15 +455,15 @@ export default function PublicListenPage() {
           ) : (
             <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
               <FiAlertCircle className="text-4xl text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Audio not available</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">{t('listen.audioNotAvailableTitle')}</h3>
               <p className="text-gray-600">
-                This story does not have audio narration available yet.
+                {t('listen.audioNotAvailableDesc')}
               </p>
               <button
                 onClick={navigateBackToStory}
                 className="btn btn-primary mt-4"
               >
-                Back to Story
+                {t('listen.backToStory')}
               </button>
             </div>
           )}

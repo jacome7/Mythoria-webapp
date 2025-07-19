@@ -66,10 +66,7 @@ export default function PublicStoryPage() {
   useEffect(() => {
     if (!slug) return;    const fetchPublicStory = async () => {
       try {
-        console.log('[Public Page] Fetching story for slug:', slug);
         const response = await fetch(`/api/p/${slug}`);
-        console.log('[Public Page] Response status:', response.status);
-        console.log('[Public Page] Response ok:', response.ok);
         
         if (!response.ok) {
           const errorText = await response.text();
@@ -78,14 +75,16 @@ export default function PublicStoryPage() {
         }
         
         const result = await response.json();
-        console.log('[Public Page] Response data:', result);        if (result.success) {
+        console.log('[Public Page] Response data:', result);
+        if (result.success) {
+          // Story data fetched successfully
           setData(result);
           
-          // Story data fetched successfully
-          console.log('[Public Page] Story and chapters loaded successfully');} else {
+        } else {
           console.error('[Public Page] API returned error:', result.error);
           setError(result.error || 'Story not found');
-        }      } catch (err) {
+        }
+      } catch (err) {
         console.error('[Public Page] Error fetching public story:', err);
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';
         setError(`Failed to load story: ${errorMessage}`);
@@ -104,7 +103,7 @@ export default function PublicStoryPage() {
       
       // Set meta description
       const metaDescription = document.querySelector('meta[name="description"]');
-      const description = story.synopsis || story.plotDescription || `Read "${story.title}" on Mythoria`;
+      const description = story.synopsis || story.plotDescription || t('metadata.defaultDescription', { title: story.title });
       if (metaDescription) {
         metaDescription.setAttribute('content', description);
       } else {
@@ -134,7 +133,7 @@ export default function PublicStoryPage() {
       setMetaTag('og:image', `${baseUrl}/api/og/story/${slug}`);
       setMetaTag('og:image:width', '1200');
       setMetaTag('og:image:height', '630');
-      setMetaTag('og:image:alt', `Cover image for "${story.title}"`);
+      setMetaTag('og:image:alt', t('metadata.coverImageAlt', { title: story.title }));
 
       // Twitter Card tags
       const setTwitterTag = (name: string, content: string) => {
@@ -201,14 +200,13 @@ export default function PublicStoryPage() {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 {/* Tags and Action Buttons */}
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="badge badge-success text-xs sm:text-sm">{t('labels.publicStory')}</span>
                   <a
                     href={`/${locale}/stories/print/${story.storyId}`}
                     className="btn btn-primary btn-sm flex items-center gap-2 text-xs sm:text-sm"
                   >
                     <FiPrinter className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span className="hidden min-[480px]:inline">{t('actions.orderPrint')}</span>
-                    <span className="min-[480px]:hidden">Print</span>
+                    <span className="min-[480px]:hidden">{t('actions.print')}</span>
                   </a>
                   {story.hasAudio && (
                     <a
@@ -217,7 +215,7 @@ export default function PublicStoryPage() {
                     >
                       <FiVolume2 className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span className="hidden min-[480px]:inline">{t('actions.listen')}</span>
-                      <span className="min-[480px]:hidden">Listen</span>
+                      <span className="min-[480px]:hidden">{t('actions.listenMobile')}</span>
                     </a>
                   )}
                 </div>
@@ -227,7 +225,7 @@ export default function PublicStoryPage() {
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mt-4">
               <div className="flex items-center gap-1">
                 <FiUser />
-                <span>{t('labels.by')} {story.authorName || 'Unknown Author'}</span>
+                <span>{t('labels.by')} {story.authorName || t('labels.unknownAuthor')}</span>
               </div>
                 <div className="flex items-center gap-1">
                 <FiCalendar />
