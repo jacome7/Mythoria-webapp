@@ -26,7 +26,11 @@ export async function GET(
 
     const storyData = await storyResponse.json();
     
-    if (!storyData.success || !storyData.story.hasAudio) {
+    // Check if the story has chapters with audio
+    const hasAudio = storyData.chapters && Array.isArray(storyData.chapters) && 
+                     storyData.chapters.some((chapter: { audioUri?: string }) => chapter.audioUri);
+    
+    if (!storyData.success || !hasAudio) {
       console.error('[Audio Proxy] Story does not have audio');
       return NextResponse.json(
         { error: 'Audio not available for this story' },
@@ -34,28 +38,15 @@ export async function GET(
       );
     }
 
-    // Get the audio URL from the audiobookUri
-    const audiobookUri = storyData.story.audiobookUri;
+    // Get the audio URL from the chapter's audioUri
+    const chapterIdx = parseInt(chapterIndex);
     let audioUrl: string | null = null;
 
-    if (Array.isArray(audiobookUri)) {
-      const chapterIdx = parseInt(chapterIndex);
-      if (chapterIdx >= 0 && chapterIdx < audiobookUri.length) {
-        audioUrl = audiobookUri[chapterIdx].audioUri;
-      }
-    } else if (typeof audiobookUri === 'object' && audiobookUri) {
-      const audiobookData = audiobookUri as Record<string, string>;
-      
-      // Try chapter_ format first
-      const chapterKey = `chapter_${parseInt(chapterIndex) + 1}`;
-      if (audiobookData[chapterKey]) {
-        audioUrl = audiobookData[chapterKey];
-      } else {
-        // Try numeric format
-        const numericKey = (parseInt(chapterIndex) + 1).toString();
-        if (audiobookData[numericKey]) {
-          audioUrl = audiobookData[numericKey];
-        }
+    // Find the chapter by index (chapters are returned in order)
+    if (storyData.chapters && Array.isArray(storyData.chapters)) {
+      const chapter = storyData.chapters[chapterIdx];
+      if (chapter && chapter.audioUri) {
+        audioUrl = chapter.audioUri;
       }
     }
 

@@ -13,11 +13,15 @@ import CreditsDisplay from '@/components/CreditsDisplay';
 export default function MyStoriesPage() {
   const t = useTranslations('MyStoriesPage');
   const locale = useLocale();
-  const [authorName, setAuthorName] = useState<string>(t('defaults.authorName'));
+  const [authorName, setAuthorName] = useState<string>('');
   const [credits, setCredits] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'stories' | 'characters'>('stories');
+  
   useEffect(() => {
+    // Initialize with translation first
+    setAuthorName(t('defaults.authorName'));
+    
     const fetchUserData = async () => {
       try {
         // Fetch author data

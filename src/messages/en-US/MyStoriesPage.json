@@ -1,52 +1,52 @@
 {
-  "MyStoriesPage": {
-    "title": "My Stories",
-    "description": "View and manage all your created stories",
-    "noStories": {
-      "title": "No Stories Yet",
-      "subtitle": "You haven't created any stories yet. Start your storytelling journey now!",
-      "action": "Create Your First Story"
-    },
-    "table": {
-      "date": "Date",
-      "title": "Title", 
-      "status": "Status",
-      "actions": "Actions"
-    },
-    "status": {
-      "draft": "Draft",
-      "writing": "Writing",
-      "published": "Published"
-    },
-    "actions": {
-      "read": "Read",
-      "edit": "Edit",
-      "share": "Share",
-      "print": "Print",
-      "delete": "Delete",
-      "printNotAvailable": "Print Not Available"
-    },
-    "sharing": {
-      "publicAccessible": "Story is now publicly accessible",
-      "nowPrivate": "Story is now private"
-    },
-    "deleteConfirm": {
-      "title": "Delete Story",
-      "message": "Are you sure you want to delete this story? This action cannot be undone.",
-      "cancel": "Cancel",
-      "confirm": "Delete"
-    },
-    "signedOut": {
-      "needSignIn": "Every storyteller needs an account to keep their magical credits safe!",
-      "signIn": "Sign In",
-      "createAccount": "Create Account"
-    },
-    "defaults": {
-      "authorName": "Storyteller"
-    },
-    "tabs": {
-      "myStories": "My Stories",
-      "myCharacters": "My Characters"
-    }
+  "title": "My Stories",
+  "description": "View and manage all your created stories",
+  "writeNewStory": "Write New Story",
+  "noStories": {
+    "title": "No Stories Yet",
+    "subtitle": "You haven't created any stories yet. Start your storytelling journey now!",
+    "action": "Create Your First Story"
+  },
+  "table": {
+    "date": "Date",
+    "title": "Title", 
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "status": {
+    "draft": "Draft",
+    "writing": "Writing",
+    "published": "Published"
+  },
+  "actions": {
+    "read": "Read",
+    "edit": "Edit",
+    "share": "Share",
+    "print": "Print",
+    "delete": "Delete",
+    "printNotAvailable": "Print Not Available"
+  },
+  "sharing": {
+    "publicAccessible": "Story is now publicly accessible",
+    "nowPrivate": "Story is now private"
+  },
+  "deleteConfirm": {
+    "title": "Delete Story",
+    "message": "Are you sure you want to delete this story? This action cannot be undone.",
+    "cancel": "Cancel",
+    "confirm": "Delete"
+  },
+  "signedOut": {
+    "welcome": "Welcome to My Stories",
+    "needSignIn": "Every storyteller needs an account to keep their magical credits safe!",
+    "signIn": "Sign In",
+    "createAccount": "Create Account"
+  },
+  "defaults": {
+    "authorName": "Storyteller"
+  },
+  "tabs": {
+    "myStories": "My Stories",
+    "myCharacters": "My Characters"
   }
 }

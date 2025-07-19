@@ -39,11 +39,10 @@ import {
   FiItalic, 
   FiUnderline, 
   FiSave,
-  FiAlertCircle,
   FiZap,
   FiImage,
   FiType,
-  FiX
+  FiChevronLeft
 } from 'react-icons/fi';
 import { toAbsoluteImageUrl } from '../utils/image-url';
 
@@ -52,10 +51,10 @@ import { toAbsoluteImageUrl } from '../utils/image-url';
 type TextSize = 'small' | 'medium' | 'large' | 'xlarge';
 
 const TEXT_SIZE_OPTIONS = [
-  { value: 'small' as TextSize, label: 'S', em: '0.875em' },
-  { value: 'medium' as TextSize, label: 'M', em: '1em' },
-  { value: 'large' as TextSize, label: 'L', em: '1.25em' },
-  { value: 'xlarge' as TextSize, label: 'XL', em: '1.5em' },
+  { value: 'small' as TextSize, em: '0.875em' },
+  { value: 'medium' as TextSize, em: '1em' },
+  { value: 'large' as TextSize, em: '1.25em' },
+  { value: 'xlarge' as TextSize, em: '1.5em' },
 ];
 
 // Custom command for text size formatting
@@ -154,6 +153,7 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
   const [currentTextSize, setCurrentTextSize] = useState<TextSize>('medium');
+  const t = useTranslations('components.chapterEditor');
 
   // Update format state
   useEffect(() => {
@@ -372,21 +372,21 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
           <button
             onClick={() => formatText('bold')}
             className={`btn btn-sm ${isBold ? 'btn-primary' : 'btn-ghost'}`}
-            title="Bold"
+            title={t('toolbar.bold')}
           >
             <FiBold className="w-4 h-4" />
           </button>
           <button
             onClick={() => formatText('italic')}
             className={`btn btn-sm ${isItalic ? 'btn-primary' : 'btn-ghost'}`}
-            title="Italic"
+            title={t('toolbar.italic')}
           >
             <FiItalic className="w-4 h-4" />
           </button>
           <button
             onClick={() => formatText('underline')}
             className={`btn btn-sm ${isUnderline ? 'btn-primary' : 'btn-ghost'}`}
-            title="Underline"
+            title={t('toolbar.underline')}
           >
             <FiUnderline className="w-4 h-4" />
           </button>
@@ -397,10 +397,10 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
               tabIndex={0} 
               role="button" 
               className="btn btn-sm btn-ghost gap-1"
-              title="Text Size"
+              title={t('toolbar.textSize')}
             >
               <FiType className="w-4 h-4" />
-              {TEXT_SIZE_OPTIONS.find(opt => opt.value === currentTextSize)?.label || 'M'}
+              {t(`textSizes.${currentTextSize}`)}
             </div>
             <ul 
               tabIndex={0} 
@@ -413,7 +413,7 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
                     className={`text-center ${currentTextSize === option.value ? 'active' : ''}`}
                     style={{ fontSize: option.em }}
                   >
-                    {option.label}
+                    {t(`textSizes.${option.value}`)}
                   </button>
                 </li>
               ))}
@@ -426,10 +426,10 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
             <button
               onClick={onAIEdit}
               className="btn btn-sm btn-primary"
-              title="AI Edit"
+              title={t('toolbar.aiEdit')}
             >
               <FiZap className="w-4 h-4" />
-              Edit
+              {t('toolbar.edit')}
             </button>
           </div>
         )}
@@ -770,25 +770,19 @@ export default function ChapterEditor({
           <div className="p-4 border-t border-base-300 bg-base-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                {hasChanges && (
-                  <div className="flex items-center gap-1 text-warning">
-                    <FiAlertCircle className="w-4 h-4" />
-                    <span className="text-sm">Unsaved changes</span>
-                  </div>
-                )}
-              </div>
-              <div className="flex items-center gap-3">
-                {/* Cancel button - always show if we have a chapterNumber */}
+                {/* Back link - always show if we have a chapterNumber */}
                 {chapterNumber && (
                   <button
                     onClick={handleCancel}
-                    className="btn btn-ghost"
+                    className="btn btn-ghost btn-sm"
                     title={storyId ? `Go to reading page for Chapter ${chapterNumber}` : t('goBackButton')}
                   >
-                    <FiX className="w-4 h-4" />
-                    Cancel
+                    <FiChevronLeft className="w-4 h-4" />
+                    {t('backButton')}
                   </button>
                 )}
+              </div>
+              <div className="flex items-center gap-3">
                 <button
                   onClick={handleSave}
                   disabled={isLoading || !hasChanges}
@@ -799,7 +793,7 @@ export default function ChapterEditor({
                   ) : (
                     <FiSave className="w-4 h-4" />
                   )}
-                  {isLoading ? 'Saving...' : t('saveButton')}
+                  {isLoading ? t('saving') : t('saveButton')}
                 </button>
               </div>
             </div>

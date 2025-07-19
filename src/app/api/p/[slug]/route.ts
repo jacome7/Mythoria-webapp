@@ -51,6 +51,9 @@ export async function GET(
     // Get all chapters for this story
     const chapters = await chapterService.getStoryChapters(story.storyId);
 
+    // Check if any chapters have audio
+    const hasAudio = chapters.some(chapter => chapter.audioUri);
+
     // Transform story data for frontend
     const transformedStory = {
       storyId: story.storyId,
@@ -65,7 +68,7 @@ export async function GET(
       createdAt: story.createdAt,
       isPublic: story.isPublic,
       slug: story.slug,
-      hasAudio: story.hasAudio,
+      hasAudio: hasAudio,
       audiobookUri: story.audiobookUri,
     };
 
