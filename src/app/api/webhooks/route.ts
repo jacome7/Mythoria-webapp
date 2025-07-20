@@ -5,6 +5,25 @@ import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { authors } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+import { pricingService } from '@/db/services';
+
+/**
+ * Detect user's preferred locale from webhook context or other indicators
+ */
+function detectUserLocale(email: string, webhookHeaders?: Headers): string {
+  // First, try to detect from the webhook request headers/context
+  // (This would need additional context passing which we don't have access to in webhooks)
+  
+  // For now, fall back to email domain detection until the client-side sync takes over
+  if (email.endsWith('.pt') || email.includes('@mythoria.pt') || email.includes('.pt')) {
+    return 'pt-PT';
+  }
+  
+  // Default to English for all other cases
+  // Note: The LocaleSync component will update this to the correct locale
+  // based on the user's actual webapp usage within 2 minutes of sign-up
+  return 'en-US';
+}
 
 export async function POST(req: Request) {
   // Get the headers
@@ -79,7 +98,78 @@ export async function POST(req: Request) {
   }
 }
 
-async function handleUserCreated(evt: WebhookEvent) {  if (evt.type !== 'user.created') return;
+/**
+ * Send welcome notification to newly registered user
+ */
+async function sendWelcomeNotification(email: string, name: string) {
+  const notificationEngineUrl = process.env.NOTIFICATION_ENGINE_URL;
+  const notificationEngineApiKey = process.env.NOTIFICATION_ENGINE_API_KEY;
+  
+  if (!notificationEngineUrl) {
+    console.warn('NOTIFICATION_ENGINE_URL not configured, skipping welcome notification');
+    return;
+  }
+
+  try {
+    // Get dynamic story credits amount
+    const storyCredits = await pricingService.getInitialAuthorCredits();
+    
+    // Use the same locale detection logic as user creation
+    const language = detectUserLocale(email);
+    
+    const notificationPayload = {
+      templateId: 'welcome',
+      recipients: [
+        {
+          email: email,
+          name: name,
+          language: language
+        }
+      ],
+      variables: {
+        name: name,
+        storyCredits: storyCredits,
+        currentDate: new Date().toISOString()
+      },
+      priority: 'normal',
+      metadata: {
+        source: 'user_signup',
+        userEmail: email
+      }
+    };
+
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (notificationEngineApiKey) {
+      headers['Authorization'] = `Bearer ${notificationEngineApiKey}`;
+    }
+
+    console.log('Sending welcome notification to:', email, 'Language:', language, 'Credits:', storyCredits);
+    
+    const response = await fetch(`${notificationEngineUrl}/email/template`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(notificationPayload),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Notification API responded with status ${response.status}: ${errorText}`);
+    }
+
+    const result = await response.json();
+    console.log('Welcome notification sent successfully:', result);
+    
+  } catch (error) {
+    console.error('Error sending welcome notification:', error);
+    throw error;
+  }
+}
+
+async function handleUserCreated(evt: WebhookEvent) {
+  if (evt.type !== 'user.created') return;
 
   const { id, email_addresses, first_name, last_name } = evt.data;
 
@@ -88,16 +178,34 @@ async function handleUserCreated(evt: WebhookEvent) {  if (evt.type !== 'user.cr
   if (!primaryEmail) {
     console.error('No primary email found for user:', id);
     return;
-  }  try {
+  }
+
+  const userName = `${first_name || ''} ${last_name || ''}`.trim() || 'Anonymous User';
+
+  const userLocale = detectUserLocale(primaryEmail.email_address);
+
+  try {
     // Try to insert new user first
     await db.insert(authors).values({
       clerkUserId: id,
       email: primaryEmail.email_address,
-      displayName: `${first_name || ''} ${last_name || ''}`.trim() || 'Anonymous User',
+      displayName: userName,
+      preferredLocale: userLocale,
       lastLoginAt: new Date(),
       createdAt: new Date(),
     });
-    console.log('User created in database:', id, 'for email:', primaryEmail.email_address);  } catch (error: unknown) {
+    console.log('User created in database:', id, 'for email:', primaryEmail.email_address, 'with locale:', userLocale);
+
+    // Send welcome notification (don't block user creation if this fails)
+    try {
+      await sendWelcomeNotification(primaryEmail.email_address, userName);
+      console.log('Welcome notification sent successfully for user:', id);
+    } catch (notificationError) {
+      console.error('Failed to send welcome notification for user:', id, 'Error:', notificationError);
+      // We don't re-throw this error - user creation should still succeed
+    }
+
+  } catch (error: unknown) {
     // Log the full error structure for debugging
     console.log('Error structure:', JSON.stringify(error, null, 2));
     
@@ -129,13 +237,22 @@ async function handleUserCreated(evt: WebhookEvent) {  if (evt.type !== 'user.cr
             .update(authors)
             .set({
               clerkUserId: id, // Update to new clerkId
-              displayName: `${first_name || ''} ${last_name || ''}`.trim() || 'Anonymous User',
+              displayName: userName,
+              preferredLocale: userLocale,
               lastLoginAt: new Date(),
               // Keep original createdAt, don't update it
             })
             .where(eq(authors.email, primaryEmail.email_address));
 
-          console.log('User updated (clerkUserId changed) for email:', primaryEmail.email_address);
+          console.log('User updated (clerkUserId changed) for email:', primaryEmail.email_address, 'with locale:', userLocale);
+          
+          // Send welcome notification for this "new" user account (don't block if fails)
+          try {
+            await sendWelcomeNotification(primaryEmail.email_address, userName);
+            console.log('Welcome notification sent successfully for updated user:', id);
+          } catch (notificationError) {
+            console.error('Failed to send welcome notification for updated user:', id, 'Error:', notificationError);
+          }
         } catch (updateError) {
           console.error('Error updating user after duplicate email:', updateError);
           throw updateError;

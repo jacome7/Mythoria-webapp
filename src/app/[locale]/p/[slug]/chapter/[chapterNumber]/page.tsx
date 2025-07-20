@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import { FiLoader, FiAlertCircle } from 'react-icons/fi';
+import { useTranslations, useLocale } from 'next-intl';
+import { FiLoader, FiAlertCircle, FiEdit3, FiPrinter } from 'react-icons/fi';
 import StoryReader from '@/components/StoryReader';
 import PublicStoryRating from '@/components/PublicStoryRating';
 
@@ -44,7 +44,8 @@ interface PublicChapterData {
 
 export default function PublicChapterPage() {
   const params = useParams();
-  const t = useTranslations('PublicStoryPage');
+  const locale = useLocale();
+  const tPublicStoryPage = useTranslations('PublicStoryPage');
   const tCommon = useTranslations('common');
   const slug = params.slug as string;
   const chapterNumber = parseInt(params.chapterNumber as string);
@@ -77,6 +78,18 @@ export default function PublicChapterPage() {
     }
   }, [slug, chapterNumber]);
 
+  // Set page title when data is loaded
+  useEffect(() => {
+    if (data?.story && data?.currentChapter) {
+      const story = data.story;
+      const chapter = data.currentChapter;
+      document.title = tPublicStoryPage('metadata.chapterPageTitle', { 
+        title: story.title, 
+        number: chapter.chapterNumber 
+      });
+    }
+  }, [data, tPublicStoryPage]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
@@ -93,8 +106,8 @@ export default function PublicChapterPage() {
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center space-y-4">
           <FiAlertCircle className="w-16 h-16 text-error mx-auto" />
-          <h1 className="text-2xl font-bold">{t('chapterNotFound')}</h1>
-          <p className="text-base-content/70">{error || t('chapterNotAvailable')}</p>
+          <h1 className="text-2xl font-bold">{tPublicStoryPage('chapterNotFound')}</h1>
+          <p className="text-base-content/70">{error || tPublicStoryPage('chapterNotAvailable')}</p>
           <button
             onClick={() => window.history.back()}
             className="btn btn-primary"
@@ -108,6 +121,7 @@ export default function PublicChapterPage() {
 
   const story = data.story;
   const chapters = data.chapters;
+  const isLastChapter = chapterNumber === chapters.length;
 
   return (
     <div className="min-h-screen bg-base-100">
@@ -118,7 +132,7 @@ export default function PublicChapterPage() {
             <div>
               <h1 className="text-2xl font-bold">{story.title}</h1>
               <p className="text-sm text-base-content/70">
-                Chapter {chapterNumber}: {data.currentChapter.title}
+                {tPublicStoryPage('chapter')} {chapterNumber}: {data.currentChapter.title}
               </p>
             </div>
           </div>
@@ -140,6 +154,38 @@ export default function PublicChapterPage() {
         chapters={chapters}
         currentChapter={chapterNumber}
       />
+
+      {/* Last Chapter CTAs */}
+      {isLastChapter && (
+        <div className="max-w-4xl mx-auto p-4 print:hidden">
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 mt-8 border border-blue-200">
+            <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">
+              {tPublicStoryPage('lastChapter.enjoyedTitle')}
+            </h3>
+            <p className="text-gray-700 text-center mb-6">
+              {tPublicStoryPage('lastChapter.enjoyedDesc')}
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a
+                href={`/${locale}`}
+                className="btn btn-primary flex items-center gap-2"
+              >
+                <FiEdit3 className="w-4 h-4" />
+                {tPublicStoryPage('actions.createOwnStory')}
+              </a>
+              
+              <a
+                href={`/${locale}/stories/print/${story.storyId}`}
+                className="btn btn-secondary flex items-center gap-2"
+              >
+                <FiPrinter className="w-4 h-4" />
+                {tPublicStoryPage('actions.orderPrintedBook')}
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Story Rating */}
       <div className="max-w-4xl mx-auto p-4 print:hidden">

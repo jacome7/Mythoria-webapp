@@ -572,18 +572,18 @@
       },
       "funnyMessages": {
         "generate_outline": [
-          "🍫 Os nossos Oompa-Loompas estão a esboçar o projeto da sua história em papel de chocolate!",
+          "🍫 Os nossos Umpa-lumpas estão a esboçar o projeto da sua história em papel de chocolate!",
           "📋 Os elfos escritores estão a mapear a sua aventura com penas encantadas!",
           "✨ Os arquitetos de histórias estão a desenhar a estrutura de enredo perfeita!"
         ],
         "write_chapters": [
-          "📖 Os Oompa-Loompas estão a digitar furiosamente nas suas pequenas máquinas de escrever!",
+          "📖 Os Umpa-lumpas estão a digitar furiosamente nas suas pequenas máquinas de escrever!",
           "✍️ Os nossos elfos literários estão a tecer o seu conto com fios dourados!",
           "🎭 Os escribas de histórias estão a dar vida aos seus personagens com tinta mágica!",
           "📚 Os feiticeiros de capítulos estão a criar cada página com feitiços literários!"
         ],
         "generate_front_cover": [
-          "🎨 Os nossos Oompa-Loompas artísticos estão a misturar tinta mágica para a sua capa!",
+          "🎨 Os nossos Umpa-lumpas artísticos estão a misturar tinta mágica para a sua capa!",
           "🖌️ Os ilustradores mestres estão a esboçar a sua capa com pincéis arco-íris!",
           "🌟 Os designers de capas estão a polvilhar poeira estelar na face do seu livro!"
         ],
@@ -593,28 +593,28 @@
           "✨ Os elfos de conclusão de capa estão a adicionar os toques finais mágicos!"
         ],
         "generate_images": [
-          "🖼️ Os Oompa-Loompas ilustradores estão a pintar cada cena com emoção!",
+          "🖼️ Os Umpa-lumpas ilustradores estão a pintar cada cena com emoção!",
           "🎨 Os feiticeiros de imagens estão a dar vida colorida aos seus personagens!",
           "🌈 As fadas da arte estão a adicionar detalhes mágicos a cada ilustração!",
           "🖌️ Os contadores de histórias visuais estão a criar janelas para o seu mundo!"
         ],
         "assemble": [
-          "📚 Os Oompa-Loompas encadernadores estão a costurar tudo junto!",
+          "📚 Os Umpa-lumpas encadernadores estão a costurar tudo junto!",
           "🔧 Os elfos de montagem estão a garantir que cada página está perfeita!",
           "📋 Os feiticeiros de controlo de qualidade estão a verificar cada detalhe mágico!"
         ],
         "generate_audiobook": [
-          "🎤 Os Oompa-Loompas atores de voz estão a narrar a sua história!",
+          "🎤 Os Umpa-lumpas atores de voz estão a narrar a sua história!",
           "🎵 Os feiticeiros de áudio estão a adicionar o ritmo perfeito de contar histórias!",
           "🎧 Os engenheiros de som estão a polir cada palavra mágica!"
         ],
         "done": [
           "🎉 Tadã! A sua história mágica está pronta para a sua grande aventura!",
-          "✨ Tudo feito! Os Oompa-Loompas estão a fazer uma pausa merecida para o cacau!",
+          "✨ Tudo feito! Os Umpa-lumpas estão a fazer uma pausa merecida para o cacau!",
           "🏆 Missão cumprida! A sua história está completa e pronta para encantar!"
         ],
         "default": [
-          "⚡ Os nossos Oompa-Loompas mágicos estão a trabalhar as suas maravilhas criativas!"
+          "⚡ Os nossos Umpa-lumpas mágicos estão a trabalhar as suas maravilhas criativas!"
         ]
       }
     },
@@ -745,13 +745,6 @@
       "CharacterCard": {
         "alerts": {
           "maxTraits": "Máximo de 5 características permitidas. Remova uma característica primeiro."
-        }
-      },
-      "ContactForm": {
-        "responses": {
-          "fillRequiredFields": "Por favor preencha todos os campos obrigatórios",
-          "ticketCreated": "Ticket de suporte criado com sucesso! Entraremos em contacto consigo dentro de 24 horas.",
-          "ticketCreationFailed": "Falha ao criar ticket de suporte. Tente novamente mais tarde."
         }
       },
       "EditCreditInfo": {

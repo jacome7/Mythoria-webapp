@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiLoader, FiAlertCircle, FiVolume2, FiPlay, FiPause, FiSquare, FiArrowLeft, FiBook } from 'react-icons/fi';
-import Image from 'next/image';
+import { FiLoader, FiAlertCircle, FiVolume2, FiArrowLeft } from 'react-icons/fi';
+import { useAudioPlayer, AudioChapterList, hasAudiobook, getAudioChapters } from '@/components/AudioPlayer';
 
 interface Chapter {
   id: string;
@@ -55,11 +55,11 @@ export default function PublicListenPage() {
   const [data, setData] = useState<PublicStoryData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Audio playback states
-  const [currentlyPlaying, setCurrentlyPlaying] = useState<number | null>(null);
-  const [audioElements, setAudioElements] = useState<{ [key: number]: HTMLAudioElement }>({});
-  const [audioProgress, setAudioProgress] = useState<{ [key: number]: number }>({});
-  const [audioLoading, setAudioLoading] = useState<{ [key: number]: boolean }>({});
+  // Initialize audio player hook
+  const audioPlayer = useAudioPlayer({
+    audioEndpoint: `/api/p/${slug}/audio`,
+    onError: (errorMessage) => setError(errorMessage),
+  });
 
   useEffect(() => {
     if (!slug) return;
@@ -102,199 +102,16 @@ export default function PublicListenPage() {
     };
 
     fetchPublicStory();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
-  // Check if story has audiobook
-  const hasAudiobook = () => {
-    if (!data?.story?.audiobookUri) return false;
-    if (Array.isArray(data.story.audiobookUri)) {
-      return data.story.audiobookUri.length > 0;
-    }
-    if (typeof data.story.audiobookUri === 'object') {
-      const audiobookData = data.story.audiobookUri as Record<string, unknown>;
-      
-      // Check for chapter_ keys first (Format 1)
-      let chapterKeys = Object.keys(audiobookData).filter(key => key.startsWith('chapter_'));
-      
-      // If no chapter_ keys, check for numeric keys (Format 2)
-      if (chapterKeys.length === 0) {
-        chapterKeys = Object.keys(audiobookData).filter(key => /^\d+$/.test(key));
-      }
-      
-      return chapterKeys.some(key => audiobookData[key] && typeof audiobookData[key] === 'string');
-    }
-    return false;
-  };
-
-  // Get audiobook chapters as array
-  const getAudioChapters = () => {
-    if (!data?.story?.audiobookUri || !data?.chapters) return [];
-    
-    if (Array.isArray(data.story.audiobookUri)) {
-      return data.story.audiobookUri;
-    }
-    
-    if (typeof data.story.audiobookUri === 'object') {
-      const audiobookData = data.story.audiobookUri as Record<string, unknown>;
-      const audioChapters = [];
-      
-      // First, try to find chapter_ keys (Format 1)
-      let chapterKeys = Object.keys(audiobookData)
-        .filter(key => key.startsWith('chapter_'))
-        .sort((a, b) => {
-          const aNum = parseInt(a.replace('chapter_', ''));
-          const bNum = parseInt(b.replace('chapter_', ''));
-          return aNum - bNum;
-        });
-
-      // If no chapter_ keys found, try numeric keys (Format 2)
-      if (chapterKeys.length === 0) {
-        chapterKeys = Object.keys(audiobookData)
-          .filter(key => /^\d+$/.test(key)) // Only numeric keys
-          .sort((a, b) => parseInt(a) - parseInt(b)); // Sort numerically
-      }
-
-      // Create a map of database chapters for easy lookup
-      const dbChaptersMap = new Map();
-      data.chapters.forEach(chapter => {
-        dbChaptersMap.set(chapter.chapterNumber, chapter);
-      });
-
-      for (const chapterKey of chapterKeys) {
-        let chapterNumber: number;
-        
-        if (chapterKey.startsWith('chapter_')) {
-          // Format 1: chapter_1, chapter_2, etc.
-          chapterNumber = parseInt(chapterKey.replace('chapter_', ''));
-        } else {
-          // Format 2: 1, 2, 3, etc.
-          chapterNumber = parseInt(chapterKey);
-        }
-        
-        const audioUri = audiobookData[chapterKey];
-        const dbChapter = dbChaptersMap.get(chapterNumber);
-        
-        if (audioUri && typeof audioUri === 'string') {
-          audioChapters.push({
-            chapterTitle: dbChapter?.title || t('listen.chapterFallback', { number: chapterNumber }),
-            audioUri: audioUri,
-            duration: 0, // We don't have duration for object format
-            imageUri: dbChapter?.imageUri || undefined
-          });
-        }
-      }
-      
-      return audioChapters;
-    }
-    return [];
-  };
-
-  // Audio playback functions
-  const formatDuration = (seconds: number): string => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
-
-  const playAudio = async (chapterIndex: number) => {
-    try {
-      // Stop any currently playing audio
-      if (currentlyPlaying !== null && audioElements[currentlyPlaying]) {
-        audioElements[currentlyPlaying].pause();
-        audioElements[currentlyPlaying].currentTime = 0;
-      }
-
-      setAudioLoading(prev => ({ ...prev, [chapterIndex]: true }));
-
-      // Use the proxy API endpoint for secure access
-      const proxyAudioUri = `/api/p/${slug}/audio/${chapterIndex}`;
-
-      // Create new audio element if it doesn't exist
-      if (!audioElements[chapterIndex]) {
-        const audio = new Audio();
-        audio.preload = 'metadata';
-
-        audio.addEventListener('loadedmetadata', () => {
-          setAudioLoading(prev => ({ ...prev, [chapterIndex]: false }));
-        });
-
-        audio.addEventListener('timeupdate', () => {
-          if (audio.duration) {
-            const progress = (audio.currentTime / audio.duration) * 100;
-            setAudioProgress(prev => ({ ...prev, [chapterIndex]: progress }));
-          }
-        });
-
-        audio.addEventListener('ended', () => {
-          setCurrentlyPlaying(null);
-          setAudioProgress(prev => ({ ...prev, [chapterIndex]: 0 }));
-        });
-
-        audio.addEventListener('error', (e) => {
-          console.error('Audio playback error:', e);
-          setAudioLoading(prev => ({ ...prev, [chapterIndex]: false }));
-          alert(tCommon('Errors.failedToLoadAudio'));
-        });
-
-        setAudioElements(prev => ({ ...prev, [chapterIndex]: audio }));
-        
-        // Set the source and start playing
-        audio.src = proxyAudioUri;
-        await audio.play();
-        setCurrentlyPlaying(chapterIndex);
-      } else {
-        // Use existing audio element
-        const audio = audioElements[chapterIndex];
-        if (audio.src !== proxyAudioUri) {
-          audio.src = proxyAudioUri;
-        }
-        await audio.play();
-        setCurrentlyPlaying(chapterIndex);
-        setAudioLoading(prev => ({ ...prev, [chapterIndex]: false }));
-      }
-    } catch (error) {
-      console.error('Error playing audio:', error);
-      setAudioLoading(prev => ({ ...prev, [chapterIndex]: false }));
-
-      if (error instanceof Error) {
-        if (error.name === 'NotAllowedError') {
-          alert(tCommon('Errors.audioPlaybackInteractionRequired'));
-        } else if (error.name === 'NotSupportedError') {
-          alert(tCommon('Errors.audioFormatNotSupported'));
-        } else {
-          alert(tCommon('Errors.failedToPlayAudio'));
-        }
-      } else {
-        alert(tCommon('Errors.failedToPlayAudio'));
-      }
-    }
-  };
-
-  const pauseAudio = (chapterIndex: number) => {
-    if (audioElements[chapterIndex]) {
-      audioElements[chapterIndex].pause();
-      setCurrentlyPlaying(null);
-    }
-  };
-
-  const stopAudio = (chapterIndex: number) => {
-    if (audioElements[chapterIndex]) {
-      audioElements[chapterIndex].pause();
-      audioElements[chapterIndex].currentTime = 0;
-      setCurrentlyPlaying(null);
-      setAudioProgress(prev => ({ ...prev, [chapterIndex]: 0 }));
-    }
-  };
-
-  // Cleanup audio elements when component unmounts
+  // Set page title when data is loaded
   useEffect(() => {
-    return () => {
-      Object.values(audioElements).forEach(audio => {
-        audio.pause();
-        audio.src = '';
-      });
-    };
-  }, [audioElements]);
+    if (data?.story) {
+      const story = data.story;
+      document.title = t('metadata.listenPageTitle', { title: story.title });
+    }
+  }, [data, t]);
 
   const navigateBackToStory = () => {
     router.push(`/${locale}/p/${slug}`);
@@ -365,93 +182,15 @@ export default function PublicListenPage() {
       {/* Audio Content */}
       <div className="container mx-auto px-4 py-6">
         <div className="max-w-4xl mx-auto">
-          {hasAudiobook() ? (
-            <div className="space-y-4">
-              {getAudioChapters().map((chapter, index) => (
-                <div key={index} className="bg-white rounded-lg shadow-sm border p-4">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                    {/* Chapter Image */}
-                    <div className="flex-shrink-0 mx-auto sm:mx-0">
-                      {chapter.imageUri ? (
-                        <Image
-                          src={chapter.imageUri}
-                          alt={t('listen.chapterImageAlt', { number: index + 1 })}
-                          className="w-16 h-16 object-cover rounded-lg"
-                          width={64}
-                          height={64}
-                          onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                          }}
-                        />
-                      ) : (
-                        <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                          <FiBook className="w-6 h-6 text-gray-400" />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Chapter Info */}
-                    <div className="flex-grow text-center sm:text-left">
-                      <h3 className="font-semibold text-lg text-gray-900">
-                        {index + 1}. {chapter.chapterTitle}
-                      </h3>
-                      {chapter.duration > 0 && (
-                        <p className="text-sm text-gray-600">
-                          {t('listen.duration', { duration: formatDuration(chapter.duration) })}
-                        </p>
-                      )}
-
-                      {/* Progress Bar */}
-                      {audioProgress[index] > 0 && (
-                        <div className="mt-2">
-                          <div className="w-full bg-gray-200 rounded-full h-2">
-                            <div 
-                              className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
-                              style={{ width: `${audioProgress[index]}%` }}
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Audio Controls */}
-                    <div className="flex-shrink-0 flex gap-2 mx-auto sm:mx-0">
-                      {audioLoading[index] ? (
-                        <div className="w-10 h-10 flex items-center justify-center">
-                          <FiLoader className="animate-spin text-gray-400" />
-                        </div>
-                      ) : currentlyPlaying === index ? (
-                        <>
-                          <button
-                            onClick={() => pauseAudio(index)}
-                            className="btn btn-circle btn-primary btn-sm"
-                            title={t('listen.controls.pause')}
-                          >
-                            <FiPause className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => stopAudio(index)}
-                            className="btn btn-circle btn-outline btn-sm"
-                            title={t('listen.controls.stop')}
-                          >
-                            <FiSquare className="w-3 h-3" />
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          onClick={() => playAudio(index)}
-                          className="btn btn-circle btn-primary btn-sm"
-                          title={t('listen.controls.play')}
-                        >
-                          <FiPlay className="w-4 h-4 ml-0.5" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+          {hasAudiobook(data?.story?.audiobookUri) ? (
+            <AudioChapterList 
+              chapters={getAudioChapters(
+                data.story.audiobookUri, 
+                data.chapters, 
+                (number) => t('listen.chapterFallback', { number })
+              )}
+              {...audioPlayer}
+            />
           ) : (
             <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
               <FiAlertCircle className="text-4xl text-gray-400 mx-auto mb-4" />

@@ -875,13 +875,6 @@
 					"maxTraits": "Maximum 5 traits allowed. Remove a trait first."
 				}
 			},
-			"ContactForm": {
-				"responses": {
-					"fillRequiredFields": "Please fill in all required fields",
-					"ticketCreated": "Support ticket created successfully! We'll get back to you within 24 hours.",
-					"ticketCreationFailed": "Failed to create support ticket. Please try again later."
-				}
-			},
 			"EditCreditInfo": {
 				"labels": {
 					"editNumber": "Edit #{editNumber}",

@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { SignedIn, SignedOut } from '@clerk/nextjs';
@@ -56,6 +56,9 @@ function BuyCreditsContent() {
 	   const [creditPackages, setCreditPackages] = useState<CreditPackage[]>([]);
 	   const [packagesLoading, setPackagesLoading] = useState(true);
 	   const [packagesError, setPackagesError] = useState<string | null>(null);
+	   
+	   // Ref for cart items section
+	   const cartItemsRef = useRef<HTMLDivElement>(null);
 
 	   // Handle client-side mounting to prevent hydration issues
 	   useEffect(() => {
@@ -232,6 +235,24 @@ function BuyCreditsContent() {
 			   }
 	   }, [searchParams, creditPackages]);
 
+	   // Function to scroll to cart items on mobile
+	   const scrollToCartItems = () => {
+			   // Only scroll on mobile/tablet (< lg breakpoint, which is 1024px)
+			   if (window.innerWidth >= 1024) return;
+			   
+			   if (cartItemsRef.current) {
+					   const element = cartItemsRef.current;
+					   const elementRect = element.getBoundingClientRect();
+					   const absoluteElementTop = elementRect.top + window.pageYOffset;
+					   const offset = 20; // Small offset for better UX
+					   
+					   window.scrollTo({
+							   top: absoluteElementTop - offset,
+							   behavior: 'smooth'
+					   });
+			   }
+	   };
+
 	   const addToCart = (packageId: number) => {
 			   setCart(prev => {
 					   const existing = prev.find(item => item.packageId === packageId);
@@ -245,6 +266,11 @@ function BuyCreditsContent() {
 							   return [...prev, { packageId, quantity: 1 }];
 					   }
 			   });
+			   
+			   // Scroll to cart items on mobile after a short delay to allow state update
+			   setTimeout(() => {
+					   scrollToCartItems();
+			   }, 100);
 	   };
 
 	   const updateQuantity = (packageId: number, quantity: number) => {
@@ -507,7 +533,7 @@ function BuyCreditsContent() {
 						<h2 className="text-2xl font-bold mb-6">{t('cart.title')}</h2>
 						
 						{/* Cart Items */}
-						<div className="bg-base-200 rounded-lg p-6 mb-6">
+						<div ref={cartItemsRef} className="bg-base-200 rounded-lg p-6 mb-6">
 							{cart.length === 0 ? (
 								<p className="text-center text-gray-500 py-8">{t('cart.empty')}</p>
 							) : (

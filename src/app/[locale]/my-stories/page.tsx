@@ -18,10 +18,7 @@ export default function MyStoriesPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'stories' | 'characters'>('stories');
   
-  useEffect(() => {
-    // Initialize with translation first
-    setAuthorName(t('defaults.authorName'));
-    
+  useEffect(() => {    
     const fetchUserData = async () => {
       try {
         // Fetch author data

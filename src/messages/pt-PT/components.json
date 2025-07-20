@@ -91,6 +91,27 @@
       }
     },
     "contactForm": {
+      "form": {
+        "title": "Contactar Suporte",
+        "name": "Nome",
+        "email": "Email",
+        "category": "Categoria",
+        "message": "Mensagem",
+        "submit": "Criar Ticket de Suporte",
+        "namePlaceholder": "Introduza o seu nome",
+        "emailPlaceholder": "Introduza o seu endereço de email",
+        "messagePlaceholder": "Descreva o seu problema ou questão...",
+        "selectCategory": "Selecione uma categoria..."
+      },
+      "categoriesShort": {
+        "featureIdeas": "Ideias de Funcionalidades e Sugestões",
+        "reportBug": "Reportar um Bug",
+        "troubles": "Problemas Técnicos",
+        "delivery": "Impressão e Entrega",
+        "credits": "Créditos e Faturação",
+        "businessPartnership": "Parceria de Negócio",
+        "general": "Questões Gerais"
+      },
       "errors": {
         "fillRequired": "Por favor preencha todos os campos obrigatórios",
         "createFailed": "Falha ao criar ticket de suporte. Tente novamente."
@@ -168,6 +189,9 @@
       }
     },
     "revolutPayment": {
+      "loading": "A carregar opções de pagamento...",
+      "securityNote": "A sua informação de pagamento é segura e encriptada.",
+      "encryptionNote": "Protegido por encriptação SSL de 256 bits",
       "errors": {
         "initializeFailed": "Falha ao inicializar pagamento"
       }

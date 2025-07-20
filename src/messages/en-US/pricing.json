@@ -190,8 +190,8 @@
     },
     "payment": {
       "title": "Payment Method",
-      "revolutPay": "Revolut Pay & Cards",
-      "revolutDescription": "Pay with Revolut Pay or any credit/debit card securely",
+      "revolutPay": "Credits Cards or Revolut Pay",
+      "revolutDescription": "Pay with any credit/debit card or Revolut Pay securely",
       "mbway": "MBWay",
       "mbwayDescription": "Send money instantly using your MB Way app. You'll receive payment instructions via email.",
       "creditCards": "Credit/Debit Cards",

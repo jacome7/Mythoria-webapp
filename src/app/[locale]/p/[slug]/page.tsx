@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiLoader, FiAlertCircle, FiUser, FiCalendar, FiTag, FiEye, FiPrinter, FiVolume2 } from 'react-icons/fi';
+import { FiLoader, FiAlertCircle, FiUser, FiCalendar, FiTag, FiEye, FiPrinter, FiVolume2, FiEdit3 } from 'react-icons/fi';
 import PublicStoryRating from '@/components/PublicStoryRating';
 import StoryReader from '@/components/StoryReader';
 
@@ -99,7 +99,8 @@ export default function PublicStoryPage() {
   useEffect(() => {
     if (data?.story) {
       const story = data.story;
-      document.title = `${story.title} | Mythoria`;
+      // Use localized page title template
+      document.title = t('metadata.pageTitle', { title: story.title });
       
       // Set meta description
       const metaDescription = document.querySelector('meta[name="description"]');
@@ -151,6 +152,7 @@ export default function PublicStoryPage() {
       setTwitterTag('twitter:description', description);
       setTwitterTag('twitter:image', `${baseUrl}/api/og/story/${slug}`);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, slug]);
   if (loading) {
     return (
@@ -295,6 +297,38 @@ export default function PublicStoryPage() {
             </div>
           </div>
         )}
+        
+        {/* Story Complete CTAs */}
+        <div className="container mx-auto px-4 mt-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 border border-blue-200 print:hidden">
+              <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">
+                {t('storyComplete.enjoyedTitle')}
+              </h3>
+              <p className="text-gray-700 text-center mb-6">
+                {t('storyComplete.enjoyedDesc')}
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a
+                  href={`/${locale}`}
+                  className="btn btn-primary flex items-center gap-2"
+                >
+                  <FiEdit3 className="w-4 h-4" />
+                  {t('actions.createOwnStory')}
+                </a>
+                
+                <a
+                  href={`/${locale}/stories/print/${story.storyId}`}
+                  className="btn btn-secondary flex items-center gap-2"
+                >
+                  <FiPrinter className="w-4 h-4" />
+                  {t('actions.orderPrintedBook')}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
         
         {/* Story Rating Section */}
         <div className="container mx-auto px-4 mt-8">

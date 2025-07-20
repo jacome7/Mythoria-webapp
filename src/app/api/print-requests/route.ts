@@ -4,6 +4,7 @@ import { printRequests, printProviders, stories, addresses } from '@/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { getCurrentAuthor } from '@/lib/auth';
 import { creditService } from '@/db/services';
+import { getEnvironmentConfig } from '../../../../config/environment';
 
 export async function GET(request: NextRequest) {
   try {
@@ -223,6 +224,47 @@ export async function POST(request: NextRequest) {
       .leftJoin(stories, eq(printRequests.storyId, stories.storyId))
       .where(eq(printRequests.id, newRequest[0].id))
       .limit(1);
+
+    // Create ticket in admin system for print request (async, don't block the response)
+    try {
+      const config = getEnvironmentConfig();
+      const ticketResponse = await fetch(`${config.admin.apiUrl}/api/tickets`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          category: 'print_request',
+          storyId: body.storyId,
+          userId: author.authorId,
+          shippingAddress: body.shippingId ? {
+            addressId: body.shippingId,
+            // We could fetch full address details here if needed
+          } : null,
+          printingOption: {
+            serviceCode: body.printingOption?.serviceCode,
+            title: body.printingOption?.title,
+            credits: body.printingOption?.credits,
+          },
+          totalCost: body.totalCost,
+          orderDetails: {
+            printRequestId: newRequest[0].id,
+            requestedAt: new Date().toISOString(),
+            status: 'pending_processing',
+          }
+        }),
+      });
+
+      if (ticketResponse.ok) {
+        const ticketData = await ticketResponse.json();
+        console.log('Print request ticket created:', ticketData.id);
+      } else {
+        console.warn('Failed to create print request ticket:', ticketResponse.statusText);
+      }
+    } catch (ticketError) {
+      console.warn('Print request ticket creation failed:', ticketError);
+      // Don't fail the entire process if ticket creation fails
+    }
 
     return NextResponse.json({
       success: true,

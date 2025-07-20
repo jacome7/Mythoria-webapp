@@ -5,22 +5,18 @@ import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import Image from 'next/image';
 import {
   FiBook,
   FiVolume2,
   FiEdit3,
   FiShare2,
-  FiPlay,
-  FiPause,
-  FiSquare,
   FiArrowLeft,
   FiCreditCard,
   FiLoader,
   FiPrinter
 } from 'react-icons/fi';
-import { trackStoryManagement } from '../../../../../lib/analytics';
 import ShareModal from '../../../../../components/ShareModal';
+import { useAudioPlayer, AudioChapterList, hasAudiobook, getAudioChapters } from '@/components/AudioPlayer';
 
 interface Story {
   storyId: string;
@@ -112,11 +108,15 @@ export default function ListenStoryPage() {
   const [audioGenerationProgress, setAudioGenerationProgress] = useState<string>('');
   const [selectedVoice, setSelectedVoice] = useState<string>('coral');
 
-  // Audio playback states (for when audio is available)
-  const [currentlyPlaying, setCurrentlyPlaying] = useState<number | null>(null);
-  const [audioElements, setAudioElements] = useState<{ [key: number]: HTMLAudioElement }>({});
-  const [audioProgress, setAudioProgress] = useState<{ [key: number]: number }>({});
-  const [audioLoading, setAudioLoading] = useState<{ [key: number]: boolean }>({});
+  // Initialize audio player hook
+  const audioPlayer = useAudioPlayer({
+    audioEndpoint: `/api/stories/${storyId}/audio`,
+    onError: (errorMessage) => setError(errorMessage),
+    trackingData: {
+      story_id: storyId,
+      story_title: story?.title,
+    }
+  });
 
   // Voice options for narration
   const voiceOptions = [
@@ -131,87 +131,7 @@ export default function ListenStoryPage() {
     { value: 'sage', label: 'Sage' },
     { value: 'shimmer', label: 'Shimmer' },
     { value: 'verse', label: 'Verse' }
-  ];  // Check if story has audiobook
-  const hasAudiobook = () => {
-    if (!story?.audiobookUri) return false;
-    if (Array.isArray(story.audiobookUri)) {
-      const result = story.audiobookUri.length > 0;
-      console.log(`hasAudiobook: Array format, length=${story.audiobookUri.length}, result=${result}`);
-      return result;
-    }
-    if (typeof story.audiobookUri === 'object') {
-      const audiobookData = story.audiobookUri as Record<string, unknown>;
-      
-      // Check for chapter_ keys first (Format 1)
-      let chapterKeys = Object.keys(audiobookData).filter(key => key.startsWith('chapter_'));
-      
-      // If no chapter_ keys, check for numeric keys (Format 2)
-      if (chapterKeys.length === 0) {
-        chapterKeys = Object.keys(audiobookData).filter(key => /^\d+$/.test(key));
-      }
-      
-      const result = chapterKeys.some(key => audiobookData[key] && typeof audiobookData[key] === 'string');
-      console.log(`hasAudiobook: Object format, chapterKeys=${chapterKeys}, result=${result}`);
-      return result;
-    }
-    console.log('hasAudiobook: Unknown format');
-    return false;
-  };  // Get audiobook chapters as array
-  const getAudioChapters = () => {
-    if (!story?.audiobookUri) return [];
-    if (Array.isArray(story.audiobookUri)) {
-      return story.audiobookUri;
-    }
-    if (typeof story.audiobookUri === 'object') {
-      // Handle both database formats:
-      // Format 1: {"chapter_1": "url", "chapter_2": "url", ...}
-      // Format 2: {"1": "url", "2": "url", "3": "url", ...}
-      const audiobookData = story.audiobookUri as Record<string, unknown>;
-      const chapters = [];
-      
-      // First, try to find chapter_ keys (Format 1)
-      let chapterKeys = Object.keys(audiobookData)
-        .filter(key => key.startsWith('chapter_'))
-        .sort((a, b) => {
-          const aNum = parseInt(a.replace('chapter_', ''));
-          const bNum = parseInt(b.replace('chapter_', ''));
-          return aNum - bNum;
-        });
-
-      // If no chapter_ keys found, try numeric keys (Format 2)
-      if (chapterKeys.length === 0) {
-        chapterKeys = Object.keys(audiobookData)
-          .filter(key => /^\d+$/.test(key)) // Only numeric keys
-          .sort((a, b) => parseInt(a) - parseInt(b)); // Sort numerically
-      }
-
-      for (const chapterKey of chapterKeys) {
-        let chapterNumber: number;
-        
-        if (chapterKey.startsWith('chapter_')) {
-          // Format 1: chapter_1, chapter_2, etc.
-          chapterNumber = parseInt(chapterKey.replace('chapter_', ''));
-        } else {
-          // Format 2: 1, 2, 3, etc.
-          chapterNumber = parseInt(chapterKey);
-        }
-        
-        const audioUri = audiobookData[chapterKey];
-        
-        if (audioUri && typeof audioUri === 'string') {
-          chapters.push({
-            chapterTitle: `Chapter ${chapterNumber}`,
-            audioUri: audioUri,
-            duration: 0, // We don't have duration for object format
-            imageUri: undefined
-          });
-        }
-      }
-      
-      return chapters;
-    }
-    return [];
-  };
+  ];
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -346,129 +266,6 @@ export default function ListenStoryPage() {
       }
     }
   };
-
-  // Audio playbook functions (for when audio is available)
-  const formatDuration = (seconds: number): string => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
-
-  const playAudio = async (chapterIndex: number) => {
-    try {
-      // Stop any currently playing audio
-      if (currentlyPlaying !== null && audioElements[currentlyPlaying]) {
-        audioElements[currentlyPlaying].pause();
-        audioElements[currentlyPlaying].currentTime = 0;
-      }
-
-      setAudioLoading(prev => ({ ...prev, [chapterIndex]: true }));
-
-      // Use the proxy API endpoint instead of direct Google Cloud Storage URL
-      const proxyAudioUri = `/api/stories/${storyId}/audio/${chapterIndex}`;
-
-      // Create new audio element if it doesn't exist
-      if (!audioElements[chapterIndex]) {
-        const audio = new Audio();
-        audio.preload = 'metadata';
-
-        audio.addEventListener('loadedmetadata', () => {
-          setAudioLoading(prev => ({ ...prev, [chapterIndex]: false }));
-        });
-
-        audio.addEventListener('timeupdate', () => {
-          if (audio.duration) {
-            const progress = (audio.currentTime / audio.duration) * 100;
-            setAudioProgress(prev => ({ ...prev, [chapterIndex]: progress }));
-          }
-        });
-
-        audio.addEventListener('ended', () => {
-          setCurrentlyPlaying(null);
-          setAudioProgress(prev => ({ ...prev, [chapterIndex]: 0 }));
-        });
-
-        audio.addEventListener('error', (e) => {
-          console.error('Audio playback error:', e);
-          setAudioLoading(prev => ({ ...prev, [chapterIndex]: false }));
-          alert(tCommon('Errors.failedToLoadAudio'));
-        });
-
-        setAudioElements(prev => ({ ...prev, [chapterIndex]: audio }));
-        
-        // Set the source and start playing
-        audio.src = proxyAudioUri;
-        await audio.play();
-        setCurrentlyPlaying(chapterIndex);
-
-        // Track story listening
-        trackStoryManagement.listen({
-          story_id: storyId,
-          story_title: story?.title,
-          chapter_number: chapterIndex + 1,
-          total_chapters: getAudioChapters().length
-        });
-      } else {
-        // Use existing audio element
-        const audio = audioElements[chapterIndex];
-        if (audio.src !== proxyAudioUri) {
-          audio.src = proxyAudioUri;
-        }
-        await audio.play();
-        setCurrentlyPlaying(chapterIndex);
-        setAudioLoading(prev => ({ ...prev, [chapterIndex]: false }));
-
-        // Track story listening (for existing audio elements)
-        trackStoryManagement.listen({
-          story_id: storyId,
-          story_title: story?.title,
-          chapter_number: chapterIndex + 1,
-          total_chapters: getAudioChapters().length
-        });
-      }
-    } catch (error) {
-      console.error('Error playing audio:', error);
-      setAudioLoading(prev => ({ ...prev, [chapterIndex]: false }));
-
-      if (error instanceof Error) {
-        if (error.name === 'NotAllowedError') {
-          alert(tCommon('Errors.audioPlaybackInteractionRequired'));
-        } else if (error.name === 'NotSupportedError') {
-          alert(tCommon('Errors.audioFormatNotSupported'));
-        } else {
-          alert(tCommon('Errors.failedToPlayAudio'));
-        }
-      } else {
-        alert(tCommon('Errors.failedToPlayAudio'));
-      }
-    }
-  };
-
-  const pauseAudio = (chapterIndex: number) => {
-    if (audioElements[chapterIndex]) {
-      audioElements[chapterIndex].pause();
-      setCurrentlyPlaying(null);
-    }
-  };
-
-  const stopAudio = (chapterIndex: number) => {
-    if (audioElements[chapterIndex]) {
-      audioElements[chapterIndex].pause();
-      audioElements[chapterIndex].currentTime = 0;
-      setCurrentlyPlaying(null);
-      setAudioProgress(prev => ({ ...prev, [chapterIndex]: 0 }));
-    }
-  };
-
-  // Cleanup audio elements when component unmounts
-  useEffect(() => {
-    return () => {
-      Object.values(audioElements).forEach(audio => {
-        audio.pause();
-        audio.src = '';
-      });
-    };
-  }, [audioElements]);
 
   const navigateToRead = () => {
     router.push(`/${locale}/stories/read/${storyId}`);
@@ -611,98 +408,19 @@ export default function ListenStoryPage() {
                     <h2 className="card-title text-2xl mb-6">
                       <FiVolume2 className="w-6 h-6 mr-2" />
                       {tCommon('ListenStory.listenToStory', { title: story.title })}
-                    </h2>                    {hasAudiobook() ? (
+                    </h2>
+                    
+                    {hasAudiobook(story.audiobookUri) ? (
                       <div className="space-y-6">
                         {/* Audiobook Chapters */}
-                        <div className="space-y-4">
-                          {getAudioChapters().map((chapter, index) => (
-                            <div key={index} className="card bg-base-200 shadow-md">
-                              <div className="card-body p-4">
-                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                                  {/* Chapter Image */}
-                                  <div className="flex-shrink-0 mx-auto sm:mx-0">
-                                    {chapter.imageUri ? (
-                                      <Image
-                                        src={chapter.imageUri}
-                                        alt={tCommon('altTexts.chapterIllustration', { number: index + 1 })}
-                                        className="w-16 h-16 object-cover rounded-lg"
-                                        width={64}
-                                        height={64}
-                                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                                          const target = e.target as HTMLImageElement;
-                                          target.style.display = 'none';
-                                        }}
-                                      />
-                                    ) : (
-                                      <div className="w-16 h-16 bg-base-300 rounded-lg flex items-center justify-center">
-                                        <FiBook className="w-6 h-6 text-base-content/50" />
-                                      </div>
-                                    )}
-                                  </div>
-
-                                  {/* Chapter Info */}
-                                  <div className="flex-grow text-center sm:text-left">
-                                    <h3 className="font-semibold text-lg">
-                                      {chapter.chapterTitle || tCommon('ListenStory.chapterTitle', { number: index + 1 })}
-                                    </h3>
-                                    {chapter.duration > 0 && (
-                                      <p className="text-sm text-base-content/70">
-                                        {tCommon('ListenStory.duration')}: {formatDuration(chapter.duration)}
-                                      </p>
-                                    )}
-
-                                    {/* Progress Bar */}
-                                    {audioProgress[index] > 0 && (
-                                      <div className="mt-2">
-                                        <progress
-                                          className="progress progress-primary w-full h-2"
-                                          value={audioProgress[index]}
-                                          max="100"
-                                          aria-label={tCommon('ListenStory.playbackProgress', { title: chapter.chapterTitle || tCommon('ListenStory.chapterTitle', { number: index + 1 }), progress: Math.round(audioProgress[index]) })}
-                                        />
-                                      </div>
-                                    )}
-                                  </div>
-
-                                  {/* Audio Controls */}
-                                  <div className="flex-shrink-0 flex gap-2 mx-auto sm:mx-0">
-                                    {audioLoading[index] ? (
-                                      <span className="loading loading-spinner loading-sm"></span>
-                                    ) : currentlyPlaying === index ? (
-                                      <>
-                                        <button
-                                          onClick={() => pauseAudio(index)}
-                                          className="btn btn-sm btn-circle btn-primary"
-                                          title={tCommon('Actions.pause')}
-                                          aria-label={`${tCommon('Actions.pause')} ${chapter.chapterTitle || tCommon('ListenStory.chapterTitle', { number: index + 1 })}`}
-                                        >
-                                          <FiPause className="w-4 h-4" />
-                                        </button>
-                                        <button
-                                          onClick={() => stopAudio(index)}
-                                          className="btn btn-sm btn-circle btn-outline"
-                                          title={tCommon('Actions.stop')}
-                                          aria-label={`${tCommon('Actions.stop')} ${chapter.chapterTitle || tCommon('ListenStory.chapterTitle', { number: index + 1 })}`}
-                                        >
-                                          <FiSquare className="w-3 h-3" />
-                                        </button>
-                                      </>
-                                    ) : (
-                                      <button
-                                        onClick={() => playAudio(index)}
-                                        className="btn btn-sm btn-circle btn-primary"
-                                        title={tCommon('Actions.play')}
-                                        aria-label={`${tCommon('Actions.play')} ${chapter.chapterTitle || tCommon('ListenStory.chapterTitle', { number: index + 1 })}`}
-                                      >
-                                        <FiPlay className="w-4 h-4 ml-0.5" />
-                                      </button>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+                        <AudioChapterList 
+                          chapters={getAudioChapters(
+                            story.audiobookUri, 
+                            [], 
+                            (number) => tCommon('ListenStory.chapterTitle', { number })
+                          )}
+                          {...audioPlayer}
+                        />
 
                         {/* Re-narrate Section */}
                         <div className="divider"></div>

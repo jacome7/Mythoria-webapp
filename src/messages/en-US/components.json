@@ -91,6 +91,27 @@
       }
     },
     "contactForm": {
+      "form": {
+        "title": "Contact Support",
+        "name": "Name",
+        "email": "Email",
+        "category": "Category",
+        "message": "Message",
+        "submit": "Create Support Ticket",
+        "namePlaceholder": "Enter your name",
+        "emailPlaceholder": "Enter your email address", 
+        "messagePlaceholder": "Describe your issue or question...",
+        "selectCategory": "Select a category..."
+      },
+      "categoriesShort": {
+        "featureIdeas": "Feature Ideas & Suggestions",
+        "reportBug": "Report a Bug",
+        "troubles": "Technical Issues",
+        "delivery": "Printing & Delivery",
+        "credits": "Credits & Billing",
+        "businessPartnership": "Business Partnership",
+        "general": "General Questions"
+      },
       "errors": {
         "fillRequired": "Please fill in all required fields",
         "createFailed": "Failed to create support ticket. Please try again."
@@ -168,6 +189,9 @@
       }
     },
     "revolutPayment": {
+      "loading": "Loading payment options...",
+      "securityNote": "Your payment information is secure and encrypted.",
+      "encryptionNote": "Protected by 256-bit SSL encryption",
       "errors": {
         "initializeFailed": "Failed to initialize payment"
       }
