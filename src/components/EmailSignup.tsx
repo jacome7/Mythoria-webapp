@@ -33,7 +33,9 @@ const EmailSignup = ({ className = "" }: EmailSignupProps) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email: email.trim() }),
-      });      const data = await response.json();      if (response.ok) {
+      });
+      const data = await response.json();
+      if (response.ok) {
         // Track lead capture event
         trackAuth.leadCapture({
           form_type: 'newsletter',
@@ -57,7 +59,8 @@ const EmailSignup = ({ className = "" }: EmailSignupProps) => {
           setMessage(t('errors.general'));
         }
         setIsSuccess(false);
-      }    } catch (error) {
+      }
+    } catch (error) {
       console.error('Email signup error:', error);
       setMessage(t('errors.network'));
       setIsSuccess(false);

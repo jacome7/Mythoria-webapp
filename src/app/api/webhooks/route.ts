@@ -10,10 +10,7 @@ import { pricingService } from '@/db/services';
 /**
  * Detect user's preferred locale from webhook context or other indicators
  */
-function detectUserLocale(email: string, webhookHeaders?: Headers): string {
-  // First, try to detect from the webhook request headers/context
-  // (This would need additional context passing which we don't have access to in webhooks)
-  
+function detectUserLocale(email: string): string {
   // For now, fall back to email domain detection until the client-side sync takes over
   if (email.endsWith('.pt') || email.includes('@mythoria.pt') || email.includes('.pt')) {
     return 'pt-PT';

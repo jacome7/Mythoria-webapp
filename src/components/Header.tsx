@@ -71,7 +71,7 @@ const Header = () => {
           <label tabIndex={0} className="btn btn-ghost lg:hidden">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
           </label>
-          <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+          <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-1 shadow bg-base-100 rounded-box w-52">
             <li><Link href="/" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.homepage')}</Link></li>
             <li><Link href="/get-inspired" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.getInspired')}</Link></li>
             <li><Link href="/tell-your-story/step-1" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.tellYourStory')}</Link></li>
@@ -82,7 +82,7 @@ const Header = () => {
           </ul>
         </div>
         <div className="flex items-center">
-          <Link href="/" className="btn btn-ghost normal-case text-xl px-1 py-0.5">
+          <Link href="/" className="btn btn-ghost normal-case text-xl px-0 py-0.5">
             <Image src="/images/logo/just_lettering.png" alt={t('logoAlt')} width={140} height={45} />
           </Link>
           <div className="ml-1 sm:ml-2">
