@@ -333,7 +333,7 @@ function BuyCreditsContent() {
 			const data = await response.json();
 
 			if (!response.ok) {
-				throw new Error(data.error || 'Failed to create order');
+                                throw new Error(data.error || t('errors.orderCreationFailed'));
 			}
 
 			console.log('Order created successfully:', data);
@@ -653,9 +653,9 @@ function BuyCreditsContent() {
 								className="radio radio-primary"
 							/>
 							<div className="flex items-center space-x-2">
-								<Image 
-									src="/images/mbway.png" 
-									alt="MB Way" 
+                                                                <Image
+                                                                        src="/images/mbway.png"
+                                                                        alt={t('payment.mbway')}
 									width={24}
 									height={24}
 									className="object-contain" 
