@@ -54,6 +54,7 @@
       "creditsUnit": "Créditos"
     },
     "infoModal": {
+      "title": "Informações do Serviço",
       "header": "Informações do Serviço",
       "button": "Mais Informações",
       "services": {
