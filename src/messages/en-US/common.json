@@ -304,16 +304,22 @@
 				"audioPlaybackError": "An error occurred during audio playback. Please refresh the page and try again."
 			}
 		},
-		"storyRating": {
-			"title": "Rate this story",
-			"titleUpdate": "Update Your Rating",
-			"currentRating": "Current Rating",
-			"averageRating": "Average Rating",
-			"totalRatings": "Total Ratings",
-			"feedback": {
-				"title": "What could we improve? (Optional)",
-				"placeholder": "Your feedback helps us create better stories...",
-				"includeNameLabel": "Allow the author to see my name with this feedback"
+                "storyRating": {
+                        "title": "Rate this story",
+                        "titleUpdate": "Update Your Rating",
+                        "currentRating": "Current Rating",
+                        "averageRating": "Average Rating",
+                        "totalRatings": "Total Ratings",
+                        "basedOnRatings": "Based on {count} rating{plural}",
+                        "clickToRate": "Click to rate {count} star{plural}",
+                        "noRatingsYet": "No ratings yet",
+                        "yourCurrentRating": "Your current rating",
+                        "youSelected": "You selected:",
+                        "starTooltip": "Rate {count} star{plural}",
+                        "feedback": {
+                                "title": "What could we improve? (Optional)",
+                                "placeholder": "Your feedback helps us create better stories...",
+                                "includeNameLabel": "Allow the author to see my name with this feedback"
 			},
 			"buttons": {
 				"cancel": "Cancel",

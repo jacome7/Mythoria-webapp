@@ -335,10 +335,10 @@ export default function PricingPage() {
 			{selectedInfo && (
 				<div className="modal modal-open">
 					<div className="modal-box w-10/12 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-4">
-						<h3 className="font-bold text-lg mb-4">Information</h3>
+                                                <h3 className="font-bold text-lg mb-4">{t('infoModal.title')}</h3>
 						<p className="py-2">{infoTexts[selectedInfo as keyof typeof infoTexts]}</p>
 						<div className="modal-action">
-							<button className="btn" onClick={closeModal}>Close</button>
+                                                        <button className="btn" onClick={closeModal}>{t('infoModal.close')}</button>
 						</div>
 					</div>
 					<div className="modal-backdrop" onClick={closeModal}></div>

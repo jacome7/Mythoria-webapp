@@ -317,6 +317,12 @@
       "currentRating": "Avaliação Atual",
       "averageRating": "Avaliação Média",
       "totalRatings": "Total de Avaliações",
+      "basedOnRatings": "Com base em {count} avaliação{plural}",
+      "clickToRate": "Clique para avaliar {count} estrela{plural}",
+      "noRatingsYet": "Sem avaliações ainda",
+      "yourCurrentRating": "A sua avaliação",
+      "youSelected": "Selecionou:",
+      "starTooltip": "Avaliar {count} estrela{plural}",
       "feedback": {
         "title": "O que podemos melhorar? (Opcional)",
         "placeholder": "O seu feedback ajuda-nos a criar melhores histórias...",
