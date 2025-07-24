@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { FiVolume2 } from 'react-icons/fi';
 import ReadingToolbar, { ReadingSettings } from './ReadingToolbar';
 import { loadStoryCSS, removeStoryCSS } from '../lib/story-css';
 import { getLogoForGraphicalStyle } from '../utils/logo-mapping';
@@ -32,6 +33,7 @@ interface StoryReaderProps {
     graphicalStyle?: string;
     coverUri?: string;
     backcoverUri?: string;
+    hasAudio?: boolean;
   };
   chapters: Chapter[];
   currentChapter?: number;
@@ -194,13 +196,36 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
 
       {/* Start Reading Button */}
       <div className="text-center py-8">
-        <button
-          onClick={() => navigateToChapter(1)}
-          className="btn btn-primary btn-lg"
-          disabled={chapters.length === 0}
-        >
-          {t('startReading')}
-        </button>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+          <button
+            onClick={() => navigateToChapter(1)}
+            className="btn btn-primary btn-lg"
+            disabled={chapters.length === 0}
+          >
+            {t('startReading')}
+          </button>
+          
+          {/* Listen Button */}
+          {story.hasAudio && (
+            <button
+              onClick={() => {
+                // Navigate to listen page
+                if (window.location.pathname.includes('/p/')) {
+                  // Public story navigation
+                  const slug = window.location.pathname.split('/p/')[1].split('/')[0];
+                  router.push(`/p/${slug}/listen`);
+                } else {
+                  // Private story navigation
+                  router.push(`/stories/listen/${storyId}`);
+                }
+              }}
+              className="btn btn-outline btn-primary btn-lg flex items-center gap-2"
+            >
+              <FiVolume2 className="w-5 h-5" />
+              {t('listen')}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

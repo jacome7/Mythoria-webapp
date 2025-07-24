@@ -1,6 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
 import { getLanguageSpecificPrompt, getLanguageSpecificSchema } from "./prompt-loader";
-import { calculateGenAICost, normalizeModelName } from "@/db/genai-cost-calculator";
 import { normalizeCharacterType } from "@/types/character-enums";
 import { normalizeStoryEnums } from "@/utils/enum-normalizers";
 import { getLibTranslations } from '@/utils/lib-translations';
@@ -42,12 +41,6 @@ export interface StructuredStory {
 export interface StructuredStoryResult {
   story: StructuredStory;
   characters: StructuredCharacter[];
-  costInfo?: {
-    totalCost: number;
-    inputTokens: number;
-    outputTokens: number;
-    modelUsed: string;
-  };
 }
 
 export async function generateStructuredStory(
@@ -176,25 +169,6 @@ export async function generateStructuredStory(
     // Generate content
     const result = await ai.models.generateContent(req);
     
-    // Extract token usage information from the response
-    const inputTokens = result.usageMetadata?.promptTokenCount || 0;
-    const outputTokens = result.usageMetadata?.candidatesTokenCount || 0;
-    
-    // Calculate cost for this request
-    const normalizedModelName = normalizeModelName(modelName);
-    const imageCount = imageData ? 1 : 0; // Count images if present
-    
-    const costInfo = calculateGenAICost({
-      provider: 'google',
-      modelName: normalizedModelName,
-      inputTokens,
-      outputTokens,
-      imageCount
-    });
-    
-    // Note: Token usage tracking has been moved to the story-generation-workflow service
-    // and will be handled there for consistency.
-    
     // Get the text from the response
     const text = result.text;
     
@@ -300,13 +274,7 @@ export async function generateStructuredStory(
           plotDescription: userDescription,
           title: t('genaiStoryStructurer.fallbacks.generatedStoryTitle')
         },
-        characters: [],
-        costInfo: costInfo.modelFound ? {
-          totalCost: costInfo.totalCost,
-          inputTokens,
-          outputTokens,
-          modelUsed: modelName
-        } : undefined
+        characters: []
       };
       
       return fallbackResult;
@@ -326,18 +294,7 @@ export async function generateStructuredStory(
       parsedResult.story = normalized as StructuredStory;
     }
 
-    // Add cost information to the result
-    const resultWithCost: StructuredStoryResult = {
-      ...parsedResult,
-      costInfo: costInfo.modelFound ? {
-        totalCost: costInfo.totalCost,
-        inputTokens,
-        outputTokens,
-        modelUsed: modelName
-      } : undefined
-    };
-
-    return resultWithCost;
+    return parsedResult;
   } catch (error) {
     const { t } = await getLibTranslations(locale);
     throw new Error(t('genaiStoryStructurer.errors.failedToGenerate', { 

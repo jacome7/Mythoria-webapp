@@ -84,11 +84,6 @@ export async function DELETE() {
       await tx.delete(stories)
         .where(eq(stories.authorId, author.authorId));
 
-      // MOVED TO WORKFLOWS_DB - Token usage tracking is now in workflows database
-      // This table will need to be cleaned up via the story-generation-workflow service
-      // await tx.delete(tokenUsageTracking)
-      //   .where(eq(tokenUsageTracking.authorId, author.authorId));
-
       // Delete credits
       await tx.delete(credits)
         .where(eq(credits.authorId, author.authorId));

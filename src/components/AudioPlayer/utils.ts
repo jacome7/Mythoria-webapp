@@ -46,9 +46,25 @@ export function getAudioChapters(
 ): AudioChapter[] {
   if (!audiobookUri || !chapters) return [];
   
-  // Handle array format (structured audiobook data)
+  // Handle array format (structured audiobook data) - but enhance with database chapter info
   if (Array.isArray(audiobookUri)) {
-    return audiobookUri;
+    // Create a map of database chapters for easy lookup
+    const dbChaptersMap = new Map();
+    chapters.forEach(chapter => {
+      dbChaptersMap.set(chapter.chapterNumber, chapter);
+    });
+    
+    // Enhance the array format with database chapter information
+    return audiobookUri.map((audioChapter, index) => {
+      const chapterNumber = index + 1;
+      const dbChapter = dbChaptersMap.get(chapterNumber);
+      
+      return {
+        ...audioChapter,
+        chapterTitle: dbChapter?.title || audioChapter.chapterTitle || fallbackTitleFn(chapterNumber),
+        imageUri: dbChapter?.imageUri || audioChapter.imageUri || undefined
+      };
+    });
   }
   
   // Handle object format (chapter keys mapping to URLs)
@@ -93,12 +109,13 @@ export function getAudioChapters(
       const dbChapter = dbChaptersMap.get(chapterNumber);
       
       if (audioUri && typeof audioUri === 'string') {
-        audioChapters.push({
+        const audioChapter = {
           chapterTitle: dbChapter?.title || fallbackTitleFn(chapterNumber),
           audioUri: audioUri,
           duration: 0, // We don't have duration for object format
           imageUri: dbChapter?.imageUri || undefined
-        });
+        };
+        audioChapters.push(audioChapter);
       }
     }
     

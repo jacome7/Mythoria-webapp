@@ -1,6 +1,6 @@
 import { db } from "./index";
-import { authors, stories, characters, storyCharacters, creditLedger, authorCreditBalances, leads, storyRatings, aiEdits, chapters } from "./schema";
-import { eq, and, count, desc, sql, like, asc, max } from "drizzle-orm";
+import { authors, stories, characters, storyCharacters, creditLedger, authorCreditBalances, storyRatings, aiEdits, chapters } from "./schema";
+import { eq, and, count, desc, sql, asc, max } from "drizzle-orm";
 import { ClerkUserForSync } from "@/types/clerk";
 import { pricingService } from "./services/pricing";
 import { CharacterRole, CharacterAge, isValidCharacterAge } from "../types/character-enums";
@@ -471,77 +471,6 @@ export const creditService = {  async addCreditEntry(
     purchaseId?: string
   ) {
     return await this.addCreditEntry(authorId, amount, eventType, undefined, purchaseId);
-  }
-};
-
-// Lead operations
-export const leadService = {
-  async getTotalLeadsCount() {
-    const result = await db.select({ value: count() }).from(leads);
-    return result[0]?.value || 0;
-  },
-  async getLeads(
-    page: number = 1,
-    limit: number = 100,
-    searchTerm?: string,
-    sortBy: 'email' | 'createdAt' | 'notifiedAt' = 'createdAt',
-    sortOrder: 'asc' | 'desc' = 'desc'
-  ) {
-    const offset = (page - 1) * limit;
-    
-    // Build search condition
-    let whereCondition = undefined;
-    if (searchTerm && searchTerm.trim()) {
-      const searchPattern = `%${searchTerm.trim().toLowerCase()}%`;
-      whereCondition = like(leads.email, searchPattern);
-    }
-    
-    // Get total count with search
-    const countQuery = db.select({ value: count() }).from(leads);
-    if (whereCondition) {
-      countQuery.where(whereCondition);
-    }
-    const totalCountResult = await countQuery;
-    const totalCount = totalCountResult[0]?.value || 0;
-    
-    // Get leads with pagination, search, and sorting
-    const leadsQuery = db.select().from(leads);
-    
-    if (whereCondition) {
-      leadsQuery.where(whereCondition);
-    }
-    
-    // Build sort condition
-    let orderBy;
-    switch (sortBy) {
-      case 'email':
-        orderBy = sortOrder === 'asc' ? asc(leads.email) : desc(leads.email);
-        break;
-      case 'notifiedAt':
-        orderBy = sortOrder === 'asc' ? asc(leads.notifiedAt) : desc(leads.notifiedAt);
-        break;
-      default:
-        orderBy = sortOrder === 'asc' ? asc(leads.createdAt) : desc(leads.createdAt);
-    }
-    
-    const leadsList = await leadsQuery
-      .orderBy(orderBy)
-      .limit(limit)
-      .offset(offset);
-    
-    const totalPages = Math.ceil(totalCount / limit);
-    
-    return {
-      leads: leadsList,
-      pagination: {
-        currentPage: page,
-        totalPages,
-        totalCount,
-        hasNextPage: page < totalPages,
-        hasPrevPage: page > 1,
-        limit
-      }
-    };
   }
 };
 

@@ -92,6 +92,13 @@
       "when": 1752791526625,
       "tag": "0012_new_bastion",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1753117520471,
+      "tag": "0013_drop_leads_table",
+      "breakpoints": true
     }
   ]
 }

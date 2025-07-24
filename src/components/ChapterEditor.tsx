@@ -366,7 +366,7 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
   };
 
   return (
-    <div className="bg-base-200 border-b border-base-300 p-2">
+    <div className="bg-base-200 border-b border-base-300 px-4 py-2 md:p-2 sticky top-0 z-50 shadow-md">
       <div className="flex items-left gap-1 justify-between">
         <div className="flex items-left gap-0">
           <button
@@ -680,7 +680,7 @@ export default function ChapterEditor({
   return (
     <div className="h-full flex flex-col space-y-6">
       {/* Chapter Title */}
-      <div className="space-y-2">
+      <div className="space-y-2 px-4 md:px-0">
         <input
           id="chapter-title"
           type="text"
@@ -693,7 +693,7 @@ export default function ChapterEditor({
 
       {/* Chapter Image */}
       {chapterImageUri && (
-        <div className="space-y-2">
+        <div className="space-y-2 px-4 md:px-0">
           <label className="block text-sm font-medium text-base-content">
             {t('imagePlaceholder', { number: chapterNumber })}
           </label>
@@ -736,16 +736,19 @@ export default function ChapterEditor({
         >
           <EditorToolbar onAIEdit={onAIEdit} />
           
-          <div className="flex-1 flex flex-col border border-base-300 rounded-lg overflow-hidden relative">
+          <div 
+            className="flex-1 flex flex-col border-0 md:border border-base-300 md:rounded-lg overflow-hidden relative"
+            data-lexical-editor
+          >
             <RichTextPlugin
               contentEditable={
                 <ContentEditable 
-                  className="flex-1 p-4 prose prose-lg max-w-none focus:outline-none"
+                  className="flex-1 p-4 md:p-4 prose prose-lg max-w-none focus:outline-none"
                   style={{ minHeight: '400px' }}
                 />
               }
               placeholder={
-                <div className="absolute top-4 left-4 text-base-content/50 pointer-events-none">
+                <div className="absolute top-4 left-4 md:left-4 text-base-content/50 pointer-events-none">
                   {t('contentPlaceholder')}
                 </div>
               }
@@ -767,7 +770,7 @@ export default function ChapterEditor({
           </div>
 
           {/* Save button */}
-          <div className="p-4 border-t border-base-300 bg-base-200">
+          <div className="px-4 py-4 md:p-4 border-t border-base-300 bg-base-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 {/* Back link - always show if we have a chapterNumber */}

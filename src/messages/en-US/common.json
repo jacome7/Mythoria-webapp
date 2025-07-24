@@ -23,27 +23,6 @@
 			"contactUs": "Contact Us",
 			"copyright": "Aventuras Contemporâneas, Lda"
 		},
-		"EmailSignup": {
-			"title": "Get Notified When We Launch!",
-			"subtitle": "Be the first to know when Mythoria becomes available and start creating your magical stories.",
-			"form": {
-				"placeholder": "Enter your email address",
-				"button": "Notify Me"
-			},
-			"validation": {
-				"emailRequired": "Please enter your email address",
-				"emailInvalid": "Please enter a valid email address"
-			},
-			"errors": {
-				"general": "Something went wrong. Please try again.",
-				"network": "Network error. Please check your connection and try again."
-			},
-			"messages": {
-				"success": "Thank you for your interest! We'll notify you as soon as Mythoria is available.",
-				"alreadyRegistered": "Wow, you are really eager to experience Mythoria. Rest assured we will notify you when we launch!"
-			},
-			"privacy": "We respect your privacy. No spam, just launch notifications."
-		},
 		"StepNavigation": {
 			"next": "Next",
 			"prev": "Prev",
@@ -228,6 +207,7 @@
 			"StoryReader": {
 				"preparing": "Preparing your story...",
 				"startReading": "Start Reading",
+				"listen": "Listen",
 				"chapterNotFound": "Chapter not found",
 				"chapterNotFoundDescription": "The requested chapter could not be found.",
 				"backToStory": "Back to Story",

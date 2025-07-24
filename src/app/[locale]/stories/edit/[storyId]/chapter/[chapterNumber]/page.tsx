@@ -482,8 +482,8 @@ export default function EditChapterPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto p-4">
-        <div className="space-y-6">
+      <div className="md:max-w-7xl md:mx-auto md:p-4">
+        <div className="space-y-6 md:space-y-6">
           {/* Chapter Editor */}
           <ChapterEditor
             key={`chapter-${chapterNumber}-v${currentChapterData.version}`}

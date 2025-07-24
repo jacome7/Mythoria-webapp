@@ -108,9 +108,6 @@ export const trackAuth = {
   
   logout: (params: AuthEventParams = {}) => 
     trackEvent('logout', params),
-  
-  leadCapture: (params: AnalyticsEventParams = {}) => 
-    trackEvent('lead_capture', params),
 };
 
 /**

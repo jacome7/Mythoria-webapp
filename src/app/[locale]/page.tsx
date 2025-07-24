@@ -7,7 +7,6 @@ import { useTranslations } from 'next-intl';
 import { useMemo, useState, useRef } from 'react';
 import StoryCounter from "@/components/StoryCounter";
 import QuoteOfTheDay from "@/components/QuoteOfTheDay";
-import EmailSignup from "@/components/EmailSignup";
 import AnimatedLogo from "@/components/AnimatedLogo";
 
 export default function Home() {
@@ -43,8 +42,6 @@ export default function Home() {
     }
     return seq;
   }, [words, t]);
-
-  const showSoonPage = process.env.NEXT_PUBLIC_SHOW_SOON_PAGE === 'true';
 
   // Carousel navigation functions
   const scrollToSlide = (slideIndex: number) => {
@@ -114,20 +111,7 @@ export default function Home() {
         <section className="my-8">
           <QuoteOfTheDay />
         </section>
-        {showSoonPage ? (
-          <section className="my-16 text-center">
-            <h2 className="text-3xl font-bold mb-4">{t('comingSoon.title')}</h2>            
-            <p className="text-xl text-gray-600 mb-12">
-              {t('comingSoon.subtitle')}
-            </p>
             
-            {/* Email Signup Component */}
-            <div className="max-w-md mx-auto">
-              <EmailSignup />
-            </div>
-          </section>
-        ) : (
-          <>
             {/* Audience Sections */}
             <section className="my-16">
               {/* Desktop Grid */}
@@ -337,8 +321,6 @@ export default function Home() {
               <h2 className="text-3xl font-bold mb-4">{t('community.title')}</h2>
               <StoryCounter />
             </section>
-          </>
-        )}
       </div>
     </div>
   );

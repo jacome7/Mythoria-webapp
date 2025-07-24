@@ -6,16 +6,14 @@ import { useTranslations } from 'next-intl';
 import ImageEditingTab from './ImageEditingTab';
 import CreditConfirmationModal from './CreditConfirmationModal';
 import EditCreditInfo from './EditCreditInfo';
-import { extractStoryImagesFromHtml, extractStoryImages, StoryImage } from '@/utils/imageUtils';
+import { StoryImage } from '@/utils/imageUtils';
+import { chapterService } from '@/db/services';
 
 interface AIEditModalProps {
   isOpen: boolean;
   onClose: () => void;
   storyId: string;
-  storyContent: string;
   onEditSuccess: (updatedHtml: string, autoSave?: boolean) => void;
-  onOptimisticUpdate: (updatedHtml: string) => void;
-  onRevertUpdate: (originalHtml: string) => void;
 }
 
 interface Chapter {
@@ -29,10 +27,7 @@ export default function AIEditModal({
   isOpen, 
   onClose, 
   storyId, 
-  storyContent, 
-  onEditSuccess,
-  onOptimisticUpdate,
-  onRevertUpdate
+  onEditSuccess
 }: AIEditModalProps) {
   const t = useTranslations('common.aiEditModal');
   const [activeTab, setActiveTab] = useState<EditTab>('text');
@@ -78,120 +73,32 @@ export default function AIEditModal({
     message?: string;
     nextThreshold?: number;
     isFree?: boolean;
-  } | null>(null);// Extract chapters from story content
-  useEffect(() => {
-    if (!storyContent) return;
+  } | null>(null);
 
-    console.log('Extracting chapters from story content length:', storyContent.length);
-    console.log('Story content preview:', storyContent.substring(0, 1000));
-    
-    const foundChapters: Chapter[] = [];
-    
-    // Look for mythoria-chapter divs with id="chapter-X"
-    const chapterDivRegex = /<div[^>]*class="[^"]*mythoria-chapter[^"]*"[^>]*id="chapter-(\d+)"[^>]*>/gi;
-    
-    let match;
-    while ((match = chapterDivRegex.exec(storyContent)) !== null) {
-      const chapterNumber = parseInt(match[1]);
-      
-      // Validate chapter number
-      if (isNaN(chapterNumber) || chapterNumber < 1 || chapterNumber > 100) {
-        continue;
-      }
-      
-      // Try to extract chapter title from the content inside the div
-      const chapterStartIndex = match.index + match[0].length;
-      const nextChapterMatch = storyContent.indexOf('<div class="mythoria-chapter"', chapterStartIndex);
-      const chapterEndIndex = nextChapterMatch > -1 ? nextChapterMatch : storyContent.length;
-      const chapterContent = storyContent.substring(chapterStartIndex, chapterEndIndex);
-      
-      // Look for chapter title in various formats within the chapter content
-      let chapterTitle = `Chapter ${chapterNumber}`;
-      const titlePatterns = [
-        /<h[1-6][^>]*>([^<]*(?:chapter|capítulo)\s*\d+[^<]*)<\/h[1-6]>/gi,
-        /<h[1-6][^>]*>\s*(\d+)\.\s*([^<]+)\s*<\/h[1-6]>/gi,
-        /<h[1-6][^>]*>\s*([^<]+)\s*<\/h[1-6]>/gi
-      ];
-      
-      for (const titlePattern of titlePatterns) {
-        titlePattern.lastIndex = 0;
-        const titleMatch = titlePattern.exec(chapterContent);
-        if (titleMatch) {
-          if (titlePattern === titlePatterns[0]) {
-            chapterTitle = titleMatch[1].trim();
-          } else if (titlePattern === titlePatterns[1]) {
-            chapterTitle = titleMatch[2].trim();
-          } else {
-            const title = titleMatch[1].trim();
-            // Only use generic headings if they're reasonably short and look like chapter titles
-            if (title.length <= 50 && !title.toLowerCase().includes('img') && !title.toLowerCase().includes('div')) {
-              chapterTitle = title;
-            }
-          }
-          break;
+  // Load chapters from database
+  useEffect(() => {
+    const loadChapters = async () => {
+      if (isOpen && storyId) {
+        try {
+          const tableOfContents = await chapterService.getChapterTableOfContents(storyId);
+          const chaptersList = tableOfContents.map((chapter: { chapterNumber: number; title: string }) => ({
+            number: chapter.chapterNumber,
+            title: chapter.title || `Chapter ${chapter.chapterNumber}`
+          }));
+          
+          console.log('Loaded chapters from database:', chaptersList);
+          setChapters(chaptersList);
+        } catch (error) {
+          console.error('Error loading chapters:', error);
+          setChapters([]);
         }
       }
-      
-      // Truncate long titles
-      if (chapterTitle.length > 50) {
-        chapterTitle = chapterTitle.substring(0, 47) + '...';
-      }
-      
-      foundChapters.push({
-        number: chapterNumber,
-        title: chapterTitle
-      });
-      
-      console.log(`Found chapter ${chapterNumber}: "${chapterTitle}"`);
-    }
-
-    // Sort chapters by number
-    foundChapters.sort((a, b) => a.number - b.number);
-    
-    console.log('Final extracted chapters:', foundChapters);
-    setChapters(foundChapters);
-  }, [storyContent]);  // Extract images from story content and Google Cloud Storage
-  useEffect(() => {
-    const loadImages = async () => {
-      if (!storyId) {
-        setStoryImages([]);
-        return;
-      }
-
-      let extractedImages: StoryImage[] = [];
-
-      try {
-        // Try to get images from Google Cloud Storage first
-        const response = await fetch(`/api/stories/${storyId}`, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.mediaLinks && Object.keys(data.mediaLinks).length > 0) {
-            extractedImages = extractStoryImages(data.mediaLinks);
-            console.log('Extracted story images from Google Cloud Storage:', extractedImages);
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching images from Google Cloud Storage:', error);
-      }
-
-      // If no images from storage, fall back to HTML extraction
-      if (extractedImages.length === 0 && storyContent) {
-        extractedImages = extractStoryImagesFromHtml(storyContent);
-        console.log('Extracted story images from HTML (fallback):', extractedImages);
-      }
-
-      setStoryImages(extractedImages);
     };
 
-    loadImages();
-  }, [storyContent, storyId]);
+    if (isOpen) {
+      loadChapters();
+    }
+  }, [isOpen, storyId]);
 
   // Load credit info for text editing when modal opens
   useEffect(() => {
@@ -384,251 +291,43 @@ export default function AIEditModal({
   const handleImageUpdated = (updatedImages: StoryImage[]) => {
     setStoryImages(updatedImages);
     console.log('Images updated in AIEditModal:', updatedImages);
-  };  const handleImageEditSuccess = async (originalUrl: string, newUrl: string) => {
-    console.log('handleImageEditSuccess called with optimistic updates:', { originalUrl, newUrl });
-    
-    // Store original content for potential revert
-    const originalContent = storyContent;
+  };
+
+  const handleImageEditSuccess = async (originalUrl: string, newUrl: string) => {
+    console.log('handleImageEditSuccess called:', { originalUrl, newUrl });
     
     try {
-      // Step 1: Optimistically update the UI immediately
-      if (storyContent) {
-        console.log('Starting optimistic update...');
-        
-        let updatedHtml = storyContent;
-        const urlExists = storyContent.includes(originalUrl);
-        console.log('Original URL exists in content:', urlExists);
-        
-        if (urlExists) {
-          // Direct replacement if URL exists exactly
-          updatedHtml = storyContent.replace(
-            new RegExp(originalUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
-            newUrl
-          );
-          console.log('Direct URL replacement successful');
-        } else {
-          console.warn('Original URL not found in story content. Attempting fallback strategies...');
-          
-          // Fallback 1: Try to find and replace URLs in src attributes with more flexible matching
-          const srcRegex = /src\s*=\s*["']([^"']*)['"]/gi;
-          let foundMatch = false;
-          updatedHtml = storyContent.replace(srcRegex, (match, url) => {
-            // Direct match
-            if (url === originalUrl) {
-              console.log('Found exact URL match in src attribute:', url, '→', newUrl);
-              foundMatch = true;
-              return match.replace(url, newUrl);
-            }
-            
-            // Filename match (handles cases where paths might differ)
-            const originalFilename = originalUrl.split('/').pop();
-            const urlFilename = url.split('/').pop();
-            if (originalFilename && urlFilename && originalFilename === urlFilename) {
-              console.log('Found filename match in src attribute:', url, '→', newUrl);
-              foundMatch = true;
-              return match.replace(url, newUrl);
-            }
-            
-            // Partial match (handles cases where URL has query parameters or fragments)
-            if (originalFilename && url.includes(originalFilename)) {
-              console.log('Found partial filename match in src attribute:', url, '→', newUrl);
-              foundMatch = true;
-              return match.replace(url, newUrl);
-            }
-            
-            return match;
-          });
-          
-          // Fallback 2: If still no changes, try more aggressive filename-based replacement
-          if (!foundMatch && updatedHtml === storyContent) {
-            const originalFilename = originalUrl.split('/').pop();
-            const newFilename = newUrl.split('/').pop();
-            
-            if (originalFilename && newFilename) {
-              // Try replacing the filename in any context (not just URLs)
-              const filenameRegex = new RegExp(
-                originalFilename.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 
-                'g'
-              );
-              const beforeReplace = updatedHtml;
-              updatedHtml = storyContent.replace(filenameRegex, newFilename);
-              if (updatedHtml !== beforeReplace) {
-                console.log('Attempted aggressive filename-based replacement:', originalFilename, '→', newFilename);
-                foundMatch = true;
-              }
-            }
-          }
-          
-          // Fallback 3: Try to find any similar image URLs and replace the most likely candidate
-          if (!foundMatch && updatedHtml === storyContent) {
-            console.log('Attempting heuristic URL matching...');
-            
-            // Extract all image URLs from the content
-            const allImageUrls = [];
-            const imageRegex = /src\s*=\s*["']([^"']*\.(jpg|jpeg|png|gif|webp|svg))['"]/gi;
-            let imageMatch;
-            while ((imageMatch = imageRegex.exec(storyContent)) !== null) {
-              allImageUrls.push(imageMatch[1]);
-            }
-            
-            console.log('Found image URLs in content:', allImageUrls);
-            console.log('Looking for URL similar to:', originalUrl);
-            
-            // Try to find the most similar URL (this handles cases where the version might be different)
-            const originalPath = originalUrl.split('/').slice(0, -1).join('/');
-            const originalBasename = originalUrl.split('/').pop()?.replace(/\.[^.]*$/, ''); // filename without extension
-            
-            for (const candidateUrl of allImageUrls) {
-              const candidatePath = candidateUrl.split('/').slice(0, -1).join('/');
-              const candidateBasename = candidateUrl.split('/').pop()?.replace(/\.[^.]*$/, '');
-              
-              // If paths match and basenames are similar (handles version differences)
-              if (originalPath === candidatePath && originalBasename && candidateBasename && 
-                  (originalBasename.includes(candidateBasename) || candidateBasename.includes(originalBasename))) {
-                console.log('Found similar URL to replace:', candidateUrl, '→', newUrl);
-                updatedHtml = storyContent.replace(
-                  new RegExp(candidateUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
-                  newUrl
-                );
-                foundMatch = true;
-                break;
-              }
-            }
-          }
-        }
-          console.log('Replacement result:', {
-          originalUrl,
-          newUrl,
-          originalLength: storyContent.length,
-          updatedLength: updatedHtml.length,
-          contentChanged: updatedHtml !== storyContent,
-          originalUrlFound: storyContent.includes(originalUrl),
-          replacementsCount: (storyContent.match(new RegExp(originalUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length,
-          htmlPreview: storyContent.substring(0, 500) + '...'
-        });
-        
-        if (updatedHtml !== storyContent) {
-          console.log('Optimistic update: immediately updating UI');
-          onOptimisticUpdate(updatedHtml);
-            // Step 2: Attempt to save to backend
-          console.log('Attempting to save changes to backend...');
-          setIsSavingImage(true);
-          
-          try {
-            const saveResponse = await fetch(`/api/books/${storyId}/save`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },              body: JSON.stringify({
-                html: updatedHtml,
-                source: 'manual'
-              }),
-            });            if (saveResponse.ok) {
-              console.log('Backend save successful - image change completed');
-              const saveResult = await saveResponse.json();
-              
-              // Verify the save was actually successful
-              if (saveResult.verified === false) {
-                console.error('WARNING: Save completed but file verification failed. This may indicate a storage inconsistency.');
-                setError('Image saved but there may be a storage issue. Please refresh the page to verify your changes.');
-                setIsSavingImage(false);
-                return;
-              }
-              
-              setIsSavingImage(false);
-              
-              // Close the modal immediately
-              onClose();
-              
-              // Add a small delay to ensure modal closes, then redirect to force refresh
-              setTimeout(() => {
-                // Redirect to the current page to force a fresh load of the updated HTML
-                window.location.reload();
-              }, 100);
-              
-            } else {
-              setIsSavingImage(false);
-              const error = await saveResponse.json();
-              throw new Error(error.error || 'Failed to save');
-            }
-            
-          } catch (saveError) {
-            setIsSavingImage(false);
-            console.error('Backend save failed, reverting optimistic update:', saveError);
-            
-            // Step 3: Revert the optimistic update on save failure
-            onRevertUpdate(originalContent);
-            
-            // Show error message
-            setError('Failed to save image change. The change has been reverted.');
-            return;
-          }
-            } else {
-          console.warn('No changes made to HTML content - URL replacement failed');
-          console.error('Failed to find and replace image URL:', {
-            originalUrl,
-            searchPatterns: [
-              'Direct URL match',
-              'Filename in src attributes', 
-              'Aggressive filename replacement',
-              'Heuristic URL matching'
-            ],
-            allImageUrlsInContent: (() => {
-              const urls = [];
-              const regex = /src\s*=\s*["']([^"']*\.(jpg|jpeg|png|gif|webp|svg))['"]/gi;
-              let match;
-              while ((match = regex.exec(storyContent)) !== null) {
-                urls.push(match[1]);
-              }
-              return urls;
-            })()
-          });          setError('Failed to update image in story. The image URL could not be found in the content. Please try again.');
-          setIsSavingImage(false);
-          return;
-        }
-      } else {        console.warn('No story content available to update');
-        setError('No story content available to update.');
-        setIsSavingImage(false);
-        return;
-      }
-
-      // Step 4: Refresh the story data to get updated media links
-      console.log('Refreshing story data...');
-      await refreshStoryData();
-      console.log('Story data refresh completed');
-        } catch (error) {
-      console.error('Error in optimistic image update:', error);
+      setIsSavingImage(true);
+      
+      // Update the story images list to reflect the change
+      setStoryImages(currentImages => 
+        currentImages.map(img => 
+          img.latestVersion.url === originalUrl 
+            ? { 
+                ...img, 
+                latestVersion: { ...img.latestVersion, url: newUrl },
+                versions: img.versions.map(v => 
+                  v.url === originalUrl ? { ...v, url: newUrl } : v
+                )
+              } 
+            : img
+        )
+      );
+      
+      console.log('Image successfully updated in the story');
       setIsSavingImage(false);
       
-      // Revert optimistic update on any error
-      onRevertUpdate(originalContent);
+      // Close the modal
+      onClose();
+      
+    } catch (error) {
+      console.error('Error updating image:', error);
+      setIsSavingImage(false);
       setError('Failed to update image. Please try again.');
     }
   };
-  const refreshStoryData = async () => {
-    try {
-      const response = await fetch(`/api/stories/${storyId}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
 
-      if (response.ok) {
-        const data = await response.json();
-        
-        // Update images with new media links data from Google Cloud Storage
-        if (data.mediaLinks) {
-          const updatedImages = extractStoryImages(data.mediaLinks);
-          setStoryImages(updatedImages);
-          console.log('Refreshed story images after edit:', updatedImages);
-        }
-      }
-    } catch (error) {
-      console.error('Error refreshing story data:', error);
-    }
-  };  const handleClose = () => {
+  const handleClose = () => {
     if (!isLoading && !isSavingImage) {
       onClose();
       setUserRequest('');
@@ -818,7 +517,6 @@ export default function AIEditModal({
                 storyImages={storyImages}
                 onImageEditSuccess={handleImageEditSuccess}
                 onImageUpdated={handleImageUpdated}
-                storyContent={storyContent}
               />
               
               {/* Credit Information for Image Editing */}

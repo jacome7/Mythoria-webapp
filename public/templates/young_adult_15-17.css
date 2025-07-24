@@ -127,6 +127,14 @@
   margin-bottom: 1.5rem;
 }
 
+.mythoria-chapter-content p {
+  text-indent: 1rem;
+  margin-bottom: 1.25rem !important;
+  font-size: 1rem !important;
+  line-height: 1.8 !important;
+  color: #111 !important;
+}
+
 /* Chapter images */
 .mythoria-chapter-image {
   text-align: center;

@@ -308,14 +308,13 @@ export default async function LocaleLayout({
     "inLanguage": metadata.structuredData?.inLanguage || locale
   };
 
-  const showSoonPage = process.env.NEXT_PUBLIC_SHOW_SOON_PAGE === 'true';
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <LanguageAttribute locale={locale} />
       <StructuredData data={structuredData} />
       <LocaleSync />
       <div className="flex flex-col min-h-screen">
-        {!showSoonPage && <Header />}
+        <Header />
         <main className="flex-grow">{children}</main>
         <Footer />
       </div>

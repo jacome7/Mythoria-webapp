@@ -18,10 +18,13 @@ export function useAudioPlayer({
 
   const playAudio = useCallback(async (chapterIndex: number) => {
     try {
-      // Stop any currently playing audio
+      // Stop and properly clean up any currently playing audio
       if (currentlyPlaying !== null && audioElements[currentlyPlaying]) {
-        audioElements[currentlyPlaying].pause();
-        audioElements[currentlyPlaying].currentTime = 0;
+        const currentAudio = audioElements[currentlyPlaying];
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        // Reset the audio element to free up resources
+        currentAudio.load();
       }
 
       setAudioLoading(prev => ({ ...prev, [chapterIndex]: true }));
@@ -51,22 +54,35 @@ export function useAudioPlayer({
         });
 
         audio.addEventListener('error', (e) => {
-          console.error('Audio playback error:', e);
+          console.error('Audio playback error for chapter', chapterIndex + 1, ':', e);
           setAudioLoading(prev => ({ ...prev, [chapterIndex]: false }));
+          setCurrentlyPlaying(null);
+          // Don't trigger the global error handler that crashes the page
+          // Instead, show a more user-friendly message
           const errorMessage = tCommon('Errors.failedToLoadAudio');
-          if (onError) {
-            onError(errorMessage);
-          } else {
-            alert(errorMessage);
-          }
+          alert(`${errorMessage} (Chapter ${chapterIndex + 1})`);
         });
 
         setAudioElements(prev => ({ ...prev, [chapterIndex]: audio }));
         
-        // Set the source and start playing
+        // Set the source and start playing with proper error handling
         audio.src = proxyAudioUri;
-        await audio.play();
-        setCurrentlyPlaying(chapterIndex);
+        
+        try {
+          await audio.play();
+          setCurrentlyPlaying(chapterIndex);
+        } catch (playError) {
+          console.error('Play promise rejected for chapter', chapterIndex + 1, ':', playError);
+          setAudioLoading(prev => ({ ...prev, [chapterIndex]: false }));
+          
+          // Handle different types of play errors
+          if (playError instanceof Error && playError.name === 'NotAllowedError') {
+            alert(tCommon('Errors.audioPlaybackInteractionRequired'));
+          } else {
+            alert(`${tCommon('Errors.failedToPlayAudio')} (Chapter ${chapterIndex + 1})`);
+          }
+          return;
+        }
 
         // Track story listening if tracking data is provided
         if (trackingData?.story_id) {
@@ -80,12 +96,31 @@ export function useAudioPlayer({
       } else {
         // Use existing audio element
         const audio = audioElements[chapterIndex];
+        
+        // Always reset the audio element when switching sources
         if (audio.src !== proxyAudioUri) {
+          audio.pause();
+          audio.currentTime = 0;
+          audio.load(); // Reset the element
           audio.src = proxyAudioUri;
         }
-        await audio.play();
-        setCurrentlyPlaying(chapterIndex);
-        setAudioLoading(prev => ({ ...prev, [chapterIndex]: false }));
+        
+        try {
+          await audio.play();
+          setCurrentlyPlaying(chapterIndex);
+          setAudioLoading(prev => ({ ...prev, [chapterIndex]: false }));
+        } catch (playError) {
+          console.error('Play promise rejected for existing chapter', chapterIndex + 1, ':', playError);
+          setAudioLoading(prev => ({ ...prev, [chapterIndex]: false }));
+          
+          // Handle different types of play errors
+          if (playError instanceof Error && playError.name === 'NotAllowedError') {
+            alert(tCommon('Errors.audioPlaybackInteractionRequired'));
+          } else {
+            alert(`${tCommon('Errors.failedToPlayAudio')} (Chapter ${chapterIndex + 1})`);
+          }
+          return;
+        }
 
         // Track story listening if tracking data is provided
         if (trackingData?.story_id) {
@@ -131,8 +166,11 @@ export function useAudioPlayer({
 
   const stopAudio = useCallback((chapterIndex: number) => {
     if (audioElements[chapterIndex]) {
-      audioElements[chapterIndex].pause();
-      audioElements[chapterIndex].currentTime = 0;
+      const audio = audioElements[chapterIndex];
+      audio.pause();
+      audio.currentTime = 0;
+      // Reset the audio element to free up resources
+      audio.load();
       setCurrentlyPlaying(null);
       setAudioProgress(prev => ({ ...prev, [chapterIndex]: 0 }));
     }
@@ -143,7 +181,9 @@ export function useAudioPlayer({
     return () => {
       Object.values(audioElements).forEach(audio => {
         audio.pause();
-        audio.src = '';
+        audio.currentTime = 0;
+        audio.removeAttribute('src'); // Remove source to stop download
+        audio.load(); // Reset the element
       });
     };
   }, [audioElements]);

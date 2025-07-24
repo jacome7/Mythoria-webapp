@@ -35,6 +35,19 @@ interface Story {
   updatedAt: string;
 }
 
+interface Chapter {
+  id: string;
+  chapterNumber: number;
+  title: string;
+  imageUri: string | null;
+  imageThumbnailUri: string | null;
+  htmlContent: string;
+  audioUri: string | null;
+  version: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 interface UserCredits {
   currentBalance: number;
   creditHistory: Array<{
@@ -99,6 +112,7 @@ export default function ListenStoryPage() {
   const tCommon = useTranslations('common');
   const storyId = params.storyId as string;
   const [story, setStory] = useState<Story | null>(null);
+  const [chapters, setChapters] = useState<Chapter[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -111,7 +125,8 @@ export default function ListenStoryPage() {
   // Initialize audio player hook
   const audioPlayer = useAudioPlayer({
     audioEndpoint: `/api/stories/${storyId}/audio`,
-    onError: (errorMessage) => setError(errorMessage),
+    // Remove onError callback to prevent page crashes - let audio player handle errors internally
+    onError: undefined,
     trackingData: {
       story_id: storyId,
       story_title: story?.title,
@@ -146,11 +161,20 @@ export default function ListenStoryPage() {
         // Handle story
         if (storyResponse.ok) {
           const storyData = await storyResponse.json();
+          console.log('Fetched story data:', storyData);
+          
           if (storyData.story.status !== 'published') {
             setError(tCommon('Errors.storyNotAvailableYet'));
             return;
           }
           setStory(storyData.story);
+          
+          // Set chapters data if available
+          if (storyData.chapters) {
+            setChapters(storyData.chapters);
+          } else {
+            console.log('No chapters data in API response');
+          }
         } else if (storyResponse.status === 404) {
           setError(tCommon('Errors.storyNotFoundGeneric'));
           return;
@@ -203,11 +227,19 @@ export default function ListenStoryPage() {
             const tempStory = data.story;
             if (Array.isArray(tempStory.audiobookUri) && tempStory.audiobookUri.length > 0) {
               setStory(tempStory);
+              // Update chapters if available
+              if (data.chapters) {
+                setChapters(data.chapters);
+              }
               setIsGeneratingAudio(false);
               setAudioGenerationProgress(tCommon('ListenStory.generationCompleted'));
               clearInterval(pollInterval);
             } else if (typeof tempStory.audiobookUri === 'object' && Object.keys(tempStory.audiobookUri).length > 0) {
               setStory(tempStory);
+              // Update chapters if available
+              if (data.chapters) {
+                setChapters(data.chapters);
+              }
               setIsGeneratingAudio(false);
               setAudioGenerationProgress(tCommon('ListenStory.generationCompleted'));
               clearInterval(pollInterval);
@@ -416,7 +448,7 @@ export default function ListenStoryPage() {
                         <AudioChapterList 
                           chapters={getAudioChapters(
                             story.audiobookUri, 
-                            [], 
+                            chapters, 
                             (number) => tCommon('ListenStory.chapterTitle', { number })
                           )}
                           {...audioPlayer}

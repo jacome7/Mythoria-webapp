@@ -12,7 +12,7 @@ const AboutUsPage = () => {
   return (
     <div className="min-h-screen bg-base-100">
       {/* Hero Section */}
-      <section className="hero min-h-[80vh] bg-gradient-to-br from-primary/10 to-secondary/10">
+      <section className="hero min-h-[40vh] bg-gradient-to-br from-primary/10 to-secondary/10">
         <div className="hero-content text-center max-w-4xl">
           <div>
             <h1 className="text-4xl md:text-6xl font-bold text-base-content mb-6">

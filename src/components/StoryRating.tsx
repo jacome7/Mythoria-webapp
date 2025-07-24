@@ -3,6 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { FiStar } from 'react-icons/fi';
+import { 
+  getAnonymousRating, 
+  setAnonymousRating, 
+  areCookiesSupported 
+} from '@/utils/cookieUtils';
 
 interface StoryRatingProps {
   storyId: string;
@@ -13,6 +18,12 @@ interface UserRating {
   ratingId: string;
   rating: string;
   feedback: string | null;
+  createdAt: string;
+}
+
+interface AnonymousRating {
+  rating: string;
+  feedback?: string;
   createdAt: string;
 }
 
@@ -27,12 +38,31 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [existingRating, setExistingRating] = useState<UserRating | null>(null);
+  const [anonymousRating, setAnonymousRatingState] = useState<AnonymousRating | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [cookiesSupported, setCookiesSupported] = useState<boolean>(true);
 
   // Fetch existing rating on component mount
   useEffect(() => {
     const fetchExistingRating = async () => {
       try {
+        // Check cookie support
+        const cookieSupport = areCookiesSupported();
+        setCookiesSupported(cookieSupport);
+
+        // Check for anonymous rating in cookies first
+        if (cookieSupport) {
+          const anonymousRatingData = getAnonymousRating(storyId);
+          if (anonymousRatingData) {
+            setAnonymousRatingState(anonymousRatingData);
+            setRating(parseInt(anonymousRatingData.rating));
+            setFeedback(anonymousRatingData.feedback || '');
+            setLoading(false);
+            return;
+          }
+        }
+
+        // Try to fetch authenticated user rating
         const response = await fetch(`/api/stories/${storyId}/ratings`);
         if (response.ok) {
           const data = await response.json();
@@ -88,6 +118,21 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
           throw new Error(t('errors.serviceUnavailable'));
         }
         
+        // Check if this is an anonymous user (no authentication)
+        if (response.status === 401 && cookiesSupported) {
+          // Store rating in cookie for anonymous users
+          setAnonymousRating(storyId, finalRating.toString(), finalFeedback || undefined);
+          setAnonymousRatingState({
+            rating: finalRating.toString(),
+            feedback: finalFeedback || undefined,
+            createdAt: new Date().toISOString(),
+          });
+          setSubmitted(true);
+          onRatingSubmitted?.(finalRating);
+          setShowFeedbackForm(false);
+          return;
+        }
+        
         throw new Error(errorData.error || t('errors.submitFailed'));
       }
 
@@ -131,23 +176,32 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
         <div className="card-body text-center">
           <div className="text-success text-4xl mb-2">✓</div>          
           <h3 className="card-title text-success justify-center">
-            {existingRating ? (t('success.titleUpdated') || 'Rating Updated!') : t('success.title')}
+            {(existingRating || anonymousRating) ? (t('success.titleUpdated') || 'Rating Updated!') : t('success.title')}
           </h3>
           <p className="text-success/80">
-            {existingRating ? (t('success.messageUpdated') || 'Your rating has been updated successfully!') : t('success.message')}
+            {(existingRating || anonymousRating) ? (t('success.messageUpdated') || 'Your rating has been updated successfully!') : t('success.message')}
           </p>
           
-          {/* Allow user to submit another rating */}
-          <button
-            onClick={() => {
-              setSubmitted(false);
-              setShowFeedbackForm(false);
-              setError(null);
-            }}
-            className="btn btn-outline btn-success mt-4"
-          >
-            Update Rating
-          </button>
+          {/* Allow user to submit another rating only for authenticated users */}
+          {existingRating && (
+            <button
+              onClick={() => {
+                setSubmitted(false);
+                setShowFeedbackForm(false);
+                setError(null);
+              }}
+              className="btn btn-outline btn-success mt-4"
+            >
+              Update Rating
+            </button>
+          )}
+          
+          {/* Show message for anonymous users */}
+          {anonymousRating && !existingRating && (
+            <p className="text-sm text-base-content/60 mt-4">
+              {t('anonymous.thankYou') || 'Thank you for your feedback!'}
+            </p>
+          )}
         </div>
       </div>
     );
@@ -158,10 +212,10 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
       <div className="card-body">
         <div className="text-center">
           <h3 className="card-title justify-center mb-4">
-            {existingRating ? (t('titleUpdate') || 'Update Your Rating') : t('title')}
+            {(existingRating || anonymousRating) ? (t('titleUpdate') || 'Update Your Rating') : t('title')}
           </h3>
           
-          {/* Show existing rating info */}
+          {/* Show existing rating info for authenticated users */}
           {existingRating && !submitted && (
             <div className="mb-4 p-3 bg-info/10 rounded-lg border border-info/20">
               <p className="text-sm text-info">
@@ -171,11 +225,43 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
                     ({new Date(existingRating.createdAt).toLocaleDateString()})
                   </span>
                 )}
-              </p>              {existingRating.feedback && (
+              </p>
+              {existingRating.feedback && (
                 <p className="text-xs text-base-content/70 mt-1">
                   &ldquo;{existingRating.feedback}&rdquo;
                 </p>
               )}
+            </div>
+          )}
+
+          {/* Show anonymous rating info */}
+          {anonymousRating && !existingRating && !submitted && (
+            <div className="mb-4 p-3 bg-warning/10 rounded-lg border border-warning/20">
+              <p className="text-sm text-warning">
+                {t('anonymous.alreadyRated') || 'You have already rated this story'}: {anonymousRating.rating} ⭐ 
+                {anonymousRating.createdAt && (
+                  <span className="ml-2 text-xs">
+                    ({new Date(anonymousRating.createdAt).toLocaleDateString()})
+                  </span>
+                )}
+              </p>
+              {anonymousRating.feedback && (
+                <p className="text-xs text-base-content/70 mt-1">
+                  &ldquo;{anonymousRating.feedback}&rdquo;
+                </p>
+              )}
+              <p className="text-xs text-warning/80 mt-2">
+                {t('anonymous.cannotChange') || 'Anonymous ratings cannot be changed. Please sign in to update your rating.'}
+              </p>
+            </div>
+          )}
+
+          {/* Show cookies disabled warning */}
+          {!cookiesSupported && !existingRating && (
+            <div className="mb-4 p-3 bg-error/10 rounded-lg border border-error/20">
+              <p className="text-sm text-error">
+                {t('cookies.disabled') || 'Cookies are disabled. Multiple ratings may be allowed.'}
+              </p>
             </div>
           )}
           
@@ -193,7 +279,7 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
                 onClick={() => handleStarClick(star)}
                 onMouseEnter={() => setHoveredRating(star)}
                 onMouseLeave={() => setHoveredRating(0)}
-                disabled={isSubmitting}
+                disabled={isSubmitting || (!!anonymousRating && !existingRating)}
               >
                 <FiStar 
                   className={star <= (hoveredRating || rating) ? 'fill-current' : ''} 
@@ -256,7 +342,7 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
                       {t('buttons.submitting')}
                     </>
                   ) : (
-                    existingRating ? (t('buttons.updateRating') || 'Update Rating') : t('buttons.submitRating')
+                    (existingRating || anonymousRating) ? (t('buttons.updateRating') || 'Update Rating') : t('buttons.submitRating')
                   )}
                 </button>
               </div>

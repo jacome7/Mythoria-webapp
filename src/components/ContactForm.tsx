@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
 import { FaTicketAlt } from 'react-icons/fa';
 import { trackContact } from '../lib/analytics';
 
@@ -14,6 +15,7 @@ interface ContactFormProps {
 function ContactFormContent({ className = "" }: ContactFormProps) {
   const t = useTranslations('components.contactForm');
   const searchParams = useSearchParams();
+  const { user, isSignedIn } = useUser();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -35,6 +37,34 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
       }));
     }
   }, [searchParams]);
+
+  // Auto-fill email and name if user is logged in
+  useEffect(() => {
+    if (isSignedIn && user) {
+      const updates: Partial<typeof formData> = {};
+      
+      // Auto-fill email if available
+      if (user.primaryEmailAddress?.emailAddress) {
+        updates.email = user.primaryEmailAddress.emailAddress;
+      }
+      
+      // Auto-fill name if available (firstName + lastName)
+      if (user.firstName || user.lastName) {
+        const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+        if (fullName) {
+          updates.name = fullName;
+        }
+      }
+      
+      // Only update if we have something to update
+      if (Object.keys(updates).length > 0) {
+        setFormData(prev => ({
+          ...prev,
+          ...updates
+        }));
+      }
+    }
+  }, [isSignedIn, user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;

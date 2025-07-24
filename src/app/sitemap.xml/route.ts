@@ -91,33 +91,38 @@ async function generateSitemap(): Promise<string> {
   });
   
   // Add featured stories to sitemap with multilingual support
-  try {
-    const featuredStories = await storyService.getFeaturedPublicStories();
-    
-    featuredStories.forEach(story => {
-      if (story.slug) {
-        // Create entry for each featured story with hreflang support
-        const storyUrls = locales.map(locale => ({
-          url: `${baseUrl}/${locale}/p/${story.slug}/`,
-          locale: locale
-        }));
-        
-        storyUrls.forEach(({ url }) => {
-          // Create the main URL entry
-          const urlEntry = createUrlEntryWithHreflang(
-            url,
-            story.createdAt.toISOString(),
-            'weekly',
-            '0.8',
-            storyUrls
-          );
-          urls.push(urlEntry);
-        });
-      }
-    });
-  } catch (error) {
-    console.error('Error fetching featured stories for sitemap:', error);
-    // Continue without featured stories if there's an error
+  // Skip database operations during build time
+  const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build' || process.env.NODE_ENV === 'test';
+  
+  if (!isBuildTime) {
+    try {
+      const featuredStories = await storyService.getFeaturedPublicStories();
+      
+      featuredStories.forEach(story => {
+        if (story.slug) {
+          // Create entry for each featured story with hreflang support
+          const storyUrls = locales.map(locale => ({
+            url: `${baseUrl}/${locale}/p/${story.slug}/`,
+            locale: locale
+          }));
+          
+          storyUrls.forEach(({ url }) => {
+            // Create the main URL entry
+            const urlEntry = createUrlEntryWithHreflang(
+              url,
+              story.createdAt.toISOString(),
+              'weekly',
+              '0.8',
+              storyUrls
+            );
+            urls.push(urlEntry);
+          });
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching featured stories for sitemap:', error);
+      // Continue without featured stories if there's an error
+    }
   }
   
   return `<?xml version="1.0" encoding="UTF-8"?>

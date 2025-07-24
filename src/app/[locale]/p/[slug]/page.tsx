@@ -280,6 +280,7 @@ export default function PublicStoryPage() {
               graphicalStyle: story.graphicalStyle,
               coverUri: story.coverUri,
               backcoverUri: story.backcoverUri,
+              hasAudio: story.hasAudio,
             }}
             chapters={data.chapters}
             currentChapter={0} // Start at first page/cover

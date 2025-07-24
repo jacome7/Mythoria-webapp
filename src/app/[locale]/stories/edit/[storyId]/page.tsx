@@ -57,6 +57,7 @@ export default function StoryEditPage() {
   const router = useRouter();
   const { user } = useUser();
   const tCommon = useTranslations('common');
+  const tStoryEdit = useTranslations('storyEditPage');
 
   const storyId = params.storyId as string;
   const locale = params.locale as string;
@@ -95,22 +96,22 @@ export default function StoryEditPage() {
       const response = await fetch(`/api/stories/${storyId}/edit`);
       
       if (!response.ok) {
-        throw new Error('Failed to load story data');
+        throw new Error(tStoryEdit('errors.failedToLoadStoryData'));
       }
 
       const data: ApiResponse = await response.json();
       if (data.success) {
         setStoryData(data);
       } else {
-        throw new Error('Failed to load story');
+        throw new Error(tStoryEdit('errors.failedToLoadStory'));
       }
     } catch (error) {
-      console.error('Error loading story:', error);
-      addToast('Failed to load story data', 'error');
+      console.error(tStoryEdit('logging.errorLoadingStory'), error);
+      addToast(tStoryEdit('errors.failedToLoadStoryDataToast'), 'error');
     } finally {
       setLoading(false);
     }
-  }, [storyId, user, addToast]);
+  }, [storyId, user, addToast, tStoryEdit]);
 
   // Update story info
   const updateStoryInfo = async (updates: Partial<ApiStory>) => {
@@ -127,7 +128,7 @@ export default function StoryEditPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update story info');
+        throw new Error(tStoryEdit('errors.failedToUpdateStoryInfo'));
       }
 
       const result = await response.json();
@@ -139,11 +140,11 @@ export default function StoryEditPage() {
           return { ...prev, story: result.story };
         });
 
-        addToast('Story info updated successfully', 'success');
+        addToast(tStoryEdit('success.storyInfoUpdated'), 'success');
       }
     } catch (error) {
-      console.error('Error updating story info:', error);
-      addToast('Failed to update story info', 'error');
+      console.error(tStoryEdit('logging.errorUpdatingStoryInfo'), error);
+      addToast(tStoryEdit('errors.failedToUpdateStoryInfo'), 'error');
     } finally {
       setSaving(false);
     }
@@ -168,7 +169,7 @@ export default function StoryEditPage() {
 
   // Handle AI edit success
   const handleAIEditSuccess = async (updatedData: Record<string, unknown>) => {
-    console.log('AI Edit Success - Updated Data:', updatedData);
+    console.log(tStoryEdit('logging.aiEditSuccessUpdatedData'), updatedData);
     
     // Handle full story edit
     if (updatedData.scope === 'story') {
@@ -199,28 +200,33 @@ export default function StoryEditPage() {
           .join(', ');
         
         addToast(
-          `${successCount} chapters updated successfully. Chapter ${failedChapters} failed to edit.`,
+          tStoryEdit('chapterUpdates.chaptersUpdatedSuccessfully', {
+            successCount: successCount.toString(),
+            failedChapters: failedChapters
+          }),
           'warning'
         );
       } else {
         addToast(
-          `All ${successCount} chapters updated successfully. Changes have been saved automatically.`,
+          tStoryEdit('chapterUpdates.allChaptersUpdated', {
+            successCount: successCount.toString()
+          }),
           'success'
         );
       }
     } else if (updatedData.updatedHtml && updatedData.chaptersUpdated) {
       // For story-wide edits (legacy format), reload data to get all updated chapters
       await loadStoryData();
-      addToast('Story updated successfully', 'success');
+      addToast(tStoryEdit('success.storyUpdated'), 'success');
     } else if (updatedData.updatedHtml) {
       // For single chapter edits, we could update directly but currently
       // this page doesn't show individual chapter content, so reload
       await loadStoryData();
-      addToast('Chapter updated successfully', 'success');
+      addToast(tStoryEdit('success.chapterUpdated'), 'success');
     } else {
       // Fallback: reload story data to get the latest changes
       await loadStoryData();
-      addToast('Content updated successfully', 'success');
+      addToast(tStoryEdit('success.contentUpdated'), 'success');
     }
   };
 
@@ -256,9 +262,9 @@ export default function StoryEditPage() {
     return (
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center max-w-md">
-          <div className="text-6xl mb-4">😞</div>
+          <div className="text-6xl mb-4">{tStoryEdit('errors.errorEmoji')}</div>
           <h1 className="text-2xl font-bold mb-2">{tCommon('Errors.generic')}</h1>
-          <p className="text-base-content/70 mb-6">Failed to load story data</p>
+          <p className="text-base-content/70 mb-6">{tStoryEdit('errors.failedToLoadStoryData')}</p>
           <button
             onClick={() => router.push(`/${locale}/stories`)}
             className="btn btn-primary"
@@ -311,7 +317,7 @@ export default function StoryEditPage() {
                 setSelectedImageData({
                   imageUri: storyData.story.coverUri,
                   imageType: 'cover',
-                  title: 'Front Cover'
+                  title: tStoryEdit('imageTypes.frontCover')
                 });
                 setShowAIImageEditor(true);
               }
@@ -321,7 +327,7 @@ export default function StoryEditPage() {
                 setSelectedImageData({
                   imageUri: storyData.story.backcoverUri,
                   imageType: 'backcover',
-                  title: 'Back Cover'
+                  title: tStoryEdit('imageTypes.backCover')
                 });
                 setShowAIImageEditor(true);
               }
