@@ -279,7 +279,9 @@
         "failedToDeductCredits": "Failed to deduct credits. Please try again.",
         "dataFetchError": "Error fetching data. Please check your connection and try again.",
         "failedToLoadCreditInformation": "Failed to load credit information. Please try again.",
-        "failedToLoadPricingInformation": "Failed to load pricing information. Please try again."
+        "failedToLoadPricingInformation": "Failed to load pricing information. Please try again.",
+        "insufficientCreditsError": "You have insufficient credits. Please purchase more credits to continue.",
+        "failedToCompleteStory": "Failed to complete story. Please try again."
       }
     }
   }
