@@ -259,7 +259,9 @@
         "failedToDeductCredits": "Falha ao deduzir créditos. Por favor tente novamente.",
         "dataFetchError": "Erro ao obter dados. Por favor verifique a sua ligação e tente novamente.",
         "failedToLoadCreditInformation": "Falha ao carregar informação de créditos. Por favor tente novamente.",
-        "failedToLoadPricingInformation": "Falha ao carregar informação de preços. Por favor tente novamente."
+        "failedToLoadPricingInformation": "Falha ao carregar informação de preços. Por favor tente novamente.",
+        "insufficientCreditsError": "Tens créditos insuficientes. Compra mais créditos para continuares.",
+        "failedToCompleteStory": "Falha ao completar a história. Por favor tenta novamente."
       }
     }
   }

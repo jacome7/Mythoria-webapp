@@ -122,12 +122,12 @@ function Step5Page() {
 
   const handleCompleteStory = async () => {
     if (!currentStoryId || !storyData || !ebookPricing) {
-      setError('Story data not available');
+      setError(t('storyDataNotAvailable'));
       return;
     }
 
     if (hasInsufficientCredits()) {
-      setError('You have insufficient credits. Please purchase more credits to continue.');
+      setError(t('alerts.insufficientCreditsError'));
       return;
     }
 
@@ -200,7 +200,7 @@ function Step5Page() {
       setStoryGenerationStarted(true);
     } catch (error) {
       console.error('Error completing story:', error);
-      setError(error instanceof Error ? error.message : 'Failed to complete story');
+      setError(error instanceof Error ? error.message : t('alerts.failedToCompleteStory'));
     } finally {
       setSubmitting(false);
     }
