@@ -28,6 +28,7 @@ export function useAuthTracking() {
           user_id: user.id,
           sign_up_method: user.primaryEmailAddress ? 'email' : 'social'
         });
+        
         hasTrackedSignupRef.current = true;
       } else if (!hasTrackedSignupRef.current) {
         // Existing user logging in

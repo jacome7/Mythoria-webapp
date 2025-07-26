@@ -11,6 +11,7 @@ import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { FaShoppingCart, FaPlus, FaMinus, FaTrash, FaCreditCard, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 import BillingInformation from '@/components/BillingInformation';
 import RevolutPayment from '@/components/RevolutPayment';
+import { trackCommerce } from '@/lib/analytics';
 
 interface CreditPackage {
 	   id: number;
@@ -175,6 +176,19 @@ function BuyCreditsContent() {
 					   setPaymentStatus('success');
 					   setPaymentMessage(t('payment.success'));
 					   
+					   // Track credit purchase in analytics (if cart still has items)
+					   if (cart.length > 0) {
+						   const totalCredits = cart.reduce((total, item) => {
+							   const pkg = getPackageById(item.packageId);
+							   return total + (pkg ? pkg.credits * item.quantity : 0);
+						   }, 0);
+						   
+						   trackCommerce.creditPurchase({
+							   purchase_amount: total,
+							   credits_purchased: totalCredits,
+						   });
+					   }
+					   
 					   // Clear cart and redirect
 					   setCart([]);
 					   setOrderToken(null);
@@ -199,6 +213,7 @@ function BuyCreditsContent() {
 					   newUrl.searchParams.delete('payment');
 					   window.history.replaceState({}, '', newUrl.toString());
 			   }
+	   // eslint-disable-next-line react-hooks/exhaustive-deps
 	   }, [isMounted, searchParams, tRevolut, t, locale]);
 
 	   // Fetch credit packages from API (like pricing page)
@@ -369,6 +384,18 @@ function BuyCreditsContent() {
 				setPaymentStatus('success');
 				setPaymentMessage(t('payment.mbwaySuccess'));
 				
+				// Calculate total credits purchased for analytics
+				const totalCredits = cart.reduce((total, item) => {
+					const pkg = getPackageById(item.packageId);
+					return total + (pkg ? pkg.credits * item.quantity : 0);
+				}, 0);
+				
+				// Track credit purchase in analytics
+				trackCommerce.creditPurchase({
+					purchase_amount: total,
+					credits_purchased: totalCredits,
+				});
+				
 				// Clear cart and reset form
 				setCart([]);
 				
@@ -418,6 +445,19 @@ function BuyCreditsContent() {
 
 	const handlePaymentSuccess = (result: Record<string, unknown>) => {
 		console.log('Payment successful:', result);
+		
+		// Calculate total credits purchased for analytics
+		const totalCredits = cart.reduce((total, item) => {
+			const pkg = getPackageById(item.packageId);
+			return total + (pkg ? pkg.credits * item.quantity : 0);
+		}, 0);
+		
+		// Track credit purchase in analytics
+		trackCommerce.creditPurchase({
+			purchase_amount: total,
+			credits_purchased: totalCredits,
+		});
+		
 		setPaymentStatus('success');
 		setPaymentMessage(t('payment.success'));
 		

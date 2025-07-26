@@ -76,6 +76,7 @@ pids
 *.seed
 *.pid.lock
 /public/*.js
+public/sw.js
 
 # Coverage directory used by tools like istanbul
 coverage/

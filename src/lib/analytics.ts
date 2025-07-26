@@ -8,6 +8,9 @@ export type AnalyticsEvent =
   | 'logout'
   | 'lead_capture'
   
+  // Commerce & Credits
+  | 'credit_purchase'
+  
   // Story Creation Flow
   | 'story_creation_started'
   | 'story_step1_completed'
@@ -60,6 +63,11 @@ export interface ContactEventParams extends AnalyticsEventParams {
   inquiry_type?: string;
 }
 
+export interface CreditPurchaseEventParams extends AnalyticsEventParams {
+  purchase_amount?: number;
+  credits_purchased?: number;
+}
+
 /**
  * Track a custom event in Google Analytics
  * @param eventName - The name of the event to track
@@ -108,6 +116,14 @@ export const trackAuth = {
   
   logout: (params: AuthEventParams = {}) => 
     trackEvent('logout', params),
+};
+
+/**
+ * Track commerce and credit events
+ */
+export const trackCommerce = {
+  creditPurchase: (params: CreditPurchaseEventParams = {}) => 
+    trackEvent('credit_purchase', params),
 };
 
 /**

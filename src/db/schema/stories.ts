@@ -31,6 +31,8 @@ export const stories = pgTable("stories", {
   coverUri: text("cover_uri"), // Internal Google Storage link to front cover image
   backcoverUri: text("backcover_uri"), // Internal Google Storage link to back cover image
   hasAudio: boolean("has_audio").default(false), // Whether story has audio narration
+  interiorPdfUri: text("interior_pdf_uri"), // Internal Google Storage link to interior PDF for printing
+  coverPdfUri: text("cover_pdf_uri"), // Internal Google Storage link to cover spread PDF for printing
 
   // Sharing functionality fields
   slug: text("slug"), // Human-readable slug for public URLs

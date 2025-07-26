@@ -125,7 +125,6 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
         },
         body: JSON.stringify({
           storyId: story.storyId,
-          pdfUrl: story.pdfUri || null,
           shippingId: selectedAddress.addressId,
           printingOption: {
             serviceCode: selectedPrintingOption.serviceCode,
