@@ -162,6 +162,8 @@
         "novelStyleHelp": "Que género/estilo deve ter a tua história?",
         "graphicStyle": "Estilo Gráfico",
         "graphicStyleHelp": "Escolhe o estilo artístico das ilustrações da tua história",
+        "imageInstructions": "Instruções de Imagem Personalizadas",
+        "imageInstructionsHelp": "Fornece instruções específicas para personalizar as imagens geradas por IA. Descreve a aparência das personagens, preferências de estilo visual ou quaisquer elementos especiais que queiras incluir.",
         "bookSize": "Tamanho do Livro",
         "bookSizeHelp": "Número de capítulos/parágrafos na tua história",
         "storyLanguage": "Idioma da História",
@@ -175,6 +177,7 @@
         "selectAudience": "Selecionar público-alvo...",
         "selectNovelStyle": "Selecionar estilo de romance...",
         "selectGraphicStyle": "Selecionar estilo gráfico...",
+        "imageInstructions": "Descreve como gostarias que as personagens aparentassem, elementos visuais específicos, cores ou detalhes artísticos para as imagens da tua história...",
         "outlinePlaceholder": "Descreva todos os detalhes que gostaria na história...",
         "storyLanguageHelp": "A tua história será escrita e gerada no idioma selecionado."
       },
@@ -206,7 +209,8 @@
       },
       "previews": {
         "storyOutlineProvided": "Esboço da história fornecido",
-        "additionalRequestsProvided": "Pedidos adicionais fornecidos"
+        "additionalRequestsProvided": "Pedidos adicionais fornecidos",
+        "customImageInstructions": "Instruções de imagem personalizadas"
       },
       "modal": {
         "title": "Amostras de Estilos Gráficos",
@@ -225,7 +229,8 @@
         "graphicStyleRequired": "O estilo gráfico é obrigatório antes de prosseguir para o próximo passo. Por favor, abra a secção \"Estilo e Cenário\".",
         "noStoryFound": "Nenhuma história encontrada. Por favor, comece pelo passo 1.",
         "saveFailed": "Falha ao guardar detalhes da história",
-        "saveFailedTryAgain": "Falha ao guardar detalhes da história. Por favor, tente novamente."
+        "saveFailedTryAgain": "Falha ao guardar detalhes da história. Por favor, tente novamente.",
+        "loadFailed": "Falha ao carregar informações da história. Por favor, tenta novamente."
       },
       "saving": "A guardar...",
       "next": "Próximo"
