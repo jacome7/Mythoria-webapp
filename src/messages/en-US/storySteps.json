@@ -81,6 +81,16 @@
         "image": "image",
         "images": "images"
       },
+      "imageGalleryTitle": "Your Images ({count}/3)",
+      "photoTips": {
+        "title": "📸 Photo Tips",
+        "tips": [
+          "Take photos of drawings, scenes, or written notes",
+          "You can add up to 3 images to tell your story",
+          "Our AI will analyze images to help create your story",
+          "Mix photos with text or audio for a richer story"
+        ]
+      },
       "recordingTips": {
         "title": "Recording Tips",
         "tips": [
