@@ -177,6 +177,8 @@
         "novelStyleHelp": "What genre/style should your story be?",
         "graphicStyle": "Graphic Style",
         "graphicStyleHelp": "Choose the artistic style for your story's illustrations",
+        "imageInstructions": "Custom Image Instructions",
+        "imageInstructionsHelp": "Provide specific instructions to customize the AI-generated images. Describe character appearances, visual style preferences, or any special elements you'd like included.",
         "bookSize": "Book Size",
         "bookSizeHelp": "Number of chapters/paragraphs in your story",
         "storyLanguage": "Story Language",
@@ -190,6 +192,7 @@
         "selectAudience": "Select target audience...",
         "selectNovelStyle": "Select novel style...",
         "selectGraphicStyle": "Select graphic style...",
+        "imageInstructions": "Describe how you'd like the characters to look, specific visual elements, colors, or artistic details for your story images...",
         "outlinePlaceholder": "Describe all the details you'd like in the story...",
         "storyLanguageHelp": "Your story will be written and generated in the selected language."
       },
@@ -221,7 +224,8 @@
       },
       "previews": {
         "storyOutlineProvided": "Story outline provided",
-        "additionalRequestsProvided": "Additional requests provided"
+        "additionalRequestsProvided": "Additional requests provided",
+        "customImageInstructions": "Custom image instructions"
       },
       "modal": {
         "title": "Graphical Style Samples",
@@ -240,7 +244,8 @@
         "graphicStyleRequired": "Graphic style is required before proceeding to the next step. Please open the \"Style & Setting\" section.",
         "noStoryFound": "No story found. Please start from step 1.",
         "saveFailed": "Failed to save story details",
-        "saveFailedTryAgain": "Failed to save story details. Please try again."
+        "saveFailedTryAgain": "Failed to save story details. Please try again.",
+        "loadFailed": "Failed to load story information. Please try again."
       },
       "saving": "Saving...",
       "next": "Next"

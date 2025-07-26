@@ -87,7 +87,7 @@ function Step4Page() {
     if (novelStyle) parts.push(NovelStyleLabels[novelStyle]);
     if (graphicalStyle) parts.push(GraphicalStyleLabels[graphicalStyle]);
     if (place.trim()) parts.push(place.trim());
-    if (imageGenerationInstructions.trim()) parts.push('Custom image instructions');
+    if (imageGenerationInstructions.trim()) parts.push(t('previews.customImageInstructions'));
     return parts.join(', ');
   };
 
@@ -187,7 +187,7 @@ function Step4Page() {
       }
     } catch (error) {
       console.error('Error fetching story data:', error);
-      setError('Failed to load story information. Please try again.');
+      setError(t('errors.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -554,19 +554,19 @@ function Step4Page() {
                           {/* Custom Image Instructions Field */}
                           <div className="form-control md:col-span-2">
                             <label className="label">
-                              <span className="label-text font-semibold">Custom Image Instructions</span>
+                              <span className="label-text font-semibold">{t('fields.imageInstructions')}</span>
                             </label>
                             <textarea
                               value={imageGenerationInstructions}
                               onChange={(e) => setImageGenerationInstructions(e.target.value)}
-                              placeholder="Describe how you&apos;d like the characters to look, specific visual elements, colors, or artistic details for your story images..."
+                              placeholder={t('placeholders.imageInstructions')}
                               className="textarea textarea-bordered h-24 w-full"
                               rows={4}
                               maxLength={1000}
                             />
                             <label className="label">
                               <span className="label-text-alt break-words max-w-full whitespace-normal">
-                                Provide specific instructions to customize the AI-generated images. Describe character appearances, visual style preferences, or any special elements you&apos;d like included.
+                                {t('fields.imageInstructionsHelp')}
                                 {imageGenerationInstructions.length > 0 && (
                                   <span className="ml-2 text-sm">({imageGenerationInstructions.length}/1000)</span>
                                 )}
