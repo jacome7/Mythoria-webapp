@@ -63,11 +63,11 @@ export default function PublicChapterPage() {
         if (result.success) {
           setData(result);
         } else {
-          setError(result.error || 'Failed to load chapter');
+          setError(result.error || tPublicStoryPage('errors.failedToLoadChapter'));
         }
       } catch (err) {
         console.error('Error fetching public chapter:', err);
-        setError('Failed to load chapter');
+        setError(tPublicStoryPage('errors.failedToLoadChapter'));
       } finally {
         setLoading(false);
       }

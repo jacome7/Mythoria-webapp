@@ -82,12 +82,12 @@ export default function PublicStoryPage() {
           
         } else {
           console.error('[Public Page] API returned error:', result.error);
-          setError(result.error || 'Story not found');
+          setError(result.error || t('errors.notFound'));
         }
       } catch (err) {
         console.error('[Public Page] Error fetching public story:', err);
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-        setError(`Failed to load story: ${errorMessage}`);
+        setError(`${t('errors.failedToLoadStory')}: ${errorMessage}`);
       } finally {
         setLoading(false);
       }

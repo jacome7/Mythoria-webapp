@@ -90,12 +90,12 @@ export default function PublicListenPage() {
           console.log('[Public Listen Page] Story loaded successfully');
         } else {
           console.error('[Public Listen Page] API returned error:', result.error);
-          setError(result.error || 'Story not found');
+          setError(result.error || t('errors.notFound'));
         }
       } catch (err) {
         console.error('[Public Listen Page] Error fetching public story:', err);
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-        setError(`Failed to load story: ${errorMessage}`);
+        setError(`${t('errors.failedToLoadStory')}: ${errorMessage}`);
       } finally {
         setLoading(false);
       }
