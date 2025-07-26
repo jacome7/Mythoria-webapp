@@ -20,7 +20,9 @@
       "notFound": "História Não Encontrada",
       "notFoundDesc": "A história que procura não existe ou já não é pública.",
       "contentNotAvailable": "Conteúdo Não Disponível",
-      "contentNotAvailableDesc": "O conteúdo da história não está atualmente disponível para leitura."
+      "contentNotAvailableDesc": "O conteúdo da história não está atualmente disponível para leitura.",
+      "failedToLoadStory": "Falha ao carregar história",
+      "failedToLoadChapter": "Falha ao carregar capítulo"
     },
     "actions": {
       "orderPrint": "Encomendar Impressão",

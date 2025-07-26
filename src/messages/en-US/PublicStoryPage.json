@@ -20,7 +20,9 @@
       "notFound": "Story Not Found",
       "notFoundDesc": "The story you're looking for doesn't exist or is no longer public.",
       "contentNotAvailable": "Content Not Available",
-      "contentNotAvailableDesc": "The story content is not currently available for reading."
+      "contentNotAvailableDesc": "The story content is not currently available for reading.",
+      "failedToLoadStory": "Failed to load story",
+      "failedToLoadChapter": "Failed to load chapter"
     },
     "actions": {
       "orderPrint": "Order Print",
