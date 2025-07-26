@@ -650,7 +650,9 @@ export default function Step2Page() {
                 {/* Image Gallery */}
                 {uploadedImages.length > 0 && (
                   <div className="mb-6">
-                    <h4 className="font-semibold mb-3">Your Images ({uploadedImages.length}/3)</h4>
+                    <h4 className="font-semibold mb-3">
+                      {t('imageGalleryTitle', { count: uploadedImages.length })}
+                    </h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {uploadedImages.map((img, index) => (
                         <div key={index} className="relative">
@@ -735,12 +737,11 @@ export default function Step2Page() {
 
                 {/* Image Tips */}
                 <div className="mt-6 p-4 bg-base-200 rounded-lg">
-                  <h4 className="font-semibold mb-3">📸 Photo Tips</h4>
+                  <h4 className="font-semibold mb-3">{t('photoTips.title')}</h4>
                   <ul className="text-sm space-y-1 list-disc list-inside">
-                    <li>Take photos of drawings, scenes, or written notes</li>
-                    <li>You can add up to 3 images to tell your story</li>
-                    <li>Our AI will analyze images to help create your story</li>
-                    <li>Mix photos with text or audio for a richer story</li>
+                    {(t.raw('photoTips.tips') as string[]).map((tip: string, index: number) => (
+                      <li key={index}>{tip}</li>
+                    ))}
                   </ul>
                 </div>
               </div>
@@ -754,7 +755,7 @@ export default function Step2Page() {
                     saveToSession();
                   }}
                 >
-                  Done
+                  {t('actions.done')}
                 </button>
               </div>
             </div>

@@ -81,6 +81,16 @@
         "image": "imagem",
         "images": "imagens"
       },
+      "imageGalleryTitle": "As Tuas Imagens ({count}/3)",
+      "photoTips": {
+        "title": "📸 Dicas de Fotografia",
+        "tips": [
+          "Tira fotos de desenhos, cenas ou notas escritas",
+          "Podes adicionar até 3 imagens para contar a tua história",
+          "A nossa IA vai analisar as imagens para ajudar a criar a tua história",
+          "Combina fotos com texto ou áudio para uma história mais rica"
+        ]
+      },
       "recordingTips": {
         "title": "Dicas de Gravação",
         "tips": [
