@@ -116,7 +116,7 @@ export default function EditChapterPage() {
       }
     } catch (error) {
       console.error('Error loading story:', error);
-      addToast('Failed to load story data', 'error');
+      addToast(tComponents('chapterEditor.errors.failedToLoadStoryData'), 'error');
     } finally {
       setLoading(false);
     }
