@@ -258,7 +258,7 @@ function Step3Page() {
 
     } catch (error) {
       console.error('Error adding existing character:', error);
-      alert('Failed to add character to story. Please try again.');
+      alert(t('alerts.failedToAddCharacter'));
     }
   };
 
@@ -344,7 +344,7 @@ function Step3Page() {
 
     } catch (error) {
       console.error('Error navigating to next step:', error);
-      alert('Failed to continue. Please try again.');
+      alert(t('alerts.failedToContinue'));
     } finally {
       setIsNavigating(false);
     }
@@ -368,8 +368,8 @@ function Step3Page() {
               <>
                 {/* Mobile Progress Indicator */}
                 <div className="block md:hidden mb-8">
-                  <div className="text-center text-sm text-gray-600 mb-2">
-                    Step {currentStep} of {totalSteps}
+                <div className="text-center text-sm text-gray-600 mb-2">
+                    {t('progress.stepLabel', { currentStep, totalSteps })}
                   </div>
                   <progress
                     className="progress progress-primary w-full"
@@ -399,7 +399,7 @@ function Step3Page() {
                 <h1 className="card-title text-3xl">{t('heading')}</h1>
                 {isInEditMode && (
                   <div className="badge badge-info">
-                    Editing Draft Story
+                    {t('badges.editingDraft')}
                   </div>
                 )}
               </div>

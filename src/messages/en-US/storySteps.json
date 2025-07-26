@@ -81,6 +81,16 @@
         "image": "image",
         "images": "images"
       },
+      "imageGalleryTitle": "Your Images ({count}/3)",
+      "photoTips": {
+        "title": "📸 Photo Tips",
+        "tips": [
+          "Take photos of drawings, scenes, or written notes",
+          "You can add up to 3 images to tell your story",
+          "Our AI will analyze images to help create your story",
+          "Mix photos with text or audio for a richer story"
+        ]
+      },
       "recordingTips": {
         "title": "Recording Tips",
         "tips": [
@@ -134,6 +144,9 @@
       "greatWork": "Great work! You've created {count, plural, =1 {# character} other {# characters}}.",
       "youCanAlways": "You can always add more characters later or continue to the next chapter to develop your story further.",
       "continuing": "Continuing...",
+      "progress": {
+        "stepLabel": "Step {currentStep} of {totalSteps}"
+      },
       "badges": {
         "editingDraft": "Editing Draft Story"
       },
@@ -144,7 +157,9 @@
         "failedToLoadStoryCharacters": "Failed to load story characters. Please try again.",
         "characterLoadError": "Error loading characters. Please refresh the page.",
         "failedToLoadStoryData": "Failed to load story data. Please try again.",
-        "failedToLoadStoryForEditing": "Failed to load story for editing. Please try again."
+        "failedToLoadStoryForEditing": "Failed to load story for editing. Please try again.",
+        "failedToAddCharacter": "Failed to add character to story. Please try again.",
+        "failedToContinue": "Failed to continue. Please try again."
       },
       "next": "Next"
     },
@@ -162,6 +177,8 @@
         "novelStyleHelp": "What genre/style should your story be?",
         "graphicStyle": "Graphic Style",
         "graphicStyleHelp": "Choose the artistic style for your story's illustrations",
+        "imageInstructions": "Custom Image Instructions",
+        "imageInstructionsHelp": "Provide specific instructions to customize the AI-generated images. Describe character appearances, visual style preferences, or any special elements you'd like included.",
         "bookSize": "Book Size",
         "bookSizeHelp": "Number of chapters/paragraphs in your story",
         "storyLanguage": "Story Language",
@@ -175,6 +192,7 @@
         "selectAudience": "Select target audience...",
         "selectNovelStyle": "Select novel style...",
         "selectGraphicStyle": "Select graphic style...",
+        "imageInstructions": "Describe how you'd like the characters to look, specific visual elements, colors, or artistic details for your story images...",
         "outlinePlaceholder": "Describe all the details you'd like in the story...",
         "storyLanguageHelp": "Your story will be written and generated in the selected language."
       },
@@ -206,7 +224,8 @@
       },
       "previews": {
         "storyOutlineProvided": "Story outline provided",
-        "additionalRequestsProvided": "Additional requests provided"
+        "additionalRequestsProvided": "Additional requests provided",
+        "customImageInstructions": "Custom image instructions"
       },
       "modal": {
         "title": "Graphical Style Samples",
@@ -225,7 +244,8 @@
         "graphicStyleRequired": "Graphic style is required before proceeding to the next step. Please open the \"Style & Setting\" section.",
         "noStoryFound": "No story found. Please start from step 1.",
         "saveFailed": "Failed to save story details",
-        "saveFailedTryAgain": "Failed to save story details. Please try again."
+        "saveFailedTryAgain": "Failed to save story details. Please try again.",
+        "loadFailed": "Failed to load story information. Please try again."
       },
       "saving": "Saving...",
       "next": "Next"
@@ -259,7 +279,9 @@
         "failedToDeductCredits": "Failed to deduct credits. Please try again.",
         "dataFetchError": "Error fetching data. Please check your connection and try again.",
         "failedToLoadCreditInformation": "Failed to load credit information. Please try again.",
-        "failedToLoadPricingInformation": "Failed to load pricing information. Please try again."
+        "failedToLoadPricingInformation": "Failed to load pricing information. Please try again.",
+        "insufficientCreditsError": "You have insufficient credits. Please purchase more credits to continue.",
+        "failedToCompleteStory": "Failed to complete story. Please try again."
       }
     }
   }

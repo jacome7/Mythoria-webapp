@@ -81,6 +81,16 @@
         "image": "imagem",
         "images": "imagens"
       },
+      "imageGalleryTitle": "As Tuas Imagens ({count}/3)",
+      "photoTips": {
+        "title": "📸 Dicas de Fotografia",
+        "tips": [
+          "Tira fotos de desenhos, cenas ou notas escritas",
+          "Podes adicionar até 3 imagens para contar a tua história",
+          "A nossa IA vai analisar as imagens para ajudar a criar a tua história",
+          "Combina fotos com texto ou áudio para uma história mais rica"
+        ]
+      },
       "recordingTips": {
         "title": "Dicas de Gravação",
         "tips": [
@@ -134,6 +144,9 @@
       "greatWork": "Bom trabalho! Criaste {count, plural, =1 {# personagem} other {# personagens}}.",
       "youCanAlways": "Podes sempre adicionar mais personagens mais tarde ou avançar para o próximo capítulo para desenvolver ainda mais a tua história.",
       "continuing": "A continuar...",
+      "progress": {
+        "stepLabel": "Passo {currentStep} de {totalSteps}"
+      },
       "badges": {
         "editingDraft": "A Editar Rascunho da História"
       },
@@ -144,7 +157,9 @@
         "failedToLoadStoryCharacters": "Falha ao carregar personagens da história. Por favor tente novamente.",
         "characterLoadError": "Erro ao carregar personagens. Por favor atualize a página.",
         "failedToLoadStoryData": "Falha ao carregar dados da história. Por favor tente novamente.",
-        "failedToLoadStoryForEditing": "Falha ao carregar história para edição. Por favor tente novamente."
+        "failedToLoadStoryForEditing": "Falha ao carregar história para edição. Por favor tente novamente.",
+        "failedToAddCharacter": "Falha ao adicionar personagem à história. Por favor tente novamente.",
+        "failedToContinue": "Falha ao continuar. Por favor tente novamente."
       },
       "next": "Seguinte"
     },
@@ -162,6 +177,8 @@
         "novelStyleHelp": "Que género/estilo deve ter a tua história?",
         "graphicStyle": "Estilo Gráfico",
         "graphicStyleHelp": "Escolhe o estilo artístico das ilustrações da tua história",
+        "imageInstructions": "Instruções de Imagem Personalizadas",
+        "imageInstructionsHelp": "Fornece instruções específicas para personalizar as imagens geradas por IA. Descreve a aparência das personagens, preferências de estilo visual ou quaisquer elementos especiais que queiras incluir.",
         "bookSize": "Tamanho do Livro",
         "bookSizeHelp": "Número de capítulos/parágrafos na tua história",
         "storyLanguage": "Idioma da História",
@@ -175,6 +192,7 @@
         "selectAudience": "Selecionar público-alvo...",
         "selectNovelStyle": "Selecionar estilo de romance...",
         "selectGraphicStyle": "Selecionar estilo gráfico...",
+        "imageInstructions": "Descreve como gostarias que as personagens aparentassem, elementos visuais específicos, cores ou detalhes artísticos para as imagens da tua história...",
         "outlinePlaceholder": "Descreva todos os detalhes que gostaria na história...",
         "storyLanguageHelp": "A tua história será escrita e gerada no idioma selecionado."
       },
@@ -206,7 +224,8 @@
       },
       "previews": {
         "storyOutlineProvided": "Esboço da história fornecido",
-        "additionalRequestsProvided": "Pedidos adicionais fornecidos"
+        "additionalRequestsProvided": "Pedidos adicionais fornecidos",
+        "customImageInstructions": "Instruções de imagem personalizadas"
       },
       "modal": {
         "title": "Amostras de Estilos Gráficos",
@@ -225,7 +244,8 @@
         "graphicStyleRequired": "O estilo gráfico é obrigatório antes de prosseguir para o próximo passo. Por favor, abra a secção \"Estilo e Cenário\".",
         "noStoryFound": "Nenhuma história encontrada. Por favor, comece pelo passo 1.",
         "saveFailed": "Falha ao guardar detalhes da história",
-        "saveFailedTryAgain": "Falha ao guardar detalhes da história. Por favor, tente novamente."
+        "saveFailedTryAgain": "Falha ao guardar detalhes da história. Por favor, tente novamente.",
+        "loadFailed": "Falha ao carregar informações da história. Por favor, tenta novamente."
       },
       "saving": "A guardar...",
       "next": "Próximo"
@@ -259,7 +279,9 @@
         "failedToDeductCredits": "Falha ao deduzir créditos. Por favor tente novamente.",
         "dataFetchError": "Erro ao obter dados. Por favor verifique a sua ligação e tente novamente.",
         "failedToLoadCreditInformation": "Falha ao carregar informação de créditos. Por favor tente novamente.",
-        "failedToLoadPricingInformation": "Falha ao carregar informação de preços. Por favor tente novamente."
+        "failedToLoadPricingInformation": "Falha ao carregar informação de preços. Por favor tente novamente.",
+        "insufficientCreditsError": "Tens créditos insuficientes. Compra mais créditos para continuares.",
+        "failedToCompleteStory": "Falha ao completar a história. Por favor tenta novamente."
       }
     }
   }

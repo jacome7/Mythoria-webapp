@@ -78,6 +78,9 @@
         "medium": "M",
         "large": "G",
         "xlarge": "XG"
+      },
+      "errors": {
+        "failedToLoadStoryData": "Falha ao carregar dados da história"
       }
     },
     "chapterNavigation": {
