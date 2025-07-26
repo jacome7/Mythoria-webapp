@@ -134,6 +134,9 @@
       "greatWork": "Bom trabalho! Criaste {count, plural, =1 {# personagem} other {# personagens}}.",
       "youCanAlways": "Podes sempre adicionar mais personagens mais tarde ou avançar para o próximo capítulo para desenvolver ainda mais a tua história.",
       "continuing": "A continuar...",
+      "progress": {
+        "stepLabel": "Passo {currentStep} de {totalSteps}"
+      },
       "badges": {
         "editingDraft": "A Editar Rascunho da História"
       },
@@ -144,7 +147,9 @@
         "failedToLoadStoryCharacters": "Falha ao carregar personagens da história. Por favor tente novamente.",
         "characterLoadError": "Erro ao carregar personagens. Por favor atualize a página.",
         "failedToLoadStoryData": "Falha ao carregar dados da história. Por favor tente novamente.",
-        "failedToLoadStoryForEditing": "Falha ao carregar história para edição. Por favor tente novamente."
+        "failedToLoadStoryForEditing": "Falha ao carregar história para edição. Por favor tente novamente.",
+        "failedToAddCharacter": "Falha ao adicionar personagem à história. Por favor tente novamente.",
+        "failedToContinue": "Falha ao continuar. Por favor tente novamente."
       },
       "next": "Seguinte"
     },

@@ -134,6 +134,9 @@
       "greatWork": "Great work! You've created {count, plural, =1 {# character} other {# characters}}.",
       "youCanAlways": "You can always add more characters later or continue to the next chapter to develop your story further.",
       "continuing": "Continuing...",
+      "progress": {
+        "stepLabel": "Step {currentStep} of {totalSteps}"
+      },
       "badges": {
         "editingDraft": "Editing Draft Story"
       },
@@ -144,7 +147,9 @@
         "failedToLoadStoryCharacters": "Failed to load story characters. Please try again.",
         "characterLoadError": "Error loading characters. Please refresh the page.",
         "failedToLoadStoryData": "Failed to load story data. Please try again.",
-        "failedToLoadStoryForEditing": "Failed to load story for editing. Please try again."
+        "failedToLoadStoryForEditing": "Failed to load story for editing. Please try again.",
+        "failedToAddCharacter": "Failed to add character to story. Please try again.",
+        "failedToContinue": "Failed to continue. Please try again."
       },
       "next": "Next"
     },
