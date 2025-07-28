@@ -54,7 +54,11 @@ export default async function RootLayout({
     >
       <html data-theme="autumn">
         <head>
-          <GoogleAnalytics measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-86D0QFW197'} />
+          <GoogleAnalytics 
+            measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-86D0QFW197'}
+            googleAdsId={process.env.NEXT_PUBLIC_GOOGLE_ADS_ID}
+            googleTagId={process.env.NEXT_PUBLIC_GOOGLE_TAG_ID}
+          />
           {/* PWA Meta Tags */}
           <meta name="application-name" content="Mythoria" />
           <meta name="apple-mobile-web-app-capable" content="yes" />

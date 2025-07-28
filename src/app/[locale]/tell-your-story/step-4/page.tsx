@@ -69,8 +69,8 @@ function Step4Page() {
   const [styleSettingOpen, setStyleSettingOpen] = useState(false);
   const [contentDetailsOpen, setContentDetailsOpen] = useState(false);
   
-  // Modal state
-  const [showStyleSamples, setShowStyleSamples] = useState(false);
+  // Dropdown state
+  const [showGraphicalStyleDropdown, setShowGraphicalStyleDropdown] = useState(false);
 
   // Language options from translation
   const languageOptions = t.raw('languageOptions') as Array<{value: string, label: string}>;
@@ -139,18 +139,30 @@ function Step4Page() {
     }))
   ];
 
-  const graphicalStyleOptions = [
-    { value: '', label: t('placeholders.selectGraphicStyle') },
-    ...getAllGraphicalStyles().map(value => ({
-      value,
-      label: GraphicalStyleLabels[value]
-    }))];  // Auto-update chapter count when target audience changes (unless manually overridden)
+  // Auto-update chapter count when target audience changes (unless manually overridden)
   useEffect(() => {
     if (!isChapterCountManual && targetAudience) {
       const newCount = getChapterCountForAudience(targetAudience);
       setChapterCount(newCount);
     }
   }, [targetAudience, isChapterCountManual, getChapterCountForAudience]);
+
+  // Close dropdown on Escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (showGraphicalStyleDropdown) {
+          setShowGraphicalStyleDropdown(false);
+        }
+      }
+    };
+
+    if (showGraphicalStyleDropdown) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [showGraphicalStyleDropdown]);
+
   const fetchStoryData = useCallback(async (storyId: string) => {
     try {
       setLoading(true);
@@ -191,7 +203,7 @@ function Step4Page() {
     } finally {
       setLoading(false);
     }
-  }, [getChapterCountForAudience, locale]);
+  }, [getChapterCountForAudience, locale, t]);
 
   useEffect(() => {
     // Check if we have a valid story session
@@ -523,29 +535,25 @@ function Step4Page() {
                           <div className="form-control">
                             <label className="label">
                               <span className="label-text font-semibold">{t('fields.graphicStyle')} *</span>
+                            </label>
+                            <div className="relative">
                               <button
                                 type="button"
-                                className="btn btn-ghost btn-sm ml-2 text-primary hover:text-primary-focus"
-                                onClick={() => setShowStyleSamples(true)}
+                                className={`select select-bordered w-full text-left ${!graphicalStyle ? 'text-gray-500' : ''}`}
+                                onClick={() => setShowGraphicalStyleDropdown(true)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    setShowGraphicalStyleDropdown(true);
+                                  }
+                                }}
                               >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                {graphicalStyle ? GraphicalStyleLabels[graphicalStyle] : t('placeholders.selectGraphicStyle')}
+                                <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                 </svg>
-                                {t('modal.samples')}
                               </button>
-                            </label>
-                            <select
-                              value={graphicalStyle}
-                              onChange={(e) => setGraphicalStyle(e.target.value as GraphicalStyle | '')}
-                              className="select select-bordered w-full"
-                              required
-                            >
-                              {graphicalStyleOptions.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                  {option.label}
-                                </option>
-                              ))}
-                            </select>
+                            </div>
                             <label className="label">
                               <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.graphicStyleHelp')}</span>
                             </label>
@@ -636,15 +644,20 @@ function Step4Page() {
                   </div>
                 )}
 
-                {/* Graphical Style Samples Modal */}
-                {showStyleSamples && (
+                {/* Graphical Style Custom Dropdown Gallery */}
+                {showGraphicalStyleDropdown && (
                   <div className="modal modal-open">
                     <div className="modal-box max-w-4xl h-3/4 max-h-screen">
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className="font-bold text-lg">{t('modal.title')}</h3>
+                        <h3 className="font-bold text-lg">{t('fields.graphicStyle')}</h3>
                         <button 
                           className="btn btn-sm btn-circle btn-ghost"
-                          onClick={() => setShowStyleSamples(false)}
+                          onClick={() => setShowGraphicalStyleDropdown(false)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Escape') {
+                              setShowGraphicalStyleDropdown(false);
+                            }
+                          }}
                         >
                           ✕
                         </button>
@@ -658,8 +671,16 @@ function Step4Page() {
                               className="card bg-base-100 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
                               onClick={() => {
                                 setGraphicalStyle(style);
-                                setShowStyleSamples(false);
+                                setShowGraphicalStyleDropdown(false);
                               }}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
+                                  setGraphicalStyle(style);
+                                  setShowGraphicalStyleDropdown(false);
+                                }
+                              }}
+                              tabIndex={0}
                             >
                               <figure className="px-4 pt-4">
                                 <Image
@@ -691,7 +712,7 @@ function Step4Page() {
                       <div className="modal-action">
                         <button 
                           className="btn"
-                          onClick={() => setShowStyleSamples(false)}
+                          onClick={() => setShowGraphicalStyleDropdown(false)}
                         >
                           {t('modal.close')}
                         </button>
@@ -699,7 +720,7 @@ function Step4Page() {
                     </div>
                     <div 
                       className="modal-backdrop"
-                      onClick={() => setShowStyleSamples(false)}
+                      onClick={() => setShowGraphicalStyleDropdown(false)}
                     ></div>
                   </div>
                 )}

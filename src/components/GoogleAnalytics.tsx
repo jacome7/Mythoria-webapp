@@ -14,9 +14,15 @@ declare global {
 
 interface GoogleAnalyticsProps {
   measurementId: string;
+  googleAdsId?: string;
+  googleTagId?: string;
 }
 
-export default function GoogleAnalytics({ measurementId }: GoogleAnalyticsProps) {
+export default function GoogleAnalytics({ 
+  measurementId, 
+  googleAdsId, 
+  googleTagId 
+}: GoogleAnalyticsProps) {
   useEffect(() => {
     // Initialize dataLayer if it doesn't exist
     window.dataLayer = window.dataLayer || [];    // Define gtag function
@@ -31,17 +37,32 @@ export default function GoogleAnalytics({ measurementId }: GoogleAnalyticsProps)
     
     // Initialize Google Analytics
     gtag('js', new Date());
+    
+    // Configure Google Analytics
     gtag('config', measurementId);
-  }, [measurementId]);
+    
+    // Configure Google Ads if provided
+    if (googleAdsId) {
+      gtag('config', googleAdsId);
+    }
+    
+    // Configure Google Tag if provided  
+    if (googleTagId) {
+      gtag('config', googleTagId);
+    }
+  }, [measurementId, googleAdsId, googleTagId]);
 
   if (!measurementId) {
     return null;
   }
 
+  // Use the primary measurement ID for the script source
+  const scriptId = googleTagId || measurementId;
+
   return (
     <>
       <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
+        src={`https://www.googletagmanager.com/gtag/js?id=${scriptId}`}
         strategy="afterInteractive"
       />
     </>

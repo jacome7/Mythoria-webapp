@@ -19,7 +19,7 @@
     "test:print-providers": "node scripts/test-print-providers.js",
     "deploy:staging": "gcloud builds submit --config cloudbuild-staging.yaml",
     "deploy:production": "gcloud builds submit --config cloudbuild.yaml",
-    "deploy:win": "powershell -ExecutionPolicy Bypass -File scripts/deploy.ps1",
+    "deploy": "powershell -ExecutionPolicy Bypass -File scripts/deploy.ps1",
     "docs:serve": "npx serve docs/"
   },
   "sideEffects": false,

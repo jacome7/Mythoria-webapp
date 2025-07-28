@@ -57,6 +57,7 @@ export default function PublicStoryPage() {
   const locale = useLocale();
   const t = useTranslations('PublicStoryPage');
   const tCommon = useTranslations('common');
+  const tGet = useTranslations('GetInspiredPage');
   const slug = params.slug as string;
   
   const [loading, setLoading] = useState(true);
@@ -152,8 +153,7 @@ export default function PublicStoryPage() {
       setTwitterTag('twitter:description', description);
       setTwitterTag('twitter:image', `${baseUrl}/api/og/story/${slug}`);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, slug]);
+  }, [data, slug, t]);
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -236,21 +236,21 @@ export default function PublicStoryPage() {
               {story.targetAudience && (
                 <div className="flex items-center gap-1">
                   <FiTag />
-                  <span>{story.targetAudience.replace('_', ' ')}</span>
+                  <span>{tGet(`targetAudience.${story.targetAudience}`) || story.targetAudience.replace('_', ' ')}</span>
                 </div>
               )}
               
               {story.graphicalStyle && (
                 <div className="flex items-center gap-1">
                   <FiEye />
-                  <span className="capitalize">{story.graphicalStyle.replace('_', ' ')}</span>
+                  <span>{tGet(`graphicalStyle.${story.graphicalStyle}`) || story.graphicalStyle.replace('_', ' ')}</span>
                 </div>
               )}
               
               {story.novelStyle && (
                 <div className="flex items-center gap-1">
                   <FiTag />
-                  <span className="capitalize">{story.novelStyle.replace('_', ' ')}</span>
+                  <span>{tGet(`novelStyle.${story.novelStyle}`) || story.novelStyle.replace('_', ' ')}</span>
                 </div>
               )}
             </div>

@@ -315,6 +315,25 @@
       "oil_painting": "Pintura a Óleo",
       "colored_pencil": "Lápis de Cor"
     },
+    "novelStyle": {
+      "all": "Todos os Estilos",
+      "adventure": "Aventura",
+      "fantasy": "Fantasia",
+      "mystery": "Mistério",
+      "romance": "Romance",
+      "science_fiction": "Ficção Científica",
+      "historical": "Histórico",
+      "contemporary": "Contemporâneo",
+      "fairy_tale": "Conto de Fadas",
+      "comedy": "Comédia",
+      "drama": "Drama",
+      "horror": "Terror",
+      "thriller": "Thriller",
+      "biography": "Biografia",
+      "educational": "Educacional",
+      "poetry": "Poesia",
+      "sports_adventure": "Aventura Desportiva"
+    },
     "storyLanguage": {
       "all": "Todos os Idiomas",
       "en-US": "Inglês",
