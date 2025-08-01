@@ -287,10 +287,12 @@ export default function AITextStoryEditor({
                 {t('title', { storyTitle: story.title })}
               </h2>
               <p className="text-sm text-gray-600">
-                {currentChapter 
-                  ? `Chapter ${currentChapter.chapterNumber}: ${currentChapter.title}`
-                  : t('fullStoryTitle')
-                }
+                {currentChapter
+                  ? t('chapterOption', {
+                      number: currentChapter.chapterNumber,
+                      title: currentChapter.title
+                    })
+                  : t('fullStoryTitle')}
               </p>
             </div>
           </div>
@@ -308,7 +310,7 @@ export default function AITextStoryEditor({
             {/* Scope Selection */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-700">
-                Edit Scope
+                {t('editScopeLabel')}
               </label>
               <div className="flex space-x-4">
                 <label className="flex items-center">
@@ -320,7 +322,7 @@ export default function AITextStoryEditor({
                     disabled={!currentChapter && chapters.length === 0}
                     className="mr-2"
                   />
-                  Current Chapter Only
+                  {t('currentChapterOnly')}
                 </label>
                 <label className="flex items-center">
                   <input
@@ -330,7 +332,7 @@ export default function AITextStoryEditor({
                     onChange={(e) => setEditScope(e.target.value as EditScope)}
                     className="mr-2"
                   />
-                  All Chapters
+                  {t('allChapters')}
                 </label>
               </div>
             </div>
@@ -339,7 +341,7 @@ export default function AITextStoryEditor({
             {editScope === 'chapter' && chapters.length > 1 && (
               <div className="space-y-3">
                 <label className="block text-sm font-medium text-gray-700">
-                  Select Chapter
+                  {t('selectChapterLabel')}
                 </label>
                 <select
                   value={selectedChapter || ''}
@@ -348,7 +350,10 @@ export default function AITextStoryEditor({
                 >
                   {chapters.map((chapter) => (
                     <option key={chapter.id} value={chapter.chapterNumber}>
-                      Chapter {chapter.chapterNumber}: {chapter.title}
+                      {t('chapterOption', {
+                        number: chapter.chapterNumber,
+                        title: chapter.title
+                      })}
                     </option>
                   ))}
                 </select>
@@ -358,7 +363,7 @@ export default function AITextStoryEditor({
             {/* User Request */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-700">
-                Edit Request
+                {t('editRequestLabel')}
               </label>
               <textarea
                 value={userRequest}
@@ -379,15 +384,15 @@ export default function AITextStoryEditor({
                 <div className="flex items-center space-x-2 mb-2">
                   <FiEdit3 className="w-4 h-4 text-gray-600" />
                   <span className="text-sm font-medium text-gray-900">
-                    How Full Story Edit Works
+                    {t('fullStoryExplanation.title')}
                   </span>
                 </div>
                 <div className="text-sm text-gray-700 space-y-1">
-                  <p>• AI will apply your request to all chapters in the story</p>
-                  <p>• Each chapter edit counts as one edit towards your credit usage</p>
-                  <p>• All successful changes will be automatically saved</p>
-                  <p>• You can review the changes after the edit is complete</p>
-                  <p>• If some chapters fail to edit, the successful ones will still be saved</p>
+                  <p>{t('fullStoryExplanation.item1')}</p>
+                  <p>{t('fullStoryExplanation.item2')}</p>
+                  <p>{t('fullStoryExplanation.item3')}</p>
+                  <p>{t('fullStoryExplanation.item4')}</p>
+                  <p>{t('fullStoryExplanation.item5')}</p>
                 </div>
               </div>
             )}
@@ -398,7 +403,7 @@ export default function AITextStoryEditor({
                 <div className="flex items-center space-x-2 mb-2">
                   <FiAlertCircle className="w-4 h-4 text-blue-600" />
                   <span className="text-sm font-medium text-blue-900">
-                    Cost Estimation
+                    {t('costEstimation.title')}
                   </span>
                 </div>
                 <div className="text-sm text-blue-800">
@@ -408,38 +413,53 @@ export default function AITextStoryEditor({
                       <p className="mb-1">{creditInfo.message}</p>
                       {creditInfo.freeEdits && creditInfo.freeEdits > 0 && (
                         <p className="text-blue-600">
-                          • {creditInfo.freeEdits} free chapter edits
+                          {t('costEstimation.freeChapterEdits', {
+                            count: creditInfo.freeEdits
+                          })}
                         </p>
                       )}
                       {creditInfo.paidEdits && creditInfo.paidEdits > 0 && (
                         <p className="text-blue-600">
-                          • {creditInfo.paidEdits} paid chapter edits
+                          {t('costEstimation.paidChapterEdits', {
+                            count: creditInfo.paidEdits
+                          })}
                         </p>
                       )}
                       <p className="text-blue-600">
-                        • Current balance: {creditInfo.currentBalance} credits
+                        {t('costEstimation.currentBalance', {
+                          credits: creditInfo.currentBalance
+                        })}
                       </p>
                     </>
                   ) : (
                     // Single chapter edit cost info
                     <>
                       <p className="mb-1">
-                        {creditInfo.isFree 
-                          ? "This edit is free!" 
-                          : `This edit will cost ${creditInfo.requiredCredits} credit${creditInfo.requiredCredits === 1 ? '' : 's'}`
-                        }
+                        {creditInfo.isFree
+                          ? t('costEstimation.freeEdit')
+                          : t('costEstimation.costEdit', {
+                              credits: creditInfo.requiredCredits,
+                              plural: creditInfo.requiredCredits === 1 ? '' : 's'
+                            })}
                       </p>
                       <p className="text-blue-600">
-                        • Current balance: {creditInfo.currentBalance} credits
+                        {t('costEstimation.currentBalance', {
+                          credits: creditInfo.currentBalance
+                        })}
                       </p>
                       {!creditInfo.isFree && (
                         <p className="text-blue-600">
-                          • Edit count: {creditInfo.editCount} (next threshold: {creditInfo.nextThreshold})
+                          {t('costEstimation.editCount', {
+                            count: creditInfo.editCount,
+                            threshold: creditInfo.nextThreshold
+                          })}
                         </p>
                       )}
                       {creditInfo.message && (
                         <p className="text-blue-600 mt-1">
-                          • {creditInfo.message}
+                          {t('costEstimation.message', {
+                            message: creditInfo.message
+                          })}
                         </p>
                       )}
                     </>
