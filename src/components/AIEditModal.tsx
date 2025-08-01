@@ -207,12 +207,12 @@ export default function AIEditModal({
       const creditData = await creditCheckResponse.json();
 
       if (!creditCheckResponse.ok) {
-        setError(creditData.error || 'Failed to check credit requirements');
+        setError(creditData.error || t('errors.checkCreditsFailed'));
         return;
       }
 
       if (!creditData.canEdit) {
-        setError(creditData.message || 'Insufficient credits for this edit');
+        setError(creditData.message || t('errors.insufficientCredits'));
         return;
       }
 
@@ -236,7 +236,7 @@ export default function AIEditModal({
 
     } catch (error) {
       console.error('Error checking credits:', error);
-      setError('Failed to check credit requirements. Please try again.');
+      setError(t('errors.checkCreditsFailedRetry'));
     }
   };
 
@@ -323,7 +323,7 @@ export default function AIEditModal({
     } catch (error) {
       console.error('Error updating image:', error);
       setIsSavingImage(false);
-      setError('Failed to update image. Please try again.');
+      setError(t('errors.updateImageFailed'));
     }
   };
 
@@ -557,9 +557,9 @@ export default function AIEditModal({
             <div className="flex flex-col items-center gap-4">
               <span className="loading loading-spinner loading-lg text-primary"></span>
               <div>
-                <h3 className="text-lg font-semibold">Saving Image Changes</h3>
+                <h3 className="text-lg font-semibold">{t('imageSave.title')}</h3>
                 <p className="text-sm text-base-content/70 mt-2">
-                  Please wait while we save your image changes to the story...
+                  {t('imageSave.description')}
                 </p>
               </div>
             </div>

@@ -360,9 +360,17 @@
 				"requestTooLong": "Request must be 2000 characters or less",
 				"editFailed": "Failed to edit story. Please try again.",
 				"describeChanges": "Please describe the changes you want to make to the image",
-				"unableToCheckCredits": "Unable to check credits. Please try again."
-			}
-		},
+                                "unableToCheckCredits": "Unable to check credits. Please try again.",
+                                "checkCreditsFailed": "Failed to check credit requirements",
+                                "checkCreditsFailedRetry": "Failed to check credit requirements. Please try again.",
+                                "insufficientCredits": "Insufficient credits for this edit",
+                                "updateImageFailed": "Failed to update image. Please try again."
+                        },
+                        "imageSave": {
+                                "title": "Saving Image Changes",
+                                "description": "Please wait while we save your image changes to the story..."
+                        }
+                },
 		"aiImageEditor": {
 			"errors": {
 				"describeChanges": "Please describe the changes you want to make to the image",
