@@ -1,0 +1,27 @@
+{
+  "common": {
+    "Header": {
+      "navigation": {
+        "homepage": "Inicio",
+        "getInspired": "Inspírate",
+        "tellYourStory": "Cuenta Tu Historia",
+        "myStories": "Mis Historias",
+        "pricing": "Precios",
+        "dashboard": "Panel"
+      },
+      "auth": {
+        "signIn": "Iniciar Sesión",
+        "signUp": "Registrarse"
+      },
+      "logoAlt": "Logo de Mythoria"
+    },
+    "Footer": {
+      "aboutFounder": "Me llamo Rodrigo, acabo de cumplir 18 años y me encanta escuchar historias desde pequeño.",
+      "readMyStory": "Lee mi propia historia",
+      "privacyPolicy": "Privacidad y Cookies",
+      "termsConditions": "Términos y Condiciones",
+      "contactUs": "Contacto",
+      "copyright": "Aventuras Contemporâneas, Lda"
+    }
+  }
+}
