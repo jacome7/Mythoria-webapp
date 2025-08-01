@@ -365,7 +365,15 @@
       "errors": {
         "enterRequest": "Por favor, insira o seu pedido de edição",
         "requestTooLong": "O pedido deve ter 2000 caracteres ou menos",
-        "editFailed": "Falha ao editar a história. Tente novamente."
+        "editFailed": "Falha ao editar a história. Tente novamente.",
+        "checkCreditsFailed": "Falha ao verificar os requisitos de crédito",
+        "checkCreditsFailedRetry": "Falha ao verificar os requisitos de crédito. Tente novamente.",
+        "insufficientCredits": "Créditos insuficientes para esta edição",
+        "updateImageFailed": "Falha ao atualizar a imagem. Tente novamente."
+      },
+      "imageSave": {
+        "title": "A guardar alterações na imagem",
+        "description": "Por favor aguarde enquanto guardamos as alterações de imagem na história..."
       }
     },
     "creditConfirmation": {
