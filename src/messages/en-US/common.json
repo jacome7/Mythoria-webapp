@@ -753,12 +753,25 @@
 			},
 			"quote": "\"Not all those who wander are lost... but this page definitely is!\" - A confused Hobbit"
 		},
-		"voices": {
-			"selectVoice": "Select Voice",
-			"descriptions": {
-				"alloy": "A neutral and balanced voice suited for general narration and information delivery.",
-				"ash": "A clear and precise voice, ideal for instructions and technical explanations.",
-				"ballad": "A melodic and smooth voice that lends itself well to storytelling and narrative content.",
+                "voices": {
+                        "selectVoice": "Select Voice",
+                        "names": {
+                                "alloy": "Alloy",
+                                "ash": "Ash",
+                                "ballad": "Ballad",
+                                "coral": "Coral",
+                                "echo": "Echo",
+                                "fable": "Fable",
+                                "nova": "Nova",
+                                "onyx": "Onyx",
+                                "sage": "Sage",
+                                "shimmer": "Shimmer",
+                                "verse": "Verse"
+                        },
+                        "descriptions": {
+                                "alloy": "A neutral and balanced voice suited for general narration and information delivery.",
+                                "ash": "A clear and precise voice, ideal for instructions and technical explanations.",
+                                "ballad": "A melodic and smooth voice that lends itself well to storytelling and narrative content.",
 				"coral": "A warm and friendly voice, perfect for conversational interfaces and customer-facing dialogue.",
 				"echo": "A resonant and deep voice, offering a strong presence for announcements and formal messages.",
 				"fable": "A warm and engaging voice with a storytelling quality, designed for immersive narratives.",

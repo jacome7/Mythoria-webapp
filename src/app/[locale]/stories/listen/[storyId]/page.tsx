@@ -135,17 +135,17 @@ export default function ListenStoryPage() {
 
   // Voice options for narration
   const voiceOptions = [
-    { value: 'alloy', label: 'Alloy' },
-    { value: 'ash', label: 'Ash' },
-    { value: 'ballad', label: 'Ballad' },
-    { value: 'coral', label: 'Coral' },
-    { value: 'echo', label: 'Echo' },
-    { value: 'fable', label: 'Fable' },
-    { value: 'nova', label: 'Nova' },
-    { value: 'onyx', label: 'Onyx' },
-    { value: 'sage', label: 'Sage' },
-    { value: 'shimmer', label: 'Shimmer' },
-    { value: 'verse', label: 'Verse' }
+    { value: 'alloy', label: tCommon('voices.names.alloy') },
+    { value: 'ash', label: tCommon('voices.names.ash') },
+    { value: 'ballad', label: tCommon('voices.names.ballad') },
+    { value: 'coral', label: tCommon('voices.names.coral') },
+    { value: 'echo', label: tCommon('voices.names.echo') },
+    { value: 'fable', label: tCommon('voices.names.fable') },
+    { value: 'nova', label: tCommon('voices.names.nova') },
+    { value: 'onyx', label: tCommon('voices.names.onyx') },
+    { value: 'sage', label: tCommon('voices.names.sage') },
+    { value: 'shimmer', label: tCommon('voices.names.shimmer') },
+    { value: 'verse', label: tCommon('voices.names.verse') },
   ];
 
   useEffect(() => {
