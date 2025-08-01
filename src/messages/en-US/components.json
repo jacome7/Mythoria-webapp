@@ -73,6 +73,12 @@
       "errors": {
         "failedToFetch": "Failed to fetch audiobook progress",
         "failedToLoad": "Failed to load audiobook generation progress"
+      },
+      "timeUnits": {
+        "second": "second",
+        "seconds": "seconds",
+        "minute": "minute",
+        "minutes": "minutes"
       }
     },
     "audiobookGenerationTrigger": {

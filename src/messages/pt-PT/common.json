@@ -253,7 +253,9 @@
       "StoryGenerationProgress": {
         "ready": "A Sua História Está Pronta!",
         "timeUnits": {
+          "second": "segundo",
           "seconds": "segundos",
+          "minute": "minuto",
           "minutes": "minutos"
         }
       },
