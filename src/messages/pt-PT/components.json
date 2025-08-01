@@ -161,7 +161,12 @@
         "inProgress": "Em progresso...",
         "completed": "Concluído com sucesso!",
         "failed": "Falhado"
-      }
+      },
+      "progressLabel": "Progresso",
+      "elapsedLabel": "Tempo decorrido",
+      "remainingLabel": "Tempo restante",
+      "successMessage": "Operação concluída com sucesso!",
+      "close": "Fechar"
     },
     "readingProgress": {
       "fallbacks": {

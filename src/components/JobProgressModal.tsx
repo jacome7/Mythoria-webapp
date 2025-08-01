@@ -226,7 +226,7 @@ export default function JobProgressModal({
           {/* Progress Bar */}
           <div className="space-y-3">
             <div className="flex justify-between text-sm text-gray-600">
-              <span>Progress</span>
+              <span>{t('progressLabel')}</span>
               <span>{Math.round(jobStatus?.progress || 0)}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
@@ -247,9 +247,12 @@ export default function JobProgressModal({
           {jobStatus && jobStatus.status === 'processing' && (
             <div className="mt-4 space-y-2">
               <div className="flex justify-between text-xs text-gray-500">
-                <span>Elapsed: {formatTime(jobStatus.elapsedTime)}</span>
                 <span>
-                  Remaining: ~{formatTime(Math.max(0, jobStatus.remainingTime))}
+                  {t('elapsedLabel')}: {formatTime(jobStatus.elapsedTime)}
+                </span>
+                <span>
+                  {t('remainingLabel')}: ~
+                  {formatTime(Math.max(0, jobStatus.remainingTime))}
                 </span>
               </div>
             </div>
@@ -271,7 +274,7 @@ export default function JobProgressModal({
               <div className="flex items-center space-x-2">
                 <FiCheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
                 <span className="text-sm text-green-600">
-                  Operation completed successfully!
+                  {t('successMessage')}
                 </span>
               </div>
             </div>
@@ -285,7 +288,7 @@ export default function JobProgressModal({
               onClick={onClose}
               className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
             >
-              Close
+              {t('close')}
             </button>
           </div>
         )}
