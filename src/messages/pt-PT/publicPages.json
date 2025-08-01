@@ -480,7 +480,9 @@
       "loadingFailed": "Falha ao carregar dados da história",
       "missingRequiredFields": "Por favor complete todos os campos obrigatórios",
       "orderFailed": "Falha ao efetuar encomenda de impressão",
-      "insufficientCredits": "Créditos insuficientes."
+      "insufficientCredits": "Créditos insuficientes.",
+      "loadPricingFailed": "Falha ao carregar informação de preços",
+      "fetchCreditsFailed": "Falha ao obter saldo de créditos"
     },
     "addressInfo": {
       "selectShipping": "Por favor selecione uma morada de envio para o seu livro impresso.",
