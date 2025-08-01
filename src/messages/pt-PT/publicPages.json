@@ -185,6 +185,14 @@
           "description": "As crianças ficarão cativadas ao verem-se em aventuras emocionantes, enquanto os adultos se deleitam revivendo memórias queridas e partilhando momentos sinceros."
         }
       },
+      "stepLabels": {
+        "step1": "Passo 1",
+        "step2": "Passo 2",
+        "step3": "Passo 3",
+        "step4": "Passo 4",
+        "step5": "Passo 5",
+        "step6": "Passo 6"
+      },
       "conclusion": "Os nossos Umpa-lumpas da Fábrica de Histórias tratam de todo o resto, dando vida à sua história!"
     },
     "community": {
