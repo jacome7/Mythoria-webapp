@@ -9,8 +9,15 @@
   },
   "table": {
     "date": "Data",
-    "title": "Título", 
-    "status": "Estado",
+    "title": "Título",
+    "status": {
+      "header": "Estado",
+      "queued": "Em Fila",
+      "running": "A Gerar",
+      "completed": "Concluída",
+      "failed": "Falhada",
+      "cancelled": "Cancelada"
+    },
     "actions": "Ações"
   },
   "status": {

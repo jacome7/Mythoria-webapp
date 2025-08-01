@@ -227,11 +227,11 @@ export default function MyStoriesTable() {
     }
 
     const statusMap = {
-      'queued': { text: 'Queued', class: 'badge-info', icon: '⏳' },
-      'running': { text: 'Generating', class: 'badge-warning', icon: '🔄' },
-      'completed': { text: 'Completed', class: 'badge-success', icon: '✅' },
-      'failed': { text: 'Failed', class: 'badge-error', icon: '❌' },
-      'cancelled': { text: 'Cancelled', class: 'badge-neutral', icon: '⏹️' },
+      queued: { text: t('table.status.queued'), class: 'badge-info', icon: '⏳' },
+      running: { text: t('table.status.running'), class: 'badge-warning', icon: '🔄' },
+      completed: { text: t('table.status.completed'), class: 'badge-success', icon: '✅' },
+      failed: { text: t('table.status.failed'), class: 'badge-error', icon: '❌' },
+      cancelled: { text: t('table.status.cancelled'), class: 'badge-neutral', icon: '⏹️' },
     };
 
     const statusInfo = statusMap[story.storyGenerationStatus];
@@ -293,7 +293,7 @@ export default function MyStoriesTable() {
                       className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
                       onClick={() => handleSort('status')}
                     >
-                      {t('table.status')}
+                      {t('table.status.header')}
                       {getSortIcon('status')}
                     </button>
                   </th>
