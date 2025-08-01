@@ -338,13 +338,13 @@ export default function AIImageEditor({
             {newImageGenerated && (
               <div className="space-y-3">
                 <label className="block text-sm font-medium text-gray-700">
-                  New Generated Image
+                  {t('newImageLabel')}
                 </label>
                 <div className="bg-green-50 rounded-lg p-4 border border-green-200">
                   <div className="relative mx-auto max-w-sm">
                     <Image
                       src={toAbsoluteImageUrl(newImageGenerated) || ''}
-                      alt="Generated Image"
+                      alt={t('generatedImageAlt')}
                       width={400}
                       height={500}
                       className="w-full h-auto rounded-lg object-cover"
@@ -352,7 +352,7 @@ export default function AIImageEditor({
                   </div>
                   <div className="mt-4 text-center">
                     <p className="text-sm text-green-600 mb-3">
-                      New image generated successfully!
+                      {t('newImageSuccess')}
                     </p>
                     <button
                       onClick={handleReplaceImage}
