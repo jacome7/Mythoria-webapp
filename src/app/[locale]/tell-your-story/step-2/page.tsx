@@ -276,7 +276,7 @@ export default function Step2Page() {
       // Get the current authenticated user
       const userResponse = await fetch('/api/auth/me');
       if (!userResponse.ok) {
-        throw new Error('Failed to get user information');
+        throw new Error(t('errors.failedGetUser'));
       }
       const userData = await userResponse.json();
 
@@ -295,7 +295,7 @@ export default function Step2Page() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create story');
+        throw new Error(errorData.error || t('errors.failedCreate'));
       }
 
       const { story } = await response.json();
@@ -369,7 +369,8 @@ export default function Step2Page() {
 
     } catch (error) {
       console.error('Error creating story:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      const errorMessage =
+        error instanceof Error ? error.message : t('errors.unknown');
       alert(t('alerts.failedToCreateStory', { errorMessage }));
     } finally {
       setIsCreatingStory(false);

@@ -127,6 +127,11 @@
         "title": "✨ Creating Your Story",
         "message": "Our magical Oompa Loompas are hard at work preparing your story! This might take a moment...",
         "pleaseWait": "Please wait while we work our magic! ✨"
+      },
+      "errors": {
+        "failedGetUser": "Failed to get user information.",
+        "failedCreate": "Failed to create story.",
+        "unknown": "Unknown error occurred."
       }
     },
     "step3": {

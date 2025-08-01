@@ -127,6 +127,11 @@
         "title": "✨ A Criar a Tua História",
         "message": "Os nossos Oompa Loompas estão a trabalhar arduamente para preparar a tua história! Isto pode demorar um momento...",
         "pleaseWait": "Por favor aguarda enquanto fazemos a nossa magia! ✨"
+      },
+      "errors": {
+        "failedGetUser": "Falha ao obter informa\u00e7\u00e3o do utilizador.",
+        "failedCreate": "Falha ao criar hist\u00f3ria.",
+        "unknown": "Ocorreu um erro desconhecido."
       }
     },
     "step3": {
