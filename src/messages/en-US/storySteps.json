@@ -275,7 +275,9 @@
       "storyDataNotAvailable": "Story data not available. Please try again.",
       "stepProgress": "Step {currentStep} of {totalSteps}",
       "alerts": {
-        "failedToFetchData": "Failed to fetch story data. Please try again.",
+        "failedToFetchStoryData": "Failed to fetch story data. Please try again.",
+        "failedToFetchUserCredits": "Failed to fetch user credits. Please try again.",
+        "failedToFetchPricingData": "Failed to fetch pricing data. Please try again.",
         "failedToDeductCredits": "Failed to deduct credits. Please try again.",
         "dataFetchError": "Error fetching data. Please check your connection and try again.",
         "failedToLoadCreditInformation": "Failed to load credit information. Please try again.",

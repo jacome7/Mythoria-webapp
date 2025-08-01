@@ -275,7 +275,9 @@
       "storyDataNotAvailable": "Dados da história não disponíveis. Tenta novamente.",
       "stepProgress": "Passo {currentStep} de {totalSteps}",
       "alerts": {
-        "failedToFetchData": "Falha ao obter dados da história. Por favor tente novamente.",
+        "failedToFetchStoryData": "Falha ao obter dados da história. Por favor tente novamente.",
+        "failedToFetchUserCredits": "Falha ao obter créditos do utilizador. Por favor tente novamente.",
+        "failedToFetchPricingData": "Falha ao obter dados de preços. Por favor tente novamente.",
         "failedToDeductCredits": "Falha ao deduzir créditos. Por favor tente novamente.",
         "dataFetchError": "Erro ao obter dados. Por favor verifique a sua ligação e tente novamente.",
         "failedToLoadCreditInformation": "Falha ao carregar informação de créditos. Por favor tente novamente.",
