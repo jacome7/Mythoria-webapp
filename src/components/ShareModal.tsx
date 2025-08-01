@@ -61,7 +61,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
 
       if (!storyId || storyId === 'undefined') {
         console.error('Invalid storyId:', storyId);
-        alert('Invalid story ID');
+        alert(t('alerts.invalidStoryId'));
         setLoading(false);
         return;
       }
@@ -130,7 +130,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
   const handleNativeShare = async (url: string) => {
     const sharePayload = {
       title: storyTitle,
-      text: `Check out "${storyTitle}" on Mythoria 📚`,
+      text: t('shareMessages.checkOut', { storyTitle }),
       url,
     };
 
@@ -147,19 +147,19 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
   };
 
   const handleWhatsApp = (url: string) => {
-    const message = encodeURIComponent(`Check out "${storyTitle}" on Mythoria 📚 ${url}`);
+    const message = encodeURIComponent(`${t('shareMessages.checkOut', { storyTitle })} ${url}`);
     window.open(`https://wa.me/?text=${message}`, '_blank');
   };
 
   const handleFacebook = (url: string) => {
     const encodedUrl = encodeURIComponent(url);
-    const message = encodeURIComponent(`Check out "${storyTitle}" on Mythoria 📚`);
+    const message = encodeURIComponent(t('shareMessages.checkOut', { storyTitle }));
     window.open(`https://www.facebook.com/dialog/share?app_id=YOUR_APP_ID&href=${encodedUrl}&quote=${message}`, '_blank');
   };
 
   const handleEmail = (url: string) => {
-    const subject = encodeURIComponent(`Check out "${storyTitle}"`);
-    const body = encodeURIComponent(`I wanted to share this story with you:\n\n"${storyTitle}"\n\n${url}\n\nEnjoy reading! 📚`);
+    const subject = encodeURIComponent(t('shareMessages.emailSubject', { storyTitle }));
+    const body = encodeURIComponent(t('shareMessages.emailBody', { storyTitle, url }));
     window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
   };
   const reset = () => {
