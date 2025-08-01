@@ -24,17 +24,26 @@ const getFunnyMessage = (step: string, t: ReturnType<typeof import('next-intl').
   return messages[Math.floor(Math.random() * messages.length)];
 };
 
-const calculateEstimatedTime = (percentage: number): string => {
+const calculateEstimatedTime = (
+  percentage: number,
+  t: ReturnType<typeof import('next-intl').useTranslations>
+): string => {
   const totalEstimatedTime = 8 * 60; // 8 minutes in seconds (typically faster than story generation)
-  const remainingTime = Math.max(0, totalEstimatedTime - (totalEstimatedTime * percentage / 100));
-  
+  const remainingTime = Math.max(0, totalEstimatedTime - (totalEstimatedTime * percentage) / 100);
+
   if (remainingTime < 60) {
-    return `${Math.ceil(remainingTime)} seconds`;
-  } else {
-    const minutes = Math.floor(remainingTime / 60);
-    const seconds = Math.ceil(remainingTime % 60);
-    return seconds > 0 ? `${minutes}:${seconds.toString().padStart(2, '0')} minutes` : `${minutes} minutes`;
+    const value = Math.ceil(remainingTime);
+    const unit = value === 1 ? t('timeUnits.second') : t('timeUnits.seconds');
+    return `${value} ${unit}`;
   }
+
+  const minutes = Math.floor(remainingTime / 60);
+  const seconds = Math.ceil(remainingTime % 60);
+  const minuteLabel = minutes === 1 ? t('timeUnits.minute') : t('timeUnits.minutes');
+
+  return seconds > 0
+    ? `${minutes}:${seconds.toString().padStart(2, '0')} ${minuteLabel}`
+    : `${minutes} ${minuteLabel}`;
 };
 
 export default function AudiobookGenerationProgress({ storyId, onComplete }: AudiobookGenerationProgressProps) {
@@ -173,7 +182,7 @@ export default function AudiobookGenerationProgress({ storyId, onComplete }: Aud
           max={100}
         />
         <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
-          <span>{t('estimatedTimeRemaining')}: {calculateEstimatedTime(progress.audiobookGenerationCompletedPercentage)}</span>
+          <span>{t('estimatedTimeRemaining')}: {calculateEstimatedTime(progress.audiobookGenerationCompletedPercentage, t)}</span>
           {progress.chaptersProcessed && progress.totalChapters && (
             <span>{t('chaptersProcessed', { 
               processed: progress.chaptersProcessed, 

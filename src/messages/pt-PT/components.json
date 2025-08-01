@@ -46,6 +46,12 @@
       "errors": {
         "failedToFetch": "Falha ao obter progresso do audiolivro",
         "failedToLoad": "Falha ao carregar progresso da geração do audiolivro"
+      },
+      "timeUnits": {
+        "second": "segundo",
+        "seconds": "segundos",
+        "minute": "minuto",
+        "minutes": "minutos"
       }
     },
     "audiobookGenerationTrigger": {

@@ -23,17 +23,26 @@ const getFunnyMessage = (step: string, t: ReturnType<typeof import('next-intl').
   return messages[Math.floor(Math.random() * messages.length)];
 };
 
-const calculateEstimatedTime = (percentage: number): string => {
+const calculateEstimatedTime = (
+  percentage: number,
+  t: ReturnType<typeof import('next-intl').useTranslations>
+): string => {
   const totalEstimatedTime = 14 * 60; // 14 minutes in seconds
-  const remainingTime = Math.max(0, totalEstimatedTime - (totalEstimatedTime * percentage / 100));
-  
+  const remainingTime = Math.max(0, totalEstimatedTime - (totalEstimatedTime * percentage) / 100);
+
   if (remainingTime < 60) {
-    return `${Math.ceil(remainingTime)} seconds`;
-  } else {
-    const minutes = Math.floor(remainingTime / 60);
-    const seconds = Math.ceil(remainingTime % 60);
-    return seconds > 0 ? `${minutes}:${seconds.toString().padStart(2, '0')} minutes` : `${minutes} minutes`;
+    const value = Math.ceil(remainingTime);
+    const unit = value === 1 ? t('timeUnits.second') : t('timeUnits.seconds');
+    return `${value} ${unit}`;
   }
+
+  const minutes = Math.floor(remainingTime / 60);
+  const seconds = Math.ceil(remainingTime % 60);
+  const minuteLabel = minutes === 1 ? t('timeUnits.minute') : t('timeUnits.minutes');
+
+  return seconds > 0
+    ? `${minutes}:${seconds.toString().padStart(2, '0')} ${minuteLabel}`
+    : `${minutes} ${minuteLabel}`;
 };
 
 export default function StoryGenerationProgress({ storyId, onComplete }: StoryGenerationProgressProps) {
@@ -110,7 +119,7 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
     return () => clearInterval(intervalId);
   }, [storyId, onComplete]);
   const percentage = progress.storyGenerationCompletedPercentage;
-  const estimatedTime = calculateEstimatedTime(percentage);
+  const estimatedTime = calculateEstimatedTime(percentage, t);
   const isCompleted = progress.status === 'published';
 
   // Show completion state when story is published

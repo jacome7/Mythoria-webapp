@@ -252,10 +252,12 @@
 			},
 			"StoryGenerationProgress": {
 				"ready": "Your Story is Ready!",
-				"timeUnits": {
-					"seconds": "seconds",
-					"minutes": "minutes"
-				}
+                                "timeUnits": {
+                                        "second": "second",
+                                        "seconds": "seconds",
+                                        "minute": "minute",
+                                        "minutes": "minutes"
+                                }
 			},
 			"MyStoriesTable": {
 				"generationStatus": {
