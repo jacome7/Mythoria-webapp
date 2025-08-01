@@ -247,7 +247,7 @@ export default function Home() {
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>
                   </div>
                   <div className="timeline-start md:text-end mb-10">
-                    <time className="font-mono italic">Step 1</time>
+                    <time className="font-mono italic">{t('howItWorks.stepLabels.step1')}</time>
                     <div className="text-lg font-black">{t('howItWorks.steps.step1.title')}</div>
                     {t('howItWorks.steps.step1.description')}
                   </div>
@@ -259,7 +259,7 @@ export default function Home() {
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>
                   </div>
                   <div className="timeline-end mb-10">
-                    <time className="font-mono italic">Step 2</time>
+                    <time className="font-mono italic">{t('howItWorks.stepLabels.step2')}</time>
                     <div className="text-lg font-black">{t('howItWorks.steps.step2.title')}</div>
                     {t('howItWorks.steps.step2.description')}
                   </div>
@@ -271,7 +271,7 @@ export default function Home() {
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>
                   </div>
                   <div className="timeline-start md:text-end mb-10">
-                    <time className="font-mono italic">Step 3</time>
+                    <time className="font-mono italic">{t('howItWorks.stepLabels.step3')}</time>
                     <div className="text-lg font-black">{t('howItWorks.steps.step3.title')}</div>
                     {t('howItWorks.steps.step3.description')}
                   </div>
@@ -283,7 +283,7 @@ export default function Home() {
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>
                   </div>
                   <div className="timeline-end mb-10">
-                    <time className="font-mono italic">Step 4</time>
+                    <time className="font-mono italic">{t('howItWorks.stepLabels.step4')}</time>
                     <div className="text-lg font-black">{t('howItWorks.steps.step4.title')}</div>
                     {t('howItWorks.steps.step4.description')}
                   </div>
@@ -295,7 +295,7 @@ export default function Home() {
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>
                   </div>
                   <div className="timeline-start md:text-end mb-10">
-                    <time className="font-mono italic">Step 5</time>
+                    <time className="font-mono italic">{t('howItWorks.stepLabels.step5')}</time>
                     <div className="text-lg font-black">{t('howItWorks.steps.step5.title')}</div>
                     {t('howItWorks.steps.step5.description')}
                   </div>
@@ -307,7 +307,7 @@ export default function Home() {
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>
                   </div>
                   <div className="timeline-end mb-10">
-                    <time className="font-mono italic">Step 6</time>
+                    <time className="font-mono italic">{t('howItWorks.stepLabels.step6')}</time>
                     <div className="text-lg font-black">{t('howItWorks.steps.step6.title')}</div>
                     {t('howItWorks.steps.step6.description')}
                   </div>

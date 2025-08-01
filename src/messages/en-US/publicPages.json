@@ -185,6 +185,14 @@
           "description": "Children will be captivated seeing themselves in exciting adventures, while adults will be delighted by reliving cherished memories and sharing heartfelt moments."
         }
       },
+      "stepLabels": {
+        "step1": "Step 1",
+        "step2": "Step 2",
+        "step3": "Step 3",
+        "step4": "Step 4",
+        "step5": "Step 5",
+        "step6": "Step 6"
+      },
       "conclusion": "Our Story Factory Oompa-Loompas will handle everything else, bringing your story to life!"
     },
     "community": {
