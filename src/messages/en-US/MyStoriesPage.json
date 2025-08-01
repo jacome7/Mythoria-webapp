@@ -9,8 +9,15 @@
   },
   "table": {
     "date": "Date",
-    "title": "Title", 
-    "status": "Status",
+    "title": "Title",
+    "status": {
+      "header": "Status",
+      "queued": "Queued",
+      "running": "Generating",
+      "completed": "Completed",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    },
     "actions": "Actions"
   },
   "status": {
