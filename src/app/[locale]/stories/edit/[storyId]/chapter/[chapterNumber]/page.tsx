@@ -58,6 +58,7 @@ export default function EditChapterPage() {
   const { user } = useUser();
   const tCommon = useTranslations('common');
   const tComponents = useTranslations('components');
+  const tEditor = useTranslations('editor');
 
   const storyId = params.storyId as string;
   const chapterNumber = parseInt(params.chapterNumber as string);
@@ -109,7 +110,7 @@ export default function EditChapterPage() {
         
         // Verify the requested chapter exists
         if (!data.chapters.some(c => c.chapterNumber === chapterNumber)) {
-          throw new Error('Chapter not found');
+          throw new Error(tEditor('chapterNotFound'));
         }
       } else {
         throw new Error('Failed to load story');
@@ -326,12 +327,15 @@ export default function EditChapterPage() {
           .join(', ');
         
         addToast(
-          `${successCount} chapters updated successfully. Chapter ${failedChapters} failed to edit.`,
+          tEditor('chapterUpdates.chaptersUpdatedSuccessfully', {
+            successCount,
+            failedChapters,
+          }),
           'warning'
         );
       } else {
         addToast(
-          `All ${successCount} chapters updated successfully. Changes have been saved automatically.`,
+          tEditor('chapterUpdates.allChaptersUpdated', { successCount }),
           'success'
         );
       }
@@ -389,7 +393,9 @@ export default function EditChapterPage() {
       imageUri: imageData.imageUri,
       imageType: imageData.imageType as 'cover' | 'backcover' | 'chapter',
       chapterNumber: imageData.chapterNumber,
-      title: `Chapter ${imageData.chapterNumber}`
+      title: tEditor('imageEditor.chapterTitle', {
+        chapterNumber: imageData.chapterNumber ?? 0,
+      }),
     });
     setShowAIImageEditor(true);
   };
@@ -418,13 +424,13 @@ export default function EditChapterPage() {
         <div className="text-center max-w-md">
           <div className="text-6xl mb-4">😞</div>
           <h1 className="text-2xl font-bold mb-2">{tCommon('Errors.generic')}</h1>
-          <p className="text-base-content/70 mb-6">Chapter not found</p>
+          <p className="text-base-content/70 mb-6">{tEditor('chapterNotFound')}</p>
           <button
             onClick={() => router.push(`/${locale}/stories/edit/${storyId}`)}
             className="btn btn-primary"
           >
             <FiArrowLeft className="w-4 h-4 mr-2" />
-            Back to Story
+            {tEditor('backToStory')}
           </button>
         </div>
       </div>
@@ -464,7 +470,7 @@ export default function EditChapterPage() {
               onClick={undoChapter}
               disabled={!canUndo}
               className="btn btn-outline btn-sm"
-              title="Undo (Previous Version)"
+              title={tEditor('undoPreviousVersion')}
             >
               <FiRotateCcw className="w-4 h-4" />
             </button>
@@ -473,7 +479,7 @@ export default function EditChapterPage() {
               onClick={redoChapter}
               disabled={!canRedo}
               className="btn btn-outline btn-sm"
-              title="Redo (Next Version)"
+              title={tEditor('redoNextVersion')}
             >
               <FiRotateCw className="w-4 h-4" />
             </button>
