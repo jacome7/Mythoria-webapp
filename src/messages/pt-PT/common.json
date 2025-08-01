@@ -637,6 +637,19 @@
     },
     "voices": {
       "selectVoice": "Selecionar Voz",
+      "names": {
+        "alloy": "Alloy",
+        "ash": "Ash",
+        "ballad": "Ballad",
+        "coral": "Coral",
+        "echo": "Echo",
+        "fable": "Fable",
+        "nova": "Nova",
+        "onyx": "Onyx",
+        "sage": "Sage",
+        "shimmer": "Shimmer",
+        "verse": "Verse"
+      },
       "descriptions": {
         "alloy": "Uma voz neutra e equilibrada adequada para narração geral e entrega de informação.",
         "ash": "Uma voz clara e precisa, ideal para instruções e explicações técnicas.",
