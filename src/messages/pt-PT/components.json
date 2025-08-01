@@ -36,6 +36,30 @@
         "enterRequest": "Por favor introduza o seu pedido de edição",
         "unableToCheckCredits": "Não foi possível verificar os créditos. Tente novamente.",
         "failedToEdit": "Falha ao editar história. Tente novamente."
+      },
+      "editScopeLabel": "Âmbito da Edição",
+      "currentChapterOnly": "Apenas Capítulo Atual",
+      "allChapters": "Todos os Capítulos",
+      "selectChapterLabel": "Selecionar Capítulo",
+      "chapterOption": "Capítulo {number}: {title}",
+      "editRequestLabel": "Pedido de Edição",
+      "fullStoryExplanation": {
+        "title": "Como Funciona a Edição da História Completa",
+        "item1": "A IA aplicará o seu pedido a todos os capítulos da história",
+        "item2": "Cada edição de capítulo conta como uma edição nos seus créditos",
+        "item3": "Todas as alterações bem-sucedidas serão gravadas automaticamente",
+        "item4": "Pode rever as alterações após a conclusão da edição",
+        "item5": "Se alguns capítulos falharem, os bem-sucedidos serão mantidos"
+      },
+      "costEstimation": {
+        "title": "Estimativa de Custo",
+        "freeEdit": "Esta edição é gratuita!",
+        "costEdit": "Esta edição custará {credits} crédito{plural}",
+        "currentBalance": "\u2022 Saldo atual: {credits} créditos",
+        "editCount": "\u2022 Contagem de edições: {count} (próximo limite: {threshold})",
+        "freeChapterEdits": "\u2022 {count} edições de capítulos gratuitas",
+        "paidChapterEdits": "\u2022 {count} edições de capítulos pagas",
+        "message": "\u2022 {message}"
       }
     },
     "audiobookGenerationProgress": {
