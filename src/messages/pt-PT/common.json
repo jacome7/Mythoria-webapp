@@ -179,6 +179,14 @@
         "errors": {
           "createLinkFailed": "Erro ao criar link de partilha: Tente novamente mais tarde.",
           "shareLinkCreationFailed": "Falha ao criar ligação de partilha. Por favor tente novamente."
+        },
+        "alerts": {
+          "invalidStoryId": "ID de história inválido"
+        },
+        "shareMessages": {
+          "checkOut": "Veja \"{storyTitle}\" no Mythoria \ud83d\udcda",
+          "emailSubject": "Veja \"{storyTitle}\"",
+          "emailBody": "Queria partilhar esta história consigo:\n\n\"{storyTitle}\"\n\n{url}\n\nBoa leitura! \ud83d\udcda"
         }
       },
       "CreditsDisplay": {

@@ -174,12 +174,20 @@
 				"publicStoryTitle": "Public Story",
 				"publicStoryDesc": "This story is currently public and can be viewed by anyone.",
 				"publicUrl": "Public URL",
-				"makePrivate": "Make story private",
-				"makePrivateDesc": "Remove public access and make the story private",
-				"errors": {
-					"createLinkFailed": "Error creating share link: Please try again later.",
-					"shareLinkCreationFailed": "Failed to create share link. Please try again."
-				}
+        "makePrivate": "Make story private",
+        "makePrivateDesc": "Remove public access and make the story private",
+        "errors": {
+            "createLinkFailed": "Error creating share link: Please try again later.",
+            "shareLinkCreationFailed": "Failed to create share link. Please try again."
+        },
+        "alerts": {
+            "invalidStoryId": "Invalid story ID"
+        },
+        "shareMessages": {
+            "checkOut": "Check out \"{storyTitle}\" on Mythoria \ud83d\udcda",
+            "emailSubject": "Check out \"{storyTitle}\"",
+            "emailBody": "I wanted to share this story with you:\n\n\"{storyTitle}\"\n\n{url}\n\nEnjoy reading! \ud83d\udcda"
+        }
 			},
 			"CreditsDisplay": {
 				"button": "Credits available: {credits}",
