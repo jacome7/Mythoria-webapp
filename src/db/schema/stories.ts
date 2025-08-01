@@ -16,6 +16,7 @@ export const stories = pgTable("stories", {
   synopsis: text("synopsis"),
   place: text("place"), // Setting of the story (real or imaginary)
   additionalRequests: text("additionalRequests"), // Optional text area for mentioning products, companies, or specific details to include.
+  imageGenerationInstructions: text("image_generation_instructions"), // Custom instructions for AI image generation
   targetAudience: targetAudienceEnum("target_audience"),
   novelStyle: novelStyleEnum("novel_style"),
   graphicalStyle: graphicalStyleEnum("graphical_style"),
@@ -27,6 +28,11 @@ export const stories = pgTable("stories", {
   pdfUri: text("pdf_uri"), // Internal Google Storage link to access the PDF file
   audiobookUri: jsonb("audiobook_uri"), // JSON object with internal GS links to each chapter audio file
   audiobookStatus: audiobookStatusEnum("audiobook_status"), // Status of audiobook generation
+  coverUri: text("cover_uri"), // Internal Google Storage link to front cover image
+  backcoverUri: text("backcover_uri"), // Internal Google Storage link to back cover image
+  hasAudio: boolean("has_audio").default(false), // Whether story has audio narration
+  interiorPdfUri: text("interior_pdf_uri"), // Internal Google Storage link to interior PDF for printing
+  coverPdfUri: text("cover_pdf_uri"), // Internal Google Storage link to cover spread PDF for printing
 
   // Sharing functionality fields
   slug: text("slug"), // Human-readable slug for public URLs
@@ -88,6 +94,31 @@ export const storyCollaborators = pgTable("story_collaborators", {
   userIdIdx: index("story_collaborators_user_id_idx").on(table.userId),
 }));
 
+// Story chapters with versioning support
+export const chapters = pgTable("chapters", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  storyId: uuid("story_id").notNull().references(() => stories.storyId, { onDelete: 'cascade' }),
+  authorId: uuid("author_id").notNull().references(() => authors.authorId, { onDelete: 'cascade' }),
+  version: integer("version").notNull(),
+  chapterNumber: integer("chapter_number").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  imageUri: text("image_uri"), // Google Storage link to chapter image
+  imageThumbnailUri: text("image_thumbnail_uri"), // Google Storage link to chapter thumbnail
+  htmlContent: text("html_content").notNull(), // Full HTML content for the chapter
+  audioUri: text("audio_uri"), // Google Storage link to audio narration
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+}, (table) => ({
+  // Indexes for performance optimization
+  idIdx: index("chapters_id_idx").on(table.id),
+  storyIdIdx: index("chapters_story_id_idx").on(table.storyId),
+  versionIdx: index("chapters_version_idx").on(table.version),
+  chapterNumberIdx: index("chapters_chapter_number_idx").on(table.chapterNumber),
+  // Composite indexes for frequent queries
+  storyIdVersionIdx: index("chapters_story_id_version_idx").on(table.storyId, table.version),
+  storyIdChapterNumberVersionIdx: index("chapters_story_id_chapter_number_version_idx").on(table.storyId, table.chapterNumber, table.version),
+}));
+
 // -----------------------------------------------------------------------------
 // Types
 // -----------------------------------------------------------------------------
@@ -102,3 +133,6 @@ export type NewShareLink = typeof shareLinks.$inferInsert;
 
 export type StoryCollaborator = typeof storyCollaborators.$inferSelect;
 export type NewStoryCollaborator = typeof storyCollaborators.$inferInsert;
+
+export type Chapter = typeof chapters.$inferSelect;
+export type NewChapter = typeof chapters.$inferInsert;

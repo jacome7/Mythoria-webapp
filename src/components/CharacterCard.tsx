@@ -167,7 +167,7 @@ export default function CharacterCard({
       } else {
         // Add trait (max 5)
         if (currentTraits.length >= 5) {
-          alert('Maximum 5 traits allowed. Remove a trait first.');
+          alert(t('errors.maxTraits'));
           return prev;
         }
         return {

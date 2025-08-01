@@ -6,9 +6,8 @@ import { useLocale, useTranslations } from 'next-intl';
 import { FiArrowLeft, FiMapPin, FiPrinter, FiBook } from 'react-icons/fi';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { useUser } from '@clerk/nextjs';
 import { type Address as AddressType } from '@/components/AddressCard';
-import { getEnvironmentConfig } from '../../../config/environment';
+
 
 // Lazy load step components
 const StoryStep = dynamic(() => import('@/components/print-order/steps/StoryStep'));
@@ -19,7 +18,7 @@ interface Story {
   storyId: string;
   title: string;
   synopsis: string;
-  pdfUri: string;
+  pdfUri?: string;
   authorId: string;
   frontCoverImageUrl?: string;
   chapterCount: number;
@@ -55,7 +54,6 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations('PrintOrder');
-  const { user } = useUser();
 
   const [currentStep, setCurrentStep] = useState<Step>('story');
   const [story, setStory] = useState<Story | null>(null);
@@ -81,10 +79,6 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
         const storyData = data.story;
         if (storyData.status !== 'published') {
           setError(t('errors.storyNotPublished'));
-          return;
-        }
-        if (!storyData.pdfUri) {
-          setError(t('errors.pdfNotAvailable'));
           return;
         }
         setStory(storyData);
@@ -124,43 +118,6 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
     try {
       setOrderLoading(true);
       
-      // Create ticket in admin system for print request
-      const config = getEnvironmentConfig();
-      try {
-        const ticketResponse = await fetch(`${config.admin.apiUrl}/api/tickets`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            category: 'print_request',
-            storyId: story.storyId,
-            userId: user?.id,
-            shippingAddress: {
-              addressId: selectedAddress.addressId,
-              line1: selectedAddress.line1,
-              line2: selectedAddress.line2,
-              city: selectedAddress.city,
-              postalCode: selectedAddress.postalCode,
-              country: selectedAddress.country,
-              phone: selectedAddress.phone,
-            },
-            printFormat: selectedPrintingOption.serviceCode,
-          })
-        });
-
-        if (ticketResponse.ok) {
-          const ticketData = await ticketResponse.json();
-          console.log('Print request ticket created:', ticketData.id);
-        } else {
-          console.warn('Failed to create print request ticket:', await ticketResponse.text());
-          // Don't fail the entire process if ticket creation fails
-        }
-      } catch (ticketError) {
-        console.warn('Print request ticket creation failed:', ticketError);
-        // Don't fail the entire process if ticket creation fails
-      }
-      
       const response = await fetch('/api/print-requests', {
         method: 'POST',
         headers: {
@@ -168,7 +125,6 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
         },
         body: JSON.stringify({
           storyId: story.storyId,
-          pdfUrl: story.pdfUri,
           shippingId: selectedAddress.addressId,
           printingOption: {
             serviceCode: selectedPrintingOption.serviceCode,

@@ -75,6 +75,27 @@ export default function SignInClient({ locale, translations }: SignInClientProps
                 height={84}
               />
             </div>
+            
+            {/* Mobile-only first-time user message */}
+            <div className="lg:hidden text-center mb-6 p-4 bg-orange-50 rounded-lg border border-orange-100">
+              <p className="text-sm text-gray-600 mb-3">
+                {translations.firstTimeText}{' '}
+                <Link 
+                  href={`/${locale}/sign-up`} 
+                  className="font-medium underline text-primary"
+                >
+                  {translations.createAccountLink}
+                </Link>
+                {' '}{translations.createAccountText}
+              </p>
+              <Link 
+                href={`/${locale}/sign-up`} 
+                className="btn btn-sm btn-outline btn-primary"
+              >
+                {translations.createAccountLink}
+              </Link>
+            </div>
+            
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
                 {translations.pageTitle}

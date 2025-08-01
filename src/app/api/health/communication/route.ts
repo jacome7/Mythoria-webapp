@@ -27,6 +27,12 @@ interface CommunicationTestResults {
         pubsubPing: string;
       };
     };
+    admin: {
+      baseUrl: string;
+      endpoints: {
+        ping: string;
+      };
+    };
   };
   services: {
     storyGeneration: {
@@ -36,6 +42,9 @@ interface CommunicationTestResults {
     notification: {
       direct: ServiceTestResult;
       pubsub: ServiceTestResult;
+    };
+    admin: {
+      ping: ServiceTestResult;
     };
   };
   summary: {
@@ -88,6 +97,50 @@ async function testDirectCommunication(serviceUrl: string, endpoint: string): Pr
 
 async function testPingEndpoint(serviceUrl: string): Promise<ServiceTestResult> {
   return testDirectCommunication(serviceUrl, '/ping');
+}
+
+async function testAdminPing(adminUrl: string, apiKey: string): Promise<ServiceTestResult> {
+  const startTime = Date.now();
+  
+  try {
+    const response = await fetch(`${adminUrl}/api/ping`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      // Add timeout to prevent hanging
+      signal: AbortSignal.timeout(10000)
+    });
+
+    const responseTime = Date.now() - startTime;
+    
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => 'Unknown error');
+      return {
+        success: false,
+        responseTime,
+        error: `HTTP ${response.status}: ${errorText}`
+      };
+    }
+
+    const data = await response.json();
+    
+    return {
+      success: data.success === true,
+      responseTime,
+      data: data
+    };
+
+  } catch (error) {
+    const responseTime = Date.now() - startTime;
+    
+    return {
+      success: false,
+      responseTime,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    };
+  }
 }
 
 async function testPubSubCommunication(serviceUrl: string, endpoint: string): Promise<ServiceTestResult> {
@@ -157,6 +210,12 @@ export async function GET() {
           ping: '/ping',
           pubsubPing: '/test/pubsub-ping'
         }
+      },
+      admin: {
+        baseUrl: config.admin.apiUrl,
+        endpoints: {
+          ping: '/api/ping'
+        }
       }
     },
     services: {
@@ -167,10 +226,13 @@ export async function GET() {
       notification: {
         direct: { success: false, responseTime: 0 },
         pubsub: { success: false, responseTime: 0 }
+      },
+      admin: {
+        ping: { success: false, responseTime: 0 }
       }
     },
     summary: {
-      totalTests: 4,
+      totalTests: 5, // Updated to include admin test
       passedTests: 0,
       failedTests: 0,
       overallSuccess: false
@@ -206,12 +268,20 @@ export async function GET() {
       '/test/pubsub-ping'
     );
 
+    // Test Admin Service
+    console.log('🔐 Testing Admin Service...');
+    
+    // Admin ping test with API key authentication
+    console.log('  - Testing admin ping with API key authentication...');
+    results.services.admin.ping = await testAdminPing(config.admin.apiUrl, config.admin.apiKey);
+
     // Calculate summary
     const allTests = [
       results.services.storyGeneration.direct,
       results.services.storyGeneration.pubsub,
       results.services.notification.direct,
-      results.services.notification.pubsub
+      results.services.notification.pubsub,
+      results.services.admin.ping
     ];
 
     results.summary.passedTests = allTests.filter(test => test.success).length;

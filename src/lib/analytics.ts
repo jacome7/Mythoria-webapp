@@ -1,5 +1,7 @@
 'use client';
 
+import { trackMythoriaConversionsEnhanced } from './googleAdsConversions';
+
 // Define event types for better type safety
 export type AnalyticsEvent = 
   // Authentication & Onboarding
@@ -7,6 +9,9 @@ export type AnalyticsEvent =
   | 'login'
   | 'logout'
   | 'lead_capture'
+  
+  // Commerce & Credits
+  | 'credit_purchase'
   
   // Story Creation Flow
   | 'story_creation_started'
@@ -60,6 +65,11 @@ export interface ContactEventParams extends AnalyticsEventParams {
   inquiry_type?: string;
 }
 
+export interface CreditPurchaseEventParams extends AnalyticsEventParams {
+  purchase_amount?: number;
+  credits_purchased?: number;
+}
+
 /**
  * Track a custom event in Google Analytics
  * @param eventName - The name of the event to track
@@ -100,17 +110,32 @@ export function trackEvent(
  * Track authentication events
  */
 export const trackAuth = {
-  signUp: (params: AuthEventParams = {}) => 
-    trackEvent('sign_up', params),
+  signUp: (params: AuthEventParams = {}) => {
+    trackEvent('sign_up', params);
+    // Track Google Ads conversion
+    trackMythoriaConversionsEnhanced.signUp(params.user_id as string);
+  },
   
   login: (params: AuthEventParams = {}) => 
     trackEvent('login', params),
   
   logout: (params: AuthEventParams = {}) => 
     trackEvent('logout', params),
-  
-  leadCapture: (params: AnalyticsEventParams = {}) => 
-    trackEvent('lead_capture', params),
+};
+
+/**
+ * Track commerce and credit events
+ */
+export const trackCommerce = {
+  creditPurchase: (params: CreditPurchaseEventParams = {}) => {
+    trackEvent('credit_purchase', params);
+    // Track Google Ads conversion
+    trackMythoriaConversionsEnhanced.creditPurchase(
+      params.purchase_amount as number || 0,
+      'EUR', // Adjust currency as needed
+      params.transaction_id as string
+    );
+  },
 };
 
 /**
@@ -141,8 +166,14 @@ export const trackStoryCreation = {
   characterCustomized: (params: CharacterEventParams = {}) => 
     trackEvent('character_customized', params),
   
-  generationRequested: (params: StoryEventParams = {}) => 
-    trackEvent('story_generation_requested', params),
+  generationRequested: (params: StoryEventParams = {}) => {
+    trackEvent('story_generation_requested', params);
+    // Track Google Ads conversion for story creation
+    trackMythoriaConversionsEnhanced.storyCreated(
+      params.story_id as string,
+      params.user_id as string
+    );
+  },
 };
 
 /**

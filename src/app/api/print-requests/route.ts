@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { printRequests, printProviders, stories, addresses } from '@/db/schema';
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, and, desc, or } from 'drizzle-orm';
 import { getCurrentAuthor } from '@/lib/auth';
 import { creditService } from '@/db/services';
+import { getEnvironmentConfig } from '../../../../config/environment';
+import { PrintPubSubService } from '@/lib/print-pubsub';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function GET(request: NextRequest) {
   try {
@@ -87,9 +90,9 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
       // Validate required fields
-    if (!body.storyId || !body.pdfUrl) {
+    if (!body.storyId) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields: storyId, pdfUrl' },
+        { success: false, error: 'Missing required fields: storyId' },
         { status: 400 }
       );
     }
@@ -101,15 +104,19 @@ export async function POST(request: NextRequest) {
       .where(
         and(
           eq(stories.storyId, body.storyId),
-          eq(stories.authorId, author.authorId),
-          eq(stories.status, 'published')
+          eq(stories.status, 'published'),
+          // Allow if story is public OR if user is the author
+          or(
+            eq(stories.isPublic, true),
+            eq(stories.authorId, author.authorId)
+          )
         )
       )
       .limit(1);
 
     if (story.length === 0) {
       return NextResponse.json(
-        { success: false, error: 'Story not found or not published' },
+        { success: false, error: 'Story not found, not published, or not accessible for printing' },
         { status: 404 }
       );
     }
@@ -173,7 +180,7 @@ export async function POST(request: NextRequest) {
       await creditService.deductCredits(
         author.authorId,
         totalCost,
-        body.printingOption?.serviceCode || 'printOrder',
+        'printOrder', // Use the correct enum value
         body.storyId
       );
     } catch (error) {
@@ -186,7 +193,7 @@ export async function POST(request: NextRequest) {
     const newRequest = await db.insert(printRequests).values({
       authorId: author.authorId,
       storyId: body.storyId,
-      pdfUrl: body.pdfUrl,
+      pdfUrl: 'pending://generation', // Will be updated after print generation
       printProviderId: suitableProvider.id,
       shippingId: body.shippingId || null,
       printingOptions: {
@@ -223,6 +230,59 @@ export async function POST(request: NextRequest) {
       .leftJoin(stories, eq(printRequests.storyId, stories.storyId))
       .where(eq(printRequests.id, newRequest[0].id))
       .limit(1);
+
+    // Create ticket in admin system for print request (async, don't block the response)
+    try {
+      const config = getEnvironmentConfig();
+      const ticketResponse = await fetch(`${config.admin.apiUrl}/api/tickets`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          category: 'print_request',
+          storyId: body.storyId,
+          userId: author.authorId,
+          shippingAddress: body.shippingId ? {
+            addressId: body.shippingId,
+            // We could fetch full address details here if needed
+          } : null,
+          printingOption: {
+            serviceCode: body.printingOption?.serviceCode,
+            title: body.printingOption?.title,
+            credits: body.printingOption?.credits,
+          },
+          totalCost: body.totalCost,
+          orderDetails: {
+            printRequestId: newRequest[0].id,
+            requestedAt: new Date().toISOString(),
+            status: 'pending_processing',
+          }
+        }),
+      });
+
+      if (ticketResponse.ok) {
+        const ticketData = await ticketResponse.json();
+        console.log('Print request ticket created:', ticketData.id);
+      } else {
+        console.warn('Failed to create print request ticket:', ticketResponse.statusText);
+      }
+    } catch (ticketError) {
+      console.warn('Print request ticket creation failed:', ticketError);
+      // Don't fail the entire process if ticket creation fails
+    }
+
+    // Trigger print PDF generation (async, don't block the response)
+    try {
+      const printPubSub = new PrintPubSubService();
+      const runId = uuidv4();
+      
+      await printPubSub.triggerPrintGeneration(body.storyId, runId);
+      console.log('Print generation triggered for story:', body.storyId, 'runId:', runId);
+    } catch (printError) {
+      console.warn('Print generation trigger failed:', printError);
+      // Don't fail the entire process if print generation trigger fails
+    }
 
     return NextResponse.json({
       success: true,

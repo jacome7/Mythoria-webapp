@@ -29,6 +29,7 @@ interface StoryData {
   graphicalStyle: GraphicalStyle | null;
   plotDescription: string | null;
   additionalRequests: string | null;
+  imageGenerationInstructions: string | null;
   chapterCount?: number | null;
   storyLanguage?: string | null;
 }
@@ -59,6 +60,7 @@ function Step4Page() {
   const [graphicalStyle, setGraphicalStyle] = useState<GraphicalStyle | ''>('');
   const [plotDescription, setPlotDescription] = useState('');
   const [additionalRequests, setAdditionalRequests] = useState('');
+  const [imageGenerationInstructions, setImageGenerationInstructions] = useState('');
   const [chapterCount, setChapterCount] = useState<number>(4); // Default matches CHILDREN_3_6
   const [isChapterCountManual, setIsChapterCountManual] = useState(false);
   const [storyLanguage, setStoryLanguage] = useState<string>(locale);
@@ -67,13 +69,13 @@ function Step4Page() {
   const [styleSettingOpen, setStyleSettingOpen] = useState(false);
   const [contentDetailsOpen, setContentDetailsOpen] = useState(false);
   
-  // Modal state
-  const [showStyleSamples, setShowStyleSamples] = useState(false);
+  // Dropdown state
+  const [showGraphicalStyleDropdown, setShowGraphicalStyleDropdown] = useState(false);
 
-  // Language options
-  // Helper functions for validation and display
+  // Language options from translation
+  const languageOptions = t.raw('languageOptions') as Array<{value: string, label: string}>;
   const hasStyleSettingData = () => {
-    return place.trim() || novelStyle || graphicalStyle;
+    return place.trim() || novelStyle || graphicalStyle || imageGenerationInstructions.trim();
   };
 
   const hasContentDetailsData = () => {
@@ -85,6 +87,7 @@ function Step4Page() {
     if (novelStyle) parts.push(NovelStyleLabels[novelStyle]);
     if (graphicalStyle) parts.push(GraphicalStyleLabels[graphicalStyle]);
     if (place.trim()) parts.push(place.trim());
+    if (imageGenerationInstructions.trim()) parts.push(t('previews.customImageInstructions'));
     return parts.join(', ');
   };
 
@@ -102,17 +105,7 @@ function Step4Page() {
     return true; // Content details are optional
   };
 
-  const languageOptions = [
-    { value: 'nl-NL', label: 'Dutch (Nederlands)' },
-    { value: 'en-US', label: 'English' },
-    { value: 'fr-FR', label: 'French (Français)' },
-    { value: 'de-DE', label: 'German (Deutsch)' },
-    { value: 'it-IT', label: 'Italian (Italiano)' },
-    { value: 'pl-PL', label: 'Polish (Polski)' },
-    { value: 'pt-BR', label: 'Portuguese (Brazil)' },
-    { value: 'pt-PT', label: 'Portuguese (Portugal)' },
-    { value: 'es-ES', label: 'Spanish (Español)' }
-  ];
+
   
   // Chapter count mapping based on target audience
   const getChapterCountForAudience = useCallback((audience: TargetAudience | ''): number => {
@@ -131,7 +124,7 @@ function Step4Page() {
   }, []);
 
   const targetAudienceOptions = [
-    { value: '', label: 'Select target audience...' },
+    { value: '', label: t('placeholders.selectAudience') },
     ...getAllTargetAudiences().map(value => ({
       value,
       label: TargetAudienceLabels[value]
@@ -139,25 +132,37 @@ function Step4Page() {
   ];
 
   const novelStyleOptions = [
-    { value: '', label: 'Select novel style...' },
+    { value: '', label: t('placeholders.selectNovelStyle') },
     ...getAllNovelStyles().map(value => ({
       value,
       label: NovelStyleLabels[value]
     }))
   ];
 
-  const graphicalStyleOptions = [
-    { value: '', label: 'Select graphic style...' },
-    ...getAllGraphicalStyles().map(value => ({
-      value,
-      label: GraphicalStyleLabels[value]
-    }))];  // Auto-update chapter count when target audience changes (unless manually overridden)
+  // Auto-update chapter count when target audience changes (unless manually overridden)
   useEffect(() => {
     if (!isChapterCountManual && targetAudience) {
       const newCount = getChapterCountForAudience(targetAudience);
       setChapterCount(newCount);
     }
   }, [targetAudience, isChapterCountManual, getChapterCountForAudience]);
+
+  // Close dropdown on Escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (showGraphicalStyleDropdown) {
+          setShowGraphicalStyleDropdown(false);
+        }
+      }
+    };
+
+    if (showGraphicalStyleDropdown) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [showGraphicalStyleDropdown]);
+
   const fetchStoryData = useCallback(async (storyId: string) => {
     try {
       setLoading(true);
@@ -178,6 +183,7 @@ function Step4Page() {
       setGraphicalStyle(story.graphicalStyle || '');
       setPlotDescription(story.plotDescription || '');
       setAdditionalRequests(story.additionalRequests || '');
+      setImageGenerationInstructions(story.imageGenerationInstructions || '');
       
       // Set story language - prefer the one from the story, fallback to current locale
       setStoryLanguage(story.storyLanguage || locale);      // Handle chapter count - only mark as manual if it differs from the expected automatic value
@@ -193,11 +199,11 @@ function Step4Page() {
       }
     } catch (error) {
       console.error('Error fetching story data:', error);
-      setError('Failed to load story information. Please try again.');
+      setError(t('errors.loadFailed'));
     } finally {
       setLoading(false);
     }
-  }, [getChapterCountForAudience, locale]);
+  }, [getChapterCountForAudience, locale, t]);
 
   useEffect(() => {
     // Check if we have a valid story session
@@ -259,6 +265,7 @@ function Step4Page() {
           graphicalStyle: graphicalStyle || null,
           plotDescription: plotDescription.trim() || null,
           additionalRequests: additionalRequests.trim() || null,
+          imageGenerationInstructions: imageGenerationInstructions.trim() || null,
           chapterCount: chapterCount,
           storyLanguage: storyLanguage,
         }),
@@ -277,7 +284,8 @@ function Step4Page() {
         graphical_style: graphicalStyle || undefined,
         chapter_count: chapterCount,
         has_plot_description: !!plotDescription.trim(),
-        has_additional_requests: !!additionalRequests.trim()
+        has_additional_requests: !!additionalRequests.trim(),
+        has_image_generation_instructions: !!imageGenerationInstructions.trim()
       });      // Navigate to next step after successful save
       if (editStoryId) {
         // In edit mode, pass the edit parameter to the next step
@@ -527,31 +535,50 @@ function Step4Page() {
                           <div className="form-control">
                             <label className="label">
                               <span className="label-text font-semibold">{t('fields.graphicStyle')} *</span>
+                            </label>
+                            <div className="relative">
                               <button
                                 type="button"
-                                className="btn btn-ghost btn-sm ml-2 text-primary hover:text-primary-focus"
-                                onClick={() => setShowStyleSamples(true)}
+                                className={`select select-bordered w-full text-left ${!graphicalStyle ? 'text-gray-500' : ''}`}
+                                onClick={() => setShowGraphicalStyleDropdown(true)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    setShowGraphicalStyleDropdown(true);
+                                  }
+                                }}
                               >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                {graphicalStyle ? GraphicalStyleLabels[graphicalStyle] : t('placeholders.selectGraphicStyle')}
+                                <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                 </svg>
-                                {t('modal.samples')}
                               </button>
-                            </label>
-                            <select
-                              value={graphicalStyle}
-                              onChange={(e) => setGraphicalStyle(e.target.value as GraphicalStyle | '')}
-                              className="select select-bordered w-full"
-                              required
-                            >
-                              {graphicalStyleOptions.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                  {option.label}
-                                </option>
-                              ))}
-                            </select>
+                            </div>
                             <label className="label">
                               <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.graphicStyleHelp')}</span>
+                            </label>
+                          </div>
+
+                          {/* Custom Image Instructions Field */}
+                          <div className="form-control md:col-span-2">
+                            <label className="label">
+                              <span className="label-text font-semibold">{t('fields.imageInstructions')}</span>
+                            </label>
+                            <textarea
+                              value={imageGenerationInstructions}
+                              onChange={(e) => setImageGenerationInstructions(e.target.value)}
+                              placeholder={t('placeholders.imageInstructions')}
+                              className="textarea textarea-bordered h-24 w-full"
+                              rows={4}
+                              maxLength={1000}
+                            />
+                            <label className="label">
+                              <span className="label-text-alt break-words max-w-full whitespace-normal">
+                                {t('fields.imageInstructionsHelp')}
+                                {imageGenerationInstructions.length > 0 && (
+                                  <span className="ml-2 text-sm">({imageGenerationInstructions.length}/1000)</span>
+                                )}
+                              </span>
                             </label>
                           </div>
                         </div>
@@ -617,15 +644,20 @@ function Step4Page() {
                   </div>
                 )}
 
-                {/* Graphical Style Samples Modal */}
-                {showStyleSamples && (
+                {/* Graphical Style Custom Dropdown Gallery */}
+                {showGraphicalStyleDropdown && (
                   <div className="modal modal-open">
                     <div className="modal-box max-w-4xl h-3/4 max-h-screen">
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className="font-bold text-lg">{t('modal.title')}</h3>
+                        <h3 className="font-bold text-lg">{t('fields.graphicStyle')}</h3>
                         <button 
                           className="btn btn-sm btn-circle btn-ghost"
-                          onClick={() => setShowStyleSamples(false)}
+                          onClick={() => setShowGraphicalStyleDropdown(false)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Escape') {
+                              setShowGraphicalStyleDropdown(false);
+                            }
+                          }}
                         >
                           ✕
                         </button>
@@ -639,8 +671,16 @@ function Step4Page() {
                               className="card bg-base-100 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
                               onClick={() => {
                                 setGraphicalStyle(style);
-                                setShowStyleSamples(false);
+                                setShowGraphicalStyleDropdown(false);
                               }}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
+                                  setGraphicalStyle(style);
+                                  setShowGraphicalStyleDropdown(false);
+                                }
+                              }}
+                              tabIndex={0}
                             >
                               <figure className="px-4 pt-4">
                                 <Image
@@ -672,7 +712,7 @@ function Step4Page() {
                       <div className="modal-action">
                         <button 
                           className="btn"
-                          onClick={() => setShowStyleSamples(false)}
+                          onClick={() => setShowGraphicalStyleDropdown(false)}
                         >
                           {t('modal.close')}
                         </button>
@@ -680,7 +720,7 @@ function Step4Page() {
                     </div>
                     <div 
                       className="modal-backdrop"
-                      onClick={() => setShowStyleSamples(false)}
+                      onClick={() => setShowGraphicalStyleDropdown(false)}
                     ></div>
                   </div>
                 )}

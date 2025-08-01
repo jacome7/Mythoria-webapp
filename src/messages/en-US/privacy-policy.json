@@ -185,7 +185,8 @@
     },    "section10": {
       "title": "10. Your rights",
       "content": "You may access, correct, erase, restrict, object, or port your personal data and withdraw consent at any time. Requests sent to dpo@mythoria.pt are answered within one month (Art. 12 GDPR). If you believe your rights are infringed, you can lodge a complaint with CNPD (contacts in § 1).",
-      "deleteAccount": "If you want to exercise your right to erasure (GDPR Art. 17) and delete your account permanently, you can do so through our dedicated account deletion page."
+      "deleteAccount": "If you want to exercise your right to erasure (GDPR Art. 17) and delete your account permanently, you can do so through our dedicated account deletion page.",
+      "deleteAccountButton": "Delete Account"
     },
     "section11": {
       "title": "11. International transfers",

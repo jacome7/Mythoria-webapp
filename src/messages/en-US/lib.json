@@ -1,0 +1,51 @@
+{
+  "lib": {
+    "auth": {
+      "errors": {
+        "authenticationRequired": "Authentication required",
+        "authorNotFound": "Author not found in database"
+      }
+    },
+    "editCredits": {
+      "errors": {
+        "failedToCheck": "Failed to check edit credits",
+        "failedToRecord": "Failed to record edit and deduct credits"
+      },
+      "messages": {
+        "freeEditsRemaining": "{count} free edit remaining",
+        "freeEditsRemainingPlural": "{count} free edits remaining",
+        "nextEditCost": "Next edit will cost {credits} credit",
+        "nextEditCostPlural": "Next edit will cost {credits} credits",
+        "oneFreeEditRemaining": "1 free edit remaining"
+      }
+    },
+    "genaiStoryStructurer": {
+      "errors": {
+        "invalidImageFormat": "Invalid image data format",
+        "failedToProcessImage": "Failed to process image data for AI analysis",
+        "invalidAudioFormat": "Invalid audio data format",
+        "failedToProcessAudio": "Failed to process audio data for AI analysis",
+        "noResponseText": "No response text generated from the model",
+        "invalidJsonFormat": "GenAI returned invalid JSON format",
+        "failedToGenerate": "Failed to generate structured story: {error}"
+      },
+      "fallbacks": {
+        "generatedStoryTitle": "Generated Story"
+      }
+    },
+    "metadata": {
+      "descriptions": {
+        "storyFallback": "Read \"{title}\" by {author} on Mythoria - Create magical stories for children.",
+        "sharedStoryFallback": "\"{title}\" by {author} - A magical story created with Mythoria."
+      },
+      "titles": {
+        "sharedStory": "{title} - Shared on Mythoria"
+      }
+    },
+    "storyEnumMapping": {
+      "fallbacks": {
+        "unknown": "Unknown"
+      }
+    }
+  }
+}

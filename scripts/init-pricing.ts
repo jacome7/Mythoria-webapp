@@ -33,6 +33,16 @@ const PRICING_DATA = [
     credits: 3,
     isActive: true,
   },
+  {
+    serviceCode: 'AiTextEditing',
+    credits: 1,
+    isActive: true,
+  },
+  {
+    serviceCode: 'AiImageEditing',
+    credits: 1,
+    isActive: true,
+  },
 ];
 
 async function initializePricing() {

@@ -123,6 +123,18 @@
       "Ficção",
       "Mito"
     ],
+    "fallbackWords": [
+      "Aventura",
+      "História de Amor",
+      "Mistério",
+      "Conto de Fadas"
+    ],
+    "altTexts": {
+      "kidsBook": "Livro Infantil",
+      "groupsYearbooks": "Grupos & Álbuns",
+      "adultBook": "Como Conheci a Vossa Mãe",
+      "companyBook": "Livro da Empresa"
+    },
     "comingSoon": {
       "title": "A nossa história está apenas a começar...",
       "subtitle": "A Mythoria está a preparar algo mágico! Estou a trabalhar arduamente, juntamente com a IA, para lhe trazer um novo mundo de histórias personalizadas. Fique atento, a aventura estará disponível em breve! 🧙‍♂️📚✨"
@@ -173,7 +185,15 @@
           "description": "As crianças ficarão cativadas ao verem-se em aventuras emocionantes, enquanto os adultos se deleitam revivendo memórias queridas e partilhando momentos sinceros."
         }
       },
-      "conclusion": "Os nossos Oompa-Loompas da Fábrica de Histórias tratam de todo o resto, dando vida à sua história!"
+      "stepLabels": {
+        "step1": "Passo 1",
+        "step2": "Passo 2",
+        "step3": "Passo 3",
+        "step4": "Passo 4",
+        "step5": "Passo 5",
+        "step6": "Passo 6"
+      },
+      "conclusion": "Os nossos Umpa-lumpas da Fábrica de Histórias tratam de todo o resto, dando vida à sua história!"
     },
     "community": {
       "title": "Junte-se à Nossa Crescente Comunidade de Contadores de Histórias!"
@@ -217,7 +237,7 @@
   "AboutUs": {
     "hero": {
       "title": "Mythoria",
-      "subtitle": "Histórias criadas por um sonhador de 18 anos … e uma legião de Oompa-Loompas.",
+      "subtitle": "Histórias criadas por um sonhador de 18 anos … e uma legião de Umpa-lumpas.",
       "cta": "Comece a sua própria história"
     },
     "founder": {
@@ -233,8 +253,8 @@
       }
     },
     "aiTeam": {
-      "title": "Conheça os Oompa-Loompas 2.0",
-      "subtitle": "Ao contrário da fábrica do Wonka, os nossos Oompa-Loompas são puro silício—éticos, incansáveis e infinitamente escaláveis.",
+      "title": "Conheça os Umpa-lumpas 2.0",
+      "subtitle": "Ao contrário da fábrica do Wonka, os nossos Umpa-lumpas são puro silício—éticos, incansáveis e infinitamente escaláveis.",
       "quillBot": {
         "name": "Quill-Bot",
         "description": "Escreve reviravoltas mais rápido do que consegue dizer expelliarmus"
@@ -303,6 +323,25 @@
       "oil_painting": "Pintura a Óleo",
       "colored_pencil": "Lápis de Cor"
     },
+    "novelStyle": {
+      "all": "Todos os Estilos",
+      "adventure": "Aventura",
+      "fantasy": "Fantasia",
+      "mystery": "Mistério",
+      "romance": "Romance",
+      "science_fiction": "Ficção Científica",
+      "historical": "Histórico",
+      "contemporary": "Contemporâneo",
+      "fairy_tale": "Conto de Fadas",
+      "comedy": "Comédia",
+      "drama": "Drama",
+      "horror": "Terror",
+      "thriller": "Thriller",
+      "biography": "Biografia",
+      "educational": "Educacional",
+      "poetry": "Poesia",
+      "sports_adventure": "Aventura Desportiva"
+    },
     "storyLanguage": {
       "all": "Todos os Idiomas",
       "en-US": "Inglês",
@@ -315,7 +354,9 @@
       "createdBy": "Criado por",
       "emptyTitle": "Ainda Não Há Histórias em Destaque",
       "emptyMessage": "Crie a sua própria história e partilhe-a com o mundo!",
-      "createStory": "Criar a Sua História"
+      "createStory": "Criar a Sua História",
+      "storyCoverAlt": "Capa da história",
+      "filterResults": "{count} de {total} histórias mostradas"
     },
     "emptyState": {
       "noStoriesMatch": "Nenhuma história corresponde aos seus filtros",
@@ -395,7 +436,10 @@
       "cta": "Crie as suas próprias histórias mágicas hoje!"
     },
     "actions": {
-      "orderPrint": "Encomendar Impressão"
+      "orderPrint": "Encomendar Impressão",
+      "print": "Imprimir",
+      "listen": "Ouvir",
+      "listenMobile": "Ouvir"
     }
   },
   "SharedStoryPage": {
@@ -441,11 +485,12 @@
     "errors": {
       "storyNotFound": "História não encontrada",
       "storyNotPublished": "Apenas histórias publicadas podem ser impressas",
-      "pdfNotAvailable": "PDF não disponível para esta história",
       "loadingFailed": "Falha ao carregar dados da história",
       "missingRequiredFields": "Por favor complete todos os campos obrigatórios",
       "orderFailed": "Falha ao efetuar encomenda de impressão",
-      "insufficientCredits": "Créditos insuficientes."
+      "insufficientCredits": "Créditos insuficientes.",
+      "loadPricingFailed": "Falha ao carregar informação de preços",
+      "fetchCreditsFailed": "Falha ao obter saldo de créditos"
     },
     "addressInfo": {
       "selectShipping": "Por favor selecione uma morada de envio para o seu livro impresso.",

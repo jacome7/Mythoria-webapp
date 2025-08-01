@@ -113,11 +113,11 @@ function Step3Page() {
 
     } catch (error) {
       console.error('Error fetching story characters:', error);
-      alert('Failed to load story characters. Please try again.');
+      alert(t('alerts.failedToLoadStoryCharacters'));
     } finally {
       setLoading(false);
     }
-  }, [currentStoryId]);
+  }, [currentStoryId, t]);
 
   const fetchAvailableCharacters = useCallback(async (storyId?: string) => {
     const targetStoryId = storyId || currentStoryId;
@@ -150,7 +150,7 @@ function Step3Page() {
           // Load existing story data
           const success = await loadExistingStoryData(editStoryId);
           if (!success) {
-            alert('Failed to load story data. Please try again.');
+            alert(t('alerts.failedToLoadStoryData'));
             router.push('/my-stories');
             return;
           }
@@ -164,7 +164,7 @@ function Step3Page() {
 
         } catch (error) {
           console.error('Error initializing edit mode:', error);
-          alert('Failed to load story for editing. Please try again.');
+          alert(t('alerts.failedToLoadStoryForEditing'));
           router.push('/my-stories');
           return;
         }
@@ -189,7 +189,7 @@ function Step3Page() {
     };
 
     initializeStoryData();
-  }, [router, editStoryId, fetchStoryCharacters, fetchAvailableCharacters]);
+  }, [router, editStoryId, fetchStoryCharacters, fetchAvailableCharacters, t]);
   const handleCreateCharacter = async (characterData: Character) => {
     try {
       const response = await fetch('/api/characters', {
@@ -258,7 +258,7 @@ function Step3Page() {
 
     } catch (error) {
       console.error('Error adding existing character:', error);
-      alert('Failed to add character to story. Please try again.');
+      alert(t('alerts.failedToAddCharacter'));
     }
   };
 
@@ -344,7 +344,7 @@ function Step3Page() {
 
     } catch (error) {
       console.error('Error navigating to next step:', error);
-      alert('Failed to continue. Please try again.');
+      alert(t('alerts.failedToContinue'));
     } finally {
       setIsNavigating(false);
     }
@@ -368,8 +368,8 @@ function Step3Page() {
               <>
                 {/* Mobile Progress Indicator */}
                 <div className="block md:hidden mb-8">
-                  <div className="text-center text-sm text-gray-600 mb-2">
-                    Step {currentStep} of {totalSteps}
+                <div className="text-center text-sm text-gray-600 mb-2">
+                    {t('progress.stepLabel', { currentStep, totalSteps })}
                   </div>
                   <progress
                     className="progress progress-primary w-full"
@@ -399,7 +399,7 @@ function Step3Page() {
                 <h1 className="card-title text-3xl">{t('heading')}</h1>
                 {isInEditMode && (
                   <div className="badge badge-info">
-                    Editing Draft Story
+                    {t('badges.editingDraft')}
                   </div>
                 )}
               </div>

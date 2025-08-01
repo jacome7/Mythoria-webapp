@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Check if package exists
-      const creditPackage = paymentService.getCreditPackage(pkg.packageId);
+      const creditPackage = await paymentService.getCreditPackage(pkg.packageId);
       if (!creditPackage) {
         return NextResponse.json(
           { error: `Invalid package ID: ${pkg.packageId}` },

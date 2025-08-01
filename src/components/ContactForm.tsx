@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
 import { FaTicketAlt } from 'react-icons/fa';
 import { trackContact } from '../lib/analytics';
 
@@ -12,8 +13,9 @@ interface ContactFormProps {
 
 // Separate component for search params to handle suspense
 function ContactFormContent({ className = "" }: ContactFormProps) {
-  const t = useTranslations('ContactUsPage');
+  const t = useTranslations('components.contactForm');
   const searchParams = useSearchParams();
+  const { user, isSignedIn } = useUser();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -36,6 +38,34 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
     }
   }, [searchParams]);
 
+  // Auto-fill email and name if user is logged in
+  useEffect(() => {
+    if (isSignedIn && user) {
+      const updates: Partial<typeof formData> = {};
+      
+      // Auto-fill email if available
+      if (user.primaryEmailAddress?.emailAddress) {
+        updates.email = user.primaryEmailAddress.emailAddress;
+      }
+      
+      // Auto-fill name if available (firstName + lastName)
+      if (user.firstName || user.lastName) {
+        const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+        if (fullName) {
+          updates.name = fullName;
+        }
+      }
+      
+      // Only update if we have something to update
+      if (Object.keys(updates).length > 0) {
+        setFormData(prev => ({
+          ...prev,
+          ...updates
+        }));
+      }
+    }
+  }, [isSignedIn, user]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -47,7 +77,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
     e.preventDefault();
     
     if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
-      setResponseMessage('Please fill in all required fields');
+      setResponseMessage(t('errors.fillRequired'));
       setIsSuccess(false);
       return;
     }
@@ -81,7 +111,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
       const result = await response.json();
       
       if (result.success) {
-        setResponseMessage('🎫 Support ticket created! We will review your request and get back to you as soon as possible.');
+        setResponseMessage(t('success.ticketCreated'));
         setIsSuccess(true);
         setShowModal(true);
         
@@ -99,13 +129,13 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
         }, 4000);
         
       } else {
-        setResponseMessage(result.error || 'Failed to create support ticket. Please try again.');
+        setResponseMessage(result.error || t('errors.createFailed'));
         setIsSuccess(false);
         setShowModal(true);
       }
         } catch (error) {
       console.error('Contact form error:', error);
-      setResponseMessage('Failed to create support ticket. Please try again.');
+      setResponseMessage(t('errors.createFailed'));
       setIsSuccess(false);
       setShowModal(true);
     } finally {
@@ -222,14 +252,14 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
                 )}
               </div>
               <h3 className="font-bold text-lg text-center mb-4">
-                {isSuccess ? 'Ticket Created!' : 'Oops!'}
+                {isSuccess ? t('modal.ticketCreated') : t('modal.oops')}
               </h3>
               <p className="text-center text-base-content/80">
                 {responseMessage}
               </p>
               {isSuccess && (
                 <p className="text-center text-sm text-base-content/60 mt-2">
-                  Redirecting to homepage in a few seconds...
+                  {t('modal.redirectingMessage')}
                 </p>
               )}
               <div className="modal-action">
@@ -238,7 +268,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
                     className="btn btn-primary" 
                     onClick={() => setShowModal(false)}
                   >
-                    Try Again
+                    {t('modal.tryAgain')}
                   </button>
                 )}
                 {isSuccess && (
@@ -246,7 +276,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
                     className="btn btn-primary" 
                     onClick={() => window.location.href = '/'}
                   >
-                    Go to Homepage
+                    {t('modal.goToHomepage')}
                   </button>
                 )}
               </div>
@@ -260,7 +290,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
 
 const ContactForm = ({ className = "" }: ContactFormProps) => {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div className="loading loading-spinner loading-lg"></div>}>
       <ContactFormContent className={className} />
     </Suspense>
   );

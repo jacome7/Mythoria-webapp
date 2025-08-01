@@ -3,11 +3,17 @@
 .story-container {
   max-width: 900px;
   margin: 0 auto;
-  padding: 0rem;
+  padding: 0.5rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.7;
   background-color: #fafafa;
   color: #333;
+}
+
+.story-container .prose p {
+  margin-bottom: 1.5rem;
+  text-align: justify;
+  text-indent: 2rem;
 }
 
 .mythoria-story-title {
@@ -29,7 +35,9 @@
 }
 
 .mythoria-author-name {
-  text-align: center !important;
+  text-align: right;
+  margin-top: 16px;
+  margin-right: 32px;
   font-size: 1rem !important;
   margin-bottom: 2.5rem !important;
   line-height: 1.4 !important;
@@ -63,7 +71,8 @@
   margin-bottom: 1.5rem;
 }
 
-.mythoria-chapter-paragraph {
+.mythoria-chapter-content p {
+  text-indent: 1rem;
   margin-bottom: 1.25rem !important;
   font-size: 1.25rem !important;
   line-height: 1.8 !important;
@@ -133,7 +142,7 @@
 /* Chapter images */
 .mythoria-chapter-image {
   text-align: center;
-  margin: 1.5rem 0;
+  margin: 1rem 0;
 }
 
 .mythoria-chapter-img {
@@ -148,7 +157,8 @@
   background-color: #f0f8e8;
   padding: 1rem !important;
   border-radius: 8px;
-  margin: 2rem 0;
+  margin: 10px;
+  padding: 10px;
 }
 
 .mythoria-toc-title {
@@ -201,10 +211,11 @@
 /* Mythoria message */
 .mythoria-message {
   text-align: center;
+  text-size-adjust: 80%;
   margin: 10px;
   padding: 10px;
   background-color: #f0f0f0;
-  color: white;
+  color: rgb(44, 44, 44);
   border-radius: 8px;
 }
 
@@ -224,6 +235,7 @@
   display: block;
   border: 1px solid #9e9e9e;
   border-radius: 8px;
+  margin-bottom: 16px;
 }
 
 /* Credits */
@@ -240,4 +252,20 @@
   font-size: 1rem !important;
   line-height: 1.6 !important;
   color: #666 !important;
+}
+
+/* Front cover styling */
+.mythoria-front-cover {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.mythoria-cover-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }

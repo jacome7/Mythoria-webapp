@@ -32,14 +32,14 @@ export default function SharedStoryPage() {
         }
       } catch (err) {
         console.error('Error accessing shared story:', err);
-        setError('Failed to access shared story');
+        setError(t('errors.failedToAccess'));
       } finally {
         setLoading(false);
       }
     };
 
     accessSharedStory();
-  }, [token, router, locale]);  if (loading) {
+  }, [token, router, locale, t]);  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">

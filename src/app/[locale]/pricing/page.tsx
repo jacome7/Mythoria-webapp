@@ -163,7 +163,7 @@ export default function PricingPage() {
 												<FaInfoCircle className="text-sm" />
 											</button>
 										</span>
-										<span className="font-semibold">1</span>
+										<span className="font-semibold">{getServiceCost('AiTextEditing')}</span>
 									</li>
 									<li className="flex items-center justify-between">
 										<span className="flex items-center">
@@ -175,7 +175,7 @@ export default function PricingPage() {
 												<FaInfoCircle className="text-sm" />
 											</button>
 										</span>
-										<span className="font-semibold">1</span>
+										<span className="font-semibold">{getServiceCost('AiImageEditing')}</span>
 									</li>
 								</ul>
 							</li>
@@ -295,7 +295,7 @@ export default function PricingPage() {
 					<h2 className="text-4xl font-bold text-center mb-10">{t('faq.title')}</h2>
 					<div className="space-y-4 max-w-4xl mx-auto px-0 sm:px-4">
 						<div tabIndex={0} className="collapse collapse-plus border border-base-300 bg-base-200 rounded-box">
-							<div className="collapse-title text-xl font-medium flex items-center">
+							<div className="collapse-title text-sm sm:text-l font-medium flex items-center">
 								<FaQuestionCircle className="mr-2 text-primary" /> {t('faq.questions.expiration.question')}
 							</div>
 							<div className="collapse-content">
@@ -303,7 +303,7 @@ export default function PricingPage() {
 							</div>
 						</div>
 						<div tabIndex={1} className="collapse collapse-plus border border-base-300 bg-base-200 rounded-box">
-							<div className="collapse-title text-xl font-medium flex items-center">
+							<div className="collapse-title text-sm sm:text-l font-medium flex items-center">
 								<FaQuestionCircle className="mr-2 text-primary" /> {t('faq.questions.refund.question')}
 							</div>
 							<div className="collapse-content">
@@ -311,7 +311,7 @@ export default function PricingPage() {
 							</div>
 						</div>
 						<div tabIndex={2} className="collapse collapse-plus border border-base-300 bg-base-200 rounded-box">
-							<div className="collapse-title text-xl font-medium flex items-center">
+							<div className="collapse-title text-sm sm:text-l font-medium flex items-center">
 								<FaQuestionCircle className="mr-2 text-primary" /> {t('faq.questions.payment.question')}
 							</div>
 							<div className="collapse-content">
@@ -319,7 +319,7 @@ export default function PricingPage() {
 							</div>
 						</div>
 						<div tabIndex={3} className="collapse collapse-plus border border-base-300 bg-base-200 rounded-box">
-							<div className="collapse-title text-xl font-medium flex items-center">
+							<div className="collapse-title text-sm sm:text-l font-medium flex items-center">
 								<FaQuestionCircle className="mr-2 text-primary" /> {t('faq.questions.shipping.question')}
 							</div>
 							<div className="collapse-content">
@@ -334,11 +334,11 @@ export default function PricingPage() {
 			{/* Info Modal */}
 			{selectedInfo && (
 				<div className="modal modal-open">
-					<div className="modal-box">
-						<h3 className="font-bold text-lg mb-4">Information</h3>
-						<p className="py-4">{infoTexts[selectedInfo as keyof typeof infoTexts]}</p>
+					<div className="modal-box w-10/12 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-4">
+                                                <h3 className="font-bold text-lg mb-4">{t('infoModal.title')}</h3>
+						<p className="py-2">{infoTexts[selectedInfo as keyof typeof infoTexts]}</p>
 						<div className="modal-action">
-							<button className="btn" onClick={closeModal}>Close</button>
+                                                        <button className="btn" onClick={closeModal}>{t('infoModal.close')}</button>
 						</div>
 					</div>
 					<div className="modal-backdrop" onClick={closeModal}></div>

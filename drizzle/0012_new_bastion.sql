@@ -1,0 +1,1 @@
+ALTER TABLE "stories" ADD COLUMN "image_generation_instructions" text;

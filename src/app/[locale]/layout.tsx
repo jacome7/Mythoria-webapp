@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import StructuredData from '@/components/StructuredData';
 import LanguageAttribute from '@/components/LanguageAttribute';
+import LocaleSync from '@/components/LocaleSync';
 import { readdir, readFile } from 'fs/promises';
 import path from 'path';
 import { Metadata, Viewport } from 'next';
@@ -181,16 +182,51 @@ export async function generateMetadata({
   params: Promise<{locale: string}>
 }): Promise<Metadata> {
   const {locale} = await params;
-    // Get messages for metadata
-  const messages = await getMessages(locale);
-  const metadata = messages?.metadata || {};
+  
+  // Define custom metadata structure for easier management
+  interface CustomMetadata {
+    title: string;
+    description: string;
+    openGraph: {
+      title: string;
+      description: string;
+      image: string;
+    };
+  }
+  
+  // Load metadata using dynamic import with proper error handling
+  let metadata: CustomMetadata = {
+    title: 'Mythoria | Personalized Books Creator',
+    description: 'Create unique, fully illustrated books with Mythoria\'s generative-AI.',
+    openGraph: {
+      title: 'Mythoria | Personalized Books Creator',
+      description: 'Turn your ideas into personalised, beautifully illustrated books with AI.',
+      image: 'https://mythoria.pt/assets/og/mythoria_en.jpg'
+    }
+  };
+  
+  try {
+    if (locale === 'pt-PT') {
+      metadata = {
+        title: 'Mythoria | Criador de Livros Personalizados',
+        description: 'Crie livros únicos e totalmente ilustrados com a IA generativa da Mythoria. Transforme qualquer história num e-book, audiolivro ou presente impresso em minutos.',
+        openGraph: {
+          title: 'Mythoria | Criador de Livros Personalizados',
+          description: 'Transforme as suas ideias em livros personalizados e lindamente ilustrados — leia, ouça ou imprima.',
+          image: 'https://mythoria.pt/assets/og/mythoria_pt.jpg'
+        }
+      };
+    }
+  } catch (error) {
+    console.error(`Failed to load metadata for locale ${locale}:`, error);
+  }
   
   // Base URL for the application
   const baseUrl = 'https://mythoria.pt';
   const currentUrl = `${baseUrl}/${locale}/`;
   return {
-    title: metadata.title || 'Mythoria |  Personalized Books Creator',
-    description: metadata.description || 'Create unique, fully illustrated books with Mythoria\'s generative-AI.',
+    title: metadata.title,
+    description: metadata.description,
     robots: 'index,follow,max-snippet:-1,max-image-preview:large',
     manifest: getManifestUrl(locale),
     appleWebApp: {
@@ -209,11 +245,11 @@ export async function generateMetadata({
       type: 'website',
       siteName: 'Mythoria',
       url: currentUrl,
-      title: metadata.openGraph?.title || metadata.title || 'Mythoria | Personalized Books Creator',
-      description: metadata.openGraph?.description || metadata.description || 'Turn your ideas into personalised, beautifully illustrated books with AI.',
+      title: metadata.openGraph.title,
+      description: metadata.openGraph.description,
       images: [
         {
-          url: metadata.openGraph?.image || 'https://mythoria.pt/assets/og/mythoria_en.jpg',
+          url: metadata.openGraph.image,
           width: 1200,
           height: 630,
           alt: 'Mythoria - Personalized Books Creator'
@@ -223,9 +259,9 @@ export async function generateMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      title: metadata.openGraph?.title || metadata.title || 'Mythoria | Personalized Books Creator',
-      description: metadata.openGraph?.description || metadata.description || 'Turn your ideas into personalised, beautifully illustrated books with AI.',
-      images: [metadata.openGraph?.image || 'https://mythoria.pt/assets/og/mythoria_en.jpg'],
+      title: metadata.openGraph.title,
+      description: metadata.openGraph.description,
+      images: [metadata.openGraph.image],
     }
   };
 }
@@ -272,13 +308,13 @@ export default async function LocaleLayout({
     "inLanguage": metadata.structuredData?.inLanguage || locale
   };
 
-  const showSoonPage = process.env.NEXT_PUBLIC_SHOW_SOON_PAGE === 'true';
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <LanguageAttribute locale={locale} />
       <StructuredData data={structuredData} />
+      <LocaleSync />
       <div className="flex flex-col min-h-screen">
-        {!showSoonPage && <Header />}
+        <Header />
         <main className="flex-grow">{children}</main>
         <Footer />
       </div>

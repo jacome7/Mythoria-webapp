@@ -1,0 +1,322 @@
+{
+  "components": {
+    "aiImageEditor": {
+      "title": "Editor de Imagem IA - {imageType}",
+      "currentImage": "Imagem Atual:",
+      "requestPlaceholder": "Descreva como quer modificar esta imagem...",
+      "characterCount": "{count}/{max} caracteres",
+      "generateButton": "Gerar Nova Imagem",
+      "replaceButton": "Substituir Original",
+      "cancelButton": "Cancelar",
+      "loading": "A gerar...",
+      "newImageLabel": "Nova Imagem Gerada",
+      "newImageSuccess": "Nova imagem gerada com sucesso!",
+      "generatedImageAlt": "Imagem Gerada",
+      "errors": {
+        "describeChanges": "Por favor descreva as alterações que quer fazer à imagem",
+        "unableToCheckCredits": "Não foi possível verificar os créditos. Tente novamente.",
+        "failedToGenerate": "Falha ao gerar nova imagem. Tente novamente.",
+        "failedToReplace": "Falha ao substituir imagem. Tente novamente."
+      },
+      "imageTypes": {
+        "cover": "Capa",
+        "backcover": "Contracapa",
+        "chapter": "Capítulo {number}"
+      }
+    },
+    "aiTextStoryEditor": {
+      "title": "Editor de Texto IA - {storyTitle}",
+      "fullStoryTitle": "História Completa",
+      "requestPlaceholder": "Introduza o seu pedido de edição...",
+      "characterCount": "{count}/{max} caracteres",
+      "editButton": "Editar História",
+      "cancelButton": "Cancelar",
+      "loading": "A processar...",
+      "errors": {
+        "enterRequest": "Por favor introduza o seu pedido de edição",
+        "unableToCheckCredits": "Não foi possível verificar os créditos. Tente novamente.",
+        "failedToEdit": "Falha ao editar história. Tente novamente."
+      },
+      "editScopeLabel": "Âmbito da Edição",
+      "currentChapterOnly": "Apenas Capítulo Atual",
+      "allChapters": "Todos os Capítulos",
+      "selectChapterLabel": "Selecionar Capítulo",
+      "chapterOption": "Capítulo {number}: {title}",
+      "editRequestLabel": "Pedido de Edição",
+      "fullStoryExplanation": {
+        "title": "Como Funciona a Edição da História Completa",
+        "item1": "A IA aplicará o seu pedido a todos os capítulos da história",
+        "item2": "Cada edição de capítulo conta como uma edição nos seus créditos",
+        "item3": "Todas as alterações bem-sucedidas serão gravadas automaticamente",
+        "item4": "Pode rever as alterações após a conclusão da edição",
+        "item5": "Se alguns capítulos falharem, os bem-sucedidos serão mantidos"
+      },
+      "costEstimation": {
+        "title": "Estimativa de Custo",
+        "freeEdit": "Esta edição é gratuita!",
+        "costEdit": "Esta edição custará {credits} crédito{plural}",
+        "currentBalance": "\u2022 Saldo atual: {credits} créditos",
+        "editCount": "\u2022 Contagem de edições: {count} (próximo limite: {threshold})",
+        "freeChapterEdits": "\u2022 {count} edições de capítulos gratuitas",
+        "paidChapterEdits": "\u2022 {count} edições de capítulos pagas",
+        "message": "\u2022 {message}"
+      }
+    },
+    "audiobookGenerationProgress": {
+      "title": "Progresso da Geração do Audiolivro",
+      "status": {
+        "pending": "Pendente",
+        "inProgress": "Em Progresso",
+        "completed": "Concluído",
+        "failed": "Falhou"
+      },
+      "errors": {
+        "failedToFetch": "Falha ao obter progresso do audiolivro",
+        "failedToLoad": "Falha ao carregar progresso da geração do audiolivro"
+      },
+      "timeUnits": {
+        "second": "segundo",
+        "seconds": "segundos",
+        "minute": "minuto",
+        "minutes": "minutos"
+      }
+    },
+    "audiobookGenerationTrigger": {
+      "generateButton": "Gerar Audiolivro",
+      "errors": {
+        "failedToStart": "Falha ao iniciar geração do audiolivro",
+        "failedToStartWithReason": "Falha ao iniciar geração do audiolivro: {reason}",
+        "failedToPlayAudio": "Falha ao reproduzir áudio. Por favor tente novamente."
+      }
+    },
+    "chapterEditor": {
+      "editImageButton": "Editar Imagem do Capítulo",
+      "saveButton": "Guardar Capítulo",
+      "backButton": "Voltar",
+      "goBackButton": "Voltar",
+      "imagePlaceholder": "Imagem do Capítulo {number}",
+      "titlePlaceholder": "Introduza o título do capítulo...",
+      "contentPlaceholder": "Escreva o conteúdo do seu capítulo aqui...",
+      "saving": "A guardar...",
+      "toolbar": {
+        "bold": "Negrito",
+        "italic": "Itálico",
+        "underline": "Sublinhado",
+        "textSize": "Tamanho do Texto",
+        "aiEdit": "Edição IA",
+        "edit": "Editar"
+      },
+      "textSizes": {
+        "small": "P",
+        "medium": "M",
+        "large": "G",
+        "xlarge": "XG"
+      },
+      "errors": {
+        "failedToLoadStoryData": "Falha ao carregar dados da história"
+      }
+    },
+    "chapterNavigation": {
+      "storyInformation": "Informação da História",
+      "info": "Info",
+      "chapterLabel": "Capítulo {number}"
+    },
+    "characterCard": {
+      "errors": {
+        "maxTraits": "Máximo de 5 características permitidas. Remova uma característica primeiro."
+      }
+    },
+    "contactForm": {
+      "form": {
+        "title": "Contactar Suporte",
+        "name": "Nome",
+        "email": "Email",
+        "category": "Categoria",
+        "message": "Mensagem",
+        "submit": "Criar Ticket de Suporte",
+        "namePlaceholder": "Introduza o seu nome",
+        "emailPlaceholder": "Introduza o seu endereço de email",
+        "messagePlaceholder": "Descreva o seu problema ou questão...",
+        "selectCategory": "Selecione uma categoria..."
+      },
+      "categoriesShort": {
+        "featureIdeas": "Ideias de Funcionalidades e Sugestões",
+        "reportBug": "Reportar um Bug",
+        "troubles": "Problemas Técnicos",
+        "delivery": "Impressão e Entrega",
+        "credits": "Créditos e Faturação",
+        "businessPartnership": "Parceria de Negócio",
+        "general": "Questões Gerais"
+      },
+      "errors": {
+        "fillRequired": "Por favor preencha todos os campos obrigatórios",
+        "createFailed": "Falha ao criar ticket de suporte. Tente novamente."
+      },
+      "success": {
+        "ticketCreated": "Ticket de suporte criado com sucesso! Entraremos em contacto em breve."
+      },
+      "modal": {
+        "ticketCreated": "Ticket Criado!",
+        "oops": "Ops!",
+        "tryAgain": "Tentar Novamente",
+        "goToHomepage": "Ir para Página Inicial",
+        "redirectingMessage": "A redirecionar para a página inicial em alguns segundos..."
+      }
+    },
+    "editCreditInfo": {
+      "editLabel": "Edição #{number}",
+      "balanceLabel": "O seu saldo: {credits} créditos",
+      "buyCreditsButton": "Comprar créditos",
+      "progressLabel": "Progresso:"
+    },
+    "groupedCharacterTypeSelect": {
+      "placeholder": "Selecionar tipo de personagem...",
+      "groups": {
+        "human": "Humano",
+        "animals": "Animais",
+        "fantasy": "Fantasia",
+        "other": "Outro"
+      }
+    },
+    "imageEditButton": {
+      "tooltip": "Editar esta imagem com Mythoria"
+    },
+    "jobProgressModal": {
+      "title": "A Processar o Seu Pedido",
+      "steps": {
+        "textEditing": "Edição de Texto",
+        "imageEditing": "Edição de Imagem",
+        "audioGeneration": "Geração de Áudio",
+        "finalizing": "A Finalizar"
+      },
+      "status": {
+        "waitingToStart": "À espera de iniciar...",
+        "inProgress": "Em progresso...",
+        "completed": "Concluído com sucesso!",
+        "failed": "Falhado"
+      },
+      "labels": {
+        "progress": "Progresso",
+        "elapsed": "Decorrido",
+        "remaining": "Restante"
+      },
+      "closeButton": "Fechar"
+    },
+    "readingProgress": {
+      "fallbacks": {
+        "storyTitle": "Título da História",
+        "chapterTitle": "Capítulo {number}"
+      }
+    },
+    "readingToolbar": {
+      "title": "Configurações de Leitura",
+      "toggleLabel": "Alternar configurações de leitura",
+      "cover": "Capa",
+      "coverAndToc": "Capa e Índice",
+      "chapterLabel": "Capítulo {number}",
+      "resetButton": "Repor Predefinições",
+      "controls": {
+        "fontSize": "Tamanho do Texto",
+        "lineHeight": "Altura da Linha",
+        "margins": "Margens",
+        "fontSizeLabel": "Ajustar tamanho do texto",
+        "lineHeightLabel": "Ajustar altura da linha",
+        "marginsLabel": "Ajustar margens",
+        "decreaseFontSize": "Diminuir tamanho do texto",
+        "increaseFontSize": "Aumentar tamanho do texto",
+        "decreaseLineHeight": "Diminuir altura da linha",
+        "increaseLineHeight": "Aumentar altura da linha",
+        "decreaseMargins": "Diminuir margens",
+        "increaseMargins": "Aumentar margens"
+      }
+    },
+    "revolutPayment": {
+      "loading": "A carregar opções de pagamento...",
+      "securityNote": "A sua informação de pagamento é segura e encriptada.",
+      "encryptionNote": "Protegido por encriptação SSL de 256 bits",
+      "errors": {
+        "initializeFailed": "Falha ao inicializar pagamento"
+      }
+    },
+    "shareModal": {
+      "errors": {
+        "invalidStoryId": "ID da história inválido"
+      },
+      "messages": {
+        "checkOut": "Confira \"{title}\" no Mythoria"
+      }
+    },
+    "storyInfoEditor": {
+      "title": "Informação da História",
+      "storyTitle": "Título da História",
+      "titlePlaceholder": "Introduza o título da história",
+      "synopsis": "Sinopse",
+      "synopsisPlaceholder": "Breve descrição da sua história",
+      "dedicationMessage": "Mensagem de Dedicatória",
+      "dedicationPlaceholder": "Uma dedicatória pessoal para esta história",
+      "authorName": "Nome do Autor",
+      "authorPlaceholder": "Como deve ser creditado o autor?",
+      "targetAudience": "Público-Alvo",
+      "targetAudiencePlaceholder": "Selecione o público-alvo",
+      "graphicalStyle": "Estilo Gráfico",
+      "saveButton": "Guardar Alterações",
+      "saving": "A guardar...",
+      "cancelButton": "Cancelar",
+      "frontCover": "Capa da Frente",
+      "backCover": "Contracapa",
+      "noCoverImage": "Sem imagem de capa",
+      "noBackCover": "Sem contracapa",
+      "editCover": "Editar Capa",
+      "editBackCover": "Editar Contracapa",
+      "addCover": "Adicionar Capa",
+      "addBackCover": "Adicionar Contracapa",
+      "storyDetails": "Detalhes da História",
+      "graphicalStyleLabel": "Estilo Gráfico:",
+      "created": "Criado:",
+      "lastUpdated": "Última Atualização:",
+      "notSpecified": "Não especificado",
+      "targetAudienceOptions": {
+        "children_0-2": "Crianças 0-2 (Bebés/Crianças pequenas)",
+        "children_3-6": "Crianças 3-6 (Pré-escolares)",
+        "children_7-10": "Crianças 7-10 (1º Ciclo)",
+        "children_11-14": "Crianças 11-14 (2º e 3º Ciclo)",
+        "young_adult_15-17": "Jovem Adulto 15-17",
+        "adult_18+": "Adulto 18+",
+        "all_ages": "Todas as Idades"
+      },
+      "altTexts": {
+        "storyCover": "Capa da história",
+        "storyBackCover": "Contracapa da história"
+      },
+      "messages": {
+        "storyInfoUpdated": "Informação da história atualizada com sucesso",
+        "chapterSaved": "Capítulo guardado com sucesso",
+        "chapterSavedWithVersion": "Capítulo guardado como versão {version}",
+        "failedToSaveChapter": "Falha ao guardar capítulo",
+        "noPreviousVersion": "Nenhuma versão anterior disponível",
+        "revertedToVersion": "Revertido para a versão {version}",
+        "advancedToVersion": "Avançado para a versão {version}",
+        "failedToUndoChapter": "Falha ao desfazer capítulo",
+        "chapterUpdatedSuccessfully": "Capítulo atualizado com sucesso",
+        "contentUpdatedSuccessfully": "Conteúdo atualizado com sucesso"
+      },
+      "logging": {
+        "errorSavingStoryInfo": "Erro ao guardar informações da história:"
+      }
+    },
+    "printOrder": {
+      "paymentStep": {
+        "errors": {
+          "loadPricingFailed": "Falha ao carregar informação de preços",
+          "fetchPricingFailed": "Falha ao obter dados de preços"
+        }
+      },
+      "printOrderContent": {
+        "errors": {
+          "saveAddressFailed": "Falha ao guardar endereço",
+          "deleteAddressFailed": "Falha ao eliminar endereço"
+        }
+      }
+    }
+  }
+}

@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { FiImage, FiEdit3 } from 'react-icons/fi';
 import CreditConfirmationModal from './CreditConfirmationModal';
+import EditCreditInfo from './EditCreditInfo';
 import { StoryImage, ImageVersion, getImageDisplayName, formatVersionNumber, formatRelativeTime } from '@/utils/imageUtils';
 
 interface ImageEditingTabProps {
@@ -12,14 +13,13 @@ interface ImageEditingTabProps {
   storyImages: StoryImage[];
   onImageEditSuccess: (originalUrl: string, newUrl: string) => void;
   onImageUpdated: (updatedImages: StoryImage[]) => void;
-  storyContent?: string; // Add story content to find which image version is currently in use
 }
 
 export default function ImageEditingTab({
   storyId,
   storyImages,
-  onImageEditSuccess, onImageUpdated,
-  storyContent
+  onImageEditSuccess,
+  onImageUpdated
 }: ImageEditingTabProps) {
   const t = useTranslations('common.imageEditingTab');
   const [selectedImage, setSelectedImage] = useState<StoryImage | null>(null);
@@ -48,6 +48,17 @@ export default function ImageEditingTab({
     imageUrl: string;
     userRequest: string;
   } | null>(null);
+  
+  // Credit info for display (before submission)
+  const [imageEditCreditInfo, setImageEditCreditInfo] = useState<{
+    canEdit: boolean;
+    requiredCredits: number;
+    currentBalance: number;
+    editCount: number;
+    message?: string;
+    nextThreshold?: number;
+    isFree?: boolean;
+  } | null>(null);
   // Clear optimistic update state when error changes (success or failure)
   useEffect(() => {
     if (error && optimisticUpdate) {
@@ -66,72 +77,59 @@ export default function ImageEditingTab({
 
       return () => clearTimeout(timeout);
     }  }, [optimisticUpdate]);
-  // Helper function to find which version of an image is currently used in the story content
-  const findCurrentVersionInStory = (image: StoryImage): ImageVersion => {
-    if (!storyContent) {
-      // If no story content provided, default to latest version
-      console.log(`No story content provided, defaulting to latest version for ${image.type}`);
-      return image.latestVersion;
-    }
 
-    // Check each version of the image to see which one is in the story content
-    // Start with the latest versions first as they're more likely to be in use
-    const sortedVersions = [...image.versions].sort((a, b) => {
-      // Extract version numbers for sorting (e.g., "v001" -> 1)
-      const getVersionNumber = (version: string) => {
-        const match = version.match(/v(\d+)/);
-        return match ? parseInt(match[1]) : 0;
-      };
-      return getVersionNumber(b.version) - getVersionNumber(a.version);
-    });
-
-    // 1. Direct URL match
-    for (const version of sortedVersions) {
-      if (storyContent.includes(version.url)) {
-        console.log(`Found version ${version.version} of ${image.type} in story content (direct URL match):`, version.url);
-        return version;
+  // Load credit info for image editing when image is selected
+  useEffect(() => {
+    const loadImageEditCreditInfo = async () => {
+      if (!selectedImage || !storyId) {
+        setImageEditCreditInfo(null);
+        return;
       }
-    }
 
-    // 2. Filename match (handles URL differences like domain changes)
-    for (const version of sortedVersions) {
-      const filename = version.url.split('/').pop();
-      if (filename && storyContent.includes(filename)) {
-        console.log(`Found version ${version.version} of ${image.type} in story content (filename match):`, filename);
-        return version;
-      }
-    }
+      try {
+        const response = await fetch('/api/ai-edit/check-credits', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'imageEdit',
+            storyId
+          }),
+        });
 
-    // 3. Partial URL match (handles protocol or domain differences)
-    for (const version of sortedVersions) {
-      // Extract the path part of the URL (everything after the domain)
-      const urlParts = version.url.split('/');
-      if (urlParts.length > 3) {
-        const pathPart = urlParts.slice(3).join('/'); // Skip protocol and domain
-        if (storyContent.includes(pathPart)) {
-          console.log(`Found version ${version.version} of ${image.type} in story content (partial URL match):`, pathPart);
-          return version;
+        if (response.ok) {
+          const data = await response.json();
+          setImageEditCreditInfo({
+            canEdit: data.canEdit,
+            requiredCredits: data.requiredCredits,
+            currentBalance: data.currentBalance,
+            editCount: data.editCount,
+            message: data.message,
+            nextThreshold: data.nextThreshold,
+            isFree: data.isFree
+          });
         }
+      } catch (error) {
+        console.error('Error loading image edit credit info:', error);
       }
-    }
+    };
 
-    console.log(`No version of ${image.type} found in story content, defaulting to latest version`);
-    // If no version found in content, default to latest version
-    return image.latestVersion;
-  };
+    loadImageEditCreditInfo();
+  }, [selectedImage, storyId]);
+
   const handleImageSelect = (image: StoryImage) => {
     setSelectedImage(image);
-    // Find the version that's currently being used in the story content
-    const currentVersionInStory = findCurrentVersionInStory(image);
-    setSelectedVersion(currentVersionInStory);
-    setPreviewImage(currentVersionInStory.url);
+    // Always use the latest version as the default selection
+    setSelectedVersion(image.latestVersion);
+    setPreviewImage(image.latestVersion.url);
     setError(null);
     
     console.log('Selected image:', {
       type: image.type,
       chapterNumber: image.chapterNumber,
-      selectedVersion: currentVersionInStory.version,
-      isLatestVersion: currentVersionInStory.url === image.latestVersion.url
+      selectedVersion: image.latestVersion.version,
+      isLatestVersion: true
     });
   };
 
@@ -221,7 +219,9 @@ export default function ImageEditingTab({
         body: JSON.stringify({
           storyId,
           imageUrl: pendingImageEditData.imageUrl,
-          userRequest: pendingImageEditData.userRequest
+          userRequest: pendingImageEditData.userRequest,
+          imageType: selectedImage?.type,
+          chapterNumber: selectedImage?.chapterNumber
         }),
       });      const data = await response.json();
 
@@ -302,7 +302,8 @@ export default function ImageEditingTab({
     setIsReplacing(true);
     setError(null);
 
-    try {      // Instead of assuming latestVersion.url is in the HTML, use the originally selected version URL      // This is the URL that was used to generate the new image
+    try {
+      // Use the originally selected version URL for replacement
       const originalImageToReplace = selectedVersion.url;
 
       console.log('Replacing image in story:', {
@@ -312,7 +313,7 @@ export default function ImageEditingTab({
         selectedImageChapter: selectedImage.chapterNumber
       });
 
-      // Call the parent callback to handle the HTML replacement
+      // Call the parent callback to handle the replacement
       onImageEditSuccess(originalImageToReplace, newImageGenerated);
 
       // Clear the new image generated state since it's now been used
@@ -375,20 +376,21 @@ export default function ImageEditingTab({
         selectedVersionUrl: selectedVersion.url,
         selectedVersionVersion: selectedVersion.version,
         allVersions: selectedImage.versions.map(v => ({ version: v.version, url: v.url }))
-      });      // Find the version that's currently in the story content
-      const currentVersionInStory = findCurrentVersionInStory(selectedImage);
-      const originalImageToReplace = currentVersionInStory.url;
+      });
+
+      // Use the latest version as the baseline for what's currently in the story
+      const originalImageToReplace = selectedImage.latestVersion.url;
 
       console.log('Attempting to replace:', {
-        currentVersionInStory: currentVersionInStory.version,
-        currentVersionUrl: currentVersionInStory.url,
+        currentLatestVersion: selectedImage.latestVersion.version,
+        currentLatestUrl: selectedImage.latestVersion.url,
         selectedVersion: selectedVersion.version,
         selectedVersionUrl: selectedVersion.url,
         willActuallyChange: originalImageToReplace !== selectedVersion.url
       });
 
       if (originalImageToReplace === selectedVersion.url) {
-        console.log('Selected version is already the current version, no change needed');
+        console.log('Selected version is already the latest version, no change needed');
         setError(t('errors.sameVersion'));
         return;
       }
@@ -400,7 +402,7 @@ export default function ImageEditingTab({
         newUrl: selectedVersion.url
       });
 
-      // Call the parent callback to handle the HTML replacement
+      // Call the parent callback to handle the replacement
       onImageEditSuccess(originalImageToReplace, selectedVersion.url);
 
       console.log('Successfully called onImageEditSuccess with URLs:', {
@@ -416,9 +418,10 @@ export default function ImageEditingTab({
       setIsChangingImage(false);
     }
   };
-  // Check if the selected version is different from the version currently in the story
-  const isVersionChanged = selectedImage && selectedVersion && storyContent &&
-    selectedVersion.url !== findCurrentVersionInStory(selectedImage).url;
+  
+  // Check if the selected version is different from the latest version (which we consider as "current")
+  const isVersionChanged = selectedImage && selectedVersion &&
+    selectedVersion.url !== selectedImage.latestVersion.url;
 
   if (storyImages.length === 0) {
     return (
@@ -456,7 +459,8 @@ export default function ImageEditingTab({
                   height={400}
                 />
               </div><div className="text-center">
-                <h4 className="font-medium text-sm">{getImageDisplayName(image)}</h4>                <p className="text-xs text-base-content/60 mt-1">
+                <h4 className="font-medium text-sm">{getImageDisplayName(image)}</h4>
+                <p className="text-xs text-base-content/60 mt-1">
                   {t('imageSelection.versionsAvailable', {
                     count: image.versions.length,
                     plural: image.versions.length !== 1 ? 's' : ''
@@ -468,18 +472,6 @@ export default function ImageEditingTab({
                         version: formatVersionNumber(image.latestVersion.version)
                       })}
                     </p>
-                    {(() => {
-                      const currentVersion = findCurrentVersionInStory(image);
-                      const isCurrentLatest = currentVersion.url === image.latestVersion.url;
-                      if (!isCurrentLatest) {
-                        return (
-                          <p className="text-xs text-warning font-medium">
-                            Currently in story: {formatVersionNumber(currentVersion.version)}
-                          </p>
-                        );
-                      }
-                      return null;
-                    })()}
                   </div>
                 )}
               </div>
@@ -505,12 +497,11 @@ export default function ImageEditingTab({
             .slice()
             .reverse() // Show newest versions first in dropdown
             .map((version) => {
-              const isCurrentInStory = storyContent ? storyContent.includes(version.url) || 
-                (version.url.split('/').pop() && storyContent.includes(version.url.split('/').pop()!)) : false;
+              const isLatestVersion = version.url === selectedImage.latestVersion.url;
               return (
                 <option key={version.url} value={version.url}>
                   {formatVersionNumber(version.version)} ({formatRelativeTime(version.timestamp)})
-                  {isCurrentInStory ? ' • In Story' : ''}
+                  {isLatestVersion ? ' • Latest' : ''}
                 </option>
               );
             })}
@@ -526,7 +517,8 @@ export default function ImageEditingTab({
 
           {/* Change Image Button - Show when a different version is selected */}
           {isVersionChanged && (
-            <div className="mt-4">              <button
+            <div className="mt-4">
+              <button
               type="button"
               onClick={handleChangeImage}
               className={`btn w-full ${optimisticUpdate?.inProgress ? 'btn-success' : 'btn-warning'}`}
@@ -562,7 +554,8 @@ export default function ImageEditingTab({
         <div>          <label className="label">
           <span className="label-text font-medium">{t('imagePreview.label')}</span>
         </label>
-          <div className="max-w-md mx-auto">            <div className="aspect-square bg-base-200 rounded-lg overflow-hidden">
+          <div className="max-w-md mx-auto">
+            <div className="aspect-square bg-base-200 rounded-lg overflow-hidden">
             <Image
               src={previewImage}
               alt="Preview"
@@ -614,7 +607,8 @@ export default function ImageEditingTab({
             <div className="flex items-center gap-3">
               <span className="loading loading-spinner loading-sm"></span>
               <div>
-                <p className="font-medium">{t('loadingState.title')}</p>                  <p className="text-sm text-base-content/70">
+                <p className="font-medium">{t('loadingState.title')}</p>
+                <p className="text-sm text-base-content/70">
                   {t('loadingState.description')}
                 </p>
               </div>
@@ -623,7 +617,23 @@ export default function ImageEditingTab({
               <progress className="progress progress-primary w-full"></progress>
             </div>
           </div>
-          )}          {/* Submit Button */}
+          )}
+
+          {/* Credit Information */}
+          {imageEditCreditInfo && (
+            <EditCreditInfo
+              canEdit={imageEditCreditInfo.canEdit}
+              requiredCredits={imageEditCreditInfo.requiredCredits}
+              currentBalance={imageEditCreditInfo.currentBalance}
+              editCount={imageEditCreditInfo.editCount}
+              message={imageEditCreditInfo.message}
+              nextThreshold={imageEditCreditInfo.nextThreshold}
+              isFree={imageEditCreditInfo.isFree}
+              action="imageEdit"
+            />
+          )}
+
+          {/* Submit Button */}
           <button
             type="submit"
             className="btn btn-primary w-full"
@@ -643,11 +653,12 @@ export default function ImageEditingTab({
 
           {/* Replace Image Button - Show when new image is generated */}
           {newImageGenerated && selectedVersion && (
-            <div className="mt-4 p-4 bg-success/10 border border-success/20 rounded-lg">
+            <div className="mt-4 p-4 bg-primary/10 border border-primary/20 rounded-lg">
               <div className="flex items-center gap-2 mb-3">
-                <svg className="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                </svg>                <span className="font-medium text-success">{t('success.title')}</span>
+                </svg>
+                <span className="font-medium text-primary">{t('success.title')}</span>
               </div>
               <p className="text-sm text-base-content/70 mb-3">
                 {t('success.description')}
@@ -655,7 +666,7 @@ export default function ImageEditingTab({
               <button
                 type="button"
                 onClick={handleReplaceImage}
-                className="btn btn-success w-full"
+                className="btn btn-primary w-full"
                 disabled={isReplacing}
               >
                 {isReplacing ? (
@@ -671,7 +682,8 @@ export default function ImageEditingTab({
                 )}
               </button>
             </div>
-          )}        </form>
+          )}
+        </form>
       )}
       
       {/* Credit Confirmation Modal */}

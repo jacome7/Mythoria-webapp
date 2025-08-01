@@ -177,7 +177,7 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
           {isLoadingUserData && (
             <div className="py-4 text-center">
               <span className="loading loading-spinner loading-sm"></span>
-              <span className="ml-2">Loading your information...</span>
+              <span className="ml-2">{t('loading')}</span>
             </div>
           )}
           
@@ -227,7 +227,7 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
                   value={billingInfo.fiscalNumber}
                   onChange={(e) => handleInputChange('fiscalNumber', e.target.value)}
                   onBlur={handleVATBlur}
-                  placeholder="e.g., PT123456789, ES12345678A, FR12345678901"
+                  placeholder={t('placeholders.vatNumber')}
                 />
                 {vatValidation.error && (
                   <label className="label">
@@ -256,7 +256,7 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
                   className="input input-bordered"
                   value={billingInfo.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
-                  placeholder="+351 912 345 678"
+                  placeholder={t('placeholders.phone')}
                 />
               </div>
             </div>
@@ -332,7 +332,7 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
                     className="input input-bordered"
                     value={billingInfo.postalCode}
                     onChange={(e) => handleInputChange('postalCode', e.target.value)}
-                    placeholder="12345"
+                    placeholder={t('placeholders.postalCode')}
                   />
                 </div>
 
@@ -345,50 +345,50 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
                     value={billingInfo.country}
                     onChange={(e) => handleInputChange('country', e.target.value)}
                   >
-                    <option value="">Select country</option>
-                    <optgroup label="European Union">
-                      <option value="AT">Austria</option>
-                      <option value="BE">Belgium</option>
-                      <option value="BG">Bulgaria</option>
-                      <option value="HR">Croatia</option>
-                      <option value="CY">Cyprus</option>
-                      <option value="CZ">Czech Republic</option>
-                      <option value="DK">Denmark</option>
-                      <option value="EE">Estonia</option>
-                      <option value="FI">Finland</option>
-                      <option value="FR">France</option>
-                      <option value="DE">Germany</option>
-                      <option value="GR">Greece</option>
-                      <option value="HU">Hungary</option>
-                      <option value="IE">Ireland</option>
-                      <option value="IT">Italy</option>
-                      <option value="LV">Latvia</option>
-                      <option value="LT">Lithuania</option>
-                      <option value="LU">Luxembourg</option>
-                      <option value="MT">Malta</option>
-                      <option value="NL">Netherlands</option>
-                      <option value="PL">Poland</option>
-                      <option value="PT">Portugal</option>
-                      <option value="RO">Romania</option>
-                      <option value="SK">Slovakia</option>
-                      <option value="SI">Slovenia</option>
-                      <option value="ES">Spain</option>
-                      <option value="SE">Sweden</option>
+                    <option value="">{t('selectCountry')}</option>
+                    <optgroup label={t('groups.eu')}>
+                      <option value="AT">{t('countries.at')}</option>
+                      <option value="BE">{t('countries.be')}</option>
+                      <option value="BG">{t('countries.bg')}</option>
+                      <option value="HR">{t('countries.hr')}</option>
+                      <option value="CY">{t('countries.cy')}</option>
+                      <option value="CZ">{t('countries.cz')}</option>
+                      <option value="DK">{t('countries.dk')}</option>
+                      <option value="EE">{t('countries.ee')}</option>
+                      <option value="FI">{t('countries.fi')}</option>
+                      <option value="FR">{t('countries.fr')}</option>
+                      <option value="DE">{t('countries.de')}</option>
+                      <option value="GR">{t('countries.gr')}</option>
+                      <option value="HU">{t('countries.hu')}</option>
+                      <option value="IE">{t('countries.ie')}</option>
+                      <option value="IT">{t('countries.it')}</option>
+                      <option value="LV">{t('countries.lv')}</option>
+                      <option value="LT">{t('countries.lt')}</option>
+                      <option value="LU">{t('countries.lu')}</option>
+                      <option value="MT">{t('countries.mt')}</option>
+                      <option value="NL">{t('countries.nl')}</option>
+                      <option value="PL">{t('countries.pl')}</option>
+                      <option value="PT">{t('countries.pt')}</option>
+                      <option value="RO">{t('countries.ro')}</option>
+                      <option value="SK">{t('countries.sk')}</option>
+                      <option value="SI">{t('countries.si')}</option>
+                      <option value="ES">{t('countries.es')}</option>
+                      <option value="SE">{t('countries.se')}</option>
                     </optgroup>
-                    <optgroup label="Other European Countries">
-                      <option value="CH">Switzerland</option>
-                      <option value="NO">Norway</option>
-                      <option value="GB">United Kingdom</option>
+                    <optgroup label={t('groups.otherEurope')}>
+                      <option value="CH">{t('countries.ch')}</option>
+                      <option value="NO">{t('countries.no')}</option>
+                      <option value="GB">{t('countries.gb')}</option>
                     </optgroup>
-                    <optgroup label="Other Countries">
-                      <option value="US">United States</option>
-                      <option value="CA">Canada</option>
-                      <option value="AU">Australia</option>
-                      <option value="JP">Japan</option>
-                      <option value="BR">Brazil</option>
-                      <option value="MX">Mexico</option>
-                      <option value="IN">India</option>
-                      <option value="SG">Singapore</option>
+                    <optgroup label={t('groups.other')}>
+                      <option value="US">{t('countries.us')}</option>
+                      <option value="CA">{t('countries.ca')}</option>
+                      <option value="AU">{t('countries.au')}</option>
+                      <option value="JP">{t('countries.jp')}</option>
+                      <option value="BR">{t('countries.br')}</option>
+                      <option value="MX">{t('countries.mx')}</option>
+                      <option value="IN">{t('countries.in')}</option>
+                      <option value="SG">{t('countries.sg')}</option>
                     </optgroup>
                   </select>
                 </div>

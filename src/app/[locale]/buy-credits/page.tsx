@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { SignedIn, SignedOut } from '@clerk/nextjs';
@@ -11,6 +11,7 @@ import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { FaShoppingCart, FaPlus, FaMinus, FaTrash, FaCreditCard, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 import BillingInformation from '@/components/BillingInformation';
 import RevolutPayment from '@/components/RevolutPayment';
+import { trackCommerce } from '@/lib/analytics';
 
 interface CreditPackage {
 	   id: number;
@@ -56,6 +57,9 @@ function BuyCreditsContent() {
 	   const [creditPackages, setCreditPackages] = useState<CreditPackage[]>([]);
 	   const [packagesLoading, setPackagesLoading] = useState(true);
 	   const [packagesError, setPackagesError] = useState<string | null>(null);
+	   
+	   // Ref for cart items section
+	   const cartItemsRef = useRef<HTMLDivElement>(null);
 
 	   // Handle client-side mounting to prevent hydration issues
 	   useEffect(() => {
@@ -172,6 +176,19 @@ function BuyCreditsContent() {
 					   setPaymentStatus('success');
 					   setPaymentMessage(t('payment.success'));
 					   
+					   // Track credit purchase in analytics (if cart still has items)
+					   if (cart.length > 0) {
+						   const totalCredits = cart.reduce((total, item) => {
+							   const pkg = getPackageById(item.packageId);
+							   return total + (pkg ? pkg.credits * item.quantity : 0);
+						   }, 0);
+						   
+						   trackCommerce.creditPurchase({
+							   purchase_amount: total,
+							   credits_purchased: totalCredits,
+						   });
+					   }
+					   
 					   // Clear cart and redirect
 					   setCart([]);
 					   setOrderToken(null);
@@ -196,6 +213,7 @@ function BuyCreditsContent() {
 					   newUrl.searchParams.delete('payment');
 					   window.history.replaceState({}, '', newUrl.toString());
 			   }
+	   // eslint-disable-next-line react-hooks/exhaustive-deps
 	   }, [isMounted, searchParams, tRevolut, t, locale]);
 
 	   // Fetch credit packages from API (like pricing page)
@@ -232,6 +250,24 @@ function BuyCreditsContent() {
 			   }
 	   }, [searchParams, creditPackages]);
 
+	   // Function to scroll to cart items on mobile
+	   const scrollToCartItems = () => {
+			   // Only scroll on mobile/tablet (< lg breakpoint, which is 1024px)
+			   if (window.innerWidth >= 1024) return;
+			   
+			   if (cartItemsRef.current) {
+					   const element = cartItemsRef.current;
+					   const elementRect = element.getBoundingClientRect();
+					   const absoluteElementTop = elementRect.top + window.pageYOffset;
+					   const offset = 20; // Small offset for better UX
+					   
+					   window.scrollTo({
+							   top: absoluteElementTop - offset,
+							   behavior: 'smooth'
+					   });
+			   }
+	   };
+
 	   const addToCart = (packageId: number) => {
 			   setCart(prev => {
 					   const existing = prev.find(item => item.packageId === packageId);
@@ -245,6 +281,11 @@ function BuyCreditsContent() {
 							   return [...prev, { packageId, quantity: 1 }];
 					   }
 			   });
+			   
+			   // Scroll to cart items on mobile after a short delay to allow state update
+			   setTimeout(() => {
+					   scrollToCartItems();
+			   }, 100);
 	   };
 
 	   const updateQuantity = (packageId: number, quantity: number) => {
@@ -333,7 +374,7 @@ function BuyCreditsContent() {
 			const data = await response.json();
 
 			if (!response.ok) {
-				throw new Error(data.error || 'Failed to create order');
+                                throw new Error(data.error || t('errors.orderCreationFailed'));
 			}
 
 			console.log('Order created successfully:', data);
@@ -342,6 +383,18 @@ function BuyCreditsContent() {
 				// For MB Way, show success message and redirect
 				setPaymentStatus('success');
 				setPaymentMessage(t('payment.mbwaySuccess'));
+				
+				// Calculate total credits purchased for analytics
+				const totalCredits = cart.reduce((total, item) => {
+					const pkg = getPackageById(item.packageId);
+					return total + (pkg ? pkg.credits * item.quantity : 0);
+				}, 0);
+				
+				// Track credit purchase in analytics
+				trackCommerce.creditPurchase({
+					purchase_amount: total,
+					credits_purchased: totalCredits,
+				});
 				
 				// Clear cart and reset form
 				setCart([]);
@@ -392,6 +445,19 @@ function BuyCreditsContent() {
 
 	const handlePaymentSuccess = (result: Record<string, unknown>) => {
 		console.log('Payment successful:', result);
+		
+		// Calculate total credits purchased for analytics
+		const totalCredits = cart.reduce((total, item) => {
+			const pkg = getPackageById(item.packageId);
+			return total + (pkg ? pkg.credits * item.quantity : 0);
+		}, 0);
+		
+		// Track credit purchase in analytics
+		trackCommerce.creditPurchase({
+			purchase_amount: total,
+			credits_purchased: totalCredits,
+		});
+		
 		setPaymentStatus('success');
 		setPaymentMessage(t('payment.success'));
 		
@@ -507,7 +573,7 @@ function BuyCreditsContent() {
 						<h2 className="text-2xl font-bold mb-6">{t('cart.title')}</h2>
 						
 						{/* Cart Items */}
-						<div className="bg-base-200 rounded-lg p-6 mb-6">
+						<div ref={cartItemsRef} className="bg-base-200 rounded-lg p-6 mb-6">
 							{cart.length === 0 ? (
 								<p className="text-center text-gray-500 py-8">{t('cart.empty')}</p>
 							) : (
@@ -653,9 +719,9 @@ function BuyCreditsContent() {
 								className="radio radio-primary"
 							/>
 							<div className="flex items-center space-x-2">
-								<Image 
-									src="/images/mbway.png" 
-									alt="MB Way" 
+                                                                <Image
+                                                                        src="/images/mbway.png"
+                                                                        alt={t('payment.mbway')}
 									width={24}
 									height={24}
 									className="object-contain" 

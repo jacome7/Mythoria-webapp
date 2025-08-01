@@ -9,7 +9,7 @@ interface Story {
   storyId: string;
   title: string;
   synopsis: string;
-  pdfUri: string;
+  pdfUri?: string;
   authorId: string;
   frontCoverImageUrl?: string;
   chapterCount: number;
@@ -115,7 +115,7 @@ export default function PaymentStep({
       setPrintingOptions(options);
     } catch (error) {
       console.error('Error fetching printing options:', error);
-      throw error;
+      setError(t('errors.loadPricingFailed'));
     }
   }, [t]);
 
@@ -129,22 +129,14 @@ export default function PaymentStep({
       setUserCredits(data.currentBalance || 0);
     } catch (error) {
       console.error('Error fetching user credits:', error);
-      throw error;
+      setError(t('errors.fetchCreditsFailed'));
     }
-  }, []);
+  }, [t]);
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        await Promise.all([
-          fetchPrintingOptions(),
-          fetchUserCredits()
-        ]);
-      } catch (err) {
-        console.error('Error fetching data:', err);
-        setError('Failed to load pricing information');
-      } finally {
-        setLoadingData(false);
-      }
+      await fetchPrintingOptions();
+      await fetchUserCredits();
+      setLoadingData(false);
     };
 
     fetchData();

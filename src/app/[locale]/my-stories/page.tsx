@@ -13,18 +13,19 @@ import CreditsDisplay from '@/components/CreditsDisplay';
 export default function MyStoriesPage() {
   const t = useTranslations('MyStoriesPage');
   const locale = useLocale();
-  const [authorName, setAuthorName] = useState<string>('Storyteller');
+  const [authorName, setAuthorName] = useState<string>('');
   const [credits, setCredits] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'stories' | 'characters'>('stories');
-  useEffect(() => {
+  
+  useEffect(() => {    
     const fetchUserData = async () => {
       try {
         // Fetch author data
         const authorResponse = await fetch('/api/auth/me');
         if (authorResponse.ok) {
           const authorData = await authorResponse.json();
-          setAuthorName(authorData.displayName || 'Storyteller');
+          setAuthorName(authorData.displayName || t('defaults.authorName'));
         }
 
         // Fetch credits
@@ -41,7 +42,7 @@ export default function MyStoriesPage() {
     };
 
     fetchUserData();
-  }, []);
+  }, [t]);
 
   if (loading) {
     return (
@@ -94,13 +95,13 @@ export default function MyStoriesPage() {
                 className={`tab tab-lifted py-1 flex-1 text-center ${activeTab === 'stories' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
                 onClick={() => setActiveTab('stories')}
               >
-                {t('tabs.myStories') || 'My Stories'}
+                {t('tabs.myStories')}
               </a>
               <a
                 className={`tab tab-lifted py-1 flex-1 text-center ${activeTab === 'characters' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
                 onClick={() => setActiveTab('characters')}
               >
-                {t('tabs.myCharacters') || 'My Characters'}
+                {t('tabs.myCharacters')}
               </a>
             </div>
 

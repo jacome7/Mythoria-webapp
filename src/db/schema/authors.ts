@@ -24,14 +24,6 @@ export const authors = pgTable("authors", {
   createdAtIdx: index("authors_created_at_idx").on(table.createdAt),
 }));
 
-// Leads (email collection for app launch notifications)
-export const leads = pgTable("leads", {
-  leadId: uuid("lead_id").primaryKey().defaultRandom(),
-  email: varchar("email", { length: 255 }).notNull().unique(),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-  notifiedAt: timestamp("notified_at", { withTimezone: true }), // Track when we notified them
-});
-
 // Addresses
 export const addresses = pgTable("addresses", {
   addressId: uuid("address_id").primaryKey().defaultRandom(),
@@ -73,9 +65,6 @@ export type NewAuthor = typeof authors.$inferInsert;
 
 export type Address = typeof addresses.$inferSelect;
 export type NewAddress = typeof addresses.$inferInsert;
-
-export type Lead = typeof leads.$inferSelect;
-export type NewLead = typeof leads.$inferInsert;
 
 export type Event = typeof events.$inferSelect;
 export type NewEvent = typeof events.$inferInsert;

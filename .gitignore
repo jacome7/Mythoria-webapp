@@ -19,6 +19,10 @@
 /.next/
 /out/
 
+# Service Worker files
+/public/sw.js
+/public/workbox-*.js
+
 # Production
 /build
 /dist
@@ -71,6 +75,8 @@ pids
 *.pid
 *.seed
 *.pid.lock
+/public/*.js
+public/sw.js
 
 # Coverage directory used by tools like istanbul
 coverage/

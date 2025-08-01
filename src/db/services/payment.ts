@@ -9,6 +9,8 @@ export interface CreditPackage {
   price: number;
   popular?: boolean;
   bestValue?: boolean;
+  key?: string;
+  dbId?: string;
 }
 
 export interface CreateOrderRequest {
@@ -47,29 +49,26 @@ export interface WebhookPayload {
 }
 
 export const paymentService = {
-  // Get credit package by ID (using the same mapping as the frontend API)
+  // Get credit packages from database with frontend-compatible IDs
+  async getCreditPackages(): Promise<CreditPackage[]> {
+    const dbPackages = await creditPackagesService.getActiveCreditPackages();
+    
+    // Transform the data to match the frontend expectations (same as in API)
+    return dbPackages.map((pkg, index) => ({
+      id: index + 1, // Use incremental ID for frontend compatibility
+      credits: pkg.credits,
+      price: parseFloat(pkg.price),
+      popular: pkg.popular,
+      bestValue: pkg.bestValue,
+      key: pkg.key,
+      dbId: pkg.id, // Keep the database ID for reference
+    }));
+  },
+
+  // Get credit package by frontend ID
   async getCreditPackage(id: number): Promise<CreditPackage | undefined> {
-    try {
-      // Get all active packages in the same order as the frontend API
-      const packages = await creditPackagesService.getActiveCreditPackages();
-      
-      // Use the same mapping as the frontend API (index + 1 = frontend ID)
-      const packageIndex = id - 1;
-      if (packageIndex >= 0 && packageIndex < packages.length) {
-        const dbPackage = packages[packageIndex];
-        return {
-          id: id, // Keep the frontend ID
-          credits: dbPackage.credits,
-          price: parseFloat(dbPackage.price),
-          popular: dbPackage.popular,
-          bestValue: dbPackage.bestValue,
-        };
-      }
-      return undefined;
-    } catch (error) {
-      console.error('Error fetching credit package:', error);
-      return undefined;
-    }
+    const packages = await this.getCreditPackages();
+    return packages.find(pkg => pkg.id === id);
   },
 
   // Calculate total for order
@@ -130,14 +129,6 @@ export const paymentService = {
       ...(orderData.idempotencyKey && { idempotency_key: orderData.idempotencyKey }),
     };
     
-    console.log('PaymentService: Revolut order payload:', revolutOrderPayload);
-    console.log('PaymentService: Amount breakdown:', {
-      totalAmountEuros: orderTotals.totalAmount,
-      totalAmountCents: Math.round(orderTotals.totalAmount * 100),
-      currency: 'EUR',
-      description: `Mythoria Credits Purchase - ${orderTotals.totalCredits} credits`,
-    });
-
     const revolutResponse = await fetch(`${apiBaseUrl}/api/orders`, {
       method: 'POST',
       headers: {

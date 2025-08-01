@@ -81,7 +81,28 @@ export async function GET(
 
     // Fetch the audio file from Google Cloud Storage
     try {
-      const audioResponse = await fetch(audioUri);
+      // Validate and fix URL protocol issues
+      let finalAudioUri = audioUri;
+      
+      // Convert gs:// URLs to https:// URLs for Google Cloud Storage
+      if (finalAudioUri.startsWith('gs://')) {
+        console.log('[Authenticated Audio] Converting gs:// URL to https://');
+        const gsPath = finalAudioUri.replace('gs://', '');
+        const bucketAndPath = gsPath.split('/');
+        const bucket = bucketAndPath[0];
+        const path = bucketAndPath.slice(1).join('/');
+        finalAudioUri = `https://storage.googleapis.com/${bucket}/${path}`;
+      }
+      
+      // Check if the URL is HTTP and convert to HTTPS if needed
+      if (finalAudioUri.startsWith('http://')) {
+        console.warn('[Authenticated Audio] Converting HTTP URL to HTTPS:', finalAudioUri);
+        finalAudioUri = finalAudioUri.replace('http://', 'https://');
+      }
+      
+      console.log('[Authenticated Audio] Final URL:', finalAudioUri);
+
+      const audioResponse = await fetch(finalAudioUri);
       
       if (!audioResponse.ok) {
         console.error(`Failed to fetch audio from ${audioUri}:`, audioResponse.status);

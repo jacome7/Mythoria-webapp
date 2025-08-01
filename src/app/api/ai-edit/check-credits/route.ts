@@ -4,9 +4,12 @@ import { authorService, aiEditService } from '@/db/services';
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('🔍 Credit check request started');
+    
     // Check authentication
     const { userId } = await auth();
     if (!userId) {
+      console.log('❌ Credit check failed: No userId');
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
@@ -16,6 +19,7 @@ export async function POST(request: NextRequest) {
     // Get the current user
     const author = await authorService.getAuthorByClerkId(userId);
     if (!author) {
+      console.log('❌ Credit check failed: Author not found for userId:', userId);
       return NextResponse.json(
         { success: false, error: 'Author not found' },
         { status: 404 }
@@ -25,9 +29,12 @@ export async function POST(request: NextRequest) {
     // Parse request body
     const body = await request.json();
     const { action, storyId } = body;
+    
+    console.log('📋 Credit check request body:', { action, storyId, authorId: author.authorId });
 
     // Validate required fields
     if (!action || !['textEdit', 'imageEdit'].includes(action)) {
+      console.log('❌ Credit check failed: Invalid action:', action);
       return NextResponse.json(
         { success: false, error: 'Invalid action. Must be "textEdit" or "imageEdit"' },
         { status: 400 }
@@ -35,6 +42,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!storyId) {
+      console.log('❌ Credit check failed: Missing storyId');
       return NextResponse.json(
         { success: false, error: 'Story ID is required' },
         { status: 400 }
@@ -42,7 +50,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Check edit permission
+    console.log('🔄 Checking edit permission for author:', author.authorId, 'action:', action);
     const permission = await aiEditService.checkEditPermission(author.authorId, action);
+    
+    console.log('✅ Credit check successful:', {
+      canEdit: permission.canEdit,
+      requiredCredits: permission.requiredCredits,
+      currentBalance: permission.currentBalance,
+      editCount: permission.editCount
+    });
 
     return NextResponse.json({
       success: true,
@@ -51,15 +67,12 @@ export async function POST(request: NextRequest) {
       currentBalance: permission.currentBalance,
       editCount: permission.editCount,
       message: permission.message,
-      // Provide additional context for the UI
-      isFree: permission.requiredCredits === 0,
-      nextThreshold: action === 'textEdit' 
-        ? Math.ceil((permission.editCount + 1) / 5) * 5 
-        : permission.editCount === 0 ? 1 : permission.editCount + 1
+      nextThreshold: permission.nextThreshold,
+      isFree: permission.isFree
     });
 
   } catch (error) {
-    console.error('Error in AI edit credit check API:', error);
+    console.error('💥 Error in credit check API:', error);
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

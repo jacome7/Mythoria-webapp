@@ -5,29 +5,33 @@ import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiBook, FiVolume2, FiEdit3, FiShare2, FiArrowLeft, FiPrinter } from 'react-icons/fi';
+import { FiVolume2, FiEdit3, FiShare2, FiArrowLeft, FiPrinter, FiBook } from 'react-icons/fi';
 import { trackStoryManagement } from '../../../../../lib/analytics';
 import StoryReader from '../../../../../components/StoryReader';
 import StoryRating from '../../../../../components/StoryRating';
 import ShareModal from '../../../../../components/ShareModal';
 
-interface Story {
-  storyId: string;
+interface Chapter {
+  id: string;
+  chapterNumber: number;
   title: string;
-  status: 'draft' | 'writing' | 'published';
-  htmlUri?: string;
-  audiobookUri?: Array<{
-    chapterTitle: string;
-    audioUri: string;
-    duration: number;
-    imageUri?: string;
-  }>;
+  imageUri: string | null;
+  imageThumbnailUri: string | null;
+  htmlContent: string;
+  audioUri: string | null;
+  version: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface Story {
+  title: string;
+  authorName: string;
+  dedicationMessage?: string;
   targetAudience?: string;
   graphicalStyle?: string;
-  isPublic?: boolean;
-  slug?: string;
-  createdAt: string;
-  updatedAt: string;
+  coverUri?: string;
+  backcoverUri?: string;
 }
 
 export default function ReadStoryPage() {
@@ -37,7 +41,7 @@ export default function ReadStoryPage() {
   const tCommon = useTranslations('common');
   const storyId = params.storyId as string;
   const [story, setStory] = useState<Story | null>(null);
-  const [storyContent, setStoryContent] = useState<string | null>(null);
+  const [chapters, setChapters] = useState<Chapter[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -45,33 +49,20 @@ export default function ReadStoryPage() {
   useEffect(() => {
     const fetchStory = async () => {
       try {
-        const response = await fetch(`/api/stories/${storyId}`);
+        const response = await fetch(`/api/stories/${storyId}/chapters`);
         if (response.ok) {
-          const data = await response.json();          // Only allow access to published stories
-          if (data.story.status !== 'published') {
-            setError(tCommon('Errors.storyNotAvailableYet'));
-            return;
-          }
+          const data = await response.json();
           setStory(data.story);
+          setChapters(data.chapters);
 
           // Track story viewing
           trackStoryManagement.viewed({
-            story_id: data.story.storyId,
+            story_id: storyId,
             story_title: data.story.title,
-            story_status: data.story.status,
+            story_status: 'published',
             target_audience: data.story.targetAudience,
             graphical_style: data.story.graphicalStyle
           });
-
-          // Use the HTML content from the API response
-          if (data.htmlContent) {
-            setStoryContent(data.htmlContent);
-          } else if (data.story.htmlUri) {
-            // Fallback message if content couldn't be fetched
-            setStoryContent('<p>Story content is being prepared. Please check back later.</p>');
-          } else {
-            setStoryContent('<p>Story content is not yet available. The story may still be generating.</p>');
-          }
         } else if (response.status === 404) {
           setError(tCommon('Errors.storyNotFoundGeneric'));
         } else if (response.status === 403) {
@@ -96,19 +87,69 @@ export default function ReadStoryPage() {
     router.push(`/${locale}/stories/listen/${storyId}`);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const navigateToRead = () => {
+    // Already on read page, do nothing
+    return;
+  };
+
   const navigateToEdit = () => {
     router.push(`/${locale}/stories/edit/${storyId}`);
   };
 
-  const navigateToPrint = () => {
+  const navigateToMyStories = () => {
+    router.push(`/${locale}/my-stories`);
+  };
+
+  const handlePrint = () => {
     router.push(`/${locale}/stories/print/${storyId}`);
+  };
+
+  const handleShare = () => {
+    setShowShareModal(true);
   };
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-center items-center min-h-96">
-          <span className="loading loading-spinner loading-lg"></span>
+      <div className="min-h-screen bg-base-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="loading loading-spinner loading-lg mb-4"></div>
+          <p className="text-lg">{tCommon('Loading.default')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-base-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">📚</div>
+          <h1 className="text-3xl font-bold mb-4">{tCommon('Errors.oops')}</h1>
+          <p className="text-lg mb-6">{error}</p>
+          <button
+            onClick={() => router.back()}
+            className="btn btn-primary"
+          >
+            {tCommon('Actions.goBack')}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!story || chapters.length === 0) {
+    return (
+      <div className="min-h-screen bg-base-100 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold mb-4">{tCommon('Errors.noChaptersFound')}</h1>
+          <p className="text-lg mb-6">{tCommon('Errors.noChaptersFoundDesc')}</p>
+          <button
+            onClick={() => router.push(`/${locale}/my-stories`)}
+            className="btn btn-primary"
+          >
+            {tCommon('Actions.backToMyStories')}
+          </button>
         </div>
       </div>
     );
@@ -142,137 +183,97 @@ export default function ReadStoryPage() {
       </SignedOut>
 
       <SignedIn>
-        {error ? (
-          <div className="container mx-auto px-4 py-8">
-            <div className="text-center space-y-6">
-              <div className="alert alert-error">
-                <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>{error}</span>
-              </div>
+        {/* Action Bar */}
+        <div className="bg-base-200 border-b border-base-300 p-4 print:hidden">
+          <div className="max-w-6xl mx-auto flex items-center justify-between">
+            <button
+              onClick={navigateToMyStories}
+              className="btn btn-ghost btn-sm"
+            >
+              <FiArrowLeft className="w-4 h-4 mr-2" />
+              <span className="hidden sm:inline">{tCommon('Actions.backToMyStories')}</span>
+            </button>
+            
+            <div className="flex items-center gap-2">
               <button
-                onClick={() => router.push(`/${locale}/my-stories`)}
-                className="btn btn-primary"
+                className="btn btn-ghost btn-sm btn-active"
               >
-                Back to My Stories
+                <FiBook className="w-4 h-4" />
+                <span className="hidden sm:inline sm:ml-2">{tCommon('Actions.read')}</span>
+              </button>
+              
+              <button
+                onClick={navigateToListen}
+                className="btn btn-ghost btn-sm"
+              >
+                <FiVolume2 className="w-4 h-4" />
+                <span className="hidden sm:inline sm:ml-2">{tCommon('Actions.listen')}</span>
+              </button>
+              
+              <button
+                onClick={navigateToEdit}
+                className="btn btn-ghost btn-sm"
+              >
+                <FiEdit3 className="w-4 h-4" />
+                <span className="hidden sm:inline sm:ml-2">{tCommon('Actions.edit')}</span>
+              </button>
+              
+              <button
+                onClick={handlePrint}
+                className="btn btn-ghost btn-sm"
+              >
+                <FiPrinter className="w-4 h-4" />
+                <span className="hidden sm:inline sm:ml-2">{tCommon('Actions.print')}</span>
+              </button>
+              
+              <button
+                onClick={handleShare}
+                className="btn btn-ghost btn-sm"
+              >
+                <FiShare2 className="w-4 h-4" />
+                <span className="hidden sm:inline sm:ml-2">{tCommon('Actions.share')}</span>
               </button>
             </div>
           </div>
-        ) : story ? (
-          <div className="space-y-6">
-            {/* Story Header */}
-            <div className="container mx-auto px-4 py-6">
-              <div className="text-center space-y-4">
-                
-                {/* Navigation Buttons */}
-                <div className="flex flex-wrap justify-center gap-2">
-                  <button className="btn btn-primary">
-                    <FiBook className="w-4 h-4 md:mr-2" />
-                    <span className="hidden md:inline">Reading</span>
-                  </button>
-                  <button
-                    onClick={navigateToListen}
-                    className="btn btn-outline btn-primary"
-                  >
-                    <FiVolume2 className="w-4 h-4" />
-                    <span className="hidden md:inline md:ml-2">Listen</span>
-                  </button>
-                  <button
-                    onClick={navigateToEdit}
-                    className="btn btn-outline btn-primary"
-                  >
-                    <FiEdit3 className="w-4 h-4" />
-                    <span className="hidden md:inline md:ml-2">Edit</span>
-                  </button>
-                  <button
-                    onClick={navigateToPrint}
-                    className="btn btn-outline btn-primary"
-                  >
-                    <FiPrinter className="w-4 h-4" />
-                    <span className="hidden md:inline md:ml-2">Print</span>
-                  </button>
-                  <button
-                    onClick={() => setShowShareModal(true)}
-                    className="btn btn-outline btn-primary"
-                  >
-                    <FiShare2 className="w-4 h-4" />
-                    <span className="hidden md:inline md:ml-2">Share</span>
-                  </button>
-                </div>
-              </div>
-            </div>
+        </div>
 
-            {/* Story Content */}
-            <div>
-              <StoryReader
-                storyContent={storyContent || ''}
-                storyMetadata={{
-                  targetAudience: story.targetAudience,
-                  graphicalStyle: story.graphicalStyle,
-                  title: story.title
-                }}
-              />
+        {/* Story Reader - First page with cover and table of contents */}
+        <StoryReader
+          storyId={storyId}
+          story={story}
+          chapters={chapters}
+          currentChapter={0} // 0 = first page
+        />
 
-              {/* Story Rating Component */}
-              <div className="container mx-auto px-4 py-8">
-                <div className="max-w-2xl mx-auto">
-                  <StoryRating
-                    storyId={storyId}
-                    onRatingSubmitted={(rating) => {
-                      console.log('Rating submitted:', rating);
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
+        {/* Story Rating */}
+        <div className="max-w-4xl mx-auto p-4 print:hidden">
+          <StoryRating storyId={storyId} />
+        </div>
 
-            {/* Back to Stories Button */}
-            <div className="container mx-auto px-4 pb-8">
-              <div className="text-center">
-                <button
-                  onClick={() => router.push(`/${locale}/my-stories`)}
-                  className="btn btn-outline"
-                >
-                  <FiArrowLeft className="w-4 h-4 mr-2" />
-                  Back to My Stories
-                </button>
-              </div>
-            </div>
-          </div>
-        ) : null}
-      </SignedIn>
-      
-      {/* Share Modal */}
-      {story && (
+        {/* Share Modal */}
         <ShareModal
+          storyId={storyId}
+          storyTitle={story.title}
           isOpen={showShareModal}
           onClose={() => setShowShareModal(false)}
-          storyId={story.storyId}
-          storyTitle={story.title}
-          isPublic={story.isPublic}
-          slug={story.slug}
-          onShareSuccess={(shareData) => {
-            console.log('Share successful:', shareData);
-            // Refresh story data to get updated isPublic status
-            if (shareData.success) {
-              // Refetch the story data
-              const refetchStory = async () => {
-                try {
-                  const response = await fetch(`/api/stories/${story.storyId}`);
-                  if (response.ok) {
-                    const updatedStory = await response.json();
-                    setStory(updatedStory);
-                  }
-                } catch (error) {
-                  console.error('Error refreshing story:', error);
-                }
-              };
-              refetchStory();
-            }
-          }}
         />
-      )}
+      </SignedIn>
+
+      <SignedOut>
+        <div className="min-h-screen bg-base-100 flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-6xl mb-4">🔒</div>
+            <h1 className="text-3xl font-bold mb-4">{tCommon('Errors.authRequired')}</h1>
+            <p className="text-lg mb-6">{tCommon('Errors.pleaseSignIn')}</p>
+            <button
+              onClick={() => router.push(`/${locale}/sign-in`)}
+              className="btn btn-primary"
+            >
+              {tCommon('Actions.signIn')}
+            </button>
+          </div>
+        </div>
+      </SignedOut>
     </div>
   );
 }

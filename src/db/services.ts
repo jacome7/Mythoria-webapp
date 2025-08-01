@@ -1,9 +1,10 @@
 import { db } from "./index";
-import { authors, stories, characters, storyCharacters, creditLedger, authorCreditBalances, leads, storyRatings, aiEdits } from "./schema";
-import { eq, and, count, desc, sql, like, asc } from "drizzle-orm";
+import { authors, stories, characters, storyCharacters, creditLedger, authorCreditBalances, storyRatings, aiEdits, chapters } from "./schema";
+import { eq, and, count, desc, sql, asc, max } from "drizzle-orm";
 import { ClerkUserForSync } from "@/types/clerk";
 import { pricingService } from "./services/pricing";
 import { CharacterRole, CharacterAge, isValidCharacterAge } from "../types/character-enums";
+import { toAbsoluteImageUrl, toRelativeImagePath } from "../utils/image-url";
 
 // Export payment service
 export { paymentService } from "./services/payment";
@@ -147,7 +148,11 @@ export const authorService = {  async createAuthor(authorData: { clerkUserId: st
   async getTotalAuthorsCount() {
     const result = await db.select({ value: count() }).from(authors);
     return result[0]?.value || 0;
-  }
+  },
+
+  async getAuthorCreditBalance(authorId: string) {
+    return await creditService.getAuthorCreditBalance(authorId);
+  },
 };
 
 // Story operations
@@ -166,11 +171,21 @@ export const storyService = {  async createStory(storyData: {
 
   async getStoryById(storyId: string) {
     const [story] = await db.select().from(stories).where(eq(stories.storyId, storyId));
-    return story;
+    if (!story) return story;
+    
+    return {
+      ...story,
+      featureImageUri: toAbsoluteImageUrl(story.featureImageUri),
+    };
   },
 
   async getStoriesByAuthor(authorId: string) {
-    return await db.select().from(stories).where(eq(stories.authorId, authorId));
+    const storyResults = await db.select().from(stories).where(eq(stories.authorId, authorId));
+    
+    return storyResults.map(story => ({
+      ...story,
+      featureImageUri: toAbsoluteImageUrl(story.featureImageUri),
+    }));
   },
   async getPublishedStories() {
     return await db.select().from(stories).where(eq(stories.status, 'published'));
@@ -221,6 +236,7 @@ export const storyService = {  async createStory(storyData: {
       .orderBy(desc(stories.createdAt));    // Convert string rating to number and ensure proper types
     return result.map(story => ({
       ...story,
+      featureImageUri: toAbsoluteImageUrl(story.featureImageUri),
       averageRating: story.averageRating ? parseFloat(story.averageRating as unknown as string) : null,
       ratingCount: story.ratingCount || 0
     }));
@@ -230,8 +246,18 @@ export const storyService = {  async createStory(storyData: {
     const result = await db.select({ value: count() }).from(stories);
     return result[0]?.value || 0;
   },  async updateStory(storyId: string, updates: Partial<typeof stories.$inferInsert>) {
-    const [story] = await db.update(stories).set(updates).where(eq(stories.storyId, storyId)).returning();
-    return story;
+    // Convert any image URLs to relative paths for storage
+    const processedUpdates = {
+      ...updates,
+      ...(updates.featureImageUri !== undefined && { featureImageUri: toRelativeImagePath(updates.featureImageUri) }),
+    };
+    
+    const [story] = await db.update(stories).set(processedUpdates).where(eq(stories.storyId, storyId)).returning();
+    
+    return {
+      ...story,
+      featureImageUri: toAbsoluteImageUrl(story.featureImageUri),
+    };
   },
 
   async deleteStory(storyId: string) {
@@ -258,7 +284,8 @@ export const characterService = {
       type: characterData.type || undefined, // Accept any string for type
       age: characterData.age && isValidCharacterAge(characterData.age)
         ? characterData.age as CharacterAge
-        : undefined
+        : undefined,
+      photoUrl: toRelativeImagePath(characterData.photoUrl),
     };
     
     console.log('[characterService.createCharacter] Input type:', characterData.type);
@@ -266,16 +293,30 @@ export const characterService = {
     
     const [character] = await db.insert(characters).values(validatedData).returning();
     console.log('[characterService.createCharacter] Created character with type:', character.type);
-    return character;
+    
+    return {
+      ...character,
+      photoUrl: toAbsoluteImageUrl(character.photoUrl),
+    };
   },
 
   async getCharactersByAuthor(authorId: string) {
-    return await db.select().from(characters).where(eq(characters.authorId, authorId));
+    const characterResults = await db.select().from(characters).where(eq(characters.authorId, authorId));
+    
+    return characterResults.map(character => ({
+      ...character,
+      photoUrl: toAbsoluteImageUrl(character.photoUrl),
+    }));
   },
 
   async getCharacterById(characterId: string) {
     const [character] = await db.select().from(characters).where(eq(characters.characterId, characterId));
-    return character;
+    if (!character) return character;
+    
+    return {
+      ...character,
+      photoUrl: toAbsoluteImageUrl(character.photoUrl),
+    };
   }
 };
 
@@ -295,7 +336,7 @@ export const storyCharacterService = {
   },
 
   async getCharactersByStory(storyId: string) {
-    return await db
+    const results = await db
       .select({
         character: characters,
         role: storyCharacters.role
@@ -303,10 +344,18 @@ export const storyCharacterService = {
       .from(storyCharacters)
       .innerJoin(characters, eq(storyCharacters.characterId, characters.characterId))
       .where(eq(storyCharacters.storyId, storyId));
+
+    return results.map(result => ({
+      ...result,
+      character: {
+        ...result.character,
+        photoUrl: toAbsoluteImageUrl(result.character.photoUrl),
+      }
+    }));
   },
 
   async getStoriesByCharacter(characterId: string) {
-    return await db
+    const results = await db
       .select({
         story: stories,
         role: storyCharacters.role
@@ -314,6 +363,14 @@ export const storyCharacterService = {
       .from(storyCharacters)
       .innerJoin(stories, eq(storyCharacters.storyId, stories.storyId))
       .where(eq(storyCharacters.characterId, characterId));
+
+    return results.map(result => ({
+      ...result,
+      story: {
+        ...result.story,
+        featureImageUri: toAbsoluteImageUrl(result.story.featureImageUri),
+      }
+    }));
   },
   async removeCharacterFromStory(storyId: string, characterId: string) {
     await db
@@ -417,77 +474,6 @@ export const creditService = {  async addCreditEntry(
   }
 };
 
-// Lead operations
-export const leadService = {
-  async getTotalLeadsCount() {
-    const result = await db.select({ value: count() }).from(leads);
-    return result[0]?.value || 0;
-  },
-  async getLeads(
-    page: number = 1,
-    limit: number = 100,
-    searchTerm?: string,
-    sortBy: 'email' | 'createdAt' | 'notifiedAt' = 'createdAt',
-    sortOrder: 'asc' | 'desc' = 'desc'
-  ) {
-    const offset = (page - 1) * limit;
-    
-    // Build search condition
-    let whereCondition = undefined;
-    if (searchTerm && searchTerm.trim()) {
-      const searchPattern = `%${searchTerm.trim().toLowerCase()}%`;
-      whereCondition = like(leads.email, searchPattern);
-    }
-    
-    // Get total count with search
-    const countQuery = db.select({ value: count() }).from(leads);
-    if (whereCondition) {
-      countQuery.where(whereCondition);
-    }
-    const totalCountResult = await countQuery;
-    const totalCount = totalCountResult[0]?.value || 0;
-    
-    // Get leads with pagination, search, and sorting
-    const leadsQuery = db.select().from(leads);
-    
-    if (whereCondition) {
-      leadsQuery.where(whereCondition);
-    }
-    
-    // Build sort condition
-    let orderBy;
-    switch (sortBy) {
-      case 'email':
-        orderBy = sortOrder === 'asc' ? asc(leads.email) : desc(leads.email);
-        break;
-      case 'notifiedAt':
-        orderBy = sortOrder === 'asc' ? asc(leads.notifiedAt) : desc(leads.notifiedAt);
-        break;
-      default:
-        orderBy = sortOrder === 'asc' ? asc(leads.createdAt) : desc(leads.createdAt);
-    }
-    
-    const leadsList = await leadsQuery
-      .orderBy(orderBy)
-      .limit(limit)
-      .offset(offset);
-    
-    const totalPages = Math.ceil(totalCount / limit);
-    
-    return {
-      leads: leadsList,
-      pagination: {
-        currentPage: page,
-        totalPages,
-        totalCount,
-        hasNextPage: page < totalPages,
-        hasPrevPage: page > 1,
-        limit
-      }
-    };
-  }
-};
-
 // AI Edit operations
 export const aiEditService = {
   async getEditCount(authorId: string, action: 'textEdit' | 'imageEdit'): Promise<number> {
@@ -506,20 +492,114 @@ export const aiEditService = {
     const editCount = await this.getEditCount(authorId, action);
     
     if (action === 'textEdit') {
-      // First 5 edits are free, then 1 credit per 5 edits
+      // First 5 edits are free, then charge every 5th edit (6th, 11th, 16th, etc.)
       if (editCount < 5) {
         return 0; // Still in free tier
       }
       
       // Check if we need to charge for this edit (every 5th edit after the free ones)
       const paidEdits = editCount - 4; // editCount 5 becomes paidEdits 1, etc.
-      return paidEdits % 5 === 0 ? 1 : 0;
+      if (paidEdits % 5 === 0) {
+        // Get pricing from database with fallback
+        try {
+          const pricing = await pricingService.getPricingByServiceCode('AiTextEditing');
+          return pricing?.credits || 1; // Fallback to 1 credit
+        } catch (error) {
+          console.error('Error fetching AiTextEditing pricing:', error);
+          return 1; // Fallback to 1 credit
+        }
+      }
+      return 0;
     } else if (action === 'imageEdit') {
-      // First image edit is free, then 1 credit per edit
-      return editCount === 0 ? 0 : 1;
+      // First image edit is free, then charge for every edit after
+      if (editCount === 0) {
+        return 0; // First edit is free
+      }
+      // Get pricing from database with fallback
+      try {
+        const pricing = await pricingService.getPricingByServiceCode('AiImageEditing');
+        return pricing?.credits || 1; // Fallback to 1 credit
+      } catch (error) {
+        console.error('Error fetching AiImageEditing pricing:', error);
+        return 1; // Fallback to 1 credit
+      }
     }
     
     return 0;
+  },
+
+  async calculateMultipleEditCredits(
+    authorId: string, 
+    action: 'textEdit' | 'imageEdit', 
+    editCount: number
+  ): Promise<{
+    totalCredits: number;
+    freeEdits: number;
+    paidEdits: number;
+    breakdown: Array<{ editNumber: number; credits: number; isFree: boolean }>;
+  }> {
+    const currentEditCount = await this.getEditCount(authorId, action);
+    const breakdown: Array<{ editNumber: number; credits: number; isFree: boolean }> = [];
+    let totalCredits = 0;
+    let freeEdits = 0;
+    let paidEdits = 0;
+
+    for (let i = 0; i < editCount; i++) {
+      const editNumber = currentEditCount + i + 1;
+      let credits = 0;
+      let isFree = true;
+
+      if (action === 'textEdit') {
+        if (editNumber <= 5) {
+          credits = 0;
+          isFree = true;
+        } else {
+          const paidEditNumber = editNumber - 5;
+          if (paidEditNumber % 5 === 0) {
+            try {
+              const pricing = await pricingService.getPricingByServiceCode('AiTextEditing');
+              credits = pricing?.credits || 1;
+              isFree = false;
+            } catch (error) {
+              console.error('Error fetching AiTextEditing pricing:', error);
+              credits = 1;
+              isFree = false;
+            }
+          }
+        }
+      } else if (action === 'imageEdit') {
+        if (editNumber === 1) {
+          credits = 0;
+          isFree = true;
+        } else {
+          try {
+            const pricing = await pricingService.getPricingByServiceCode('AiImageEditing');
+            credits = pricing?.credits || 1;
+            isFree = false;
+          } catch (error) {
+            console.error('Error fetching AiImageEditing pricing:', error);
+            credits = 1;
+            isFree = false;
+          }
+        }
+      }
+
+      breakdown.push({ editNumber, credits, isFree });
+      totalCredits += credits;
+      
+      if (isFree) {
+        freeEdits++;
+      } else {
+        paidEdits++;
+      }
+    }
+
+    return {
+      totalCredits,
+      freeEdits,
+      paidEdits,
+      breakdown
+    };
   },
 
   async checkEditPermission(authorId: string, action: 'textEdit' | 'imageEdit'): Promise<{
@@ -528,6 +608,8 @@ export const aiEditService = {
     currentBalance: number;
     editCount: number;
     message?: string;
+    nextThreshold?: number;
+    isFree?: boolean;
   }> {
     const requiredCredits = await this.calculateRequiredCredits(authorId, action);
     const currentBalance = await creditService.getAuthorCreditBalance(authorId);
@@ -536,10 +618,35 @@ export const aiEditService = {
     const canEdit = requiredCredits === 0 || currentBalance >= requiredCredits;
     
     let message;
-    if (!canEdit) {
+    let nextThreshold;
+    const isFree = requiredCredits === 0;
+
+    if (action === 'textEdit') {
+      if (editCount < 5) {
+        const remaining = 5 - editCount;
+        message = `${remaining} free edits remaining`;
+        nextThreshold = 5;
+      } else {
+        const nextChargeAt = Math.ceil((editCount - 4) / 5) * 5 + 5;
+        const editsUntilCharge = nextChargeAt - editCount;
+        if (editsUntilCharge > 1) {
+          message = `${editsUntilCharge - 1} free edits remaining`;
+        } else if (requiredCredits > 0) {
+          message = `Next edit will cost ${requiredCredits} credit(s)`;
+        }
+        nextThreshold = nextChargeAt;
+      }
+    } else if (action === 'imageEdit') {
+      if (editCount === 0) {
+        message = `1 free edit remaining`;
+        nextThreshold = 1;
+      } else if (requiredCredits > 0) {
+        message = `Next edit will cost ${requiredCredits} credit(s)`;
+      }
+    }
+
+    if (!canEdit && requiredCredits > 0) {
       message = `Insufficient credits. You need ${requiredCredits} credit(s) but have ${currentBalance}.`;
-    } else if (requiredCredits > 0) {
-      message = `This edit will cost ${requiredCredits} credit(s). Your balance: ${currentBalance}.`;
     }
 
     return {
@@ -547,7 +654,9 @@ export const aiEditService = {
       requiredCredits,
       currentBalance,
       editCount,
-      message
+      message,
+      nextThreshold,
+      isFree
     };
   },
 
@@ -593,6 +702,320 @@ export const aiEditService = {
       .where(eq(aiEdits.authorId, authorId))
       .orderBy(desc(aiEdits.requestedAt))
       .limit(limit);
+  }
+};
+
+// Chapter operations
+export const chapterService = {
+  async createChapter(chapterData: { 
+    storyId: string; 
+    authorId: string;
+    title: string; 
+    htmlContent: string; 
+    chapterNumber: number;
+    version?: number;
+    imageUri?: string;
+    imageThumbnailUri?: string;
+    audioUri?: string;
+  }) {
+    const [chapter] = await db.insert(chapters).values({
+      storyId: chapterData.storyId,
+      authorId: chapterData.authorId,
+      title: chapterData.title,
+      htmlContent: chapterData.htmlContent,
+      chapterNumber: chapterData.chapterNumber,
+      version: chapterData.version || 1,
+      imageUri: toRelativeImagePath(chapterData.imageUri),
+      imageThumbnailUri: toRelativeImagePath(chapterData.imageThumbnailUri),
+      audioUri: chapterData.audioUri,
+    }).returning();
+    
+    // Convert relative paths back to absolute URLs for response
+    return {
+      ...chapter,
+      imageUri: toAbsoluteImageUrl(chapter.imageUri),
+      imageThumbnailUri: toAbsoluteImageUrl(chapter.imageThumbnailUri),
+    };
+  },
+
+  async getChapterById(chapterId: string) {
+    const [chapter] = await db.select().from(chapters).where(eq(chapters.id, chapterId));
+    if (!chapter) return chapter;
+    
+    return {
+      ...chapter,
+      imageUri: toAbsoluteImageUrl(chapter.imageUri),
+      imageThumbnailUri: toAbsoluteImageUrl(chapter.imageThumbnailUri),
+    };
+  },
+
+  async getChaptersByStory(storyId: string) {
+    const chapterResults = await db.select().from(chapters).where(eq(chapters.storyId, storyId)).orderBy(asc(chapters.chapterNumber));
+    
+    return chapterResults.map(chapter => ({
+      ...chapter,
+      imageUri: toAbsoluteImageUrl(chapter.imageUri),
+      imageThumbnailUri: toAbsoluteImageUrl(chapter.imageThumbnailUri),
+    }));
+  },
+
+  async updateChapter(chapterId: string, updates: Partial<typeof chapters.$inferInsert>) {
+    // Convert any image URLs to relative paths for storage
+    const processedUpdates = {
+      ...updates,
+      ...(updates.imageUri !== undefined && { imageUri: toRelativeImagePath(updates.imageUri) }),
+      ...(updates.imageThumbnailUri !== undefined && { imageThumbnailUri: toRelativeImagePath(updates.imageThumbnailUri) }),
+    };
+    
+    const [chapter] = await db.update(chapters).set(processedUpdates).where(eq(chapters.id, chapterId)).returning();
+    
+    return {
+      ...chapter,
+      imageUri: toAbsoluteImageUrl(chapter.imageUri),
+      imageThumbnailUri: toAbsoluteImageUrl(chapter.imageThumbnailUri),
+    };
+  },
+
+  async deleteChapter(chapterId: string) {
+    await db.delete(chapters).where(eq(chapters.id, chapterId));
+  },
+
+  async getStoryChapters(storyId: string): Promise<Array<{
+    id: string;
+    chapterNumber: number;
+    title: string;
+    imageUri: string | null;
+    imageThumbnailUri: string | null;
+    htmlContent: string;
+    audioUri: string | null;
+    version: number;
+    createdAt: Date;
+    updatedAt: Date;
+  }>> {
+    // Get the latest version for each chapter
+    const latestVersionsSubquery = db
+      .select({
+        storyId: chapters.storyId,
+        chapterNumber: chapters.chapterNumber,
+        latestVersion: max(chapters.version).as('latest_version')
+      })
+      .from(chapters)
+      .where(eq(chapters.storyId, storyId))
+      .groupBy(chapters.storyId, chapters.chapterNumber)
+      .as('latest_versions');
+
+    const chapterResults = await db
+      .select({
+        id: chapters.id,
+        chapterNumber: chapters.chapterNumber,
+        title: chapters.title,
+        imageUri: chapters.imageUri,
+        imageThumbnailUri: chapters.imageThumbnailUri,
+        htmlContent: chapters.htmlContent,
+        audioUri: chapters.audioUri,
+        version: chapters.version,
+        createdAt: chapters.createdAt,
+        updatedAt: chapters.updatedAt
+      })
+      .from(chapters)
+      .innerJoin(latestVersionsSubquery, and(
+        eq(chapters.storyId, latestVersionsSubquery.storyId),
+        eq(chapters.chapterNumber, latestVersionsSubquery.chapterNumber),
+        eq(chapters.version, latestVersionsSubquery.latestVersion)
+      ))
+      .where(eq(chapters.storyId, storyId))
+      .orderBy(asc(chapters.chapterNumber));
+
+    return chapterResults.map(chapter => ({
+      ...chapter,
+      imageUri: toAbsoluteImageUrl(chapter.imageUri),
+      imageThumbnailUri: toAbsoluteImageUrl(chapter.imageThumbnailUri),
+    }));
+  },
+
+  async getStoryChapter(storyId: string, chapterNumber: number): Promise<{
+    id: string;
+    chapterNumber: number;
+    title: string;
+    imageUri: string | null;
+    imageThumbnailUri: string | null;
+    htmlContent: string;
+    audioUri: string | null;
+    version: number;
+    createdAt: Date;
+    updatedAt: Date;
+  } | null> {
+    // Get the latest version of the specific chapter
+    const latestVersionResult = await db
+      .select({ latestVersion: max(chapters.version) })
+      .from(chapters)
+      .where(and(
+        eq(chapters.storyId, storyId),
+        eq(chapters.chapterNumber, chapterNumber)
+      ));
+
+    const latestVersion = latestVersionResult[0]?.latestVersion;
+    if (!latestVersion) return null;
+
+    const [chapter] = await db
+      .select({
+        id: chapters.id,
+        chapterNumber: chapters.chapterNumber,
+        title: chapters.title,
+        imageUri: chapters.imageUri,
+        imageThumbnailUri: chapters.imageThumbnailUri,
+        htmlContent: chapters.htmlContent,
+        audioUri: chapters.audioUri,
+        version: chapters.version,
+        createdAt: chapters.createdAt,
+        updatedAt: chapters.updatedAt
+      })
+      .from(chapters)
+      .where(and(
+        eq(chapters.storyId, storyId),
+        eq(chapters.chapterNumber, chapterNumber),
+        eq(chapters.version, latestVersion)
+      ));
+
+    if (!chapter) return null;
+
+    return {
+      ...chapter,
+      imageUri: toAbsoluteImageUrl(chapter.imageUri),
+      imageThumbnailUri: toAbsoluteImageUrl(chapter.imageThumbnailUri),
+    };
+  },
+
+  async getTotalChaptersCount(storyId: string): Promise<number> {
+    const result = await db
+      .select({ count: count() })
+      .from(chapters)
+      .where(eq(chapters.storyId, storyId));
+    
+    return result[0]?.count || 0;
+  },
+
+  async getChapterTableOfContents(storyId: string): Promise<Array<{
+    chapterNumber: number;
+    title: string;
+  }>> {
+    // Get the latest version for each chapter for table of contents
+    const latestVersionsSubquery = db
+      .select({
+        storyId: chapters.storyId,
+        chapterNumber: chapters.chapterNumber,
+        latestVersion: max(chapters.version).as('latest_version')
+      })
+      .from(chapters)
+      .where(eq(chapters.storyId, storyId))
+      .groupBy(chapters.storyId, chapters.chapterNumber)
+      .as('latest_versions');
+
+    return await db
+      .select({
+        chapterNumber: chapters.chapterNumber,
+        title: chapters.title
+      })
+      .from(chapters)
+      .innerJoin(latestVersionsSubquery, and(
+        eq(chapters.storyId, latestVersionsSubquery.storyId),
+        eq(chapters.chapterNumber, latestVersionsSubquery.chapterNumber),
+        eq(chapters.version, latestVersionsSubquery.latestVersion)
+      ))
+      .where(eq(chapters.storyId, storyId))
+      .orderBy(asc(chapters.chapterNumber));
+  },
+
+  async updateChapterContent(storyId: string, chapterNumber: number, htmlContent: string): Promise<void> {
+    // Find the maximum version number for this chapter
+    const maxVersionResult = await db
+      .select({ 
+        maxVersion: max(chapters.version) 
+      })
+      .from(chapters)
+      .where(and(
+        eq(chapters.storyId, storyId),
+        eq(chapters.chapterNumber, chapterNumber)
+      ));
+
+    const maxVersion = maxVersionResult[0]?.maxVersion || 0;
+    if (maxVersion === 0) {
+      throw new Error(`Chapter ${chapterNumber} not found for story ${storyId}`);
+    }
+
+    // Get the full chapter details for the latest version
+    const [chapterToUpdate] = await db
+      .select()
+      .from(chapters)
+      .where(and(
+        eq(chapters.storyId, storyId),
+        eq(chapters.chapterNumber, chapterNumber),
+        eq(chapters.version, maxVersion)
+      ));
+
+    if (!chapterToUpdate) {
+      throw new Error(`Chapter ${chapterNumber} not found for story ${storyId}`);
+    }
+
+    // Create a new version with updated content
+    const newVersion = maxVersion + 1;
+    await db.insert(chapters).values({
+      storyId: chapterToUpdate.storyId,
+      authorId: chapterToUpdate.authorId,
+      title: chapterToUpdate.title,
+      htmlContent: htmlContent,
+      chapterNumber: chapterToUpdate.chapterNumber,
+      version: newVersion,
+      imageUri: chapterToUpdate.imageUri,
+      imageThumbnailUri: chapterToUpdate.imageThumbnailUri,
+      audioUri: chapterToUpdate.audioUri,
+    });
+  },
+
+  async updateChapterImage(storyId: string, chapterNumber: number, imageUri: string): Promise<void> {
+    // Find the maximum version number for this chapter
+    const maxVersionResult = await db
+      .select({ 
+        maxVersion: max(chapters.version) 
+      })
+      .from(chapters)
+      .where(and(
+        eq(chapters.storyId, storyId),
+        eq(chapters.chapterNumber, chapterNumber)
+      ));
+
+    const maxVersion = maxVersionResult[0]?.maxVersion || 0;
+    if (maxVersion === 0) {
+      throw new Error(`Chapter ${chapterNumber} not found for story ${storyId}`);
+    }
+
+    // Get the full chapter details for the latest version
+    const [chapterToUpdate] = await db
+      .select()
+      .from(chapters)
+      .where(and(
+        eq(chapters.storyId, storyId),
+        eq(chapters.chapterNumber, chapterNumber),
+        eq(chapters.version, maxVersion)
+      ));
+
+    if (!chapterToUpdate) {
+      throw new Error(`Chapter ${chapterNumber} not found for story ${storyId}`);
+    }
+
+    // Create a new version with updated image
+    const newVersion = maxVersion + 1;
+    await db.insert(chapters).values({
+      storyId: chapterToUpdate.storyId,
+      authorId: chapterToUpdate.authorId,
+      title: chapterToUpdate.title,
+      htmlContent: chapterToUpdate.htmlContent,
+      chapterNumber: chapterToUpdate.chapterNumber,
+      version: newVersion,
+      imageUri: imageUri,
+      imageThumbnailUri: chapterToUpdate.imageThumbnailUri,
+      audioUri: chapterToUpdate.audioUri,
+    });
   }
 };
 

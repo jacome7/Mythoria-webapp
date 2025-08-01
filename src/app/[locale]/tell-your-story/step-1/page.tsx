@@ -22,6 +22,7 @@ interface AuthorData {
 export default function Step1Page() {
   const locale = useLocale();
   const t = useTranslations('StorySteps.step1');
+  const tCommon = useTranslations('StorySteps.common');
   const [, setAuthorData] = useState<AuthorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -167,7 +168,7 @@ export default function Step1Page() {
                 {/* Mobile Progress Indicator */}
                 <div className="block md:hidden mb-8">
                   <div className="text-center text-sm text-gray-600 mb-2">
-                    Step {currentStep} of {totalSteps}
+                    {tCommon('stepProgress', { currentStep, totalSteps })}
                   </div>
                   <progress
                     className="progress progress-primary w-full"

@@ -54,6 +54,7 @@
       "creditsUnit": "Credits"
     },
     "infoModal": {
+      "title": "Service Information",
       "header": "Service Information",
       "button": "More Info",
       "services": {
@@ -170,6 +171,58 @@
         "postalCode": "Postal Code",
         "country": "Country"
       },
+      "loading": "Loading your information...",
+      "placeholders": {
+        "vatNumber": "e.g., PT123456789, ES12345678A, FR12345678901",
+        "phone": "+351 912 345 678",
+        "postalCode": "12345"
+      },
+      "selectCountry": "Select country",
+      "groups": {
+        "eu": "European Union",
+        "otherEurope": "Other European Countries",
+        "other": "Other Countries"
+      },
+      "countries": {
+        "at": "Austria",
+        "be": "Belgium",
+        "bg": "Bulgaria",
+        "hr": "Croatia",
+        "cy": "Cyprus",
+        "cz": "Czech Republic",
+        "dk": "Denmark",
+        "ee": "Estonia",
+        "fi": "Finland",
+        "fr": "France",
+        "de": "Germany",
+        "gr": "Greece",
+        "hu": "Hungary",
+        "ie": "Ireland",
+        "it": "Italy",
+        "lv": "Latvia",
+        "lt": "Lithuania",
+        "lu": "Luxembourg",
+        "mt": "Malta",
+        "nl": "Netherlands",
+        "pl": "Poland",
+        "pt": "Portugal",
+        "ro": "Romania",
+        "sk": "Slovakia",
+        "si": "Slovenia",
+        "es": "Spain",
+        "se": "Sweden",
+        "ch": "Switzerland",
+        "no": "Norway",
+        "gb": "United Kingdom",
+        "us": "United States",
+        "ca": "Canada",
+        "au": "Australia",
+        "jp": "Japan",
+        "br": "Brazil",
+        "mx": "Mexico",
+        "in": "India",
+        "sg": "Singapore"
+      },
       "vatValidation": {
         "valid": "Valid VAT number",
         "invalid": "Invalid VAT number format",
@@ -190,8 +243,8 @@
     },
     "payment": {
       "title": "Payment Method",
-      "revolutPay": "Revolut Pay & Cards",
-      "revolutDescription": "Pay with Revolut Pay or any credit/debit card securely",
+      "revolutPay": "Credits Cards or Revolut Pay",
+      "revolutDescription": "Pay with any credit/debit card or Revolut Pay securely",
       "mbway": "MBWay",
       "mbwayDescription": "Send money instantly using your MB Way app. You'll receive payment instructions via email.",
       "creditCards": "Credit/Debit Cards",

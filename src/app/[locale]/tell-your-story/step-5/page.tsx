@@ -69,7 +69,7 @@ function Step5Page() {
     } else {
       setLoading(false);
     }
-  }, [router]);
+  }, [router]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchStoryData = async (storyId: string) => {
     try {
@@ -81,7 +81,7 @@ function Step5Page() {
       setStoryData(data.story);
     } catch (error) {
       console.error('Error fetching story data:', error);
-      setError('Failed to load story data. Please try again.');
+      setError(t('alerts.failedToFetchStoryData'));
     }
   };
   const fetchUserCredits = async () => {
@@ -94,7 +94,7 @@ function Step5Page() {
       setUserCredits(data.currentBalance || 0);
     } catch (error) {
       console.error('Error fetching user credits:', error);
-      setError('Failed to load credit information. Please try again.');
+      setError(t('alerts.failedToFetchUserCredits'));
     }
   };
 
@@ -110,7 +110,7 @@ function Step5Page() {
       }
     } catch (error) {
       console.error('Error fetching pricing data:', error);
-      setError('Failed to load pricing information. Please try again.');
+      setError(t('alerts.failedToFetchPricingData'));
     }
   };
   
@@ -122,12 +122,12 @@ function Step5Page() {
 
   const handleCompleteStory = async () => {
     if (!currentStoryId || !storyData || !ebookPricing) {
-      setError('Story data not available');
+      setError(t('storyDataNotAvailable'));
       return;
     }
 
     if (hasInsufficientCredits()) {
-      setError('You have insufficient credits. Please purchase more credits to continue.');
+      setError(t('alerts.insufficientCreditsError'));
       return;
     }
 
@@ -149,7 +149,9 @@ function Step5Page() {
 
       if (!creditsResponse.ok) {
         const creditsError = await creditsResponse.json();
-        throw new Error(creditsError.error || 'Failed to deduct credits');
+        console.error('Failed to deduct credits:', creditsError);
+        setError(t('alerts.failedToDeductCredits'));
+        return;
       }
 
       const creditsResult = await creditsResponse.json();
@@ -178,7 +180,9 @@ function Step5Page() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to complete story');
+        console.error('Failed to complete story:', errorData);
+        setError(t('alerts.failedToCompleteStory'));
+        return;
       }
 
       const result = await response.json();
@@ -200,7 +204,7 @@ function Step5Page() {
       setStoryGenerationStarted(true);
     } catch (error) {
       console.error('Error completing story:', error);
-      setError(error instanceof Error ? error.message : 'Failed to complete story');
+      setError(t('alerts.failedToCompleteStory'));
     } finally {
       setSubmitting(false);
     }

@@ -43,6 +43,7 @@ export default function MyStoriesTable() {
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [storyToShare, setStoryToShare] = useState<Story | null>(null);
   const [openActionMenu, setOpenActionMenu] = useState<string | null>(null);
+  const [menuPosition, setMenuPosition] = useState<{top: number, right: number} | null>(null);
   
   // Mobile detection
   const [isMobile, setIsMobile] = useState(false);
@@ -69,8 +70,13 @@ export default function MyStoriesTable() {
   // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (openActionMenu && !(event.target as Element).closest('.relative')) {
+      const target = event.target as Element;
+      if (openActionMenu && 
+          !target.closest('.relative') && 
+          !target.closest('[data-story-menu]') &&
+          !target.closest('.fixed')) {
         setOpenActionMenu(null);
+        setMenuPosition(null);
       }
     };
 
@@ -103,7 +109,10 @@ export default function MyStoriesTable() {
     try {
       const response = await fetch(`/api/my-stories/${storyToDelete.storyId}`, {
         method: 'DELETE',
-      });      if (response.ok) {        // Track story deletion
+      });
+      
+      if (response.ok) {
+        // Track story deletion
         trackStoryManagement.deleted({
           story_id: storyToDelete.storyId,
           story_title: storyToDelete.title,
@@ -218,11 +227,11 @@ export default function MyStoriesTable() {
     }
 
     const statusMap = {
-      'queued': { text: 'Queued', class: 'badge-info', icon: '⏳' },
-      'running': { text: 'Generating', class: 'badge-warning', icon: '🔄' },
-      'completed': { text: 'Completed', class: 'badge-success', icon: '✅' },
-      'failed': { text: 'Failed', class: 'badge-error', icon: '❌' },
-      'cancelled': { text: 'Cancelled', class: 'badge-neutral', icon: '⏹️' },
+      queued: { text: t('table.status.queued'), class: 'badge-info', icon: '⏳' },
+      running: { text: t('table.status.running'), class: 'badge-warning', icon: '🔄' },
+      completed: { text: t('table.status.completed'), class: 'badge-success', icon: '✅' },
+      failed: { text: t('table.status.failed'), class: 'badge-error', icon: '❌' },
+      cancelled: { text: t('table.status.cancelled'), class: 'badge-neutral', icon: '⏹️' },
     };
 
     const statusInfo = statusMap[story.storyGenerationStatus];
@@ -257,7 +266,7 @@ export default function MyStoriesTable() {
           </div>
         </div>
       ) : (
-        <>          <div className="overflow-x-auto overflow-y-visible">
+        <><div className="overflow-x-auto overflow-y-visible">
             <table className="table table-zebra w-full">
               <thead>
                 <tr>
@@ -284,7 +293,7 @@ export default function MyStoriesTable() {
                       className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
                       onClick={() => handleSort('status')}
                     >
-                      {t('table.status')}
+                      {t('table.status.header')}
                       {getSortIcon('status')}
                     </button>
                   </th>
@@ -306,9 +315,9 @@ export default function MyStoriesTable() {
                         <span>{story.title}</span>
                       )}
                     </td>
-                    <td className="px-2 py-1 md:px-4 md:py-2">
+                    <td className="px-2 py-1 md:px-4 md:py-2 whitespace-nowrap">
                       <div className="space-y-1">
-                        <span className={`${getStatusBadgeClass(story.status)} badge-sm text-xs`}>
+                        <span className={`${getStatusBadgeClass(story.status)} badge-sm text-xs whitespace-nowrap`}>
                           {t(`status.${story.status}`)}
                         </span>
                         {(() => {
@@ -316,7 +325,7 @@ export default function MyStoriesTable() {
                           if (genStatus && story.status === 'writing') {
                             return (
                               <div className="flex flex-col space-y-1">
-                                <span className={`badge badge-xs ${genStatus.class}`}>
+                                <span className={`badge badge-xs ${genStatus.class} whitespace-nowrap`}>
                                   {genStatus.icon} {genStatus.text}
                                 </span>
                                 {genStatus.percentage > 0 && genStatus.text === 'Generating' && (
@@ -430,14 +439,27 @@ export default function MyStoriesTable() {
                         <button
                           className="btn btn-ghost btn-sm"
                           data-story-menu={story.storyId}
-                          onClick={() => setOpenActionMenu(openActionMenu === story.storyId ? null : story.storyId)}
+                          onClick={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            setMenuPosition({
+                              top: rect.bottom + 4,
+                              right: window.innerWidth - rect.right
+                            });
+                            setOpenActionMenu(openActionMenu === story.storyId ? null : story.storyId);
+                          }}
                         >
                           <FiMoreVertical className="w-4 h-4" />
                         </button>
-                        {openActionMenu === story.storyId && (
-                          <div className="absolute right-0 top-full mt-1 z-[9999] bg-base-100 border border-base-300 rounded-lg shadow-xl min-w-48">
+                        {openActionMenu === story.storyId && menuPosition && (
+                          <div 
+                            className="fixed z-[9999] bg-base-100 border border-base-300 rounded-lg shadow-xl min-w-48"
+                            style={{
+                              top: `${menuPosition.top}px`,
+                              right: `${menuPosition.right}px`
+                            }}
+                          >
                             <div className="p-2 space-y-1">
-                              {story.status === 'published' && (                                <Link
+                              {story.status === 'published' && (<Link
                                   href={`/${locale}/stories/${story.storyId}`}
                                   className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
                                   onClick={() => setOpenActionMenu(null)}
@@ -453,6 +475,7 @@ export default function MyStoriesTable() {
                                   onClick={() => {
                                     handleShare(story);
                                     setOpenActionMenu(null);
+                                    setMenuPosition(null);
                                   }}
                                 >
                                   <FiShare2 className="w-4 h-4" />
@@ -461,7 +484,7 @@ export default function MyStoriesTable() {
                               ) : (
                                 <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
                                   <FiShare2 className="w-4 h-4" />
-                                  {t('actions.share')} (Disabled)
+                                  {t('actions.share')}
                                 </div>
                               )}
                               
@@ -471,6 +494,7 @@ export default function MyStoriesTable() {
                                   onClick={() => {
                                     handlePrint(story);
                                     setOpenActionMenu(null);
+                                    setMenuPosition(null);
                                   }}
                                 >
                                   <FiPrinter className="w-4 h-4" />
@@ -479,20 +503,23 @@ export default function MyStoriesTable() {
                               ) : (
                                 <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
                                   <FiPrinter className="w-4 h-4" />
-                                  {t('actions.print')} (Not Available)
+                                  {t('actions.print')}
                                 </div>
                               )}
                               
                               {story.status === 'writing' ? (
                                 <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
                                   <FiEdit3 className="w-4 h-4" />
-                                  {t('actions.edit')} (Disabled)
+                                  {t('actions.edit')}
                                 </div>
                               ) : story.status === 'draft' ? (
                                 <Link
                                   href={`/${locale}/tell-your-story/step-3?edit=${story.storyId}`}
                                   className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
-                                  onClick={() => setOpenActionMenu(null)}
+                                  onClick={() => {
+                                    setOpenActionMenu(null);
+                                    setMenuPosition(null);
+                                  }}
                                 >
                                   <FiEdit3 className="w-4 h-4" />
                                   {t('actions.edit')}
@@ -501,7 +528,10 @@ export default function MyStoriesTable() {
                                 <Link
                                   href={`/${locale}/stories/edit/${story.storyId}`}
                                   className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
-                                  onClick={() => setOpenActionMenu(null)}
+                                  onClick={() => {
+                                    setOpenActionMenu(null);
+                                    setMenuPosition(null);
+                                  }}
                                 >
                                   <FiEdit3 className="w-4 h-4" />
                                   {t('actions.edit')}
@@ -515,13 +545,15 @@ export default function MyStoriesTable() {
                                 onClick={() => {
                                   handleDeleteClick(story);
                                   setOpenActionMenu(null);
+                                  setMenuPosition(null);
                                 }}
                               >
                                 <FiTrash2 className="w-4 h-4" />
                                 {t('actions.delete')}
                               </button>
                             </div>
-                          </div>                        )}
+                          </div>
+                        )}
                       </div>
                     </td>
                   </tr>))}

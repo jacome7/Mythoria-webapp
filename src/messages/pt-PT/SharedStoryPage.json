@@ -1,0 +1,11 @@
+{
+  "loading": {
+    "title": "A carregar história partilhada...",
+    "subtitle": "Por favor aguarde enquanto carregamos a história"
+  },
+  "redirecting": "A redirecionar...",
+  "errors": {
+    "unableToAccess": "Não foi possível aceder à história partilhada",
+    "failedToAccess": "Falha ao aceder à história partilhada"
+  }
+}

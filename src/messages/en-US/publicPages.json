@@ -123,6 +123,18 @@
       "Fiction",
       "Myth"
     ],
+    "fallbackWords": [
+      "Adventure",
+      "Love Story",
+      "Mystery",
+      "Fairy Tale"
+    ],
+    "altTexts": {
+      "kidsBook": "Kids Book",
+      "groupsYearbooks": "Groups & Yearbooks",
+      "adultBook": "How I met your mother",
+      "companyBook": "Company Book"
+    },
     "comingSoon": {
       "title": "Our story is just beginning...",
       "subtitle": "Mythoria is crafting something magical! I'm working hard, alongside AI, to bring you a new world of personalized storytelling. Stay tuned, the adventure will be available soon! 🧙‍♂️📚✨"
@@ -172,6 +184,14 @@
           "title": "Experience the Magic",
           "description": "Children will be captivated seeing themselves in exciting adventures, while adults will be delighted by reliving cherished memories and sharing heartfelt moments."
         }
+      },
+      "stepLabels": {
+        "step1": "Step 1",
+        "step2": "Step 2",
+        "step3": "Step 3",
+        "step4": "Step 4",
+        "step5": "Step 5",
+        "step6": "Step 6"
       },
       "conclusion": "Our Story Factory Oompa-Loompas will handle everything else, bringing your story to life!"
     },
@@ -315,7 +335,9 @@
       "createdBy": "Created by",
       "emptyTitle": "No Featured Stories Yet",
       "emptyMessage": "Create your own story and share it with the world!",
-      "createStory": "Create Your Story"
+      "createStory": "Create Your Story",
+      "storyCoverAlt": "Story cover",
+      "filterResults": "{count} of {total} stories shown"
     },
     "emptyState": {
       "noStoriesMatch": "No stories match your filters",
@@ -395,7 +417,10 @@
       "cta": "Create your own magical stories today!"
     },
     "actions": {
-      "orderPrint": "Order printed copy"
+      "orderPrint": "Order printed copy",
+      "listen": "Listen",
+      "print": "Print",
+      "listenMobile": "Listen"
     }
   },
   "SharedStoryPage": {
@@ -440,11 +465,12 @@
     "errors": {
       "storyNotFound": "Story not found",
       "storyNotPublished": "Only published stories can be printed",
-      "pdfNotAvailable": "PDF not available for this story",
       "loadingFailed": "Failed to load story data",
       "missingRequiredFields": "Please complete all required fields",
       "orderFailed": "Failed to place print order",
-      "insufficientCredits": "Insufficient credits."
+      "insufficientCredits": "Insufficient credits.",
+      "loadPricingFailed": "Failed to load pricing information",
+      "fetchCreditsFailed": "Failed to fetch credit balance"
     },
     "addressInfo": {
       "selectShipping": "Please select a shipping address for your printed book.",

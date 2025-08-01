@@ -19,7 +19,8 @@ export default function AudiobookGenerationTrigger({
   onGenerationStart,
   onGenerationComplete
 }: AudiobookGenerationTriggerProps) {
-  const t = useTranslations('stories.audioGeneration');
+  const t = useTranslations('components.audiobookGenerationTrigger');
+  const tCommon = useTranslations('common');
   const [isGeneratingLocal, setIsGeneratingLocal] = useState(isGenerating);
   const [error, setError] = useState<string | null>(null);
   const [selectedVoice, setSelectedVoice] = useState('nova');
@@ -45,7 +46,7 @@ export default function AudiobookGenerationTrigger({
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to start audiobook generation');
+        throw new Error(errorData.error || t('errors.failedToStart'));
       }
 
       // The response will be 202 Accepted, and the workflow will process asynchronously
@@ -56,7 +57,9 @@ export default function AudiobookGenerationTrigger({
       
     } catch (error) {
       console.error('Error generating audiobook:', error);
-      setError(error instanceof Error ? error.message : 'Failed to generate audiobook');
+      setError(
+        error instanceof Error ? error.message : t('errors.failedToStart'),
+      );
       setIsGeneratingLocal(false);
     }
   };
@@ -70,12 +73,36 @@ export default function AudiobookGenerationTrigger({
 
   // Voice options for OpenAI TTS
   const voiceOptions = [
-    { value: 'alloy', label: 'Alloy', description: 'Neutral, balanced voice' },
-    { value: 'echo', label: 'Echo', description: 'Clear, expressive voice' },
-    { value: 'fable', label: 'Fable', description: 'Warm, storytelling voice' },
-    { value: 'nova', label: 'Nova', description: 'Bright, energetic voice' },
-    { value: 'onyx', label: 'Onyx', description: 'Deep, authoritative voice' },
-    { value: 'shimmer', label: 'Shimmer', description: 'Gentle, soothing voice' },
+    {
+      value: 'alloy',
+      label: tCommon('voices.names.alloy'),
+      description: tCommon('voices.descriptions.alloy'),
+    },
+    {
+      value: 'echo',
+      label: tCommon('voices.names.echo'),
+      description: tCommon('voices.descriptions.echo'),
+    },
+    {
+      value: 'fable',
+      label: tCommon('voices.names.fable'),
+      description: tCommon('voices.descriptions.fable'),
+    },
+    {
+      value: 'nova',
+      label: tCommon('voices.names.nova'),
+      description: tCommon('voices.descriptions.nova'),
+    },
+    {
+      value: 'onyx',
+      label: tCommon('voices.names.onyx'),
+      description: tCommon('voices.descriptions.onyx'),
+    },
+    {
+      value: 'shimmer',
+      label: tCommon('voices.names.shimmer'),
+      description: tCommon('voices.descriptions.shimmer'),
+    },
   ];
 
   if (hasAudiobook) {
