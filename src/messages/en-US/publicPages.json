@@ -460,7 +460,9 @@
       "loadingFailed": "Failed to load story data",
       "missingRequiredFields": "Please complete all required fields",
       "orderFailed": "Failed to place print order",
-      "insufficientCredits": "Insufficient credits."
+      "insufficientCredits": "Insufficient credits.",
+      "loadPricingFailed": "Failed to load pricing information",
+      "fetchCreditsFailed": "Failed to fetch credit balance"
     },
     "addressInfo": {
       "selectShipping": "Please select a shipping address for your printed book.",
