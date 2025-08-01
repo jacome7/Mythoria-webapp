@@ -521,6 +521,10 @@
       "description": "histórias criadas e contando..."
     },
     "storyGenerationProgress": {
+      "timeUnits": {
+        "seconds": "segundos",
+        "minutes": "minutos"
+      },
       "completion": {
         "title": "A Sua História Está Pronta!",
         "description": "Parabéns! A sua história mágica foi criada e está pronta para ser lida.",

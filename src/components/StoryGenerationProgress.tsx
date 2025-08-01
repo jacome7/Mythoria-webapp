@@ -23,16 +23,21 @@ const getFunnyMessage = (step: string, t: ReturnType<typeof import('next-intl').
   return messages[Math.floor(Math.random() * messages.length)];
 };
 
-const calculateEstimatedTime = (percentage: number): string => {
+interface TimeUnits {
+  seconds: string;
+  minutes: string;
+}
+
+const calculateEstimatedTime = (percentage: number, timeUnits: TimeUnits): string => {
   const totalEstimatedTime = 14 * 60; // 14 minutes in seconds
   const remainingTime = Math.max(0, totalEstimatedTime - (totalEstimatedTime * percentage / 100));
-  
+
   if (remainingTime < 60) {
-    return `${Math.ceil(remainingTime)} seconds`;
+    return `${Math.ceil(remainingTime)} ${timeUnits.seconds}`;
   } else {
     const minutes = Math.floor(remainingTime / 60);
     const seconds = Math.ceil(remainingTime % 60);
-    return seconds > 0 ? `${minutes}:${seconds.toString().padStart(2, '0')} minutes` : `${minutes} minutes`;
+    return seconds > 0 ? `${minutes}:${seconds.toString().padStart(2, '0')} ${timeUnits.minutes}` : `${minutes} ${timeUnits.minutes}`;
   }
 };
 
@@ -110,7 +115,10 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
     return () => clearInterval(intervalId);
   }, [storyId, onComplete]);
   const percentage = progress.storyGenerationCompletedPercentage;
-  const estimatedTime = calculateEstimatedTime(percentage);
+  const estimatedTime = calculateEstimatedTime(percentage, {
+    seconds: t('timeUnits.seconds'),
+    minutes: t('timeUnits.minutes'),
+  });
   const isCompleted = progress.status === 'published';
 
   // Show completion state when story is published

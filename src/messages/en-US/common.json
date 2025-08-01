@@ -648,8 +648,12 @@
 			"notAvailable": "N/A",
 			"description": "stories created and counting..."
 		},
-		"storyGenerationProgress": {
-			"completion": {
+                "storyGenerationProgress": {
+                        "timeUnits": {
+                                "seconds": "seconds",
+                                "minutes": "minutes"
+                        },
+                        "completion": {
 				"title": "Your Story is Ready!",
 				"description": "Congratulations! Your magical story has been created and is ready to be read.",
 				"progress": "100% Complete!",

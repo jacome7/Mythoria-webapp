@@ -18,22 +18,27 @@ interface AudiobookProgress {
   totalChapters?: number;
 }
 
+interface TimeUnits {
+  seconds: string;
+  minutes: string;
+}
+
 // Funny narrator messages based on current step
 const getFunnyMessage = (step: string, t: ReturnType<typeof import('next-intl').useTranslations>) => {
   const messages = t.raw(`narrationMessages.${step}`) || t.raw('narrationMessages.default');
   return messages[Math.floor(Math.random() * messages.length)];
 };
 
-const calculateEstimatedTime = (percentage: number): string => {
+const calculateEstimatedTime = (percentage: number, timeUnits: TimeUnits): string => {
   const totalEstimatedTime = 8 * 60; // 8 minutes in seconds (typically faster than story generation)
   const remainingTime = Math.max(0, totalEstimatedTime - (totalEstimatedTime * percentage / 100));
-  
+
   if (remainingTime < 60) {
-    return `${Math.ceil(remainingTime)} seconds`;
+    return `${Math.ceil(remainingTime)} ${timeUnits.seconds}`;
   } else {
     const minutes = Math.floor(remainingTime / 60);
     const seconds = Math.ceil(remainingTime % 60);
-    return seconds > 0 ? `${minutes}:${seconds.toString().padStart(2, '0')} minutes` : `${minutes} minutes`;
+    return seconds > 0 ? `${minutes}:${seconds.toString().padStart(2, '0')} ${timeUnits.minutes}` : `${minutes} ${timeUnits.minutes}`;
   }
 };
 
@@ -173,7 +178,10 @@ export default function AudiobookGenerationProgress({ storyId, onComplete }: Aud
           max={100}
         />
         <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
-          <span>{t('estimatedTimeRemaining')}: {calculateEstimatedTime(progress.audiobookGenerationCompletedPercentage)}</span>
+          <span>{t('estimatedTimeRemaining')}: {calculateEstimatedTime(progress.audiobookGenerationCompletedPercentage, {
+            seconds: t('timeUnits.seconds'),
+            minutes: t('timeUnits.minutes'),
+          })}</span>
           {progress.chaptersProcessed && progress.totalChapters && (
             <span>{t('chaptersProcessed', { 
               processed: progress.chaptersProcessed, 
