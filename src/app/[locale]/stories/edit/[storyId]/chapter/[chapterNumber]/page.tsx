@@ -121,7 +121,7 @@ export default function EditChapterPage() {
     } finally {
       setLoading(false);
     }
-  }, [storyId, user, addToast, chapterNumber, tComponents]);
+  }, [storyId, user, addToast, chapterNumber, tComponents, tEditor]);
 
   // Save chapter content and create new version
   const saveChapterContent = async (content: string, title: string) => {

@@ -95,7 +95,7 @@ export default function PublicStoryPage() {
     };
 
     fetchPublicStory();
-  }, [slug]);
+  }, [slug, t]);
   // Generate metadata for the page
   useEffect(() => {
     if (data?.story) {

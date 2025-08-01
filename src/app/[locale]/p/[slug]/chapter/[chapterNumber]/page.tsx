@@ -76,7 +76,7 @@ export default function PublicChapterPage() {
     if (slug && chapterNumber) {
       fetchPublicChapter();
     }
-  }, [slug, chapterNumber]);
+  }, [slug, chapterNumber, tPublicStoryPage]);
 
   // Set page title when data is loaded
   useEffect(() => {
