@@ -1,0 +1,15 @@
+{
+  "editor": {
+    "chapterNotFound": "Chapter not found",
+    "backToStory": "Back to Story",
+    "undoPreviousVersion": "Undo (Previous Version)",
+    "redoNextVersion": "Redo (Next Version)",
+    "chapterUpdates": {
+      "chaptersUpdatedSuccessfully": "{successCount} chapters updated successfully. Chapter {failedChapters} failed to edit.",
+      "allChaptersUpdated": "All {successCount} chapters updated successfully. Changes have been saved automatically."
+    },
+    "imageEditor": {
+      "chapterTitle": "Chapter {chapterNumber}"
+    }
+  }
+}
