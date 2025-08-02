@@ -1,11 +1,11 @@
 {
   "loading": {
-    "title": "Loading shared story...",
-    "subtitle": "Please wait while we load the story"
+    "title": "Cargando historia compartida...",
+    "subtitle": "Espera un momento mientras cargamos la historia"
   },
-  "redirecting": "Redirecting...",
+  "redirecting": "Redirigiendo...",
   "errors": {
-    "unableToAccess": "Unable to access shared story",
-    "failedToAccess": "Failed to access shared story"
+    "unableToAccess": "No se puede acceder a la historia compartida",
+    "failedToAccess": "Error al acceder a la historia compartida"
   }
 }

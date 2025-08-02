@@ -1,72 +1,72 @@
 {
   "PublicStoryPage": {
-    "storyNotFound": "Story Not Found",
-    "storyNotAvailable": "This story is not available for public reading.",
-    "chapterNotFound": "Chapter Not Found",
-    "chapterNotAvailable": "This chapter is not available.",
-    "aboutStory": "About This Story",
-    "author": "Author",
-    "targetAudience": "Target Audience",
-    "graphicalStyle": "Graphical Style",
-    "chapter": "Chapter",
-    "chapters": "Chapters",
-    "synopsis": "Synopsis",
-    "notSpecified": "Not specified",
+    "storyNotFound": "Historia no encontrada",
+    "storyNotAvailable": "Esta historia no está disponible para lectura pública.",
+    "chapterNotFound": "Capítulo no encontrado",
+    "chapterNotAvailable": "Este capítulo no está disponible.",
+    "aboutStory": "Acerca de esta historia",
+    "author": "Autor",
+    "targetAudience": "Público objetivo",
+    "graphicalStyle": "Estilo gráfico",
+    "chapter": "Capítulo",
+    "chapters": "Capítulos",
+    "synopsis": "Sinopsis",
+    "notSpecified": "No especificado",
     "loading": {
-      "title": "Loading Story",
-      "subtitle": "Please wait while we load your story..."
+      "title": "Cargando historia",
+      "subtitle": "Espera un momento mientras cargamos tu historia..."
     },
     "errors": {
-      "notFound": "Story Not Found",
-      "notFoundDesc": "The story you're looking for doesn't exist or is no longer public.",
-      "contentNotAvailable": "Content Not Available",
-      "contentNotAvailableDesc": "The story content is not currently available for reading.",
-      "failedToLoadStory": "Failed to load story",
-      "failedToLoadChapter": "Failed to load chapter"
+      "notFound": "Historia no encontrada",
+      "notFoundDesc": "La historia que buscas no existe o ya no es pública.",
+      "contentNotAvailable": "Contenido no disponible",
+      "contentNotAvailableDesc": "El contenido de la historia no está disponible para lectura.",
+      "failedToLoadStory": "No se pudo cargar la historia",
+      "failedToLoadChapter": "No se pudo cargar el capítulo"
     },
     "actions": {
-      "orderPrint": "Order Print",
-      "listen": "Listen",
-      "print": "Print",
-      "listenMobile": "Listen",
-      "createOwnStory": "Create Your Own Story",
-      "orderPrintedBook": "Order Printed Book"
+      "orderPrint": "Pedir impresión",
+      "listen": "Escuchar",
+      "print": "Imprimir",
+      "listenMobile": "Escuchar",
+      "createOwnStory": "Crea tu propia historia",
+      "orderPrintedBook": "Pedir libro impreso"
     },
     "labels": {
-      "by": "by",
-      "synopsis": "Synopsis",
-      "unknownAuthor": "Unknown Author"
+      "by": "de",
+      "synopsis": "Sinopsis",
+      "unknownAuthor": "Autor desconocido"
     },
     "metadata": {
-      "defaultDescription": "Read \"{title}\" on Mythoria",
-      "coverImageAlt": "Cover image for \"{title}\"",
+      "defaultDescription": "Lee \"{title}\" en Mythoria",
+      "coverImageAlt": "Imagen de portada de \"{title}\"",
       "pageTitle": "{title} | Mythoria",
-      "chapterPageTitle": "{title} - Chapter {number} | Mythoria",
-      "listenPageTitle": "Listen to \"{title}\" | Mythoria"
+      "chapterPageTitle": "{title} - Capítulo {number} | Mythoria",
+      "listenPageTitle": "Escucha \"{title}\" | Mythoria"
     },
     "listen": {
-      "title": "Listen to \"{title}\"",
-      "backMobile": "Back",
-      "audioNotAvailable": "This story does not have audio narration available.",
-      "audioNotAvailableTitle": "Audio not available",
-      "audioNotAvailableDesc": "This story does not have audio narration available yet.",
-      "backToStory": "Back to Story",
-      "duration": "Duration: {duration}",
-      "chapterFallback": "Chapter {number}",
-      "chapterImageAlt": "Chapter {number} illustration",
+      "title": "Escucha \"{title}\"",
+      "backMobile": "Volver",
+      "audioNotAvailable": "Esta historia no tiene narración disponible.",
+      "audioNotAvailableTitle": "Audio no disponible",
+      "audioNotAvailableDesc": "Esta historia todavía no cuenta con narración de audio.",
+      "backToStory": "Volver a la historia",
+      "duration": "Duración: {duration}",
+      "chapterFallback": "Capítulo {number}",
+      "chapterImageAlt": "Ilustración del capítulo {number}",
       "controls": {
-        "play": "Play",
-        "pause": "Pause",
-        "stop": "Stop"
+        "play": "Reproducir",
+        "pause": "Pausar",
+        "stop": "Parar"
       }
     },
     "lastChapter": {
-      "enjoyedTitle": "Enjoyed this story?",
-      "enjoyedDesc": "Create your own personalized story or order a beautiful printed copy!"
+      "enjoyedTitle": "¿Te ha gustado esta historia?",
+      "enjoyedDesc": "Crea tu propio cuento personalizado u ordena una preciosa copia impresa."
     },
     "storyComplete": {
-      "enjoyedTitle": "Did you enjoy this story?",
-      "enjoyedDesc": "Ready to create your own magical tale or get a beautiful printed version of this story?"
+      "enjoyedTitle": "¿Disfrutaste de esta historia?",
+      "enjoyedDesc": "¿Listo para crear tu propio relato mágico o conseguir una bonita versión impresa?"
     }
   }
 }

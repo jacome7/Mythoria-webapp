@@ -2,49 +2,49 @@
   "lib": {
     "auth": {
       "errors": {
-        "authenticationRequired": "Authentication required",
-        "authorNotFound": "Author not found in database"
+        "authenticationRequired": "Autenticación obligatoria",
+        "authorNotFound": "Autor no encontrado en la base de datos"
       }
     },
     "editCredits": {
       "errors": {
-        "failedToCheck": "Failed to check edit credits",
-        "failedToRecord": "Failed to record edit and deduct credits"
+        "failedToCheck": "No se pudieron comprobar los créditos de edición",
+        "failedToRecord": "No se pudo registrar la edición ni descontar créditos"
       },
       "messages": {
-        "freeEditsRemaining": "{count} free edit remaining",
-        "freeEditsRemainingPlural": "{count} free edits remaining",
-        "nextEditCost": "Next edit will cost {credits} credit",
-        "nextEditCostPlural": "Next edit will cost {credits} credits",
-        "oneFreeEditRemaining": "1 free edit remaining"
+        "freeEditsRemaining": "Queda {count} edición gratuita",
+        "freeEditsRemainingPlural": "Quedan {count} ediciones gratuitas",
+        "nextEditCost": "La próxima edición costará {credits} crédito",
+        "nextEditCostPlural": "La próxima edición costará {credits} créditos",
+        "oneFreeEditRemaining": "Queda 1 edición gratuita"
       }
     },
     "genaiStoryStructurer": {
       "errors": {
-        "invalidImageFormat": "Invalid image data format",
-        "failedToProcessImage": "Failed to process image data for AI analysis",
-        "invalidAudioFormat": "Invalid audio data format",
-        "failedToProcessAudio": "Failed to process audio data for AI analysis",
-        "noResponseText": "No response text generated from the model",
-        "invalidJsonFormat": "GenAI returned invalid JSON format",
-        "failedToGenerate": "Failed to generate structured story: {error}"
+        "invalidImageFormat": "Formato de imagen no válido",
+        "failedToProcessImage": "No se pudo procesar la imagen para el análisis de IA",
+        "invalidAudioFormat": "Formato de audio no válido",
+        "failedToProcessAudio": "No se pudo procesar el audio para el análisis de IA",
+        "noResponseText": "El modelo no generó texto de respuesta",
+        "invalidJsonFormat": "La IA devolvió un formato JSON no válido",
+        "failedToGenerate": "No se pudo generar la historia estructurada: {error}"
       },
       "fallbacks": {
-        "generatedStoryTitle": "Generated Story"
+        "generatedStoryTitle": "Historia generada"
       }
     },
     "metadata": {
       "descriptions": {
-        "storyFallback": "Read \"{title}\" by {author} on Mythoria - Create magical stories for children.",
-        "sharedStoryFallback": "\"{title}\" by {author} - A magical story created with Mythoria."
+        "storyFallback": "Lee \"{title}\" de {author} en Mythoria - Crea historias mágicas para niños.",
+        "sharedStoryFallback": "\"{title}\" de {author} - Una historia mágica creada con Mythoria."
       },
       "titles": {
-        "sharedStory": "{title} - Shared on Mythoria"
+        "sharedStory": "{title} - Compartido en Mythoria"
       }
     },
     "storyEnumMapping": {
       "fallbacks": {
-        "unknown": "Unknown"
+        "unknown": "Desconocido"
       }
     }
   }
