@@ -1,110 +1,110 @@
 {
   "components": {
     "aiImageEditor": {
-      "title": "AI Image Editor - {imageType}",
-      "currentImage": "Current Image:",
-      "requestPlaceholder": "Describe how you want to modify this image...",
-      "characterCount": "{count}/{max} characters",
-      "generateButton": "Generate New Image",
-      "replaceButton": "Replace Original",
-      "cancelButton": "Cancel",
-      "loading": "Generating...",
-      "newImageLabel": "New Generated Image",
-      "newImageSuccess": "New image generated successfully!",
-      "generatedImageAlt": "Generated Image",
+      "title": "Editor de imágenes con IA - {imageType}",
+      "currentImage": "Imagen actual:",
+      "requestPlaceholder": "Describe cómo quieres modificar esta imagen...",
+      "characterCount": "{count}/{max} caracteres",
+      "generateButton": "Generar nueva imagen",
+      "replaceButton": "Reemplazar original",
+      "cancelButton": "Cancelar",
+      "loading": "Generando...",
+      "newImageLabel": "Nueva imagen generada",
+      "newImageSuccess": "¡Imagen nueva generada, qué pasada!",
+      "generatedImageAlt": "Imagen generada",
       "errors": {
-        "describeChanges": "Please describe the changes you want to make to the image",
-        "unableToCheckCredits": "Unable to check credits. Please try again.",
-        "failedToGenerate": "Failed to generate new image. Please try again.",
-        "failedToReplace": "Failed to replace image. Please try again."
+        "describeChanges": "Describe los cambios que quieres hacer en la imagen",
+        "unableToCheckCredits": "No se pueden comprobar los créditos. Inténtalo de nuevo.",
+        "failedToGenerate": "No se pudo generar la nueva imagen. Inténtalo otra vez.",
+        "failedToReplace": "No se pudo reemplazar la imagen. Inténtalo de nuevo."
       },
       "imageTypes": {
-        "cover": "Cover",
-        "backcover": "Back Cover",
-        "chapter": "Chapter {number}"
+        "cover": "Portada",
+        "backcover": "Contraportada",
+        "chapter": "Capítulo {number}"
       }
     },
     "aiTextStoryEditor": {
-      "title": "AI Text Editor - {storyTitle}",
-      "fullStoryTitle": "Full Story",
-      "requestPlaceholder": "Enter your editing request...",
-      "characterCount": "{count}/{max} characters",
-      "editButton": "Edit Story",
-      "cancelButton": "Cancel",
-      "loading": "Processing...",
+      "title": "Editor de texto con IA - {storyTitle}",
+      "fullStoryTitle": "Historia completa",
+      "requestPlaceholder": "Introduce tu petición de edición...",
+      "characterCount": "{count}/{max} caracteres",
+      "editButton": "Editar historia",
+      "cancelButton": "Cancelar",
+      "loading": "Procesando...",
       "errors": {
-        "enterRequest": "Please enter your editing request",
-        "unableToCheckCredits": "Unable to check credits. Please try again.",
-        "failedToEdit": "Failed to edit story. Please try again."
+        "enterRequest": "Introduce tu petición de edición",
+        "unableToCheckCredits": "No se pueden comprobar los créditos. Inténtalo de nuevo.",
+        "failedToEdit": "No se pudo editar la historia. Inténtalo otra vez."
       },
-      "editScopeLabel": "Edit Scope",
-      "currentChapterOnly": "Current Chapter Only",
-      "allChapters": "All Chapters",
-      "selectChapterLabel": "Select Chapter",
-      "chapterOption": "Chapter {number}: {title}",
-      "editRequestLabel": "Edit Request",
+      "editScopeLabel": "Ámbito de edición",
+      "currentChapterOnly": "Sólo este capítulo",
+      "allChapters": "Todos los capítulos",
+      "selectChapterLabel": "Selecciona capítulo",
+      "chapterOption": "Capítulo {number}: {title}",
+      "editRequestLabel": "Petición de edición",
       "fullStoryExplanation": {
-        "title": "How Full Story Edit Works",
-        "item1": "AI will apply your request to all chapters in the story",
-        "item2": "Each chapter edit counts as one edit towards your credit usage",
-        "item3": "All successful changes will be automatically saved",
-        "item4": "You can review the changes after the edit is complete",
-        "item5": "If some chapters fail to edit, the successful ones will still be saved"
+        "title": "Cómo funciona la edición completa",
+        "item1": "La IA aplicará tu petición a todos los capítulos de la historia",
+        "item2": "Cada capítulo editado cuenta como una edición en tu uso de créditos",
+        "item3": "Todos los cambios que salgan bien se guardarán automáticamente",
+        "item4": "Podrás revisar los cambios cuando la edición termine",
+        "item5": "Si algún capítulo falla, los que funcionen se guardarán igual"
       },
       "costEstimation": {
-        "title": "Cost Estimation",
-        "freeEdit": "This edit is free!",
-        "costEdit": "This edit will cost {credits} credit{plural}",
-        "currentBalance": "\u2022 Current balance: {credits} credits",
-        "editCount": "\u2022 Edit count: {count} (next threshold: {threshold})",
-        "freeChapterEdits": "\u2022 {count} free chapter edits",
-        "paidChapterEdits": "\u2022 {count} paid chapter edits",
+        "title": "Estimación de coste",
+        "freeEdit": "¡Esta edición es gratis!",
+        "costEdit": "Esta edición costará {credits} crédito{plural}",
+        "currentBalance": "\u2022 Saldo actual: {credits} créditos",
+        "editCount": "\u2022 Número de ediciones: {count} (siguiente límite: {threshold})",
+        "freeChapterEdits": "\u2022 {count} ediciones de capítulo gratis",
+        "paidChapterEdits": "\u2022 {count} ediciones de capítulo de pago",
         "message": "\u2022 {message}"
       }
     },
     "audiobookGenerationProgress": {
-      "title": "Audiobook Generation Progress",
+      "title": "Progreso de generación de audiolibro",
       "status": {
-        "pending": "Pending",
-        "inProgress": "In Progress",
-        "completed": "Completed",
-        "failed": "Failed"
+        "pending": "Pendiente",
+        "inProgress": "En marcha",
+        "completed": "Completado",
+        "failed": "Ha fallado"
       },
       "errors": {
-        "failedToFetch": "Failed to fetch audiobook progress",
-        "failedToLoad": "Failed to load audiobook generation progress"
+        "failedToFetch": "No se pudo obtener el progreso del audiolibro",
+        "failedToLoad": "No se pudo cargar el progreso de la generación de audiolibro"
       },
       "timeUnits": {
-        "second": "second",
-        "seconds": "seconds",
-        "minute": "minute",
-        "minutes": "minutes"
+        "second": "segundo",
+        "seconds": "segundos",
+        "minute": "minuto",
+        "minutes": "minutos"
       }
     },
     "audiobookGenerationTrigger": {
-      "generateButton": "Generate Audiobook",
+      "generateButton": "Generar audiolibro",
       "errors": {
-        "failedToStart": "Failed to start audiobook generation",
-        "failedToStartWithReason": "Failed to start audiobook generation: {reason}",
-        "failedToPlayAudio": "Failed to play audio. Please try again."
+        "failedToStart": "No se pudo iniciar la generación del audiolibro",
+        "failedToStartWithReason": "No se pudo iniciar la generación del audiolibro: {reason}",
+        "failedToPlayAudio": "No se pudo reproducir el audio. Inténtalo de nuevo."
       }
     },
     "chapterEditor": {
-      "editImageButton": "Edit Chapter Image",
-      "saveButton": "Save Chapter",
-      "backButton": "Back",
-      "goBackButton": "Go back",
-      "imagePlaceholder": "Chapter {number} Image",
-      "titlePlaceholder": "Enter chapter title...",
-      "contentPlaceholder": "Write your chapter content here...",
-      "saving": "Saving...",
+      "editImageButton": "Editar imagen del capítulo",
+      "saveButton": "Guardar capítulo",
+      "backButton": "Atrás",
+      "goBackButton": "Volver",
+      "imagePlaceholder": "Imagen del capítulo {number}",
+      "titlePlaceholder": "Escribe el título del capítulo...",
+      "contentPlaceholder": "Escribe aquí el contenido del capítulo...",
+      "saving": "Guardando...",
       "toolbar": {
-        "bold": "Bold",
-        "italic": "Italic",
-        "underline": "Underline",
-        "textSize": "Text Size",
-        "aiEdit": "AI Edit",
-        "edit": "Edit"
+        "bold": "Negrita",
+        "italic": "Cursiva",
+        "underline": "Subrayado",
+        "textSize": "Tamaño de texto",
+        "aiEdit": "Edición con IA",
+        "edit": "Editar"
       },
       "textSizes": {
         "small": "S",
@@ -113,208 +113,208 @@
         "xlarge": "XL"
       },
       "errors": {
-        "failedToLoadStoryData": "Failed to load story data"
+        "failedToLoadStoryData": "No se pudieron cargar los datos de la historia"
       }
     },
     "chapterNavigation": {
-      "storyInformation": "Story Information",
+      "storyInformation": "Información de la historia",
       "info": "Info",
-      "chapterLabel": "Chapter {number}"
+      "chapterLabel": "Capítulo {number}"
     },
     "characterCard": {
       "errors": {
-        "maxTraits": "Maximum 5 traits allowed. Remove a trait first."
+        "maxTraits": "Máximo 5 rasgos permitidos. Quita uno primero."
       }
     },
     "contactForm": {
       "form": {
-        "title": "Contact Support",
-        "name": "Name",
-        "email": "Email",
-        "category": "Category",
-        "message": "Message",
-        "submit": "Create Support Ticket",
-        "namePlaceholder": "Enter your name",
-        "emailPlaceholder": "Enter your email address", 
-        "messagePlaceholder": "Describe your issue or question...",
-        "selectCategory": "Select a category..."
+        "title": "Contactar con soporte",
+        "name": "Nombre",
+        "email": "Correo electrónico",
+        "category": "Categoría",
+        "message": "Mensaje",
+        "submit": "Crear ticket de soporte",
+        "namePlaceholder": "Introduce tu nombre",
+        "emailPlaceholder": "Introduce tu correo electrónico",
+        "messagePlaceholder": "Describe tu problema o pregunta...",
+        "selectCategory": "Selecciona una categoría..."
       },
       "categoriesShort": {
-        "featureIdeas": "Feature Ideas & Suggestions",
-        "reportBug": "Report a Bug",
-        "troubles": "Technical Issues",
-        "delivery": "Printing & Delivery",
-        "credits": "Credits & Billing",
-        "businessPartnership": "Business Partnership",
-        "general": "General Questions"
+        "featureIdeas": "Ideas y sugerencias",
+        "reportBug": "Informar de un fallo",
+        "troubles": "Problemas técnicos",
+        "delivery": "Impresión y entrega",
+        "credits": "Créditos y facturación",
+        "businessPartnership": "Colaboración empresarial",
+        "general": "Preguntas generales"
       },
       "errors": {
-        "fillRequired": "Please fill in all required fields",
-        "createFailed": "Failed to create support ticket. Please try again."
+        "fillRequired": "Por favor, rellena todos los campos obligatorios",
+        "createFailed": "No se pudo crear el ticket de soporte. Inténtalo de nuevo."
       },
       "success": {
-        "ticketCreated": "Support ticket created successfully! We'll get back to you soon."
+        "ticketCreated": "¡Ticket de soporte creado! Te responderemos en un periquete."
       },
       "modal": {
-        "ticketCreated": "Ticket Created!",
-        "oops": "Oops!",
-        "tryAgain": "Try Again",
-        "goToHomepage": "Go to Homepage",
-        "redirectingMessage": "Redirecting to homepage in a few seconds..."
+        "ticketCreated": "¡Ticket creado!",
+        "oops": "¡Ups!",
+        "tryAgain": "Intentar de nuevo",
+        "goToHomepage": "Ir a la página principal",
+        "redirectingMessage": "Redirigiendo a la página principal en unos segundos..."
       }
     },
     "editCreditInfo": {
-      "editLabel": "Edit #{number}",
-      "balanceLabel": "Your balance: {credits} credits",
-      "buyCreditsButton": "Buy credits",
-      "progressLabel": "Progress:"
+      "editLabel": "Editar n.º{number}",
+      "balanceLabel": "Tu saldo: {credits} créditos",
+      "buyCreditsButton": "Comprar créditos",
+      "progressLabel": "Progreso:"
     },
     "groupedCharacterTypeSelect": {
-      "placeholder": "Select character type...",
+      "placeholder": "Selecciona tipo de personaje...",
       "groups": {
-        "human": "Human",
-        "animals": "Animals",
-        "fantasy": "Fantasy",
-        "other": "Other"
+        "human": "Humano",
+        "animals": "Animales",
+        "fantasy": "Fantasía",
+        "other": "Otros"
       }
     },
     "imageEditButton": {
-      "tooltip": "Edit this image with Mythoria"
+      "tooltip": "Editar esta imagen con Mythoria"
     },
     "jobProgressModal": {
-      "title": "Processing Your Request",
+      "title": "Procesando tu petición",
       "steps": {
-        "textEditing": "Text Editing",
-        "imageEditing": "Image Editing",
-        "audioGeneration": "Audio Generation",
-        "finalizing": "Finalizing"
+        "textEditing": "Edición de texto",
+        "imageEditing": "Edición de imagen",
+        "audioGeneration": "Generación de audio",
+        "finalizing": "Finalizando"
       },
       "status": {
-        "waitingToStart": "Waiting to start...",
-        "inProgress": "In progress...",
-        "completed": "Completed successfully!",
-        "failed": "Failed"
+        "waitingToStart": "Esperando para empezar...",
+        "inProgress": "En marcha...",
+        "completed": "¡Completado con éxito!",
+        "failed": "Ha fallado"
       },
       "labels": {
-        "progress": "Progress",
-        "elapsed": "Elapsed",
-        "remaining": "Remaining"
+        "progress": "Progreso",
+        "elapsed": "Transcurrido",
+        "remaining": "Restante"
       },
-      "closeButton": "Close"
+      "closeButton": "Cerrar"
     },
     "readingProgress": {
       "fallbacks": {
-        "storyTitle": "Story Title",
-        "chapterTitle": "Chapter {number}"
+        "storyTitle": "Título de la historia",
+        "chapterTitle": "Capítulo {number}"
       }
     },
     "readingToolbar": {
-      "title": "Reading Settings",
-      "toggleLabel": "Toggle reading settings",
-      "cover": "Cover",
-      "coverAndToc": "Cover & Table of Contents",
-      "chapterLabel": "Chapter {number}",
-      "resetButton": "Reset to Default",
+      "title": "Opciones de lectura",
+      "toggleLabel": "Mostrar/ocultar opciones de lectura",
+      "cover": "Portada",
+      "coverAndToc": "Portada y tabla de contenidos",
+      "chapterLabel": "Capítulo {number}",
+      "resetButton": "Restablecer por defecto",
       "controls": {
-        "fontSize": "Text Size",
-        "lineHeight": "Line Height",
-        "margins": "Margins",
-        "fontSizeLabel": "Adjust text size",
-        "lineHeightLabel": "Adjust line height",
-        "marginsLabel": "Adjust margins",
-        "decreaseFontSize": "Decrease text size",
-        "increaseFontSize": "Increase text size",
-        "decreaseLineHeight": "Decrease line height",
-        "increaseLineHeight": "Increase line height",
-        "decreaseMargins": "Decrease margins",
-        "increaseMargins": "Increase margins"
+        "fontSize": "Tamaño de texto",
+        "lineHeight": "Altura de línea",
+        "margins": "Márgenes",
+        "fontSizeLabel": "Ajustar tamaño de texto",
+        "lineHeightLabel": "Ajustar altura de línea",
+        "marginsLabel": "Ajustar márgenes",
+        "decreaseFontSize": "Reducir tamaño de texto",
+        "increaseFontSize": "Aumentar tamaño de texto",
+        "decreaseLineHeight": "Reducir altura de línea",
+        "increaseLineHeight": "Aumentar altura de línea",
+        "decreaseMargins": "Reducir márgenes",
+        "increaseMargins": "Aumentar márgenes"
       }
     },
     "revolutPayment": {
-      "loading": "Loading payment options...",
-      "securityNote": "Your payment information is secure and encrypted.",
-      "encryptionNote": "Protected by 256-bit SSL encryption",
+      "loading": "Cargando opciones de pago...",
+      "securityNote": "Tu información de pago está segura y cifrada.",
+      "encryptionNote": "Protegido con cifrado SSL de 256 bits",
       "errors": {
-        "initializeFailed": "Failed to initialize payment"
+        "initializeFailed": "No se pudo inicializar el pago"
       }
     },
     "shareModal": {
       "errors": {
-        "invalidStoryId": "Invalid story ID"
+        "invalidStoryId": "ID de historia no válido"
       },
       "messages": {
-        "checkOut": "Check out \"{title}\" on Mythoria"
+        "checkOut": "Echa un ojo a \"{title}\" en Mythoria"
       }
     },
     "storyInfoEditor": {
-      "title": "Story Information",
-      "storyTitle": "Story Title",
-      "titlePlaceholder": "Enter story title",
-      "synopsis": "Synopsis",
-      "synopsisPlaceholder": "Brief description of your story",
-      "dedicationMessage": "Dedication Message",
-      "dedicationPlaceholder": "A personal dedication for this story",
-      "authorName": "Author Name",
-      "authorPlaceholder": "How should the author be credited?",
-      "targetAudience": "Target Audience",
-      "targetAudiencePlaceholder": "Select target audience",
-      "graphicalStyle": "Graphical Style",
-      "saveButton": "Save Changes",
-      "saving": "Saving...",
-      "cancelButton": "Cancel",
-      "frontCover": "Front Cover",
-      "backCover": "Back Cover",
-      "noCoverImage": "No cover image",
-      "noBackCover": "No back cover",
-      "editCover": "Edit Cover",
-      "editBackCover": "Edit Back Cover",
-      "addCover": "Add Cover",
-      "addBackCover": "Add Back Cover",
-      "storyDetails": "Story Details",
-      "graphicalStyleLabel": "Graphical Style:",
-      "created": "Created:",
-      "lastUpdated": "Last Updated:",
-      "notSpecified": "Not specified",
+      "title": "Información de la historia",
+      "storyTitle": "Título de la historia",
+      "titlePlaceholder": "Introduce el título de la historia",
+      "synopsis": "Sinopsis",
+      "synopsisPlaceholder": "Breve descripción de tu historia",
+      "dedicationMessage": "Mensaje de dedicatoria",
+      "dedicationPlaceholder": "Una dedicatoria personal para esta historia",
+      "authorName": "Nombre del autor",
+      "authorPlaceholder": "¿Cómo quieres que se mencione al autor?",
+      "targetAudience": "Público objetivo",
+      "targetAudiencePlaceholder": "Selecciona el público objetivo",
+      "graphicalStyle": "Estilo gráfico",
+      "saveButton": "Guardar cambios",
+      "saving": "Guardando...",
+      "cancelButton": "Cancelar",
+      "frontCover": "Portada",
+      "backCover": "Contraportada",
+      "noCoverImage": "Sin imagen de portada",
+      "noBackCover": "Sin contraportada",
+      "editCover": "Editar portada",
+      "editBackCover": "Editar contraportada",
+      "addCover": "Añadir portada",
+      "addBackCover": "Añadir contraportada",
+      "storyDetails": "Detalles de la historia",
+      "graphicalStyleLabel": "Estilo gráfico:",
+      "created": "Creada:",
+      "lastUpdated": "Última actualización:",
+      "notSpecified": "No especificado",
       "targetAudienceOptions": {
-        "children_0-2": "Children 0-2 (Babies/Toddlers)",
-        "children_3-6": "Children 3-6 (Preschoolers)",
-        "children_7-10": "Children 7-10 (Early Elementary)",
-        "children_11-14": "Children 11-14 (Middle Grade)",
-        "young_adult_15-17": "Young Adult 15-17",
-        "adult_18+": "Adult 18+",
-        "all_ages": "All Ages"
+        "children_0-2": "Niños 0-2 (bebés/peques)",
+        "children_3-6": "Niños 3-6 (preescolar)",
+        "children_7-10": "Niños 7-10 (primaria temprana)",
+        "children_11-14": "Niños 11-14 (pre-adolescentes)",
+        "young_adult_15-17": "Juvenil 15-17",
+        "adult_18+": "Adultos 18+",
+        "all_ages": "Todas las edades"
       },
       "altTexts": {
-        "storyCover": "Story cover",
-        "storyBackCover": "Story back cover"
+        "storyCover": "Portada de la historia",
+        "storyBackCover": "Contraportada de la historia"
       },
       "messages": {
-        "storyInfoUpdated": "Story info updated successfully",
-        "chapterSaved": "Chapter saved successfully",
-        "chapterSavedWithVersion": "Chapter saved as version {version}",
-        "failedToSaveChapter": "Failed to save chapter",
-        "noPreviousVersion": "No previous version available",
-        "revertedToVersion": "Reverted to version {version}",
-        "advancedToVersion": "Advanced to version {version}",
-        "failedToUndoChapter": "Failed to undo chapter",
-        "chapterUpdatedSuccessfully": "Chapter updated successfully",
-        "contentUpdatedSuccessfully": "Content updated successfully"
+        "storyInfoUpdated": "Información de la historia actualizada",
+        "chapterSaved": "Capítulo guardado",
+        "chapterSavedWithVersion": "Capítulo guardado como versión {version}",
+        "failedToSaveChapter": "No se pudo guardar el capítulo",
+        "noPreviousVersion": "No hay versión anterior",
+        "revertedToVersion": "Revertido a la versión {version}",
+        "advancedToVersion": "Avanzado a la versión {version}",
+        "failedToUndoChapter": "No se pudo deshacer el capítulo",
+        "chapterUpdatedSuccessfully": "Capítulo actualizado",
+        "contentUpdatedSuccessfully": "Contenido actualizado"
       },
       "logging": {
-        "errorSavingStoryInfo": "Error saving story info:"
+        "errorSavingStoryInfo": "Error al guardar la información de la historia:"
       }
     },
     "printOrder": {
       "paymentStep": {
         "errors": {
-          "loadPricingFailed": "Failed to load pricing information",
-          "fetchPricingFailed": "Failed to fetch pricing data"
+          "loadPricingFailed": "No se pudo cargar la información de precios",
+          "fetchPricingFailed": "No se pudieron obtener los datos de precios"
         }
       },
       "printOrderContent": {
         "errors": {
-          "saveAddressFailed": "Failed to save address",
-          "deleteAddressFailed": "Failed to delete address"
+          "saveAddressFailed": "No se pudo guardar la dirección",
+          "deleteAddressFailed": "No se pudo eliminar la dirección"
         }
       }
     }
