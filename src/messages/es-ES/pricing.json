@@ -1,285 +1,287 @@
 {
   "PricingPage": {
     "header": {
-      "title": "Our Pricing",
-      "subtitle": "Simple, flexible, and designed for your storytelling needs."
-    }, 
+      "title": "Nuestros precios",
+      "subtitle": "Sencillo, flexible y pensado para tus historias."
+    },
     "creditPackages": {
       "badges": {
-        "bestValue": "Best Value",
-        "popular": "Popular"
+        "bestValue": "La mejor ganga",
+        "popular": "La que más se lleva"
       },
       "packages": {
         "credits5": {
-          "description": "Perfect for trying things out."
+          "description": "Perfecto para probar."
         },
         "credits10": {
-          "description": "Great for a couple of stories."
+          "description": "Ideal para un par de historias."
         },
         "credits30": {
-          "description": "Ideal for avid storytellers."
+          "description": "Ideal para quienes no paran de contar historias."
         },
         "credits100": {
-          "description": "For the ultimate story creators!"
+          "description": "¡Para los creadores de historias definitivos!"
         }
       },
-      "buyButton": "Buy {credits} Credits",
-      "credits": "Credits"
+      "buyButton": "Comprar {credits} créditos",
+      "credits": "Créditos"
     },
     "serviceCosts": {
-      "loading": "Loading pricing information...",
-      "availableServices": "Our services:",
-      "creditsHeader": "Credits",
+      "loading": "Cargando información de precios...",
+      "availableServices": "Nuestros servicios:",
+      "creditsHeader": "Créditos",
       "services": {
-        "generateEbook": "Generate a digital eBook",
-        "narrateAudiobook": "Narrate a book (audio-book)",
-        "editBook": "Edit a book:",
-        "manualEditing": "Manual editing",
-        "textReviewAI": "Text review with AI",
-        "generateNewImages": "Generate new images",
-        "printShipBook": "Print and ship book:",
-        "softCover": "Soft cover",
-        "hardCover": "Hard Cover",
-        "extraChapterCost": "Extra chapter Cost"
+        "generateEbook": "Generar un eBook digital",
+        "narrateAudiobook": "Narrar un libro (audiolibro)",
+        "editBook": "Editar un libro:",
+        "manualEditing": "Edición manual",
+        "textReviewAI": "Revisión de texto con IA",
+        "generateNewImages": "Generar imágenes nuevas",
+        "printShipBook": "Imprimir y enviar libro:",
+        "softCover": "Tapa blanda",
+        "hardCover": "Tapa dura",
+        "extraChapterCost": "Coste por capítulo extra"
       },
       "serviceNames": {
-        "ebook": "Generate a digital book (eBook)",
-        "audiobook": "Generate an audiobook", 
-        "printed_book": "Order a printed & shipped hardcover book"
+        "ebook": "Generar un libro digital (eBook)",
+        "audiobook": "Generar un audiolibro",
+        "printed_book": "Pedir un libro en tapa dura impreso y enviado"
       },
       "tableHeaders": {
-        "service": "Service",
-        "cost": "Cost in Credits"
+        "service": "Servicio",
+        "cost": "Coste en créditos"
       },
-      "creditsUnit": "Credits"
+      "creditsUnit": "Créditos"
     },
     "infoModal": {
-      "title": "Service Information",
-      "header": "Service Information",
-      "button": "More Info",
+      "title": "Información del servicio",
+      "header": "Información del servicio",
+      "button": "Más info",
       "services": {
         "ebook": {
-          "title": "Generate a digital eBook",
-          "description": "Create a personalized digital book that can be read on any device."
+          "title": "Generar un eBook digital",
+          "description": "Crea un libro digital personalizado que podrás leer en cualquier dispositivo."
         },
         "audiobook": {
-          "title": "Narrate a book (audio-book)",
-          "description": "Transform your story into an engaging audiobook with professional narration."
+          "title": "Narrar un libro (audiolibro)",
+          "description": "Transforma tu historia en un audiolibro cautivador con narración profesional."
         },
         "printedBook": {
-          "title": "Order printed & shipped hardcover book",
-          "description": "Get a beautiful physical hardcover book delivered to your door.",
+          "title": "Pedir un libro en tapa dura impreso y enviado",
+          "description": "Recibe un precioso libro físico de tapa dura en tu puerta.",
           "printingOptions": [
-            "Premium hardcover binding",
-            "High-quality paper and printing",
-            "Professional cover design",
-            "Worldwide shipping available"
+            "Encuadernación de tapa dura premium",
+            "Papel e impresión de alta calidad",
+            "Diseño de portada profesional",
+            "Envío disponible a todo el mundo"
           ]
         }
       },
-      "close": "Close"
+      "close": "Cerrar"
     },
-    "newUserMessage": "Every new user gets 5 credits. Your first story is on us!",
+    "newUserMessage": "Cada usuario nuevo recibe 5 créditos. ¡La primera historia la invitamos nosotros!",
     "infoTexts": {
-      "textReview": "The first 5 edits are free. We only charge per group of 5 text changes.",
-      "imageGeneration": "The first image editing is free.",
-      "printedBooks": "Both printed soft and hard cover include the first 4 chapters at no additional costs."
+      "textReview": "Las primeras 5 ediciones son gratis. Solo cobramos por grupos de 5 cambios de texto.",
+      "imageGeneration": "La primera edición de imagen es gratis.",
+      "printedBooks": "La impresión en tapa blanda o dura incluye los 4 primeros capítulos sin coste adicional."
     },
     "whyCredits": {
-      "title": "Why a Credit-Based System?",
+      "title": "¿Por qué un sistema de créditos?",
       "benefits": {
         "flexibility": {
-          "title": "Flexibility:",
-          "description": "Purchase credits in bundles and use them for any service, anytime."
+          "title": "Flexibilidad:",
+          "description": "Compra créditos en paquetes y úsalos para cualquier servicio cuando te venga bien."
         },
         "savings": {
-          "title": "Savings:",
-          "description": "Enjoy better value with larger credit packages. The more you buy, the more you save!"
+          "title": "Ahorro:",
+          "description": "Consigue mejor precio con paquetes grandes. Cuantos más compres, más ahorras."
         },
         "gifting": {
-          "title": "Gifting Made Easy:",
-          "description": "Credits can be a perfect gift for friends and family, allowing them to choose their own storytelling adventure. (Gifting feature coming soon!)"
+          "title": "Regalos fáciles:",
+          "description": "Los créditos son un regalo guay para amigos y familia, así eligen su propia aventura. (La función de regalar llegará pronto)."
         },
         "simplicity": {
-          "title": "Simplicity:",
-          "description": "Understand the costs upfront for all our creative services. No hidden fees."
+          "title": "Simplicidad:",
+          "description": "Conoce los costes de nuestros servicios creativos desde el principio. Sin sorpresas."
         }
       }
     },
     "faq": {
-      "title": "Frequently Asked Questions",
+      "title": "Preguntas frecuentes",
       "questions": {
         "expiration": {
-          "question": "Do credits expire?",
-          "answer": "No, your Mythoria credits never expire! You can use them whenever inspiration strikes."
+          "question": "¿Caducan los créditos?",
+          "answer": "¡No, tus créditos de Mythoria nunca caducan! Úsalos cuando te venga la inspiración."
         },
         "refund": {
-          "question": "Can I get a refund on unused credits?",
-          "answer": "Currently, credits are non-refundable. However, they can be used for any of our services or gifted to another user in the future."
+          "question": "¿Puedo pedir un reembolso de créditos sin usar?",
+          "answer": "Por ahora los créditos no se reembolsan. Pero podrás usarlos en cualquiera de nuestros servicios o regalarlos a otro usuario en el futuro."
         },
         "payment": {
-          "question": "What payment methods do you accept?",
-          "answer": "We plan to accept all major credit cards (Visa, MasterCard, American Express) and PayPal. (Payment integration coming soon)"
+          "question": "¿Qué métodos de pago aceptáis?",
+          "answer": "Planeamos aceptar todas las tarjetas principales (Visa, MasterCard, American Express) y PayPal. (La integración de pagos llega en breve)."
         },
         "shipping": {
-          "question": "How are printed books shipped?",
-          "answer": "Printed books are shipped via standard postal services. Shipping times and costs may vary depending on your location. You'll see detailed shipping information at checkout when ordering a printed book."
+          "question": "¿Cómo se envían los libros impresos?",
+          "answer": "Los libros impresos se envían por servicios postales estándar. Los plazos y costes dependen de tu ubicación. Verás toda la información de envío al realizar el pedido de un libro impreso."
         }
       }
-    },    "errors": {
-      "loadingFailed": "Failed to load pricing information"
+    },
+    "errors": {
+      "loadingFailed": "No se pudo cargar la información de precios"
     }
   },
   "BuyCreditsPage": {
     "header": {
-      "title": "Buy Credits",
-      "subtitle": "Choose your credit packages and complete your purchase"
+      "title": "Comprar créditos",
+      "subtitle": "Elige tus paquetes de créditos y completa tu compra"
     },
     "packages": {
-      "title": "Available Credit Packages",
-      "addToCart": "Add to Cart"
+      "title": "Paquetes de créditos disponibles",
+      "addToCart": "Añadir al carrito"
     },
     "cart": {
-      "title": "Your Order",
-      "empty": "Your cart is empty",
-      "each": "each"
-    },    "summary": {
-      "title": "Order Summary",
+      "title": "Tu pedido",
+      "empty": "Tu carrito está vacío",
+      "each": "cada uno"
+    },
+    "summary": {
+      "title": "Resumen del pedido",
       "subtotal": "Subtotal:",
-      "vat": "VAT (6% included):",
+      "vat": "IVA (6% incluido):",
       "total": "Total:"
     },
     "billing": {
-      "title": "Billing Information",
-      "subtitle": "Optional invoicing details",
-      "expand": "Add billing information",
-      "collapse": "Hide billing information",
-      "personalDetails": "Personal Details",
-      "billingAddress": "Billing Address",
+      "title": "Información de facturación",
+      "subtitle": "Datos de facturación opcionales",
+      "expand": "Añadir información de facturación",
+      "collapse": "Ocultar información de facturación",
+      "personalDetails": "Datos personales",
+      "billingAddress": "Dirección de facturación",
       "fields": {
-        "fullName": "Full Name",
-        "email": "Email Address",
-        "vatNumber": "VAT Number",
-        "vatNumberOptional": "VAT Number (optional)",
-        "phone": "Phone Number",
-        "phoneOptional": "Phone (optional)",
-        "addressLine1": "Address Line 1",
-        "addressLine2": "Address Line 2",
-        "addressLine2Optional": "Address Line 2 (optional)",
-        "city": "City",
-        "stateRegion": "State/Region",
-        "postalCode": "Postal Code",
-        "country": "Country"
+        "fullName": "Nombre completo",
+        "email": "Dirección de correo",
+        "vatNumber": "Número de IVA",
+        "vatNumberOptional": "Número de IVA (opcional)",
+        "phone": "Número de teléfono",
+        "phoneOptional": "Teléfono (opcional)",
+        "addressLine1": "Dirección línea 1",
+        "addressLine2": "Dirección línea 2",
+        "addressLine2Optional": "Dirección línea 2 (opcional)",
+        "city": "Ciudad",
+        "stateRegion": "Provincia/Región",
+        "postalCode": "Código postal",
+        "country": "País"
       },
-      "loading": "Loading your information...",
+      "loading": "Cargando tu información...",
       "placeholders": {
-        "vatNumber": "e.g., PT123456789, ES12345678A, FR12345678901",
+        "vatNumber": "ej.: PT123456789, ES12345678A, FR12345678901",
         "phone": "+351 912 345 678",
         "postalCode": "12345"
       },
-      "selectCountry": "Select country",
+      "selectCountry": "Selecciona país",
       "groups": {
-        "eu": "European Union",
-        "otherEurope": "Other European Countries",
-        "other": "Other Countries"
+        "eu": "Unión Europea",
+        "otherEurope": "Otros países europeos",
+        "other": "Otros países"
       },
       "countries": {
         "at": "Austria",
-        "be": "Belgium",
+        "be": "Bélgica",
         "bg": "Bulgaria",
-        "hr": "Croatia",
-        "cy": "Cyprus",
-        "cz": "Czech Republic",
-        "dk": "Denmark",
+        "hr": "Croacia",
+        "cy": "Chipre",
+        "cz": "República Checa",
+        "dk": "Dinamarca",
         "ee": "Estonia",
-        "fi": "Finland",
-        "fr": "France",
-        "de": "Germany",
-        "gr": "Greece",
-        "hu": "Hungary",
-        "ie": "Ireland",
-        "it": "Italy",
-        "lv": "Latvia",
-        "lt": "Lithuania",
-        "lu": "Luxembourg",
+        "fi": "Finlandia",
+        "fr": "Francia",
+        "de": "Alemania",
+        "gr": "Grecia",
+        "hu": "Hungría",
+        "ie": "Irlanda",
+        "it": "Italia",
+        "lv": "Letonia",
+        "lt": "Lituania",
+        "lu": "Luxemburgo",
         "mt": "Malta",
-        "nl": "Netherlands",
-        "pl": "Poland",
+        "nl": "Países Bajos",
+        "pl": "Polonia",
         "pt": "Portugal",
-        "ro": "Romania",
-        "sk": "Slovakia",
-        "si": "Slovenia",
-        "es": "Spain",
-        "se": "Sweden",
-        "ch": "Switzerland",
-        "no": "Norway",
-        "gb": "United Kingdom",
-        "us": "United States",
-        "ca": "Canada",
+        "ro": "Rumanía",
+        "sk": "Eslovaquia",
+        "si": "Eslovenia",
+        "es": "España",
+        "se": "Suecia",
+        "ch": "Suiza",
+        "no": "Noruega",
+        "gb": "Reino Unido",
+        "us": "Estados Unidos",
+        "ca": "Canadá",
         "au": "Australia",
-        "jp": "Japan",
-        "br": "Brazil",
-        "mx": "Mexico",
+        "jp": "Japón",
+        "br": "Brasil",
+        "mx": "México",
         "in": "India",
-        "sg": "Singapore"
+        "sg": "Singapur"
       },
       "vatValidation": {
-        "valid": "Valid VAT number",
-        "invalid": "Invalid VAT number format",
-        "help": "Enter a valid EU VAT number (e.g., DE123456789)",
+        "valid": "Número de IVA válido",
+        "invalid": "Formato de número de IVA no válido",
+        "help": "Introduce un número de IVA de la UE válido (ej.: DE123456789)",
         "errors": {
-          "tooShort": "VAT number is too short",
-          "unsupportedCountry": "Unsupported country code. Please use an EU VAT number.",
-          "invalidFormat": "Invalid VAT number format for {country}. Expected format: {format}"
+          "tooShort": "El número de IVA es demasiado corto",
+          "unsupportedCountry": "Código de país no admitido. Usa un número de IVA de la UE.",
+          "invalidFormat": "Formato de número de IVA no válido para {country}. Formato esperado: {format}"
         }
       },
       "info": {
-        "title": "Billing Information",
-        "description1": "This information will be used for your invoice and payment processing",
-        "description2": "VAT number is optional but helps with business tax reporting",
-        "description3": "All information is stored securely and only used for billing purposes",
-        "description4": "You can update this information anytime in your account settings"
+        "title": "Información de facturación",
+        "description1": "Esta información se usará para tu factura y el procesamiento del pago",
+        "description2": "El número de IVA es opcional, pero ayuda con la contabilidad empresarial",
+        "description3": "Toda la información se guarda de forma segura y solo se usa para facturación",
+        "description4": "Puedes actualizar estos datos cuando quieras en los ajustes de tu cuenta"
       }
     },
     "payment": {
-      "title": "Payment Method",
-      "revolutPay": "Credits Cards or Revolut Pay",
-      "revolutDescription": "Pay with any credit/debit card or Revolut Pay securely",
+      "title": "Método de pago",
+      "revolutPay": "Tarjetas o Revolut Pay",
+      "revolutDescription": "Paga con cualquier tarjeta de crédito/débito o con Revolut Pay de forma segura",
       "mbway": "MBWay",
-      "mbwayDescription": "Send money instantly using your MB Way app. You'll receive payment instructions via email.",
-      "creditCards": "Credit/Debit Cards",
-      "comingSoon": "Coming Soon",
-      "completePayment": "Complete Payment",
-      "creatingOrder": "Creating order...",
-      "orderCreated": "Order created successfully",
-      "success": "Payment successful! Redirecting to your stories..."
+      "mbwayDescription": "Envía dinero al instante con tu app MB Way. Recibirás las instrucciones de pago por correo.",
+      "creditCards": "Tarjetas de crédito/débito",
+      "comingSoon": "Próximamente",
+      "completePayment": "Completar pago",
+      "creatingOrder": "Creando pedido...",
+      "orderCreated": "Pedido creado correctamente",
+      "success": "¡Pago realizado! En nada te llevamos a tus historias..."
     },
     "actions": {
-      "placeOrder": "Place Order",
-      "proceedToPayment": "Proceed to Payment",
-      "creatingOrder": "Creating Order...",
-      "tryAgain": "Try Again",
-      "cancel": "Cancel",
-      "backToPricing": "← Back to Pricing"
+      "placeOrder": "Realizar pedido",
+      "proceedToPayment": "Ir al pago",
+      "creatingOrder": "Creando pedido...",
+      "tryAgain": "Intentar de nuevo",
+      "cancel": "Cancelar",
+      "backToPricing": "← Volver a precios"
     },
     "errors": {
-      "billingRequired": "Please provide billing information",
-      "emptyCart": "Please add items to your cart",
-      "orderCreationFailed": "Failed to create order. Please try again.",
-      "paymentFailed": "Payment failed. Please try again."
+      "billingRequired": "Por favor, facilita la información de facturación",
+      "emptyCart": "Añade artículos a tu carrito",
+      "orderCreationFailed": "No se pudo crear el pedido. Inténtalo de nuevo.",
+      "paymentFailed": "El pago ha fallado. Inténtalo otra vez."
     },
     "badges": {
-      "bestValue": "Best Value",
-      "popular": "Popular"
+      "bestValue": "La mejor ganga",
+      "popular": "La que más se lleva"
     }
   },
   "RevolutPayment": {
-    "loading": "Loading payment options...",
-    "securityNote": "Your payment is secured by Revolut's encryption",
-    "encryptionNote": "256-bit SSL encryption",
+    "loading": "Cargando opciones de pago...",
+    "securityNote": "Tu pago está protegido con el cifrado de Revolut",
+    "encryptionNote": "Cifrado SSL de 256 bits",
     "errors": {
-      "sdkLoadFailed": "Failed to load payment service. Please refresh the page.",
-      "initializationFailed": "Failed to initialize payment. Please try again."
+      "sdkLoadFailed": "No se pudo cargar el servicio de pago. Recarga la página.",
+      "initializationFailed": "No se pudo inicializar el pago. Inténtalo otra vez."
     }
   }
 }
