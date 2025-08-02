@@ -1,15 +1,15 @@
 {
   "editor": {
-    "chapterNotFound": "Chapter not found",
-    "backToStory": "Back to Story",
-    "undoPreviousVersion": "Undo (Previous Version)",
-    "redoNextVersion": "Redo (Next Version)",
+    "chapterNotFound": "Capítulo no encontrado",
+    "backToStory": "Volver a la historia",
+    "undoPreviousVersion": "Deshacer (versión anterior)",
+    "redoNextVersion": "Rehacer (versión siguiente)",
     "chapterUpdates": {
-      "chaptersUpdatedSuccessfully": "{successCount} chapters updated successfully. Chapter {failedChapters} failed to edit.",
-      "allChaptersUpdated": "All {successCount} chapters updated successfully. Changes have been saved automatically."
+      "chaptersUpdatedSuccessfully": "{successCount} capítulos actualizados correctamente. El capítulo {failedChapters} no se pudo editar.",
+      "allChaptersUpdated": "Los {successCount} capítulos se actualizaron correctamente. Los cambios se han guardado automáticamente."
     },
     "imageEditor": {
-      "chapterTitle": "Chapter {chapterNumber}"
+      "chapterTitle": "Capítulo {chapterNumber}"
     }
   }
 }

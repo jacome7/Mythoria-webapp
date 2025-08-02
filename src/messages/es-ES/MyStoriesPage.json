@@ -1,59 +1,59 @@
 {
-  "title": "My Stories",
-  "description": "View and manage all your created stories",
-  "writeNewStory": "Write New Story",
+  "title": "Mis historias",
+  "description": "Consulta y gestiona todas tus historias creadas",
+  "writeNewStory": "Escribir nueva historia",
   "noStories": {
-    "title": "No Stories Yet",
-    "subtitle": "You haven't created any stories yet. Start your storytelling journey now!",
-    "action": "Create Your First Story"
+    "title": "Aún no tienes historias",
+    "subtitle": "Todavía no has creado ninguna historia. ¡Empieza tu aventura narrativa ahora!",
+    "action": "Crea tu primera historia"
   },
   "table": {
-    "date": "Date",
-    "title": "Title",
+    "date": "Fecha",
+    "title": "Título",
     "status": {
-      "header": "Status",
-      "queued": "Queued",
-      "running": "Generating",
-      "completed": "Completed",
-      "failed": "Failed",
-      "cancelled": "Cancelled"
+      "header": "Estado",
+      "queued": "En cola",
+      "running": "Generando",
+      "completed": "Completado",
+      "failed": "Fallido",
+      "cancelled": "Cancelado"
     },
-    "actions": "Actions"
+    "actions": "Acciones"
   },
   "status": {
-    "draft": "Draft",
-    "writing": "Writing",
-    "published": "Published"
+    "draft": "Borrador",
+    "writing": "Escribiendo",
+    "published": "Publicado"
   },
   "actions": {
-    "read": "Read",
-    "edit": "Edit",
-    "share": "Share",
-    "print": "Print",
-    "delete": "Delete",
-    "printNotAvailable": "Print Not Available"
+    "read": "Leer",
+    "edit": "Editar",
+    "share": "Compartir",
+    "print": "Imprimir",
+    "delete": "Eliminar",
+    "printNotAvailable": "Impresión no disponible"
   },
   "sharing": {
-    "publicAccessible": "Story is now publicly accessible",
-    "nowPrivate": "Story is now private"
+    "publicAccessible": "La historia ahora es pública",
+    "nowPrivate": "La historia ahora es privada"
   },
   "deleteConfirm": {
-    "title": "Delete Story",
-    "message": "Are you sure you want to delete this story? This action cannot be undone.",
-    "cancel": "Cancel",
-    "confirm": "Delete"
+    "title": "Eliminar historia",
+    "message": "¿Seguro que quieres eliminar esta historia? Esta acción no se puede deshacer.",
+    "cancel": "Cancelar",
+    "confirm": "Eliminar"
   },
   "signedOut": {
-    "welcome": "Welcome to My Stories",
-    "needSignIn": "Every storyteller needs an account to keep their magical credits safe!",
-    "signIn": "Sign In",
-    "createAccount": "Create Account"
+    "welcome": "Bienvenido a Mis historias",
+    "needSignIn": "Todo narrador necesita una cuenta para guardar sus créditos mágicos.",
+    "signIn": "Iniciar sesión",
+    "createAccount": "Crear cuenta"
   },
   "defaults": {
-    "authorName": "Storyteller"
+    "authorName": "Narrador"
   },
   "tabs": {
-    "myStories": "My Stories",
-    "myCharacters": "My Characters"
+    "myStories": "Mis historias",
+    "myCharacters": "Mis personajes"
   }
 }

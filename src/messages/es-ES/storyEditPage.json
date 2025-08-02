@@ -1,31 +1,31 @@
 {
   "storyEditPage": {
-    "pageTitle": "Edit Story",
+    "pageTitle": "Editar historia",
     "errors": {
-      "failedToLoadStoryData": "Failed to load story data",
-      "failedToLoadStory": "Failed to load story",
-      "failedToUpdateStoryInfo": "Failed to update story info",
-      "failedToLoadStoryDataToast": "Failed to load story data",
+      "failedToLoadStoryData": "No se pudieron cargar los datos de la historia",
+      "failedToLoadStory": "No se pudo cargar la historia",
+      "failedToUpdateStoryInfo": "No se pudo actualizar la información de la historia",
+      "failedToLoadStoryDataToast": "No se pudieron cargar los datos de la historia",
       "errorEmoji": "😞"
     },
     "success": {
-      "storyInfoUpdated": "Story info updated successfully",
-      "storyUpdated": "Story updated successfully",
-      "chapterUpdated": "Chapter updated successfully",
-      "contentUpdated": "Content updated successfully"
+      "storyInfoUpdated": "Información de la historia actualizada",
+      "storyUpdated": "Historia actualizada",
+      "chapterUpdated": "Capítulo actualizado",
+      "contentUpdated": "Contenido actualizado"
     },
     "chapterUpdates": {
-      "chaptersUpdatedSuccessfully": "{successCount} chapters updated successfully. Chapter {failedChapters} failed to edit.",
-      "allChaptersUpdated": "All {successCount} chapters updated successfully. Changes have been saved automatically."
+      "chaptersUpdatedSuccessfully": "{successCount} capítulos actualizados correctamente. El capítulo {failedChapters} no se pudo editar.",
+      "allChaptersUpdated": "Todos los {successCount} capítulos se actualizaron correctamente. Los cambios se han guardado automáticamente."
     },
     "imageTypes": {
-      "frontCover": "Front Cover",
-      "backCover": "Back Cover"
+      "frontCover": "Portada",
+      "backCover": "Contraportada"
     },
     "logging": {
-      "errorLoadingStory": "Error loading story:",
-      "errorUpdatingStoryInfo": "Error updating story info:",
-      "aiEditSuccessUpdatedData": "AI Edit Success - Updated Data:"
+      "errorLoadingStory": "Error cargando la historia:",
+      "errorUpdatingStoryInfo": "Error al actualizar la información de la historia:",
+      "aiEditSuccessUpdatedData": "Edición IA correcta - Datos actualizados:"
     }
   }
 }
