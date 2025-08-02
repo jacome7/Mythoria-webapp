@@ -276,7 +276,7 @@
       "feedbackButton": "🪄 Suggest a spell",
       "milestoneLabels": {
         "betaSpellbook": "Beta Spellbook",
-        "feedbackCauldron": "Feedback Cauldron", 
+        "feedbackCauldron": "Feedback Cauldron",
         "globalPortal": "Global Portal"
       }
     },
@@ -288,7 +288,9 @@
       "title": "Investors: Join the Quest",
       "description": "Dragons love gold; we love partners. If you see the treasure too, open the scroll."
     }
-  },  "GetInspiredPage": {    "filters": {
+  },
+  "GetInspiredPage": {
+    "filters": {
       "title": "Filter Stories",
       "targetAudience": "Target Audience",
       "graphicalStyle": "Art Style",
@@ -456,7 +458,8 @@
     "signInToContinue": "Sign in to continue",
     "signInOrCreateAccount": "You need to sign in or create an account to place a print order.",
     "signIn": "Sign In",
-    "createAccount": "Create Account",    "steps": {
+    "createAccount": "Create Account",
+    "steps": {
       "story": "Story",
       "address": "Shipping Address",
       "payment": "Print Options",

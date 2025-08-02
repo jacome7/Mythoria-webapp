@@ -1,4 +1,103 @@
 {
+  "SignInPage": {
+    "hero": {
+      "title": "Bienvenido a Mythoria",
+      "subtitle": "Continúa tu viaje narrativo. Inicia sesión para acceder a tus historias y personajes mágicos.",
+      "firstTimeMessage": "¿Es la primera vez que vienes por aquí? ",
+      "signUpLink": "regístrate y únete",
+      "signUpSuffix": " al Universo Mythoria hoy mismo."
+    },
+    "features": {
+      "unlimitedStories": "✨ Crea historias ilimitadas",
+      "characterLibrary": "📚 Gestiona tu biblioteca de personajes",
+      "customizeAdventures": "🎨 Personaliza tus aventuras"
+    },
+    "form": {
+      "title": "Inicia Sesión",
+      "subtitle": "Introduce tus credenciales para seguir con tu historia"
+    }
+  },
+  "SignUpPage": {
+    "hero": {
+      "title": "Únete al Universo Mythoria",
+      "subtitle": "Empieza tu aventura narrativa mágica. Crea historias personalizadas que den vida a tu imaginación."
+    },
+    "features": {
+      "firstStoryFree": "🌟 Crea tu primera historia gratis",
+      "uniqueCharacters": "👥 Diseña personajes únicos",
+      "publishedBooks": "📖 Recibe tus libros publicados",
+      "unlimitedCreativity": "🎭 Creatividad sin límites"
+    },
+    "form": {
+      "title": "Crear Cuenta",
+      "subtitle": "Empieza hoy mismo tu viaje de narrador"
+    }
+  },
+  "MyStoriesPage": {
+    "title": "Mis historias",
+    "writeNewStory": "Nueva historia",
+    "signedOut": {
+      "welcome": "¡Bienvenido!",
+      "needSignIn": "Todo narrador necesita una cuenta para mantener sus créditos mágicos a buen recaudo.",
+      "signIn": "Iniciar sesión",
+      "createAccount": "Crear cuenta"
+    },
+    "tabs": {
+      "myStories": "Mis historias",
+      "myCharacters": "Mis personajes"
+    },
+    "noStories": {
+      "title": "¡Tu colección de historias está esperando a comenzar! 📚✨",
+      "subtitle": "Todo gran narrador empezó con un solo relato. ¿Listo para escribir tu primera aventura mágica?",
+      "action": "Empieza tu primera historia"
+    },
+    "table": {
+      "date": "Fecha",
+      "title": "Título",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "status": {
+      "draft": "Borrador",
+      "writing": "En proceso",
+      "published": "Publicado"
+    },
+    "actions": {
+      "share": "Compartir",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "print": "Pedir impresión",
+      "printNotAvailable": "La impresión no está disponible para esta historia"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar historia",
+      "message": "¿Seguro que quieres eliminar esta historia? Esta acción no se puede deshacer.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar"
+    }
+  },
+  "MyCharactersPage": {
+    "noCharacters": {
+      "title": "¡Aún no tienes personajes!",
+      "subtitle": "Crea personajes para tus historias y aparecerán aquí."
+    },
+    "table": {
+      "name": "Nombre",
+      "type": "Tipo",
+      "actions": "Acciones"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Eliminar"
+    },
+    "createCharacter": "Crear personaje",
+    "deleteConfirm": {
+      "title": "Eliminar personaje",
+      "message": "¿Seguro que quieres eliminar este personaje? Esta acción no se puede deshacer.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar"
+    }
+  },
   "HomePage": {
     "title": "Bienvenido",
     "hero": {
@@ -97,6 +196,355 @@
     },
     "community": {
       "title": "¡Únete a Nuestra Creciente Comunidad de Narradores!"
+    }
+  },
+  "AboutUs": {
+    "hero": {
+      "title": "Mythoria",
+      "subtitle": "Historias cocinadas por un soñador de 18 años… y una legión de Oompa-Loompas.",
+      "cta": "Empieza tu propia historia"
+    },
+    "founder": {
+      "title": "El Joven Fundador",
+      "description": "Conoce a Rodrigo, quien convirtió su fascinación infantil por los relatos en una fábrica de aventuras. Con 18 años, combina una imaginación desbordante con una pizca de inteligencia artificial para crear historias personalizadas para cada niño o adulto.",
+      "ageLabel": "18 años",
+      "ageHover": "subiendo de nivel",
+      "imageAlt": "Rodrigo - Fundador de Mythoria",
+      "badges": {
+        "founder": "Fundador",
+        "aiEnthusiast": "Apasionado de la IA",
+        "storyteller": "Narrador"
+      }
+    },
+    "aiTeam": {
+      "title": "Conoce a los Oompa-Loompas 2.0",
+      "subtitle": "A diferencia de la fábrica de Wonka, nuestros Oompa-Loompas son de silicio puro — éticos, incansables y escalables sin límite.",
+      "quillBot": {
+        "name": "Quill-Bot",
+        "description": "Escribe giros de guion más rápido de lo que tardas en decir expelliarmus"
+      },
+      "brushBot": {
+        "name": "Brush-Bot",
+        "description": "Pinta mundos en estilo Pixar, manga o acuarela con un clic"
+      },
+      "voiceBot": {
+        "name": "Voice-Bot",
+        "description": "Da a cada héroe una voz única — sin billete dorado"
+      }
+    },
+    "progress": {
+      "title": "Laboratorio en Proceso",
+      "milestone1": "Libro de hechizos beta – las primeras 100 familias ya están forjando relatos",
+      "milestone2": "Caldero de comentarios – aquí cae cada sugerencia",
+      "milestone3": "Portal de lanzamiento global – previsto para septiembre de 2025",
+      "feedbackButton": "🪄 Sugiere un hechizo",
+      "milestoneLabels": {
+        "betaSpellbook": "Libro de Hechizos Beta",
+        "feedbackCauldron": "Caldero de Comentarios",
+        "globalPortal": "Portal Global"
+      }
+    },
+    "news": {
+      "title": "Noticias del Reino",
+      "breaking": "Última Pluma 🗞️ — ¡Rodrigo gana el Premio Joven Innovador InovaGaia 2025 por Mythoria!"
+    },
+    "investors": {
+      "title": "Inversores: Únete a la Aventura",
+      "description": "A los dragones les encanta el oro; a nosotros, los socios. Si también ves el tesoro, abre el pergamino."
+    }
+  },
+  "GetInspiredPage": {
+    "filters": {
+      "title": "Filtrar Historias",
+      "targetAudience": "Público Objetivo",
+      "graphicalStyle": "Estilo Artístico",
+      "storyLanguage": "Idioma",
+      "clearAll": "Borrar Filtros",
+      "showingAll": "Mostrando Todas las Historias"
+    },
+    "targetAudience": {
+      "all": "Todas las Edades",
+      "children_0-2": "Bebés y Peques (0-2)",
+      "children_3-6": "Preescolares (3-6)",
+      "children_7-10": "Primaria Temprana (7-10)",
+      "children_11-14": "Pre-adolescentes (11-14)",
+      "young_adult_15-17": "Adolescentes (15-17)",
+      "adult_18+": "Adultos (18+)",
+      "all_ages": "Todas las Edades"
+    },
+    "graphicalStyle": {
+      "all": "Todos los Estilos",
+      "cartoon": "Dibujo animado",
+      "realistic": "Realista",
+      "watercolor": "Acuarela",
+      "digital_art": "Arte Digital",
+      "hand_drawn": "Hecho a Mano",
+      "minimalist": "Minimalista",
+      "vintage": "Vintage",
+      "comic_book": "Cómic",
+      "anime": "Anime",
+      "pixar_style": "Estilo Pixar",
+      "disney_style": "Estilo Disney",
+      "sketch": "Boceto",
+      "oil_painting": "Óleo",
+      "colored_pencil": "Lápiz de Color"
+    },
+    "storyLanguage": {
+      "all": "Todos los Idiomas",
+      "en-US": "Inglés",
+      "pt-PT": "Portugués"
+    },
+    "gallery": {
+      "title": "Historias Destacadas",
+      "subtitle": "Relatos que han inspirado a familias de todo el mundo",
+      "viewStory": "Ver Historia",
+      "createdBy": "Creada por",
+      "emptyTitle": "Aún no hay Historias Destacadas",
+      "emptyMessage": "¡Crea tu propia historia y compártela con el mundo!",
+      "createStory": "Crea tu Historia",
+      "storyCoverAlt": "Portada de la historia",
+      "filterResults": "{count} de {total} historias mostradas"
+    },
+    "emptyState": {
+      "noStoriesMatch": "Ninguna historia coincide con tus filtros",
+      "tryAdjustingFilters": "Prueba a ajustar los filtros o explora todas las historias para descubrir nuevas aventuras.",
+      "noStoriesAvailable": "No hay historias disponibles",
+      "browseAllStories": "Ver Todas las Historias"
+    }
+  },
+  "ContactUsPage": {
+    "title": "Contacta con Mythoria",
+    "intro": "¡Saludos, aventurero! Tanto si vienes de la Comarca, Hogwarts o una galaxia muy, muy lejana, estamos aquí para ayudarte en tu travesía por el maravilloso mundo de Mythoria. Tu opinión es tan valiosa como el Anillo Único (pero mucho más fácil de manejar, te lo prometemos).",
+    "scrollTitle": "Envíanos tu lechuza (o rellena el formulario)",
+    "scrollIntro": "Elige el pergamino que mejor se ajuste a tu misión:",
+    "categories": {
+      "featureIdeas": "Ideas de Funciones (Inspíranos como Tolkien)",
+      "reportBug": "Reportar un Bug (¡Hasta Sherlock Holmes necesitaba pistas!)",
+      "troubles": "Problemas al Generar una Historia (Cuando los hechizos se tuercen)",
+      "delivery": "Envío del Libro Impreso (Nuestras lechuzas quizá necesiten indicaciones)",
+      "credits": "Créditos y Pagos (¡Los duendes de Gringotts no perdonan!)",
+      "general": "Encantamiento General (Soporte)",
+      "businessPartnership": "Colaboración Empresarial"
+    },
+    "categoriesShort": {
+      "featureIdeas": "Ideas de Funciones",
+      "reportBug": "Reportar un Bug",
+      "troubles": "Problemas de Generación",
+      "delivery": "Envío del Libro",
+      "credits": "Créditos y Pagos",
+      "businessPartnership": "Colaboración Empresarial",
+      "general": "Encantamiento General"
+    },
+    "form": {
+      "title": "El Formulario Mágico",
+      "name": "Tu Nombre:",
+      "namePlaceholder": "Alias de Mago",
+      "email": "Tu Email:",
+      "emailPlaceholder": "Para que nuestros palomos te encuentren",
+      "category": "Selecciona tu Misión:",
+      "selectCategory": "Elige una categoría...",
+      "message": "Tu Mensaje Mágico:",
+      "messagePlaceholder": "Comparte tus ideas o feedback encantado...",
+      "submit": "Lanzar Hechizo"
+    },
+    "join": {
+      "title": "Únete a la Comunidad",
+      "intro": "¡Mythoria está en una épica misión para conquistar nuevos reinos y busca almas valientes que se unan!",
+      "printing": "Socios de Impresión y Logística: ¿Listos para recorrer la Tierra Media o Poniente y entregar historias que importan? Únete a nosotros para difundir la magia de los relatos personalizados.",
+      "country": "Gestores de País y Magos Locales: Ayuda a Mythoria a conquistar el mundo (pacíficamente, lo prometemos). Lleva la alegría de contar historias a tu reino y más allá.",
+      "developers": "Desarrolladores que vibren con el código y hablen IA: ¿Dominas el binario y charlas sin esfuerzo con la IA? Necesitamos devs con chispa para mejorar la experiencia Mythoria.",
+      "call": "¿Te apetece convertirte en Mythoriano? Envíanos tus datos con el formulario encantado de arriba y cuéntanos tu área de interés."
+    },
+    "bonus": {
+      "title": "¡Alerta de Créditos Extra!",
+      "content": "¿Tienes ojo de halcón para los bugs o una mente llena de ideas? Gana créditos mágicos extra por cada fallo válido que reportes o por cada función inspirada que propongas.",
+      "disclaimer": "(*) La decisión final recae en nuestros encantadores Oompa-Loompas. Son impredecibles, pero adoran premiar la creatividad.",
+      "closing": "¡Creemos magia juntos!"
+    }
+  },
+  "PublicStoryPage": {
+    "loading": {
+      "title": "Cargando historia...",
+      "subtitle": "Un momento, estamos preparando la historia"
+    },
+    "errors": {
+      "notFound": "Historia no encontrada",
+      "notFoundDesc": "La historia que buscas no existe o ya no es pública.",
+      "contentNotAvailable": "Contenido no disponible",
+      "contentNotAvailableDesc": "Actualmente no se puede mostrar el contenido de esta historia."
+    },
+    "labels": {
+      "publicStory": "Historia Pública",
+      "by": "por",
+      "synopsis": "Sinopsis"
+    },
+    "footer": {
+      "createdWith": "Esta historia fue creada con",
+      "cta": "¡Crea tus propias historias mágicas hoy!"
+    },
+    "actions": {
+      "orderPrint": "Pedir copia impresa",
+      "listen": "Escuchar",
+      "print": "Imprimir",
+      "listenMobile": "Escuchar"
+    }
+  },
+  "SharedStoryPage": {
+    "loading": {
+      "title": "Cargando historia compartida...",
+      "subtitle": "Por favor, espera mientras verificamos tu acceso"
+    },
+    "errors": {
+      "unableToAccess": "No se puede acceder a la historia"
+    },
+    "redirecting": "Redirigiendo..."
+  },
+  "TellYourStoryPage": {
+    "signedOut": {
+      "title": "¿Listo para Contar tu Historia?",
+      "subtitle": "Regístrate para empezar a crear tus aventuras mágicas con Mythoria.",
+      "getStarted": "Empezar"
+    }
+  },
+  "AboutUsModal": {
+    "feedback": {
+      "title": "🪄 Lanza tu Hechizo de Feedback",
+      "placeholder": "Comparte tus sugerencias mágicas...",
+      "submit": "Enviar Hechizo ✨"
+    },
+    "investors": {
+      "button": "Abrir el Pergamino 📜"
+    }
+  },
+  "PrintOrder": {
+    "title": "Pedir Copia Impresa",
+    "backToStories": "Volver a Mis Historias",
+    "signInToContinue": "Inicia sesión para continuar",
+    "signInOrCreateAccount": "Debes iniciar sesión o crear una cuenta para hacer un pedido de impresión.",
+    "signIn": "Iniciar Sesión",
+    "createAccount": "Crear Cuenta",
+    "steps": {
+      "story": "Historia",
+      "address": "Dirección de Envío",
+      "payment": "Opciones de Impresión",
+      "confirmation": "Confirmación"
+    },
+    "errors": {
+      "storyNotFound": "Historia no encontrada",
+      "storyNotPublished": "Solo las historias publicadas se pueden imprimir",
+      "loadingFailed": "Error al cargar los datos de la historia",
+      "missingRequiredFields": "Completa todos los campos obligatorios",
+      "orderFailed": "Error al realizar el pedido de impresión",
+      "insufficientCredits": "Créditos insuficientes.",
+      "loadPricingFailed": "Error al cargar información de precios",
+      "fetchCreditsFailed": "Error al obtener tu saldo de créditos"
+    },
+    "addressInfo": {
+      "selectShipping": "Selecciona una dirección de envío para tu libro impreso.",
+      "noAddresses": "No tienes direcciones guardadas. Añade una dirección para continuar.",
+      "addNewAddress": "Añadir Nueva Dirección"
+    },
+    "formats": {
+      "paperback": "Tapa blanda",
+      "hardcover": "Tapa dura"
+    },
+    "payment": {
+      "selectBookType": "Selecciona tu Tipo de Libro",
+      "chooseQuality": "Elige la calidad de impresión que mejor se adapte a ti:",
+      "softcoverTitle": "📖 Tapa blanda",
+      "softcoverDescription": "Libro flexible con acabado brillante. Ideal para el día a día.",
+      "hardcoverTitle": "📚 Tapa dura",
+      "hardcoverDescription": "Cubierta rígida y encuadernación resistente. Perfecto como regalo o para conservar.",
+      "premiumTitle": "🌟 Premium",
+      "premiumDescription": "Edición de tapa dura de lujo con materiales premium. Calidad excepcional para ocasiones especiales.",
+      "priceNote": "Todos los precios incluyen la impresión a color de 4 capítulos y el envío.",
+      "extraChapterNote": "Cada capítulo extra cuesta 2 créditos.",
+      "yourStory": "Tu historia",
+      "extraChaptersNote": "capítulos extra",
+      "orderSummary": "Resumen del Pedido",
+      "selectedOption": "Opción Seleccionada",
+      "basePrice": "Precio Base",
+      "extraChapters": "Capítulos Extra",
+      "shipping": "Envío",
+      "included": "Incluido",
+      "printOrderFee": "Procesamiento del Pedido",
+      "total": "Total",
+      "credits": "créditos",
+      "cost": "Coste",
+      "yourCredits": "Tus Créditos",
+      "insufficientCreditsTitle": "Créditos Insuficientes",
+      "needMoreCredits": "Necesitas {count} créditos más para realizar este pedido.",
+      "getMoreCredits": "Obtener Más Créditos",
+      "method": "Método de Pago",
+      "creditsInfo": "El pago se deducirá de tu saldo de créditos al realizar el pedido.",
+      "pleaseSelectOption": "Selecciona una opción de impresión para continuar.",
+      "confirmOrder": "Confirma tu Pedido",
+      "confirmOrderDescription": "Debido a la alta demanda, la entrega puede tardar hasta 4 semanas. ¿Seguro que quieres continuar?"
+    },
+    "confirmation": {
+      "title": "¡Pedido realizado con éxito!",
+      "message": "Tu solicitud de impresión ha sido enviada. Recibirás actualizaciones sobre la impresión y el envío por email."
+    },
+    "buttons": {
+      "continue": "Continuar",
+      "back": "Atrás",
+      "placeOrder": "Realizar Pedido",
+      "backToStories": "Volver a Mis Historias",
+      "confirm": "Confirmar Pedido",
+      "cancel": "Cancelar"
+    }
+  },
+  "Addresses": {
+    "addAddress": "Añadir Nueva Dirección",
+    "editAddress": "Editar Dirección",
+    "confirmDelete": "¿Seguro que quieres eliminar esta dirección?",
+    "validation": {
+      "requiredFields": "Por favor, rellena todos los campos obligatorios (Dirección Línea 1, Ciudad, País)"
+    },
+    "errors": {
+      "saveFailed": "Error al guardar la dirección. Inténtalo de nuevo.",
+      "deleteFailed": "Error al eliminar la dirección. Inténtalo de nuevo."
+    },
+    "fields": {
+      "type": "Tipo de Dirección",
+      "line1": "Dirección Línea 1",
+      "line2": "Dirección Línea 2",
+      "city": "Ciudad",
+      "stateRegion": "Provincia/Región",
+      "postalCode": "Código Postal",
+      "country": "País",
+      "phone": "Teléfono"
+    },
+    "placeholders": {
+      "line1": "Introduce la dirección",
+      "line2": "Piso, puerta, etc. (opcional)",
+      "city": "Introduce la ciudad",
+      "stateRegion": "Introduce la provincia o región",
+      "postalCode": "Introduce el código postal",
+      "phone": "Introduce el teléfono"
+    },
+    "types": {
+      "delivery": "Envío",
+      "billing": "Facturación"
+    },
+    "countries": {
+      "us": "Estados Unidos",
+      "gb": "Reino Unido",
+      "de": "Alemania",
+      "fr": "Francia",
+      "es": "España",
+      "it": "Italia",
+      "pt": "Portugal",
+      "nl": "Países Bajos",
+      "be": "Bélgica",
+      "ca": "Canadá",
+      "au": "Australia",
+      "jp": "Japón",
+      "br": "Brasil"
+    },
+    "buttons": {
+      "save": "Guardar Dirección",
+      "cancel": "Cancelar"
     }
   }
 }

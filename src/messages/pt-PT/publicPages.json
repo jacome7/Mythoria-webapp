@@ -288,7 +288,9 @@
       "title": "Investidores: Juntem-se à Aventura",
       "description": "Os dragões amam ouro; nós amamos parceiros. Se também veem o tesouro, abram o pergaminho."
     }
-  },  "GetInspiredPage": {    "filters": {
+  },
+  "GetInspiredPage": {
+    "filters": {
       "title": "Filtrar Histórias",
       "targetAudience": "Público-Alvo",
       "graphicalStyle": "Estilo Artístico",

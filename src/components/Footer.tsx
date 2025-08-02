@@ -26,7 +26,7 @@ const Footer = () => {
             {/* Social icons */}
             <div className="mb-4">
               <div className="flex gap-4 justify-center md:justify-end">
-                <a href="" target="_blank" rel="noopener noreferrer" className="link link-hover">
+                <a href="https://www.facebook.com/MythoriaOfficial" target="_blank" rel="noopener noreferrer" className="link link-hover">
                   <FaFacebook size={24} />
                 </a>
                 <a href="https://www.instagram.com/mythoria_oficial" target="_blank" rel="noopener noreferrer" className="link link-hover">
