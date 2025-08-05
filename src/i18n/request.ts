@@ -8,7 +8,26 @@ export default getRequestConfig(async ({requestLocale}) => {
   if (!locale || !routing.locales.includes(locale as (typeof routing.locales)[number])) {
     locale = routing.defaultLocale;
   }  // Load and merge messages from different domain files
-  const [commonMessages, authMessages, publicPagesMessages, privacyPolicyMessages, pricingMessages, storyStepsMessages, contactUsPageMessages, myStoriesPageMessages, buyCreditsMessages, publicStoryPageMessages, storyEditPageMessages] = await Promise.all([
+  const [
+    commonMessages, 
+    authMessages, 
+    publicPagesMessages, 
+    privacyPolicyMessages, 
+    pricingMessages, 
+    storyStepsMessages, 
+    contactUsPageMessages, 
+    myStoriesPageMessages, 
+    buyCreditsMessages, 
+    publicStoryPageMessages, 
+    storyEditPageMessages,
+    charactersMessages,
+    componentsMessages,
+    deleteAccountMessages,
+    editorMessages,
+    libMessages,
+    metadataMessages,
+    sharedStoryPageMessages
+  ] = await Promise.all([
     import(`../messages/${locale}/common.json`).then(module => module.default),
     import(`../messages/${locale}/auth.json`).then(module => module.default),
     import(`../messages/${locale}/publicPages.json`).then(module => module.default),
@@ -19,7 +38,14 @@ export default getRequestConfig(async ({requestLocale}) => {
     import(`../messages/${locale}/MyStoriesPage.json`).then(module => module.default),
     import(`../messages/${locale}/buy-credits.json`).then(module => module.default),
     import(`../messages/${locale}/PublicStoryPage.json`).then(module => module.default),
-    import(`../messages/${locale}/storyEditPage.json`).then(module => module.default)
+    import(`../messages/${locale}/storyEditPage.json`).then(module => module.default),
+    import(`../messages/${locale}/characters.json`).then(module => module.default),
+    import(`../messages/${locale}/components.json`).then(module => module.default),
+    import(`../messages/${locale}/delete-account.json`).then(module => module.default),
+    import(`../messages/${locale}/editor.json`).then(module => module.default),
+    import(`../messages/${locale}/lib.json`).then(module => module.default),
+    import(`../messages/${locale}/metadata.json`).then(module => module.default),
+    import(`../messages/${locale}/SharedStoryPage.json`).then(module => module.default)
   ]);
 
   return {
@@ -32,6 +58,13 @@ export default getRequestConfig(async ({requestLocale}) => {
       ...buyCreditsMessages,
       ...publicStoryPageMessages,
       ...storyEditPageMessages,
+      ...charactersMessages,
+      ...componentsMessages,
+      ...deleteAccountMessages,
+      ...editorMessages,
+      ...libMessages,
+      ...metadataMessages,
+      ...sharedStoryPageMessages,
       publicPages: publicPagesMessages,
       privacyPolicy: privacyPolicyMessages,
       pricing: pricingMessages,

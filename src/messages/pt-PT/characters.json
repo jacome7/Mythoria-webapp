@@ -156,7 +156,14 @@
       "confident": "Confiante",
       "playful": "Brincalhão",
       "serious": "Sério",
-      "adventurous": "Aventureiro"
+      "adventurous": "Aventureiro",
+      "welcoming": "Acolhedor",
+      "wise": "Sábio",
+      "caring": "Carinhoso",
+      "supportive": "Apoiante",
+      "responsible": "Responsável",
+      "intelligent": "Inteligente",
+      "fearful": "Receoso"
     },
     "confirmDelete": "Tens a certeza de que queres eliminar esta personagem? Esta ação não pode ser desfeita."
   }

@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import {
   ClerkProvider,
 } from "@clerk/nextjs";
-import { enUS, ptPT } from '@clerk/localizations';
+import { enUS, ptPT, esES } from '@clerk/localizations';
 import GoogleAnalytics from "../components/GoogleAnalytics";
 import AnalyticsProvider from "../components/AnalyticsProvider";
+import LocaleRedirect from "../components/LocaleRedirect";
 import { headers } from 'next/headers';
 import "./globals.css";
 
@@ -28,31 +29,23 @@ export default async function RootLayout({
   const locale = localeMatch ? localeMatch[1] : 'en-US';
   
   // Select appropriate Clerk localization
-  const clerkLocalization = locale === 'pt-PT' ? ptPT : enUS;
+  const getClerkLocalization = (locale: string) => {
+    switch (locale) {
+      case 'pt-PT':
+        return ptPT;
+      case 'es-ES':
+        return esES;
+      case 'en-US':
+      default:
+        return enUS;
+    }
+  };
   
-  // Debugging configuration for Clerk
-  const isDebugMode = process.env.CLERK_DEBUG === 'true';
-  const telemetryDebug = process.env.NEXT_PUBLIC_CLERK_TELEMETRY_DEBUG === 'true';
-    if (isDebugMode) {
-    console.log('[Clerk Debug] Environment configuration:', {
-      publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.substring(0, 20) + '...',
-      debugMode: isDebugMode,
-      logLevel: process.env.CLERK_LOG_LEVEL,
-      telemetryDisabled: process.env.NEXT_PUBLIC_CLERK_TELEMETRY_DISABLED,
-      telemetryDebug: telemetryDebug,
-      signInUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL,
-      signUpUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL,
-      detectedLocale: locale,
-      clerkLocalization: locale === 'pt-PT' ? 'ptPT' : 'enUS'
-    });
-  }
+  const clerkLocalization = getClerkLocalization(locale);
+  
   return (
-    <ClerkProvider 
-      localization={clerkLocalization}
-      // Debug configuration is handled via environment variables
-      // Additional debugging props would go here if supported by the version
-    >
-      <html data-theme="autumn">
+    <ClerkProvider localization={clerkLocalization}>
+      <html lang={locale} data-theme="autumn">
         <head>
           <GoogleAnalytics 
             measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-86D0QFW197'}

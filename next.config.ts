@@ -1,8 +1,22 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from 'next-intl/plugin';
-import withPWA from 'next-pwa';
+import withPWAInit from '@ducanh2912/next-pwa';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
+
+const withPWA = withPWAInit({
+  dest: 'public',
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  reloadOnOnline: true,
+  disable: process.env.NODE_ENV === 'development',
+  workboxOptions: {
+    disableDevLogs: true,
+  },
+  fallbacks: {
+    document: '/offline',
+  },
+});
 
 const nextConfig: NextConfig = {
   // Enable standalone output for better Docker performance
@@ -90,49 +104,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-// PWA Configuration
-const withPWAConfig = withPWA({
-  dest: 'public',
-  register: true,
-  skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development',
-  // Disable auto-generation of manifest since we're handling it dynamically
-  buildExcludes: [/manifest$/, /\.map$/, /^manifest\.json$/],
-  runtimeCaching: [
-    {
-      urlPattern: /^https?.*\.(png|jpg|jpeg|webp|svg|gif|ico)$/,
-      handler: 'CacheFirst',
-      options: {
-        cacheName: 'mythoria-images',
-        expiration: {
-          maxEntries: 64,
-          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
-        },
-      },
-    },
-    {
-      urlPattern: /^https?.*\.(js|css|woff|woff2|otf|ttf)$/,
-      handler: 'CacheFirst',
-      options: {
-        cacheName: 'mythoria-static',
-        expiration: {
-          maxEntries: 32,
-          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
-        },
-      },
-    },
-    {
-      urlPattern: /^https?.*\/api\/manifest/,
-      handler: 'StaleWhileRevalidate',
-      options: {
-        cacheName: 'mythoria-manifest',
-        expiration: {
-          maxEntries: 4,
-          maxAgeSeconds: 60 * 60, // 1 hour
-        },
-      },
-    },
-  ],
-});
-
-export default withPWAConfig(withNextIntl(nextConfig) as any);
+export default withPWA(withNextIntl(nextConfig));

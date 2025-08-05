@@ -9,6 +9,9 @@ const LanguageSwitcher = () => {
   const router = useRouter();
   const pathname = usePathname();
   const handleLanguageChange = (newLocale: string) => {
+    // Store the language preference in localStorage
+    localStorage.setItem('mythoria-locale', newLocale);
+    
     // Remove the current locale from the pathname
     const segments = pathname.split('/');
     if (routing.locales.includes(segments[1] as (typeof routing.locales)[number])) {
@@ -18,7 +21,7 @@ const LanguageSwitcher = () => {
     }
     
     const newPath = segments.join('/');
-    router.push(newPath);
+    window.location.href = newPath;
   };
 
   const getLanguageLabel = (locale: string) => {

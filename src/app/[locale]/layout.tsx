@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import StructuredData from '@/components/StructuredData';
 import LanguageAttribute from '@/components/LanguageAttribute';
 import LocaleSync from '@/components/LocaleSync';
+import { generateServerHreflangLinks } from '@/lib/hreflang';
 import { readdir, readFile } from 'fs/promises';
 import path from 'path';
 import { Metadata, Viewport } from 'next';
@@ -216,6 +217,16 @@ export async function generateMetadata({
           image: 'https://mythoria.pt/assets/og/mythoria_pt.jpg'
         }
       };
+    } else if (locale === 'es-ES') {
+      metadata = {
+        title: 'Mythoria | Creador de Libros Personalizados',
+        description: 'Crea libros únicos y completamente ilustrados con la IA generativa de Mythoria. Transforma cualquier historia en un e-book, audiolibro o regalo impreso en minutos.',
+        openGraph: {
+          title: 'Mythoria | Creador de Libros Personalizados',
+          description: 'Transforma tus ideas en libros personalizados y bellamente ilustrados — lee, escucha o imprime.',
+          image: 'https://mythoria.pt/assets/og/mythoria_es.jpg'
+        }
+      };
     }
   } catch (error) {
     console.error(`Failed to load metadata for locale ${locale}:`, error);
@@ -224,6 +235,10 @@ export async function generateMetadata({
   // Base URL for the application
   const baseUrl = 'https://mythoria.pt';
   const currentUrl = `${baseUrl}/${locale}/`;
+  
+  // Generate hreflang links dynamically for the current page
+  const hreflangLinks = await generateServerHreflangLinks(locale);
+  
   return {
     title: metadata.title,
     description: metadata.description,
@@ -236,10 +251,7 @@ export async function generateMetadata({
     },
     alternates: {
       canonical: currentUrl,
-      languages: {
-        'en-US': `${baseUrl}/en-US/`,
-        'pt-PT': `${baseUrl}/pt-PT/`,
-      }
+      languages: hreflangLinks
     },
     openGraph: {
       type: 'website',

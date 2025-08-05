@@ -381,12 +381,11 @@ export default function GetInspiredPage() {
                 <figure className="px-4 pt-4">
                   <Link href={`/${locale}/p/${story.slug}`}>
                     <div className="relative w-full h-80 rounded-xl overflow-hidden cursor-pointer">
-                      <Image
+                      <img
                         src={story.featureImageUri || '/Mythoria-logo-white-512x336.jpg'}
                         alt={t('gallery.storyCoverAlt')}
-                        fill
-                        className="object-cover hover:scale-105 transition-transform duration-300"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        loading="lazy"
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                         onError={(e) => {
                           // Fallback to placeholder if image fails to load
                           const target = e.target as HTMLImageElement;
