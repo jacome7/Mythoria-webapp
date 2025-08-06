@@ -104,7 +104,7 @@
       "writeYourOwn": "Escreva a sua própria",
       "subtitle": "Transforme qualquer pessoa no herói de um livro lindamente ilustrado — para crianças, adultos ou equipas inteiras.",
       "subtitleEmphasized": "qualquer pessoa",
-      "tryItNow": "Experimente agora"
+      "tellYourOwnStory": "Conta a tua própria história"
     },
     "words": [
       "História",
@@ -198,6 +198,11 @@
     "community": {
       "title": "Junte-se à Nossa Crescente Comunidade de Contadores de Histórias!"
     },
+    "cta": {
+      "title": "Pronto para começar a sua jornada de contar histórias?",
+      "subtitle": "Registe-se hoje e receba 5 créditos grátis para criar a sua primeira história personalizada!",
+      "button": "Experimente Grátis"
+    },
     "features": {
       "title": "Porquê escolher a Mythoria?",
       "feature1": {
@@ -227,11 +232,6 @@
         "quote": "A qualidade da história e das ilustrações superou as nossas expectativas. A Mythoria criou algo verdadeiramente especial.",
         "author": "João P., avô"
       }
-    },
-    "cta": {
-      "title": "Pronto para criar a sua história?",
-      "subtitle": "Junte-se a milhares de famílias que já descobriram a magia da Mythoria.",
-      "button": "Começar a Criar"
     }
   },
   "AboutUs": {

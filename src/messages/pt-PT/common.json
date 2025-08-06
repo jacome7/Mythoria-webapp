@@ -536,7 +536,7 @@
       "loading": "Carregando...",
       "error": "Erro ao carregar",
       "notAvailable": "N/D",
-      "description": "histórias criadas e contando..."
+      "description": "histórias criadas e a contar..."
     },
     "storyGenerationProgress": {
       "completion": {

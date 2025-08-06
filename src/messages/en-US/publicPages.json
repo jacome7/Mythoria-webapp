@@ -104,7 +104,7 @@
       "writeYourOwn": "Write your own",
       "subtitle": "Turn anyone into the hero of a beautifully illustrated book — for children, grown-ups or entire teams.",
       "subtitleEmphasized": "anyone",
-      "tryItNow": "Try it now"
+      "tellYourOwnStory": "Write your own story"
     },
     "words": [
       "Story",
@@ -198,6 +198,11 @@
     "community": {
       "title": "Join Our Growing Community of Storytellers!"
     },
+    "cta": {
+      "title": "Ready to start your storytelling journey?",
+      "subtitle": "Sign up today and get 5 free credits to create your first personalized story!",
+      "button": "Try It For Free"
+    },
     "features": {
       "title": "Why choose Mythoria?",
       "feature1": {
@@ -227,11 +232,6 @@
         "quote": "The quality of the story and illustrations exceeded our expectations. Mythoria has created something truly special.",
         "author": "João P., grandfather"
       }
-    },
-    "cta": {
-      "title": "Ready to create your story?",
-      "subtitle": "Join thousands of families who have already discovered the magic of Mythoria.",
-      "button": "Start Creating"
     }
   },
   "AboutUs": {

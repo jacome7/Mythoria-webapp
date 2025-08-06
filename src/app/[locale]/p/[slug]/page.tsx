@@ -100,8 +100,8 @@ export default function PublicStoryPage() {
   useEffect(() => {
     if (data?.story) {
       const story = data.story;
-      // Use localized page title template
-      document.title = t('metadata.pageTitle', { title: story.title });
+      // Set page title directly with the format "StoryTitle | Mythoria"
+      document.title = `${story.title} | Mythoria`;
       
       // Set meta description
       const metaDescription = document.querySelector('meta[name="description"]');
@@ -127,7 +127,7 @@ export default function PublicStoryPage() {
       };
 
       const baseUrl = window.location.origin;
-      setMetaTag('og:title', story.title);
+      setMetaTag('og:title', `${story.title} | Mythoria`);
       setMetaTag('og:description', description);
       setMetaTag('og:type', 'article');
       setMetaTag('og:url', window.location.href);
@@ -149,7 +149,7 @@ export default function PublicStoryPage() {
       };
 
       setTwitterTag('twitter:card', 'summary_large_image');
-      setTwitterTag('twitter:title', story.title);
+      setTwitterTag('twitter:title', `${story.title} | Mythoria`);
       setTwitterTag('twitter:description', description);
       setTwitterTag('twitter:image', `${baseUrl}/api/og/story/${slug}`);
     }

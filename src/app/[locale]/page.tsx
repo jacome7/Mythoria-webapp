@@ -5,6 +5,7 @@ import Link from "next/link";
 import { TypeAnimation } from 'react-type-animation';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState, useRef } from 'react';
+import { SignedOut } from '@clerk/nextjs';
 import StoryCounter from "@/components/StoryCounter";
 import QuoteOfTheDay from "@/components/QuoteOfTheDay";
 import AnimatedLogo from "@/components/AnimatedLogo";
@@ -95,10 +96,10 @@ export default function Home() {
                     )}
                   </span>
                 ))}
-              </p>{/*}
-              <Link href="/create" className="btn btn-primary btn-lg">
-                {t('hero.tryItNow')}
-              </Link>*/}
+              </p>
+              <Link href="/tell-your-story" className="btn btn-primary btn-lg">
+                {t('hero.tellYourOwnStory')}
+              </Link>
             </div>
             {/* Right Side: Logo */}
             <div className="lg:w-1/2 flex justify-center lg:justify-end mt-4 lg:mt-0">
@@ -321,6 +322,19 @@ export default function Home() {
               <h2 className="text-3xl font-bold mb-4">{t('community.title')}</h2>
               <StoryCounter />
             </section>
+
+            {/* Call to Action Section - Only show if user is not signed in */}
+            <SignedOut>
+              <section className="my-16">
+                <div className="bg-gray-100 rounded-lg shadow-lg p-8 text-center">
+                  <h3 className="font-bold text-xl mb-4">{t('cta.title')}</h3>
+                  <div className="text-base mb-6">{t('cta.subtitle')}</div>
+                  <Link href="/sign-up" className="btn btn-outline btn-primary btn-lg">
+                    {t('cta.button')}
+                  </Link>
+                </div>
+              </section>
+            </SignedOut>
       </div>
     </div>
   );

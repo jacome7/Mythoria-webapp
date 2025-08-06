@@ -35,12 +35,14 @@ const Footer = () => {
                 <a href="https://linkedin.com/company/mythoria" target="_blank" rel="noopener noreferrer" className="link link-hover">
                   <FaLinkedin size={24} />
                 </a>
+                {/*}
                 <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="link link-hover">
                   <FaTiktok size={24} />
                 </a>
                 <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="link link-hover">
                   <FaYoutube size={24} />
                 </a>
+                */}
               </div>
             </div>
               {/* Links */}

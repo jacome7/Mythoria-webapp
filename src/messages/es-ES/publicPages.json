@@ -104,7 +104,7 @@
       "writeYourOwn": "Escribe tu propia",
       "subtitle": "Convierte a cualquiera en el héroe de un libro bellamente ilustrado — para niños, adultos o equipos completos.",
       "subtitleEmphasized": "a cualquiera",
-      "tryItNow": "Pruébalo ahora"
+      "tellYourOwnStory": "Cuenta tu propia historia"
     },
     "words": [
       "Historia",
@@ -196,6 +196,11 @@
     },
     "community": {
       "title": "¡Únete a Nuestra Creciente Comunidad de Narradores!"
+    },
+    "cta": {
+      "title": "¿Listo para comenzar tu viaje de narración?",
+      "subtitle": "¡Regístrate hoy y recibe 5 créditos gratis para crear tu primera historia personalizada!",
+      "button": "Pruébalo Gratis"
     }
   },
   "AboutUs": {

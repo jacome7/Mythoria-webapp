@@ -19,20 +19,6 @@ function initializeDatabase() {
   if (pool) {
     return dbInstance;
   }
-
-  // Add debug logging for environment variables (remove in production)
-  if (process.env.NODE_ENV !== "production") {
-    const config = getDatabaseConfig();
-    console.log("Database configuration:", {
-      host: config.host,
-      port: config.port,
-      user: config.user,
-      database: config.database,
-      nodeEnv: process.env.NODE_ENV,
-      hasConnectionString: !!config.connectionString,
-    });
-  }
-
   // Create pool with centralized configuration
   pool = new Pool(getPoolConfig());
 
@@ -41,10 +27,6 @@ function initializeDatabase() {
     console.error('Unexpected error on idle client', err);
   });
   pool.on('connect', () => {
-    // Log connection method for debugging
-    if (isVpcDirectEgress()) {
-      console.log('Using VPC Direct Egress connection to Cloud SQL');
-    }
   });
   pool.on('acquire', () => {
     // Pool client acquired
