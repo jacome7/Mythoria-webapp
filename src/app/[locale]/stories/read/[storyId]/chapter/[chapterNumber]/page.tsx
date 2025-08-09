@@ -100,7 +100,7 @@ export default function ReadChapterPage() {
   };
 
   const handlePrint = () => {
-    window.print();
+    router.push(`/${locale}/stories/print/${storyId}`);
   };
 
   const handleShare = () => {

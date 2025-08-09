@@ -520,10 +520,10 @@ function BuyCreditsContent() {
 							</div>
 						</SignedOut>
 						<SignedIn>
-							{/* Header */}
-							<header className="text-center mb-12">
-								<h1 className="text-4xl font-bold text-primary mb-4">{t('header.title')}</h1>
-								<p className="text-lg text-gray-600">{t('header.subtitle')}</p>
+							{/* Header Section */}
+							<header className="text-center mb-16">
+								<h1 className="text-5xl font-bold text-primary">{t('header.title')}</h1>
+								<p className="text-xl mt-4 text-gray-700">{t('header.subtitle')}</p>
 							</header>
 
 				<div className="grid lg:grid-cols-2 gap-12">

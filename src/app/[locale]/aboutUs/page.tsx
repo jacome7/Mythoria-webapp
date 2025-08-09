@@ -11,25 +11,15 @@ const AboutUsPage = () => {
 
   return (
     <div className="min-h-screen bg-base-100">
-      {/* Hero Section */}
-      <section className="hero min-h-[40vh] bg-gradient-to-br from-primary/10 to-secondary/10">
-        <div className="hero-content text-center max-w-4xl">
-          <div>
-            <h1 className="text-4xl md:text-6xl font-bold text-base-content mb-6">
-              {t('hero.title')}
-            </h1>
-            <p className="text-lg md:text-xl text-base-content/70 mb-8 max-w-2xl mx-auto leading-relaxed">
-              {t('hero.subtitle')}
-            </p>
-            <Link href="/tell-your-story/step-1" className="btn btn-primary btn-lg">
-              {t('hero.cta')}
-            </Link>
-          </div>
-        </div>
-      </section>
+      <div className="container mx-auto px-4 py-12">
+        {/* Header Section */}
+        <header className="text-center mb-16">
+          <h1 className="text-5xl font-bold text-primary">{t('hero.title')}</h1>
+          <p className="text-xl mt-4 text-gray-700">{t('hero.subtitle')}</p>
+        </header>
 
-      {/* Founder Section */}
-      <section className="py-16 md:py-24">
+        {/* Founder Section */}
+        <section className="py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -216,6 +206,7 @@ const AboutUsPage = () => {
           </div>
         </div>
       </section>
+      </div>
     </div>
   );
 };

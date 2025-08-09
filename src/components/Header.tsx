@@ -31,6 +31,7 @@ const Header = () => {
             <li><Link href="/" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.homepage')}</Link></li>
             <li><Link href="/get-inspired" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.getInspired')}</Link></li>
             <li><Link href="/tell-your-story/step-1" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.tellYourStory')}</Link></li>
+            <li><Link href="/blog" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.blog')}</Link></li>
             <li><Link href="/pricing" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.pricing')}</Link></li>
           </ul>
           </div>
@@ -75,6 +76,7 @@ const Header = () => {
             <li><Link href="/" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.homepage')}</Link></li>
             <li><Link href="/get-inspired" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.getInspired')}</Link></li>
             <li><Link href="/tell-your-story/step-1" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.tellYourStory')}</Link></li>
+            <li><Link href="/blog" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.blog')}</Link></li>
             <li><Link href="/pricing" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.pricing')}</Link></li>
             {isSignedIn && (
               <li><Link href="/my-stories" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.myStories')}</Link></li>
@@ -97,6 +99,7 @@ const Header = () => {
           <li><Link href="/">{t('navigation.homepage')}</Link></li>
           <li><Link href="/get-inspired">{t('navigation.getInspired')}</Link></li>
           <li><Link href="/tell-your-story/step-1">{t('navigation.tellYourStory')}</Link></li>
+          <li><Link href="/blog">{t('navigation.blog')}</Link></li>
           <li><Link href="/pricing">{t('navigation.pricing')}</Link></li>
           {isSignedIn && (
             <li><Link href="/my-stories">{t('navigation.myStories')}</Link></li>

@@ -189,14 +189,14 @@ export default function GetInspiredPage() {
 
   const hasActiveFilters = Object.values(filters).some(filterArray => filterArray.length > 0);
 
-  return (<div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+  return (<div className="min-h-screen bg-base-100">
       {/* Gallery Section */}
       <div className="container mx-auto px-4 pt-16 pb-16">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-800 mb-4">
+          <h2 className="text-5xl font-bold text-primary">
             {t('gallery.title')}
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl mt-4 text-gray-700">
             {t('gallery.subtitle')}
           </p>
         </div>

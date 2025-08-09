@@ -1,11 +1,20 @@
 {
-  "loading": {
-    "title": "A carregar história partilhada...",
-    "subtitle": "Por favor aguarde enquanto carregamos a história"
-  },
-  "redirecting": "A redirecionar...",
-  "errors": {
-    "unableToAccess": "Não foi possível aceder à história partilhada",
-    "failedToAccess": "Falha ao aceder à história partilhada"
+  "SharedStoryPage": {
+    "loading": {
+      "title": "A carregar história partilhada...",
+      "subtitle": "Por favor aguarde enquanto carregamos a história"
+    },
+    "redirecting": "A redirecionar...",
+    "errors": {
+      "unableToAccess": "Não foi possível aceder à história partilhada",
+      "failedToAccess": "Falha ao aceder à história partilhada"
+    },
+    "auth": {
+      "signInToEdit": "Inicie sessão para colaborar nesta história",
+      "signInToRead": "Inicie sessão para ler esta história",
+      "createAccountToCollaborate": "Crie uma conta para começar a colaborar e ajudar a dar vida a esta história!",
+      "createAccountToReadFull": "Crie uma conta para ler a história completa e descobrir todos os seus capítulos!"
+    },
+    "craftedWith": "Criado com"
   }
 }

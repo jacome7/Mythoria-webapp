@@ -7,6 +7,7 @@ import { shippingCodes } from './shipping';
 import { creditLedger, authorCreditBalances } from './credits';
 import { storyRatings } from './ratings';
 import { printProviders, printRequests } from './print';
+import { blogPosts, blogPostTranslations } from './blog';
 
 // -----------------------------------------------------------------------------
 // Relations (for type safety with Drizzle ORM queries)
@@ -165,5 +166,17 @@ export const printRequestsRelations = relations(printRequests, ({ one }) => ({
   shippingAddress: one(addresses, {
     fields: [printRequests.shippingId],
     references: [addresses.addressId],
+  }),
+}));
+
+// Blog relations
+export const blogPostsRelations = relations(blogPosts, ({ many }) => ({
+  translations: many(blogPostTranslations),
+}));
+
+export const blogPostTranslationsRelations = relations(blogPostTranslations, ({ one }) => ({
+  post: one(blogPosts, {
+    fields: [blogPostTranslations.postId],
+    references: [blogPosts.id],
   }),
 }));

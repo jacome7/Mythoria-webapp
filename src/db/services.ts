@@ -9,6 +9,7 @@ import { toAbsoluteImageUrl, toRelativeImagePath } from "../utils/image-url";
 // Export payment service
 export { paymentService } from "./services/payment";
 export { creditPackagesService } from "./services/credit-packages";
+export { blogService } from './services/blog';
 
 // Author operations
 export const authorService = {  async createAuthor(authorData: { clerkUserId: string; email: string; displayName: string }) {

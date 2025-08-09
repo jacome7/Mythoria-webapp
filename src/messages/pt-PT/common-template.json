@@ -984,6 +984,48 @@
 					}
 				}
 			}
+		},
+		"blog": {
+			"list": {
+				"title": "The Blog",
+				"subtitle": "Chronicles from the realm of storytelling",
+				"description": "Dive into the magical world of narratives, where every tale whispers secrets of distant lands and forgotten wisdom.",
+				"readMore": "Continue Reading",
+				"publishedOn": "Published on",
+				"by": "by",
+				"readingTime": "min read",
+				"noPostsFound": "No tales have been penned yet",
+				"noPostsFoundDescription": "The quill rests silent, but great stories are brewing. Return soon to discover new adventures!",
+				"loadMore": "Load More Chronicles",
+				"loading": "Unveiling more tales...",
+				"error": "The ancient scrolls seem unreachable at the moment",
+				"tryAgain": "Try Again"
+			},
+			"post": {
+				"backToList": "Back to Chronicles",
+				"publishedOn": "Published on",
+				"readingTime": "min read",
+				"sharePost": "Share this Chronicle",
+				"relatedPosts": "More Tales from the Realm",
+				"previousPost": "Previous Tale",
+				"nextPost": "Next Adventure",
+				"notFound": "This chronicle seems to have vanished into the mists of time",
+				"notFoundDescription": "Perhaps it was claimed by a dragon, or maybe it's hidden in another realm. Try exploring our other tales!",
+				"notAvailable": "This tale is not available in your language",
+				"notAvailableDescription": "This chronicle hasn't been translated to your language yet. You can explore our other tales or check back later.",
+				"error": "The ancient tome could not be opened",
+				"errorDescription": "Something went wrong while trying to read this chronicle. Please try again later."
+			},
+			"navigation": {
+				"blog": "Chronicles",
+				"home": "Main Hall"
+			},
+			"metadata": {
+				"defaultTitle": "The Blog - Tales from Mythoria",
+				"defaultDescription": "Discover chronicles and tales from the magical realm of Mythoria. Explore stories, writing tips, and adventures in storytelling.",
+				"listTitle": "The Blog - Chronicles from the Realm",
+				"listDescription": "Explore our collection of tales, writing wisdom, and adventures from the world of storytelling."
+			}
 		}
 	}
 }

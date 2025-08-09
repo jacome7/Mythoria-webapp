@@ -6,6 +6,14 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  plugins: [
+    require('@tailwindcss/typography'),
+    require('daisyui'),
+  ],
+  // @ts-ignore - DaisyUI config
+  daisyui: {
+    themes: ["autumn"],
+  },
 } satisfies Config;
 
 export default config;

@@ -1,11 +1,20 @@
 {
-  "loading": {
-    "title": "Loading shared story...",
-    "subtitle": "Please wait while we load the story"
-  },
-  "redirecting": "Redirecting...",
-  "errors": {
-    "unableToAccess": "Unable to access shared story",
-    "failedToAccess": "Failed to access shared story"
+  "SharedStoryPage": {
+    "loading": {
+      "title": "Loading shared story...",
+      "subtitle": "Please wait while we load the story"
+    },
+    "redirecting": "Redirecting...",
+    "errors": {
+      "unableToAccess": "Unable to access shared story",
+      "failedToAccess": "Failed to access shared story"
+    },
+    "auth": {
+      "signInToEdit": "Sign in to collaborate on this story",
+      "signInToRead": "Sign in to read this story",
+      "createAccountToCollaborate": "Create an account to start collaborating and help bring this story to life!",
+      "createAccountToReadFull": "Create an account to read the full story and discover all its chapters!"
+    },
+    "craftedWith": "Crafted with"
   }
 }

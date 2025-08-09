@@ -8,6 +8,7 @@ export * from './enums';
 // Domain tables and types
 export * from './authors';
 export * from './stories';
+export * from './blog';
 export * from './characters';
 export * from './payments';
 export * from './shipping';

@@ -4,6 +4,27 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { FiLoader, FiAlertCircle } from 'react-icons/fi';
+import Image from 'next/image';
+import { toAbsoluteImageUrl } from '@/utils/image-url';
+import { getLogoForGraphicalStyle } from '@/utils/logo-mapping';
+
+interface StoryPreview {
+  title: string;
+  synopsis: string;
+  authorName: string;
+  coverUri?: string;
+  targetAudience?: string;
+  graphicalStyle?: string;
+}
+
+interface ApiResponse {
+  success: boolean;
+  requiresAuth?: boolean;
+  storyPreview?: StoryPreview;
+  accessLevel?: string;
+  redirectUrl?: string;
+  error?: string;
+}
 
 export default function SharedStoryPage() {
   const params = useParams();
@@ -15,6 +36,9 @@ export default function SharedStoryPage() {
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [storyPreview, setStoryPreview] = useState<StoryPreview | null>(null);
+  const [requiresAuth, setRequiresAuth] = useState(false);
+  const [accessLevel, setAccessLevel] = useState<string>('');
 
   useEffect(() => {
     if (!token) return;
@@ -22,11 +46,16 @@ export default function SharedStoryPage() {
     const accessSharedStory = async () => {
       try {
         const response = await fetch(`/api/share/${token}`);
-        const result = await response.json();
+        const result: ApiResponse = await response.json();
 
         if (result.success && result.redirectUrl) {
           // Redirect to the actual story page
           router.push(`/${locale}${result.redirectUrl}`);
+        } else if (result.requiresAuth && result.storyPreview) {
+          // Show preview for unauthenticated users
+          setStoryPreview(result.storyPreview);
+          setRequiresAuth(true);
+          setAccessLevel(result.accessLevel || '');
         } else if (result.error) {
           setError(result.error);
         }
@@ -46,6 +75,99 @@ export default function SharedStoryPage() {
           <FiLoader className="animate-spin text-4xl text-primary mx-auto" />
           <h2 className="text-xl font-semibold">{t('loading.title')}</h2>
           <p className="text-gray-600">{t('loading.subtitle')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (requiresAuth && storyPreview) {
+    const logoUrl = getLogoForGraphicalStyle(storyPreview.graphicalStyle);
+    
+    return (
+      <div className="min-h-screen bg-base-100">
+        <div className="container mx-auto px-4 py-8 max-w-4xl">
+          <div className="text-center space-y-8">
+            {/* Story Preview Section */}
+            <div className="space-y-6">
+              <h1 className="text-4xl font-bold text-gray-900">{storyPreview.title}</h1>
+              
+              {/* Cover Image */}
+              {storyPreview.coverUri && toAbsoluteImageUrl(storyPreview.coverUri) && (
+                <div className="flex justify-center">
+                  <div className="relative">
+                    <Image 
+                      src={toAbsoluteImageUrl(storyPreview.coverUri)!} 
+                      alt={`${storyPreview.title} - Book Cover`}
+                      className="rounded-lg shadow-lg max-w-sm w-full h-auto"
+                      width={400}
+                      height={600}
+                      priority
+                    />
+                  </div>
+                </div>
+              )}
+              
+              {/* Author Name */}
+              <p className="text-xl text-gray-700">
+                {tCommon('Components.StoryReader.byAuthor', { authorName: storyPreview.authorName })}
+              </p>
+              
+              {/* Synopsis */}
+              {storyPreview.synopsis && (
+                <div className="bg-base-200 rounded-lg p-6 text-left max-w-2xl mx-auto">
+                  <h3 className="text-lg font-semibold mb-3">{tCommon('Components.StoryReader.synopsis')}</h3>
+                  <p className="text-gray-700 leading-relaxed">{storyPreview.synopsis}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Authentication Required Section */}
+            <div className="bg-base-200 rounded-lg p-8 space-y-6">
+              <div className="space-y-4">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {accessLevel === 'edit' 
+                    ? t('auth.signInToEdit') 
+                    : t('auth.signInToRead')
+                  }
+                </h2>
+                <p className="text-gray-600 text-lg">
+                  {accessLevel === 'edit'
+                    ? t('auth.createAccountToCollaborate')
+                    : t('auth.createAccountToReadFull')
+                  }
+                </p>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a
+                  href={`/${locale}/sign-in`}
+                  className="btn btn-primary btn-lg px-8"
+                >
+                  {tCommon('Auth.signIn')}
+                </a>
+                <a
+                  href={`/${locale}/sign-up`}
+                  className="btn btn-outline btn-lg px-8"
+                >
+                  {tCommon('Auth.createAccount')}
+                </a>
+              </div>
+            </div>
+
+            {/* Mythoria Branding */}
+            <div className="space-y-4">
+              <p className="text-gray-600">
+                {tCommon('Components.StoryReader.craftedWith')}
+              </p>
+              <Image 
+                src={logoUrl} 
+                alt="Mythoria Logo" 
+                className="mx-auto max-w-xs w-full h-auto"
+                width={300}
+                height={150}
+              />
+            </div>
+          </div>
         </div>
       </div>
     );
