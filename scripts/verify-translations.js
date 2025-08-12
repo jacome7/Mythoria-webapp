@@ -5,6 +5,20 @@ const locales = ['en-US', 'pt-PT'];
 const requiredHomePageKeys = ['words', 'hero', 'audiences', 'howItWorks', 'community'];
 const requiredCommonKeys = ['Header', 'Footer'];
 
+// New: Critical keys for PublicStoryPage that must exist for CTAs to render translated in production
+// Each entry is a dot-path under the root object of PublicStoryPage.json
+const requiredPublicStoryPageKeys = [
+  'PublicStoryPage.storyComplete.enjoyedTitle',
+  'PublicStoryPage.storyComplete.enjoyedDesc',
+  'PublicStoryPage.actions.createOwnStory',
+  'PublicStoryPage.actions.orderPrintedBook',
+  'PublicStoryPage.metadata.coverImageAlt'
+];
+
+function getNested(obj, pathStr) {
+  return pathStr.split('.').reduce((acc, part) => (acc && acc[part] !== undefined ? acc[part] : undefined), obj);
+}
+
 console.log('🔍 Verifying translation files...\n');
 
 let hasErrors = false;
@@ -82,6 +96,29 @@ locales.forEach(locale => {
       }
     } catch (e) {
       console.error(`❌ Failed to parse common.json for locale ${locale}:`, e.message);
+      hasErrors = true;
+    }
+  }
+
+  // Check PublicStoryPage.json critical CTA keys
+  const publicStoryPagePath = path.join(messagesPath, 'PublicStoryPage.json');
+  if (!fs.existsSync(publicStoryPagePath)) {
+    console.error(`❌ Missing PublicStoryPage.json for locale: ${locale}`);
+    hasErrors = true;
+  } else {
+    try {
+      const content = JSON.parse(fs.readFileSync(publicStoryPagePath, 'utf8'));
+      requiredPublicStoryPageKeys.forEach(keyPath => {
+        if (getNested(content, keyPath) === undefined) {
+          console.error(`❌ Missing required key '${keyPath}' in PublicStoryPage.json for locale: ${locale}`);
+          hasErrors = true;
+        }
+      });
+      if (!hasErrors) {
+        console.log(`✅ PublicStoryPage.json critical keys present for locale: ${locale}`);
+      }
+    } catch (e) {
+      console.error(`❌ Failed to parse PublicStoryPage.json for locale ${locale}:`, e.message);
       hasErrors = true;
     }
   }
