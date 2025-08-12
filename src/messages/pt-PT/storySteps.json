@@ -129,8 +129,8 @@
         "pleaseWait": "Por favor aguarda enquanto fazemos a nossa magia! ✨"
       },
       "errors": {
-        "failedGetUser": "Falha ao obter informa\u00e7\u00e3o do utilizador.",
-        "failedCreate": "Falha ao criar hist\u00f3ria.",
+        "failedGetUser": "Falha ao obter informação do utilizador.",
+        "failedCreate": "Falha ao criar história.",
         "unknown": "Ocorreu um erro desconhecido."
       }
     },
@@ -202,19 +202,46 @@
         "storyLanguageHelp": "A tua história será escrita e gerada no idioma selecionado."
       },
       "languageOptions": [
-        { "value": "nl-NL", "label": "Holandês (Nederlands)" },
-        { "value": "en-US", "label": "Inglês" },
-        { "value": "fr-FR", "label": "Francês (Français)" },
-        { "value": "de-DE", "label": "Alemão (Deutsch)" },
-        { "value": "it-IT", "label": "Italiano (Italiano)" },
-        { "value": "pl-PL", "label": "Polaco (Polski)" },
-        { "value": "pt-BR", "label": "Português (Brasil)" },
-        { "value": "pt-PT", "label": "Português (Portugal)" },
-        { "value": "es-ES", "label": "Espanhol (Español)" }
+        {
+          "value": "nl-NL",
+          "label": "Holandês (Nederlands)"
+        },
+        {
+          "value": "en-US",
+          "label": "Inglês"
+        },
+        {
+          "value": "fr-FR",
+          "label": "Francês (Français)"
+        },
+        {
+          "value": "de-DE",
+          "label": "Alemão (Deutsch)"
+        },
+        {
+          "value": "it-IT",
+          "label": "Italiano (Italiano)"
+        },
+        {
+          "value": "pl-PL",
+          "label": "Polaco (Polski)"
+        },
+        {
+          "value": "pt-BR",
+          "label": "Português (Brasil)"
+        },
+        {
+          "value": "pt-PT",
+          "label": "Português (Portugal)"
+        },
+        {
+          "value": "es-ES",
+          "label": "Espanhol (Español)"
+        }
       ],
       "chapterCounts": {
         "short": "Curta (3-5 capítulos)",
-        "medium": "Média (6-8 capítulos)", 
+        "medium": "Média (6-8 capítulos)",
         "long": "Longa (9-12 capítulos)"
       },
       "plurals": {

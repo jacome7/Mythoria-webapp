@@ -1,19 +1,19 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 
 const LanguageSwitcher = () => {
   const locale = useLocale();
-  const router = useRouter();
   const pathname = usePathname();
   const handleLanguageChange = (newLocale: string) => {
     // Store the language preference in localStorage
     localStorage.setItem('mythoria-locale', newLocale);
     
     // Remove the current locale from the pathname
-    const segments = pathname.split('/');
+  const safePathname = pathname || window.location.pathname;
+  const segments = safePathname.split('/');
     if (routing.locales.includes(segments[1] as (typeof routing.locales)[number])) {
       segments[1] = newLocale;
     } else {

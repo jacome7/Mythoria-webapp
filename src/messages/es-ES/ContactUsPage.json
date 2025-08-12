@@ -26,27 +26,6 @@
       "country": "🌍 Ayúdanos a llevar Mythoria a tu país o región",
       "developers": "💻 Desarrolladores con ganas de crear historias impulsadas por IA",
       "call": "¿Te interesa? Dínoslo en tu mensaje"
-    },
-    "form": {
-      "validation": {
-        "allFieldsRequired": "Por favor, rellena todos los campos obligatorios",
-        "nameRequired": "El nombre es obligatorio",
-        "emailRequired": "El correo electrónico es obligatorio",
-        "emailInvalid": "Introduce un correo electrónico válido",
-        "messageRequired": "El mensaje es obligatorio"
-      },
-      "success": {
-        "title": "¡Gracias por tu mensaje!",
-        "message": "Hemos recibido tu mensaje y te responderemos lo antes posible. Si nos has enviado comentarios o sugerencias, añadiremos un pequeño bonus de créditos a tu cuenta como agradecimiento."
-      },
-      "errors": {
-        "sendFailed": "No se pudo enviar el mensaje. Inténtalo de nuevo.",
-        "networkError": "Error de red. Comprueba tu conexión e inténtalo otra vez."
-      }
-    },
-    "loading": {
-      "default": "Cargando...",
-      "form": "Cargando formulario de contacto..."
     }
   }
 }

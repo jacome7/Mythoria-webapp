@@ -19,6 +19,17 @@ interface ClientCodeBlockProps {
 }
 
 const ClientCodeBlock: React.FC<ClientCodeBlockProps> = ({ children, className = '' }) => {
+  const getStringFromNode = (node: React.ReactNode): string => {
+    if (typeof node === 'string') return node;
+    if (typeof node === 'number') return String(node);
+    if (Array.isArray(node)) return node.map(getStringFromNode).join('');
+    if (React.isValidElement(node)) {
+      const props = node.props as { children?: React.ReactNode };
+      return getStringFromNode(props.children);
+    }
+    return '';
+  };
+
   const isInline = !className.includes('language-');
   
   if (isInline) {
@@ -32,18 +43,7 @@ const ClientCodeBlock: React.FC<ClientCodeBlockProps> = ({ children, className =
   // Check if this is a mermaid code block
   if (className.includes('language-mermaid')) {
     // Extract the text content from children
-    let chartContent = '';
-    if (typeof children === 'string') {
-      chartContent = children;
-    } else if (React.isValidElement(children) && children.props && typeof (children.props as any).children === 'string') {
-      chartContent = (children.props as any).children;
-    } else {
-      chartContent = String(children);
-    }
-    
-    // Clean up the chart content
-    chartContent = chartContent.trim();
-    
+    const chartContent = getStringFromNode(children).trim();
     return <MermaidChart chart={chartContent} />;
   }
   

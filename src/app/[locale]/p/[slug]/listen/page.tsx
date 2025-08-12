@@ -49,7 +49,9 @@ export default function PublicListenPage() {
   const locale = useLocale();
   const t = useTranslations('PublicStoryPage');
   const tCommon = useTranslations('common');
-  const slug = params.slug as string;
+  const slug = Array.isArray(params?.slug)
+    ? (params?.slug[0] ?? '')
+    : (params?.slug as string | undefined) ?? '';
   
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<PublicStoryData | null>(null);

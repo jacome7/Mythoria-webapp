@@ -53,16 +53,16 @@ interface ApiResponse {
 }
 
 export default function EditChapterPage() {
-  const params = useParams();
+  const params = useParams<{ storyId?: string; chapterNumber?: string; locale?: string }>();
   const router = useRouter();
   const { user } = useUser();
   const tCommon = useTranslations('common');
   const tComponents = useTranslations('components');
   const tEditor = useTranslations('editor');
 
-  const storyId = params.storyId as string;
-  const chapterNumber = parseInt(params.chapterNumber as string);
-  const locale = params.locale as string;
+  const storyId = (params?.storyId as string | undefined) ?? '';
+  const chapterNumber = parseInt(((params?.chapterNumber as string | undefined) ?? '0'), 10);
+  const locale = (params?.locale as string | undefined) ?? '';
 
   // Convert API data to component-compatible format
   const convertApiChaptersToChapters = (apiChapters: ApiChapter[]) => {

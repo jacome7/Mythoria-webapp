@@ -9,7 +9,9 @@ export function useGoogleAnalytics() {
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.gtag) {
-      const url = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '');
+  const path = pathname || window.location.pathname;
+  const sp = searchParams ? searchParams.toString() : '';
+  const url = path + (sp ? `?${sp}` : '');
       
       window.gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-86D0QFW197', {
         page_location: window.location.origin + url,

@@ -40,7 +40,7 @@ const getIconComponent = (iconName: string) => {
 
 // Separate component for search params to handle suspense
 function BuyCreditsContent() {
-	   const searchParams = useSearchParams();
+		const searchParams = useSearchParams();
 	   const t = useTranslations('BuyCreditsPage');
 	   const tPricing = useTranslations('PricingPage');
 	   const tMyStories = useTranslations('MyStoriesPage');
@@ -70,9 +70,9 @@ function BuyCreditsContent() {
 	   useEffect(() => {
 			   if (!isMounted) return;
 
-			   const revolutOrderId = searchParams.get('_rp_oid');
-			   const revolutFailureReason = searchParams.get('_rp_fr');
-			   const paymentStatus = searchParams.get('payment');
+			   const revolutOrderId = searchParams?.get('_rp_oid') ?? null;
+			   const revolutFailureReason = searchParams?.get('_rp_fr') ?? null;
+			   const paymentStatus = searchParams?.get('payment') ?? null;
 			   
 			   if (revolutOrderId && revolutFailureReason) {
 					   console.log('Revolut error parameters:', { revolutOrderId, revolutFailureReason });
@@ -241,7 +241,7 @@ function BuyCreditsContent() {
 
 	   // Pre-select package if coming from pricing page
 	   useEffect(() => {
-			   const packageId = searchParams.get('package');
+			   const packageId = searchParams?.get('package') ?? null;
 			   if (packageId) {
 					   const id = parseInt(packageId);
 					   if (creditPackages.find(pkg => pkg.id === id)) {

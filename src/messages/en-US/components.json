@@ -55,11 +55,11 @@
         "title": "Cost Estimation",
         "freeEdit": "This edit is free!",
         "costEdit": "This edit will cost {credits} credit{plural}",
-        "currentBalance": "\u2022 Current balance: {credits} credits",
-        "editCount": "\u2022 Edit count: {count} (next threshold: {threshold})",
-        "freeChapterEdits": "\u2022 {count} free chapter edits",
-        "paidChapterEdits": "\u2022 {count} paid chapter edits",
-        "message": "\u2022 {message}"
+        "currentBalance": "• Current balance: {credits} credits",
+        "editCount": "• Edit count: {count} (next threshold: {threshold})",
+        "freeChapterEdits": "• {count} free chapter edits",
+        "paidChapterEdits": "• {count} paid chapter edits",
+        "message": "• {message}"
       }
     },
     "audiobookGenerationProgress": {
@@ -82,11 +82,8 @@
       }
     },
     "audiobookGenerationTrigger": {
-      "generateButton": "Generate Audiobook",
       "errors": {
-        "failedToStart": "Failed to start audiobook generation",
-        "failedToStartWithReason": "Failed to start audiobook generation: {reason}",
-        "failedToPlayAudio": "Failed to play audio. Please try again."
+        "failedToStart": "Failed to start audiobook generation"
       }
     },
     "chapterEditor": {
@@ -121,11 +118,6 @@
       "info": "Info",
       "chapterLabel": "Chapter {number}"
     },
-    "characterCard": {
-      "errors": {
-        "maxTraits": "Maximum 5 traits allowed. Remove a trait first."
-      }
-    },
     "contactForm": {
       "form": {
         "title": "Contact Support",
@@ -135,7 +127,7 @@
         "message": "Message",
         "submit": "Create Support Ticket",
         "namePlaceholder": "Enter your name",
-        "emailPlaceholder": "Enter your email address", 
+        "emailPlaceholder": "Enter your email address",
         "messagePlaceholder": "Describe your issue or question...",
         "selectCategory": "Select a category..."
       },
@@ -183,12 +175,6 @@
     },
     "jobProgressModal": {
       "title": "Processing Your Request",
-      "steps": {
-        "textEditing": "Text Editing",
-        "imageEditing": "Image Editing",
-        "audioGeneration": "Audio Generation",
-        "finalizing": "Finalizing"
-      },
       "status": {
         "waitingToStart": "Waiting to start...",
         "inProgress": "In progress...",
@@ -201,12 +187,6 @@
         "remaining": "Remaining"
       },
       "closeButton": "Close"
-    },
-    "readingProgress": {
-      "fallbacks": {
-        "storyTitle": "Story Title",
-        "chapterTitle": "Chapter {number}"
-      }
     },
     "readingToolbar": {
       "title": "Reading Settings",
@@ -238,14 +218,6 @@
         "initializeFailed": "Failed to initialize payment"
       }
     },
-    "shareModal": {
-      "errors": {
-        "invalidStoryId": "Invalid story ID"
-      },
-      "messages": {
-        "checkOut": "Check out \"{title}\" on Mythoria"
-      }
-    },
     "storyInfoEditor": {
       "title": "Story Information",
       "storyTitle": "Story Title",
@@ -258,10 +230,8 @@
       "authorPlaceholder": "How should the author be credited?",
       "targetAudience": "Target Audience",
       "targetAudiencePlaceholder": "Select target audience",
-      "graphicalStyle": "Graphical Style",
       "saveButton": "Save Changes",
       "saving": "Saving...",
-      "cancelButton": "Cancel",
       "frontCover": "Front Cover",
       "backCover": "Back Cover",
       "noCoverImage": "No cover image",
@@ -289,8 +259,6 @@
         "storyBackCover": "Story back cover"
       },
       "messages": {
-        "storyInfoUpdated": "Story info updated successfully",
-        "chapterSaved": "Chapter saved successfully",
         "chapterSavedWithVersion": "Chapter saved as version {version}",
         "failedToSaveChapter": "Failed to save chapter",
         "noPreviousVersion": "No previous version available",
@@ -302,20 +270,6 @@
       },
       "logging": {
         "errorSavingStoryInfo": "Error saving story info:"
-      }
-    },
-    "printOrder": {
-      "paymentStep": {
-        "errors": {
-          "loadPricingFailed": "Failed to load pricing information",
-          "fetchPricingFailed": "Failed to fetch pricing data"
-        }
-      },
-      "printOrderContent": {
-        "errors": {
-          "saveAddressFailed": "Failed to save address",
-          "deleteAddressFailed": "Failed to delete address"
-        }
       }
     }
   }

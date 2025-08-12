@@ -1,17 +1,8 @@
 {
   "PublicStoryPage": {
-    "storyNotFound": "Story Not Found",
-    "storyNotAvailable": "This story is not available for public reading.",
     "chapterNotFound": "Chapter Not Found",
     "chapterNotAvailable": "This chapter is not available.",
-    "aboutStory": "About This Story",
-    "author": "Author",
-    "targetAudience": "Target Audience",
-    "graphicalStyle": "Graphical Style",
     "chapter": "Chapter",
-    "chapters": "Chapters",
-    "synopsis": "Synopsis",
-    "notSpecified": "Not specified",
     "loading": {
       "title": "Loading Story",
       "subtitle": "Please wait while we load your story..."
@@ -40,7 +31,6 @@
     "metadata": {
       "defaultDescription": "Read \"{title}\" on Mythoria",
       "coverImageAlt": "Cover image for \"{title}\"",
-      "pageTitle": "{title} | Mythoria",
       "chapterPageTitle": "{title} - Chapter {number} | Mythoria",
       "listenPageTitle": "Listen to \"{title}\" | Mythoria"
     },

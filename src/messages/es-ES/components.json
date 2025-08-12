@@ -55,11 +55,11 @@
         "title": "Estimación de coste",
         "freeEdit": "¡Esta edición es gratis!",
         "costEdit": "Esta edición costará {credits} crédito{plural}",
-        "currentBalance": "\u2022 Saldo actual: {credits} créditos",
-        "editCount": "\u2022 Número de ediciones: {count} (siguiente límite: {threshold})",
-        "freeChapterEdits": "\u2022 {count} ediciones de capítulo gratis",
-        "paidChapterEdits": "\u2022 {count} ediciones de capítulo de pago",
-        "message": "\u2022 {message}"
+        "currentBalance": "• Saldo actual: {credits} créditos",
+        "editCount": "• Número de ediciones: {count} (siguiente límite: {threshold})",
+        "freeChapterEdits": "• {count} ediciones de capítulo gratis",
+        "paidChapterEdits": "• {count} ediciones de capítulo de pago",
+        "message": "• {message}"
       }
     },
     "audiobookGenerationProgress": {
@@ -82,11 +82,8 @@
       }
     },
     "audiobookGenerationTrigger": {
-      "generateButton": "Generar audiolibro",
       "errors": {
-        "failedToStart": "No se pudo iniciar la generación del audiolibro",
-        "failedToStartWithReason": "No se pudo iniciar la generación del audiolibro: {reason}",
-        "failedToPlayAudio": "No se pudo reproducir el audio. Inténtalo de nuevo."
+        "failedToStart": "No se pudo iniciar la generación del audiolibro"
       }
     },
     "chapterEditor": {
@@ -120,11 +117,6 @@
       "storyInformation": "Información de la historia",
       "info": "Info",
       "chapterLabel": "Capítulo {number}"
-    },
-    "characterCard": {
-      "errors": {
-        "maxTraits": "Máximo 5 rasgos permitidos. Quita uno primero."
-      }
     },
     "contactForm": {
       "form": {
@@ -183,12 +175,6 @@
     },
     "jobProgressModal": {
       "title": "Procesando tu petición",
-      "steps": {
-        "textEditing": "Edición de texto",
-        "imageEditing": "Edición de imagen",
-        "audioGeneration": "Generación de audio",
-        "finalizing": "Finalizando"
-      },
       "status": {
         "waitingToStart": "Esperando para empezar...",
         "inProgress": "En marcha...",
@@ -201,12 +187,6 @@
         "remaining": "Restante"
       },
       "closeButton": "Cerrar"
-    },
-    "readingProgress": {
-      "fallbacks": {
-        "storyTitle": "Título de la historia",
-        "chapterTitle": "Capítulo {number}"
-      }
     },
     "readingToolbar": {
       "title": "Opciones de lectura",
@@ -238,14 +218,6 @@
         "initializeFailed": "No se pudo inicializar el pago"
       }
     },
-    "shareModal": {
-      "errors": {
-        "invalidStoryId": "ID de historia no válido"
-      },
-      "messages": {
-        "checkOut": "Echa un ojo a \"{title}\" en Mythoria"
-      }
-    },
     "storyInfoEditor": {
       "title": "Información de la historia",
       "storyTitle": "Título de la historia",
@@ -258,10 +230,8 @@
       "authorPlaceholder": "¿Cómo quieres que se mencione al autor?",
       "targetAudience": "Público objetivo",
       "targetAudiencePlaceholder": "Selecciona el público objetivo",
-      "graphicalStyle": "Estilo gráfico",
       "saveButton": "Guardar cambios",
       "saving": "Guardando...",
-      "cancelButton": "Cancelar",
       "frontCover": "Portada",
       "backCover": "Contraportada",
       "noCoverImage": "Sin imagen de portada",
@@ -289,8 +259,6 @@
         "storyBackCover": "Contraportada de la historia"
       },
       "messages": {
-        "storyInfoUpdated": "Información de la historia actualizada",
-        "chapterSaved": "Capítulo guardado",
         "chapterSavedWithVersion": "Capítulo guardado como versión {version}",
         "failedToSaveChapter": "No se pudo guardar el capítulo",
         "noPreviousVersion": "No hay versión anterior",
@@ -302,20 +270,6 @@
       },
       "logging": {
         "errorSavingStoryInfo": "Error al guardar la información de la historia:"
-      }
-    },
-    "printOrder": {
-      "paymentStep": {
-        "errors": {
-          "loadPricingFailed": "No se pudo cargar la información de precios",
-          "fetchPricingFailed": "No se pudieron obtener los datos de precios"
-        }
-      },
-      "printOrderContent": {
-        "errors": {
-          "saveAddressFailed": "No se pudo guardar la dirección",
-          "deleteAddressFailed": "No se pudo eliminar la dirección"
-        }
       }
     }
   }

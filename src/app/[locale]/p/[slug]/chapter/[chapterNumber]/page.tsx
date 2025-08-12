@@ -47,8 +47,13 @@ export default function PublicChapterPage() {
   const locale = useLocale();
   const tPublicStoryPage = useTranslations('PublicStoryPage');
   const tCommon = useTranslations('common');
-  const slug = params.slug as string;
-  const chapterNumber = parseInt(params.chapterNumber as string);
+  const slug = Array.isArray(params?.slug)
+    ? (params?.slug[0] ?? '')
+    : (params?.slug as string | undefined) ?? '';
+  const chapterParam = Array.isArray(params?.chapterNumber)
+    ? (params?.chapterNumber[0] ?? '')
+    : (params?.chapterNumber as string | undefined) ?? '';
+  const chapterNumber = parseInt(chapterParam || '0', 10);
   
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<PublicChapterData | null>(null);

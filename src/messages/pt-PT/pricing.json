@@ -44,7 +44,7 @@
       },
       "serviceNames": {
         "ebook": "Gerar um livro digital (eBook)",
-        "audiobook": "Gerar um audiolivro", 
+        "audiobook": "Gerar um audiolivro",
         "printed_book": "Encomendar um livro impresso e enviado"
       },
       "tableHeaders": {
@@ -126,7 +126,8 @@
           "answer": "Os livros impressos são enviados via serviços postais standard. Os tempos e custos de envio podem variar dependendo da sua localização. Verá informações detalhadas de envio no checkout ao encomendar um livro impresso."
         }
       }
-    },    "errors": {
+    },
+    "errors": {
       "loadingFailed": "Falha ao carregar informação de preços"
     }
   },
@@ -143,7 +144,8 @@
       "title": "A Sua Encomenda",
       "empty": "O seu carrinho está vazio",
       "each": "cada"
-    },    "summary": {
+    },
+    "summary": {
       "title": "Resumo da Encomenda",
       "subtotal": "Subtotal:",
       "vat": "IVA (6% incluído):",

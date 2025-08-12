@@ -2,7 +2,7 @@ import {NextIntlClientProvider} from 'next-intl';
 import {notFound} from 'next/navigation';
 import {routing} from '../../i18n/routing';
 import {setRequestLocale} from 'next-intl/server';
-import Header from '@/components/Header';
+import StickyHeader from '@/components/StickyHeader';
 import Footer from '@/components/Footer';
 import StructuredData from '@/components/StructuredData';
 import LanguageAttribute from '@/components/LanguageAttribute';
@@ -326,7 +326,7 @@ export default async function LocaleLayout({
       <StructuredData data={structuredData} />
       <LocaleSync />
       <div className="flex flex-col min-h-screen">
-        <Header />
+  <StickyHeader />
         <main className="flex-grow">{children}</main>
         <Footer />
       </div>

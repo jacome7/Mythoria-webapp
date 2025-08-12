@@ -178,7 +178,8 @@
           }
         }
       }
-    },    "section9": {
+    },
+    "section9": {
       "title": "9. Medidas de segurança",
       "content": "Implementamos controlos alinhados com a ISO 27001: encriptação em trânsito (TLS 1.3) e em repouso (AES-256), acesso por mínimo privilégio, MFA para colaboradores, correções automáticas e testes de intrusão anuais. A resposta a incidentes segue as regras de notificação de violação do Art.º 33 RGPD."
     },

@@ -27,12 +27,12 @@ interface ApiResponse {
 }
 
 export default function SharedStoryPage() {
-  const params = useParams();
+  const params = useParams<{ token?: string }>();
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations('SharedStoryPage');
   const tCommon = useTranslations('common');
-  const token = params.token as string;
+  const token = (params?.token as string | undefined) ?? '';
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

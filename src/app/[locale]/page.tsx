@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { TypeAnimation } from 'react-type-animation';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState, useRef } from 'react';
+import { useMemo } from 'react';
 import { SignedOut } from '@clerk/nextjs';
 import StoryCounter from "@/components/StoryCounter";
 import QuoteOfTheDay from "@/components/QuoteOfTheDay";
@@ -13,11 +13,8 @@ import AnimatedLogo from "@/components/AnimatedLogo";
 export default function Home() {
   const t = useTranslations('HomePage');
   
-  // Carousel state
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const totalSlides = 4; // Number of carousel items
-  
+  // Note: Carousel removed in favor of a vertical mobile layout
+
   // Get the words array from translations with proper error handling
   const wordsRaw = t.raw('words');
   
@@ -44,30 +41,7 @@ export default function Home() {
     return seq;
   }, [words, t]);
 
-  // Carousel navigation functions
-  const scrollToSlide = (slideIndex: number) => {
-    if (carouselRef.current) {
-      const slideWidth = 320; // w-80 = 320px
-      const scrollPosition = slideIndex * slideWidth;
-      carouselRef.current.scrollTo({
-        left: scrollPosition,
-        behavior: 'smooth'
-      });
-      setCurrentSlide(slideIndex);
-    }
-  };
-
-  const nextSlide = () => {
-    if (currentSlide < totalSlides - 1) {
-      scrollToSlide(currentSlide + 1);
-    }
-  };
-
-  const prevSlide = () => {
-    if (currentSlide > 0) {
-      scrollToSlide(currentSlide - 1);
-    }
-  };
+  // Carousel logic removed
 
   return (
     <div className="min-h-screen bg-base-100 text-base-content">
@@ -117,9 +91,9 @@ export default function Home() {
             <section className="my-16">
               {/* Desktop Grid */}
               <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <Link href="/p/jucas-e-o-incndio-no-algarve" className="card bg-base-200 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer">
+                <Link href="/p/mateus-e-o-leo" className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer">
                   <figure className="px-10 pt-10">
-                    <Image src="/SampleBooks/jucas_incendio_no_algarve.jpg" alt={t('altTexts.kidsBook')} width={300} height={300} className="rounded-xl" />
+                    <Image src="/SampleBooks/Mateus_e_o_leao.jpg" alt={t('altTexts.kidsBook')} width={300} height={300} className="rounded-xl" />
                   </figure>
                   <div className="card-body items-center text-center">
                     <h2 className="card-title text-2xl">{t('audiences.kids.title')}</h2>
@@ -127,7 +101,7 @@ export default function Home() {
                   </div>
                 </Link>
 
-                <Link href="/p/juventude-de-gaia-no-mundial-de-clubes" className="card bg-base-200 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer">
+                <Link href="/p/juventude-de-gaia-no-mundial-de-clubes" className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer">
                   <figure className="px-10 pt-10">
                     <Image src="/SampleBooks/juventude_gaia.jpg" alt={t('altTexts.groupsYearbooks')} width={300} height={300} className="rounded-xl" />
                   </figure>
@@ -137,7 +111,7 @@ export default function Home() {
                   </div>
                 </Link>
 
-                <Link href="/p/how-i-met-your-mother" className="card bg-base-200 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer">
+                <Link href="/p/how-i-met-your-mother" className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer">
                   <figure className="px-10 pt-10">
                     <Image src="/SampleBooks/How_I_met_your_mother.jpg" alt={t('altTexts.adultBook')} width={300} height={300} className="rounded-xl" />
                   </figure>
@@ -147,7 +121,7 @@ export default function Home() {
                   </div>
                 </Link>
 
-                <div className="card bg-base-200 shadow-xl">
+                <div className="card bg-base-100 shadow-xl">
                   <figure className="px-10 pt-10">
                     <Image src="/SampleBooks/CaravanConcierge.jpg" alt={t('altTexts.companyBook')} width={300} height={300} className="rounded-xl" />
                   </figure>
@@ -158,83 +132,47 @@ export default function Home() {
                 </div>
               </div>
               
-              {/* Mobile Horizontal Gallery */}
-              <div className="md:hidden relative">
-                <div 
-                  ref={carouselRef}
-                  className="carousel carousel-center w-full space-x-4 overflow-x-auto scrollbar-hide"
-                >
-                  <div className="carousel-item w-80">
-                    <Link href="/p/jucas-e-o-incndio-no-algarve" className="card bg-base-100 shadow-xl w-full hover:shadow-2xl transition-shadow cursor-pointer">
-                      <figure className="px-10 pt-10">
-                        <Image src="/SampleBooks/jucas_incendio_no_algarve.jpg" alt={t('altTexts.kidsBook')} width={300} height={300} className="rounded-xl" />
-                      </figure>
-                      <div className="card-body items-center text-center">
-                        <h2 className="card-title text-xl">{t('audiences.kids.title')}</h2>
-                        <p className="text-sm">{t('audiences.kids.description')}</p>
-                      </div>
-                    </Link>
+              {/* Mobile Vertical List */}
+              <div className="md:hidden space-y-6">
+                <Link href="/p/mateus-e-o-leo" className="card bg-base-100 shadow-xl w-full mx-2 hover:shadow-2xl transition-shadow cursor-pointer">
+                  <figure className="p-4">
+                    <Image src="/SampleBooks/Mateus_e_o_leao.jpg" alt={t('altTexts.kidsBook')} width={1200} height={1200} className="w-full h-auto rounded-xl" />
+                  </figure>
+                  <div className="card-body items-center text-center">
+                    <h2 className="card-title text-xl">{t('audiences.kids.title')}</h2>
+                    <p className="text-sm">{t('audiences.kids.description')}</p>
                   </div>
+                </Link>
 
-                  <div className="carousel-item w-80">
-                    <Link href="/p/juventude-de-gaia-no-mundial-de-clubes" className="card bg-base-100 shadow-xl w-full hover:shadow-2xl transition-shadow cursor-pointer">
-                      <figure className="px-10 pt-10">
-                        <Image src="/SampleBooks/juventude_gaia.jpg" alt={t('altTexts.groupsYearbooks')} width={300} height={300} className="rounded-xl" />
-                      </figure>
-                      <div className="card-body items-center text-center">
-                        <h2 className="card-title text-xl">{t('audiences.groups.title')}</h2>
-                        <p className="text-sm">{t('audiences.groups.description')}</p>
-                      </div>
-                    </Link>
+                <Link href="/p/juventude-de-gaia-no-mundial-de-clubes" className="card bg-base-100 shadow-xl w-full mx-2 hover:shadow-2xl transition-shadow cursor-pointer">
+                  <figure className="p-4">
+                    <Image src="/SampleBooks/juventude_gaia.jpg" alt={t('altTexts.groupsYearbooks')} width={1200} height={1200} className="w-full h-auto rounded-xl" />
+                  </figure>
+                  <div className="card-body items-center text-center">
+                    <h2 className="card-title text-xl">{t('audiences.groups.title')}</h2>
+                    <p className="text-sm">{t('audiences.groups.description')}</p>
                   </div>
+                </Link>
 
-                  <div className="carousel-item w-80">
-                    <Link href="/p/how-i-met-your-mother" className="card bg-base-100 shadow-xl w-full hover:shadow-2xl transition-shadow cursor-pointer">
-                      <figure className="px-10 pt-10">
-                        <Image src="/SampleBooks/How_I_met_your_mother.jpg" alt={t('altTexts.adultBook')} width={300} height={300} className="rounded-xl" />
-                      </figure>
-                      <div className="card-body items-center text-center">
-                        <h2 className="card-title text-xl">{t('audiences.adults.title')}</h2>
-                        <p className="text-sm">{t('audiences.adults.description')}</p>
-                      </div>
-                    </Link>
+                <Link href="/p/how-i-met-your-mother" className="card bg-base-100 shadow-xl w-full mx-2 hover:shadow-2xl transition-shadow cursor-pointer">
+                  <figure className="p-4">
+                    <Image src="/SampleBooks/How_I_met_your_mother.jpg" alt={t('altTexts.adultBook')} width={1200} height={1200} className="w-full h-auto rounded-xl" />
+                  </figure>
+                  <div className="card-body items-center text-center">
+                    <h2 className="card-title text-xl">{t('audiences.adults.title')}</h2>
+                    <p className="text-sm">{t('audiences.adults.description')}</p>
                   </div>
+                </Link>
 
-                  <div className="carousel-item w-80">
-                    <div className="card bg-base-100 shadow-xl w-full">
-                      <figure className="px-10 pt-10">
-                        <Image src="/SampleBooks/CaravanConcierge.jpg" alt={t('altTexts.companyBook')} width={300} height={300} className="rounded-xl" />
-                      </figure>
-                      <div className="card-body items-center text-center">
-                        <h2 className="card-title text-xl">{t('audiences.companies.title')}</h2>
-                        <p className="text-sm">{t('audiences.companies.description')}</p>
-                      </div>
-                    </div>
+                <div className="card bg-base-100 shadow-xl w-full mx-2">
+                  <figure className="p-4">
+                    <Image src="/SampleBooks/CaravanConcierge.jpg" alt={t('altTexts.companyBook')} width={1200} height={1200} className="w-full h-auto rounded-xl" />
+                  </figure>
+                  <div className="card-body items-center text-center">
+                    <h2 className="card-title text-xl">{t('audiences.companies.title')}</h2>
+                    <p className="text-sm">{t('audiences.companies.description')}</p>
                   </div>
                 </div>
-                
-                {/* Navigation Arrows */}
-                {currentSlide > 0 && (
-                  <button 
-                    onClick={prevSlide}
-                    className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-base-100 rounded-full shadow-lg p-2 opacity-70 hover:opacity-100 transition-opacity"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-base-content" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                )}
-                
-                {currentSlide < totalSlides - 1 && (
-                  <button 
-                    onClick={nextSlide}
-                    className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-base-100 rounded-full shadow-lg p-2 opacity-70 hover:opacity-100 transition-opacity"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-base-content" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                )}
               </div>
             </section>
 

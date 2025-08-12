@@ -8,7 +8,7 @@
       "unauthenticated": {
         "title": "¡Vaya! Parece que intentas colarte en la sala de autores!",
         "description": "Agradecemos tu entusiasmo por contar historias, pero primero tendrás que iniciar sesión. Tranquilo, es más fácil que convencer a un dragón para que comparta su tesoro. 🐉",
-        "signIn": "🔐 Inicia sesión para comenzar tu aventura",
+        "signIn": "🔐 Inicia sesión para comenzar",
         "signUp": "✨ Crea tu cuenta de autor"
       },
       "heading": "Capítulo 1 - El autor",
@@ -202,15 +202,42 @@
         "storyLanguageHelp": "Tu historia se escribirá y generará en el idioma seleccionado."
       },
       "languageOptions": [
-        { "value": "nl-NL", "label": "Holandés (Nederlands)" },
-        { "value": "en-US", "label": "Inglés" },
-        { "value": "fr-FR", "label": "Francés (Français)" },
-        { "value": "de-DE", "label": "Alemán (Deutsch)" },
-        { "value": "it-IT", "label": "Italiano (Italiano)" },
-        { "value": "pl-PL", "label": "Polaco (Polski)" },
-        { "value": "pt-BR", "label": "Portugués (Brasil)" },
-        { "value": "pt-PT", "label": "Portugués (Portugal)" },
-        { "value": "es-ES", "label": "Español" }
+        {
+          "value": "nl-NL",
+          "label": "Holandés (Nederlands)"
+        },
+        {
+          "value": "en-US",
+          "label": "Inglés"
+        },
+        {
+          "value": "fr-FR",
+          "label": "Francés (Français)"
+        },
+        {
+          "value": "de-DE",
+          "label": "Alemán (Deutsch)"
+        },
+        {
+          "value": "it-IT",
+          "label": "Italiano (Italiano)"
+        },
+        {
+          "value": "pl-PL",
+          "label": "Polaco (Polski)"
+        },
+        {
+          "value": "pt-BR",
+          "label": "Portugués (Brasil)"
+        },
+        {
+          "value": "pt-PT",
+          "label": "Portugués (Portugal)"
+        },
+        {
+          "value": "es-ES",
+          "label": "Español"
+        }
       ],
       "chapterCounts": {
         "short": "Corto (3-5 capítulos)",

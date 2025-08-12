@@ -49,8 +49,8 @@ const calculateEstimatedTime = (
 export default function AudiobookGenerationProgress({ storyId, onComplete }: AudiobookGenerationProgressProps) {
   const t = useTranslations('components.audiobookGenerationProgress');
   const router = useRouter();
-  const params = useParams();
-  const locale = params.locale || 'en';
+  const params = useParams() as { locale?: string } | null;
+  const locale = (params?.locale && typeof params.locale === 'string') ? params.locale : 'en-US';
   
   const [progress, setProgress] = useState<AudiobookProgress>({
     audiobookGenerationCompletedPercentage: 0,

@@ -17,7 +17,8 @@ export function useHreflangLinks(): HreflangLink[] {
   const baseUrl = 'https://mythoria.pt';
   
   // Remove the locale from the pathname to get the base path
-  const basePathWithoutLocale = pathname.replace(/^\/[a-z]{2}-[A-Z]{2}/, '') || '/';
+  const safePath = pathname || (typeof window !== 'undefined' ? window.location.pathname : '/');
+  const basePathWithoutLocale = safePath.replace(/^\/[a-z]{2}-[A-Z]{2}/, '') || '/';
   
   return routing.locales.map((locale) => ({
     hreflang: locale.toLowerCase(), // Convert en-US to en-us for proper hreflang format

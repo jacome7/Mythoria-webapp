@@ -5,11 +5,11 @@ import { useParams, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 
 export default function SharedStoryEditPage() {
-  const params = useParams();
+  const params = useParams<{ token?: string }>();
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations('common');
-  const token = params.token as string;
+  const token = (params?.token as string | undefined) ?? '';
 
   useEffect(() => {
     if (!token) return;

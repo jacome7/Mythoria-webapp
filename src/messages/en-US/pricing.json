@@ -3,7 +3,7 @@
     "header": {
       "title": "Our Pricing",
       "subtitle": "Simple, flexible, and designed for your storytelling needs."
-    }, 
+    },
     "creditPackages": {
       "badges": {
         "bestValue": "Best Value",
@@ -44,7 +44,7 @@
       },
       "serviceNames": {
         "ebook": "Generate a digital book (eBook)",
-        "audiobook": "Generate an audiobook", 
+        "audiobook": "Generate an audiobook",
         "printed_book": "Order a printed & shipped hardcover book"
       },
       "tableHeaders": {
@@ -126,7 +126,8 @@
           "answer": "Printed books are shipped via standard postal services. Shipping times and costs may vary depending on your location. You'll see detailed shipping information at checkout when ordering a printed book."
         }
       }
-    },    "errors": {
+    },
+    "errors": {
       "loadingFailed": "Failed to load pricing information"
     }
   },
@@ -143,7 +144,8 @@
       "title": "Your Order",
       "empty": "Your cart is empty",
       "each": "each"
-    },    "summary": {
+    },
+    "summary": {
       "title": "Order Summary",
       "subtotal": "Subtotal:",
       "vat": "VAT (6% included):",

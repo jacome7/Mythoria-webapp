@@ -202,19 +202,46 @@
         "storyLanguageHelp": "Your story will be written and generated in the selected language."
       },
       "languageOptions": [
-        { "value": "nl-NL", "label": "Dutch (Nederlands)" },
-        { "value": "en-US", "label": "English" },
-        { "value": "fr-FR", "label": "French (Français)" },
-        { "value": "de-DE", "label": "German (Deutsch)" },
-        { "value": "it-IT", "label": "Italian (Italiano)" },
-        { "value": "pl-PL", "label": "Polish (Polski)" },
-        { "value": "pt-BR", "label": "Portuguese (Brazil)" },
-        { "value": "pt-PT", "label": "Portuguese (Portugal)" },
-        { "value": "es-ES", "label": "Spanish (Español)" }
+        {
+          "value": "nl-NL",
+          "label": "Dutch (Nederlands)"
+        },
+        {
+          "value": "en-US",
+          "label": "English"
+        },
+        {
+          "value": "fr-FR",
+          "label": "French (Français)"
+        },
+        {
+          "value": "de-DE",
+          "label": "German (Deutsch)"
+        },
+        {
+          "value": "it-IT",
+          "label": "Italian (Italiano)"
+        },
+        {
+          "value": "pl-PL",
+          "label": "Polish (Polski)"
+        },
+        {
+          "value": "pt-BR",
+          "label": "Portuguese (Brazil)"
+        },
+        {
+          "value": "pt-PT",
+          "label": "Portuguese (Portugal)"
+        },
+        {
+          "value": "es-ES",
+          "label": "Spanish (Español)"
+        }
       ],
       "chapterCounts": {
         "short": "Short (3-5 chapters)",
-        "medium": "Medium (6-8 chapters)", 
+        "medium": "Medium (6-8 chapters)",
         "long": "Long (9-12 chapters)"
       },
       "plurals": {

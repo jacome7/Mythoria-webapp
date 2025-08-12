@@ -24,14 +24,18 @@ const nextConfig: NextConfig = {
   // Image configuration to allow external images
   images: {
     remotePatterns: [
+      // Mythoria site images
       {
         protocol: 'https',
-        hostname: '**', // Allow all HTTPS hostnames
+        hostname: 'mythoria.pt',
+        pathname: '/**',
       },
+      // Google Cloud Storage bucket for generated stories
       {
-        protocol: 'http',
-        hostname: '**', // Allow all HTTP hostnames (for local development)
-      }
+        protocol: 'https',
+        hostname: 'storage.googleapis.com',
+        pathname: '/mythoria-generated-stories/**',
+      },
     ],
   },
   
@@ -47,59 +51,14 @@ const nextConfig: NextConfig = {
       'drizzle-orm',
       'react-type-animation'
     ],
-  },    // Webpack optimizations
-  webpack: (config, { dev, isServer }) => {
-    if (!dev && !isServer) {
-      // Tree shaking optimizations
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        // Optimize Google Cloud imports
-        '@google-cloud/vertexai$': '@google-cloud/vertexai/build/src/index.js',
-      };
-
-      // Optimize bundle splitting
-      config.optimization.splitChunks = {
-        ...config.optimization.splitChunks,
-        cacheGroups: {
-          ...config.optimization.splitChunks?.cacheGroups,
-          default: false,
-          vendors: false,
-          // Vendor chunk
-          vendor: {
-            name: 'vendor',
-            chunks: 'all',
-            test: /node_modules/,
-            priority: 20,
-            maxSize: 244000, // ~240KB chunks
-          },
-          // Common chunk
-          common: {
-            minChunks: 2,
-            chunks: 'all',
-            name: 'common',
-            priority: 10,
-          },
-          // Google Cloud services chunk
-          googleCloud: {
-            name: 'google-cloud',
-            chunks: 'all',
-            test: /node_modules\/@google-cloud/,
-            priority: 30,
-          },
-          // React Icons chunk
-          reactIcons: {
-            name: 'react-icons',
-            chunks: 'all',
-            test: /node_modules\/react-icons/,
-            priority: 25,
-          },
-        },
-      };
-
-      // Enable tree shaking for ES modules
-      config.optimization.usedExports = true;
-      config.optimization.sideEffects = false;
-    }
+  },
+  // Keep webpack config minimal; avoid overriding Next.js optimization to prevent chunk/runtime issues
+  webpack: (config) => {
+    // Safe aliasing that doesn't interfere with chunking
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@google-cloud/vertexai$': '@google-cloud/vertexai/build/src/index.js',
+    };
     return config;
   },
 };

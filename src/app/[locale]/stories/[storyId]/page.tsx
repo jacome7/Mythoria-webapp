@@ -7,9 +7,9 @@ import { useLocale } from 'next-intl';
 
 export default function StoryPage() {
   const router = useRouter();
-  const params = useParams();
+  const params = useParams<{ storyId?: string }>();
   const locale = useLocale();
-  const storyId = params.storyId as string;
+  const storyId = (params?.storyId as string | undefined) ?? '';
 
   useEffect(() => {
     // Redirect to the read page by default

@@ -10,10 +10,12 @@ import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import { blogService, BlogLocale, BLOG_SUPPORTED_LOCALES } from '@/db/services/blog';
 import { mdxComponents } from '@/lib/blog/mdx-components';
+import { calculateReadingTimeFromMdx } from '@/lib/blog/readingTime';
 import { validateMdxSource } from '@/lib/blog/mdx-validate';
 import { routing } from '@/i18n/routing';
 import ShareButton from '@/components/ShareButton';
 import BackToTopButton from '@/components/BackToTopButton';
+import InlineMarkdown from '@/lib/blog/InlineMarkdown';
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -36,15 +38,29 @@ export async function generateMetadata({
     if (!post) {
       return { title: 'Not Found' };
     }
+    const baseUrl = 'https://mythoria.pt';
+    const pageUrl = `${baseUrl}/${locale}/blog/${post.slug}/`;
+    // Build hreflang based on available translations for this post
+    const translations = await blogService.getPublishedTranslationsBySlugBase(post.slugBase);
+    const hreflangLinks = translations.reduce<Record<string, string>>((acc, t) => {
+      acc[t.locale] = `${baseUrl}/${t.locale}/blog/${t.slug}/`;
+      return acc;
+    }, {});
     
     return {
       title: post.title,
       description: post.summary,
+      robots: 'index,follow,max-snippet:-1,max-image-preview:large',
+      alternates: {
+        canonical: pageUrl,
+        languages: hreflangLinks,
+      },
       openGraph: {
         title: post.title,
         description: post.summary,
         type: 'article',
         publishedTime: post.publishedAt?.toISOString(),
+        url: pageUrl,
         images: post.heroImageUrl ? [{ url: post.heroImageUrl }] : undefined,
       },
       twitter: {
@@ -68,13 +84,6 @@ function formatDate(date: Date, locale: string): string {
   }).format(date);
 }
 
-function calculateReadingTime(content: string): number {
-  const wordsPerMinute = 200;
-  // Remove MDX syntax for word count
-  const cleanContent = content.replace(/[#*`]/g, '').replace(/!\[.*?\]\(.*?\)/g, '');
-  const words = cleanContent.split(/\s+/).length;
-  return Math.ceil(words / wordsPerMinute);
-}
 
 export default async function BlogPostPage({
   params,
@@ -90,7 +99,7 @@ export default async function BlogPostPage({
   
   // Check if locale is supported by blog
   if (!BLOG_SUPPORTED_LOCALES.includes(locale as BlogLocale)) {
-    return <PostNotAvailable locale={locale} slug={slug} />;
+  return <PostNotAvailable locale={locale} />;
   }
   
   const t = await getTranslations('blog.post');
@@ -116,10 +125,30 @@ export default async function BlogPostPage({
       console.warn('Failed to load adjacent posts:', error);
     }
     
-    const readingTime = calculateReadingTime(post.contentMdx);
+  const readingTime = calculateReadingTimeFromMdx(post.contentMdx);
     
     return (
       <div className="min-h-screen bg-base-100">
+        {/* JSON-LD Article schema for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Article',
+              headline: post.title,
+              datePublished: post.publishedAt?.toISOString(),
+              dateModified: post.publishedAt?.toISOString(),
+              image: post.heroImageUrl ? [post.heroImageUrl] : undefined,
+              inLanguage: locale,
+              mainEntityOfPage: {
+                '@type': 'WebPage',
+                '@id': `${process.env.NEXT_PUBLIC_BASE_URL || 'https://mythoria.pt'}/${locale}/blog/${post.slug}`
+              },
+              description: post.summary,
+            }),
+          }}
+        />
         {/* Back Navigation */}
         <div className="bg-base-200 border-b border-base-300">
           <div className="max-w-4xl mx-auto px-4 py-4">
@@ -181,9 +210,10 @@ export default async function BlogPostPage({
             </div>
           )}
             
-            <p className="text-xl text-base-content/80 leading-relaxed mb-8 italic border-l-4 border-primary pl-6">
-              {post.summary}
-            </p>
+            <InlineMarkdown
+              text={post.summary}
+              className="text-xl text-base-content/80 leading-relaxed mb-8 italic border-l-4 border-primary pl-6"
+            />
           </header>
           
           {/* Article Content */}
@@ -196,7 +226,20 @@ export default async function BlogPostPage({
                   remarkPlugins: [remarkGfm],
                   rehypePlugins: [
                     rehypeSlug,
-                    [rehypeAutolinkHeadings, { behavior: 'wrap' }],
+                    [
+                      rehypeAutolinkHeadings,
+                      {
+                        behavior: 'wrap',
+                        // Prevent underlines on autolinked headings
+                        properties: {
+                          className: [
+                            'no-underline',
+                            'hover:no-underline',
+                            'focus:no-underline'
+                          ],
+                        },
+                      },
+                    ],
                   ],
                 },
               }}
@@ -280,7 +323,7 @@ async function PostNotFound({ locale }: { locale: string }) {
   );
 }
 
-async function PostNotAvailable({ locale, slug }: { locale: string; slug: string }) {
+async function PostNotAvailable({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: 'blog.post' });
   
   return (

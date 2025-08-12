@@ -132,7 +132,6 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
   // Render first page content
   const renderFirstPage = () => (
     <div className="story-container">
-      <h1 className="mythoria-story-title">{story.title}</h1>
       
       {/* Front Cover */}
       {story.coverUri && toAbsoluteImageUrl(story.coverUri) && (

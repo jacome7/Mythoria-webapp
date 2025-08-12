@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { storyService } from '@/db/services';
+import { blogService, BlogLocale } from '@/db/services/blog';
+import { routing } from '@/i18n/routing';
 
 const baseUrl = 'https://mythoria.pt';
-const locales = ['en-US', 'pt-PT'];
+const locales = routing.locales as readonly string[];
 
 // Static pages that should be included in the sitemap
 const staticPages = [
@@ -89,6 +91,23 @@ async function generateSitemap(): Promise<string> {
     );
     urls.push(urlEntry);
   });
+
+  // Add blog index pages with hreflang support
+  const blogIndexUrls = locales.map(locale => ({
+    url: `${baseUrl}/${locale}/blog/`,
+    locale: locale
+  }));
+
+  blogIndexUrls.forEach(({ url }) => {
+    const urlEntry = createUrlEntryWithHreflang(
+      url,
+      currentDate,
+      'weekly',
+      '0.8',
+      blogIndexUrls
+    );
+    urls.push(urlEntry);
+  });
   
   // Add featured stories to sitemap with multilingual support
   // Skip database operations during build time
@@ -122,6 +141,42 @@ async function generateSitemap(): Promise<string> {
     } catch (error) {
       console.error('Error fetching featured stories for sitemap:', error);
       // Continue without featured stories if there's an error
+    }
+  }
+
+  // Add blog posts (published) to sitemap with hreflang alternates
+  if (!isBuildTime) {
+    try {
+      // Collect all posts across locales by slugBase to avoid duplicates
+      const seenSlugBases = new Set<string>();
+      for (const locale of locales) {
+        const posts = await blogService.getPublishedList(locale as BlogLocale, { limit: 1000, offset: 0 });
+        for (const post of posts) {
+          if (seenSlugBases.has(post.slugBase)) continue;
+          seenSlugBases.add(post.slugBase);
+          // Fetch translations for hreflang
+          const translations = await blogService.getPublishedTranslationsBySlugBase(post.slugBase);
+          const alternateUrls = translations.map(t => ({
+            url: `${baseUrl}/${t.locale}/blog/${t.slug}/`,
+            locale: t.locale,
+          }));
+          // Prefer using the current locale's URL if available, otherwise the first translation
+          const primary = alternateUrls.find(a => a.locale === locale) || alternateUrls[0];
+          if (primary) {
+            urls.push(
+              createUrlEntryWithHreflang(
+                primary.url,
+                (post.publishedAt ?? new Date()).toISOString(),
+                'weekly',
+                '0.7',
+                alternateUrls
+              )
+            );
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching blog posts for sitemap:', error);
     }
   }
   

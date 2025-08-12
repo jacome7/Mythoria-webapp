@@ -7,12 +7,10 @@
         "tellYourStory": "Conte a Sua História",
         "blog": "O Diário",
         "myStories": "As Minhas Histórias",
-        "pricing": "Preços",
-        "dashboard": "Painel"
+        "pricing": "Preços"
       },
       "auth": {
-        "signIn": "Entrar",
-        "signUp": "Registar"
+        "signIn": "Entrar"
       },
       "logoAlt": "Logótipo Mythoria"
     },
@@ -30,114 +28,48 @@
       "finish": "Concluir"
     },
     "Share": {
-      "button": "Partilhar",
       "tooltips": {
         "cannotShareWriting": "Não é possível partilhar a história enquanto está a ser escrita",
         "cannotShareDraft": "Não é possível partilhar a história até estar publicada"
-      },
-      "modal": {
-        "title": "Partilhar História",
-        "allowEdit": "Permitir que o destinatário edite",
-        "makePublic": "Tornar história pública",
-        "generateLink": "Gerar Link de Partilha",
-        "shareVia": "Partilhar via:",
-        "whatsapp": "WhatsApp",
-        "facebook": "Facebook",
-        "email": "Email",
-        "copyLink": "Copiar Link",
-        "more": "Mais",
-        "createAnother": "Criar Outro",
-        "done": "Concluído",
-        "linkCopied": "Link copiado para a área de transferência!",
-        "shareSuccess": "Link de partilha criado com sucesso",
-        "privateExpires": "Link privado expira em 30 dias"
-      },
-      "types": {
-        "privateView": "Visualização Privada: Os destinatários devem iniciar sessão para ver a história",
-        "privateEdit": "Edição Privada: Os destinatários podem colaborar e editar a história",
-        "publicRead": "Público: Qualquer pessoa pode ver a história sem iniciar sessão",
-        "publicStoryTitle": "História Pública",
-        "publicStoryDesc": "Esta história está atualmente pública e pode ser vista por qualquer pessoa.",
-        "publicUrl": "URL Público",
-        "makePrivate": "Tornar história privada",
-        "makePrivateDesc": "Remover acesso público e tornar a história privada"
       }
     },
     "Auth": {
       "signIn": "Entrar",
-      "signUp": "Registar",
       "createAccount": "Criar Conta",
       "accessRestricted": "Acesso Restrito",
-      "needSignIn": "Precisa de fazer login para aceder às histórias.",
-      "needSignInEdit": "Precisa de fazer login para editar histórias.",
-      "welcome": "Bem-vindo"
+      "needSignIn": "Precisa de fazer login para aceder às histórias."
     },
     "Actions": {
       "signIn": "Entrar",
       "read": "Ler",
       "listen": "Ouvir",
       "edit": "Editar",
-      "editing": "A Editar",
       "print": "Imprimir",
       "share": "Partilhar",
-      "startReading": "Começar a Ler",
-      "startListening": "Começar a Ouvir",
-      "startEditing": "Começar a Editar",
-      "audioNotAvailable": "Áudio Não Disponível",
       "backToMyStories": "Voltar às Minhas Histórias",
       "goToHomepage": "Ir para a Página Inicial",
       "tryAgain": "Tentar Novamente",
       "close": "Fechar",
       "backToStory": "Voltar à História",
-      "listening": "A Ouvir",
-      "pause": "Pausar",
-      "play": "Reproduzir",
-      "stop": "Parar",
       "createAccount": "Criar Conta",
       "goBack": "Voltar"
-    },
-    "placeholder": {
-      "chapterContent": "Comece a escrever o conteúdo do seu capítulo aqui..."
     },
     "altTexts": {
       "chapterIllustration": "Ilustração do Capítulo {number}"
     },
     "Loading": {
-      "story": "A carregar história...",
-      "sharedStory": "A carregar história partilhada...",
       "redirecting": "A redirecionar...",
       "redirectingToSharedStory": "A redirecionar para a história partilhada...",
-      "pleaseWaitStory": "Por favor aguarde enquanto carregamos a história",
-      "pleaseWaitAccess": "Por favor aguarde enquanto verificamos o seu acesso",
       "default": "A carregar...",
-      "buyCredits": "A carregar...",
-      "processing": "A processar..."
+      "buyCredits": "A carregar..."
     },
     "Errors": {
       "authRequired": "Autenticação Necessária",
       "pleaseSignIn": "Por favor, inicie sessão para continuar",
-      "storyNotFound": "História não encontrada",
-      "storyNotFoundDesc": "A história que procura não existe ou já não é pública.",
-      "unableToAccess": "Não é possível aceder à história",
-      "storyContentNotAvailable": "Conteúdo da história não disponível",
-      "storyContentNotAvailableDesc": "O conteúdo da história não está atualmente disponível para visualização.",
       "storyNotAvailableYet": "Esta história ainda não está disponível.",
       "storyNotFoundGeneric": "História não encontrada.",
       "noPermission": "Não tem permissão para aceder a esta história.",
-      "noPermissionEdit": "Não tem permissão para editar esta história.",
       "failedToLoad": "Falha ao carregar a história. Por favor tente novamente.",
-      "failedToCreateOrder": "Falha ao criar pedido",
-      "failedToAccessSharedStory": "Falha ao aceder à história partilhada",
-      "failedToLoadStoryContent": "Falha ao carregar conteúdo da história",
-      "failedToLoadStoryData": "Falha ao carregar dados da história",
-      "failedToDeleteAccount": "Falha ao eliminar conta. Por favor tente mais tarde.",
-      "failedToLoadStoryCharacters": "Falha ao carregar personagens da história",
-      "failedToFetchData": "Falha ao obter dados",
-      "failedToDeductCredits": "Falha ao deduzir créditos",
-      "audiobookGenerationError": "Falha ao gerar audiolivro",
-      "audioPlaybackError": "Erro na reprodução de áudio",
-      "audioLoadError": "Falha ao carregar áudio",
-      "shareLinkCreationFailed": "Falha ao criar ligação de partilha",
       "noChaptersFound": "Nenhum Capítulo Encontrado",
       "noChaptersFoundDesc": "Esta história não tem capítulos!",
       "chapterNotFound": "Capítulo Não Encontrado",
@@ -185,9 +117,9 @@
           "invalidStoryId": "ID de história inválido"
         },
         "shareMessages": {
-          "checkOut": "Veja \"{storyTitle}\" no Mythoria \ud83d\udcda",
+          "checkOut": "Veja \"{storyTitle}\" no Mythoria 📚",
           "emailSubject": "Veja \"{storyTitle}\"",
-          "emailBody": "Queria partilhar esta história consigo:\n\n\"{storyTitle}\"\n\n{url}\n\nBoa leitura! \ud83d\udcda"
+          "emailBody": "Queria partilhar esta história consigo:\n\n\"{storyTitle}\"\n\n{url}\n\nBoa leitura! 📚"
         }
       },
       "CreditsDisplay": {
@@ -226,88 +158,12 @@
         "byAuthor": "por {authorName}",
         "tableOfContents": "Índice",
         "coverAndIntroduction": "Capa e Introdução"
-      },
-      "ReadingProgress": {
-        "title": "Progresso de Leitura",
-        "tableOfContents": "Índice",
-        "noTableOfContents": "Não há índice disponível para esta história.",
-        "currentlyReading": "Lendo Atualmente",
-        "contents": "Conteúdos"
-      },
-      "ReadingToolbar": {
-        "allAges": "Todas as Idades",
-        "fontSize": "Tamanho da Letra",
-        "resetToDefault": "Repor Padrão"
-      },
-      "StoryRating": {
-        "thankYou": "Obrigado pela sua avaliação!",
-        "submitRating": "Submeter Avaliação"
-      },
-      "BookEditor": {
-        "find": "Encontrar",
-        "replaceAll": "Substituir Tudo",
-        "unsavedChanges": "Tem alterações não guardadas"
-      },
-      "AIEditModal": {
-        "title": "Editor de História",
-        "processing": "A processar o seu pedido..."
-      },
-      "ImageEditingTab": {
-        "selectImage": "Por favor selecione uma imagem para editar",
-        "changeImage": "Alterar Imagem na História"
-      },
-      "StoryCounter": {
-        "storiesCreated": "histórias criadas e a contar..."
-      },
-      "StoryGenerationProgress": {
-        "ready": "A Sua História Está Pronta!",
-        "timeUnits": {
-          "second": "segundo",
-          "seconds": "segundos",
-          "minute": "minuto",
-          "minutes": "minutos"
-        }
-      },
-      "MyStoriesTable": {
-        "generationStatus": {
-          "queued": "Em Fila",
-          "generating": "A Gerar",
-          "completed": "Concluída",
-          "failed": "Falhada",
-          "cancelled": "Cancelada"
-        },
-        "tooltips": {
-          "readStory": "Ler História",
-          "cannotEditWriting": "Não é possível editar história enquanto está a ser escrita",
-          "printNotAvailable": "(Não Disponível)"
-        }
-      },
-      "ReadStoryPageNavigation": {
-        "reading": "A Ler",
-        "listen": "Ouvir",
-        "edit": "Editar",
-        "share": "Partilhar",
-        "backToMyStories": "Voltar às Minhas Histórias"
-      },
-      "ListenStoryPage": {
-        "errors": {
-          "audioLoadFailed": "Falha ao carregar áudio. Verifique a sua ligação à internet e tente novamente.",
-          "audioGenerationFailed": "Falha na geração de áudio. Tente novamente mais tarde.",
-          "audioPlaybackError": "Ocorreu um erro durante a reprodução de áudio. Atualize a página e tente novamente."
-        }
-      },
-      "ListenStoryPageErrors": {
-        "audioLoadFailed": "Falha ao carregar áudio. Verifique a sua ligação à internet e tente novamente.",
-        "audioGenerationFailed": "Falha na geração de áudio. Tente novamente mais tarde.",
-        "audioPlaybackError": "Ocorreu um erro durante a reprodução de áudio. Atualize a página e tente novamente."
       }
     },
     "storyRating": {
       "title": "Avalie esta história",
       "titleUpdate": "Atualize a Sua Avaliação",
       "currentRating": "Avaliação Atual",
-      "averageRating": "Avaliação Média",
-      "totalRatings": "Total de Avaliações",
       "basedOnRatings": "Com base em {count} avaliação{plural}",
       "clickToRate": "Clique para avaliar {count} estrela{plural}",
       "noRatingsYet": "Sem avaliações ainda",
@@ -354,20 +210,11 @@
         "placeholder": "Descreva as alterações que gostaria de fazer à sua história...",
         "charactersCount": "{current}/{max} caracteres"
       },
-      "userRequest": {
-        "label": "Que alterações gostaria de fazer?",
-        "placeholder": "Descreva as alterações que gostaria de fazer à sua história..."
-      },
       "buttons": {
         "cancel": "Cancelar",
         "close": "Fechar",
         "applyChanges": "Aplicar Alterações",
         "processing": "Processando..."
-      },
-      "actions": {
-        "cancel": "Cancelar",
-        "edit": "Editar",
-        "editing": "Editando..."
       },
       "loadingState": {
         "title": "Processando o seu pedido...",
@@ -409,45 +256,6 @@
       "proceedFree": "Gerar (Gratuito)",
       "proceedWithCredits": "Usar {credits} Créditos",
       "buyCredits": "Comprar Créditos"
-    },
-    "bookEditor": {
-      "loading": "Carregando editor...",
-      "toolbar": {
-        "tooltips": {
-          "bold": "Negrito (Ctrl+B)",
-          "italic": "Itálico (Ctrl+I)",
-          "strikethrough": "Riscado",
-          "undo": "Desfazer (Ctrl+Z)",
-          "redo": "Refazer (Ctrl+Y)",
-          "switchToVisual": "Mudar para Editor Visual",
-          "switchToHtml": "Mudar para Código HTML",
-          "findReplace": "Localizar e Substituir (Ctrl+F)",
-          "aiEdit": "⚡ Edição - Melhore a sua história",
-          "save": "Guardar (Ctrl+S)"
-        },
-        "buttons": {
-          "visual": "Visual",
-          "html": "HTML",
-          "aiEdit": "Edição",
-          "save": "Guardar",
-          "cancel": "Cancelar"
-        }
-      },
-      "findReplace": {
-        "findLabel": "Localizar",
-        "findPlaceholder": "Insira o texto a localizar...",
-        "replaceLabel": "Substituir por",
-        "replacePlaceholder": "Insira o texto de substituição...",
-        "findButton": "Localizar",
-        "replaceAllButton": "Substituir Tudo",
-        "matchesFound": "{count} correspondências"
-      },
-      "htmlEditor": {
-        "title": "Editor de Código HTML",
-        "description": "Edite o HTML puro. As classes CSS do Mythoria (mythoria-*) serão preservadas automaticamente quando guardar.",
-        "placeholder": "Insira o código HTML aqui..."
-      },
-      "unsavedChanges": "Tem alterações não guardadas"
     },
     "imageEditingTab": {
       "noImages": {
@@ -501,40 +309,7 @@
         "sameVersion": "A versão selecionada já é a versão atual"
       }
     },
-    "readingToolbar": {
-      "title": "Configurações de Leitura",
-      "toggleLabel": "Alternar configurações de leitura",
-      "themeSwitch": "Mudar para tema {theme}",
-      "quickTemplateLabel": "Seleção rápida de modelo CSS",
-      "resetButton": "Repor Padrão",
-      "controls": {
-        "style": "Estilo",
-        "fontSize": "Tamanho da Fonte",
-        "lineHeight": "Altura da Linha",
-        "margins": "Margens",
-        "templateLabel": "Selecionar modelo CSS",
-        "fontSizeLabel": "Percentagem do tamanho da fonte",
-        "lineHeightLabel": "Percentagem da altura da linha",
-        "marginsLabel": "Percentagem das margens",
-        "decreaseFontSize": "Diminuir tamanho da fonte",
-        "increaseFontSize": "Aumentar tamanho da fonte",
-        "decreaseLineHeight": "Diminuir altura da linha",
-        "increaseLineHeight": "Aumentar altura da linha",
-        "decreaseMargins": "Diminuir margens",
-        "increaseMargins": "Aumentar margens"
-      },
-      "templates": {
-        "all_ages": "Todas as Idades",
-        "children_0-2": "Crianças (0-2)",
-        "children_3-6": "Crianças (3-6)",
-        "children_7-10": "Crianças (7-10)",
-        "children_11-14": "Crianças (11-14)",
-        "young_adult_15-17": "Jovem Adulto (15-17)",
-        "adult_18+": "Adulto (18+)"
-      }
-    },
     "storyCounter": {
-      "loading": "Carregando...",
       "error": "Erro ao carregar",
       "notAvailable": "N/D",
       "description": "histórias criadas e a contar..."
@@ -624,17 +399,16 @@
       }
     },
     "NotFound": {
-      "title": "404 - Página Perdida na Floresta Encantada",
       "mainHeading": "Ups! Esta Página Perdeu-se no Livro de Histórias",
       "description": "Parece que a página que procura se perdeu num capítulo por escrever! Talvez esteja escondida num conto de fadas, ou talvez tenha sido apanhada numa aventura própria.",
       "funnyMessage": "Os nossos elfos literários estão a procurar em todos os livros da biblioteca mágica, mas esta página parece ter partido na sua própria aventura!",
       "suggestions": {
         "title": "Enquanto procuramos a sua página perdida, pode:",
         "items": [
-          "📖 Voltar à Página Inicial e começar uma nova aventura",
-          "✨ Criar a sua própria história mágica",
-          "📚 Explorar as suas histórias existentes",
-          "🎯 Verificar se o URL está escrito corretamente (até a magia tem regras!)"
+          null,
+          null,
+          null,
+          null
         ]
       },
       "actions": {
@@ -662,13 +436,13 @@
       "descriptions": {
         "alloy": "Uma voz neutra e equilibrada adequada para narração geral e entrega de informação.",
         "ash": "Uma voz clara e precisa, ideal para instruções e explicações técnicas.",
-        "ballad": "Uma voz melódica e suave que se presta bem à narração de histórias e conteúdo narrativo.",
-        "coral": "Uma voz calorosa e amigável, perfeita para interfaces conversacionais e diálogo com o cliente.",
+        "ballad": "Uma voz melódica e suave que se presta bem à narração de histórias e a conteúdo narrativo.",
+        "coral": "Uma voz calorosa e amigável, perfeita para interfaces conversacionais e diálogo com clientes.",
         "echo": "Uma voz ressonante e profunda, oferecendo uma forte presença para anúncios e mensagens formais.",
         "fable": "Uma voz calorosa e envolvente com qualidade narrativa, desenhada para narrativas imersivas.",
         "nova": "Uma voz brilhante e energética, ótima para conteúdo animado e entregas entusiasmadas.",
         "onyx": "Uma voz profunda e autoritária que transmite gravitas e confiabilidade.",
-        "sage": "Uma voz calma e pensativa, bem adequada para conteúdo reflexivo e orientação.",
+        "sage": "Uma voz calma e ponderada, bem adequada para conteúdo reflexivo e orientação.",
         "shimmer": "Uma voz brilhante e energética, adicionando brilho e dinamismo ao seu áudio.",
         "verse": "Uma voz versátil e expressiva que se adapta bem a uma ampla gama de requisitos tonais."
       }
@@ -677,7 +451,6 @@
       "accessRestricted": "Acesso Restrito",
       "needSignInToListen": "Precisa de estar autenticado para ouvir histórias.",
       "listenToStory": "Ouvir \"{title}\"",
-      "duration": "Duração",
       "wantNewNarration": "Quer uma Nova Narração?",
       "newNarrationDescription": "Pode gerar uma nova narração da sua história com características de voz diferentes.",
       "cost": "Custo",
@@ -691,170 +464,14 @@
       "convertDescription": "Converta a sua história numa história lindamente narrada com a ajuda dos elfos da Mythoria",
       "narrateYourStory": "Narrar a Sua História",
       "generatingAudiobook": "A Gerar o Seu Audiolivro",
-      "narrationProgress": "Os elfos da Mythoria vão demorar cerca de 5 minutos para narrar toda a história.",
       "checkingUpdates": "Estamos a verificar atualizações a cada 15 segundos. Mantenha esta página aberta.",
       "generationCompleted": "Geração do audiolivro concluída!",
       "chapterTitle": "Capítulo {number}",
-      "playbackProgress": "Progresso da reprodução para {title}: {progress}%",
       "startingGeneration": "A iniciar geração do audiolivro...",
       "generationStarted": "Geração do audiolivro iniciada! Os elfos da Mythoria vão demorar cerca de 5 minutos para narrar toda a história.",
       "needMoreCreditsGenerate": "Precisa de mais {shortfall} créditos para gerar um audiolivro.",
       "generationFailed": "Falha ao iniciar geração do audiolivro",
       "tryAgainLater": "Por favor tente novamente mais tarde."
-    },
-    "ComponentTranslations": {
-      "AIImageEditor": {
-        "errors": {
-          "describeChanges": "Por favor descreva as alterações que pretende fazer à imagem",
-          "unableToCheckCredits": "Não foi possível verificar os créditos. Tente novamente.",
-          "imageEditFailed": "Falha na edição da imagem. Tente novamente.",
-          "processingFailed": "Falha no processamento. Tente novamente."
-        }
-      },
-      "AITextStoryEditor": {
-        "title": "Editor de Texto IA - {storyTitle}",
-        "scope": {
-          "fullStory": "História Completa",
-          "singleChapter": "Capítulo {chapterNumber}"
-        },
-        "errors": {
-          "enterEditingRequest": "Por favor introduza o seu pedido de edição",
-          "unableToCheckCredits": "Não foi possível verificar os créditos. Tente novamente.",
-          "editingFailed": "Falha na edição de texto. Tente novamente."
-        },
-        "explanations": {
-          "fullStoryTitle": "Como Funciona a Edição de História Completa",
-          "fullStoryDescription": "Isto irá analisar e melhorar toda a sua história mantendo a consistência em todos os capítulos."
-        }
-      },
-      "AudiobookGenerationProgress": {
-        "errors": {
-          "failedToFetchProgress": "Falha ao obter progresso do audiolivro",
-          "failedToLoadProgress": "Falha ao carregar progresso de geração do audiolivro"
-        }
-      },
-      "AudiobookGenerationTrigger": {
-        "errors": {
-          "failedToStart": "Falha ao iniciar geração do audiolivro"
-        }
-      },
-      "ChapterEditor": {
-        "labels": {
-          "chapterImage": "Imagem do Capítulo {chapterNumber}",
-          "editChapterImage": "Editar Imagem do Capítulo",
-          "saveChapter": "Guardar Capítulo",
-          "saving": "Guardando...",
-          "cancel": "Cancelar",
-          "goBack": "Voltar",
-          "goToReadingPage": "Ir para página de leitura do Capítulo {chapterNumber}"
-        },
-        "placeholders": {
-          "chapterTitle": "Capítulo {chapterNumber}",
-          "chapterImageAlt": "Capítulo {chapterNumber}"
-        }
-      },
-      "ChapterNavigation": {
-        "labels": {
-          "storyInformation": "Informação da História",
-          "info": "Info",
-          "chapterNumber": "Capítulo {chapterNumber}"
-        }
-      },
-      "CharacterCard": {
-        "alerts": {
-          "maxTraits": "Máximo de 5 características permitidas. Remova uma característica primeiro."
-        }
-      },
-      "EditCreditInfo": {
-        "labels": {
-          "editNumber": "Edição #{editNumber}",
-          "yourBalance": "O seu saldo: {credits} créditos",
-          "buyCredits": "Comprar créditos",
-          "progress": "Progresso:"
-        }
-      },
-      "GroupedCharacterTypeSelect": {
-        "placeholder": "Selecionar tipo de personagem...",
-        "groups": {
-          "human": "Humano",
-          "animals": "Animais",
-          "fantasy": "Fantasia",
-          "other": "Outro"
-        }
-      },
-      "ImageEditButton": {
-        "tooltip": "Editar esta imagem com Mythoria"
-      },
-      "JobProgressModal": {
-        "statusLabels": {
-          "textEditing": "Edição de Texto",
-          "imageEditing": "Edição de Imagem",
-          "waitingToStart": "Aguardando para iniciar...",
-          "processing": "Processando...",
-          "completedSuccessfully": "Concluído com sucesso!",
-          "failed": "Falhado",
-          "cancelled": "Cancelado",
-          "queued": "Em fila",
-          "generating": "Gerando",
-          "analyzing": "Analisando",
-          "enhancing": "Melhorando",
-          "finalizing": "Finalizando"
-        }
-      },
-      "ReadingProgress": {
-        "fallbackTitles": {
-          "storyTitle": "Título da História",
-          "chapterNumber": "Capítulo {chapterNumber}"
-        }
-      },
-      "ReadingToolbar": {
-        "labels": {
-          "cover": "Capa",
-          "coverAndContents": "Capa e Índice",
-          "chapterNumber": "Capítulo {chapterNumber}"
-        }
-      },
-      "RevolutPayment": {
-        "errors": {
-          "failedToInitialize": "Falha ao inicializar pagamento"
-        }
-      },
-      "ShareModal": {
-        "alerts": {
-          "invalidStoryId": "ID de história inválido"
-        },
-        "shareMessages": {
-          "checkOut": "Veja \"{storyTitle}\" no Mythoria",
-          "shareText": "Criei esta história incrível no Mythoria! Veja: {storyTitle}"
-        }
-      },
-      "StoryInfoEditor": {
-        "labels": {
-          "storyInformation": "Informação da História",
-          "storyTitle": "Título da História",
-          "saveChanges": "Guardar Alterações",
-          "saving": "Guardando...",
-          "cancel": "Cancelar"
-        },
-        "placeholders": {
-          "enterStoryTitle": "Introduza o título da história",
-          "storyDescription": "Introduza a descrição da história..."
-        }
-      },
-      "PrintOrder": {
-        "PaymentStep": {
-          "errors": {
-            "failedToLoadPricing": "Falha ao carregar informações de preços",
-            "failedToFetchPricing": "Falha ao obter dados de preços"
-          }
-        },
-        "PrintOrderContent": {
-          "errors": {
-            "failedToSaveAddress": "Falha ao guardar endereço",
-            "failedToDeleteAddress": "Falha ao eliminar endereço"
-          }
-        }
-      }
     }
   }
 }

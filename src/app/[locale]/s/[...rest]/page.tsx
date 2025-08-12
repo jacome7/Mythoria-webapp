@@ -5,14 +5,15 @@ import { useParams, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 
 export default function SharedStoryRouteHandler() {
-  const params = useParams();
+  const params = useParams<{ rest?: string[] }>();
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations('SharedStoryPage');
   
   useEffect(() => {
-    if (params.rest && Array.isArray(params.rest)) {
-      const [token, ...rest] = params.rest;
+  const restParam = params?.rest;
+    if (Array.isArray(restParam)) {
+      const [token, ...rest] = restParam as string[];
       
       if (token) {
         // If there are additional path segments (like 'edit'), include them

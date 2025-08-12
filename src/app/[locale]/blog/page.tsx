@@ -5,7 +5,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { FiCalendar, FiClock } from 'react-icons/fi';
 import { blogService, BlogLocale, BLOG_SUPPORTED_LOCALES } from '@/db/services/blog';
+import InlineMarkdown from '@/lib/blog/InlineMarkdown';
 import { routing } from '@/i18n/routing';
+import { calculateReadingTimeFromMdx } from '@/lib/blog/readingTime';
+import { generateHreflangLinks } from '@/lib/hreflang';
 
 interface BlogListPageProps {
   params: Promise<{
@@ -23,14 +26,27 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'blog.metadata' });
+  const baseUrl = 'https://mythoria.pt';
+  const hreflangLinks = generateHreflangLinks(locale, `/${locale}/blog`);
   
   return {
     title: t('listTitle'),
     description: t('listDescription'),
+    robots: 'index,follow,max-snippet:-1,max-image-preview:large',
+    alternates: {
+      canonical: `${baseUrl}/${locale}/blog/`,
+      languages: hreflangLinks,
+    },
     openGraph: {
       title: t('listTitle'),
       description: t('listDescription'),
       type: 'website',
+      url: `${baseUrl}/${locale}/blog/`,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('listTitle'),
+      description: t('listDescription'),
     },
   };
 }
@@ -47,11 +63,7 @@ function formatDate(date: Date, locale: string): string {
   }).format(date);
 }
 
-function calculateReadingTime(content: string): number {
-  const wordsPerMinute = 200;
-  const words = content.split(/\s+/).length;
-  return Math.ceil(words / wordsPerMinute);
-}
+// Note: use calculateReadingTimeFromMdx from '@/lib/blog/readingTime'
 
 export default async function BlogListPage({
   params,
@@ -138,7 +150,7 @@ export default async function BlogListPage({
                       </div>
                       <div className="flex items-center gap-2">
                         <FiClock className="w-4 h-4" />
-                        <span>{calculateReadingTime(post.summary)} {t('readingTime', { ns: 'blog.post' })}</span>
+                        <span>{calculateReadingTimeFromMdx(post.contentMdx ?? post.summary)} {t('readingTime', { ns: 'blog.post' })}</span>
                       </div>
                     </div>
                     
@@ -151,9 +163,10 @@ export default async function BlogListPage({
                       </Link>
                     </h2>
                     
-                    <p className="text-base-content/80 leading-relaxed mb-6 line-clamp-3">
-                      {post.summary}
-                    </p>
+                    <InlineMarkdown
+                      text={post.summary}
+                      className="text-base-content/80 leading-relaxed mb-6 line-clamp-3"
+                    />
                     
                     <div className="card-actions justify-end">
                       <Link

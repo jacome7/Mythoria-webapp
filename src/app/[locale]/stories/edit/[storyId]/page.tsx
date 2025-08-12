@@ -53,14 +53,14 @@ interface ApiResponse {
 }
 
 export default function StoryEditPage() {
-  const params = useParams();
+  const params = useParams<{ storyId?: string; locale?: string }>();
   const router = useRouter();
   const { user } = useUser();
   const tCommon = useTranslations('common');
   const tStoryEdit = useTranslations('storyEditPage');
 
-  const storyId = params.storyId as string;
-  const locale = params.locale as string;
+  const storyId = (params?.storyId as string | undefined) ?? '';
+  const locale = (params?.locale as string | undefined) ?? '';
 
   // Convert API data to component-compatible format
   const convertApiChaptersToChapters = (apiChapters: ApiChapter[]) => {

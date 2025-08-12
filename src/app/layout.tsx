@@ -5,7 +5,6 @@ import {
 import { enUS, ptPT, esES } from '@clerk/localizations';
 import GoogleAnalytics from "../components/GoogleAnalytics";
 import AnalyticsProvider from "../components/AnalyticsProvider";
-import LocaleRedirect from "../components/LocaleRedirect";
 import { headers } from 'next/headers';
 import "./globals.css";
 

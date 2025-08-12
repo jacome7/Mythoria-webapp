@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "./schema";
-import { getDatabaseConfig, getPoolConfig, isVpcDirectEgress } from "@/lib/database-config";
+import { getPoolConfig } from "@/lib/database-config";
 
 // Check if we're in build time
 const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build' || process.env.NODE_ENV === 'test';

@@ -36,11 +36,11 @@ interface Story {
 
 export default function ReadChapterPage() {
   const router = useRouter();
-  const params = useParams();
+  const params = useParams<{ storyId?: string; chapterNumber?: string }>();
   const locale = useLocale();
   const tCommon = useTranslations('common');
-  const storyId = params.storyId as string;
-  const chapterNumber = parseInt(params.chapterNumber as string);
+  const storyId = (params?.storyId as string | undefined) ?? '';
+  const chapterNumber = parseInt(((params?.chapterNumber as string | undefined) ?? '0'), 10);
   const [story, setStory] = useState<Story | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [currentChapter, setCurrentChapter] = useState<Chapter | null>(null);

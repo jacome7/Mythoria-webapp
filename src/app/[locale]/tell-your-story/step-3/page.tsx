@@ -28,7 +28,7 @@ export default function Step3PageWrapper() {
 function Step3Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const editStoryId = searchParams.get('edit');
+  const editStoryId = searchParams?.get('edit') ?? null;
   const t = useTranslations('StorySteps.step3');
   const tChar = useTranslations('Characters');
   const [characters, setCharacters] = useState<Character[]>([]);

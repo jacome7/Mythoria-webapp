@@ -1,17 +1,8 @@
 {
   "PublicStoryPage": {
-    "storyNotFound": "Historia no encontrada",
-    "storyNotAvailable": "Esta historia no está disponible para lectura pública.",
     "chapterNotFound": "Capítulo no encontrado",
     "chapterNotAvailable": "Este capítulo no está disponible.",
-    "aboutStory": "Acerca de esta historia",
-    "author": "Autor",
-    "targetAudience": "Público objetivo",
-    "graphicalStyle": "Estilo gráfico",
     "chapter": "Capítulo",
-    "chapters": "Capítulos",
-    "synopsis": "Sinopsis",
-    "notSpecified": "No especificado",
     "loading": {
       "title": "Cargando historia",
       "subtitle": "Espera un momento mientras cargamos tu historia..."
@@ -40,7 +31,6 @@
     "metadata": {
       "defaultDescription": "Lee \"{title}\" en Mythoria",
       "coverImageAlt": "Imagen de portada de \"{title}\"",
-      "pageTitle": "{title} | Mythoria",
       "chapterPageTitle": "{title} - Capítulo {number} | Mythoria",
       "listenPageTitle": "Escucha \"{title}\" | Mythoria"
     },

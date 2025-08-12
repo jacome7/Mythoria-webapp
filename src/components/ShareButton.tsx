@@ -18,7 +18,7 @@ export default function ShareButton({ title, summary, url, shareText }: ShareBut
           text: summary,
           url,
         });
-      } catch (error) {
+  } catch {
         // User cancelled sharing or other error
         console.log('Share cancelled');
       }
@@ -28,7 +28,7 @@ export default function ShareButton({ title, summary, url, shareText }: ShareBut
         await navigator.clipboard.writeText(url);
         // You could add a toast notification here
         console.log('URL copied to clipboard');
-      } catch (error) {
+  } catch {
         console.error('Failed to copy URL');
       }
     }

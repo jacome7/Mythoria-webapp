@@ -38,7 +38,8 @@ export default function Step5PageWrapper() {
 
 function Step5Page() {
   const router = useRouter();
-  const searchParams = useSearchParams(); const editStoryId = searchParams.get('edit');
+  const searchParams = useSearchParams();
+  const editStoryId = searchParams?.get('edit');
   const locale = useLocale();
   const t = useTranslations('StorySteps.step5');
   const [loading, setLoading] = useState(true);

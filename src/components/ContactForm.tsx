@@ -29,7 +29,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
 
   // Pre-select category based on URL parameter
   useEffect(() => {
-    const categoryParam = searchParams.get('category');
+    const categoryParam = searchParams?.get('category');
     if (categoryParam) {
       setFormData(prev => ({
         ...prev,

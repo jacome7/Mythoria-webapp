@@ -75,6 +75,7 @@ export const blogService = {
       slug: blogPostTranslations.slug,
       title: blogPostTranslations.title,
       summary: blogPostTranslations.summary,
+  contentMdx: blogPostTranslations.contentMdx,
     }).from(blogPosts)
       .innerJoin(blogPostTranslations, eq(blogPostTranslations.postId, blogPosts.id))
       .where(and(eq(blogPosts.status, 'published'), eq(blogPostTranslations.locale, locale)))
@@ -125,6 +126,21 @@ export const blogService = {
       .limit(1);
 
     return { previous: prev || null, next: next || null };
+  },
+
+  /**
+   * Get all published translations (locale and slug) for a post identified by slugBase.
+   */
+  async getPublishedTranslationsBySlugBase(slugBase: string) {
+    const rows = await db.select({
+      locale: blogPostTranslations.locale,
+      slug: blogPostTranslations.slug,
+      publishedAt: blogPosts.publishedAt,
+    }).from(blogPosts)
+      .innerJoin(blogPostTranslations, eq(blogPostTranslations.postId, blogPosts.id))
+      .where(and(eq(blogPosts.status, 'published'), eq(blogPosts.slugBase, slugBase)))
+      .orderBy(asc(blogPostTranslations.locale));
+    return rows;
   },
 };
 

@@ -45,9 +45,10 @@ export default function Step4PageWrapper() {
 function Step4Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const params = useParams();
-  const locale = params.locale as string || 'en-US';
-  const editStoryId = searchParams.get('edit');
+  const params = useParams() as { locale?: string } | null;
+  // useParams can be null during hydration; guard and provide a safe fallback
+  const locale = (params?.locale && typeof params.locale === 'string') ? params.locale : 'en-US';
+  const editStoryId = searchParams?.get('edit');
   const t = useTranslations('StorySteps.step4');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

@@ -9,7 +9,8 @@ import dynamic from 'next/dynamic';
 const PrintOrderContent = dynamic(() => import('@/components/print-order/PrintOrderContent'));
 
 export default function PrintOrderPage() {
-  const { storyId } = useParams();
+  const params = useParams<{ storyId?: string }>();
+  const storyId = (params?.storyId as string | undefined) ?? '';
   const router = useRouter();
   const locale = useLocale();
   const tCommon = useTranslations('common');
@@ -17,7 +18,7 @@ export default function PrintOrderPage() {
   return (
     <div className="min-h-screen bg-base-100 p-4">
       <SignedIn>
-        <PrintOrderContent storyId={storyId as string} />
+  <PrintOrderContent storyId={storyId} />
       </SignedIn>
 
       <SignedOut>
