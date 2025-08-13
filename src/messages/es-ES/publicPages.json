@@ -368,6 +368,9 @@
     }
   },
   "PublicStoryPage": {
+    "chapterNotFound": "Capítulo no encontrado",
+    "chapterNotAvailable": "Este capítulo no está disponible.",
+    "chapter": "Capítulo",
     "loading": {
       "title": "Cargando historia...",
       "subtitle": "Un momento, estamos preparando la historia"
@@ -376,22 +379,57 @@
       "notFound": "Historia no encontrada",
       "notFoundDesc": "La historia que buscas no existe o ya no es pública.",
       "contentNotAvailable": "Contenido no disponible",
-      "contentNotAvailableDesc": "Actualmente no se puede mostrar el contenido de esta historia."
+      "contentNotAvailableDesc": "El contenido de la historia no está disponible para lectura.",
+      "failedToLoadStory": "No se pudo cargar la historia",
+      "failedToLoadChapter": "No se pudo cargar el capítulo"
     },
     "labels": {
       "publicStory": "Historia Pública",
       "by": "por",
-      "synopsis": "Sinopsis"
+      "synopsis": "Sinopsis",
+      "unknownAuthor": "Autor desconocido"
     },
     "footer": {
       "createdWith": "Esta historia fue creada con",
       "cta": "¡Crea tus propias historias mágicas hoy!"
     },
     "actions": {
-      "orderPrint": "Pedir copia impresa",
+      "orderPrint": "Pedir impresión",
       "listen": "Escuchar",
       "print": "Imprimir",
-      "listenMobile": "Escuchar"
+      "listenMobile": "Escuchar",
+      "createOwnStory": "Crea tu propia historia",
+      "orderPrintedBook": "Pedir libro impreso"
+    },
+    "metadata": {
+      "defaultDescription": "Lee \"{title}\" en Mythoria",
+      "coverImageAlt": "Imagen de portada de \"{title}\"",
+      "chapterPageTitle": "{title} - Capítulo {number} | Mythoria",
+      "listenPageTitle": "Escucha \"{title}\" | Mythoria"
+    },
+    "listen": {
+      "title": "Escucha \"{title}\"",
+      "backMobile": "Volver",
+      "audioNotAvailable": "Esta historia no tiene narración disponible.",
+      "audioNotAvailableTitle": "Audio no disponible",
+      "audioNotAvailableDesc": "Esta historia todavía no cuenta con narración de audio.",
+      "backToStory": "Volver a la historia",
+      "duration": "Duración: {duration}",
+      "chapterFallback": "Capítulo {number}",
+      "chapterImageAlt": "Ilustración del capítulo {number}",
+      "controls": {
+        "play": "Reproducir",
+        "pause": "Pausar",
+        "stop": "Parar"
+      }
+    },
+    "lastChapter": {
+      "enjoyedTitle": "¿Te ha gustado esta historia?",
+      "enjoyedDesc": "Crea tu propio cuento personalizado u ordena una preciosa copia impresa."
+    },
+    "storyComplete": {
+      "enjoyedTitle": "¿Disfrutaste de esta historia?",
+      "enjoyedDesc": "¿Listo para crear tu propio relato mágico o conseguir una bonita versión impresa?"
     }
   },
   "SharedStoryPage": {
