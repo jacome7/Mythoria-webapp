@@ -21,7 +21,7 @@ export default function RevolutPayment({
   onPaymentCancel,
   disabled = false,
 }: RevolutPaymentProps) {
-  const t = useTranslations('components.revolutPayment');
+  const tComponentsRevolutPayment = useTranslations('components.revolutPayment');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const revolutPayRef = useRef<HTMLDivElement>(null);
@@ -130,7 +130,7 @@ export default function RevolutPayment({
       } catch (error) {
         console.error('RevolutPayment: Initialization failed:', error);
         if (isMounted) {
-          setError(error instanceof Error ? error.message : t('errors.initializeFailed'));
+          setError(error instanceof Error ? error.message : tComponentsRevolutPayment('errors.initializeFailed'));
           setIsLoading(false);
         }
       }
@@ -141,7 +141,7 @@ export default function RevolutPayment({
     return () => {
       isMounted = false;
     };
-  }, [orderToken, orderAmount, disabled, onPaymentSuccess, onPaymentError, onPaymentCancel, t]);
+  }, [orderToken, orderAmount, disabled, onPaymentSuccess, onPaymentError, onPaymentCancel, tComponentsRevolutPayment]);
 
   if (error) {
     return (
@@ -163,7 +163,7 @@ export default function RevolutPayment({
         <div className="bg-base-200 rounded-lg p-6 text-center">
           <div className="flex items-center justify-center space-x-2">
             <span className="loading loading-spinner loading-sm"></span>
-            <span>{t('loading')}</span>
+            <span>{tComponentsRevolutPayment('loading')}</span>
           </div>
         </div>
       )}
@@ -178,12 +178,12 @@ export default function RevolutPayment({
       {/* Payment Information */}
       {!isLoading && (
         <div className="text-xs text-gray-600 space-y-1">
-          <p>{t('securityNote')}</p>
+          <p>{tComponentsRevolutPayment('securityNote')}</p>
           <div className="flex items-center space-x-2">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
             </svg>
-            <span>{t('encryptionNote')}</span>
+            <span>{tComponentsRevolutPayment('encryptionNote')}</span>
           </div>
         </div>
       )}

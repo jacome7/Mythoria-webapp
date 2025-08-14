@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 export default function NotFound() {
-  const t = useTranslations('common.NotFound');
+  const tNotFound = useTranslations('common.NotFound');
 
   return (
     <div className="min-h-screen bg-base-100 text-base-content">
@@ -22,13 +22,13 @@ export default function NotFound() {
             {/* Content */}
             <div className="lg:w-1/2 text-center lg:text-left">
               <h1 className="text-5xl font-bold text-primary mb-6">
-                {t('mainHeading')}
+                {tNotFound('mainHeading')}
               </h1>
               <p className="py-4 text-lg">
-                {t('description')}
+                {tNotFound('description')}
               </p>
               <p className="py-2 text-base italic">
-                {t('funnyMessage')}
+                {tNotFound('funnyMessage')}
               </p>
             </div>
           </div>
@@ -37,10 +37,10 @@ export default function NotFound() {
         {/* Suggestions Section */}
         <div className="bg-base-200 rounded-box p-8 my-8">
           <h2 className="text-2xl font-bold mb-6 text-center">
-            {t('suggestions.title')}
+            {tNotFound('suggestions.title')}
           </h2>
           <div className="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto">
-            {t.raw('suggestions.items').map((item: string, index: number) => (
+            {tNotFound.raw('suggestions.items').map((item: string, index: number) => (
               <div key={index} className="flex items-center p-4 bg-base-100 rounded-lg shadow-sm">
                 <span className="text-2xl mr-4">{item.split(' ')[0]}</span>
                 <span>{item.substring(item.indexOf(' ') + 1)}</span>
@@ -53,13 +53,13 @@ export default function NotFound() {
         <div className="text-center my-12">
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/" className="btn btn-primary btn-lg">
-              🏠 {t('actions.goHome')}
+              🏠 {tNotFound('actions.goHome')}
             </Link>
             <Link href="/tell-your-story" className="btn btn-secondary btn-lg">
-              ✨ {t('actions.createStory')}
+              ✨ {tNotFound('actions.createStory')}
             </Link>
             <Link href="/my-stories" className="btn btn-outline btn-lg">
-              📚 {t('actions.myStories')}
+              📚 {tNotFound('actions.myStories')}
             </Link>
           </div>
         </div>
@@ -68,7 +68,7 @@ export default function NotFound() {
         <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-box p-8 my-8">
           <blockquote className="text-center">
             <p className="text-lg italic mb-4">
-              {t('quote')}
+              {tNotFound('quote')}
             </p>
           </blockquote>
         </div>

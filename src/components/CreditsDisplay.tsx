@@ -20,8 +20,8 @@ interface CreditsDisplayProps {
 }
 
 export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
-  const t = useTranslations('common.Components.CreditsDisplay');
-  const tActions = useTranslations('common.Actions');
+  const tCommonCreditsDisplay = useTranslations('common.Components.CreditsDisplay');
+  const tCommonActions = useTranslations('common.Actions');
   const locale = useLocale();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [creditHistory, setCreditHistory] = useState<CreditHistoryEntry[]>([]);
@@ -76,14 +76,14 @@ export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
   };
   const formatEventType = (eventType: string) => {
     const eventTypes: { [key: string]: string } = {
-      'initialCredit': t('eventTypes.initialCredit'),
-      'creditPurchase': t('eventTypes.creditPurchase'),
-      'eBookGeneration': t('eventTypes.eBookGeneration'),
-      'audioBookGeneration': t('eventTypes.audioBookGeneration'),
-      'printOrder': t('eventTypes.printOrder'),
-      'refund': t('eventTypes.refund'),
-      'voucher': t('eventTypes.voucher'),
-      'promotion': t('eventTypes.promotion')
+      'initialCredit': tCommonCreditsDisplay('eventTypes.initialCredit'),
+      'creditPurchase': tCommonCreditsDisplay('eventTypes.creditPurchase'),
+      'eBookGeneration': tCommonCreditsDisplay('eventTypes.eBookGeneration'),
+      'audioBookGeneration': tCommonCreditsDisplay('eventTypes.audioBookGeneration'),
+      'printOrder': tCommonCreditsDisplay('eventTypes.printOrder'),
+      'refund': tCommonCreditsDisplay('eventTypes.refund'),
+      'voucher': tCommonCreditsDisplay('eventTypes.voucher'),
+      'promotion': tCommonCreditsDisplay('eventTypes.promotion')
     };
     return eventTypes[eventType] || eventType;
   };
@@ -97,14 +97,14 @@ export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
       className="btn btn-outline btn-primary"
       onClick={handleOpenModal}
     >
-      {t('button', { credits: currentBalance.toString() })}
+      {tCommonCreditsDisplay('button', { credits: currentBalance.toString() })}
     </button>
 
       {/* Credit History Modal */}
       {isModalOpen && (
         <div className="modal modal-open">
           <div className="modal-box max-w-4xl">
-            <h3 className="font-bold text-lg mb-4">{t('creditHistory')}</h3>
+            <h3 className="font-bold text-lg mb-4">{tCommonCreditsDisplay('creditHistory')}</h3>
 
             {loading ? (
               <div className="flex justify-center items-center py-8">
@@ -116,10 +116,10 @@ export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
                   <table className="table table-zebra w-full">
                     <thead className="sticky top-0 bg-base-100 z-10">
                     <tr>
-                      <th>{t('headers.date')}</th>
-                      <th>{t('headers.eventType')}</th>
-                      <th className="text-right">{t('headers.amount')}</th>
-                      <th className="text-right">{t('headers.balance')}</th>
+                      <th>{tCommonCreditsDisplay('headers.date')}</th>
+                      <th>{tCommonCreditsDisplay('headers.eventType')}</th>
+                      <th className="text-right">{tCommonCreditsDisplay('headers.amount')}</th>
+                      <th className="text-right">{tCommonCreditsDisplay('headers.balance')}</th>
                     </tr>
                   </thead>
                     <tbody>
@@ -146,13 +146,13 @@ export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
                 </div>
                 <div className="mt-6 p-4 bg-base-200 rounded-lg">
                   <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold">{t('currentBalance')}</span>
-                    <span className="text-xl font-bold text-primary">{currentBalance} {t('credits')}</span>
+                    <span className="text-lg font-semibold">{tCommonCreditsDisplay('currentBalance')}</span>
+                    <span className="text-xl font-bold text-primary">{currentBalance} {tCommonCreditsDisplay('credits')}</span>
                   </div>
                 </div>
                 <div className="mt-4">
                   <Link href={`/${locale}/buy-credits`} className="btn btn-primary w-full">
-                    {t('addCredits')}
+                    {tCommonCreditsDisplay('addCredits')}
                   </Link>
                 </div>
               </>
@@ -162,7 +162,7 @@ export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
                 className="btn btn-ghost"
                 onClick={() => setIsModalOpen(false)}
               >
-                {tActions('close')}
+                {tCommonActions('close')}
               </button>
             </div>
           </div>

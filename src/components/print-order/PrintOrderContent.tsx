@@ -53,7 +53,7 @@ interface PrintOrderContentProps {
 export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
   const router = useRouter();
   const locale = useLocale();
-  const t = useTranslations('PrintOrder');
+  const tPrintOrder = useTranslations('PrintOrder');
 
   const [currentStep, setCurrentStep] = useState<Step>('story');
   const [story, setStory] = useState<Story | null>(null);
@@ -78,16 +78,16 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
       if (response.ok && data.story) {
         const storyData = data.story;
         if (storyData.status !== 'published') {
-          setError(t('errors.storyNotPublished'));
+          setError(tPrintOrder('errors.storyNotPublished'));
           return;
         }
         setStory(storyData);
       } else {
-        setError(data.error || t('errors.storyNotFound'));
+        setError(data.error || tPrintOrder('errors.storyNotFound'));
       }
     } catch (err) {
       console.error('Error loading story:', err);
-      setError(t('errors.loadingFailed'));
+      setError(tPrintOrder('errors.loadingFailed'));
     }
   };
   const loadAddresses = async () => {
@@ -106,7 +106,7 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
     }
   };  const handlePlaceOrder = async () => {
     if (!story || !selectedAddress || !selectedPrintingOption) {
-      setError(t('errors.missingRequiredFields'));
+      setError(tPrintOrder('errors.missingRequiredFields'));
       return;
     }
 
@@ -144,21 +144,21 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
       } else {
         // Handle insufficient credits error specifically
         if (response.status === 402) {
-          setError(`${t('errors.insufficientCredits')} ${data.required} credits required, ${data.available} available.`);
+          setError(`${tPrintOrder('errors.insufficientCredits')} ${data.required} credits required, ${data.available} available.`);
         } else {
-          setError(data.error || t('errors.orderFailed'));
+          setError(data.error || tPrintOrder('errors.orderFailed'));
         }
       }
     } catch (err) {
       console.error('Error placing order:', err);
-      setError(t('errors.orderFailed'));
+      setError(tPrintOrder('errors.orderFailed'));
     } finally {
       setOrderLoading(false);
     }
   };  const steps = [
-    { id: 'story', title: t('steps.story'), icon: FiBook },
-    { id: 'address', title: t('steps.address'), icon: FiMapPin },
-    { id: 'payment', title: t('steps.payment'), icon: FiPrinter },
+    { id: 'story', title: tPrintOrder('steps.story'), icon: FiBook },
+    { id: 'address', title: tPrintOrder('steps.address'), icon: FiMapPin },
+    { id: 'payment', title: tPrintOrder('steps.payment'), icon: FiPrinter },
   ];
 
   const getCurrentStepIndex = () => steps.findIndex(step => step.id === currentStep);
@@ -256,7 +256,7 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
             className="btn btn-primary mt-4"
           >
             <FiArrowLeft className="w-4 h-4 mr-2" />
-            {t('backToStories')}
+            {tPrintOrder('backToStories')}
           </Link>
         </div>
       </div>
@@ -274,7 +274,7 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
           <FiArrowLeft className="w-4 h-4" />
         </Link>
         <div>
-          <h1 className="text-3xl font-bold">{t('title')}</h1>
+          <h1 className="text-3xl font-bold">{tPrintOrder('title')}</h1>
           {story && (
             <p className="text-base-content/70">{story.title}</p>
           )}

@@ -30,7 +30,7 @@ export default function SharedStoryPage() {
   const params = useParams<{ token?: string }>();
   const router = useRouter();
   const locale = useLocale();
-  const t = useTranslations('SharedStoryPage');
+  const tSharedStoryPage = useTranslations('SharedStoryPage');
   const tCommon = useTranslations('common');
   const token = (params?.token as string | undefined) ?? '';
   
@@ -61,20 +61,20 @@ export default function SharedStoryPage() {
         }
       } catch (err) {
         console.error('Error accessing shared story:', err);
-        setError(t('errors.failedToAccess'));
+        setError(tSharedStoryPage('errors.failedToAccess'));
       } finally {
         setLoading(false);
       }
     };
 
     accessSharedStory();
-  }, [token, router, locale, t]);  if (loading) {
+  }, [token, router, locale, tSharedStoryPage]);  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <FiLoader className="animate-spin text-4xl text-primary mx-auto" />
-          <h2 className="text-xl font-semibold">{t('loading.title')}</h2>
-          <p className="text-gray-600">{t('loading.subtitle')}</p>
+          <h2 className="text-xl font-semibold">{tSharedStoryPage('loading.title')}</h2>
+          <p className="text-gray-600">{tSharedStoryPage('loading.subtitle')}</p>
         </div>
       </div>
     );

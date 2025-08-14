@@ -50,7 +50,7 @@ export default function ReadingToolbar({
   currentChapter = 0, 
   onChapterChange 
 }: ReadingToolbarProps) {
-  const t = useTranslations('components.readingToolbar');
+  const tComponentsReadingToolbar = useTranslations('components.readingToolbar');
   const [settings, setSettings] = useState<ReadingSettings>(DEFAULT_SETTINGS);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -104,10 +104,10 @@ export default function ReadingToolbar({
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="btn btn-ghost btn-sm"
-            aria-label={t('toggleLabel')}
+            aria-label={tComponentsReadingToolbar('toggleLabel')}
           >
             <FiType className="w-4 h-4" />
-            <span className="hidden sm:inline ml-2">{t('title')}</span>
+            <span className="hidden sm:inline ml-2">{tComponentsReadingToolbar('title')}</span>
           </button>
           
           {/* Quick Actions - Always Visible */}
@@ -118,10 +118,10 @@ export default function ReadingToolbar({
                 <div tabIndex={0} role="button" className="btn btn-ghost btn-sm">
                   <FiBook className="w-4 h-4" />
                   <span className="hidden sm:inline ml-2">
-                    {currentChapter === 0 ? t('cover') : t('chapterLabel', { number: currentChapter })}
+                    {currentChapter === 0 ? tComponentsReadingToolbar('cover') : tComponentsReadingToolbar('chapterLabel', { number: currentChapter })}
                   </span>
                   <span className="sm:hidden ml-1">
-                    {currentChapter === 0 ? t('cover') : t('chapterLabel', { number: currentChapter })}
+                    {currentChapter === 0 ? tComponentsReadingToolbar('cover') : tComponentsReadingToolbar('chapterLabel', { number: currentChapter })}
                   </span>
                   <FiChevronDown className="w-3 h-3 ml-1" />
                 </div>
@@ -131,7 +131,7 @@ export default function ReadingToolbar({
                       onClick={() => onChapterChange?.(0)}
                       className={`${currentChapter === 0 ? 'bg-primary/20' : ''}`}
                     >
-                      {t('coverAndToc')}
+                      {tComponentsReadingToolbar('coverAndToc')}
                     </button>
                   </li>
                   {chapters.map((chapter) => (
@@ -156,13 +156,13 @@ export default function ReadingToolbar({
               {/* Font Size Control */}
               <div className="flex items-center gap-3">
                 <FiType className="w-4 h-4 text-base-content/70" />
-                <span className="text-sm font-medium min-w-fit">{t('controls.fontSize')}</span>
+                <span className="text-sm font-medium min-w-fit">{tComponentsReadingToolbar('controls.fontSize')}</span>
                 <div className="flex items-center gap-2 flex-1">
                   <button
                     onClick={() => adjustValue('fontSize', -10)}
                     className="btn btn-ghost btn-xs"
                     disabled={settings.fontSize <= 50}
-                    aria-label={t('controls.decreaseFontSize')}
+                    aria-label={tComponentsReadingToolbar('controls.decreaseFontSize')}
                   >
                     <FiMinus className="w-3 h-3" />
                   </button>
@@ -175,7 +175,7 @@ export default function ReadingToolbar({
                       value={settings.fontSize}
                       onChange={(e) => updateSetting('fontSize', parseInt(e.target.value))}
                       className="range range-primary range-xs"
-                      aria-label={t('controls.fontSizeLabel')}
+                      aria-label={tComponentsReadingToolbar('controls.fontSizeLabel')}
                     />
                   </div>
                   <button

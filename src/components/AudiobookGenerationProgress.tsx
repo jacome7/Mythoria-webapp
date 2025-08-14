@@ -47,7 +47,7 @@ const calculateEstimatedTime = (
 };
 
 export default function AudiobookGenerationProgress({ storyId, onComplete }: AudiobookGenerationProgressProps) {
-  const t = useTranslations('components.audiobookGenerationProgress');
+  const tComponentsAudiobookGenerationProgress = useTranslations('components.audiobookGenerationProgress');
   const router = useRouter();
   const params = useParams() as { locale?: string } | null;
   const locale = (params?.locale && typeof params.locale === 'string') ? params.locale : 'en-US';
@@ -64,22 +64,22 @@ export default function AudiobookGenerationProgress({ storyId, onComplete }: Aud
     try {
       const response = await fetch(`/api/stories/${storyId}/audiobook-progress`);
       if (!response.ok) {
-        throw new Error(t('errors.failedToFetch'));
+        throw new Error(tComponentsAudiobookGenerationProgress('errors.failedToFetch'));
       }
       const data = await response.json();
       setProgress(data);
     } catch (error) {
       console.error('Error fetching audiobook progress:', error);
-      setError(t('errors.failedToLoad'));
+      setError(tComponentsAudiobookGenerationProgress('errors.failedToLoad'));
     }
-  }, [storyId, t]);
+  }, [storyId, tComponentsAudiobookGenerationProgress]);
 
   // Update funny message based on current step
   useEffect(() => {
     if (progress.currentStep) {
-      setCurrentMessage(getFunnyMessage(progress.currentStep, t));
+      setCurrentMessage(getFunnyMessage(progress.currentStep, tComponentsAudiobookGenerationProgress));
     }
-  }, [progress.currentStep, t]);
+  }, [progress.currentStep, tComponentsAudiobookGenerationProgress]);
 
   // Poll for progress updates
   useEffect(() => {
@@ -114,7 +114,7 @@ export default function AudiobookGenerationProgress({ storyId, onComplete }: Aud
             className="btn btn-primary"
             onClick={() => window.location.reload()}
           >
-            {t('retry')}
+            {tComponentsAudiobookGenerationProgress('retry')}
           </button>
         </div>
       </div>

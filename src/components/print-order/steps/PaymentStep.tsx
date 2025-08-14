@@ -52,7 +52,7 @@ export default function PaymentStep({
   onPlaceOrder,
   loading,
 }: PaymentStepProps) {
-  const t = useTranslations('PrintOrder');
+  const tPrintOrder = useTranslations('PrintOrder');
   const locale = useLocale();
   const [printingOptions, setPrintingOptions] = useState<PrintingOption[]>([]);
   const [extraChapterCost, setExtraChapterCost] = useState<number>(0);
@@ -91,12 +91,12 @@ export default function PaymentStep({
 
         switch (service.serviceCode) {
           case 'printedSoftCover':
-            title = t('payment.softcoverTitle');
-            description = t('payment.softcoverDescription');
+            title = tPrintOrder('payment.softcoverTitle');
+            description = tPrintOrder('payment.softcoverDescription');
             break;
           case 'printedHardcover':
-            title = t('payment.hardcoverTitle');
-            description = t('payment.hardcoverDescription');
+            title = tPrintOrder('payment.hardcoverTitle');
+            description = tPrintOrder('payment.hardcoverDescription');
             break;
           default:
             title = service.name;
@@ -115,9 +115,9 @@ export default function PaymentStep({
       setPrintingOptions(options);
     } catch (error) {
       console.error('Error fetching printing options:', error);
-      setError(t('errors.loadPricingFailed'));
+      setError(tPrintOrder('errors.loadPricingFailed'));
     }
-  }, [t]);
+  }, [tPrintOrder]);
 
   const fetchUserCredits = useCallback(async () => {
     try {
@@ -129,9 +129,9 @@ export default function PaymentStep({
       setUserCredits(data.currentBalance || 0);
     } catch (error) {
       console.error('Error fetching user credits:', error);
-      setError(t('errors.fetchCreditsFailed'));
+      setError(tPrintOrder('errors.fetchCreditsFailed'));
     }
-  }, [t]);
+  }, [tPrintOrder]);
   useEffect(() => {
     const fetchData = async () => {
       await fetchPrintingOptions();
@@ -174,7 +174,7 @@ export default function PaymentStep({
   if (loadingData) {
     return (
       <div>
-        <h2 className="card-title mb-4">{t('steps.payment')}</h2>
+        <h2 className="card-title mb-4">{tPrintOrder('steps.payment')}</h2>
         <div className="flex items-center justify-center min-h-[200px]">
           <span className="loading loading-spinner loading-lg"></span>
         </div>
@@ -185,13 +185,13 @@ export default function PaymentStep({
   if (error) {
     return (
       <div>
-        <h2 className="card-title mb-4">{t('steps.payment')}</h2>
+        <h2 className="card-title mb-4">{tPrintOrder('steps.payment')}</h2>
         <div className="alert alert-error">
           <span>{error}</span>
         </div>
         <div className="card-actions justify-between mt-6">
           <button className="btn btn-ghost" onClick={onBack}>
-            {t('buttons.back')}
+            {tPrintOrder('buttons.back')}
           </button>
         </div>
       </div>
@@ -200,9 +200,9 @@ export default function PaymentStep({
 
   return (
     <div>
-      <h2 className="card-title mb-4">{t('payment.selectBookType')}</h2>
+      <h2 className="card-title mb-4">{tPrintOrder('payment.selectBookType')}</h2>
       
-      <p className="text-base-content/70 mb-6">{t('payment.chooseQuality')}</p>
+      <p className="text-base-content/70 mb-6">{tPrintOrder('payment.chooseQuality')}</p>
 
       {/* Printing Options */}
       <div className="grid md:grid-cols-3 gap-4 mb-6">
@@ -223,7 +223,7 @@ export default function PaymentStep({
                 </div>
                 <div className="flex items-center justify-between mt-auto">
                   <div className="text-lg font-semibold text-primary">
-                    {option.credits} {t('payment.credits')}
+                    {option.credits} {tPrintOrder('payment.credits')}
                   </div>
                   {selectedPrintingOption?.serviceCode === option.serviceCode && (
                     <div className="text-primary">
@@ -240,12 +240,12 @@ export default function PaymentStep({
       {/* Price Notes */}
       <div className="alert alert-info mb-6">
         <div className="text-sm">
-          <p className="font-semibold mb-1">{t('payment.priceNote')}</p>
-          <p>{t('payment.extraChapterNote')}</p>
+          <p className="font-semibold mb-1">{tPrintOrder('payment.priceNote')}</p>
+          <p>{tPrintOrder('payment.extraChapterNote')}</p>
           <p className="mt-2">
-            <strong>{t('payment.yourStory')}:</strong> {story.chapterCount} chapters
+            <strong>{tPrintOrder('payment.yourStory')}:</strong> {story.chapterCount} chapters
             {calculateExtraChapters() > 0 && (
-              <span> ({calculateExtraChapters()} {t('payment.extraChaptersNote')})</span>
+              <span> ({calculateExtraChapters()} {tPrintOrder('payment.extraChaptersNote')})</span>
             )}
           </p>
         </div>
@@ -256,53 +256,53 @@ export default function PaymentStep({
         <div className="grid md:grid-cols-2 gap-6 mb-6">
           {/* Order Summary */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">{t('payment.orderSummary')}</h3>
+            <h3 className="text-lg font-semibold mb-4">{tPrintOrder('payment.orderSummary')}</h3>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span>{t('payment.selectedOption')}:</span>
+                <span>{tPrintOrder('payment.selectedOption')}:</span>
                 <span>{selectedPrintingOption.title}</span>
               </div>              <div className="flex justify-between">
-                <span>{t('payment.basePrice')}:</span>
-                <span>{selectedPrintingOption.credits} {t('payment.credits')}</span>
+                <span>{tPrintOrder('payment.basePrice')}:</span>
+                <span>{selectedPrintingOption.credits} {tPrintOrder('payment.credits')}</span>
               </div>
               {calculateExtraChapters() > 0 && (
                 <div className="flex justify-between">
-                  <span>{t('payment.extraChapters')} ({calculateExtraChapters()}):</span>
-                  <span>{calculateExtraChapters() * extraChapterCost} {t('payment.credits')}</span>
+                  <span>{tPrintOrder('payment.extraChapters')} ({calculateExtraChapters()}):</span>
+                  <span>{calculateExtraChapters() * extraChapterCost} {tPrintOrder('payment.credits')}</span>
                 </div>
               )}
               <div className="flex justify-between">
-                <span>{t('payment.shipping')}:</span>
-                <span className="text-success">{t('payment.included')}</span>
+                <span>{tPrintOrder('payment.shipping')}:</span>
+                <span className="text-success">{tPrintOrder('payment.included')}</span>
               </div>
               <div className="divider"></div>
               <div className="flex justify-between font-bold text-lg">
-                <span>{t('payment.total')}:</span>
-                <span>{calculateTotalCost()} {t('payment.credits')}</span>
+                <span>{tPrintOrder('payment.total')}:</span>
+                <span>{calculateTotalCost()} {tPrintOrder('payment.credits')}</span>
               </div>
             </div>
           </div>
 
           {/* Credits Information */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">{t('payment.method')}</h3>
+            <h3 className="text-lg font-semibold mb-4">{tPrintOrder('payment.method')}</h3>
             <div className="space-y-4">
               <div className="alert alert-info">
                 <FiCreditCard className="w-5 h-5" />
-                <span>{t('payment.creditsInfo')}</span>
+                <span>{tPrintOrder('payment.creditsInfo')}</span>
               </div>              {/* Credits Balance */}
               <div className="card bg-base-200 p-4">
                 <div className="flex justify-center items-center gap-8">
                   <div className="text-center">
-                    <span className="text-sm text-gray-600 block mb-1">{t('payment.cost')}</span>
+                    <span className="text-sm text-gray-600 block mb-1">{tPrintOrder('payment.cost')}</span>
                     <div className="text-2xl font-bold text-primary">
-                      {calculateTotalCost()} {t('payment.credits')}
+                      {calculateTotalCost()} {tPrintOrder('payment.credits')}
                     </div>
                   </div>
                   <div className="text-center">
-                    <span className="text-sm text-gray-600 block mb-1">{t('payment.yourCredits')}</span>
+                    <span className="text-sm text-gray-600 block mb-1">{tPrintOrder('payment.yourCredits')}</span>
                     <div className={`text-2xl font-bold ${hasInsufficientCredits() ? 'text-error' : 'text-success'}`}>
-                      {userCredits} {t('payment.credits')}
+                      {userCredits} {tPrintOrder('payment.credits')}
                     </div>
                   </div>
                 </div>
@@ -312,15 +312,15 @@ export default function PaymentStep({
               {hasInsufficientCredits() && (
                 <div className="alert alert-warning">
                   <div className="flex flex-col items-center">
-                    <span className="font-semibold">{t('payment.insufficientCreditsTitle')}</span>
+                    <span className="font-semibold">{tPrintOrder('payment.insufficientCreditsTitle')}</span>
                     <span className="text-sm mt-2">
-                      {t('payment.needMoreCredits', { count: calculateTotalCost() - userCredits })}
+                      {tPrintOrder('payment.needMoreCredits', { count: calculateTotalCost() - userCredits })}
                     </span>
                     <a
                       href={`/${locale}/pricing`}
                       className="btn btn-outline btn-sm mt-2"
                     >
-                      {t('payment.getMoreCredits')}
+                      {tPrintOrder('payment.getMoreCredits')}
                     </a>
                   </div>
                 </div>
@@ -333,13 +333,13 @@ export default function PaymentStep({
       {/* Error for no selection */}
       {!selectedPrintingOption && (
         <div className="alert alert-warning mb-6">
-          <span>{t('payment.pleaseSelectOption')}</span>
+          <span>{tPrintOrder('payment.pleaseSelectOption')}</span>
         </div>
       )}
 
       <div className="card-actions justify-between mt-6">
         <button className="btn btn-ghost" onClick={onBack}>
-          {t('buttons.back')}
+          {tPrintOrder('buttons.back')}
         </button>
         <button
           className={`btn btn-primary ${loading ? 'loading' : ''}`}
@@ -349,23 +349,23 @@ export default function PaymentStep({
           {loading ? (
             <span className="loading loading-spinner loading-sm"></span>
           ) : (
-            t('buttons.placeOrder')
+            tPrintOrder('buttons.placeOrder')
           )}
         </button>
       </div>      {/* Confirmation Modal */}
       {showConfirmModal && (
         <div className="modal modal-open">
           <div className="modal-box">
-            <h3 className="font-bold text-lg mb-4">{t('payment.confirmOrder')}</h3>
+            <h3 className="font-bold text-lg mb-4">{tPrintOrder('payment.confirmOrder')}</h3>
             <p className="text-sm text-base-content/70 mb-6">
-              {t('payment.confirmOrderDescription')}
+              {tPrintOrder('payment.confirmOrderDescription')}
             </p>
             <div className="modal-action">
               <button className="btn btn-primary" onClick={handleConfirmOrder}>
-                {t('buttons.confirm')}
+                {tPrintOrder('buttons.confirm')}
               </button>
               <button className="btn btn-ghost" onClick={() => setShowConfirmModal(false)}>
-                {t('buttons.cancel')}
+                {tPrintOrder('buttons.cancel')}
               </button>
             </div>
           </div>

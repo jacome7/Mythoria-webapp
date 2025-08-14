@@ -21,7 +21,7 @@ export default function ImageEditingTab({
   onImageEditSuccess,
   onImageUpdated
 }: ImageEditingTabProps) {
-  const t = useTranslations('common.imageEditingTab');
+  const tCommonImageEditingTab = useTranslations('common.imageEditingTab');
   const [selectedImage, setSelectedImage] = useState<StoryImage | null>(null);
   const [selectedVersion, setSelectedVersion] = useState<ImageVersion | null>(null);
   const [userRequest, setUserRequest] = useState('');
@@ -140,17 +140,17 @@ export default function ImageEditingTab({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedImage || !selectedVersion) {
-      setError(t('errors.selectImage'));
+      setError(tCommonImageEditingTab('errors.selectImage'));
       return;
     }
 
     if (!userRequest.trim()) {
-      setError(t('errors.enterChanges'));
+      setError(tCommonImageEditingTab('errors.enterChanges'));
       return;
     }
 
     if (userRequest.length > 2000) {
-      setError(t('errors.requestTooLong'));
+      setError(tCommonImageEditingTab('errors.requestTooLong'));
       return;
     }
 
@@ -267,11 +267,11 @@ export default function ImageEditingTab({
         setPendingImageEditData(null);
         setCreditInfo(null);
       } else {
-        setError(data.error || t('errors.editFailed'));
+        setError(data.error || tCommonImageEditingTab('errors.editFailed'));
       }
     } catch (error) {
       console.error('Error editing image:', error);
-      setError(t('errors.editFailed'));
+      setError(tCommonImageEditingTab('errors.editFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -295,7 +295,7 @@ export default function ImageEditingTab({
 
   const handleReplaceImage = async () => {
     if (!selectedImage || !selectedVersion || !newImageGenerated) {
-      setError(t('errors.noNewImage'));
+      setError(tCommonImageEditingTab('errors.noNewImage'));
       return;
     }
 
@@ -354,14 +354,14 @@ export default function ImageEditingTab({
 
     } catch (error) {
       console.error('Error replacing image:', error);
-      setError(t('errors.replaceImageFailed'));
+      setError(tCommonImageEditingTab('errors.replaceImageFailed'));
     } finally {
       setIsReplacing(false);
     }
   };
   const handleChangeImage = async () => {
     if (!selectedImage || !selectedVersion) {
-      setError(t('errors.noVersionSelected'));
+      setError(tCommonImageEditingTab('errors.noVersionSelected'));
       return;
     }
 
@@ -391,7 +391,7 @@ export default function ImageEditingTab({
 
       if (originalImageToReplace === selectedVersion.url) {
         console.log('Selected version is already the latest version, no change needed');
-        setError(t('errors.sameVersion'));
+        setError(tCommonImageEditingTab('errors.sameVersion'));
         return;
       }
 
@@ -412,7 +412,7 @@ export default function ImageEditingTab({
 
     } catch (error) {
       console.error('Error changing image:', error);
-      setError(t('errors.changeImageFailed'));
+      setError(tCommonImageEditingTab('errors.changeImageFailed'));
       setOptimisticUpdate(null); // Clear optimistic update on error
     } finally {
       setIsChangingImage(false);
@@ -427,9 +427,9 @@ export default function ImageEditingTab({
     return (
       <div className="text-center py-12">
         <FiImage className="w-12 h-12 text-base-content/40 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-base-content/70 mb-2">{t('noImages.title')}</h3>
+        <h3 className="text-lg font-medium text-base-content/70 mb-2">{tCommonImageEditingTab('noImages.title')}</h3>
         <p className="text-base-content/50">
-          {t('noImages.description')}
+          {tCommonImageEditingTab('noImages.description')}
         </p>
       </div>
     );
@@ -439,7 +439,7 @@ export default function ImageEditingTab({
     <div className="space-y-6">
       {/* Image Selection */}
       <div>        <label className="label">
-        <span className="label-text font-medium">{t('imageSelection.label')}</span>
+        <span className="label-text font-medium">{tCommonImageEditingTab('imageSelection.label')}</span>
       </label><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {storyImages.map((image) => (
             <div
@@ -461,14 +461,14 @@ export default function ImageEditingTab({
               </div><div className="text-center">
                 <h4 className="font-medium text-sm">{getImageDisplayName(image)}</h4>
                 <p className="text-xs text-base-content/60 mt-1">
-                  {t('imageSelection.versionsAvailable', {
+                  {tCommonImageEditingTab('imageSelection.versionsAvailable', {
                     count: image.versions.length,
                     plural: image.versions.length !== 1 ? 's' : ''
                   })}
                 </p>                {image.versions.length > 1 && (
                   <div className="space-y-1">
                     <p className="text-xs text-primary font-medium">
-                      {t('imageSelection.latestVersion', {
+                      {tCommonImageEditingTab('imageSelection.latestVersion', {
                         version: formatVersionNumber(image.latestVersion.version)
                       })}
                     </p>
@@ -481,7 +481,7 @@ export default function ImageEditingTab({
       </div>      {/* Version Selection */}
       {selectedImage && selectedImage.versions.length > 1 && (
         <div>          <label className="label">
-          <span className="label-text font-medium">{t('versionSelection.label')}</span>
+          <span className="label-text font-medium">{tCommonImageEditingTab('versionSelection.label')}</span>
         </label>
           <select
             value={selectedVersion?.url || ''}
@@ -506,11 +506,11 @@ export default function ImageEditingTab({
               );
             })}
           </select>          <p className="text-sm text-base-content/70 mt-2">
-            {t('versionSelection.versionsInfo', {
+            {tCommonImageEditingTab('versionSelection.versionsInfo', {
               count: selectedImage.versions.length,
               plural: selectedImage.versions.length !== 1 ? 's' : ''
             })}
-            {selectedVersion && ` • ${t('versionSelection.currentlySelected', {
+            {selectedVersion && ` • ${tCommonImageEditingTab('versionSelection.currentlySelected', {
               version: formatVersionNumber(selectedVersion.version)
             })}`}
           </p>
@@ -532,17 +532,17 @@ export default function ImageEditingTab({
               ) : isChangingImage ? (
                 <>
                   <span className="loading loading-spinner loading-xs"></span>
-                  {t('versionSelection.changingImage')}
+                  {tCommonImageEditingTab('versionSelection.changingImage')}
                 </>
               ) : (
                 <>
                   <FiImage className="w-4 h-4" />
-                  {t('versionSelection.changeImageButton')}
+                  {tCommonImageEditingTab('versionSelection.changeImageButton')}
                 </>
               )}
             </button>
               <p className="text-sm text-base-content/70 mt-2">
-                {t('versionSelection.changeImageDescription')}
+                {tCommonImageEditingTab('versionSelection.changeImageDescription')}
               </p>
             </div>
           )}
@@ -552,7 +552,7 @@ export default function ImageEditingTab({
       {/* Image Preview */}
       {previewImage && (
         <div>          <label className="label">
-          <span className="label-text font-medium">{t('imagePreview.label')}</span>
+          <span className="label-text font-medium">{tCommonImageEditingTab('imagePreview.label')}</span>
         </label>
           <div className="max-w-md mx-auto">
             <div className="aspect-square bg-base-200 rounded-lg overflow-hidden">
@@ -573,10 +573,10 @@ export default function ImageEditingTab({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>            <label className="label">
             <span className="label-text font-medium">
-              {t('editRequest.label')}
+              {tCommonImageEditingTab('editRequest.label')}
             </span>
             <span className="label-text-alt break-words max-w-full whitespace-normal">
-              {t('editRequest.charactersCount', {
+              {tCommonImageEditingTab('editRequest.charactersCount', {
                 current: userRequest.length,
                 max: 2000
               })}
@@ -585,7 +585,7 @@ export default function ImageEditingTab({
             <textarea
               value={userRequest}
               onChange={(e) => setUserRequest(e.target.value)}
-              placeholder={t('editRequest.placeholder')}
+              placeholder={tCommonImageEditingTab('editRequest.placeholder')}
               className="textarea textarea-bordered w-full h-32 resize-none"
               maxLength={2000}
               disabled={isLoading}
@@ -607,9 +607,9 @@ export default function ImageEditingTab({
             <div className="flex items-center gap-3">
               <span className="loading loading-spinner loading-sm"></span>
               <div>
-                <p className="font-medium">{t('loadingState.title')}</p>
+                <p className="font-medium">{tCommonImageEditingTab('loadingState.title')}</p>
                 <p className="text-sm text-base-content/70">
-                  {t('loadingState.description')}
+                  {tCommonImageEditingTab('loadingState.description')}
                 </p>
               </div>
             </div>
@@ -641,12 +641,12 @@ export default function ImageEditingTab({
           >            {isLoading ? (
             <>
               <span className="loading loading-spinner loading-xs"></span>
-              {t('buttons.editingImage')}
+              {tCommonImageEditingTab('buttons.editingImage')}
             </>
           ) : (
             <>
               <FiEdit3 className="w-4 h-4" />
-              {t('buttons.generateNewVersion')}
+              {tCommonImageEditingTab('buttons.generateNewVersion')}
             </>
           )}
           </button>
@@ -658,10 +658,10 @@ export default function ImageEditingTab({
                 <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                 </svg>
-                <span className="font-medium text-primary">{t('success.title')}</span>
+                <span className="font-medium text-primary">{tCommonImageEditingTab('success.title')}</span>
               </div>
               <p className="text-sm text-base-content/70 mb-3">
-                {t('success.description')}
+                {tCommonImageEditingTab('success.description')}
               </p>
               <button
                 type="button"
@@ -672,12 +672,12 @@ export default function ImageEditingTab({
                 {isReplacing ? (
                   <>
                     <span className="loading loading-spinner loading-xs"></span>
-                    {t('buttons.replacingImage')}
+                    {tCommonImageEditingTab('buttons.replacingImage')}
                   </>
                 ) : (
                   <>
                     <FiImage className="w-4 h-4" />
-                    {t('buttons.replaceImageInStory')}
+                    {tCommonImageEditingTab('buttons.replaceImageInStory')}
                   </>
                 )}
               </button>

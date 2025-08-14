@@ -19,6 +19,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     aboutUsMessages,
     homePageMessages,
     myStoriesPageMessages,
+    myCharactersPageMessages,
     signInPageMessages,
     tellYourStoryPageMessages,
     buyCreditsPageMessages,
@@ -35,8 +36,9 @@ export default getRequestConfig(async ({ requestLocale }) => {
     sharedStoryPageMessages,
     getInspiredPageMessages,
     blogMessages,
-  blogPostMessages,
-  publicPagesMessages
+    blogPostMessages,
+    printOrderMessages,
+    addressesMessages
   ] = await Promise.all([
     import(`../messages/${locale}/common.json`).then(module => module.default),
     import(`../messages/${locale}/auth.json`).then(module => module.default),
@@ -47,6 +49,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     import(`../messages/${locale}/aboutUs.json`).then(module => module.default),
     import(`../messages/${locale}/HomePage.json`).then(module => module.default),
     import(`../messages/${locale}/MyStoriesPage.json`).then(module => module.default),
+    import(`../messages/${locale}/MyCharactersPage.json`).then(module => module.default),
     import(`../messages/${locale}/SignInPage.json`).then(module => module.default),
     import(`../messages/${locale}/TellYourStoryPage.json`).then(module => module.default),
     import(`../messages/${locale}/BuyCreditsPage.json`).then(module => module.default),
@@ -63,8 +66,9 @@ export default getRequestConfig(async ({ requestLocale }) => {
     import(`../messages/${locale}/SharedStoryPage.json`).then(module => module.default),
     import(`../messages/${locale}/GetInspiredPage.json`).then(module => module.default),
     import(`../messages/${locale}/blog.json`).then(module => module.default),
-  import(`../messages/${locale}/BlogPost.json`).then(module => module.default),
-  import(`../messages/${locale}/publicPages.json`).then(module => module.default)
+    import(`../messages/${locale}/BlogPost.json`).then(module => module.default),
+    import(`../messages/${locale}/PrintOrder.json`).then(module => module.default),
+    import(`../messages/${locale}/Addresses.json`).then(module => module.default)
   ]);
 
   return {
@@ -76,6 +80,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ...aboutUsMessages,
       ...homePageMessages,
       ...myStoriesPageMessages,
+      ...myCharactersPageMessages,
       ...signInPageMessages,
       ...tellYourStoryPageMessages,
       ...buyCreditsPageMessages,
@@ -93,8 +98,9 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ...getInspiredPageMessages,
       ...blogMessages,
       ...blogPostMessages,
-  ...pricingPageMessages,
-  publicPages: publicPagesMessages,
+      ...printOrderMessages,
+      ...addressesMessages,
+      ...pricingPageMessages,
       privacyPolicy: privacyPolicyMessages,
       storySteps: storyStepsMessages
     }

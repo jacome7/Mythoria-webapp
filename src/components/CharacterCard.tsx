@@ -63,9 +63,9 @@ interface CharacterCardProps {
 }
 
 // Function to format role names for display
-const formatRoleName = (role: string, t: (key: string) => string): string => {
+const formatRoleName = (role: string): string => {
   const roleKey = `roles.${role}`;
-  const translated = t(roleKey);
+  const translated = tCharacters(roleKey);
   // If no translation found, fall back to formatted version
   if (translated === roleKey) {
     return role
@@ -77,9 +77,9 @@ const formatRoleName = (role: string, t: (key: string) => string): string => {
 };
 
 // Helper function to get translated trait name
-const getTraitDisplayName = (trait: string, t: (key: string) => string): string => {
+const getTraitDisplayName = (trait: string): string => {
   const traitKey = `traits.${trait}`;
-  const translated = t(traitKey);
+  const translated = tCharacters(traitKey);
   // If no translation found, fall back to formatted version
   if (translated === traitKey) {
     return trait.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -95,13 +95,13 @@ export default function CharacterCard({
   onDelete,
   onCancel
 }: CharacterCardProps) {
-  const t = useTranslations('Characters');
-  const characterRoles = getCharacterRoleOptions(t);
+  const tCharacters = useTranslations('Characters');
+  const characterRoles = getCharacterRoleOptions(tCharacters);
   
   // Get age options based on character type
   const getAgeOptions = () => {
     if (!formData.type) return [];
-    return getCharacterAgeOptions(t, formData.type as CharacterType);
+    return getCharacterAgeOptions(tCharacters, formData.type as CharacterType);
   };  const [formData, setFormData] = useState<Character>({
     name: character?.name || '',
     type: character?.type || 'boy',
@@ -120,7 +120,7 @@ export default function CharacterCard({
   const traitDropdownRef = useRef<HTMLDivElement>(null);
 
   // Get filtered traits based on search term
-  const filteredTraits = getCharacterTraitOptions(traitSearchTerm, t);
+  const filteredTraits = getCharacterTraitOptions(traitSearchTerm, tCharacters);
 
   // Handle click outside to close trait dropdown
   useEffect(() => {
@@ -167,7 +167,7 @@ export default function CharacterCard({
       } else {
         // Add trait (max 5)
         if (currentTraits.length >= 5) {
-          alert(t('errors.maxTraits'));
+          alert(tCharacters('errors.maxTraits'));
           return prev;
         }
         return {
@@ -185,7 +185,7 @@ export default function CharacterCard({
 
   const handleSave = async () => {
     if (!formData.name.trim()) {
-      alert(t('validation.nameRequired'));
+      alert(tCharacters('validation.nameRequired'));
       return;
     }
 
@@ -208,7 +208,7 @@ export default function CharacterCard({
       }
     } catch (error) {
       console.error('Error saving character:', error);
-      alert(t('errors.saveFailed'));
+      alert(tCharacters('errors.saveFailed'));
     } finally {
       setSaving(false);
     }
@@ -219,7 +219,7 @@ export default function CharacterCard({
       await onDelete();
     } catch (error) {
       console.error('Error deleting character:', error);
-      alert(t('errors.deleteFailed'));
+      alert(tCharacters('errors.deleteFailed'));
     } finally {
       setDeleting(false);
     }
@@ -258,7 +258,7 @@ export default function CharacterCard({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="label">
-                <span className="label-text font-semibold">{t('fields.type')}</span>
+                <span className="label-text font-semibold">{tCharacters('fields.type')}</span>
               </label>
               <p className="text-gray-700">{getTypeDisplayValue(formData.type || '')}</p>
             </div>
@@ -266,7 +266,7 @@ export default function CharacterCard({
             {formData.age && (
               <div>
                 <label className="label">
-                  <span className="label-text font-semibold">{t('fields.age')}</span>
+                  <span className="label-text font-semibold">{tCharacters('fields.age')}</span>
                 </label>
                 <p className="text-gray-700">
                   {getAgeOptions().find(age => age.value === formData.age)?.label || formData.age}
@@ -282,7 +282,7 @@ export default function CharacterCard({
           {formData.traits && formData.traits.length > 0 && (
             <div className="mb-4">
               <label className="label">
-                <span className="label-text font-semibold">{t('fields.traits')}</span>
+                <span className="label-text font-semibold">{tCharacters('fields.traits')}</span>
               </label>
               <div className="flex flex-wrap gap-2">
                 {formData.traits.map((trait) => (
@@ -300,7 +300,7 @@ export default function CharacterCard({
           {formData.characteristics && (
             <div className="mb-4">
               <label className="label">
-                <span className="label-text font-semibold">{t('fields.characteristics')}</span>
+                <span className="label-text font-semibold">{tCharacters('fields.characteristics')}</span>
               </label>
               <p className="text-gray-700">{formData.characteristics}</p>
             </div>
@@ -309,7 +309,7 @@ export default function CharacterCard({
           {formData.physicalDescription && (
             <div className="mb-4">
               <label className="label">
-                <span className="label-text font-semibold">{t('fields.physicalDescription')}</span>
+                <span className="label-text font-semibold">{tCharacters('fields.physicalDescription')}</span>
               </label>
               <p className="text-gray-700">{formData.physicalDescription}</p>
             </div>
@@ -321,14 +321,14 @@ export default function CharacterCard({
               onClick={onEdit}
               disabled={deleting}
             >
-              ✏️ {t('actions.edit')}
+              ✏️ {tCharacters('actions.edit')}
             </button>
             <button
               className={`btn btn-error btn-sm ${deleting ? 'loading' : ''}`}
               onClick={handleDelete}
               disabled={deleting}
             >
-              {deleting ? '' : `🗑️ ${t('actions.delete')}`}
+              {deleting ? '' : `🗑️ ${tCharacters('actions.delete')}`}
             </button>
           </div>
         </div>
@@ -340,12 +340,12 @@ export default function CharacterCard({
     <div className="card bg-base-100 shadow-lg border">
       <div className="card-body">
         <h3 className="card-title text-xl mb-4">
-          {mode === 'create' ? `✨ ${t('titles.addNew')}` : `✏️ ${t('titles.edit')}`}
+          {mode === 'create' ? `✨ ${tCharacters('titles.addNew')}` : `✏️ ${tCharacters('titles.edit')}`}
         </h3>
 
         <div className="form-control mb-4">
           <label className="label">
-            <span className="label-text font-semibold">{t('fields.role')}</span>
+            <span className="label-text font-semibold">{tCharacters('fields.role')}</span>
           </label>
           <select
             className="select select-bordered w-full"
@@ -360,12 +360,12 @@ export default function CharacterCard({
 
         <div className="form-control mb-4">
           <label className="label">
-            <span className="label-text font-semibold">{t('fields.name')}</span>
+            <span className="label-text font-semibold">{tCharacters('fields.name')}</span>
           </label>
           <input
             type="text"
             className="input input-bordered w-full"
-            placeholder={t('placeholders.name')}
+            placeholder={tCharacters('placeholders.name')}
             value={formData.name}
             onChange={(e) => handleInputChange('name', e.target.value)}
           />
@@ -373,19 +373,19 @@ export default function CharacterCard({
 
         <div className="form-control mb-4">
           <label className="label">
-            <span className="label-text font-semibold">{t('fields.type')}</span>
+            <span className="label-text font-semibold">{tCharacters('fields.type')}</span>
           </label>
           <GroupedCharacterTypeSelect
             value={formData.type}
             onChange={(value) => handleInputChange('type', value)}
-            placeholder={t('placeholders.type')}
+            placeholder={tCharacters('placeholders.type')}
           />
 
           {showOtherTypeInput && (
             <input
               type="text"
               className="input input-bordered w-full mt-2"
-              placeholder={t('placeholders.otherType')}
+              placeholder={tCharacters('placeholders.otherType')}
               maxLength={32}
               value={formData.type}
               onChange={(e) => handleInputChange('type', e.target.value)}
@@ -396,14 +396,14 @@ export default function CharacterCard({
         {/* Age Field */}
         <div className="form-control mb-4">
           <label className="label">
-            <span className="label-text font-semibold">{t('fields.age')}</span>
+            <span className="label-text font-semibold">{tCharacters('fields.age')}</span>
           </label>
           <select
             className="select select-bordered w-full"
             value={formData.age || ''}
             onChange={(e) => handleInputChange('age', e.target.value)}
           >
-            <option value="">{t('placeholders.age')}</option>
+            <option value="">{tCharacters('placeholders.age')}</option>
             {getAgeOptions().map((age: {value: string, label: string, description: string}) => (
               <option key={age.value} value={age.value}>{age.label}</option>
             ))}
@@ -420,7 +420,7 @@ export default function CharacterCard({
         {/* Traits Selection */}
         <div className="form-control mb-4">
           <label className="label">
-            <span className="label-text font-semibold">{t('fields.traits')} ({t('placeholders.maxTraits')})</span>
+            <span className="label-text font-semibold">{tCharacters('fields.traits')} ({tCharacters('placeholders.maxTraits')})</span>
           </label>
           
           {/* Trait Search */}
@@ -428,7 +428,7 @@ export default function CharacterCard({
             <input
               type="text"
               className="input input-bordered w-full"
-              placeholder={t('placeholders.searchTraits')}
+              placeholder={tCharacters('placeholders.searchTraits')}
               value={traitSearchTerm}
               onChange={(e) => handleTraitSearchChange(e.target.value)}
               onFocus={() => setShowTraitDropdown(true)}
@@ -444,7 +444,7 @@ export default function CharacterCard({
                         category === 'negative' ? 'text-red-700 bg-red-50' : 
                         'text-blue-700 bg-blue-50'
                       }`}>
-                        {t(`traitCategories.${category}`)}
+                        {tCharacters(`traitCategories.${category}`)}
                       </div>
                       {traits.map((trait) => {
                         const isSelected = formData.traits?.includes(trait.value);
@@ -472,7 +472,7 @@ export default function CharacterCard({
                 
                 {Object.values(filteredTraits).every(arr => arr.length === 0) && (
                   <div className="px-3 py-4 text-center text-gray-500 text-sm">
-                    {t('messages.noTraitsFound', { searchTerm: traitSearchTerm })}
+                    {tCharacters('messages.noTraitsFound', { searchTerm: traitSearchTerm })}
                   </div>
                 )}
                 
@@ -485,7 +485,7 @@ export default function CharacterCard({
                     }}
                     className="text-xs text-gray-600 hover:text-gray-800"
                   >
-                    {t('actions.close')}
+                    {tCharacters('actions.close')}
                   </button>
                 </div>
               </div>
@@ -511,18 +511,18 @@ export default function CharacterCard({
                 </div>
               ))
             ) : (
-              <span className="text-gray-400 text-sm">{t('placeholders.noTraitsSelected')}</span>
+              <span className="text-gray-400 text-sm">{tCharacters('placeholders.noTraitsSelected')}</span>
             )}
           </div>
         </div>
 
         <div className="form-control mb-4">
           <label className="label">
-            <span className="label-text font-semibold">{t('fields.characteristics')}</span>
+            <span className="label-text font-semibold">{tCharacters('fields.characteristics')}</span>
           </label>
           <textarea
             className="textarea textarea-bordered h-24 w-full"
-            placeholder={t('placeholders.characteristics')}
+            placeholder={tCharacters('placeholders.characteristics')}
             value={formData.characteristics}
             onChange={(e) => handleInputChange('characteristics', e.target.value)}
           />
@@ -534,11 +534,11 @@ export default function CharacterCard({
 
         <div className="form-control mb-4">
           <label className="label">
-            <span className="label-text font-semibold">{t('fields.physicalDescription')}</span>
+            <span className="label-text font-semibold">{tCharacters('fields.physicalDescription')}</span>
           </label>
           <textarea
             className="textarea textarea-bordered h-24 w-full"
-            placeholder={t('placeholders.physicalDescription')}
+            placeholder={tCharacters('placeholders.physicalDescription')}
             value={formData.physicalDescription}
             onChange={(e) => handleInputChange('physicalDescription', e.target.value)}
           />
@@ -555,7 +555,7 @@ export default function CharacterCard({
               onClick={onCancel}
               disabled={saving}
             >
-              {t('actions.cancel')}
+              {tCharacters('actions.cancel')}
             </button>
           )}
           <button
@@ -563,7 +563,7 @@ export default function CharacterCard({
             onClick={handleSave}
             disabled={saving || !formData.name.trim()}
           >
-            {saving ? '' : (mode === 'create' ? `➕ ${t('actions.addCharacter')}` : `💾 ${t('actions.saveChanges')}`)}
+            {saving ? '' : (mode === 'create' ? `➕ ${tCharacters('actions.addCharacter')}` : `💾 ${tCharacters('actions.saveChanges')}`)}
           </button>
         </div>
       </div>

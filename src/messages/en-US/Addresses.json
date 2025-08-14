@@ -1,0 +1,55 @@
+{
+  "Addresses": {
+    "addAddress": "Add New Address",
+    "editAddress": "Edit Address",
+    "confirmDelete": "Are you sure you want to delete this address?",
+    "validation": {
+      "requiredFields": "Please fill in all required fields (Address Line 1, City, Country)"
+    },
+    "errors": {
+      "saveFailed": "Failed to save address. Please try again.",
+      "deleteFailed": "Failed to delete address. Please try again."
+    },
+    "fields": {
+      "type": "Address Type",
+      "line1": "Address Line 1",
+      "line2": "Address Line 2",
+      "city": "City",
+      "stateRegion": "State/Region",
+      "postalCode": "Postal Code",
+      "country": "Country",
+      "phone": "Phone Number"
+    },
+    "placeholders": {
+      "line1": "Enter street address",
+      "line2": "Apartment, suite, etc. (optional)",
+      "city": "Enter city",
+      "stateRegion": "Enter state or region",
+      "postalCode": "Enter postal code",
+      "phone": "Enter phone number"
+    },
+    "types": {
+      "delivery": "Delivery",
+      "billing": "Billing"
+    },
+    "countries": {
+      "us": "United States",
+      "gb": "United Kingdom",
+      "de": "Germany",
+      "fr": "France",
+      "es": "Spain",
+      "it": "Italy",
+      "pt": "Portugal",
+      "nl": "Netherlands",
+      "be": "Belgium",
+      "ca": "Canada",
+      "au": "Australia",
+      "jp": "Japan",
+      "br": "Brazil"
+    },
+    "buttons": {
+      "save": "Save Address",
+      "cancel": "Cancel"
+    }
+  }
+}
