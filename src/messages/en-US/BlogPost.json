@@ -1,0 +1,17 @@
+{
+  "BlogPost": {
+    "backToList": "Back to Chronicles",
+    "sharePost": "Share Chronicle",
+    "readingTime": "min read",
+    "publishedOn": "Published on {date}",
+    "previousPost": "Previous Chronicle",
+    "nextPost": "Next Chronicle",
+    "notFound": "Chronicle Not Found",
+    "notFoundDescription": "The chronicle you're looking for doesn't exist or is no longer available.",
+    "notAvailable": "Chronicle Not Available",
+    "notAvailableDescription": "This chronicle isn't available in your language.",
+    "error": "Failed to load chronicle",
+    "errorDescription": "We couldn't load the chronicle. Please try again later."
+  }
+}
+

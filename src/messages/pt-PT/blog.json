@@ -11,14 +11,6 @@
       "loadMore": "Carregar mais crónicas",
       "error": "Falha ao carregar as crónicas"
     },
-    "post": {
-      "backToList": "Voltar às crónicas",
-      "sharePost": "Partilhar crónica",
-      "readingTime": "min de leitura",
-      "publishedOn": "Publicado em {date}",
-      "previousPost": "Crónica anterior",
-      "nextPost": "Próxima crónica"
-    },
     "metadata": {
       "listTitle": "Todas as crónicas de Mythoria",
       "listDescription": "Explora a nossa coleção completa de crónicas, desde aventuras épicas a lendas esquecidas do reino de Mythoria."

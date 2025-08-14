@@ -29,7 +29,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
     libMessages,
     metadataMessages,
     sharedStoryPageMessages,
-    blogMessages
+    blogMessages,
+    blogPostMessages
   ] = await Promise.all([
     import(`../messages/${locale}/common.json`).then(module => module.default),
     import(`../messages/${locale}/auth.json`).then(module => module.default),
@@ -51,7 +52,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
     import(`../messages/${locale}/lib.json`).then(module => module.default),
     import(`../messages/${locale}/metadata.json`).then(module => module.default),
     import(`../messages/${locale}/SharedStoryPage.json`).then(module => module.default),
-    import(`../messages/${locale}/blog.json`).then(module => module.default)
+    import(`../messages/${locale}/blog.json`).then(module => module.default),
+    import(`../messages/${locale}/BlogPost.json`).then(module => module.default)
   ]);
 
   return {
@@ -74,6 +76,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ...metadataMessages,
       ...sharedStoryPageMessages,
       ...blogMessages,
+      ...blogPostMessages,
       publicPages: publicPagesMessages,
       privacyPolicy: privacyPolicyMessages,
       pricing: pricingMessages,

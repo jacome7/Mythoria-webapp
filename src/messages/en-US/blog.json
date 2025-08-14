@@ -11,14 +11,6 @@
       "loadMore": "Load More Chronicles",
       "error": "Failed to load chronicles"
     },
-    "post": {
-      "backToList": "Back to Chronicles",
-      "sharePost": "Share Chronicle",
-      "readingTime": "min read",
-      "publishedOn": "Published on {date}",
-      "previousPost": "Previous Chronicle",
-      "nextPost": "Next Chronicle"
-    },
     "metadata": {
       "listTitle": "All Chronicles of Mythoria",
       "listDescription": "Explore our complete collection of chronicles, from epic adventures to forgotten legends of the realm of Mythoria."

@@ -150,7 +150,7 @@ export default async function BlogListPage({
                       </div>
                       <div className="flex items-center gap-2">
                         <FiClock className="w-4 h-4" />
-                        <span>{calculateReadingTimeFromMdx(post.contentMdx ?? post.summary)} {t('readingTime', { ns: 'blog.post' })}</span>
+                        <span>{calculateReadingTimeFromMdx(post.contentMdx ?? post.summary)} {t('readingTime', { ns: 'BlogPost' })}</span>
                       </div>
                     </div>
                     
