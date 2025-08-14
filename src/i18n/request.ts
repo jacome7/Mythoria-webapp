@@ -7,21 +7,24 @@ export default getRequestConfig(async ({ requestLocale }) => {
   // Ensure that a valid locale is used
   if (!locale || !routing.locales.includes(locale as (typeof routing.locales)[number])) {
     locale = routing.defaultLocale;
-  }  // Load and merge messages from different domain files
+  }
+  // Load and merge messages from different domain files
   const [
     commonMessages,
     authMessages,
-    publicPagesMessages,
     privacyPolicyMessages,
-    pricingMessages,
+    pricingPageMessages,
     storyStepsMessages,
     contactUsPageMessages,
     aboutUsMessages,
     homePageMessages,
     myStoriesPageMessages,
     signInPageMessages,
-    buyCreditsMessages,
+    tellYourStoryPageMessages,
+    buyCreditsPageMessages,
+    revolutPaymentMessages,
     publicStoryPageMessages,
+    publicStoryChapterMessages,
     storyEditPageMessages,
     charactersMessages,
     componentsMessages,
@@ -30,22 +33,25 @@ export default getRequestConfig(async ({ requestLocale }) => {
     libMessages,
     metadataMessages,
     sharedStoryPageMessages,
+    getInspiredPageMessages,
     blogMessages,
     blogPostMessages
   ] = await Promise.all([
     import(`../messages/${locale}/common.json`).then(module => module.default),
     import(`../messages/${locale}/auth.json`).then(module => module.default),
-    import(`../messages/${locale}/publicPages.json`).then(module => module.default),
     import(`../messages/${locale}/privacy-policy.json`).then(module => module.default),
-    import(`../messages/${locale}/pricing.json`).then(module => module.default),
+    import(`../messages/${locale}/PricingPage.json`).then(module => module.default),
     import(`../messages/${locale}/storySteps.json`).then(module => module.default),
     import(`../messages/${locale}/ContactUsPage.json`).then(module => module.default),
     import(`../messages/${locale}/aboutUs.json`).then(module => module.default),
     import(`../messages/${locale}/HomePage.json`).then(module => module.default),
     import(`../messages/${locale}/MyStoriesPage.json`).then(module => module.default),
     import(`../messages/${locale}/SignInPage.json`).then(module => module.default),
-    import(`../messages/${locale}/buy-credits.json`).then(module => module.default),
+    import(`../messages/${locale}/TellYourStoryPage.json`).then(module => module.default),
+    import(`../messages/${locale}/BuyCreditsPage.json`).then(module => module.default),
+    import(`../messages/${locale}/RevolutPayment.json`).then(module => module.default),
     import(`../messages/${locale}/PublicStoryPage.json`).then(module => module.default),
+    import(`../messages/${locale}/PublicStoryChapter.json`).then(module => module.default),
     import(`../messages/${locale}/storyEditPage.json`).then(module => module.default),
     import(`../messages/${locale}/characters.json`).then(module => module.default),
     import(`../messages/${locale}/components.json`).then(module => module.default),
@@ -54,6 +60,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     import(`../messages/${locale}/lib.json`).then(module => module.default),
     import(`../messages/${locale}/metadata.json`).then(module => module.default),
     import(`../messages/${locale}/SharedStoryPage.json`).then(module => module.default),
+    import(`../messages/${locale}/GetInspiredPage.json`).then(module => module.default),
     import(`../messages/${locale}/blog.json`).then(module => module.default),
     import(`../messages/${locale}/BlogPost.json`).then(module => module.default)
   ]);
@@ -68,8 +75,11 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ...homePageMessages,
       ...myStoriesPageMessages,
       ...signInPageMessages,
-      ...buyCreditsMessages,
+      ...tellYourStoryPageMessages,
+      ...buyCreditsPageMessages,
+      ...revolutPaymentMessages,
       ...publicStoryPageMessages,
+      ...publicStoryChapterMessages,
       ...storyEditPageMessages,
       ...charactersMessages,
       ...componentsMessages,
@@ -78,11 +88,12 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ...libMessages,
       ...metadataMessages,
       ...sharedStoryPageMessages,
+      ...getInspiredPageMessages,
       ...blogMessages,
       ...blogPostMessages,
+      ...pricingPageMessages,
       publicPages: publicPagesMessages,
       privacyPolicy: privacyPolicyMessages,
-      pricing: pricingMessages,
       storySteps: storyStepsMessages
     }
   };

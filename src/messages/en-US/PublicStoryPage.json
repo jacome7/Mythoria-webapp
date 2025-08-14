@@ -1,8 +1,5 @@
 {
   "PublicStoryPage": {
-    "chapterNotFound": "Chapter Not Found",
-    "chapterNotAvailable": "This chapter is not available.",
-    "chapter": "Chapter",
     "loading": {
       "title": "Loading Story",
       "subtitle": "Please wait while we load your story..."
@@ -12,8 +9,7 @@
       "notFoundDesc": "The story you're looking for doesn't exist or is no longer public.",
       "contentNotAvailable": "Content Not Available",
       "contentNotAvailableDesc": "The story content is not currently available for reading.",
-      "failedToLoadStory": "Failed to load story",
-      "failedToLoadChapter": "Failed to load chapter"
+      "failedToLoadStory": "Failed to load story"
     },
     "actions": {
       "orderPrint": "Order Print",
@@ -31,7 +27,6 @@
     "metadata": {
       "defaultDescription": "Read \"{title}\" on Mythoria",
       "coverImageAlt": "Cover image for \"{title}\"",
-      "chapterPageTitle": "{title} - Chapter {number} | Mythoria",
       "listenPageTitle": "Listen to \"{title}\" | Mythoria"
     },
     "listen": {
@@ -49,10 +44,6 @@
         "pause": "Pause",
         "stop": "Stop"
       }
-    },
-    "lastChapter": {
-      "enjoyedTitle": "Enjoyed this story?",
-      "enjoyedDesc": "Create your own personalized story or order a beautiful printed copy!"
     },
     "storyComplete": {
       "enjoyedTitle": "Did you enjoy this story?",

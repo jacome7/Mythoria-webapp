@@ -78,7 +78,7 @@ interface Filters {
 
 export default function GetInspiredPage() {
   const locale = useLocale();
-  const t = useTranslations('GetInspiredPage');
+  const tGetInspiredPage = useTranslations('GetInspiredPage');
   const [featuredStories, setFeaturedStories] = useState<FeaturedStory[]>([]);
   const [filteredStories, setFilteredStories] = useState<FeaturedStory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -194,10 +194,10 @@ export default function GetInspiredPage() {
       <div className="container mx-auto px-4 pt-16 pb-16">
         <div className="text-center mb-12">
           <h2 className="text-5xl font-bold text-primary">
-            {t('gallery.title')}
+            {tGetInspiredPage('gallery.title')}
           </h2>
           <p className="text-xl mt-4 text-gray-700">
-            {t('gallery.subtitle')}
+            {tGetInspiredPage('gallery.subtitle')}
           </p>
         </div>
 
@@ -205,14 +205,14 @@ export default function GetInspiredPage() {
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-2xl font-bold text-gray-800">
-              {t('filters.title')}
+              {tGetInspiredPage('filters.title')}
             </h3>
             {hasActiveFilters && (
               <button
                 onClick={clearAllFilters}
                 className="btn btn-outline btn-sm"
               >
-                {t('filters.clearAll')}
+                {tGetInspiredPage('filters.clearAll')}
               </button>
             )}
           </div>
@@ -221,7 +221,7 @@ export default function GetInspiredPage() {
             {/* Target Audience Filter */}
             <div className="dropdown dropdown-bottom w-full">
               <div tabIndex={0} role="button" className="btn btn-outline w-full justify-between">
-                <span>{t('filters.targetAudience')}</span>
+                <span>{tGetInspiredPage('filters.targetAudience')}</span>
                 <div className="flex items-center gap-2">
                   {filters.targetAudience.length > 0 && (
                     <div className="badge badge-primary badge-sm">
@@ -243,7 +243,7 @@ export default function GetInspiredPage() {
                         checked={filters.targetAudience.includes(option)}
                         onChange={() => handleFilterToggle('targetAudience', option)}
                       />
-                      <span className="label-text">{t(`targetAudience.${option}`)}</span>
+                      <span className="label-text">{tGetInspiredPage(`targetAudience.${option}`)}</span>
                     </label>
                   </li>
                 ))}
@@ -253,7 +253,7 @@ export default function GetInspiredPage() {
             {/* Graphical Style Filter */}
             <div className="dropdown dropdown-bottom w-full">
               <div tabIndex={0} role="button" className="btn btn-outline w-full justify-between">
-                <span>{t('filters.graphicalStyle')}</span>
+                <span>{tGetInspiredPage('filters.graphicalStyle')}</span>
                 <div className="flex items-center gap-2">
                   {filters.graphicalStyle.length > 0 && (
                     <div className="badge badge-primary badge-sm">
@@ -276,7 +276,7 @@ export default function GetInspiredPage() {
                           checked={filters.graphicalStyle.includes(option)}
                           onChange={() => handleFilterToggle('graphicalStyle', option)}
                         />
-                        <span className="label-text">{t(`graphicalStyle.${option}`)}</span>
+                        <span className="label-text">{tGetInspiredPage(`graphicalStyle.${option}`)}</span>
                       </label>
                     </li>
                   ))}
@@ -287,7 +287,7 @@ export default function GetInspiredPage() {
             {/* Story Language Filter */}
             <div className="dropdown dropdown-bottom w-full">
               <div tabIndex={0} role="button" className="btn btn-outline w-full justify-between">
-                <span>{t('filters.storyLanguage')}</span>
+                <span>{tGetInspiredPage('filters.storyLanguage')}</span>
                 <div className="flex items-center gap-2">
                   {filters.storyLanguage.length > 0 && (
                     <div className="badge badge-primary badge-sm">
@@ -309,7 +309,7 @@ export default function GetInspiredPage() {
                         checked={filters.storyLanguage.includes(option)}
                         onChange={() => handleFilterToggle('storyLanguage', option)}
                       />
-                      <span className="label-text">{t(`storyLanguage.${option}`)}</span>
+                      <span className="label-text">{tGetInspiredPage(`storyLanguage.${option}`)}</span>
                     </label>
                   </li>
                 ))}
@@ -323,7 +323,7 @@ export default function GetInspiredPage() {
               <div className="flex flex-wrap gap-2">
                 {filters.targetAudience.map((filter) => (
                   <div key={`ta-${filter}`} className="badge badge-primary gap-2">
-                    {t(`targetAudience.${filter}`)}
+                    {tGetInspiredPage(`targetAudience.${filter}`)}
                     <button
                       onClick={() => handleFilterToggle('targetAudience', filter)}
                       className="btn btn-circle btn-ghost btn-xs"
@@ -334,7 +334,7 @@ export default function GetInspiredPage() {
                 ))}
                 {filters.graphicalStyle.map((filter) => (
                   <div key={`gs-${filter}`} className="badge badge-secondary gap-2">
-                    {t(`graphicalStyle.${filter}`)}
+                    {tGetInspiredPage(`graphicalStyle.${filter}`)}
                     <button
                       onClick={() => handleFilterToggle('graphicalStyle', filter)}
                       className="btn btn-circle btn-ghost btn-xs"
@@ -345,7 +345,7 @@ export default function GetInspiredPage() {
                 ))}
                 {filters.storyLanguage.map((filter) => (
                   <div key={`sl-${filter}`} className="badge badge-accent gap-2">
-                    {t(`storyLanguage.${filter}`)}
+                    {tGetInspiredPage(`storyLanguage.${filter}`)}
                     <button
                       onClick={() => handleFilterToggle('storyLanguage', filter)}
                       className="btn btn-circle btn-ghost btn-xs"
@@ -363,7 +363,7 @@ export default function GetInspiredPage() {
         {hasActiveFilters && (
           <div className="text-center mb-8">
             <p className="text-sm text-gray-500">
-              {t('gallery.filterResults', { count: filteredStories.length, total: featuredStories.length })}
+              {tGetInspiredPage('gallery.filterResults', { count: filteredStories.length, total: featuredStories.length })}
             </p>
           </div>
         )}
@@ -383,7 +383,7 @@ export default function GetInspiredPage() {
                     <div className="relative w-full h-80 rounded-xl overflow-hidden cursor-pointer">
                       <Image
                         src={story.featureImageUri || '/Mythoria-logo-white-512x336.jpg'}
-                        alt={t('gallery.storyCoverAlt')}
+                        alt={tGetInspiredPage('gallery.storyCoverAlt')}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover hover:scale-105 transition-transform duration-300"
@@ -402,7 +402,7 @@ export default function GetInspiredPage() {
                     {story.title}
                   </h3>
                   <p className="text-gray-600 mb-2">
-                    {t('gallery.createdBy')} <span className="font-semibold">{story.author}</span>
+                    {tGetInspiredPage('gallery.createdBy')} <span className="font-semibold">{story.author}</span>
                   </p>
                   
                   {/* Star Rating - only show if story has ratings */}
@@ -419,17 +419,17 @@ export default function GetInspiredPage() {
                   <div className="flex flex-wrap justify-center gap-1 mb-4">
                     {story.targetAudience && (
                       <div className="badge badge-outline badge-primary badge-xs">
-                        {t(`targetAudience.${story.targetAudience}`)}
+                        {tGetInspiredPage(`targetAudience.${story.targetAudience}`)}
                       </div>
                     )}
                     {story.graphicalStyle && (
                       <div className="badge badge-outline badge-secondary badge-xs">
-                        {t(`graphicalStyle.${story.graphicalStyle}`)}
+                        {tGetInspiredPage(`graphicalStyle.${story.graphicalStyle}`)}
                       </div>
                     )}
                     {story.storyLanguage && (
                       <div className="badge badge-outline badge-accent badge-xs">
-                        {t(`storyLanguage.${story.storyLanguage}`)}
+                        {tGetInspiredPage(`storyLanguage.${story.storyLanguage}`)}
                       </div>
                     )}
                   </div>
@@ -439,7 +439,7 @@ export default function GetInspiredPage() {
                       href={`/${locale}/p/${story.slug}`}
                       className="btn btn-primary btn-sm"
                     >
-                      {t('gallery.viewStory')}
+                      {tGetInspiredPage('gallery.viewStory')}
                     </Link>
                   </div>
                 </div>
@@ -457,14 +457,14 @@ export default function GetInspiredPage() {
               </div>
               <h3 className="text-xl font-semibold text-gray-800 mb-4">
                 {hasActiveFilters 
-                  ? t('emptyState.noStoriesMatch') 
-                  : t('gallery.emptyTitle')
+                  ? tGetInspiredPage('emptyState.noStoriesMatch') 
+                  : tGetInspiredPage('gallery.emptyTitle')
                 }
               </h3>
               <p className="text-gray-600 mb-8">
                 {hasActiveFilters 
-                  ? t('emptyState.tryAdjustingFilters')
-                  : t('gallery.emptyMessage')
+                  ? tGetInspiredPage('emptyState.tryAdjustingFilters')
+                  : tGetInspiredPage('gallery.emptyMessage')
                 }
               </p>
               {hasActiveFilters ? (
@@ -472,14 +472,14 @@ export default function GetInspiredPage() {
                   onClick={clearAllFilters}
                   className="btn btn-secondary"
                 >
-                  {t('filters.clearAll')}
+                  {tGetInspiredPage('filters.clearAll')}
                 </button>
               ) : (
                 <Link 
                   href={`/${locale}/dashboard`}
                   className="btn btn-primary"
                 >
-                  {t('gallery.createStory')}
+                  {tGetInspiredPage('gallery.createStory')}
                 </Link>
               )}
             </div>
