@@ -17,22 +17,6 @@
       "subtitle": "Introduce tus credenciales para seguir con tu historia"
     }
   },
-  "SignUpPage": {
-    "hero": {
-      "title": "Únete al Universo Mythoria",
-      "subtitle": "Empieza tu aventura narrativa mágica. Crea historias personalizadas que den vida a tu imaginación."
-    },
-    "features": {
-      "firstStoryFree": "🌟 Crea tu primera historia gratis",
-      "uniqueCharacters": "👥 Diseña personajes únicos",
-      "publishedBooks": "📖 Recibe tus libros publicados",
-      "unlimitedCreativity": "🎭 Creatividad sin límites"
-    },
-    "form": {
-      "title": "Crear Cuenta",
-      "subtitle": "Empieza hoy mismo tu viaje de narrador"
-    }
-  },
   "MyStoriesPage": {
     "title": "Hola",
     "writeNewStory": "Nueva historia",

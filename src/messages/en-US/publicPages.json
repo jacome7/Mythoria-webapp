@@ -17,22 +17,6 @@
       "subtitle": "Enter your credentials to continue your story"
     }
   },
-  "SignUpPage": {
-    "hero": {
-      "title": "Join the Mythoria Universe",
-      "subtitle": "Start your magical storytelling adventure. Create personalized stories that bring your imagination to life."
-    },
-    "features": {
-      "firstStoryFree": "🌟 Create your first story for free",
-      "uniqueCharacters": "👥 Build unique characters",
-      "publishedBooks": "📖 Get published books delivered",
-      "unlimitedCreativity": "🎭 Unlimited creativity"
-    },
-    "form": {
-      "title": "Create Account",
-      "subtitle": "Start your storytelling journey today"
-    }
-  },
   "MyStoriesPage": {
     "title": "Hello",
     "writeNewStory": "New Story",

@@ -1,25 +1,15 @@
-'use client'
+'use client';
 
-import { SignUp } from '@clerk/nextjs'
-import Image from 'next/image'
+import { SignUp } from '@clerk/nextjs';
+import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 
 interface SignUpClientProps {
   locale: string;
-  translations: {
-    title: string;
-    subtitle: string;
-    pageTitle: string;
-    pageSubtitle: string;
-    features: {
-      free: string;
-      character: string;
-      quality: string;
-      creativity: string;
-    };
-  };
 }
 
-export default function SignUpClient({ locale, translations }: SignUpClientProps) {
+export default function SignUpClient({ locale }: SignUpClientProps) {
+  const tSignUpPage = useTranslations('SignUpPage');
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 flex">
       {/* Left side - Logo and branding (only on desktop) */}
@@ -36,17 +26,17 @@ export default function SignUpClient({ locale, translations }: SignUpClientProps
           </div>
           <div className="space-y-4">
             <h1 className="text-4xl font-bold text-gray-800">
-              {translations.title}
+              {tSignUpPage('hero.title')}
             </h1>
             <p className="text-lg text-gray-600 max-w-md mx-auto">
-              {translations.subtitle}
+              {tSignUpPage('hero.subtitle')}
             </p>
           </div>
           <div className="space-y-2 text-sm text-gray-500">
-            <p>{translations.features.free}</p>
-            <p>{translations.features.character}</p>
-            <p>{translations.features.quality}</p>
-            <p>{translations.features.creativity}</p>
+            <p>{tSignUpPage('features.firstStoryFree')}</p>
+            <p>{tSignUpPage('features.uniqueCharacters')}</p>
+            <p>{tSignUpPage('features.publishedBooks')}</p>
+            <p>{tSignUpPage('features.unlimitedCreativity')}</p>
           </div>
         </div>
       </div>
@@ -66,13 +56,13 @@ export default function SignUpClient({ locale, translations }: SignUpClientProps
             </div>
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                {translations.pageTitle}
+                {tSignUpPage('form.title')}
               </h2>
               <p className="text-gray-600">
-                {translations.pageSubtitle}
+                {tSignUpPage('form.subtitle')}
               </p>
             </div>
-              <SignUp 
+              <SignUp
               routing="hash"
               fallbackRedirectUrl={`/${locale}/my-stories`}
               appearance={{

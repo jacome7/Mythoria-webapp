@@ -1,0 +1,18 @@
+{
+  "SignUpPage": {
+    "hero": {
+      "title": "Junte-se ao Universo Mythoria",
+      "subtitle": "Inicie a sua aventura mágica de narrativa. Crie histórias personalizadas que dão vida à sua imaginação."
+    },
+    "features": {
+      "firstStoryFree": "🌟 Crie a sua primeira história gratuitamente",
+      "uniqueCharacters": "👥 Construa personagens únicas",
+      "publishedBooks": "📖 Receba livros publicados entregues",
+      "unlimitedCreativity": "🎭 Criatividade ilimitada"
+    },
+    "form": {
+      "title": "Criar Conta",
+      "subtitle": "Comece hoje a sua jornada de narrativa"
+    }
+  }
+}
