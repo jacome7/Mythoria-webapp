@@ -1,31 +1,52 @@
 {
   "ContactUsPage": {
-    "title": "Entre em Contacto",
-    "intro": "Adoraríamos ouvir de si! Se tem questões, feedback ou precisa de assistência, a nossa equipa está aqui para tornar a sua experiência Mythoria mágica.",
-    "scrollTitle": "Em que podemos ajudá-lo?",
-    "scrollIntro": "Escolha das categorias abaixo para obter suporte mais rápido:",
+    "title": "Contacte a Mythoria",
+    "intro": "Saudações, aventureiro! Seja da Terra Média, de Hogwarts ou de uma galáxia muito distante, estamos aqui para ajudar na sua jornada pelo maravilhoso mundo da Mythoria. O seu feedback é precioso como o Anel, mas bem mais fácil de carregar!",
+    "scrollTitle": "Envie-nos a sua Coruja (ou preencha o formulário)",
+    "scrollIntro": "Escolha o pergaminho que melhor se adapta à sua missão:",
     "categories": {
-      "featureIdeas": "Ideias de Funcionalidades e Sugestões",
-      "reportBug": "Reportar um Bug",
-      "troubles": "Problemas Técnicos",
-      "delivery": "Impressão e Entrega",
-      "credits": "Créditos e Faturação",
-      "businessPartnership": "Parceria de Negócios",
-      "general": "Questões Gerais"
+      "featureIdeas": "Ideias de Funcionalidades (Inspire-nos como Tolkien)",
+      "reportBug": "Reportar um Erro (Até Sherlock Holmes precisava de pistas!)",
+      "troubles": "Problemas na Geração de Histórias (Quando os feitiços falham)",
+      "delivery": "Entrega de Livro Impresso (As nossas corujas podem precisar de direções)",
+      "credits": "Créditos & Pagamentos (Os duendes de Gringotes são exigentes!)",
+      "general": "Encantamento Geral (Suporte)",
+      "businessPartnership": "Parceria de Negócios"
     },
-    "bonus": {
-      "title": "Pequeno Bónus pelo Seu Feedback!",
-      "content": "Como agradecimento por dedicar tempo a contactar-nos, adicionaremos um pequeno bónus de créditos à sua conta quando respondermos a feedback ou sugestões genuínas.",
-      "disclaimer": "(Isto não se aplica a questões gerais ou pedidos de suporte, apenas feedback acionável que nos ajude a melhorar a Mythoria.)",
-      "closing": "A sua voz importa na formação do futuro da narrativa! ✨"
+    "categoriesShort": {
+      "featureIdeas": "Ideias de Funcionalidades",
+      "reportBug": "Reportar um Erro",
+      "troubles": "Problemas na Geração de Histórias",
+      "delivery": "Entrega de Livro Impresso",
+      "credits": "Créditos & Pagamentos",
+      "businessPartnership": "Parceria de Negócios",
+      "general": "Encantamento Geral"
+    },
+    "form": {
+      "title": "O Formulário Mágico",
+      "name": "O Seu Nome:",
+      "namePlaceholder": "Ou Alcunha de Feiticeiro",
+      "email": "O Seu Email:",
+      "emailPlaceholder": "Para as nossas pombas mensageiras",
+      "category": "Selecione a Sua Missão:",
+      "selectCategory": "Escolha uma categoria...",
+      "message": "A Sua Mensagem Mágica:",
+      "messagePlaceholder": "Partilhe os seus pensamentos, ideias ou feedback mágico...",
+      "submit": "Lançar Feitiço"
     },
     "join": {
-      "title": "Junte-se à Nossa Comunidade em Crescimento",
-      "intro": "A Mythoria está a expandir-se, e estamos sempre à procura de pessoas apaixonadas para se juntarem à nossa missão:",
-      "printing": "🖨️ Faça parceria connosco como fornecedor de impressão local na sua área",
-      "country": "🌍 Ajude-nos a expandir a Mythoria para o seu país ou região",
-      "developers": "💻 Programadores talentosos interessados em narrativa alimentada por IA",
-      "call": "Interessado? Diga-nos na sua mensagem!"
+      "title": "Junte-se à Irmandade",
+      "intro": "A Mythoria está numa missão épica para conquistar novos reinos e procura bravos aventureiros para se juntarem à nossa irmandade!",
+      "printing": "Parceiros de Impressão & Logística: preparados para atravessar a Terra Média ou Westeros para entregar histórias inesquecíveis.",
+      "country": "Gestores de País & Feiticeiros Locais: ajudem a Mythoria a conquistar o mundo (pacificamente, prometemos). Levem a alegria da narração ao vosso reino e além!",
+      "developers": "Programadores que dominam a linguagem binária e conversam facilmente com IA?",
+      "call": "Interessado em tornar-se Mythoriano? Envie-nos os seus dados através do formulário encantado acima e indique a sua área de interesse."
+    },
+    "bonus": {
+      "title": "Alerta de Créditos Bónus!",
+      "content": "Olhos de águia para bugs ou uma mente imaginativa cheia de ideias? Ganhe créditos mágicos extra por cada bug válido ou funcionalidade inspirada que sugerir.",
+      "disclaimer": "(*) A decisão final cabe aos nossos adoráveis Oompa Loompas. São imprevisíveis, mas adoram recompensar a criatividade!",
+      "closing": "Vamos criar magia juntos!"
     }
   }
 }
