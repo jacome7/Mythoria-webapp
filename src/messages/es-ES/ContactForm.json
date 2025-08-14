@@ -1,0 +1,39 @@
+{
+  "ContactForm": {
+    "form": {
+      "title": "Contactar con soporte",
+      "name": "Nombre",
+      "email": "Correo electrónico",
+      "category": "Categoría",
+      "message": "Mensaje",
+      "submit": "Crear ticket de soporte",
+      "namePlaceholder": "Introduce tu nombre",
+      "emailPlaceholder": "Introduce tu correo electrónico",
+      "messagePlaceholder": "Describe tu problema o pregunta...",
+      "selectCategory": "Selecciona una categoría..."
+    },
+    "categoriesShort": {
+      "featureIdeas": "Ideas y sugerencias",
+      "reportBug": "Informar de un fallo",
+      "troubles": "Problemas técnicos",
+      "delivery": "Impresión y entrega",
+      "credits": "Créditos y facturación",
+      "businessPartnership": "Colaboración empresarial",
+      "general": "Preguntas generales"
+    },
+    "errors": {
+      "fillRequired": "Por favor, rellena todos los campos obligatorios",
+      "createFailed": "No se pudo crear el ticket de soporte. Inténtalo de nuevo."
+    },
+    "success": {
+      "ticketCreated": "¡Ticket de soporte creado! Te responderemos en un periquete."
+    },
+    "modal": {
+      "ticketCreated": "¡Ticket creado!",
+      "oops": "¡Ups!",
+      "tryAgain": "Intentar de nuevo",
+      "goToHomepage": "Ir a la página principal",
+      "redirectingMessage": "Redirigiendo a la página principal en unos segundos..."
+    }
+  }
+}

@@ -153,7 +153,7 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
   const [currentTextSize, setCurrentTextSize] = useState<TextSize>('medium');
-  const tComponentsChapterEditor = useTranslations('components.chapterEditor');
+  const tChapterEditor = useTranslations('ChapterEditor');
 
   // Update format state
   useEffect(() => {
@@ -372,21 +372,21 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
           <button
             onClick={() => formatText('bold')}
             className={`btn btn-sm ${isBold ? 'btn-primary' : 'btn-ghost'}`}
-            title={tComponentsChapterEditor('toolbar.bold')}
+            title={tChapterEditor('toolbar.bold')}
           >
             <FiBold className="w-4 h-4" />
           </button>
           <button
             onClick={() => formatText('italic')}
             className={`btn btn-sm ${isItalic ? 'btn-primary' : 'btn-ghost'}`}
-            title={tComponentsChapterEditor('toolbar.italic')}
+            title={tChapterEditor('toolbar.italic')}
           >
             <FiItalic className="w-4 h-4" />
           </button>
           <button
             onClick={() => formatText('underline')}
             className={`btn btn-sm ${isUnderline ? 'btn-primary' : 'btn-ghost'}`}
-            title={tComponentsChapterEditor('toolbar.underline')}
+            title={tChapterEditor('toolbar.underline')}
           >
             <FiUnderline className="w-4 h-4" />
           </button>
@@ -397,10 +397,10 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
               tabIndex={0} 
               role="button" 
               className="btn btn-sm btn-ghost gap-1"
-              title={tComponentsChapterEditor('toolbar.textSize')}
+              title={tChapterEditor('toolbar.textSize')}
             >
               <FiType className="w-4 h-4" />
-              {tComponentsChapterEditor(`textSizes.${currentTextSize}`)}
+              {tChapterEditor(`textSizes.${currentTextSize}`)}
             </div>
             <ul 
               tabIndex={0} 
@@ -413,7 +413,7 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
                     className={`text-center ${currentTextSize === option.value ? 'active' : ''}`}
                     style={{ fontSize: option.em }}
                   >
-                    {tComponentsChapterEditor(`textSizes.${option.value}`)}
+                    {tChapterEditor(`textSizes.${option.value}`)}
                   </button>
                 </li>
               ))}
@@ -426,10 +426,10 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
             <button
               onClick={onAIEdit}
               className="btn btn-sm btn-primary"
-              title={tComponentsChapterEditor('toolbar.aiEdit')}
+              title={tChapterEditor('toolbar.aiEdit')}
             >
               <FiZap className="w-4 h-4" />
-              {tComponentsChapterEditor('toolbar.edit')}
+              {tChapterEditor('toolbar.edit')}
             </button>
           </div>
         )}
@@ -616,7 +616,7 @@ export default function ChapterEditor({
   const [currentTitle, setCurrentTitle] = useState(chapterTitle);
   const [currentContent, setCurrentContent] = useState(initialContent);
   const [hasChanges, setHasChanges] = useState(false);
-  const tComponentsChapterEditor = useTranslations('components.chapterEditor');
+  const tChapterEditor = useTranslations('ChapterEditor');
 
   // Debug logging for props
   useEffect(() => {
@@ -687,7 +687,7 @@ export default function ChapterEditor({
           value={currentTitle}
           onChange={(e) => handleTitleChange(e.target.value)}
           className="input input-bordered w-full text-lg font-semibold"
-          placeholder={tComponentsChapterEditor('titlePlaceholder')}
+          placeholder={tChapterEditor('titlePlaceholder')}
         />
       </div>
 
@@ -695,7 +695,7 @@ export default function ChapterEditor({
       {chapterImageUri && (
         <div className="space-y-2 px-4 md:px-0">
           <label className="block text-sm font-medium text-base-content">
-            {tComponentsChapterEditor('imagePlaceholder', { number: chapterNumber })}
+            {tChapterEditor('imagePlaceholder', { number: chapterNumber })}
           </label>
           <div className="border-2 border-dashed border-base-300 rounded-lg p-6 text-center w-full">
             <div className="space-y-4">
@@ -718,7 +718,7 @@ export default function ChapterEditor({
                   className="btn btn-sm btn-outline"
                 >
                   <FiImage className="w-4 h-4" />
-                  {tComponentsChapterEditor('editImageButton')}
+                  {tChapterEditor('editImageButton')}
                 </button>
               )}
             </div>
@@ -749,7 +749,7 @@ export default function ChapterEditor({
               }
               placeholder={
                 <div className="absolute top-4 left-4 md:left-4 text-base-content/50 pointer-events-none">
-                  {tComponentsChapterEditor('contentPlaceholder')}
+                  {tChapterEditor('contentPlaceholder')}
                 </div>
               }
               ErrorBoundary={LexicalErrorBoundary}
@@ -778,10 +778,10 @@ export default function ChapterEditor({
                   <button
                     onClick={handleCancel}
                     className="btn btn-ghost btn-sm"
-                    title={storyId ? `Go to reading page for Chapter ${chapterNumber}` : tComponentsChapterEditor('goBackButton')}
+                    title={storyId ? `Go to reading page for Chapter ${chapterNumber}` : tChapterEditor('goBackButton')}
                   >
                     <FiChevronLeft className="w-4 h-4" />
-                    {tComponentsChapterEditor('backButton')}
+                    {tChapterEditor('backButton')}
                   </button>
                 )}
               </div>
@@ -796,7 +796,7 @@ export default function ChapterEditor({
                   ) : (
                     <FiSave className="w-4 h-4" />
                   )}
-                  {isLoading ? tComponentsChapterEditor('saving') : tComponentsChapterEditor('saveButton')}
+                  {isLoading ? tChapterEditor('saving') : tChapterEditor('saveButton')}
                 </button>
               </div>
             </div>

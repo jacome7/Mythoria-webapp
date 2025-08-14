@@ -1,0 +1,17 @@
+{
+  "JobProgressModal": {
+    "title": "Processing Your Request",
+    "status": {
+      "waitingToStart": "Waiting to start...",
+      "inProgress": "In progress...",
+      "completed": "Completed successfully!",
+      "failed": "Failed"
+    },
+    "labels": {
+      "progress": "Progress",
+      "elapsed": "Elapsed",
+      "remaining": "Remaining"
+    },
+    "closeButton": "Close"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "GroupedCharacterTypeSelect": {
+    "placeholder": "Selecionar tipo de personagem...",
+    "groups": {
+      "human": "Humano",
+      "animals": "Animais",
+      "fantasy": "Fantasia",
+      "other": "Outro"
+    }
+  }
+}

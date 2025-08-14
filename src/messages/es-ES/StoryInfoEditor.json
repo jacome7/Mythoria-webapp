@@ -1,0 +1,56 @@
+{
+  "StoryInfoEditor": {
+    "title": "Información de la historia",
+    "storyTitle": "Título de la historia",
+    "titlePlaceholder": "Introduce el título de la historia",
+    "synopsis": "Sinopsis",
+    "synopsisPlaceholder": "Breve descripción de tu historia",
+    "dedicationMessage": "Mensaje de dedicatoria",
+    "dedicationPlaceholder": "Una dedicatoria personal para esta historia",
+    "authorName": "Nombre del autor",
+    "authorPlaceholder": "¿Cómo quieres que se mencione al autor?",
+    "targetAudience": "Público objetivo",
+    "targetAudiencePlaceholder": "Selecciona el público objetivo",
+    "saveButton": "Guardar cambios",
+    "saving": "Guardando...",
+    "frontCover": "Portada",
+    "backCover": "Contraportada",
+    "noCoverImage": "Sin imagen de portada",
+    "noBackCover": "Sin contraportada",
+    "editCover": "Editar portada",
+    "editBackCover": "Editar contraportada",
+    "addCover": "Añadir portada",
+    "addBackCover": "Añadir contraportada",
+    "storyDetails": "Detalles de la historia",
+    "graphicalStyleLabel": "Estilo gráfico:",
+    "created": "Creada:",
+    "lastUpdated": "Última actualización:",
+    "notSpecified": "No especificado",
+    "targetAudienceOptions": {
+      "children_0-2": "Niños 0-2 (bebés/peques)",
+      "children_3-6": "Niños 3-6 (preescolar)",
+      "children_7-10": "Niños 7-10 (primaria temprana)",
+      "children_11-14": "Niños 11-14 (pre-adolescentes)",
+      "young_adult_15-17": "Juvenil 15-17",
+      "adult_18+": "Adultos 18+",
+      "all_ages": "Todas las edades"
+    },
+    "altTexts": {
+      "storyCover": "Portada de la historia",
+      "storyBackCover": "Contraportada de la historia"
+    },
+    "messages": {
+      "chapterSavedWithVersion": "Capítulo guardado como versión {version}",
+      "failedToSaveChapter": "No se pudo guardar el capítulo",
+      "noPreviousVersion": "No hay versión anterior",
+      "revertedToVersion": "Revertido a la versión {version}",
+      "advancedToVersion": "Avanzado a la versión {version}",
+      "failedToUndoChapter": "No se pudo deshacer el capítulo",
+      "chapterUpdatedSuccessfully": "Capítulo actualizado",
+      "contentUpdatedSuccessfully": "Contenido actualizado"
+    },
+    "logging": {
+      "errorSavingStoryInfo": "Error al guardar la información de la historia:"
+    }
+  }
+}
