@@ -43,7 +43,7 @@ function BuyCreditsContent() {
 		const searchParams = useSearchParams();
 	   const t = useTranslations('BuyCreditsPage');
 	   const tPricing = useTranslations('PricingPage');
-	   const tMyStories = useTranslations('MyStoriesPage');
+	   const tMyStoriesPage = useTranslations('MyStoriesPage');
 	   const tRevolut = useTranslations('RevolutPayment');
 	   const locale = useLocale();
 	   const [cart, setCart] = useState<CartItem[]>([]);
@@ -507,14 +507,14 @@ function BuyCreditsContent() {
 							<div className="text-center space-y-6">
 								<h1 className="text-4xl font-bold">{t('header.title')}</h1>
 								<p className="text-lg text-gray-600 max-w-2xl mx-auto">
-									{tMyStories('signedOut.needSignIn')}
+									{tMyStoriesPage('signedOut.needSignIn')}
 								</p>
 								<div className="flex flex-col sm:flex-row gap-4 justify-center">
 									<Link href={`/${locale}/sign-in`} className="btn btn-primary">
-										{tMyStories('signedOut.signIn')}
+										{tMyStoriesPage('signedOut.signIn')}
 									</Link>
 									<Link href={`/${locale}/sign-up`} className="btn btn-outline">
-										{tMyStories('signedOut.createAccount')}
+										{tMyStoriesPage('signedOut.createAccount')}
 									</Link>
 								</div>
 							</div>

@@ -33,49 +33,6 @@
       "subtitle": "Empieza hoy mismo tu viaje de narrador"
     }
   },
-  "MyStoriesPage": {
-    "title": "Hola",
-    "writeNewStory": "Nueva historia",
-    "signedOut": {
-      "welcome": "¡Bienvenido!",
-      "needSignIn": "Todo narrador necesita una cuenta para mantener sus créditos mágicos a buen recaudo.",
-      "signIn": "Iniciar sesión",
-      "createAccount": "Crear cuenta"
-    },
-    "tabs": {
-      "myStories": "Mis historias",
-      "myCharacters": "Mis personajes"
-    },
-    "noStories": {
-      "title": "¡Tu colección de historias está esperando a comenzar! 📚✨",
-      "subtitle": "Todo gran narrador empezó con un solo relato. ¿Listo para escribir tu primera aventura mágica?",
-      "action": "Empieza tu primera historia"
-    },
-    "table": {
-      "date": "Fecha",
-      "title": "Título",
-      "status": "Estado",
-      "actions": "Acciones"
-    },
-    "status": {
-      "draft": "Borrador",
-      "writing": "En proceso",
-      "published": "Publicado"
-    },
-    "actions": {
-      "share": "Compartir",
-      "edit": "Editar",
-      "delete": "Eliminar",
-      "print": "Pedir impresión",
-      "printNotAvailable": "La impresión no está disponible para esta historia"
-    },
-    "deleteConfirm": {
-      "title": "Eliminar historia",
-      "message": "¿Seguro que quieres eliminar esta historia? Esta acción no se puede deshacer.",
-      "cancel": "Cancelar",
-      "confirm": "Eliminar"
-    }
-  },
   "MyCharactersPage": {
     "noCharacters": {
       "title": "¡Aún no tienes personajes!",
