@@ -102,7 +102,7 @@ export default async function BlogPostPage({
   return <PostNotAvailable locale={locale} />;
   }
   
-  const t = await getTranslations('blog.post');
+  const tBlogPost = await getTranslations({ locale, namespace: 'BlogPost' });
   
   try {
     const post = await blogService.getPublishedBySlug(locale as BlogLocale, slug);
@@ -157,7 +157,7 @@ export default async function BlogPostPage({
               className="btn btn-ghost btn-sm gap-2 hover:bg-base-300"
             >
               <FiArrowLeft className="w-4 h-4" />
-              {t('backToList')}
+              {tBlogPost('backToList')}
             </Link>
           </div>
         </div>
@@ -173,12 +173,12 @@ export default async function BlogPostPage({
                 <div className="flex items-center gap-2">
                   <FiCalendar className="w-4 h-4" />
                   <span>
-                    {t('publishedOn', { date: formatDate(post.publishedAt!, locale) })}
+                    {tBlogPost('publishedOn', { date: formatDate(post.publishedAt!, locale) })}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <FiClock className="w-4 h-4" />
-                  <span>{readingTime} {t('readingTime')}</span>
+                  <span>{readingTime} {tBlogPost('readingTime')}</span>
                 </div>
               </div>
               
@@ -187,7 +187,7 @@ export default async function BlogPostPage({
                 title={post.title}
                 summary={post.summary}
                 url={`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/${locale}/blog/${post.slug}`}
-                shareText={t('sharePost')}
+                shareText={tBlogPost('sharePost')}
               />
             </div>
             
@@ -260,7 +260,7 @@ export default async function BlogPostPage({
                       className="block group"
                     >
                       <div className="text-sm text-base-content/60 mb-2">
-                        ← {t('previousPost')}
+                        ← {tBlogPost('previousPost')}
                       </div>
                       <div className="text-lg font-semibold group-hover:text-primary transition-colors">
                         {adjacentPosts.previous.title}
@@ -279,7 +279,7 @@ export default async function BlogPostPage({
                       className="block group"
                     >
                       <div className="text-sm text-base-content/60 mb-2">
-                        {t('nextPost')} →
+                        {tBlogPost('nextPost')} →
                       </div>
                       <div className="text-lg font-semibold group-hover:text-primary transition-colors">
                         {adjacentPosts.next.title}
@@ -306,17 +306,17 @@ export default async function BlogPostPage({
 
 // Error Components
 async function PostNotFound({ locale }: { locale: string }) {
-  const t = await getTranslations({ locale, namespace: 'blog.post' });
+  const tBlogPost = await getTranslations({ locale, namespace: 'BlogPost' });
   
   return (
     <div className="min-h-screen bg-base-100 flex items-center justify-center">
       <div className="text-center max-w-md mx-auto px-4">
         <div className="text-8xl mb-6">🌫️</div>
-        <h1 className="text-3xl font-bold mb-4">{t('notFound')}</h1>
-        <p className="text-base-content/70 mb-8">{t('notFoundDescription')}</p>
+        <h1 className="text-3xl font-bold mb-4">{tBlogPost('notFound')}</h1>
+        <p className="text-base-content/70 mb-8">{tBlogPost('notFoundDescription')}</p>
         <Link href={`/${locale}/blog`} className="btn btn-primary btn-lg">
           <FiArrowLeft className="w-5 h-5 mr-2" />
-          {t('backToList')}
+          {tBlogPost('backToList')}
         </Link>
       </div>
     </div>
@@ -324,17 +324,17 @@ async function PostNotFound({ locale }: { locale: string }) {
 }
 
 async function PostNotAvailable({ locale }: { locale: string }) {
-  const t = await getTranslations({ locale, namespace: 'blog.post' });
+  const tBlogPost = await getTranslations({ locale, namespace: 'BlogPost' });
   
   return (
     <div className="min-h-screen bg-base-100 flex items-center justify-center">
       <div className="text-center max-w-md mx-auto px-4">
         <div className="text-8xl mb-6">🌍</div>
-        <h1 className="text-3xl font-bold mb-4">{t('notAvailable')}</h1>
-        <p className="text-base-content/70 mb-8">{t('notAvailableDescription')}</p>
+        <h1 className="text-3xl font-bold mb-4">{tBlogPost('notAvailable')}</h1>
+        <p className="text-base-content/70 mb-8">{tBlogPost('notAvailableDescription')}</p>
         <Link href={`/${locale}/blog`} className="btn btn-primary btn-lg">
           <FiArrowLeft className="w-5 h-5 mr-2" />
-          {t('backToList')}
+          {tBlogPost('backToList')}
         </Link>
       </div>
     </div>
@@ -342,17 +342,17 @@ async function PostNotAvailable({ locale }: { locale: string }) {
 }
 
 async function PostError({ locale }: { locale: string }) {
-  const t = await getTranslations({ locale, namespace: 'blog.post' });
+  const tBlogPost = await getTranslations({ locale, namespace: 'BlogPost' });
   
   return (
     <div className="min-h-screen bg-base-100 flex items-center justify-center">
       <div className="text-center max-w-md mx-auto px-4">
         <div className="text-8xl mb-6">⚡</div>
-        <h1 className="text-3xl font-bold mb-4">{t('error')}</h1>
-        <p className="text-base-content/70 mb-8">{t('errorDescription')}</p>
+        <h1 className="text-3xl font-bold mb-4">{tBlogPost('error')}</h1>
+        <p className="text-base-content/70 mb-8">{tBlogPost('errorDescription')}</p>
         <Link href={`/${locale}/blog`} className="btn btn-primary btn-lg">
           <FiArrowLeft className="w-5 h-5 mr-2" />
-          {t('backToList')}
+          {tBlogPost('backToList')}
         </Link>
       </div>
     </div>
