@@ -1,0 +1,67 @@
+{
+  "AboutUs": {
+    "hero": {
+      "title": "Mythoria",
+      "subtitle": "Stories brewed by an 18-year-old dreamer … and a legion of Oompa-Loompas.",
+      "cta": "Start your own story"
+    },
+    "founder": {
+      "title": "The Young Founder",
+      "description": "Meet Rodrigo, who turned his childhood fascination with stories into an adventure factory. At 18, he combines a huge imagination with a dash of artificial intelligence to create personalized tales for every child or adult.",
+      "ageLabel": "18 years old",
+      "ageHover": "still levelling-up",
+      "imageAlt": "Rodrigo - Founder of Mythoria",
+      "badges": {
+        "founder": "Founder",
+        "aiEnthusiast": "AI Enthusiast",
+        "storyteller": "Storyteller"
+      }
+    },
+    "aiTeam": {
+      "title": "Meet the Oompa-Loompas 2.0",
+      "subtitle": "Unlike Wonka's factory, our Oompa-Loompas are pure silicon—ethical, sleepless and endlessly scalable.",
+      "quillBot": {
+        "name": "Quill-Bot",
+        "description": "Writes plot twists faster than you can say expelliarmus"
+      },
+      "brushBot": {
+        "name": "Brush-Bot",
+        "description": "Paints worlds in Pixar, manga or water-colour at a click"
+      },
+      "voiceBot": {
+        "name": "Voice-Bot",
+        "description": "Gives every hero a unique voice—no golden ticket needed"
+      }
+    },
+    "progress": {
+      "title": "Work-in-Progress Lab",
+      "milestone1": "Beta spellbook – first 100 families already crafting tales",
+      "milestone2": "Community feedback cauldron – every suggestion pops here",
+      "milestone3": "Global release portal – scheduled for September 2025",
+      "feedbackButton": "🪄 Suggest a spell",
+      "milestoneLabels": {
+        "betaSpellbook": "Beta Spellbook",
+        "feedbackCauldron": "Feedback Cauldron",
+        "globalPortal": "Global Portal"
+      }
+    },
+    "news": {
+      "title": "News From the Realm",
+      "breaking": "Breaking Quill 🗞️ — Rodrigo wins the 2025 InovaGaia Young Innovator Award for Mythoria!"
+    },
+    "investors": {
+      "title": "Investors: Join the Quest",
+      "description": "Dragons love gold; we love partners. If you see the treasure too, open the scroll."
+    }
+  },
+  "AboutUsModal": {
+    "feedback": {
+      "title": "🪄 Cast Your Feedback Spell",
+      "placeholder": "Share your magical suggestions...",
+      "submit": "Send Spell ✨"
+    },
+    "investors": {
+      "button": "Open the Scroll 📜"
+    }
+  }
+}
