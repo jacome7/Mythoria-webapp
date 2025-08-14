@@ -6,11 +6,11 @@ export async function generateMetadata({
 }: {
   params: { locale: string };
 }): Promise<Metadata> {
-  const t = await getTranslations({ locale, namespace: 'DeleteAccount' });
+  const tDeleteAccount = await getTranslations({ locale, namespace: 'DeleteAccount' });
 
   return {
-    title: t('title'),
-    description: t('subtitle'),
+    title: tDeleteAccount('title'),
+    description: tDeleteAccount('subtitle'),
     robots: {
       index: false, // Don't index this sensitive page
       follow: false,

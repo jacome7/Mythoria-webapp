@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { FaTrash, FaExclamationTriangle, FaUser, FaCog, FaLock } from 'react-icons/fa';
 
 export default function DeleteAccountPage() {
-  const t = useTranslations('DeleteAccount');
+  const tDeleteAccount = useTranslations('DeleteAccount');
   const { user, isLoaded } = useUser();
   const [emailConfirmation, setEmailConfirmation] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -34,7 +34,7 @@ export default function DeleteAccountPage() {
       }
     } catch (error) {
       console.error('Error deleting account:', error);
-      alert(t('errors.deletionAlert'));
+      alert(tDeleteAccount('errors.deletionAlert'));
     } finally {
       setIsDeleting(false);
       setIsDialogOpen(false);
@@ -48,10 +48,10 @@ export default function DeleteAccountPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-primary mb-4">
-            {t('title')}
+            {tDeleteAccount('title')}
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            {t('subtitle')}
+            {tDeleteAccount('subtitle')}
           </p>
         </div>
 
@@ -65,36 +65,36 @@ export default function DeleteAccountPage() {
             <div className="flex items-center gap-3 mb-6">
               <FaUser className="h-6 w-6 text-primary" />
               <h2 className="text-2xl font-bold text-primary">
-                {t('notLoggedIn.title')}
+                {tDeleteAccount('notLoggedIn.title')}
               </h2>
             </div>
             <p className="text-gray-700 mb-6 text-lg">
-              {t('notLoggedIn.description')}
+              {tDeleteAccount('notLoggedIn.description')}
             </p>
             
             <div className="bg-base-100 border border-base-300 rounded-lg p-6 mb-6">
               <div className="flex items-center gap-2 mb-4">
                 <FaCog className="h-5 w-5 text-primary" />
                 <h3 className="text-lg font-semibold text-primary">
-                  {t('notLoggedIn.steps.title')}
+                  {tDeleteAccount('notLoggedIn.steps.title')}
                 </h3>
               </div>
               <ol className="list-decimal list-inside space-y-3 text-gray-700">
-                <li className="pl-2">{t('notLoggedIn.steps.step1')}</li>
-                <li className="pl-2">{t('notLoggedIn.steps.step2')}</li>
+                <li className="pl-2">{tDeleteAccount('notLoggedIn.steps.step1')}</li>
+                <li className="pl-2">{tDeleteAccount('notLoggedIn.steps.step2')}</li>
                 <li className="flex items-center gap-2 pl-2">
                   <FaLock className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>{t('notLoggedIn.steps.step3')}</span>
+                  <span>{tDeleteAccount('notLoggedIn.steps.step3')}</span>
                 </li>
-                <li className="pl-2">{t('notLoggedIn.steps.step4')}</li>
+                <li className="pl-2">{tDeleteAccount('notLoggedIn.steps.step4')}</li>
               </ol>
             </div>
             
             <div className="alert alert-warning">
               <FaExclamationTriangle className="h-5 w-5" />
               <div>
-                <h4 className="font-bold">{t('warning.title')}</h4>
-                <div className="text-sm">{t('warning.description')}</div>
+                <h4 className="font-bold">{tDeleteAccount('warning.title')}</h4>
+                <div className="text-sm">{tDeleteAccount('warning.description')}</div>
               </div>
             </div>
           </div>
@@ -104,19 +104,19 @@ export default function DeleteAccountPage() {
             <div className="flex items-center gap-3 mb-6">
               <FaTrash className="h-6 w-6 text-error" />
               <h2 className="text-2xl font-bold text-error">
-                {t('loggedIn.title')}
+                {tDeleteAccount('loggedIn.title')}
               </h2>
             </div>
             <p className="text-gray-700 mb-8 text-lg">
-              {t('loggedIn.description')}
+              {tDeleteAccount('loggedIn.description')}
             </p>
 
             {/* Warning Alert */}
             <div className="alert alert-warning mb-6">
               <FaExclamationTriangle className="h-5 w-5" />
               <div>
-                <h4 className="font-bold">{t('warning.title')}</h4>
-                <div className="text-sm">{t('warning.description')}</div>
+                <h4 className="font-bold">{tDeleteAccount('warning.title')}</h4>
+                <div className="text-sm">{tDeleteAccount('warning.description')}</div>
               </div>
             </div>
 
@@ -124,23 +124,23 @@ export default function DeleteAccountPage() {
             <div className="alert alert-error mb-8">
               <FaExclamationTriangle className="h-5 w-5" />
               <div className="w-full">
-                <h4 className="font-bold mb-3">{t('loggedIn.consequences.title')}</h4>
+                <h4 className="font-bold mb-3">{tDeleteAccount('loggedIn.consequences.title')}</h4>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
                     <span className="w-2 h-2 bg-current rounded-full mt-2 flex-shrink-0"></span>
-                    {t('loggedIn.consequences.item1')}
+                    {tDeleteAccount('loggedIn.consequences.item1')}
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="w-2 h-2 bg-current rounded-full mt-2 flex-shrink-0"></span>
-                    {t('loggedIn.consequences.item2')}
+                    {tDeleteAccount('loggedIn.consequences.item2')}
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="w-2 h-2 bg-current rounded-full mt-2 flex-shrink-0"></span>
-                    {t('loggedIn.consequences.item3')}
+                    {tDeleteAccount('loggedIn.consequences.item3')}
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="w-2 h-2 bg-current rounded-full mt-2 flex-shrink-0"></span>
-                    {t('loggedIn.consequences.item4')}
+                    {tDeleteAccount('loggedIn.consequences.item4')}
                   </li>
                 </ul>
               </div>
@@ -151,7 +151,7 @@ export default function DeleteAccountPage() {
               className="btn btn-error btn-lg w-full"
             >
               <FaTrash className="h-5 w-5" />
-              {t('loggedIn.deleteButton')}
+              {tDeleteAccount('loggedIn.deleteButton')}
             </button>
 
             {/* Modal Dialog */}
@@ -159,15 +159,15 @@ export default function DeleteAccountPage() {
               <div className="modal modal-open">
                 <div className="modal-box">
                   <h3 className="font-bold text-lg text-error mb-4">
-                    {t('confirmation.title')}
+                    {tDeleteAccount('confirmation.title')}
                   </h3>
                   <p className="text-gray-700 mb-6">
-                    {t('confirmation.description')}
+                    {tDeleteAccount('confirmation.description')}
                   </p>
                   
                   <div className="form-control mb-6">
                     <label className="label">
-                      <span className="label-text font-medium">{t('confirmation.emailLabel')}</span>
+                      <span className="label-text font-medium">{tDeleteAccount('confirmation.emailLabel')}</span>
                     </label>
                     <input
                       type="email"
@@ -179,7 +179,7 @@ export default function DeleteAccountPage() {
                     {emailConfirmation && !isEmailValid && (
                       <label className="label">
                         <span className="label-text-alt text-error break-words">
-                          {t('confirmation.emailMismatch')}
+                          {tDeleteAccount('confirmation.emailMismatch')}
                         </span>
                       </label>
                     )}
@@ -193,7 +193,7 @@ export default function DeleteAccountPage() {
                       }}
                       className="btn btn-ghost"
                     >
-                      {t('confirmation.cancel')}
+                      {tDeleteAccount('confirmation.cancel')}
                     </button>
                     <button
                       onClick={handleDeleteAccount}
@@ -203,12 +203,12 @@ export default function DeleteAccountPage() {
                       {isDeleting ? (
                         <>
                           <span className="loading loading-spinner loading-sm"></span>
-                          {t('confirmation.deleting')}
+                          {tDeleteAccount('confirmation.deleting')}
                         </>
                       ) : (
                         <>
                           <FaTrash className="h-4 w-4" />
-                          {t('confirmation.confirmDelete')}
+                          {tDeleteAccount('confirmation.confirmDelete')}
                         </>
                       )}
                     </button>
@@ -222,10 +222,10 @@ export default function DeleteAccountPage() {
         {/* Legal compliance information */}
         <div className="bg-white shadow-xl rounded-lg p-8">
           <h2 className="text-xl font-bold text-primary mb-4">
-            {t('legal.title')}
+            {tDeleteAccount('legal.title')}
           </h2>
           <p className="text-gray-600 leading-relaxed">
-            {t('legal.description')}
+            {tDeleteAccount('legal.description')}
           </p>
         </div>
       </div>

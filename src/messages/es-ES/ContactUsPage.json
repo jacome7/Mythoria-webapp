@@ -1,31 +1,52 @@
 {
   "ContactUsPage": {
-    "title": "Ponte en contacto",
-    "intro": "Nos encantaría saber de ti. Si tienes dudas, comentarios o necesitas ayuda, nuestro equipo está aquí para que tu experiencia con Mythoria sea mágica.",
-    "scrollTitle": "¿En qué podemos echarte una mano?",
-    "scrollIntro": "Elige una de las categorías para recibir ayuda más rápido:",
+    "title": "Contacta con Mythoria",
+    "intro": "¡Saludos, aventurero! Tanto si vienes de la Comarca, Hogwarts o una galaxia muy, muy lejana, estamos aquí para ayudarte en tu travesía por el maravilloso mundo de Mythoria. Tu opinión es tan valiosa como el Anillo Único (pero mucho más fácil de manejar, te lo prometemos).",
+    "scrollTitle": "Envíanos tu lechuza (o rellena el formulario)",
+    "scrollIntro": "Elige el pergamino que mejor se ajuste a tu misión:",
     "categories": {
-      "featureIdeas": "Ideas y sugerencias",
-      "reportBug": "Reportar un fallo",
-      "troubles": "Problemas técnicos",
-      "delivery": "Impresión y envío",
-      "credits": "Créditos y facturación",
-      "businessPartnership": "Colaboración empresarial",
-      "general": "Preguntas generales"
+      "featureIdeas": "Ideas de Funciones (Inspíranos como Tolkien)",
+      "reportBug": "Reportar un Bug (¡Hasta Sherlock Holmes necesitaba pistas!)",
+      "troubles": "Problemas al Generar una Historia (Cuando los hechizos se tuercen)",
+      "delivery": "Envío del Libro Impreso (Nuestras lechuzas quizá necesiten indicaciones)",
+      "credits": "Créditos y Pagos (¡Los duendes de Gringotts no perdonan!)",
+      "general": "Encantamiento General (Soporte)",
+      "businessPartnership": "Colaboración Empresarial"
     },
-    "bonus": {
-      "title": "Un pequeño detalle por tu opinión",
-      "content": "Para agradecerte que nos escribas, añadiremos un pequeño bonus de créditos a tu cuenta cuando respondamos a comentarios o sugerencias válidas.",
-      "disclaimer": "(No se aplica a preguntas generales ni solicitudes de soporte; solo a comentarios que nos ayuden a mejorar Mythoria).",
-      "closing": "¡Tu voz cuenta para dar forma al futuro de las historias! ✨"
+    "categoriesShort": {
+      "featureIdeas": "Ideas de Funciones",
+      "reportBug": "Reportar un Bug",
+      "troubles": "Problemas de Generación",
+      "delivery": "Envío del Libro",
+      "credits": "Créditos y Pagos",
+      "businessPartnership": "Colaboración Empresarial",
+      "general": "Encantamiento General"
+    },
+    "form": {
+      "title": "El Formulario Mágico",
+      "name": "Tu Nombre:",
+      "namePlaceholder": "Alias de Mago",
+      "email": "Tu Email:",
+      "emailPlaceholder": "Para que nuestros palomos te encuentren",
+      "category": "Selecciona tu Misión:",
+      "selectCategory": "Elige una categoría...",
+      "message": "Tu Mensaje Mágico:",
+      "messagePlaceholder": "Comparte tus ideas o feedback encantado...",
+      "submit": "Lanzar Hechizo"
     },
     "join": {
-      "title": "Únete a nuestra comunidad creciente",
-      "intro": "Mythoria está en plena expansión y siempre buscamos gente apasionada que se sume a nuestra misión:",
-      "printing": "🖨️ Colabora con nosotros como imprenta local en tu zona",
-      "country": "🌍 Ayúdanos a llevar Mythoria a tu país o región",
-      "developers": "💻 Desarrolladores con ganas de crear historias impulsadas por IA",
-      "call": "¿Te interesa? Dínoslo en tu mensaje"
+      "title": "Únete a la Comunidad",
+      "intro": "¡Mythoria está en una épica misión para conquistar nuevos reinos y busca almas valientes que se unan!",
+      "printing": "Socios de Impresión y Logística: ¿Listos para recorrer la Tierra Media o Poniente y entregar historias que importan? Únete a nosotros para difundir la magia de los relatos personalizados.",
+      "country": "Gestores de País y Magos Locales: Ayuda a Mythoria a conquistar el mundo (pacíficamente, lo prometemos). Lleva la alegría de contar historias a tu reino y más allá.",
+      "developers": "Desarrolladores que vibren con el código y hablen IA: ¿Dominas el binario y charlas sin esfuerzo con la IA? Necesitamos devs con chispa para mejorar la experiencia Mythoria.",
+      "call": "¿Te apetece convertirte en Mythoriano? Envíanos tus datos con el formulario encantado de arriba y cuéntanos tu área de interés."
+    },
+    "bonus": {
+      "title": "¡Alerta de Créditos Extra!",
+      "content": "¿Tienes ojo de halcón para los bugs o una mente llena de ideas? Gana créditos mágicos extra por cada fallo válido que reportes o por cada función inspirada que propongas.",
+      "disclaimer": "(*) La decisión final recae en nuestros encantadores Oompa-Loompas. Son impredecibles, pero adoran premiar la creatividad.",
+      "closing": "¡Creemos magia juntos!"
     }
   }
 }
