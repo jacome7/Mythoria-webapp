@@ -130,13 +130,6 @@
     },
     "redirecting": "Redirigiendo..."
   },
-  "TellYourStoryPage": {
-    "signedOut": {
-      "title": "¿Listo para Contar tu Historia?",
-      "subtitle": "Regístrate para empezar a crear tus aventuras mágicas con Mythoria.",
-      "getStarted": "Empezar"
-    }
-  },
   "PrintOrder": {
     "title": "Pedir Copia Impresa",
     "backToStories": "Volver a Mis Historias",
