@@ -11,7 +11,7 @@ import MyCharactersTable from '@/components/MyCharactersTable';
 import CreditsDisplay from '@/components/CreditsDisplay';
 
 export default function MyStoriesPage() {
-  const t = useTranslations('MyStoriesPage');
+  const tMyStoriesPage = useTranslations('MyStoriesPage');
   const locale = useLocale();
   const [authorName, setAuthorName] = useState<string>('');
   const [credits, setCredits] = useState<number>(0);
@@ -25,7 +25,7 @@ export default function MyStoriesPage() {
         const authorResponse = await fetch('/api/auth/me');
         if (authorResponse.ok) {
           const authorData = await authorResponse.json();
-          setAuthorName(authorData.displayName || t('defaults.authorName'));
+          setAuthorName(authorData.displayName || tMyStoriesPage('defaults.authorName'));
         }
 
         // Fetch credits
@@ -42,7 +42,7 @@ export default function MyStoriesPage() {
     };
 
     fetchUserData();
-  }, [t]);
+  }, [tMyStoriesPage]);
 
   if (loading) {
     return (
@@ -58,16 +58,16 @@ export default function MyStoriesPage() {
     <div className="container mx-auto px-4 py-8">
       <SignedOut>
         <div className="text-center space-y-6">
-          <h1 className="text-4xl font-bold">{t('signedOut.welcome')}</h1>
+          <h1 className="text-4xl font-bold">{tMyStoriesPage('signedOut.welcome')}</h1>
           <p className="text-lg text-gray-600">
-            {t('signedOut.needSignIn')}
+            {tMyStoriesPage('signedOut.needSignIn')}
           </p>
           <div className="space-x-4">
             <Link href={`/${locale}/sign-in`} className="btn btn-primary">
-              {t('signedOut.signIn')}
+              {tMyStoriesPage('signedOut.signIn')}
             </Link>
             <Link href={`/${locale}/sign-up`} className="btn btn-outline">
-              {t('signedOut.createAccount')}
+              {tMyStoriesPage('signedOut.createAccount')}
             </Link>
           </div>
         </div>
@@ -77,13 +77,13 @@ export default function MyStoriesPage() {
         <div className="space-y-6">
           <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4">
             <h1 className="text-4xl font-bold">
-              {t('title')}, {authorName}!
+              {tMyStoriesPage('title')}, {authorName}!
             </h1>
             <div className="flex flex-row items-center gap-2 md:gap-4">
               <CreditsDisplay credits={credits} />
               <Link href="/tell-your-story/step-1" className="btn btn-primary">
                 <FiPlus className="w-5 h-5 mr-2" />
-                {t('writeNewStory')}
+                {tMyStoriesPage('writeNewStory')}
               </Link>
             </div>
           </div>
@@ -95,13 +95,13 @@ export default function MyStoriesPage() {
                 className={`tab tab-lifted py-1 flex-1 text-center ${activeTab === 'stories' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
                 onClick={() => setActiveTab('stories')}
               >
-                {t('tabs.myStories')}
+                {tMyStoriesPage('tabs.myStories')}
               </a>
               <a
                 className={`tab tab-lifted py-1 flex-1 text-center ${activeTab === 'characters' ? 'tab-active !bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
                 onClick={() => setActiveTab('characters')}
               >
-                {t('tabs.myCharacters')}
+                {tMyStoriesPage('tabs.myCharacters')}
               </a>
             </div>
 
