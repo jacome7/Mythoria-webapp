@@ -4,8 +4,8 @@
     "chapterNotAvailable": "Este capítulo não está disponível.",
     "chapter": "Capítulo",
     "loading": {
-      "title": "A Carregar História",
-      "subtitle": "Por favor aguarde enquanto carregamos a sua história..."
+      "title": "A carregar história...",
+      "subtitle": "Por favor aguarde enquanto carregamos a história"
     },
     "errors": {
       "notFound": "História Não Encontrada",
@@ -15,6 +15,16 @@
       "failedToLoadStory": "Falha ao carregar história",
       "failedToLoadChapter": "Falha ao carregar capítulo"
     },
+    "labels": {
+      "publicStory": "História Pública",
+      "by": "por",
+      "synopsis": "Sinopse",
+      "unknownAuthor": "Autor Desconhecido"
+    },
+    "footer": {
+      "createdWith": "Esta história foi criada com",
+      "cta": "Crie as suas próprias histórias mágicas hoje!"
+    },
     "actions": {
       "orderPrint": "Encomendar Impressão",
       "listen": "Ouvir",
@@ -22,11 +32,6 @@
       "listenMobile": "Ouvir",
       "createOwnStory": "Criar a Sua Própria História",
       "orderPrintedBook": "Encomendar Livro Impresso"
-    },
-    "labels": {
-      "by": "por",
-      "synopsis": "Sinopse",
-      "unknownAuthor": "Autor Desconhecido"
     },
     "metadata": {
       "defaultDescription": "Leia \"{title}\" na Mythoria",

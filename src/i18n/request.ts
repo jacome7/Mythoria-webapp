@@ -61,6 +61,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     messages: {
       ...commonMessages,
       ...authMessages,
+      ...publicPagesMessages,
       ...contactUsPageMessages,
       ...aboutUsMessages,
       ...homePageMessages,
@@ -77,7 +78,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ...sharedStoryPageMessages,
       ...blogMessages,
       ...blogPostMessages,
-      publicPages: publicPagesMessages,
       privacyPolicy: privacyPolicyMessages,
       pricing: pricingMessages,
       storySteps: storyStepsMessages
