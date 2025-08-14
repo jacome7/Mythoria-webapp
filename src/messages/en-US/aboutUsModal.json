@@ -1,0 +1,12 @@
+{
+  "AboutUsModal": {
+    "feedback": {
+      "title": "🪄 Cast Your Feedback Spell",
+      "placeholder": "Share your magical suggestions...",
+      "submit": "Send Spell ✨"
+    },
+    "investors": {
+      "button": "Open the Scroll 📜"
+    }
+  }
+}

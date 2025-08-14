@@ -1,0 +1,12 @@
+{
+  "AboutUsModal": {
+    "feedback": {
+      "title": "🪄 Lanza tu Hechizo de Feedback",
+      "placeholder": "Comparte tus sugerencias mágicas...",
+      "submit": "Enviar Hechizo ✨"
+    },
+    "investors": {
+      "button": "Abrir el Pergamino 📜"
+    }
+  }
+}

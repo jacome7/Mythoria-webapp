@@ -1,0 +1,12 @@
+{
+  "AboutUsModal": {
+    "feedback": {
+      "title": "🪄 Lance o Seu Feitiço de Feedback",
+      "placeholder": "Partilhe as suas sugestões mágicas...",
+      "submit": "Enviar Feitiço ✨"
+    },
+    "investors": {
+      "button": "Abrir o Pergaminho 📜"
+    }
+  }
+}
