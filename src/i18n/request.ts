@@ -42,9 +42,9 @@ export default getRequestConfig(async ({ requestLocale }) => {
   ] = await Promise.all([
     import(`../messages/${locale}/common.json`).then(module => module.default),
     import(`../messages/${locale}/auth.json`).then(module => module.default),
-    import(`../messages/${locale}/privacy-policy.json`).then(module => module.default),
+    import(`../messages/${locale}/PrivacyPolicy.json`).then(module => module.default),
     import(`../messages/${locale}/PricingPage.json`).then(module => module.default),
-    import(`../messages/${locale}/storySteps.json`).then(module => module.default),
+    import(`../messages/${locale}/StorySteps.json`).then(module => module.default),
     import(`../messages/${locale}/ContactUsPage.json`).then(module => module.default),
     import(`../messages/${locale}/aboutUs.json`).then(module => module.default),
     import(`../messages/${locale}/HomePage.json`).then(module => module.default),
@@ -56,10 +56,10 @@ export default getRequestConfig(async ({ requestLocale }) => {
     import(`../messages/${locale}/RevolutPayment.json`).then(module => module.default),
     import(`../messages/${locale}/PublicStoryPage.json`).then(module => module.default),
     import(`../messages/${locale}/PublicStoryChapter.json`).then(module => module.default),
-    import(`../messages/${locale}/storyEditPage.json`).then(module => module.default),
-    import(`../messages/${locale}/characters.json`).then(module => module.default),
+    import(`../messages/${locale}/StoryEditPage.json`).then(module => module.default),
+    import(`../messages/${locale}/Characters.json`).then(module => module.default),
     import(`../messages/${locale}/components.json`).then(module => module.default),
-    import(`../messages/${locale}/delete-account.json`).then(module => module.default),
+    import(`../messages/${locale}/DeleteAccount.json`).then(module => module.default),
     import(`../messages/${locale}/editor.json`).then(module => module.default),
     import(`../messages/${locale}/lib.json`).then(module => module.default),
     import(`../messages/${locale}/metadata.json`).then(module => module.default),
@@ -101,8 +101,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ...printOrderMessages,
       ...addressesMessages,
       ...pricingPageMessages,
-      privacyPolicy: privacyPolicyMessages,
-      storySteps: storyStepsMessages
+      ...privacyPolicyMessages,
+      ...storyStepsMessages
     }
   };
 });

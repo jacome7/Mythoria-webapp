@@ -62,31 +62,6 @@ interface CharacterCardProps {
   onCancel?: () => void;
 }
 
-// Function to format role names for display
-const formatRoleName = (role: string): string => {
-  const roleKey = `roles.${role}`;
-  const translated = tCharacters(roleKey);
-  // If no translation found, fall back to formatted version
-  if (translated === roleKey) {
-    return role
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  }
-  return translated;
-};
-
-// Helper function to get translated trait name
-const getTraitDisplayName = (trait: string): string => {
-  const traitKey = `traits.${trait}`;
-  const translated = tCharacters(traitKey);
-  // If no translation found, fall back to formatted version
-  if (translated === traitKey) {
-    return trait.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  }
-  return translated;
-};
-
 export default function CharacterCard({
   character,
   mode,
@@ -96,6 +71,30 @@ export default function CharacterCard({
   onCancel
 }: CharacterCardProps) {
   const tCharacters = useTranslations('Characters');
+
+  // Function to format role names for display
+  const formatRoleName = (role: string): string => {
+    const roleKey = `roles.${role}`;
+    const translated = tCharacters(roleKey);
+    if (translated === roleKey) {
+      return role
+        .split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    }
+    return translated;
+  };
+
+  // Helper function to get translated trait name
+  const getTraitDisplayName = (trait: string): string => {
+    const traitKey = `traits.${trait}`;
+    const translated = tCharacters(traitKey);
+    if (translated === traitKey) {
+      return trait.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
+    return translated;
+  };
+
   const characterRoles = getCharacterRoleOptions(tCharacters);
   
   // Get age options based on character type
@@ -250,7 +249,7 @@ export default function CharacterCard({
               )}
               <div>
                 <h3 className="card-title text-xl">{formData.name}</h3>
-                <div className="badge badge-primary badge-outline">{formatRoleName(formData.role || 'other', t)}</div>
+                <div className="badge badge-primary badge-outline">{formatRoleName(formData.role || 'other')}</div>
               </div>
             </div>
           </div>
@@ -290,7 +289,7 @@ export default function CharacterCard({
                     key={trait}
                     className="px-2 py-1 rounded text-sm bg-gray-200 text-gray-700"
                   >
-                    {getTraitDisplayName(trait, t)}
+                    {getTraitDisplayName(trait)}
                   </div>
                 ))}
               </div>
@@ -500,7 +499,7 @@ export default function CharacterCard({
                   key={trait}
                   className="inline-flex items-center gap-1 px-2 py-1 bg-gray-200 text-gray-700 text-sm rounded"
                 >
-                  <span>{getTraitDisplayName(trait, t)}</span>
+                  <span>{getTraitDisplayName(trait)}</span>
                   <button
                     type="button"
                     onClick={() => handleTraitToggle(trait as CharacterTrait)}

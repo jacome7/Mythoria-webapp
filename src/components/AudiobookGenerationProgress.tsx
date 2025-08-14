@@ -125,15 +125,15 @@ export default function AudiobookGenerationProgress({ storyId, onComplete }: Aud
     return (
       <div className="max-w-2xl mx-auto p-6">
         <div className="alert alert-error">
-          <h3 className="font-bold">{t('generationFailed')}</h3>
-          <p>{t('generationFailedMessage')}</p>
+          <h3 className="font-bold">{tComponentsAudiobookGenerationProgress('generationFailed')}</h3>
+          <p>{tComponentsAudiobookGenerationProgress('generationFailedMessage')}</p>
         </div>
         <div className="mt-4 text-center">
-          <button 
+          <button
             className="btn btn-primary"
             onClick={() => router.push(`/${locale}/my-stories/${storyId}`)}
           >
-            {t('backToStory')}
+            {tComponentsAudiobookGenerationProgress('backToStory')}
           </button>
         </div>
       </div>
@@ -145,16 +145,16 @@ export default function AudiobookGenerationProgress({ storyId, onComplete }: Aud
       <div className="max-w-2xl mx-auto p-6 text-center">
         <div className="mb-6">
           <div className="text-6xl mb-4">🎉</div>
-          <h2 className="text-3xl font-bold text-success mb-2">{t('generationComplete')}</h2>
-          <p className="text-lg">{t('audiobookReady')}</p>
+          <h2 className="text-3xl font-bold text-success mb-2">{tComponentsAudiobookGenerationProgress('generationComplete')}</h2>
+          <p className="text-lg">{tComponentsAudiobookGenerationProgress('audiobookReady')}</p>
         </div>
-        
+
         <div className="space-y-4">
-          <button 
+          <button
             className="btn btn-primary btn-lg"
             onClick={() => router.push(`/${locale}/my-stories/${storyId}`)}
           >
-            {t('listenToAudiobook')}
+            {tComponentsAudiobookGenerationProgress('listenToAudiobook')}
           </button>
         </div>
       </div>
@@ -164,14 +164,14 @@ export default function AudiobookGenerationProgress({ storyId, onComplete }: Aud
   return (
     <div className="max-w-2xl mx-auto p-6">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold mb-4">{t('generatingAudiobook')}</h2>
-        <p className="text-gray-600">{t('processingMessage')}</p>
+        <h2 className="text-2xl font-bold mb-4">{tComponentsAudiobookGenerationProgress('generatingAudiobook')}</h2>
+        <p className="text-gray-600">{tComponentsAudiobookGenerationProgress('processingMessage')}</p>
       </div>
 
       {/* Progress Bar */}
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium">{t('progress')}</span>
+          <span className="text-sm font-medium">{tComponentsAudiobookGenerationProgress('progress')}</span>
           <span className="text-sm text-gray-500">
             {progress.audiobookGenerationCompletedPercentage}%
           </span>
@@ -182,12 +182,19 @@ export default function AudiobookGenerationProgress({ storyId, onComplete }: Aud
           max={100}
         />
         <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
-          <span>{t('estimatedTimeRemaining')}: {calculateEstimatedTime(progress.audiobookGenerationCompletedPercentage, t)}</span>
+          <span>
+            {tComponentsAudiobookGenerationProgress('estimatedTimeRemaining')}: {calculateEstimatedTime(
+              progress.audiobookGenerationCompletedPercentage,
+              tComponentsAudiobookGenerationProgress
+            )}
+          </span>
           {progress.chaptersProcessed && progress.totalChapters && (
-            <span>{t('chaptersProcessed', { 
-              processed: progress.chaptersProcessed, 
-              total: progress.totalChapters 
-            })}</span>
+            <span>
+              {tComponentsAudiobookGenerationProgress('chaptersProcessed', {
+                processed: progress.chaptersProcessed,
+                total: progress.totalChapters
+              })}
+            </span>
           )}
         </div>
       </div>
@@ -198,7 +205,7 @@ export default function AudiobookGenerationProgress({ storyId, onComplete }: Aud
           <div className="flex items-center gap-3">
             <div className="loading loading-spinner loading-sm"></div>
             <div>
-              <p className="font-medium">{t(`steps.${progress.currentStep}`)}</p>
+              <p className="font-medium">{tComponentsAudiobookGenerationProgress(`steps.${progress.currentStep}`)}</p>
               {currentMessage && (
                 <p className="text-sm text-gray-600 mt-1 italic">&ldquo;{currentMessage}&rdquo;</p>
               )}
@@ -210,10 +217,10 @@ export default function AudiobookGenerationProgress({ storyId, onComplete }: Aud
       {/* Status Messages */}
       <div className="text-center space-y-2">
         <p className="text-sm text-gray-600">
-          {t('statusMessage')}
+          {tComponentsAudiobookGenerationProgress('statusMessage')}
         </p>
         <p className="text-xs text-gray-500">
-          {t('doNotClose')}
+          {tComponentsAudiobookGenerationProgress('doNotClose')}
         </p>
       </div>
     </div>

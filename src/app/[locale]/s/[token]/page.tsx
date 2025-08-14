@@ -32,6 +32,7 @@ export default function SharedStoryPage() {
   const locale = useLocale();
   const tSharedStoryPage = useTranslations('SharedStoryPage');
   const tCommon = useTranslations('common');
+  const tAuth = useTranslations('auth');
   const token = (params?.token as string | undefined) ?? '';
   
   const [loading, setLoading] = useState(true);
@@ -125,15 +126,15 @@ export default function SharedStoryPage() {
             <div className="bg-base-200 rounded-lg p-8 space-y-6">
               <div className="space-y-4">
                 <h2 className="text-2xl font-bold text-gray-900">
-                  {accessLevel === 'edit' 
-                    ? t('auth.signInToEdit') 
-                    : t('auth.signInToRead')
+                  {accessLevel === 'edit'
+                    ? tAuth('signInToEdit')
+                    : tAuth('signInToRead')
                   }
                 </h2>
                 <p className="text-gray-600 text-lg">
                   {accessLevel === 'edit'
-                    ? t('auth.createAccountToCollaborate')
-                    : t('auth.createAccountToReadFull')
+                    ? tAuth('createAccountToCollaborate')
+                    : tAuth('createAccountToReadFull')
                   }
                 </p>
               </div>
@@ -177,7 +178,7 @@ export default function SharedStoryPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4 max-w-md mx-auto px-4">
           <FiAlertCircle className="text-4xl text-red-500 mx-auto" />
-          <h2 className="text-xl font-semibold text-gray-900">{t('errors.unableToAccess')}</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{tSharedStoryPage('errors.unableToAccess')}</h2>
           <p className="text-gray-600">{error}</p>
           
           <div className="space-y-2">
@@ -205,7 +206,7 @@ export default function SharedStoryPage() {
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center space-y-4">
         <FiLoader className="animate-spin text-4xl text-primary mx-auto" />
-        <h2 className="text-xl font-semibold">{t('redirecting')}</h2>
+        <h2 className="text-xl font-semibold">{tSharedStoryPage('redirecting')}</h2>
       </div>
     </div>
   );

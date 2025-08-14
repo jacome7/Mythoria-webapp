@@ -1,5 +1,5 @@
 {
-  "storyEditPage": {
+  "StoryEditPage": {
     "errors": {
       "failedToLoadStoryData": "Failed to load story data",
       "failedToLoadStory": "Failed to load story",

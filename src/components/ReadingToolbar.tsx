@@ -182,7 +182,7 @@ export default function ReadingToolbar({
                     onClick={() => adjustValue('fontSize', 10)}
                     className="btn btn-ghost btn-xs"
                     disabled={settings.fontSize >= 200}
-                    aria-label={t('controls.increaseFontSize')}
+                    aria-label={tComponentsReadingToolbar('controls.increaseFontSize')}
                   >
                     <FiPlus className="w-3 h-3" />
                   </button>
@@ -192,13 +192,13 @@ export default function ReadingToolbar({
 
               {/* Line Height Control */}              <div className="flex items-center gap-3">
                 <FiAlignJustify className="w-4 h-4 text-base-content/70" />
-                <span className="text-sm font-medium min-w-fit">{t('controls.lineHeight')}</span>
+                <span className="text-sm font-medium min-w-fit">{tComponentsReadingToolbar('controls.lineHeight')}</span>
                 <div className="flex items-center gap-2 flex-1">
                   <button
                     onClick={() => adjustValue('lineHeight', -10)}
                     className="btn btn-ghost btn-xs"
                     disabled={settings.lineHeight <= 50}
-                    aria-label={t('controls.decreaseLineHeight')}
+                    aria-label={tComponentsReadingToolbar('controls.decreaseLineHeight')}
                   >
                     <FiMinus className="w-3 h-3" />
                   </button>
@@ -210,14 +210,14 @@ export default function ReadingToolbar({
                       step="10"                      value={settings.lineHeight}
                       onChange={(e) => updateSetting('lineHeight', parseInt(e.target.value))}
                       className="range range-secondary range-xs"
-                      aria-label={t('controls.lineHeightLabel')}
+                      aria-label={tComponentsReadingToolbar('controls.lineHeightLabel')}
                     />
                   </div>
                   <button
                     onClick={() => adjustValue('lineHeight', 10)}
                     className="btn btn-ghost btn-xs"
                     disabled={settings.lineHeight >= 200}
-                    aria-label={t('controls.increaseLineHeight')}
+                    aria-label={tComponentsReadingToolbar('controls.increaseLineHeight')}
                   >
                     <FiPlus className="w-3 h-3" />
                   </button>
@@ -227,13 +227,13 @@ export default function ReadingToolbar({
 
               {/* Margins Control */}              <div className="flex items-center gap-3">
                 <FiMaximize2 className="w-4 h-4 text-base-content/70" />
-                <span className="text-sm font-medium min-w-fit">{t('controls.margins')}</span>
+                <span className="text-sm font-medium min-w-fit">{tComponentsReadingToolbar('controls.margins')}</span>
                 <div className="flex items-center gap-2 flex-1">
                   <button
                     onClick={() => adjustValue('margins', -10)}
                     className="btn btn-ghost btn-xs"
                     disabled={settings.margins <= 50}
-                    aria-label={t('controls.decreaseMargins')}
+                    aria-label={tComponentsReadingToolbar('controls.decreaseMargins')}
                   >
                     <FiMinus className="w-3 h-3" />
                   </button>
@@ -245,14 +245,14 @@ export default function ReadingToolbar({
                       step="10"                      value={settings.margins}
                       onChange={(e) => updateSetting('margins', parseInt(e.target.value))}
                       className="range range-accent range-xs"
-                      aria-label={t('controls.marginsLabel')}
+                      aria-label={tComponentsReadingToolbar('controls.marginsLabel')}
                     />
                   </div>
                   <button
                     onClick={() => adjustValue('margins', 10)}
                     className="btn btn-ghost btn-xs"
                     disabled={settings.margins >= 200}
-                    aria-label={t('controls.increaseMargins')}
+                    aria-label={tComponentsReadingToolbar('controls.increaseMargins')}
                   >
                     <FiPlus className="w-3 h-3" />
                   </button>
@@ -266,7 +266,7 @@ export default function ReadingToolbar({
                 onClick={resetSettings}
                 className="btn btn-outline btn-sm"
               >
-                {t('resetButton')}
+                {tComponentsReadingToolbar('resetButton')}
               </button>
             </div>
           </div>
