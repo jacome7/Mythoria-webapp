@@ -50,7 +50,7 @@ export default function ReadingToolbar({
   currentChapter = 0, 
   onChapterChange 
 }: ReadingToolbarProps) {
-  const tComponentsReadingToolbar = useTranslations('components.readingToolbar');
+  const tReadingToolbar = useTranslations('ReadingToolbar');
   const [settings, setSettings] = useState<ReadingSettings>(DEFAULT_SETTINGS);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -104,10 +104,10 @@ export default function ReadingToolbar({
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="btn btn-ghost btn-sm"
-            aria-label={tComponentsReadingToolbar('toggleLabel')}
+            aria-label={tReadingToolbar('toggleLabel')}
           >
             <FiType className="w-4 h-4" />
-            <span className="hidden sm:inline ml-2">{tComponentsReadingToolbar('title')}</span>
+            <span className="hidden sm:inline ml-2">{tReadingToolbar('title')}</span>
           </button>
           
           {/* Quick Actions - Always Visible */}
@@ -118,10 +118,10 @@ export default function ReadingToolbar({
                 <div tabIndex={0} role="button" className="btn btn-ghost btn-sm">
                   <FiBook className="w-4 h-4" />
                   <span className="hidden sm:inline ml-2">
-                    {currentChapter === 0 ? tComponentsReadingToolbar('cover') : tComponentsReadingToolbar('chapterLabel', { number: currentChapter })}
+                    {currentChapter === 0 ? tReadingToolbar('cover') : tReadingToolbar('chapterLabel', { number: currentChapter })}
                   </span>
                   <span className="sm:hidden ml-1">
-                    {currentChapter === 0 ? tComponentsReadingToolbar('cover') : tComponentsReadingToolbar('chapterLabel', { number: currentChapter })}
+                    {currentChapter === 0 ? tReadingToolbar('cover') : tReadingToolbar('chapterLabel', { number: currentChapter })}
                   </span>
                   <FiChevronDown className="w-3 h-3 ml-1" />
                 </div>
@@ -131,7 +131,7 @@ export default function ReadingToolbar({
                       onClick={() => onChapterChange?.(0)}
                       className={`${currentChapter === 0 ? 'bg-primary/20' : ''}`}
                     >
-                      {tComponentsReadingToolbar('coverAndToc')}
+                      {tReadingToolbar('coverAndToc')}
                     </button>
                   </li>
                   {chapters.map((chapter) => (
@@ -156,13 +156,13 @@ export default function ReadingToolbar({
               {/* Font Size Control */}
               <div className="flex items-center gap-3">
                 <FiType className="w-4 h-4 text-base-content/70" />
-                <span className="text-sm font-medium min-w-fit">{tComponentsReadingToolbar('controls.fontSize')}</span>
+                <span className="text-sm font-medium min-w-fit">{tReadingToolbar('controls.fontSize')}</span>
                 <div className="flex items-center gap-2 flex-1">
                   <button
                     onClick={() => adjustValue('fontSize', -10)}
                     className="btn btn-ghost btn-xs"
                     disabled={settings.fontSize <= 50}
-                    aria-label={tComponentsReadingToolbar('controls.decreaseFontSize')}
+                    aria-label={tReadingToolbar('controls.decreaseFontSize')}
                   >
                     <FiMinus className="w-3 h-3" />
                   </button>
@@ -175,14 +175,14 @@ export default function ReadingToolbar({
                       value={settings.fontSize}
                       onChange={(e) => updateSetting('fontSize', parseInt(e.target.value))}
                       className="range range-primary range-xs"
-                      aria-label={tComponentsReadingToolbar('controls.fontSizeLabel')}
+                      aria-label={tReadingToolbar('controls.fontSizeLabel')}
                     />
                   </div>
                   <button
                     onClick={() => adjustValue('fontSize', 10)}
                     className="btn btn-ghost btn-xs"
                     disabled={settings.fontSize >= 200}
-                    aria-label={tComponentsReadingToolbar('controls.increaseFontSize')}
+                    aria-label={tReadingToolbar('controls.increaseFontSize')}
                   >
                     <FiPlus className="w-3 h-3" />
                   </button>
@@ -192,13 +192,13 @@ export default function ReadingToolbar({
 
               {/* Line Height Control */}              <div className="flex items-center gap-3">
                 <FiAlignJustify className="w-4 h-4 text-base-content/70" />
-                <span className="text-sm font-medium min-w-fit">{tComponentsReadingToolbar('controls.lineHeight')}</span>
+                <span className="text-sm font-medium min-w-fit">{tReadingToolbar('controls.lineHeight')}</span>
                 <div className="flex items-center gap-2 flex-1">
                   <button
                     onClick={() => adjustValue('lineHeight', -10)}
                     className="btn btn-ghost btn-xs"
                     disabled={settings.lineHeight <= 50}
-                    aria-label={tComponentsReadingToolbar('controls.decreaseLineHeight')}
+                    aria-label={tReadingToolbar('controls.decreaseLineHeight')}
                   >
                     <FiMinus className="w-3 h-3" />
                   </button>
@@ -210,14 +210,14 @@ export default function ReadingToolbar({
                       step="10"                      value={settings.lineHeight}
                       onChange={(e) => updateSetting('lineHeight', parseInt(e.target.value))}
                       className="range range-secondary range-xs"
-                      aria-label={tComponentsReadingToolbar('controls.lineHeightLabel')}
+                      aria-label={tReadingToolbar('controls.lineHeightLabel')}
                     />
                   </div>
                   <button
                     onClick={() => adjustValue('lineHeight', 10)}
                     className="btn btn-ghost btn-xs"
                     disabled={settings.lineHeight >= 200}
-                    aria-label={tComponentsReadingToolbar('controls.increaseLineHeight')}
+                    aria-label={tReadingToolbar('controls.increaseLineHeight')}
                   >
                     <FiPlus className="w-3 h-3" />
                   </button>
@@ -227,13 +227,13 @@ export default function ReadingToolbar({
 
               {/* Margins Control */}              <div className="flex items-center gap-3">
                 <FiMaximize2 className="w-4 h-4 text-base-content/70" />
-                <span className="text-sm font-medium min-w-fit">{tComponentsReadingToolbar('controls.margins')}</span>
+                <span className="text-sm font-medium min-w-fit">{tReadingToolbar('controls.margins')}</span>
                 <div className="flex items-center gap-2 flex-1">
                   <button
                     onClick={() => adjustValue('margins', -10)}
                     className="btn btn-ghost btn-xs"
                     disabled={settings.margins <= 50}
-                    aria-label={tComponentsReadingToolbar('controls.decreaseMargins')}
+                    aria-label={tReadingToolbar('controls.decreaseMargins')}
                   >
                     <FiMinus className="w-3 h-3" />
                   </button>
@@ -245,14 +245,14 @@ export default function ReadingToolbar({
                       step="10"                      value={settings.margins}
                       onChange={(e) => updateSetting('margins', parseInt(e.target.value))}
                       className="range range-accent range-xs"
-                      aria-label={tComponentsReadingToolbar('controls.marginsLabel')}
+                      aria-label={tReadingToolbar('controls.marginsLabel')}
                     />
                   </div>
                   <button
                     onClick={() => adjustValue('margins', 10)}
                     className="btn btn-ghost btn-xs"
                     disabled={settings.margins >= 200}
-                    aria-label={tComponentsReadingToolbar('controls.increaseMargins')}
+                    aria-label={tReadingToolbar('controls.increaseMargins')}
                   >
                     <FiPlus className="w-3 h-3" />
                   </button>
@@ -266,7 +266,7 @@ export default function ReadingToolbar({
                 onClick={resetSettings}
                 className="btn btn-outline btn-sm"
               >
-                {tComponentsReadingToolbar('resetButton')}
+                {tReadingToolbar('resetButton')}
               </button>
             </div>
           </div>

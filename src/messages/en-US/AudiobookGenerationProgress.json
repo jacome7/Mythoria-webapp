@@ -1,0 +1,33 @@
+{
+  "AudiobookGenerationProgress": {
+    "title": "Audiobook Generation Progress",
+    "generatingAudiobook": "Generating Your Audiobook",
+    "processingMessage": "Please keep this page open while we narrate your story.",
+    "progress": "Progress",
+    "estimatedTimeRemaining": "Estimated time remaining",
+    "chaptersProcessed": "Chapters {processed} of {total}",
+    "generationFailed": "Audiobook generation failed",
+    "generationFailedMessage": "We couldn't complete your audiobook.",
+    "backToStory": "Back to story",
+    "generationComplete": "Generation complete!",
+    "audiobookReady": "Your audiobook is ready.",
+    "listenToAudiobook": "Listen to audiobook",
+    "retry": "Retry",
+    "statusMessage": "Our elves are working on your narration...",
+    "doNotClose": "Please do not close this tab.",
+    "errors": {
+      "failedToFetch": "Failed to fetch audiobook progress",
+      "failedToLoad": "Failed to load audiobook generation progress"
+    },
+    "timeUnits": {
+      "second": "second",
+      "seconds": "seconds",
+      "minute": "minute",
+      "minutes": "minutes"
+    },
+    "steps": {},
+    "narrationMessages": {
+      "default": ["\uD83C\uDF99\uFE0F Crafting your audiobook..."]
+    }
+  }
+}

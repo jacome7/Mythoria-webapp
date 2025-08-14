@@ -57,7 +57,8 @@ export default function EditChapterPage() {
   const router = useRouter();
   const { user } = useUser();
   const tCommon = useTranslations('common');
-  const tComponents = useTranslations('components');
+  const tChapterEditor = useTranslations('ChapterEditor');
+  const tStoryInfoEditor = useTranslations('StoryInfoEditor');
   const tEditor = useTranslations('editor');
 
   const storyId = (params?.storyId as string | undefined) ?? '';
@@ -117,11 +118,11 @@ export default function EditChapterPage() {
       }
     } catch (error) {
       console.error('Error loading story:', error);
-      addToast(tComponents('chapterEditor.errors.failedToLoadStoryData'), 'error');
+      addToast(tChapterEditor('errors.failedToLoadStoryData'), 'error');
     } finally {
       setLoading(false);
     }
-  }, [storyId, user, addToast, chapterNumber, tComponents, tEditor]);
+  }, [storyId, user, addToast, chapterNumber, tChapterEditor, tEditor]);
 
   // Save chapter content and create new version
   const saveChapterContent = async (content: string, title: string) => {
@@ -163,10 +164,10 @@ export default function EditChapterPage() {
         return { ...prev, chapters: updatedChapters };
       });
 
-      addToast(tComponents('storyInfoEditor.messages.chapterSavedWithVersion', {version: result.chapter.version}), 'success');
+      addToast(tStoryInfoEditor('messages.chapterSavedWithVersion', {version: result.chapter.version}), 'success');
     } catch (error) {
       console.error('Error saving chapter:', error);
-      addToast(tComponents('storyInfoEditor.messages.failedToSaveChapter'), 'error');
+      addToast(tStoryInfoEditor('messages.failedToSaveChapter'), 'error');
     } finally {
       setSaving(false);
     }
@@ -177,7 +178,7 @@ export default function EditChapterPage() {
     if (!storyData || !currentChapterData) return;
 
     if (currentChapterData.version <= 1) {
-      addToast(tComponents('storyInfoEditor.messages.noPreviousVersion'), 'warning');
+      addToast(tStoryInfoEditor('messages.noPreviousVersion'), 'warning');
       return;
     }
 
@@ -214,10 +215,10 @@ export default function EditChapterPage() {
         return { ...prev, chapters: updatedChapters };
       });
 
-      addToast(tComponents('storyInfoEditor.messages.revertedToVersion', {version: result.chapter.version}), 'success');
+      addToast(tStoryInfoEditor('messages.revertedToVersion', {version: result.chapter.version}), 'success');
     } catch (error) {
       console.error('Error undoing chapter:', error);
-      addToast(tComponents('storyInfoEditor.messages.failedToUndoChapter'), 'error');
+      addToast(tStoryInfoEditor('messages.failedToUndoChapter'), 'error');
     }
   };
 
@@ -259,7 +260,7 @@ export default function EditChapterPage() {
         return { ...prev, chapters: updatedChapters };
       });
 
-      addToast(tComponents('storyInfoEditor.messages.advancedToVersion', {version: result.chapter.version}), 'success');
+      addToast(tStoryInfoEditor('messages.advancedToVersion', {version: result.chapter.version}), 'success');
     } catch (error) {
       console.error('Error redoing chapter:', error);
     }
@@ -365,11 +366,11 @@ export default function EditChapterPage() {
         return { ...prev, chapters: updatedChapters };
       });
       
-      addToast(tComponents('storyInfoEditor.messages.chapterUpdatedSuccessfully'), 'success');
+      addToast(tStoryInfoEditor('messages.chapterUpdatedSuccessfully'), 'success');
     } else {
       // Fallback: reload story data to get the latest changes
       await loadStoryData();
-      addToast(tComponents('storyInfoEditor.messages.contentUpdatedSuccessfully'), 'success');
+      addToast(tStoryInfoEditor('messages.contentUpdatedSuccessfully'), 'success');
     }
   };
 

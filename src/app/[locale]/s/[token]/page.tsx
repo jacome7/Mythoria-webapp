@@ -32,8 +32,7 @@ export default function SharedStoryPage() {
   const locale = useLocale();
   const tSharedStoryPage = useTranslations('SharedStoryPage');
   const tCommon = useTranslations('common');
-  const tAuth = useTranslations('auth');
-  const token = (params?.token as string | undefined) ?? '';
+    const token = (params?.token as string | undefined) ?? '';
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -127,14 +126,14 @@ export default function SharedStoryPage() {
               <div className="space-y-4">
                 <h2 className="text-2xl font-bold text-gray-900">
                   {accessLevel === 'edit'
-                    ? tAuth('signInToEdit')
-                    : tAuth('signInToRead')
+                    ? tSharedStoryPage('auth.signInToEdit')
+                    : tSharedStoryPage('auth.signInToRead')
                   }
                 </h2>
                 <p className="text-gray-600 text-lg">
                   {accessLevel === 'edit'
-                    ? tAuth('createAccountToCollaborate')
-                    : tAuth('createAccountToReadFull')
+                    ? tSharedStoryPage('auth.createAccountToCollaborate')
+                    : tSharedStoryPage('auth.createAccountToReadFull')
                   }
                 </p>
               </div>

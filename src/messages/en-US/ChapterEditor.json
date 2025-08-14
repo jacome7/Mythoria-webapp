@@ -1,0 +1,29 @@
+{
+  "ChapterEditor": {
+    "editImageButton": "Edit Chapter Image",
+    "saveButton": "Save Chapter",
+    "backButton": "Back",
+    "goBackButton": "Go back",
+    "imagePlaceholder": "Chapter {number} Image",
+    "titlePlaceholder": "Enter chapter title...",
+    "contentPlaceholder": "Write your chapter content here...",
+    "saving": "Saving...",
+    "toolbar": {
+      "bold": "Bold",
+      "italic": "Italic",
+      "underline": "Underline",
+      "textSize": "Text Size",
+      "aiEdit": "AI Edit",
+      "edit": "Edit"
+    },
+    "textSizes": {
+      "small": "S",
+      "medium": "M",
+      "large": "L",
+      "xlarge": "XL"
+    },
+    "errors": {
+      "failedToLoadStoryData": "Failed to load story data"
+    }
+  }
+}

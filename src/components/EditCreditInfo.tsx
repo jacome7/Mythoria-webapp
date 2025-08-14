@@ -24,7 +24,7 @@ export default function EditCreditInfo({
   action
 }: EditCreditInfoProps) {
   const locale = useLocale();
-  const tComponentsEditCreditInfo = useTranslations('components.editCreditInfo');
+  const tEditCreditInfo = useTranslations('EditCreditInfo');
 
   if (!message) return null;
 
@@ -41,7 +41,7 @@ export default function EditCreditInfo({
         <div className="flex items-center justify-between">
           <span className="font-medium">{message}</span>
           <span className="text-xs opacity-75">
-            {tComponentsEditCreditInfo('editLabel', { number: editCount + 1 })}
+            {tEditCreditInfo('editLabel', { number: editCount + 1 })}
           </span>
         </div>
         
@@ -49,12 +49,12 @@ export default function EditCreditInfo({
         {!canEdit && (
           <div className="mt-2 pt-2 border-t border-red-200">
             <div className="flex items-center justify-between text-xs">
-              <span>{tComponentsEditCreditInfo('balanceLabel', { credits: currentBalance })}</span>
+              <span>{tEditCreditInfo('balanceLabel', { credits: currentBalance })}</span>
               <Link 
                 href={`/${locale}/buy-credits`}
                 className="text-red-600 hover:text-red-800 underline font-medium"
               >
-                {tComponentsEditCreditInfo('buyCreditsButton')}
+                {tEditCreditInfo('buyCreditsButton')}
               </Link>
             </div>
           </div>
@@ -64,7 +64,7 @@ export default function EditCreditInfo({
         {action === 'textEdit' && canEdit && nextThreshold && (
           <div className="mt-2 pt-2 border-t border-current border-opacity-20">
             <div className="flex items-center justify-between text-xs opacity-75">
-              <span>{tComponentsEditCreditInfo('progressLabel')}</span>
+              <span>{tEditCreditInfo('progressLabel')}</span>
               <div className="flex items-center space-x-2">
                 <div className="w-16 bg-current bg-opacity-20 rounded-full h-1">
                   <div 

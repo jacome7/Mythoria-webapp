@@ -1,0 +1,16 @@
+{
+  "AudiobookGenerationTrigger": {
+    "generateAudiobook": "Generar Audiolibro",
+    "audiobookDescription": "Convierte tu historia en un audiolibro inmersivo.",
+    "selectVoice": "Seleccionar Voz",
+    "generating": "Generando...",
+    "createAudiobook": "Crear Audiolibro",
+    "estimatedTime": "Tiempo estimado",
+    "aboutEightMinutes": "Unos 8 minutos",
+    "creditCost": "Costo en créditos",
+    "creditsRequired": "10 créditos",
+    "errors": {
+      "failedToStart": "Error al iniciar la generación del audiolibro"
+    }
+  }
+}

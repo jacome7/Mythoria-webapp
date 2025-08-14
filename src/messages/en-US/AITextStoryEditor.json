@@ -1,0 +1,40 @@
+{
+  "AITextStoryEditor": {
+    "title": "AI Text Editor - {storyTitle}",
+    "fullStoryTitle": "Full Story",
+    "requestPlaceholder": "Enter your editing request...",
+    "characterCount": "{count}/{max} characters",
+    "editButton": "Edit Story",
+    "cancelButton": "Cancel",
+    "loading": "Processing...",
+    "errors": {
+      "enterRequest": "Please enter your editing request",
+      "unableToCheckCredits": "Unable to check credits. Please try again.",
+      "failedToEdit": "Failed to edit story. Please try again."
+    },
+    "editScopeLabel": "Edit Scope",
+    "currentChapterOnly": "Current Chapter Only",
+    "allChapters": "All Chapters",
+    "selectChapterLabel": "Select Chapter",
+    "chapterOption": "Chapter {number}: {title}",
+    "editRequestLabel": "Edit Request",
+    "fullStoryExplanation": {
+      "title": "How Full Story Edit Works",
+      "item1": "AI will apply your request to all chapters in the story",
+      "item2": "Each chapter edit counts as one edit towards your credit usage",
+      "item3": "All successful changes will be automatically saved",
+      "item4": "You can review the changes after the edit is complete",
+      "item5": "If some chapters fail to edit, the successful ones will still be saved"
+    },
+    "costEstimation": {
+      "title": "Cost Estimation",
+      "freeEdit": "This edit is free!",
+      "costEdit": "This edit will cost {credits} credit{plural}",
+      "currentBalance": "• Current balance: {credits} credits",
+      "editCount": "• Edit count: {count} (next threshold: {threshold})",
+      "freeChapterEdits": "• {count} free chapter edits",
+      "paidChapterEdits": "• {count} paid chapter edits",
+      "message": "• {message}"
+    }
+  }
+}

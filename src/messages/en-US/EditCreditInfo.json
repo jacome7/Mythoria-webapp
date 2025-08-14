@@ -1,0 +1,8 @@
+{
+  "EditCreditInfo": {
+    "editLabel": "Edit #{number}",
+    "balanceLabel": "Your balance: {credits} credits",
+    "buyCreditsButton": "Buy credits",
+    "progressLabel": "Progress:"
+  }
+}

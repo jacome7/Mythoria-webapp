@@ -1,0 +1,39 @@
+{
+  "ContactForm": {
+    "form": {
+      "title": "Contact Support",
+      "name": "Name",
+      "email": "Email",
+      "category": "Category",
+      "message": "Message",
+      "submit": "Create Support Ticket",
+      "namePlaceholder": "Enter your name",
+      "emailPlaceholder": "Enter your email address",
+      "messagePlaceholder": "Describe your issue or question...",
+      "selectCategory": "Select a category..."
+    },
+    "categoriesShort": {
+      "featureIdeas": "Feature Ideas & Suggestions",
+      "reportBug": "Report a Bug",
+      "troubles": "Technical Issues",
+      "delivery": "Printing & Delivery",
+      "credits": "Credits & Billing",
+      "businessPartnership": "Business Partnership",
+      "general": "General Questions"
+    },
+    "errors": {
+      "fillRequired": "Please fill in all required fields",
+      "createFailed": "Failed to create support ticket. Please try again."
+    },
+    "success": {
+      "ticketCreated": "Support ticket created successfully! We'll get back to you soon."
+    },
+    "modal": {
+      "ticketCreated": "Ticket Created!",
+      "oops": "Oops!",
+      "tryAgain": "Try Again",
+      "goToHomepage": "Go to Homepage",
+      "redirectingMessage": "Redirecting to homepage in a few seconds..."
+    }
+  }
+}

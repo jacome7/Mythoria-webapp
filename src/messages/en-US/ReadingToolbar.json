@@ -1,0 +1,24 @@
+{
+  "ReadingToolbar": {
+    "title": "Reading Settings",
+    "toggleLabel": "Toggle reading settings",
+    "cover": "Cover",
+    "coverAndToc": "Cover & Table of Contents",
+    "chapterLabel": "Chapter {number}",
+    "resetButton": "Reset to Default",
+    "controls": {
+      "fontSize": "Text Size",
+      "lineHeight": "Line Height",
+      "margins": "Margins",
+      "fontSizeLabel": "Adjust text size",
+      "lineHeightLabel": "Adjust line height",
+      "marginsLabel": "Adjust margins",
+      "decreaseFontSize": "Decrease text size",
+      "increaseFontSize": "Increase text size",
+      "decreaseLineHeight": "Decrease line height",
+      "increaseLineHeight": "Increase line height",
+      "decreaseMargins": "Decrease margins",
+      "increaseMargins": "Increase margins"
+    }
+  }
+}
