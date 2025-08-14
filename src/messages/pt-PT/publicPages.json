@@ -176,56 +176,6 @@
       "browseAllStories": "Explorar Todas as Histórias"
     }
   },
-  "ContactUsPage": {
-    "title": "Contacte a Mythoria",
-    "intro": "Saudações, aventureiro! Seja da Terra Média, de Hogwarts ou de uma galáxia muito distante, estamos aqui para ajudar na sua jornada pelo maravilhoso mundo da Mythoria. O seu feedback é precioso como o Anel, mas bem mais fácil de carregar!",
-    "scrollTitle": "Envie-nos a sua Coruja (ou preencha o formulário)",
-    "scrollIntro": "Escolha o pergaminho que melhor se adapta à sua missão:",
-    "categories": {
-      "featureIdeas": "Ideias de Funcionalidades (Inspire-nos como Tolkien)",
-      "reportBug": "Reportar um Erro (Até Sherlock Holmes precisava de pistas!)",
-      "troubles": "Problemas na Geração de Histórias (Quando os feitiços falham)",
-      "delivery": "Entrega de Livro Impresso (As nossas corujas podem precisar de direções)",
-      "credits": "Créditos & Pagamentos (Os duendes de Gringotes são exigentes!)",
-      "general": "Encantamento Geral (Suporte)",
-      "businessPartnership": "Parceria de Negócios"
-    },
-    "categoriesShort": {
-      "featureIdeas": "Ideias de Funcionalidades",
-      "reportBug": "Reportar um Erro",
-      "troubles": "Problemas na Geração de Histórias",
-      "delivery": "Entrega de Livro Impresso",
-      "credits": "Créditos & Pagamentos",
-      "businessPartnership": "Parceria de Negócios",
-      "general": "Encantamento Geral"
-    },
-    "form": {
-      "title": "O Formulário Mágico",
-      "name": "O Seu Nome:",
-      "namePlaceholder": "Ou Alcunha de Feiticeiro",
-      "email": "O Seu Email:",
-      "emailPlaceholder": "Para as nossas pombas mensageiras",
-      "category": "Selecione a Sua Missão:",
-      "selectCategory": "Escolha uma categoria...",
-      "message": "A Sua Mensagem Mágica:",
-      "messagePlaceholder": "Partilhe os seus pensamentos, ideias ou feedback mágico...",
-      "submit": "Lançar Feitiço"
-    },
-    "join": {
-      "title": "Junte-se à Irmandade",
-      "intro": "A Mythoria está numa missão épica para conquistar novos reinos e procura bravos aventureiros para se juntarem à nossa irmandade!",
-      "printing": "Parceiros de Impressão & Logística: preparados para atravessar a Terra Média ou Westeros para entregar histórias inesquecíveis.",
-      "country": "Gestores de País & Feiticeiros Locais: ajudem a Mythoria a conquistar o mundo (pacificamente, prometemos). Levem a alegria da narração ao vosso reino e além!",
-      "developers": "Programadores que dominam a linguagem binária e conversam facilmente com IA?",
-      "call": "Interessado em tornar-se Mythoriano? Envie-nos os seus dados através do formulário encantado acima e indique a sua área de interesse."
-    },
-    "bonus": {
-      "title": "Alerta de Créditos Bónus!",
-      "content": "Olhos de águia para bugs ou uma mente imaginativa cheia de ideias? Ganhe créditos mágicos extra por cada bug válido ou funcionalidade inspirada que sugerir.",
-      "disclaimer": "(*) A decisão final cabe aos nossos adoráveis Oompa Loompas. São imprevisíveis, mas adoram recompensar a criatividade!",
-      "closing": "Vamos criar magia juntos!"
-    }
-  },
   "PublicStoryPage": {
     "chapterNotFound": "Capítulo Não Encontrado",
     "chapterNotAvailable": "Este capítulo não está disponível.",
