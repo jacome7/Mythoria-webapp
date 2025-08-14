@@ -1,0 +1,54 @@
+{
+  "ImageEditingTab": {
+    "noImages": {
+      "title": "Nenhuma Imagem Encontrada",
+      "description": "Ainda não há imagens disponíveis para esta história. As imagens aparecerão aqui quando forem geradas."
+    },
+    "imageSelection": {
+      "label": "Selecione uma imagem para editar:",
+      "versionsAvailable": "{count} versão{plural} disponível{plural}",
+      "latestVersion": "Mais recente: {version}"
+    },
+    "versionSelection": {
+      "label": "Escolha a versão para editar:",
+      "versionsInfo": "{count} versão{plural} disponível{plural}",
+      "currentlySelected": "Atualmente selecionada: {version}",
+      "changeImageButton": "Alterar Imagem na História",
+      "changingImage": "Alterando Imagem...",
+      "changeImageDescription": "Isto substituirá a imagem atual na sua história pela versão selecionada."
+    },
+    "imagePreview": {
+      "label": "Imagem atual:"
+    },
+    "editRequest": {
+      "label": "Que alterações gostaria de fazer a esta imagem?",
+      "placeholder": "Descreva as alterações que gostaria de fazer à imagem...",
+      "charactersCount": "{current}/{max} caracteres"
+    },
+    "loadingState": {
+      "title": "Processando a sua edição de imagem...",
+      "description": "Isto pode demorar até 3 minutos dependendo da complexidade das alterações."
+    },
+    "buttons": {
+      "generateNewVersion": "Gerar Nova Versão",
+      "editingImage": "Editando Imagem...",
+      "replaceImageInStory": "Substituir Imagem na História",
+      "replacingImage": "Substituindo Imagem..."
+    },
+    "success": {
+      "title": "Nova versão da imagem gerada com sucesso!",
+      "description": "Clique no botão abaixo para substituir a imagem atual na sua história pela nova versão."
+    },
+    "errors": {
+      "selectImage": "Por favor, selecione uma imagem para editar",
+      "enterChanges": "Por favor, descreva as alterações que deseja fazer",
+      "requestTooLong": "O pedido deve ter 2000 caracteres ou menos",
+      "editFailed": "Falha ao editar a imagem. Tente novamente.",
+      "noNewImage": "Nenhuma nova imagem disponível para substituir",
+      "replaceImageFailed": "Falha ao substituir a imagem na história. Tente novamente.",
+      "noVersionSelected": "Nenhuma versão de imagem selecionada para alterar",
+      "changeImageFailed": "Falha ao alterar a imagem na história. Tente novamente.",
+      "sameVersion": "A versão selecionada já é a versão atual"
+    }
+  }
+}

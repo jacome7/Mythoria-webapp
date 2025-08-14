@@ -48,7 +48,7 @@ export default function PublicListenPage() {
   const router = useRouter();
   const locale = useLocale();
   const tPublicStoryPage = useTranslations('PublicStoryPage');
-  const tCommon = useTranslations('common');
+  const tActions = useTranslations('Actions');
   const slug = Array.isArray(params?.slug)
     ? (params?.slug[0] ?? '')
     : (params?.slug as string | undefined) ?? '';
@@ -144,7 +144,7 @@ export default function PublicListenPage() {
               onClick={navigateBackToStory}
               className="btn btn-primary btn-sm"
             >
-              {tCommon('Actions.goBack')}
+              {tActions('goBack')}
             </button>
           </div>
         </div>
@@ -166,7 +166,7 @@ export default function PublicListenPage() {
                 className="btn btn-ghost btn-sm"
               >
                 <FiArrowLeft className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">{tCommon('Actions.backToStory')}</span>
+                <span className="hidden sm:inline">{tActions('backToStory')}</span>
                 <span className="sm:hidden">{tPublicStoryPage('listen.backMobile')}</span>
               </button>
               

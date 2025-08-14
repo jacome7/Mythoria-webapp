@@ -30,7 +30,7 @@ interface RatingData {
 }
 
 export default function PublicStoryRating({ storyId, onRatingSubmitted }: PublicStoryRatingProps) {
-  const tCommonStoryRating = useTranslations('common.storyRating');
+  const tCommonStoryRating = useTranslations('StoryRating');
   const [userRating, setUserRating] = useState<number>(0);
   const [hoveredRating, setHoveredRating] = useState<number>(0);
   const [feedback, setFeedback] = useState<string>('');

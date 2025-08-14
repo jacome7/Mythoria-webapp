@@ -1,0 +1,8 @@
+{
+  "Share": {
+    "tooltips": {
+      "cannotShareWriting": "Não é possível partilhar a história enquanto está a ser escrita",
+      "cannotShareDraft": "Não é possível partilhar a história até estar publicada"
+    }
+  }
+}

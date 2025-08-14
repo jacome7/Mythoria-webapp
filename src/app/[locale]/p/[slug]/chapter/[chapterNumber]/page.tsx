@@ -47,7 +47,8 @@ export default function PublicChapterPage() {
   const locale = useLocale();
   const tPublicStoryPage = useTranslations('PublicStoryPage');
   const tPublicStoryChapter = useTranslations('PublicStoryChapter');
-  const tCommon = useTranslations('common');
+  const tLoading = useTranslations('Loading');
+  const tActions = useTranslations('Actions');
   const slug = Array.isArray(params?.slug)
     ? (params?.slug[0] ?? '')
     : (params?.slug as string | undefined) ?? '';
@@ -101,7 +102,7 @@ export default function PublicChapterPage() {
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
           <FiLoader className="animate-spin w-8 h-8 text-primary" />
-          <p className="text-lg">{tCommon('Loading.default')}...</p>
+          <p className="text-lg">{tLoading('default')}...</p>
         </div>
       </div>
     );
@@ -118,7 +119,7 @@ export default function PublicChapterPage() {
             onClick={() => window.history.back()}
             className="btn btn-primary"
           >
-            {tCommon('Actions.goBack')}
+            {tActions('goBack')}
           </button>
         </div>
       </div>

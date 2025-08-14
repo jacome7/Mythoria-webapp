@@ -31,7 +31,9 @@ export default function SharedStoryPage() {
   const router = useRouter();
   const locale = useLocale();
   const tSharedStoryPage = useTranslations('SharedStoryPage');
-  const tCommon = useTranslations('common');
+  const tStoryReader = useTranslations('StoryReader');
+  const tAuth = useTranslations('Auth');
+  const tActions = useTranslations('Actions');
     const token = (params?.token as string | undefined) ?? '';
   
   const [loading, setLoading] = useState(true);
@@ -109,13 +111,13 @@ export default function SharedStoryPage() {
               
               {/* Author Name */}
               <p className="text-xl text-gray-700">
-                {tCommon('Components.StoryReader.byAuthor', { authorName: storyPreview.authorName })}
+                {tStoryReader('byAuthor', { authorName: storyPreview.authorName })}
               </p>
               
               {/* Synopsis */}
               {storyPreview.synopsis && (
                 <div className="bg-base-200 rounded-lg p-6 text-left max-w-2xl mx-auto">
-                  <h3 className="text-lg font-semibold mb-3">{tCommon('Components.StoryReader.synopsis')}</h3>
+                  <h3 className="text-lg font-semibold mb-3">{tStoryReader('synopsis')}</h3>
                   <p className="text-gray-700 leading-relaxed">{storyPreview.synopsis}</p>
                 </div>
               )}
@@ -143,13 +145,13 @@ export default function SharedStoryPage() {
                   href={`/${locale}/sign-in`}
                   className="btn btn-primary btn-lg px-8"
                 >
-                  {tCommon('Auth.signIn')}
+                  {tAuth('signIn')}
                 </a>
                 <a
                   href={`/${locale}/sign-up`}
                   className="btn btn-outline btn-lg px-8"
                 >
-                  {tCommon('Auth.createAccount')}
+                  {tAuth('createAccount')}
                 </a>
               </div>
             </div>
@@ -157,7 +159,7 @@ export default function SharedStoryPage() {
             {/* Mythoria Branding */}
             <div className="space-y-4">
               <p className="text-gray-600">
-                {tCommon('Components.StoryReader.craftedWith')}
+                {tStoryReader('craftedWith')}
               </p>
               <Image 
                 src={logoUrl} 
@@ -185,14 +187,14 @@ export default function SharedStoryPage() {
               onClick={() => window.location.reload()}
               className="btn btn-outline btn-sm"
             >
-              {tCommon('Actions.tryAgain')}
+              {tActions('tryAgain')}
             </button>
             <div>
               <a
                 href={`/${locale}`}
                 className="btn btn-primary btn-sm"
               >
-                {tCommon('Actions.goToHomepage')}
+                {tActions('goToHomepage')}
               </a>
             </div>
           </div>

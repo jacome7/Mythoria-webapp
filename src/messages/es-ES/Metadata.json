@@ -1,0 +1,35 @@
+{
+  "Metadata": {
+    "title": "Mythoria | Creador de Libros Personalizados",
+    "description": "Crea libros únicos y totalmente ilustrados con la IA generativa de Mythoria. Convierte cualquier historia en un e-book, audiolibro o regalo impreso en minutos.",
+    "defaultTitle": "Mythoria",
+    "defaultDescription": "Creador de Libros Personalizados",
+    "brand": {
+      "name": "Mythoria",
+      "tagline": "Creador de Libros Personalizados"
+    },
+    "openGraph": {
+      "title": "Mythoria | Creador de Libros Personalizados",
+      "description": "Convierte tus ideas en libros personalizados y bellamente ilustrados — léelos, escúchalos o imprímelos.",
+      "image": "https://mythoria.pt/assets/og/mythoria_en.jpg",
+      "url": "https://mythoria.pt/es-ES/"
+    },
+    "structuredData": {
+      "name": "Mythoria",
+      "description": "Mythoria permite a cualquiera crear y personalizar libros totalmente ilustrados usando IA generativa.",
+      "inLanguage": "es-ES"
+    },
+    "manifest": {
+      "name": "Mythoria - Creador de Libros Personalizados",
+      "short_name": "Mythoria",
+      "description": "Crea libros únicos y totalmente ilustrados",
+      "shortcuts": {
+        "createStory": {
+          "name": "Crear Historia",
+          "short_name": "Crear",
+          "description": "Empieza a crear una nueva historia"
+        }
+      }
+    }
+  }
+}

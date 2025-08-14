@@ -25,7 +25,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const tBlogMetadata = await getTranslations({ locale, namespace: 'blog.metadata' });
+  const tBlogMetadata = await getTranslations({ locale, namespace: 'Blog.metadata' });
   const baseUrl = 'https://mythoria.pt';
   const hreflangLinks = generateHreflangLinks(locale, `/${locale}/blog`);
 
@@ -84,7 +84,7 @@ export default async function BlogListPage({
     notFound();
   }
   
-  const t = await getTranslations('blog.list');
+  const t = await getTranslations('Blog.list');
   const currentPage = parseInt(page || '1', 10);
   const postsPerPage = 10;
   const offset = (currentPage - 1) * postsPerPage;

@@ -46,7 +46,7 @@ const calculateEstimatedTime = (
 };
 
 export default function StoryGenerationProgress({ storyId, onComplete }: StoryGenerationProgressProps) {
-  const tCommonStoryGenerationProgress = useTranslations('common.storyGenerationProgress');
+  const tCommonStoryGenerationProgress = useTranslations('StoryGenerationProgress');
   const router = useRouter();
   const params = useParams() as { locale?: string } | null;
   const locale = (params?.locale && typeof params.locale === 'string') ? params.locale : 'en-US';

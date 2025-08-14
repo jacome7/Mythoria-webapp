@@ -12,7 +12,7 @@ interface AudiobookGenerationTriggerProps {
   onGenerationComplete?: () => void;
 }
 
-export default function AudiobookGenerationTrigger({ 
+export default function AudiobookGenerationTrigger({
   storyId, 
   hasAudiobook, 
   isGenerating = false,
@@ -20,7 +20,7 @@ export default function AudiobookGenerationTrigger({
   onGenerationComplete
 }: AudiobookGenerationTriggerProps) {
   const tAudiobookGenerationTrigger = useTranslations('AudiobookGenerationTrigger');
-  const tCommon = useTranslations('common');
+  const tVoices = useTranslations('Voices');
   const [isGeneratingLocal, setIsGeneratingLocal] = useState(isGenerating);
   const [error, setError] = useState<string | null>(null);
   const [selectedVoice, setSelectedVoice] = useState('nova');
@@ -75,33 +75,33 @@ export default function AudiobookGenerationTrigger({
   const voiceOptions = [
     {
       value: 'alloy',
-      label: tCommon('voices.names.alloy'),
-      description: tCommon('voices.descriptions.alloy'),
+      label: tVoices('names.alloy'),
+      description: tVoices('descriptions.alloy'),
     },
     {
       value: 'echo',
-      label: tCommon('voices.names.echo'),
-      description: tCommon('voices.descriptions.echo'),
+      label: tVoices('names.echo'),
+      description: tVoices('descriptions.echo'),
     },
     {
       value: 'fable',
-      label: tCommon('voices.names.fable'),
-      description: tCommon('voices.descriptions.fable'),
+      label: tVoices('names.fable'),
+      description: tVoices('descriptions.fable'),
     },
     {
       value: 'nova',
-      label: tCommon('voices.names.nova'),
-      description: tCommon('voices.descriptions.nova'),
+      label: tVoices('names.nova'),
+      description: tVoices('descriptions.nova'),
     },
     {
       value: 'onyx',
-      label: tCommon('voices.names.onyx'),
-      description: tCommon('voices.descriptions.onyx'),
+      label: tVoices('names.onyx'),
+      description: tVoices('descriptions.onyx'),
     },
     {
       value: 'shimmer',
-      label: tCommon('voices.names.shimmer'),
-      description: tCommon('voices.descriptions.shimmer'),
+      label: tVoices('names.shimmer'),
+      description: tVoices('descriptions.shimmer'),
     },
   ];
 

@@ -34,8 +34,8 @@ type SortDirection = 'asc' | 'desc';
 
 export default function MyStoriesTable() {
   const tMyStoriesPage = useTranslations('MyStoriesPage');
-  const tCommonShare = useTranslations('common.Share');
-  const tCommonActions = useTranslations('common.Actions');
+  const tCommonShare = useTranslations('Share');
+  const tCommonActions = useTranslations('Actions');
   const locale = useLocale();const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);

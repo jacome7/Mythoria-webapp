@@ -1,0 +1,28 @@
+{
+  "ListenStory": {
+    "accessRestricted": "Acesso Restrito",
+    "needSignInToListen": "Precisa de estar autenticado para ouvir histórias.",
+    "listenToStory": "Ouvir \"{title}\"",
+    "wantNewNarration": "Quer uma Nova Narração?",
+    "newNarrationDescription": "Pode gerar uma nova narração da sua história com características de voz diferentes.",
+    "cost": "Custo",
+    "yourBalance": "O Seu Saldo",
+    "narrateStoryAgain": "Narrar História Novamente",
+    "replaceCurrentNarration": "Isto irá substituir a sua narração atual",
+    "needMoreCredits": "Precisa de mais {credits} créditos para gerar uma nova narração.",
+    "buyMoreCredits": "Comprar Mais Créditos",
+    "loadingPricing": "A carregar informações de preços...",
+    "convertYourStory": "Converta a Sua História",
+    "convertDescription": "Converta a sua história numa história lindamente narrada com a ajuda dos elfos da Mythoria",
+    "narrateYourStory": "Narrar a Sua História",
+    "generatingAudiobook": "A Gerar o Seu Audiolivro",
+    "checkingUpdates": "Estamos a verificar atualizações a cada 15 segundos. Mantenha esta página aberta.",
+    "generationCompleted": "Geração do audiolivro concluída!",
+    "chapterTitle": "Capítulo {number}",
+    "startingGeneration": "A iniciar geração do audiolivro...",
+    "generationStarted": "Geração do audiolivro iniciada! Os elfos da Mythoria vão demorar cerca de 5 minutos para narrar toda a história.",
+    "needMoreCreditsGenerate": "Precisa de mais {shortfall} créditos para gerar um audiolivro.",
+    "generationFailed": "Falha ao iniciar geração do audiolivro",
+    "tryAgainLater": "Por favor tente novamente mais tarde."
+  }
+}

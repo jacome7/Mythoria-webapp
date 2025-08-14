@@ -14,7 +14,7 @@ interface StoryMetadata {
 export async function generateStoryMetadata(story: StoryMetadata, locale?: string): Promise<Metadata> {
   const { t } = await getLibTranslations(locale);
   const title = `${story.title} | Mythoria`;
-  const description = story.synopsis || story.plotDescription || t('metadata.descriptions.storyFallback', {
+  const description = story.synopsis || story.plotDescription || t('Metadata.descriptions.storyFallback', {
     title: story.title,
     author: story.author.displayName
   });
@@ -55,8 +55,8 @@ export async function generateStoryMetadata(story: StoryMetadata, locale?: strin
 
 export async function generateSharedStoryMetadata(story: StoryMetadata, locale?: string): Promise<Metadata> {
   const { t } = await getLibTranslations(locale);
-  const title = t('metadata.titles.sharedStory', { title: story.title });
-  const description = story.synopsis || story.plotDescription || t('metadata.descriptions.sharedStoryFallback', {
+  const title = t('Metadata.titles.sharedStory', { title: story.title });
+  const description = story.synopsis || story.plotDescription || t('Metadata.descriptions.sharedStoryFallback', {
     title: story.title,
     author: story.author.displayName
   });

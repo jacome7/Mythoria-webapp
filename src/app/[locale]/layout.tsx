@@ -296,7 +296,7 @@ export default async function LocaleLayout({
   
   // Get messages using the helper function
   const messages = await getMessages(locale);
-  const metadata = messages?.metadata || {};
+  const metadata = (messages?.Metadata as any) || {};
 
   // Structure data for JSON-LD
   const structuredData = {

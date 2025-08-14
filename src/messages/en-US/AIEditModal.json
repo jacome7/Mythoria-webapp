@@ -1,0 +1,42 @@
+{
+  "AIEditModal": {
+    "title": "Story Editor",
+    "description": "Enhance your story with Mythoria",
+    "tabs": {
+      "text": "Text",
+      "images": "Images"
+    },
+    "editSelection": {
+      "label": "What would you like to edit?",
+      "entireStory": "Entire Story"
+    },
+    "editRequest": {
+      "label": "What changes would you like to make?",
+      "placeholder": "Describe the changes you'd like to make to your story...",
+      "charactersCount": "{current}/{max} characters"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "close": "Close",
+      "applyChanges": "Apply Changes",
+      "processing": "Processing..."
+    },
+    "loadingState": {
+      "title": "Processing your request...",
+      "description": "This may take 5-60 seconds depending on the scope of changes."
+    },
+    "errors": {
+      "enterRequest": "Please enter your editing request",
+      "requestTooLong": "Request must be 2000 characters or less",
+      "editFailed": "Failed to edit story. Please try again.",
+      "checkCreditsFailed": "Failed to check credit requirements",
+      "checkCreditsFailedRetry": "Failed to check credit requirements. Please try again.",
+      "insufficientCredits": "Insufficient credits for this edit",
+      "updateImageFailed": "Failed to update image. Please try again."
+    },
+    "imageSave": {
+      "title": "Saving Image Changes",
+      "description": "Please wait while we save your image changes to the story..."
+    }
+  }
+}

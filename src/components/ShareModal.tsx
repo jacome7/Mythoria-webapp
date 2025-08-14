@@ -37,7 +37,7 @@ interface ShareData {
 }
 
 export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPublic = false, slug, onShareSuccess }: ShareModalProps) {
-  const tCommonShareModal = useTranslations('common.Components.ShareModal');
+  const tCommonShareModal = useTranslations('ShareModal');
   const [allowEdit, setAllowEdit] = useState(false);
   const [makePublic, setMakePublic] = useState(isPublic);
   const [loading, setLoading] = useState(false);

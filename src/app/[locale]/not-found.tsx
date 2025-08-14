@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 export default function NotFound() {
-  const tNotFound = useTranslations('common.NotFound');
+  const tNotFound = useTranslations('NotFound');
 
   return (
     <div className="min-h-screen bg-base-100 text-base-content">

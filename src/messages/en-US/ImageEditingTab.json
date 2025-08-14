@@ -1,0 +1,54 @@
+{
+  "ImageEditingTab": {
+    "noImages": {
+      "title": "No Images Found",
+      "description": "No images are available for this story yet. Images will appear here once they are generated."
+    },
+    "imageSelection": {
+      "label": "Select an image to edit:",
+      "versionsAvailable": "{count} version{plural} available",
+      "latestVersion": "Latest: {version}"
+    },
+    "versionSelection": {
+      "label": "Choose version to edit:",
+      "versionsInfo": "{count} version{plural} available",
+      "currentlySelected": "Currently selected: {version}",
+      "changeImageButton": "Change Image in Story",
+      "changingImage": "Changing Image...",
+      "changeImageDescription": "This will replace the current image in your story with the selected version."
+    },
+    "imagePreview": {
+      "label": "Current image:"
+    },
+    "editRequest": {
+      "label": "What changes would you like to make to this image?",
+      "placeholder": "Describe the changes you'd like to make to the image...",
+      "charactersCount": "{current}/{max} characters"
+    },
+    "loadingState": {
+      "title": "Processing your image edit...",
+      "description": "This may take up to 3 minutes depending on the complexity of changes."
+    },
+    "buttons": {
+      "generateNewVersion": "Generate New Version",
+      "editingImage": "Editing Image...",
+      "replaceImageInStory": "Replace Image in Story",
+      "replacingImage": "Replacing Image..."
+    },
+    "success": {
+      "title": "New image version generated successfully!",
+      "description": "Click the button below to replace the current image in your story with the new version."
+    },
+    "errors": {
+      "selectImage": "Please select an image to edit",
+      "enterChanges": "Please describe the changes you want to make",
+      "requestTooLong": "Request must be 2000 characters or less",
+      "editFailed": "Failed to edit image. Please try again.",
+      "noNewImage": "No new image available to replace",
+      "replaceImageFailed": "Failed to replace image in story. Please try again.",
+      "noVersionSelected": "No image version selected to change to",
+      "changeImageFailed": "Failed to change image in story. Please try again.",
+      "sameVersion": "The selected version is already the current version"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "CreditsDisplay": {
+    "button": "Créditos disponibles: {credits}",
+    "creditHistory": "Historial de créditos",
+    "currentBalance": "Saldo disponible:",
+    "credits": "créditos",
+    "addCredits": "Añadir créditos",
+    "headers": {
+      "date": "Fecha",
+      "eventType": "Tipo de evento",
+      "amount": "Cantidad",
+      "balance": "Saldo"
+    },
+    "eventTypes": {
+      "initialCredit": "Crédito inicial",
+      "creditPurchase": "Compra de créditos",
+      "eBookGeneration": "Generación de eBook",
+      "audioBookGeneration": "Generación de audiolibro",
+      "printOrder": "Pedido de impresión",
+      "refund": "Reembolso",
+      "voucher": "Vale",
+      "promotion": "Promoción"
+    }
+  }
+}
