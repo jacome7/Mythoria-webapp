@@ -282,13 +282,6 @@
     },
     "redirecting": "Redirecting..."
   },
-  "TellYourStoryPage": {
-    "signedOut": {
-      "title": "Ready to Tell Your Story?",
-      "subtitle": "Sign up to start creating your magical adventures with Mythoria.",
-      "getStarted": "Get Started"
-    }
-  },
   "PrintOrder": {
     "title": "Order Printed Copy",
     "backToStories": "Back to My Stories",
