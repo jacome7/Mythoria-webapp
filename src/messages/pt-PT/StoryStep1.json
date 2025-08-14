@@ -1,0 +1,30 @@
+{
+  "StorySteps": {
+    "step1": {
+      "unauthenticated": {
+        "title": "Ops! Parece que estás a tentar entrar no lounge dos autores!",
+        "description": "Embora apreciemos o teu entusiasmo pela narração, tens de iniciar sessão primeiro. Não te preocupes, é mais fácil do que convencer um dragão a partilhar o seu tesouro! 🐉",
+        "signIn": "🔐 Iniciar Sessão",
+        "signUp": "✨ Criar Conta de Autor"
+      },
+      "heading": "Capítulo 1 - O Autor",
+      "intro": "Bem-vindo, contador de histórias! Antes de mergulharmos na tua aventura mágica, vamos configurar a informação do autor para a tua história. Podes usar o teu próprio nome ou criar um nome de autor personalizado para este conto.",
+      "fields": {
+        "authorName": "Nome do Autor(es) *",
+        "authorNameHelp": "Quem deve ser creditado como autor desta história?",
+        "authorNamePlaceholder": "ex: André e Matilde",
+        "dedication": "Mensagem de Dedicatória",
+        "dedicationPlaceholder": "Escreve uma mensagem de dedicatória personalizada para a primeira página do teu livro...",
+        "dedicationHelp": "Esta mensagem aparecerá na primeira página da tua história",
+        "optional": "Opcional"
+      },
+      "messages": {
+        "loadingProfile": "A carregar o teu perfil de autor...",
+        "required": "Por favor, fornece um nome de autor para a tua história",
+        "saveFailed": "Falha ao guardar informação do autor. Tenta novamente.",
+        "fetchFailed": "Falha ao obter dados do utilizador",
+        "loadFailed": "Falha ao carregar a informação do utilizador. Tenta novamente."
+      }
+    }
+  }
+}

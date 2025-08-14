@@ -1,0 +1,30 @@
+{
+  "StorySteps": {
+    "step1": {
+      "unauthenticated": {
+        "title": "Oops! Looks like you're trying to sneak into the author's lounge!",
+        "description": "While we appreciate your enthusiasm for storytelling, you'll need to sign in first. Don't worry, it's easier than convincing a dragon to share its treasure! 🐉",
+        "signIn": "🔐 Sign In to Start Your Adventure",
+        "signUp": "✨ Create Your Author Account"
+      },
+      "heading": "Chapter 1 - The Author",
+      "intro": "Welcome, storyteller! Before we dive into your magical adventure, let's set up the author information for your story. You can use your own name or create a custom author name for this tale.",
+      "fields": {
+        "authorName": "Author Name(s) *",
+        "authorNameHelp": "Who should be credited as the author of this story?",
+        "authorNamePlaceholder": "e.g., André and Matilde",
+        "dedication": "Dedication Message",
+        "dedicationPlaceholder": "Write a personalized dedication message for the first page of your book...",
+        "dedicationHelp": "This message will appear on the first page of your story",
+        "optional": "Optional"
+      },
+      "messages": {
+        "loadingProfile": "Loading your author profile...",
+        "required": "Please provide an author name for your story",
+        "saveFailed": "Failed to save author information. Please try again.",
+        "fetchFailed": "Failed to fetch user data",
+        "loadFailed": "Failed to load user information. Please try again."
+      }
+    }
+  }
+}
