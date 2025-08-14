@@ -30,12 +30,12 @@ export default function ChapterNavigation({
   currentChapter,
   onChapterChange,
 }: ChapterNavigationProps) {
-  const t = useTranslations('components.chapterNavigation');
+  const tComponentsChapterNavigation = useTranslations('components.chapterNavigation');
   
   const getCurrentChapterTitle = () => {
-    if (currentChapter === 0) return t('storyInformation');
+    if (currentChapter === 0) return tComponentsChapterNavigation('storyInformation');
     const chapter = chapters.find(c => c.chapterNumber === currentChapter);
-    return chapter ? `${currentChapter}. ${chapter.title}` : t('chapterLabel', { number: currentChapter });
+    return chapter ? `${currentChapter}. ${chapter.title}` : tComponentsChapterNavigation('chapterLabel', { number: currentChapter });
   };
 
   return (
@@ -46,7 +46,7 @@ export default function ChapterNavigation({
           {getCurrentChapterTitle()}
         </span>
         <span className="sm:hidden ml-1">
-          {currentChapter === 0 ? t('info') : `${currentChapter}`}
+          {currentChapter === 0 ? tComponentsChapterNavigation('info') : `${currentChapter}`}
         </span>
         <FiChevronDown className="w-3 h-3 ml-1" />
       </div>
@@ -62,7 +62,7 @@ export default function ChapterNavigation({
             className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded transition-colors ${currentChapter === 0 ? 'bg-primary/20' : 'hover:bg-base-200'}`}
           >
             <FiInfo className="w-4 h-4 flex-shrink-0" />
-            <span className="font-medium text-sm">{t('storyInformation')}</span>
+            <span className="font-medium text-sm">{tComponentsChapterNavigation('storyInformation')}</span>
           </button>
         </li>
         

@@ -8,7 +8,7 @@ export default function SharedStoryRouteHandler() {
   const params = useParams<{ rest?: string[] }>();
   const router = useRouter();
   const locale = useLocale();
-  const t = useTranslations('SharedStoryPage');
+  const tSharedStoryPage = useTranslations('SharedStoryPage');
   
   useEffect(() => {
   const restParam = params?.rest;
@@ -30,7 +30,7 @@ export default function SharedStoryRouteHandler() {
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center space-y-4">
         <div className="loading loading-spinner loading-lg text-primary"></div>
-        <h2 className="text-xl font-semibold">{t('redirecting')}</h2>
+        <h2 className="text-xl font-semibold">{tSharedStoryPage('redirecting')}</h2>
       </div>
     </div>
   );

@@ -28,7 +28,7 @@ interface AnonymousRating {
 }
 
 export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingProps) {
-  const t = useTranslations('common.storyRating');
+  const tCommonStoryRating = useTranslations('common.storyRating');
   const [rating, setRating] = useState<number>(0);
   const [hoveredRating, setHoveredRating] = useState<number>(0);
   const [feedback, setFeedback] = useState<string>('');
@@ -115,7 +115,7 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
       if (!response.ok) {
         const errorData = await response.json();
         if (response.status === 503) {
-          throw new Error(t('errors.serviceUnavailable'));
+          throw new Error(tCommonStoryRating('errors.serviceUnavailable'));
         }
         
         // Check if this is an anonymous user (no authentication)
@@ -133,7 +133,7 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
           return;
         }
         
-        throw new Error(errorData.error || t('errors.submitFailed'));
+        throw new Error(errorData.error || tCommonStoryRating('errors.submitFailed'));
       }
 
       const result = await response.json();
@@ -149,7 +149,7 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
       // Reset form state after successful submission
       setShowFeedbackForm(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('errors.generic'));
+      setError(err instanceof Error ? err.message : tCommonStoryRating('errors.generic'));
     } finally {
       setIsSubmitting(false);
     }
@@ -176,10 +176,10 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
         <div className="card-body text-center">
           <div className="text-success text-4xl mb-2">✓</div>          
           <h3 className="card-title text-success justify-center">
-            {(existingRating || anonymousRating) ? (t('success.titleUpdated') || 'Rating Updated!') : t('success.title')}
+            {(existingRating || anonymousRating) ? (tCommonStoryRating('success.titleUpdated') || 'Rating Updated!') : tCommonStoryRating('success.title')}
           </h3>
           <p className="text-success/80">
-            {(existingRating || anonymousRating) ? (t('success.messageUpdated') || 'Your rating has been updated successfully!') : t('success.message')}
+            {(existingRating || anonymousRating) ? (tCommonStoryRating('success.messageUpdated') || 'Your rating has been updated successfully!') : tCommonStoryRating('success.message')}
           </p>
           
           {/* Allow user to submit another rating only for authenticated users */}
@@ -199,7 +199,7 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
           {/* Show message for anonymous users */}
           {anonymousRating && !existingRating && (
             <p className="text-sm text-base-content/60 mt-4">
-              {t('anonymous.thankYou') || 'Thank you for your feedback!'}
+              {tCommonStoryRating('anonymous.thankYou') || 'Thank you for your feedback!'}
             </p>
           )}
         </div>
@@ -212,14 +212,14 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
       <div className="card-body">
         <div className="text-center">
           <h3 className="card-title justify-center mb-4">
-            {(existingRating || anonymousRating) ? (t('titleUpdate') || 'Update Your Rating') : t('title')}
+            {(existingRating || anonymousRating) ? (tCommonStoryRating('titleUpdate') || 'Update Your Rating') : tCommonStoryRating('title')}
           </h3>
           
           {/* Show existing rating info for authenticated users */}
           {existingRating && !submitted && (
             <div className="mb-4 p-3 bg-info/10 rounded-lg border border-info/20">
               <p className="text-sm text-info">
-                {t('currentRating') || 'Current Rating'}: {existingRating.rating} ⭐ 
+                {tCommonStoryRating('currentRating') || 'Current Rating'}: {existingRating.rating} ⭐ 
                 {existingRating.createdAt && (
                   <span className="ml-2 text-xs">
                     ({new Date(existingRating.createdAt).toLocaleDateString()})
@@ -238,7 +238,7 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
           {anonymousRating && !existingRating && !submitted && (
             <div className="mb-4 p-3 bg-warning/10 rounded-lg border border-warning/20">
               <p className="text-sm text-warning">
-                {t('anonymous.alreadyRated') || 'You have already rated this story'}: {anonymousRating.rating} ⭐ 
+                {tCommonStoryRating('anonymous.alreadyRated') || 'You have already rated this story'}: {anonymousRating.rating} ⭐ 
                 {anonymousRating.createdAt && (
                   <span className="ml-2 text-xs">
                     ({new Date(anonymousRating.createdAt).toLocaleDateString()})
@@ -251,7 +251,7 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
                 </p>
               )}
               <p className="text-xs text-warning/80 mt-2">
-                {t('anonymous.cannotChange') || 'Anonymous ratings cannot be changed. Please sign in to update your rating.'}
+                {tCommonStoryRating('anonymous.cannotChange') || 'Anonymous ratings cannot be changed. Please sign in to update your rating.'}
               </p>
             </div>
           )}
@@ -260,7 +260,7 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
           {!cookiesSupported && !existingRating && (
             <div className="mb-4 p-3 bg-error/10 rounded-lg border border-error/20">
               <p className="text-sm text-error">
-                {t('cookies.disabled') || 'Cookies are disabled. Multiple ratings may be allowed.'}
+                {tCommonStoryRating('cookies.disabled') || 'Cookies are disabled. Multiple ratings may be allowed.'}
               </p>
             </div>
           )}
@@ -294,13 +294,13 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
               <div className="text-left">
                 <label htmlFor="feedback" className="label">
                   <span className="label-text">
-                    {t('feedback.title')}
+                    {tCommonStoryRating('feedback.title')}
                   </span>
                 </label>
                 <textarea
                   id="feedback"
                   className="textarea textarea-bordered w-full h-24 resize-none"
-                  placeholder={t('feedback.placeholder')}
+                  placeholder={tCommonStoryRating('feedback.placeholder')}
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
                   disabled={isSubmitting}
@@ -317,7 +317,7 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
                     disabled={isSubmitting}
                   />
                   <span className="label-text">
-                    {t('feedback.includeNameLabel')}
+                    {tCommonStoryRating('feedback.includeNameLabel')}
                   </span>
                 </label>
               </div>
@@ -329,7 +329,7 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
                   onClick={() => setShowFeedbackForm(false)}
                   disabled={isSubmitting}
                 >
-                  {t('buttons.cancel')}
+                  {tCommonStoryRating('buttons.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -339,10 +339,10 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
                   {isSubmitting ? (
                     <>
                       <span className="loading loading-spinner loading-sm"></span>
-                      {t('buttons.submitting')}
+                      {tCommonStoryRating('buttons.submitting')}
                     </>
                   ) : (
-                    (existingRating || anonymousRating) ? (t('buttons.updateRating') || 'Update Rating') : t('buttons.submitRating')
+                    (existingRating || anonymousRating) ? (tCommonStoryRating('buttons.updateRating') || 'Update Rating') : tCommonStoryRating('buttons.submitRating')
                   )}
                 </button>
               </div>
@@ -360,7 +360,7 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
           {isSubmitting && !showFeedbackForm && (
             <div className="flex items-center justify-center gap-2 mt-4">
               <span className="loading loading-spinner loading-sm"></span>
-              <span>{t('submittingMessage')}</span>
+              <span>{tCommonStoryRating('submittingMessage')}</span>
             </div>
           )}
         </div>

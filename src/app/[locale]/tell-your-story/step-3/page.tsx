@@ -29,8 +29,8 @@ function Step3Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editStoryId = searchParams?.get('edit') ?? null;
-  const t = useTranslations('StorySteps.step3');
-  const tChar = useTranslations('Characters');
+  const tStoryStepsStep3 = useTranslations('StorySteps.step3');
+  const tCharacters = useTranslations('Characters');
   const [characters, setCharacters] = useState<Character[]>([]);
   const [availableCharacters, setAvailableCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +54,7 @@ function Step3Page() {
     };
 
     const roleKey = `roles.${roleMap[role] || 'other'}`;
-    const translated = tChar(roleKey);
+    const translated = tCharacters(roleKey);
     // If no translation found, fall back to formatted version
     if (translated === roleKey) {
       return role
@@ -82,7 +82,7 @@ function Step3Page() {
     };
 
     const typeKey = `types.${typeMap[typeValue] || 'other'}`;
-    const translated = tChar(typeKey);
+    const translated = tCharacters(typeKey);
     // If no translation found, fall back to original value
     if (translated === typeKey) {
       return typeValue;
@@ -113,11 +113,11 @@ function Step3Page() {
 
     } catch (error) {
       console.error('Error fetching story characters:', error);
-      alert(t('alerts.failedToLoadStoryCharacters'));
+      alert(tStoryStepsStep3('alerts.failedToLoadStoryCharacters'));
     } finally {
       setLoading(false);
     }
-  }, [currentStoryId, t]);
+  }, [currentStoryId, tStoryStepsStep3]);
 
   const fetchAvailableCharacters = useCallback(async (storyId?: string) => {
     const targetStoryId = storyId || currentStoryId;
@@ -150,7 +150,7 @@ function Step3Page() {
           // Load existing story data
           const success = await loadExistingStoryData(editStoryId);
           if (!success) {
-            alert(t('alerts.failedToLoadStoryData'));
+            alert(tStoryStepsStep3('alerts.failedToLoadStoryData'));
             router.push('/my-stories');
             return;
           }
@@ -164,7 +164,7 @@ function Step3Page() {
 
         } catch (error) {
           console.error('Error initializing edit mode:', error);
-          alert(t('alerts.failedToLoadStoryForEditing'));
+          alert(tStoryStepsStep3('alerts.failedToLoadStoryForEditing'));
           router.push('/my-stories');
           return;
         }
@@ -189,7 +189,7 @@ function Step3Page() {
     };
 
     initializeStoryData();
-  }, [router, editStoryId, fetchStoryCharacters, fetchAvailableCharacters, t]);
+  }, [router, editStoryId, fetchStoryCharacters, fetchAvailableCharacters, tStoryStepsStep3]);
   const handleCreateCharacter = async (characterData: Character) => {
     try {
       const response = await fetch('/api/characters', {
@@ -258,7 +258,7 @@ function Step3Page() {
 
     } catch (error) {
       console.error('Error adding existing character:', error);
-      alert(t('alerts.failedToAddCharacter'));
+      alert(tStoryStepsStep3('alerts.failedToAddCharacter'));
     }
   };
 
@@ -344,7 +344,7 @@ function Step3Page() {
 
     } catch (error) {
       console.error('Error navigating to next step:', error);
-      alert(t('alerts.failedToContinue'));
+      alert(tStoryStepsStep3('alerts.failedToContinue'));
     } finally {
       setIsNavigating(false);
     }
@@ -369,7 +369,7 @@ function Step3Page() {
                 {/* Mobile Progress Indicator */}
                 <div className="block md:hidden mb-8">
                 <div className="text-center text-sm text-gray-600 mb-2">
-                    {t('progress.stepLabel', { currentStep, totalSteps })}
+                    {tStoryStepsStep3('progress.stepLabel', { currentStep, totalSteps })}
                   </div>
                   <progress
                     className="progress progress-primary w-full"
@@ -396,20 +396,20 @@ function Step3Page() {
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
               <div className="flex items-center justify-between mb-6">
-                <h1 className="card-title text-3xl">{t('heading')}</h1>
+                <h1 className="card-title text-3xl">{tStoryStepsStep3('heading')}</h1>
                 {isInEditMode && (
                   <div className="badge badge-info">
-                    {t('badges.editingDraft')}
+                    {tStoryStepsStep3('badges.editingDraft')}
                   </div>
                 )}
               </div>
 
               <div className="prose max-w-none mb-6">
-                <p className="text-gray-600 text-lg">{t('intro')}</p>
+                <p className="text-gray-600 text-lg">{tStoryStepsStep3('intro')}</p>
               </div>{loading ? (
                 <div className="text-center py-12">
                   <span className="loading loading-spinner loading-lg"></span>
-                  <p className="text-lg text-gray-600 mt-4">{t('loadingCharacters')}</p>
+                  <p className="text-lg text-gray-600 mt-4">{tStoryStepsStep3('loadingCharacters')}</p>
                 </div>
               ) : (
                 <div className="space-y-6">
@@ -445,11 +445,11 @@ function Step3Page() {
                           className="btn btn-primary btn-lg"
                           onClick={() => setShowAddOptions(true)}
                         >
-                          {t('addCharacter')}
+                          {tStoryStepsStep3('addCharacter')}
                         </button>
                       ) : (
                         <div className="space-y-4">
-                          <div className="text-lg font-semibold">{t('chooseMethod')}</div>
+                          <div className="text-lg font-semibold">{tStoryStepsStep3('chooseMethod')}</div>
 
                           {/* Create New Character Option */}
                           <button
@@ -459,17 +459,17 @@ function Step3Page() {
                               setShowAddOptions(false);
                             }}
                           >
-                            {t('createNew')}
+                            {tStoryStepsStep3('createNew')}
                           </button>
 
                           {/* Add Existing Character Option (only if available characters exist) */}                            {availableCharacters.length > 0 && (
                             <div className="space-y-2">
                               <div className="text-sm text-gray-600">
-                                {t('orChooseExisting')}
+                                {tStoryStepsStep3('orChooseExisting')}
                               </div>
                               <div className="dropdown dropdown-end w-full">
                                 <div tabIndex={0} role="button" className="btn btn-outline btn-lg w-full">
-                                  {t('useExisting')}
+                                  {tStoryStepsStep3('useExisting')}
                                 </div>
                                 <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow-lg border max-h-60 overflow-y-auto">
                                   {availableCharacters.map((character) => (
@@ -480,7 +480,7 @@ function Step3Page() {
                                       >                                          <div>
                                           <div className="font-semibold">{character.name}</div>
                                           <div className="text-sm text-gray-500">
-                                            {getTypeDisplayValue(character.type || '')} • {tChar('fields.role')}: {formatRoleName(character.role || 'protagonist')}
+                                            {getTypeDisplayValue(character.type || '')} • {tCharacters('fields.role')}: {formatRoleName(character.role || 'protagonist')}
                                           </div>
                                           {character.characteristics && (
                                             <div className="text-xs text-gray-400 mt-1">
@@ -503,7 +503,7 @@ function Step3Page() {
                             className="btn btn-ghost"
                             onClick={() => setShowAddOptions(false)}
                           >
-                            {t('cancel')}
+                            {tStoryStepsStep3('cancel')}
                           </button>
                         </div>
                       )}
@@ -515,9 +515,9 @@ function Step3Page() {
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
                       <div className="text-4xl mb-4">🎭</div>
                       <h3 className="text-xl font-semibold text-blue-800 mb-2">
-                        {t('readyTitle')}
+                        {tStoryStepsStep3('readyTitle')}
                       </h3>
-                      <p className="text-blue-600">{t('readyDescription')}</p>
+                      <p className="text-blue-600">{tStoryStepsStep3('readyDescription')}</p>
                     </div>
                   )}
 
@@ -527,8 +527,8 @@ function Step3Page() {
                       <div className="flex items-start space-x-3">
                         <div className="text-2xl">💡</div>
                         <div>
-                          <p className="text-green-800 font-medium">{t('greatWork', { count: characters.length })}</p>
-                          <p className="text-green-600 text-sm mt-1">{t('youCanAlways')}</p>
+                          <p className="text-green-800 font-medium">{tStoryStepsStep3('greatWork', { count: characters.length })}</p>
+                          <p className="text-green-600 text-sm mt-1">{tStoryStepsStep3('youCanAlways')}</p>
                         </div>
                       </div>
                     </div>
@@ -545,8 +545,8 @@ function Step3Page() {
                 onNext={handleNextStep}
                 nextLabel={
                   isNavigating
-                    ? t('continuing')
-                    : t('next')
+                    ? tStoryStepsStep3('continuing')
+                    : tStoryStepsStep3('next')
                 }
                 prevLabel={isInEditMode ? 'Back to My Stories' : undefined}
               />

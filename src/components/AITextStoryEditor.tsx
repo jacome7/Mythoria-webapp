@@ -50,7 +50,7 @@ export default function AITextStoryEditor({
   onOptimisticUpdate, // eslint-disable-line @typescript-eslint/no-unused-vars
   onRevertUpdate // eslint-disable-line @typescript-eslint/no-unused-vars
 }: AITextStoryEditorProps) {
-  const t = useTranslations('components.aiTextStoryEditor');
+  const tComponentsAITextStoryEditor = useTranslations('components.aiTextStoryEditor');
   const [editScope, setEditScope] = useState<EditScope>(currentChapter ? 'chapter' : 'story');
   const [selectedChapter, setSelectedChapter] = useState<number | null>(
     currentChapter ? currentChapter.chapterNumber : null
@@ -161,14 +161,14 @@ export default function AITextStoryEditor({
   // Handle text edit
   const handleTextEdit = async () => {
     if (!userRequest.trim()) {
-      setError(t('errors.enterRequest'));
+      setError(tComponentsAITextStoryEditor('errors.enterRequest'));
       return;
     }
 
     // Check credits first
     const credits = await checkEditCredits();
     if (!credits) {
-      setError(t('errors.unableToCheckCredits'));
+      setError(tComponentsAITextStoryEditor('errors.unableToCheckCredits'));
       return;
     }
 
@@ -217,7 +217,7 @@ export default function AITextStoryEditor({
 
     } catch (error) {
       console.error('Error creating text edit job:', error);
-      setError(error instanceof Error ? error.message : t('errors.failedToEdit'));
+      setError(error instanceof Error ? error.message : tComponentsAITextStoryEditor('errors.failedToEdit'));
       setIsLoading(false);
     }
   };
@@ -284,15 +284,15 @@ export default function AITextStoryEditor({
             </div>
             <div>
               <h2 className="text-xl font-semibold text-gray-900">
-                {t('title', { storyTitle: story.title })}
+                {tComponentsAITextStoryEditor('title', { storyTitle: story.title })}
               </h2>
               <p className="text-sm text-gray-600">
                 {currentChapter
-                  ? t('chapterOption', {
+                  ? tComponentsAITextStoryEditor('chapterOption', {
                       number: currentChapter.chapterNumber,
                       title: currentChapter.title
                     })
-                  : t('fullStoryTitle')}
+                  : tComponentsAITextStoryEditor('fullStoryTitle')}
               </p>
             </div>
           </div>
@@ -310,7 +310,7 @@ export default function AITextStoryEditor({
             {/* Scope Selection */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-700">
-                {t('editScopeLabel')}
+                {tComponentsAITextStoryEditor('editScopeLabel')}
               </label>
               <div className="flex space-x-4">
                 <label className="flex items-center">
@@ -322,7 +322,7 @@ export default function AITextStoryEditor({
                     disabled={!currentChapter && chapters.length === 0}
                     className="mr-2"
                   />
-                  {t('currentChapterOnly')}
+                  {tComponentsAITextStoryEditor('currentChapterOnly')}
                 </label>
                 <label className="flex items-center">
                   <input
@@ -332,7 +332,7 @@ export default function AITextStoryEditor({
                     onChange={(e) => setEditScope(e.target.value as EditScope)}
                     className="mr-2"
                   />
-                  {t('allChapters')}
+                  {tComponentsAITextStoryEditor('allChapters')}
                 </label>
               </div>
             </div>
@@ -341,7 +341,7 @@ export default function AITextStoryEditor({
             {editScope === 'chapter' && chapters.length > 1 && (
               <div className="space-y-3">
                 <label className="block text-sm font-medium text-gray-700">
-                  {t('selectChapterLabel')}
+                  {tComponentsAITextStoryEditor('selectChapterLabel')}
                 </label>
                 <select
                   value={selectedChapter || ''}
@@ -350,7 +350,7 @@ export default function AITextStoryEditor({
                 >
                   {chapters.map((chapter) => (
                     <option key={chapter.id} value={chapter.chapterNumber}>
-                      {t('chapterOption', {
+                      {tComponentsAITextStoryEditor('chapterOption', {
                         number: chapter.chapterNumber,
                         title: chapter.title
                       })}
@@ -363,18 +363,18 @@ export default function AITextStoryEditor({
             {/* User Request */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-700">
-                {t('editRequestLabel')}
+                {tComponentsAITextStoryEditor('editRequestLabel')}
               </label>
               <textarea
                 value={userRequest}
                 onChange={(e) => setUserRequest(e.target.value)}
-                placeholder={t('requestPlaceholder')}
+                placeholder={tComponentsAITextStoryEditor('requestPlaceholder')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
                 rows={8}
                 maxLength={2000}
               />
               <div className="flex justify-between text-xs text-gray-500">
-                <span>{t('characterCount', { count: userRequest.length, max: 2000 })}</span>
+                <span>{tComponentsAITextStoryEditor('characterCount', { count: userRequest.length, max: 2000 })}</span>
               </div>
             </div>
 
@@ -384,15 +384,15 @@ export default function AITextStoryEditor({
                 <div className="flex items-center space-x-2 mb-2">
                   <FiEdit3 className="w-4 h-4 text-gray-600" />
                   <span className="text-sm font-medium text-gray-900">
-                    {t('fullStoryExplanation.title')}
+                    {tComponentsAITextStoryEditor('fullStoryExplanation.title')}
                   </span>
                 </div>
                 <div className="text-sm text-gray-700 space-y-1">
-                  <p>{t('fullStoryExplanation.item1')}</p>
-                  <p>{t('fullStoryExplanation.item2')}</p>
-                  <p>{t('fullStoryExplanation.item3')}</p>
-                  <p>{t('fullStoryExplanation.item4')}</p>
-                  <p>{t('fullStoryExplanation.item5')}</p>
+                  <p>{tComponentsAITextStoryEditor('fullStoryExplanation.item1')}</p>
+                  <p>{tComponentsAITextStoryEditor('fullStoryExplanation.item2')}</p>
+                  <p>{tComponentsAITextStoryEditor('fullStoryExplanation.item3')}</p>
+                  <p>{tComponentsAITextStoryEditor('fullStoryExplanation.item4')}</p>
+                  <p>{tComponentsAITextStoryEditor('fullStoryExplanation.item5')}</p>
                 </div>
               </div>
             )}
@@ -403,7 +403,7 @@ export default function AITextStoryEditor({
                 <div className="flex items-center space-x-2 mb-2">
                   <FiAlertCircle className="w-4 h-4 text-blue-600" />
                   <span className="text-sm font-medium text-blue-900">
-                    {t('costEstimation.title')}
+                    {tComponentsAITextStoryEditor('costEstimation.title')}
                   </span>
                 </div>
                 <div className="text-sm text-blue-800">
@@ -413,20 +413,20 @@ export default function AITextStoryEditor({
                       <p className="mb-1">{creditInfo.message}</p>
                       {creditInfo.freeEdits && creditInfo.freeEdits > 0 && (
                         <p className="text-blue-600">
-                          {t('costEstimation.freeChapterEdits', {
+                          {tComponentsAITextStoryEditor('costEstimation.freeChapterEdits', {
                             count: creditInfo.freeEdits
                           })}
                         </p>
                       )}
                       {creditInfo.paidEdits && creditInfo.paidEdits > 0 && (
                         <p className="text-blue-600">
-                          {t('costEstimation.paidChapterEdits', {
+                          {tComponentsAITextStoryEditor('costEstimation.paidChapterEdits', {
                             count: creditInfo.paidEdits
                           })}
                         </p>
                       )}
                       <p className="text-blue-600">
-                        {t('costEstimation.currentBalance', {
+                        {tComponentsAITextStoryEditor('costEstimation.currentBalance', {
                           credits: creditInfo.currentBalance
                         })}
                       </p>
@@ -436,20 +436,20 @@ export default function AITextStoryEditor({
                     <>
                       <p className="mb-1">
                         {creditInfo.isFree
-                          ? t('costEstimation.freeEdit')
-                          : t('costEstimation.costEdit', {
+                          ? tComponentsAITextStoryEditor('costEstimation.freeEdit')
+                          : tComponentsAITextStoryEditor('costEstimation.costEdit', {
                               credits: creditInfo.requiredCredits,
                               plural: creditInfo.requiredCredits === 1 ? '' : 's'
                             })}
                       </p>
                       <p className="text-blue-600">
-                        {t('costEstimation.currentBalance', {
+                        {tComponentsAITextStoryEditor('costEstimation.currentBalance', {
                           credits: creditInfo.currentBalance
                         })}
                       </p>
                       {!creditInfo.isFree && (
                         <p className="text-blue-600">
-                          {t('costEstimation.editCount', {
+                          {tComponentsAITextStoryEditor('costEstimation.editCount', {
                             count: creditInfo.editCount,
                             threshold: creditInfo.nextThreshold
                           })}
@@ -457,7 +457,7 @@ export default function AITextStoryEditor({
                       )}
                       {creditInfo.message && (
                         <p className="text-blue-600 mt-1">
-                          {t('costEstimation.message', {
+                          {tComponentsAITextStoryEditor('costEstimation.message', {
                             message: creditInfo.message
                           })}
                         </p>
@@ -484,7 +484,7 @@ export default function AITextStoryEditor({
                 onClick={onClose}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
               >
-                {t('cancelButton')}
+                {tComponentsAITextStoryEditor('cancelButton')}
               </button>
               <button
                 onClick={handleTextEdit}
@@ -493,13 +493,13 @@ export default function AITextStoryEditor({
               >
                 {isLoading ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>{t('loading')}</span>
+                    <div className="w-4 h-4 border-2 border-white border-tComponentsAITextStoryEditor-transparent rounded-full animate-spin" />
+                    <span>{tComponentsAITextStoryEditor('loading')}</span>
                   </>
                 ) : (
                   <>
                     <FiZap className="w-4 h-4" />
-                    <span>{t('editButton')}</span>
+                    <span>{tComponentsAITextStoryEditor('editButton')}</span>
                   </>
                 )}
               </button>

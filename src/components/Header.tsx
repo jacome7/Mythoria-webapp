@@ -9,7 +9,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 import { useLocale } from 'next-intl';
 
 const Header = () => {
-  const t = useTranslations('common.Header');
+  const tCommonHeader = useTranslations('common.Header');
   const { isLoaded, isSignedIn } = useUser();
   const [isClient, setIsClient] = useState(false);
   const locale = useLocale();
@@ -28,16 +28,16 @@ const Header = () => {
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
             </label>
             <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-            <li><Link href="/" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.homepage')}</Link></li>
-            <li><Link href="/get-inspired" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.getInspired')}</Link></li>
-            <li><Link href="/tell-your-story/step-1" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.tellYourStory')}</Link></li>
-            <li><Link href="/blog" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.blog')}</Link></li>
-            <li><Link href="/pricing" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.pricing')}</Link></li>
+            <li><Link href="/" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.homepage')}</Link></li>
+            <li><Link href="/get-inspired" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.getInspired')}</Link></li>
+            <li><Link href="/tell-your-story/step-1" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.tellYourStory')}</Link></li>
+            <li><Link href="/blog" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.blog')}</Link></li>
+            <li><Link href="/pricing" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.pricing')}</Link></li>
           </ul>
           </div>
           <div className="flex items-center">
             <Link href="/" className="btn btn-ghost normal-case text-xl px-1 py-0.5">
-              <Image src="/images/logo/just_lettering.png" alt={t('logoAlt')} width={150} height={49} />
+              <Image src="/images/logo/just_lettering.png" alt={tCommonHeader('logoAlt')} width={150} height={49} />
             </Link>
             <div className="ml-1 sm:ml-2">
               <span className="badge badge-outline badge-primary badge-xs sm:badge-sm font-semibold" style={{ fontSize: '11px' }}>
@@ -48,10 +48,10 @@ const Header = () => {
         </div>
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">
-            <li><Link href="/">{t('navigation.homepage')}</Link></li>
-            <li><Link href="/get-inspired">{t('navigation.getInspired')}</Link></li>
-            <li><Link href="/tell-your-story/step-1">{t('navigation.tellYourStory')}</Link></li>
-            <li><Link href="/pricing">{t('navigation.pricing')}</Link></li>
+            <li><Link href="/">{tCommonHeader('navigation.homepage')}</Link></li>
+            <li><Link href="/get-inspired">{tCommonHeader('navigation.getInspired')}</Link></li>
+            <li><Link href="/tell-your-story/step-1">{tCommonHeader('navigation.tellYourStory')}</Link></li>
+            <li><Link href="/pricing">{tCommonHeader('navigation.pricing')}</Link></li>
           </ul>
         </div>
         <div className="navbar-end">
@@ -73,19 +73,19 @@ const Header = () => {
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
           </label>
           <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-1 shadow bg-base-100 rounded-box w-52">
-            <li><Link href="/" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.homepage')}</Link></li>
-            <li><Link href="/get-inspired" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.getInspired')}</Link></li>
-            <li><Link href="/tell-your-story/step-1" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.tellYourStory')}</Link></li>
-            <li><Link href="/blog" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.blog')}</Link></li>
-            <li><Link href="/pricing" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.pricing')}</Link></li>
+            <li><Link href="/" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.homepage')}</Link></li>
+            <li><Link href="/get-inspired" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.getInspired')}</Link></li>
+            <li><Link href="/tell-your-story/step-1" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.tellYourStory')}</Link></li>
+            <li><Link href="/blog" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.blog')}</Link></li>
+            <li><Link href="/pricing" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.pricing')}</Link></li>
             {isSignedIn && (
-              <li><Link href="/my-stories" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{t('navigation.myStories')}</Link></li>
+              <li><Link href="/my-stories" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.myStories')}</Link></li>
             )}
           </ul>
         </div>
         <div className="flex items-center">
           <Link href="/" className="btn btn-ghost normal-case text-xl px-0 py-0.5">
-            <Image src="/images/logo/just_lettering.png" alt={t('logoAlt')} width={140} height={45} />
+            <Image src="/images/logo/just_lettering.png" alt={tCommonHeader('logoAlt')} width={140} height={45} />
           </Link>
           <div className="ml-1 sm:ml-2">
             <span className="badge badge-outline badge-primary badge-xs sm:badge-sm font-semibold" style={{ fontSize: '11px' }}>
@@ -96,13 +96,13 @@ const Header = () => {
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
-          <li><Link href="/">{t('navigation.homepage')}</Link></li>
-          <li><Link href="/get-inspired">{t('navigation.getInspired')}</Link></li>
-          <li><Link href="/tell-your-story/step-1">{t('navigation.tellYourStory')}</Link></li>
-          <li><Link href="/blog">{t('navigation.blog')}</Link></li>
-          <li><Link href="/pricing">{t('navigation.pricing')}</Link></li>
+          <li><Link href="/">{tCommonHeader('navigation.homepage')}</Link></li>
+          <li><Link href="/get-inspired">{tCommonHeader('navigation.getInspired')}</Link></li>
+          <li><Link href="/tell-your-story/step-1">{tCommonHeader('navigation.tellYourStory')}</Link></li>
+          <li><Link href="/blog">{tCommonHeader('navigation.blog')}</Link></li>
+          <li><Link href="/pricing">{tCommonHeader('navigation.pricing')}</Link></li>
           {isSignedIn && (
-            <li><Link href="/my-stories">{t('navigation.myStories')}</Link></li>
+            <li><Link href="/my-stories">{tCommonHeader('navigation.myStories')}</Link></li>
           )}
         </ul>
       </div>
@@ -114,7 +114,7 @@ const Header = () => {
         {!isSignedIn ? (
           <div className="flex gap-2">
             <Link href={`/${locale}/sign-in`} className="btn btn-primary">
-              {t('auth.signIn')}
+              {tCommonHeader('auth.signIn')}
             </Link>
           </div>
         ) : (

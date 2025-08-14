@@ -13,7 +13,7 @@ interface ContactFormProps {
 
 // Separate component for search params to handle suspense
 function ContactFormContent({ className = "" }: ContactFormProps) {
-  const t = useTranslations('components.contactForm');
+  const tComponentsContactForm = useTranslations('components.contactForm');
   const searchParams = useSearchParams();
   const { user, isSignedIn } = useUser();
   const [formData, setFormData] = useState({
@@ -77,7 +77,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
     e.preventDefault();
     
     if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
-      setResponseMessage(t('errors.fillRequired'));
+      setResponseMessage(tComponentsContactForm('errors.fillRequired'));
       setIsSuccess(false);
       return;
     }
@@ -111,7 +111,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
       const result = await response.json();
       
       if (result.success) {
-        setResponseMessage(t('success.ticketCreated'));
+        setResponseMessage(tComponentsContactForm('success.ticketCreated'));
         setIsSuccess(true);
         setShowModal(true);
         
@@ -129,13 +129,13 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
         }, 4000);
         
       } else {
-        setResponseMessage(result.error || t('errors.createFailed'));
+        setResponseMessage(result.error || tComponentsContactForm('errors.createFailed'));
         setIsSuccess(false);
         setShowModal(true);
       }
         } catch (error) {
       console.error('Contact form error:', error);
-      setResponseMessage(t('errors.createFailed'));
+      setResponseMessage(tComponentsContactForm('errors.createFailed'));
       setIsSuccess(false);
       setShowModal(true);
     } finally {
@@ -148,13 +148,13 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
       <div className="card-body p-6">
         <div className="flex items-center gap-3 mb-4">
           <FaTicketAlt className="text-xl text-primary" />
-          <h2 className="text-xl font-semibold">{t('form.title')}</h2>
+          <h2 className="text-xl font-semibold">{tComponentsContactForm('form.title')}</h2>
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="form-control">
             <label className="label py-1" htmlFor="name">
-              <span className="label-text font-medium text-sm">{t('form.name')}</span>
+              <span className="label-text font-medium text-sm">{tComponentsContactForm('form.name')}</span>
             </label>
             <input
               id="name"
@@ -162,7 +162,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
               type="text"
               value={formData.name}
               onChange={handleInputChange}
-              placeholder={t('form.namePlaceholder')}
+              placeholder={tComponentsContactForm('form.namePlaceholder')}
               className="input input-bordered input-primary w-full h-10 focus:outline-none focus:ring-2 focus:ring-primary/20"
               disabled={isLoading}
               required
@@ -171,7 +171,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
           
           <div className="form-control">
             <label className="label py-1" htmlFor="email">
-              <span className="label-text font-medium text-sm">{t('form.email')}</span>
+              <span className="label-text font-medium text-sm">{tComponentsContactForm('form.email')}</span>
             </label>
             <input
               id="email"
@@ -179,7 +179,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
               type="email"
               value={formData.email}
               onChange={handleInputChange}
-              placeholder={t('form.emailPlaceholder')}
+              placeholder={tComponentsContactForm('form.emailPlaceholder')}
               className="input input-bordered input-primary w-full h-10 focus:outline-none focus:ring-2 focus:ring-primary/20"
               disabled={isLoading}
               required
@@ -188,7 +188,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
           
           <div className="form-control">
             <label className="label py-1" htmlFor="category">
-              <span className="label-text font-medium text-sm">{t('form.category')}</span>
+              <span className="label-text font-medium text-sm">{tComponentsContactForm('form.category')}</span>
             </label>
             <select 
               id="category" 
@@ -198,19 +198,19 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
               className="select select-bordered select-primary w-full h-10 focus:outline-none focus:ring-2 focus:ring-primary/20"
               disabled={isLoading}
             >
-              <option value="">{t('form.selectCategory')}</option>              <option value="feature_ideas">{t('categoriesShort.featureIdeas')}</option>
-              <option value="bug_report">{t('categoriesShort.reportBug')}</option>
-              <option value="technical_issues">{t('categoriesShort.troubles')}</option>
-              <option value="delivery">{t('categoriesShort.delivery')}</option>
-              <option value="credits">{t('categoriesShort.credits')}</option>
-              <option value="business_partnership">{t('categoriesShort.businessPartnership')}</option>
-              <option value="general">{t('categoriesShort.general')}</option>
+              <option value="">{tComponentsContactForm('form.selectCategory')}</option>              <option value="feature_ideas">{tComponentsContactForm('categoriesShort.featureIdeas')}</option>
+              <option value="bug_report">{tComponentsContactForm('categoriesShort.reportBug')}</option>
+              <option value="technical_issues">{tComponentsContactForm('categoriesShort.troubles')}</option>
+              <option value="delivery">{tComponentsContactForm('categoriesShort.delivery')}</option>
+              <option value="credits">{tComponentsContactForm('categoriesShort.credits')}</option>
+              <option value="business_partnership">{tComponentsContactForm('categoriesShort.businessPartnership')}</option>
+              <option value="general">{tComponentsContactForm('categoriesShort.general')}</option>
             </select>
           </div>
           
           <div className="form-control">
             <label className="label py-1" htmlFor="message">
-              <span className="label-text font-medium text-sm">{t('form.message')}</span>
+              <span className="label-text font-medium text-sm">{tComponentsContactForm('form.message')}</span>
             </label>
             <textarea
               id="message"
@@ -218,7 +218,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
               value={formData.message}
               onChange={handleInputChange}
               className="textarea textarea-bordered textarea-primary h-20 w-full focus:outline-none focus:ring-2 focus:ring-primary/20"
-              placeholder={t('form.messagePlaceholder')}
+              placeholder={tComponentsContactForm('form.messagePlaceholder')}
               disabled={isLoading}
               required
             ></textarea>
@@ -234,7 +234,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
             ) : (
               <>
                 <FaTicketAlt className="mr-2" />
-                {t('form.submit')}
+                {tComponentsContactForm('form.submit')}
               </>
             )}
           </button>
@@ -252,14 +252,14 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
                 )}
               </div>
               <h3 className="font-bold text-lg text-center mb-4">
-                {isSuccess ? t('modal.ticketCreated') : t('modal.oops')}
+                {isSuccess ? tComponentsContactForm('modal.ticketCreated') : tComponentsContactForm('modal.oops')}
               </h3>
               <p className="text-center text-base-content/80">
                 {responseMessage}
               </p>
               {isSuccess && (
                 <p className="text-center text-sm text-base-content/60 mt-2">
-                  {t('modal.redirectingMessage')}
+                  {tComponentsContactForm('modal.redirectingMessage')}
                 </p>
               )}
               <div className="modal-action">
@@ -268,7 +268,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
                     className="btn btn-primary" 
                     onClick={() => setShowModal(false)}
                   >
-                    {t('modal.tryAgain')}
+                    {tComponentsContactForm('modal.tryAgain')}
                   </button>
                 )}
                 {isSuccess && (
@@ -276,7 +276,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
                     className="btn btn-primary" 
                     onClick={() => window.location.href = '/'}
                   >
-                    {t('modal.goToHomepage')}
+                    {tComponentsContactForm('modal.goToHomepage')}
                   </button>
                 )}
               </div>

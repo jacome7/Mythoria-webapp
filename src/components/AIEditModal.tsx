@@ -29,7 +29,7 @@ export default function AIEditModal({
   storyId, 
   onEditSuccess
 }: AIEditModalProps) {
-  const t = useTranslations('common.aiEditModal');
+  const tCommonAIEditModal = useTranslations('common.aiEditModal');
   const [activeTab, setActiveTab] = useState<EditTab>('text');
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [storyImages, setStoryImages] = useState<StoryImage[]>([]);
@@ -182,12 +182,12 @@ export default function AIEditModal({
     e.preventDefault();
     
     if (!userRequest.trim()) {
-      setError(t('errors.enterRequest'));
+      setError(tCommonAIEditModal('errors.enterRequest'));
       return;
     }
 
     if (userRequest.length > 2000) {
-      setError(t('errors.requestTooLong'));
+      setError(tCommonAIEditModal('errors.requestTooLong'));
       return;
     }
 
@@ -207,12 +207,12 @@ export default function AIEditModal({
       const creditData = await creditCheckResponse.json();
 
       if (!creditCheckResponse.ok) {
-        setError(creditData.error || t('errors.checkCreditsFailed'));
+        setError(creditData.error || tCommonAIEditModal('errors.checkCreditsFailed'));
         return;
       }
 
       if (!creditData.canEdit) {
-        setError(creditData.message || t('errors.insufficientCredits'));
+        setError(creditData.message || tCommonAIEditModal('errors.insufficientCredits'));
         return;
       }
 
@@ -236,7 +236,7 @@ export default function AIEditModal({
 
     } catch (error) {
       console.error('Error checking credits:', error);
-      setError(t('errors.checkCreditsFailedRetry'));
+      setError(tCommonAIEditModal('errors.checkCreditsFailedRetry'));
     }
   };
 
@@ -279,11 +279,11 @@ export default function AIEditModal({
         setPendingEditData(null);
         setCreditInfo(null);
       } else {
-        setError(data.error || t('errors.editFailed'));
+        setError(data.error || tCommonAIEditModal('errors.editFailed'));
       }
     } catch (error) {
       console.error('Error editing story:', error);
-      setError(t('errors.editFailed'));
+      setError(tCommonAIEditModal('errors.editFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -323,7 +323,7 @@ export default function AIEditModal({
     } catch (error) {
       console.error('Error updating image:', error);
       setIsSavingImage(false);
-      setError(t('errors.updateImageFailed'));
+      setError(tCommonAIEditModal('errors.updateImageFailed'));
     }
   };
 
@@ -353,9 +353,9 @@ export default function AIEditModal({
             <div className="p-2 bg-primary bg-opacity-20 rounded-lg">
               <FiZap className="w-5 h-5 text-primary" />
             </div>            <div>
-              <h2 className="text-xl font-bold">{t('title')}</h2>
+              <h2 className="text-xl font-bold">{tCommonAIEditModal('title')}</h2>
               <p className="text-sm text-base-content/70">
-                {t('description')}
+                {tCommonAIEditModal('description')}
               </p>
             </div>
           </div>          <button
@@ -376,7 +376,7 @@ export default function AIEditModal({
               disabled={isLoading || isSavingImage}
             >
               <FiFileText className="w-4 h-4 mr-2" />
-              {t('tabs.text')}
+              {tCommonAIEditModal('tabs.text')}
             </button>
             <button
               className={`tab ${activeTab === 'images' ? 'tab-active' : ''}`}
@@ -384,7 +384,7 @@ export default function AIEditModal({
               disabled={isLoading || isSavingImage}
             >
               <FiImage className="w-4 h-4 mr-2" />
-              {t('tabs.images')}
+              {tCommonAIEditModal('tabs.images')}
             </button>
           </div>
 
@@ -394,7 +394,7 @@ export default function AIEditModal({
               {/* Chapter Selection */}
               <div>
                 <label className="label">
-                  <span className="label-text font-medium">{t('editSelection.label')}</span>
+                  <span className="label-text font-medium">{tCommonAIEditModal('editSelection.label')}</span>
                 </label>
                 <select
                   value={selectedChapter === null ? 'full' : selectedChapter.toString()}
@@ -409,7 +409,7 @@ export default function AIEditModal({
                   className="select select-bordered w-full"
                   disabled={isLoading}
                 >
-                  <option value="full">{t('editSelection.entireStory')}</option>
+                  <option value="full">{tCommonAIEditModal('editSelection.entireStory')}</option>
                   {chapters.map((chapter) => (
                     <option key={chapter.number} value={chapter.number.toString()}>
                       {chapter.title}
@@ -422,10 +422,10 @@ export default function AIEditModal({
               <div>
                 <label className="label">
                   <span className="label-text font-medium">
-                    {t('editRequest.label')}
+                    {tCommonAIEditModal('editRequest.label')}
                   </span>
                   <span className="label-text-alt break-words max-w-full whitespace-normal">
-                    {t('editRequest.charactersCount', { 
+                    {tCommonAIEditModal('editRequest.charactersCount', { 
                       current: userRequest.length,
                       max: 2000
                     })}
@@ -434,7 +434,7 @@ export default function AIEditModal({
                 <textarea
                   value={userRequest}
                   onChange={(e) => setUserRequest(e.target.value)}
-                  placeholder={t('editRequest.placeholder')}
+                  placeholder={tCommonAIEditModal('editRequest.placeholder')}
                   className="textarea textarea-bordered w-full h-32 resize-none"
                   maxLength={2000}
                   disabled={isLoading}
@@ -456,9 +456,9 @@ export default function AIEditModal({
                   <div className="flex items-center gap-3">
                     <span className="loading loading-spinner loading-sm"></span>
                     <div>
-                      <p className="font-medium">{t('loadingState.title')}</p>
+                      <p className="font-medium">{tCommonAIEditModal('loadingState.title')}</p>
                       <p className="text-sm text-base-content/70">
-                        {t('loadingState.description')}
+                        {tCommonAIEditModal('loadingState.description')}
                       </p>
                     </div>
                   </div>
@@ -483,14 +483,14 @@ export default function AIEditModal({
               )}
 
               {/* Actions */}
-              <div className="flex gap-3 pt-4 border-t border-base-300">
+              <div className="flex gap-3 pt-4 border-tCommonAIEditModal border-base-300">
                 <button
                   type="button"
                   onClick={handleClose}
                   className="btn btn-ghost flex-1"
                   disabled={isLoading}
                 >
-                  {t('buttons.cancel')}
+                  {tCommonAIEditModal('buttons.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -500,12 +500,12 @@ export default function AIEditModal({
                   {isLoading ? (
                     <>
                       <span className="loading loading-spinner loading-xs"></span>
-                      {t('buttons.processing')}
+                      {tCommonAIEditModal('buttons.processing')}
                     </>
                   ) : (
                     <>
                       <FiEdit3 className="w-4 h-4" />
-                      {t('buttons.applyChanges')}
+                      {tCommonAIEditModal('buttons.applyChanges')}
                     </>
                   )}
                 </button>
@@ -536,14 +536,14 @@ export default function AIEditModal({
               )}
               
               {/* Actions for Image Tab */}
-              <div className="flex gap-3 pt-6 border-t border-base-300 mt-6">
+              <div className="flex gap-3 pt-6 border-tCommonAIEditModal border-base-300 mt-6">
                 <button
                   type="button"
                   onClick={handleClose}
                   className="btn btn-ghost flex-1"
                   disabled={isLoading || isSavingImage}
                 >
-                  {t('buttons.close')}
+                  {tCommonAIEditModal('buttons.close')}
                 </button>
               </div>
             </>          )}
@@ -557,9 +557,9 @@ export default function AIEditModal({
             <div className="flex flex-col items-center gap-4">
               <span className="loading loading-spinner loading-lg text-primary"></span>
               <div>
-                <h3 className="text-lg font-semibold">{t('imageSave.title')}</h3>
+                <h3 className="text-lg font-semibold">{tCommonAIEditModal('imageSave.title')}</h3>
                 <p className="text-sm text-base-content/70 mt-2">
-                  {t('imageSave.description')}
+                  {tCommonAIEditModal('imageSave.description')}
                 </p>
               </div>
             </div>

@@ -1,5 +1,5 @@
 {
-  "storyEditPage": {
+  "StoryEditPage": {
     "errors": {
       "failedToLoadStoryData": "No se pudieron cargar los datos de la historia",
       "failedToLoadStory": "No se pudo cargar la historia",

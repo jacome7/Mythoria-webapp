@@ -1,0 +1,24 @@
+{
+  "MyCharactersPage": {
+    "noCharacters": {
+      "title": "You don't have any characters yet!",
+      "subtitle": "Start creating characters for your stories to see them here."
+    },
+    "table": {
+      "name": "Name",
+      "type": "Type",
+      "actions": "Actions"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "createCharacter": "Create Character",
+    "deleteConfirm": {
+      "title": "Delete Character",
+      "message": "Are you sure you want to delete this character? This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    }
+  }
+}

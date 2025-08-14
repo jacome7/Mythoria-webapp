@@ -28,10 +28,10 @@ const StepNavigation = ({
   prevLabel
 }: StepNavigationProps) => {
   const router = useRouter();
-  const t = useTranslations('common.StepNavigation');
+  const tCommonStepNavigation = useTranslations('common.StepNavigation');
 
-  const resolvedNextLabel = nextLabel ?? t('next');
-  const resolvedPrevLabel = prevLabel ?? t('prev');
+  const resolvedNextLabel = nextLabel ?? tCommonStepNavigation('next');
+  const resolvedPrevLabel = prevLabel ?? tCommonStepNavigation('prev');
   const handleNext = async () => {
     if (onNext) {
       const result = await onNext();
@@ -78,7 +78,7 @@ const StepNavigation = ({
             disabled={nextDisabled}
             className={`btn btn-primary btn-md md:btn-lg ${nextDisabled ? 'btn-disabled' : ''}`} // Responsive button size
           >
-            {currentStep === totalSteps - 1 ? t('finish') : resolvedNextLabel} {/* Shortened "Finish Story" */}
+            {currentStep === totalSteps - 1 ? tCommonStepNavigation('finish') : resolvedNextLabel} {/* Shortened "Finish Story" */}
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1 md:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"> {/* Responsive icon margin */}
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
@@ -89,7 +89,7 @@ const StepNavigation = ({
             className={`btn btn-primary btn-md md:btn-lg ${nextDisabled ? 'btn-disabled' : ''}`} // Responsive button size
             onClick={handleNext}
           >
-            {currentStep === totalSteps - 1 ? t('finish') : resolvedNextLabel} {/* Shortened "Finish Story" */}
+            {currentStep === totalSteps - 1 ? tCommonStepNavigation('finish') : resolvedNextLabel} {/* Shortened "Finish Story" */}
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1 md:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"> {/* Responsive icon margin */}
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
@@ -100,7 +100,7 @@ const StepNavigation = ({
             disabled={nextDisabled}
             className={`btn btn-primary btn-md md:btn-lg ${nextDisabled ? 'btn-disabled' : ''}`} // Responsive button size
           >
-            {currentStep === totalSteps - 1 ? t('finish') : resolvedNextLabel} {/* Shortened "Finish Story" */}
+            {currentStep === totalSteps - 1 ? tCommonStepNavigation('finish') : resolvedNextLabel} {/* Shortened "Finish Story" */}
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1 md:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"> {/* Responsive icon margin */}
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>

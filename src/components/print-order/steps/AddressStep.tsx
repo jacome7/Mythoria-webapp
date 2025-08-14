@@ -45,12 +45,12 @@ export default function AddressStep({
   onShowCreateAddress,
   onCancelAddressEdit,
 }: AddressStepProps) {
-  const t = useTranslations('PrintOrder');
+  const tPrintOrder = useTranslations('PrintOrder');
 
   return (
     <div>
-      <h2 className="card-title mb-4">{t('steps.address')}</h2>
-      <p className="mb-4">{t('addressInfo.selectShipping')}</p>
+      <h2 className="card-title mb-4">{tPrintOrder('steps.address')}</h2>
+      <p className="mb-4">{tPrintOrder('addressInfo.selectShipping')}</p>
       
       {showCreateAddress || editingAddress ? (
         <AddressCard
@@ -67,7 +67,7 @@ export default function AddressStep({
         <div>
           {addresses.length === 0 ? (
             <div className="alert alert-warning mb-4">
-              <span>{t('addressInfo.noAddresses')}</span>
+              <span>{tPrintOrder('addressInfo.noAddresses')}</span>
             </div>
           ) : (
             <div className="space-y-4 mb-4">
@@ -91,7 +91,7 @@ export default function AddressStep({
             onClick={() => onShowCreateAddress(true)}
           >
             <FiPlus className="w-4 h-4 mr-2" />
-            {t('addressInfo.addNewAddress')}
+            {tPrintOrder('addressInfo.addNewAddress')}
           </button>
         </div>
       )}
@@ -102,14 +102,14 @@ export default function AddressStep({
             className="btn btn-ghost"
             onClick={onBack}
           >
-            {t('buttons.back')}
+            {tPrintOrder('buttons.back')}
           </button>
           <button 
             className="btn btn-primary"
             onClick={onNext}
             disabled={!selectedAddress}
           >
-            {t('buttons.continue')}
+            {tPrintOrder('buttons.continue')}
           </button>
         </div>
       )}

@@ -34,8 +34,8 @@ type SortDirection = 'asc' | 'desc';
 
 export default function MyStoriesTable() {
   const tMyStoriesPage = useTranslations('MyStoriesPage');
-  const tShare = useTranslations('common.Share');
-  const tActions = useTranslations('common.Actions');
+  const tCommonShare = useTranslations('common.Share');
+  const tCommonActions = useTranslations('common.Actions');
   const locale = useLocale();const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -361,7 +361,7 @@ export default function MyStoriesTable() {
                           <button
                             className="btn btn-ghost btn-sm btn-disabled"
                             disabled
-                            title={tShare('tooltips.cannotShareWriting')}
+                            title={tCommonShare('tooltips.cannotShareWriting')}
                           >
                             <FiShare2 className="w-4 h-4" />
                           </button>
@@ -369,7 +369,7 @@ export default function MyStoriesTable() {
                           <button
                             className="btn btn-ghost btn-sm btn-disabled"
                             disabled
-                            title={tShare('tooltips.cannotShareDraft')}
+                            title={tCommonShare('tooltips.cannotShareDraft')}
                           >
                             <FiShare2 className="w-4 h-4" />
                           </button>
@@ -465,7 +465,7 @@ export default function MyStoriesTable() {
                                   onClick={() => setOpenActionMenu(null)}
                                 >
                                   <FiBook className="w-4 h-4" />
-                                  {tActions('read')}
+                                  {tCommonActions('read')}
                                 </Link>
                               )}
                               

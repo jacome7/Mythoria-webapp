@@ -19,6 +19,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     aboutUsMessages,
     homePageMessages,
     myStoriesPageMessages,
+    myCharactersPageMessages,
     signInPageMessages,
     tellYourStoryPageMessages,
     buyCreditsPageMessages,
@@ -35,36 +36,39 @@ export default getRequestConfig(async ({ requestLocale }) => {
     sharedStoryPageMessages,
     getInspiredPageMessages,
     blogMessages,
-  blogPostMessages,
-  publicPagesMessages
+    blogPostMessages,
+    printOrderMessages,
+    addressesMessages
   ] = await Promise.all([
     import(`../messages/${locale}/common.json`).then(module => module.default),
     import(`../messages/${locale}/auth.json`).then(module => module.default),
-    import(`../messages/${locale}/privacy-policy.json`).then(module => module.default),
+    import(`../messages/${locale}/PrivacyPolicy.json`).then(module => module.default),
     import(`../messages/${locale}/PricingPage.json`).then(module => module.default),
-    import(`../messages/${locale}/storySteps.json`).then(module => module.default),
+    import(`../messages/${locale}/StorySteps.json`).then(module => module.default),
     import(`../messages/${locale}/ContactUsPage.json`).then(module => module.default),
     import(`../messages/${locale}/aboutUs.json`).then(module => module.default),
     import(`../messages/${locale}/HomePage.json`).then(module => module.default),
     import(`../messages/${locale}/MyStoriesPage.json`).then(module => module.default),
+    import(`../messages/${locale}/MyCharactersPage.json`).then(module => module.default),
     import(`../messages/${locale}/SignInPage.json`).then(module => module.default),
     import(`../messages/${locale}/TellYourStoryPage.json`).then(module => module.default),
     import(`../messages/${locale}/BuyCreditsPage.json`).then(module => module.default),
     import(`../messages/${locale}/RevolutPayment.json`).then(module => module.default),
     import(`../messages/${locale}/PublicStoryPage.json`).then(module => module.default),
     import(`../messages/${locale}/PublicStoryChapter.json`).then(module => module.default),
-    import(`../messages/${locale}/storyEditPage.json`).then(module => module.default),
-    import(`../messages/${locale}/characters.json`).then(module => module.default),
+    import(`../messages/${locale}/StoryEditPage.json`).then(module => module.default),
+    import(`../messages/${locale}/Characters.json`).then(module => module.default),
     import(`../messages/${locale}/components.json`).then(module => module.default),
-    import(`../messages/${locale}/delete-account.json`).then(module => module.default),
+    import(`../messages/${locale}/DeleteAccount.json`).then(module => module.default),
     import(`../messages/${locale}/editor.json`).then(module => module.default),
     import(`../messages/${locale}/lib.json`).then(module => module.default),
     import(`../messages/${locale}/metadata.json`).then(module => module.default),
     import(`../messages/${locale}/SharedStoryPage.json`).then(module => module.default),
     import(`../messages/${locale}/GetInspiredPage.json`).then(module => module.default),
     import(`../messages/${locale}/blog.json`).then(module => module.default),
-  import(`../messages/${locale}/BlogPost.json`).then(module => module.default),
-  import(`../messages/${locale}/publicPages.json`).then(module => module.default)
+    import(`../messages/${locale}/BlogPost.json`).then(module => module.default),
+    import(`../messages/${locale}/PrintOrder.json`).then(module => module.default),
+    import(`../messages/${locale}/Addresses.json`).then(module => module.default)
   ]);
 
   return {
@@ -76,6 +80,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ...aboutUsMessages,
       ...homePageMessages,
       ...myStoriesPageMessages,
+      ...myCharactersPageMessages,
       ...signInPageMessages,
       ...tellYourStoryPageMessages,
       ...buyCreditsPageMessages,
@@ -93,10 +98,11 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ...getInspiredPageMessages,
       ...blogMessages,
       ...blogPostMessages,
-  ...pricingPageMessages,
-  publicPages: publicPagesMessages,
-      privacyPolicy: privacyPolicyMessages,
-      storySteps: storyStepsMessages
+      ...printOrderMessages,
+      ...addressesMessages,
+      ...pricingPageMessages,
+      ...privacyPolicyMessages,
+      ...storyStepsMessages
     }
   };
 });

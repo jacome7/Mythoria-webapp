@@ -1,0 +1,80 @@
+{
+  "PrintOrder": {
+    "title": "Pedir Copia Impresa",
+    "backToStories": "Volver a Mis Historias",
+    "signInToContinue": "Inicia sesión para continuar",
+    "signInOrCreateAccount": "Debes iniciar sesión o crear una cuenta para hacer un pedido de impresión.",
+    "signIn": "Iniciar Sesión",
+    "createAccount": "Crear Cuenta",
+    "steps": {
+      "story": "Historia",
+      "address": "Dirección de Envío",
+      "payment": "Opciones de Impresión",
+      "confirmation": "Confirmación"
+    },
+    "errors": {
+      "storyNotFound": "Historia no encontrada",
+      "storyNotPublished": "Solo las historias publicadas se pueden imprimir",
+      "loadingFailed": "Error al cargar los datos de la historia",
+      "missingRequiredFields": "Completa todos los campos obligatorios",
+      "orderFailed": "Error al realizar el pedido de impresión",
+      "insufficientCredits": "Créditos insuficientes.",
+      "loadPricingFailed": "Error al cargar información de precios",
+      "fetchCreditsFailed": "Error al obtener tu saldo de créditos"
+    },
+    "addressInfo": {
+      "selectShipping": "Selecciona una dirección de envío para tu libro impreso.",
+      "noAddresses": "No tienes direcciones guardadas. Añade una dirección para continuar.",
+      "addNewAddress": "Añadir Nueva Dirección"
+    },
+    "formats": {
+      "paperback": "Tapa blanda",
+      "hardcover": "Tapa dura"
+    },
+    "payment": {
+      "selectBookType": "Selecciona tu Tipo de Libro",
+      "chooseQuality": "Elige la calidad de impresión que mejor se adapte a ti:",
+      "softcoverTitle": "📖 Tapa blanda",
+      "softcoverDescription": "Libro flexible con acabado brillante. Ideal para el día a día.",
+      "hardcoverTitle": "📚 Tapa dura",
+      "hardcoverDescription": "Cubierta rígida y encuadernación resistente. Perfecto como regalo o para conservar.",
+      "premiumTitle": "🌟 Premium",
+      "premiumDescription": "Edición de tapa dura de lujo con materiales premium. Calidad excepcional para ocasiones especiales.",
+      "priceNote": "Todos los precios incluyen la impresión a color de 4 capítulos y el envío.",
+      "extraChapterNote": "Cada capítulo extra cuesta 2 créditos.",
+      "yourStory": "Tu historia",
+      "extraChaptersNote": "capítulos extra",
+      "orderSummary": "Resumen del Pedido",
+      "selectedOption": "Opción Seleccionada",
+      "basePrice": "Precio Base",
+      "extraChapters": "Capítulos Extra",
+      "shipping": "Envío",
+      "included": "Incluido",
+      "printOrderFee": "Procesamiento del Pedido",
+      "total": "Total",
+      "credits": "créditos",
+      "cost": "Coste",
+      "yourCredits": "Tus Créditos",
+      "insufficientCreditsTitle": "Créditos Insuficientes",
+      "needMoreCredits": "Necesitas {count} créditos más para realizar este pedido.",
+      "getMoreCredits": "Obtener Más Créditos",
+      "method": "Método de Pago",
+      "creditsInfo": "El pago se deducirá de tu saldo de créditos al realizar el pedido.",
+      "pleaseSelectOption": "Selecciona una opción de impresión para continuar.",
+      "confirmOrder": "Confirma tu Pedido",
+      "confirmOrderDescription": "Debido a la alta demanda, la entrega puede tardar hasta 4 semanas. ¿Seguro que quieres continuar?"
+    },
+    "confirmation": {
+      "title": "¡Pedido realizado con éxito!",
+      "message": "Tu solicitud de impresión ha sido enviada. Recibirás actualizaciones sobre la impresión y el envío por email."
+    },
+    "buttons": {
+      "continue": "Continuar",
+      "back": "Atrás",
+      "placeOrder": "Realizar Pedido",
+      "backToStories": "Volver a Mis Historias",
+      "confirm": "Confirmar Pedido",
+      "cancel": "Cancelar"
+    }
+  }
+}

@@ -40,7 +40,7 @@ export default function JobProgressModal({
   onComplete,
   onError
 }: JobProgressModalProps) {
-  const t = useTranslations('components.jobProgressModal');
+  const tComponentsJobProgressModal = useTranslations('components.jobProgressModal');
   const [jobStatus, setJobStatus] = useState<JobStatus | null>(null);
   const [polling, setPolling] = useState(false);
   const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
@@ -177,15 +177,15 @@ export default function JobProgressModal({
 
     switch (jobStatus.status) {
       case 'pending':
-        return t('status.waitingToStart');
+        return tComponentsJobProgressModal('status.waitingToStart');
       case 'processing':
-        return t('status.inProgress');
+        return tComponentsJobProgressModal('status.inProgress');
       case 'completed':
-        return t('status.completed');
+        return tComponentsJobProgressModal('status.completed');
       case 'failed':
-        return jobStatus.error || t('status.failed');
+        return jobStatus.error || tComponentsJobProgressModal('status.failed');
       default:
-        return t('status.inProgress');
+        return tComponentsJobProgressModal('status.inProgress');
     }
   };
 
@@ -204,7 +204,7 @@ export default function JobProgressModal({
             {getStatusIcon()}
             <div>
               <h2 className="text-lg font-semibold text-gray-900">
-                {t('title')}
+                {tComponentsJobProgressModal('title')}
               </h2>
               <p className="text-sm text-gray-600">
                 {getStatusText()}
@@ -226,7 +226,7 @@ export default function JobProgressModal({
           {/* Progress Bar */}
           <div className="space-y-3">
             <div className="flex justify-between text-sm text-gray-600">
-              <span>{t('labels.progress')}</span>
+              <span>{tComponentsJobProgressModal('labels.progress')}</span>
               <span>{Math.round(jobStatus?.progress || 0)}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
@@ -248,10 +248,10 @@ export default function JobProgressModal({
             <div className="mt-4 space-y-2">
               <div className="flex justify-between text-xs text-gray-500">
                 <span>
-                  {t('labels.elapsed')}: {formatTime(jobStatus.elapsedTime)}
+                  {tComponentsJobProgressModal('labels.elapsed')}: {formatTime(jobStatus.elapsedTime)}
                 </span>
                 <span>
-                  {t('labels.remaining')}: ~{formatTime(
+                  {tComponentsJobProgressModal('labels.remaining')}: ~{formatTime(
                     Math.max(0, jobStatus.remainingTime)
                   )}
                 </span>
@@ -275,7 +275,7 @@ export default function JobProgressModal({
               <div className="flex items-center space-x-2">
                 <FiCheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
                 <span className="text-sm text-green-600">
-                  {t('status.completed')}
+                  {tComponentsJobProgressModal('status.completed')}
                 </span>
               </div>
             </div>
@@ -284,12 +284,12 @@ export default function JobProgressModal({
 
         {/* Footer */}
         {canClose() && (
-          <div className="p-4 border-t border-gray-200 flex justify-end">
+          <div className="p-4 border-tComponentsJobProgressModal border-gray-200 flex justify-end">
             <button
               onClick={onClose}
               className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
             >
-              {t('closeButton')}
+              {tComponentsJobProgressModal('closeButton')}
             </button>
           </div>
         )}

@@ -42,7 +42,7 @@ export default function AIImageEditor({
   onOptimisticUpdate, // eslint-disable-line @typescript-eslint/no-unused-vars
   onRevertUpdate // eslint-disable-line @typescript-eslint/no-unused-vars
 }: AIImageEditorProps) {
-  const t = useTranslations('components.aiImageEditor');
+  const tComponentsAIImageEditor = useTranslations('components.aiImageEditor');
   const [userRequest, setUserRequest] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -113,14 +113,14 @@ export default function AIImageEditor({
   // Handle image edit
   const handleImageEdit = async () => {
     if (!userRequest.trim()) {
-      setError(t('errors.describeChanges'));
+      setError(tComponentsAIImageEditor('errors.describeChanges'));
       return;
     }
 
     // Check credits first
     const credits = await checkImageEditCredits();
     if (!credits) {
-      setError(t('errors.unableToCheckCredits'));
+      setError(tComponentsAIImageEditor('errors.unableToCheckCredits'));
       return;
     }
 
@@ -191,7 +191,7 @@ export default function AIImageEditor({
 
     } catch (error) {
       console.error('Error creating image edit job:', error);
-      setError(error instanceof Error ? error.message : t('errors.failedToGenerate'));
+      setError(error instanceof Error ? error.message : tComponentsAIImageEditor('errors.failedToGenerate'));
       setIsLoading(false);
       setPendingImageEditData(null);
     }
@@ -245,11 +245,11 @@ export default function AIImageEditor({
         onImageEditSuccess(data);
         onClose();
       } else {
-        setError(data.error || t('errors.failedToReplace'));
+        setError(data.error || tComponentsAIImageEditor('errors.failedToReplace'));
       }
     } catch (error) {
       console.error('Error replacing image:', error);
-      setError(t('errors.failedToReplace'));
+      setError(tComponentsAIImageEditor('errors.failedToReplace'));
     } finally {
       setIsReplacing(false);
     }
@@ -260,11 +260,11 @@ export default function AIImageEditor({
     
     switch (imageData.imageType) {
       case 'cover':
-        return t('imageTypes.cover');
+        return tComponentsAIImageEditor('imageTypes.cover');
       case 'backcover':
-        return t('imageTypes.backcover');
+        return tComponentsAIImageEditor('imageTypes.backcover');
       case 'chapter':
-        return t('imageTypes.chapter', { number: imageData.chapterNumber ?? 0 });
+        return tComponentsAIImageEditor('imageTypes.chapter', { number: imageData.chapterNumber ?? 0 });
       default:
         return 'Image';
     }
@@ -283,7 +283,7 @@ export default function AIImageEditor({
             </div>
             <div>
               <h2 className="text-xl font-semibold text-gray-900">
-                {t('title', { imageType: getImageTitle() })}
+                {tComponentsAIImageEditor('title', { imageType: getImageTitle() })}
               </h2>
               <p className="text-sm text-gray-600">
                 {story.title}
@@ -304,7 +304,7 @@ export default function AIImageEditor({
             {/* Current Image */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-700">
-                {t('currentImage')}
+                {tComponentsAIImageEditor('currentImage')}
               </label>
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="relative mx-auto max-w-sm">
@@ -324,13 +324,13 @@ export default function AIImageEditor({
               <textarea
                 value={userRequest}
                 onChange={(e) => setUserRequest(e.target.value)}
-                placeholder={t('requestPlaceholder')}
+                placeholder={tComponentsAIImageEditor('requestPlaceholder')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none"
                 rows={4}
                 maxLength={1000}
               />
               <div className="flex justify-between text-xs text-gray-500">
-                <span>{t('characterCount', { count: userRequest.length, max: 1000 })}</span>
+                <span>{tComponentsAIImageEditor('characterCount', { count: userRequest.length, max: 1000 })}</span>
               </div>
             </div>
 
@@ -338,13 +338,13 @@ export default function AIImageEditor({
             {newImageGenerated && (
               <div className="space-y-3">
                 <label className="block text-sm font-medium text-gray-700">
-                  {t('newImageLabel')}
+                  {tComponentsAIImageEditor('newImageLabel')}
                 </label>
                 <div className="bg-green-50 rounded-lg p-4 border border-green-200">
                   <div className="relative mx-auto max-w-sm">
                     <Image
                       src={toAbsoluteImageUrl(newImageGenerated) || ''}
-                      alt={t('generatedImageAlt')}
+                      alt={tComponentsAIImageEditor('generatedImageAlt')}
                       width={400}
                       height={500}
                       className="w-full h-auto rounded-lg object-cover"
@@ -352,7 +352,7 @@ export default function AIImageEditor({
                   </div>
                   <div className="mt-4 text-center">
                     <p className="text-sm text-green-600 mb-3">
-                      {t('newImageSuccess')}
+                      {tComponentsAIImageEditor('newImageSuccess')}
                     </p>
                     <button
                       onClick={handleReplaceImage}
@@ -362,12 +362,12 @@ export default function AIImageEditor({
                       {isReplacing ? (
                         <>
                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          <span>{t('loading')}</span>
+                          <span>{tComponentsAIImageEditor('loading')}</span>
                         </>
                       ) : (
                         <>
                           <FiImage className="w-4 h-4" />
-                          <span>{t('replaceButton')}</span>
+                          <span>{tComponentsAIImageEditor('replaceButton')}</span>
                         </>
                       )}
                     </button>
@@ -392,7 +392,7 @@ export default function AIImageEditor({
                 onClick={onClose}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
               >
-                {t('cancelButton')}
+                {tComponentsAIImageEditor('cancelButton')}
               </button>
               {!newImageGenerated && (
                 <button
@@ -403,12 +403,12 @@ export default function AIImageEditor({
                   {isLoading ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>{t('loading')}</span>
+                      <span>{tComponentsAIImageEditor('loading')}</span>
                     </>
                   ) : (
                     <>
                       <FiZap className="w-4 h-4" />
-                      <span>{t('generateButton')}</span>
+                      <span>{tComponentsAIImageEditor('generateButton')}</span>
                     </>
                   )}
                 </button>
