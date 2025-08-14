@@ -91,8 +91,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ...getInspiredPageMessages,
       ...blogMessages,
       ...blogPostMessages,
-      ...pricingPageMessages,
-      publicPages: publicPagesMessages,
+  ...pricingPageMessages,
+  publicPages: publicPagesMessages,
       privacyPolicy: privacyPolicyMessages,
       storySteps: storyStepsMessages
     }

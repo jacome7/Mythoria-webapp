@@ -805,6 +805,7 @@ export default function BuyCreditsPage() {
 }
 
 function LoadingFallback() {
-	const t = useTranslations('common.Loading');
+	// Use the correct translation namespace for the buy credits page
+	const tBuyCreditsPage = useTranslations('BuyCreditsPage');
 	return <div>{tBuyCreditsPage('buyCredits')}</div>;
 }

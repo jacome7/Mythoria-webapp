@@ -61,7 +61,7 @@ export default function PricingPage() {
 		} finally {
 			setLoading(false);
 		}
-	}, [t]);
+	}, [tPricingPage]);
 
 	const fetchCreditPackages = useCallback(async () => {
 		try {
@@ -79,7 +79,7 @@ export default function PricingPage() {
 		} finally {
 			setPackagesLoading(false);
 		}
-	}, [t]);
+	}, [tPricingPage]);
 
 	useEffect(() => {
 		fetchServices();
