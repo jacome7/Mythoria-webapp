@@ -15,7 +15,7 @@ const defaultFormatDuration = (seconds: number): string => {
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
 
-export function AudioChapterList({ 
+export function AudioChapterList({
   chapters,
   currentlyPlaying,
   audioProgress,
@@ -25,7 +25,7 @@ export function AudioChapterList({
   stopAudio,
   formatDuration = defaultFormatDuration
 }: AudioChapterListProps) {
-  const t = useTranslations('PublicStoryPage');
+  const tPublicStoryPage = useTranslations('PublicStoryPage');
 
   return (
     <div className="space-y-4">
@@ -37,7 +37,7 @@ export function AudioChapterList({
               {chapter.imageUri ? (
                 <Image
                   src={chapter.imageUri}
-                  alt={t('listen.chapterImageAlt', { number: index + 1 })}
+                  alt={tPublicStoryPage('listen.chapterImageAlt', { number: index + 1 })}
                   className="w-16 h-16 object-cover rounded-lg"
                   width={64}
                   height={64}
@@ -60,7 +60,7 @@ export function AudioChapterList({
               </h3>
               {chapter.duration > 0 && (
                 <p className="text-sm text-gray-600">
-                  {t('listen.duration', { duration: formatDuration(chapter.duration) })}
+                  {tPublicStoryPage('listen.duration', { duration: formatDuration(chapter.duration) })}
                 </p>
               )}
 
@@ -88,14 +88,14 @@ export function AudioChapterList({
                   <button
                     onClick={() => pauseAudio(index)}
                     className="btn btn-circle btn-primary btn-sm"
-                    title={t('listen.controls.pause')}
+                    title={tPublicStoryPage('listen.controls.pause')}
                   >
                     <FiPause className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => stopAudio(index)}
                     className="btn btn-circle btn-outline btn-sm"
-                    title={t('listen.controls.stop')}
+                    title={tPublicStoryPage('listen.controls.stop')}
                   >
                     <FiSquare className="w-3 h-3" />
                   </button>
@@ -104,7 +104,7 @@ export function AudioChapterList({
                 <button
                   onClick={() => playAudio(index)}
                   className="btn btn-circle btn-primary btn-sm"
-                  title={t('listen.controls.play')}
+                  title={tPublicStoryPage('listen.controls.play')}
                 >
                   <FiPlay className="w-4 h-4 ml-0.5" />
                 </button>

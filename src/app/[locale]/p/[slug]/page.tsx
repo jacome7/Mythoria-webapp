@@ -55,7 +55,7 @@ interface PublicStoryData {
 export default function PublicStoryPage() {
   const params = useParams();
   const locale = useLocale();
-  const t = useTranslations('PublicStoryPage');
+  const tPublicStoryPage = useTranslations('PublicStoryPage');
   const tCommon = useTranslations('common');
   const tGetInspiredPage = useTranslations('GetInspiredPage');
   const slug = Array.isArray(params?.slug)
@@ -85,19 +85,19 @@ export default function PublicStoryPage() {
           
         } else {
           console.error('[Public Page] API returned error:', result.error);
-          setError(result.error || t('errors.notFound'));
+          setError(result.error || tPublicStoryPage('errors.notFound'));
         }
       } catch (err) {
         console.error('[Public Page] Error fetching public story:', err);
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-        setError(`${t('errors.failedToLoadStory')}: ${errorMessage}`);
+        setError(`${tPublicStoryPage('errors.failedToLoadStory')}: ${errorMessage}`);
       } finally {
         setLoading(false);
       }
     };
 
     fetchPublicStory();
-  }, [slug, t]);
+  }, [slug, tPublicStoryPage]);
   // Generate metadata for the page
   useEffect(() => {
     if (data?.story) {
@@ -107,7 +107,8 @@ export default function PublicStoryPage() {
       
       // Set meta description
       const metaDescription = document.querySelector('meta[name="description"]');
-      const description = story.synopsis || story.plotDescription || t('metadata.defaultDescription', { title: story.title });
+      const description =
+        story.synopsis || story.plotDescription || tPublicStoryPage('metadata.defaultDescription', { title: story.title });
       if (metaDescription) {
         metaDescription.setAttribute('content', description);
       } else {
@@ -137,7 +138,7 @@ export default function PublicStoryPage() {
       setMetaTag('og:image', `${baseUrl}/api/og/story/${slug}`);
       setMetaTag('og:image:width', '1200');
       setMetaTag('og:image:height', '630');
-      setMetaTag('og:image:alt', t('metadata.coverImageAlt', { title: story.title }));
+      setMetaTag('og:image:alt', tPublicStoryPage('metadata.coverImageAlt', { title: story.title }));
 
       // Twitter Card tags
       const setTwitterTag = (name: string, content: string) => {
@@ -161,8 +162,8 @@ export default function PublicStoryPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <FiLoader className="animate-spin text-4xl text-primary mx-auto" />
-          <h2 className="text-xl font-semibold">{t('loading.title')}</h2>
-          <p className="text-gray-600">{t('loading.subtitle')}</p>
+          <h2 className="text-xl font-semibold">{tPublicStoryPage('loading.title')}</h2>
+          <p className="text-gray-600">{tPublicStoryPage('loading.subtitle')}</p>
         </div>
       </div>
     );
@@ -172,8 +173,8 @@ export default function PublicStoryPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4 max-w-md mx-auto px-4">
           <FiAlertCircle className="text-4xl text-red-500 mx-auto" />
-          <h2 className="text-xl font-semibold text-gray-900">{t('errors.notFound')}</h2>
-          <p className="text-gray-600">{error || t('errors.notFoundDesc')}</p>
+          <h2 className="text-xl font-semibold text-gray-900">{tPublicStoryPage('errors.notFound')}</h2>
+          <p className="text-gray-600">{error || tPublicStoryPage('errors.notFoundDesc')}</p>
           
           <div className="space-y-2">
             <a
@@ -209,8 +210,8 @@ export default function PublicStoryPage() {
                     className="btn btn-primary btn-sm flex items-center gap-2 text-xs sm:text-sm"
                   >
                     <FiPrinter className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="hidden min-[480px]:inline">{t('actions.orderPrint')}</span>
-                    <span className="min-[480px]:hidden">{t('actions.print')}</span>
+                    <span className="hidden min-[480px]:inline">{tPublicStoryPage('actions.orderPrint')}</span>
+                    <span className="min-[480px]:hidden">{tPublicStoryPage('actions.print')}</span>
                   </a>
                   {story.hasAudio && (
                     <a
@@ -218,8 +219,8 @@ export default function PublicStoryPage() {
                       className="btn btn-secondary btn-sm flex items-center gap-2 text-xs sm:text-sm"
                     >
                       <FiVolume2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span className="hidden min-[480px]:inline">{t('actions.listen')}</span>
-                      <span className="min-[480px]:hidden">{t('actions.listenMobile')}</span>
+                      <span className="hidden min-[480px]:inline">{tPublicStoryPage('actions.listen')}</span>
+                      <span className="min-[480px]:hidden">{tPublicStoryPage('actions.listenMobile')}</span>
                     </a>
                   )}
                 </div>
@@ -229,7 +230,7 @@ export default function PublicStoryPage() {
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mt-4">
               <div className="flex items-center gap-1">
                 <FiUser />
-                <span>{t('labels.by')} {story.authorName || t('labels.unknownAuthor')}</span>
+                <span>{tPublicStoryPage('labels.by')} {story.authorName || tPublicStoryPage('labels.unknownAuthor')}</span>
               </div>
                 <div className="flex items-center gap-1">
                 <FiCalendar />
@@ -259,7 +260,7 @@ export default function PublicStoryPage() {
             
             {(story.synopsis || story.plotDescription) && (
               <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                <h3 className="font-bold text-gray-900 mb-2">{t('labels.synopsis')}</h3>
+                <h3 className="font-bold text-gray-900 mb-2">{tPublicStoryPage('labels.synopsis')}</h3>
                 <p className="text-gray-700 leading-relaxed text-sm">
                   {story.synopsis || story.plotDescription}
                 </p>
@@ -292,9 +293,9 @@ export default function PublicStoryPage() {
             <div className="max-w-4xl mx-auto">
               <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
                 <FiAlertCircle className="text-4xl text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">{t('errors.contentNotAvailable')}</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">{tPublicStoryPage('errors.contentNotAvailable')}</h3>
                 <p className="text-gray-600">
-                  {t('errors.contentNotAvailableDesc')}
+                  {tPublicStoryPage('errors.contentNotAvailableDesc')}
                 </p>
               </div>
             </div>
@@ -306,10 +307,10 @@ export default function PublicStoryPage() {
           <div className="max-w-4xl mx-auto">
             <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 border border-blue-200 print:hidden">
               <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">
-                {t('storyComplete.enjoyedTitle')}
+                {tPublicStoryPage('storyComplete.enjoyedTitle')}
               </h3>
               <p className="text-gray-700 text-center mb-6">
-                {t('storyComplete.enjoyedDesc')}
+                {tPublicStoryPage('storyComplete.enjoyedDesc')}
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -318,7 +319,7 @@ export default function PublicStoryPage() {
                   className="btn btn-primary flex items-center gap-2"
                 >
                   <FiEdit3 className="w-4 h-4" />
-                  {t('actions.createOwnStory')}
+                  {tPublicStoryPage('actions.createOwnStory')}
                 </a>
                 
                 <a
@@ -326,7 +327,7 @@ export default function PublicStoryPage() {
                   className="btn btn-secondary flex items-center gap-2"
                 >
                   <FiPrinter className="w-4 h-4" />
-                  {t('actions.orderPrintedBook')}
+                  {tPublicStoryPage('actions.orderPrintedBook')}
                 </a>
               </div>
             </div>
