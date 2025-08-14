@@ -24,9 +24,14 @@
       "orderPrintedBook": "Order Printed Book"
     },
     "labels": {
+      "publicStory": "Public Story",
       "by": "by",
       "synopsis": "Synopsis",
       "unknownAuthor": "Unknown Author"
+    },
+    "footer": {
+      "createdWith": "This story was created with",
+      "cta": "Create your own magical stories today!"
     },
     "metadata": {
       "defaultDescription": "Read \"{title}\" on Mythoria",

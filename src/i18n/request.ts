@@ -68,6 +68,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     messages: {
       ...commonMessages,
       ...authMessages,
+      ...publicPagesMessages,
       ...contactUsPageMessages,
       ...aboutUsMessages,
       ...homePageMessages,
