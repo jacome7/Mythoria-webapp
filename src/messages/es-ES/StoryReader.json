@@ -1,0 +1,16 @@
+{
+  "StoryReader": {
+    "preparing": "Preparando tu historia...",
+    "startReading": "Comenzar a leer",
+    "listen": "Escuchar",
+    "chapterNotFound": "Capítulo no encontrado",
+    "chapterNotFoundDescription": "No se pudo encontrar el capítulo solicitado.",
+    "backToStory": "Volver a la historia",
+    "storyImaginedBy": "Esta historia fue imaginada por",
+    "storyImaginedByEnd": ".",
+    "craftedWith": "Creada con:",
+    "byAuthor": "por {authorName}",
+    "tableOfContents": "Índice",
+    "coverAndIntroduction": "Portada e introducción"
+  }
+}

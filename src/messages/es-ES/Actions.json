@@ -1,0 +1,17 @@
+{
+  "Actions": {
+    "signIn": "Iniciar sesión",
+    "read": "Leer",
+    "listen": "Escuchar",
+    "edit": "Editar",
+    "print": "Imprimir",
+    "share": "Compartir",
+    "backToMyStories": "Volver a mis historias",
+    "goToHomepage": "Ir a inicio",
+    "tryAgain": "Intentar de nuevo",
+    "close": "Cerrar",
+    "goBack": "Volver",
+    "backToStory": "Volver a la historia",
+    "createAccount": "Crear cuenta"
+  }
+}

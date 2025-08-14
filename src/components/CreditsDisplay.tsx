@@ -20,8 +20,8 @@ interface CreditsDisplayProps {
 }
 
 export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
-  const tCommonCreditsDisplay = useTranslations('common.Components.CreditsDisplay');
-  const tCommonActions = useTranslations('common.Actions');
+  const tCommonCreditsDisplay = useTranslations('CreditsDisplay');
+  const tCommonActions = useTranslations('Actions');
   const locale = useLocale();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [creditHistory, setCreditHistory] = useState<CreditHistoryEntry[]>([]);

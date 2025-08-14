@@ -1,0 +1,25 @@
+{
+  "CreditConfirmation": {
+    "textEdit": "Edición de texto",
+    "imageEdit": "Edición de imagen",
+    "freeEditTitle": "Edición gratuita disponible",
+    "confirmEditTitle": "Confirmar edición",
+    "editProgress": "Progreso de edición",
+    "editsCompleted": "ediciones completadas",
+    "textEditFreeRemaining": "{remaining} ediciones de texto gratis restantes",
+    "textEditPaidMode": "Modo de pago: 1 crédito cada 5 ediciones",
+    "imageEditFirstFree": "¡Tu primera edición de imagen es gratis!",
+    "imageEditPaidMode": "1 crédito por edición de imagen",
+    "creditBalance": "Saldo de créditos",
+    "thisEditCosts": "Esta edición cuesta:",
+    "remainingBalance": "Saldo restante:",
+    "freeEdit": "¡Esta edición es gratis!",
+    "lowCreditsWarning": "Créditos bajos",
+    "lowCreditsMessage": "Piensa en comprar más créditos para seguir editando.",
+    "cancel": "Cancelar",
+    "processing": "Procesando...",
+    "proceedFree": "Continuar (gratis)",
+    "proceedWithCredits": "Usar {credits} créditos",
+    "buyCredits": "Comprar créditos"
+  }
+}

@@ -56,10 +56,12 @@ export default function EditChapterPage() {
   const params = useParams<{ storyId?: string; chapterNumber?: string; locale?: string }>();
   const router = useRouter();
   const { user } = useUser();
-  const tCommon = useTranslations('common');
+  const tLoading = useTranslations('Loading');
+  const tErrors = useTranslations('Errors');
+  const tActions = useTranslations('Actions');
   const tChapterEditor = useTranslations('ChapterEditor');
   const tStoryInfoEditor = useTranslations('StoryInfoEditor');
-  const tEditor = useTranslations('editor');
+  const tEditor = useTranslations('Editor');
 
   const storyId = (params?.storyId as string | undefined) ?? '';
   const chapterNumber = parseInt(((params?.chapterNumber as string | undefined) ?? '0'), 10);
@@ -412,7 +414,7 @@ export default function EditChapterPage() {
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center">
           <div className="loading loading-spinner loading-lg text-primary mb-4"></div>
-          <p className="text-lg font-medium">{tCommon('Loading.default')}</p>
+          <p className="text-lg font-medium">{tLoading('default')}</p>
         </div>
       </div>
     );
@@ -424,7 +426,7 @@ export default function EditChapterPage() {
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center max-w-md">
           <div className="text-6xl mb-4">😞</div>
-          <h1 className="text-2xl font-bold mb-2">{tCommon('Errors.generic')}</h1>
+          <h1 className="text-2xl font-bold mb-2">{tErrors('generic')}</h1>
           <p className="text-base-content/70 mb-6">{tEditor('chapterNotFound')}</p>
           <button
             onClick={() => router.push(`/${locale}/stories/edit/${storyId}`)}
@@ -452,7 +454,7 @@ export default function EditChapterPage() {
               className="btn btn-ghost btn-sm"
             >
               <FiArrowLeft className="w-4 h-4" />
-              <span className="hidden sm:inline ml-2">{tCommon('Actions.goBack')}</span>
+              <span className="hidden sm:inline ml-2">{tActions('goBack')}</span>
             </button>
             
             <h1 className="text-xl font-bold">{storyData.story.title}</h1>

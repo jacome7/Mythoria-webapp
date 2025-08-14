@@ -57,14 +57,13 @@ export async function GET() {
           };
         }
         
-        // Load common.json as sample
-        if (files.includes('common.json')) {
-          const content = await readFile(path.join(localeDir, 'common.json'), 'utf8');
+        // Load Header.json as sample
+        if (files.includes('Header.json')) {
+          const content = await readFile(path.join(localeDir, 'Header.json'), 'utf8');
           const json = JSON.parse(content);
-          diagnostics.translations[locale].sample.common = {
-            hasHeader: !!json.Header,
-            hasFooter: !!json.Footer,
-            keys: Object.keys(json)
+          (diagnostics.translations[locale].sample as any).Header = {
+            hasNavigation: !!json.Header?.navigation,
+            keys: Object.keys(json.Header || {})
           };
         }
       } catch (e) {

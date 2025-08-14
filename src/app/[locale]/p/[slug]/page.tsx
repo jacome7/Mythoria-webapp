@@ -56,7 +56,7 @@ export default function PublicStoryPage() {
   const params = useParams();
   const locale = useLocale();
   const tPublicStoryPage = useTranslations('PublicStoryPage');
-  const tCommon = useTranslations('common');
+  const tActions = useTranslations('Actions');
   const tGetInspiredPage = useTranslations('GetInspiredPage');
   const slug = Array.isArray(params?.slug)
     ? (params?.slug[0] ?? '')
@@ -181,7 +181,7 @@ export default function PublicStoryPage() {
               href={`/${locale}`}
               className="btn btn-primary btn-sm"
             >
-              {tCommon('Actions.goToHomepage')}
+              {tActions('goToHomepage')}
             </a>
           </div>
         </div>

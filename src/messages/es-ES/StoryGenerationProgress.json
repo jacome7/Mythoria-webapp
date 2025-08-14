@@ -1,0 +1,86 @@
+{
+  "StoryGenerationProgress": {
+    "completion": {
+      "title": "¡Tu historia está lista!",
+      "description": "¡Enhorabuena! Tu historia mágica está lista para leer.",
+      "progress": "¡100 % completado!",
+      "buttons": {
+        "readStory": "📖 Leer ahora",
+        "myStories": "📚 Mis historias"
+      },
+      "celebration": {
+        "title": "¡Tu historia ya forma parte de Mythoria!",
+        "description": "Compártela o crea otra aventura."
+      }
+    },
+    "progress": {
+      "title": "🏭 ¡Fábrica de historias en marcha!",
+      "description": "Tu historia estará lista en 14 minutos",
+      "progressLabel": "Progreso",
+      "estimatedTimeLabel": "Tiempo restante",
+      "creatingMagic": "Creando magia...",
+      "currentlyLabel": "Actualmente:",
+      "tip": {
+        "title": "Tip:",
+        "description": "Mientras esperas, visita \"Mis historias\" para ver el progreso o crear otra."
+      }
+    },
+    "steps": {
+      "generate_outline": "Esbozando la trama",
+      "write_chapters": "Escribiendo capítulos mágicos",
+      "generate_front_cover": "Diseñando la portada",
+      "generate_back_cover": "Creando la contraportada",
+      "generate_images": "Pintando ilustraciones",
+      "assemble": "Encudernando la historia",
+      "generate_audiobook": "Grabando el audiolibro",
+      "done": "Toques finales"
+    },
+    "funnyMessages": {
+      "generate_outline": [
+        "🍫 ¡Los Oompa-Loompas bosquejan tu historia en papel de chocolate!",
+        "📋 Los duendes escritores trazan tu aventura con plumas mágicas.",
+        "✨ Los arquitectos de historias diseñan la trama perfecta."
+      ],
+      "write_chapters": [
+        "📖 Los Oompa-Loompas teclean furiosamente en sus máquinas diminutas.",
+        "✍️ Los elfos literarios hilan tu relato con hilos de oro.",
+        "🎭 Los escribas dan vida a los personajes con tinta encantada.",
+        "📚 Los magos de capítulos elaboran cada página con hechizos."
+      ],
+      "generate_front_cover": [
+        "🎨 Los Oompa-Loompas artistas mezclan pintura mágica para tu portada.",
+        "🖌️ Ilustradores maestros dibujan con pinceles arcoíris.",
+        "🌟 Diseñadores salpican tu libro con polvo de estrellas."
+      ],
+      "generate_back_cover": [
+        "🎭 Poetas de contraportada escriben sinopsis con tinta invisible.",
+        "📖 Nuestros sinopseros crean el teaser perfecto.",
+        "✨ Duendes rematan la portada con toques mágicos."
+      ],
+      "generate_images": [
+        "🖼️ Oompa-Loompas pintan cada escena con emoción.",
+        "🎨 Magos de la imagen dan color a tus personajes.",
+        "🌈 Hadas artísticas añaden detalles de fantasía.",
+        "🖌️ Narradores visuales abren ventanas a tu mundo."
+      ],
+      "assemble": [
+        "📚 Oompa-Loompas encuadernan cada página.",
+        "🔧 Elfos ensambladores revisan cada detalle.",
+        "📋 Magos de control de calidad verifican todo."
+      ],
+      "generate_audiobook": [
+        "🎤 Oompa-Loompas narradores ponen voz a tu historia.",
+        "🎵 Magos del sonido añaden ritmo narrativo.",
+        "🎧 Ingenieros pulen cada palabra."
+      ],
+      "done": [
+        "🎉 ¡Voilà! Tu historia ya está lista para la aventura.",
+        "✨ ¡Todo listo! Los Oompa-Loompas se van a por un cacao.",
+        "🏆 ¡Misión cumplida! Tu historia encantará a todos."
+      ],
+      "default": [
+        "⚡ Oompa-Loompas mágicos dan rienda suelta a su creatividad."
+      ]
+    }
+  }
+}

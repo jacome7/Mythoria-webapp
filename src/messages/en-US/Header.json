@@ -1,0 +1,16 @@
+{
+  "Header": {
+    "navigation": {
+      "homepage": "Homepage",
+      "getInspired": "Get Inspired",
+      "tellYourStory": "Tell Your Story",
+      "blog": "The Blog",
+      "myStories": "My Stories",
+      "pricing": "Pricing"
+    },
+    "auth": {
+      "signIn": "Sign In"
+    },
+    "logoAlt": "Mythoria Logo"
+  }
+}

@@ -23,13 +23,13 @@ interface Chapter {
 
 type EditTab = 'text' | 'images';
 
-export default function AIEditModal({ 
+export default function AIEditModal({
   isOpen, 
   onClose, 
   storyId, 
   onEditSuccess
 }: AIEditModalProps) {
-  const tCommonAIEditModal = useTranslations('common.aiEditModal');
+  const tCommonAIEditModal = useTranslations('AIEditModal');
   const [activeTab, setActiveTab] = useState<EditTab>('text');
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [storyImages, setStoryImages] = useState<StoryImage[]>([]);

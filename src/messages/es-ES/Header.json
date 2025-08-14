@@ -1,0 +1,16 @@
+{
+  "Header": {
+    "navigation": {
+      "homepage": "Inicio",
+      "getInspired": "Inspírate",
+      "tellYourStory": "Cuenta tu historia",
+      "blog": "Las Crónicas",
+      "myStories": "Mis historias",
+      "pricing": "Precios"
+    },
+    "auth": {
+      "signIn": "Iniciar sesión"
+    },
+    "logoAlt": "Logo de Mythoria"
+  }
+}

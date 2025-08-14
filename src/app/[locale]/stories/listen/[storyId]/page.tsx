@@ -70,15 +70,15 @@ interface VoiceSelectorProps {
   selectedVoice: string;
   onVoiceChange: (voice: string) => void;
   voiceOptions: Array<{ value: string; label: string }>;
-  tCommon: (key: string) => string;
+  tVoices: (key: string) => string;
 }
 
-function VoiceSelector({ selectedVoice, onVoiceChange, voiceOptions, tCommon }: VoiceSelectorProps) {
+function VoiceSelector({ selectedVoice, onVoiceChange, voiceOptions, tVoices }: VoiceSelectorProps) {
   return (
     <div className="space-y-4">
       <div className="form-control w-full">
         <label className="label">
-          <span className="label-text font-medium">{tCommon('voices.selectVoice')}</span>
+          <span className="label-text font-medium">{tVoices('selectVoice')}</span>
         </label>
         <select
           className="select select-bordered w-full"
@@ -98,7 +98,7 @@ function VoiceSelector({ selectedVoice, onVoiceChange, voiceOptions, tCommon }: 
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
-          <span className="text-sm">{tCommon(`voices.descriptions.${selectedVoice}`)}</span>
+          <span className="text-sm">{tVoices(`descriptions.${selectedVoice}`)}</span>
         </div>
       )}
     </div>
@@ -109,7 +109,11 @@ export default function ListenStoryPage() {
   const router = useRouter();
   const params = useParams<{ storyId?: string }>();
   const locale = useLocale();
-  const tCommon = useTranslations('common');
+  const tVoices = useTranslations('Voices');
+  const tErrors = useTranslations('Errors');
+  const tListenStory = useTranslations('ListenStory');
+  const tActions = useTranslations('Actions');
+  const tCreditsDisplay = useTranslations('CreditsDisplay');
   const storyId = (params?.storyId as string | undefined) ?? '';
   const [story, setStory] = useState<Story | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
@@ -135,17 +139,17 @@ export default function ListenStoryPage() {
 
   // Voice options for narration
   const voiceOptions = [
-    { value: 'alloy', label: tCommon('voices.names.alloy') },
-    { value: 'ash', label: tCommon('voices.names.ash') },
-    { value: 'ballad', label: tCommon('voices.names.ballad') },
-    { value: 'coral', label: tCommon('voices.names.coral') },
-    { value: 'echo', label: tCommon('voices.names.echo') },
-    { value: 'fable', label: tCommon('voices.names.fable') },
-    { value: 'nova', label: tCommon('voices.names.nova') },
-    { value: 'onyx', label: tCommon('voices.names.onyx') },
-    { value: 'sage', label: tCommon('voices.names.sage') },
-    { value: 'shimmer', label: tCommon('voices.names.shimmer') },
-    { value: 'verse', label: tCommon('voices.names.verse') },
+    { value: 'alloy', label: tVoices('names.alloy') },
+    { value: 'ash', label: tVoices('names.ash') },
+    { value: 'ballad', label: tVoices('names.ballad') },
+    { value: 'coral', label: tVoices('names.coral') },
+    { value: 'echo', label: tVoices('names.echo') },
+    { value: 'fable', label: tVoices('names.fable') },
+    { value: 'nova', label: tVoices('names.nova') },
+    { value: 'onyx', label: tVoices('names.onyx') },
+    { value: 'sage', label: tVoices('names.sage') },
+    { value: 'shimmer', label: tVoices('names.shimmer') },
+    { value: 'verse', label: tVoices('names.verse') },
   ];
 
   useEffect(() => {
@@ -164,7 +168,7 @@ export default function ListenStoryPage() {
           console.log('Fetched story data:', storyData);
           
           if (storyData.story.status !== 'published') {
-            setError(tCommon('Errors.storyNotAvailableYet'));
+            setError(tErrors('storyNotAvailableYet'));
             return;
           }
           setStory(storyData.story);
@@ -176,13 +180,13 @@ export default function ListenStoryPage() {
             console.log('No chapters data in API response');
           }
         } else if (storyResponse.status === 404) {
-          setError(tCommon('Errors.storyNotFoundGeneric'));
+          setError(tErrors('storyNotFoundGeneric'));
           return;
         } else if (storyResponse.status === 403) {
-          setError(tCommon('Errors.noPermission'));
+          setError(tErrors('noPermission'));
           return;
         } else {
-          setError(tCommon('Errors.failedToLoad'));
+          setError(tErrors('failedToLoad'));
           return;
         }
 
@@ -202,7 +206,7 @@ export default function ListenStoryPage() {
 
       } catch (error) {
         console.error('Error fetching data:', error);
-        setError(tCommon('Errors.failedToLoad'));
+        setError(tErrors('failedToLoad'));
       } finally {
         setLoading(false);
       }
@@ -211,7 +215,7 @@ export default function ListenStoryPage() {
     if (storyId) {
       fetchInitialData();
     }
-  }, [storyId, tCommon]);
+  }, [storyId, tErrors]);
 
   // Poll for audiobook updates when generating
   useEffect(() => {
@@ -232,7 +236,7 @@ export default function ListenStoryPage() {
                 setChapters(data.chapters);
               }
               setIsGeneratingAudio(false);
-              setAudioGenerationProgress(tCommon('ListenStory.generationCompleted'));
+              setAudioGenerationProgress(tListenStory('generationCompleted'));
               clearInterval(pollInterval);
             } else if (typeof tempStory.audiobookUri === 'object' && Object.keys(tempStory.audiobookUri).length > 0) {
               setStory(tempStory);
@@ -241,7 +245,7 @@ export default function ListenStoryPage() {
                 setChapters(data.chapters);
               }
               setIsGeneratingAudio(false);
-              setAudioGenerationProgress(tCommon('ListenStory.generationCompleted'));
+              setAudioGenerationProgress(tListenStory('generationCompleted'));
               clearInterval(pollInterval);
             }
           }
@@ -252,10 +256,10 @@ export default function ListenStoryPage() {
     }, 15000); // Poll every 15 seconds
 
     return () => clearInterval(pollInterval);
-  }, [isGeneratingAudio, storyId, tCommon]);  const handleGenerateAudiobook = async () => {
+  }, [isGeneratingAudio, storyId, tListenStory]);  const handleGenerateAudiobook = async () => {
     try {
       setIsGeneratingAudio(true);
-      setAudioGenerationProgress(tCommon('ListenStory.startingGeneration'));
+      setAudioGenerationProgress(tListenStory('startingGeneration'));
       
       const response = await fetch(`/api/stories/${storyId}/generate-audiobook`, {
         method: 'POST',
@@ -269,7 +273,7 @@ export default function ListenStoryPage() {
 
       if (response.ok) {
         const result = await response.json();
-        setAudioGenerationProgress(tCommon('ListenStory.generationStarted'));
+        setAudioGenerationProgress(tListenStory('generationStarted'));
         
         // Update user credits if provided
         if (result.newBalance !== undefined && userCredits) {
@@ -281,9 +285,9 @@ export default function ListenStoryPage() {
         const errorData = await response.json();
         if (response.status === 402) {
           // Insufficient credits
-          throw new Error(tCommon('ListenStory.needMoreCreditsGenerate', { shortfall: errorData.shortfall }));
+          throw new Error(tListenStory('needMoreCreditsGenerate', { shortfall: errorData.shortfall }));
         } else {
-          throw new Error(errorData.error || tCommon('ListenStory.generationFailed'));
+          throw new Error(errorData.error || tListenStory('generationFailed'));
         }
       }
     } catch (error) {
@@ -292,9 +296,9 @@ export default function ListenStoryPage() {
       setAudioGenerationProgress('');
       
       if (error instanceof Error) {
-        alert(tCommon('Errors.failedToStartAudiobook') + ': ' + error.message);
+        alert(tErrors('failedToStartAudiobook') + ': ' + error.message);
       } else {
-        alert(tCommon('Errors.failedToStartAudiobook') + '. ' + tCommon('ListenStory.tryAgainLater'));
+        alert(tErrors('failedToStartAudiobook') + '. ' + tListenStory('tryAgainLater'));
       }
     }
   };
@@ -336,22 +340,22 @@ export default function ListenStoryPage() {
       <SignedOut>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center space-y-6">
-            <h1 className="text-4xl font-bold">{tCommon('ListenStory.accessRestricted')}</h1>
+            <h1 className="text-4xl font-bold">{tListenStory('accessRestricted')}</h1>
             <p className="text-lg text-gray-600">
-              {tCommon('ListenStory.needSignInToListen')}
+              {tListenStory('needSignInToListen')}
             </p>
             <div className="space-x-4">
               <button
                 onClick={() => router.push(`/${locale}/sign-in`)}
                 className="btn btn-primary"
               >
-                {tCommon('Actions.signIn')}
+                {tActions('signIn')}
               </button>
               <button
                 onClick={() => router.push(`/${locale}/sign-up`)}
                 className="btn btn-outline"
               >
-                {tCommon('Actions.createAccount')}
+                {tActions('createAccount')}
               </button>
             </div>
           </div>
@@ -372,7 +376,7 @@ export default function ListenStoryPage() {
                 onClick={() => router.push(`/${locale}/my-stories`)}
                 className="btn btn-primary"
               >
-                {tCommon('Actions.backToMyStories')}
+                {tActions('backToMyStories')}
               </button>
             </div>
           </div>
@@ -386,7 +390,7 @@ export default function ListenStoryPage() {
                   className="btn btn-ghost btn-sm"
                 >
                   <FiArrowLeft className="w-4 h-4 mr-2" />
-                  <span className="hidden sm:inline">{tCommon('Actions.backToMyStories')}</span>
+                  <span className="hidden sm:inline">{tActions('backToMyStories')}</span>
                 </button>
                 
                 <div className="flex items-center gap-2">
@@ -395,14 +399,14 @@ export default function ListenStoryPage() {
                     className="btn btn-ghost btn-sm"
                   >
                     <FiBook className="w-4 h-4" />
-                    <span className="hidden sm:inline sm:ml-2">{tCommon('Actions.read')}</span>
+                    <span className="hidden sm:inline sm:ml-2">{tActions('read')}</span>
                   </button>
                   
                   <button
                     className="btn btn-ghost btn-sm btn-active"
                   >
                     <FiVolume2 className="w-4 h-4" />
-                    <span className="hidden sm:inline sm:ml-2">{tCommon('Actions.listen')}</span>
+                    <span className="hidden sm:inline sm:ml-2">{tActions('listen')}</span>
                   </button>
                   
                   <button
@@ -410,7 +414,7 @@ export default function ListenStoryPage() {
                     className="btn btn-ghost btn-sm"
                   >
                     <FiEdit3 className="w-4 h-4" />
-                    <span className="hidden sm:inline sm:ml-2">{tCommon('Actions.edit')}</span>
+                    <span className="hidden sm:inline sm:ml-2">{tActions('edit')}</span>
                   </button>
                   
                   <button
@@ -418,7 +422,7 @@ export default function ListenStoryPage() {
                     className="btn btn-ghost btn-sm"
                   >
                     <FiPrinter className="w-4 h-4" />
-                    <span className="hidden sm:inline sm:ml-2">{tCommon('Actions.print')}</span>
+                    <span className="hidden sm:inline sm:ml-2">{tActions('print')}</span>
                   </button>
                   
                   <button
@@ -426,7 +430,7 @@ export default function ListenStoryPage() {
                     className="btn btn-ghost btn-sm"
                   >
                     <FiShare2 className="w-4 h-4" />
-                    <span className="hidden sm:inline sm:ml-2">{tCommon('Actions.share')}</span>
+                    <span className="hidden sm:inline sm:ml-2">{tActions('share')}</span>
                   </button>
                 </div>
               </div>
@@ -439,7 +443,7 @@ export default function ListenStoryPage() {
                   <div className="card-body">
                     <h2 className="card-title text-2xl mb-6">
                       <FiVolume2 className="w-6 h-6 mr-2" />
-                      {tCommon('ListenStory.listenToStory', { title: story.title })}
+                      {tListenStory('listenToStory', { title: story.title })}
                     </h2>
                     
                     {hasAudiobook(story.audiobookUri) ? (
@@ -449,7 +453,7 @@ export default function ListenStoryPage() {
                           chapters={getAudioChapters(
                             story.audiobookUri, 
                             chapters, 
-                            (number) => tCommon('ListenStory.chapterTitle', { number })
+                            (number) => tListenStory('chapterTitle', { number })
                           )}
                           {...audioPlayer}
                         />
@@ -461,10 +465,10 @@ export default function ListenStoryPage() {
                             <div className="text-center space-y-4">
                               <h3 className="card-title text-lg mb-4 justify-center">
                                 <FiVolume2 className="w-5 h-5 mr-2" />
-                                {tCommon('ListenStory.wantNewNarration')}
+                                {tListenStory('wantNewNarration')}
                               </h3>
                               <p className="text-base-content/70 mb-4">
-                                {tCommon('ListenStory.newNarrationDescription')}
+                                {tListenStory('newNarrationDescription')}
                               </p>
                               
                               {audiobookCost && userCredits && (
@@ -474,16 +478,16 @@ export default function ListenStoryPage() {
                                     selectedVoice={selectedVoice}
                                     onVoiceChange={setSelectedVoice}
                                     voiceOptions={voiceOptions}
-                                    tCommon={tCommon}
+                                    tVoices={tVoices}
                                   />
                                   
                                   <div className="stats stats-horizontal shadow">
                                     <div className="stat">
-                                      <div className="stat-title">{tCommon('ListenStory.cost')}</div>
+                                      <div className="stat-title">{tListenStory('cost')}</div>
                                       <div className="stat-value text-lg">{audiobookCost.credits} credits</div>
                                     </div>
                                     <div className="stat">
-                                      <div className="stat-title">{tCommon('ListenStory.yourBalance')}</div>
+                                      <div className="stat-title">{tListenStory('yourBalance')}</div>
                                       <div className="stat-value text-lg">{userCredits.currentBalance} credits</div>
                                     </div>
                                   </div>
@@ -496,10 +500,10 @@ export default function ListenStoryPage() {
                                         disabled={isGeneratingAudio}
                                       >
                                         <FiVolume2 className="w-4 h-4 mr-2" />
-                                        {tCommon('ListenStory.narrateStoryAgain')}
+                                        {tListenStory('narrateStoryAgain')}
                                       </button>
                                       <p className="text-sm text-base-content/60">
-                                        {tCommon('ListenStory.replaceCurrentNarration')}
+                                        {tListenStory('replaceCurrentNarration')}
                                       </p>
                                     </div>
                                   ) : (
@@ -508,14 +512,14 @@ export default function ListenStoryPage() {
                                         <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
                                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                                         </svg>
-                                        <span>{tCommon('ListenStory.needMoreCredits', { credits: audiobookCost.credits - userCredits.currentBalance })}</span>
+                                        <span>{tListenStory('needMoreCredits', { credits: audiobookCost.credits - userCredits.currentBalance })}</span>
                                       </div>
                                       <button
                                         onClick={navigateToPricing}
                                         className="btn btn-secondary btn-wide"
                                       >
                                         <FiCreditCard className="w-4 h-4 mr-2" />
-                                        {tCommon('ListenStory.buyMoreCredits')}
+                                        {tListenStory('buyMoreCredits')}
                                       </button>
                                     </div>
                                   )}
@@ -525,7 +529,7 @@ export default function ListenStoryPage() {
                               {(!audiobookCost || !userCredits) && (
                                 <div className="alert alert-info max-w-md mx-auto">
                                   <span className="loading loading-spinner loading-sm"></span>
-                                  <span>{tCommon('ListenStory.loadingPricing')}</span>
+                                  <span>{tListenStory('loadingPricing')}</span>
                                 </div>
                               )}
                             </div>
@@ -535,7 +539,7 @@ export default function ListenStoryPage() {
                     ) : isGeneratingAudio ? (
                       <div className="text-center py-16">
                         <FiLoader className="w-16 h-16 mx-auto mb-4 text-primary animate-spin" />
-                        <h3 className="text-xl font-semibold mb-2">{tCommon('ListenStory.generatingAudiobook')}</h3>
+                        <h3 className="text-xl font-semibold mb-2">{tListenStory('generatingAudiobook')}</h3>
                         <p className="text-base-content/70 mb-4">
                           {audioGenerationProgress}
                         </p>
@@ -544,16 +548,16 @@ export default function ListenStoryPage() {
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
-                            <span className="text-sm">{tCommon('ListenStory.checkingUpdates')}</span>
+                            <span className="text-sm">{tListenStory('checkingUpdates')}</span>
                           </div>
                         </div>
                       </div>
                     ) : (
                       <div className="text-center py-16">
                         <FiVolume2 className="w-16 h-16 mx-auto mb-4 text-base-content/30" />
-                        <h3 className="text-xl font-semibold mb-2">{tCommon('ListenStory.convertYourStory')}</h3>
+                        <h3 className="text-xl font-semibold mb-2">{tListenStory('convertYourStory')}</h3>
                         <p className="text-lg text-base-content/70 mb-6">
-                          {tCommon('ListenStory.convertDescription')}
+                          {tListenStory('convertDescription')}
                         </p>
                         
                         {/* Show pricing and action */}
@@ -564,7 +568,7 @@ export default function ListenStoryPage() {
                               selectedVoice={selectedVoice}
                               onVoiceChange={setSelectedVoice}
                               voiceOptions={voiceOptions}
-                              tCommon={tCommon}
+                              tVoices={tVoices}
                             />
                             
                             <div className="card bg-base-200 shadow-md">
@@ -574,7 +578,7 @@ export default function ListenStoryPage() {
                                 <div className="flex justify-between items-center">
                                   <span className="text-lg font-bold">{audiobookCost.credits} credits</span>
                                   <span className="text-sm text-base-content/60">
-                                    {tCommon('Components.CreditsDisplay.currentBalance')} {userCredits.currentBalance} {tCommon('Components.CreditsDisplay.credits')}
+                                    {tCreditsDisplay('currentBalance')} {userCredits.currentBalance} {tCreditsDisplay('credits')}
                                   </span>
                                 </div>
                               </div>
@@ -587,7 +591,7 @@ export default function ListenStoryPage() {
                                 disabled={isGeneratingAudio}
                               >
                                 <FiVolume2 className="w-5 h-5 mr-2" />
-                                {tCommon('ListenStory.narrateYourStory')}
+                                {tListenStory('narrateYourStory')}
                               </button>
                             ) : (
                               <div className="space-y-2">
@@ -595,14 +599,14 @@ export default function ListenStoryPage() {
                                   <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                                   </svg>
-                                  <span>{tCommon('ListenStory.needMoreCredits', { credits: audiobookCost.credits - userCredits.currentBalance })}</span>
+                                  <span>{tListenStory('needMoreCredits', { credits: audiobookCost.credits - userCredits.currentBalance })}</span>
                                 </div>
                                 <button
                                   onClick={navigateToPricing}
                                   className="btn btn-secondary btn-lg w-full"
                                 >
                                   <FiCreditCard className="w-5 h-5 mr-2" />
-                                  {tCommon('ListenStory.buyMoreCredits')}
+                                  {tListenStory('buyMoreCredits')}
                                 </button>
                               </div>
                             )}
@@ -613,7 +617,7 @@ export default function ListenStoryPage() {
                           <div className="max-w-md mx-auto">
                             <div className="alert alert-info">
                               <span className="loading loading-spinner loading-sm"></span>
-                              <span>{tCommon('ListenStory.loadingPricing')}</span>
+                              <span>{tListenStory('loadingPricing')}</span>
                             </div>
                           </div>
                         )}

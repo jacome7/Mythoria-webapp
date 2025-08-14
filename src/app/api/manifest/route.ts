@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
 
   try {
     // Import the metadata for the requested locale
-    const metadata = await import(`@/messages/${validLocale}/metadata.json`);
+    const metadata = await import(`@/messages/${validLocale}/Metadata.json`);
     
     // Base manifest configuration
     const baseManifest = {
@@ -48,14 +48,14 @@ export async function GET(request: NextRequest) {
     // Merge with localized content
     const localizedManifest = {
       ...baseManifest,
-      name: metadata.manifest.name,
-      short_name: metadata.manifest.short_name,
-      description: metadata.manifest.description,
+      name: metadata.Metadata.manifest.name,
+      short_name: metadata.Metadata.manifest.short_name,
+      description: metadata.Metadata.manifest.description,
       shortcuts: [
         {
-          name: metadata.manifest.shortcuts.createStory.name,
-          short_name: metadata.manifest.shortcuts.createStory.short_name,
-          description: metadata.manifest.shortcuts.createStory.description,
+          name: metadata.Metadata.manifest.shortcuts.createStory.name,
+          short_name: metadata.Metadata.manifest.shortcuts.createStory.short_name,
+          description: metadata.Metadata.manifest.shortcuts.createStory.description,
           url: `/${validLocale}`,
           icons: [{ src: "/favicon.ico", sizes: "64x64" }]
         }

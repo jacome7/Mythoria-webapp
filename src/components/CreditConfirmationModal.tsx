@@ -34,7 +34,7 @@ export default function CreditConfirmationModal({
   chapterCount,
   message
 }: CreditConfirmationModalProps) {
-  const tCommonCreditConfirmation = useTranslations('common.creditConfirmation');
+  const tCommonCreditConfirmation = useTranslations('CreditConfirmation');
 
   if (!isOpen) return null;
 

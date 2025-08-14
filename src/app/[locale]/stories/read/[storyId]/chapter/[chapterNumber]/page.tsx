@@ -38,7 +38,9 @@ export default function ReadChapterPage() {
   const router = useRouter();
   const params = useParams<{ storyId?: string; chapterNumber?: string }>();
   const locale = useLocale();
-  const tCommon = useTranslations('common');
+  const tLoading = useTranslations('Loading');
+  const tErrors = useTranslations('Errors');
+  const tActions = useTranslations('Actions');
   const storyId = (params?.storyId as string | undefined) ?? '';
   const chapterNumber = parseInt(((params?.chapterNumber as string | undefined) ?? '0'), 10);
   const [story, setStory] = useState<Story | null>(null);
@@ -68,15 +70,15 @@ export default function ReadChapterPage() {
             chapter_number: chapterNumber
           });
         } else if (response.status === 404) {
-          setError(tCommon('Errors.storyNotFoundGeneric'));
+          setError(tErrors('storyNotFoundGeneric'));
         } else if (response.status === 403) {
-          setError(tCommon('Errors.noPermission'));
+          setError(tErrors('noPermission'));
         } else {
-          setError(tCommon('Errors.failedToLoad'));
+          setError(tErrors('failedToLoad'));
         }
       } catch (error) {
         console.error('Error fetching story chapter:', error);
-        setError(tCommon('Errors.failedToLoad'));
+        setError(tErrors('failedToLoad'));
       } finally {
         setLoading(false);
       }
@@ -85,7 +87,7 @@ export default function ReadChapterPage() {
     if (storyId && chapterNumber) {
       fetchChapter();
     }
-  }, [storyId, chapterNumber, tCommon]);
+  }, [storyId, chapterNumber, tErrors]);
 
   const navigateToListen = () => {
     router.push(`/${locale}/stories/listen/${storyId}`);
@@ -112,7 +114,7 @@ export default function ReadChapterPage() {
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center">
           <div className="loading loading-spinner loading-lg mb-4"></div>
-          <p className="text-lg">{tCommon('Loading.default')}</p>
+          <p className="text-lg">{tLoading('default')}</p>
         </div>
       </div>
     );
@@ -123,13 +125,13 @@ export default function ReadChapterPage() {
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">📚</div>
-          <h1 className="text-3xl font-bold mb-4">{tCommon('Errors.oops')}</h1>
+          <h1 className="text-3xl font-bold mb-4">{tErrors('oops')}</h1>
           <p className="text-lg mb-6">{error}</p>
           <button
             onClick={() => router.back()}
             className="btn btn-primary"
           >
-            {tCommon('Actions.goBack')}
+            {tActions('goBack')}
           </button>
         </div>
       </div>
@@ -141,13 +143,13 @@ export default function ReadChapterPage() {
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">📚</div>
-          <h1 className="text-3xl font-bold mb-4">{tCommon('Errors.chapterNotFound')}</h1>
-          <p className="text-lg mb-6">{tCommon('Errors.chapterNotFoundDesc')}</p>
+          <h1 className="text-3xl font-bold mb-4">{tErrors('chapterNotFound')}</h1>
+          <p className="text-lg mb-6">{tErrors('chapterNotFoundDesc')}</p>
           <button
             onClick={() => router.push(`/${locale}/stories/read/${storyId}`)}
             className="btn btn-primary"
           >
-            {tCommon('Actions.backToStory')}
+            {tActions('backToStory')}
           </button>
         </div>
       </div>
@@ -165,7 +167,7 @@ export default function ReadChapterPage() {
               className="btn btn-ghost btn-sm"
             >
               <FiArrowLeft className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">{tCommon('Actions.backToMyStories')}</span>
+              <span className="hidden sm:inline">{tActions('backToMyStories')}</span>
             </button>
             
             <div className="flex items-center gap-2">
@@ -174,7 +176,7 @@ export default function ReadChapterPage() {
                 className="btn btn-ghost btn-sm"
               >
                 <FiVolume2 className="w-4 h-4" />
-                <span className="hidden sm:inline sm:ml-2">{tCommon('Actions.listen')}</span>
+                <span className="hidden sm:inline sm:ml-2">{tActions('listen')}</span>
               </button>
               
               <button
@@ -182,7 +184,7 @@ export default function ReadChapterPage() {
                 className="btn btn-ghost btn-sm"
               >
                 <FiEdit3 className="w-4 h-4" />
-                <span className="hidden sm:inline sm:ml-2">{tCommon('Actions.edit')}</span>
+                <span className="hidden sm:inline sm:ml-2">{tActions('edit')}</span>
               </button>
               
               <button
@@ -190,7 +192,7 @@ export default function ReadChapterPage() {
                 className="btn btn-ghost btn-sm"
               >
                 <FiPrinter className="w-4 h-4" />
-                <span className="hidden sm:inline sm:ml-2">{tCommon('Actions.print')}</span>
+                <span className="hidden sm:inline sm:ml-2">{tActions('print')}</span>
               </button>
               
               <button
@@ -198,7 +200,7 @@ export default function ReadChapterPage() {
                 className="btn btn-ghost btn-sm"
               >
                 <FiShare2 className="w-4 h-4" />
-                <span className="hidden sm:inline sm:ml-2">{tCommon('Actions.share')}</span>
+                <span className="hidden sm:inline sm:ml-2">{tActions('share')}</span>
               </button>
             </div>
           </div>
@@ -230,13 +232,13 @@ export default function ReadChapterPage() {
         <div className="min-h-screen bg-base-100 flex items-center justify-center">
           <div className="text-center">
             <div className="text-6xl mb-4">🔒</div>
-            <h1 className="text-3xl font-bold mb-4">{tCommon('Errors.authRequired')}</h1>
-            <p className="text-lg mb-6">{tCommon('Errors.pleaseSignIn')}</p>
+            <h1 className="text-3xl font-bold mb-4">{tErrors('authRequired')}</h1>
+            <p className="text-lg mb-6">{tErrors('pleaseSignIn')}</p>
             <button
               onClick={() => router.push(`/${locale}/sign-in`)}
               className="btn btn-primary"
             >
-              {tCommon('Actions.signIn')}
+              {tActions('signIn')}
             </button>
           </div>
         </div>

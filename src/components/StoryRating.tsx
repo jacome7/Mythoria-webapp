@@ -28,7 +28,7 @@ interface AnonymousRating {
 }
 
 export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingProps) {
-  const tCommonStoryRating = useTranslations('common.storyRating');
+  const tCommonStoryRating = useTranslations('StoryRating');
   const [rating, setRating] = useState<number>(0);
   const [hoveredRating, setHoveredRating] = useState<number>(0);
   const [feedback, setFeedback] = useState<string>('');

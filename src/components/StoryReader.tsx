@@ -40,8 +40,9 @@ interface StoryReaderProps {
 }
 
 export default function StoryReader({ storyId, story, chapters, currentChapter }: StoryReaderProps) {
-  const tStoryReader = useTranslations('common.Components.StoryReader');
-  const tCommon = useTranslations('common');
+  const tStoryReader = useTranslations('StoryReader');
+  const tActions = useTranslations('Actions');
+  const tAltTexts = useTranslations('AltTexts');
   const router = useRouter();
   const [readingSettings, setReadingSettings] = useState<ReadingSettings | null>(null);
   const [isContentLoaded, setIsContentLoaded] = useState(false);
@@ -260,7 +261,7 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
             <div className="mythoria-chapter-image">
               <Image 
                 src={toAbsoluteImageUrl(currentChapterData.imageUri)!} 
-                alt={tCommon('altTexts.chapterIllustration', { number: currentChapterData.chapterNumber })} 
+                alt={tAltTexts('chapterIllustration', { number: currentChapterData.chapterNumber })}
                 className="mythoria-chapter-img"
                 width={600}
                 height={400}
@@ -355,7 +356,7 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
               onClick={() => setShowTableOfContents(false)}
               className="btn btn-sm"
             >
-              {tCommon('Actions.close')}
+              {tActions('close')}
             </button>
           </div>
         </div>

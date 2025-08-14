@@ -8,7 +8,7 @@ export default function SharedStoryEditPage() {
   const params = useParams<{ token?: string }>();
   const router = useRouter();
   const locale = useLocale();
-  const tCommon = useTranslations('common');
+  const tLoading = useTranslations('Loading');
   const token = (params?.token as string | undefined) ?? '';
 
   useEffect(() => {
@@ -21,7 +21,7 @@ export default function SharedStoryEditPage() {
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center space-y-4">
         <div className="loading loading-spinner loading-lg text-primary"></div>
-        <h2 className="text-xl font-semibold">{tCommon('Loading.redirectingToSharedStory')}</h2>
+        <h2 className="text-xl font-semibold">{tLoading('redirectingToSharedStory')}</h2>
       </div>
     </div>
   );

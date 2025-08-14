@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { FaBookReader } from 'react-icons/fa';
 
 const StoryCounter = () => {
-  const tCommonStoryCounter = useTranslations('common.storyCounter');
+  const tCommonStoryCounter = useTranslations('StoryCounter');
   const [storyCount, setStoryCount] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

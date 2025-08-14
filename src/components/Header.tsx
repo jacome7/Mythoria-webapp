@@ -9,7 +9,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 import { useLocale } from 'next-intl';
 
 const Header = () => {
-  const tCommonHeader = useTranslations('common.Header');
+  const tCommonHeader = useTranslations('Header');
   const { isLoaded, isSignedIn } = useUser();
   const [isClient, setIsClient] = useState(false);
   const locale = useLocale();

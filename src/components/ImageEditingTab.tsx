@@ -21,7 +21,7 @@ export default function ImageEditingTab({
   onImageEditSuccess,
   onImageUpdated
 }: ImageEditingTabProps) {
-  const tCommonImageEditingTab = useTranslations('common.imageEditingTab');
+  const tCommonImageEditingTab = useTranslations('ImageEditingTab');
   const [selectedImage, setSelectedImage] = useState<StoryImage | null>(null);
   const [selectedVersion, setSelectedVersion] = useState<ImageVersion | null>(null);
   const [userRequest, setUserRequest] = useState('');

@@ -28,7 +28,7 @@ const StepNavigation = ({
   prevLabel
 }: StepNavigationProps) => {
   const router = useRouter();
-  const tCommonStepNavigation = useTranslations('common.StepNavigation');
+  const tCommonStepNavigation = useTranslations('StepNavigation');
 
   const resolvedNextLabel = nextLabel ?? tCommonStepNavigation('next');
   const resolvedPrevLabel = prevLabel ?? tCommonStepNavigation('prev');

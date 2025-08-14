@@ -1,0 +1,31 @@
+{
+  "Voices": {
+    "selectVoice": "Seleccionar voz",
+    "names": {
+      "alloy": "Alloy",
+      "ash": "Ash",
+      "ballad": "Ballad",
+      "coral": "Coral",
+      "echo": "Echo",
+      "fable": "Fable",
+      "nova": "Nova",
+      "onyx": "Onyx",
+      "sage": "Sage",
+      "shimmer": "Shimmer",
+      "verse": "Verse"
+    },
+    "descriptions": {
+      "alloy": "Voz neutra y equilibrada, adecuada para narración general y entrega de información.",
+      "ash": "Voz clara y precisa, ideal para instrucciones y explicaciones técnicas.",
+      "ballad": "Voz melódica y suave que funciona muy bien para contar historias y contenido narrativo.",
+      "coral": "Voz cálida y amigable, perfecta para interfaces conversacionales y atención al cliente.",
+      "echo": "Voz resonante y profunda, con gran presencia para anuncios y mensajes formales.",
+      "fable": "Voz cálida y envolvente con calidad narrativa, diseñada para narrativas inmersivas.",
+      "nova": "Voz brillante y enérgica, ideal para contenidos animados y entregas entusiastas.",
+      "onyx": "Voz profunda y autoritaria que transmite solidez y confianza.",
+      "sage": "Voz serena y reflexiva, adecuada para contenido pausado y de guía.",
+      "shimmer": "Voz brillante y enérgica que añade chispa y dinamismo a tu audio.",
+      "verse": "Voz versátil y expresiva que se adapta a una amplia variedad de tonos."
+    }
+  }
+}
