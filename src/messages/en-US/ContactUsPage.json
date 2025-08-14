@@ -1,31 +1,52 @@
 {
   "ContactUsPage": {
-    "title": "Get in Touch",
-    "intro": "We'd love to hear from you! Whether you have questions, feedback, or need assistance, our team is here to help make your Mythoria experience magical.",
-    "scrollTitle": "What can we help you with?",
-    "scrollIntro": "Choose from the categories below to get faster support:",
+    "title": "Contact Mythoria",
+    "intro": "Greetings, fellow adventurer! Whether you're from the Shire, Hogwarts, or a galaxy far, far away, we're here to assist you in your journey through the wonderful world of Mythoria. Your feedback is as precious as the One Ring (but easier to handle, we promise!).",
+    "scrollTitle": "Send Us Your Owl (or just fill the form)",
+    "scrollIntro": "Choose the scroll that best suits your quest:",
     "categories": {
-      "featureIdeas": "Feature Ideas & Suggestions",
-      "reportBug": "Report a Bug",
-      "troubles": "Technical Issues",
-      "delivery": "Printing & Delivery",
-      "credits": "Credits & Billing",
-      "businessPartnership": "Business Partnership",
-      "general": "General Questions"
+      "featureIdeas": "Feature Ideas (Inspire us like Tolkien)",
+      "reportBug": "Report a Bug (Even Sherlock Holmes needed clues!)",
+      "troubles": "Story Generation Troubles (When the magic spells go awry)",
+      "delivery": "Printed Book Delivery (Our owls might need directions)",
+      "credits": "Credits & Payments (The goblins at Gringotts are strict!)",
+      "general": "General Enchantment (Support)",
+      "businessPartnership": "Business Partnership"
     },
-    "bonus": {
-      "title": "Small Bonus for Your Feedback!",
-      "content": "As a thank you for taking the time to contact us, we'll add a small credit bonus to your account when we respond to genuine feedback or suggestions.",
-      "disclaimer": "(This doesn't apply to general questions or support requests, only actionable feedback that helps us improve Mythoria.)",
-      "closing": "Your voice matters in shaping the future of storytelling! ✨"
+    "categoriesShort": {
+      "featureIdeas": "Feature Ideas",
+      "reportBug": "Report a Bug",
+      "troubles": "Story Generation Troubles",
+      "delivery": "Printed Book Delivery",
+      "credits": "Credits & Payments",
+      "businessPartnership": "Business Partnership",
+      "general": "General Enchantment"
+    },
+    "form": {
+      "title": "The Magic Form",
+      "name": "Your Name:",
+      "namePlaceholder": "Wizarding Alias",
+      "email": "Your Email:",
+      "emailPlaceholder": "So our carrier pigeons can find you",
+      "category": "Select Your Quest:",
+      "selectCategory": "Choose a category...",
+      "message": "Your Magical Message:",
+      "messagePlaceholder": "Share your thoughts, ideas, or magical feedback...",
+      "submit": "Cast Spell"
     },
     "join": {
-      "title": "Join Our Growing Community",
-      "intro": "Mythoria is expanding, and we're always looking for passionate people to join our mission:",
-      "printing": "🖨️ Partner with us as a local printing provider in your area",
-      "country": "🌍 Help us expand Mythoria to your country or region",
-      "developers": "💻 Talented developers interested in AI-powered storytelling",
-      "call": "Interested? Let us know in your message!"
+      "title": "Join the Fellowship",
+      "intro": "Mythoria is on an epic quest to conquer new realms and we are looking for brave souls to join our fellowship!",
+      "printing": "Printing & Logistics Partners: Are you ready to journey across Middle-earth or Westeros to deliver stories that matter? Join us in spreading the magic of personalized storytelling.",
+      "country": "Country Managers & Local Wizards: Help Mythoria take over the world (peacefully, we assure you). Bring the joy of storytelling to your kingdom and beyond!",
+      "developers": "Developers Who Vibe Code & Speak AI: Do you speak fluent binary and chat effortlessly with AI? We need skilled developers who vibe with innovative technology and artificial intelligence to enhance the Mythoria experience.",
+      "call": "Interested in becoming a Mythorian? Send us your details using the enchanted form above, and let us know your area of interest."
+    },
+    "bonus": {
+      "title": "Bonus Credits Alert!",
+      "content": "Have a sharp eye for bugs or an imaginative mind bursting with ideas? Earn extra magical credits for every valid bug reported or inspired feature suggested.",
+      "disclaimer": "(*) Final decision rests with our delightful Oompa Loompas. They're charmingly unpredictable, but they love rewarding creativity!",
+      "closing": "Let's create magic together!"
     }
   }
 }
