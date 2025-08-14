@@ -33,7 +33,7 @@ type SortField = 'title' | 'createdAt' | 'updatedAt' | 'status';
 type SortDirection = 'asc' | 'desc';
 
 export default function MyStoriesTable() {
-  const t = useTranslations('MyStoriesPage');
+  const tMyStoriesPage = useTranslations('MyStoriesPage');
   const tShare = useTranslations('common.Share');
   const tActions = useTranslations('common.Actions');
   const locale = useLocale();const [stories, setStories] = useState<Story[]>([]);
@@ -227,11 +227,11 @@ export default function MyStoriesTable() {
     }
 
     const statusMap = {
-      queued: { text: t('table.status.queued'), class: 'badge-info', icon: '⏳' },
-      running: { text: t('table.status.running'), class: 'badge-warning', icon: '🔄' },
-      completed: { text: t('table.status.completed'), class: 'badge-success', icon: '✅' },
-      failed: { text: t('table.status.failed'), class: 'badge-error', icon: '❌' },
-      cancelled: { text: t('table.status.cancelled'), class: 'badge-neutral', icon: '⏹️' },
+      queued: { text: tMyStoriesPage('table.status.queued'), class: 'badge-info', icon: '⏳' },
+      running: { text: tMyStoriesPage('table.status.running'), class: 'badge-warning', icon: '🔄' },
+      completed: { text: tMyStoriesPage('table.status.completed'), class: 'badge-success', icon: '✅' },
+      failed: { text: tMyStoriesPage('table.status.failed'), class: 'badge-error', icon: '❌' },
+      cancelled: { text: tMyStoriesPage('table.status.cancelled'), class: 'badge-neutral', icon: '⏹️' },
     };
 
     const statusInfo = statusMap[story.storyGenerationStatus];
@@ -255,13 +255,13 @@ export default function MyStoriesTable() {
         <div className="text-center py-16 bg-base-200 rounded-lg">
           <div className="max-w-md mx-auto space-y-4">
             <h2 className="text-2xl font-semibold text-base-content">
-              {t('noStories.title')}
+              {tMyStoriesPage('noStories.title')}
             </h2>
             <p className="text-base-content/70">
-              {t('noStories.subtitle')}
+              {tMyStoriesPage('noStories.subtitle')}
             </p>
             <Link href="/tell-your-story/step-1" className="btn btn-primary btn-lg">
-              {t('noStories.action')}
+              {tMyStoriesPage('noStories.action')}
             </Link>
           </div>
         </div>
@@ -275,7 +275,7 @@ export default function MyStoriesTable() {
                       className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
                       onClick={() => handleSort('createdAt')}
                     >
-                      {t('table.date')}
+                      {tMyStoriesPage('table.date')}
                       {getSortIcon('createdAt')}
                     </button>
                   </th>
@@ -284,7 +284,7 @@ export default function MyStoriesTable() {
                       className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
                       onClick={() => handleSort('title')}
                     >
-                      {t('table.title')}
+                      {tMyStoriesPage('table.title')}
                       {getSortIcon('title')}
                     </button>
                   </th>
@@ -293,11 +293,11 @@ export default function MyStoriesTable() {
                       className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
                       onClick={() => handleSort('status')}
                     >
-                      {t('table.status')}
+                      {tMyStoriesPage('table.status')}
                       {getSortIcon('status')}
                     </button>
                   </th>
-                  <th className="text-right px-2 py-1 md:px-4 md:py-2">{t('table.actions')}</th>
+                  <th className="text-right px-2 py-1 md:px-4 md:py-2">{tMyStoriesPage('table.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -318,7 +318,7 @@ export default function MyStoriesTable() {
                     <td className="px-2 py-1 md:px-4 md:py-2 whitespace-nowrap">
                       <div className="space-y-1">
                         <span className={`${getStatusBadgeClass(story.status)} badge-sm text-xs whitespace-nowrap`}>
-                          {t(`status.${story.status}`)}
+                          {tMyStoriesPage(`status.${story.status}`)}
                         </span>
                         {(() => {
                           const genStatus = getGenerationStatusInfo(story);
@@ -377,7 +377,7 @@ export default function MyStoriesTable() {
                           <button
                             className="btn btn-ghost btn-sm"
                             onClick={() => handleShare(story)}
-                            title={t('actions.share')}
+                            title={tMyStoriesPage('actions.share')}
                           >
                             <FiShare2 className="w-4 h-4" />
                           </button>
@@ -387,7 +387,7 @@ export default function MyStoriesTable() {
                           <button
                             className="btn btn-ghost btn-sm"
                             onClick={() => handlePrint(story)}
-                            title={t('actions.print')}
+                            title={tMyStoriesPage('actions.print')}
                           >
                             <FiPrinter className="w-4 h-4" />
                           </button>
@@ -395,7 +395,7 @@ export default function MyStoriesTable() {
                           <button
                             className="btn btn-ghost btn-sm btn-disabled"
                             disabled
-                            title={t('actions.printNotAvailable')}
+                            title={tMyStoriesPage('actions.printNotAvailable')}
                           >
                             <FiPrinter className="w-4 h-4" />
                           </button>
@@ -412,7 +412,7 @@ export default function MyStoriesTable() {
                           <Link
                             href={`/${locale}/tell-your-story/step-3?edit=${story.storyId}`}
                             className="btn btn-ghost btn-sm"
-                            title={t('actions.edit')}
+                            title={tMyStoriesPage('actions.edit')}
                           >
                             <FiEdit3 className="w-4 h-4" />
                           </Link>
@@ -420,7 +420,7 @@ export default function MyStoriesTable() {
                           <Link
                             href={`/${locale}/stories/edit/${story.storyId}`}
                             className="btn btn-ghost btn-sm"
-                            title={t('actions.edit')}
+                            title={tMyStoriesPage('actions.edit')}
                           >
                             <FiEdit3 className="w-4 h-4" />
                           </Link>
@@ -428,7 +428,7 @@ export default function MyStoriesTable() {
                         <button
                           className="btn btn-ghost btn-sm text-error hover:bg-error hover:text-error-content"
                           onClick={() => handleDeleteClick(story)}
-                          title={t('actions.delete')}
+                          title={tMyStoriesPage('actions.delete')}
                         >
                           <FiTrash2 className="w-4 h-4" />
                         </button>
@@ -479,12 +479,12 @@ export default function MyStoriesTable() {
                                   }}
                                 >
                                   <FiShare2 className="w-4 h-4" />
-                                  {t('actions.share')}
+                                  {tMyStoriesPage('actions.share')}
                                 </button>
                               ) : (
                                 <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
                                   <FiShare2 className="w-4 h-4" />
-                                  {t('actions.share')}
+                                  {tMyStoriesPage('actions.share')}
                                 </div>
                               )}
                               
@@ -498,19 +498,19 @@ export default function MyStoriesTable() {
                                   }}
                                 >
                                   <FiPrinter className="w-4 h-4" />
-                                  {t('actions.print')}
+                                  {tMyStoriesPage('actions.print')}
                                 </button>
                               ) : (
                                 <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
                                   <FiPrinter className="w-4 h-4" />
-                                  {t('actions.print')}
+                                  {tMyStoriesPage('actions.print')}
                                 </div>
                               )}
                               
                               {story.status === 'writing' ? (
                                 <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
                                   <FiEdit3 className="w-4 h-4" />
-                                  {t('actions.edit')}
+                                  {tMyStoriesPage('actions.edit')}
                                 </div>
                               ) : story.status === 'draft' ? (
                                 <Link
@@ -522,7 +522,7 @@ export default function MyStoriesTable() {
                                   }}
                                 >
                                   <FiEdit3 className="w-4 h-4" />
-                                  {t('actions.edit')}
+                                  {tMyStoriesPage('actions.edit')}
                                 </Link>
                               ) : (
                                 <Link
@@ -534,7 +534,7 @@ export default function MyStoriesTable() {
                                   }}
                                 >
                                   <FiEdit3 className="w-4 h-4" />
-                                  {t('actions.edit')}
+                                  {tMyStoriesPage('actions.edit')}
                                 </Link>
                               )}
                               
@@ -549,7 +549,7 @@ export default function MyStoriesTable() {
                                 }}
                               >
                                 <FiTrash2 className="w-4 h-4" />
-                                {t('actions.delete')}
+                                {tMyStoriesPage('actions.delete')}
                               </button>
                             </div>
                           </div>
@@ -567,20 +567,20 @@ export default function MyStoriesTable() {
       {deleteModalOpen && (
         <div className="modal modal-open">
           <div className="modal-box">
-            <h3 className="font-bold text-lg">{t('deleteConfirm.title')}</h3>
-            <p className="py-4">{t('deleteConfirm.message')}</p>
+            <h3 className="font-bold text-lg">{tMyStoriesPage('deleteConfirm.title')}</h3>
+            <p className="py-4">{tMyStoriesPage('deleteConfirm.message')}</p>
             <div className="modal-action">
               <button
                 className="btn btn-ghost"
                 onClick={() => setDeleteModalOpen(false)}
               >
-                {t('deleteConfirm.cancel')}
+                {tMyStoriesPage('deleteConfirm.cancel')}
               </button>
               <button
                 className="btn btn-error"
                 onClick={handleDeleteConfirm}
               >
-                {t('deleteConfirm.confirm')}
+                {tMyStoriesPage('deleteConfirm.confirm')}
               </button>
             </div>
           </div>
