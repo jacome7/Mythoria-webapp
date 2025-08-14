@@ -4,32 +4,6 @@
       "stepProgress": "Paso {currentStep} de {totalSteps}",
       "saving": "Guardando..."
     },
-    "step1": {
-      "unauthenticated": {
-        "title": "¡Vaya! Parece que intentas colarte en la sala de autores!",
-        "description": "Agradecemos tu entusiasmo por contar historias, pero primero tendrás que iniciar sesión. Tranquilo, es más fácil que convencer a un dragón para que comparta su tesoro. 🐉",
-        "signIn": "🔐 Inicia sesión para comenzar",
-        "signUp": "✨ Crea tu cuenta de autor"
-      },
-      "heading": "Capítulo 1 - El autor",
-      "intro": "¡Bienvenido, cuentacuentos! Antes de lanzarnos a tu aventura mágica, vamos a configurar la información del autor de tu historia. Puedes usar tu propio nombre o inventar uno para esta narración.",
-      "fields": {
-        "authorName": "Nombre(s) del autor *",
-        "authorNameHelp": "¿Quién debe aparecer como autor de esta historia?",
-        "authorNamePlaceholder": "p. ej., Andrés y Matilde",
-        "dedication": "Mensaje de dedicatoria",
-        "dedicationPlaceholder": "Escribe un mensaje de dedicatoria para la primera página de tu libro...",
-        "dedicationHelp": "Este mensaje aparecerá en la primera página de tu historia",
-        "optional": "Opcional"
-      },
-      "messages": {
-        "loadingProfile": "Cargando tu perfil de autor...",
-        "required": "Por favor, indica un nombre de autor para tu historia",
-        "saveFailed": "No se pudo guardar la información del autor. Inténtalo de nuevo.",
-        "fetchFailed": "No se pudieron obtener los datos del usuario",
-        "loadFailed": "No se pudo cargar la información del usuario. Inténtalo de nuevo."
-      }
-    },
     "step2": {
       "heading": "Capítulo 2 - La historia",
       "intro": "Puedes crear tu historia dibujándola, grabándola o simplemente escribiéndola.",

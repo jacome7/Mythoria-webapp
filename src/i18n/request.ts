@@ -15,6 +15,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     privacyPolicyMessages,
     pricingPageMessages,
     storyStepsMessages,
+    storyStep1Messages,
     contactUsPageMessages,
     aboutUsMessages,
     homePageMessages,
@@ -43,6 +44,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     import(`../messages/${locale}/privacy-policy.json`).then(module => module.default),
     import(`../messages/${locale}/PricingPage.json`).then(module => module.default),
     import(`../messages/${locale}/storySteps.json`).then(module => module.default),
+    import(`../messages/${locale}/StoryStep1.json`).then(module => module.default),
     import(`../messages/${locale}/ContactUsPage.json`).then(module => module.default),
     import(`../messages/${locale}/aboutUs.json`).then(module => module.default),
     import(`../messages/${locale}/HomePage.json`).then(module => module.default),
@@ -66,6 +68,13 @@ export default getRequestConfig(async ({ requestLocale }) => {
   import(`../messages/${locale}/BlogPost.json`).then(module => module.default),
   import(`../messages/${locale}/publicPages.json`).then(module => module.default)
   ]);
+
+  const storySteps = {
+    StorySteps: {
+      ...storyStepsMessages.StorySteps,
+      ...storyStep1Messages.StorySteps,
+    },
+  };
 
   return {
     locale: locale as string,
@@ -96,6 +105,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
   ...pricingPageMessages,
   publicPages: publicPagesMessages,
       privacyPolicy: privacyPolicyMessages,
+      pricing: pricingMessages,
       storySteps: storyStepsMessages
     }
   };
