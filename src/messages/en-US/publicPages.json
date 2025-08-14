@@ -55,65 +55,6 @@
       "confirm": "Delete"
     }
   },
-  "GetInspiredPage": {
-    "filters": {
-      "title": "Filter Stories",
-      "targetAudience": "Target Audience",
-      "graphicalStyle": "Art Style",
-      "storyLanguage": "Language",
-      "clearAll": "Clear Filters",
-      "showingAll": "Showing All Stories"
-    },
-    "targetAudience": {
-      "all": "All Ages",
-      "children_0-2": "Babies & Toddlers (0-2)",
-      "children_3-6": "Preschoolers (3-6)",
-      "children_7-10": "Early Elementary (7-10)",
-      "children_11-14": "Middle Grade (11-14)",
-      "young_adult_15-17": "Young Adults (15-17)",
-      "adult_18+": "Adults (18+)",
-      "all_ages": "All Ages"
-    },
-    "graphicalStyle": {
-      "all": "All Styles",
-      "cartoon": "Cartoon",
-      "realistic": "Realistic",
-      "watercolor": "Watercolor",
-      "digital_art": "Digital Art",
-      "hand_drawn": "Hand Drawn",
-      "minimalist": "Minimalist",
-      "vintage": "Vintage",
-      "comic_book": "Comic Book",
-      "anime": "Anime",
-      "pixar_style": "Pixar Style",
-      "disney_style": "Disney Style",
-      "sketch": "Sketch",
-      "oil_painting": "Oil Painting",
-      "colored_pencil": "Colored Pencil"
-    },
-    "storyLanguage": {
-      "all": "All Languages",
-      "en-US": "English",
-      "pt-PT": "Portuguese"
-    },
-    "gallery": {
-      "title": "Featured Stories",
-      "subtitle": "Stories that have inspired families around the world",
-      "viewStory": "View Story",
-      "createdBy": "Created by",
-      "emptyTitle": "No Featured Stories Yet",
-      "emptyMessage": "Create your own story and share it with the world!",
-      "createStory": "Create Your Story",
-      "storyCoverAlt": "Story cover",
-      "filterResults": "{count} of {total} stories shown"
-    },
-    "emptyState": {
-      "noStoriesMatch": "No stories match your filters",
-      "tryAdjustingFilters": "Try adjusting your filters or browse all stories to discover new adventures.",
-      "noStoriesAvailable": "No stories available",
-      "browseAllStories": "Browse All Stories"
-    }
-  },
   "PublicStoryPage": {
     "chapterNotFound": "Chapter Not Found",
     "chapterNotAvailable": "This chapter is not available.",

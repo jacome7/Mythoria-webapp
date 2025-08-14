@@ -1,0 +1,78 @@
+{
+  "filters": {
+    "title": "Filtrar Histórias",
+    "targetAudience": "Público-Alvo",
+    "graphicalStyle": "Estilo Artístico",
+    "storyLanguage": "Idioma",
+    "clearAll": "Limpar Filtros",
+    "showingAll": "Mostrar Todas as Histórias"
+  },
+  "targetAudience": {
+    "all": "Todas as Idades",
+    "children_0-2": "Bebés e Crianças (0-2)",
+    "children_3-6": "Pré-escolares (3-6)",
+    "children_7-10": "Ensino Primário (7-10)",
+    "children_11-14": "Ensino Preparatório (11-14)",
+    "young_adult_15-17": "Jovens Adultos (15-17)",
+    "adult_18+": "Adultos (18+)",
+    "all_ages": "Todas as Idades"
+  },
+  "graphicalStyle": {
+    "all": "Todos os Estilos",
+    "cartoon": "Desenho Animado",
+    "realistic": "Realista",
+    "watercolor": "Aguarela",
+    "digital_art": "Arte Digital",
+    "hand_drawn": "Desenho à Mão",
+    "minimalist": "Minimalista",
+    "vintage": "Vintage",
+    "comic_book": "Banda Desenhada",
+    "anime": "Anime",
+    "pixar_style": "Estilo Pixar",
+    "disney_style": "Estilo Disney",
+    "sketch": "Esboço",
+    "oil_painting": "Pintura a Óleo",
+    "colored_pencil": "Lápis de Cor"
+  },
+  "novelStyle": {
+    "all": "Todos os Estilos",
+    "adventure": "Aventura",
+    "fantasy": "Fantasia",
+    "mystery": "Mistério",
+    "romance": "Romance",
+    "science_fiction": "Ficção Científica",
+    "historical": "Histórico",
+    "contemporary": "Contemporâneo",
+    "fairy_tale": "Conto de Fadas",
+    "comedy": "Comédia",
+    "drama": "Drama",
+    "horror": "Terror",
+    "thriller": "Thriller",
+    "biography": "Biografia",
+    "educational": "Educacional",
+    "poetry": "Poesia",
+    "sports_adventure": "Aventura Desportiva"
+  },
+  "storyLanguage": {
+    "all": "Todos os Idiomas",
+    "en-US": "Inglês",
+    "pt-PT": "Português"
+  },
+  "gallery": {
+    "title": "Histórias em Destaque",
+    "subtitle": "Histórias que inspiraram famílias em todo o mundo",
+    "viewStory": "Ver História",
+    "createdBy": "Criado por",
+    "emptyTitle": "Ainda Não Há Histórias em Destaque",
+    "emptyMessage": "Crie a sua própria história e partilhe-a com o mundo!",
+    "createStory": "Criar a Sua História",
+    "storyCoverAlt": "Capa da história",
+    "filterResults": "{count} de {total} histórias mostradas"
+  },
+  "emptyState": {
+    "noStoriesMatch": "Nenhuma história corresponde aos seus filtros",
+    "tryAdjustingFilters": "Tente ajustar os seus filtros ou explore todas as histórias para descobrir novas aventuras.",
+    "noStoriesAvailable": "Nenhuma história disponível",
+    "browseAllStories": "Explorar Todas as Histórias"
+  }
+}
