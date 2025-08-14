@@ -35,7 +35,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
     sharedStoryPageMessages,
     getInspiredPageMessages,
     blogMessages,
-    blogPostMessages
+  blogPostMessages,
+  publicPagesMessages
   ] = await Promise.all([
     import(`../messages/${locale}/common.json`).then(module => module.default),
     import(`../messages/${locale}/auth.json`).then(module => module.default),
@@ -62,7 +63,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
     import(`../messages/${locale}/SharedStoryPage.json`).then(module => module.default),
     import(`../messages/${locale}/GetInspiredPage.json`).then(module => module.default),
     import(`../messages/${locale}/blog.json`).then(module => module.default),
-    import(`../messages/${locale}/BlogPost.json`).then(module => module.default)
+  import(`../messages/${locale}/BlogPost.json`).then(module => module.default),
+  import(`../messages/${locale}/publicPages.json`).then(module => module.default)
   ]);
 
   return {
