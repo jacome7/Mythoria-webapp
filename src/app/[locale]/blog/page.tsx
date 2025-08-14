@@ -25,28 +25,28 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'blog.metadata' });
+  const tBlogMetadata = await getTranslations({ locale, namespace: 'blog.metadata' });
   const baseUrl = 'https://mythoria.pt';
   const hreflangLinks = generateHreflangLinks(locale, `/${locale}/blog`);
-  
+
   return {
-    title: t('listTitle'),
-    description: t('listDescription'),
+    title: tBlogMetadata('listTitle'),
+    description: tBlogMetadata('listDescription'),
     robots: 'index,follow,max-snippet:-1,max-image-preview:large',
     alternates: {
       canonical: `${baseUrl}/${locale}/blog/`,
       languages: hreflangLinks,
     },
     openGraph: {
-      title: t('listTitle'),
-      description: t('listDescription'),
+      title: tBlogMetadata('listTitle'),
+      description: tBlogMetadata('listDescription'),
       type: 'website',
       url: `${baseUrl}/${locale}/blog/`,
     },
     twitter: {
       card: 'summary_large_image',
-      title: t('listTitle'),
-      description: t('listDescription'),
+      title: tBlogMetadata('listTitle'),
+      description: tBlogMetadata('listDescription'),
     },
   };
 }
