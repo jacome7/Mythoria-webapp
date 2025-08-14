@@ -1,0 +1,59 @@
+{
+  "filters": {
+    "title": "Filtrar Historias",
+    "targetAudience": "Público Objetivo",
+    "graphicalStyle": "Estilo Artístico",
+    "storyLanguage": "Idioma",
+    "clearAll": "Borrar Filtros",
+    "showingAll": "Mostrando Todas las Historias"
+  },
+  "targetAudience": {
+    "all": "Todas las Edades",
+    "children_0-2": "Bebés y Peques (0-2)",
+    "children_3-6": "Preescolares (3-6)",
+    "children_7-10": "Primaria Temprana (7-10)",
+    "children_11-14": "Pre-adolescentes (11-14)",
+    "young_adult_15-17": "Adolescentes (15-17)",
+    "adult_18+": "Adultos (18+)",
+    "all_ages": "Todas las Edades"
+  },
+  "graphicalStyle": {
+    "all": "Todos los Estilos",
+    "cartoon": "Dibujo animado",
+    "realistic": "Realista",
+    "watercolor": "Acuarela",
+    "digital_art": "Arte Digital",
+    "hand_drawn": "Hecho a Mano",
+    "minimalist": "Minimalista",
+    "vintage": "Vintage",
+    "comic_book": "Cómic",
+    "anime": "Anime",
+    "pixar_style": "Estilo Pixar",
+    "disney_style": "Estilo Disney",
+    "sketch": "Boceto",
+    "oil_painting": "Óleo",
+    "colored_pencil": "Lápiz de Color"
+  },
+  "storyLanguage": {
+    "all": "Todos los Idiomas",
+    "en-US": "Inglés",
+    "pt-PT": "Portugués"
+  },
+  "gallery": {
+    "title": "Historias Destacadas",
+    "subtitle": "Relatos que han inspirado a familias de todo el mundo",
+    "viewStory": "Ver Historia",
+    "createdBy": "Creada por",
+    "emptyTitle": "Aún no hay Historias Destacadas",
+    "emptyMessage": "¡Crea tu propia historia y compártela con el mundo!",
+    "createStory": "Crea tu Historia",
+    "storyCoverAlt": "Portada de la historia",
+    "filterResults": "{count} de {total} historias mostradas"
+  },
+  "emptyState": {
+    "noStoriesMatch": "Ninguna historia coincide con tus filtros",
+    "tryAdjustingFilters": "Prueba a ajustar los filtros o explora todas las historias para descubrir nuevas aventuras.",
+    "noStoriesAvailable": "No hay historias disponibles",
+    "browseAllStories": "Ver Todas las Historias"
+  }
+}

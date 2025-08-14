@@ -57,7 +57,7 @@ export default function PublicStoryPage() {
   const locale = useLocale();
   const tPublicStoryPage = useTranslations('PublicStoryPage');
   const tCommon = useTranslations('common');
-  const tGet = useTranslations('GetInspiredPage');
+  const tGetInspiredPage = useTranslations('GetInspiredPage');
   const slug = Array.isArray(params?.slug)
     ? (params?.slug[0] ?? '')
     : (params?.slug as string | undefined) ?? '';
@@ -108,6 +108,7 @@ export default function PublicStoryPage() {
       // Set meta description
       const metaDescription = document.querySelector('meta[name="description"]');
       const description = story.synopsis || story.plotDescription || tPublicStoryPage('metadata.defaultDescription', { title: story.title });
+
       if (metaDescription) {
         metaDescription.setAttribute('content', description);
       } else {
@@ -238,21 +239,21 @@ export default function PublicStoryPage() {
               {story.targetAudience && (
                 <div className="flex items-center gap-1">
                   <FiTag />
-                  <span>{tGet(`targetAudience.${story.targetAudience}`) || story.targetAudience.replace('_', ' ')}</span>
+                  <span>{tGetInspiredPage(`targetAudience.${story.targetAudience}`) || story.targetAudience.replace('_', ' ')}</span>
                 </div>
               )}
               
               {story.graphicalStyle && (
                 <div className="flex items-center gap-1">
                   <FiEye />
-                  <span>{tGet(`graphicalStyle.${story.graphicalStyle}`) || story.graphicalStyle.replace('_', ' ')}</span>
+                  <span>{tGetInspiredPage(`graphicalStyle.${story.graphicalStyle}`) || story.graphicalStyle.replace('_', ' ')}</span>
                 </div>
               )}
               
               {story.novelStyle && (
                 <div className="flex items-center gap-1">
                   <FiTag />
-                  <span>{tGet(`novelStyle.${story.novelStyle}`) || story.novelStyle.replace('_', ' ')}</span>
+                  <span>{tGetInspiredPage(`novelStyle.${story.novelStyle}`) || story.novelStyle.replace('_', ' ')}</span>
                 </div>
               )}
             </div>

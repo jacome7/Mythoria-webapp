@@ -27,7 +27,7 @@ interface AnimatedLogoProps {
 }
 
 export default function AnimatedLogo({ className = '' }: AnimatedLogoProps) {
-  const t = useTranslations('GetInspiredPage');
+  const tGetInspiredPage = useTranslations('GetInspiredPage');
   const [currentStyleIndex, setCurrentStyleIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
 
@@ -48,7 +48,7 @@ export default function AnimatedLogo({ className = '' }: AnimatedLogoProps) {
 
   const currentStyle = GRAPHICAL_STYLES[currentStyleIndex];
   const logoSrc = `/images/logo/${currentStyle.fileName}`;
-  const styleLabel = t(`graphicalStyle.${currentStyle.key}`);
+  const styleLabel = tGetInspiredPage(`graphicalStyle.${currentStyle.key}`);
 
   return (
     <div className={`relative ${className}`}>

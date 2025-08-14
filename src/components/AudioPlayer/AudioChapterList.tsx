@@ -15,7 +15,7 @@ const defaultFormatDuration = (seconds: number): string => {
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
 
-export function AudioChapterList({ 
+export function AudioChapterList({
   chapters,
   currentlyPlaying,
   audioProgress,
