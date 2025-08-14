@@ -1,0 +1,18 @@
+{
+  "PublicStoryChapter": {
+    "chapterNotFound": "Chapter Not Found",
+    "chapterNotAvailable": "This chapter is not available.",
+    "chapter": "Chapter",
+    "errors": {
+      "failedToLoadChapter": "Failed to load chapter"
+    },
+    "metadata": {
+      "chapterPageTitle": "{title} - Chapter {number} | Mythoria"
+    },
+    "lastChapter": {
+      "enjoyedTitle": "Enjoyed this story?",
+      "enjoyedDesc": "Create your own personalized story or order a beautiful printed copy!"
+    }
+  }
+}
+

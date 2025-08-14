@@ -107,8 +107,8 @@ export default function PublicStoryPage() {
       
       // Set meta description
       const metaDescription = document.querySelector('meta[name="description"]');
-      const description =
-        story.synopsis || story.plotDescription || tPublicStoryPage('metadata.defaultDescription', { title: story.title });
+      const description = story.synopsis || story.plotDescription || tPublicStoryPage('metadata.defaultDescription', { title: story.title });
+
       if (metaDescription) {
         metaDescription.setAttribute('content', description);
       } else {
@@ -156,7 +156,7 @@ export default function PublicStoryPage() {
       setTwitterTag('twitter:description', description);
       setTwitterTag('twitter:image', `${baseUrl}/api/og/story/${slug}`);
     }
-  }, [data, slug, t]);
+  }, [data, slug, tPublicStoryPage]);
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
