@@ -31,6 +31,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     libMessages,
     metadataMessages,
     sharedStoryPageMessages,
+    getInspiredPageMessages,
     blogMessages,
     blogPostMessages
   ] = await Promise.all([
@@ -55,6 +56,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     import(`../messages/${locale}/lib.json`).then(module => module.default),
     import(`../messages/${locale}/metadata.json`).then(module => module.default),
     import(`../messages/${locale}/SharedStoryPage.json`).then(module => module.default),
+    import(`../messages/${locale}/GetInspiredPage.json`).then(module => module.default),
     import(`../messages/${locale}/blog.json`).then(module => module.default),
     import(`../messages/${locale}/BlogPost.json`).then(module => module.default)
   ]);
@@ -79,6 +81,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ...libMessages,
       ...metadataMessages,
       ...sharedStoryPageMessages,
+      ...getInspiredPageMessages,
       ...blogMessages,
       ...blogPostMessages,
       ...pricingPageMessages,
