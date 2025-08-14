@@ -33,49 +33,6 @@
       "subtitle": "Empieza hoy mismo tu viaje de narrador"
     }
   },
-  "MyStoriesPage": {
-    "title": "Hola",
-    "writeNewStory": "Nueva historia",
-    "signedOut": {
-      "welcome": "¡Bienvenido!",
-      "needSignIn": "Todo narrador necesita una cuenta para mantener sus créditos mágicos a buen recaudo.",
-      "signIn": "Iniciar sesión",
-      "createAccount": "Crear cuenta"
-    },
-    "tabs": {
-      "myStories": "Mis historias",
-      "myCharacters": "Mis personajes"
-    },
-    "noStories": {
-      "title": "¡Tu colección de historias está esperando a comenzar! 📚✨",
-      "subtitle": "Todo gran narrador empezó con un solo relato. ¿Listo para escribir tu primera aventura mágica?",
-      "action": "Empieza tu primera historia"
-    },
-    "table": {
-      "date": "Fecha",
-      "title": "Título",
-      "status": "Estado",
-      "actions": "Acciones"
-    },
-    "status": {
-      "draft": "Borrador",
-      "writing": "En proceso",
-      "published": "Publicado"
-    },
-    "actions": {
-      "share": "Compartir",
-      "edit": "Editar",
-      "delete": "Eliminar",
-      "print": "Pedir impresión",
-      "printNotAvailable": "La impresión no está disponible para esta historia"
-    },
-    "deleteConfirm": {
-      "title": "Eliminar historia",
-      "message": "¿Seguro que quieres eliminar esta historia? Esta acción no se puede deshacer.",
-      "cancel": "Cancelar",
-      "confirm": "Eliminar"
-    }
-  },
   "MyCharactersPage": {
     "noCharacters": {
       "title": "¡Aún no tienes personajes!",
@@ -96,115 +53,6 @@
       "message": "¿Seguro que quieres eliminar este personaje? Esta acción no se puede deshacer.",
       "cancel": "Cancelar",
       "confirm": "Eliminar"
-    }
-  },
-  "GetInspiredPage": {
-    "filters": {
-      "title": "Filtrar Historias",
-      "targetAudience": "Público Objetivo",
-      "graphicalStyle": "Estilo Artístico",
-      "storyLanguage": "Idioma",
-      "clearAll": "Borrar Filtros",
-      "showingAll": "Mostrando Todas las Historias"
-    },
-    "targetAudience": {
-      "all": "Todas las Edades",
-      "children_0-2": "Bebés y Peques (0-2)",
-      "children_3-6": "Preescolares (3-6)",
-      "children_7-10": "Primaria Temprana (7-10)",
-      "children_11-14": "Pre-adolescentes (11-14)",
-      "young_adult_15-17": "Adolescentes (15-17)",
-      "adult_18+": "Adultos (18+)",
-      "all_ages": "Todas las Edades"
-    },
-    "graphicalStyle": {
-      "all": "Todos los Estilos",
-      "cartoon": "Dibujo animado",
-      "realistic": "Realista",
-      "watercolor": "Acuarela",
-      "digital_art": "Arte Digital",
-      "hand_drawn": "Hecho a Mano",
-      "minimalist": "Minimalista",
-      "vintage": "Vintage",
-      "comic_book": "Cómic",
-      "anime": "Anime",
-      "pixar_style": "Estilo Pixar",
-      "disney_style": "Estilo Disney",
-      "sketch": "Boceto",
-      "oil_painting": "Óleo",
-      "colored_pencil": "Lápiz de Color"
-    },
-    "storyLanguage": {
-      "all": "Todos los Idiomas",
-      "en-US": "Inglés",
-      "pt-PT": "Portugués"
-    },
-    "gallery": {
-      "title": "Historias Destacadas",
-      "subtitle": "Relatos que han inspirado a familias de todo el mundo",
-      "viewStory": "Ver Historia",
-      "createdBy": "Creada por",
-      "emptyTitle": "Aún no hay Historias Destacadas",
-      "emptyMessage": "¡Crea tu propia historia y compártela con el mundo!",
-      "createStory": "Crea tu Historia",
-      "storyCoverAlt": "Portada de la historia",
-      "filterResults": "{count} de {total} historias mostradas"
-    },
-    "emptyState": {
-      "noStoriesMatch": "Ninguna historia coincide con tus filtros",
-      "tryAdjustingFilters": "Prueba a ajustar los filtros o explora todas las historias para descubrir nuevas aventuras.",
-      "noStoriesAvailable": "No hay historias disponibles",
-      "browseAllStories": "Ver Todas las Historias"
-    }
-  },
-  "ContactUsPage": {
-    "title": "Contacta con Mythoria",
-    "intro": "¡Saludos, aventurero! Tanto si vienes de la Comarca, Hogwarts o una galaxia muy, muy lejana, estamos aquí para ayudarte en tu travesía por el maravilloso mundo de Mythoria. Tu opinión es tan valiosa como el Anillo Único (pero mucho más fácil de manejar, te lo prometemos).",
-    "scrollTitle": "Envíanos tu lechuza (o rellena el formulario)",
-    "scrollIntro": "Elige el pergamino que mejor se ajuste a tu misión:",
-    "categories": {
-      "featureIdeas": "Ideas de Funciones (Inspíranos como Tolkien)",
-      "reportBug": "Reportar un Bug (¡Hasta Sherlock Holmes necesitaba pistas!)",
-      "troubles": "Problemas al Generar una Historia (Cuando los hechizos se tuercen)",
-      "delivery": "Envío del Libro Impreso (Nuestras lechuzas quizá necesiten indicaciones)",
-      "credits": "Créditos y Pagos (¡Los duendes de Gringotts no perdonan!)",
-      "general": "Encantamiento General (Soporte)",
-      "businessPartnership": "Colaboración Empresarial"
-    },
-    "categoriesShort": {
-      "featureIdeas": "Ideas de Funciones",
-      "reportBug": "Reportar un Bug",
-      "troubles": "Problemas de Generación",
-      "delivery": "Envío del Libro",
-      "credits": "Créditos y Pagos",
-      "businessPartnership": "Colaboración Empresarial",
-      "general": "Encantamiento General"
-    },
-    "form": {
-      "title": "El Formulario Mágico",
-      "name": "Tu Nombre:",
-      "namePlaceholder": "Alias de Mago",
-      "email": "Tu Email:",
-      "emailPlaceholder": "Para que nuestros palomos te encuentren",
-      "category": "Selecciona tu Misión:",
-      "selectCategory": "Elige una categoría...",
-      "message": "Tu Mensaje Mágico:",
-      "messagePlaceholder": "Comparte tus ideas o feedback encantado...",
-      "submit": "Lanzar Hechizo"
-    },
-    "join": {
-      "title": "Únete a la Comunidad",
-      "intro": "¡Mythoria está en una épica misión para conquistar nuevos reinos y busca almas valientes que se unan!",
-      "printing": "Socios de Impresión y Logística: ¿Listos para recorrer la Tierra Media o Poniente y entregar historias que importan? Únete a nosotros para difundir la magia de los relatos personalizados.",
-      "country": "Gestores de País y Magos Locales: Ayuda a Mythoria a conquistar el mundo (pacíficamente, lo prometemos). Lleva la alegría de contar historias a tu reino y más allá.",
-      "developers": "Desarrolladores que vibren con el código y hablen IA: ¿Dominas el binario y charlas sin esfuerzo con la IA? Necesitamos devs con chispa para mejorar la experiencia Mythoria.",
-      "call": "¿Te apetece convertirte en Mythoriano? Envíanos tus datos con el formulario encantado de arriba y cuéntanos tu área de interés."
-    },
-    "bonus": {
-      "title": "¡Alerta de Créditos Extra!",
-      "content": "¿Tienes ojo de halcón para los bugs o una mente llena de ideas? Gana créditos mágicos extra por cada fallo válido que reportes o por cada función inspirada que propongas.",
-      "disclaimer": "(*) La decisión final recae en nuestros encantadores Oompa-Loompas. Son impredecibles, pero adoran premiar la creatividad.",
-      "closing": "¡Creemos magia juntos!"
     }
   },
   "PublicStoryPage": {
@@ -281,13 +129,6 @@
       "unableToAccess": "No se puede acceder a la historia"
     },
     "redirecting": "Redirigiendo..."
-  },
-  "TellYourStoryPage": {
-    "signedOut": {
-      "title": "¿Listo para Contar tu Historia?",
-      "subtitle": "Regístrate para empezar a crear tus aventuras mágicas con Mythoria.",
-      "getStarted": "Empezar"
-    }
   },
   "PrintOrder": {
     "title": "Pedir Copia Impresa",
