@@ -11,7 +11,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
   const [
     commonMessages,
     authMessages,
-    publicPagesMessages,
     privacyPolicyMessages,
     pricingMessages,
     storyStepsMessages,
@@ -34,7 +33,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
   ] = await Promise.all([
     import(`../messages/${locale}/common.json`).then(module => module.default),
     import(`../messages/${locale}/auth.json`).then(module => module.default),
-    import(`../messages/${locale}/publicPages.json`).then(module => module.default),
     import(`../messages/${locale}/privacy-policy.json`).then(module => module.default),
     import(`../messages/${locale}/pricing.json`).then(module => module.default),
     import(`../messages/${locale}/storySteps.json`).then(module => module.default),
@@ -77,7 +75,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ...sharedStoryPageMessages,
       ...blogMessages,
       ...blogPostMessages,
-      publicPages: publicPagesMessages,
       privacyPolicy: privacyPolicyMessages,
       pricing: pricingMessages,
       storySteps: storyStepsMessages
