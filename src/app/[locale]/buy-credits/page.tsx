@@ -41,10 +41,10 @@ const getIconComponent = (iconName: string) => {
 // Separate component for search params to handle suspense
 function BuyCreditsContent() {
 		const searchParams = useSearchParams();
-	   const t = useTranslations('BuyCreditsPage');
-	   const tPricing = useTranslations('PricingPage');
-	   const tMyStories = useTranslations('MyStoriesPage');
-	   const tRevolut = useTranslations('RevolutPayment');
+	   const tBuyCreditsPage = useTranslations('BuyCreditsPage');
+	   const tPricingPage = useTranslations('PricingPage');
+	   const tMyStoriesPage = useTranslations('MyStoriesPage');
+	   const tRevolutPayment = useTranslations('RevolutPayment');
 	   const locale = useLocale();
 	   const [cart, setCart] = useState<CartItem[]>([]);
 	   const [selectedPayment, setSelectedPayment] = useState<string>('revolut');
@@ -134,7 +134,7 @@ function BuyCreditsContent() {
 							   // Use a safe translation lookup with fallback
 							   if (errorCode && errorCode !== 'unknown') {
 									   try {
-											   const translatedMessage = tRevolut(`errors.${errorCode}`);
+											   const translatedMessage = tRevolutPayment(`errors.${errorCode}`);
 											   // Check if translation was successful (doesn't contain the key path)
 											   if (!translatedMessage.includes('RevolutPayment.errors.')) {
 													   errorMessage = translatedMessage;
@@ -148,7 +148,7 @@ function BuyCreditsContent() {
 							   } else {
 									   // Use unknown error translation or fallback to original message
 									   try {
-											   const unknownMessage = tRevolut('errors.unknown');
+											   const unknownMessage = tRevolutPayment('errors.unknown');
 											   errorMessage = unknownMessage.includes('RevolutPayment.errors.') 
 													   ? revolutFailureReason 
 													   : unknownMessage;
@@ -174,7 +174,7 @@ function BuyCreditsContent() {
 			   } else if (paymentStatus === 'success') {
 					   // Handle successful payment redirect
 					   setPaymentStatus('success');
-					   setPaymentMessage(t('payment.success'));
+					   setPaymentMessage(tBuyCreditsPage('payment.success'));
 					   
 					   // Track credit purchase in analytics (if cart still has items)
 					   if (cart.length > 0) {
@@ -214,7 +214,7 @@ function BuyCreditsContent() {
 					   window.history.replaceState({}, '', newUrl.toString());
 			   }
 	   // eslint-disable-next-line react-hooks/exhaustive-deps
-	   }, [isMounted, searchParams, tRevolut, t, locale]);
+	   }, [isMounted, searchParams, tRevolutPayment , tBuyCreditsPage, locale]);
 
 	   // Fetch credit packages from API (like pricing page)
 	   const fetchCreditPackages = useCallback(async () => {
@@ -229,11 +229,11 @@ function BuyCreditsContent() {
 					   setCreditPackages(sortedPackages);
 			   } catch (error) {
 					   console.error('Error fetching credit packages:', error);
-					   setPackagesError(tPricing('errors.loadingFailed'));
+					   setPackagesError(tPricingPage('errors.loadingFailed'));
 			   } finally {
 					   setPackagesLoading(false);
 			   }
-	   }, [tPricing]);
+	   }, [tPricingPage]);
 
 	   useEffect(() => {
 			   fetchCreditPackages();
@@ -330,12 +330,12 @@ function BuyCreditsContent() {
 
 	const handlePlaceOrder = async () => {
 		if (cart.length === 0) {
-			alert(t('errors.emptyCart'));
+			alert(tBuyCreditsPage('errors.emptyCart'));
 			return;
 		}
 
 		setIsCreatingOrder(true);
-		setPaymentMessage(t('payment.creatingOrder'));
+		setPaymentMessage(tBuyCreditsPage('payment.creatingOrder'));
 
 		try {
 			// Prepare credit packages for API
@@ -374,7 +374,7 @@ function BuyCreditsContent() {
 			const data = await response.json();
 
 			if (!response.ok) {
-                                throw new Error(data.error || t('errors.orderCreationFailed'));
+                                throw new Error(data.error || tBuyCreditsPage('errors.orderCreationFailed'));
 			}
 
 			console.log('Order created successfully:', data);
@@ -382,7 +382,7 @@ function BuyCreditsContent() {
 			if (selectedPayment === 'mbway') {
 				// For MB Way, show success message and redirect
 				setPaymentStatus('success');
-				setPaymentMessage(t('payment.mbwaySuccess'));
+				setPaymentMessage(tBuyCreditsPage('payment.mbwaySuccess'));
 				
 				// Calculate total credits purchased for analytics
 				const totalCredits = cart.reduce((total, item) => {
@@ -407,14 +407,14 @@ function BuyCreditsContent() {
 				// Store order details for other payment methods
 				setOrderToken(data.orderToken);
 				setOrderAmount(data.amount);
-				setPaymentMessage(t('payment.orderCreated'));
+				setPaymentMessage(tBuyCreditsPage('payment.orderCreated'));
 			}
 
 		} catch (error) {
 			console.error('Order creation failed:', error);
 			setPaymentStatus('error');
 			
-			let errorMessage = error instanceof Error ? error.message : t('errors.orderCreationFailed');
+			let errorMessage = error instanceof Error ? error.message : tBuyCreditsPage('errors.orderCreationFailed');
 			let contactUrl = '';
 			
 			// Check if the error includes a contact URL (for MB Way failures)
@@ -430,7 +430,7 @@ function BuyCreditsContent() {
 			
 			setPaymentMessage(
 				contactUrl 
-					? `${errorMessage} ${t('errors.contactSupport')} `
+					? `${errorMessage} ${tBuyCreditsPage('errors.contactSupport')} `
 					: errorMessage
 			);
 			
@@ -459,7 +459,7 @@ function BuyCreditsContent() {
 		});
 		
 		setPaymentStatus('success');
-		setPaymentMessage(t('payment.success'));
+		setPaymentMessage(tBuyCreditsPage('payment.success'));
 		
 		// Clear cart and reset form
 		setCart([]);
@@ -474,7 +474,7 @@ function BuyCreditsContent() {
 	const handlePaymentError = (error: Record<string, unknown>) => {
 		console.error('Payment failed:', error);
 		setPaymentStatus('error');
-		setPaymentMessage((error.message as string) || t('errors.paymentFailed'));
+		setPaymentMessage((error.message as string) || tBuyCreditsPage('errors.paymentFailed'));
 	};
 
 	const handlePaymentCancel = () => {
@@ -496,7 +496,7 @@ function BuyCreditsContent() {
 				{!isMounted ? (
 					// Loading state to prevent hydration mismatch
 					<div className="text-center">
-						<h1 className="text-4xl font-bold text-primary mb-4">{t('header.title')}</h1>
+						<h1 className="text-4xl font-bold text-primary mb-4">{tBuyCreditsPage('header.title')}</h1>
 						<div className="flex justify-center items-center min-h-96">
 							<span className="loading loading-spinner loading-lg"></span>
 						</div>
@@ -505,16 +505,16 @@ function BuyCreditsContent() {
 					<>
 						<SignedOut>
 							<div className="text-center space-y-6">
-								<h1 className="text-4xl font-bold">{t('header.title')}</h1>
+								<h1 className="text-4xl font-bold">{tBuyCreditsPage('header.title')}</h1>
 								<p className="text-lg text-gray-600 max-w-2xl mx-auto">
-									{tMyStories('signedOut.needSignIn')}
+									{tMyStoriesPage('signedOut.needSignIn')}
 								</p>
 								<div className="flex flex-col sm:flex-row gap-4 justify-center">
 									<Link href={`/${locale}/sign-in`} className="btn btn-primary">
-										{tMyStories('signedOut.signIn')}
+										{tMyStoriesPage('signedOut.signIn')}
 									</Link>
 									<Link href={`/${locale}/sign-up`} className="btn btn-outline">
-										{tMyStories('signedOut.createAccount')}
+										{tMyStoriesPage('signedOut.createAccount')}
 									</Link>
 								</div>
 							</div>
@@ -522,14 +522,14 @@ function BuyCreditsContent() {
 						<SignedIn>
 							{/* Header Section */}
 							<header className="text-center mb-16">
-								<h1 className="text-5xl font-bold text-primary">{t('header.title')}</h1>
-								<p className="text-xl mt-4 text-gray-700">{t('header.subtitle')}</p>
+								<h1 className="text-5xl font-bold text-primary">{tBuyCreditsPage('header.title')}</h1>
+								<p className="text-xl mt-4 text-gray-700">{tBuyCreditsPage('header.subtitle')}</p>
 							</header>
 
 				<div className="grid lg:grid-cols-2 gap-12">
 					{/* Left Side - Available Packages */}
 					<div>
-						<h2 className="text-2xl font-bold mb-6">{t('packages.title')}</h2>
+						<h2 className="text-2xl font-bold mb-6">{tBuyCreditsPage('packages.title')}</h2>
 						{packagesLoading ? (
 							<div className="flex justify-center items-center py-12">
 								<span className="loading loading-spinner loading-lg"></span>
@@ -543,14 +543,14 @@ function BuyCreditsContent() {
 							<div className="space-y-4">
 								{creditPackages.map((pkg) => (
 									<div key={pkg.id} className={`card bg-base-200 shadow-lg border-2 ${pkg.bestValue ? 'border-accent' : pkg.popular ? 'border-secondary' : 'border-transparent'}`}>
-										{pkg.bestValue && <div className="badge badge-accent absolute -top-3 -right-3 p-2">{t('badges.bestValue')}</div>}
-										{pkg.popular && <div className="badge badge-secondary absolute -top-3 -right-3 p-2">{t('badges.popular')}</div>}
+										{pkg.bestValue && <div className="badge badge-accent absolute -top-3 -right-3 p-2">{tBuyCreditsPage('badges.bestValue')}</div>}
+										{pkg.popular && <div className="badge badge-secondary absolute -top-3 -right-3 p-2">{tBuyCreditsPage('badges.popular')}</div>}
 										<div className="card-body">
 											<div className="flex items-center justify-between">
 												<div className="flex items-center space-x-4">
 													<div className="text-3xl text-primary">{getIconComponent(pkg.icon)}</div>
 													<div>
-														<h3 className="text-xl font-bold">{pkg.credits} {tPricing('creditPackages.credits')}</h3>
+														<h3 className="text-xl font-bold">{pkg.credits} {tPricingPage('creditPackages.credits')}</h3>
 														<p className="text-lg font-semibold text-primary">€{pkg.price.toFixed(2)}</p>
 													</div>
 												</div>
@@ -558,7 +558,7 @@ function BuyCreditsContent() {
 													onClick={() => addToCart(pkg.id)}
 													className="btn btn-primary"
 												>
-													{t('packages.addToCart')}
+													{tBuyCreditsPage('packages.addToCart')}
 												</button>
 											</div>
 										</div>
@@ -570,12 +570,12 @@ function BuyCreditsContent() {
 
 					{/* Right Side - Shopping Cart */}
 					<div>
-						<h2 className="text-2xl font-bold mb-6">{t('cart.title')}</h2>
+						<h2 className="text-2xl font-bold mb-6">{tBuyCreditsPage('cart.title')}</h2>
 						
 						{/* Cart Items */}
 						<div ref={cartItemsRef} className="bg-base-200 rounded-lg p-6 mb-6">
 							{cart.length === 0 ? (
-								<p className="text-center text-gray-500 py-8">{t('cart.empty')}</p>
+								<p className="text-center text-gray-500 py-8">{tBuyCreditsPage('cart.empty')}</p>
 							) : (
 								<div className="space-y-4">
 									{cart.map((item) => {
@@ -587,8 +587,8 @@ function BuyCreditsContent() {
 												<div className="flex items-center space-x-3">
 													<div className="text-2xl text-primary">{getIconComponent(pkg.icon)}</div>
 													<div>
-														<h4 className="font-semibold">{pkg.credits} {tPricing('creditPackages.credits')}</h4>
-														<p className="text-sm text-gray-600">€{pkg.price.toFixed(2)} {t('cart.each')}</p>
+														<h4 className="font-semibold">{pkg.credits} {tPricingPage('creditPackages.credits')}</h4>
+														<p className="text-sm text-gray-600">€{pkg.price.toFixed(2)} {tBuyCreditsPage('cart.each')}</p>
 													</div>
 												</div>
 												<div className="flex items-center space-x-3">
@@ -624,19 +624,19 @@ function BuyCreditsContent() {
 						{/* Pricing Summary */}
 						{cart.length > 0 && (
 							<div className="bg-base-200 rounded-lg p-6 mb-6">
-								<h3 className="text-lg font-bold mb-4">{t('summary.title')}</h3>
+								<h3 className="text-lg font-bold mb-4">{tBuyCreditsPage('summary.title')}</h3>
 								<div className="space-y-2">
 									<div className="flex justify-between">
-										<span>{t('summary.subtotal')}</span>
+										<span>{tBuyCreditsPage('summary.subtotal')}</span>
 										<span>€{subtotal.toFixed(2)}</span>
 									</div>
 									<div className="flex justify-between text-sm text-gray-600">
-										<span>{t('summary.vat')}</span>
+										<span>{tBuyCreditsPage('summary.vat')}</span>
 										<span>€{vatAmount.toFixed(2)}</span>
 									</div>
 									<div className="divider my-2"></div>
 									<div className="flex justify-between text-xl font-bold">
-										<span>{t('summary.total')}</span>
+										<span>{tBuyCreditsPage('summary.total')}</span>
 										<span className="text-primary">€{total.toFixed(2)}</span>
 									</div>
 								</div>
@@ -664,7 +664,7 @@ function BuyCreditsContent() {
 								{paymentStatus === 'error' && (
 									<div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-3">
 										<button onClick={resetPayment} className="btn btn-sm btn-outline">
-											{t('actions.tryAgain')}
+											{tBuyCreditsPage('actions.tryAgain')}
 										</button>
 										{(window as Window & { mbwayErrorContactUrl?: string }).mbwayErrorContactUrl && (
 											<a 
@@ -673,7 +673,7 @@ function BuyCreditsContent() {
 												target="_blank"
 												rel="noopener noreferrer"
 											>
-												{t('actions.contactSupport')}
+												{tBuyCreditsPage('actions.contactSupport')}
 											</a>
 										)}
 									</div>
@@ -686,7 +686,7 @@ function BuyCreditsContent() {
 						{/* Payment Section */}
 						{cart.length > 0 && paymentStatus !== 'success' && (
 							<div className="bg-base-200 rounded-lg p-6 mb-6">
-								<h3 className="text-lg font-bold mb-4">{t('payment.title')}</h3>
+								<h3 className="text-lg font-bold mb-4">{tBuyCreditsPage('payment.title')}</h3>
 								
 								{!orderToken ? (
 									// Payment method selection
@@ -702,11 +702,11 @@ function BuyCreditsContent() {
 											/>
 											<div className="flex items-center space-x-2">
 												<FaCreditCard className="text-primary" />
-												<span className="font-semibold">{t('payment.revolutPay')}</span>
+												<span className="font-semibold">{tBuyCreditsPage('payment.revolutPay')}</span>
 											</div>
 										</label>
 										<p className="text-sm text-gray-600 ml-8">
-											{t('payment.revolutDescription')}
+											{tBuyCreditsPage('payment.revolutDescription')}
 										</p>
 						{/* MBWay Option */}
 						<label className="flex items-center space-x-3 cursor-pointer">
@@ -721,29 +721,29 @@ function BuyCreditsContent() {
 							<div className="flex items-center space-x-2">
                                                                 <Image
                                                                         src="/images/mbway.png"
-                                                                        alt={t('payment.mbway')}
+                                                                        alt={tBuyCreditsPage('payment.mbway')}
 									width={24}
 									height={24}
 									className="object-contain" 
 								/>
-								<span className="font-semibold">{t('payment.mbway')}</span>
+								<span className="font-semibold">{tBuyCreditsPage('payment.mbway')}</span>
 							</div>
 						</label>
 						<p className="text-sm text-gray-600 ml-8">
-							{t('payment.mbwayDescription')}
+							{tBuyCreditsPage('payment.mbwayDescription')}
 						</p>
 									</div>
 								) : (
 									// Revolut Payment Widget
 									<div className="space-y-4">
 										<div className="flex items-center justify-between">
-											<h4 className="font-semibold">{t('payment.completePayment')}</h4>
+											<h4 className="font-semibold">{tBuyCreditsPage('payment.completePayment')}</h4>
 											<button 
 												onClick={resetPayment}
 												className="btn btn-sm btn-outline"
 												disabled={paymentStatus === 'processing'}
 											>
-												{t('actions.cancel')}
+												{tBuyCreditsPage('actions.cancel')}
 											</button>
 										</div>
 										
@@ -770,11 +770,11 @@ function BuyCreditsContent() {
 								{isCreatingOrder ? (
 									<>
 										<span className="loading loading-spinner loading-sm"></span>
-										{t('actions.creatingOrder')}
+										{tBuyCreditsPage('actions.creatingOrder')}
 									</>
 								) : (
 									<>
-										{t('actions.proceedToPayment')} - €{total.toFixed(2)}
+										{tBuyCreditsPage('actions.proceedToPayment')} - €{total.toFixed(2)}
 									</>
 								)}
 							</button>
@@ -783,7 +783,7 @@ function BuyCreditsContent() {
 						{/* Back to Pricing */}
 						<div className="mt-6 text-center">
 							<Link href="/pricing" className="btn btn-outline">
-								{t('actions.backToPricing')}
+								{tBuyCreditsPage('actions.backToPricing')}
 							</Link>
 						</div>
 					</div>
@@ -805,6 +805,7 @@ export default function BuyCreditsPage() {
 }
 
 function LoadingFallback() {
-	const t = useTranslations('common.Loading');
-	return <div>{t('buyCredits')}</div>;
+	// Use the correct translation namespace for the buy credits page
+	const tBuyCreditsPage = useTranslations('BuyCreditsPage');
+	return <div>{tBuyCreditsPage('buyCredits')}</div>;
 }

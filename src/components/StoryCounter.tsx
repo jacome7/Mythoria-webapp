@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { FaBookReader } from 'react-icons/fa';
 
 const StoryCounter = () => {
-  const t = useTranslations('common.storyCounter');
+  const tCommonStoryCounter = useTranslations('StoryCounter');
   const [storyCount, setStoryCount] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,14 +68,14 @@ const StoryCounter = () => {
         <div className="stat-figure">
           <FaBookReader className="text-3xl" />
         </div>        {isLoading && <div className="stat-value"><span className="loading loading-dots loading-md"></span></div>}
-        {error && <div className="stat-value text-error text-sm">{t('error')}</div>}
+        {error && <div className="stat-value text-error text-sm">{tCommonStoryCounter('error')}</div>}
         {!isLoading && !error && storyCount !== null && (
           <div className="stat-value">{storyCount.toLocaleString()}</div>
         )}
         {!isLoading && !error && storyCount === null && (
-            <div className="stat-value">{t('notAvailable')}</div>
+            <div className="stat-value">{tCommonStoryCounter('notAvailable')}</div>
         )}
-        <div className="stat-desc text-primary-content">{t('description')}</div>
+        <div className="stat-desc text-primary-content">{tCommonStoryCounter('description')}</div>
       </div>
     </div>
   );

@@ -1,0 +1,55 @@
+{
+  "Addresses": {
+    "addAddress": "Añadir Nueva Dirección",
+    "editAddress": "Editar Dirección",
+    "confirmDelete": "¿Seguro que quieres eliminar esta dirección?",
+    "validation": {
+      "requiredFields": "Por favor, rellena todos los campos obligatorios (Dirección Línea 1, Ciudad, País)"
+    },
+    "errors": {
+      "saveFailed": "Error al guardar la dirección. Inténtalo de nuevo.",
+      "deleteFailed": "Error al eliminar la dirección. Inténtalo de nuevo."
+    },
+    "fields": {
+      "type": "Tipo de Dirección",
+      "line1": "Dirección Línea 1",
+      "line2": "Dirección Línea 2",
+      "city": "Ciudad",
+      "stateRegion": "Provincia/Región",
+      "postalCode": "Código Postal",
+      "country": "País",
+      "phone": "Teléfono"
+    },
+    "placeholders": {
+      "line1": "Introduce la dirección",
+      "line2": "Piso, puerta, etc. (opcional)",
+      "city": "Introduce la ciudad",
+      "stateRegion": "Introduce la provincia o región",
+      "postalCode": "Introduce el código postal",
+      "phone": "Introduce el teléfono"
+    },
+    "types": {
+      "delivery": "Envío",
+      "billing": "Facturación"
+    },
+    "countries": {
+      "us": "Estados Unidos",
+      "gb": "Reino Unido",
+      "de": "Alemania",
+      "fr": "Francia",
+      "es": "España",
+      "it": "Italia",
+      "pt": "Portugal",
+      "nl": "Países Bajos",
+      "be": "Bélgica",
+      "ca": "Canadá",
+      "au": "Australia",
+      "jp": "Japón",
+      "br": "Brasil"
+    },
+    "buttons": {
+      "save": "Guardar Dirección",
+      "cancel": "Cancelar"
+    }
+  }
+}

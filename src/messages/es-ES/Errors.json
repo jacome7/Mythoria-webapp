@@ -1,0 +1,20 @@
+{
+  "Errors": {
+    "authRequired": "Autenticación requerida",
+    "pleaseSignIn": "Inicia sesión para continuar",
+    "storyNotAvailableYet": "Esta historia aún no está disponible.",
+    "storyNotFoundGeneric": "Historia no encontrada.",
+    "noPermission": "No tienes permiso para acceder a esta historia.",
+    "failedToLoad": "Error al cargar la historia. Inténtalo de nuevo.",
+    "oops": "¡Vaya!",
+    "noChaptersFound": "No se encontraron capítulos",
+    "noChaptersFoundDesc": "¡Esta historia no tiene capítulos!",
+    "chapterNotFound": "Capítulo no encontrado",
+    "chapterNotFoundDesc": "No se pudo encontrar el capítulo solicitado.",
+    "failedToStartAudiobook": "Error al iniciar la generación del audiolibro",
+    "failedToPlayAudio": "Error al reproducir audio. Inténtalo de nuevo.",
+    "failedToLoadAudio": "Error al cargar audio. Comprueba tu conexión e inténtalo de nuevo.",
+    "audioPlaybackInteractionRequired": "Se requiere interacción del usuario para reproducir audio. Pulsa de nuevo el botón de reproducción.",
+    "audioFormatNotSupported": "Este formato de audio no es compatible con tu navegador."
+  }
+}

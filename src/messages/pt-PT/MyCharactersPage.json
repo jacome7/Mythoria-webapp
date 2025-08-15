@@ -1,0 +1,24 @@
+{
+  "MyCharactersPage": {
+    "noCharacters": {
+      "title": "Ainda não tem personagens!",
+      "subtitle": "Comece a criar personagens para as suas histórias para as ver aqui."
+    },
+    "table": {
+      "name": "Nome",
+      "type": "Tipo",
+      "actions": "Ações"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Eliminar"
+    },
+    "createCharacter": "Criar Personagem",
+    "deleteConfirm": {
+      "title": "Eliminar Personagem",
+      "message": "Tem a certeza de que quer eliminar esta personagem? Esta ação não pode ser desfeita.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar"
+    }
+  }
+}

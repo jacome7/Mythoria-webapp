@@ -1,0 +1,14 @@
+{
+  "SignUpPage": {
+    "title": "Create Your Mythoria Account",
+    "subtitle": "Join thousands of storytellers and start crafting magical tales today.",
+    "pageTitle": "Create Account",
+    "pageSubtitle": "Begin your storytelling journey with us today.",
+    "features": {
+      "free": "🆓 First story absolutely free",
+      "character": "👤 Unique character creation",
+      "quality": "📖 Published-book quality",
+      "creativity": "🚀 Unlimited creativity"
+    }
+  }
+}

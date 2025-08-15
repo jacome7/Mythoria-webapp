@@ -37,7 +37,7 @@ interface ShareData {
 }
 
 export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPublic = false, slug, onShareSuccess }: ShareModalProps) {
-  const t = useTranslations('common.Components.ShareModal');
+  const tCommonShareModal = useTranslations('ShareModal');
   const [allowEdit, setAllowEdit] = useState(false);
   const [makePublic, setMakePublic] = useState(isPublic);
   const [loading, setLoading] = useState(false);
@@ -61,7 +61,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
 
       if (!storyId || storyId === 'undefined') {
         console.error('Invalid storyId:', storyId);
-        alert(t('alerts.invalidStoryId'));
+        alert(tCommonShareModal('alerts.invalidStoryId'));
         setLoading(false);
         return;
       }
@@ -103,11 +103,11 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
         });
       } else {
         console.error('Error creating share link:', data.error);
-        alert(t('errors.createLinkFailed'));
+        alert(tCommonShareModal('errors.createLinkFailed'));
       }
     } catch (error) {
       console.error('Error creating share link:', error);
-      alert(t('errors.shareLinkCreationFailed'));
+      alert(tCommonShareModal('errors.shareLinkCreationFailed'));
     } finally {
       setLoading(false);
     }
@@ -130,7 +130,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
   const handleNativeShare = async (url: string) => {
     const sharePayload = {
       title: storyTitle,
-      text: t('shareMessages.checkOut', { storyTitle }),
+      text: tCommonShareModal('shareMessages.checkOut', { storyTitle }),
       url,
     };
 
@@ -147,19 +147,19 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
   };
 
   const handleWhatsApp = (url: string) => {
-    const message = encodeURIComponent(`${t('shareMessages.checkOut', { storyTitle })} ${url}`);
+    const message = encodeURIComponent(`${tCommonShareModal('shareMessages.checkOut', { storyTitle })} ${url}`);
     window.open(`https://wa.me/?text=${message}`, '_blank');
   };
 
   const handleFacebook = (url: string) => {
     const encodedUrl = encodeURIComponent(url);
-    const message = encodeURIComponent(t('shareMessages.checkOut', { storyTitle }));
+    const message = encodeURIComponent(tCommonShareModal('shareMessages.checkOut', { storyTitle }));
     window.open(`https://www.facebook.com/dialog/share?app_id=YOUR_APP_ID&href=${encodedUrl}&quote=${message}`, '_blank');
   };
 
   const handleEmail = (url: string) => {
-    const subject = encodeURIComponent(t('shareMessages.emailSubject', { storyTitle }));
-    const body = encodeURIComponent(t('shareMessages.emailBody', { storyTitle, url }));
+    const subject = encodeURIComponent(tCommonShareModal('shareMessages.emailSubject', { storyTitle }));
+    const body = encodeURIComponent(tCommonShareModal('shareMessages.emailBody', { storyTitle, url }));
     window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
   };
   const reset = () => {
@@ -180,7 +180,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">          <div className="flex items-center gap-3">
             <FiShare2 className="text-primary text-xl" />
-            <h2 className="text-xl font-semibold">{t('title')}</h2>
+            <h2 className="text-xl font-semibold">{tCommonShareModal('title')}</h2>
           </div>
           <button
             onClick={handleClose}
@@ -193,13 +193,13 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
             <>
               {/* Public Story Display */}
               <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                <h3 className="font-medium text-green-900 mb-2">{t('publicStoryTitle') || 'Public Story'}</h3>
-                <p className="text-sm text-green-700 mb-3">{t('publicStoryDesc') || 'This story is currently public and can be viewed by anyone.'}</p>
+                <h3 className="font-medium text-green-900 mb-2">{tCommonShareModal('publicStoryTitle') || 'Public Story'}</h3>
+                <p className="text-sm text-green-700 mb-3">{tCommonShareModal('publicStoryDesc') || 'This story is currently public and can be viewed by anyone.'}</p>
                 
                 {/* Public URL */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-green-800">
-                    {t('publicUrl') || 'Public URL'}
+                    {tCommonShareModal('publicUrl') || 'Public URL'}
                   </label>
                   <div className="flex gap-2">
                     <input
@@ -215,12 +215,12 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
                       {copied ? (
                         <>
                           <FiCheck className="text-green-600" />
-                          {t('copied')}
+                          {tCommonShareModal('copied')}
                         </>
                       ) : (
                         <>
                           <FiCopy />
-                          {t('copy')}
+                          {tCommonShareModal('copy')}
                         </>
                       )}
                     </button>
@@ -236,8 +236,8 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
                       <FiLock className="text-red-600" />
                     </div>
                     <div>
-                      <h4 className="font-medium">{t('makePrivate') || 'Make story private'}</h4>
-                      <p className="text-sm text-gray-600">{t('makePrivateDesc') || 'Remove public access and make the story private'}</p>
+                      <h4 className="font-medium">{tCommonShareModal('makePrivate') || 'Make story private'}</h4>
+                      <p className="text-sm text-gray-600">{tCommonShareModal('makePrivateDesc') || 'Remove public access and make the story private'}</p>
                     </div>
                   </div>
                   <input
@@ -251,7 +251,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
 
               {/* Share Options for Public Story */}
               <div className="space-y-3">
-                <h4 className="font-medium text-center">{t('shareVia')}</h4>
+                <h4 className="font-medium text-center">{tCommonShareModal('shareVia')}</h4>
 
                 <div className="grid grid-cols-2 gap-3">
                   <button
@@ -259,7 +259,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
                     className="btn btn-outline btn-sm flex items-center gap-2"
                   >
                     <FaWhatsapp className="text-green-600" />
-                    {t('whatsapp')}
+                    {tCommonShareModal('whatsapp')}
                   </button>
 
                   <button
@@ -267,7 +267,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
                     className="btn btn-outline btn-sm flex items-center gap-2"
                   >
                     <FaFacebook className="text-blue-600" />
-                    {t('facebook')}
+                    {tCommonShareModal('facebook')}
                   </button>
 
                   <button
@@ -275,7 +275,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
                     className="btn btn-outline btn-sm flex items-center gap-2"
                   >
                     <FiMail />
-                    {t('email')}
+                    {tCommonShareModal('email')}
                   </button>
 
                   <button
@@ -283,7 +283,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
                     className="btn btn-outline btn-sm flex items-center gap-2"
                   >
                     <FiShare2 />
-                    {t('more')}
+                    {tCommonShareModal('more')}
                   </button>
                 </div>
               </div>
@@ -300,7 +300,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
                   ) : (
                     <>
                       <FiLock />
-                      {t('makePrivate') || 'Make Private'}
+                      {tCommonShareModal('makePrivate') || 'Make Private'}
                     </>
                   )}
                 </button>
@@ -310,7 +310,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
             <>
               {/* Story Info */}              <div className="bg-gray-50 rounded-lg p-4">
                 <h3 className="font-medium text-gray-900 mb-1">{storyTitle}</h3>
-                <p className="text-sm text-gray-600">{t('chooseOptions')}</p>
+                <p className="text-sm text-gray-600">{tCommonShareModal('chooseOptions')}</p>
               </div>
 
               {/* Share Options */}
@@ -320,8 +320,8 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
                     <div className="p-2 bg-blue-100 rounded-lg">
                       <FiUsers className="text-blue-600" />
                     </div>                    <div>
-                      <h4 className="font-medium">{t('allowEdit')}</h4>
-                      <p className="text-sm text-gray-600">{t('allowEditDesc')}</p>
+                      <h4 className="font-medium">{tCommonShareModal('allowEdit')}</h4>
+                      <p className="text-sm text-gray-600">{tCommonShareModal('allowEditDesc')}</p>
                     </div>
                   </div>
                   <input
@@ -338,8 +338,8 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
                     <div className="p-2 bg-green-100 rounded-lg">
                       <FiGlobe className="text-green-600" />
                     </div>                    <div>
-                      <h4 className="font-medium">{t('makePublic')}</h4>
-                      <p className="text-sm text-gray-600">{t('makePublicDesc')}</p>
+                      <h4 className="font-medium">{tCommonShareModal('makePublic')}</h4>
+                      <p className="text-sm text-gray-600">{tCommonShareModal('makePublicDesc')}</p>
                     </div>
                   </div>
                   <input
@@ -360,11 +360,11 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <div className="flex items-start gap-3">
                   <FiInfo className="text-blue-600 mt-0.5 flex-shrink-0" />
-                  <div className="text-sm">                    <p className="font-medium text-blue-900 mb-2">{t('optionsExplained')}</p>
+                  <div className="text-sm">                    <p className="font-medium text-blue-900 mb-2">{tCommonShareModal('optionsExplained')}</p>
                     <ul className="space-y-1 text-blue-700">
-                      <li><strong>{t('privateView')}</strong></li>
-                      <li><strong>{t('privateEdit')}</strong></li>
-                      <li><strong>{t('publicOption')}</strong></li>
+                      <li><strong>{tCommonShareModal('privateView')}</strong></li>
+                      <li><strong>{tCommonShareModal('privateEdit')}</strong></li>
+                      <li><strong>{tCommonShareModal('publicOption')}</strong></li>
                     </ul>
                   </div>
                 </div>
@@ -380,7 +380,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
                   <span className="loading loading-spinner loading-sm"></span>                ) : (
                   <>
                     <FiShare2 />
-                    {t('generateLink')}
+                    {tCommonShareModal('generateLink')}
                   </>
                 )}
               </button>
@@ -396,7 +396,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
 
                 {/* Share URL */}                <div className="bg-gray-50 rounded-lg p-4">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('shareUrl')}
+                    {tCommonShareModal('shareUrl')}
                   </label>
                   <div className="flex gap-2">
                     <input
@@ -411,12 +411,12 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
                     >                      {copied ? (
                         <>
                           <FiCheck className="text-green-600" />
-                          {t('copied')}
+                          {tCommonShareModal('copied')}
                         </>
                       ) : (
                         <>
                           <FiCopy />
-                          {t('copy')}
+                          {tCommonShareModal('copy')}
                         </>
                       )}
                     </button>
@@ -424,14 +424,14 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
                 </div>
 
                 {/* Share Options */}                <div className="space-y-3">
-                  <h4 className="font-medium text-center">{t('shareVia')}</h4>
+                  <h4 className="font-medium text-center">{tCommonShareModal('shareVia')}</h4>
 
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       onClick={() => handleWhatsApp(getFullUrl(shareData.url))}
                       className="btn btn-outline btn-sm flex items-center gap-2"
                     >                      <FaWhatsapp className="text-green-600" />
-                      {t('whatsapp')}
+                      {tCommonShareModal('whatsapp')}
                     </button>
 
                     <button
@@ -439,7 +439,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
                       className="btn btn-outline btn-sm flex items-center gap-2"
                     >
                       <FaFacebook className="text-blue-600" />
-                      {t('facebook')}
+                      {tCommonShareModal('facebook')}
                     </button>
 
                     <button
@@ -447,7 +447,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
                       className="btn btn-outline btn-sm flex items-center gap-2"
                     >
                       <FiMail />
-                      {t('email')}
+                      {tCommonShareModal('email')}
                     </button>
 
                     <button
@@ -455,7 +455,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
                       className="btn btn-outline btn-sm flex items-center gap-2"
                     >
                       <FiShare2 />
-                      {t('more')}
+                      {tCommonShareModal('more')}
                     </button>
                   </div>
                 </div>
@@ -464,7 +464,7 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
                 {shareData.linkType === 'private' && (
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">                    <div className="flex items-center gap-2 text-yellow-800 text-sm">
                       <FiLock />
-                      <span>{t('privateExpires')}</span>
+                      <span>{tCommonShareModal('privateExpires')}</span>
                     </div>
                   </div>
                 )}
@@ -475,13 +475,13 @@ export default function ShareModal({ isOpen, onClose, storyId, storyTitle, isPub
                   onClick={reset}
                   className="flex-1 btn btn-outline"
                 >
-                  {t('createAnother')}
+                  {tCommonShareModal('createAnother')}
                 </button>
                 <button
                   onClick={handleClose}
                   className="flex-1 btn btn-primary"
                 >
-                  {t('done')}
+                  {tCommonShareModal('done')}
                 </button>
               </div>
             </>

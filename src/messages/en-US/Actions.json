@@ -1,0 +1,17 @@
+{
+  "Actions": {
+    "signIn": "Sign In",
+    "read": "Read",
+    "listen": "Listen",
+    "edit": "Edit",
+    "print": "Print",
+    "share": "Share",
+    "backToMyStories": "Back to My Stories",
+    "goToHomepage": "Go to Homepage",
+    "tryAgain": "Try Again",
+    "close": "Close",
+    "goBack": "Go Back",
+    "backToStory": "Back to Story",
+    "createAccount": "Create Account"
+  }
+}

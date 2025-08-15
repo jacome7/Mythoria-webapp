@@ -8,7 +8,7 @@ export function useAudioPlayer({
   onError, 
   trackingData 
 }: AudioPlayerHookProps): AudioPlayerState & AudioPlayerActions {
-  const tCommon = useTranslations('common');
+  const tErrors = useTranslations('Errors');
 
   // Audio playback states
   const [currentlyPlaying, setCurrentlyPlaying] = useState<number | null>(null);
@@ -59,7 +59,7 @@ export function useAudioPlayer({
           setCurrentlyPlaying(null);
           // Don't trigger the global error handler that crashes the page
           // Instead, show a more user-friendly message
-          const errorMessage = tCommon('Errors.failedToLoadAudio');
+          const errorMessage = tErrors('failedToLoadAudio');
           alert(`${errorMessage} (Chapter ${chapterIndex + 1})`);
         });
 
@@ -77,9 +77,9 @@ export function useAudioPlayer({
           
           // Handle different types of play errors
           if (playError instanceof Error && playError.name === 'NotAllowedError') {
-            alert(tCommon('Errors.audioPlaybackInteractionRequired'));
+            alert(tErrors('audioPlaybackInteractionRequired'));
           } else {
-            alert(`${tCommon('Errors.failedToPlayAudio')} (Chapter ${chapterIndex + 1})`);
+            alert(`${tErrors('failedToPlayAudio')} (Chapter ${chapterIndex + 1})`);
           }
           return;
         }
@@ -115,9 +115,9 @@ export function useAudioPlayer({
           
           // Handle different types of play errors
           if (playError instanceof Error && playError.name === 'NotAllowedError') {
-            alert(tCommon('Errors.audioPlaybackInteractionRequired'));
+            alert(tErrors('audioPlaybackInteractionRequired'));
           } else {
-            alert(`${tCommon('Errors.failedToPlayAudio')} (Chapter ${chapterIndex + 1})`);
+            alert(`${tErrors('failedToPlayAudio')} (Chapter ${chapterIndex + 1})`);
           }
           return;
         }
@@ -139,14 +139,14 @@ export function useAudioPlayer({
       let errorMessage: string;
       if (error instanceof Error) {
         if (error.name === 'NotAllowedError') {
-          errorMessage = tCommon('Errors.audioPlaybackInteractionRequired');
+          errorMessage = tErrors('audioPlaybackInteractionRequired');
         } else if (error.name === 'NotSupportedError') {
-          errorMessage = tCommon('Errors.audioFormatNotSupported');
+          errorMessage = tErrors('audioFormatNotSupported');
         } else {
-          errorMessage = tCommon('Errors.failedToPlayAudio');
+          errorMessage = tErrors('failedToPlayAudio');
         }
       } else {
-        errorMessage = tCommon('Errors.failedToPlayAudio');
+        errorMessage = tErrors('failedToPlayAudio');
       }
 
       if (onError) {
@@ -155,7 +155,7 @@ export function useAudioPlayer({
         alert(errorMessage);
       }
     }
-  }, [currentlyPlaying, audioElements, audioEndpoint, tCommon, onError, trackingData]);
+  }, [currentlyPlaying, audioElements, audioEndpoint, tErrors, onError, trackingData]);
 
   const pauseAudio = useCallback((chapterIndex: number) => {
     if (audioElements[chapterIndex]) {

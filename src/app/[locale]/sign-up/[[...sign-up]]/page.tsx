@@ -17,19 +17,19 @@ export default async function SignUpPage({
   const { locale } = await params;
   setRequestLocale(locale);
   
-  const t = await getTranslations('auth');
+  const tSignUpPage = await getTranslations('SignUpPage');
   
   // Extract all needed translations
   const translations = {
-    title: t('signUp.title'),
-    subtitle: t('signUp.subtitle'),
-    pageTitle: t('signUp.pageTitle'),
-    pageSubtitle: t('signUp.pageSubtitle'),
+    title: tSignUpPage('title'),
+    subtitle: tSignUpPage('subtitle'),
+    pageTitle: tSignUpPage('pageTitle'),
+    pageSubtitle: tSignUpPage('pageSubtitle'),
     features: {
-      free: t('signUp.features.free'),
-      character: t('signUp.features.character'),
-      quality: t('signUp.features.quality'),
-      creativity: t('signUp.features.creativity')
+      free: tSignUpPage('features.free'),
+      character: tSignUpPage('features.character'),
+      quality: tSignUpPage('features.quality'),
+      creativity: tSignUpPage('features.creativity')
     }
   };
   

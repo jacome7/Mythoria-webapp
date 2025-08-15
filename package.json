@@ -4,11 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "prebuild": "node scripts/verify-translations.js",
     "build": "next build",
     "start": "next start",
   "lint": "next lint",
-  "test": "node scripts/smoke-test.js",
   "i18n:prune:pt-PT:common": "tsx scripts/prune-unused-keys.ts pt-PT common.json",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx -r dotenv/config ./src/db/migrate.ts",
@@ -22,7 +20,9 @@
     "deploy:staging": "gcloud builds submit --config cloudbuild-staging.yaml",
     "deploy:production": "gcloud builds submit --config cloudbuild.yaml",
     "deploy": "powershell -ExecutionPolicy Bypass -File scripts/deploy.ps1",
-    "docs:serve": "npx serve docs/"
+  "docs:serve": "npx serve docs/",
+  "i18n:parity": "tsx scripts/check-locale-parity.ts",
+  "i18n:keys": "tsx scripts/generate-translation-keys.ts"
   },
   "sideEffects": false,
   "dependencies": {

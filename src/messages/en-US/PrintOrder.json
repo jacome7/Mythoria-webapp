@@ -1,0 +1,80 @@
+{
+  "PrintOrder": {
+    "title": "Order Printed Copy",
+    "backToStories": "Back to My Stories",
+    "signInToContinue": "Sign in to continue",
+    "signInOrCreateAccount": "You need to sign in or create an account to place a print order.",
+    "signIn": "Sign In",
+    "createAccount": "Create Account",
+    "steps": {
+      "story": "Story",
+      "address": "Shipping Address",
+      "payment": "Print Options",
+      "confirmation": "Confirmation"
+    },
+    "errors": {
+      "storyNotFound": "Story not found",
+      "storyNotPublished": "Only published stories can be printed",
+      "loadingFailed": "Failed to load story data",
+      "missingRequiredFields": "Please complete all required fields",
+      "orderFailed": "Failed to place print order",
+      "insufficientCredits": "Insufficient credits.",
+      "loadPricingFailed": "Failed to load pricing information",
+      "fetchCreditsFailed": "Failed to fetch credit balance"
+    },
+    "addressInfo": {
+      "selectShipping": "Please select a shipping address for your printed book.",
+      "noAddresses": "You don't have any saved addresses. Please add a shipping address to continue.",
+      "addNewAddress": "Add New Address"
+    },
+    "formats": {
+      "paperback": "Paperback",
+      "hardcover": "Hardcover"
+    },
+    "payment": {
+      "selectBookType": "Select Your Book Type",
+      "chooseQuality": "Choose the printing quality that suits you best:",
+      "softcoverTitle": "📖 Softcover",
+      "softcoverDescription": "Flexible paperback with a glossy finish. Ideal for daily reading and handling.",
+      "hardcoverTitle": "📚 Hardcover",
+      "hardcoverDescription": "Rigid cover, sturdy binding. Perfect as a gift or to keep for a long time.",
+      "premiumTitle": "🌟 Premium",
+      "premiumDescription": "Deluxe hardcover edition with premium materials. Exceptional quality for special occasions.",
+      "priceNote": "All prices include 4 chapter printing in full-color printing and delivery.",
+      "extraChapterNote": "Each additional chapter costs 2 credits.",
+      "yourStory": "Your story",
+      "extraChaptersNote": "extra chapters",
+      "orderSummary": "Order Summary",
+      "selectedOption": "Selected Option",
+      "basePrice": "Base Price",
+      "extraChapters": "Extra Chapters",
+      "shipping": "Shipping",
+      "included": "Included",
+      "printOrderFee": "Print Order Processing",
+      "total": "Total",
+      "credits": "credits",
+      "cost": "Cost",
+      "yourCredits": "Your Credits",
+      "insufficientCreditsTitle": "Insufficient Credits",
+      "needMoreCredits": "You need {count} more credits to place this order.",
+      "getMoreCredits": "Get More Credits",
+      "method": "Payment Method",
+      "creditsInfo": "Payment will be deducted from your credits balance when you place the order.",
+      "pleaseSelectOption": "Please select a printing option to continue.",
+      "confirmOrder": "Confirm Your Print Order",
+      "confirmOrderDescription": "Due to high demand, the delivery can take up to 4 weeks. Are you sure you want to proceed with your order?"
+    },
+    "confirmation": {
+      "title": "Order Placed Successfully!",
+      "message": "Your print request has been submitted. You will receive updates on the printing and shipping status via email."
+    },
+    "buttons": {
+      "continue": "Continue",
+      "back": "Back",
+      "placeOrder": "Place Order",
+      "backToStories": "Back to My Stories",
+      "confirm": "Confirm Order",
+      "cancel": "Cancel"
+    }
+  }
+}

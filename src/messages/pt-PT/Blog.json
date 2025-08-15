@@ -1,0 +1,19 @@
+{
+  "Blog": {
+    "list": {
+      "title": "O Diário",
+      "subtitle": "Crónicas do reino da narrativa",
+      "readMore": "Continuar a ler",
+      "publishedOn": "Publicado em",
+      "readingTime": "min de leitura",
+      "noPostsFound": "Ainda não há crónicas",
+      "noPostsFoundDescription": "Os nossos escribas estão a redigir as primeiras aventuras. Volta em breve para novas histórias épicas de Mythoria!",
+      "loadMore": "Carregar mais crónicas",
+      "error": "Falha ao carregar as crónicas"
+    },
+    "metadata": {
+      "listTitle": "Todas as crónicas de Mythoria",
+      "listDescription": "Explora a nossa coleção completa de crónicas, desde aventuras épicas a lendas esquecidas do reino de Mythoria."
+    }
+  }
+}

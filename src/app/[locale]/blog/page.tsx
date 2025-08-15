@@ -25,28 +25,28 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'blog.metadata' });
+  const tBlogMetadata = await getTranslations({ locale, namespace: 'Blog.metadata' });
   const baseUrl = 'https://mythoria.pt';
   const hreflangLinks = generateHreflangLinks(locale, `/${locale}/blog`);
-  
+
   return {
-    title: t('listTitle'),
-    description: t('listDescription'),
+    title: tBlogMetadata('listTitle'),
+    description: tBlogMetadata('listDescription'),
     robots: 'index,follow,max-snippet:-1,max-image-preview:large',
     alternates: {
       canonical: `${baseUrl}/${locale}/blog/`,
       languages: hreflangLinks,
     },
     openGraph: {
-      title: t('listTitle'),
-      description: t('listDescription'),
+      title: tBlogMetadata('listTitle'),
+      description: tBlogMetadata('listDescription'),
       type: 'website',
       url: `${baseUrl}/${locale}/blog/`,
     },
     twitter: {
       card: 'summary_large_image',
-      title: t('listTitle'),
-      description: t('listDescription'),
+      title: tBlogMetadata('listTitle'),
+      description: tBlogMetadata('listDescription'),
     },
   };
 }
@@ -84,7 +84,7 @@ export default async function BlogListPage({
     notFound();
   }
   
-  const t = await getTranslations('blog.list');
+  const t = await getTranslations('Blog.list');
   const currentPage = parseInt(page || '1', 10);
   const postsPerPage = 10;
   const offset = (currentPage - 1) * postsPerPage;
@@ -150,7 +150,7 @@ export default async function BlogListPage({
                       </div>
                       <div className="flex items-center gap-2">
                         <FiClock className="w-4 h-4" />
-                        <span>{calculateReadingTimeFromMdx(post.contentMdx ?? post.summary)} {t('readingTime', { ns: 'blog.post' })}</span>
+                        <span>{calculateReadingTimeFromMdx(post.contentMdx ?? post.summary)} {t('readingTime', { ns: 'BlogPost' })}</span>
                       </div>
                     </div>
                     

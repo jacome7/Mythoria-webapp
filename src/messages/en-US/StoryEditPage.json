@@ -1,0 +1,30 @@
+{
+  "StoryEditPage": {
+    "errors": {
+      "failedToLoadStoryData": "Failed to load story data",
+      "failedToLoadStory": "Failed to load story",
+      "failedToUpdateStoryInfo": "Failed to update story info",
+      "failedToLoadStoryDataToast": "Failed to load story data",
+      "errorEmoji": "😞"
+    },
+    "success": {
+      "storyInfoUpdated": "Story info updated successfully",
+      "storyUpdated": "Story updated successfully",
+      "chapterUpdated": "Chapter updated successfully",
+      "contentUpdated": "Content updated successfully"
+    },
+    "chapterUpdates": {
+      "chaptersUpdatedSuccessfully": "{successCount} chapters updated successfully. Chapter {failedChapters} failed to edit.",
+      "allChaptersUpdated": "All {successCount} chapters updated successfully. Changes have been saved automatically."
+    },
+    "imageTypes": {
+      "frontCover": "Front Cover",
+      "backCover": "Back Cover"
+    },
+    "logging": {
+      "errorLoadingStory": "Error loading story:",
+      "errorUpdatingStoryInfo": "Error updating story info:",
+      "aiEditSuccessUpdatedData": "AI Edit Success - Updated Data:"
+    }
+  }
+}

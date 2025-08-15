@@ -12,15 +12,15 @@ interface AudiobookGenerationTriggerProps {
   onGenerationComplete?: () => void;
 }
 
-export default function AudiobookGenerationTrigger({ 
+export default function AudiobookGenerationTrigger({
   storyId, 
   hasAudiobook, 
   isGenerating = false,
   onGenerationStart,
   onGenerationComplete
 }: AudiobookGenerationTriggerProps) {
-  const t = useTranslations('components.audiobookGenerationTrigger');
-  const tCommon = useTranslations('common');
+  const tAudiobookGenerationTrigger = useTranslations('AudiobookGenerationTrigger');
+  const tVoices = useTranslations('Voices');
   const [isGeneratingLocal, setIsGeneratingLocal] = useState(isGenerating);
   const [error, setError] = useState<string | null>(null);
   const [selectedVoice, setSelectedVoice] = useState('nova');
@@ -46,7 +46,7 @@ export default function AudiobookGenerationTrigger({
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || t('errors.failedToStart'));
+        throw new Error(errorData.error || tAudiobookGenerationTrigger('errors.failedToStart'));
       }
 
       // The response will be 202 Accepted, and the workflow will process asynchronously
@@ -58,7 +58,7 @@ export default function AudiobookGenerationTrigger({
     } catch (error) {
       console.error('Error generating audiobook:', error);
       setError(
-        error instanceof Error ? error.message : t('errors.failedToStart'),
+        error instanceof Error ? error.message : tAudiobookGenerationTrigger('errors.failedToStart'),
       );
       setIsGeneratingLocal(false);
     }
@@ -75,33 +75,33 @@ export default function AudiobookGenerationTrigger({
   const voiceOptions = [
     {
       value: 'alloy',
-      label: tCommon('voices.names.alloy'),
-      description: tCommon('voices.descriptions.alloy'),
+      label: tVoices('names.alloy'),
+      description: tVoices('descriptions.alloy'),
     },
     {
       value: 'echo',
-      label: tCommon('voices.names.echo'),
-      description: tCommon('voices.descriptions.echo'),
+      label: tVoices('names.echo'),
+      description: tVoices('descriptions.echo'),
     },
     {
       value: 'fable',
-      label: tCommon('voices.names.fable'),
-      description: tCommon('voices.descriptions.fable'),
+      label: tVoices('names.fable'),
+      description: tVoices('descriptions.fable'),
     },
     {
       value: 'nova',
-      label: tCommon('voices.names.nova'),
-      description: tCommon('voices.descriptions.nova'),
+      label: tVoices('names.nova'),
+      description: tVoices('descriptions.nova'),
     },
     {
       value: 'onyx',
-      label: tCommon('voices.names.onyx'),
-      description: tCommon('voices.descriptions.onyx'),
+      label: tVoices('names.onyx'),
+      description: tVoices('descriptions.onyx'),
     },
     {
       value: 'shimmer',
-      label: tCommon('voices.names.shimmer'),
-      description: tCommon('voices.descriptions.shimmer'),
+      label: tVoices('names.shimmer'),
+      description: tVoices('descriptions.shimmer'),
     },
   ];
 
@@ -127,17 +127,17 @@ export default function AudiobookGenerationTrigger({
       <div className="card-body text-center">
         <h3 className="card-title justify-center flex items-center gap-2">
           <span className="text-2xl">🎙️</span>
-          {t('generateAudiobook')}
+          {tAudiobookGenerationTrigger('generateAudiobook')}
         </h3>
         
         <p className="text-gray-600 mb-6">
-          {t('audiobookDescription')}
+          {tAudiobookGenerationTrigger('audiobookDescription')}
         </p>
 
         {/* Voice Selection */}
         <div className="mb-6">
           <label className="label">
-            <span className="label-text font-medium">{t('selectVoice')}</span>
+            <span className="label-text font-medium">{tAudiobookGenerationTrigger('selectVoice')}</span>
           </label>
           <select 
             className="select select-bordered w-full max-w-md"
@@ -167,20 +167,20 @@ export default function AudiobookGenerationTrigger({
             {isGeneratingLocal ? (
               <>
                 <span className="loading loading-spinner loading-sm"></span>
-                {t('generating')}
+                {tAudiobookGenerationTrigger('generating')}
               </>
             ) : (
               <>
                 <span className="text-xl mr-2">🎵</span>
-                {t('createAudiobook')}
+                {tAudiobookGenerationTrigger('createAudiobook')}
               </>
             )}
           </button>
         </div>
 
         <div className="text-sm text-gray-500 mt-4 space-y-1">
-          <p>{t('estimatedTime')}: {t('aboutEightMinutes')}</p>
-          <p>{t('creditCost')}: {t('creditsRequired')}</p>
+          <p>{tAudiobookGenerationTrigger('estimatedTime')}: {tAudiobookGenerationTrigger('aboutEightMinutes')}</p>
+          <p>{tAudiobookGenerationTrigger('creditCost')}: {tAudiobookGenerationTrigger('creditsRequired')}</p>
         </div>
       </div>
     </div>

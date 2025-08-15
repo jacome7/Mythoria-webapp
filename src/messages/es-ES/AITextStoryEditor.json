@@ -1,0 +1,40 @@
+{
+  "AITextStoryEditor": {
+    "title": "Editor de texto con IA - {storyTitle}",
+    "fullStoryTitle": "Historia completa",
+    "requestPlaceholder": "Introduce tu petición de edición...",
+    "characterCount": "{count}/{max} caracteres",
+    "editButton": "Editar historia",
+    "cancelButton": "Cancelar",
+    "loading": "Procesando...",
+    "errors": {
+      "enterRequest": "Introduce tu petición de edición",
+      "unableToCheckCredits": "No se pueden comprobar los créditos. Inténtalo de nuevo.",
+      "failedToEdit": "No se pudo editar la historia. Inténtalo otra vez."
+    },
+    "editScopeLabel": "Ámbito de edición",
+    "currentChapterOnly": "Sólo este capítulo",
+    "allChapters": "Todos los capítulos",
+    "selectChapterLabel": "Selecciona capítulo",
+    "chapterOption": "Capítulo {number}: {title}",
+    "editRequestLabel": "Petición de edición",
+    "fullStoryExplanation": {
+      "title": "Cómo funciona la edición completa",
+      "item1": "La IA aplicará tu petición a todos los capítulos de la historia",
+      "item2": "Cada capítulo editado cuenta como una edición en tu uso de créditos",
+      "item3": "Todos los cambios que salgan bien se guardarán automáticamente",
+      "item4": "Podrás revisar los cambios cuando la edición termine",
+      "item5": "Si algún capítulo falla, los que funcionen se guardarán igual"
+    },
+    "costEstimation": {
+      "title": "Estimación de coste",
+      "freeEdit": "¡Esta edición es gratis!",
+      "costEdit": "Esta edición costará {credits} crédito{plural}",
+      "currentBalance": "• Saldo actual: {credits} créditos",
+      "editCount": "• Número de ediciones: {count} (siguiente límite: {threshold})",
+      "freeChapterEdits": "• {count} ediciones de capítulo gratis",
+      "paidChapterEdits": "• {count} ediciones de capítulo de pago",
+      "message": "• {message}"
+    }
+  }
+}

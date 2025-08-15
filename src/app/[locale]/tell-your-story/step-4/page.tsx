@@ -49,7 +49,7 @@ function Step4Page() {
   // useParams can be null during hydration; guard and provide a safe fallback
   const locale = (params?.locale && typeof params.locale === 'string') ? params.locale : 'en-US';
   const editStoryId = searchParams?.get('edit');
-  const t = useTranslations('StorySteps.step4');
+  const tStoryStepsStep4 = useTranslations('StorySteps.step4');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -74,7 +74,7 @@ function Step4Page() {
   const [showGraphicalStyleDropdown, setShowGraphicalStyleDropdown] = useState(false);
 
   // Language options from translation
-  const languageOptions = t.raw('languageOptions') as Array<{value: string, label: string}>;
+  const languageOptions = tStoryStepsStep4.raw('languageOptions') as Array<{value: string, label: string}>;
   const hasStyleSettingData = () => {
     return place.trim() || novelStyle || graphicalStyle || imageGenerationInstructions.trim();
   };
@@ -88,14 +88,14 @@ function Step4Page() {
     if (novelStyle) parts.push(NovelStyleLabels[novelStyle]);
     if (graphicalStyle) parts.push(GraphicalStyleLabels[graphicalStyle]);
     if (place.trim()) parts.push(place.trim());
-    if (imageGenerationInstructions.trim()) parts.push(t('previews.customImageInstructions'));
+    if (imageGenerationInstructions.trim()) parts.push(tStoryStepsStep4('previews.customImageInstructions'));
     return parts.join(', ');
   };
 
   const getContentDetailsPreview = () => {
     const parts = [];
-    if (plotDescription.trim()) parts.push(t('previews.storyOutlineProvided'));
-    if (additionalRequests.trim()) parts.push(t('previews.additionalRequestsProvided'));
+    if (plotDescription.trim()) parts.push(tStoryStepsStep4('previews.storyOutlineProvided'));
+    if (additionalRequests.trim()) parts.push(tStoryStepsStep4('previews.additionalRequestsProvided'));
     return parts.join(', ');
   };
 
@@ -125,7 +125,7 @@ function Step4Page() {
   }, []);
 
   const targetAudienceOptions = [
-    { value: '', label: t('placeholders.selectAudience') },
+    { value: '', label: tStoryStepsStep4('placeholders.selectAudience') },
     ...getAllTargetAudiences().map(value => ({
       value,
       label: TargetAudienceLabels[value]
@@ -133,7 +133,7 @@ function Step4Page() {
   ];
 
   const novelStyleOptions = [
-    { value: '', label: t('placeholders.selectNovelStyle') },
+    { value: '', label: tStoryStepsStep4('placeholders.selectNovelStyle') },
     ...getAllNovelStyles().map(value => ({
       value,
       label: NovelStyleLabels[value]
@@ -200,11 +200,11 @@ function Step4Page() {
       }
     } catch (error) {
       console.error('Error fetching story data:', error);
-      setError(t('errors.loadFailed'));
+      setError(tStoryStepsStep4('errors.loadFailed'));
     } finally {
       setLoading(false);
     }
-  }, [getChapterCountForAudience, locale, t]);
+  }, [getChapterCountForAudience, locale, tStoryStepsStep4]);
 
   useEffect(() => {
     // Check if we have a valid story session
@@ -223,29 +223,29 @@ function Step4Page() {
   const handleNext = async () => {
     // Auto-save before navigating
     if (!title.trim()) {
-      setError(t('errors.titleRequired'));
+      setError(tStoryStepsStep4('errors.titleRequired'));
       return;
     }
 
     if (!targetAudience) {
-      setError(t('errors.audienceRequired'));
+      setError(tStoryStepsStep4('errors.audienceRequired'));
       return;
     }
 
     if (!novelStyle) {
-      setError(t('errors.novelStyleRequired'));
+      setError(tStoryStepsStep4('errors.novelStyleRequired'));
       setStyleSettingOpen(true);
       return;
     }
 
     if (!graphicalStyle) {
-      setError(t('errors.graphicStyleRequired'));
+      setError(tStoryStepsStep4('errors.graphicStyleRequired'));
       setStyleSettingOpen(true);
       return;
     }
 
     if (!currentStoryId) {
-      setError(t('errors.noStoryFound'));
+      setError(tStoryStepsStep4('errors.noStoryFound'));
       return;
     }
 
@@ -271,7 +271,7 @@ function Step4Page() {
           storyLanguage: storyLanguage,
         }),
       });      if (!response.ok) {
-        throw new Error(t('errors.saveFailed'));
+        throw new Error(tStoryStepsStep4('errors.saveFailed'));
       }
 
       // Track step 4 completion
@@ -298,7 +298,7 @@ function Step4Page() {
 
     } catch (error) {
       console.error('Error saving story:', error);
-      setError(t('errors.saveFailedTryAgain'));
+      setError(tStoryStepsStep4('errors.saveFailedTryAgain'));
     } finally {
       setSaving(false);
     }
@@ -321,7 +321,7 @@ function Step4Page() {
                   {/* Mobile Progress Indicator */}
                   <div className="block md:hidden mb-8">
                     <div className="text-center text-sm text-gray-600 mb-2">
-                      {t('progress.stepLabel', { currentStep, totalSteps })}
+                      {tStoryStepsStep4('progress.stepLabel', { currentStep, totalSteps })}
                     </div>
                     <progress
                       className="progress progress-primary w-full"
@@ -346,17 +346,17 @@ function Step4Page() {
             {/* Step content */}
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
-                <h1 className="card-title text-3xl mb-6">{t('heading')}</h1>
+                <h1 className="card-title text-3xl mb-6">{tStoryStepsStep4('heading')}</h1>
 
                 {loading ? (
                   <div className="text-center py-12">
                     <span className="loading loading-spinner loading-lg"></span>
-                    <p className="text-lg text-gray-600 mt-4">{t('saving')}</p>
+                    <p className="text-lg text-gray-600 mt-4">{tStoryStepsStep4('saving')}</p>
                   </div>
                 ) : (
                   <div className="space-y-6">
                     <div className="prose max-w-none mb-6">
-                      <p className="text-gray-600">{t('intro')}</p>
+                      <p className="text-gray-600">{tStoryStepsStep4('intro')}</p>
                     </div>
 
                     {error && (
@@ -373,32 +373,32 @@ function Step4Page() {
                       <div className="card-body">
                         <h2 className="card-title text-xl mb-4 flex items-center">
                           <span className="text-primary">📖</span>
-                          {t('sections.storyBasics')}
+                          {tStoryStepsStep4('sections.storyBasics')}
                         </h2>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {/* Title Field */}
                           <div className="form-control md:col-span-2">
                             <label className="label">
-                              <span className="label-text font-semibold">{t('fields.title')} *</span>
+                              <span className="label-text font-semibold">{tStoryStepsStep4('fields.title')} *</span>
                             </label>
                             <input
                               type="text"
                               value={title}
                               onChange={(e) => setTitle(e.target.value)}
-                              placeholder={t('fields.title')}
+                              placeholder={tStoryStepsStep4('fields.title')}
                               className="input input-bordered w-full"
                               required
                             />
                             <label className="label">
-                              <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.titleHelp')}</span>
+                              <span className="label-text-alt break-words max-w-full whitespace-normal">{tStoryStepsStep4('fields.titleHelp')}</span>
                             </label>
                           </div>
 
                           {/* Target Audience Field */}
                           <div className="form-control">
                             <label className="label">
-                              <span className="label-text font-semibold">{t('fields.audience')} *</span>
+                              <span className="label-text font-semibold">{tStoryStepsStep4('fields.audience')} *</span>
                             </label>
                             <select
                               value={targetAudience}
@@ -418,14 +418,14 @@ function Step4Page() {
                               ))}
                             </select>
                             <label className="label">
-                              <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.audienceHelp')}</span>
+                              <span className="label-text-alt break-words max-w-full whitespace-normal">{tStoryStepsStep4('fields.audienceHelp')}</span>
                             </label>
                           </div>
 
                           {/* Book Size Field */}
                           <div className="form-control">
                             <label className="label">
-                              <span className="label-text font-semibold">{t('fields.bookSize')}</span>
+                              <span className="label-text font-semibold">{tStoryStepsStep4('fields.bookSize')}</span>
                             </label>
                             <select
                               value={chapterCount}
@@ -437,19 +437,19 @@ function Step4Page() {
                             >
                               {[2, 4, 6, 8, 10].map((count) => (
                                 <option key={count} value={count}>
-                                  {count} {count === 1 ? t('plurals.chapter') : t('plurals.chapters')}
+                                  {count} {count === 1 ? tStoryStepsStep4('plurals.chapter') : tStoryStepsStep4('plurals.chapters')}
                                 </option>
                               ))}
                             </select>
                             <label className="label">
-                              <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.bookSizeHelp')}</span>
+                              <span className="label-text-alt break-words max-w-full whitespace-normal">{tStoryStepsStep4('fields.bookSizeHelp')}</span>
                             </label>
                           </div>
 
                           {/* Story Language Field */}
                           <div className="form-control md:col-span-2">
                             <label className="label">
-                              <span className="label-text font-semibold">{t('fields.storyLanguage')}</span>
+                              <span className="label-text font-semibold">{tStoryStepsStep4('fields.storyLanguage')}</span>
                             </label>
                             <select
                               value={storyLanguage}
@@ -463,7 +463,7 @@ function Step4Page() {
                               ))}
                             </select>
                             <label className="label">
-                              <span className="label-text-alt break-words max-w-full whitespace-normal">{t('placeholders.storyLanguageHelp')}</span>
+                              <span className="label-text-alt break-words max-w-full whitespace-normal">{tStoryStepsStep4('placeholders.storyLanguageHelp')}</span>
                             </label>
                           </div>
                         </div>
@@ -480,9 +480,9 @@ function Step4Page() {
                       <div className="collapse-title text-xl font-medium flex items-center justify-between">
                         <div className="flex items-center">
                           <span className="text-primary mr-2">🎨</span>
-                          {t('sections.styleSetting')}
+                          {tStoryStepsStep4('sections.styleSetting')}
                           {!isSectionComplete('style') && (
-                            <span className="badge badge-warning badge-sm ml-2">{t('sections.required')}</span>
+                            <span className="badge badge-warning badge-sm ml-2">{tStoryStepsStep4('sections.required')}</span>
                           )}
                         </div>
                         {hasStyleSettingData() && (
@@ -496,24 +496,24 @@ function Step4Page() {
                           {/* Place Field */}
                           <div className="form-control md:col-span-2">
                             <label className="label">
-                              <span className="label-text font-semibold">{t('fields.place')}</span>
+                              <span className="label-text font-semibold">{tStoryStepsStep4('fields.place')}</span>
                             </label>
                             <input
                               type="text"
                               value={place}
                               onChange={(e) => setPlace(e.target.value)}
-                              placeholder={t('fields.place')}
+                              placeholder={tStoryStepsStep4('fields.place')}
                               className="input input-bordered w-full"
                             />
                             <label className="label">
-                              <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.placeHelp')}</span>
+                              <span className="label-text-alt break-words max-w-full whitespace-normal">{tStoryStepsStep4('fields.placeHelp')}</span>
                             </label>
                           </div>
 
                           {/* Novel Style Field */}
                           <div className="form-control">
                             <label className="label">
-                              <span className="label-text font-semibold">{t('fields.novelStyle')} *</span>
+                              <span className="label-text font-semibold">{tStoryStepsStep4('fields.novelStyle')} *</span>
                             </label>
                             <select
                               value={novelStyle}
@@ -528,14 +528,14 @@ function Step4Page() {
                               ))}
                             </select>
                             <label className="label">
-                              <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.novelStyleHelp')}</span>
+                              <span className="label-text-alt break-words max-w-full whitespace-normal">{tStoryStepsStep4('fields.novelStyleHelp')}</span>
                             </label>
                           </div>
 
                           {/* Graphic Style Field */}
                           <div className="form-control">
                             <label className="label">
-                              <span className="label-text font-semibold">{t('fields.graphicStyle')} *</span>
+                              <span className="label-text font-semibold">{tStoryStepsStep4('fields.graphicStyle')} *</span>
                             </label>
                             <div className="relative">
                               <button
@@ -549,33 +549,33 @@ function Step4Page() {
                                   }
                                 }}
                               >
-                                {graphicalStyle ? GraphicalStyleLabels[graphicalStyle] : t('placeholders.selectGraphicStyle')}
+                                {graphicalStyle ? GraphicalStyleLabels[graphicalStyle] : tStoryStepsStep4('placeholders.selectGraphicStyle')}
                                 <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                 </svg>
                               </button>
                             </div>
                             <label className="label">
-                              <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.graphicStyleHelp')}</span>
+                              <span className="label-text-alt break-words max-w-full whitespace-normal">{tStoryStepsStep4('fields.graphicStyleHelp')}</span>
                             </label>
                           </div>
 
                           {/* Custom Image Instructions Field */}
                           <div className="form-control md:col-span-2">
                             <label className="label">
-                              <span className="label-text font-semibold">{t('fields.imageInstructions')}</span>
+                              <span className="label-text font-semibold">{tStoryStepsStep4('fields.imageInstructions')}</span>
                             </label>
                             <textarea
                               value={imageGenerationInstructions}
                               onChange={(e) => setImageGenerationInstructions(e.target.value)}
-                              placeholder={t('placeholders.imageInstructions')}
+                              placeholder={tStoryStepsStep4('placeholders.imageInstructions')}
                               className="textarea textarea-bordered h-24 w-full"
                               rows={4}
                               maxLength={1000}
                             />
                             <label className="label">
                               <span className="label-text-alt break-words max-w-full whitespace-normal">
-                                {t('fields.imageInstructionsHelp')}
+                                {tStoryStepsStep4('fields.imageInstructionsHelp')}
                                 {imageGenerationInstructions.length > 0 && (
                                   <span className="ml-2 text-sm">({imageGenerationInstructions.length}/1000)</span>
                                 )}
@@ -596,7 +596,7 @@ function Step4Page() {
                       <div className="collapse-title text-xl font-medium flex items-center justify-between">
                         <div className="flex items-center">
                           <span className="text-primary mr-2">📝</span>
-                          {t('sections.contentDetails')}
+                          {tStoryStepsStep4('sections.contentDetails')}
                         </div>
                         {hasContentDetailsData() && (
                           <span className="text-sm text-gray-600 font-normal truncate max-w-xs hidden md:inline">
@@ -609,34 +609,34 @@ function Step4Page() {
                           {/* Story Outline Field */}
                           <div className="form-control">
                             <label className="label">
-                              <span className="label-text font-semibold">{t('fields.outline')}</span>
+                              <span className="label-text font-semibold">{tStoryStepsStep4('fields.outline')}</span>
                             </label>
                             <textarea
                               value={plotDescription}
                               onChange={(e) => setPlotDescription(e.target.value)}
-                              placeholder={t('placeholders.outlinePlaceholder')}
+                              placeholder={tStoryStepsStep4('placeholders.outlinePlaceholder')}
                               className="textarea textarea-bordered h-40 w-full"
                               rows={8}
                             />
                             <label className="label">
-                              <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.outlineHelp')}</span>
+                              <span className="label-text-alt break-words max-w-full whitespace-normal">{tStoryStepsStep4('fields.outlineHelp')}</span>
                             </label>
                           </div>
 
                           {/* Additional Requests Field */}
                           <div className="form-control">
                             <label className="label">
-                              <span className="label-text font-semibold">{t('fields.additional')}</span>
+                              <span className="label-text font-semibold">{tStoryStepsStep4('fields.additional')}</span>
                             </label>
                             <textarea
                               value={additionalRequests}
                               onChange={(e) => setAdditionalRequests(e.target.value)}
-                              placeholder={t('fields.additional')}
+                              placeholder={tStoryStepsStep4('fields.additional')}
                               className="textarea textarea-bordered h-32 w-full"
                               rows={6}
                             />
                             <label className="label">
-                              <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.additionalHelp')}</span>
+                              <span className="label-text-alt break-words max-w-full whitespace-normal">{tStoryStepsStep4('fields.additionalHelp')}</span>
                             </label>
                           </div>
                         </div>
@@ -650,7 +650,7 @@ function Step4Page() {
                   <div className="modal modal-open">
                     <div className="modal-box max-w-4xl h-3/4 max-h-screen">
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className="font-bold text-lg">{t('fields.graphicStyle')}</h3>
+                        <h3 className="font-bold text-lg">{tStoryStepsStep4('fields.graphicStyle')}</h3>
                         <button 
                           className="btn btn-sm btn-circle btn-ghost"
                           onClick={() => setShowGraphicalStyleDropdown(false)}
@@ -686,7 +686,7 @@ function Step4Page() {
                               <figure className="px-4 pt-4">
                                 <Image
                                   src={`/images/GraphicTemplates/YoungAdults/${style}.jpg`}
-                                  alt={t('modal.altText', { style: GraphicalStyleLabels[style] })}
+                                  alt={tStoryStepsStep4('modal.altText', { style: GraphicalStyleLabels[style] })}
                                   width={256}
                                   height={384}
                                   className="rounded-xl w-full h-96 object-contain"
@@ -702,7 +702,7 @@ function Step4Page() {
                                   {GraphicalStyleLabels[style]}
                                 </h2>
                                 {graphicalStyle === style && (
-                                  <div className="badge badge-primary">{t('modal.selected')}</div>
+                                  <div className="badge badge-primary">{tStoryStepsStep4('modal.selected')}</div>
                                 )}
                               </div>
                             </div>
@@ -715,7 +715,7 @@ function Step4Page() {
                           className="btn"
                           onClick={() => setShowGraphicalStyleDropdown(false)}
                         >
-                          {t('modal.close')}
+                          {tStoryStepsStep4('modal.close')}
                         </button>
                       </div>
                     </div>
@@ -733,7 +733,7 @@ function Step4Page() {
                   prevHref={editStoryId ? `/tell-your-story/step-3?edit=${editStoryId}` : "/tell-your-story/step-3"}
                   onNext={handleNext}
                   nextDisabled={saving}
-                  nextLabel={saving ? t('saving') : t('next')}
+                  nextLabel={saving ? tStoryStepsStep4('saving') : tStoryStepsStep4('next')}
                 />
               </div>
             </div>

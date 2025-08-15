@@ -1,0 +1,36 @@
+{
+  "StoryRating": {
+    "title": "Valora esta historia",
+    "titleUpdate": "Actualiza tu valoración",
+    "currentRating": "Valoración actual",
+    "basedOnRatings": "Basado en {count} valoración{plural}",
+    "clickToRate": "Haz clic para valorar {count} estrella{plural}",
+    "noRatingsYet": "Sin valoraciones",
+    "yourCurrentRating": "Tu valoración actual",
+    "youSelected": "Has seleccionado:",
+    "starTooltip": "Valorar {count} estrella{plural}",
+    "feedback": {
+      "title": "¿Qué podemos mejorar? (Opcional)",
+      "placeholder": "Tu opinión nos ayuda a crear mejores historias...",
+      "includeNameLabel": "Permitir que el autor vea mi nombre con este comentario"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "submitRating": "Enviar valoración",
+      "updateRating": "Actualizar valoración",
+      "submitting": "Enviando..."
+    },
+    "success": {
+      "title": "¡Gracias por tu valoración!",
+      "titleUpdated": "¡Valoración actualizada!",
+      "message": "Tu opinión nos ayuda a mejorar nuestras historias.",
+      "messageUpdated": "¡Tu valoración se ha actualizado correctamente!"
+    },
+    "submittingMessage": "Enviando tu valoración...",
+    "errors": {
+      "serviceUnavailable": "El sistema de valoraciones se está configurando. Vuelve en unos minutos.",
+      "submitFailed": "Error al enviar la valoración",
+      "generic": "Se ha producido un error"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "Editor": {
+    "chapterNotFound": "Capítulo não encontrado",
+    "backToStory": "Voltar à História",
+    "undoPreviousVersion": "Desfazer (Versão Anterior)",
+    "redoNextVersion": "Refazer (Próxima Versão)",
+    "chapterUpdates": {
+      "chaptersUpdatedSuccessfully": "{successCount} capítulos atualizados com sucesso. Capítulo {failedChapters} falhou a editar.",
+      "allChaptersUpdated": "Todos os {successCount} capítulos atualizados com sucesso. As alterações foram guardadas automaticamente."
+    },
+    "imageEditor": {
+      "chapterTitle": "Capítulo {chapterNumber}"
+    }
+  }
+}

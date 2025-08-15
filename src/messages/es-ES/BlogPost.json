@@ -1,0 +1,17 @@
+{
+  "BlogPost": {
+    "backToList": "Volver a las crónicas",
+    "sharePost": "Compartir crónica",
+    "readingTime": "min de lectura",
+    "publishedOn": "Publicado el {date}",
+    "previousPost": "Crónica anterior",
+    "nextPost": "Siguiente crónica",
+    "notFound": "Crónica no encontrada",
+    "notFoundDescription": "La crónica que buscas no existe o ya no está disponible.",
+    "notAvailable": "Crónica no disponible",
+    "notAvailableDescription": "Esta crónica no está disponible en tu idioma.",
+    "error": "Error al cargar la crónica",
+    "errorDescription": "No se pudo cargar la crónica. Por favor, inténtalo de nuevo más tarde."
+  }
+}
+

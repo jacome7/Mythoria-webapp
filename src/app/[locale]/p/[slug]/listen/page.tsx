@@ -47,8 +47,8 @@ export default function PublicListenPage() {
   const params = useParams();
   const router = useRouter();
   const locale = useLocale();
-  const t = useTranslations('PublicStoryPage');
-  const tCommon = useTranslations('common');
+  const tPublicStoryPage = useTranslations('PublicStoryPage');
+  const tActions = useTranslations('Actions');
   const slug = Array.isArray(params?.slug)
     ? (params?.slug[0] ?? '')
     : (params?.slug as string | undefined) ?? '';
@@ -86,18 +86,18 @@ export default function PublicListenPage() {
           
           // Check if story has audio
           if (!result.story.hasAudio) {
-            setError(t('listen.audioNotAvailable'));
+            setError(tPublicStoryPage('listen.audioNotAvailable'));
           }
           
           console.log('[Public Listen Page] Story loaded successfully');
         } else {
           console.error('[Public Listen Page] API returned error:', result.error);
-          setError(result.error || t('errors.notFound'));
+          setError(result.error || tPublicStoryPage('errors.notFound'));
         }
       } catch (err) {
         console.error('[Public Listen Page] Error fetching public story:', err);
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-        setError(`${t('errors.failedToLoadStory')}: ${errorMessage}`);
+        setError(`${tPublicStoryPage('errors.failedToLoadStory')}: ${errorMessage}`);
       } finally {
         setLoading(false);
       }
@@ -111,9 +111,9 @@ export default function PublicListenPage() {
   useEffect(() => {
     if (data?.story) {
       const story = data.story;
-      document.title = t('metadata.listenPageTitle', { title: story.title });
+      document.title = tPublicStoryPage('metadata.listenPageTitle', { title: story.title });
     }
-  }, [data, t]);
+  }, [data, tPublicStoryPage]);
 
   const navigateBackToStory = () => {
     router.push(`/${locale}/p/${slug}`);
@@ -124,8 +124,8 @@ export default function PublicListenPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <FiLoader className="animate-spin text-4xl text-primary mx-auto" />
-          <h2 className="text-xl font-semibold">{t('loading.title')}</h2>
-          <p className="text-gray-600">{t('loading.subtitle')}</p>
+          <h2 className="text-xl font-semibold">{tPublicStoryPage('loading.title')}</h2>
+          <p className="text-gray-600">{tPublicStoryPage('loading.subtitle')}</p>
         </div>
       </div>
     );
@@ -136,15 +136,15 @@ export default function PublicListenPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4 max-w-md mx-auto px-4">
           <FiAlertCircle className="text-4xl text-red-500 mx-auto" />
-          <h2 className="text-xl font-semibold text-gray-900">{t('errors.notFound')}</h2>
-          <p className="text-gray-600">{error || t('errors.notFoundDesc')}</p>
+          <h2 className="text-xl font-semibold text-gray-900">{tPublicStoryPage('errors.notFound')}</h2>
+          <p className="text-gray-600">{error || tPublicStoryPage('errors.notFoundDesc')}</p>
           
           <div className="space-y-2">
             <button
               onClick={navigateBackToStory}
               className="btn btn-primary btn-sm"
             >
-              {tCommon('Actions.goBack')}
+              {tActions('goBack')}
             </button>
           </div>
         </div>
@@ -166,13 +166,13 @@ export default function PublicListenPage() {
                 className="btn btn-ghost btn-sm"
               >
                 <FiArrowLeft className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">{tCommon('Actions.backToStory')}</span>
-                <span className="sm:hidden">{t('listen.backMobile')}</span>
+                <span className="hidden sm:inline">{tActions('backToStory')}</span>
+                <span className="sm:hidden">{tPublicStoryPage('listen.backMobile')}</span>
               </button>
               
               <h1 className="text-xl font-semibold text-gray-900 text-center flex-1 mx-4">
                 <FiVolume2 className="w-5 h-5 inline mr-2" />
-                {t('listen.title', { title: story.title })}
+                {tPublicStoryPage('listen.title', { title: story.title })}
               </h1>
               
               <div className="w-20"></div> {/* Spacer for centering */}
@@ -189,22 +189,22 @@ export default function PublicListenPage() {
               chapters={getAudioChapters(
                 data.story.audiobookUri, 
                 data.chapters, 
-                (number) => t('listen.chapterFallback', { number })
+                (number) => tPublicStoryPage('listen.chapterFallback', { number })
               )}
               {...audioPlayer}
             />
           ) : (
             <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
               <FiAlertCircle className="text-4xl text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">{t('listen.audioNotAvailableTitle')}</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">{tPublicStoryPage('listen.audioNotAvailableTitle')}</h3>
               <p className="text-gray-600">
-                {t('listen.audioNotAvailableDesc')}
+                {tPublicStoryPage('listen.audioNotAvailableDesc')}
               </p>
               <button
                 onClick={navigateBackToStory}
                 className="btn btn-primary mt-4"
               >
-                {t('listen.backToStory')}
+                {tPublicStoryPage('listen.backToStory')}
               </button>
             </div>
           )}

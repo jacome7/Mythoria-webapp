@@ -26,7 +26,7 @@ export default function ImageEditButton({
   children
 }: ImageEditButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const t = useTranslations('components.imageEditButton');
+  const tImageEditButton = useTranslations('ImageEditButton');
 
   const handleEdit = () => {
     onEdit({
@@ -47,7 +47,7 @@ export default function ImageEditButton({
         <button
           onClick={handleEdit}
           className="absolute top-2 right-2 z-10 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-2 shadow-lg transition-all duration-200 transform hover:scale-105"
-          title={t('tooltip')}
+          title={tImageEditButton('tooltip')}
         >
           <FiEdit3 className="w-4 h-4" />
         </button>

@@ -18,17 +18,17 @@ export default function GroupedCharacterTypeSelect({
   placeholder = "Select character type...",
   className = ""
 }: GroupedCharacterTypeSelectProps) {
-  const t = useTranslations('components.groupedCharacterTypeSelect');
+  const tGroupedCharacterTypeSelect = useTranslations('GroupedCharacterTypeSelect');
   const [isOpen, setIsOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const getGroupLabel = (groupKey: string) => {
-    return t(`groups.${groupKey}`);
+    return tGroupedCharacterTypeSelect(`groups.${groupKey}`);
   };
 
   const getDisplayPlaceholder = () => {
-    return placeholder === "Select character type..." ? t('placeholder') : placeholder;
+    return placeholder === "Select character type..." ? tGroupedCharacterTypeSelect('placeholder') : placeholder;
   };
 
   // Initialize expanded groups based on current value or default to 'human'

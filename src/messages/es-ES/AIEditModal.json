@@ -1,0 +1,42 @@
+{
+  "AIEditModal": {
+    "title": "Editor de historias",
+    "description": "Mejora tu historia con Mythoria",
+    "tabs": {
+      "text": "Texto",
+      "images": "Imágenes"
+    },
+    "editSelection": {
+      "label": "¿Qué te gustaría editar?",
+      "entireStory": "Historia completa"
+    },
+    "editRequest": {
+      "label": "¿Qué cambios quieres hacer?",
+      "placeholder": "Describe los cambios que te gustaría hacer...",
+      "charactersCount": "{current}/{max} caracteres"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "close": "Cerrar",
+      "applyChanges": "Aplicar cambios",
+      "processing": "Procesando..."
+    },
+    "loadingState": {
+      "title": "Procesando tu solicitud...",
+      "description": "Esto puede tardar entre 5 y 60 segundos según el alcance de los cambios."
+    },
+    "errors": {
+      "enterRequest": "Introduce tu solicitud de edición",
+      "requestTooLong": "La solicitud debe tener 2000 caracteres o menos",
+      "editFailed": "Error al editar la historia. Inténtalo de nuevo.",
+      "checkCreditsFailed": "Error al comprobar los créditos",
+      "checkCreditsFailedRetry": "Error al comprobar los créditos. Inténtalo de nuevo.",
+      "insufficientCredits": "Créditos insuficientes para esta edición",
+      "updateImageFailed": "Error al actualizar la imagen. Inténtalo de nuevo."
+    },
+    "imageSave": {
+      "title": "Guardando cambios de imagen",
+      "description": "Espera mientras guardamos los cambios en tu historia..."
+    }
+  }
+}

@@ -7,7 +7,7 @@ import ContactForm from './ContactForm';
 import CategoryGrid from './CategoryGrid';
 
 const ContactPageContent = () => {
-  const t = useTranslations('ContactUsPage');
+  const tContactUsPage = useTranslations('ContactUsPage');
   const formRef = useRef<HTMLDivElement>(null);
 
   const handleCategoryClick = (categoryKey: string) => {
@@ -35,9 +35,9 @@ const ContactPageContent = () => {
           <div className="card-body">
             <h2 className="text-2xl font-semibold mb-4 flex items-center gap-3">
               <FaComments className="text-primary" />
-              {t('scrollTitle')}
+              {tContactUsPage('scrollTitle')}
             </h2>
-            <p className="mb-6 text-base-content/80">{t('scrollIntro')}</p>
+            <p className="mb-6 text-base-content/80">{tContactUsPage('scrollIntro')}</p>
             
             <CategoryGrid onCategoryClick={handleCategoryClick} />
           </div>
@@ -55,11 +55,11 @@ const ContactPageContent = () => {
           <div className="card-body p-6">
             <h2 className="text-lg font-semibold mb-3 flex items-center gap-3">
               <FaHeart className="text-accent" />
-              {t('bonus.title')}
+              {tContactUsPage('bonus.title')}
             </h2>
-            <p className="mb-2 text-sm">{t('bonus.content')}</p>
-            <p className="mb-3 text-xs text-base-content/60">{t('bonus.disclaimer')}</p>
-            <p className="font-semibold text-sm">{t('bonus.closing')}</p>
+            <p className="mb-2 text-sm">{tContactUsPage('bonus.content')}</p>
+            <p className="mb-3 text-xs text-base-content/60">{tContactUsPage('bonus.disclaimer')}</p>
+            <p className="font-semibold text-sm">{tContactUsPage('bonus.closing')}</p>
           </div>
         </div>
       </div>
@@ -70,26 +70,26 @@ const ContactPageContent = () => {
           <div className="card-body">
             <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
               <FaUsers className="text-primary" />
-              {t('join.title')}
+              {tContactUsPage('join.title')}
             </h2>
-            <p className="mb-4 text-base-content/80">{t('join.intro')}</p>
+            <p className="mb-4 text-base-content/80">{tContactUsPage('join.intro')}</p>
             
             <div className="space-y-3">
               <div className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                <span className="text-sm">{t('join.printing')}</span>
+                <span className="text-sm">{tContactUsPage('join.printing')}</span>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                <span className="text-sm">{t('join.country')}</span>
+                <span className="text-sm">{tContactUsPage('join.country')}</span>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                <span className="text-sm">{t('join.developers')}</span>
+                <span className="text-sm">{tContactUsPage('join.developers')}</span>
               </div>
             </div>
             
-            <p className="mt-4 font-medium">{t('join.call')}</p>
+            <p className="mt-4 font-medium">{tContactUsPage('join.call')}</p>
           </div>
         </div>
       </div>

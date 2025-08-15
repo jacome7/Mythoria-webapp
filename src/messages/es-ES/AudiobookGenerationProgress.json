@@ -1,0 +1,33 @@
+{
+  "AudiobookGenerationProgress": {
+    "title": "Progreso de Generación del Audiolibro",
+    "generatingAudiobook": "Generando tu audiolibro",
+    "processingMessage": "Por favor mantén esta página abierta mientras narramos tu historia.",
+    "progress": "Progreso",
+    "estimatedTimeRemaining": "Tiempo restante estimado",
+    "chaptersProcessed": "Capítulos {processed} de {total}",
+    "generationFailed": "La generación del audiolibro falló",
+    "generationFailedMessage": "No pudimos completar tu audiolibro.",
+    "backToStory": "Volver a la historia",
+    "generationComplete": "¡Generación completada!",
+    "audiobookReady": "Tu audiolibro está listo.",
+    "listenToAudiobook": "Escuchar audiolibro",
+    "retry": "Reintentar",
+    "statusMessage": "Nuestros elfos están narrando tu historia...",
+    "doNotClose": "Por favor no cierres esta pestaña.",
+    "errors": {
+      "failedToFetch": "Error al obtener el progreso del audiolibro",
+      "failedToLoad": "Error al cargar el progreso de la generación del audiolibro"
+    },
+    "timeUnits": {
+      "second": "segundo",
+      "seconds": "segundos",
+      "minute": "minuto",
+      "minutes": "minutos"
+    },
+    "steps": {},
+    "narrationMessages": {
+      "default": ["\uD83C\uDF99\uFE0F Creando tu audiolibro..."]
+    }
+  }
+}

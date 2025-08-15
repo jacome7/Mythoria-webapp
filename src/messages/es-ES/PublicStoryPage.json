@@ -1,8 +1,5 @@
 {
   "PublicStoryPage": {
-    "chapterNotFound": "Capítulo no encontrado",
-    "chapterNotAvailable": "Este capítulo no está disponible.",
-    "chapter": "Capítulo",
     "loading": {
       "title": "Cargando historia",
       "subtitle": "Espera un momento mientras cargamos tu historia..."
@@ -12,8 +9,7 @@
       "notFoundDesc": "La historia que buscas no existe o ya no es pública.",
       "contentNotAvailable": "Contenido no disponible",
       "contentNotAvailableDesc": "El contenido de la historia no está disponible para lectura.",
-      "failedToLoadStory": "No se pudo cargar la historia",
-      "failedToLoadChapter": "No se pudo cargar el capítulo"
+      "failedToLoadStory": "No se pudo cargar la historia"
     },
     "actions": {
       "orderPrint": "Pedir impresión",
@@ -31,7 +27,6 @@
     "metadata": {
       "defaultDescription": "Lee \"{title}\" en Mythoria",
       "coverImageAlt": "Imagen de portada de \"{title}\"",
-      "chapterPageTitle": "{title} - Capítulo {number} | Mythoria",
       "listenPageTitle": "Escucha \"{title}\" | Mythoria"
     },
     "listen": {
@@ -49,10 +44,6 @@
         "pause": "Pausar",
         "stop": "Parar"
       }
-    },
-    "lastChapter": {
-      "enjoyedTitle": "¿Te ha gustado esta historia?",
-      "enjoyedDesc": "Crea tu propio cuento personalizado u ordena una preciosa copia impresa."
     },
     "storyComplete": {
       "enjoyedTitle": "¿Disfrutaste de esta historia?",

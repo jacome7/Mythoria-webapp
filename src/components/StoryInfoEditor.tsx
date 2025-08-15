@@ -41,7 +41,7 @@ export default function StoryInfoEditor({
   onEditBackcover,
   isLoading = false,
 }: StoryInfoEditorProps) {
-  const t = useTranslations('components.storyInfoEditor');
+  const tStoryInfoEditor = useTranslations('StoryInfoEditor');
   
   const [formData, setFormData] = useState({
     title: story.title || '',
@@ -78,7 +78,7 @@ export default function StoryInfoEditor({
       await onSave(formData);
       setHasUnsavedChanges(false);
     } catch (error) {
-      console.error(t('logging.errorSavingStoryInfo'), error);
+      console.error(tStoryInfoEditor('logging.errorSavingStoryInfo'), error);
     }
   };
 
@@ -87,7 +87,7 @@ export default function StoryInfoEditor({
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold flex items-center gap-2">
           <FiBook className="w-6 h-6" />
-          {t('title')}
+          {tStoryInfoEditor('title')}
         </h2>
         <button
           onClick={handleSave}
@@ -99,7 +99,7 @@ export default function StoryInfoEditor({
           ) : (
             <FiSave className="w-4 h-4" />
           )}
-          {isLoading ? t('saving') : t('saveButton')}
+          {isLoading ? tStoryInfoEditor('saving') : tStoryInfoEditor('saveButton')}
         </button>
       </div>
 
@@ -109,27 +109,27 @@ export default function StoryInfoEditor({
           {/* Title */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-base-content">
-              {t('storyTitle')}
+              {tStoryInfoEditor('storyTitle')}
             </label>
             <input
               type="text"
               value={formData.title}
               onChange={(e) => handleInputChange('title', e.target.value)}
               className="input input-bordered w-full"
-              placeholder={t('titlePlaceholder')}
+              placeholder={tStoryInfoEditor('titlePlaceholder')}
             />
           </div>
 
           {/* Synopsis */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-base-content">
-              {t('synopsis')}
+              {tStoryInfoEditor('synopsis')}
             </label>
             <textarea
               value={formData.synopsis}
               onChange={(e) => handleInputChange('synopsis', e.target.value)}
               className="textarea textarea-bordered w-full h-24"
-              placeholder={t('synopsisPlaceholder')}
+              placeholder={tStoryInfoEditor('synopsisPlaceholder')}
             />
           </div>
 
@@ -137,13 +137,13 @@ export default function StoryInfoEditor({
           <div className="space-y-2">
             <label className="block text-sm font-medium text-base-content flex items-center gap-2">
               <FiHeart className="w-4 h-4" />
-              {t('dedicationMessage')}
+              {tStoryInfoEditor('dedicationMessage')}
             </label>
             <textarea
               value={formData.dedicationMessage}
               onChange={(e) => handleInputChange('dedicationMessage', e.target.value)}
               className="textarea textarea-bordered w-full h-20"
-              placeholder={t('dedicationPlaceholder')}
+              placeholder={tStoryInfoEditor('dedicationPlaceholder')}
             />
           </div>
 
@@ -151,35 +151,35 @@ export default function StoryInfoEditor({
           <div className="space-y-2">
             <label className="block text-sm font-medium text-base-content flex items-center gap-2">
               <FiUser className="w-4 h-4" />
-              {t('authorName')}
+              {tStoryInfoEditor('authorName')}
             </label>
             <input
               type="text"
               value={formData.customAuthor}
               onChange={(e) => handleInputChange('customAuthor', e.target.value)}
               className="input input-bordered w-full"
-              placeholder={t('authorPlaceholder')}
+              placeholder={tStoryInfoEditor('authorPlaceholder')}
             />
           </div>
 
           {/* Target Audience */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-base-content">
-              {t('targetAudience')}
+              {tStoryInfoEditor('targetAudience')}
             </label>
             <select
               value={formData.targetAudience}
               onChange={(e) => handleInputChange('targetAudience', e.target.value)}
               className="select select-bordered w-full"
             >
-              <option value="">{t('targetAudiencePlaceholder')}</option>
-              <option value="children_0-2">{t('targetAudienceOptions.children_0-2')}</option>
-              <option value="children_3-6">{t('targetAudienceOptions.children_3-6')}</option>
-              <option value="children_7-10">{t('targetAudienceOptions.children_7-10')}</option>
-              <option value="children_11-14">{t('targetAudienceOptions.children_11-14')}</option>
-              <option value="young_adult_15-17">{t('targetAudienceOptions.young_adult_15-17')}</option>
-              <option value="adult_18+">{t('targetAudienceOptions.adult_18+')}</option>
-              <option value="all_ages">{t('targetAudienceOptions.all_ages')}</option>
+              <option value="">{tStoryInfoEditor('targetAudiencePlaceholder')}</option>
+              <option value="children_0-2">{tStoryInfoEditor('targetAudienceOptions.children_0-2')}</option>
+              <option value="children_3-6">{tStoryInfoEditor('targetAudienceOptions.children_3-6')}</option>
+              <option value="children_7-10">{tStoryInfoEditor('targetAudienceOptions.children_7-10')}</option>
+              <option value="children_11-14">{tStoryInfoEditor('targetAudienceOptions.children_11-14')}</option>
+              <option value="young_adult_15-17">{tStoryInfoEditor('targetAudienceOptions.young_adult_15-17')}</option>
+              <option value="adult_18+">{tStoryInfoEditor('targetAudienceOptions.adult_18+')}</option>
+              <option value="all_ages">{tStoryInfoEditor('targetAudienceOptions.all_ages')}</option>
             </select>
           </div>
         </div>
@@ -189,7 +189,7 @@ export default function StoryInfoEditor({
           {/* Front Cover */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-base-content">
-              {t('frontCover')}
+              {tStoryInfoEditor('frontCover')}
             </label>
             <div className="border-2 border-dashed border-base-300 rounded-lg p-4 text-center w-full">
               {story.coverUri ? (
@@ -197,7 +197,7 @@ export default function StoryInfoEditor({
                   <div className="relative mx-auto max-h-48 w-fit">
                     <Image
                       src={toAbsoluteImageUrl(story.coverUri) || ''}
-                      alt={t('altTexts.storyCover')}
+                      alt={tStoryInfoEditor('altTexts.storyCover')}
                       width={200}
                       height={300}
                       className="max-h-48 rounded-lg object-contain"
@@ -208,19 +208,19 @@ export default function StoryInfoEditor({
                     className="btn btn-sm btn-outline"
                   >
                     <FiImage className="w-4 h-4" />
-                    {t('editCover')}
+                    {tStoryInfoEditor('editCover')}
                   </button>
                 </div>
               ) : (
                 <div className="space-y-2">
                   <FiImage className="w-12 h-12 mx-auto text-base-content/30" />
-                  <p className="text-sm text-base-content/70">{t('noCoverImage')}</p>
+                  <p className="text-sm text-base-content/70">{tStoryInfoEditor('noCoverImage')}</p>
                   <button
                     onClick={onEditCover}
                     className="btn btn-sm btn-primary"
                   >
                     <FiImage className="w-4 h-4" />
-                    {t('addCover')}
+                    {tStoryInfoEditor('addCover')}
                   </button>
                 </div>
               )}
@@ -230,7 +230,7 @@ export default function StoryInfoEditor({
           {/* Back Cover */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-base-content">
-              {t('backCover')}
+              {tStoryInfoEditor('backCover')}
             </label>
             <div className="border-2 border-dashed border-base-300 rounded-lg p-4 text-center w-full">
               {story.backcoverUri ? (
@@ -238,7 +238,7 @@ export default function StoryInfoEditor({
                   <div className="relative mx-auto max-h-48 w-fit">
                     <Image
                       src={toAbsoluteImageUrl(story.backcoverUri) || ''}
-                      alt={t('altTexts.storyBackCover')}
+                      alt={tStoryInfoEditor('altTexts.storyBackCover')}
                       width={200}
                       height={300}
                       className="max-h-48 rounded-lg object-contain"
@@ -249,19 +249,19 @@ export default function StoryInfoEditor({
                     className="btn btn-sm btn-outline"
                   >
                     <FiImage className="w-4 h-4" />
-                    {t('editBackCover')}
+                    {tStoryInfoEditor('editBackCover')}
                   </button>
                 </div>
               ) : (
                 <div className="space-y-2">
                   <FiImage className="w-12 h-12 mx-auto text-base-content/30" />
-                  <p className="text-sm text-base-content/70">{t('noBackCover')}</p>
+                  <p className="text-sm text-base-content/70">{tStoryInfoEditor('noBackCover')}</p>
                   <button
                     onClick={onEditBackcover}
                     className="btn btn-sm btn-primary"
                   >
                     <FiImage className="w-4 h-4" />
-                    {t('addBackCover')}
+                    {tStoryInfoEditor('addBackCover')}
                   </button>
                 </div>
               )}
@@ -271,18 +271,18 @@ export default function StoryInfoEditor({
 
         {/* Story Info */}
         <div className="bg-base-200 rounded-lg p-4 space-y-2">
-          <h3 className="font-medium">{t('storyDetails')}</h3>
+          <h3 className="font-medium">{tStoryInfoEditor('storyDetails')}</h3>
           <div className="space-y-1 text-sm">
             <div className="flex justify-between">
-              <span className="text-base-content/70">{t('graphicalStyleLabel')}</span>
-              <span>{story.graphicalStyle?.replace('_', ' ') || t('notSpecified')}</span>
+              <span className="text-base-content/70">{tStoryInfoEditor('graphicalStyleLabel')}</span>
+              <span>{story.graphicalStyle?.replace('_', ' ') || tStoryInfoEditor('notSpecified')}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-base-content/70">{t('created')}</span>
+              <span className="text-base-content/70">{tStoryInfoEditor('created')}</span>
               <span>{new Date(story.createdAt).toLocaleDateString()}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-base-content/70">{t('lastUpdated')}</span>
+              <span className="text-base-content/70">{tStoryInfoEditor('lastUpdated')}</span>
               <span>{new Date(story.updatedAt).toLocaleDateString()}</span>
             </div>
           </div>

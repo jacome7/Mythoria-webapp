@@ -1,0 +1,14 @@
+{
+  "SignUpPage": {
+    "title": "Crie a Sua Conta Mythoria",
+    "subtitle": "Junte-se a milhares de contadores de histórias e comece a criar contos mágicos hoje.",
+    "pageTitle": "Criar Conta",
+    "pageSubtitle": "Comece a sua jornada de contar histórias connosco hoje.",
+    "features": {
+      "free": "🆓 Primeira história absolutamente grátis",
+      "character": "👤 Criação única de personagens",
+      "quality": "📖 Qualidade de livro publicado",
+      "creativity": "🚀 Criatividade ilimitada"
+    }
+  }
+}

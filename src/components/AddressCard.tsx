@@ -29,21 +29,21 @@ interface AddressCardProps {
   defaultAddressType?: 'billing' | 'delivery';
 }
 
-const getCountries = (t: (key: string) => string): Array<{ value: string, label: string }> => {
+const getCountries = (tAddresses: (key: string) => string): Array<{ value: string, label: string }> => {
   const countries = [
-    { value: 'US', label: t('countries.us') },
-    { value: 'GB', label: t('countries.gb') },
-    { value: 'DE', label: t('countries.de') },
-    { value: 'FR', label: t('countries.fr') },
-    { value: 'ES', label: t('countries.es') },
-    { value: 'IT', label: t('countries.it') },
-    { value: 'PT', label: t('countries.pt') },
-    { value: 'NL', label: t('countries.nl') },
-    { value: 'BE', label: t('countries.be') },
-    { value: 'CA', label: t('countries.ca') },
-    { value: 'AU', label: t('countries.au') },
-    { value: 'JP', label: t('countries.jp') },
-    { value: 'BR', label: t('countries.br') },
+    { value: 'US', label: tAddresses('countries.us') },
+    { value: 'GB', label: tAddresses('countries.gb') },
+    { value: 'DE', label: tAddresses('countries.de') },
+    { value: 'FR', label: tAddresses('countries.fr') },
+    { value: 'ES', label: tAddresses('countries.es') },
+    { value: 'IT', label: tAddresses('countries.it') },
+    { value: 'PT', label: tAddresses('countries.pt') },
+    { value: 'NL', label: tAddresses('countries.nl') },
+    { value: 'BE', label: tAddresses('countries.be') },
+    { value: 'CA', label: tAddresses('countries.ca') },
+    { value: 'AU', label: tAddresses('countries.au') },
+    { value: 'JP', label: tAddresses('countries.jp') },
+    { value: 'BR', label: tAddresses('countries.br') },
   ];
   
   // Sort countries alphabetically by label
@@ -61,8 +61,8 @@ export default function AddressCard({
   onSelect,  hideAddressType = false,
   defaultAddressType = 'delivery'
 }: AddressCardProps) {
-  const t = useTranslations('Addresses');
-  const countries = getCountries(t);
+  const tAddresses = useTranslations('Addresses');
+  const countries = getCountries(tAddresses);
   const [formData, setFormData] = useState<Address>({
     addressId: address?.addressId || '',
     type: address?.type || defaultAddressType,
@@ -85,7 +85,7 @@ export default function AddressCard({
 
   const handleSave = async () => {
     if (!formData.line1.trim() || !formData.city.trim() || !formData.country.trim()) {
-      alert(t('validation.requiredFields'));
+      alert(tAddresses('validation.requiredFields'));
       return;
     }
 
@@ -94,14 +94,14 @@ export default function AddressCard({
       await onSave(formData);
     } catch (error) {
       console.error('Error saving address:', error);
-      alert(t('errors.saveFailed'));
+      alert(tAddresses('errors.saveFailed'));
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!confirm(t('confirmDelete'))) {
+    if (!confirm(tAddresses('confirmDelete'))) {
       return;
     }
 
@@ -110,7 +110,7 @@ export default function AddressCard({
       await onDelete();
     } catch (error) {
       console.error('Error deleting address:', error);
-      alert(t('errors.deleteFailed'));
+      alert(tAddresses('errors.deleteFailed'));
     } finally {
       setDeleting(false);
     }
@@ -131,7 +131,7 @@ export default function AddressCard({
             <div className="flex items-center gap-2">
               <FiMapPin className="w-4 h-4 text-primary" />
               <span className="badge badge-outline">
-                {t(`types.${address?.type || 'shipping'}`)}
+                {tAddresses(`types.${address?.type || 'shipping'}`)}
               </span>
             </div>
             <div className="flex gap-2">
@@ -182,21 +182,21 @@ export default function AddressCard({
       <div className="card-body">
         <div className="flex justify-between items-center mb-4">
           <h3 className="card-title">
-            {mode === 'create' ? t('addAddress') : t('editAddress')}
+            {mode === 'create' ? tAddresses('addAddress') : tAddresses('editAddress')}
           </h3>
         </div>        <div className="space-y-4">
           {/* Address Type - only show if not hidden */}
           {!hideAddressType && (
             <div className="form-control">
               <label className="label">
-                <span className="label-text">{t('fields.type')}</span>
+                <span className="label-text">{tAddresses('fields.type')}</span>
               </label>            <select
               className="select select-bordered"
               value={formData.type}
               onChange={(e) => handleInputChange('type', e.target.value as 'billing' | 'delivery')}
             >
-              <option value="delivery">{t('types.delivery')}</option>
-              <option value="billing">{t('types.billing')}</option>
+              <option value="delivery">{tAddresses('types.delivery')}</option>
+              <option value="billing">{tAddresses('types.billing')}</option>
             </select>
             </div>
           )}
@@ -204,28 +204,28 @@ export default function AddressCard({
           {/* Address Line 1 */}
           <div className="form-control">
             <label className="label">
-              <span className="label-text">{t('fields.line1')} *</span>
+              <span className="label-text">{tAddresses('fields.line1')} *</span>
             </label>
             <input
               type="text"
               className="input input-bordered"
               value={formData.line1}
               onChange={(e) => handleInputChange('line1', e.target.value)}
-              placeholder={t('placeholders.line1')}
+              placeholder={tAddresses('placeholders.line1')}
             />
           </div>
 
           {/* Address Line 2 */}
           <div className="form-control">
             <label className="label">
-              <span className="label-text">{t('fields.line2')}</span>
+              <span className="label-text">{tAddresses('fields.line2')}</span>
             </label>
             <input
               type="text"
               className="input input-bordered"
               value={formData.line2}
               onChange={(e) => handleInputChange('line2', e.target.value)}
-              placeholder={t('placeholders.line2')}
+              placeholder={tAddresses('placeholders.line2')}
             />
           </div>
 
@@ -233,40 +233,40 @@ export default function AddressCard({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="form-control">
               <label className="label">
-                <span className="label-text">{t('fields.city')} *</span>
+                <span className="label-text">{tAddresses('fields.city')} *</span>
               </label>
               <input
                 type="text"
                 className="input input-bordered"
                 value={formData.city}
                 onChange={(e) => handleInputChange('city', e.target.value)}
-                placeholder={t('placeholders.city')}
+                placeholder={tAddresses('placeholders.city')}
               />
             </div>
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text">{t('fields.stateRegion')}</span>
+                <span className="label-text">{tAddresses('fields.stateRegion')}</span>
               </label>
               <input
                 type="text"
                 className="input input-bordered"
                 value={formData.stateRegion}
                 onChange={(e) => handleInputChange('stateRegion', e.target.value)}
-                placeholder={t('placeholders.stateRegion')}
+                placeholder={tAddresses('placeholders.stateRegion')}
               />
             </div>
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text">{t('fields.postalCode')}</span>
+                <span className="label-text">{tAddresses('fields.postalCode')}</span>
               </label>
               <input
                 type="text"
                 className="input input-bordered"
                 value={formData.postalCode}
                 onChange={(e) => handleInputChange('postalCode', e.target.value)}
-                placeholder={t('placeholders.postalCode')}
+                placeholder={tAddresses('placeholders.postalCode')}
               />
             </div>
           </div>
@@ -274,7 +274,7 @@ export default function AddressCard({
           {/* Country */}
           <div className="form-control">
             <label className="label">
-              <span className="label-text">{t('fields.country')} *</span>
+              <span className="label-text">{tAddresses('fields.country')} *</span>
             </label>
             <select
               className="select select-bordered"
@@ -292,14 +292,14 @@ export default function AddressCard({
           {/* Phone */}
           <div className="form-control">
             <label className="label">
-              <span className="label-text">{t('fields.phone')}</span>
+              <span className="label-text">{tAddresses('fields.phone')}</span>
             </label>
             <input
               type="tel"
               className="input input-bordered"
               value={formData.phone}
               onChange={(e) => handleInputChange('phone', e.target.value)}
-              placeholder={t('placeholders.phone')}
+              placeholder={tAddresses('placeholders.phone')}
             />
           </div>
         </div>
@@ -311,7 +311,7 @@ export default function AddressCard({
             disabled={saving}
           >
             <FiX className="w-4 h-4 mr-2" />
-            {t('buttons.cancel')}
+            {tAddresses('buttons.cancel')}
           </button>
           <button
             className="btn btn-primary"
@@ -323,7 +323,7 @@ export default function AddressCard({
             ) : (
               <>
                 <FiCheck className="w-4 h-4 mr-2" />
-                {t('buttons.save')}
+                {tAddresses('buttons.save')}
               </>
             )}
           </button>

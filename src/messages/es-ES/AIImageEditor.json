@@ -1,0 +1,26 @@
+{
+  "AIImageEditor": {
+    "title": "Editor de imágenes con IA - {imageType}",
+    "currentImage": "Imagen actual:",
+    "requestPlaceholder": "Describe cómo quieres modificar esta imagen...",
+    "characterCount": "{count}/{max} caracteres",
+    "generateButton": "Generar nueva imagen",
+    "replaceButton": "Reemplazar original",
+    "cancelButton": "Cancelar",
+    "loading": "Generando...",
+    "newImageLabel": "Nueva imagen generada",
+    "newImageSuccess": "¡Imagen nueva generada, qué pasada!",
+    "generatedImageAlt": "Imagen generada",
+    "errors": {
+      "describeChanges": "Describe los cambios que quieres hacer en la imagen",
+      "unableToCheckCredits": "No se pueden comprobar los créditos. Inténtalo de nuevo.",
+      "failedToGenerate": "No se pudo generar la nueva imagen. Inténtalo otra vez.",
+      "failedToReplace": "No se pudo reemplazar la imagen. Inténtalo de nuevo."
+    },
+    "imageTypes": {
+      "cover": "Portada",
+      "backcover": "Contraportada",
+      "chapter": "Capítulo {number}"
+    }
+  }
+}

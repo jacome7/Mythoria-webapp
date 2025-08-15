@@ -30,8 +30,8 @@ interface SessionData {
 
 export default function Step2Page() {
   const router = useRouter();
-  const t = useTranslations('StorySteps.step2');
-  const tCommon = useTranslations('StorySteps.common');
+  const tStoryStepsStep2 = useTranslations('StorySteps.step2');
+  const tStoryStepsCommon = useTranslations('StorySteps.common');
   
   // Modal states
   const [activeModal, setActiveModal] = useState<ContentType | null>(null);
@@ -168,7 +168,7 @@ export default function Step2Page() {
       }
     } catch (error) {
       console.error('Error accessing camera:', error);
-      alert(t('alerts.cameraIssue'));
+      alert(tStoryStepsStep2('alerts.cameraIssue'));
       setIsCapturing(false);
     }
   };
@@ -254,7 +254,7 @@ export default function Step2Page() {
       setIsRecording(true);
     } catch (error) {
       console.error('Error accessing microphone:', error);
-      alert(t('alerts.microphoneIssue'));
+      alert(tStoryStepsStep2('alerts.microphoneIssue'));
     }
   };
 
@@ -276,7 +276,7 @@ export default function Step2Page() {
       // Get the current authenticated user
       const userResponse = await fetch('/api/auth/me');
       if (!userResponse.ok) {
-        throw new Error(t('errors.failedGetUser'));
+        throw new Error(tStoryStepsStep2('errors.failedGetUser'));
       }
       const userData = await userResponse.json();
 
@@ -295,7 +295,7 @@ export default function Step2Page() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || t('errors.failedCreate'));
+        throw new Error(errorData.error || tStoryStepsStep2('errors.failedCreate'));
       }
 
       const { story } = await response.json();
@@ -370,8 +370,8 @@ export default function Step2Page() {
     } catch (error) {
       console.error('Error creating story:', error);
       const errorMessage =
-        error instanceof Error ? error.message : t('errors.unknown');
-      alert(t('alerts.failedToCreateStory', { errorMessage }));
+        error instanceof Error ? error.message : tStoryStepsStep2('errors.unknown');
+      alert(tStoryStepsStep2('alerts.failedToCreateStory', { errorMessage }));
     } finally {
       setIsCreatingStory(false);
       setShowLoadingModal(false);
@@ -398,7 +398,7 @@ export default function Step2Page() {
                   {/* Mobile Progress Indicator */}
                   <div className="block md:hidden mb-8">
                     <div className="text-center text-sm text-gray-600 mb-2">
-                      {tCommon('stepProgress', { currentStep, totalSteps })}
+                      {tStoryStepsCommon('stepProgress', { currentStep, totalSteps })}
                     </div>
                     <progress 
                       className="progress progress-primary w-full" 
@@ -425,9 +425,9 @@ export default function Step2Page() {
             {/* Step content */}
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
-                <h1 className="card-title text-3xl mb-6">{t('heading')}</h1>
+                <h1 className="card-title text-3xl mb-6">{tStoryStepsStep2('heading')}</h1>
                 <div className="prose max-w-none mb-6">
-                  <p className="text-gray-600 text-lg">{t('intro')}</p>
+                  <p className="text-gray-600 text-lg">{tStoryStepsStep2('intro')}</p>
                 </div>
 
                 {/* Progress Indicator - Removed */}
@@ -442,7 +442,7 @@ export default function Step2Page() {
                     }`}
                   >
                     <span className="text-2xl">✍️</span>
-                    <span className="text-base font-semibold">{t('tabWrite')}</span>
+                    <span className="text-base font-semibold">{tStoryStepsStep2('tabWrite')}</span>
                     {storyText.trim() && (
                       <span className="badge badge-primary badge-sm">✓ Added</span>
                     )}
@@ -456,10 +456,10 @@ export default function Step2Page() {
                     }`}
                   >
                     <span className="text-2xl">📸</span>
-                    <span className="text-base font-semibold">{t('tabImage')}</span>
+                    <span className="text-base font-semibold">{tStoryStepsStep2('tabImage')}</span>
                     {uploadedImages.length > 0 && (
                       <span className="badge badge-primary badge-sm">
-                        {uploadedImages.length} {uploadedImages.length === 1 ? t('badgeLabels.image') : t('badgeLabels.images')}
+                        {uploadedImages.length} {uploadedImages.length === 1 ? tStoryStepsStep2('badgeLabels.image') : tStoryStepsStep2('badgeLabels.images')}
                       </span>
                     )}
                   </button>
@@ -472,9 +472,9 @@ export default function Step2Page() {
                     }`}
                   >
                     <span className="text-2xl">🎤</span>
-                    <span className="text-base font-semibold">{t('tabRecord')}</span>
+                    <span className="text-base font-semibold">{tStoryStepsStep2('tabRecord')}</span>
                     {uploadedAudio && (
-                      <span className="badge badge-primary badge-sm">{t('badgeLabels.added')}</span>
+                      <span className="badge badge-primary badge-sm">{tStoryStepsStep2('badgeLabels.added')}</span>
                     )}
                   </button>
                 </div>
@@ -484,7 +484,7 @@ export default function Step2Page() {
                   <div className="flex items-start space-x-3">
                     <div className="text-2xl">💡</div>
                     <div>
-                      <p className="text-blue-800 text-sm mt-1">{t('reassurance')}</p>
+                      <p className="text-blue-800 text-sm mt-1">{tStoryStepsStep2('reassurance')}</p>
                     </div>
                   </div>
                 </div>
@@ -492,7 +492,7 @@ export default function Step2Page() {
                 {/* Auto-save indicator */}
                 {isSaving && (
                   <div className="text-center text-sm text-gray-500 mt-2">
-                    <span className="loading loading-spinner loading-xs"></span> {tCommon('saving')}
+                    <span className="loading loading-spinner loading-xs"></span> {tStoryStepsCommon('saving')}
                   </div>
                 )}
 
@@ -503,7 +503,7 @@ export default function Step2Page() {
                   prevHref="/tell-your-story/step-1"
                   nextDisabled={isCreatingStory}
                   onNext={handleNextStep}
-                  nextLabel={isCreatingStory ? t('processing') : t('next')}
+                  nextLabel={isCreatingStory ? tStoryStepsStep2('processing') : tStoryStepsStep2('next')}
                 />
               </div>
             </div>
@@ -515,7 +515,7 @@ export default function Step2Page() {
           <div className="modal modal-open">
             <div className="modal-box max-w-5xl w-11/12 h-[90vh] flex flex-col p-0">
               <div className="modal-header flex justify-between items-center p-6 pb-4 border-b">
-                <h3 className="font-bold text-2xl">✍️ {t('tabWrite')}</h3>
+                <h3 className="font-bold text-2xl">✍️ {tStoryStepsStep2('tabWrite')}</h3>
                 <button
                   className="btn btn-sm btn-circle btn-ghost"
                   onClick={() => setActiveModal(null)}
@@ -590,14 +590,14 @@ export default function Step2Page() {
                     }} />
                     <textarea
                       className="enhanced-textarea w-full h-full p-4 resize-none text-base leading-relaxed border-0 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset"
-                      placeholder={t('textPlaceholder')}
+                      placeholder={tStoryStepsStep2('textPlaceholder')}
                       value={storyText}
                       onChange={(e) => setStoryText(e.target.value)}
                     />
                   </div>
                   
                   <label className="label px-0 pt-2">
-                    <span className="label-text-alt break-words max-w-full whitespace-normal">{t('textHelp')}</span>
+                    <span className="label-text-alt break-words max-w-full whitespace-normal">{tStoryStepsStep2('textHelp')}</span>
                   </label>
                 </div>
 
@@ -606,10 +606,10 @@ export default function Step2Page() {
                   <div className="p-4 bg-base-200 rounded-lg">
                     <h4 className="font-semibold mb-2 flex items-center gap-2">
                       <span className="text-xl">{currentTip.icon}</span>
-                      <span className="text-sm">{t('writingTipsTitle')}</span>
+                      <span className="text-sm">{tStoryStepsStep2('writingTipsTitle')}</span>
                     </h4>
                     <p className="text-sm leading-relaxed animate-fade-in">
-                      {t(`writingTips.${currentTipIndex}.text`)}
+                      {tStoryStepsStep2(`writingTips.${currentTipIndex}.text`)}
                     </p>
                   </div>
                 </div>
@@ -623,7 +623,7 @@ export default function Step2Page() {
                     saveToSession();
                   }}
                 >
-                  {t('actions.done')}
+                  {tStoryStepsStep2('actions.done')}
                 </button>
               </div>
             </div>
@@ -635,7 +635,7 @@ export default function Step2Page() {
           <div className="modal modal-open">
             <div className="modal-box max-w-5xl w-11/12 h-[90vh] flex flex-col">
               <div className="modal-header flex justify-between items-center mb-4">
-                <h3 className="font-bold text-2xl">📸 {t('tabImage')}</h3>
+                <h3 className="font-bold text-2xl">📸 {tStoryStepsStep2('tabImage')}</h3>
                 <button
                   className="btn btn-sm btn-circle btn-ghost"
                   onClick={() => {
@@ -652,7 +652,7 @@ export default function Step2Page() {
                 {uploadedImages.length > 0 && (
                   <div className="mb-6">
                     <h4 className="font-semibold mb-3">
-                      {t('imageGalleryTitle', { count: uploadedImages.length })}
+                      {tStoryStepsStep2('imageGalleryTitle', { count: uploadedImages.length })}
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {uploadedImages.map((img, index) => (
@@ -685,16 +685,16 @@ export default function Step2Page() {
                         className="btn btn-primary btn-lg"
                         onClick={startCamera}
                       >
-                        📷 {t('takePhoto')}
+                        📷 {tStoryStepsStep2('takePhoto')}
                       </button>
                       <button
                         className="btn btn-outline btn-lg"
                         onClick={() => fileInputRef.current?.click()}
                       >
-                        🖼️ {t('uploadImage')}
+                        🖼️ {tStoryStepsStep2('uploadImage')}
                       </button>
                     </div>
-                    <p className="text-gray-600">{t('imageHelp')}</p>
+                    <p className="text-gray-600">{tStoryStepsStep2('imageHelp')}</p>
                   </div>
                 )}
 
@@ -714,13 +714,13 @@ export default function Step2Page() {
                         onClick={capturePhoto}
                         disabled={uploadedImages.length >= 3}
                       >
-                        {t('buttons.capture')}
+                        {tStoryStepsStep2('buttons.capture')}
                       </button>
                       <button
                         className="btn btn-outline btn-lg"
                         onClick={stopCamera}
                       >
-                        {t('buttons.cancel')}
+                        {tStoryStepsStep2('buttons.cancel')}
                       </button>
                     </div>
                   </div>
@@ -738,9 +738,9 @@ export default function Step2Page() {
 
                 {/* Image Tips */}
                 <div className="mt-6 p-4 bg-base-200 rounded-lg">
-                  <h4 className="font-semibold mb-3">{t('photoTips.title')}</h4>
+                  <h4 className="font-semibold mb-3">{tStoryStepsStep2('photoTips.title')}</h4>
                   <ul className="text-sm space-y-1 list-disc list-inside">
-                    {(t.raw('photoTips.tips') as string[]).map((tip: string, index: number) => (
+                    {(tStoryStepsStep2.raw('photoTips.tips') as string[]).map((tip: string, index: number) => (
                       <li key={index}>{tip}</li>
                     ))}
                   </ul>
@@ -756,7 +756,7 @@ export default function Step2Page() {
                     saveToSession();
                   }}
                 >
-                  {t('actions.done')}
+                  {tStoryStepsStep2('actions.done')}
                 </button>
               </div>
             </div>
@@ -768,7 +768,7 @@ export default function Step2Page() {
           <div className="modal modal-open">
             <div className="modal-box max-w-5xl w-11/12 h-[90vh] flex flex-col">
               <div className="modal-header flex justify-between items-center mb-4">
-                <h3 className="font-bold text-2xl">🎤 {t('tabRecord')}</h3>
+                <h3 className="font-bold text-2xl">🎤 {tStoryStepsStep2('tabRecord')}</h3>
                 <button
                   className="btn btn-sm btn-circle btn-ghost"
                   onClick={() => setActiveModal(null)}
@@ -785,16 +785,16 @@ export default function Step2Page() {
                         className="btn btn-primary btn-lg"
                         onClick={startRecording}
                       >
-                        🎤 {t('recordVoice')}
+                        🎤 {tStoryStepsStep2('recordVoice')}
                       </button>
                       <button
                         className="btn btn-outline btn-lg"
                         onClick={() => audioInputRef.current?.click()}
                       >
-                        📁 {t('uploadAudio')}
+                        📁 {tStoryStepsStep2('uploadAudio')}
                       </button>
                     </div>
-                    <p className="text-gray-600">{t('audioHelp')}</p>
+                    <p className="text-gray-600">{tStoryStepsStep2('audioHelp')}</p>
                   </div>
                 )}
 
@@ -808,15 +808,15 @@ export default function Step2Page() {
                         </div>
                         <div className="absolute inset-0 rounded-full border-4 border-red-500 animate-ping"></div>
                       </div>
-                      <p className="text-lg font-semibold text-red-600">{t('actions.recording')}</p>
-                      <p className="text-gray-600">{t('recordingHelp')}</p>
+                      <p className="text-lg font-semibold text-red-600">{tStoryStepsStep2('actions.recording')}</p>
+                      <p className="text-gray-600">{tStoryStepsStep2('recordingHelp')}</p>
                     </div>
                     <div className="flex gap-4 justify-center">
                       <button
                         className="btn btn-error btn-lg"
                         onClick={stopRecording}
                       >
-                        ⏹️ {t('actions.stopRecording')}
+                        ⏹️ {tStoryStepsStep2('actions.stopRecording')}
                       </button>
                     </div>
                   </div>
@@ -835,20 +835,20 @@ export default function Step2Page() {
                           controls
                           className="w-full max-w-md mx-auto"
                         >
-                          {t('audioSupport.notSupported')}
+                          {tStoryStepsStep2('audioSupport.notSupported')}
                         </audio>
                         <div className="card-actions justify-center">
                           <button
                             className="btn btn-outline btn-sm"
                             onClick={clearAudio}
                           >
-                            🗑️ {t('actions.remove')}
+                            🗑️ {tStoryStepsStep2('actions.remove')}
                           </button>
                           <button
                             className="btn btn-primary btn-sm"
                             onClick={startRecording}
                           >
-                            🔄 {t('actions.recordAgain')}
+                            🔄 {tStoryStepsStep2('actions.recordAgain')}
                           </button>
                         </div>
                       </div>
@@ -866,9 +866,9 @@ export default function Step2Page() {
 
                 {/* Audio Tips */}
                 <div className="mt-6 p-4 bg-base-200 rounded-lg">
-                  <h4 className="font-semibold mb-3">🎤 {t('recordingTips.title')}</h4>
+                  <h4 className="font-semibold mb-3">🎤 {tStoryStepsStep2('recordingTips.title')}</h4>
                   <ul className="text-sm space-y-1 list-disc list-inside">
-                    {(t.raw('recordingTips.tips') as string[]).map((tip: string, index: number) => (
+                    {(tStoryStepsStep2.raw('recordingTips.tips') as string[]).map((tip: string, index: number) => (
                       <li key={index}>{tip}</li>
                     ))}
                   </ul>
@@ -883,7 +883,7 @@ export default function Step2Page() {
                     saveToSession();
                   }}
                 >
-                  {t('actions.done')}
+                  {tStoryStepsStep2('actions.done')}
                 </button>
               </div>
             </div>
@@ -895,15 +895,15 @@ export default function Step2Page() {
           <div className="modal modal-open">
             <div className="modal-box max-w-md">
               <div className="text-center space-y-6">
-                <h3 className="font-bold text-xl">{t('loadingModal.title')}</h3>
+                <h3 className="font-bold text-xl">{tStoryStepsStep2('loadingModal.title')}</h3>
                 
                 <div className="flex justify-center">
                   <span className="loading loading-spinner loading-lg text-primary"></span>
                 </div>
                 
                 <div className="space-y-3">
-                  <p className="text-base">{t('loadingModal.message')}</p>
-                  <p className="text-sm font-medium text-primary">{t('loadingModal.pleaseWait')}</p>
+                  <p className="text-base">{tStoryStepsStep2('loadingModal.message')}</p>
+                  <p className="text-sm font-medium text-primary">{tStoryStepsStep2('loadingModal.pleaseWait')}</p>
                 </div>
                 
                 <div className="text-6xl animate-bounce">🍫</div>

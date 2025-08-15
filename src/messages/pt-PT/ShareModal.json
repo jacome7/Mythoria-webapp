@@ -1,0 +1,43 @@
+{
+  "ShareModal": {
+    "title": "Partilhar História",
+    "chooseOptions": "Escolha as suas opções de partilha abaixo",
+    "allowEdit": "Permitir que o destinatário edite",
+    "allowEditDesc": "Os destinatários podem colaborar e fazer alterações",
+    "makePublic": "Tornar história pública",
+    "makePublicDesc": "Qualquer pessoa pode ver sem fazer login",
+    "generateLink": "Gerar Link de Partilha",
+    "shareUrl": "URL de Partilha",
+    "copy": "Copiar",
+    "copied": "Copiado!",
+    "shareVia": "Partilhar via:",
+    "whatsapp": "WhatsApp",
+    "facebook": "Facebook",
+    "email": "Email",
+    "more": "Mais",
+    "createAnother": "Criar Outro",
+    "done": "Concluído",
+    "optionsExplained": "Opções de Partilha Explicadas:",
+    "privateView": "Visualização Privada: Os destinatários devem fazer login para ver a história",
+    "privateEdit": "Edição Privada: Os destinatários podem colaborar e editar a história",
+    "publicOption": "Público: Qualquer pessoa pode ver a história sem fazer login",
+    "privateExpires": "Link privado expira em 30 dias",
+    "publicStoryTitle": "História Pública",
+    "publicStoryDesc": "Esta história está atualmente pública e pode ser vista por qualquer pessoa.",
+    "publicUrl": "URL Público",
+    "makePrivate": "Tornar história privada",
+    "makePrivateDesc": "Remover acesso público e tornar a história privada",
+    "errors": {
+      "createLinkFailed": "Erro ao criar link de partilha: Tente novamente mais tarde.",
+      "shareLinkCreationFailed": "Falha ao criar ligação de partilha. Por favor tente novamente."
+    },
+    "alerts": {
+      "invalidStoryId": "ID de história inválido"
+    },
+    "shareMessages": {
+      "checkOut": "Veja \"{storyTitle}\" no Mythoria 📚",
+      "emailSubject": "Veja \"{storyTitle}\"",
+      "emailBody": "Queria partilhar esta história consigo:\n\n\"{storyTitle}\"\n\n{url}\n\nBoa leitura! 📚"
+    }
+  }
+}

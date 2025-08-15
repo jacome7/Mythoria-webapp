@@ -14,7 +14,8 @@ interface CharacterWithDate extends Character {
 }
 
 export default function MyCharactersTable() {
-  const t = useTranslations('MyCharactersPage');  const [characters, setCharacters] = useState<CharacterWithDate[]>([]);
+  const tMyCharactersPage = useTranslations('MyCharactersPage');
+  const [characters, setCharacters] = useState<CharacterWithDate[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [characterToDelete, setCharacterToDelete] = useState<CharacterWithDate | null>(null);
@@ -127,17 +128,17 @@ export default function MyCharactersTable() {
         <div className="max-w-md mx-auto space-y-4">
           <div className="text-4xl mb-4">🎭</div>
           <h2 className="text-2xl font-semibold text-base-content">
-            {t('noCharacters.title') || 'No characters yet!'}
+            {tMyCharactersPage('noCharacters.title') || 'No characters yet!'}
           </h2>
           <p className="text-base-content/70">
-            {t('noCharacters.subtitle') || 'Start creating characters for your stories to see them here.'}
+            {tMyCharactersPage('noCharacters.subtitle') || 'Start creating characters for your stories to see them here.'}
           </p>
           <button
             className="btn btn-primary btn-lg"
             onClick={() => setShowCreateForm(true)}
           >
             <FiPlus className="w-5 h-5 mr-2" />
-            {t('createCharacter') || 'Create Character'}
+            {tMyCharactersPage('createCharacter') || 'Create Character'}
           </button>
         </div>
       </div>
@@ -154,7 +155,7 @@ export default function MyCharactersTable() {
             onClick={() => setShowCreateForm(true)}
           >
             <FiPlus className="w-5 h-5 mr-2" />
-            {t('createCharacter') || 'Create Character'}
+            {tMyCharactersPage('createCharacter') || 'Create Character'}
           </button>
         </div>
       )}
@@ -189,20 +190,20 @@ export default function MyCharactersTable() {
       {deleteModalOpen && (
         <div className="modal modal-open">
           <div className="modal-box">
-            <h3 className="font-bold text-lg">{t('deleteConfirm.title') || 'Delete Character'}</h3>
-            <p className="py-4">{t('deleteConfirm.message') || 'Are you sure you want to delete this character? This action cannot be undone.'}</p>
+            <h3 className="font-bold text-lg">{tMyCharactersPage('deleteConfirm.title') || 'Delete Character'}</h3>
+            <p className="py-4">{tMyCharactersPage('deleteConfirm.message') || 'Are you sure you want to delete this character? This action cannot be undone.'}</p>
             <div className="modal-action">
               <button
                 className="btn btn-ghost"
                 onClick={() => setDeleteModalOpen(false)}
               >
-                {t('deleteConfirm.cancel') || 'Cancel'}
+                {tMyCharactersPage('deleteConfirm.cancel') || 'Cancel'}
               </button>
               <button
                 className="btn btn-error"
                 onClick={handleDeleteConfirm}
               >
-                {t('deleteConfirm.confirm') || 'Delete'}
+                {tMyCharactersPage('deleteConfirm.confirm') || 'Delete'}
               </button>
             </div>
           </div>

@@ -1,0 +1,54 @@
+{
+  "ImageEditingTab": {
+    "noImages": {
+      "title": "No se encontraron imágenes",
+      "description": "Aún no hay imágenes para esta historia. Aparecerán aquí cuando se generen."
+    },
+    "imageSelection": {
+      "label": "Selecciona una imagen para editar:",
+      "versionsAvailable": "{count} versión{plural} disponible{plural}",
+      "latestVersion": "Última: {version}"
+    },
+    "versionSelection": {
+      "label": "Elige la versión a editar:",
+      "versionsInfo": "{count} versión{plural} disponible{plural}",
+      "currentlySelected": "Actualmente: {version}",
+      "changeImageButton": "Cambiar imagen en la historia",
+      "changingImage": "Cambiando imagen...",
+      "changeImageDescription": "Esto reemplazará la imagen actual por la versión seleccionada."
+    },
+    "imagePreview": {
+      "label": "Imagen actual:"
+    },
+    "editRequest": {
+      "label": "¿Qué cambios quieres hacer?",
+      "placeholder": "Describe los cambios que te gustaría hacer...",
+      "charactersCount": "{current}/{max} caracteres"
+    },
+    "loadingState": {
+      "title": "Procesando la edición...",
+      "description": "Puede tardar hasta 3 minutos según la complejidad."
+    },
+    "buttons": {
+      "generateNewVersion": "Generar nueva versión",
+      "editingImage": "Editando imagen...",
+      "replaceImageInStory": "Reemplazar imagen en la historia",
+      "replacingImage": "Reemplazando imagen..."
+    },
+    "success": {
+      "title": "¡Nueva versión generada!",
+      "description": "Pulsa el botón para reemplazar la imagen actual."
+    },
+    "errors": {
+      "selectImage": "Selecciona una imagen para editar",
+      "enterChanges": "Describe los cambios que quieres hacer",
+      "requestTooLong": "La solicitud debe tener 2000 caracteres o menos",
+      "editFailed": "Error al editar la imagen. Inténtalo de nuevo.",
+      "noNewImage": "No hay nueva imagen para reemplazar",
+      "replaceImageFailed": "Error al reemplazar la imagen. Inténtalo de nuevo.",
+      "noVersionSelected": "No has seleccionado versión",
+      "changeImageFailed": "Error al cambiar la imagen. Inténtalo de nuevo.",
+      "sameVersion": "La versión seleccionada ya es la actual"
+    }
+  }
+}

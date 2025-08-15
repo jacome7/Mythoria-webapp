@@ -1,0 +1,22 @@
+{
+  "NotFound": {
+    "mainHeading": "¡Vaya! Esta página se ha perdido en el cuento",
+    "description": "Parece que la página que buscas se ha escapado a un capítulo sin escribir. Igual está de aventura por ahí.",
+    "funnyMessage": "Nuestros elfos literarios rebuscan por la biblioteca mágica, pero la página ha emprendido su propio viaje.",
+    "suggestions": {
+      "title": "Mientras la buscamos, puedes:",
+      "items": [
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    "actions": {
+      "goHome": "Ir a inicio",
+      "createStory": "Crear nueva historia",
+      "myStories": "Mis historias"
+    },
+    "quote": "\"No todos los que vagan están perdidos... ¡pero esta página sí!\" – Un hobbit despistado"
+  }
+}

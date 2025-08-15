@@ -1,0 +1,55 @@
+{
+  "Addresses": {
+    "addAddress": "Adicionar Nova Morada",
+    "editAddress": "Editar Morada",
+    "confirmDelete": "Tem a certeza que quer eliminar esta morada?",
+    "validation": {
+      "requiredFields": "Por favor preencha todos os campos obrigatórios (Linha de Morada 1, Cidade, País)"
+    },
+    "errors": {
+      "saveFailed": "Falha ao guardar morada. Por favor tente novamente.",
+      "deleteFailed": "Falha ao eliminar morada. Por favor tente novamente."
+    },
+    "fields": {
+      "type": "Tipo de Morada",
+      "line1": "Linha de Morada 1",
+      "line2": "Linha de Morada 2",
+      "city": "Cidade",
+      "stateRegion": "Estado/Região",
+      "postalCode": "Código Postal",
+      "country": "País",
+      "phone": "Número de Telefone"
+    },
+    "placeholders": {
+      "line1": "Insira o endereço da rua",
+      "line2": "Apartamento, andar, etc. (opcional)",
+      "city": "Insira a cidade",
+      "stateRegion": "Insira estado ou região",
+      "postalCode": "Insira o código postal",
+      "phone": "Insira o número de telefone"
+    },
+    "types": {
+      "delivery": "Entrega",
+      "billing": "Faturação"
+    },
+    "countries": {
+      "us": "Estados Unidos",
+      "gb": "Reino Unido",
+      "de": "Alemanha",
+      "fr": "França",
+      "es": "Espanha",
+      "it": "Itália",
+      "pt": "Portugal",
+      "nl": "Países Baixos",
+      "be": "Bélgica",
+      "ca": "Canadá",
+      "au": "Austrália",
+      "jp": "Japão",
+      "br": "Brasil"
+    },
+    "buttons": {
+      "save": "Guardar Morada",
+      "cancel": "Cancelar"
+    }
+  }
+}

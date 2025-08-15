@@ -38,7 +38,10 @@ export default function ReadStoryPage() {
   const router = useRouter();
   const params = useParams<{ storyId?: string }>();
   const locale = useLocale();
-  const tCommon = useTranslations('common');
+  const tLoading = useTranslations('Loading');
+  const tErrors = useTranslations('Errors');
+  const tActions = useTranslations('Actions');
+  const tAuth = useTranslations('Auth');
   const storyId = (params?.storyId as string | undefined) ?? '';
   const [story, setStory] = useState<Story | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
@@ -64,15 +67,15 @@ export default function ReadStoryPage() {
             graphical_style: data.story.graphicalStyle
           });
         } else if (response.status === 404) {
-          setError(tCommon('Errors.storyNotFoundGeneric'));
+          setError(tErrors('storyNotFoundGeneric'));
         } else if (response.status === 403) {
-          setError(tCommon('Errors.noPermission'));
+          setError(tErrors('noPermission'));
         } else {
-          setError(tCommon('Errors.failedToLoad'));
+          setError(tErrors('failedToLoad'));
         }
       } catch (error) {
         console.error('Error fetching story:', error);
-        setError(tCommon('Errors.failedToLoad'));
+        setError(tErrors('failedToLoad'));
       } finally {
         setLoading(false);
       }
@@ -81,7 +84,7 @@ export default function ReadStoryPage() {
     if (storyId) {
       fetchStory();
     }
-  }, [storyId, tCommon]);
+  }, [storyId, tErrors]);
 
   const navigateToListen = () => {
     router.push(`/${locale}/stories/listen/${storyId}`);
@@ -114,7 +117,7 @@ export default function ReadStoryPage() {
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center">
           <div className="loading loading-spinner loading-lg mb-4"></div>
-          <p className="text-lg">{tCommon('Loading.default')}</p>
+          <p className="text-lg">{tLoading('default')}</p>
         </div>
       </div>
     );
@@ -125,13 +128,13 @@ export default function ReadStoryPage() {
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">📚</div>
-          <h1 className="text-3xl font-bold mb-4">{tCommon('Errors.oops')}</h1>
+          <h1 className="text-3xl font-bold mb-4">{tErrors('oops')}</h1>
           <p className="text-lg mb-6">{error}</p>
           <button
             onClick={() => router.back()}
             className="btn btn-primary"
           >
-            {tCommon('Actions.goBack')}
+            {tActions('goBack')}
           </button>
         </div>
       </div>
@@ -142,13 +145,13 @@ export default function ReadStoryPage() {
     return (
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-3xl font-bold mb-4">{tCommon('Errors.noChaptersFound')}</h1>
-          <p className="text-lg mb-6">{tCommon('Errors.noChaptersFoundDesc')}</p>
+          <h1 className="text-3xl font-bold mb-4">{tErrors('noChaptersFound')}</h1>
+          <p className="text-lg mb-6">{tErrors('noChaptersFoundDesc')}</p>
           <button
             onClick={() => router.push(`/${locale}/my-stories`)}
             className="btn btn-primary"
           >
-            {tCommon('Actions.backToMyStories')}
+            {tActions('backToMyStories')}
           </button>
         </div>
       </div>
@@ -160,22 +163,22 @@ export default function ReadStoryPage() {
       <SignedOut>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center space-y-6">
-            <h1 className="text-4xl font-bold">{tCommon('Auth.accessRestricted')}</h1>
+            <h1 className="text-4xl font-bold">{tAuth('accessRestricted')}</h1>
             <p className="text-lg text-gray-600">
-              {tCommon('Auth.needSignIn')}
+              {tAuth('needSignIn')}
             </p>
             <div className="space-x-4">
               <button
                 onClick={() => router.push(`/${locale}/sign-in`)}
                 className="btn btn-primary"
               >
-                {tCommon('Auth.signIn')}
+                {tAuth('signIn')}
               </button>
               <button
                 onClick={() => router.push(`/${locale}/sign-up`)}
                 className="btn btn-outline"
               >
-                {tCommon('Auth.createAccount')}
+                {tAuth('createAccount')}
               </button>
             </div>
           </div>
@@ -191,7 +194,7 @@ export default function ReadStoryPage() {
               className="btn btn-ghost btn-sm"
             >
               <FiArrowLeft className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">{tCommon('Actions.backToMyStories')}</span>
+              <span className="hidden sm:inline">{tActions('backToMyStories')}</span>
             </button>
             
             <div className="flex items-center gap-2">
@@ -199,7 +202,7 @@ export default function ReadStoryPage() {
                 className="btn btn-ghost btn-sm btn-active"
               >
                 <FiBook className="w-4 h-4" />
-                <span className="hidden sm:inline sm:ml-2">{tCommon('Actions.read')}</span>
+                <span className="hidden sm:inline sm:ml-2">{tActions('read')}</span>
               </button>
               
               <button
@@ -207,7 +210,7 @@ export default function ReadStoryPage() {
                 className="btn btn-ghost btn-sm"
               >
                 <FiVolume2 className="w-4 h-4" />
-                <span className="hidden sm:inline sm:ml-2">{tCommon('Actions.listen')}</span>
+                <span className="hidden sm:inline sm:ml-2">{tActions('listen')}</span>
               </button>
               
               <button
@@ -215,7 +218,7 @@ export default function ReadStoryPage() {
                 className="btn btn-ghost btn-sm"
               >
                 <FiEdit3 className="w-4 h-4" />
-                <span className="hidden sm:inline sm:ml-2">{tCommon('Actions.edit')}</span>
+                <span className="hidden sm:inline sm:ml-2">{tActions('edit')}</span>
               </button>
               
               <button
@@ -223,7 +226,7 @@ export default function ReadStoryPage() {
                 className="btn btn-ghost btn-sm"
               >
                 <FiPrinter className="w-4 h-4" />
-                <span className="hidden sm:inline sm:ml-2">{tCommon('Actions.print')}</span>
+                <span className="hidden sm:inline sm:ml-2">{tActions('print')}</span>
               </button>
               
               <button
@@ -231,7 +234,7 @@ export default function ReadStoryPage() {
                 className="btn btn-ghost btn-sm"
               >
                 <FiShare2 className="w-4 h-4" />
-                <span className="hidden sm:inline sm:ml-2">{tCommon('Actions.share')}</span>
+                <span className="hidden sm:inline sm:ml-2">{tActions('share')}</span>
               </button>
             </div>
           </div>
@@ -263,13 +266,13 @@ export default function ReadStoryPage() {
         <div className="min-h-screen bg-base-100 flex items-center justify-center">
           <div className="text-center">
             <div className="text-6xl mb-4">🔒</div>
-            <h1 className="text-3xl font-bold mb-4">{tCommon('Errors.authRequired')}</h1>
-            <p className="text-lg mb-6">{tCommon('Errors.pleaseSignIn')}</p>
+            <h1 className="text-3xl font-bold mb-4">{tErrors('authRequired')}</h1>
+            <p className="text-lg mb-6">{tErrors('pleaseSignIn')}</p>
             <button
               onClick={() => router.push(`/${locale}/sign-in`)}
               className="btn btn-primary"
             >
-              {tCommon('Actions.signIn')}
+              {tActions('signIn')}
             </button>
           </div>
         </div>

@@ -21,8 +21,8 @@ interface AuthorData {
 
 export default function Step1Page() {
   const locale = useLocale();
-  const t = useTranslations('StorySteps.step1');
-  const tCommon = useTranslations('StorySteps.common');
+  const tStoryStepsStep1 = useTranslations('StorySteps.step1');
+  const tStoryStepsCommon = useTranslations('StorySteps.common');
   const [, setAuthorData] = useState<AuthorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +48,7 @@ export default function Step1Page() {
       const response = await fetch('/api/auth/me');
 
       if (!response.ok) {
-        throw new Error(t('messages.fetchFailed'));
+        throw new Error(tStoryStepsStep1('messages.fetchFailed'));
       }
 
       const data: AuthorData = await response.json();
@@ -73,11 +73,11 @@ export default function Step1Page() {
 
     } catch (error) {
       console.error('Error fetching author data:', error);
-      setError(t('messages.loadFailed'));
+      setError(tStoryStepsStep1('messages.loadFailed'));
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, [tStoryStepsStep1]);
   useEffect(() => {
     fetchAuthorData();
 
@@ -97,7 +97,7 @@ export default function Step1Page() {
   };
   const handleNext = async (): Promise<boolean> => {
     if (!customAuthor) {
-      setError(t('messages.required'));
+      setError(tStoryStepsStep1('messages.required'));
       return false; // Prevent navigation
     }
 
@@ -132,7 +132,7 @@ export default function Step1Page() {
       return true; // Allow navigation
     } catch (err) {
       console.error('Failed to save author data:', err);
-      setError(t('messages.saveFailed'));
+      setError(tStoryStepsStep1('messages.saveFailed'));
       return false; // Prevent navigation
     } finally {
       setLoading(false);
@@ -143,16 +143,16 @@ export default function Step1Page() {
       <ClientAuthWrapper
         signedOutFallback={
           <div className="text-center space-y-6 max-w-2xl mx-auto">
-            <h1 className="text-4xl font-bold">{t('unauthenticated.title')}</h1>
+            <h1 className="text-4xl font-bold">{tStoryStepsStep1('unauthenticated.title')}</h1>
             <p className="text-lg text-gray-600">
-              {t('unauthenticated.description')}
+              {tStoryStepsStep1('unauthenticated.description')}
             </p>
             <div className="space-y-4 sm:space-y-0 sm:space-x-4">
               <Link href={`/${locale}/sign-in`} className="btn btn-primary btn-lg">
-                {t('unauthenticated.signIn')}
+                {tStoryStepsStep1('unauthenticated.signIn')}
               </Link>
               <Link href={`/${locale}/sign-up`} className="btn btn-outline btn-lg">
-                {t('unauthenticated.signUp')}
+                {tStoryStepsStep1('unauthenticated.signUp')}
               </Link>
             </div>
           </div>
@@ -168,7 +168,7 @@ export default function Step1Page() {
                 {/* Mobile Progress Indicator */}
                 <div className="block md:hidden mb-8">
                   <div className="text-center text-sm text-gray-600 mb-2">
-                    {tCommon('stepProgress', { currentStep, totalSteps })}
+                    {tStoryStepsCommon('stepProgress', { currentStep, totalSteps })}
                   </div>
                   <progress
                     className="progress progress-primary w-full"
@@ -194,16 +194,16 @@ export default function Step1Page() {
           {/* Step content */}
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
-              <h1 className="card-title text-3xl mb-6">{t('heading')}</h1>
+              <h1 className="card-title text-3xl mb-6">{tStoryStepsStep1('heading')}</h1>
 
               {loading ? (
                 <div className="text-center py-12">
                   <span className="loading loading-spinner loading-lg"></span>
-                  <p className="text-lg text-gray-600 mt-4">{t('messages.loadingProfile')}</p>
+                  <p className="text-lg text-gray-600 mt-4">{tStoryStepsStep1('messages.loadingProfile')}</p>
                 </div>) : (
                 <div className="space-y-6">
                   <div className="prose max-w-none mb-6">
-                    <p className="text-gray-600">{t('intro')}</p>
+                    <p className="text-gray-600">{tStoryStepsStep1('intro')}</p>
                   </div>
 
                   {error && (
@@ -219,7 +219,7 @@ export default function Step1Page() {
                     {/* Author Name Field */}
                     <div className="form-control">
                       <label className="label">
-                        <span className="label-text font-semibold">{t('fields.authorName')}</span>
+                        <span className="label-text font-semibold">{tStoryStepsStep1('fields.authorName')}</span>
                       </label>
                       <input
                         type="text"
@@ -228,20 +228,20 @@ export default function Step1Page() {
                           setCustomAuthor(e.target.value);
                           checkForChanges(e.target.value, dedicationMessage);
                         }}
-                        placeholder={t('fields.authorNamePlaceholder')}
+                        placeholder={tStoryStepsStep1('fields.authorNamePlaceholder')}
                         className="input input-bordered w-full"
                         required
                       />
                       <label className="label">
-                        <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.authorNameHelp')}</span>
+                        <span className="label-text-alt break-words max-w-full whitespace-normal">{tStoryStepsStep1('fields.authorNameHelp')}</span>
                       </label>
                     </div>
                     
                     {/* Dedication Message Field */}
                     <div className="form-control">
                       <label className="label">
-                        <span className="label-text font-semibold">{t('fields.dedication')}</span>
-                        <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.optional')}</span>
+                        <span className="label-text font-semibold">{tStoryStepsStep1('fields.dedication')}</span>
+                        <span className="label-text-alt break-words max-w-full whitespace-normal">{tStoryStepsStep1('fields.optional')}</span>
                       </label>
                       <textarea
                         value={dedicationMessage}
@@ -249,12 +249,12 @@ export default function Step1Page() {
                           setDedicationMessage(e.target.value);
                           checkForChanges(customAuthor, e.target.value);
                         }}
-                        placeholder={t('fields.dedicationPlaceholder')}
+                        placeholder={tStoryStepsStep1('fields.dedicationPlaceholder')}
                         className="textarea textarea-bordered h-24 w-full"
                         rows={4}
                       />
                       <label className="label">
-                        <span className="label-text-alt break-words max-w-full whitespace-normal">{t('fields.dedicationHelp')}</span>
+                        <span className="label-text-alt break-words max-w-full whitespace-normal">{tStoryStepsStep1('fields.dedicationHelp')}</span>
                       </label>
                     </div></div>
                 </div>

@@ -1,0 +1,138 @@
+{
+  "HomePage": {
+    "title": "Bem-vindo",
+    "hero": {
+      "writeYourOwn": "Escreva a sua própria",
+      "subtitle": "Transforme qualquer pessoa no herói de um livro lindamente ilustrado — para crianças, adultos ou equipas inteiras.",
+      "subtitleEmphasized": "qualquer pessoa",
+      "tellYourOwnStory": "Conta a tua própria história"
+    },
+    "words": [
+      "História",
+      "Aventura",
+      "Memória",
+      "Crónica",
+      "Ficção",
+      "Fábula",
+      "Odisseia",
+      "Prosa",
+      "Livro",
+      "Romance",
+      "Romance",
+      "Manuscrito",
+      "Conto",
+      "Ficção",
+      "Mito"
+    ],
+    "fallbackWords": [
+      "Aventura",
+      "História de Amor",
+      "Mistério",
+      "Conto de Fadas"
+    ],
+    "altTexts": {
+      "kidsBook": "Livro Infantil",
+      "groupsYearbooks": "Grupos & Álbuns",
+      "adultBook": "Como Conheci a Vossa Mãe",
+      "companyBook": "Livro da Empresa"
+    },
+    "comingSoon": {
+      "title": "A nossa história está apenas a começar...",
+      "subtitle": "A Mythoria está a preparar algo mágico! Estou a trabalhar arduamente, juntamente com a IA, para lhe trazer um novo mundo de histórias personalizadas. Fique atento, a aventura estará disponível em breve! 🧙‍♂️📚✨"
+    },
+    "audiences": {
+      "kids": {
+        "title": "Crianças",
+        "description": "Transforme o seu filho, neto, sobrinho ou sobrinha no herói da sua própria aventura mágica!"
+      },
+      "groups": {
+        "title": "Grupos & Álbuns",
+        "description": "Imortalize o espírito da sua equipa e as memórias do seu grupo!"
+      },
+      "adults": {
+        "title": "Adultos",
+        "description": "Reviva a sua história de amor ou uma viagem única como uma memória ilustrada deslumbrante."
+      },
+      "companies": {
+        "title": "Empresas",
+        "description": "Ofereça aos clientes ou às famílias dos funcionários um livro de histórias personalizado com marca que mantém o seu logótipo na estante."
+      }
+    },
+    "howItWorks": {
+      "title": "Com a Mythoria, criar a sua própria história é fácil:",
+      "steps": {
+        "step1": {
+          "title": "O Autor",
+          "description": "Faça login e diga à Mythoria quem você é. Será o orgulhoso autor e proprietário da sua história única."
+        },
+        "step2": {
+          "title": "A História",
+          "description": "Partilhe facilmente a sua ideia de história escrevendo, falando ou até desenhando no papel. A Mythoria captura e transforma o seu conceito em magia."
+        },
+        "step3": {
+          "title": "As Personagens",
+          "description": "A Mythoria identifica as personagens, mas pode personalizar cada detalhe. Descreva a sua aparência, paixões e características únicas."
+        },
+        "step4": {
+          "title": "O Enredo",
+          "description": "Molde a sua história exatamente como deseja—selecione o estilo gráfico, defina o tom, escolha o seu público e ajuste cada detalhe."
+        },
+        "step5": {
+          "title": "O Presente",
+          "description": "Escolha como gostaria de receber a sua obra-prima: como eBook, audiolivro ou livro lindamente impresso."
+        },
+        "step6": {
+          "title": "Experimente a Magia",
+          "description": "As crianças ficarão cativadas ao verem-se em aventuras emocionantes, enquanto os adultos se deleitam revivendo memórias queridas e partilhando momentos sinceros."
+        }
+      },
+      "stepLabels": {
+        "step1": "Passo 1",
+        "step2": "Passo 2",
+        "step3": "Passo 3",
+        "step4": "Passo 4",
+        "step5": "Passo 5",
+        "step6": "Passo 6"
+      },
+      "conclusion": "Os nossos Umpa-lumpas da Fábrica de Histórias tratam de todo o resto, dando vida à sua história!"
+    },
+    "community": {
+      "title": "Junte-se à Nossa Crescente Comunidade de Contadores de Histórias!"
+    },
+    "cta": {
+      "title": "Pronto para começar a sua jornada de contar histórias?",
+      "subtitle": "Registe-se hoje e receba 5 créditos grátis para criar a sua primeira história personalizada!",
+      "button": "Experimente Grátis"
+    },
+    "features": {
+      "title": "Porquê escolher a Mythoria?",
+      "feature1": {
+        "title": "100% Personalizada",
+        "description": "Cada história é única e criada especialmente para si."
+      },
+      "feature2": {
+        "title": "Alimentada por IA",
+        "description": "A nossa inteligência artificial cria histórias mágicas e envolventes."
+      },
+      "feature3": {
+        "title": "Ilustrações Lindas",
+        "description": "Cada história vem com ilustrações personalizadas deslumbrantes."
+      },
+      "feature4": {
+        "title": "Livros Físicos",
+        "description": "Transforme a sua história digital num livro real que pode segurar e guardar."
+      }
+    },
+    "testimonials": {
+      "title": "O que as nossas famílias estão a dizer",
+      "testimonial1": {
+        "quote": "A minha filha adorou ver-se como a personagem principal na sua aventura. É algo que ela guardará para sempre!",
+        "author": "Maria S., mãe de 2"
+      },
+      "testimonial2": {
+        "quote": "A qualidade da história e das ilustrações superou as nossas expectativas. A Mythoria criou algo verdadeiramente especial.",
+        "author": "João P., avô"
+      }
+    }
+  }
+}

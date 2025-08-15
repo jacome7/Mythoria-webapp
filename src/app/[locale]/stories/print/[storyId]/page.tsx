@@ -13,7 +13,7 @@ export default function PrintOrderPage() {
   const storyId = (params?.storyId as string | undefined) ?? '';
   const router = useRouter();
   const locale = useLocale();
-  const tCommon = useTranslations('common');
+  const tAuth = useTranslations('Auth');
 
   return (
     <div className="min-h-screen bg-base-100 p-4">
@@ -24,22 +24,22 @@ export default function PrintOrderPage() {
       <SignedOut>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center space-y-6">
-            <h1 className="text-4xl font-bold">{tCommon('Auth.accessRestricted')}</h1>
+            <h1 className="text-4xl font-bold">{tAuth('accessRestricted')}</h1>
             <p className="text-lg text-gray-600">
-              {tCommon('Auth.needSignIn')}
+              {tAuth('needSignIn')}
             </p>
             <div className="space-x-4">
               <button
                 onClick={() => router.push(`/${locale}/sign-in`)}
                 className="btn btn-primary"
               >
-                {tCommon('Auth.signIn')}
+                {tAuth('signIn')}
               </button>
               <button
                 onClick={() => router.push(`/${locale}/sign-up`)}
                 className="btn btn-outline"
               >
-                {tCommon('Auth.createAccount')}
+                {tAuth('createAccount')}
               </button>
             </div>
           </div>

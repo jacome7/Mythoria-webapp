@@ -1,0 +1,16 @@
+{
+  "SignInPage": {
+    "title": "Bem-vindo de Volta à Mythoria",
+    "subtitle": "Continue a sua jornada de contar histórias onde parou.",
+    "firstTimeText": "Primeira vez aqui?",
+    "createAccountLink": "Crie a sua conta",
+    "createAccountText": "e comece a criar histórias mágicas.",
+    "pageTitle": "Iniciar Sessão",
+    "pageSubtitle": "Bem-vindo de volta! Por favor, inicie sessão na sua conta.",
+    "features": {
+      "unlimited": "\u2728 Criação ilimitada de histórias",
+      "library": "\uD83D\uDCDA Biblioteca de personagens",
+      "customize": "\uD83C\uDFA8 Personalize as suas aventuras"
+    }
+  }
+}

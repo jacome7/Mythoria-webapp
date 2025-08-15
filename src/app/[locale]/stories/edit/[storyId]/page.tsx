@@ -56,8 +56,10 @@ export default function StoryEditPage() {
   const params = useParams<{ storyId?: string; locale?: string }>();
   const router = useRouter();
   const { user } = useUser();
-  const tCommon = useTranslations('common');
-  const tStoryEdit = useTranslations('storyEditPage');
+  const tLoading = useTranslations('Loading');
+  const tErrors = useTranslations('Errors');
+  const tActions = useTranslations('Actions');
+  const tStoryEditPage = useTranslations('StoryEditPage');
 
   const storyId = (params?.storyId as string | undefined) ?? '';
   const locale = (params?.locale as string | undefined) ?? '';
@@ -96,22 +98,22 @@ export default function StoryEditPage() {
       const response = await fetch(`/api/stories/${storyId}/edit`);
       
       if (!response.ok) {
-        throw new Error(tStoryEdit('errors.failedToLoadStoryData'));
+        throw new Error(tStoryEditPage('errors.failedToLoadStoryData'));
       }
 
       const data: ApiResponse = await response.json();
       if (data.success) {
         setStoryData(data);
       } else {
-        throw new Error(tStoryEdit('errors.failedToLoadStory'));
+        throw new Error(tStoryEditPage('errors.failedToLoadStory'));
       }
     } catch (error) {
-      console.error(tStoryEdit('logging.errorLoadingStory'), error);
-      addToast(tStoryEdit('errors.failedToLoadStoryDataToast'), 'error');
+      console.error(tStoryEditPage('logging.errorLoadingStory'), error);
+      addToast(tStoryEditPage('errors.failedToLoadStoryDataToast'), 'error');
     } finally {
       setLoading(false);
     }
-  }, [storyId, user, addToast, tStoryEdit]);
+  }, [storyId, user, addToast, tStoryEditPage]);
 
   // Update story info
   const updateStoryInfo = async (updates: Partial<ApiStory>) => {
@@ -128,7 +130,7 @@ export default function StoryEditPage() {
       });
 
       if (!response.ok) {
-        throw new Error(tStoryEdit('errors.failedToUpdateStoryInfo'));
+        throw new Error(tStoryEditPage('errors.failedToUpdateStoryInfo'));
       }
 
       const result = await response.json();
@@ -140,11 +142,11 @@ export default function StoryEditPage() {
           return { ...prev, story: result.story };
         });
 
-        addToast(tStoryEdit('success.storyInfoUpdated'), 'success');
+        addToast(tStoryEditPage('success.storyInfoUpdated'), 'success');
       }
     } catch (error) {
-      console.error(tStoryEdit('logging.errorUpdatingStoryInfo'), error);
-      addToast(tStoryEdit('errors.failedToUpdateStoryInfo'), 'error');
+      console.error(tStoryEditPage('logging.errorUpdatingStoryInfo'), error);
+      addToast(tStoryEditPage('errors.failedToUpdateStoryInfo'), 'error');
     } finally {
       setSaving(false);
     }
@@ -169,7 +171,7 @@ export default function StoryEditPage() {
 
   // Handle AI edit success
   const handleAIEditSuccess = async (updatedData: Record<string, unknown>) => {
-    console.log(tStoryEdit('logging.aiEditSuccessUpdatedData'), updatedData);
+    console.log(tStoryEditPage('logging.aiEditSuccessUpdatedData'), updatedData);
     
     // Handle full story edit
     if (updatedData.scope === 'story') {
@@ -200,7 +202,7 @@ export default function StoryEditPage() {
           .join(', ');
         
         addToast(
-          tStoryEdit('chapterUpdates.chaptersUpdatedSuccessfully', {
+          tStoryEditPage('chapterUpdates.chaptersUpdatedSuccessfully', {
             successCount: successCount.toString(),
             failedChapters: failedChapters
           }),
@@ -208,7 +210,7 @@ export default function StoryEditPage() {
         );
       } else {
         addToast(
-          tStoryEdit('chapterUpdates.allChaptersUpdated', {
+          tStoryEditPage('chapterUpdates.allChaptersUpdated', {
             successCount: successCount.toString()
           }),
           'success'
@@ -217,16 +219,16 @@ export default function StoryEditPage() {
     } else if (updatedData.updatedHtml && updatedData.chaptersUpdated) {
       // For story-wide edits (legacy format), reload data to get all updated chapters
       await loadStoryData();
-      addToast(tStoryEdit('success.storyUpdated'), 'success');
+      addToast(tStoryEditPage('success.storyUpdated'), 'success');
     } else if (updatedData.updatedHtml) {
       // For single chapter edits, we could update directly but currently
       // this page doesn't show individual chapter content, so reload
       await loadStoryData();
-      addToast(tStoryEdit('success.chapterUpdated'), 'success');
+      addToast(tStoryEditPage('success.chapterUpdated'), 'success');
     } else {
       // Fallback: reload story data to get the latest changes
       await loadStoryData();
-      addToast(tStoryEdit('success.contentUpdated'), 'success');
+      addToast(tStoryEditPage('success.contentUpdated'), 'success');
     }
   };
 
@@ -251,7 +253,7 @@ export default function StoryEditPage() {
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center">
           <div className="loading loading-spinner loading-lg text-primary mb-4"></div>
-          <p className="text-lg font-medium">{tCommon('Loading.default')}</p>
+          <p className="text-lg font-medium">{tLoading('default')}</p>
         </div>
       </div>
     );
@@ -262,15 +264,15 @@ export default function StoryEditPage() {
     return (
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center max-w-md">
-          <div className="text-6xl mb-4">{tStoryEdit('errors.errorEmoji')}</div>
-          <h1 className="text-2xl font-bold mb-2">{tCommon('Errors.generic')}</h1>
-          <p className="text-base-content/70 mb-6">{tStoryEdit('errors.failedToLoadStoryData')}</p>
+          <div className="text-6xl mb-4">{tStoryEditPage('errors.errorEmoji')}</div>
+          <h1 className="text-2xl font-bold mb-2">{tErrors('generic')}</h1>
+          <p className="text-base-content/70 mb-6">{tStoryEditPage('errors.failedToLoadStoryData')}</p>
           <button
             onClick={() => router.push(`/${locale}/stories`)}
             className="btn btn-primary"
           >
             <FiArrowLeft className="w-4 h-4 mr-2" />
-            {tCommon('Actions.goBack')}
+            {tActions('goBack')}
           </button>
         </div>
       </div>
@@ -288,7 +290,7 @@ export default function StoryEditPage() {
               className="btn btn-ghost btn-sm"
             >
               <FiArrowLeft className="w-4 h-4" />
-              <span className="hidden sm:inline ml-2">{tCommon('Actions.goBack')}</span>
+              <span className="hidden sm:inline ml-2">{tActions('goBack')}</span>
             </button>
             
             <h1 className="text-xl font-bold">{storyData.story.title}</h1>
@@ -317,7 +319,7 @@ export default function StoryEditPage() {
                 setSelectedImageData({
                   imageUri: storyData.story.coverUri,
                   imageType: 'cover',
-                  title: tStoryEdit('imageTypes.frontCover')
+                  title: tStoryEditPage('imageTypes.frontCover')
                 });
                 setShowAIImageEditor(true);
               }
@@ -327,7 +329,7 @@ export default function StoryEditPage() {
                 setSelectedImageData({
                   imageUri: storyData.story.backcoverUri,
                   imageType: 'backcover',
-                  title: tStoryEdit('imageTypes.backCover')
+                  title: tStoryEditPage('imageTypes.backCover')
                 });
                 setShowAIImageEditor(true);
               }

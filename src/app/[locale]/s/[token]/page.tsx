@@ -30,9 +30,11 @@ export default function SharedStoryPage() {
   const params = useParams<{ token?: string }>();
   const router = useRouter();
   const locale = useLocale();
-  const t = useTranslations('SharedStoryPage');
-  const tCommon = useTranslations('common');
-  const token = (params?.token as string | undefined) ?? '';
+  const tSharedStoryPage = useTranslations('SharedStoryPage');
+  const tStoryReader = useTranslations('StoryReader');
+  const tAuth = useTranslations('Auth');
+  const tActions = useTranslations('Actions');
+    const token = (params?.token as string | undefined) ?? '';
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,20 +63,20 @@ export default function SharedStoryPage() {
         }
       } catch (err) {
         console.error('Error accessing shared story:', err);
-        setError(t('errors.failedToAccess'));
+        setError(tSharedStoryPage('errors.failedToAccess'));
       } finally {
         setLoading(false);
       }
     };
 
     accessSharedStory();
-  }, [token, router, locale, t]);  if (loading) {
+  }, [token, router, locale, tSharedStoryPage]);  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <FiLoader className="animate-spin text-4xl text-primary mx-auto" />
-          <h2 className="text-xl font-semibold">{t('loading.title')}</h2>
-          <p className="text-gray-600">{t('loading.subtitle')}</p>
+          <h2 className="text-xl font-semibold">{tSharedStoryPage('loading.title')}</h2>
+          <p className="text-gray-600">{tSharedStoryPage('loading.subtitle')}</p>
         </div>
       </div>
     );
@@ -109,13 +111,13 @@ export default function SharedStoryPage() {
               
               {/* Author Name */}
               <p className="text-xl text-gray-700">
-                {tCommon('Components.StoryReader.byAuthor', { authorName: storyPreview.authorName })}
+                {tStoryReader('byAuthor', { authorName: storyPreview.authorName })}
               </p>
               
               {/* Synopsis */}
               {storyPreview.synopsis && (
                 <div className="bg-base-200 rounded-lg p-6 text-left max-w-2xl mx-auto">
-                  <h3 className="text-lg font-semibold mb-3">{tCommon('Components.StoryReader.synopsis')}</h3>
+                  <h3 className="text-lg font-semibold mb-3">{tStoryReader('synopsis')}</h3>
                   <p className="text-gray-700 leading-relaxed">{storyPreview.synopsis}</p>
                 </div>
               )}
@@ -125,15 +127,15 @@ export default function SharedStoryPage() {
             <div className="bg-base-200 rounded-lg p-8 space-y-6">
               <div className="space-y-4">
                 <h2 className="text-2xl font-bold text-gray-900">
-                  {accessLevel === 'edit' 
-                    ? t('auth.signInToEdit') 
-                    : t('auth.signInToRead')
+                  {accessLevel === 'edit'
+                    ? tSharedStoryPage('auth.signInToEdit')
+                    : tSharedStoryPage('auth.signInToRead')
                   }
                 </h2>
                 <p className="text-gray-600 text-lg">
                   {accessLevel === 'edit'
-                    ? t('auth.createAccountToCollaborate')
-                    : t('auth.createAccountToReadFull')
+                    ? tSharedStoryPage('auth.createAccountToCollaborate')
+                    : tSharedStoryPage('auth.createAccountToReadFull')
                   }
                 </p>
               </div>
@@ -143,13 +145,13 @@ export default function SharedStoryPage() {
                   href={`/${locale}/sign-in`}
                   className="btn btn-primary btn-lg px-8"
                 >
-                  {tCommon('Auth.signIn')}
+                  {tAuth('signIn')}
                 </a>
                 <a
                   href={`/${locale}/sign-up`}
                   className="btn btn-outline btn-lg px-8"
                 >
-                  {tCommon('Auth.createAccount')}
+                  {tAuth('createAccount')}
                 </a>
               </div>
             </div>
@@ -157,7 +159,7 @@ export default function SharedStoryPage() {
             {/* Mythoria Branding */}
             <div className="space-y-4">
               <p className="text-gray-600">
-                {tCommon('Components.StoryReader.craftedWith')}
+                {tStoryReader('craftedWith')}
               </p>
               <Image 
                 src={logoUrl} 
@@ -177,7 +179,7 @@ export default function SharedStoryPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4 max-w-md mx-auto px-4">
           <FiAlertCircle className="text-4xl text-red-500 mx-auto" />
-          <h2 className="text-xl font-semibold text-gray-900">{t('errors.unableToAccess')}</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{tSharedStoryPage('errors.unableToAccess')}</h2>
           <p className="text-gray-600">{error}</p>
           
           <div className="space-y-2">
@@ -185,14 +187,14 @@ export default function SharedStoryPage() {
               onClick={() => window.location.reload()}
               className="btn btn-outline btn-sm"
             >
-              {tCommon('Actions.tryAgain')}
+              {tActions('tryAgain')}
             </button>
             <div>
               <a
                 href={`/${locale}`}
                 className="btn btn-primary btn-sm"
               >
-                {tCommon('Actions.goToHomepage')}
+                {tActions('goToHomepage')}
               </a>
             </div>
           </div>
@@ -205,7 +207,7 @@ export default function SharedStoryPage() {
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center space-y-4">
         <FiLoader className="animate-spin text-4xl text-primary mx-auto" />
-        <h2 className="text-xl font-semibold">{t('redirecting')}</h2>
+        <h2 className="text-xl font-semibold">{tSharedStoryPage('redirecting')}</h2>
       </div>
     </div>
   );

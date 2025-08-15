@@ -1,0 +1,143 @@
+{
+  "PricingPage": {
+    "header": {
+      "title": "Os Nossos Preços",
+      "subtitle": "Simples, flexível e desenhado para as suas necessidades de criação de histórias."
+    },
+    "creditPackages": {
+      "badges": {
+        "bestValue": "Melhor Valor",
+        "popular": "Popular"
+      },
+      "packages": {
+        "credits5": {
+          "description": "Perfeito para experimentar."
+        },
+        "credits10": {
+          "description": "Ótimo para algumas histórias."
+        },
+        "credits30": {
+          "description": "Ideal para contadores de histórias entusiastas."
+        },
+        "credits100": {
+          "description": "Para os criadores supremos de histórias!"
+        }
+      },
+      "buyButton": "Comprar {credits} Créditos",
+      "credits": "Créditos"
+    },
+    "serviceCosts": {
+      "loading": "A carregar informações de preços...",
+      "availableServices": "Os nossos serviços:",
+      "creditsHeader": "Créditos",
+      "services": {
+        "generateEbook": "Gerar um eBook digital",
+        "narrateAudiobook": "Narrar um livro (audiolivro)",
+        "editBook": "Editar um livro:",
+        "manualEditing": "Edição manual",
+        "textReviewAI": "Revisão de texto com IA",
+        "generateNewImages": "Gerar novas imagens",
+        "printShipBook": "Imprimir e enviar livro:",
+        "softCover": "Capa mole",
+        "hardCover": "Capa dura",
+        "extraChapterCost": "Custo de capítulo extra"
+      },
+      "serviceNames": {
+        "ebook": "Gerar um livro digital (eBook)",
+        "audiobook": "Gerar um audiolivro",
+        "printed_book": "Encomendar um livro impresso e enviado"
+      },
+      "tableHeaders": {
+        "service": "Serviço",
+        "cost": "Custo em Créditos"
+      },
+      "creditsUnit": "Créditos"
+    },
+    "infoModal": {
+      "title": "Informações do Serviço",
+      "header": "Informações do Serviço",
+      "button": "Mais Informações",
+      "services": {
+        "ebook": {
+          "title": "Gerar um eBook digital",
+          "description": "Crie um livro digital personalizado que pode ser lido em qualquer dispositivo."
+        },
+        "audiobook": {
+          "title": "Narrar um livro (audiolivro)",
+          "description": "Transforme a sua história num audiolivro envolvente com narração profissional."
+        },
+        "printedBook": {
+          "title": "Encomendar livro impresso e enviado",
+          "description": "Receba um belo livro físico de capa dura entregue na sua porta.",
+          "printingOptions": [
+            "Encadernação premium de capa dura",
+            "Papel e impressão de alta qualidade",
+            "Design de capa profissional",
+            "Envio mundial disponível"
+          ]
+        }
+      },
+      "close": "Fechar"
+    },
+    "newUserMessage": "Todos os novos utilizadores recebem 5 créditos. A sua primeira história é por nossa conta!",
+    "infoTexts": {
+      "textReview": "As primeiras 5 edições são gratuitas. Apenas cobramos por cada grupo de 5 alterações de texto.",
+      "imageGeneration": "A primeira edição de imagem é gratuita.",
+      "printedBooks": "Tanto a capa mole como a capa dura incluem os primeiros 4 capítulos sem custos adicionais."
+    },
+    "whyCredits": {
+      "title": "Porquê um Sistema Baseado em Créditos?",
+      "benefits": {
+        "flexibility": {
+          "title": "Flexibilidade:",
+          "description": "Compre créditos em pacotes e use-os para qualquer serviço, a qualquer momento."
+        },
+        "savings": {
+          "title": "Poupanças:",
+          "description": "Desfrute de melhor valor com pacotes de créditos maiores. Quanto mais comprar, mais poupa!"
+        },
+        "gifting": {
+          "title": "Fácil de Oferecer:",
+          "description": "Os créditos podem ser um presente perfeito para amigos e família, permitindo-lhes escolher a sua própria aventura narrativa. (Funcionalidade de oferta em breve!)"
+        },
+        "simplicity": {
+          "title": "Simplicidade:",
+          "description": "Compreenda os custos antecipadamente para todos os nossos serviços criativos. Sem taxas ocultas."
+        }
+      }
+    },
+    "faq": {
+      "title": "Perguntas Frequentes",
+      "questions": {
+        "expiration": {
+          "question": "Os créditos expiram?",
+          "answer": "Não, os seus créditos Mythoria nunca expiram! Pode usá-los sempre que a inspiração surgir."
+        },
+        "refund": {
+          "question": "Posso obter um reembolso dos créditos não utilizados?",
+          "answer": "Atualmente, os créditos não são reembolsáveis. No entanto, podem ser usados para qualquer um dos nossos serviços ou oferecidos a outro utilizador no futuro."
+        },
+        "payment": {
+          "question": "Que métodos de pagamento aceitam?",
+          "answer": "Planeamos aceitar todos os principais cartões de crédito (Visa, MasterCard, American Express) e PayPal. (Integração de pagamento em breve)"
+        },
+        "shipping": {
+          "question": "Como são enviados os livros impressos?",
+          "answer": "Os livros impressos são enviados via serviços postais standard. Os tempos e custos de envio podem variar dependendo da sua localização. Verá informações detalhadas de envio no checkout ao encomendar um livro impresso."
+        }
+      }
+    },
+    "errors": {
+      "loadingFailed": "Falha ao carregar informação de preços"
+    }
+  },
+  "RevolutPayment": {
+    "loading": "Carregando opções de pagamento...",
+    "securityNote": "O seu pagamento é protegido pela encriptação da Revolut",
+    "encryptionNote": "Encriptação SSL de 256 bits",
+    "errors": {
+      "sdkLoadFailed": "Falha ao carregar o serviço de pagamento. Por favor atualize a página.",
+      "initializationFailed": "Falha ao inicializar o pagamento. Por favor tente novamente."
+    }
+  }
+}

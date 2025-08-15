@@ -1,0 +1,30 @@
+{
+  "StoryEditPage": {
+    "errors": {
+      "failedToLoadStoryData": "Falha ao carregar dados da história",
+      "failedToLoadStory": "Falha ao carregar história",
+      "failedToUpdateStoryInfo": "Falha ao atualizar informações da história",
+      "failedToLoadStoryDataToast": "Falha ao carregar dados da história",
+      "errorEmoji": "😞"
+    },
+    "success": {
+      "storyInfoUpdated": "Informações da história atualizadas com sucesso",
+      "storyUpdated": "História atualizada com sucesso",
+      "chapterUpdated": "Capítulo atualizado com sucesso",
+      "contentUpdated": "Conteúdo atualizado com sucesso"
+    },
+    "chapterUpdates": {
+      "chaptersUpdatedSuccessfully": "{successCount} capítulos atualizados com sucesso. Capítulo {failedChapters} falhou ao editar.",
+      "allChaptersUpdated": "Todos os {successCount} capítulos atualizados com sucesso. As alterações foram guardadas automaticamente."
+    },
+    "imageTypes": {
+      "frontCover": "Capa da Frente",
+      "backCover": "Contracapa"
+    },
+    "logging": {
+      "errorLoadingStory": "Erro ao carregar história:",
+      "errorUpdatingStoryInfo": "Erro ao atualizar informações da história:",
+      "aiEditSuccessUpdatedData": "Sucesso da Edição IA - Dados Atualizados:"
+    }
+  }
+}

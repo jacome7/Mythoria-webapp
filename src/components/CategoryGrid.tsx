@@ -8,50 +8,50 @@ interface CategoryGridProps {
 }
 
 const CategoryGrid = ({ onCategoryClick }: CategoryGridProps) => {
-  const t = useTranslations('ContactUsPage');
+  const tContactUsPage = useTranslations('ContactUsPage');
 
   const categories = [
     {
       key: 'feature_ideas',
       icon: FaLightbulb,
       color: 'text-warning',
-      label: t('categories.featureIdeas')
+      label: tContactUsPage('categories.featureIdeas')
     },
     {
       key: 'bug_report',
       icon: FaBug,
       color: 'text-error',
-      label: t('categories.reportBug')
+      label: tContactUsPage('categories.reportBug')
     },
     {
       key: 'technical_issues',
       icon: FaCogs,
       color: 'text-info',
-      label: t('categories.troubles')
+      label: tContactUsPage('categories.troubles')
     },
     {
       key: 'delivery',
       icon: FaTruck,
       color: 'text-success',
-      label: t('categories.delivery')
+      label: tContactUsPage('categories.delivery')
     },
     {
       key: 'credits',
       icon: FaCoins,
       color: 'text-accent',
-      label: t('categories.credits')
+      label: tContactUsPage('categories.credits')
     },
     {
       key: 'business_partnership',
       icon: FaHandshake,
       color: 'text-secondary',
-      label: t('categories.businessPartnership')
+      label: tContactUsPage('categories.businessPartnership')
     },
     {
       key: 'general',
       icon: FaComments,
       color: 'text-primary',
-      label: t('categories.general')
+      label: tContactUsPage('categories.general')
     }
   ];
 

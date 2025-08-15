@@ -21,7 +21,7 @@ The manifest system has been converted from a static `manifest.json` file to a d
 1. **`/src/app/api/manifest/route.ts`** - API endpoint for dynamic manifest generation
 2. **`/src/lib/manifest.ts`** - Utility functions for manifest generation
 3. **`/src/components/ManifestLink.tsx`** - React component for manifest links
-4. **`/src/messages/*/metadata.json`** - Added manifest translations
+4. **`/src/messages/*/Metadata.json`** - Added manifest translations
 5. **`/src/app/[locale]/layout.tsx`** - Updated to use dynamic manifest
 6. **`/next.config.ts`** - Updated PWA configuration
 
@@ -29,25 +29,27 @@ The manifest system has been converted from a static `manifest.json` file to a d
 
 1. **Request**: Browser or PWA requests manifest at `/api/manifest?locale=<locale>`
 2. **Validation**: The system validates the locale against supported locales
-3. **Translation Loading**: Loads the appropriate translation file from `/src/messages/<locale>/metadata.json`
+3. **Translation Loading**: Loads the appropriate translation file from `/src/messages/<locale>/Metadata.json`
 4. **Generation**: Combines base manifest structure with localized content
 5. **Response**: Returns the localized manifest as JSON with proper headers
 
 ## Translation Structure
 
-The manifest translations are stored in the `metadata.json` files:
+The manifest translations are stored in the `Metadata.json` files:
 
 ```json
 {
-  "manifest": {
-    "name": "Mythoria - Personalized Books Creator",
-    "short_name": "Mythoria", 
-    "description": "Create unique, fully illustrated books",
-    "shortcuts": {
-      "createStory": {
-        "name": "Create Story",
-        "short_name": "Create",
-        "description": "Start creating a new story"
+  "Metadata": {
+    "manifest": {
+      "name": "Mythoria - Personalized Books Creator",
+      "short_name": "Mythoria",
+      "description": "Create unique, fully illustrated books",
+      "shortcuts": {
+        "createStory": {
+          "name": "Create Story",
+          "short_name": "Create",
+          "description": "Start creating a new story"
+        }
       }
     }
   }
@@ -116,7 +118,7 @@ node scripts/test-manifest.js
 
 1. Add the locale to `/src/i18n/routing.ts`
 2. Create translation files in `/src/messages/<locale>/`
-3. Add manifest translations to `metadata.json`
+3. Add manifest translations to `Metadata.json`
 4. Test the new locale
 
 ### Debugging

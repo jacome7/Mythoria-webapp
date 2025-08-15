@@ -46,7 +46,9 @@ export default function PublicChapterPage() {
   const params = useParams();
   const locale = useLocale();
   const tPublicStoryPage = useTranslations('PublicStoryPage');
-  const tCommon = useTranslations('common');
+  const tPublicStoryChapter = useTranslations('PublicStoryChapter');
+  const tLoading = useTranslations('Loading');
+  const tActions = useTranslations('Actions');
   const slug = Array.isArray(params?.slug)
     ? (params?.slug[0] ?? '')
     : (params?.slug as string | undefined) ?? '';
@@ -68,11 +70,11 @@ export default function PublicChapterPage() {
         if (result.success) {
           setData(result);
         } else {
-          setError(result.error || tPublicStoryPage('errors.failedToLoadChapter'));
+          setError(result.error || tPublicStoryChapter('errors.failedToLoadChapter'));
         }
       } catch (err) {
         console.error('Error fetching public chapter:', err);
-        setError(tPublicStoryPage('errors.failedToLoadChapter'));
+        setError(tPublicStoryChapter('errors.failedToLoadChapter'));
       } finally {
         setLoading(false);
       }
@@ -81,26 +83,26 @@ export default function PublicChapterPage() {
     if (slug && chapterNumber) {
       fetchPublicChapter();
     }
-  }, [slug, chapterNumber, tPublicStoryPage]);
+  }, [slug, chapterNumber, tPublicStoryChapter]);
 
   // Set page title when data is loaded
   useEffect(() => {
     if (data?.story && data?.currentChapter) {
       const story = data.story;
       const chapter = data.currentChapter;
-      document.title = tPublicStoryPage('metadata.chapterPageTitle', { 
-        title: story.title, 
-        number: chapter.chapterNumber 
+      document.title = tPublicStoryChapter('metadata.chapterPageTitle', {
+        title: story.title,
+        number: chapter.chapterNumber
       });
     }
-  }, [data, tPublicStoryPage]);
+  }, [data, tPublicStoryChapter]);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
           <FiLoader className="animate-spin w-8 h-8 text-primary" />
-          <p className="text-lg">{tCommon('Loading.default')}...</p>
+          <p className="text-lg">{tLoading('default')}...</p>
         </div>
       </div>
     );
@@ -111,13 +113,13 @@ export default function PublicChapterPage() {
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center space-y-4">
           <FiAlertCircle className="w-16 h-16 text-error mx-auto" />
-          <h1 className="text-2xl font-bold">{tPublicStoryPage('chapterNotFound')}</h1>
-          <p className="text-base-content/70">{error || tPublicStoryPage('chapterNotAvailable')}</p>
+          <h1 className="text-2xl font-bold">{tPublicStoryChapter('chapterNotFound')}</h1>
+          <p className="text-base-content/70">{error || tPublicStoryChapter('chapterNotAvailable')}</p>
           <button
             onClick={() => window.history.back()}
             className="btn btn-primary"
           >
-            {tCommon('Actions.goBack')}
+            {tActions('goBack')}
           </button>
         </div>
       </div>
@@ -135,10 +137,10 @@ export default function PublicChapterPage() {
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold">{story.title}</h1>
-              <p className="text-sm text-base-content/70">
-                {tPublicStoryPage('chapter')} {chapterNumber}: {data.currentChapter.title}
-              </p>
+          <h1 className="text-2xl font-bold">{story.title}</h1>
+          <p className="text-sm text-base-content/70">
+                {tPublicStoryChapter('chapter')} {chapterNumber}: {data.currentChapter.title}
+          </p>
             </div>
           </div>
         </div>
@@ -165,10 +167,10 @@ export default function PublicChapterPage() {
         <div className="max-w-4xl mx-auto p-4 print:hidden">
           <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 mt-8 border border-blue-200">
             <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">
-              {tPublicStoryPage('lastChapter.enjoyedTitle')}
+              {tPublicStoryChapter('lastChapter.enjoyedTitle')}
             </h3>
             <p className="text-gray-700 text-center mb-6">
-              {tPublicStoryPage('lastChapter.enjoyedDesc')}
+              {tPublicStoryChapter('lastChapter.enjoyedDesc')}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

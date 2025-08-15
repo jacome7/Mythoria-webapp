@@ -19,7 +19,7 @@ interface StoryStepProps {
 }
 
 export default function StoryStep({ story, onNext }: StoryStepProps) {
-  const t = useTranslations('PrintOrder');
+  const tPrintOrder = useTranslations('PrintOrder');
 
   return (
     <div>
@@ -50,7 +50,7 @@ export default function StoryStep({ story, onNext }: StoryStepProps) {
           className="btn btn-primary"
           onClick={onNext}
         >
-          {t('buttons.continue')}
+          {tPrintOrder('buttons.continue')}
         </button>
       </div>
     </div>
