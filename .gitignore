@@ -69,6 +69,7 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 *.log
+logs/
 
 # Runtime data
 pids

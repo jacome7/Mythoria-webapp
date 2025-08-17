@@ -279,22 +279,22 @@ export default function ReadingToolbar({
         }
         
         /* Apply reading settings to story content */
-        :global(.story-content) {
-          font-size: calc(var(--story-font-size, 1.1rem) * var(--reading-font-scale, 1));
-          line-height: calc(var(--story-line-height, 1.6) * var(--reading-line-height-scale, 1));
+        :global(.mythoria-story-content) {
+          font-size: calc(var(--story-font-size, 1rem) * var(--reading-font-scale, 1)) !important;
+          line-height: calc(var(--story-line-height, 1.5) * var(--reading-line-height-scale, 1)) !important;
           margin: calc(var(--story-margins, 1.5rem) * var(--reading-margin-scale, 1));
         }
-        
+
         :global(.mythoria-chapter-paragraph) {
-          font-size: calc(var(--story-font-size, 1.1rem) * var(--reading-font-scale, 1)) !important;
+          font-size: calc(var(--story-font-size, 1rem) * var(--reading-font-scale, 1)) !important;
           line-height: calc(var(--story-line-height, 1.6) * var(--reading-line-height-scale, 1)) !important;
         }
-        
+
         :global(.mythoria-chapter) {
           margin: calc(var(--story-spacing, 1.5rem) * var(--reading-margin-scale, 1)) 0 !important;
           padding: calc(var(--story-margins, 1.5rem) * var(--reading-margin-scale, 1)) !important;
         }
-        
+
         :global(.mythoria-story-title),
         :global(.mythoria-chapter-title),
         :global(.mythoria-toc-title) {

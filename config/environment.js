@@ -79,6 +79,19 @@ export const validateEnvironmentConfig = () => {
   if (!config.storyGeneration.workflowUrl) {
     errors.push('STORY_GENERATION_WORKFLOW_URL is required');
   }
+
+  // Admin service must be configured
+  if (!config.admin.apiUrl) {
+    errors.push('ADMIN_API_URL is required');
+  }
+  if (config.isProduction) {
+    if (!config.admin.apiKey) {
+      errors.push('ADMIN_API_KEY is required in production');
+    }
+    if (config.admin.apiUrl.includes('localhost')) {
+      errors.push('ADMIN_API_URL cannot point to localhost in production');
+    }
+  }
   
   // Required in production
   if (config.isProduction) {

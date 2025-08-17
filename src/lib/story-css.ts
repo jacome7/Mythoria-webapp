@@ -44,10 +44,23 @@ export function loadStoryCSS(targetAudience: string): void {
           return `${scopedSelector} {`;
         }
       );
-      
+      // Append variable-based overrides at the end so user controls can scale text regardless of template defaults
+      const variableOverrides = `
+/* Mythoria runtime reading overrides (appended) */
+.mythoria-story-scope .mythoria-story-content { 
+  font-size: calc(var(--story-font-size, 1rem) * var(--reading-font-scale, 1)) !important; 
+  line-height: calc(var(--story-line-height, 1.5) * var(--reading-line-height-scale, 1)) !important; 
+}
+.mythoria-story-scope .mythoria-chapter-content p {
+  font-size: calc(var(--story-font-size, 1rem) * var(--reading-font-scale, 1)) !important;
+  line-height: calc(var(--story-line-height, 1.6) * var(--reading-line-height-scale, 1)) !important;
+}
+`;      
+      const finalCSS = `${scopedCSS}\n\n${variableOverrides}`;
+
       // Create and append scoped CSS
       const style = document.createElement('style');
-      style.textContent = scopedCSS;
+      style.textContent = finalCSS;
       style.setAttribute('data-story-css', 'true');
       document.head.appendChild(style);
     })

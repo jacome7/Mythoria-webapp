@@ -378,8 +378,13 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
       <div 
         className="mythoria-story-scope"
         style={{
-          fontSize: readingSettings?.fontSize ? `${readingSettings.fontSize}%` : undefined,
-          lineHeight: readingSettings?.lineHeight ? `${readingSettings.lineHeight}%` : undefined
+          // Provide CSS variables as fallbacks for dynamic scaling if templates use them
+          // Note: concrete font-size/line-height are controlled via CSS overrides and variables
+          ...( {
+            '--reading-font-scale': readingSettings?.fontSize ? String(readingSettings.fontSize / 100) : undefined,
+            '--reading-line-height-scale': readingSettings?.lineHeight ? String(readingSettings.lineHeight / 100) : undefined,
+            '--reading-margin-scale': readingSettings?.margins ? String(readingSettings.margins / 100) : undefined,
+          } as React.CSSProperties ),
         }}
       >
         <div className="w-full px-0 md:px-0 py-0">
@@ -407,8 +412,8 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
           transition: all 0.3s ease;
         }
         
-        /* Remove default prose styles that might conflict with our custom CSS */
-        :global(.story-content.prose) {
+  /* Remove default prose styles that might conflict with our custom CSS */
+  :global(.mythoria-story-content.prose) {
           max-width: none;
           color: inherit;
         }

@@ -28,7 +28,6 @@
     "types": {
       "boy": "Rapaz",
       "girl": "Rapariga",
-      "baby": "Bebé",
       "man": "Homem",
       "woman": "Mulher",
       "human": "Humano",
@@ -52,9 +51,7 @@
       "narrator": "Narrador",
       "other": "Outro"
     },
-    "ages": {
-      "newborn": "Recém-nascido",
-      "newborn_description": "Novo no mundo; totalmente dependente e em rápido desenvolvimento (0-1 mês).",
+  "ages": {
       "infant": "Bebé",
       "infant_description": "Aprendendo a comer, padrões de sono—e talvez primeiras palavras ou passos (1-12 meses).",
       "toddler": "Criança Pequena",

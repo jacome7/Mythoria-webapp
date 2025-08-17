@@ -8,6 +8,10 @@ interface DiagnosticSample {
     wordCount: number;
     keys: string[];
   };
+  Header?: {
+    hasNavigation: boolean;
+    keys: string[];
+  };
   common?: {
     hasHeader: boolean;
     hasFooter: boolean;
@@ -61,7 +65,7 @@ export async function GET() {
         if (files.includes('Header.json')) {
           const content = await readFile(path.join(localeDir, 'Header.json'), 'utf8');
           const json = JSON.parse(content);
-          (diagnostics.translations[locale].sample as any).Header = {
+          diagnostics.translations[locale].sample.Header = {
             hasNavigation: !!json.Header?.navigation,
             keys: Object.keys(json.Header || {})
           };

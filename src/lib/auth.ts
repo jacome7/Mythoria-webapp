@@ -3,7 +3,6 @@ import { db } from '@/db';
 import { authors } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { authorService } from '@/db/services';
-import { getLibTranslations } from '@/utils/lib-translations';
 
 export async function getCurrentAuthor() {
   const user = await currentUser();
@@ -36,22 +35,24 @@ export async function getCurrentAuthor() {
 }
 
 export async function requireAuth(locale?: string) {
+  // mark unused param as intentionally unused
+  void locale;
   const { userId } = await auth();
   
   if (!userId) {
-    const { t } = await getLibTranslations(locale);
-    throw new Error(t('auth.errors.authenticationRequired'));
+  throw new Error('Authentication required');
   }
   
   return userId;
 }
 
 export async function requireCurrentAuthor(locale?: string) {
+  // mark unused param as intentionally unused
+  void locale;
   const author = await getCurrentAuthor();
   
   if (!author) {
-    const { t } = await getLibTranslations(locale);
-    throw new Error(t('auth.errors.authorNotFound'));
+  throw new Error('Author not found');
   }
   
   return author;

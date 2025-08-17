@@ -102,6 +102,36 @@
       "title": "¿Listo para comenzar tu viaje de narración?",
       "subtitle": "¡Regístrate hoy y recibe 5 créditos gratis para crear tu primera historia personalizada!",
       "button": "Pruébalo Gratis"
-    }
+      },
+      "features": {
+        "title": "¿Por qué elegir Mythoria?",
+        "feature1": {
+          "title": "100% Personalizado",
+          "description": "Cada historia es única y creada solo para ti."
+        },
+        "feature2": {
+          "title": "Impulsado por IA",
+          "description": "Nuestra inteligencia artificial crea historias mágicas y atractivas."
+        },
+        "feature3": {
+          "title": "Ilustraciones Hermosas",
+          "description": "Cada historia incluye ilustraciones impresionantes y personalizadas."
+        },
+        "feature4": {
+          "title": "Libros Físicos",
+          "description": "Convierte tu historia digital en un libro real que podrás guardar y atesorar."
+        }
+      },
+      "testimonials": {
+        "title": "Lo que dicen nuestras familias",
+        "testimonial1": {
+          "quote": "A mi hija le encantó verse como la protagonista de su aventura. ¡Es algo que atesorará para siempre!",
+          "author": "María S., madre de 2"
+        },
+        "testimonial2": {
+          "quote": "La calidad de la historia y de las ilustraciones superó nuestras expectativas. Mythoria ha creado algo realmente especial.",
+          "author": "Juan P., abuelo"
+        }
+      }
   }
 }

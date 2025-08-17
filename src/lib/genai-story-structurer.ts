@@ -2,7 +2,6 @@ import { GoogleGenAI } from "@google/genai";
 import { getLanguageSpecificPrompt, getLanguageSpecificSchema } from "./prompt-loader";
 import { normalizeCharacterType } from "@/types/character-enums";
 import { normalizeStoryEnums } from "@/utils/enum-normalizers";
-import { getLibTranslations } from '@/utils/lib-translations';
 
 // Initialize GoogleGenAI client with Vertex AI configuration
 const clientOptions = {
@@ -44,7 +43,7 @@ export interface StructuredStoryResult {
 }
 
 export async function generateStructuredStory(
-  userDescription: string, 
+  userDescription: string,
   existingCharacters: Array<{
     characterId: string;
     name: string;
@@ -54,253 +53,180 @@ export async function generateStructuredStory(
   imageData?: string | null,
   audioData?: string | null,
   authorName?: string,
-  locale?: string
-  // Note: authorId and storyId parameters removed as token tracking moved to workflows service
 ): Promise<StructuredStoryResult> {
-  try {
-    // Load language-specific prompt and schema - using English by default
-    // since the AI will now infer the target language from user content
-    const promptConfig = await getLanguageSpecificPrompt();
-    const responseSchema = await getLanguageSpecificSchema();
-    
-    // Get translations for error messages
-    const { t } = await getLibTranslations(locale);
+  // Load language-specific prompt and schema
+  const promptConfig = await getLanguageSpecificPrompt();
+  const responseSchema = await getLanguageSpecificSchema();
 
-    // DEBUG: Log the schema being sent to GenAI
-    console.log('=== DEBUG: GenAI Response Schema ===');
-    console.log(JSON.stringify(responseSchema, null, 2));
-    console.log('=== END DEBUG SCHEMA ===');
+  // Build the system prompt from template
+  const systemPrompt = promptConfig.template
+    .replace("{{userDescription}}", userDescription)
+    .replace("{{existingCharacters}}", JSON.stringify(existingCharacters))
+    .replace("{{authorName}}", authorName || "");
 
-    // Build the system prompt from template
-    const systemPrompt = promptConfig.template
-      .replace('{{userDescription}}', userDescription)
-      .replace('{{existingCharacters}}', JSON.stringify(existingCharacters))
-      .replace('{{authorName}}', authorName || '');
-    // Get model name from environment - use the most reliable model for structured output
-    // According to Google Cloud docs, these models support structured output:
-    // gemini-2.5-pro, gemini-2.5-flash, gemini-2.0-flash, gemini-2.0-flash-lite
-    const modelName = process.env.MODEL_ID || "gemini-2.5-flash";
-    
-    const generationConfig = {
-      maxOutputTokens: 16384,
-      temperature: 0.8,
-      topP: 0.8,
-      responseMimeType: "application/json", // This forces JSON output
-      responseSchema: responseSchema, // This enforces the exact schema structure
-    };
+  // According to Google Cloud docs, these models support structured output
+  const modelName = process.env.MODEL_ID || "gemini-2.5-flash";
 
-    // DEBUG: Log the generation config being sent to GenAI
-    console.log('=== DEBUG: GenAI Generation Config ===');
-    console.log(JSON.stringify(generationConfig, null, 2));
-    console.log('=== END DEBUG GENERATION CONFIG ===');
+  const generationConfig = {
+    maxOutputTokens: 16384,
+    temperature: 0.8,
+    topP: 0.8,
+    responseMimeType: "application/json",
+    responseSchema: responseSchema,
+  } as const;
 
-    // Prepare content based on whether we have image data, audio data, or both
+  // Prepare content based on whether we have image data, audio data, or both
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let contents: any[];
+
+  if (imageData || audioData) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let contents: any[];
+    const parts: any[] = [{ text: systemPrompt }];
 
-    if (imageData || audioData) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const parts: any[] = [{ text: systemPrompt }];
-      
-      // Add image if present
-      if (imageData) {
-        try {
-          const base64Data = imageData.split(',')[1];
-          const mimeType = imageData.split(';')[0].split(':')[1];
-          
-          if (!base64Data || !mimeType) {
-            throw new Error(t('genaiStoryStructurer.errors.invalidImageFormat'));
+    // Add image if present
+    if (imageData) {
+      try {
+        const base64Data = imageData.split(",")[1];
+        const mimeType = imageData.split(";")[0].split(":")[1];
+        if (!base64Data || !mimeType) {
+          throw new Error("Invalid image format");
+        }
+        parts.push({ inlineData: { mimeType, data: base64Data } });
+      } catch {
+        throw new Error("Failed to process image input");
+      }
+    }
+
+    // Add audio if present
+    if (audioData) {
+      try {
+        const base64Data = audioData.split(",")[1];
+        const mimeType = audioData.split(";")[0].split(":")[1];
+        if (!base64Data || !mimeType) {
+          throw new Error("Invalid audio format");
+        }
+        parts.push({ inlineData: { mimeType, data: base64Data } });
+      } catch {
+        throw new Error("Failed to process audio input");
+      }
+    }
+
+    contents = [{ role: "user", parts }];
+  } else {
+    contents = [{ role: "user", parts: [{ text: systemPrompt }] }];
+  }
+
+  // Prepare the request with structured output schema
+  const req = {
+    model: modelName,
+    contents,
+    generationConfig,
+  } as const;
+
+  // Generate content
+  const result = await ai.models.generateContent(req);
+  const text = result.text;
+  if (!text) {
+    throw new Error("No response text from AI model");
+  }
+
+  // Clean the response text to handle potential markdown wrapping and extra text
+  let cleanedText = text.trim();
+
+  // Try to extract JSON block
+  let jsonStartIndex = -1;
+  let jsonEndIndex = -1;
+  const jsonStartPatterns = ["{", "```json", "```"];
+  for (const pattern of jsonStartPatterns) {
+    const index = cleanedText.indexOf(pattern);
+    if (index !== -1) {
+      jsonStartIndex = pattern.startsWith("`") ? index + pattern.length : index;
+      break;
+    }
+  }
+
+  if (jsonStartIndex !== -1) {
+    let braceCount = 0;
+    let inString = false;
+    let escaped = false;
+    for (let i = jsonStartIndex; i < cleanedText.length; i++) {
+      const char = cleanedText[i];
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+      if (char === "\\") {
+        escaped = true;
+        continue;
+      }
+      if (char === '"') {
+        inString = !inString;
+        continue;
+      }
+      if (!inString) {
+        if (char === "{") braceCount++;
+        else if (char === "}") {
+          braceCount--;
+          if (braceCount === 0) {
+            jsonEndIndex = i + 1;
+            break;
           }
-          
-          parts.push({
-            inlineData: {
-              mimeType: mimeType,
-              data: base64Data
-            }
-          });
-        } catch {
-          throw new Error(t('genaiStoryStructurer.errors.failedToProcessImage'));
         }
       }
-      
-      // Add audio if present
-      if (audioData) {
-        try {
-          const base64Data = audioData.split(',')[1];
-          const mimeType = audioData.split(';')[0].split(':')[1];
-          
-          if (!base64Data || !mimeType) {
-            throw new Error(t('genaiStoryStructurer.errors.invalidAudioFormat'));
-          }
-          
-          parts.push({
-            inlineData: {
-              mimeType: mimeType,
-              data: base64Data
-            }
-          });
-        } catch {
-          throw new Error(t('genaiStoryStructurer.errors.failedToProcessAudio'));
-        }
+    }
+    if (jsonEndIndex !== -1) {
+      cleanedText = cleanedText.substring(jsonStartIndex, jsonEndIndex);
+    }
+  }
+
+  if (cleanedText.startsWith("```json")) {
+    cleanedText = cleanedText.replace(/^```json\s*/, "").replace(/\s*```$/, "");
+  } else if (cleanedText.startsWith("```")) {
+    cleanedText = cleanedText.replace(/^```\s*/, "").replace(/\s*```$/, "");
+  }
+
+  cleanedText = cleanedText.trim();
+
+  // Parse JSON
+  let parsedResult: StructuredStoryResult;
+  try {
+    parsedResult = JSON.parse(cleanedText);
+  } catch {
+    const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        parsedResult = JSON.parse(jsonMatch[0]);
+      } catch {
+        throw new Error("Invalid JSON format in AI response");
       }
-      
-      contents = [
-        {
-          role: 'user',
-          parts: parts
-        }
-      ];
     } else {
-      contents = [
-        {
-          role: 'user',
-          parts: [{ text: systemPrompt }]
-        }
-      ];
+      throw new Error("Invalid JSON format in AI response");
     }
-    
-    // Prepare the request with structured output schema
-    const req = {
-      model: modelName,
-      contents: contents,
-      generationConfig: generationConfig,
-    }
-    
-    // Generate content
-    const result = await ai.models.generateContent(req);
-    
-    // Get the text from the response
-    const text = result.text;
-    
-    if (!text) {
-      throw new Error(t('genaiStoryStructurer.errors.noResponseText'));
-    }    // Clean the response text to handle potential markdown wrapping and extra text
-    let cleanedText = text.trim();
-    
-    // Enhanced JSON extraction to handle responses with explanatory text
-    // First, try to find JSON within the response
-    let jsonStartIndex = -1;
-    let jsonEndIndex = -1;
-    
-    // Look for JSON starting patterns
-    const jsonStartPatterns = ['{', '```json', '```'];
-    for (const pattern of jsonStartPatterns) {
-      const index = cleanedText.indexOf(pattern);
-      if (index !== -1) {
-        if (pattern === '```json') {
-          jsonStartIndex = index + pattern.length;
-        } else if (pattern === '```') {
-          jsonStartIndex = index + pattern.length;
-        } else {
-          jsonStartIndex = index;
-        }
-        break;
-      }
-    }
-    
-    if (jsonStartIndex !== -1) {
-      // Find the end of JSON
-      let braceCount = 0;
-      let inString = false;
-      let escaped = false;
-      
-      for (let i = jsonStartIndex; i < cleanedText.length; i++) {
-        const char = cleanedText[i];
-        
-        if (escaped) {
-          escaped = false;
-          continue;
-        }
-        
-        if (char === '\\') {
-          escaped = true;
-          continue;
-        }
-        
-        if (char === '"') {
-          inString = !inString;
-          continue;
-        }
-        
-        if (!inString) {
-          if (char === '{') {
-            braceCount++;
-          } else if (char === '}') {
-            braceCount--;
-            if (braceCount === 0) {
-              jsonEndIndex = i + 1;
-              break;
-            }
-          }
-        }
-      }
-      
-      if (jsonEndIndex !== -1) {
-        cleanedText = cleanedText.substring(jsonStartIndex, jsonEndIndex);
-      }
-    }
-    
-    // Remove any remaining markdown formatting
-    if (cleanedText.startsWith('```json')) {
-      cleanedText = cleanedText.replace(/^```json\s*/, '').replace(/\s*```$/, '');
-    } else if (cleanedText.startsWith('```')) {
-      cleanedText = cleanedText.replace(/^```\s*/, '').replace(/\s*```$/, '');
-    }
-    
-    // Final cleanup
-    cleanedText = cleanedText.trim();    // Parse the JSON text returned by the model
-    let parsedResult: StructuredStoryResult;
-    try {
-      parsedResult = JSON.parse(cleanedText);
-    } catch {
-      // Try to extract JSON even if parsing failed - maybe there's text before/after
-      const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        try {
-          parsedResult = JSON.parse(jsonMatch[0]);
-        } catch {
-          throw new Error(t('genaiStoryStructurer.errors.invalidJsonFormat'));
-        }
-      } else {
-        throw new Error(t('genaiStoryStructurer.errors.invalidJsonFormat'));
-      }
-    }
+  }
 
-    // Validate the structure
-    if (!parsedResult.story || !Array.isArray(parsedResult.characters)) {
-      // Try to create a fallback structure if the response has some usable content
-      const fallbackResult: StructuredStoryResult = {
-        story: {
-          plotDescription: userDescription,
-          title: t('genaiStoryStructurer.fallbacks.generatedStoryTitle')
-        },
-        characters: []
-      };
-      
-      return fallbackResult;
-    }
+  // Validate the structure
+  if (!parsedResult.story || !Array.isArray(parsedResult.characters)) {
+    const fallbackResult: StructuredStoryResult = {
+      story: { plotDescription: userDescription, title: "Generated Story" },
+      characters: [],
+    };
+    return fallbackResult;
+  }
 
-    // Normalize character types to ensure they match the required enum values
-    if (parsedResult.characters && Array.isArray(parsedResult.characters)) {
-      parsedResult.characters = parsedResult.characters.map(character => ({
-        ...character,
-        type: normalizeCharacterType(character.type)
-      }));
-    }
-
-    // Normalize story enum fields to ensure they match the required enum values
-    if (parsedResult.story) {
-      const normalized = normalizeStoryEnums(parsedResult.story as Record<string, unknown>);
-      parsedResult.story = normalized as StructuredStory;
-    }
-
-    return parsedResult;
-  } catch (error) {
-    const { t } = await getLibTranslations(locale);
-    throw new Error(t('genaiStoryStructurer.errors.failedToGenerate', { 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+  // Normalize
+  if (parsedResult.characters && Array.isArray(parsedResult.characters)) {
+    parsedResult.characters = parsedResult.characters.map((character) => ({
+      ...character,
+      type: normalizeCharacterType(character.type),
     }));
   }
+
+  if (parsedResult.story) {
+    const normalized = normalizeStoryEnums(parsedResult.story as Record<string, unknown>);
+    parsedResult.story = normalized as StructuredStory;
+  }
+
+  return parsedResult;
 }
 
 export default generateStructuredStory;

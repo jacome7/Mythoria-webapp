@@ -9,8 +9,9 @@
     "storyImaginedBy": "Esta história foi imaginada por",
     "storyImaginedByEnd": ".",
     "craftedWith": "Criada com:",
-    "byAuthor": "por {authorName}",
+  "byAuthor": "por {authorName}",
+  "synopsis": "Sinopse",
     "tableOfContents": "Índice",
-    "coverAndIntroduction": "Capa e Introdução"
+  "coverAndIntroduction": "Capa e Introdução"
   }
 }
