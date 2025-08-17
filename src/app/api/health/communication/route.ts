@@ -63,6 +63,7 @@ async function testDirectCommunication(serviceUrl: string, endpoint: string): Pr
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        ...(process.env.STORY_GENERATION_WORKFLOW_API_KEY && endpoint.startsWith('/ping') ? { 'x-api-key': process.env.STORY_GENERATION_WORKFLOW_API_KEY } : {})
       },
       signal: AbortSignal.timeout(10000) // 10 second timeout
     });
@@ -157,6 +158,7 @@ async function testPubSubCommunication(serviceUrl: string, endpoint: string): Pr
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...(process.env.STORY_GENERATION_WORKFLOW_API_KEY ? { 'x-api-key': process.env.STORY_GENERATION_WORKFLOW_API_KEY } : {})
       },
       body: JSON.stringify(testMessage),
       signal: AbortSignal.timeout(15000) // 15 second timeout for pub/sub

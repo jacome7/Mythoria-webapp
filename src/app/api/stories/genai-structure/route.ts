@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentAuthor } from "@/lib/auth";
-import { generateStructuredStory } from "@/lib/genai-story-structurer";
-import { characterService, storyService, storyCharacterService } from "@/db/services";
-import { mapStoryAttributes } from "@/lib/story-enum-mapping";
+import { storyService } from "@/db/services";
+import { sgwFetch, sgwUrl } from "@/lib/sgw-client";
 
-// Type guard for character role
-function isValidCharacterRole(role: string): role is 'protagonist' | 'antagonist' | 'supporting' | 'mentor' | 'comic_relief' | 'love_interest' | 'sidekick' | 'narrator' | 'other' {
-  return ['protagonist', 'antagonist', 'supporting', 'mentor', 'comic_relief', 'love_interest', 'sidekick', 'narrator', 'other'].includes(role);
-}
+// No-op: character role validation is handled on SGW
 
 export async function POST(request: NextRequest) {
   try {
@@ -43,110 +39,55 @@ export async function POST(request: NextRequest) {
     }
 
     // Get existing characters for this author
-    const existingCharacters = await characterService.getCharactersByAuthor(currentAuthor.authorId);    // Call the GenAI service to structure the story
-    console.log('Calling GenAI to structure story for author:', currentAuthor.authorId);
-    const structuredResult = await generateStructuredStory(
-      userDescription, 
-      existingCharacters, 
-      imageData, 
+    // Proxy to SGW
+  // const config = getEnvironmentConfig();
+  const endpoint = sgwUrl('/ai/text/structure');
+
+    // Log proxy details for debugging
+    console.log('[genai-structure] Proxying to SGW', { endpoint, storyId, hasText: !!userDescription, hasImage: !!imageData, hasAudio: !!audioData });
+
+    const payload: Record<string, unknown> = {
+      storyId,
+      userDescription,
+      imageData,
       audioData
-    );
-    
-    // Debug: Log the raw structured result to understand what AI is returning
-    console.log('GenAI returned structured result:', JSON.stringify(structuredResult, null, 2));
-    console.log('Characters received from GenAI:');
-    structuredResult.characters.forEach((character, index) => {
-      console.log(`Character ${index}:`, {
-        name: character.name,
-        characterId: character.characterId,
-        characterIdType: typeof character.characterId,
-        characterIdValue: JSON.stringify(character.characterId)
-      });
-    });    // Update the story with the structured data
-    const storyUpdates: Record<string, unknown> = {};
-    if (structuredResult.story.title) storyUpdates.title = structuredResult.story.title;
-    if (structuredResult.story.plotDescription) storyUpdates.plotDescription = structuredResult.story.plotDescription;
-    if (structuredResult.story.synopsis) storyUpdates.synopsis = structuredResult.story.synopsis;
-    if (structuredResult.story.place) storyUpdates.place = structuredResult.story.place;
-    if (structuredResult.story.additionalRequests) storyUpdates.additionalRequests = structuredResult.story.additionalRequests;
-    
-    // Add storyLanguage from AI detection
-    if (structuredResult.story.storyLanguage) {
-      storyUpdates.storyLanguage = structuredResult.story.storyLanguage;
+    };
+    // Strip null/undefined fields to avoid schema errors downstream
+    Object.keys(payload).forEach((k) => {
+      const key = k as keyof typeof payload;
+      if (payload[key] === null || payload[key] === undefined) delete payload[key];
+    });
+
+    const workflowResponse = await sgwFetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    // Try to parse JSON; if it fails, fall back to text for better error messages
+    let data: unknown;
+    const rawText = await workflowResponse.text();
+    try {
+      data = rawText ? JSON.parse(rawText) : {};
+    } catch {
+      data = { raw: rawText };
     }
-    
-    // Use smart mapping for enum fields
-    const mappedAttributes = mapStoryAttributes({
-      targetAudience: structuredResult.story.targetAudience,
-      novelStyle: structuredResult.story.novelStyle,
-      graphicalStyle: structuredResult.story.graphicalStyle,
-    });
-    
-    if (mappedAttributes.targetAudience) storyUpdates.targetAudience = mappedAttributes.targetAudience;
-    if (mappedAttributes.novelStyle) storyUpdates.novelStyle = mappedAttributes.novelStyle;
-    if (mappedAttributes.graphicalStyle) storyUpdates.graphicalStyle = mappedAttributes.graphicalStyle;
 
-    const updatedStory = await storyService.updateStory(storyId, storyUpdates);
+    if (!workflowResponse.ok) {
+      console.error('[genai-structure] SGW error', { status: workflowResponse.status, body: data });
+      return NextResponse.json(
+        {
+          error: 'Story-generation-workflow request failed',
+          status: workflowResponse.status,
+          endpoint,
+          body: data
+        },
+        { status: workflowResponse.status }
+      );
+    }
 
-    // Process characters
-    const processedCharacters = [];
-      for (const character of structuredResult.characters) {
-      let characterRecord;
-      
-      // Check if characterId exists and is not null, "null", or empty string
-      if (character.characterId && character.characterId !== "null" && character.characterId.trim() !== "") {
-        // Use existing character
-        characterRecord = await characterService.getCharacterById(character.characterId);
-        if (!characterRecord) {
-          console.warn(`Character with ID ${character.characterId} not found, creating new one`);
-          characterRecord = await characterService.createCharacter({
-            name: character.name,
-            authorId: currentAuthor.authorId,
-            type: character.type || undefined,
-            role: character.role && isValidCharacterRole(character.role) ? character.role : undefined,
-            age: character.age || undefined,
-            traits: character.traits || [],
-            characteristics: character.characteristics || undefined,
-            physicalDescription: character.physicalDescription || undefined,
-            photoUrl: character.photoUrl || undefined,
-          });
-        }
-      } else {
-        // Create new character (characterId is null, "null", empty, or undefined)
-        characterRecord = await characterService.createCharacter({
-          name: character.name,
-          authorId: currentAuthor.authorId,
-          type: character.type || undefined,
-          role: character.role && isValidCharacterRole(character.role) ? character.role : undefined,
-          age: character.age || undefined,
-          traits: character.traits || [],
-          characteristics: character.characteristics || undefined,
-          physicalDescription: character.physicalDescription || undefined,
-          photoUrl: character.photoUrl || undefined,
-        });
-      }      // Link character to story
-      try {        await storyCharacterService.addCharacterToStory(
-          storyId, 
-          characterRecord.characterId, 
-          character.role && isValidCharacterRole(character.role) ? character.role : undefined
-        );} catch (linkError) {
-        // Character might already be linked to this story, which is fine
-        console.warn(`Character ${characterRecord.characterId} might already be linked to story ${storyId}:`, linkError);
-      }      processedCharacters.push({
-        ...characterRecord,
-        role: character.role || undefined
-      });    }    console.log('Successfully structured story and processed characters');
-
-    // Return success response - workflow will be triggered later in step-6
-    return NextResponse.json({ 
-      success: true,
-      story: updatedStory,
-      characters: processedCharacters,
-      originalInput: userDescription,
-      hasImageInput: !!imageData,
-      hasAudioInput: !!audioData,
-      message: 'Story structure generated successfully. Complete all steps to generate your full story.'
-    });
+  console.log('[genai-structure] SGW success');
+  return NextResponse.json(data as Record<string, unknown>);
 
   } catch (error) {
     console.error('Error in GenAI story processing:', error);

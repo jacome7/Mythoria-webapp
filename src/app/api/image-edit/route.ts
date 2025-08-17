@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { getEnvironmentConfig } from '../../../../config/environment';
 import { authorService, aiEditService, storyService } from '@/db/services';
+import { sgwFetch } from '@/lib/sgw-client';
 
 export async function POST(request: NextRequest) {
   try {    // Check authentication
@@ -130,7 +131,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Make request to story generation workflow using new RESTful endpoint
-    const workflowResponse = await fetch(endpoint, {
+  const workflowResponse = await sgwFetch(endpoint, {
       method,
       headers: {
         'Content-Type': 'application/json',

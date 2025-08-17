@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const STORY_API_URL = process.env.STORY_GENERATION_WORKFLOW_URL || 'http://localhost:8080';
+import { sgwFetch } from '@/lib/sgw-client';
 
 export async function GET(
   request: NextRequest,
@@ -17,11 +16,9 @@ export async function GET(
     }
 
     // Forward the request to the story-generation-workflow service
-    const response = await fetch(`${STORY_API_URL}/api/jobs/${jobId}`, {
+    const response = await sgwFetch(`/api/jobs/${jobId}`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
     });
 
     const data = await response.json();

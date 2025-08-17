@@ -6,6 +6,7 @@ import { db } from '@/db';
 import { authors } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { pricingService } from '@/db/services';
+import { notificationFetch } from '@/lib/notification-client';
 
 /**
  * Detect user's preferred locale from webhook context or other indicators
@@ -100,7 +101,6 @@ export async function POST(req: Request) {
  */
 async function sendWelcomeNotification(email: string, name: string) {
   const notificationEngineUrl = process.env.NOTIFICATION_ENGINE_URL;
-  const notificationEngineApiKey = process.env.NOTIFICATION_ENGINE_API_KEY;
   
   if (!notificationEngineUrl) {
     console.warn('NOTIFICATION_ENGINE_URL not configured, skipping welcome notification');
@@ -135,19 +135,9 @@ async function sendWelcomeNotification(email: string, name: string) {
       }
     };
 
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-    
-    if (notificationEngineApiKey) {
-      headers['Authorization'] = `Bearer ${notificationEngineApiKey}`;
-    }
-
     console.log('Sending welcome notification to:', email, 'Language:', language, 'Credits:', storyCredits);
-    
-    const response = await fetch(`${notificationEngineUrl}/email/template`, {
+    const response = await notificationFetch(`${notificationEngineUrl}/email/template`, {
       method: 'POST',
-      headers,
       body: JSON.stringify(notificationPayload),
     });
 

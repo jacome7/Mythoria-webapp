@@ -1,7 +1,7 @@
 {
-  "title": "My Stories",
+  "title": "Hi",
   "description": "View and manage all your created stories",
-  "writeNewStory": "Write New Story",
+  "writeNewStory": "New Story",
   "noStories": {
     "title": "No Stories Yet",
     "subtitle": "You haven't created any stories yet. Start your storytelling journey now!",

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { getEnvironmentConfig } from '../../../../config/environment';
 import { authorService, aiEditService, chapterService } from '@/db/services';
+import { sgwFetch } from '@/lib/sgw-client';
 
 export async function POST(request: NextRequest) {
   try {    // Check authentication
@@ -58,7 +59,7 @@ export async function POST(request: NextRequest) {
 
     // Get environment configuration
     const config = getEnvironmentConfig();
-    const workflowUrl = config.storyGeneration.workflowUrl;    // Determine the appropriate endpoint based on scope
+  const workflowUrl = config.storyGeneration.workflowUrl;    // Determine the appropriate endpoint based on scope
     let endpoint: string;
     const method = 'PATCH';
     
@@ -80,7 +81,7 @@ export async function POST(request: NextRequest) {
     let workflowData: unknown;
     
     try {
-      workflowResponse = await fetch(endpoint, {
+      workflowResponse = await sgwFetch(endpoint, {
         method,
         headers: {
           'Content-Type': 'application/json',

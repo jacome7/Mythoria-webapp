@@ -1,17 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const STORY_API_URL = process.env.STORY_GENERATION_WORKFLOW_URL || 'http://localhost:8080';
+import { sgwFetch } from '@/lib/sgw-client';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
     // Forward the request to the story-generation-workflow service
-    const response = await fetch(`${STORY_API_URL}/api/jobs/text-edit`, {
+    const response = await sgwFetch('/api/jobs/text-edit', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
 

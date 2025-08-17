@@ -498,12 +498,12 @@ function Step4Page() {
                             <label className="label">
                               <span className="label-text font-semibold">{tStoryStepsStep4('fields.place')}</span>
                             </label>
-                            <input
-                              type="text"
+                            <textarea
                               value={place}
                               onChange={(e) => setPlace(e.target.value)}
                               placeholder={tStoryStepsStep4('fields.place')}
-                              className="input input-bordered w-full"
+                              className="textarea textarea-bordered w-full"
+                              rows={4}
                             />
                             <label className="label">
                               <span className="label-text-alt break-words max-w-full whitespace-normal">{tStoryStepsStep4('fields.placeHelp')}</span>

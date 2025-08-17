@@ -28,17 +28,9 @@ We've implemented a comprehensive enum normalization system that maps GenAI outp
 - **Keyword detection**: Falls back to keyword-based matching
 - **Intelligent defaults**: Provides sensible fallbacks for unknown values
 
-### 2. Integration with GenAI (`src/lib/genai-story-structurer.ts`)
+### 2. Integration Point
 
-The normalization is automatically applied after GenAI processing:
-
-```typescript
-// Normalize story enum fields to ensure they match the required enum values
-if (parsedResult.story) {
-  const normalized = normalizeStoryEnums(parsedResult.story as Record<string, unknown>);
-  parsedResult.story = normalized as StructuredStory;
-}
-```
+Normalization is applied in the server-side Story Structurer flow (now handled by the Story-generation-workflow service). Webapp consumers receive normalized enums from the API.
 
 ### 3. Enhanced Prompts (`src/prompts/`)
 
@@ -126,7 +118,7 @@ const audienceMap: Record<string, TargetAudience> = {
 ## Related Files
 
 - `src/utils/enum-normalizers.ts` - Main normalization logic
-- `src/lib/genai-story-structurer.ts` - GenAI integration
+// Deprecated: the old `src/lib/genai-story-structurer.ts` was removed after migration to SGW.
 - `src/prompts/structureStoryOutline_schema.ts` - Enhanced schema
 - `src/prompts/en-US/structureStoryOutline_prompt.ts` - Enhanced prompts
 - `src/types/story-enums.ts` - Enum definitions

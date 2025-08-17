@@ -258,6 +258,14 @@ export default function Step2Page() {
     }
   };
 
+  // Helper: convert File to data URL (base64)
+  const fileToDataUrl = (file: File) => new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (e) => reject(e);
+    reader.readAsDataURL(file);
+  });
+
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
@@ -303,39 +311,56 @@ export default function Step2Page() {
 
       // Process with GenAI if any content provided
       if (storyText.trim() || uploadedImages.length > 0 || uploadedAudio) {
-        console.log('Processing content with GenAI...');
+        console.log('Processing content with GenAI (signed uploads)...');
 
-        // Convert images to base64
-        const imageBase64Array = await Promise.all(
-          uploadedImages.map(img => 
-            new Promise<string>((resolve) => {
-              const reader = new FileReader();
-              reader.onload = (e) => resolve(e.target?.result as string);
-              reader.readAsDataURL(img.file);
-            })
-          )
-        );
+  let imageObjectPath: string | undefined;
+  let audioObjectPath: string | undefined;
+  let imageDataB64: string | undefined;
+  let audioDataB64: string | undefined;
 
-        // Convert audio to base64 if present
-        let audioBase64 = null;
-        if (uploadedAudio) {
-          audioBase64 = await new Promise<string>((resolve) => {
-            const reader = new FileReader();
-            reader.onload = (e) => resolve(e.target?.result as string);
-            reader.readAsDataURL(uploadedAudio.file);
+        // Minimal integration: upload first image if available
+        if (uploadedImages.length > 0) {
+          const img = uploadedImages[0].file;
+          const contentType = img.type || 'image/jpeg';
+          imageDataB64 = await fileToDataUrl(img);
+          const resp = await fetch('/api/media/signed-upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ storyId: story.storyId, kind: 'image', contentType, filename: img.name, dataUrl: imageDataB64 })
           });
+          const uploaded = await resp.json();
+          if (!resp.ok || !uploaded?.objectPath) throw new Error(`Image upload failed: ${resp.status}`);
+          imageObjectPath = uploaded.objectPath;
         }
 
-        // Send to GenAI for processing
-        const genaiResponse = await fetch('/api/stories/genai-structure', {
+        // Upload audio if present
+        if (uploadedAudio) {
+          const aud = uploadedAudio.file;
+          const contentType = aud.type || 'audio/wav';
+          audioDataB64 = await fileToDataUrl(aud);
+          const resp = await fetch('/api/media/signed-upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ storyId: story.storyId, kind: 'audio', contentType, filename: aud.name, dataUrl: audioDataB64 })
+          });
+          const uploaded = await resp.json();
+          if (!resp.ok || !uploaded?.objectPath) throw new Error(`Audio upload failed: ${resp.status}`);
+          audioObjectPath = uploaded.objectPath;
+        }
+
+        // Send to GenAI for processing with object paths
+    const genaiResponse = await fetch('/api/stories/genai-structure', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            userDescription: storyText || (uploadedImages.length > 0 ? "Analyze the images to create a story" : "Analyze the audio to create a story"),
-            imageData: imageBase64Array.length > 0 ? imageBase64Array[0] : null, // Send first image for now
-            audioData: audioBase64,
+      userDescription: storyText || (imageObjectPath || imageDataB64 ? 'Analyze the images to create a story' : (audioObjectPath || audioDataB64 ? 'Analyze the audio to create a story' : '')),
+      // Prefer object paths; if not available, include base64 data
+      imageObjectPath,
+      audioObjectPath,
+      imageData: imageDataB64,
+      audioData: audioDataB64,
             storyId: story.storyId,
           }),
         });

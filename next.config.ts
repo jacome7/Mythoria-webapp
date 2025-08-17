@@ -46,7 +46,6 @@ const nextConfig: NextConfig = {
       '@clerk/nextjs', 
       'next-intl',
       'react-icons',
-      '@google-cloud/vertexai',
       'daisyui',
       'drizzle-orm',
       'react-type-animation'
@@ -54,10 +53,9 @@ const nextConfig: NextConfig = {
   },
   // Keep webpack config minimal; avoid overriding Next.js optimization to prevent chunk/runtime issues
   webpack: (config) => {
-    // Safe aliasing that doesn't interfere with chunking
+    // Keep aliasing minimal; no VertexAI alias required anymore
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@google-cloud/vertexai$': '@google-cloud/vertexai/build/src/index.js',
     };
     return config;
   },

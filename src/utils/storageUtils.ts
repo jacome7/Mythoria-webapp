@@ -2,7 +2,7 @@ import { Storage } from '@google-cloud/storage';
 
 // Initialize Google Cloud Storage
 const storage = new Storage();
-const bucketName = process.env.GOOGLE_CLOUD_STORAGE_BUCKET || 'mythoria-generated-stories';
+const bucketName = process.env.STORAGE_BUCKET_NAME || 'mythoria-generated-stories';
 
 /**
  * Get all image files from Google Cloud Storage for a specific story

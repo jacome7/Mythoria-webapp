@@ -44,7 +44,8 @@ export const getEnvironmentConfig = () => {
     },
     
     storyGeneration: {
-      workflowUrl: process.env.STORY_GENERATION_WORKFLOW_URL || 'http://localhost:8080',
+  workflowUrl: process.env.STORY_GENERATION_WORKFLOW_URL || 'http://localhost:8080',
+  apiKey: process.env.STORY_GENERATION_WORKFLOW_API_KEY || '',
     },
     
     admin: {
@@ -54,6 +55,7 @@ export const getEnvironmentConfig = () => {
     
     notification: {
       engineUrl: process.env.NOTIFICATION_ENGINE_URL || 'http://localhost:8081',
+  apiKey: process.env.NOTIFICATION_ENGINE_API_KEY || '',
     },
   };
 };
@@ -90,6 +92,9 @@ export const validateEnvironmentConfig = () => {
     }
     if (config.admin.apiUrl.includes('localhost')) {
       errors.push('ADMIN_API_URL cannot point to localhost in production');
+    }
+    if (!config.notification.apiKey) {
+      errors.push('NOTIFICATION_ENGINE_API_KEY is required in production');
     }
   }
   

@@ -152,12 +152,9 @@ export async function POST(request: NextRequest) {
             name: manager.name || manager.email,
           }));
 
-          await fetch(`${process.env.NOTIFICATION_ENGINE_URL}/email`, {
+          const { notificationFetch } = await import('@/lib/notification-client');
+          await notificationFetch(`${process.env.NOTIFICATION_ENGINE_URL}/email`, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${process.env.NOTIFICATION_ENGINE_API_KEY}`,
-            },
             body: JSON.stringify({
               to: managerEmails,
               subject: `MB Way Payment request (${ticketNumber}) - ${orderTotals.totalAmount}€ = ${orderTotals.totalCredits} credits - requested by ${author.mobilePhone || 'No phone'}`,
@@ -193,12 +190,9 @@ export async function POST(request: NextRequest) {
       // Determine user's locale
       const userLocale = normalizeLocale(author.preferredLocale || locale);
       
-      await fetch(`${process.env.NOTIFICATION_ENGINE_URL}/email/template`, {
+      const { notificationFetch } = await import('@/lib/notification-client');
+      await notificationFetch(`${process.env.NOTIFICATION_ENGINE_URL}/email/template`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.NOTIFICATION_ENGINE_API_KEY}`,
-        },
         body: JSON.stringify({
           templateId: 'mbway-payment-instructions',
           recipients: [{
