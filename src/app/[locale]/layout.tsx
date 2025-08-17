@@ -52,7 +52,7 @@ async function getMessages(locale: string): Promise<Messages> {
   try {
     const messagesDir = path.join(process.cwd(), 'src', 'messages', locale);
     const files = await readdir(messagesDir);
-    let messages: Messages = {};
+    const messages: Messages = {};
     
     for (const file of files) {
       if (file.endsWith('.json')) {
@@ -60,7 +60,17 @@ async function getMessages(locale: string): Promise<Messages> {
         try {
           const fileContent = await readFile(filePath, 'utf8');
           const json = JSON.parse(fileContent);
-          messages = { ...messages, ...json };
+          
+          // Extract namespace from filename (e.g., 'MyStoriesPage.json' -> 'MyStoriesPage')
+          const namespace = file.replace('.json', '');
+          
+          // Add namespace if the JSON doesn't already have it as a top-level key
+          if (json && typeof json === 'object' && !json[namespace]) {
+            messages[namespace] = json;
+          } else {
+            // If the JSON already has the namespace, merge it directly
+            Object.assign(messages, json);
+          }
         } catch (parseError) {
           console.error(`Failed to parse ${file} for locale ${locale}:`, parseError);
         }
@@ -109,32 +119,30 @@ async function getFallbackMessages(): Promise<Messages> {
     console.error('Failed to load fallback messages:', fallbackError);
   }
   
-  // Return minimal fallback structure
+  // Return minimal fallback structure with proper namespaces
   return {
-    common: {
-      Header: {
-        navigation: {
-          homepage: "Homepage",
-          getInspired: "Get Inspired",
-          tellYourStory: "Tell Your Story",
-          myStories: "My Stories",
-          pricing: "Pricing",
-          dashboard: "Dashboard"
-        },
-        auth: {
-          signIn: "Sign In",
-          signUp: "Sign Up"
-        },
-        logoAlt: "Mythoria Logo"
+    Header: {
+      navigation: {
+        homepage: "Homepage",
+        getInspired: "Get Inspired",
+        tellYourStory: "Tell Your Story",
+        myStories: "My Stories",
+        pricing: "Pricing",
+        dashboard: "Dashboard"
       },
-      Footer: {
-        aboutFounder: "About the founder",
-        readMyStory: "Read my story",
-        privacyPolicy: "Privacy & Cookies",
-        termsConditions: "Terms & Conditions",
-        contactUs: "Contact Us",
-        copyright: "© 2024 Mythoria"
-      }
+      auth: {
+        signIn: "Sign In",
+        signUp: "Sign Up"
+      },
+      logoAlt: "Mythoria Logo"
+    },
+    Footer: {
+      aboutFounder: "About the founder",
+      readMyStory: "Read my story",
+      privacyPolicy: "Privacy & Cookies",
+      termsConditions: "Terms & Conditions",
+      contactUs: "Contact Us",
+      copyright: "© 2024 Mythoria"
     },
     HomePage: {
       words: ['Adventure', 'Love Story', 'Mystery', 'Fairy Tale'],
@@ -157,21 +165,24 @@ async function getFallbackMessages(): Promise<Messages> {
           title: "For Companies 🌟",
           description: "Create personalized storybooks for your team."
         }
+      }
+    },
+    MyStoriesPage: {
+      title: "My Stories",
+      description: "View and manage all your created stories",
+      writeNewStory: "Write New Story",
+      defaults: {
+        authorName: "Storyteller"
       },
-      howItWorks: {
-        title: "How It Works",
-        steps: {
-          step1: { title: "The Author", description: "Start your journey" },
-          step2: { title: "The Story", description: "Share your idea" },
-          step3: { title: "The Characters", description: "Personalize details" },
-          step4: { title: "The Plot", description: "Shape your story" },
-          step5: { title: "The Gift", description: "Choose your format" },
-          step6: { title: "Experience", description: "Enjoy your story" }
-        },
-        conclusion: "Our Story Factory will handle the rest!"
+      tabs: {
+        myStories: "My Stories",
+        myCharacters: "My Characters"
       },
-      community: {
-        title: "Join Our Growing Community!"
+      signedOut: {
+        welcome: "Welcome to My Stories",
+        needSignIn: "Every storyteller needs an account to keep their magical credits safe!",
+        signIn: "Sign In",
+        createAccount: "Create Account"
       }
     }
   };
@@ -294,7 +305,7 @@ export default async function LocaleLayout({
   
   setRequestLocale(locale);
   
-  // Get messages using the helper function
+  // Get messages using the helper function  
   const messages = await getMessages(locale);
   const metadata = (messages?.Metadata as MetadataMessages) || {} as MetadataMessages;
 

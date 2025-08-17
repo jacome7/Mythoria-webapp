@@ -293,7 +293,7 @@ export default function MyStoriesTable() {
                       className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
                       onClick={() => handleSort('status')}
                     >
-                      {tMyStoriesPage('table.status')}
+                      {tMyStoriesPage('table.status.header')}
                       {getSortIcon('status')}
                     </button>
                   </th>
