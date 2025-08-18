@@ -7,6 +7,10 @@
     "build": "cross-env NODE_NO_WARNINGS=1 next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
     "logs": "powershell -ExecutionPolicy Bypass -File scripts/get-cloud-run-logs.ps1",
     "i18n:prune:pt-PT:common": "tsx scripts/prune-unused-keys.ts pt-PT common.json",
     "db:generate": "drizzle-kit generate",
@@ -21,7 +25,7 @@
     "docs:serve": "npx serve docs/",
     "i18n:parity": "tsx scripts/check-locale-parity.ts",
     "i18n:keys": "tsx scripts/generate-translation-keys.ts",
-    "test": "jest"
+    "test": "cross-env NODE_OPTIONS=--no-deprecation jest"
   },
   "sideEffects": false,
   "dependencies": {
@@ -74,9 +78,13 @@
     "eslint-config-next": "^15.4.2",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
+    "prettier": "^3.3.3",
     "tailwindcss": "^4",
     "ts-jest": "^29.2.5",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=22.0.0"
   },
   "overrides": {
     "@types/long": false,

@@ -1,11 +1,10 @@
 ﻿<#
 PowerShell deployment script for Mythoria webapp to Google Cloud Run
-Usage: .\deploy.ps1 [-Direct] [-Staging] [-NoBuild] [-Help]
+Usage: .\deploy.ps1 [-Staging] [-NoBuild] [-Help]
 #>
 
 [CmdletBinding()]
 param(
-    [switch]$Direct,
     [switch]$Staging,
     [switch]$NoBuild,
     [switch]$Help
@@ -23,10 +22,9 @@ $IMAGE_NAME        = "gcr.io/$PROJECT_ID/$SERVICE_NAME"
 # -----------------------------------------------------------------------------
 
 function Show-Help {
-    Write-Host "Usage: .\deploy.ps1 [-Direct] [-Staging] [-NoBuild] [-Help]" -ForegroundColor Cyan
+    Write-Host "Usage: .\deploy.ps1 [-Staging] [-NoBuild] [-Help]" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "Options:" -ForegroundColor Yellow
-    Write-Host "  -Direct      Use Docker + gcloud run deploy directly (skips Cloud Build)" -ForegroundColor White
     Write-Host "  -Staging     Deploy to the staging service ($BASE_SERVICE_NAME-staging)" -ForegroundColor White
     Write-Host "  -NoBuild     Skip the front-end build step (assumes ./dist already exists)" -ForegroundColor White
     Write-Host "  -Help        Show this help message" -ForegroundColor White
@@ -72,15 +70,6 @@ function Test-Prerequisites {
         throw
     }
 
-    if ($Direct) {
-        try {
-            & docker --version | Out-Null
-            Write-Success "Docker is available"
-        } catch {
-            Write-Err "Docker is required for -Direct deployments."
-            throw
-        }
-    }
 
     try {
         $account = (& gcloud auth list --filter=status:ACTIVE --format="value(account)") | Select-Object -First 1
@@ -122,63 +111,6 @@ function Deploy-With-CloudBuild {
     Write-Success "Cloud Build finished"
 }
 
-function Deploy-Direct {
-    Write-Info "Building Docker image $IMAGE_NAME"
-    
-    $envFilePath = Join-Path $PSScriptRoot "..\.env.production"
-
-    # Prepare build arguments from .env.production
-    $buildArgs = @(
-        "--build-arg", "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY')",
-        "--build-arg", "NEXT_PUBLIC_CLERK_SIGN_IN_URL=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'CLERK_SIGN_IN_URL')", # Source from CLERK_SIGN_IN_URL
-        "--build-arg", "NEXT_PUBLIC_CLERK_SIGN_UP_URL=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'CLERK_SIGN_UP_URL')", # Source from CLERK_SIGN_UP_URL
-        "--build-arg", "NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'CLERK_SIGN_IN_FALLBACK_REDIRECT_URL')", # Source from CLERK_SIGN_IN_FALLBACK_REDIRECT_URL
-        "--build-arg", "NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'CLERK_SIGN_UP_FALLBACK_REDIRECT_URL')", # Source from CLERK_SIGN_UP_FALLBACK_REDIRECT_URL
-        "--build-arg", "NEXT_PUBLIC_CLERK_IS_DEVELOPMENT=false", # Typically false for production
-        "--build-arg", "NEXT_PUBLIC_GA_MEASUREMENT_ID=$(Get-EnvVariable -FilePath $envFilePath -VariableName 'NEXT_PUBLIC_GA_MEASUREMENT_ID')"
-    )
-    
-    & docker build --tag $IMAGE_NAME $buildArgs .
-
-    Write-Info "Pushing image to Container Registry"
-    & docker push $IMAGE_NAME
-
-    Write-Info "Deploying to Cloud Run service '$SERVICE_NAME' in $REGION"
-    
-    $envVarsFilePath = Join-Path $PSScriptRoot "..\.env.production.yaml"
-    if (-not (Test-Path $envVarsFilePath)) {
-        Write-Warn "Environment file '$envVarsFilePath' not found. Create it from '.env.production'."
-        Write-Warn "Deployment will proceed without --env-vars-file if it's missing."
-        & gcloud run deploy $SERVICE_NAME `
-            --image $IMAGE_NAME `
-            --region $REGION `
-            --platform managed `
-            --allow-unauthenticated `
-            --clear-secrets `
-            --port 3000 `
-            --memory 1Gi `
-            --cpu 1 `
-            --max-instances 10 `
-            --min-instances 0 `
-            --set-env-vars "NODE_ENV=production" # Minimal set if YAML is missing
-    } else {
-        & gcloud run deploy $SERVICE_NAME `
-            --image $IMAGE_NAME `
-            --region $REGION `
-            --platform managed `
-            --allow-unauthenticated `
-            --clear-secrets `
-            --port 3000 `
-            --memory 1Gi `
-            --cpu 1 `
-            --max-instances 10 `
-            --min-instances 0 `
-            --env-vars-file $envVarsFilePath
-    }
-
-    Write-Success "Image deployed to Cloud Run"
-}
-
 function Test-Deployment {
     Write-Info "Fetching service URL"
     $serviceUrl = & gcloud run services describe $SERVICE_NAME --region $REGION --format="value(status.url)"
@@ -204,11 +136,7 @@ function Main {
     Test-Prerequisites
     Build-Application
 
-    if ($Direct) {
-        Deploy-Direct
-    } else {
-        Deploy-With-CloudBuild
-    }
+    Deploy-With-CloudBuild
 
     Test-Deployment
     Write-Success "All done ✨"
