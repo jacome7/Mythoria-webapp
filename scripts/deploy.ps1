@@ -1,12 +1,16 @@
 ﻿<#
 PowerShell deployment script for Mythoria webapp to Google Cloud Run
-Usage: .\deploy.ps1 [-Staging] [-NoBuild] [-Help]
+Usage: .\deploy.ps1 [-Staging] [-Fast] [-Help]
+
+Modes:
+ - Normal (default): installs deps, lint, typecheck, tests, build, then deploy via Cloud Build
+ - Fast: reuses the last built image (no build/lint/tests) and deploys directly to Cloud Run
 #>
 
 [CmdletBinding()]
 param(
     [switch]$Staging,
-    [switch]$NoBuild,
+    [switch]$Fast,
     [switch]$Help
 )
 
@@ -22,11 +26,11 @@ $IMAGE_NAME        = "gcr.io/$PROJECT_ID/$SERVICE_NAME"
 # -----------------------------------------------------------------------------
 
 function Show-Help {
-    Write-Host "Usage: .\deploy.ps1 [-Staging] [-NoBuild] [-Help]" -ForegroundColor Cyan
+    Write-Host "Usage: .\deploy.ps1 [-Staging] [-Fast] [-Help]" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "Options:" -ForegroundColor Yellow
     Write-Host "  -Staging     Deploy to the staging service ($BASE_SERVICE_NAME-staging)" -ForegroundColor White
-    Write-Host "  -NoBuild     Skip the front-end build step (assumes ./dist already exists)" -ForegroundColor White
+    Write-Host "  -Fast        Reuse last built image (skip build/lint/tests) and deploy to Cloud Run" -ForegroundColor White
     Write-Host "  -Help        Show this help message" -ForegroundColor White
     Write-Host ""
     Write-Host "Note: This script now uses Google Secret Manager for sensitive data." -ForegroundColor Cyan
@@ -34,10 +38,10 @@ function Show-Help {
 }
 
 # --- Console helpers ---------------------------------------------------------
-function Write-Info     { param([string]$Msg) Write-Host "ℹ️  $Msg" -ForegroundColor Blue  }
-function Write-Success  { param([string]$Msg) Write-Host "✅ $Msg" -ForegroundColor Green }
-function Write-Warn     { param([string]$Msg) Write-Host "⚠️  $Msg" -ForegroundColor Yellow }
-function Write-Err      { param([string]$Msg) Write-Host "❌ $Msg" -ForegroundColor Red   }
+function Write-Info     { param([string]$Msg) Write-Host "[INFO] $Msg" -ForegroundColor Blue }
+function Write-Success  { param([string]$Msg) Write-Host "[SUCCESS] $Msg" -ForegroundColor Green }
+function Write-Warn     { param([string]$Msg) Write-Host "[WARN] $Msg" -ForegroundColor Yellow }
+function Write-Err      { param([string]$Msg) Write-Host "[ERROR] $Msg" -ForegroundColor Red }
 # -----------------------------------------------------------------------------
 
 # Helper function to get a value from .env.production file
@@ -87,28 +91,37 @@ function Test-Prerequisites {
 }
 
 function Build-Application {
-    if ($NoBuild) {
-        Write-Warn "Skipping npm build step"
-        return
-    }
-
-    Write-Info "Installing node dependencies (npm ci)"
+    Write-Info "Installing dependencies (npm ci)"
     & npm ci
-
-    Write-Info "Running linter (npm run lint)"
+    Write-Info "Linting (npm run lint)"
     & npm run lint
-
+    Write-Info "Typecheck (npm run typecheck)"
+    & npm run typecheck
+    Write-Info "Running tests (npm test)"
+    & npm test
     Write-Info "Building production bundle (npm run build)"
     & npm run build
-
-    Write-Success "Front-end build completed"
+    Write-Success "Build completed"
 }
 
 function Deploy-With-CloudBuild {
-    Write-Info "Starting Cloud Build submission"
+    Write-Info "Starting Cloud Build submission (beta)"
     # Pass service name and region as substitutions
-    & gcloud builds submit --config cloudbuild.yaml --substitutions "_SERVICE_NAME=$SERVICE_NAME,_REGION=$REGION"
+    & gcloud beta builds submit --config cloudbuild.yaml --substitutions "_SERVICE_NAME=$SERVICE_NAME,_REGION=$REGION"
     Write-Success "Cloud Build finished"
+}
+
+function Deploy-Fast {
+    Write-Info "Fast deploy: reusing last built image from Container Registry"
+    $digest = (& gcloud container images list-tags $IMAGE_NAME --format="get(digest)" --limit=1 --sort-by=~timestamp 2>$null)
+    if (-not $digest) {
+        Write-Err "No prior image found for $IMAGE_NAME. Fast deploy requires an existing image."
+        throw "Missing image"
+    }
+    $imageRef = "$IMAGE_NAME@sha256:$digest"
+    Write-Info "Deploying image $imageRef to Cloud Run service $SERVICE_NAME in $REGION"
+    & gcloud run deploy $SERVICE_NAME --image $imageRef --region $REGION --platform managed --quiet
+    Write-Success "Fast deploy submitted"
 }
 
 function Test-Deployment {
@@ -116,10 +129,10 @@ function Test-Deployment {
     $serviceUrl = & gcloud run services describe $SERVICE_NAME --region $REGION --format="value(status.url)"
 
     if ($serviceUrl) {
-        Write-Success "Deployment successful!"
+        Write-Success "Deployment successful"
         Write-Host ""
-        Write-Host "🌐  $serviceUrl" -ForegroundColor Cyan
-        Write-Host "🔧  https://console.cloud.google.com/run/detail/$REGION/$SERVICE_NAME" -ForegroundColor Cyan
+        Write-Host "Service URL: $serviceUrl" -ForegroundColor Cyan
+        Write-Host "Console: https://console.cloud.google.com/run/detail/$REGION/$SERVICE_NAME" -ForegroundColor Cyan
         Write-Host ""
     } else {
         Write-Err "Unable to determine service URL"
@@ -130,16 +143,19 @@ function Test-Deployment {
 function Main {
     if ($Help) { Show-Help; return }
 
-    Write-Host "🚀  Deploying Mythoria ($SERVICE_NAME)..." -ForegroundColor Magenta
+    Write-Host "Deploying Mythoria ($SERVICE_NAME)..." -ForegroundColor Magenta
     Write-Host ""
 
     Test-Prerequisites
-    Build-Application
-
-    Deploy-With-CloudBuild
+    if ($Fast) {
+        Deploy-Fast
+    } else {
+        Build-Application
+        Deploy-With-CloudBuild
+    }
 
     Test-Deployment
-    Write-Success "All done ✨"
+    Write-Success "All done"
 }
 
 try {
