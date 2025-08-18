@@ -20,7 +20,8 @@
     "deploy": "powershell -ExecutionPolicy Bypass -File scripts/deploy.ps1",
     "docs:serve": "npx serve docs/",
     "i18n:parity": "tsx scripts/check-locale-parity.ts",
-    "i18n:keys": "tsx scripts/generate-translation-keys.ts"
+    "i18n:keys": "tsx scripts/generate-translation-keys.ts",
+    "test": "jest"
   },
   "sideEffects": false,
   "dependencies": {
@@ -61,6 +62,9 @@
     "@eslint/eslintrc": "^3",
     "@lingual/i18n-check": "^0.8.4",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.0.0",
+    "@types/jest": "^29.5.14",
     "@types/node": "^24",
     "@types/pg": "^8.15.5",
     "@types/react": "^19",
@@ -68,7 +72,10 @@
     "cross-env": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "^15.4.2",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "tailwindcss": "^4",
+    "ts-jest": "^29.2.5",
     "typescript": "^5"
   },
   "overrides": {
