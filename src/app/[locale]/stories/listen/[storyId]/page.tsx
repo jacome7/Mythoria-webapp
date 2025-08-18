@@ -22,7 +22,6 @@ interface Story {
   storyId: string;
   title: string;
   status: 'draft' | 'writing' | 'published';
-  htmlUri?: string;
   audiobookUri?: Array<{
     chapterTitle: string;
     audioUri: string;

@@ -1,3 +1,17 @@
+-- Ensure the "type" column is text before updates (handles enum state)
+DO $$
+BEGIN
+	IF EXISTS (
+		SELECT 1 FROM information_schema.columns
+		WHERE table_schema = 'public'
+			AND table_name = 'characters'
+			AND column_name = 'type'
+			AND udt_name = 'character_type'
+	) THEN
+		ALTER TABLE "characters" ALTER COLUMN "type" SET DATA TYPE text USING "type"::text;
+	END IF;
+END $$;
+
 -- First, update existing character types to snake_case format
 UPDATE characters SET type = 'boy' WHERE type = 'Boy';
 UPDATE characters SET type = 'girl' WHERE type = 'Girl';
@@ -15,4 +29,16 @@ UPDATE characters SET type = 'alien_extraterrestrial' WHERE type = 'Alien';
 UPDATE characters SET type = 'other' WHERE type = 'Other';
 
 -- Then change the column type to varchar
-ALTER TABLE "characters" ALTER COLUMN "type" SET DATA TYPE varchar(50);
+DO $$
+BEGIN
+	-- Only alter if not already character varying
+	IF EXISTS (
+		SELECT 1 FROM information_schema.columns
+		WHERE table_schema = 'public'
+			AND table_name = 'characters'
+			AND column_name = 'type'
+			AND data_type <> 'character varying'
+	) THEN
+		ALTER TABLE "characters" ALTER COLUMN "type" SET DATA TYPE varchar(50);
+	END IF;
+END $$;

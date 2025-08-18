@@ -18,8 +18,6 @@ export async function GET(
         storyId: stories.storyId,
         title: stories.title,
         synopsis: stories.synopsis,
-        htmlUri: stories.htmlUri,
-        pdfUri: stories.pdfUri,
         audiobookUri: stories.audiobookUri,
         targetAudience: stories.targetAudience,
         graphicalStyle: stories.graphicalStyle,

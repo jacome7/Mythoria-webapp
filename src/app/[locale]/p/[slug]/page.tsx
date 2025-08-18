@@ -27,8 +27,6 @@ interface PublicStoryData {
     title: string;
     authorName: string;
     synopsis?: string;
-    htmlUri?: string;
-    pdfUri?: string;
     audiobookUri?: Array<{
       chapterTitle: string;
       audioUri: string;

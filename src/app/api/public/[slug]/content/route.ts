@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { stories } from '@/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { stories, chapters } from '@/db/schema';
+import { eq, and, asc, max } from 'drizzle-orm';
 
 export async function GET(
   request: Request,
@@ -17,7 +17,6 @@ export async function GET(
       .select({
         storyId: stories.storyId,
         title: stories.title,
-        htmlUri: stories.htmlUri,
         isPublic: stories.isPublic,
       })
       .from(stories)
@@ -37,30 +36,49 @@ export async function GET(
     const storyData = story[0];
     console.log('[Public Story Content API] Story data:', { 
       storyId: storyData.storyId, 
-      title: storyData.title, 
-      hasHtmlUri: !!storyData.htmlUri,
+      title: storyData.title,
       isPublic: storyData.isPublic 
     });
 
-    if (!storyData.htmlUri) {
-      console.log('[Public Story Content API] No HTML URI available');
-      return NextResponse.json({ error: 'Story content not available' }, { status: 404 });
+    // Build HTML from chapters
+    const latestVersionsSubquery = db
+      .select({
+        storyId: chapters.storyId,
+        chapterNumber: chapters.chapterNumber,
+        latestVersion: max(chapters.version).as('latest_version'),
+      })
+      .from(chapters)
+      .where(eq(chapters.storyId, storyData.storyId))
+      .groupBy(chapters.storyId, chapters.chapterNumber)
+      .as('latest_versions');
+
+    const chapterRows = await db
+      .select({
+        chapterNumber: chapters.chapterNumber,
+        title: chapters.title,
+        htmlContent: chapters.htmlContent,
+      })
+      .from(chapters)
+      .innerJoin(
+        latestVersionsSubquery,
+        and(
+          eq(chapters.storyId, latestVersionsSubquery.storyId),
+          eq(chapters.chapterNumber, latestVersionsSubquery.chapterNumber),
+          eq(chapters.version, latestVersionsSubquery.latestVersion)
+        )
+      )
+      .where(eq(chapters.storyId, storyData.storyId))
+      .orderBy(asc(chapters.chapterNumber));
+
+    if (!chapterRows.length) {
+      return NextResponse.json({ error: 'No chapters found for this story' }, { status: 404 });
     }
 
-    // Fetch the story content from Google Cloud Storage
-    console.log('[Public Story Content API] Fetching content from:', storyData.htmlUri);
-    const response = await fetch(storyData.htmlUri);
-    
-    if (!response.ok) {
-      console.error('[Public Story Content API] Failed to fetch from GCS:', response.status, response.statusText);
-      return NextResponse.json({ error: 'Failed to fetch story content' }, { status: 500 });
-    }
+    const body = `<!DOCTYPE html><html lang="en"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>${storyData.title}</title></head><body>${chapterRows
+      .map((c) => `<article data-chapter=\"${c.chapterNumber}\"><h2>Chapter ${c.chapterNumber}: ${c.title}</h2>${c.htmlContent}</article>`)
+      .join('')}</body></html>`;
 
-    const htmlContent = await response.text();
-    console.log('[Public Story Content API] Successfully fetched content, length:', htmlContent.length);
-
-    // Return the HTML content with proper headers
-    return new NextResponse(htmlContent, {
+    return new NextResponse(body, {
       status: 200,
       headers: {
         'Content-Type': 'text/html; charset=utf-8',

@@ -18,7 +18,6 @@ interface Story {
   storyId: string;
   title: string;
   synopsis: string;
-  pdfUri?: string;
   authorId: string;
   frontCoverImageUrl?: string;
   chapterCount: number;

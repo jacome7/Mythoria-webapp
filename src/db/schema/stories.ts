@@ -24,8 +24,7 @@ export const stories = pgTable("stories", {
   deliveryAddress: jsonb("delivery_address"), // Delivery address for printed books
   customAuthor: text("custom_author"), // Custom author name(s) for the story
   dedicationMessage: text("dedication_message"), // Personalized dedication message
-  htmlUri: text("html_uri"), // Internal Google Storage link to access the HTML file
-  pdfUri: text("pdf_uri"), // Internal Google Storage link to access the PDF file
+  // Removed html_uri and pdf_uri in favor of generating HTML from chapters and using interior/cover print PDFs
   audiobookUri: jsonb("audiobook_uri"), // JSON object with internal GS links to each chapter audio file
   audiobookStatus: audiobookStatusEnum("audiobook_status"), // Status of audiobook generation
   coverUri: text("cover_uri"), // Internal Google Storage link to front cover image

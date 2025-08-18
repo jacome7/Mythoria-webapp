@@ -110,7 +110,7 @@ export async function GET(
     // If it's the author's story, they can read it regardless of status
     
     // Transform audiobookUri from database format to frontend format
-    const transformedStory = {
+  const transformedStory = {
       ...story,
       audiobookUri: transformAudiobookUri(story.audiobookUri)
     };

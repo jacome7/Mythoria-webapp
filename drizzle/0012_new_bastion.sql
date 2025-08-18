@@ -1,1 +1,1 @@
-ALTER TABLE "stories" ADD COLUMN "image_generation_instructions" text;
+ALTER TABLE "stories" ADD COLUMN IF NOT EXISTS "image_generation_instructions" text;

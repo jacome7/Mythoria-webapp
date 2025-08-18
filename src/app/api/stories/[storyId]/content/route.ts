@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db';
-import { stories, storyCollaborators } from '@/db/schema';
-import { eq, and, or } from 'drizzle-orm';
+import { stories, storyCollaborators, chapters } from '@/db/schema';
+import { eq, and, or, asc, max } from 'drizzle-orm';
 import { authorService } from '@/db/services';
 
 export async function GET(
@@ -16,7 +16,7 @@ export async function GET(
     
     console.log('[Story Content API] Story ID:', storyId);
     console.log('[Story Content API] User ID:', userId);    // Check if user has access to the story (owner or collaborator)
-    let story;
+  let story;
     
     if (userId) {
       // If user is authenticated, check ownership, collaboration, or public access
@@ -32,7 +32,6 @@ export async function GET(
           storyId: stories.storyId,
           authorId: stories.authorId,
           title: stories.title,
-          htmlUri: stories.htmlUri,
           isPublic: stories.isPublic,
         })
         .from(stories)
@@ -64,7 +63,6 @@ export async function GET(
           storyId: stories.storyId,
           authorId: stories.authorId,
           title: stories.title,
-          htmlUri: stories.htmlUri,
           isPublic: stories.isPublic,
         })
         .from(stories)
@@ -85,30 +83,50 @@ export async function GET(
     const storyData = story[0];
     console.log('[Story Content API] Story data:', { 
       storyId: storyData.storyId, 
-      title: storyData.title, 
-      hasHtmlUri: !!storyData.htmlUri,
+      title: storyData.title,
       isPublic: storyData.isPublic 
     });
 
-    if (!storyData.htmlUri) {
-      console.log('[Story Content API] No HTML URI available');
-      return NextResponse.json({ error: 'Story content not available' }, { status: 404 });
+    // Compose HTML content from the latest version of each chapter
+    // Subquery to get latest version per chapter
+    const latestVersionsSubquery = db
+      .select({
+        storyId: chapters.storyId,
+        chapterNumber: chapters.chapterNumber,
+        latestVersion: max(chapters.version).as('latest_version'),
+      })
+      .from(chapters)
+      .where(eq(chapters.storyId, storyData.storyId))
+      .groupBy(chapters.storyId, chapters.chapterNumber)
+      .as('latest_versions');
+
+    const chapterRows = await db
+      .select({
+        chapterNumber: chapters.chapterNumber,
+        title: chapters.title,
+        htmlContent: chapters.htmlContent,
+      })
+      .from(chapters)
+      .innerJoin(
+        latestVersionsSubquery,
+        and(
+          eq(chapters.storyId, latestVersionsSubquery.storyId),
+          eq(chapters.chapterNumber, latestVersionsSubquery.chapterNumber),
+          eq(chapters.version, latestVersionsSubquery.latestVersion)
+        )
+      )
+      .where(eq(chapters.storyId, storyData.storyId))
+      .orderBy(asc(chapters.chapterNumber));
+
+    if (!chapterRows.length) {
+      return NextResponse.json({ error: 'No chapters found for this story' }, { status: 404 });
     }
 
-    // Fetch the story content from Google Cloud Storage
-    console.log('[Story Content API] Fetching content from:', storyData.htmlUri);
-    const response = await fetch(storyData.htmlUri);
-    
-    if (!response.ok) {
-      console.error('[Story Content API] Failed to fetch from GCS:', response.status, response.statusText);
-      return NextResponse.json({ error: 'Failed to fetch story content' }, { status: 500 });
-    }
+    const body = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${storyData.title}</title></head><body>${chapterRows
+      .map((c) => `<article data-chapter="${c.chapterNumber}"><h2>Chapter ${c.chapterNumber}: ${c.title}</h2>${c.htmlContent}</article>`)
+      .join('')}</body></html>`;
 
-    const htmlContent = await response.text();
-    console.log('[Story Content API] Successfully fetched content, length:', htmlContent.length);
-
-    // Return the HTML content with proper headers
-    return new NextResponse(htmlContent, {
+    return new NextResponse(body, {
       status: 200,
       headers: {
         'Content-Type': 'text/html; charset=utf-8',
