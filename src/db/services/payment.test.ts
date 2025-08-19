@@ -1,4 +1,4 @@
-import { paymentService } from "./payment";
+import { paymentService, type CreditPackage } from "./payment";
 
 describe("paymentService.calculateOrderTotal", () => {
   it("calculates totals for valid packages", async () => {
@@ -6,10 +6,10 @@ describe("paymentService.calculateOrderTotal", () => {
       .spyOn(paymentService, "getCreditPackage")
       .mockImplementation(async (id) => {
         if (id === 1) {
-          return { id: 1, credits: 100, price: 10 } as any;
+          return { id: 1, credits: 100, price: 10 } as CreditPackage;
         }
         if (id === 2) {
-          return { id: 2, credits: 200, price: 18 } as any;
+          return { id: 2, credits: 200, price: 18 } as CreditPackage;
         }
         return undefined;
       });
