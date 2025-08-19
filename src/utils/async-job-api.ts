@@ -98,6 +98,29 @@ export async function getJobStatus(jobId: string): Promise<JobStatusResponse> {
 }
 
 /**
+ * Create an async full story translation job
+ */
+export async function createTranslateJob(params: {
+  storyId: string;
+  targetLocale: string;
+}): Promise<AsyncJobResponse> {
+  const response = await fetch('/api/jobs/translate-text', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(params),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+  }
+
+  return await response.json();
+}
+
+/**
  * Helper function to poll job status until completion
  */
 export async function waitForJobCompletion(

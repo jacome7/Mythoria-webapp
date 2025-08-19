@@ -5,11 +5,13 @@ import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiVolume2, FiEdit3, FiShare2, FiArrowLeft, FiPrinter, FiBook } from 'react-icons/fi';
+import { FiVolume2, FiEdit3, FiShare2, FiArrowLeft, FiPrinter, FiBook, FiCopy } from 'react-icons/fi';
 import { trackStoryManagement } from '../../../../../lib/analytics';
 import StoryReader from '../../../../../components/StoryReader';
 import StoryRating from '../../../../../components/StoryRating';
 import ShareModal from '../../../../../components/ShareModal';
+import { useToast } from '@/hooks/useToast';
+import ToastContainer from '../../../../../components/ToastContainer';
 
 interface Chapter {
   id: string;
@@ -32,6 +34,7 @@ interface Story {
   graphicalStyle?: string;
   coverUri?: string;
   backcoverUri?: string;
+  status?: 'draft' | 'writing' | 'published';
 }
 
 export default function ReadStoryPage() {
@@ -41,19 +44,21 @@ export default function ReadStoryPage() {
   const tLoading = useTranslations('Loading');
   const tErrors = useTranslations('Errors');
   const tActions = useTranslations('Actions');
+  const tMyStories = useTranslations('MyStoriesPage');
   const tAuth = useTranslations('Auth');
   const storyId = (params?.storyId as string | undefined) ?? '';
   const [story, setStory] = useState<Story | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
+  const { toasts, successWithAction, error: toastError, removeToast } = useToast();
 
   useEffect(() => {
     const fetchStory = async () => {
       try {
         const response = await fetch(`/api/stories/${storyId}/chapters`);
-        if (response.ok) {
+  if (response.ok) {
           const data = await response.json();
           setStory(data.story);
           setChapters(data.chapters);
@@ -67,15 +72,15 @@ export default function ReadStoryPage() {
             graphical_style: data.story.graphicalStyle
           });
         } else if (response.status === 404) {
-          setError(tErrors('storyNotFoundGeneric'));
+          setLoadError(tErrors('storyNotFoundGeneric'));
         } else if (response.status === 403) {
-          setError(tErrors('noPermission'));
+          setLoadError(tErrors('noPermission'));
         } else {
-          setError(tErrors('failedToLoad'));
+          setLoadError(tErrors('failedToLoad'));
         }
       } catch (error) {
         console.error('Error fetching story:', error);
-        setError(tErrors('failedToLoad'));
+        setLoadError(tErrors('failedToLoad'));
       } finally {
         setLoading(false);
       }
@@ -112,6 +117,29 @@ export default function ReadStoryPage() {
     setShowShareModal(true);
   };
 
+  const handleDuplicate = async () => {
+    try {
+      const resp = await fetch(`/api/my-stories/${storyId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'duplicate', locale }),
+      });
+      if (!resp.ok) throw new Error(`Duplicate failed: ${resp.status}`);
+      const data = await resp.json();
+      const newId = data?.story?.storyId || data?.storyId;
+      const link = `/${locale}/stories/read/${newId}`;
+      // localized message comes from MyStoriesPage duplicate.success for consistency
+      successWithAction(
+        tMyStories('duplicate.success'),
+        tActions('open'),
+        link
+      );
+    } catch (e) {
+      console.error(e);
+      toastError(tActions('tryAgain'));
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
@@ -123,13 +151,13 @@ export default function ReadStoryPage() {
     );
   }
 
-  if (error) {
+  if (loadError) {
     return (
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">📚</div>
           <h1 className="text-3xl font-bold mb-4">{tErrors('oops')}</h1>
-          <p className="text-lg mb-6">{error}</p>
+          <p className="text-lg mb-6">{loadError}</p>
           <button
             onClick={() => router.back()}
             className="btn btn-primary"
@@ -236,6 +264,14 @@ export default function ReadStoryPage() {
                 <FiShare2 className="w-4 h-4" />
                 <span className="hidden sm:inline sm:ml-2">{tActions('share')}</span>
               </button>
+
+              <button
+                onClick={handleDuplicate}
+                className="btn btn-ghost btn-sm"
+              >
+                <FiCopy className="w-4 h-4" />
+                <span className="hidden sm:inline sm:ml-2">{tActions('duplicate')}</span>
+              </button>
             </div>
           </div>
         </div>
@@ -261,6 +297,9 @@ export default function ReadStoryPage() {
           onClose={() => setShowShareModal(false)}
         />
       </SignedIn>
+
+  {/* Toasts */}
+  <ToastContainer toasts={toasts} onRemove={removeToast} />
 
       <SignedOut>
         <div className="min-h-screen bg-base-100 flex items-center justify-center">

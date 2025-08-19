@@ -31,11 +31,16 @@
     "share": "Partilhar",
     "print": "Imprimir",
     "delete": "Eliminar",
-    "printNotAvailable": "Impressão Não Disponível"
+  "printNotAvailable": "Impressão Não Disponível",
+  "duplicate": "Duplicar"
   },
   "sharing": {
     "publicAccessible": "A história está agora publicamente acessível",
     "nowPrivate": "A história está agora privada"
+  },
+  "duplicate": {
+    "success": "História duplicada com sucesso",
+    "error": "Falha ao duplicar a história"
   },
   "deleteConfirm": {
     "title": "Eliminar História",

@@ -33,6 +33,7 @@ export async function GET(
       story: {
         storyId: story.storyId,
         title: story.title,
+  storyLanguage: story.storyLanguage,
         synopsis: story.synopsis,
         dedicationMessage: story.dedicationMessage,
         customAuthor: story.customAuthor,

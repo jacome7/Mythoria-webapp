@@ -29,9 +29,14 @@
     "read": "Leer",
     "edit": "Editar",
     "share": "Compartir",
+    "duplicate": "Duplicar",
     "print": "Imprimir",
     "delete": "Eliminar",
     "printNotAvailable": "Impresión no disponible"
+  },
+  "duplicate": {
+    "success": "Historia duplicada correctamente",
+    "error": "No se pudo duplicar la historia"
   },
   "sharing": {
     "publicAccessible": "La historia ahora es pública",

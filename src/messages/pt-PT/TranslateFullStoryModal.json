@@ -1,0 +1,26 @@
+{
+  "TranslateFullStoryModal": {
+    "title": "Traduzir história completa",
+    "currentLanguage": "Atual: {lang}",
+    "targetLanguage": "Idioma de destino",
+    "duplicateLabel": "Duplicar história",
+    "duplicateOff": "A sua história será sobrescrita com a nova tradução.",
+    "duplicateOn": "A sua história original será preservada. Será criada uma nova história com a nova tradução.",
+    "cost": {
+      "title": "Custo estimado",
+      "freeEdits": "• {count} edições gratuitas de capítulos",
+      "paidEdits": "• {count} edições de capítulos pagas",
+      "balance": "• Saldo atual: {credits} créditos"
+    },
+    "cancel": "Cancelar",
+    "translate": "Traduzir",
+    "processing": "A iniciar...",
+    "buyCredits": "Comprar créditos",
+    "errors": {
+      "unableToCheckCredits": "Não foi possível verificar os créditos.",
+      "selectDifferentLanguage": "Por favor, selecione um idioma diferente.",
+      "unableToStart": "Não foi possível iniciar a tradução.",
+      "failed": "A tradução falhou. Tente novamente."
+    }
+  }
+}

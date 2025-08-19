@@ -1,5 +1,9 @@
 {
   "StoryEditPage": {
+    "language": {
+      "label": "Idioma da história",
+      "translate": "Traduzir história completa"
+    },
     "errors": {
       "failedToLoadStoryData": "Falha ao carregar dados da história",
       "failedToLoadStory": "Falha ao carregar história",

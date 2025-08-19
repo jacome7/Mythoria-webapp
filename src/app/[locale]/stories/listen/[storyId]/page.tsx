@@ -13,8 +13,11 @@ import {
   FiArrowLeft,
   FiCreditCard,
   FiLoader,
-  FiPrinter
+  FiPrinter,
+  FiCopy
 } from 'react-icons/fi';
+import ToastContainer from '../../../../../components/ToastContainer';
+import { useToast } from '@/hooks/useToast';
 import ShareModal from '../../../../../components/ShareModal';
 import { useAudioPlayer, AudioChapterList, hasAudiobook, getAudioChapters } from '@/components/AudioPlayer';
 
@@ -124,6 +127,7 @@ export default function ListenStoryPage() {
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
   const [audioGenerationProgress, setAudioGenerationProgress] = useState<string>('');
   const [selectedVoice, setSelectedVoice] = useState<string>('coral');
+  const { toasts, removeToast, successWithAction, error: toastError } = useToast();
 
   // Initialize audio player hook
   const audioPlayer = useAudioPlayer({
@@ -324,6 +328,28 @@ export default function ListenStoryPage() {
     router.push(`/${locale}/pricing`);
   };
 
+  const handleDuplicate = async () => {
+    try {
+      const resp = await fetch(`/api/my-stories/${storyId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'duplicate', locale }),
+      });
+      if (!resp.ok) throw new Error(`Duplicate failed: ${resp.status}`);
+      const data = await resp.json();
+      const newId = data?.story?.storyId || data?.storyId;
+      const link = `/${locale}/stories/read/${newId}`;
+      successWithAction(
+        tActions('duplicateSuccess', { default: 'Story duplicated successfully' }),
+        tActions('open'),
+        link
+      );
+    } catch (e) {
+      console.error('Error duplicating story:', e);
+      toastError(tActions('tryAgain'));
+    }
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -430,6 +456,14 @@ export default function ListenStoryPage() {
                   >
                     <FiShare2 className="w-4 h-4" />
                     <span className="hidden sm:inline sm:ml-2">{tActions('share')}</span>
+                  </button>
+
+                  <button
+                    onClick={handleDuplicate}
+                    className="btn btn-ghost btn-sm"
+                  >
+                    <FiCopy className="w-4 h-4" />
+                    <span className="hidden sm:inline sm:ml-2">{tActions('duplicate')}</span>
                   </button>
                 </div>
               </div>
@@ -642,6 +676,8 @@ export default function ListenStoryPage() {
           }}
         />
       )}
+      {/* Toasts */}
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 }

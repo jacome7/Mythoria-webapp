@@ -29,9 +29,14 @@
     "read": "Read",
     "edit": "Edit",
     "share": "Share",
+    "duplicate": "Duplicate",
     "print": "Print",
     "delete": "Delete",
     "printNotAvailable": "Print Not Available"
+  },
+  "duplicate": {
+    "success": "Story duplicated successfully",
+    "error": "Failed to duplicate story"
   },
   "sharing": {
     "publicAccessible": "Story is now publicly accessible",

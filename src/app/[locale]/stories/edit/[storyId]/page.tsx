@@ -6,12 +6,13 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { useTranslations } from 'next-intl';
-import { FiArrowLeft } from 'react-icons/fi';
+import { FiArrowLeft, FiCopy } from 'react-icons/fi';
 
 // Components
 import ChapterNavigation from '../../../../../components/ChapterNavigation';
 import StoryInfoEditor from '../../../../../components/StoryInfoEditor';
 import ToastContainer from '../../../../../components/ToastContainer';
+import TranslateFullStoryModal from '../../../../../components/TranslateFullStoryModal';
 
 // Hooks
 import { useToast } from '../../../../../hooks/useToast';
@@ -20,6 +21,8 @@ import { useToast } from '../../../../../hooks/useToast';
 interface ApiStory {
   storyId: string;
   title: string;
+  status?: 'draft' | 'writing' | 'published';
+  storyLanguage?: string;
   synopsis?: string;
   dedicationMessage?: string;
   customAuthor?: string;
@@ -60,6 +63,7 @@ export default function StoryEditPage() {
   const tErrors = useTranslations('Errors');
   const tActions = useTranslations('Actions');
   const tStoryEditPage = useTranslations('StoryEditPage');
+  const tMyStories = useTranslations('MyStoriesPage');
 
   const storyId = (params?.storyId as string | undefined) ?? '';
   const locale = (params?.locale as string | undefined) ?? '';
@@ -79,6 +83,7 @@ export default function StoryEditPage() {
   const [saving, setSaving] = useState(false);
   const [showAITextEditor, setShowAITextEditor] = useState(false);
   const [showAIImageEditor, setShowAIImageEditor] = useState(false);
+  const [showTranslateModal, setShowTranslateModal] = useState(false);
   const [selectedImageData, setSelectedImageData] = useState<{
     imageUri: string;
     imageType: 'cover' | 'backcover' | 'chapter';
@@ -87,7 +92,7 @@ export default function StoryEditPage() {
   } | null>(null);
   
   // Toast notifications
-  const { toasts, addToast, removeToast } = useToast();
+  const { toasts, addToast, removeToast, successWithAction, error: toastError } = useToast();
 
   // Load story data
   const loadStoryData = useCallback(async () => {
@@ -156,6 +161,29 @@ export default function StoryEditPage() {
   const handleGoBack = () => {
     // Navigate to general story reading page
     router.push(`/${locale}/stories/read/${storyId}`);
+  };
+
+  // Handle duplicate
+  const handleDuplicate = async () => {
+    try {
+      const resp = await fetch(`/api/my-stories/${storyId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'duplicate', locale }),
+      });
+      if (!resp.ok) throw new Error(`Duplicate failed: ${resp.status}`);
+      const data = await resp.json();
+      const newId = data?.story?.storyId || data?.storyId;
+      const link = `/${locale}/stories/read/${newId}`;
+      successWithAction(
+        tMyStories('duplicate.success'),
+        tActions('open'),
+        link
+      );
+    } catch (e) {
+      console.error('Error duplicating story:', e);
+      toastError(tActions('tryAgain'));
+    }
   };
 
   // Handle chapter navigation
@@ -303,6 +331,13 @@ export default function StoryEditPage() {
               currentChapter={0}
               onChapterChange={handleChapterChange}
             />
+            <button
+              onClick={handleDuplicate}
+              className="btn btn-ghost btn-sm"
+            >
+              <FiCopy className="w-4 h-4" />
+              <span className="hidden sm:inline ml-2">{tActions('duplicate')}</span>
+            </button>
           </div>
         </div>
       </div>
@@ -314,6 +349,7 @@ export default function StoryEditPage() {
           <StoryInfoEditor
             story={storyData.story}
             onSave={updateStoryInfo}
+            onTranslateClick={() => setShowTranslateModal(true)}
             onEditCover={() => {
               if (storyData.story.coverUri) {
                 setSelectedImageData({
@@ -336,6 +372,8 @@ export default function StoryEditPage() {
             }}
             isLoading={saving}
           />
+
+          
 
           {/* AI Text Editor Modal */}
           <AITextStoryEditor
@@ -384,6 +422,19 @@ export default function StoryEditPage() {
               onImageEditSuccess={handleAIEditSuccess}
               onOptimisticUpdate={handleAIEditOptimisticUpdate}
               onRevertUpdate={handleAIEditRevertUpdate}
+            />
+          )}
+
+          {/* Translate Full Story Modal */}
+          {showTranslateModal && (
+            <TranslateFullStoryModal
+              isOpen={showTranslateModal}
+              onClose={() => setShowTranslateModal(false)}
+              storyId={storyData.story.storyId}
+              currentLanguage={storyData.story.storyLanguage || locale}
+              onRedirectToRead={(newId) => {
+                router.push(`/${locale}/stories/read/${newId}`);
+              }}
             />
           )}
         </div>

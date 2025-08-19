@@ -12,10 +12,13 @@ import {
   FiChevronDown,
   FiBook,
   FiPrinter,
-  FiMoreVertical
+  FiMoreVertical,
+  FiCopy
 } from 'react-icons/fi';
 import { trackStoryManagement } from '../lib/analytics';
 import ShareModal from './ShareModal';
+import ToastContainer from './ToastContainer';
+import { useToast } from '@/hooks/useToast';
 
 interface Story {
   storyId: string;
@@ -44,6 +47,7 @@ export default function MyStoriesTable() {
   const [storyToShare, setStoryToShare] = useState<Story | null>(null);
   const [openActionMenu, setOpenActionMenu] = useState<string | null>(null);
   const [menuPosition, setMenuPosition] = useState<{top: number, right: number} | null>(null);
+  const { toasts, removeToast, successWithAction, error } = useToast();
   
   // Mobile detection
   const [isMobile, setIsMobile] = useState(false);
@@ -134,6 +138,29 @@ export default function MyStoriesTable() {
   const handlePrint = (story: Story) => {
     // Navigate to the print order page
     window.location.href = `/${locale}/stories/print/${story.storyId}`;
+  };
+
+  const handleDuplicate = async (story: Story) => {
+    try {
+      const resp = await fetch(`/api/my-stories/${story.storyId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'duplicate', locale }),
+      });
+      if (!resp.ok) {
+        throw new Error(`Duplicate failed: ${resp.status}`);
+      }
+  const data = await resp.json();
+  const newStory = data.story as Story;
+  // Refresh list to include new story
+  await fetchStories();
+  // Localized toast with link
+  const link = `/${locale}/stories/read/${newStory.storyId}`;
+  successWithAction(tMyStoriesPage('duplicate.success'), tCommonActions('open'), link);
+    } catch (e) {
+      console.error('Error duplicating story:', e);
+      error(tMyStoriesPage('duplicate.error'));
+    }
   };
 
   // Filtering and sorting functions
@@ -348,6 +375,15 @@ export default function MyStoriesTable() {
                     <td className="pl-2 pr-1 py-1 md:px-4 md:py-2">
                       {/* Desktop Actions - Hidden on Mobile */}
                       <div className="hidden md:flex justify-end gap-0.5">
+                        {/* Duplicate action available for any story per requirement (but API restricts to published) */}
+                        <button
+                          className={`btn btn-ghost btn-sm ${story.status !== 'published' ? 'btn-disabled' : ''}`}
+                          onClick={() => story.status === 'published' && handleDuplicate(story)}
+                          title={tMyStoriesPage('actions.duplicate')}
+                          disabled={story.status !== 'published'}
+                        >
+                          <FiCopy className="w-4 h-4" />
+                        </button>
                         {story.status === 'published' && (
                           <Link
                             href={`/${locale}/stories/${story.storyId}`}
@@ -539,6 +575,20 @@ export default function MyStoriesTable() {
                               )}
                               
                               <div className="border-t border-base-300 my-1"></div>
+                              <button
+                                className={`flex items-center gap-2 px-3 py-2 text-sm rounded-md w-full text-left ${story.status !== 'published' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-base-200'}`}
+                                onClick={() => {
+                                  if (story.status === 'published') {
+                                    handleDuplicate(story);
+                                  }
+                                  setOpenActionMenu(null);
+                                  setMenuPosition(null);
+                                }}
+                                disabled={story.status !== 'published'}
+                              >
+                                <FiCopy className="w-4 h-4" />
+                                {tMyStoriesPage('actions.duplicate')}
+                              </button>
                               
                               <button
                                 className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-error hover:text-error-content rounded-md w-full text-left text-error"
@@ -585,7 +635,12 @@ export default function MyStoriesTable() {
             </div>
           </div>
         </div>
-      )}      {/* Share Modal */}
+  )}
+
+  {/* Toasts */}
+  <ToastContainer toasts={toasts} onRemove={removeToast} />
+
+  {/* Share Modal */}
       {storyToShare && storyToShare.storyId && (
         <ShareModal
           isOpen={shareModalOpen}

@@ -7,7 +7,8 @@ import {
   FiImage, 
   FiUser,
   FiBook,
-  FiHeart
+  FiHeart,
+  FiGlobe
 } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
 import { toAbsoluteImageUrl } from '../utils/image-url';
@@ -22,6 +23,7 @@ interface Story {
   backcoverUri?: string;
   targetAudience?: string;
   graphicalStyle?: string;
+  storyLanguage?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -32,6 +34,7 @@ interface StoryInfoEditorProps {
   onEditCover: () => void;
   onEditBackcover: () => void;
   isLoading?: boolean;
+  onTranslateClick?: () => void;
 }
 
 export default function StoryInfoEditor({
@@ -40,6 +43,7 @@ export default function StoryInfoEditor({
   onEditCover,
   onEditBackcover,
   isLoading = false,
+  onTranslateClick,
 }: StoryInfoEditorProps) {
   const tStoryInfoEditor = useTranslations('StoryInfoEditor');
   
@@ -273,6 +277,21 @@ export default function StoryInfoEditor({
         <div className="bg-base-200 rounded-lg p-4 space-y-2">
           <h3 className="font-medium">{tStoryInfoEditor('storyDetails')}</h3>
           <div className="space-y-1 text-sm">
+            <div className="flex justify-between items-center">
+              <span className="text-base-content/70">{tStoryInfoEditor('language')}</span>
+              <span className="flex items-center gap-2">
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-xs"
+                  onClick={onTranslateClick}
+                  title={tStoryInfoEditor('translate')}
+                >
+                  <FiGlobe className="w-4 h-4" />
+                  <span className="ml-1 hidden sm:inline">{tStoryInfoEditor('translate')}</span>
+                </button>
+                <span>{story.storyLanguage || '—'}</span>
+              </span>
+            </div>
             <div className="flex justify-between">
               <span className="text-base-content/70">{tStoryInfoEditor('graphicalStyleLabel')}</span>
               <span>{story.graphicalStyle?.replace('_', ' ') || tStoryInfoEditor('notSpecified')}</span>

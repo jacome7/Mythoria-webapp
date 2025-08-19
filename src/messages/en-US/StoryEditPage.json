@@ -1,5 +1,9 @@
 {
   "StoryEditPage": {
+    "language": {
+      "label": "Story language",
+      "translate": "Translate full story"
+    },
     "errors": {
       "failedToLoadStoryData": "Failed to load story data",
       "failedToLoadStory": "Failed to load story",

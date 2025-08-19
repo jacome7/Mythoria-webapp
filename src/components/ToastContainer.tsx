@@ -48,6 +48,11 @@ export default function ToastContainer({ toasts, onRemove }: ToastContainerProps
         >
           {getToastIcon(toast.type)}
           <span>{toast.message}</span>
+          {toast.actionHref && toast.actionLabel && (
+            <a href={toast.actionHref} className="btn btn-sm btn-ghost">
+              {toast.actionLabel}
+            </a>
+          )}
           <button
             onClick={() => onRemove(toast.id)}
             className="btn btn-ghost btn-sm btn-square"
