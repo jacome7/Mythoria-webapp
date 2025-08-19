@@ -2,12 +2,12 @@ import { extractStoryImages } from '@/utils/imageUtils';
 
 describe('extractStoryImages', () => {
   it('groups images by type and sorts versions', () => {
-    const data = {
+    const data: Record<string, { url: string }> = {
       'frontcover_v001.png': { url: 'https://storage.googleapis.com/b/frontcover_v001.png' },
       'frontcover_v002.png': { url: 'https://storage.googleapis.com/b/frontcover_v002.png' },
       'chapter_1.png': { url: 'https://storage.googleapis.com/b/chapter_1.png' },
       'chapter_1_v002.png': { url: 'https://storage.googleapis.com/b/chapter_1_v002.png' },
-    } as any;
+    };
 
     const images = extractStoryImages(data);
     expect(images[0].type).toBe('frontcover');

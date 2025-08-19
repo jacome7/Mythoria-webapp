@@ -24,7 +24,9 @@ describe("creditService.deductCredits", () => {
     jest.spyOn(creditService, "canAfford").mockResolvedValue(true);
     const addSpy = jest
       .spyOn(creditService, "addCreditEntry")
-      .mockResolvedValue({} as any);
+      .mockResolvedValue(
+        {} as unknown as Awaited<ReturnType<typeof creditService.addCreditEntry>>,
+      );
 
     await creditService.deductCredits("user", 10, "eBookGeneration", "story1");
 
@@ -41,7 +43,9 @@ describe("creditService.addCredits", () => {
   it("delegates to addCreditEntry", async () => {
     const addSpy = jest
       .spyOn(creditService, "addCreditEntry")
-      .mockResolvedValue({} as any);
+      .mockResolvedValue(
+        {} as unknown as Awaited<ReturnType<typeof creditService.addCreditEntry>>,
+      );
     await creditService.addCredits("user", 20, "creditPurchase", "p1");
     expect(addSpy).toHaveBeenCalledWith(
       "user",

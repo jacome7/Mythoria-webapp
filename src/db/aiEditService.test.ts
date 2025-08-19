@@ -24,7 +24,11 @@ describe('aiEditService.checkEditPermission', () => {
 describe('aiEditService.recordSuccessfulEdit', () => {
   it('deducts credits when required and records edit', async () => {
     jest.spyOn(aiEditService, 'calculateRequiredCredits').mockResolvedValue(2);
-    const deductSpy = jest.spyOn(creditService, 'deductCredits').mockResolvedValue({} as any);
+    const deductSpy = jest
+      .spyOn(creditService, 'deductCredits')
+      .mockResolvedValue(
+        {} as unknown as Awaited<ReturnType<typeof creditService.deductCredits>>,
+      );
     const values = jest.fn().mockResolvedValue([]);
     (db.insert as jest.Mock).mockReturnValue({ values });
 
