@@ -1,6 +1,7 @@
 jest.mock('@/db', () => ({ db: { select: jest.fn(), insert: jest.fn(), update: jest.fn() } }));
 import { pricingService } from './pricing';
 import { db } from '@/db';
+import type { Pricing, NewPricing } from '@/db/schema';
 
 describe('pricingService.getPricingByServiceCode', () => {
   it('returns first result when found', async () => {
@@ -26,11 +27,15 @@ describe('pricingService.getPricingByServiceCode', () => {
 
 describe('pricingService.createPricing', () => {
   it('inserts pricing entry', async () => {
-    const returning = jest.fn().mockResolvedValue([{ id: '1', serviceCode: 'S', credits: 5 }]);
+    const returning = jest
+      .fn()
+      .mockResolvedValue([{ id: '1', serviceCode: 'S', credits: 5 } as Pricing]);
     const values = jest.fn().mockReturnValue({ returning });
     (db.insert as jest.Mock).mockReturnValue({ values });
 
-    const result = await pricingService.createPricing({ serviceCode: 'S', credits: 5 } as any);
+    const result = await pricingService.createPricing(
+      { serviceCode: 'S', credits: 5 } as NewPricing,
+    );
     expect(result).toEqual({ id: '1', serviceCode: 'S', credits: 5 });
     expect(values).toHaveBeenCalledWith({ serviceCode: 'S', credits: 5 });
   });
@@ -51,7 +56,11 @@ describe('pricingService.updatePricing', () => {
 
 describe('pricingService.deactivatePricing', () => {
   it('delegates to updatePricing', async () => {
-    const updateSpy = jest.spyOn(pricingService, 'updatePricing').mockResolvedValue({} as any);
+    const updateSpy = jest
+      .spyOn(pricingService, 'updatePricing')
+      .mockResolvedValue(
+        {} as unknown as Awaited<ReturnType<typeof pricingService.updatePricing>>,
+      );
     await pricingService.deactivatePricing('1');
     expect(updateSpy).toHaveBeenCalledWith('1', { isActive: false });
   });
@@ -62,8 +71,8 @@ describe('pricingService.calculateCreditsForFeatures', () => {
     jest
       .spyOn(pricingService, 'getPricingByServiceCodes')
       .mockResolvedValue([
-        { serviceCode: 'eBookGeneration', credits: 5 } as any,
-        { serviceCode: 'printOrder', credits: 10 } as any,
+        { serviceCode: 'eBookGeneration', credits: 5 } as Pricing,
+        { serviceCode: 'printOrder', credits: 10 } as Pricing,
       ]);
     const result = await pricingService.calculateCreditsForFeatures({ ebook: true, printed: true });
     expect(result.total).toBe(15);
@@ -75,7 +84,7 @@ describe('pricingService.getInitialAuthorCredits', () => {
   it('returns credits from pricing table', async () => {
     jest
       .spyOn(pricingService, 'getPricingByServiceCode')
-      .mockResolvedValue({ credits: 7 } as any);
+      .mockResolvedValue({ credits: 7 } as Pricing);
     await expect(pricingService.getInitialAuthorCredits()).resolves.toBe(7);
   });
 
