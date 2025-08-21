@@ -25,35 +25,34 @@ export async function GET(request: NextRequest) {
     }
 
     const requests = await db
-      .select({
-        id: printRequests.id,
-        storyId: printRequests.storyId,
-        pdfUrl: printRequests.pdfUrl,
-        status: printRequests.status,
-        requestedAt: printRequests.requestedAt,
-        printedAt: printRequests.printedAt,
-        updatedAt: printRequests.updatedAt,
-        provider: {
-          id: printProviders.id,
-          name: printProviders.name,
-          companyName: printProviders.companyName,
-          integration: printProviders.integration,
-        },
-        story: {
-          id: stories.storyId,
-          title: stories.title,
-          authorId: stories.authorId,
-        },
-        shippingAddress: {
-          id: addresses.addressId,
-          line1: addresses.line1,
-          line2: addresses.line2,
-          city: addresses.city,
-          postalCode: addresses.postalCode,
-          country: addresses.country,
-          phone: addresses.phone,
-        }
-      })
+        .select({
+          id: printRequests.id,
+          storyId: printRequests.storyId,
+          status: printRequests.status,
+          requestedAt: printRequests.requestedAt,
+          printedAt: printRequests.printedAt,
+          updatedAt: printRequests.updatedAt,
+          provider: {
+            id: printProviders.id,
+            name: printProviders.name,
+            companyName: printProviders.companyName,
+            integration: printProviders.integration,
+          },
+          story: {
+            id: stories.storyId,
+            title: stories.title,
+            authorId: stories.authorId,
+          },
+          shippingAddress: {
+            id: addresses.addressId,
+            line1: addresses.line1,
+            line2: addresses.line2,
+            city: addresses.city,
+            postalCode: addresses.postalCode,
+            country: addresses.country,
+            phone: addresses.phone,
+          }
+        })
       .from(printRequests)
       .leftJoin(printProviders, eq(printRequests.printProviderId, printProviders.id))
       .leftJoin(stories, eq(printRequests.storyId, stories.storyId))
@@ -149,7 +148,8 @@ export async function POST(request: NextRequest) {
         { success: false, error: `No print provider available for country: ${shippingCountry}` },
         { status: 404 }
       );
-    }    // Check and deduct credits for print order
+    }
+    // Check and deduct credits for print order
     try {
       // Calculate total cost based on printing option and extra chapters
       const totalCost = body.totalCost || 0;
@@ -189,11 +189,12 @@ export async function POST(request: NextRequest) {
         { success: false, error: 'Failed to process payment. Please try again.' },
         { status: 500 }
       );
-    }    // Create the print request
+    }
+    
+    // Create the print request
     const newRequest = await db.insert(printRequests).values({
       authorId: author.authorId,
       storyId: body.storyId,
-      pdfUrl: 'pending://generation', // Will be updated after print generation
       printProviderId: suitableProvider.id,
       shippingId: body.shippingId || null,
       printingOptions: {
@@ -212,7 +213,6 @@ export async function POST(request: NextRequest) {
       .select({
         id: printRequests.id,
         storyId: printRequests.storyId,
-        pdfUrl: printRequests.pdfUrl,
         status: printRequests.status,
         requestedAt: printRequests.requestedAt,
         provider: {

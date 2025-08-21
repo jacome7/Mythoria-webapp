@@ -233,13 +233,9 @@ async function handleUserCreated(evt: WebhookEvent) {
 
           console.log('User updated (clerkUserId changed) for email:', primaryEmail.email_address, 'with locale:', userLocale);
           
-          // Send welcome notification for this "new" user account (don't block if fails)
-          try {
-            await sendWelcomeNotification(primaryEmail.email_address, userName);
-            console.log('Welcome notification sent successfully for updated user:', id);
-          } catch (notificationError) {
-            console.error('Failed to send welcome notification for updated user:', id, 'Error:', notificationError);
-          }
+          // Do NOT send welcome notification in duplicate email scenario.
+          // Requirement: Only send for truly new unique email accounts.
+          console.log('Skipping welcome notification for duplicate email update path:', primaryEmail.email_address);
         } catch (updateError) {
           console.error('Error updating user after duplicate email:', updateError);
           throw updateError;

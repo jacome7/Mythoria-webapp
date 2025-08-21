@@ -324,7 +324,8 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
           {currentStep === 'address' && (
             <AddressStep
               addresses={addresses}
-              selectedAddress={selectedAddress}              onSelectAddress={setSelectedAddress}
+              selectedAddress={selectedAddress}
+              onSelectAddress={setSelectedAddress}
               onSaveAddress={handleSaveAddress}
               onEditAddress={handleEditAddress}
               onDeleteAddress={handleDeleteAddress}
@@ -335,9 +336,11 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
               onShowCreateAddress={setShowCreateAddress}
               onCancelAddressEdit={handleCancelAddressEdit}
             />
-          )}          {currentStep === 'payment' && story && (
+          )}
+          {currentStep === 'payment' && story && (
             <PaymentStep
-              story={story}              selectedPrintingOption={selectedPrintingOption}
+              story={story}
+              selectedPrintingOption={selectedPrintingOption}
               onSelectPrintingOption={setSelectedPrintingOption}
               onBack={() => setCurrentStep('address')}
               onPlaceOrder={handlePlaceOrder}

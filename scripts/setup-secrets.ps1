@@ -77,6 +77,9 @@ $ClerkPublishableKey = $env:NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 $ClerkSecretKey = $env:CLERK_SECRET_KEY
 $ClerkWebhookSecret = $env:CLERK_WEBHOOK_SECRET
 $GaTrackingId = $env:NEXT_PUBLIC_GA_MEASUREMENT_ID
+$StoryGenApiKey = $env:STORY_GENERATION_WORKFLOW_API_KEY
+$AdminApiKey = $env:ADMIN_API_KEY
+$NotificationApiKey = $env:NOTIFICATION_ENGINE_API_KEY
 
 Write-Host "Setting up Google Cloud Secret Manager secrets for project: $ProjectId" -ForegroundColor Green
 
@@ -113,6 +116,18 @@ if (-not $GaTrackingId) {
     Write-Err "NEXT_PUBLIC_GA_MEASUREMENT_ID not found in .env.production file."
     exit 1
 }
+if (-not $StoryGenApiKey) {
+    Write-Err "STORY_GENERATION_WORKFLOW_API_KEY not found in .env.production file."
+    exit 1
+}
+if (-not $AdminApiKey) {
+    Write-Err "ADMIN_API_KEY not found in .env.production file."
+    exit 1
+}
+if (-not $NotificationApiKey) {
+    Write-Err "NOTIFICATION_ENGINE_API_KEY not found in .env.production file."
+    exit 1
+}
 
 # Display loaded configuration
 Write-Info "Configuration loaded:"
@@ -123,6 +138,9 @@ Write-Host "  OK CLERK_PUBLISHABLE_KEY: $($ClerkPublishableKey.Substring(0, 20))
 Write-Host "  OK CLERK_SECRET_KEY: $($('*' * $ClerkSecretKey.Length))" -ForegroundColor Green
 Write-Host "  OK CLERK_WEBHOOK_SECRET: $($('*' * $ClerkWebhookSecret.Length))" -ForegroundColor Green
 Write-Host "  OK GA_MEASUREMENT_ID: $GaTrackingId" -ForegroundColor Green
+Write-Host "  OK STORY_GENERATION_API_KEY: $($('*' * $StoryGenApiKey.Length))" -ForegroundColor Green
+Write-Host "  OK ADMIN_API_KEY: $($('*' * $AdminApiKey.Length))" -ForegroundColor Green
+Write-Host "  OK NOTIFICATION_API_KEY: $($('*' * $NotificationApiKey.Length))" -ForegroundColor Green
 
 # Set the Google Cloud project
 Write-Host "Setting Google Cloud project..." -ForegroundColor Blue
@@ -153,6 +171,15 @@ $ClerkWebhookSecret.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gclou
 
 Write-Host "Creating Google Analytics measurement ID secret..." -ForegroundColor Blue
 $GaTrackingId.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gcloud secrets create mythoria-ga-measurement-id --data-file=temp_secret.txt --replication-policy='automatic'; Remove-Item temp_secret.txt
+
+Write-Host "Creating Story Generation API key secret..." -ForegroundColor Blue
+$StoryGenApiKey.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gcloud secrets create STORY_GENERATION_WORKFLOW_API_KEY --data-file=temp_secret.txt --replication-policy='automatic'; Remove-Item temp_secret.txt
+
+Write-Host "Creating Admin API key secret..." -ForegroundColor Blue
+$AdminApiKey.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gcloud secrets create ADMIN_API_KEY --data-file=temp_secret.txt --replication-policy='automatic'; Remove-Item temp_secret.txt
+
+Write-Host "Creating Notification Engine API key secret..." -ForegroundColor Blue
+$NotificationApiKey.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gcloud secrets create NOTIFICATION_ENGINE_API_KEY --data-file=temp_secret.txt --replication-policy='automatic'; Remove-Item temp_secret.txt
 
 # Grant permissions to Cloud Build service account
 Write-Host "Granting permissions to Cloud Build service account..." -ForegroundColor Blue

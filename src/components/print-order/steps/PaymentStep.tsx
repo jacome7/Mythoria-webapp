@@ -351,7 +351,8 @@ export default function PaymentStep({
             tPrintOrder('buttons.placeOrder')
           )}
         </button>
-      </div>      {/* Confirmation Modal */}
+      </div>
+      {/* Confirmation Modal */}
       {showConfirmModal && (
         <div className="modal modal-open">
           <div className="modal-box">

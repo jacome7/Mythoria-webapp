@@ -55,7 +55,7 @@ interface CommunicationTestResults {
   };
 }
 
-async function testDirectCommunication(serviceUrl: string, endpoint: string): Promise<ServiceTestResult> {
+async function testDirectCommunication(serviceUrl: string, endpoint: string, apiKey?: string): Promise<ServiceTestResult> {
   const startTime = Date.now();
   
   try {
@@ -63,7 +63,7 @@ async function testDirectCommunication(serviceUrl: string, endpoint: string): Pr
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        ...(process.env.STORY_GENERATION_WORKFLOW_API_KEY && endpoint.startsWith('/ping') ? { 'x-api-key': process.env.STORY_GENERATION_WORKFLOW_API_KEY } : {})
+        ...(apiKey ? { 'x-api-key': apiKey } : {})
       },
       signal: AbortSignal.timeout(10000) // 10 second timeout
     });
@@ -96,8 +96,8 @@ async function testDirectCommunication(serviceUrl: string, endpoint: string): Pr
   }
 }
 
-async function testPingEndpoint(serviceUrl: string): Promise<ServiceTestResult> {
-  return testDirectCommunication(serviceUrl, '/ping');
+async function testPingEndpoint(serviceUrl: string, apiKey?: string): Promise<ServiceTestResult> {
+  return testDirectCommunication(serviceUrl, '/ping', apiKey);
 }
 
 async function testAdminPing(adminUrl: string, apiKey: string): Promise<ServiceTestResult> {
@@ -144,7 +144,7 @@ async function testAdminPing(adminUrl: string, apiKey: string): Promise<ServiceT
   }
 }
 
-async function testPubSubCommunication(serviceUrl: string, endpoint: string): Promise<ServiceTestResult> {
+async function testPubSubCommunication(serviceUrl: string, endpoint: string, apiKey?: string): Promise<ServiceTestResult> {
   const startTime = Date.now();
   
   try {
@@ -158,7 +158,7 @@ async function testPubSubCommunication(serviceUrl: string, endpoint: string): Pr
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(process.env.STORY_GENERATION_WORKFLOW_API_KEY ? { 'x-api-key': process.env.STORY_GENERATION_WORKFLOW_API_KEY } : {})
+        ...(apiKey ? { 'x-api-key': apiKey } : {})
       },
       body: JSON.stringify(testMessage),
       signal: AbortSignal.timeout(15000) // 15 second timeout for pub/sub
@@ -247,13 +247,14 @@ export async function GET() {
     
     // Direct communication test
     console.log('  - Testing direct communication (ping)...');
-    results.services.storyGeneration.direct = await testPingEndpoint(config.storyGeneration.workflowUrl);
+    results.services.storyGeneration.direct = await testPingEndpoint(config.storyGeneration.workflowUrl, config.storyGeneration.apiKey);
     
     // Pub/Sub communication test
     console.log('  - Testing pub/sub communication...');
     results.services.storyGeneration.pubsub = await testPubSubCommunication(
       config.storyGeneration.workflowUrl, 
-      '/test/pubsub-ping'
+      '/test/pubsub-ping',
+      config.storyGeneration.apiKey
     );
 
     // Test Notification Engine Service
@@ -261,13 +262,14 @@ export async function GET() {
     
     // Direct communication test
     console.log('  - Testing direct communication (ping)...');
-    results.services.notification.direct = await testPingEndpoint(config.notification.engineUrl);
+    results.services.notification.direct = await testPingEndpoint(config.notification.engineUrl, config.notification.apiKey);
     
     // Pub/Sub communication test  
     console.log('  - Testing pub/sub communication...');
     results.services.notification.pubsub = await testPubSubCommunication(
       config.notification.engineUrl,
-      '/test/pubsub-ping'
+      '/test/pubsub-ping',
+      config.notification.apiKey
     );
 
     // Test Admin Service
