@@ -19,12 +19,23 @@ export default function GroupedCharacterTypeSelect({
   className = ""
 }: GroupedCharacterTypeSelectProps) {
   const tGroupedCharacterTypeSelect = useTranslations('GroupedCharacterTypeSelect');
+  const tCharacters = useTranslations('Characters');
   const [isOpen, setIsOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const getGroupLabel = (groupKey: string) => {
     return tGroupedCharacterTypeSelect(`groups.${groupKey}`);
+  };
+
+  const getCharacterTypeDisplayLabel = (typeValue: string) => {
+    const typeKey = `types.${typeValue}`;
+    const translated = tCharacters(typeKey);
+    // If translation exists, use it; otherwise fall back to the hardcoded label
+    if (translated !== typeKey) {
+      return translated;
+    }
+    return getCharacterTypeLabel(typeValue);
   };
 
   const getDisplayPlaceholder = () => {
@@ -68,7 +79,7 @@ export default function GroupedCharacterTypeSelect({
     setIsOpen(false);
   };
 
-  const displayValue = value ? getCharacterTypeLabel(value) : getDisplayPlaceholder();
+  const displayValue = value ? getCharacterTypeDisplayLabel(value) : getDisplayPlaceholder();
 
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
@@ -121,7 +132,7 @@ export default function GroupedCharacterTypeSelect({
                           : 'text-gray-700'
                       }`}
                     >
-                      {option.label}
+                      {getCharacterTypeDisplayLabel(option.value)}
                     </button>
                   ))}
                 </div>

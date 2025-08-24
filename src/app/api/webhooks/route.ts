@@ -5,23 +5,17 @@ import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { authors } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { pricingService } from '@/db/services';
-import { notificationFetch } from '@/lib/notification-client';
+import { sendWelcomeNotification } from '@/lib/notifications/welcome';
 
-/**
- * Detect user's preferred locale from webhook context or other indicators
- */
+// Basic locale detection from email domain (fallback logic). This mirrors earlier heuristic
+// and should be replaced if/when a more robust detection source is available.
 function detectUserLocale(email: string): string {
-  // For now, fall back to email domain detection until the client-side sync takes over
-  if (email.endsWith('.pt') || email.includes('@mythoria.pt') || email.includes('.pt')) {
-    return 'pt-PT';
-  }
-  
-  // Default to English for all other cases
-  // Note: The LocaleSync component will update this to the correct locale
-  // based on the user's actual webapp usage within 2 minutes of sign-up
+  const lower = email.toLowerCase();
+  if (lower.endsWith('.pt') || lower.includes('.pt') || lower.endsWith('.pt">')) return 'pt-PT';
+  if (lower.endsWith('.es') || lower.includes('.es')) return 'es-ES';
   return 'en-US';
 }
+
 
 export async function POST(req: Request) {
   // Get the headers
@@ -96,64 +90,7 @@ export async function POST(req: Request) {
   }
 }
 
-/**
- * Send welcome notification to newly registered user
- */
-async function sendWelcomeNotification(email: string, name: string) {
-  const notificationEngineUrl = process.env.NOTIFICATION_ENGINE_URL;
-  
-  if (!notificationEngineUrl) {
-    console.warn('NOTIFICATION_ENGINE_URL not configured, skipping welcome notification');
-    return;
-  }
-
-  try {
-    // Get dynamic story credits amount
-    const storyCredits = await pricingService.getInitialAuthorCredits();
-    
-    // Use the same locale detection logic as user creation
-    const language = detectUserLocale(email);
-    
-    const notificationPayload = {
-      templateId: 'welcome',
-      recipients: [
-        {
-          email: email,
-          name: name,
-          language: language
-        }
-      ],
-      variables: {
-        name: name,
-        storyCredits: storyCredits,
-        currentDate: new Date().toISOString()
-      },
-      priority: 'normal',
-      metadata: {
-        source: 'user_signup',
-        userEmail: email
-      }
-    };
-
-    console.log('Sending welcome notification to:', email, 'Language:', language, 'Credits:', storyCredits);
-    const response = await notificationFetch(`${notificationEngineUrl}/email/template`, {
-      method: 'POST',
-      body: JSON.stringify(notificationPayload),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Notification API responded with status ${response.status}: ${errorText}`);
-    }
-
-    const result = await response.json();
-    console.log('Welcome notification sent successfully:', result);
-    
-  } catch (error) {
-    console.error('Error sending welcome notification:', error);
-    throw error;
-  }
-}
+// sendWelcomeNotification now lives in '@/lib/notifications/welcome'
 
 async function handleUserCreated(evt: WebhookEvent) {
   if (evt.type !== 'user.created') return;
@@ -185,7 +122,7 @@ async function handleUserCreated(evt: WebhookEvent) {
 
     // Send welcome notification (don't block user creation if this fails)
     try {
-      await sendWelcomeNotification(primaryEmail.email_address, userName);
+  await sendWelcomeNotification({ email: primaryEmail.email_address, name: userName });
       console.log('Welcome notification sent successfully for user:', id);
     } catch (notificationError) {
       console.error('Failed to send welcome notification for user:', id, 'Error:', notificationError);

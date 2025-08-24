@@ -81,6 +81,12 @@
       "default": [
         "⚡ Os nossos Umpa-lumpas mágicos estão a trabalhar as suas maravilhas criativas!"
       ]
+    },
+    "timeUnits": {
+      "second": "segundo",
+      "seconds": "segundos",
+      "minute": "minuto",
+      "minutes": "minutos"
     }
   }
 }

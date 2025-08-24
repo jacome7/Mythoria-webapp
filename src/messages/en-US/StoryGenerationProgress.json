@@ -81,6 +81,12 @@
       "default": [
         "⚡ Our magical Oompa-Loompas are working their creative wonders!"
       ]
+    },
+    "timeUnits": {
+      "second": "second",
+      "seconds": "seconds",
+      "minute": "minute",
+      "minutes": "minutes"
     }
   }
 }

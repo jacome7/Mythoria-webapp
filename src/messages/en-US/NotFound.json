@@ -18,5 +18,27 @@
       "myStories": "My Stories"
     },
     "quote": "\"Not all those who wander are lost... but this page definitely is!\" - A confused Hobbit"
+  },
+  "Header": {
+    "navigation": {
+      "homepage": "Homepage",
+      "getInspired": "Get Inspired",
+      "tellYourStory": "Tell Your Story",
+      "blog": "The Blog",
+      "myStories": "My Stories",
+      "pricing": "Pricing"
+    },
+    "auth": {
+      "signIn": "Sign In"
+    },
+    "logoAlt": "Mythoria Logo"
+  },
+  "Footer": {
+    "aboutFounder": "My name is Rodrigo, I've just turned 18 years old and I love listening to stories since I was little.",
+    "readMyStory": "Read my own story",
+    "privacyPolicy": "Privacy & Cookies",
+    "termsConditions": "Terms & Conditions",
+    "contactUs": "Contact Us",
+    "copyright": "Aventuras Contemporâneas, Lda"
   }
 }

@@ -226,6 +226,12 @@ export default function CharacterCard({
 
   // Helper function to get type display value
   const getTypeDisplayValue = (typeValue: string) => {
+    const typeKey = `types.${typeValue}`;
+    const translated = tCharacters(typeKey);
+    // If translation exists, use it; otherwise fall back to formatted value
+    if (translated !== typeKey) {
+      return translated;
+    }
     return typeValue.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   };
 

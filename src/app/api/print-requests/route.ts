@@ -195,6 +195,8 @@ export async function POST(request: NextRequest) {
     const newRequest = await db.insert(printRequests).values({
       authorId: author.authorId,
       storyId: body.storyId,
+  // PDF is generated asynchronously after the request; store placeholder for now
+  pdfUrl: '',
       printProviderId: suitableProvider.id,
       shippingId: body.shippingId || null,
       printingOptions: {

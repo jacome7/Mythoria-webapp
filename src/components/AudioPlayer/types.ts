@@ -22,6 +22,11 @@ export interface AudioPlayerActions {
 export interface AudioPlayerHookProps {
   audioEndpoint: string; // Base endpoint for audio proxy
   onError?: (error: string) => void;
+  /**
+   * Total number of chapters available for playback. If not provided, will fall back to
+   * trackingData.total_chapters. Required for auto-advance to next chapter on end.
+   */
+  totalChapters?: number;
   trackingData?: {
     story_id?: string;
     story_title?: string;

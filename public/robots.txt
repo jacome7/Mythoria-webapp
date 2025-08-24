@@ -7,6 +7,7 @@ Allow: /
 # Allow all pages by default, but add specific directives for better SEO
 Allow: /en-US/
 Allow: /pt-PT/
+Allow: /es-ES/
 
 # Disallow admin and private areas
 Disallow: /portaldegestao/

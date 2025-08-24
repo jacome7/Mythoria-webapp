@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { trackStoryManagement } from '@/lib/analytics';
 import { AudioPlayerState, AudioPlayerActions, AudioPlayerHookProps } from './types';
@@ -6,7 +6,8 @@ import { AudioPlayerState, AudioPlayerActions, AudioPlayerHookProps } from './ty
 export function useAudioPlayer({ 
   audioEndpoint, 
   onError, 
-  trackingData 
+  trackingData,
+  totalChapters
 }: AudioPlayerHookProps): AudioPlayerState & AudioPlayerActions {
   const tErrors = useTranslations('Errors');
 
@@ -15,6 +16,14 @@ export function useAudioPlayer({
   const [audioElements, setAudioElements] = useState<{ [key: number]: HTMLAudioElement }>({});
   const [audioProgress, setAudioProgress] = useState<{ [key: number]: number }>({});
   const [audioLoading, setAudioLoading] = useState<{ [key: number]: boolean }>({});
+
+  // Refs to always-current state for event handlers (auto-advance logic)
+  const audioElementsRef = useRef(audioElements);
+  const totalChaptersRef = useRef<number>(totalChapters ?? trackingData?.total_chapters ?? 0);
+  const playAudioRef = useRef<(i: number) => Promise<void>>(async () => {});
+
+  useEffect(() => { audioElementsRef.current = audioElements; }, [audioElements]);
+  useEffect(() => { totalChaptersRef.current = totalChapters ?? trackingData?.total_chapters ?? 0; }, [totalChapters, trackingData]);
 
   const playAudio = useCallback(async (chapterIndex: number) => {
     try {
@@ -49,8 +58,19 @@ export function useAudioPlayer({
         });
 
         audio.addEventListener('ended', () => {
+          // Mark current as finished
           setCurrentlyPlaying(null);
           setAudioProgress(prev => ({ ...prev, [chapterIndex]: 0 }));
+
+            // Auto-advance if there is a next chapter
+          const total = totalChaptersRef.current;
+          const nextIndex = chapterIndex + 1;
+          if (total > 0 && nextIndex < total) {
+            // Slight delay to allow state to settle before starting next
+            setTimeout(() => {
+              playAudioRef.current(nextIndex);
+            }, 150);
+          }
         });
 
         audio.addEventListener('error', (e) => {
@@ -156,6 +176,9 @@ export function useAudioPlayer({
       }
     }
   }, [currentlyPlaying, audioElements, audioEndpoint, tErrors, onError, trackingData]);
+
+  // Keep ref of latest playAudio for ended event handlers
+  useEffect(() => { playAudioRef.current = playAudio; }, [playAudio]);
 
   const pauseAudio = useCallback((chapterIndex: number) => {
     if (audioElements[chapterIndex]) {

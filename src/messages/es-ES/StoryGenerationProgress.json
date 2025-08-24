@@ -81,6 +81,12 @@
       "default": [
         "⚡ Oompa-Loompas mágicos dan rienda suelta a su creatividad."
       ]
+    },
+    "timeUnits": {
+      "second": "segundo",
+      "seconds": "segundos",
+      "minute": "minuto",
+      "minutes": "minutos"
     }
   }
 }
