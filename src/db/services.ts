@@ -5,6 +5,7 @@ import { ClerkUserForSync } from "@/types/clerk";
 import { pricingService } from "./services/pricing";
 import { CharacterRole, CharacterAge, isValidCharacterAge } from "../types/character-enums";
 import { toAbsoluteImageUrl, toRelativeImagePath } from "../utils/image-url";
+import { normalizePreferredLocale, detectUserLocaleFromEmail } from '@/utils/locale-utils';
 
 // Export payment service
 export { paymentService } from "./services/payment";
@@ -12,8 +13,14 @@ export { creditPackagesService } from "./services/credit-packages";
 export { blogService } from './services/blog';
 
 // Author operations
-export const authorService = {  async createAuthor(authorData: { clerkUserId: string; email: string; displayName: string }) {
-    const [author] = await db.insert(authors).values(authorData).returning();
+export const authorService = {  async createAuthor(authorData: { clerkUserId: string; email: string; displayName: string; preferredLocale?: string }) {
+    const normalizedLocale = normalizePreferredLocale(authorData.preferredLocale);
+    const [author] = await db.insert(authors).values({
+      clerkUserId: authorData.clerkUserId,
+      email: authorData.email,
+      displayName: authorData.displayName,
+      preferredLocale: normalizedLocale,
+    }).returning();
     
     // Initialize credits for new author with initial credits from pricing table
     const initialCredits = await pricingService.getInitialAuthorCredits();
@@ -42,12 +49,15 @@ export const authorService = {  async createAuthor(authorData: { clerkUserId: st
       const primaryEmail = clerkUser.emailAddresses?.find((email) => email.id === clerkUser.primaryEmailAddressId);
       const primaryPhone = clerkUser.phoneNumbers?.find((phone) => phone.id === clerkUser.primaryPhoneNumberId);
 
+      const email = primaryEmail?.emailAddress || clerkUser.emailAddresses?.[0]?.emailAddress || '';
+      const detectedLocale = detectUserLocaleFromEmail(email);
       const newAuthorData = {
         clerkUserId: clerkUser.id,
-        email: primaryEmail?.emailAddress || clerkUser.emailAddresses?.[0]?.emailAddress || '',
+        email,
         displayName: this.buildDisplayName(clerkUser),
         lastLoginAt: currentTime,
         createdAt: currentTime,
+        preferredLocale: normalizePreferredLocale(detectedLocale),
         ...(primaryPhone?.phoneNumber && { mobilePhone: primaryPhone.phoneNumber })
       };
 
@@ -83,6 +93,7 @@ export const authorService = {  async createAuthor(authorData: { clerkUserId: st
                   clerkUserId: clerkUser.id, // Update to new clerkId
                   displayName: this.buildDisplayName(clerkUser),
                   lastLoginAt: currentTime,
+                  preferredLocale: normalizePreferredLocale(detectedLocale),
                   ...(primaryPhone?.phoneNumber && { mobilePhone: primaryPhone.phoneNumber })
                 })
                 .where(eq(authors.email, newAuthorData.email))

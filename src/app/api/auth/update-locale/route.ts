@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db';
 import { authors } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+import { normalizePreferredLocale } from '@/utils/locale-utils';
 
 export async function POST(req: Request) {
   try {
@@ -17,22 +18,18 @@ export async function POST(req: Request) {
     }
 
     // Parse request body
-    const { preferredLocale } = await req.json();
-    
-    // Validate locale
-    const validLocales = ['en-US', 'pt-PT']; // Add more as needed
-    if (!preferredLocale || !validLocales.includes(preferredLocale)) {
-      return NextResponse.json(
-        { error: 'Invalid locale. Must be one of: ' + validLocales.join(', ') },
-        { status: 400 }
-      );
-    }
+  const body = await req.json();
+  const preferredLocaleInput = body?.preferredLocale as string | undefined;
+  const normalized = normalizePreferredLocale(preferredLocaleInput);
+
+  // (Implicit validation via normalization) If input was invalid we still coerce to 'en-US'.
+  // If you want to reject unknown locales explicitly, add a guard here.
 
     // Update user's preferred locale in the database
     const [updatedAuthor] = await db
       .update(authors)
       .set({
-        preferredLocale: preferredLocale,
+  preferredLocale: normalized,
       })
       .where(eq(authors.clerkUserId, userId))
       .returning();
@@ -44,11 +41,11 @@ export async function POST(req: Request) {
       );
     }
 
-    console.log('User locale updated:', userId, 'to locale:', preferredLocale);
+  console.log('User locale updated:', userId, 'to locale:', normalized);
 
     return NextResponse.json({
       success: true,
-      preferredLocale: updatedAuthor.preferredLocale
+  preferredLocale: updatedAuthor.preferredLocale
     });
 
   } catch (error) {
