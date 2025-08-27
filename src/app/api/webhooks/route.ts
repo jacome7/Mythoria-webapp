@@ -5,17 +5,8 @@ import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { authors } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+import { detectUserLocaleFromEmail } from '@/utils/locale-utils';
 import { sendWelcomeNotification } from '@/lib/notifications/welcome';
-
-// Basic locale detection from email domain (fallback logic). This mirrors earlier heuristic
-// and should be replaced if/when a more robust detection source is available.
-function detectUserLocale(email: string): string {
-  const lower = email.toLowerCase();
-  if (lower.endsWith('.pt') || lower.includes('.pt') || lower.endsWith('.pt">')) return 'pt-PT';
-  if (lower.endsWith('.es') || lower.includes('.es')) return 'es-ES';
-  return 'en-US';
-}
-
 
 export async function POST(req: Request) {
   // Get the headers
@@ -106,7 +97,7 @@ async function handleUserCreated(evt: WebhookEvent) {
 
   const userName = `${first_name || ''} ${last_name || ''}`.trim() || 'Anonymous User';
 
-  const userLocale = detectUserLocale(primaryEmail.email_address);
+  const userLocale = detectUserLocaleFromEmail(primaryEmail.email_address);
 
   try {
     // Try to insert new user first
