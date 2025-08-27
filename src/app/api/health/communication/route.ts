@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getEnvironmentConfig } from '../../../../../config/environment.js';
+import { getEnvironmentConfig } from '@/config/environment';
 
 const config = getEnvironmentConfig();
 

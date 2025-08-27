@@ -1,5 +1,5 @@
 import { PubSub } from '@google-cloud/pubsub';
-import { getEnvironmentConfig } from '../../config/environment';
+import { getEnvironmentConfig } from '@/config/environment';
 
 export class PrintPubSubService {
   private pubsub: PubSub;
