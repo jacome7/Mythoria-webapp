@@ -1,0 +1,57 @@
+{
+  "BuyCreditsPage": {
+    "header": {
+      "title": "Acheter des crédits",
+      "subtitle": "Achetez des crédits pour débloquer des fonctionnalités premium et créer des histoires incroyables."
+    },
+    "packages": {
+      "title": "Packages de crédit disponibles",
+      "addToCart": "Ajouter au panier"
+    },
+    "badges": {
+      "bestValue": "Meilleur rapport qualité-prix",
+      "popular": "Populaire"
+    },
+    "cart": {
+      "title": "Panier",
+      "empty": "Votre panier est vide. Ajoutez des forfaits de crédit pour commencer!",
+      "each": "chaque"
+    },
+    "summary": {
+      "title": "Résumé de la commande",
+      "subtotal": "Total",
+      "vat": "TVA (6%)",
+      "total": "Total"
+    },
+    "payment": {
+      "title": "Mode de paiement",
+      "revolutPay": "Revolut Pay",
+      "revolutDescription": "Paiement rapide et sécurisé avec Revolut. Payez avec votre carte bancaire ou votre compte Revolut.",
+      "revolutError": "Erreur de paiement",
+      "revolutErrorHelp": "Si vous continuez à rencontrer des problèmes, veuillez essayer d'utiliser un mode de paiement différent ou un support de contact.",
+      "mbway": "MB Way",
+      "mbwayDescription": "Payez en utilisant votre application mobile Portugais MB Way.",
+      "comingSoon": "À venir",
+      "completePayment": "Complétez votre paiement",
+      "creatingOrder": "Créer votre commande ...",
+      "orderCreated": "Ordre créé avec succès",
+      "success": "Paiement réussi! Rediriger vers vos histoires ...",
+      "mbwaySuccess": "MB Way Payment Demande créée! Vérifiez votre e-mail pour les instructions de paiement. Rediriger vers vos histoires ...",
+      "processing": "Paiement de traitement ..."
+    },
+    "actions": {
+      "proceedToPayment": "Procéder au paiement",
+      "creatingOrder": "Création d'ordre ...",
+      "cancel": "Annuler",
+      "tryAgain": "Essayer à nouveau",
+      "contactSupport": "Support de contact",
+      "backToPricing": "Retour aux prix"
+    },
+    "errors": {
+      "emptyCart": "Votre panier est vide. Veuillez d'abord ajouter des forfaits de crédit.",
+      "orderCreationFailed": "Échec de la commande. Veuillez réessayer.",
+      "paymentFailed": "Le paiement a échoué. Veuillez réessayer.",
+      "contactSupport": "Veuillez contacter notre équipe d'assistance pour obtenir de l'aide."
+    }
+  }
+}

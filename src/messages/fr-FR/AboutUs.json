@@ -1,0 +1,67 @@
+{
+  "AboutUs": {
+    "hero": {
+      "title": "Mythorie",
+      "subtitle": "Des histoires brassées par un rêveur de 18 ans… et une légion d'Oompa-Loompas.",
+      "cta": "Commencez votre propre histoire"
+    },
+    "founder": {
+      "title": "Le jeune fondateur",
+      "description": "Rencontrez Rodrigo, qui a transformé sa fascination d'enfance pour les histoires en usine d'aventure. À 18 ans, il combine une énorme imagination avec un soupçon d'intelligence artificielle pour créer des contes personnalisés pour chaque enfant ou adulte.",
+      "ageLabel": "18 ans",
+      "ageHover": "Toujours en levant",
+      "imageAlt": "Rodrigo - Fondateur de Mythoria",
+      "badges": {
+        "founder": "Fondateur",
+        "aiEnthusiast": "Enthousiaste de l'IA",
+        "storyteller": "Conteur"
+      }
+    },
+    "aiTeam": {
+      "title": "Rencontrez l'Oompa-Loompas 2.0",
+      "subtitle": "Contrairement à l'usine de Wonka, nos Oompa-Loompas sont du silicium pur - éthique, sans sommeil et sans fin évolutif.",
+      "quillBot": {
+        "name": "Quille",
+        "description": "Écrit des rebondissements plus rapidement que vous ne pouvez dire Expelliarmus"
+      },
+      "brushBot": {
+        "name": "Pinceau",
+        "description": "Peint les mondes en pixar, manga ou couleur à eau à un clic"
+      },
+      "voiceBot": {
+        "name": "Bot",
+        "description": "Donne à chaque héros une voix unique - aucun billet d'or nécessaire"
+      }
+    },
+    "progress": {
+      "title": "Laboratoire de travail en cours",
+      "milestone1": "Beta Spellbook - les 100 premières familles créent déjà des contes",
+      "milestone2": "Couldron de rétroaction de la communauté - Chaque suggestion apparaît ici",
+      "milestone3": "Portail de libération mondiale - prévu pour septembre 2025",
+      "feedbackButton": "🪄 Suggérer un sort",
+      "milestoneLabels": {
+        "betaSpellbook": "Spellbook Beta",
+        "feedbackCauldron": "Couldron de rétroaction",
+        "globalPortal": "Portail mondial"
+      }
+    },
+    "news": {
+      "title": "Nouvelles du royaume",
+      "breaking": "Breaking Quill 🗞️ - Rodrigo remporte le prix Inovagaia Young Innovator 2025 pour Mythoria!"
+    },
+    "investors": {
+      "title": "Investisseurs: rejoignez la quête",
+      "description": "Les dragons aiment l'or; Nous aimons les partenaires. Si vous voyez aussi le trésor, ouvrez le parchemin."
+    }
+  },
+  "AboutUsModal": {
+    "feedback": {
+      "title": "🪄 Jetez votre sort de rétroaction",
+      "placeholder": "Partagez vos suggestions magiques ...",
+      "submit": "Envoyer un sort ✨"
+    },
+    "investors": {
+      "button": "Ouvrez le parchemin 📜"
+    }
+  }
+}

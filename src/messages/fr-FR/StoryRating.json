@@ -1,0 +1,36 @@
+{
+  "StoryRating": {
+    "title": "Rate this story",
+    "titleUpdate": "Update Your Rating",
+    "currentRating": "Current Rating",
+    "basedOnRatings": "Based on {count} rating{plural}",
+    "clickToRate": "Click to rate {count} star{plural}",
+    "noRatingsYet": "No ratings yet",
+    "yourCurrentRating": "Your current rating",
+    "youSelected": "You selected:",
+    "starTooltip": "Rate {count} star{plural}",
+    "feedback": {
+      "title": "What could we improve? (Optional)",
+      "placeholder": "Your feedback helps us create better stories...",
+      "includeNameLabel": "Allow the author to see my name with this feedback"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "submitRating": "Submit Rating",
+      "updateRating": "Update Rating",
+      "submitting": "Submitting..."
+    },
+    "success": {
+      "title": "Thank you for your rating!",
+      "titleUpdated": "Rating Updated!",
+      "message": "Your feedback helps us improve our stories.",
+      "messageUpdated": "Your rating has been updated successfully!"
+    },
+    "submittingMessage": "Submitting your rating...",
+    "errors": {
+      "serviceUnavailable": "The rating system is currently being set up. Please try again in a few minutes.",
+      "submitFailed": "Failed to submit rating",
+      "generic": "An error occurred"
+    }
+  }
+}

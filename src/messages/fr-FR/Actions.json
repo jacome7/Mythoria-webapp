@@ -1,0 +1,20 @@
+{
+  "Actions": {
+    "signIn": "Se connecter",
+    "read": "Lire",
+    "listen": "Écouter",
+    "edit": "Modifier",
+    "print": "Imprimer",
+    "share": "Partager",
+    "backToMyStories": "Retour à mes histoires",
+    "goToHomepage": "Aller à la page d'accueil",
+    "tryAgain": "Essayer à nouveau",
+    "close": "Fermer",
+    "goBack": "Remonter",
+    "backToStory": "Retour à l'histoire",
+    "createAccount": "Créer un compte",
+    "duplicate": "Double",
+    "open": "Ouvrir",
+    "duplicateTitleSuffix": "- Copier"
+  }
+}

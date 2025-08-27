@@ -1,0 +1,24 @@
+{
+  "MyCharactersPage": {
+    "noCharacters": {
+      "title": "Vous n'avez pas encore de personnages!",
+      "subtitle": "Commencez à créer des personnages pour vos histoires pour les voir ici."
+    },
+    "table": {
+      "name": "Nom",
+      "type": "Taper",
+      "actions": "Actes"
+    },
+    "actions": {
+      "edit": "Modifier",
+      "delete": "Supprimer"
+    },
+    "createCharacter": "Créer un caractère",
+    "deleteConfirm": {
+      "title": "Supprimer le caractère",
+      "message": "Êtes-vous sûr de vouloir supprimer ce personnage? Cette action ne peut pas être annulée.",
+      "cancel": "Annuler",
+      "confirm": "Supprimer"
+    }
+  }
+}

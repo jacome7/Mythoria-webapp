@@ -1,0 +1,64 @@
+{
+  "title": "Salut",
+  "description": "Voir et gérer toutes vos histoires créées",
+  "writeNewStory": "Nouvelle histoire",
+  "noStories": {
+    "title": "Pas encore d'histoires",
+    "subtitle": "Vous n'avez pas encore créé d'histoires. Commencez votre voyage de narration maintenant!",
+    "action": "Créez votre première histoire"
+  },
+  "table": {
+    "date": "Date",
+    "title": "Titre",
+    "status": {
+      "header": "Statut",
+      "queued": "En queue de file d'attente",
+      "running": "Générateur",
+      "completed": "Complété",
+      "failed": "Échoué",
+      "cancelled": "Annulé"
+    },
+    "actions": "Actes"
+  },
+  "status": {
+    "draft": "Brouillon",
+    "writing": "En écrivant",
+    "published": "Publié"
+  },
+  "actions": {
+    "read": "Lire",
+    "edit": "Modifier",
+    "share": "Partager",
+    "duplicate": "Double",
+    "print": "Imprimer",
+    "delete": "Supprimer",
+    "printNotAvailable": "Impression non disponible"
+  },
+  "duplicate": {
+    "success": "Histoire dupliquée avec succès",
+    "error": "Échec de l'histoire duplicata"
+  },
+  "sharing": {
+    "publicAccessible": "L'histoire est désormais accessible au public",
+    "nowPrivate": "L'histoire est maintenant privée"
+  },
+  "deleteConfirm": {
+    "title": "Supprimer l'histoire",
+    "message": "Êtes-vous sûr de vouloir supprimer cette histoire? Cette action ne peut pas être annulée.",
+    "cancel": "Annuler",
+    "confirm": "Supprimer"
+  },
+  "signedOut": {
+    "welcome": "Bienvenue dans mes histoires",
+    "needSignIn": "Chaque conteur a besoin d'un compte pour assurer la sécurité de ses crédits magiques!",
+    "signIn": "Se connecter",
+    "createAccount": "Créer un compte"
+  },
+  "defaults": {
+    "authorName": "Conteur"
+  },
+  "tabs": {
+    "myStories": "Mes histoires",
+    "myCharacters": "Mes personnages"
+  }
+}

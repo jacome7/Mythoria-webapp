@@ -1,0 +1,24 @@
+{
+  "ReadingToolbar": {
+    "title": "Paramètres de lecture",
+    "toggleLabel": "Paramètres de lecture de basculement",
+    "cover": "Couverture",
+    "coverAndToc": "Couverture et table des matières",
+    "chapterLabel": "Chapitre {numéro}",
+    "resetButton": "Réinitialiser à la valeur par défaut",
+    "controls": {
+      "fontSize": "Taille de texte",
+      "lineHeight": "Hauteur de ligne",
+      "margins": "Marges",
+      "fontSizeLabel": "Ajuster la taille du texte",
+      "lineHeightLabel": "Ajuster la hauteur de la ligne",
+      "marginsLabel": "Ajuster les marges",
+      "decreaseFontSize": "Diminuer la taille du texte",
+      "increaseFontSize": "Augmenter la taille du texte",
+      "decreaseLineHeight": "Diminuer la hauteur de la ligne",
+      "increaseLineHeight": "Augmenter la hauteur de la ligne",
+      "decreaseMargins": "Diminuer les marges",
+      "increaseMargins": "Augmenter les marges"
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "ContactForm": {
+    "form": {
+      "title": "Support de contact",
+      "name": "Nom",
+      "email": "E-mail",
+      "category": "Catégorie",
+      "message": "Message",
+      "submit": "Créer un ticket d'assistance",
+      "namePlaceholder": "Entrez votre nom",
+      "emailPlaceholder": "Entrez votre adresse e-mail",
+      "messagePlaceholder": "Décrivez votre problème ou votre question ...",
+      "selectCategory": "Sélectionnez une catégorie ..."
+    },
+    "categoriesShort": {
+      "featureIdeas": "Idées et suggestions de fonctionnalités",
+      "reportBug": "Signaler un bug",
+      "troubles": "Problèmes techniques",
+      "delivery": "Impression et livraison",
+      "credits": "Crédits et facturation",
+      "businessPartnership": "Partenariat commercial",
+      "general": "Questions générales"
+    },
+    "errors": {
+      "fillRequired": "Veuillez remplir tous les champs requis",
+      "createFailed": "Échec de la création du ticket d'assistance. Veuillez réessayer."
+    },
+    "success": {
+      "ticketCreated": "Ticket de support créé avec succès! Nous vous répondrons bientôt."
+    },
+    "modal": {
+      "ticketCreated": "Ticket créé!",
+      "oops": "Oups!",
+      "tryAgain": "Essayer à nouveau",
+      "goToHomepage": "Aller à la page d'accueil",
+      "redirectingMessage": "Redirection vers la page d'accueil en quelques secondes ..."
+    }
+  }
+}

@@ -32,6 +32,8 @@ const LanguageSwitcher = () => {
         return 'PT';
       case 'es-ES':
         return 'ES';
+      case 'fr-FR':
+        return 'FR';
       default:
         return loc.toUpperCase();
     }
@@ -58,6 +60,7 @@ const LanguageSwitcher = () => {
                 {availableLocale === 'en-US' ? 'English' :
                  availableLocale === 'pt-PT' ? 'Português' :
                  availableLocale === 'es-ES' ? 'Español' :
+                 availableLocale === 'fr-FR' ? 'Français' :
                  availableLocale}
               </span>
               <span className="text-xs opacity-60">{getLanguageLabel(availableLocale)}</span>

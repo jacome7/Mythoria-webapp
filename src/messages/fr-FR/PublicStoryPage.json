@@ -1,0 +1,53 @@
+{
+  "PublicStoryPage": {
+    "loading": {
+      "title": "Histoire de chargement",
+      "subtitle": "Veuillez patienter pendant que nous chargeons votre histoire ..."
+    },
+    "errors": {
+      "notFound": "Histoire non trouvée",
+      "notFoundDesc": "L'histoire que vous recherchez n'existe pas ou n'est plus publique.",
+      "contentNotAvailable": "Contenu non disponible",
+      "contentNotAvailableDesc": "Le contenu de l'histoire n'est pas actuellement disponible pour la lecture.",
+      "failedToLoadStory": "Échec de la charge de l'histoire"
+    },
+    "actions": {
+      "orderPrint": "Commander Print",
+      "listen": "Écouter",
+      "print": "Imprimer",
+      "listenMobile": "Écouter",
+      "createOwnStory": "Créez votre propre histoire",
+      "orderPrintedBook": "Commandez le livre imprimé"
+    },
+    "labels": {
+      "by": "par",
+      "synopsis": "Synopsis",
+      "unknownAuthor": "Auteur inconnu"
+    },
+    "metadata": {
+      "defaultDescription": "Lire \"{title}\" sur Mythoria",
+      "coverImageAlt": "Image de couverture pour \"{title}\"",
+      "listenPageTitle": "Écoutez \"{title}\" | Mythorie"
+    },
+    "listen": {
+      "title": "Écoutez \"{title}\"",
+      "backMobile": "Dos",
+      "audioNotAvailable": "Cette histoire n'a pas de narration audio disponible.",
+      "audioNotAvailableTitle": "Audio non disponible",
+      "audioNotAvailableDesc": "Cette histoire n'a pas encore de narration audio disponible.",
+      "backToStory": "Retour à l'histoire",
+      "duration": "Durée: {durée}",
+      "chapterFallback": "Chapitre {numéro}",
+      "chapterImageAlt": "Chapitre {numéro} illustration",
+      "controls": {
+        "play": "Jouer",
+        "pause": "Pause",
+        "stop": "Arrêt"
+      }
+    },
+    "storyComplete": {
+      "enjoyedTitle": "Avez-vous apprécié cette histoire?",
+      "enjoyedDesc": "Prêt à créer votre propre conte magique ou à obtenir une belle version imprimée de cette histoire?"
+    }
+  }
+}

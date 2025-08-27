@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import {
   ClerkProvider,
 } from "@clerk/nextjs";
-import { enUS, ptPT, esES } from '@clerk/localizations';
+import { enUS, ptPT, esES, frFR } from '@clerk/localizations';
 import GoogleAnalytics from "../components/GoogleAnalytics";
 import AnalyticsProvider from "../components/AnalyticsProvider";
 import { headers } from 'next/headers';
@@ -38,6 +38,8 @@ export default async function RootLayout({
         return ptPT;
       case 'es-ES':
         return esES;
+      case 'fr-FR':
+        return frFR;
       case 'en-US':
       default:
         return enUS;

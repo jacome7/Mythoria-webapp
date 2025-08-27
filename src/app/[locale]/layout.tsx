@@ -238,6 +238,16 @@ export async function generateMetadata({
           image: 'https://mythoria.pt/assets/og/mythoria_es.jpg'
         }
       };
+    } else if (locale === 'fr-FR') {
+      metadata = {
+        title: 'Mythoria | Créateur de Livres Personnalisés',
+        description: "Créez des livres uniques et entièrement illustrés avec l'IA générative de Mythoria. Transformez n'importe quelle histoire en e-book, livre audio ou cadeau imprimé en quelques minutes.",
+        openGraph: {
+          title: 'Mythoria | Créateur de Livres Personnalisés',
+          description: 'Transformez vos idées en livres personnalisés et magnifiquement illustrés — lisez, écoutez ou imprimez.',
+          image: 'https://mythoria.pt/assets/og/mythoria_fr.jpg'
+        }
+      };
     }
   } catch (error) {
     console.error(`Failed to load metadata for locale ${locale}:`, error);

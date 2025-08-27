@@ -1,0 +1,80 @@
+{
+  "PrintOrder": {
+    "title": "Commandez une copie imprimée",
+    "backToStories": "Retour à mes histoires",
+    "signInToContinue": "Connectez-vous pour continuer",
+    "signInOrCreateAccount": "Vous devez vous connecter ou créer un compte pour passer une commande d'impression.",
+    "signIn": "Se connecter",
+    "createAccount": "Créer un compte",
+    "steps": {
+      "story": "Histoire",
+      "address": "adresse de livraison",
+      "payment": "Options d'impression",
+      "confirmation": "Confirmation"
+    },
+    "errors": {
+      "storyNotFound": "Histoire non trouvée",
+      "storyNotPublished": "Seules les histoires publiées peuvent être imprimées",
+      "loadingFailed": "Échec de charger les données de l'histoire",
+      "missingRequiredFields": "Veuillez compléter tous les champs requis",
+      "orderFailed": "Échec de la commande d'impression",
+      "insufficientCredits": "Crédits insuffisants.",
+      "loadPricingFailed": "Impossible de charger les informations sur les prix",
+      "fetchCreditsFailed": "Échec de l'obtention du solde de crédit"
+    },
+    "addressInfo": {
+      "selectShipping": "Veuillez sélectionner une adresse d'expédition pour votre livre imprimé.",
+      "noAddresses": "Vous n'avez aucune adresse enregistrée. Veuillez ajouter une adresse d'expédition pour continuer.",
+      "addNewAddress": "Ajouter une nouvelle adresse"
+    },
+    "formats": {
+      "paperback": "Livre de poche",
+      "hardcover": "Couverture rigide"
+    },
+    "payment": {
+      "selectBookType": "Sélectionnez votre type de livre",
+      "chooseQuality": "Choisissez la qualité d'impression qui vous convient le mieux:",
+      "softcoverTitle": "📖 Couverture souple",
+      "softcoverDescription": "Broché flexible avec une finition brillante. Idéal pour la lecture et la manipulation quotidiennes.",
+      "hardcoverTitle": "📚 Couverture rigide",
+      "hardcoverDescription": "Couverture rigide, liaison robuste. Parfait en cadeau ou pour rester longtemps.",
+      "premiumTitle": "🌟 Premium",
+      "premiumDescription": "Édition de luxe à couverture rigide avec matériaux premium. Qualité exceptionnelle pour les occasions spéciales.",
+      "priceNote": "Tous les prix comprennent une impression de 4 chapitres dans l'impression et la livraison en couleur.",
+      "extraChapterNote": "Chaque chapitre supplémentaire coûte 2 crédits.",
+      "yourStory": "Votre histoire",
+      "extraChaptersNote": "chapitres supplémentaires",
+      "orderSummary": "Résumé de la commande",
+      "selectedOption": "Option sélectionnée",
+      "basePrice": "Prix ​​de base",
+      "extraChapters": "Chapitres supplémentaires",
+      "shipping": "Expédition",
+      "included": "Compris",
+      "printOrderFee": "Traitement des commandes d'impression",
+      "total": "Total",
+      "credits": "crédits",
+      "cost": "Coût",
+      "yourCredits": "Vos crédits",
+      "insufficientCreditsTitle": "Crédits insuffisants",
+      "needMoreCredits": "Vous avez besoin de {compter} plus de crédits pour passer cette commande.",
+      "getMoreCredits": "Obtenez plus de crédits",
+      "method": "Mode de paiement",
+      "creditsInfo": "Le paiement sera déduit de votre solde de crédits lorsque vous passez la commande.",
+      "pleaseSelectOption": "Veuillez sélectionner une option d'impression pour continuer.",
+      "confirmOrder": "Confirmez votre commande d'impression",
+      "confirmOrderDescription": "En raison de la forte demande, la livraison peut prendre jusqu'à 4 semaines. Êtes-vous sûr de vouloir procéder à votre commande?"
+    },
+    "confirmation": {
+      "title": "Ordre passé avec succès!",
+      "message": "Votre demande d'impression a été soumise. Vous recevrez des mises à jour sur l'impression et le statut d'expédition par e-mail."
+    },
+    "buttons": {
+      "continue": "Continuer",
+      "back": "Dos",
+      "placeOrder": "Passer la commande",
+      "backToStories": "Retour à mes histoires",
+      "confirm": "Confirmer la commande",
+      "cancel": "Annuler"
+    }
+  }
+}

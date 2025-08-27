@@ -1,0 +1,35 @@
+{
+  "AudiobookGenerationProgress": {
+    "title": "Progrès de la génération de livres audio",
+    "generatingAudiobook": "Générer votre livre audio",
+    "processingMessage": "Veuillez garder cette page ouverte pendant que nous racontons votre histoire.",
+    "progress": "Progrès",
+    "estimatedTimeRemaining": "Temps estimé restant",
+    "chaptersProcessed": "Chapitres {traités} de {total}",
+    "generationFailed": "La génération de livres audio a échoué",
+    "generationFailedMessage": "Nous n'avons pas pu compléter votre livre audio.",
+    "backToStory": "Retour à l'histoire",
+    "generationComplete": "Génération complète!",
+    "audiobookReady": "Votre livre audio est prêt.",
+    "listenToAudiobook": "Écoutez le livre audio",
+    "retry": "Réessayer",
+    "statusMessage": "Nos elfes travaillent sur votre narration ...",
+    "doNotClose": "Veuillez ne pas fermer cet onglet.",
+    "errors": {
+      "failedToFetch": "Échec de l'obtention de la progression du livre audio",
+      "failedToLoad": "Échec de la charge de la génération audio de la génération audio"
+    },
+    "timeUnits": {
+      "second": "deuxième",
+      "seconds": "secondes",
+      "minute": "minute",
+      "minutes": "minutes"
+    },
+    "steps": {},
+    "narrationMessages": {
+      "default": [
+        "🎙️ Création de votre livre audio ..."
+      ]
+    }
+  }
+}
