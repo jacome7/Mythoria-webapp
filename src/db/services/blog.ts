@@ -1,9 +1,10 @@
 import { db } from '../index';
 import { blogPosts, blogPostTranslations } from '../schema/blog';
 import { and, asc, desc, eq, lt, gt } from 'drizzle-orm';
+import { SUPPORTED_LOCALES, SupportedLocale } from '@/config/locales';
 
-export const BLOG_SUPPORTED_LOCALES = ['en-US', 'pt-PT', 'es-ES'] as const;
-export type BlogLocale = typeof BLOG_SUPPORTED_LOCALES[number];
+export const BLOG_SUPPORTED_LOCALES = SUPPORTED_LOCALES;
+export type BlogLocale = SupportedLocale;
 
 export interface CreatePostInput {
   slugBase: string;
