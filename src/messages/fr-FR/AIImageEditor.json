@@ -1,0 +1,26 @@
+{
+  "AIImageEditor": {
+    "title": "Éditeur d'image AI - {ImageType}",
+    "currentImage": "Image actuelle:",
+    "requestPlaceholder": "Décrivez comment vous souhaitez modifier cette image ...",
+    "characterCount": "{count} / {max} caractères",
+    "generateButton": "Générer une nouvelle image",
+    "replaceButton": "Remplacer l'original",
+    "cancelButton": "Annuler",
+    "loading": "Générateur...",
+    "newImageLabel": "Nouvelle image générée",
+    "newImageSuccess": "Nouvelle image générée avec succès!",
+    "generatedImageAlt": "Image générée",
+    "errors": {
+      "describeChanges": "Veuillez décrire les modifications que vous souhaitez apporter à l'image",
+      "unableToCheckCredits": "Impossible de vérifier les crédits. Veuillez réessayer.",
+      "failedToGenerate": "Échec pour générer une nouvelle image. Veuillez réessayer.",
+      "failedToReplace": "Impossible de remplacer l'image. Veuillez réessayer."
+    },
+    "imageTypes": {
+      "cover": "Couverture",
+      "backcover": "Couverture arrière",
+      "chapter": "Chapitre {numéro}"
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "ShareModal": {
+    "title": "Partager l'histoire",
+    "chooseOptions": "Choisissez vos options de partage ci-dessous",
+    "allowEdit": "Permettre au destinataire de modifier",
+    "allowEditDesc": "Les destinataires peuvent collaborer et apporter des modifications",
+    "makePublic": "Rendre l'histoire publique",
+    "makePublicDesc": "Tout le monde peut voir sans se connecter",
+    "generateLink": "Générer le lien de partage",
+    "shareUrl": "URL de partage",
+    "copy": "Copie",
+    "copied": "Copié!",
+    "shareVia": "Partager via:",
+    "whatsapp": "Whatsapp",
+    "facebook": "Facebook",
+    "email": "E-mail",
+    "more": "Plus",
+    "createAnother": "Créer un autre",
+    "done": "Fait",
+    "optionsExplained": "Options de partage expliquées:",
+    "privateView": "Vue privée: les destinataires doivent se connecter pour voir l'histoire",
+    "privateEdit": "Édition privée: les destinataires peuvent collaborer et modifier l'histoire",
+    "publicOption": "Public: n'importe qui peut voir l'histoire sans signer",
+    "privateExpires": "Le lien privé expire dans 30 jours",
+    "publicStoryTitle": "Histoire publique",
+    "publicStoryDesc": "Cette histoire est actuellement publique et peut être vue par n'importe qui.",
+    "publicUrl": "URL publique",
+    "makePrivate": "Faire une histoire privée",
+    "makePrivateDesc": "Supprimer l'accès public et rendre l'histoire privée",
+    "errors": {
+      "createLinkFailed": "Erreur Création du lien de partage: veuillez réessayer plus tard.",
+      "shareLinkCreationFailed": "Échec de la création de lien de partage. Veuillez réessayer."
+    },
+    "alerts": {
+      "invalidStoryId": "ID d'histoire non valide"
+    },
+    "shareMessages": {
+      "checkOut": "Découvrez \"{StoryTitle}\" sur Mythoria 📚",
+      "emailSubject": "Découvrez \"{StoryTitle}\"",
+      "emailBody": "Je voulais partager cette histoire avec vous:\n\n\"{StoryTitle}\"\n\n{URL}\n\nProfitez de la lecture! 📚"
+    }
+  }
+}

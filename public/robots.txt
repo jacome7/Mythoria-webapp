@@ -8,6 +8,7 @@ Allow: /
 Allow: /en-US/
 Allow: /pt-PT/
 Allow: /es-ES/
+Allow: /fr-FR/
 
 # Disallow admin and private areas
 Disallow: /portaldegestao/

@@ -17,6 +17,9 @@ export function normalizeLocale(locale?: string): SupportedLocale {
     case 'es':
     case 'es-es':
       return 'es-ES';
+    case 'fr':
+    case 'fr-fr':
+      return 'fr-FR';
     default:
       return 'en-US';
   }
@@ -29,6 +32,7 @@ export function detectUserLocaleFromEmail(email?: string | null): SupportedLocal
   const lower = email.toLowerCase();
   if (lower.endsWith('.pt') || lower.includes('.pt')) return 'pt-PT';
   if (lower.endsWith('.es') || lower.includes('.es')) return 'es-ES';
+  if (lower.endsWith('.fr') || lower.includes('.fr')) return 'fr-FR';
   return 'en-US';
 }
 

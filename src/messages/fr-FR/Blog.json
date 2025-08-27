@@ -1,0 +1,19 @@
+{
+  "Blog": {
+    "list": {
+      "title": "Le blog",
+      "subtitle": "Chroniques du domaine de la narration",
+      "readMore": "Continuer à lire",
+      "publishedOn": "Publié sur",
+      "readingTime": "Min Read",
+      "noPostsFound": "Pas encore de chroniques",
+      "noPostsFoundDescription": "Nos scribes écrivent les premières aventures. Revenez bientôt pour de nouvelles contes épiques de Mythoria!",
+      "loadMore": "Chargez plus de chroniques",
+      "error": "Échec de charger les chroniques"
+    },
+    "metadata": {
+      "listTitle": "Toutes les chroniques de Mythoria",
+      "listDescription": "Explorez notre collection complète de chroniques, des aventures épiques aux légendes oubliées du royaume de Mythoria."
+    }
+  }
+}

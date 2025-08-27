@@ -1,0 +1,17 @@
+{
+  "PublicStoryChapter": {
+    "chapterNotFound": "Chapitre introuvable",
+    "chapterNotAvailable": "Ce chapitre n'est pas disponible.",
+    "chapter": "Chapitre",
+    "errors": {
+      "failedToLoadChapter": "Échec de chargement le chapitre"
+    },
+    "metadata": {
+      "chapterPageTitle": "{Title} - Chapitre {numéro} | Mythorie"
+    },
+    "lastChapter": {
+      "enjoyedTitle": "Vous avez apprécié cette histoire?",
+      "enjoyedDesc": "Créez votre propre histoire personnalisée ou commandez une belle copie imprimée!"
+    }
+  }
+}

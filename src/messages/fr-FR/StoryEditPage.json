@@ -1,0 +1,34 @@
+{
+  "StoryEditPage": {
+    "language": {
+      "label": "Langage d'histoire",
+      "translate": "Traduire l'histoire complète"
+    },
+    "errors": {
+      "failedToLoadStoryData": "Échec de charger les données de l'histoire",
+      "failedToLoadStory": "Échec de la charge de l'histoire",
+      "failedToUpdateStoryInfo": "Échec de la mise à jour des informations de l'histoire",
+      "failedToLoadStoryDataToast": "Échec de charger les données de l'histoire",
+      "errorEmoji": "😞"
+    },
+    "success": {
+      "storyInfoUpdated": "Informations sur l'histoire mise à jour avec succès",
+      "storyUpdated": "Histoire mise à jour avec succès",
+      "chapterUpdated": "Chapitre mis à jour avec succès",
+      "contentUpdated": "Contenu mis à jour avec succès"
+    },
+    "chapterUpdates": {
+      "chaptersUpdatedSuccessfully": "{SuccessCount} Les chapitres ont mis à jour avec succès. Le chapitre {Failschapters} n'a pas réussi à modifier.",
+      "allChaptersUpdated": "Tous les chapitres {SuccessCount} ont mis à jour avec succès. Les modifications ont été enregistrées automatiquement."
+    },
+    "imageTypes": {
+      "frontCover": "Couverture avant",
+      "backCover": "Couverture arrière"
+    },
+    "logging": {
+      "errorLoadingStory": "Erreur de chargement d'histoire:",
+      "errorUpdatingStoryInfo": "Erreur Mise à jour des informations sur l'histoire:",
+      "aiEditSuccessUpdatedData": "AI Modifier le succès - Données mises à jour:"
+    }
+  }
+}

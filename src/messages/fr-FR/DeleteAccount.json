@@ -1,0 +1,53 @@
+{
+  "DeleteAccount": {
+    "title": "Supprimer le compte",
+    "subtitle": "Supprimez en permanence votre compte et toutes les données associées de Mythoria",
+    "notLoggedIn": {
+      "title": "Instructions de suppression du compte",
+      "description": "Pour supprimer votre compte, vous devez d'abord être connecté.",
+      "steps": {
+        "title": "Comment supprimer votre compte:",
+        "step1": "Cliquez sur l'icône de l'utilisateur dans le coin supérieur droit de la page",
+        "step2": "Sélectionnez «Gérer le compte» dans le menu déroulant",
+        "step3": "Dans la barre latérale gauche, choisissez la «sécurité»",
+        "step4": "Cliquez sur le bouton «Supprimer le compte» et suivez le processus de confirmation"
+      }
+    },
+    "loggedIn": {
+      "title": "Supprimez votre compte",
+      "description": "Cette action supprimera en permanence votre compte et ne peut pas être annulé.",
+      "consequences": {
+        "title": "Ce qui sera supprimé:",
+        "item1": "Votre profil et vos informations personnelles",
+        "item2": "Tous vos livres et histoires créés",
+        "item3": "Tout crédite en attente de votre compte",
+        "item4": "L'historique et les préférences de votre compte"
+      },
+      "deleteButton": "Supprimer mon compte"
+    },
+    "confirmation": {
+      "title": "Confirmer la suppression du compte",
+      "description": "Cette action ne peut pas être annulée. Pour confirmer, veuillez saisir votre adresse e-mail ci-dessous.",
+      "emailLabel": "E-mail",
+      "emailMismatch": "L'adresse e-mail ne correspond pas à l'e-mail de votre compte",
+      "cancel": "Annuler",
+      "confirmDelete": "Supprimer le compte",
+      "deleting": "Suppression ..."
+    },
+    "warning": {
+      "title": "Avertissement: cette action est irréversible",
+      "description": "Une fois votre compte supprimé, toutes vos données, y compris les livres créés, les crédits en attente et les informations personnelles seront supprimés en permanence et ne peuvent pas être récupérés."
+    },
+    "legal": {
+      "title": "Conformité légale",
+      "description": "Ce processus de suppression est conforme à l'article 17 du RGPD (droit à l'effacement) et aux termes de la plate-forme Facebook Section 3 (d) (i), en vous assurant votre droit de supprimer vos données personnelles."
+    },
+    "errors": {
+      "deletionFailed": "La suppression du compte a échoué. Veuillez réessayer ou contacter le support si le problème persiste.",
+      "networkError": "Une erreur de réseau s'est produite. Veuillez vérifier votre connexion et réessayer.",
+      "failedToDeleteAccount": "Échec de la suppression du compte. Veuillez réessayer plus tard.",
+      "deletionError": "Une erreur s'est produite lors de la suppression de votre compte. Veuillez contacter l'assistance pour obtenir de l'aide.",
+      "deletionAlert": "Une erreur s'est produite lors de la suppression de votre compte. Veuillez réessayer ou contacter le support."
+    }
+  }
+}

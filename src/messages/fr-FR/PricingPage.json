@@ -1,0 +1,143 @@
+{
+  "PricingPage": {
+    "header": {
+      "title": "Notre prix",
+      "subtitle": "Simple, flexible et conçu pour vos besoins de narration."
+    },
+    "creditPackages": {
+      "badges": {
+        "bestValue": "Meilleur rapport qualité-prix",
+        "popular": "Populaire"
+      },
+      "packages": {
+        "credits5": {
+          "description": "Parfait pour essayer les choses."
+        },
+        "credits10": {
+          "description": "Idéal pour quelques histoires."
+        },
+        "credits30": {
+          "description": "Idéal pour les conteurs avides."
+        },
+        "credits100": {
+          "description": "Pour les créateurs de l'histoire ultime!"
+        }
+      },
+      "buyButton": "Acheter {crédits} crédits",
+      "credits": "Crédits"
+    },
+    "serviceCosts": {
+      "loading": "Chargement des informations sur les prix ...",
+      "availableServices": "Nos services:",
+      "creditsHeader": "Crédits",
+      "services": {
+        "generateEbook": "Générer un ebook numérique",
+        "narrateAudiobook": "Raconter un livre (audio-book)",
+        "editBook": "Modifier un livre:",
+        "manualEditing": "Édition manuelle",
+        "textReviewAI": "Revue de texte avec AI",
+        "generateNewImages": "Générer de nouvelles images",
+        "printShipBook": "Livre d'impression et de navire:",
+        "softCover": "Couverture souple",
+        "hardCover": "Couverture dure",
+        "extraChapterCost": "Coût de chapitre supplémentaire"
+      },
+      "serviceNames": {
+        "ebook": "Générer un livre numérique (ebook)",
+        "audiobook": "Générer un livre audio",
+        "printed_book": "Commandez un livre à couverture rigide imprimée et expédiée"
+      },
+      "tableHeaders": {
+        "service": "Service",
+        "cost": "Coût des crédits"
+      },
+      "creditsUnit": "Crédits"
+    },
+    "infoModal": {
+      "title": "Informations sur le service",
+      "header": "Informations sur le service",
+      "button": "Plus d'informations",
+      "services": {
+        "ebook": {
+          "title": "Générer un ebook numérique",
+          "description": "Créez un livre numérique personnalisé qui peut être lu sur n'importe quel appareil."
+        },
+        "audiobook": {
+          "title": "Raconter un livre (audio-book)",
+          "description": "Transformez votre histoire en un livre audio engageant avec une narration professionnelle."
+        },
+        "printedBook": {
+          "title": "Commandez un livre à couverture rigide imprimée et expédiée",
+          "description": "Obtenez un beau livre à couverture rigide physique livré à votre porte.",
+          "printingOptions": [
+            "Reliure à couverture rigide premium",
+            "Papier et impression de haute qualité",
+            "Conception de couverture professionnelle",
+            "Expédition mondiale disponible"
+          ]
+        }
+      },
+      "close": "Fermer"
+    },
+    "newUserMessage": "Chaque nouvel utilisateur obtient 5 crédits. Votre première histoire est sur nous!",
+    "infoTexts": {
+      "textReview": "Les 5 premières modifications sont gratuites. Nous ne facturons que par groupe de 5 changements de texte.",
+      "imageGeneration": "Le premier montage d'image est gratuit.",
+      "printedBooks": "La couverture douce et dure imprimée comprend les 4 premiers chapitres sans frais supplémentaires."
+    },
+    "whyCredits": {
+      "title": "Pourquoi un système basé sur le crédit?",
+      "benefits": {
+        "flexibility": {
+          "title": "Flexibilité:",
+          "description": "Achetez des crédits en paquets et utilisez-les pour n'importe quel service, à tout moment."
+        },
+        "savings": {
+          "title": "Économies:",
+          "description": "Profitez d'une meilleure valeur avec des forfaits de crédit plus importants. Plus vous achetez, plus vous économisez!"
+        },
+        "gifting": {
+          "title": "Le cadeau rendu facile:",
+          "description": "Les crédits peuvent être un cadeau parfait pour les amis et la famille, leur permettant de choisir leur propre aventure de narration. (Fonctionnalité de cadeaux à venir bientôt!)"
+        },
+        "simplicity": {
+          "title": "Simplicité:",
+          "description": "Comprenez les coûts à l'avance pour tous nos services créatifs. Pas de frais cachés."
+        }
+      }
+    },
+    "faq": {
+      "title": "Questions fréquemment posées",
+      "questions": {
+        "expiration": {
+          "question": "Les crédits expirent-ils?",
+          "answer": "Non, vos crédits Mythoria ne sont jamais expirés! Vous pouvez les utiliser chaque fois que l'inspiration frappe."
+        },
+        "refund": {
+          "question": "Puis-je obtenir un remboursement sur les crédits inutilisés?",
+          "answer": "Actuellement, les crédits ne sont pas remboursables. Cependant, ils peuvent être utilisés pour n'importe lequel de nos services ou offerts à un autre utilisateur à l'avenir."
+        },
+        "payment": {
+          "question": "Quelles méthodes de paiement acceptez-vous?",
+          "answer": "Nous prévoyons d'accepter toutes les principales cartes de crédit (Visa, MasterCard, American Express) et PayPal. (Intégration des paiements à venir bientôt)"
+        },
+        "shipping": {
+          "question": "Comment les livres imprimés sont-ils expédiés?",
+          "answer": "Les livres imprimés sont expédiés via des services postaux standard. Les délais d'expédition et les coûts peuvent varier en fonction de votre emplacement. Vous verrez des informations d'expédition détaillées à la caisse lors de la commande d'un livre imprimé."
+        }
+      }
+    },
+    "errors": {
+      "loadingFailed": "Impossible de charger les informations sur les prix"
+    }
+  },
+  "RevolutPayment": {
+    "loading": "Chargement des options de paiement ...",
+    "securityNote": "Votre paiement est garanti par le cryptage de Revolut",
+    "encryptionNote": "Cryptage SSL 256 bits",
+    "errors": {
+      "sdkLoadFailed": "Échec du service de paiement. Veuillez actualiser la page.",
+      "initializationFailed": "Échec de l'initialisation du paiement. Veuillez réessayer."
+    }
+  }
+}

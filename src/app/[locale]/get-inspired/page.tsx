@@ -117,7 +117,9 @@ export default function GetInspiredPage() {
 
   const storyLanguageOptions = [
     'en-US',
-    'pt-PT'
+    'pt-PT',
+    'es-ES',
+    'fr-FR'
   ];
 
   const loadFeaturedStories = useCallback(async () => {
