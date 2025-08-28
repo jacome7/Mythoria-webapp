@@ -33,6 +33,8 @@ interface Address {
   postalCode: string;
   country: string;
   phone?: string;
+  // Added for ordering & auto-selection UX improvements
+  createdAt?: string; // ISO 8601 string (timestamptz); may be absent on legacy rows
 }
 
 interface PrintingOption {
@@ -53,6 +55,15 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
   const router = useRouter();
   const locale = useLocale();
   const tPrintOrder = useTranslations('PrintOrder');
+
+  // Helper to consistently sort addresses by createdAt descending
+  const sortAddresses = (list: Address[]): Address[] => {
+    return [...list].sort((a: Address, b: Address) => {
+      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return bTime - aTime;
+    });
+  };
 
   const [currentStep, setCurrentStep] = useState<Step>('story');
   const [story, setStory] = useState<Story | null>(null);
@@ -95,7 +106,12 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
       const data = await response.json();
       
       if (data.success) {
-        setAddresses(data.addresses);
+  const sorted = sortAddresses(data.addresses as Address[]);
+        setAddresses(sorted);
+        // Auto-select the most recent if none selected yet
+        if (!selectedAddress && sorted.length > 0) {
+          setSelectedAddress(sorted[0]);
+        }
       } else {
         console.error('Error loading addresses:', data.error);
       }    } catch (err) {
@@ -182,12 +198,16 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
       
       if (data.success) {
         if (isEditing) {
-          setAddresses(prev => 
-            prev.map(addr => addr.addressId === data.address.addressId ? data.address : addr)
-          );
+          setAddresses((prev: Address[]) => {
+            const updated: Address[] = prev.map((addr: Address) => addr.addressId === data.address.addressId ? data.address : addr);
+            return sortAddresses(updated);
+          });
         } else {
-          setAddresses(prev => [...prev, data.address]);
-          // Automatically select the newly created address
+          setAddresses((prev: Address[]) => {
+            const updated: Address[] = [...prev, data.address];
+            return sortAddresses(updated);
+          });
+          // Automatically select the newly created (most recent) address
           setSelectedAddress(data.address);
         }
         setShowCreateAddress(false);
@@ -215,10 +235,14 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
       const data = await response.json();
 
       if (data.success) {
-        setAddresses(prev => prev.filter(addr => addr.addressId !== address.addressId));
-        if (selectedAddress?.addressId === address.addressId) {
-          setSelectedAddress(null);
-        }
+        setAddresses((prev: Address[]) => {
+          const remaining: Address[] = prev.filter((addr: Address) => addr.addressId !== address.addressId);
+          const sortedRemaining = sortAddresses(remaining);
+          if (selectedAddress?.addressId === address.addressId) {
+            setSelectedAddress(sortedRemaining[0] || null);
+          }
+            return sortedRemaining;
+        });
       } else {
         throw new Error(data.error || 'Failed to delete address');
       }
