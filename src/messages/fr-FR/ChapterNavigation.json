@@ -2,6 +2,6 @@
   "ChapterNavigation": {
     "storyInformation": "Informations sur l'histoire",
     "info": "Informations",
-    "chapterLabel": "Chapitre {numéro}"
+  "chapterLabel": "Chapitre {number}"
   }
 }

@@ -170,6 +170,41 @@
       "intelligent": "Inteligente",
       "fearful": "Receoso"
     },
+    "characteristicHints": {
+      "adjusts_glasses_when_thinking": "ajusta os óculos quando pensa",
+      "hums_softly": "cantarola suavemente",
+      "cracks_knuckles_when_stressed": "estala os dedos quando está stressado",
+      "fidgets_with_hair_or_clothes": "mexe no cabelo ou na roupa",
+      "speaks_with_filler_words": "fala com muletas (\"tipo...\", \"estás a ver...\")",
+      "mutters_to_self": "murmura para si",
+      "avoids_eye_contact": "evita contacto visual",
+      "blinks_rapidly_under_stress": "pisca rapidamente sob stress",
+      "always_sipping_a_drink": "está sempre a sorver uma bebida",
+      "winks_at_others": "pisca o olho aos outros",
+      "refuses_public_restrooms": "evita casas de banho públicas",
+      "eats_snacks_constantly": "petisca constantemente",
+      "obsesses_over_cleanliness": "obcecado com limpeza",
+      "mentions_horoscopes_or_superstitions": "fala de horóscopos ou superstições",
+      "uses_sophisticated_words": "usa palavras sofisticadas",
+      "taps_foot_or_finger": "bate com o pé ou dedo"
+    },
+    "physicalDescriptionHints": {
+      "long_curly_hair": "cabelo comprido e encaracolado",
+      "wears_thin_rimmed_glasses": "usa óculos de armação fina",
+      "freckled_cheeks": "faces sardentas",
+      "scar_across_left_eyebrow": "cicatriz sobre a sobrancelha esquerda",
+      "broad_shouldered_build": "constituição de ombros largos",
+      "petite_frame": "estrutura pequena",
+      "vivid_green_eyes": "olhos verdes vivos",
+      "sun_creased_smile_lines": "linhas de sorriso marcadas pelo sol",
+      "shaved_head": "cabeça rapada",
+      "tall_and_lanky": "alto e esguio",
+      "weather_beaten_skin": "pele castigada pelo tempo",
+      "tattoo_sleeve": "braço tatuado",
+      "lean_muscular_arms": "braços magros e musculados",
+      "hunched_posture": "postura curvada",
+      "pale_skin_with_dark_circles": "pele pálida com olheiras"
+    },
     "confirmDelete": "Tens a certeza de que queres eliminar esta personagem? Esta ação não pode ser desfeita."
   }
 }

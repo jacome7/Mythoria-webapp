@@ -1,6 +1,6 @@
 {
   "Voices": {
-    "selectVoice": "Select Voice",
+    "selectVoice": "Sélectionner la voix",
     "names": {
       "alloy": "Alloy",
       "ash": "Ash",
@@ -15,17 +15,17 @@
       "verse": "Verse"
     },
     "descriptions": {
-      "alloy": "A neutral and balanced voice suited for general narration and information delivery.",
-      "ash": "A clear and precise voice, ideal for instructions and technical explanations.",
-      "ballad": "A melodic and smooth voice that lends itself well to storytelling and narrative content.",
-      "coral": "A warm and friendly voice, perfect for conversational interfaces and customer-facing dialogue.",
-      "echo": "A resonant and deep voice, offering a strong presence for announcements and formal messages.",
-      "fable": "A warm and engaging voice with a storytelling quality, designed for immersive narratives.",
-      "nova": "A bright and energetic voice, great for upbeat content and enthusiastic deliveries.",
-      "onyx": "A deep and authoritative voice that conveys gravitas and trustworthiness.",
-      "sage": "A calm and thoughtful voice, well-suited for reflective content and guidance.",
-      "shimmer": "A bright and energetic voice, adding sparkle and dynamism to your audio.",
-      "verse": "A versatile and expressive voice that adapts well to a wide range of tonal requirements."
+  "alloy": "Une voix neutre et équilibrée, adaptée à la narration générale et à la diffusion d'informations.",
+  "ash": "Une voix claire et précise, idéale pour les instructions et les explications techniques.",
+  "ballad": "Une voix mélodieuse et fluide qui se prête bien au récit et au contenu narratif.",
+  "coral": "Une voix chaleureuse et amicale, parfaite pour les interfaces conversationnelles et le dialogue avec les clients.",
+  "echo": "Une voix résonante et profonde, offrant une forte présence pour les annonces et messages formels.",
+  "fable": "Une voix chaleureuse et engageante, avec une qualité de conteur immersive.",
+  "nova": "Une voix vive et énergique, idéale pour un contenu dynamique et enthousiaste.",
+  "onyx": "Une voix profonde et autoritaire qui inspire confiance et sérieux.",
+  "sage": "Une voix calme et réfléchie, bien adaptée aux contenus guidants et à la réflexion.",
+  "shimmer": "Une voix brillante et énergique qui apporte éclat et dynamisme à votre audio.",
+  "verse": "Une voix polyvalente et expressive qui s'adapte à un large éventail de tonalités."
     }
   }
 }

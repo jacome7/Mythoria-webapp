@@ -5,7 +5,7 @@
       "targetAudience": "Public cible",
       "graphicalStyle": "Style artistique",
       "storyLanguage": "Langue",
-      "clearAll": "Filtres à claire",
+      "clearAll": "Effacer les filtres",
       "showingAll": "Montrer toutes les histoires"
     },
     "targetAudience": {
@@ -38,7 +38,9 @@
     "storyLanguage": {
       "all": "Toutes les langues",
       "en-US": "Anglais",
-      "pt-PT": "portugais"
+      "pt-PT": "Portugais",
+      "fr-FR": "Français",
+      "es-ES": "Espagnol"
     },
     "gallery": {
       "title": "Histoires en vedette",
@@ -49,7 +51,7 @@
       "emptyMessage": "Créez votre propre histoire et partagez-la avec le monde!",
       "createStory": "Créez votre histoire",
       "storyCoverAlt": "Couverture de l'histoire",
-      "filterResults": "{comte} des histoires {totaux} montrées"
+      "filterResults": "{count} sur {total} histoires affichées"
     },
     "emptyState": {
       "noStoriesMatch": "Aucune histoire ne correspond à vos filtres",

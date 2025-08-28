@@ -1,6 +1,6 @@
 {
   "CreditsDisplay": {
-    "button": "Crédits disponibles: {crédits}",
+  "button": "Crédits disponibles: {credits}",
     "creditHistory": "Historique de crédit",
     "currentBalance": "Solde disponible:",
     "credits": "crédits",

@@ -15,42 +15,42 @@ import {
 import GroupedCharacterTypeSelect from './GroupedCharacterTypeSelect';
 import RollableHints from './RollableHints';
 
-// Character hints for UI inspiration
-const CHARACTERISTIC_HINTS = [
-  "adjusts glasses when thinking",
-  "hums softly",
-  "cracks knuckles when stressed",
-  "fidgets with hair or clothes",
-  "speaks with filler words (\"like…\", \"you know…\")",
-  "mutters to self",
-  "avoids eye contact",
-  "blinks rapidly under stress",
-  "always sipping a drink",
-  "winks at others",
-  "refuses public restrooms",
-  "eats/snacks constantly",
-  "obsesses over cleanliness",
-  "mentions horoscopes or superstitions",
-  "uses sophisticated words",
-  "taps foot or finger"
+// Translation keys for hints (mapped at render time)
+const CHARACTERISTIC_HINT_KEYS = [
+  'adjusts_glasses_when_thinking',
+  'hums_softly',
+  'cracks_knuckles_when_stressed',
+  'fidgets_with_hair_or_clothes',
+  'speaks_with_filler_words',
+  'mutters_to_self',
+  'avoids_eye_contact',
+  'blinks_rapidly_under_stress',
+  'always_sipping_a_drink',
+  'winks_at_others',
+  'refuses_public_restrooms',
+  'eats_snacks_constantly',
+  'obsesses_over_cleanliness',
+  'mentions_horoscopes_or_superstitions',
+  'uses_sophisticated_words',
+  'taps_foot_or_finger'
 ];
 
-const PHYSICAL_DESCRIPTION_HINTS = [
-  "long curly hair",
-  "wears thin-rimmed glasses",
-  "freckled cheeks",
-  "scar across left eyebrow",
-  "broad-shouldered build",
-  "petite frame",
-  "vivid green eyes",
-  "sun-creased smile lines",
-  "shaved head",
-  "tall and lanky",
-  "weather-beaten skin",
-  "tattoo sleeve",
-  "lean, muscular arms",
-  "hunched posture",
-  "pale skin with dark circles"
+const PHYSICAL_DESCRIPTION_HINT_KEYS = [
+  'long_curly_hair',
+  'wears_thin_rimmed_glasses',
+  'freckled_cheeks',
+  'scar_across_left_eyebrow',
+  'broad_shouldered_build',
+  'petite_frame',
+  'vivid_green_eyes',
+  'sun_creased_smile_lines',
+  'shaved_head',
+  'tall_and_lanky',
+  'weather_beaten_skin',
+  'tattoo_sleeve',
+  'lean_muscular_arms',
+  'hunched_posture',
+  'pale_skin_with_dark_circles'
 ];
 
 interface CharacterCardProps {
@@ -531,8 +531,8 @@ export default function CharacterCard({
             value={formData.characteristics}
             onChange={(e) => handleInputChange('characteristics', e.target.value)}
           />
-          <RollableHints 
-            hints={CHARACTERISTIC_HINTS}
+          <RollableHints
+            hints={CHARACTERISTIC_HINT_KEYS.map(k => tCharacters(`characteristicHints.${k}`))}
             className="px-3 py-2 rounded-md border border-gray-200"
           />
         </div>
@@ -547,8 +547,8 @@ export default function CharacterCard({
             value={formData.physicalDescription}
             onChange={(e) => handleInputChange('physicalDescription', e.target.value)}
           />
-          <RollableHints 
-            hints={PHYSICAL_DESCRIPTION_HINTS}
+          <RollableHints
+            hints={PHYSICAL_DESCRIPTION_HINT_KEYS.map(k => tCharacters(`physicalDescriptionHints.${k}`))}
             className="px-3 py-2 rounded-md border border-gray-200"
           />
         </div>

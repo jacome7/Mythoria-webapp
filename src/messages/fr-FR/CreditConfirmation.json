@@ -6,7 +6,7 @@
     "confirmEditTitle": "Confirmer Modifier",
     "editProgress": "Modifier les progrès",
     "editsCompleted": "modifications terminées",
-    "textEditFreeRemaining": "{restant} modifications de texte libre restant",
+  "textEditFreeRemaining": "{remaining} modifications de texte gratuites restantes",
     "textEditPaidMode": "Vous êtes en mode payant - 1 crédit par 5 modifications",
     "imageEditFirstFree": "Votre première édition d'image est gratuite!",
     "imageEditPaidMode": "1 crédit par image Modifier",
@@ -19,7 +19,7 @@
     "cancel": "Annuler",
     "processing": "Traitement...",
     "proceedFree": "Procéder (gratuit)",
-    "proceedWithCredits": "Utiliser {crédits} crédits",
+  "proceedWithCredits": "Utiliser {credits} crédits",
     "buyCredits": "Acheter des crédits"
   }
 }

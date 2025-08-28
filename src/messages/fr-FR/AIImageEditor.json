@@ -1,6 +1,6 @@
 {
   "AIImageEditor": {
-    "title": "Éditeur d'image AI - {ImageType}",
+  "title": "Éditeur d'image AI - {imageType}",
     "currentImage": "Image actuelle:",
     "requestPlaceholder": "Décrivez comment vous souhaitez modifier cette image ...",
     "characterCount": "{count} / {max} caractères",
@@ -20,7 +20,7 @@
     "imageTypes": {
       "cover": "Couverture",
       "backcover": "Couverture arrière",
-      "chapter": "Chapitre {numéro}"
+  "chapter": "Chapitre {number}"
     }
   }
 }

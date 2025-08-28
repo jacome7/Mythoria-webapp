@@ -170,6 +170,41 @@
       "intelligent": "Intelligent",
       "fearful": "Craintif"
     },
+    "characteristicHints": {
+      "adjusts_glasses_when_thinking": "ajuste ses lunettes en réfléchissant",
+      "hums_softly": "fredonne doucement",
+      "cracks_knuckles_when_stressed": "se fait craquer les doigts quand il/elle est stressé(e)",
+      "fidgets_with_hair_or_clothes": "tripote ses cheveux ou ses vêtements",
+      "speaks_with_filler_words": "parle avec des tics de langage (« genre… », « tu vois… »)",
+      "mutters_to_self": "marmonne pour soi",
+      "avoids_eye_contact": "évite le contact visuel",
+      "blinks_rapidly_under_stress": "cligne rapidement des yeux sous le stress",
+      "always_sipping_a_drink": "sirote toujours une boisson",
+      "winks_at_others": "fait des clins d'œil aux autres",
+      "refuses_public_restrooms": "refuse les toilettes publiques",
+      "eats_snacks_constantly": "grignote sans cesse",
+      "obsesses_over_cleanliness": "obsédé(e) par la propreté",
+      "mentions_horoscopes_or_superstitions": "parle d'horoscopes ou de superstitions",
+      "uses_sophisticated_words": "utilise des mots sophistiqués",
+      "taps_foot_or_finger": "tapote du pied ou du doigt"
+    },
+    "physicalDescriptionHints": {
+      "long_curly_hair": "longs cheveux bouclés",
+      "wears_thin_rimmed_glasses": "porte des lunettes à fine monture",
+      "freckled_cheeks": "joues couvertes de taches de rousseur",
+      "scar_across_left_eyebrow": "cicatrice au-dessus du sourcil gauche",
+      "broad_shouldered_build": "carrure aux épaules larges",
+      "petite_frame": "petite carrure",
+      "vivid_green_eyes": "yeux verts vifs",
+      "sun_creased_smile_lines": "rides de sourire marquées par le soleil",
+      "shaved_head": "tête rasée",
+      "tall_and_lanky": "grand(e) et dégingandé(e)",
+      "weather_beaten_skin": "peau burinée",
+      "tattoo_sleeve": "bras couvert de tatouages",
+      "lean_muscular_arms": "bras maigres mais musclés",
+      "hunched_posture": "posture voûtée",
+      "pale_skin_with_dark_circles": "peau pâle avec des cernes"
+    },
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce personnage? Cette action ne peut pas être annulée."
   }
 }

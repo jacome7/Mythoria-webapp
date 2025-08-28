@@ -1,0 +1,16 @@
+{
+  "DeliveryOptions": {
+    "audiobook": {
+      "name": "Audiolivro",
+      "description": "Receba a sua história como um audiolivro narrado"
+    },
+    "ebook": {
+      "name": "Digital (eBook)",
+      "description": "Receba a sua história como um eBook digital"
+    },
+    "printed": {
+      "name": "Livro Impresso",
+      "description": "Receba uma bela cópia física impressa da sua história"
+    }
+  }
+}

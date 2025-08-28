@@ -4,7 +4,7 @@
     "saveButton": "Sauver le chapitre",
     "backButton": "Dos",
     "goBackButton": "Remonter",
-    "imagePlaceholder": "Image du chapitre {numéro}",
+  "imagePlaceholder": "Image du chapitre {number}",
     "titlePlaceholder": "Entrez le titre du chapitre ...",
     "contentPlaceholder": "Écrivez le contenu de votre chapitre ici ...",
     "saving": "Économie...",

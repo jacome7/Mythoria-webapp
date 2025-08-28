@@ -7,7 +7,7 @@
       "failedToLoadChapter": "Échec de chargement le chapitre"
     },
     "metadata": {
-      "chapterPageTitle": "{Title} - Chapitre {numéro} | Mythorie"
+  "chapterPageTitle": "{title} - Chapitre {number} | Mythorie"
     },
     "lastChapter": {
       "enjoyedTitle": "Vous avez apprécié cette histoire?",
