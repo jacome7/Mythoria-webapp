@@ -1,0 +1,19 @@
+{
+  "SharedStoryPage": {
+    "loading": {
+      "title": "Chargement d'une histoire partagée ...",
+      "subtitle": "Veuillez patienter pendant que nous chargeons l'histoire"
+    },
+    "redirecting": "Redirection ...",
+    "errors": {
+      "unableToAccess": "Impossible d'accéder à l'histoire partagée",
+      "failedToAccess": "Échec de l'histoire partagée"
+    },
+    "auth": {
+      "signInToEdit": "Connectez-vous pour collaborer sur cette histoire",
+      "signInToRead": "Connectez-vous pour lire cette histoire",
+      "createAccountToCollaborate": "Créez un compte pour commencer à collaborer et aider à donner vie à cette histoire!",
+      "createAccountToReadFull": "Créez un compte pour lire l'histoire complète et découvrir tous ses chapitres!"
+    }
+  }
+}

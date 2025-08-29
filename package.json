@@ -1,6 +1,6 @@
 {
   "name": "mythoria-webapp",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "rimraf .next/types && tsc --noEmit",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "logs": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/get-cloud-run-logs.ps1",
@@ -51,6 +51,7 @@
     "next-intl": "^4.3.4",
     "next-mdx-remote": "^5.0.0",
     "pg": "^8.16.3",
+    "postgres": "^3.4.7",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
@@ -74,6 +75,7 @@
     "@types/pg": "^8.15.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-icons": "^2.2.7",
     "cross-env": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "^15.4.2",

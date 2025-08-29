@@ -1,10 +1,10 @@
+import { SUPPORTED_LOCALES, SupportedLocale } from '@/config/locales';
+
 // Lightweight locale normalization utilities
 // Maps short or variant locale codes to canonical BCP47 tags we support.
 
-export type SupportedLocale = 'en-US' | 'pt-PT';
-
 // Normalize preferred locale input (accepts undefined, short codes, underscores, case variants)
-export function normalizePreferredLocale(locale?: string): SupportedLocale {
+export function normalizeLocale(locale?: string): SupportedLocale {
   if (!locale) return 'en-US';
   const lower = locale.toLowerCase().replace('_', '-');
   switch (lower) {
@@ -14,6 +14,12 @@ export function normalizePreferredLocale(locale?: string): SupportedLocale {
     case 'pt':
     case 'pt-pt':
       return 'pt-PT';
+    case 'es':
+    case 'es-es':
+      return 'es-ES';
+    case 'fr':
+    case 'fr-fr':
+      return 'fr-FR';
     default:
       return 'en-US';
   }
@@ -25,5 +31,9 @@ export function detectUserLocaleFromEmail(email?: string | null): SupportedLocal
   if (!email) return 'en-US';
   const lower = email.toLowerCase();
   if (lower.endsWith('.pt') || lower.includes('.pt')) return 'pt-PT';
+  if (lower.endsWith('.es') || lower.includes('.es')) return 'es-ES';
+  if (lower.endsWith('.fr') || lower.includes('.fr')) return 'fr-FR';
   return 'en-US';
 }
+
+export { SUPPORTED_LOCALES };

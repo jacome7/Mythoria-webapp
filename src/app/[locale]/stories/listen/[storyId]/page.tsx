@@ -116,6 +116,7 @@ export default function ListenStoryPage() {
   const tListenStory = useTranslations('ListenStory');
   const tActions = useTranslations('Actions');
   const tCreditsDisplay = useTranslations('CreditsDisplay');
+  const tDeliveryOptions = useTranslations('DeliveryOptions');
   const storyId = (params?.storyId as string | undefined) ?? '';
   const [story, setStory] = useState<Story | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
@@ -517,11 +518,11 @@ export default function ListenStoryPage() {
                                   <div className="stats stats-horizontal shadow">
                                     <div className="stat">
                                       <div className="stat-title">{tListenStory('cost')}</div>
-                                      <div className="stat-value text-lg">{audiobookCost.credits} credits</div>
+                                      <div className="stat-value text-lg">{audiobookCost.credits} {tCreditsDisplay('credits')}</div>
                                     </div>
                                     <div className="stat">
                                       <div className="stat-title">{tListenStory('yourBalance')}</div>
-                                      <div className="stat-value text-lg">{userCredits.currentBalance} credits</div>
+                                      <div className="stat-value text-lg">{userCredits.currentBalance} {tCreditsDisplay('credits')}</div>
                                     </div>
                                   </div>
                                   
@@ -606,10 +607,10 @@ export default function ListenStoryPage() {
                             
                             <div className="card bg-base-200 shadow-md">
                               <div className="card-body p-4">
-                                <h4 className="font-semibold">{audiobookCost.name}</h4>
-                                <p className="text-sm text-base-content/70 mb-2">{audiobookCost.description}</p>
+                                <h4 className="font-semibold">{tDeliveryOptions('audiobook.name')}</h4>
+                                <p className="text-sm text-base-content/70 mb-2">{tDeliveryOptions('audiobook.description')}</p>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-lg font-bold">{audiobookCost.credits} credits</span>
+                                  <span className="text-lg font-bold">{audiobookCost.credits} {tCreditsDisplay('credits')}</span>
                                   <span className="text-sm text-base-content/60">
                                     {tCreditsDisplay('currentBalance')} {userCredits.currentBalance} {tCreditsDisplay('credits')}
                                   </span>

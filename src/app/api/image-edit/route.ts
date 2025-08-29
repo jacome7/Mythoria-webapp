@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { getEnvironmentConfig } from '../../../../config/environment';
+import { getEnvironmentConfig } from '@/config/environment';
 import { authorService, aiEditService, storyService } from '@/db/services';
 import { sgwFetch } from '@/lib/sgw-client';
 

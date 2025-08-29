@@ -1,0 +1,29 @@
+{
+  "ChapterEditor": {
+    "editImageButton": "Modifier l'image du chapitre",
+    "saveButton": "Sauver le chapitre",
+    "backButton": "Dos",
+    "goBackButton": "Remonter",
+  "imagePlaceholder": "Image du chapitre {number}",
+    "titlePlaceholder": "Entrez le titre du chapitre ...",
+    "contentPlaceholder": "Écrivez le contenu de votre chapitre ici ...",
+    "saving": "Économie...",
+    "toolbar": {
+      "bold": "Audacieux",
+      "italic": "Italique",
+      "underline": "Souligner",
+      "textSize": "Taille de texte",
+      "aiEdit": "AI Modifier",
+      "edit": "Modifier"
+    },
+    "textSizes": {
+      "small": "S",
+      "medium": "M",
+      "large": "L",
+      "xlarge": "Xl"
+    },
+    "errors": {
+      "failedToLoadStoryData": "Échec de charger les données de l'histoire"
+    }
+  }
+}

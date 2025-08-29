@@ -52,6 +52,94 @@
       "orderCreationFailed": "No se pudo crear el pedido. Inténtalo otra vez.",
       "paymentFailed": "El pago ha fallado. Inténtalo de nuevo.",
       "contactSupport": "Por favor, ponte en contacto con nuestro equipo de soporte para recibir ayuda."
+    },
+    "billing": {
+      "title": "Información de facturación",
+      "expand": "Haz clic para desplegar e introducir datos de facturación (opcional)",
+      "collapse": "Haz clic para ocultar los datos de facturación",
+      "loading": "Cargando tus datos de facturación...",
+      "personalDetails": "Datos personales / Empresa",
+      "billingAddress": "Dirección de facturación",
+      "selectCountry": "Selecciona un país",
+      "fields": {
+        "fullName": "Nombre completo / Empresa",
+        "email": "Email",
+        "vatNumberOptional": "NIF / IVA (opcional)",
+        "phoneOptional": "Teléfono (opcional)",
+        "addressLine1": "Dirección línea 1",
+        "addressLine2Optional": "Dirección línea 2 (opcional)",
+        "addressLine2": "Dirección línea 2",
+        "city": "Ciudad",
+        "stateRegion": "Provincia / Región",
+        "postalCode": "Código postal",
+        "country": "País"
+      },
+      "placeholders": {
+        "vatNumber": "ej: ESX1234567X",
+        "phone": "+34 612 345 678",
+        "postalCode": "ej: 28001"
+      },
+      "vatValidation": {
+        "valid": "Número de IVA válido",
+        "help": "Si proporcionas un IVA válido de la UE, el IVA puede excluirse cuando proceda.",
+        "errors": {
+          "tooShort": "El número de IVA es demasiado corto",
+          "unsupportedCountry": "Código de país no soportado",
+          "invalidFormat": "Formato de IVA inválido para {country}. Esperado: {format}"
+        }
+      },
+      "groups": {
+        "eu": "Unión Europea",
+        "otherEurope": "Otra Europa",
+        "other": "Otros"
+      },
+      "countries": {
+        "at": "Austria",
+        "be": "Bélgica",
+        "bg": "Bulgaria",
+        "hr": "Croacia",
+        "cy": "Chipre",
+        "cz": "República Checa",
+        "dk": "Dinamarca",
+        "ee": "Estonia",
+        "fi": "Finlandia",
+        "fr": "Francia",
+        "de": "Alemania",
+        "gr": "Grecia",
+        "hu": "Hungría",
+        "ie": "Irlanda",
+        "it": "Italia",
+        "lv": "Letonia",
+        "lt": "Lituania",
+        "lu": "Luxemburgo",
+        "mt": "Malta",
+        "nl": "Países Bajos",
+        "pl": "Polonia",
+        "pt": "Portugal",
+        "ro": "Rumanía",
+        "sk": "Eslovaquia",
+        "si": "Eslovenia",
+        "es": "España",
+        "se": "Suecia",
+        "ch": "Suiza",
+        "no": "Noruega",
+        "gb": "Reino Unido",
+        "us": "Estados Unidos",
+        "ca": "Canadá",
+        "au": "Australia",
+        "jp": "Japón",
+        "br": "Brasil",
+        "mx": "México",
+        "in": "India",
+        "sg": "Singapur"
+      },
+      "info": {
+        "title": "¿Por qué dar datos de facturación?",
+        "description1": "Nos ayuda a emitir facturas conformes a tus compras.",
+        "description2": "La gestión del IVA mejora con un número válido.",
+        "description3": "Rellenarlo ahora te ahorra tiempo en compras futuras.",
+        "description4": "Opcional: puedes saltarte esta sección si quieres."
+      }
     }
   }
 }

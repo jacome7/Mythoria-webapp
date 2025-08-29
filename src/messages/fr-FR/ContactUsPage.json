@@ -1,0 +1,52 @@
+{
+  "ContactUsPage": {
+    "title": "Contacter mythoria",
+    "intro": "Salutations, collègue aventurier! Que vous soyez de la comté, de Poudlard ou d'une galaxie loin, loin, nous sommes là pour vous aider dans votre voyage à travers le monde merveilleux de Mythoria. Vos commentaires sont aussi précieux que le seul anneau (mais plus facile à gérer, nous promettons!).",
+    "scrollTitle": "Envoyez-nous votre hibou (ou remplissez simplement le formulaire)",
+    "scrollIntro": "Choisissez le parchemin qui convient le mieux à votre quête:",
+    "categories": {
+      "featureIdeas": "Idées de fonctionnalités (inspirer comme Tolkien)",
+      "reportBug": "Signaler un bug (même Sherlock Holmes avait besoin d'indices!)",
+      "troubles": "Troubles de la génération d'histoires (quand les sorts magiques tournent mal)",
+      "delivery": "Livraison du livre imprimé (nos hiboux peuvent avoir besoin de directions)",
+      "credits": "Crédits et paiements (les gobelins de Gringotts sont stricts!)",
+      "general": "Enchantement général (soutien)",
+      "businessPartnership": "Partenariat commercial"
+    },
+    "categoriesShort": {
+      "featureIdeas": "Idées de fonctionnalités",
+      "reportBug": "Signaler un bug",
+      "troubles": "Troubles de la génération d'histoires",
+      "delivery": "Livraison du livre imprimé",
+      "credits": "Crédits et paiements",
+      "businessPartnership": "Partenariat commercial",
+      "general": "Enchantement général"
+    },
+    "form": {
+      "title": "La forme magique",
+      "name": "Votre nom:",
+      "namePlaceholder": "Alias ​​sorcier",
+      "email": "Votre e-mail:",
+      "emailPlaceholder": "Afin que nos pigeons de transporteur puissent vous trouver",
+      "category": "Sélectionnez votre quête:",
+      "selectCategory": "Choisissez une catégorie ...",
+      "message": "Votre message magique:",
+      "messagePlaceholder": "Partagez vos pensées, vos idées ou vos commentaires magiques ...",
+      "submit": "Spel"
+    },
+    "join": {
+      "title": "Rejoignez la bourse",
+      "intro": "Mythoria est dans une quête épique pour conquérir les nouveaux royaumes et nous recherchons des âmes courageuses pour rejoindre notre bourse!",
+      "printing": "Impression et partenaires logistiques: Êtes-vous prêt à voyager à travers la Terre du Milieu ou Westeros pour livrer des histoires qui comptent? Rejoignez-nous pour répandre la magie de la narration personnalisée.",
+      "country": "Managers de pays et sorciers locaux: aidez Mythoria à prendre le contrôle du monde (pacifiquement, nous vous assurons). Apportez la joie de la narration à votre royaume et au-delà!",
+      "developers": "Développeurs qui vibe le code et parlent AI: parlez-vous couramment binaire et discutez sans effort avec l'IA? Nous avons besoin de développeurs qualifiés qui vibe avec une technologie innovante et une intelligence artificielle pour améliorer l'expérience de Mythoria.",
+      "call": "Vous souhaitez devenir mythorien? Envoyez-nous vos coordonnées en utilisant le formulaire enchanté ci-dessus et faites-nous savoir votre domaine d'intérêt."
+    },
+    "bonus": {
+      "title": "Alerte des crédits bonus!",
+      "content": "Vous avez un œil vif pour les insectes ou un esprit imaginatif qui éclate d'idées? Gagnez des crédits magiques supplémentaires pour chaque fonctionnalité de bogue valide ou inspiré suggéré.",
+      "disclaimer": "(*) La décision finale repose sur nos délicieuses oompa Loompas. Ils sont charmants imprévisibles, mais ils aiment la créativité enrichissante!",
+      "closing": "Créons la magie ensemble!"
+    }
+  }
+}

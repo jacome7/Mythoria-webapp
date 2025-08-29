@@ -1,0 +1,35 @@
+{
+  "Metadata": {
+    "title": "Mythoria | Créateur de livres personnalisés",
+    "description": "Créez des livres uniques et entièrement illustrés avec Generative-AI de Mythoria. Transformez n'importe quelle histoire en un livre électronique, un livre audio ou un cadeau imprimé en quelques minutes.",
+    "defaultTitle": "Mythorie",
+    "defaultDescription": "Créateur de livres personnalisés",
+    "brand": {
+      "name": "Mythorie",
+      "tagline": "Créateur de livres personnalisés"
+    },
+    "openGraph": {
+      "title": "Mythoria | Créateur de livres personnalisés",
+      "description": "Transformez vos idées en livres personnalisés et magnifiquement illustrés - lisez, écoutez ou imprimez.",
+      "image": "https://mythoria.pt/assets/og/mythoria_en.jpg",
+      "url": "https://mythoria.pt/en-us/"
+    },
+    "structuredData": {
+      "name": "Mythorie",
+      "description": "Mythoria permet à quiconque de créer et de personnaliser des livres entièrement illustrés en utilisant une AI générative.",
+      "inLanguage": "en-us"
+    },
+    "manifest": {
+      "name": "Mythoria - Créateur de livres personnalisés",
+      "short_name": "Mythorie",
+      "description": "Créer des livres uniques et entièrement illustrés",
+      "shortcuts": {
+        "createStory": {
+          "name": "Créer une histoire",
+          "short_name": "Créer",
+          "description": "Commencez à créer une nouvelle histoire"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "ImageEditingTab": {
+    "noImages": {
+      "title": "Aucune image trouvée",
+      "description": "Aucune image n'est encore disponible pour cette histoire. Les images apparaîtront ici une fois qu'elles seront générées."
+    },
+    "imageSelection": {
+      "label": "Sélectionnez une image à modifier:",
+      "versionsAvailable": "{count} version {pluriel} disponible",
+      "latestVersion": "Dernier: {version}"
+    },
+    "versionSelection": {
+      "label": "Choisissez la version pour modifier:",
+      "versionsInfo": "{count} version {pluriel} disponible",
+      "currentlySelected": "Actuellement sélectionné: {version}",
+      "changeImageButton": "Changer l'image dans l'histoire",
+      "changingImage": "Changer l'image ...",
+      "changeImageDescription": "Cela remplacera l'image actuelle de votre histoire par la version sélectionnée."
+    },
+    "imagePreview": {
+      "label": "Image actuelle:"
+    },
+    "editRequest": {
+      "label": "Quels changements aimeriez-vous apporter à cette image?",
+      "placeholder": "Décrivez les modifications que vous souhaitez apporter à l'image ...",
+      "charactersCount": "{Current} / {Max} caractères"
+    },
+    "loadingState": {
+      "title": "Traitement de votre image Modifier ...",
+      "description": "Cela peut prendre jusqu'à 3 minutes en fonction de la complexité des changements."
+    },
+    "buttons": {
+      "generateNewVersion": "Générer une nouvelle version",
+      "editingImage": "Édition d'image ...",
+      "replaceImageInStory": "Remplacer l'image dans l'histoire",
+      "replacingImage": "Remplacement de l'image ..."
+    },
+    "success": {
+      "title": "Une nouvelle version d'image générée avec succès!",
+      "description": "Cliquez sur le bouton ci-dessous pour remplacer l'image actuelle de votre histoire par la nouvelle version."
+    },
+    "errors": {
+      "selectImage": "Veuillez sélectionner une image pour modifier",
+      "enterChanges": "Veuillez décrire les modifications que vous souhaitez apporter",
+      "requestTooLong": "La demande doit être de 2000 caractères ou moins",
+      "editFailed": "Échec de l'édition de l'image. Veuillez réessayer.",
+      "noNewImage": "Aucune nouvelle image disponible pour remplacer",
+      "replaceImageFailed": "N'a pas réussi à remplacer l'image dans l'histoire. Veuillez réessayer.",
+      "noVersionSelected": "Aucune version d'image sélectionnée pour passer à",
+      "changeImageFailed": "N'a pas changé d'image dans l'histoire. Veuillez réessayer.",
+      "sameVersion": "La version sélectionnée est déjà la version actuelle"
+    }
+  }
+}

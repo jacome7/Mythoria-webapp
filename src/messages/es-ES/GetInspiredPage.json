@@ -38,7 +38,9 @@
     "storyLanguage": {
       "all": "Todos los Idiomas",
       "en-US": "Inglés",
-      "pt-PT": "Portugués"
+      "pt-PT": "Portugués",
+      "fr-FR": "Francés",
+      "es-ES": "Español"
     },
     "gallery": {
       "title": "Historias Destacadas",

@@ -38,7 +38,9 @@
     "storyLanguage": {
       "all": "All Languages",
       "en-US": "English",
-      "pt-PT": "Portuguese"
+      "pt-PT": "Portuguese",
+      "fr-FR": "French",
+      "es-ES": "Spanish"
     },
     "gallery": {
       "title": "Featured Stories",

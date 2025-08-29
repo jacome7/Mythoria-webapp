@@ -1,0 +1,68 @@
+{
+  "ProfilePage": {
+    "title": "O seu perfil e preferências",
+    "intro": "Bem-vindo ao seu painel pessoal. Aqui pode gerir as suas informações, ver os seus créditos e acompanhar a sua jornada criativa. Vamos tornar a sua experiência única!",
+    "signInPrompt": "Por favor, inicie sessão para ver o seu perfil. Estamos entusiasmados por tê-lo connosco!",
+    "details": {
+      "title": "Detalhes do seu perfil",
+      "description": "Esta é a informação que nos ajuda a personalizar a sua experiência. Não seja tímido, atualize-a sempre que lhe apetecer!",
+      "displayName": "Nome preferido",
+      "gender": "Género",
+      "selectGender": "Selecione o seu género",
+      "ageRange": "A sua faixa etária",
+      "selectAge": "Selecione a sua faixa etária"
+    },
+    "contact": {
+      "title": "Informações de contacto e preferências",
+      "description": "Os seus dados de contacto estão seguros connosco. Usamo-los para proteger a sua conta e para comunicações importantes. Sem spam, prometemos!",
+      "email": "Endereço de email",
+      "emailHelp": "Para alterar o seu e-mail, visite o seu provedor de conta.",
+      "mobile": "Telemóvel",
+      "mobilePlaceholder": "ex: +351912345678",
+      "language": "Idioma preferido"
+    },
+    "billing": {
+      "title": "A sua conta de faturação",
+      "vatNumber": "O seu número de contribuinte",
+      "vatPlaceholder": "ex: PT123456789",
+      "historyHint": "Clique no seu saldo para ver o seu histórico de transações.",
+      "addCredits": "Adicionar créditos"
+    },
+    "journey": {
+      "title": "A sua jornada criativa",
+      "description": "Adoramos ver a sua criatividade a florescer! Aqui ficam algumas das suas incríveis estatísticas.",
+  "booksCreated": "Histórias criadas"
+    },
+    "actions": {
+      "save": "Guardar alterações",
+      "saving": "A guardar..."
+    },
+    "errors": {
+      "loadFailed": "Ups! Falha ao carregar os dados do seu perfil. Por favor, tente novamente mais tarde.",
+      "saveFailed": "Oh não! Falha ao guardar as suas alterações. Por favor, tente de novo."
+    },
+    "success": {
+      "saved": "Sucesso! O seu perfil foi atualizado."
+    },
+    "genderOptions": {
+      "male": "Masculino",
+      "female": "Feminino",
+      "non_binary": "Não-binário",
+      "other": "Outro",
+      "prefer_not_to_say": "Prefiro não dizer"
+    },
+    "ageOptions": {
+      "school_age": "Idade escolar (6–12)",
+      "teen": "Adolescente (13–17)",
+      "emerging_adult": "Adulto em formação (18–24)",
+      "experienced_adult": "Adulto experiente (25–49)",
+      "midlife_mentor_or_elder": "Mentor / Experiente (50+)"
+    },
+    "languages": {
+      "en-US": "Inglês (EUA)",
+      "pt-PT": "Português (Portugal)",
+      "es-ES": "Espanhol (Espanha)",
+      "fr-FR": "Francês (França)"
+    }
+  }
+}

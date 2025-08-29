@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { paymentService } from '@/db/services';
+import { normalizeLocale } from '@/utils/locale-utils';
 
 interface Manager {
   email: string;
@@ -24,20 +25,6 @@ function getTicketNumber(uuid: string): string {
   }
   // Fallback to first 4 characters if UUID format is unexpected
   return uuid.substring(0, 4).toUpperCase();
-}
-
-// Helper function to normalize locale
-function normalizeLocale(locale?: string): string {
-  if (!locale) return 'en-US';
-  
-  const localeMap: Record<string, string> = {
-    'en': 'en-US',
-    'pt': 'pt-PT',
-    'en-US': 'en-US',
-    'pt-PT': 'pt-PT',
-  };
-  
-  return localeMap[locale.toLowerCase()] || 'en-US';
 }
 
 export async function POST(request: NextRequest) {

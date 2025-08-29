@@ -164,3 +164,37 @@ export const transactionTypeEnum = pgEnum("transaction_type", [
   'bonus', 
   'refund'
 ]);
+
+// Onboarding / profile enums
+export const genderEnum = pgEnum('gender', [
+  'female',
+  'male',
+  'prefer_not_to_say'
+]);
+
+export const literaryAgeEnum = pgEnum('literary_age', [
+  'school_age',
+  'teen',
+  'emerging_adult',
+  'experienced_adult',
+  'midlife_mentor_or_elder'
+]);
+
+export const primaryGoalEnum = pgEnum('primary_goal', [
+  'family_keepsake',
+  'personalized_gift',
+  'child_development',
+  'fun_and_creativity',
+  'friend_group_memories',
+  'company_engagement',
+  'other'
+]);
+
+export const audienceForStoriesEnum = pgEnum('audience_for_stories', [
+  'my_child',
+  'family_member',
+  'friend_group',
+  'myself',
+  'a_friend',
+  'varies'
+]);

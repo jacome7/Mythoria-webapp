@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db';
 import { authors } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { normalizePreferredLocale } from '@/utils/locale-utils';
+import { normalizeLocale } from '@/utils/locale-utils';
 
 export async function POST(req: Request) {
   try {
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     // Parse request body
   const body = await req.json();
   const preferredLocaleInput = body?.preferredLocale as string | undefined;
-  const normalized = normalizePreferredLocale(preferredLocaleInput);
+  const normalized = normalizeLocale(preferredLocaleInput);
 
   // (Implicit validation via normalization) If input was invalid we still coerce to 'en-US'.
   // If you want to reject unknown locales explicitly, add a guard here.

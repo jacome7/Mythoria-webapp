@@ -1,0 +1,16 @@
+{
+  "BlogPost": {
+    "backToList": "Retour aux chroniques",
+    "sharePost": "Partager Chronicle",
+    "readingTime": "Min Read",
+    "publishedOn": "Publié au {date}",
+    "previousPost": "Chronique précédente",
+    "nextPost": "Next Chronicle",
+    "notFound": "Chronique n'est pas trouvée",
+    "notFoundDescription": "La chronique que vous recherchez n'existe pas ou n'est plus disponible.",
+    "notAvailable": "Chronique non disponible",
+    "notAvailableDescription": "Cette chronique n'est pas disponible dans votre langue.",
+    "error": "Échec de chargement chronique",
+    "errorDescription": "Nous n'avons pas pu charger la chronique. Veuillez réessayer plus tard."
+  }
+}

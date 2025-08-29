@@ -170,6 +170,41 @@
       "intelligent": "Inteligente",
       "fearful": "Temeroso/a"
     },
+    "characteristicHints": {
+      "adjusts_glasses_when_thinking": "se ajusta las gafas al pensar",
+      "hums_softly": "tararea suavemente",
+      "cracks_knuckles_when_stressed": "se truena los dedos cuando está estresado",
+      "fidgets_with_hair_or_clothes": "juega con el pelo o la ropa",
+      "speaks_with_filler_words": "habla con muletillas (\"en plan...\", \"ya sabes...\")",
+      "mutters_to_self": "murmura para sí",
+      "avoids_eye_contact": "evita el contacto visual",
+      "blinks_rapidly_under_stress": "parpadea rápido bajo estrés",
+      "always_sipping_a_drink": "siempre sorbiendo una bebida",
+      "winks_at_others": "guiña a los demás",
+      "refuses_public_restrooms": "evita los baños públicos",
+      "eats_snacks_constantly": "picotea constantemente",
+      "obsesses_over_cleanliness": "obsesionado con la limpieza",
+      "mentions_horoscopes_or_superstitions": "menciona horóscopos o supersticiones",
+      "uses_sophisticated_words": "usa palabras sofisticadas",
+      "taps_foot_or_finger": "golpea con el pie o el dedo"
+    },
+    "physicalDescriptionHints": {
+      "long_curly_hair": "pelo largo y rizado",
+      "wears_thin_rimmed_glasses": "lleva gafas de montura fina",
+      "freckled_cheeks": "mejillas pecosas",
+      "scar_across_left_eyebrow": "cicatriz sobre la ceja izquierda",
+      "broad_shouldered_build": "complexión de hombros anchos",
+      "petite_frame": "complexión pequeña",
+      "vivid_green_eyes": "ojos verdes vivos",
+      "sun_creased_smile_lines": "líneas de sonrisa marcadas por el sol",
+      "shaved_head": "cabeza rapada",
+      "tall_and_lanky": "alto y desgarbado",
+      "weather_beaten_skin": "piel curtida por el clima",
+      "tattoo_sleeve": "brazo cubierto de tatuajes",
+      "lean_muscular_arms": "brazos delgados y musculosos",
+      "hunched_posture": "postura encorvada",
+      "pale_skin_with_dark_circles": "piel pálida con ojeras"
+    },
     "confirmDelete": "¿Seguro que quieres borrar este personaje? Esta acción no se puede deshacer."
   }
 }

@@ -1,0 +1,145 @@
+{
+  "BuyCreditsPage": {
+    "header": {
+      "title": "Acheter des crédits",
+      "subtitle": "Achetez des crédits pour débloquer des fonctionnalités premium et créer des histoires incroyables."
+    },
+    "packages": {
+      "title": "Packages de crédit disponibles",
+      "addToCart": "Ajouter au panier"
+    },
+    "badges": {
+      "bestValue": "Meilleur rapport qualité-prix",
+      "popular": "Populaire"
+    },
+    "cart": {
+      "title": "Panier",
+      "empty": "Votre panier est vide. Ajoutez des forfaits de crédit pour commencer!",
+      "each": "chaque"
+    },
+    "summary": {
+      "title": "Résumé de la commande",
+      "subtotal": "Total",
+      "vat": "TVA (6%)",
+      "total": "Total"
+    },
+    "payment": {
+      "title": "Mode de paiement",
+      "revolutPay": "Revolut Pay",
+      "revolutDescription": "Paiement rapide et sécurisé avec Revolut. Payez avec votre carte bancaire ou votre compte Revolut.",
+      "revolutError": "Erreur de paiement",
+      "revolutErrorHelp": "Si vous continuez à rencontrer des problèmes, veuillez essayer d'utiliser un mode de paiement différent ou un support de contact.",
+      "mbway": "MB Way",
+      "mbwayDescription": "Payez en utilisant votre application mobile Portugais MB Way.",
+      "comingSoon": "À venir",
+      "completePayment": "Complétez votre paiement",
+      "creatingOrder": "Créer votre commande ...",
+      "orderCreated": "Ordre créé avec succès",
+      "success": "Paiement réussi! Rediriger vers vos histoires ...",
+      "mbwaySuccess": "MB Way Payment Demande créée! Vérifiez votre e-mail pour les instructions de paiement. Rediriger vers vos histoires ...",
+      "processing": "Paiement de traitement ..."
+    },
+    "actions": {
+      "proceedToPayment": "Procéder au paiement",
+      "creatingOrder": "Création d'ordre ...",
+      "cancel": "Annuler",
+      "tryAgain": "Essayer à nouveau",
+      "contactSupport": "Support de contact",
+      "backToPricing": "Retour aux prix"
+    },
+    "errors": {
+      "emptyCart": "Votre panier est vide. Veuillez d'abord ajouter des forfaits de crédit.",
+      "orderCreationFailed": "Échec de la commande. Veuillez réessayer.",
+      "paymentFailed": "Le paiement a échoué. Veuillez réessayer.",
+      "contactSupport": "Veuillez contacter notre équipe d'assistance pour obtenir de l'aide."
+    },
+    "billing": {
+      "title": "Informations de facturation",
+      "expand": "Cliquer pour développer et saisir les détails de facturation (optionnel)",
+      "collapse": "Cliquer pour réduire les détails de facturation",
+      "loading": "Chargement de vos informations de facturation...",
+      "personalDetails": "Détails Personnels / Société",
+      "billingAddress": "Adresse de facturation",
+      "selectCountry": "Sélectionner un pays",
+      "fields": {
+        "fullName": "Nom complet / Société",
+        "email": "Email",
+        "vatNumberOptional": "N° TVA / Fiscal (optionnel)",
+        "phoneOptional": "Téléphone (optionnel)",
+        "addressLine1": "Adresse ligne 1",
+        "addressLine2Optional": "Adresse ligne 2 (optionnel)",
+        "addressLine2": "Adresse ligne 2",
+        "city": "Ville",
+        "stateRegion": "État / Région",
+        "postalCode": "Code postal",
+        "country": "Pays"
+      },
+      "placeholders": {
+        "vatNumber": "ex: PT123456789",
+        "phone": "+33 1 23 45 67 89",
+        "postalCode": "ex: 75001"
+      },
+      "vatValidation": {
+        "valid": "Numéro de TVA valide",
+        "help": "Si vous fournissez une TVA UE valide, la TVA peut être exclue lorsque applicable.",
+        "errors": {
+          "tooShort": "Le numéro de TVA est trop court",
+          "unsupportedCountry": "Code pays non pris en charge",
+          "invalidFormat": "Format de TVA invalide pour {country}. Attendu: {format}"
+        }
+      },
+      "groups": {
+        "eu": "Union Européenne",
+        "otherEurope": "Autre Europe",
+        "other": "Autres"
+      },
+      "countries": {
+        "at": "Autriche",
+        "be": "Belgique",
+        "bg": "Bulgarie",
+        "hr": "Croatie",
+        "cy": "Chypre",
+        "cz": "République tchèque",
+        "dk": "Danemark",
+        "ee": "Estonie",
+        "fi": "Finlande",
+        "fr": "France",
+        "de": "Allemagne",
+        "gr": "Grèce",
+        "hu": "Hongrie",
+        "ie": "Irlande",
+        "it": "Italie",
+        "lv": "Lettonie",
+        "lt": "Lituanie",
+        "lu": "Luxembourg",
+        "mt": "Malte",
+        "nl": "Pays-Bas",
+        "pl": "Pologne",
+        "pt": "Portugal",
+        "ro": "Roumanie",
+        "sk": "Slovaquie",
+        "si": "Slovénie",
+        "es": "Espagne",
+        "se": "Suède",
+        "ch": "Suisse",
+        "no": "Norvège",
+        "gb": "Royaume-Uni",
+        "us": "États-Unis",
+        "ca": "Canada",
+        "au": "Australie",
+        "jp": "Japon",
+        "br": "Brésil",
+        "mx": "Mexique",
+        "in": "Inde",
+        "sg": "Singapour"
+      },
+      "info": {
+        "title": "Pourquoi fournir des infos de facturation ?",
+        "description1": "Nous aide à produire des factures conformes pour vos achats.",
+        "description2": "La gestion de TVA peut être améliorée avec un numéro valide.",
+        "description3": "Remplir les détails maintenant vous fait gagner du temps plus tard.",
+        "description4": "Optionnel – vous pouvez ignorer cette section."
+      }
+    }
+  }
+}

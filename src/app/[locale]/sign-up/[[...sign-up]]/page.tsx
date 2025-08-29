@@ -5,7 +5,9 @@ import SignUpClient from './SignUpClient'
 export function generateStaticParams() {
   return [
     { locale: 'en-US', 'sign-up': [] },
-    { locale: 'pt-PT', 'sign-up': [] }
+    { locale: 'pt-PT', 'sign-up': [] },
+    { locale: 'es-ES', 'sign-up': [] },
+    { locale: 'fr-FR', 'sign-up': [] }
   ];
 }
 

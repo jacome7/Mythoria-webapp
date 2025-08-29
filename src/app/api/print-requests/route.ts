@@ -4,7 +4,7 @@ import { printRequests, printProviders, stories, addresses } from '@/db/schema';
 import { eq, and, desc, or } from 'drizzle-orm';
 import { getCurrentAuthor } from '@/lib/auth';
 import { creditService } from '@/db/services';
-import { getEnvironmentConfig } from '../../../../config/environment';
+import { getEnvironmentConfig } from '@/config/environment';
 import { PrintPubSubService } from '@/lib/print-pubsub';
 import { v4 as uuidv4 } from 'uuid';
 

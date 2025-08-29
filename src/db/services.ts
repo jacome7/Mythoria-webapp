@@ -5,7 +5,7 @@ import { ClerkUserForSync } from "@/types/clerk";
 import { pricingService } from "./services/pricing";
 import { CharacterRole, CharacterAge, isValidCharacterAge } from "../types/character-enums";
 import { toAbsoluteImageUrl, toRelativeImagePath } from "../utils/image-url";
-import { normalizePreferredLocale, detectUserLocaleFromEmail } from '@/utils/locale-utils';
+import { normalizeLocale, detectUserLocaleFromEmail } from '@/utils/locale-utils';
 
 // Export payment service
 export { paymentService } from "./services/payment";
@@ -14,7 +14,7 @@ export { blogService } from './services/blog';
 
 // Author operations
 export const authorService = {  async createAuthor(authorData: { clerkUserId: string; email: string; displayName: string; preferredLocale?: string }) {
-    const normalizedLocale = normalizePreferredLocale(authorData.preferredLocale);
+    const normalizedLocale = normalizeLocale(authorData.preferredLocale);
     const [author] = await db.insert(authors).values({
       clerkUserId: authorData.clerkUserId,
       email: authorData.email,
@@ -57,7 +57,7 @@ export const authorService = {  async createAuthor(authorData: { clerkUserId: st
         displayName: this.buildDisplayName(clerkUser),
         lastLoginAt: currentTime,
         createdAt: currentTime,
-        preferredLocale: normalizePreferredLocale(detectedLocale),
+        preferredLocale: normalizeLocale(detectedLocale),
         ...(primaryPhone?.phoneNumber && { mobilePhone: primaryPhone.phoneNumber })
       };
 
@@ -93,7 +93,7 @@ export const authorService = {  async createAuthor(authorData: { clerkUserId: st
                   clerkUserId: clerkUser.id, // Update to new clerkId
                   displayName: this.buildDisplayName(clerkUser),
                   lastLoginAt: currentTime,
-                  preferredLocale: normalizePreferredLocale(detectedLocale),
+                  preferredLocale: normalizeLocale(detectedLocale),
                   ...(primaryPhone?.phoneNumber && { mobilePhone: primaryPhone.phoneNumber })
                 })
                 .where(eq(authors.email, newAuthorData.email))

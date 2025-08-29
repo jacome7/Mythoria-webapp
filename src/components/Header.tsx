@@ -39,11 +39,6 @@ const Header = () => {
             <Link href="/" className="btn btn-ghost normal-case text-xl px-1 py-0.5">
               <Image src="/images/logo/just_lettering.png" alt={tCommonHeader('logoAlt')} width={150} height={49} />
             </Link>
-            <div className="ml-1 sm:ml-2">
-              <span className="badge badge-outline badge-primary badge-xs sm:badge-sm font-semibold" style={{ fontSize: '11px' }}>
-                BETA
-              </span>
-            </div>
           </div>
         </div>
         <div className="navbar-center hidden lg:flex">
@@ -87,11 +82,6 @@ const Header = () => {
           <Link href="/" className="btn btn-ghost normal-case text-xl px-0 py-0.5">
             <Image src="/images/logo/just_lettering.png" alt={tCommonHeader('logoAlt')} width={140} height={45} />
           </Link>
-          <div className="ml-1 sm:ml-2">
-            <span className="badge badge-outline badge-primary badge-xs sm:badge-sm font-semibold" style={{ fontSize: '11px' }}>
-              BETA
-            </span>
-          </div>
         </div>
       </div>
       <div className="navbar-center hidden lg:flex">
@@ -118,7 +108,7 @@ const Header = () => {
             </Link>
           </div>
         ) : (
-          <UserButton />
+          <UserButton userProfileUrl={`/${locale}/profile`} userProfileMode="navigation" />
         )}
       </div>
     </header>

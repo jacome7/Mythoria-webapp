@@ -52,6 +52,94 @@
       "orderCreationFailed": "Falha ao criar pedido. Por favor tente novamente.",
       "paymentFailed": "Pagamento falhou. Por favor tente novamente.",
       "contactSupport": "Por favor contacte a nossa equipa de suporte para assistência."
+    },
+    "billing": {
+      "title": "Informação de Faturação",
+      "expand": "Clique para expandir e inserir dados de faturação (opcional)",
+      "collapse": "Clique para recolher os dados de faturação",
+      "loading": "A carregar os seus dados de faturação...",
+      "personalDetails": "Dados Pessoais / Empresa",
+      "billingAddress": "Endereço de Faturação",
+      "selectCountry": "Selecione um país",
+      "fields": {
+        "fullName": "Nome Completo / Empresa",
+        "email": "Email",
+        "vatNumberOptional": "NIF / IVA (opcional)",
+        "phoneOptional": "Telefone (opcional)",
+        "addressLine1": "Morada Linha 1",
+        "addressLine2Optional": "Morada Linha 2 (opcional)",
+        "addressLine2": "Morada Linha 2",
+        "city": "Cidade",
+        "stateRegion": "Distrito / Região",
+        "postalCode": "Código Postal",
+        "country": "País"
+      },
+      "placeholders": {
+        "vatNumber": "ex: PT123456789",
+        "phone": "+351 912 345 678",
+        "postalCode": "ex: 1000-001"
+      },
+      "vatValidation": {
+        "valid": "Número de IVA válido",
+        "help": "Se fornecer um IVA válido da UE, o IVA pode ser excluído quando aplicável.",
+        "errors": {
+          "tooShort": "Número de IVA demasiado curto",
+          "unsupportedCountry": "Código de país não suportado",
+          "invalidFormat": "Formato de IVA inválido para {country}. Esperado: {format}"
+        }
+      },
+      "groups": {
+        "eu": "União Europeia",
+        "otherEurope": "Outra Europa",
+        "other": "Outros"
+      },
+      "countries": {
+        "at": "Áustria",
+        "be": "Bélgica",
+        "bg": "Bulgária",
+        "hr": "Croácia",
+        "cy": "Chipre",
+        "cz": "República Checa",
+        "dk": "Dinamarca",
+        "ee": "Estónia",
+        "fi": "Finlândia",
+        "fr": "França",
+        "de": "Alemanha",
+        "gr": "Grécia",
+        "hu": "Hungria",
+        "ie": "Irlanda",
+        "it": "Itália",
+        "lv": "Letónia",
+        "lt": "Lituânia",
+        "lu": "Luxemburgo",
+        "mt": "Malta",
+        "nl": "Países Baixos",
+        "pl": "Polónia",
+        "pt": "Portugal",
+        "ro": "Roménia",
+        "sk": "Eslováquia",
+        "si": "Eslovénia",
+        "es": "Espanha",
+        "se": "Suécia",
+        "ch": "Suíça",
+        "no": "Noruega",
+        "gb": "Reino Unido",
+        "us": "Estados Unidos",
+        "ca": "Canadá",
+        "au": "Austrália",
+        "jp": "Japão",
+        "br": "Brasil",
+        "mx": "México",
+        "in": "Índia",
+        "sg": "Singapura"
+      },
+      "info": {
+        "title": "Porquê fornecer dados de faturação?",
+        "description1": "Ajuda-nos a emitir faturas conformes às suas compras.",
+        "description2": "O tratamento de IVA pode melhorar com um número válido.",
+        "description3": "Preencher agora poupa tempo em compras futuras.",
+        "description4": "Opcional – pode ignorar esta secção."
+      }
     }
   }
 }

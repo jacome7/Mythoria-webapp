@@ -170,6 +170,41 @@
       "intelligent": "Intelligent",
       "fearful": "Fearful"
     },
+    "characteristicHints": {
+      "adjusts_glasses_when_thinking": "adjusts glasses when thinking",
+      "hums_softly": "hums softly",
+      "cracks_knuckles_when_stressed": "cracks knuckles when stressed",
+      "fidgets_with_hair_or_clothes": "fidgets with hair or clothes",
+      "speaks_with_filler_words": "speaks with filler words (\"like…\", \"you know…\")",
+      "mutters_to_self": "mutters to self",
+      "avoids_eye_contact": "avoids eye contact",
+      "blinks_rapidly_under_stress": "blinks rapidly under stress",
+      "always_sipping_a_drink": "always sipping a drink",
+      "winks_at_others": "winks at others",
+      "refuses_public_restrooms": "refuses public restrooms",
+      "eats_snacks_constantly": "eats/snacks constantly",
+      "obsesses_over_cleanliness": "obsesses over cleanliness",
+      "mentions_horoscopes_or_superstitions": "mentions horoscopes or superstitions",
+      "uses_sophisticated_words": "uses sophisticated words",
+      "taps_foot_or_finger": "taps foot or finger"
+    },
+    "physicalDescriptionHints": {
+      "long_curly_hair": "long curly hair",
+      "wears_thin_rimmed_glasses": "wears thin-rimmed glasses",
+      "freckled_cheeks": "freckled cheeks",
+      "scar_across_left_eyebrow": "scar across left eyebrow",
+      "broad_shouldered_build": "broad-shouldered build",
+      "petite_frame": "petite frame",
+      "vivid_green_eyes": "vivid green eyes",
+      "sun_creased_smile_lines": "sun-creased smile lines",
+      "shaved_head": "shaved head",
+      "tall_and_lanky": "tall and lanky",
+      "weather_beaten_skin": "weather-beaten skin",
+      "tattoo_sleeve": "tattoo sleeve",
+      "lean_muscular_arms": "lean, muscular arms",
+      "hunched_posture": "hunched posture",
+      "pale_skin_with_dark_circles": "pale skin with dark circles"
+    },
     "confirmDelete": "Are you sure you want to delete this character? This action cannot be undone."
   }
 }

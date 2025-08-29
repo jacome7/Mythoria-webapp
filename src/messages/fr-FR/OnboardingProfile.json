@@ -1,0 +1,93 @@
+{
+    "OnboardingProfile": {
+        "title": "Bienvenue ! Nous sommes ravis que vous soyez là.",
+        "intro": "Nous sommes enthousiastes à l'idée de commencer ce voyage créatif avec vous. La première étape est faite — rendons-le vraiment vôtre.",
+        "preferredName": {
+            "section": "Comment devons-nous vous appeler ?",
+            "help": "Pour rester chaleureux et personnalisé, dites-nous comment vous préférez être appelé.",
+            "label": "Votre prénom préféré"
+        },
+        "tailor": { "section": "Aidez-nous à personnaliser votre expérience (Optionnel)" },
+        "gender": {
+            "label": "Genre"
+        },
+        "literaryAge": {
+            "label": "Tranche d'âge"
+        },
+        "primaryGoal": {
+            "label": "Quels sont vos principaux objectifs ? (Sélectionnez tout ce qui s'applique)",
+            "otherPlaceholder": "(Optionnel) Dites-nous en plus"
+        },
+        "audience": {
+            "label": "Pour qui créez-vous habituellement des histoires ? (Sélectionnez tout ce qui s'applique)"
+        },
+        "interests": {
+            "label": "Quel type d'histoires aimez-vous ?"
+        },
+        "gift": {
+            "section": "Un cadeau pour démarrer !",
+            "copy": "La créativité mérite un petit coup de pouce. Nous vous offrons {credits} crédits gratuits pour votre première histoire, sans engagement.",
+            "button": {
+                "claimed": "Vous avez déjà vos crédits",
+                "start": "Commencer votre histoire"
+            }
+        },
+        "ideas": {
+            "section": "Que pouvez-vous créer ? Quelques idées :",
+            "item1": "Histoires du soir personnalisées où l'enfant est le héros.",
+            "item2": "Aventures familiales — transformez vacances et moments spéciaux en récits épiques.",
+            "item3": "Un cadeau unique pour un anniversaire, un baptême ou juste pour dire ‘je tiens à vous’."
+        },
+        "inspiration": {
+            "section": "Votre muse vous attend",
+            "copy": "En panne d'idées ? Notre page Inspiration regorge de thèmes et de points de départ.",
+            "button": "Emmenez-moi à l'Inspiration"
+        },
+        "options": {
+            "gender": {
+                "female": "Femme",
+                "male": "Homme",
+                "prefer_not_to_say": "Préfère ne pas préciser"
+            },
+            "literaryAge": {
+                "school_age": "Âge scolaire",
+                "teen": "Adolescent",
+                "emerging_adult": "Jeune adulte",
+                "experienced_adult": "Adulte expérimenté",
+                "midlife_mentor_or_elder": "Mentor ou aîné"
+            },
+            "primaryGoals": {
+                "family_keepsake": "Créer un souvenir de famille",
+                "personalized_gift": "Offrir un cadeau personnalisé unique",
+                "child_development": "Soutenir la croissance/éducation d'un enfant",
+                "fun_and_creativity": "Plaisir et créativité",
+                "friend_group_memories": "Préserver les souvenirs d'un groupe d'amis",
+                "company_engagement": "Dynamiser mon entreprise",
+                "other": "Autre"
+            },
+            "audiences": {
+                "my_child": "Mon enfant",
+                "family_member": "Un membre de la famille",
+                "friend_group": "Un groupe d'amis",
+                "myself": "Moi-même",
+                "a_friend": "Un(e) ami(e)",
+                "varies": "Ça dépend"
+            },
+            "interests": {
+                "adventure_exploration": "Aventure & Exploration",
+                "fantasy_magic": "Fantastique & Magie",
+                "science_discovery": "Science & Découverte",
+                "everyday_emotions": "Vie quotidienne & Émotions",
+                "sports": "Sports",
+                "comedy_fun": "Comédie & Humour",
+                "educational": "Éducatif"
+            }
+        },
+        "saved": "Enregistré ✓",
+        "saving": "Enregistrement...",
+        "errors": {
+            "displayNameRequired": "Le nom est requis",
+            "displayNameTooLong": "Nom trop long"
+        }
+    }
+}

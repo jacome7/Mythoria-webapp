@@ -1,0 +1,82 @@
+{
+  "OnboardingProfile": {
+    "title": "Bem-vindo! Estamos muito felizes por teres chegado.",
+    "intro": "Estamos entusiasmados por começar esta jornada criativa contigo. O primeiro passo está dado — agora vamos torná-la verdadeiramente tua.",
+    "preferredName": {
+      "section": "Como devemos tratar-te?",
+      "help": "Para manter tudo próximo e pessoal, diz-nos como preferes ser chamado.",
+      "label": "O teu nome preferido"
+    },
+    "tailor": { "section": "Ajuda-nos a personalizar a tua experiência (Opcional)" },
+    "gender": { "label": "Género" },
+    "literaryAge": { "label": "Faixa de idade" },
+    "primaryGoal": {
+      "label": "Quais são os teus principais objetivos? (Seleciona os que quiseres)",
+      "otherPlaceholder": "(Opcional) Diz-nos mais"
+    },
+    "audience": { "label": "Para quem costumas criar histórias? (Seleciona todos os que se aplicam)" },
+    "interests": { "label": "Que tipo de histórias gostas?" },
+    "gift": {
+      "section": "Um presente para começares!",
+      "copy": "A criatividade merece um empurrão. Oferecemos-te {credits} créditos gratuitos para usares na tua primeira história, sem compromisso.",
+      "button": { "claimed": "Já recebeste os teus créditos", "start": "Começa a tua história" }
+    },
+    "ideas": {
+      "section": "O que podes criar? Algumas ideias:",
+      "item1": "Histórias de embalar personalizadas onde a criança é a heroína ou o herói.",
+      "item2": "Aventuras em família — transforma férias e momentos especiais em contos épicos.",
+      "item3": "Uma prenda única para um aniversário, batizado ou apenas para dizer 'gosto de ti'."
+    },
+    "inspiration": {
+      "section": "A tua musa espera",
+      "copy": "Sem ideias? A nossa página de Inspiração está cheia de temas e pontos de partida.",
+      "button": "Leva-me à Inspiração"
+    },
+    "options": {
+      "gender": {
+        "female": "Feminino",
+        "male": "Masculino",
+        "prefer_not_to_say": "Prefiro não dizer"
+      },
+      "literaryAge": {
+        "school_age": "Idade escolar",
+        "teen": "Adolescente",
+        "emerging_adult": "Adulto emergente",
+        "experienced_adult": "Adulto experiente",
+        "midlife_mentor_or_elder": "Mentor ou sénior"
+      },
+      "primaryGoals": {
+        "family_keepsake": "Criar uma lembrança de família",
+        "personalized_gift": "Oferecer um presente personalizado único",
+        "child_development": "Apoiar o desenvolvimento/educação de uma criança",
+        "fun_and_creativity": "Diversão e criatividade",
+        "friend_group_memories": "Preservar memórias de um grupo de amigos",
+        "company_engagement": "Dar energia à minha empresa",
+        "other": "Outro"
+      },
+      "audiences": {
+        "my_child": "O meu filho / A minha filha",
+        "family_member": "Um familiar",
+        "friend_group": "Um grupo de amigos",
+        "myself": "Eu próprio(a)",
+        "a_friend": "Um amigo / Uma amiga",
+        "varies": "Depende"
+      },
+      "interests": {
+        "adventure_exploration": "Aventura e Exploração",
+        "fantasy_magic": "Fantasia e Magia",
+        "science_discovery": "Ciência e Descoberta",
+        "everyday_emotions": "Vida diária e Emoções",
+        "sports": "Desporto",
+        "comedy_fun": "Comédia e Diversão",
+        "educational": "Educativo"
+      }
+    },
+    "saved": "Guardado ✓",
+    "saving": "A guardar...",
+    "errors": {
+      "displayNameRequired": "O nome é obrigatório",
+      "displayNameTooLong": "Nome demasiado comprido"
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getEnvironmentConfig } from '../../../../config/environment';
+import { getEnvironmentConfig } from '@/config/environment';
 
 // Contact form validation schema
 const ContactFormSchema = z.object({
