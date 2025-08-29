@@ -108,7 +108,7 @@ const Header = () => {
             </Link>
           </div>
         ) : (
-          <UserButton />
+          <UserButton userProfileUrl={`/${locale}/profile`} userProfileMode="navigation" />
         )}
       </div>
     </header>

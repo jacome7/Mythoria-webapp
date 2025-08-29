@@ -24,6 +24,9 @@ type ProfilePatchPayload = Partial<{
   primaryGoalOther: string | null;
   audiences: Author['audiences']; // enum[]
   interests: string[] | null;
+  fiscalNumber: string | null;
+  mobilePhone: string | null;
+  preferredLocale: string | null;
 }>;
 
 function sanitizeInterests(interests: unknown): string[] | undefined {
@@ -43,6 +46,9 @@ export async function GET() {
       displayName: author.displayName,
       gender: author.gender,
       literaryAge: author.literaryAge,
+  fiscalNumber: author.fiscalNumber,
+  mobilePhone: author.mobilePhone,
+  preferredLocale: author.preferredLocale,
   primaryGoals: author.primaryGoals || [],
   primaryGoalOther: author.primaryGoalOther,
   audiences: author.audiences || [],
@@ -61,7 +67,7 @@ export async function PATCH(req: NextRequest) {
   const body: ProfilePatchPayload = await req.json();
 
     // Validation
-  const updates: Partial<Pick<Author, 'displayName' | 'gender' | 'literaryAge' | 'primaryGoals' | 'primaryGoalOther' | 'audiences' | 'interests'>> = {};
+  const updates: Partial<Pick<Author, 'displayName' | 'gender' | 'literaryAge' | 'primaryGoals' | 'primaryGoalOther' | 'audiences' | 'interests' | 'fiscalNumber' | 'mobilePhone' | 'preferredLocale'>> = {};
 
     if (body.displayName !== undefined) {
       const name = body.displayName.trim();
@@ -119,6 +125,29 @@ export async function PATCH(req: NextRequest) {
       updates.interests = filtered || [];
     }
 
+    // Optional contact / billing fields
+    if (body.fiscalNumber !== undefined) {
+      const fn = body.fiscalNumber?.trim();
+      if (fn && fn.length > 40) {
+        return NextResponse.json({ error: 'fiscalNumber too long' }, { status: 400 });
+      }
+      updates.fiscalNumber = fn || null;
+    }
+    if (body.mobilePhone !== undefined) {
+      const mp = body.mobilePhone?.trim();
+      if (mp && mp.length > 30) {
+        return NextResponse.json({ error: 'mobilePhone too long' }, { status: 400 });
+      }
+      updates.mobilePhone = mp || null;
+    }
+    if (body.preferredLocale !== undefined) {
+      const pl = body.preferredLocale?.trim();
+      if (pl && (pl.length < 2 || pl.length > 5)) {
+        return NextResponse.json({ error: 'preferredLocale invalid length' }, { status: 400 });
+      }
+      updates.preferredLocale = pl || null;
+    }
+
     if (Object.keys(updates).length === 0) {
       return NextResponse.json({ success: true, author });
     }
@@ -157,9 +186,12 @@ export async function PATCH(req: NextRequest) {
       displayName: updated.displayName,
       gender: updated.gender,
       literaryAge: updated.literaryAge,
-  primaryGoals: updated.primaryGoals || [],
-  primaryGoalOther: updated.primaryGoalOther,
-  audiences: updated.audiences || [],
+      fiscalNumber: updated.fiscalNumber,
+      mobilePhone: updated.mobilePhone,
+      preferredLocale: updated.preferredLocale,
+      primaryGoals: updated.primaryGoals || [],
+      primaryGoalOther: updated.primaryGoalOther,
+      audiences: updated.audiences || [],
       interests: updated.interests || []
     }});
   } catch (err) {

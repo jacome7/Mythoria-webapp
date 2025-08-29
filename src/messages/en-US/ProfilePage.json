@@ -1,0 +1,68 @@
+{
+  "ProfilePage": {
+    "title": "Your Profile & Preferences",
+    "intro": "Welcome to your personal dashboard. Here you can manage your information, view your credits, and track your creative journey. Let's make your experience uniquely yours!",
+    "signInPrompt": "Please sign in to view your profile. We're excited to have you!",
+    "details": {
+      "title": "Your Profile Details",
+      "description": "This is the info that helps us personalize your experience. Don't be shy, update it whenever you feel like it!",
+      "displayName": "Preferred Name",
+      "gender": "Gender",
+      "selectGender": "Select your gender",
+      "ageRange": "Your Age Range",
+      "selectAge": "Select your age range"
+    },
+    "contact": {
+      "title": "Contact Info & Preferences",
+      "description": "Your contact details are safe with us. We use them to protect your account and for important communications. No spam, we promise!",
+      "email": "Email Address",
+      "emailHelp": "To change your email, please visit your account provider.",
+      "mobile": "Mobile Phone",
+      "mobilePlaceholder": "e.g., +1234567890",
+      "language": "Preferred Language"
+    },
+    "billing": {
+      "title": "Your billing account",
+      "vatNumber": "Your VAT Number",
+      "vatPlaceholder": "e.g., PT123456789",
+      "historyHint": "Click on your balance to view your transaction history.",
+      "addCredits": "Add Credits"
+    },
+    "journey": {
+      "title": "Your Creative Journey",
+      "description": "We love to see your creativity flourish! Here are some of your amazing stats.",
+  "booksCreated": "Stories Created"
+    },
+    "actions": {
+      "save": "Save Changes",
+      "saving": "Saving..."
+    },
+    "errors": {
+      "loadFailed": "Oops! Failed to load your profile data. Please try again later.",
+      "saveFailed": "Oh no! Failed to save your changes. Please give it another go."
+    },
+    "success": {
+      "saved": "Success! Your profile has been updated."
+    },
+    "genderOptions": {
+      "male": "Male",
+      "female": "Female",
+      "non_binary": "Non-binary",
+      "other": "Other",
+      "prefer_not_to_say": "Prefer not to say"
+    },
+    "ageOptions": {
+      "school_age": "School Age (6–12)",
+      "teen": "Teen (13–17)",
+      "emerging_adult": "Emerging Adult (18–24)",
+      "experienced_adult": "Experienced Adult (25–49)",
+      "midlife_mentor_or_elder": "Mentor / Elder (50+)"
+    },
+    "languages": {
+      "en-US": "English (US)",
+      "pt-PT": "Português (Portugal)",
+      "es-ES": "Español (España)",
+      "fr-FR": "Français (France)"
+    }
+  }
+}

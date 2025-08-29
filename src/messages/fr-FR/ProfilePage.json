@@ -1,0 +1,68 @@
+{
+  "ProfilePage": {
+    "title": "Votre profil et vos préférences",
+    "intro": "Bienvenue sur votre tableau de bord personnel. Ici, vous pouvez gérer vos informations, consulter vos crédits et suivre votre parcours créatif. Rendons votre expérience unique !",
+    "signInPrompt": "Veuillez vous connecter pour voir votre profil. Nous sommes ravis de vous compter parmi nous !",
+    "details": {
+      "title": "Détails de votre profil",
+      "description": "Ce sont les informations qui nous aident à personnaliser votre expérience. Ne soyez pas timide, mettez-les à jour quand vous le souhaitez !",
+      "displayName": "Nom préféré",
+      "gender": "Genre",
+      "selectGender": "Sélectionnez votre genre",
+      "ageRange": "Votre tranche d'âge",
+      "selectAge": "Sélectionnez votre tranche d'âge"
+    },
+    "contact": {
+      "title": "Coordonnées et préférences",
+      "description": "Vos coordonnées sont en sécurité avec nous. Nous les utilisons pour protéger votre compte et pour les communications importantes. Pas de spam, c'est promis !",
+      "email": "Adresse e-mail",
+      "emailHelp": "Pour changer votre e-mail, veuillez visiter votre fournisseur de compte.",
+      "mobile": "Téléphone portable",
+      "mobilePlaceholder": "ex: +33612345678",
+      "language": "Langue préférée"
+    },
+    "billing": {
+      "title": "Votre compte de facturation",
+      "vatNumber": "Votre numéro de TVA",
+      "vatPlaceholder": "ex: FR12345678901",
+      "historyHint": "Cliquez sur votre solde pour voir votre historique de transactions.",
+      "addCredits": "Ajouter des crédits"
+    },
+    "journey": {
+      "title": "Votre parcours créatif",
+      "description": "Nous aimons voir votre créativité s'épanouir ! Voici quelques-unes de vos statistiques incroyables.",
+  "booksCreated": "Histoires créées"
+    },
+    "actions": {
+      "save": "Enregistrer les modifications",
+      "saving": "Enregistrement..."
+    },
+    "errors": {
+      "loadFailed": "Oups ! Impossible de charger les données de votre profil. Veuillez réessayer plus tard.",
+      "saveFailed": "Oh non ! Impossible d'enregistrer vos modifications. Veuillez réessayer."
+    },
+    "success": {
+      "saved": "Succès ! Votre profil a été mis à jour."
+    },
+    "genderOptions": {
+      "male": "Homme",
+      "female": "Femme",
+      "non_binary": "Non-binaire",
+      "other": "Autre",
+      "prefer_not_to_say": "Préfère ne pas dire"
+    },
+    "ageOptions": {
+      "school_age": "Âge scolaire (6–12)",
+      "teen": "Adolescent (13–17)",
+      "emerging_adult": "Jeune adulte émergent (18–24)",
+      "experienced_adult": "Adulte expérimenté (25–49)",
+      "midlife_mentor_or_elder": "Mentor / Aîné (50+)"
+    },
+    "languages": {
+      "en-US": "Anglais (États-Unis)",
+      "pt-PT": "Portugais (Portugal)",
+      "es-ES": "Espagnol (Espagne)",
+      "fr-FR": "Français (France)"
+    }
+  }
+}
