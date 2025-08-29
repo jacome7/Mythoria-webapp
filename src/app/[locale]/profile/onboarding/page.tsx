@@ -4,49 +4,12 @@ import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { FaVenusMars, FaBirthdayCake, FaBullseye, FaUsers, FaLightbulb, FaHeart, FaGift, FaChild, FaBookOpen } from 'react-icons/fa';
 
-// Enums from schema to ensure consistency
-const GENDER_OPTIONS = [
-  { value: 'female', label: 'Female' },
-  { value: 'male', label: 'Male' },
-  { value: 'prefer_not_to_say', label: 'Prefer not to say' },
-];
-
-const LITERARY_AGE_OPTIONS = [
-  { value: 'school_age', label: 'School Age' },
-  { value: 'teen', label: 'Teen' },
-  { value: 'emerging_adult', label: 'Emerging Adult' },
-  { value: 'experienced_adult', label: 'Experienced Adult' },
-  { value: 'midlife_mentor_or_elder', label: 'Midlife Mentor or Elder' },
-];
-
-const GOAL_OPTIONS = [
-  { value: 'family_keepsake', label: 'Create a family keepsake' },
-  { value: 'personalized_gift', label: 'Give a unique, personalized gift' },
-  { value: 'child_development', label: "Support a child's growth/education" },
-  { value: 'fun_and_creativity', label: 'Just for fun & creativity' },
-  { value: 'friend_group_memories', label: 'Preserve memories of a friend group' },
-  { value: 'company_engagement', label: 'Energize my company' },
-  { value: 'other', label: 'Other' },
-];
-
-const AUDIENCE_OPTIONS = [
-  { value: 'my_child', label: 'My child' },
-  { value: 'family_member', label: 'A family member' },
-  { value: 'friend_group', label: 'A group of friends' },
-  { value: 'myself', label: 'Myself' },
-  { value: 'a_friend', label: 'A friend' },
-  { value: 'varies', label: 'It varies' },
-];
-
-const INTEREST_OPTIONS = [
-  { value: 'adventure_exploration', label: 'Adventure & Exploration' },
-  { value: 'fantasy_magic', label: 'Fantasy & Magic' },
-  { value: 'science_discovery', label: 'Science & Discovery' },
-  { value: 'everyday_emotions', label: 'Everyday Life & Emotions' },
-  { value: 'sports', label: 'Sports' },
-  { value: 'comedy_fun', label: 'Comedy & Fun' },
-  { value: 'educational', label: 'Educational' },
-];
+// Value lists; labels resolved via i18n (see messages OnboardingProfile.options)
+const GENDER_OPTIONS = ['female','male','prefer_not_to_say'] as const;
+const LITERARY_AGE_OPTIONS = ['school_age','teen','emerging_adult','experienced_adult','midlife_mentor_or_elder'] as const;
+const GOAL_OPTIONS = ['family_keepsake','personalized_gift','child_development','fun_and_creativity','friend_group_memories','company_engagement','other'] as const;
+const AUDIENCE_OPTIONS = ['my_child','family_member','friend_group','myself','a_friend','varies'] as const;
+const INTEREST_OPTIONS = ['adventure_exploration','fantasy_magic','science_discovery','everyday_emotions','sports','comedy_fun','educational'] as const;
 
 
 interface ProfileData {
@@ -71,7 +34,7 @@ export default function OnboardingProfilePage() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [saveMessage, setSaveMessage] = useState<string | null>(null); // non-null indicates last save completed
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
   // State for interactive questions
@@ -121,7 +84,7 @@ export default function OnboardingProfilePage() {
         const data = await res.json();
   // Merge server authoritative fields; server returns plural arrays now
   setProfile(p => ({ ...(p as ProfileData), ...patch, ...data.author }));
-        setSaveMessage('Saved ✓');
+  setSaveMessage('saved'); // marker; actual text comes from i18n key
         setTimeout(() => setSaveMessage(null), 2000);
       } else {
         const err = await res.json().catch(() => ({}));
@@ -155,10 +118,10 @@ export default function OnboardingProfilePage() {
     <div className="min-h-screen bg-base-200">
       <div className="container mx-auto p-4 sm:p-8">
         <div className="hero bg-base-100 rounded-box shadow-xl mb-8">
-          <div className="hero-content text-center">
-            <div className="max-w-md">
-              <h1 className="text-4xl font-bold text-primary">{t('title')}</h1>
-              <p className="py-6">{t('intro')}</p>
+          <div className="hero-content text-center w-full">
+            <div className="w-full max-w-3xl mx-auto px-2">
+              <h1 className="text-4xl md:text-5xl font-bold text-primary leading-tight">{t('title')}</h1>
+              <p className="py-6 text-lg md:text-xl">{t('intro')}</p>
             </div>
           </div>
         </div>
@@ -168,7 +131,7 @@ export default function OnboardingProfilePage() {
             {/* Preferred Name */}
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
-                <h2 className="card-title text-2xl">{t('preferredName.section')}</h2>
+                <h2 className="card-title text-primary text-2xl">{t('preferredName.section')}</h2>
                 <p>{t('preferredName.help')}</p>
                 <div className="form-control w-full max-w-xs">
                   <label className="label">
@@ -189,7 +152,7 @@ export default function OnboardingProfilePage() {
                     }}
                     required
                   />
-                  {saveMessage && <span className="text-xs text-success mt-1">{t('saved')}</span>}
+                  {/* Removed inline saved indicator; now using toast for consistent placement */}
                 </div>
               </div>
             </div>
@@ -197,7 +160,7 @@ export default function OnboardingProfilePage() {
             {/* Interactive Questions */}
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
-                <h2 className="card-title text-2xl">{t('tailor.section')}</h2>
+                <h2 className="card-title text-primary text-2xl">{t('tailor.section')}</h2>
                 <p></p>
                 
                 <div className="space-y-6 mt-4">
@@ -206,7 +169,7 @@ export default function OnboardingProfilePage() {
                     <label className="label"><span className="label-text flex items-center"><FaVenusMars className="mr-2" /> {t('gender.label')}</span></label>
                     <select className="select select-bordered" value={profile.gender || ''} onChange={e => { debouncedPatch({ gender: e.target.value || null }); setGenderAnswered(true); }}>
                       <option disabled value="">Pick one</option>
-                      {GENDER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                      {GENDER_OPTIONS.map(v => <option key={v} value={v}>{t(`options.gender.${v}`)}</option>)}
                     </select>
                   </div>
 
@@ -216,7 +179,7 @@ export default function OnboardingProfilePage() {
                       <label className="label"><span className="label-text flex items-center"><FaBirthdayCake className="mr-2" /> {t('literaryAge.label')}</span></label>
                       <select className="select select-bordered" value={profile.literaryAge || ''} onChange={e => { debouncedPatch({ literaryAge: e.target.value || null }); setAgeAnswered(true); }}>
                         <option disabled value="">Pick one</option>
-                        {LITERARY_AGE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                        {LITERARY_AGE_OPTIONS.map(v => <option key={v} value={v}>{t(`options.literaryAge.${v}`)}</option>)}
                       </select>
                     </div>
                   </FadeInSection>
@@ -225,24 +188,24 @@ export default function OnboardingProfilePage() {
                   <FadeInSection isVisible={ageAnswered}>
                     <div className="form-control w-full">
                       <label className="label"><span className="label-text flex items-center"><FaBullseye className="mr-2" /> {t('primaryGoal.label')}</span></label>
-                      <div className="space-y-2">
-                        {GOAL_OPTIONS.map(o => {
-                          const checked = profile.primaryGoals.includes(o.value);
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {GOAL_OPTIONS.map(v => {
+                          const checked = profile.primaryGoals.includes(v);
                           return (
-                            <label key={o.value} className="flex items-center gap-2 cursor-pointer">
+                            <label key={v} className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-base-200">
                               <input
                                 type="checkbox"
                                 className="checkbox checkbox-primary"
                                 checked={checked}
                                 onChange={() => {
                                   const next = checked
-                                    ? profile.primaryGoals.filter(v => v !== o.value)
-                                    : [...profile.primaryGoals, o.value];
+                                    ? profile.primaryGoals.filter(val => val !== v)
+                                    : [...profile.primaryGoals, v];
                                   patchProfile({ primaryGoals: next });
                                   setGoalsAnswered(next.length > 0);
                                 }}
                               />
-                              <span>{o.label}</span>
+                              <span>{t(`options.primaryGoals.${v}`)}</span>
                             </label>
                           );
                         })}
@@ -266,24 +229,24 @@ export default function OnboardingProfilePage() {
                   <FadeInSection isVisible={goalsAnswered}>
                     <div className="form-control w-full">
                       <label className="label"><span className="label-text flex items-center"><FaUsers className="mr-2" /> {t('audience.label')}</span></label>
-                      <div className="space-y-2">
-                        {AUDIENCE_OPTIONS.map(o => {
-                          const checked = profile.audiences.includes(o.value);
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {AUDIENCE_OPTIONS.map(v => {
+                          const checked = profile.audiences.includes(v);
                           return (
-                            <label key={o.value} className="flex items-center gap-2 cursor-pointer">
+                            <label key={v} className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-base-200">
                               <input
                                 type="checkbox"
                                 className="checkbox checkbox-primary"
                                 checked={checked}
                                 onChange={() => {
                                   const next = checked
-                                    ? profile.audiences.filter(v => v !== o.value)
-                                    : [...profile.audiences, o.value];
+                                    ? profile.audiences.filter(val => val !== v)
+                                    : [...profile.audiences, v];
                                   patchProfile({ audiences: next });
                                   setAudiencesAnswered(next.length > 0);
                                 }}
                               />
-                              <span>{o.label}</span>
+                              <span>{t(`options.audiences.${v}`)}</span>
                             </label>
                           );
                         })}
@@ -296,15 +259,15 @@ export default function OnboardingProfilePage() {
                     <div className="form-control w-full">
                       <label className="label"><span className="label-text flex items-center"><FaLightbulb className="mr-2" /> {t('interests.label')}</span></label>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {INTEREST_OPTIONS.map(opt => {
-                          const checked = profile.interests.includes(opt.value);
+                        {INTEREST_OPTIONS.map(v => {
+                          const checked = profile.interests.includes(v);
                           return (
-                            <label key={opt.value} className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-base-200">
+                            <label key={v} className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-base-200">
                               <input type="checkbox" checked={checked} className="checkbox checkbox-primary" onChange={() => {
-                                const next = checked ? profile.interests.filter(i => i !== opt.value) : [...profile.interests, opt.value];
+                                const next = checked ? profile.interests.filter(i => i !== v) : [...profile.interests, v];
                                 debouncedPatch({ interests: next });
                               }} />
-                              <span>{opt.label}</span>
+                              <span>{t(`options.interests.${v}`)}</span>
                             </label>
                           );
                         })}
@@ -324,7 +287,7 @@ export default function OnboardingProfilePage() {
                 <h2 className="card-title text-2xl">{t('gift.section')}</h2>
                 <p>{t.rich('gift.copy', { credits: 5 })}</p>
                 <div className="card-actions justify-center mt-4">
-                  <Link href={`/${locale}/tell-your-story`} className="btn btn-secondary btn-wide">Start Your Story</Link>
+                  <Link href={`/${locale}/tell-your-story`} className="btn btn-secondary btn-wide">{t('gift.button.start')}</Link>
                 </div>
               </div>
             </div>
@@ -332,12 +295,12 @@ export default function OnboardingProfilePage() {
             {/* What can you create? */}
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
-                <h2 className="card-title text-2xl">{t('ideas.section')}</h2>
+                <h2 className="card-title text-primary text-2xl">{t('ideas.section')}</h2>
                 <p></p>
                 <ul className="list-none space-y-2 mt-4">
-                  <li className="flex items-start"><FaChild className="text-secondary mr-3 mt-1 flex-shrink-0" /><span>{t('ideas.item1')}</span></li>
-                  <li className="flex items-start"><FaHeart className="text-secondary mr-3 mt-1 flex-shrink-0" /><span>{t('ideas.item2')}</span></li>
-                  <li className="flex items-start"><FaGift className="text-secondary mr-3 mt-1 flex-shrink-0" /><span>{t('ideas.item3')}</span></li>
+                  <li className="flex items-start"><FaChild className="text-primary mr-3 mt-1 flex-shrink-0" /><span>{t('ideas.item1')}</span></li>
+                  <li className="flex items-start"><FaHeart className="text-primary mr-3 mt-1 flex-shrink-0" /><span>{t('ideas.item2')}</span></li>
+                  <li className="flex items-start"><FaGift className="text-primary mr-3 mt-1 flex-shrink-0" /><span>{t('ideas.item3')}</span></li>
                 </ul>
               </div>
             </div>
@@ -345,7 +308,7 @@ export default function OnboardingProfilePage() {
             {/* Get Inspired */}
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
-                <h2 className="card-title text-2xl">{t('inspiration.section')}</h2>
+                <h2 className="card-title text-primary text-2xl">{t('inspiration.section')}</h2>
                 <p>{t('inspiration.copy')}</p>
                 <div className="card-actions justify-end mt-4">
                   <Link href={`/${locale}/get-inspired`} className="btn btn-ghost text-accent">
@@ -357,7 +320,13 @@ export default function OnboardingProfilePage() {
             </div>
           </div>
         </div>
-  {saving && <div className="toast toast-center toast-middle"><div className="alert alert-info"><span>{t('saving')}</span></div></div>}
+        {(saving || saveMessage) && (
+          <div className="toast toast-end toast-middle">
+            <div className={`alert ${saving ? 'alert-info' : 'alert-success'}`}>
+              <span>{t(saving ? 'saving' : 'saved')}</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
