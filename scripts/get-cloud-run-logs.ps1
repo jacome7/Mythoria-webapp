@@ -2,7 +2,7 @@ Param(
     [string]$ProjectId = "oceanic-beach-460916-n5",
     [string]$Region = "europe-west9",
     [string]$ServiceName = "mythoria-webapp",
-    [int]$Limit = 10,
+    [int]$Limit = 100,
     [string]$OutFile
 )
 
