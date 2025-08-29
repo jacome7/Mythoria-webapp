@@ -1,5 +1,6 @@
-import { pgTable, uuid, varchar, timestamp, jsonb, index } from "drizzle-orm/pg-core";
-import { addressTypeEnum } from './enums';
+import { pgTable, uuid, varchar, timestamp, jsonb, index, text } from "drizzle-orm/pg-core";
+import { sql } from 'drizzle-orm';
+import { addressTypeEnum, genderEnum, literaryAgeEnum, primaryGoalEnum, audienceForStoriesEnum } from './enums';
 
 // -----------------------------------------------------------------------------
 // Authors domain
@@ -15,6 +16,15 @@ export const authors = pgTable("authors", {
   mobilePhone: varchar("mobile_phone", { length: 30 }),
   lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
   preferredLocale: varchar("preferred_locale", { length: 5 }).default('en'), // CHAR(5)
+  // Onboarding profile fields (all optional besides displayName which we reuse as preferred name)
+  gender: genderEnum('gender'),
+  literaryAge: literaryAgeEnum('literary_age'),
+  // Multi-select goals & audiences (arrays of enums)
+  primaryGoals: primaryGoalEnum('primary_goals').array().default(sql`'{}'::primary_goal[]`),
+  primaryGoalOther: varchar('primary_goal_other', { length: 160 }),
+  audiences: audienceForStoriesEnum('audiences').array().default(sql`'{}'::audience_for_stories[]`),
+  // Controlled vocabulary list of interests
+  interests: text('interests').array().default(sql`'{}'::text[]`),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 }, (table) => ({
   // Indexes for performance optimization - unique constraints already create indexes

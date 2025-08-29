@@ -1,0 +1,44 @@
+{
+  "OnboardingProfile": {
+    "title": "Welcome! We’re so happy you’re here.",
+    "intro": "We’re thrilled to start this creative journey with you. The first step is done—let’s make it truly yours.",
+    "preferredName": {
+      "section": "1) How should we address you?",
+      "help": "To keep things friendly and personal, tell us how you prefer to be called.",
+      "label": "Your preferred name"
+    },
+    "tailor": {
+      "section": "2) Help us tailor your experience (Optional)"
+    },
+    "gender": { "label": "Gender" },
+    "literaryAge": { "label": "Literary Age" },
+    "primaryGoal": {
+      "label": "What’s your main goal when creating a book with us?",
+      "otherPlaceholder": "(Optional) Tell us more"
+    },
+    "audience": { "label": "Who do you usually create stories for?" },
+    "interests": { "label": "What kind of stories do you like?" },
+    "gift": {
+      "section": "3) A gift to get you started!",
+      "copy": "Creativity deserves a little push. We’re giving you {credits} free credits to use on your first story—no strings attached.",
+      "button": { "claimed": "You already have your credits" }
+    },
+    "ideas": {
+      "section": "4) What can you create? Here are some ideas:",
+      "item1": "Personalized bedtime stories where the child is the hero.",
+      "item2": "Family adventures—turn holidays and milestones into epic tales.",
+      "item3": "A unique gift for a birthday, baptism, or just to say ‘I care.’"
+    },
+    "inspiration": {
+      "section": "5) Your muse awaits",
+      "copy": "Stuck for ideas? Our Inspiration page is packed with prompts and themes.",
+      "button": "Take me to Inspiration"
+    },
+    "saved": "Saved ✓",
+    "saving": "Saving...",
+    "errors": {
+      "displayNameRequired": "Name is required",
+      "displayNameTooLong": "Display name too long"
+    }
+  }
+}

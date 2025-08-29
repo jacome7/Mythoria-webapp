@@ -221,19 +221,23 @@ export default function MyStoriesTable() {
     return sorted;
   }, [stories, sortField, sortDirection]);
 
+  // Date formatting respecting locale rules.
+  // Desktop: day+month+2-digit year using locale ordering (e.g., pt-PT -> 28/08/25, en-US -> 08/28/25)
+  // Mobile: only numeric month/day (order depends on locale) (e.g., pt-PT -> 28/08, en-US -> 08/28)
+  const desktopDateFormatter = useMemo(() => new Intl.DateTimeFormat(locale, {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit'
+  }), [locale]);
+  const mobileDateFormatter = useMemo(() => new Intl.DateTimeFormat(locale, {
+    day: '2-digit',
+    month: '2-digit'
+  }), [locale]);
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    
-    if (isMobile) {
-      // Mobile format: "Jun 17" (no year, no time)
-      return date.toLocaleDateString(locale, {
-        month: 'short',
-        day: 'numeric'
-      });
-    }
-    
-    // Desktop format: M/D/YY
-    return `${date.getMonth() + 1}/${date.getDate()}/${String(date.getFullYear()).slice(-2)}`;
+    if (isNaN(date.getTime())) return '-';
+    return isMobile ? mobileDateFormatter.format(date) : desktopDateFormatter.format(date);
   };
   const getStatusBadgeClass = (status: string) => {
     switch (status) {

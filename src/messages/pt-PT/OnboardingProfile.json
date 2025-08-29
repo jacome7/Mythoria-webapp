@@ -1,0 +1,42 @@
+{
+  "OnboardingProfile": {
+    "title": "Bem-vindo! Estamos muito felizes por teres chegado.",
+    "intro": "Estamos entusiasmados por começar esta jornada criativa contigo. O primeiro passo está dado — agora vamos torná-la verdadeiramente tua.",
+    "preferredName": {
+      "section": "1) Como devemos tratar-te?",
+      "help": "Para manter tudo próximo e pessoal, diz-nos como preferes ser chamado.",
+      "label": "O teu nome preferido"
+    },
+    "tailor": { "section": "2) Ajuda-nos a personalizar a tua experiência (Opcional)" },
+    "gender": { "label": "Género" },
+    "literaryAge": { "label": "Faixa de idade" },
+    "primaryGoal": {
+      "label": "Quais são os teus principais objetivos? (Seleciona os que quiseres)",
+      "otherPlaceholder": "(Opcional) Diz-nos mais"
+    },
+    "audience": { "label": "Para quem costumas criar histórias? (Seleciona todos os que se aplicam)" },
+    "interests": { "label": "Que tipo de histórias gostas?" },
+    "gift": {
+      "section": "3) Um presente para começares!",
+      "copy": "A criatividade merece um empurrão. Oferecemos-te {credits} créditos gratuitos para usares na tua primeira história, sem compromisso.",
+      "button": { "claimed": "Já recebeste os teus créditos" }
+    },
+    "ideas": {
+      "section": "4) O que podes criar? Algumas ideias:",
+      "item1": "Histórias de embalar personalizadas onde a criança é a heroína ou o herói.",
+      "item2": "Aventuras em família — transforma férias e momentos especiais em contos épicos.",
+      "item3": "Uma prenda única para um aniversário, batizado ou apenas para dizer 'gosto de ti'."
+    },
+    "inspiration": {
+      "section": "5) A tua musa espera",
+      "copy": "Sem ideias? A nossa página de Inspiração está cheia de temas e pontos de partida.",
+      "button": "Leva-me à Inspiração"
+    },
+    "saved": "Guardado ✓",
+    "saving": "A guardar...",
+    "errors": {
+      "displayNameRequired": "O nome é obrigatório",
+      "displayNameTooLong": "Nome demasiado comprido"
+    }
+  }
+}

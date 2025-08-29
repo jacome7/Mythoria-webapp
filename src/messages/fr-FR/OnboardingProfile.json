@@ -1,0 +1,42 @@
+{
+  "OnboardingProfile": {
+    "title": "Bienvenue ! Nous sommes ravis que vous soyez là.",
+    "intro": "Nous sommes enthousiastes à l'idée de commencer ce voyage créatif avec vous. La première étape est faite — rendons-le vraiment vôtre.",
+    "preferredName": {
+      "section": "1) Comment devons-nous vous appeler ?",
+  "help": "Pour rester chaleureux et personnalisé, dites-nous comment vous préférez être appelé.",
+      "label": "Votre prénom préféré"
+    },
+    "tailor": { "section": "2) Aidez-nous à personnaliser votre expérience (Optionnel)" },
+    "gender": { "label": "Genre" },
+    "literaryAge": { "label": "Tranche d'âge" },
+    "primaryGoal": {
+      "label": "Quels sont vos principaux objectifs ? (Sélectionnez tout ce qui s'applique)",
+      "otherPlaceholder": "(Optionnel) Dites-nous en plus"
+    },
+    "audience": { "label": "Pour qui créez-vous habituellement des histoires ? (Sélectionnez tout ce qui s'applique)" },
+    "interests": { "label": "Quel type d'histoires aimez-vous ?" },
+    "gift": {
+      "section": "3) Un cadeau pour démarrer !",
+      "copy": "La créativité mérite un petit coup de pouce. Nous vous offrons {credits} crédits gratuits pour votre première histoire, sans engagement.",
+      "button": { "claimed": "Vous avez déjà vos crédits" }
+    },
+    "ideas": {
+      "section": "4) Que pouvez-vous créer ? Quelques idées :",
+      "item1": "Histoires du soir personnalisées où l'enfant est le héros.",
+      "item2": "Aventures familiales — transformez vacances et moments spéciaux en récits épiques.",
+      "item3": "Un cadeau unique pour un anniversaire, un baptême ou juste pour dire ‘je tiens à vous’."
+    },
+    "inspiration": {
+      "section": "5) Votre muse vous attend",
+      "copy": "En panne d'idées ? Notre page Inspiration regorge de thèmes et de points de départ.",
+      "button": "Emmenez-moi à l'Inspiration"
+    },
+    "saved": "Enregistré ✓",
+    "saving": "Enregistrement...",
+    "errors": {
+      "displayNameRequired": "Le nom est requis",
+      "displayNameTooLong": "Nom trop long"
+    }
+  }
+}
