@@ -1,17 +1,17 @@
 {
   "StoryReader": {
-    "preparing": "Preparing your story...",
-    "startReading": "Start Reading",
-    "listen": "Listen",
-    "chapterNotFound": "Chapter not found",
-    "chapterNotFoundDescription": "The requested chapter could not be found.",
-    "backToStory": "Back to Story",
-    "storyImaginedBy": "This story was imagined by",
+    "preparing": "Préparation de votre histoire...",
+    "startReading": "Commencer la lecture",
+    "listen": "Écouter",
+    "chapterNotFound": "Chapitre introuvable",
+    "chapterNotFoundDescription": "Le chapitre demandé est introuvable.",
+    "backToStory": "Retour à l'histoire",
+    "storyImaginedBy": "Cette histoire a été imaginée par",
     "storyImaginedByEnd": ".",
-    "craftedWith": "Crafted with:",
-    "byAuthor": "by {authorName}",
+    "craftedWith": "Créée avec :",
+    "byAuthor": "par {authorName}",
     "synopsis": "Synopsis",
-    "tableOfContents": "Table of Contents",
-    "coverAndIntroduction": "Cover & Introduction"
+    "tableOfContents": "Table des matières",
+    "coverAndIntroduction": "Couverture et introduction"
   }
 }
