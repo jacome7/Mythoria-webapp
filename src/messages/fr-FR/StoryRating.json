@@ -1,36 +1,36 @@
 {
   "StoryRating": {
-    "title": "Rate this story",
-    "titleUpdate": "Update Your Rating",
-    "currentRating": "Current Rating",
-    "basedOnRatings": "Based on {count} rating{plural}",
-    "clickToRate": "Click to rate {count} star{plural}",
-    "noRatingsYet": "No ratings yet",
-    "yourCurrentRating": "Your current rating",
-    "youSelected": "You selected:",
-    "starTooltip": "Rate {count} star{plural}",
+    "title": "Évaluez cette histoire",
+    "titleUpdate": "Mettez à jour votre note",
+    "currentRating": "Note actuelle",
+    "basedOnRatings": "Basé sur {count} note{plural}",
+    "clickToRate": "Cliquez pour noter {count} étoile{plural}",
+    "noRatingsYet": "Pas encore de note",
+    "yourCurrentRating": "Votre note actuelle",
+    "youSelected": "Vous avez sélectionné :",
+    "starTooltip": "Noter {count} étoile{plural}",
     "feedback": {
-      "title": "What could we improve? (Optional)",
-      "placeholder": "Your feedback helps us create better stories...",
-      "includeNameLabel": "Allow the author to see my name with this feedback"
+      "title": "Que pourrions-nous améliorer ? (facultatif)",
+      "placeholder": "Vos retours nous aident à créer de meilleures histoires...",
+      "includeNameLabel": "Permettre à l'auteur de voir mon nom avec ce commentaire"
     },
     "buttons": {
-      "cancel": "Cancel",
-      "submitRating": "Submit Rating",
-      "updateRating": "Update Rating",
-      "submitting": "Submitting..."
+      "cancel": "Annuler",
+      "submitRating": "Soumettre la note",
+      "updateRating": "Mettre à jour la note",
+      "submitting": "Envoi..."
     },
     "success": {
-      "title": "Thank you for your rating!",
-      "titleUpdated": "Rating Updated!",
-      "message": "Your feedback helps us improve our stories.",
-      "messageUpdated": "Your rating has been updated successfully!"
+      "title": "Merci pour votre note !",
+      "titleUpdated": "Note mise à jour !",
+      "message": "Vos retours nous aident à améliorer nos histoires.",
+      "messageUpdated": "Votre note a bien été mise à jour !"
     },
-    "submittingMessage": "Submitting your rating...",
+    "submittingMessage": "Envoi de votre note...",
     "errors": {
-      "serviceUnavailable": "The rating system is currently being set up. Please try again in a few minutes.",
-      "submitFailed": "Failed to submit rating",
-      "generic": "An error occurred"
+      "serviceUnavailable": "Le système de notation est en cours de configuration. Veuillez réessayer dans quelques minutes.",
+      "submitFailed": "Échec de l'envoi de la note",
+      "generic": "Une erreur s'est produite"
     }
   }
 }
