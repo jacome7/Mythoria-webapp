@@ -31,30 +31,26 @@ export async function sendWelcomeNotification(opts: SendWelcomeOptions): Promise
     const storyCredits = await pricingService.getInitialAuthorCredits();
     const language = opts.language || 'en-US';
 
-  const notificationPayload: Record<string, any> = {
-      templateId: 'welcome',
-      recipients: [
-        {
-          email,
-          name,
-          language,
-        },
-      ],
-      variables: {
-        name,
-        storyCredits,
-        currentDate: new Date().toISOString(),
-      },
-      priority: 'normal',
-      metadata: {
-        source: source || 'user_signup',
-        userEmail: email,
-      },
-    };
+    // Strongly typed payload (avoid any)
+    interface WelcomeNotificationPayload {
+      templateId: 'welcome';
+      recipients: Array<{ email: string; name: string; language: string }>;
+      variables: { name: string; storyCredits: number; currentDate: string };
+      priority: 'normal' | 'low' | 'high';
+      metadata: { source: string; userEmail: string };
+      authorId?: string;
+      storyId?: string;
+    }
 
-  // Conditionally include entity identifiers per updated API contract
-  if (authorId) notificationPayload.authorId = authorId;
-  if (storyId) notificationPayload.storyId = storyId;
+    const notificationPayload: WelcomeNotificationPayload = {
+      templateId: 'welcome',
+      recipients: [{ email, name, language }],
+      variables: { name, storyCredits, currentDate: new Date().toISOString() },
+      priority: 'normal',
+      metadata: { source: source || 'user_signup', userEmail: email },
+      ...(authorId ? { authorId } : {}),
+      ...(storyId ? { storyId } : {}),
+    };
 
     console.log('[welcome] Sending welcome notification', { email, language, storyCredits, source: notificationPayload.metadata.source });
     const response = await notificationFetch(`${notificationEngineUrl}/email/template`, {
