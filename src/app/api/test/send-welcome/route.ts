@@ -15,12 +15,14 @@ export async function POST(request: Request) {
     return new Response('Forbidden', { status: 403 });
   }
 
-  const email = 'rodrigovieirajacome@gmail.com';
-  const name = 'Rodrigo Jácome';
+  const url = new URL(request.url);
+  const email = url.searchParams.get('email') || 'rodrigovieirajacome@gmail.com';
+  const name = url.searchParams.get('name') || 'Rodrigo Jácome';
+  const authorId = url.searchParams.get('authorId') || undefined;
 
   try {
-    await sendWelcomeNotification({ email, name, source: 'manual_test' });
-    return NextResponse.json({ status: 'ok', email, name });
+  await sendWelcomeNotification({ email, name, source: 'manual_test', authorId });
+  return NextResponse.json({ status: 'ok', email, name, authorId });
   } catch (error: unknown) {
     console.error('Failed to send test welcome notification', error);
     return new Response('Failed to send welcome email', { status: 500 });

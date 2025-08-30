@@ -258,7 +258,12 @@ export async function POST(
 
     const body = await request.json().catch(() => ({}));
     const action = body?.action as string | undefined;
-    const locale = body?.locale as string | undefined;
+  // We previously accepted a `locale` here and applied it immediately to the duplicated
+  // story's storyLanguage. This caused a downstream conflict when initiating a full
+  // translation job (target locale equaled current storyLanguage). Requirement update:
+  // When duplicating, ALWAYS retain the original storyLanguage; language is only changed
+  // after translation completes. We still allow locale for title suffix lookup only.
+  const locale = body?.locale as string | undefined;
 
     if (action !== 'duplicate') {
       return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
@@ -287,7 +292,8 @@ export async function POST(
           authorId: original.authorId,
           title: newTitle,
           plotDescription: original.plotDescription ?? null,
-          storyLanguage: (locale as string | undefined) || original.storyLanguage,
+          // Keep original language on duplicate so translation job can change it later.
+          storyLanguage: original.storyLanguage,
           synopsis: original.synopsis ?? null,
           place: original.place ?? null,
           additionalRequests: original.additionalRequests ?? null,

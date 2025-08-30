@@ -101,19 +101,20 @@ async function handleUserCreated(evt: WebhookEvent) {
 
   try {
     // Try to insert new user first
-    await db.insert(authors).values({
+  const [insertedAuthor] = await db.insert(authors).values({
       clerkUserId: id,
       email: primaryEmail.email_address,
       displayName: userName,
       preferredLocale: userLocale,
       lastLoginAt: new Date(),
       createdAt: new Date(),
-    });
-    console.log('User created in database:', id, 'for email:', primaryEmail.email_address, 'with locale:', userLocale);
+  }).returning({ authorId: authors.authorId });
+  console.log('User created in database:', id, 'for email:', primaryEmail.email_address, 'with locale:', userLocale, 'authorId:', insertedAuthor?.authorId);
 
     // Send welcome notification (don't block user creation if this fails)
     try {
-  await sendWelcomeNotification({ email: primaryEmail.email_address, name: userName });
+      // Include detected locale so the notification engine can localize the welcome email
+  await sendWelcomeNotification({ email: primaryEmail.email_address, name: userName, language: userLocale, authorId: insertedAuthor?.authorId });
       console.log('Welcome notification sent successfully for user:', id);
     } catch (notificationError) {
       console.error('Failed to send welcome notification for user:', id, 'Error:', notificationError);

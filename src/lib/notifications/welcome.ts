@@ -8,6 +8,10 @@ export interface SendWelcomeOptions {
   language?: string;
   /** Optional source metadata tag (defaults to 'user_signup' or 'manual_test'). */
   source?: string;
+  /** Optional author identifier (enables idempotency / scoping on notification engine). */
+  authorId?: string;
+  /** Optional story identifier for story-scoped templates (not typically used for welcome). */
+  storyId?: string;
 }
 
 /**
@@ -15,7 +19,7 @@ export interface SendWelcomeOptions {
  * Throws on hard failures (HTTP !ok). Silent no-op if NOTIFICATION_ENGINE_URL is missing.
  */
 export async function sendWelcomeNotification(opts: SendWelcomeOptions): Promise<void> {
-  const { email, name, source } = opts;
+  const { email, name, source, authorId, storyId } = opts;
   const notificationEngineUrl = process.env.NOTIFICATION_ENGINE_URL;
 
   if (!notificationEngineUrl) {
@@ -27,13 +31,13 @@ export async function sendWelcomeNotification(opts: SendWelcomeOptions): Promise
     const storyCredits = await pricingService.getInitialAuthorCredits();
     const language = opts.language || 'en-US';
 
-    const notificationPayload = {
+  const notificationPayload: Record<string, any> = {
       templateId: 'welcome',
       recipients: [
         {
           email,
-            name,
-            language,
+          name,
+          language,
         },
       ],
       variables: {
@@ -47,6 +51,10 @@ export async function sendWelcomeNotification(opts: SendWelcomeOptions): Promise
         userEmail: email,
       },
     };
+
+  // Conditionally include entity identifiers per updated API contract
+  if (authorId) notificationPayload.authorId = authorId;
+  if (storyId) notificationPayload.storyId = storyId;
 
     console.log('[welcome] Sending welcome notification', { email, language, storyCredits, source: notificationPayload.metadata.source });
     const response = await notificationFetch(`${notificationEngineUrl}/email/template`, {
