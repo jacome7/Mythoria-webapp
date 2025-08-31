@@ -136,7 +136,7 @@ export const authorService = {  async createAuthor(authorData: { clerkUserId: st
       return email.split('@')[0];
     }
     
-    return 'Anonymous User';
+    return '';
   },
 
   async getAuthorById(authorId: string) {

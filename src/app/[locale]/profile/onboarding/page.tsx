@@ -135,7 +135,7 @@ export default function OnboardingProfilePage() {
                 <p>{t('preferredName.help')}</p>
                 <div className="form-control w-full max-w-xs">
                   <label className="label">
-                    <span className="label-text">{t('preferredName.label')}</span>
+                    <span className="label-text flex flex-wrap items-center gap-2 whitespace-normal break-words">{t('preferredName.label')}</span>
                   </label>
                   <input
                     type="text"
@@ -152,7 +152,6 @@ export default function OnboardingProfilePage() {
                     }}
                     required
                   />
-                  {/* Removed inline saved indicator; now using toast for consistent placement */}
                 </div>
               </div>
             </div>
@@ -166,9 +165,9 @@ export default function OnboardingProfilePage() {
                 <div className="space-y-6 mt-4">
                   {/* Gender */}
                   <div className="form-control w-full max-w-xs">
-                    <label className="label"><span className="label-text flex items-center"><FaVenusMars className="mr-2" /> {t('gender.label')}</span></label>
+                    <label className="label"><span className="label-text flex flex-wrap items-start gap-2 whitespace-normal break-words"><FaVenusMars className="mt-0.5" /> {t('gender.label')}</span></label>
                     <select className="select select-bordered" value={profile.gender || ''} onChange={e => { debouncedPatch({ gender: e.target.value || null }); setGenderAnswered(true); }}>
-                      <option disabled value="">Pick one</option>
+                      <option disabled value="">{t('pickOne')}</option>
                       {GENDER_OPTIONS.map(v => <option key={v} value={v}>{t(`options.gender.${v}`)}</option>)}
                     </select>
                   </div>
@@ -176,10 +175,12 @@ export default function OnboardingProfilePage() {
                   {/* Literary Age */}
                   <FadeInSection isVisible={genderAnswered}>
                     <div className="form-control w-full max-w-xs">
-                      <label className="label"><span className="label-text flex items-center"><FaBirthdayCake className="mr-2" /> {t('literaryAge.label')}</span></label>
+                      <label className="label"><span className="label-text flex flex-wrap items-start gap-2 whitespace-normal break-words"><FaBirthdayCake className="mt-0.5" /> {t('literaryAge.label')}</span></label>
                       <select className="select select-bordered" value={profile.literaryAge || ''} onChange={e => { debouncedPatch({ literaryAge: e.target.value || null }); setAgeAnswered(true); }}>
-                        <option disabled value="">Pick one</option>
-                        {LITERARY_AGE_OPTIONS.map(v => <option key={v} value={v}>{t(`options.literaryAge.${v}`)}</option>)}
+                        <option disabled value="">{t('pickOne')}</option>
+                        {LITERARY_AGE_OPTIONS.map(v => (
+                          <option key={v} value={v}>{t(`options.ageOptions.${v}`, { fallback: t(`options.literaryAge.${v}`) })}</option>
+                        ))}
                       </select>
                     </div>
                   </FadeInSection>
@@ -187,7 +188,7 @@ export default function OnboardingProfilePage() {
                   {/* Primary Goals (multi-select) */}
                   <FadeInSection isVisible={ageAnswered}>
                     <div className="form-control w-full">
-                      <label className="label"><span className="label-text flex items-center"><FaBullseye className="mr-2" /> {t('primaryGoal.label')}</span></label>
+                      <label className="label"><span className="label-text flex flex-wrap items-start gap-2 whitespace-normal break-words"><FaBullseye className="mt-0.5" /> {t('primaryGoal.label')}</span></label>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {GOAL_OPTIONS.map(v => {
                           const checked = profile.primaryGoals.includes(v);
@@ -228,7 +229,7 @@ export default function OnboardingProfilePage() {
                   {/* Audiences (multi-select) */}
                   <FadeInSection isVisible={goalsAnswered}>
                     <div className="form-control w-full">
-                      <label className="label"><span className="label-text flex items-center"><FaUsers className="mr-2" /> {t('audience.label')}</span></label>
+                      <label className="label"><span className="label-text flex flex-wrap items-start gap-2 whitespace-normal break-words"><FaUsers className="mt-0.5" /> {t('audience.label')}</span></label>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {AUDIENCE_OPTIONS.map(v => {
                           const checked = profile.audiences.includes(v);
@@ -257,7 +258,7 @@ export default function OnboardingProfilePage() {
                   {/* Interests */}
                   <FadeInSection isVisible={audiencesAnswered}>
                     <div className="form-control w-full">
-                      <label className="label"><span className="label-text flex items-center"><FaLightbulb className="mr-2" /> {t('interests.label')}</span></label>
+                      <label className="label"><span className="label-text flex flex-wrap items-start gap-2 whitespace-normal break-words"><FaLightbulb className="mt-0.5" /> {t('interests.label')}</span></label>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {INTEREST_OPTIONS.map(v => {
                           const checked = profile.interests.includes(v);
@@ -321,7 +322,8 @@ export default function OnboardingProfilePage() {
           </div>
         </div>
         {(saving || saveMessage) && (
-          <div className="toast toast-end toast-middle">
+          // Added high z-index to ensure toast appears above all other elements
+          <div className="toast toast-end toast-middle z-[9999]">
             <div className={`alert ${saving ? 'alert-info' : 'alert-success'}`}>
               <span>{t(saving ? 'saving' : 'saved')}</span>
             </div>

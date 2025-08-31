@@ -40,7 +40,8 @@ export default function ToastContainer({ toasts, onRemove }: ToastContainerProps
   };
 
   return (
-    <div className="toast toast-top toast-end">
+    // High z-index to ensure toast overlays all UI (drawers, modals, editors)
+    <div className="toast toast-top toast-end z-[9999]">
       {toasts.map((toast) => (
         <div
           key={toast.id}

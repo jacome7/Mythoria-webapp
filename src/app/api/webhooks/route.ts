@@ -94,7 +94,7 @@ async function handleUserCreated(evt: WebhookEvent) {
     return;
   }
 
-  const userName = `${first_name || ''} ${last_name || ''}`.trim() || 'Anonymous User';
+  const userName = `${first_name || ''} ${last_name || ''}`.trim() || '';
 
   const userLocale = detectUserLocaleFromEmail(primaryEmail.email_address);
 
@@ -184,12 +184,22 @@ async function handleUserUpdated(evt: WebhookEvent) {
   }
 
   try {
+    // Respect a user-defined preferred name if present in private metadata (set via profile PATCH)
+    // Clerk webhooks include private_metadata and public_metadata in evt.data.
+    // We store preferred name at private_metadata.profile.preferredName.
+    // If present, we use that instead of rebuilding from first/last names so that
+    // profile PATCHes are not immediately reverted by this webhook.
+    // If not present, we fall back to "first last" as before.
+    const preferredName = (evt.data as any)?.private_metadata?.profile?.preferredName;
+    const rebuiltName = `${first_name || ''} ${last_name || ''}`.trim() || '';
+    const newDisplayName = (preferredName && typeof preferredName === 'string' && preferredName.trim()) ? preferredName.trim() : rebuiltName;
+
     // Try updating by clerkUserId first
     const updateResult = await db
       .update(authors)
       .set({
         email: primaryEmail.email_address,
-        displayName: `${first_name || ''} ${last_name || ''}`.trim() || 'Anonymous User',
+        displayName: newDisplayName,
         lastLoginAt: new Date(),
       })
       .where(eq(authors.clerkUserId, id));    // If no rows were updated, the clerkUserId might have changed
@@ -201,7 +211,7 @@ async function handleUserUpdated(evt: WebhookEvent) {
         .update(authors)
         .set({
           clerkUserId: id, // Update the clerkUserId
-          displayName: `${first_name || ''} ${last_name || ''}`.trim() || 'Anonymous User',
+          displayName: newDisplayName,
           lastLoginAt: new Date(),
         })
         .where(eq(authors.email, primaryEmail.email_address));

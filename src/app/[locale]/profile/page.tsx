@@ -192,9 +192,6 @@ export default function AccountProfilePage() {
                   <div className="form-control">
                     <label className="label"><span className="label-text font-semibold flex items-center"><FaEnvelope className="mr-2" />{t('contact.email')}</span></label>
                     <input type="email" className="input input-bordered" value={profile.email} disabled />
-                    <label className="label">
-                      <span className="label-text-alt">{t('contact.emailHelp')}</span>
-                    </label>
                   </div>
                   <div className="form-control">
                     <label className="label"><span className="label-text font-semibold flex items-center"><FaPhone className="mr-2" />{t('contact.mobile')}</span></label>
@@ -265,7 +262,8 @@ export default function AccountProfilePage() {
         </div>
 
         {(error || success) && (
-          <div className="toast toast-end">
+          // High z-index so toast appears above all elements
+          <div className="toast toast-end z-[9999]">
             <div className={`alert ${error ? 'alert-error' : 'alert-success'}`}>
               <span>{error || success}</span>
             </div>

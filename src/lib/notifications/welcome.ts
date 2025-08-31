@@ -11,5 +11,7 @@ export interface SendWelcomeOptions {
 }
 
 export async function sendWelcomeNotification(_opts: SendWelcomeOptions): Promise<void> {
+  // Reference the options in a no-op way so ESLint doesn't flag it while preserving the deprecation.
+  void _opts;
   throw new Error('sendWelcomeNotification has been removed. Implemented now in notification-engine. Remove this call.');
 }
