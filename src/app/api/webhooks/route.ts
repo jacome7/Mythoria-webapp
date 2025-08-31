@@ -6,7 +6,6 @@ import { db } from '@/db';
 import { authors } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { detectUserLocaleFromEmail } from '@/utils/locale-utils';
-import { sendWelcomeNotification } from '@/lib/notifications/welcome';
 
 export async function POST(req: Request) {
   // Get the headers
@@ -81,7 +80,7 @@ export async function POST(req: Request) {
   }
 }
 
-// sendWelcomeNotification now lives in '@/lib/notifications/welcome'
+// (Welcome email dispatch removed – now handled fully inside notification-engine)
 
 async function handleUserCreated(evt: WebhookEvent) {
   if (evt.type !== 'user.created') return;
@@ -111,15 +110,7 @@ async function handleUserCreated(evt: WebhookEvent) {
   }).returning({ authorId: authors.authorId });
   console.log('User created in database:', id, 'for email:', primaryEmail.email_address, 'with locale:', userLocale, 'authorId:', insertedAuthor?.authorId);
 
-    // Send welcome notification (don't block user creation if this fails)
-    try {
-      // Include detected locale so the notification engine can localize the welcome email
-  await sendWelcomeNotification({ email: primaryEmail.email_address, name: userName, language: userLocale, authorId: insertedAuthor?.authorId });
-      console.log('Welcome notification sent successfully for user:', id);
-    } catch (notificationError) {
-      console.error('Failed to send welcome notification for user:', id, 'Error:', notificationError);
-      // We don't re-throw this error - user creation should still succeed
-    }
+  // (Welcome notification no longer sent from webapp. Responsibility moved to notification-engine.)
 
   } catch (error: unknown) {
     // Log the full error structure for debugging
@@ -162,9 +153,7 @@ async function handleUserCreated(evt: WebhookEvent) {
 
           console.log('User updated (clerkUserId changed) for email:', primaryEmail.email_address, 'with locale:', userLocale);
           
-          // Do NOT send welcome notification in duplicate email scenario.
-          // Requirement: Only send for truly new unique email accounts.
-          console.log('Skipping welcome notification for duplicate email update path:', primaryEmail.email_address);
+          // (Welcome notification intentionally omitted even on duplicate path.)
         } catch (updateError) {
           console.error('Error updating user after duplicate email:', updateError);
           throw updateError;

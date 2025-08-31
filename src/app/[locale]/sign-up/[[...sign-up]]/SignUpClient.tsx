@@ -74,7 +74,7 @@ export default function SignUpClient({ locale, translations }: SignUpClientProps
             </div>
               <SignUp 
               routing="hash"
-              fallbackRedirectUrl={`/${locale}/my-stories`}
+              fallbackRedirectUrl={`/${locale}/profile/onboarding`}
               appearance={{
                 elements: {
                   formButtonPrimary: 
