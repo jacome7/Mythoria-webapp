@@ -1,0 +1,21 @@
+{
+  "Offline": {
+    "title": "You're Offline",
+    "description": "It looks like you've lost your connection. Content you've already opened may still be available. We'll try to reconnect automatically.",
+    "tipsTitle": "You can still:",
+    "tips": {
+      "readCached": "Read pages already opened (they're cached).",
+      "reuseNav": "Use the Back button to revisit cached content.",
+      "wait": "Wait a moment—when you're back online we'll refresh."
+    },
+    "actions": {
+      "goBack": "Go Back",
+      "retry": "Try Again",
+      "goHome": "Home"
+    },
+    "status": {
+      "backOnline": "Connection restored. Refreshing...",
+      "stillOffline": "Still offline..."
+    }
+  }
+}

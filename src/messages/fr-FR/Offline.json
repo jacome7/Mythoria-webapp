@@ -1,0 +1,21 @@
+{
+  "Offline": {
+    "title": "Vous êtes hors ligne",
+    "description": "Il semble que vous ayez perdu la connexion. Le contenu déjà ouvert peut rester disponible. Nous tenterons de nous reconnecter automatiquement.",
+    "tipsTitle": "Vous pouvez toujours :",
+    "tips": {
+      "readCached": "Lire les pages déjà ouvertes (elles sont en cache).",
+      "reuseNav": "Utiliser le bouton Retour pour revoir le contenu en cache.",
+      "wait": "Attendre un instant — dès que vous serez reconnecté nous actualiserons."
+    },
+    "actions": {
+      "goBack": "Retour",
+      "retry": "Réessayer",
+      "goHome": "Accueil"
+    },
+    "status": {
+      "backOnline": "Connexion rétablie. Actualisation...",
+      "stillOffline": "Toujours hors ligne..."
+    }
+  }
+}

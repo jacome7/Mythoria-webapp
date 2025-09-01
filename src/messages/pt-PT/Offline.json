@@ -1,0 +1,21 @@
+{
+  "Offline": {
+    "title": "Está Offline",
+    "description": "Parece que perdeu a ligação. Conteúdos que já abriu podem continuar disponíveis. Tentaremos voltar a ligar automaticamente.",
+    "tipsTitle": "Ainda pode:",
+    "tips": {
+      "readCached": "Ler páginas já abertas (estão em cache).",
+      "reuseNav": "Usar o botão Voltar para rever conteúdo em cache.",
+      "wait": "Aguardar um momento — quando voltar online atualizamos."
+    },
+    "actions": {
+      "goBack": "Voltar",
+      "retry": "Tentar de Novo",
+      "goHome": "Início"
+    },
+    "status": {
+      "backOnline": "Ligação restaurada. A atualizar...",
+      "stillOffline": "Ainda offline..."
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "Offline": {
+    "title": "Estás sin conexión",
+    "description": "Parece que has perdido la conexión. El contenido que ya abriste puede seguir disponible. Intentaremos reconectar automáticamente.",
+    "tipsTitle": "Todavía puedes:",
+    "tips": {
+      "readCached": "Leer páginas ya abiertas (están en caché).",
+      "reuseNav": "Usar el botón Atrás para revisar contenido en caché.",
+      "wait": "Esperar un momento — cuando vuelvas en línea actualizaremos."
+    },
+    "actions": {
+      "goBack": "Volver",
+      "retry": "Reintentar",
+      "goHome": "Inicio"
+    },
+    "status": {
+      "backOnline": "Conexión restaurada. Actualizando...",
+      "stillOffline": "Aún sin conexión..."
+    }
+  }
+}
