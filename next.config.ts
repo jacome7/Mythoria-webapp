@@ -12,6 +12,10 @@ const withPWA = withPWAInit({
   disable: process.env.NODE_ENV === 'development',
   workboxOptions: {
     disableDevLogs: true,
+    // Ensure offline route is always precached (avoids bad-precaching-response if auto detection fails)
+    additionalManifestEntries: [
+      { url: '/offline', revision: process.env.npm_package_version || '1' }
+    ],
   },
   fallbacks: {
     document: '/offline',
