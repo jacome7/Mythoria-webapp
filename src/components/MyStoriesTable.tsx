@@ -145,7 +145,8 @@ export default function MyStoriesTable() {
       const resp = await fetch(`/api/my-stories/${story.storyId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'duplicate', locale }),
+  // Do not send locale when duplicating; language stays same until translation.
+  body: JSON.stringify({ action: 'duplicate' }),
       });
       if (!resp.ok) {
         throw new Error(`Duplicate failed: ${resp.status}`);

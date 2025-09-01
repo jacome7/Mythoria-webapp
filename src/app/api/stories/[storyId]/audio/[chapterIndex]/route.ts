@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentAuthor } from "@/lib/auth";
-import { storyService } from "@/db/services";
+import { ensureStoryIdAccess, AccessDeniedError } from '@/lib/authorization';
+// storyService intentionally not imported; access handled via ensureStoryIdAccess
 
 export async function GET(
   request: NextRequest,
@@ -25,16 +26,6 @@ export async function GET(
       );
     }
 
-    // Fetch the story
-    const story = await storyService.getStoryById(storyId);
-
-    if (!story) {
-      return NextResponse.json(
-        { error: "Story not found" },
-        { status: 404 }
-      );
-    }
-
     // Check if user is authenticated
     const currentAuthor = await getCurrentAuthor();
     if (!currentAuthor) {
@@ -43,13 +34,15 @@ export async function GET(
         { status: 401 }
       );
     }
-
-    // Only allow access to published stories, or stories owned by the user
-    if (story.status !== 'published' && story.authorId !== currentAuthor.authorId) {
-      return NextResponse.json(
-        { error: "Access denied. This story is not available for reading." },
-        { status: 403 }
-      );
+    // Enforce strict owner-only access
+    let story;
+    try {
+      story = await ensureStoryIdAccess(storyId, currentAuthor.authorId);
+    } catch (e) {
+      if (e instanceof AccessDeniedError) {
+        return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      }
+      throw e;
     }
 
     // Check if audiobook data exists

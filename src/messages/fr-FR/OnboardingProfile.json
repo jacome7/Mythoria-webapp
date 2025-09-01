@@ -15,15 +15,16 @@
             "label": "Tranche d'âge"
         },
         "primaryGoal": {
-            "label": "Quels sont vos principaux objectifs ? (Sélectionnez tout ce qui s'applique)",
+            "label": "Quels sont vos principaux objectifs ?",
             "otherPlaceholder": "(Optionnel) Dites-nous en plus"
         },
         "audience": {
-            "label": "Pour qui créez-vous habituellement des histoires ? (Sélectionnez tout ce qui s'applique)"
+            "label": "Pour qui créez-vous habituellement des histoires ?"
         },
         "interests": {
             "label": "Quel type d'histoires aimez-vous ?"
         },
+    "pickOne": "Choisissez-en un",
         "gift": {
             "section": "Un cadeau pour démarrer !",
             "copy": "La créativité mérite un petit coup de pouce. Nous vous offrons {credits} crédits gratuits pour votre première histoire, sans engagement.",
@@ -55,6 +56,13 @@
                 "emerging_adult": "Jeune adulte",
                 "experienced_adult": "Adulte expérimenté",
                 "midlife_mentor_or_elder": "Mentor ou aîné"
+            },
+            "ageOptions": {
+                "school_age": "Âge scolaire (6–12)",
+                "teen": "Adolescent (13–17)",
+                "emerging_adult": "Jeune adulte émergent (18–24)",
+                "experienced_adult": "Adulte expérimenté (25–49)",
+                "midlife_mentor_or_elder": "Mentor / Aîné (50+)"
             },
             "primaryGoals": {
                 "family_keepsake": "Créer un souvenir de famille",

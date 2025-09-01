@@ -11,11 +11,12 @@
     "gender": { "label": "Género" },
     "literaryAge": { "label": "Franja de edad" },
     "primaryGoal": {
-      "label": "¿Cuáles son tus principales objetivos? (Selecciona los que quieras)",
+      "label": "¿Cuáles son tus principales objetivos?",
       "otherPlaceholder": "(Opcional) Cuéntanos más"
     },
-    "audience": { "label": "¿Para quién sueles crear historias? (Selecciona todos los que apliquen)" },
+    "audience": { "label": "¿Para quién sueles crear historias?" },
     "interests": { "label": "¿Qué tipo de historias te gustan?" },
+  "pickOne": "Elige una",
     "gift": {
       "section": "¡Un regalo para que empieces!",
       "copy": "La creatividad merece un pequeño impulso. Te damos {credits} créditos gratis para tu primera historia, sin compromiso.",
@@ -44,6 +45,13 @@
         "emerging_adult": "Adulto emergente",
         "experienced_adult": "Adulto con experiencia",
         "midlife_mentor_or_elder": "Mentor o mayor"
+      },
+      "ageOptions": {
+        "school_age": "Edad escolar (6–12)",
+        "teen": "Adolescente (13–17)",
+        "emerging_adult": "Adulto emergente (18–24)",
+        "experienced_adult": "Adulto con experiencia (25–49)",
+        "midlife_mentor_or_elder": "Mentor / Sénior (50+)"
       },
       "primaryGoals": {
         "family_keepsake": "Crear un recuerdo familiar",

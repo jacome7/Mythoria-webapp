@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useLocale } from 'next-intl';
 
@@ -9,6 +9,7 @@ import { useLocale } from 'next-intl';
 export function useLocaleSync() {
   const { user, isSignedIn } = useUser();
   const currentLocale = useLocale();
+  const hasScheduledRef = useRef(false);
 
   useEffect(() => {
     if (!isSignedIn || !user || !currentLocale) return;
@@ -20,8 +21,12 @@ export function useLocaleSync() {
     
     const isRecentUser = userCreatedAt && userCreatedAt.getTime() > twoMinutesAgo;
     
-    if (isRecentUser) {
-      updateUserLocale(currentLocale);
+    if (isRecentUser && !hasScheduledRef.current) {
+      hasScheduledRef.current = true; // ensure we only schedule once
+      const timeoutId = setTimeout(() => {
+        updateUserLocale(currentLocale);
+      }, 750); // 750ms debounce to allow author creation path to complete
+      return () => clearTimeout(timeoutId);
     }
   }, [isSignedIn, user, currentLocale]);
 

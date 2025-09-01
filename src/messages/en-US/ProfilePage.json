@@ -15,8 +15,7 @@
     "contact": {
       "title": "Contact Info & Preferences",
       "description": "Your contact details are safe with us. We use them to protect your account and for important communications. No spam, we promise!",
-      "email": "Email Address",
-      "emailHelp": "To change your email, please visit your account provider.",
+  "email": "Email Address",
       "mobile": "Mobile Phone",
       "mobilePlaceholder": "e.g., +1234567890",
       "language": "Preferred Language"

@@ -122,10 +122,15 @@ export default function TranslateFullStoryModal({
     try {
       let effectiveStoryId = storyId;
       if (duplicate) {
+        // IMPORTANT: When duplicating we must NOT change the story language up-front.
+        // Previously we passed the targetLocale to the duplicate API which set storyLanguage
+        // on the new story, causing the subsequent translation job to reject with
+        // "Target locale matches current storyLanguage". Requirement: keep original
+        // language on duplication; only update language after translation job completes.
         const dup = await fetch(`/api/my-stories/${storyId}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'duplicate', locale: targetLocale }),
+          body: JSON.stringify({ action: 'duplicate' }),
         });
         if (!dup.ok) {
           const err = await dup.json().catch(() => ({}));

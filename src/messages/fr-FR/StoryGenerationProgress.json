@@ -1,90 +1,90 @@
 {
   "StoryGenerationProgress": {
     "completion": {
-      "title": "Your Story is Ready!",
-      "description": "Congratulations! Your magical story has been created and is ready to be read.",
-      "progress": "100% Complete!",
+      "title": "Votre histoire est prête !",
+      "description": "Félicitations ! Votre histoire magique a été créée et est prête à être lue.",
+      "progress": "100 % terminé !",
       "buttons": {
-        "readStory": "📖 Read Your Story Now",
-        "myStories": "📚 My Stories"
+        "readStory": "📖 Lire votre histoire maintenant",
+        "myStories": "📚 Mes histoires"
       },
       "celebration": {
-        "title": "Your story is now part of the Mythoria collection!",
-        "description": "Share it with friends or create another magical adventure."
+        "title": "Votre histoire fait désormais partie de la collection Mythoria !",
+        "description": "Partagez‑la avec des amis ou créez une nouvelle aventure magique."
       }
     },
     "progress": {
-      "title": "🏭 Story Factory in Action!",
-      "description": "Your story will be ready in up to 14 minutes",
-      "progressLabel": "Progress",
-      "estimatedTimeLabel": "Estimated time remaining",
-      "creatingMagic": "Creating magic...",
-      "currentlyLabel": "Currently:",
+      "title": "🏭 Fabrique à histoires en action !",
+      "description": "Votre histoire sera prête dans un délai pouvant aller jusqu'à 14 minutes",
+      "progressLabel": "Progression",
+      "estimatedTimeLabel": "Temps restant estimé",
+      "creatingMagic": "Création de la magie...",
+      "currentlyLabel": "Actuellement :",
       "tip": {
-        "title": "Tip:",
-        "description": "While you wait, you can visit \"My Stories\" to track progress in real-time or start creating another story!"
+        "title": "Astuce :",
+        "description": "Pendant que vous patientez, vous pouvez visiter « Mes histoires » pour suivre la progression en temps réel ou commencer à créer une autre histoire !"
       }
     },
     "steps": {
-      "generate_outline": "Crafting your story outline",
-      "write_chapters": "Writing magical chapters",
-      "generate_front_cover": "Designing the front cover",
-      "generate_back_cover": "Creating the back cover",
-      "generate_images": "Painting beautiful illustrations",
-      "assemble": "Binding your story together",
-      "generate_audiobook": "Recording your audiobook",
-      "done": "Finishing touches"
+      "generate_outline": "Élaboration du plan de votre histoire",
+      "write_chapters": "Rédaction de chapitres magiques",
+      "generate_front_cover": "Conception de la couverture",
+      "generate_back_cover": "Création de la quatrième de couverture",
+      "generate_images": "Réalisation de magnifiques illustrations",
+      "assemble": "Reliure de votre histoire",
+      "generate_audiobook": "Enregistrement de votre livre audio",
+      "done": "Touches finales"
     },
     "funnyMessages": {
       "generate_outline": [
-        "🍫 Our Oompa-Loompas are sketching your story blueprint on chocolate paper!",
-        "📋 The writing elves are mapping out your adventure with enchanted quills!",
-        "✨ Story architects are designing the perfect plot structure!"
+        "🍫 Nos Oompa-Loompas esquissent le plan de votre histoire sur du papier en chocolat !",
+        "📋 Les lutins scribes tracent votre aventure avec des plumes enchantées !",
+        "✨ Les architectes d'histoires conçoivent la structure parfaite du récit !"
       ],
       "write_chapters": [
-        "📖 Oompa-Loompas are furiously typing on their tiny typewriters!",
-        "✍️ Our literary elves are weaving your tale with golden threads!",
-        "🎭 Story scribes are bringing your characters to life with magic ink!",
-        "📚 Chapter wizards are crafting each page with literary spells!"
+        "📖 Les Oompa-Loompas tapent frénétiquement sur leurs minuscules machines à écrire !",
+        "✍️ Nos lutins littéraires tissent votre récit avec des fils d'or !",
+        "🎭 Les scribes donnent vie à vos personnages avec de l'encre magique !",
+        "📚 Les sorciers des chapitres façonnent chaque page avec des sortilèges littéraires !"
       ],
       "generate_front_cover": [
-        "🎨 Our artistic Oompa-Loompas are mixing magical paint for your cover!",
-        "🖌️ Master illustrators are sketching your cover with rainbow brushes!",
-        "🌟 Cover designers are sprinkling stardust on your book's face!"
+        "🎨 Nos Oompa-Loompas artistes mélangent des peintures magiques pour votre couverture !",
+        "🖌️ Les maîtres illustrateurs esquissent votre couverture avec des pinceaux arc-en-ciel !",
+        "🌟 Les designers de couverture saupoudrent votre livre de poussière d'étoiles !"
       ],
       "generate_back_cover": [
-        "🎭 Back-cover poets are writing mysterious blurbs with invisible ink!",
-        "📖 Our synopsis scribes are crafting the perfect teaser!",
-        "✨ Cover completion elves are adding the final magical touches!"
+        "🎭 Les poètes de quatrième de couverture rédigent des résumés mystérieux à l'encre invisible !",
+        "📖 Nos scribes du synopsis composent le teaser parfait !",
+        "✨ Les lutins de finition ajoutent les dernières touches magiques !"
       ],
       "generate_images": [
-        "🖼️ Illustration Oompa-Loompas are painting each scene with emotion!",
-        "🎨 Picture wizards are bringing your characters to colorful life!",
-        "🌈 Art fairies are adding magical details to every illustration!",
-        "🖌️ Visual storytellers are creating windows into your world!"
+        "🖼️ Les Oompa-Loompas illustrateurs peignent chaque scène avec émotion !",
+        "🎨 Les sorciers de l'image donnent une vie haute en couleur à vos personnages !",
+        "🌈 Les fées de l'art ajoutent des détails magiques à chaque illustration !",
+        "🖌️ Les conteurs visuels ouvrent des fenêtres sur votre monde !"
       ],
       "assemble": [
-        "📚 Book binding Oompa-Loompas are stitching everything together!",
-        "🔧 Assembly elves are making sure every page is perfect!",
-        "📋 Quality control wizards are checking every magical detail!"
+        "📚 Les Oompa-Loompas relieurs assemblent chaque élément !",
+        "🔧 Les lutins assembleurs s'assurent que chaque page est parfaite !",
+        "📋 Les sorciers du contrôle qualité vérifient chaque détail magique !"
       ],
       "generate_audiobook": [
-        "🎤 Voice acting Oompa-Loompas are narrating your story!",
-        "🎵 Audio wizards are adding the perfect storytelling rhythm!",
-        "🎧 Sound engineers are polishing every magical word!"
+        "🎤 Les Oompa-Loompas comédiens prêtent leur voix à votre histoire !",
+        "🎵 Les sorciers du son ajoutent le rythme narratif parfait !",
+        "🎧 Les ingénieurs du son polissent chaque mot magique !"
       ],
       "done": [
-        "🎉 Ta-da! Your magical story is ready for its grand adventure!",
-        "✨ All done! The Oompa-Loompas are taking a well-deserved cocoa break!",
-        "🏆 Mission accomplished! Your story is complete and ready to enchant!"
+        "🎉 Ta-da ! Votre histoire magique est prête pour sa grande aventure !",
+        "✨ C'est terminé ! Les Oompa-Loompas prennent une pause cacao bien méritée !",
+        "🏆 Mission accomplie ! Votre histoire est complète et prête à enchanter !"
       ],
       "default": [
-        "⚡ Our magical Oompa-Loompas are working their creative wonders!"
+        "⚡ Nos Oompa-Loompas magiques déploient leurs merveilles créatives !"
       ]
     },
     "timeUnits": {
-      "second": "second",
-      "seconds": "seconds",
+      "second": "seconde",
+      "seconds": "secondes",
       "minute": "minute",
       "minutes": "minutes"
     }

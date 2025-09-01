@@ -11,13 +11,13 @@
     "openGraph": {
       "title": "Mythoria | Créateur de livres personnalisés",
       "description": "Transformez vos idées en livres personnalisés et magnifiquement illustrés - lisez, écoutez ou imprimez.",
-      "image": "https://mythoria.pt/assets/og/mythoria_en.jpg",
-      "url": "https://mythoria.pt/en-us/"
+      "image": "https://mythoria.pt/assets/og/mythoria.jpg",
+      "url": "https://mythoria.pt/fr-FR/"
     },
     "structuredData": {
       "name": "Mythorie",
       "description": "Mythoria permet à quiconque de créer et de personnaliser des livres entièrement illustrés en utilisant une AI générative.",
-      "inLanguage": "en-us"
+      "inLanguage": "fr-FR"
     },
     "manifest": {
       "name": "Mythoria - Créateur de livres personnalisés",

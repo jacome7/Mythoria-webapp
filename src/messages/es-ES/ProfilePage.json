@@ -15,8 +15,7 @@
     "contact": {
       "title": "Información de contacto y preferencias",
       "description": "Tus datos de contacto están seguros con nosotros. Los usamos para proteger tu cuenta y para comunicaciones importantes. ¡Sin spam, lo prometemos!",
-      "email": "Dirección de correo electrónico",
-      "emailHelp": "Para cambiar tu correo electrónico, visita tu proveedor de cuenta.",
+  "email": "Dirección de correo electrónico",
       "mobile": "Teléfono móvil",
       "mobilePlaceholder": "ej: +34612345678",
       "language": "Idioma preferido"

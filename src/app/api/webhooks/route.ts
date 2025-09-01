@@ -6,7 +6,6 @@ import { db } from '@/db';
 import { authors } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { detectUserLocaleFromEmail } from '@/utils/locale-utils';
-import { sendWelcomeNotification } from '@/lib/notifications/welcome';
 
 export async function POST(req: Request) {
   // Get the headers
@@ -81,7 +80,7 @@ export async function POST(req: Request) {
   }
 }
 
-// sendWelcomeNotification now lives in '@/lib/notifications/welcome'
+// (Welcome email dispatch removed – now handled fully inside notification-engine)
 
 async function handleUserCreated(evt: WebhookEvent) {
   if (evt.type !== 'user.created') return;
@@ -95,30 +94,23 @@ async function handleUserCreated(evt: WebhookEvent) {
     return;
   }
 
-  const userName = `${first_name || ''} ${last_name || ''}`.trim() || 'Anonymous User';
+  const userName = `${first_name || ''} ${last_name || ''}`.trim() || '';
 
   const userLocale = detectUserLocaleFromEmail(primaryEmail.email_address);
 
   try {
     // Try to insert new user first
-    await db.insert(authors).values({
+  const [insertedAuthor] = await db.insert(authors).values({
       clerkUserId: id,
       email: primaryEmail.email_address,
       displayName: userName,
       preferredLocale: userLocale,
       lastLoginAt: new Date(),
       createdAt: new Date(),
-    });
-    console.log('User created in database:', id, 'for email:', primaryEmail.email_address, 'with locale:', userLocale);
+  }).returning({ authorId: authors.authorId });
+  console.log('User created in database:', id, 'for email:', primaryEmail.email_address, 'with locale:', userLocale, 'authorId:', insertedAuthor?.authorId);
 
-    // Send welcome notification (don't block user creation if this fails)
-    try {
-  await sendWelcomeNotification({ email: primaryEmail.email_address, name: userName });
-      console.log('Welcome notification sent successfully for user:', id);
-    } catch (notificationError) {
-      console.error('Failed to send welcome notification for user:', id, 'Error:', notificationError);
-      // We don't re-throw this error - user creation should still succeed
-    }
+  // (Welcome notification no longer sent from webapp. Responsibility moved to notification-engine.)
 
   } catch (error: unknown) {
     // Log the full error structure for debugging
@@ -161,9 +153,7 @@ async function handleUserCreated(evt: WebhookEvent) {
 
           console.log('User updated (clerkUserId changed) for email:', primaryEmail.email_address, 'with locale:', userLocale);
           
-          // Do NOT send welcome notification in duplicate email scenario.
-          // Requirement: Only send for truly new unique email accounts.
-          console.log('Skipping welcome notification for duplicate email update path:', primaryEmail.email_address);
+          // (Welcome notification intentionally omitted even on duplicate path.)
         } catch (updateError) {
           console.error('Error updating user after duplicate email:', updateError);
           throw updateError;
@@ -194,12 +184,22 @@ async function handleUserUpdated(evt: WebhookEvent) {
   }
 
   try {
+    // Respect a user-defined preferred name if present in private metadata (set via profile PATCH)
+    // Clerk webhooks include private_metadata and public_metadata in evt.data.
+    // We store preferred name at private_metadata.profile.preferredName.
+    // If present, we use that instead of rebuilding from first/last names so that
+    // profile PATCHes are not immediately reverted by this webhook.
+    // If not present, we fall back to "first last" as before.
+    const preferredName = (evt.data as any)?.private_metadata?.profile?.preferredName;
+    const rebuiltName = `${first_name || ''} ${last_name || ''}`.trim() || '';
+    const newDisplayName = (preferredName && typeof preferredName === 'string' && preferredName.trim()) ? preferredName.trim() : rebuiltName;
+
     // Try updating by clerkUserId first
     const updateResult = await db
       .update(authors)
       .set({
         email: primaryEmail.email_address,
-        displayName: `${first_name || ''} ${last_name || ''}`.trim() || 'Anonymous User',
+        displayName: newDisplayName,
         lastLoginAt: new Date(),
       })
       .where(eq(authors.clerkUserId, id));    // If no rows were updated, the clerkUserId might have changed
@@ -211,7 +211,7 @@ async function handleUserUpdated(evt: WebhookEvent) {
         .update(authors)
         .set({
           clerkUserId: id, // Update the clerkUserId
-          displayName: `${first_name || ''} ${last_name || ''}`.trim() || 'Anonymous User',
+          displayName: newDisplayName,
           lastLoginAt: new Date(),
         })
         .where(eq(authors.email, primaryEmail.email_address));

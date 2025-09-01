@@ -334,7 +334,8 @@ export default function ListenStoryPage() {
       const resp = await fetch(`/api/my-stories/${storyId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'duplicate', locale }),
+  // Do not send locale when duplicating; language remains original.
+  body: JSON.stringify({ action: 'duplicate' }),
       });
       if (!resp.ok) throw new Error(`Duplicate failed: ${resp.status}`);
       const data = await resp.json();

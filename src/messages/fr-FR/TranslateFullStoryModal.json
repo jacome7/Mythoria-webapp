@@ -1,26 +1,26 @@
 {
   "TranslateFullStoryModal": {
-    "title": "Translate full story",
-    "currentLanguage": "Current: {lang}",
-    "targetLanguage": "Target language",
-    "duplicateLabel": "Duplicate story",
-    "duplicateOff": "Your story will be overwritten with the new translation.",
-    "duplicateOn": "Your original story will be preserved. A new story will be created with the new translation.",
+    "title": "Traduire l'histoire complète",
+    "currentLanguage": "Actuel : {lang}",
+    "targetLanguage": "Langue cible",
+    "duplicateLabel": "Dupliquer l'histoire",
+    "duplicateOff": "Votre histoire sera écrasée par la nouvelle traduction.",
+    "duplicateOn": "Votre histoire originale sera conservée. Une nouvelle histoire sera créée avec la nouvelle traduction.",
     "cost": {
-      "title": "Estimated cost",
-      "freeEdits": "• {count} free chapter edits",
-      "paidEdits": "• {count} paid chapter edits",
-      "balance": "• Current balance: {credits} credits"
+      "title": "Coût estimé",
+      "freeEdits": "• {count} modifications gratuites de chapitres",
+      "paidEdits": "• {count} modifications payantes de chapitres",
+      "balance": "• Solde actuel : {credits} crédits"
     },
-    "cancel": "Cancel",
-    "translate": "Translate",
-    "processing": "Starting...",
-    "buyCredits": "Buy Credits",
+    "cancel": "Annuler",
+    "translate": "Traduire",
+    "processing": "Démarrage...",
+    "buyCredits": "Acheter des crédits",
     "errors": {
-      "unableToCheckCredits": "Unable to check credits.",
-      "selectDifferentLanguage": "Please select a different language.",
-      "unableToStart": "Unable to start translation.",
-      "failed": "Translation failed. Please try again."
+      "unableToCheckCredits": "Impossible de vérifier les crédits.",
+      "selectDifferentLanguage": "Veuillez sélectionner une autre langue.",
+      "unableToStart": "Impossible de démarrer la traduction.",
+      "failed": "La traduction a échoué. Veuillez réessayer."
     }
   }
 }

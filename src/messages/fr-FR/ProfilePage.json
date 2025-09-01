@@ -15,8 +15,7 @@
     "contact": {
       "title": "Coordonnées et préférences",
       "description": "Vos coordonnées sont en sécurité avec nous. Nous les utilisons pour protéger votre compte et pour les communications importantes. Pas de spam, c'est promis !",
-      "email": "Adresse e-mail",
-      "emailHelp": "Pour changer votre e-mail, veuillez visiter votre fournisseur de compte.",
+  "email": "Adresse e-mail",
       "mobile": "Téléphone portable",
       "mobilePlaceholder": "ex: +33612345678",
       "language": "Langue préférée"
