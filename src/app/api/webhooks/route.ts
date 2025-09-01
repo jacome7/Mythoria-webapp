@@ -190,9 +190,19 @@ async function handleUserUpdated(evt: WebhookEvent) {
     // If present, we use that instead of rebuilding from first/last names so that
     // profile PATCHes are not immediately reverted by this webhook.
     // If not present, we fall back to "first last" as before.
-    const preferredName = (evt.data as any)?.private_metadata?.profile?.preferredName;
+    // Safely extract preferredName without using 'any'. The Clerk typings do not (yet) expose
+    // the nested shape of private_metadata, so we defensively narrow at runtime.
+    const extractPreferredName = (e: WebhookEvent): string | undefined => {
+      const data: unknown = e.data;
+      if (typeof data !== 'object' || data === null) return undefined;
+      const privateMetadata = (data as { private_metadata?: { profile?: { preferredName?: unknown } } }).private_metadata;
+      const candidate = privateMetadata?.profile?.preferredName;
+      return (typeof candidate === 'string' && candidate.trim()) ? candidate.trim() : undefined;
+    };
+
+    const preferredName = extractPreferredName(evt);
     const rebuiltName = `${first_name || ''} ${last_name || ''}`.trim() || '';
-    const newDisplayName = (preferredName && typeof preferredName === 'string' && preferredName.trim()) ? preferredName.trim() : rebuiltName;
+    const newDisplayName = preferredName ?? rebuiltName;
 
     // Try updating by clerkUserId first
     const updateResult = await db
