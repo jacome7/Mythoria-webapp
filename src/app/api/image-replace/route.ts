@@ -23,8 +23,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse request body
-    const body = await request.json();
-    const { storyId, newImageUrl, imageType, chapterNumber } = body;
+  const body = await request.json();
+  const { storyId, newImageUrl, imageType, chapterNumber, mode } = body;
 
     // Validate required fields
     if (!storyId) {
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate image type
+  // Validate image type
     if (!['chapter', 'cover', 'backcover', 'frontcover'].includes(imageType)) {
       return NextResponse.json(
         { success: false, error: 'Image type must be "chapter", "cover", "backcover", or "frontcover"' },
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update the appropriate database table
+  // Update the appropriate database table
     try {
       if (mappedImageType === 'chapter' && chapterNumber) {
         // Update chapter image in chapters table
@@ -90,7 +90,8 @@ export async function POST(request: NextRequest) {
           storyId,
           chapterNumber,
           imageType: mappedImageType,
-          newImageUrl
+          newImageUrl,
+          mode: mode || 'unknown'
         });
         
       } else if (mappedImageType === 'cover') {
@@ -102,7 +103,8 @@ export async function POST(request: NextRequest) {
           message: 'Front cover image updated successfully',
           storyId,
           imageType: mappedImageType,
-          newImageUrl
+          newImageUrl,
+          mode: mode || 'unknown'
         });
         
       } else if (mappedImageType === 'backcover') {
@@ -114,7 +116,8 @@ export async function POST(request: NextRequest) {
           message: 'Back cover image updated successfully',
           storyId,
           imageType: mappedImageType,
-          newImageUrl
+          newImageUrl,
+          mode: mode || 'unknown'
         });
         
       } else {

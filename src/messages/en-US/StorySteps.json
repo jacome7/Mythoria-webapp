@@ -133,6 +133,14 @@
         "failedCreate": "Failed to create story.",
         "unknown": "Unknown error occurred."
       }
+      ,
+      "characterSelection": {
+        "includeExistingTitle": "Include your existing characters",
+        "noneSelected": "Select characters to include in your story",
+        "selectedCount": "{count, plural, =1 {# character selected} other {# characters selected}}",
+        "selectAll": "Select all ({count} characters)",
+        "loading": "Loading characters..."
+      }
     },
     "step3": {
       "heading": "Chapter 3 - The Characters",

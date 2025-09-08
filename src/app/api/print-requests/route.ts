@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { printRequests, printProviders, stories, addresses } from '@/db/schema';
+import { printRequests, printProviders, stories, addresses, authors } from '@/db/schema';
 import { eq, and, desc, or } from 'drizzle-orm';
 import { getCurrentAuthor } from '@/lib/auth';
 import { creditService } from '@/db/services';
 import { getEnvironmentConfig } from '@/config/environment';
 import { PrintPubSubService } from '@/lib/print-pubsub';
 import { v4 as uuidv4 } from 'uuid';
+import { normalizeLocale } from '@/utils/locale-utils';
 
 export async function GET(request: NextRequest) {
   try {
@@ -143,55 +144,37 @@ export async function POST(request: NextRequest) {
     const suitableProvider = availableProviders.find(provider => {
       const availableCountries = provider.availableCountries as string[];
       return availableCountries.includes(shippingCountry);
-    });    if (!suitableProvider) {
+    });
+    if (!suitableProvider) {
       return NextResponse.json(
         { success: false, error: `No print provider available for country: ${shippingCountry}` },
         { status: 404 }
       );
     }
-    // Check and deduct credits for print order
-    try {
-      // Calculate total cost based on printing option and extra chapters
-      const totalCost = body.totalCost || 0;
-      
-      if (!totalCost) {
-        return NextResponse.json(
-          { success: false, error: 'Total cost not provided' },
-          { status: 400 }
-        );
-      }
-
-      // Check if user has sufficient credits
-      const currentBalance = await creditService.getAuthorCreditBalance(author.authorId);
-      if (currentBalance < totalCost) {
-        return NextResponse.json(
-          { 
-            success: false,
-            error: 'Insufficient credits',
-            required: totalCost,
-            available: currentBalance,
-            shortfall: totalCost - currentBalance
-          }, 
-          { status: 402 } // Payment Required
-        );
-      }
-
-      // Deduct credits for print order
-      await creditService.deductCredits(
-        author.authorId,
-        totalCost,
-        'printOrder', // Use the correct enum value
-        body.storyId
-      );
-    } catch (error) {
-      console.error('Error processing credits for print order:', error);
+    // ------------------------------------------------------------------
+    // PRE-CHECK: Validate total cost & credit sufficiency (do NOT deduct yet)
+    // ------------------------------------------------------------------
+    const totalCost = body.totalCost || 0;
+    if (!totalCost) {
       return NextResponse.json(
-        { success: false, error: 'Failed to process payment. Please try again.' },
-        { status: 500 }
+        { success: false, error: 'Total cost not provided' },
+        { status: 400 }
       );
     }
-    
-    // Create the print request
+    const currentBalance = await creditService.getAuthorCreditBalance(author.authorId);
+    if (currentBalance < totalCost) {
+      return NextResponse.json({
+        success: false,
+        error: 'Insufficient credits',
+        required: totalCost,
+        available: currentBalance,
+        shortfall: totalCost - currentBalance
+      }, { status: 402 });
+    }
+
+    // ------------------------------------------------------------------
+    // Create the print request record (without deducting credits yet)
+    // ------------------------------------------------------------------
     const newRequest = await db.insert(printRequests).values({
       authorId: author.authorId,
       storyId: body.storyId,
@@ -204,7 +187,7 @@ export async function POST(request: NextRequest) {
         credits: body.printingOption?.credits,
         title: body.printingOption?.title,
         chapterCount: body.chapterCount,
-        totalCost: body.totalCost,
+        totalCost: totalCost,
         extraChapters: Math.max(0, (body.chapterCount || 4) - 4),
       },
       status: 'requested',
@@ -233,28 +216,29 @@ export async function POST(request: NextRequest) {
       .where(eq(printRequests.id, newRequest[0].id))
       .limit(1);
 
-    // Create ticket in admin system for print request (async, don't block the response)
+    // ------------------------------------------------------------------
+    // Create ticket in admin system (MUST succeed before deducting credits)
+    // ------------------------------------------------------------------
+    let ticketId: string | null = null;
     try {
       const config = getEnvironmentConfig();
       const ticketResponse = await fetch(`${config.admin.apiUrl}/api/tickets`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-api-key': config.admin.apiKey || '',
         },
         body: JSON.stringify({
           category: 'print_request',
           storyId: body.storyId,
           userId: author.authorId,
-          shippingAddress: body.shippingId ? {
-            addressId: body.shippingId,
-            // We could fetch full address details here if needed
-          } : null,
+          shippingAddress: body.shippingId ? { addressId: body.shippingId } : null,
           printingOption: {
             serviceCode: body.printingOption?.serviceCode,
             title: body.printingOption?.title,
             credits: body.printingOption?.credits,
           },
-          totalCost: body.totalCost,
+          totalCost: totalCost,
           orderDetails: {
             printRequestId: newRequest[0].id,
             requestedAt: new Date().toISOString(),
@@ -263,18 +247,128 @@ export async function POST(request: NextRequest) {
         }),
       });
 
-      if (ticketResponse.ok) {
-        const ticketData = await ticketResponse.json();
-        console.log('Print request ticket created:', ticketData.id);
-      } else {
-        console.warn('Failed to create print request ticket:', ticketResponse.statusText);
+      if (!ticketResponse.ok) {
+        console.error('Ticket creation failed with status:', ticketResponse.status);
+        // Roll back the print request row since external orchestration failed
+        await db.delete(printRequests).where(eq(printRequests.id, newRequest[0].id));
+        return NextResponse.json({
+          success: false,
+          error: 'We could not complete your print order. Please try again.'
+        }, { status: 500 });
       }
+      try {
+        const ticketJson = await ticketResponse.json();
+        ticketId = ticketJson.id || null;
+      } catch { /* ignore parse issues */ }
     } catch (ticketError) {
-      console.warn('Print request ticket creation failed:', ticketError);
-      // Don't fail the entire process if ticket creation fails
+      console.error('Ticket creation exception:', ticketError);
+      await db.delete(printRequests).where(eq(printRequests.id, newRequest[0].id));
+      return NextResponse.json({
+        success: false,
+        error: 'We could not complete your print order. Please try again.'
+      }, { status: 500 });
     }
 
-    // Trigger print PDF generation (async, don't block the response)
+    // ------------------------------------------------------------------
+    // Deduct credits ONLY after ticket success
+    // ------------------------------------------------------------------
+    try {
+      await creditService.deductCredits(author.authorId, totalCost, 'printOrder', body.storyId);
+    } catch (deductError) {
+      console.error('Credit deduction failed after ticket creation:', deductError);
+      // Roll back print request (avoid orphan order with no payment)
+      await db.delete(printRequests).where(eq(printRequests.id, newRequest[0].id));
+      if ((deductError as Error).message === 'Insufficient credits') {
+        return NextResponse.json({
+          success: false,
+          error: 'Insufficient credits',
+          required: totalCost,
+          available: await creditService.getAuthorCreditBalance(author.authorId)
+        }, { status: 402 });
+      }
+      return NextResponse.json({
+        success: false,
+        error: 'We could not complete your print order. Please try again.'
+      }, { status: 500 });
+    }
+
+    // ---------------------------------------------------------------
+    // Send user notification email (non-blocking; best-effort)
+    // ---------------------------------------------------------------
+    (async () => {
+      try {
+        const config = getEnvironmentConfig();
+        if (!config.notification.engineUrl || !config.notification.apiKey) {
+          console.warn('Notification engine config missing; skipping email');
+          return;
+        }
+        // Fetch address details if available
+        let addressRecord: { line1: string; line2: string | null; city: string; stateRegion: string | null; postalCode: string | null; country: string; phone: string | null } | null = null;
+        if (body.shippingId) {
+          const addr = await db
+            .select({ line1: addresses.line1, line2: addresses.line2, city: addresses.city, stateRegion: addresses.stateRegion, postalCode: addresses.postalCode, country: addresses.country, phone: addresses.phone })
+            .from(addresses)
+            .where(eq(addresses.addressId, body.shippingId))
+            .limit(1);
+          addressRecord = addr[0] || null;
+        }
+        // Fetch author email/displayName (author object may already contain these; fallback to DB)
+        let authorEmail = author.email;
+        let authorName = author.displayName || 'Storyteller';
+        if (!authorEmail || !authorName) {
+          const dbAuthor = await db.select({ email: authors.email, displayName: authors.displayName }).from(authors).where(eq(authors.authorId, author.authorId)).limit(1);
+            if (dbAuthor.length > 0) {
+              authorEmail = authorEmail || dbAuthor[0].email;
+              authorName = authorName || dbAuthor[0].displayName;
+            }
+        }
+        // Derive order number from ticket (preferred) or print request id
+        const sourceId = ticketId || newRequest[0].id;
+        const parts = sourceId.split('-');
+        const orderNumber = parts.length >= 2 ? parts[1].toUpperCase() : sourceId.replace(/-/g, '').substring(0,8).toUpperCase();
+        const orderDate = new Date().toISOString().slice(0,10); // YYYY-MM-DD
+        const listenURL = `https://mythoria.pt/stories/listen/${body.storyId}`;
+        const contactURL = 'https://mythoria.pt/contactUs';
+        // Always use author's preferredLocale (not story language) for template selection
+  const userLocale = normalizeLocale(author.preferredLocale || undefined);
+        const payload = {
+          templateId: 'print-request-created',
+          recipients: [ { email: authorEmail, name: authorName, language: userLocale } ],
+          variables: {
+            name: authorName,
+            OrderNumber: orderNumber,
+            OrderDate: orderDate,
+            CreditCost: totalCost,
+            storyTitle: story[0]?.title || '',
+            CoverImageURL: story[0]?.featureImageUri || '',
+            line1: addressRecord?.line1 || '',
+            line2: addressRecord?.line2 || '',
+            city: addressRecord?.city || '',
+            stateRegion: addressRecord?.stateRegion || '',
+            postalCode: addressRecord?.postalCode || '',
+            country: addressRecord?.country || '',
+            phone: addressRecord?.phone || '',
+            listenURL,
+            contactURL
+          }
+        };
+        const resp = await fetch(`${config.notification.engineUrl}/email/template`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': config.notification.apiKey
+          },
+          body: JSON.stringify(payload)
+        });
+        if (!resp.ok) {
+          console.warn('Failed to send print request email', resp.status);
+        }
+      } catch (notifyErr) {
+        console.warn('Notification email failed', notifyErr);
+      }
+    })();
+
+  // Trigger print PDF generation (async, non-blocking; failure does not invalidate order)
     try {
       const printPubSub = new PrintPubSubService();
       const runId = uuidv4();

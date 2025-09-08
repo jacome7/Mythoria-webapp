@@ -2,7 +2,6 @@
   "NotFound": {
     "mainHeading": "Ups! Esta Página Perdeu-se no Livro de Histórias",
     "description": "Parece que a página que procura se perdeu num capítulo por escrever! Talvez esteja escondida num conto de fadas, ou talvez tenha sido apanhada numa aventura própria.",
-    "funnyMessage": "Os nossos elfos literários estão a procurar em todos os livros da biblioteca mágica, mas esta página parece ter partido na sua própria aventura!",
     "suggestions": {
       "title": "Enquanto procuramos a sua página perdida, pode:",
       "items": [

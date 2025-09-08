@@ -27,9 +27,6 @@ export default function NotFound() {
               <p className="py-4 text-lg">
                 {tNotFound('description')}
               </p>
-              <p className="py-2 text-base italic">
-                {tNotFound('funnyMessage')}
-              </p>
             </div>
           </div>
         </div>

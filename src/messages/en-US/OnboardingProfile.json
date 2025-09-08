@@ -1,6 +1,6 @@
 {
   "OnboardingProfile": {
-    "title": "Welcome! We’re so happy you’re here.",
+  "title": "Welcome!",
     "intro": "We’re thrilled to start this creative journey with you. The first step is done—let’s make it truly yours.",
     "preferredName": {
       "section": "How should we address you?",
@@ -84,7 +84,8 @@
     "saving": "Saving...",
     "errors": {
       "displayNameRequired": "Name is required",
-      "displayNameTooLong": "Display name too long"
+  "displayNameTooLong": "Display name too long",
+  "loadFailed": "Could not load profile. Please try again later."
     }
   }
 }

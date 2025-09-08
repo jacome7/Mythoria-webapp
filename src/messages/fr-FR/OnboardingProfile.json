@@ -1,6 +1,6 @@
 {
     "OnboardingProfile": {
-        "title": "Bienvenue ! Nous sommes ravis que vous soyez là.",
+    "title": "Bienvenue !",
         "intro": "Nous sommes enthousiastes à l'idée de commencer ce voyage créatif avec vous. La première étape est faite — rendons-le vraiment vôtre.",
         "preferredName": {
             "section": "Comment devons-nous vous appeler ?",
@@ -95,7 +95,8 @@
         "saving": "Enregistrement...",
         "errors": {
             "displayNameRequired": "Le nom est requis",
-            "displayNameTooLong": "Nom trop long"
+            "displayNameTooLong": "Nom trop long",
+            "loadFailed": "Impossible de charger le profil. Veuillez réessayer plus tard."
         }
     }
 }

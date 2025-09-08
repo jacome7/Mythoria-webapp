@@ -58,7 +58,7 @@
     "authorName": "Contador de Histórias"
   },
   "tabs": {
-    "myStories": "As Minhas Histórias",
-    "myCharacters": "As Minhas Personagens"
+    "myStories": "Histórias",
+    "myCharacters": "Personagens"
   }
 }

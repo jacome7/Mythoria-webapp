@@ -40,6 +40,12 @@ const nextConfig: NextConfig = {
         hostname: 'storage.googleapis.com',
         pathname: '/mythoria-generated-stories/**',
       },
+      // Google Cloud Storage bucket for public assets
+      {
+        protocol: 'https',
+        hostname: 'storage.googleapis.com',
+        pathname: '/mythoria-public/**',
+      },
     ],
   },
   
@@ -60,7 +66,13 @@ const nextConfig: NextConfig = {
     // Keep aliasing minimal; no VertexAI alias required anymore
     config.resolve.alias = {
       ...config.resolve.alias,
+  // Force using userland punycode implementation instead of deprecated Node builtin
+  punycode: require.resolve('punycode/')
     };
+  // Note: Node's internal loader may emit DEP0040 before webpack aliasing takes effect
+  // during Next build (some Next scripts reference the builtin early). This alias prevents
+  // your application code from pulling the deprecated builtin at runtime, but cannot fully
+  // silence early bootstrap warnings in Node 22.
     return config;
   },
 };

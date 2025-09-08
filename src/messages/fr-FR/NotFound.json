@@ -2,7 +2,6 @@
   "NotFound": {
     "mainHeading": "Oups! Cette page est perdue dans le livre de contes",
     "description": "Il semble que la page que vous recherchez s'est éloignée dans un chapitre non écrit! Peut-être qu'il se cache dans un conte de fées, ou peut-être qu'il a été pris dans une aventure qui lui est propre.",
-    "funnyMessage": "Nos elfes littéraires recherchent chaque livre de la bibliothèque magique, mais cette page semble avoir disparu!",
     "suggestions": {
       "title": "Pendant que nous recherchons votre page perdue, vous pourriez:",
       "items": [

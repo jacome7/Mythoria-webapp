@@ -133,6 +133,14 @@
         "failedCreate": "Échec de la création de l’histoire.",
         "unknown": "Erreur inconnue."
       }
+      ,
+      "characterSelection": {
+        "includeExistingTitle": "Inclure vos personnages existants",
+        "noneSelected": "Sélectionnez des personnages à inclure dans votre histoire",
+        "selectedCount": "{count, plural, =1 {# personnage sélectionné} other {# personnages sélectionnés}}",
+        "selectAll": "Tout sélectionner ({count} personnages)",
+        "loading": "Chargement des personnages..."
+      }
     },
     "step3": {
       "heading": "Chapitre 3 - Les Personnages",

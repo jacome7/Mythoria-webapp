@@ -27,9 +27,6 @@ export default function NotFoundPageContent() {
               <p className="py-4 text-lg">
                 {t('description')}
               </p>
-              <p className="py-2 text-base italic">
-                {t('funnyMessage')}
-              </p>
             </div>
           </div>
         </div>

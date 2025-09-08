@@ -1,6 +1,6 @@
 {
   "OnboardingProfile": {
-    "title": "Bem-vindo! Estamos muito felizes por teres chegado.",
+  "title": "Bem-vindo!",
     "intro": "Estamos entusiasmados por começar esta jornada criativa contigo. O primeiro passo está dado — agora vamos torná-la verdadeiramente tua.",
     "preferredName": {
       "section": "Como devemos tratar-te?",
@@ -84,7 +84,8 @@
     "saving": "A guardar...",
     "errors": {
       "displayNameRequired": "O nome é obrigatório",
-      "displayNameTooLong": "Nome demasiado comprido"
+  "displayNameTooLong": "Nome demasiado comprido",
+  "loadFailed": "Não foi possível carregar o perfil. Tenta novamente mais tarde."
     }
   }
 }

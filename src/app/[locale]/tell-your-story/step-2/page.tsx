@@ -28,6 +28,18 @@ interface SessionData {
   lastSaved: number;
 }
 
+interface Character {
+  characterId: string;
+  name: string;
+  type?: string;
+  role?: string;
+  age?: string;
+  traits?: string[];
+  characteristics?: string;
+  physicalDescription?: string;
+  photoUrl?: string;
+}
+
 export default function Step2Page() {
   const router = useRouter();
   const tStoryStepsStep2 = useTranslations('StorySteps.step2');
@@ -48,6 +60,12 @@ export default function Step2Page() {
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Character states
+  const [existingCharacters, setExistingCharacters] = useState<Character[]>([]);
+  const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([]);
+  const [showCharacterSelection, setShowCharacterSelection] = useState(false);
+  const [isLoadingCharacters, setIsLoadingCharacters] = useState(false);
   
   // Refs
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -77,7 +95,30 @@ export default function Step2Page() {
         console.error('Error loading saved data:', error);
       }
     }
+    
+    // Load existing characters
+    fetchExistingCharacters();
   }, []);
+
+  // Fetch user's existing characters
+  const fetchExistingCharacters = async () => {
+    try {
+      setIsLoadingCharacters(true);
+
+      // Fetch characters for the current author
+      const charactersResponse = await fetch('/api/characters');
+      if (charactersResponse.ok) {
+        const data = await charactersResponse.json();
+        if (data.success && data.characters) {
+          setExistingCharacters(data.characters);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching existing characters:', error);
+    } finally {
+      setIsLoadingCharacters(false);
+    }
+  };
 
   // Rotate tips
   useEffect(() => {
@@ -223,6 +264,23 @@ export default function Step2Page() {
     saveToSession();
   };
 
+  // Character selection handlers
+  const toggleCharacterSelection = (characterId: string) => {
+    setSelectedCharacterIds(prev => 
+      prev.includes(characterId) 
+        ? prev.filter(id => id !== characterId)
+        : [...prev, characterId]
+    );
+  };
+
+  const toggleSelectAllCharacters = () => {
+    if (selectedCharacterIds.length === existingCharacters.length) {
+      setSelectedCharacterIds([]);
+    } else {
+      setSelectedCharacterIds(existingCharacters.map(char => char.characterId));
+    }
+  };
+
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -362,6 +420,7 @@ export default function Step2Page() {
       imageData: imageDataB64,
       audioData: audioDataB64,
             storyId: story.storyId,
+            characterIds: selectedCharacterIds.length > 0 ? selectedCharacterIds : undefined,
           }),
         });
 
@@ -503,6 +562,83 @@ export default function Step2Page() {
                     )}
                   </button>
                 </div>
+
+                {/* Character Selection - Only show if user has characters */}
+                {existingCharacters.length > 0 && (
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg">
+                    <div
+                      className="p-4 cursor-pointer flex items-center justify-between"
+                      onClick={() => setShowCharacterSelection(!showCharacterSelection)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-xl">👥</span>
+                        <div>
+                          <h3 className="font-semibold text-gray-800">{tStoryStepsStep2('characterSelection.includeExistingTitle')}</h3>
+                          <p className="text-sm text-gray-600">
+                            {selectedCharacterIds.length > 0
+                              ? tStoryStepsStep2('characterSelection.selectedCount', { count: selectedCharacterIds.length })
+                              : tStoryStepsStep2('characterSelection.noneSelected')}
+                          </p>
+                        </div>
+                      </div>
+                      <div className={`transform transition-transform ${showCharacterSelection ? 'rotate-180' : ''}`}>
+                        <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+
+                    {showCharacterSelection && (
+                      <div className="border-t border-gray-200 p-4 max-h-60 overflow-y-auto">
+                        {isLoadingCharacters ? (
+                          <div className="flex items-center justify-center py-8">
+                            <span className="loading loading-spinner loading-md"></span>
+                            <span className="ml-2 text-gray-600">{tStoryStepsStep2('characterSelection.loading')}</span>
+                          </div>
+                        ) : (
+                          <>
+                            {existingCharacters.length > 1 && (
+                              <div className="mb-3 pb-3 border-b border-gray-200">
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    className="checkbox checkbox-sm"
+                                    checked={selectedCharacterIds.length === existingCharacters.length}
+                                    onChange={toggleSelectAllCharacters}
+                                  />
+                                  <span className="text-sm font-medium text-gray-700">
+                                    {tStoryStepsStep2('characterSelection.selectAll', { count: existingCharacters.length })}
+                                  </span>
+                                </label>
+                              </div>
+                            )}
+
+                            <div className="space-y-2">
+                              {existingCharacters.map((character) => (
+                                <label key={character.characterId} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    className="checkbox checkbox-sm"
+                                    checked={selectedCharacterIds.includes(character.characterId)}
+                                    onChange={() => toggleCharacterSelection(character.characterId)}
+                                  />
+                                  <div className="flex-1">
+                                    <div className="font-medium text-gray-800">{character.name}</div>
+                                    {(character.type || character.role) && (
+                                      <div className="text-xs text-gray-500">
+                                        {[character.type, character.role].filter(Boolean).join(' • ')}
+                                      </div>
+                                    )}
+                                  </div>
+                                </label>
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Reassurance Message */}
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">

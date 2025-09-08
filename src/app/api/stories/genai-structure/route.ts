@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     if (!currentAuthor) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }    // Parse the request body
-    const { userDescription, imageData, audioData, storyId } = await request.json();
+    const { userDescription, imageData, audioData, storyId, characterIds } = await request.json();
 
     if (!userDescription?.trim() && !imageData && !audioData) {
       return NextResponse.json(
@@ -44,13 +44,14 @@ export async function POST(request: NextRequest) {
   const endpoint = sgwUrl('/ai/text/structure');
 
     // Log proxy details for debugging
-    console.log('[genai-structure] Proxying to SGW', { endpoint, storyId, hasText: !!userDescription, hasImage: !!imageData, hasAudio: !!audioData });
+    console.log('[genai-structure] Proxying to SGW', { endpoint, storyId, hasText: !!userDescription, hasImage: !!imageData, hasAudio: !!audioData, characterIdsCount: characterIds?.length || 0 });
 
     const payload: Record<string, unknown> = {
       storyId,
       userDescription,
       imageData,
-      audioData
+      audioData,
+      characterIds
     };
     // Strip null/undefined fields to avoid schema errors downstream
     Object.keys(payload).forEach((k) => {

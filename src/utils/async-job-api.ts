@@ -58,16 +58,18 @@ export async function createImageEditJob(params: {
   storyId: string;
   imageUrl: string;
   imageType: 'cover' | 'backcover' | 'chapter';
-  userRequest: string;
+  userRequest?: string;
   chapterNumber?: number;
   graphicalStyle?: string;
+  userImageUri?: string;
+  convertToStyle?: boolean; // NEW explicit flag: true => AI restyle using userImageUri as reference; false/undefined => standard edit
 }): Promise<AsyncJobResponse> {
   const response = await fetch('/api/jobs/image-edit', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(params),
+  body: JSON.stringify(params),
   });
 
   if (!response.ok) {

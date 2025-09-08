@@ -213,7 +213,7 @@ export async function generateMetadata({
     openGraph: {
       title: 'Mythoria | Personalized Books Creator',
       description: 'Turn your ideas into personalised, beautifully illustrated books with AI.',
-      image: 'https://mythoria.pt/assets/og/mythoria_en.jpg'
+  image: 'https://mythoria.pt/Mythoria-logo-white-512x336.jpg'
     }
   };
   
@@ -225,7 +225,7 @@ export async function generateMetadata({
         openGraph: {
           title: 'Mythoria | Criador de Livros Personalizados',
           description: 'Transforme as suas ideias em livros personalizados e lindamente ilustrados — leia, ouça ou imprima.',
-          image: 'https://mythoria.pt/assets/og/mythoria_pt.jpg'
+          image: 'https://mythoria.pt/Mythoria-logo-white-512x336.jpg'
         }
       };
     } else if (locale === 'es-ES') {
@@ -235,7 +235,7 @@ export async function generateMetadata({
         openGraph: {
           title: 'Mythoria | Creador de Libros Personalizados',
           description: 'Transforma tus ideas en libros personalizados y bellamente ilustrados — lee, escucha o imprime.',
-          image: 'https://mythoria.pt/assets/og/mythoria_es.jpg'
+          image: 'https://mythoria.pt/Mythoria-logo-white-512x336.jpg'
         }
       };
     } else if (locale === 'fr-FR') {
@@ -245,7 +245,7 @@ export async function generateMetadata({
         openGraph: {
           title: 'Mythoria | Créateur de Livres Personnalisés',
           description: 'Transformez vos idées en livres personnalisés et magnifiquement illustrés — lisez, écoutez ou imprimez.',
-          image: 'https://mythoria.pt/assets/og/mythoria_fr.jpg'
+          image: 'https://mythoria.pt/Mythoria-logo-white-512x336.jpg'
         }
       };
     }

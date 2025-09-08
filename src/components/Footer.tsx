@@ -29,7 +29,7 @@ const Footer = () => {
                 <a href="https://www.facebook.com/MythoriaOfficial" target="_blank" rel="noopener noreferrer" className="link link-hover">
                   <FaFacebook size={24} />
                 </a>
-                <a href="https://www.instagram.com/mythoria_oficial" target="_blank" rel="noopener noreferrer" className="link link-hover">
+                <a href="https://www.instagram.com/mythoria_books/" target="_blank" rel="noopener noreferrer" className="link link-hover">
                   <FaInstagram size={24} />
                 </a>
                 <a href="https://linkedin.com/company/mythoria" target="_blank" rel="noopener noreferrer" className="link link-hover">

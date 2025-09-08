@@ -132,6 +132,13 @@
         "failedGetUser": "Falha ao obter informação do utilizador.",
         "failedCreate": "Falha ao criar história.",
         "unknown": "Ocorreu um erro desconhecido."
+      },
+      "characterSelection": {
+        "includeExistingTitle": "Incluir as tuas personagens",
+        "noneSelected": "Seleciona personagens para incluir na tua história",
+        "selectedCount": "{count, plural, =1 {# personagem selecionada} other {# personagens selecionadas}}",
+        "selectAll": "Selecionar todas ({count} personagens)",
+        "loading": "A carregar personagens..."
       }
     },
     "step3": {

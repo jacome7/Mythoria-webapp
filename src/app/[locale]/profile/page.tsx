@@ -1,12 +1,12 @@
 "use client";
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useUser } from '@clerk/nextjs';
 import CreditsDisplay from '@/components/CreditsDisplay';
 import Link from 'next/link';
 import { GENDER_OPTIONS, LITERARY_AGE_OPTIONS } from '@/constants/profileOptions';
 import { SUPPORTED_LOCALES } from '@/config/locales';
-import { FaUser, FaVenusMars, FaBirthdayCake, FaEnvelope, FaPhone, FaGlobe, FaSave, FaBook, FaCreditCard, FaPlusCircle } from 'react-icons/fa';
+import { FaUser, FaVenusMars, FaBirthdayCake, FaEnvelope, FaPhone, FaGlobe, FaBook, FaCreditCard, FaPlusCircle } from 'react-icons/fa';
 
 interface ProfileDetails {
   displayName: string;
@@ -23,13 +23,24 @@ export default function AccountProfilePage() {
   const t = useTranslations('ProfilePage');
   const { isLoaded, isSignedIn, user } = useUser();
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  // Track if any save is in-flight (aggregated)
+  // Removed unused aggregate savingAny state to satisfy lint; per-field statuses already tracked
   const [credits, setCredits] = useState(0);
   const [storyCount, setStoryCount] = useState<number | null>(null);
-  const [dirty, setDirty] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [profile, setProfile] = useState<ProfileDetails | null>(null);
+  // Field level status map: idle | pending (debounce) | saving | saved | error
+  const [fieldStatus, setFieldStatus] = useState<Record<keyof ProfileDetails, string>>({
+    displayName: 'idle',
+    gender: 'idle',
+    literaryAge: 'idle',
+    preferredLocale: 'idle',
+    email: 'idle',
+    mobilePhone: 'idle',
+    fiscalNumber: 'idle'
+  });
+  const saveTimeouts = useRef<Record<string, ReturnType<typeof setTimeout> | null>>({});
 
   const fetchProfileData = useCallback(async () => {
     if (!isLoaded || !isSignedIn) return;
@@ -88,54 +99,113 @@ export default function AccountProfilePage() {
     fetchProfileData();
   }, [fetchProfileData]);
 
-  const handleFieldChange = (field: keyof ProfileDetails, value: string | null) => {
-    setProfile(p => p ? { ...p, [field]: value } : p);
-    setDirty(true);
-  };
-
-  const saveChanges = useCallback(async () => {
-    if (!profile) return;
-    setSaving(true);
+  const persistProfile = useCallback(async (updated: ProfileDetails, changedField: keyof ProfileDetails) => {
     setError(null);
     setSuccess(null);
+    setFieldStatus(fs => ({ ...fs, [changedField]: 'saving' }));
     try {
       const patchBody = {
-        displayName: profile.displayName,
-        gender: profile.gender,
-        literaryAge: profile.literaryAge,
-        preferredLocale: profile.preferredLocale,
-        mobilePhone: profile.mobilePhone,
-        fiscalNumber: profile.fiscalNumber
+        displayName: updated.displayName,
+        gender: updated.gender,
+        literaryAge: updated.literaryAge,
+        preferredLocale: updated.preferredLocale,
+        mobilePhone: updated.mobilePhone,
+        fiscalNumber: updated.fiscalNumber
       };
-
-      // Persist app-side profile
       await fetch('/api/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(patchBody)
       });
-  // (Optional) Updating Clerk user name skipped to avoid type mismatch; handled elsewhere in onboarding.
-
-      if (profile.preferredLocale) {
+      if (changedField === 'preferredLocale' && updated.preferredLocale) {
+        // Sync auth locale preference
         await fetch('/api/auth/update-locale', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ preferredLocale: profile.preferredLocale })
+          body: JSON.stringify({ preferredLocale: updated.preferredLocale })
         });
       }
-
-      setDirty(false);
+      setFieldStatus(fs => ({ ...fs, [changedField]: 'saved' }));
       setSuccess(t('success.saved'));
-  } catch {
+    } catch (e) {
+      console.error(e);
+      setFieldStatus(fs => ({ ...fs, [changedField]: 'error' }));
       setError(t('errors.saveFailed'));
-    } finally {
-      setSaving(false);
+  } finally {
       setTimeout(() => {
         setSuccess(null);
         setError(null);
-      }, 3000);
+        setFieldStatus(fs => ({ ...fs, [changedField]: 'idle' }));
+      }, 2500);
     }
-  }, [profile, t]);
+  }, [t]);
+
+  const scheduleFieldSave = useCallback((field: keyof ProfileDetails, nextValue: string | null, debounceMs: number) => {
+    setFieldStatus(fs => ({ ...fs, [field]: 'pending' }));
+    // Clear existing timeout
+    if (saveTimeouts.current[field]) {
+      clearTimeout(saveTimeouts.current[field]);
+    }
+    saveTimeouts.current[field] = setTimeout(() => {
+      setProfile(p => {
+        if (!p) return p;
+        const updated: ProfileDetails = { ...p, [field]: nextValue } as ProfileDetails;
+        // persist with updated local state right away
+        persistProfile(updated, field);
+        return updated;
+      });
+    }, debounceMs);
+  }, [persistProfile]);
+
+  const flushFieldSave = useCallback((field: keyof ProfileDetails) => {
+    // Clear any pending debounce
+    if (saveTimeouts.current[field]) {
+      clearTimeout(saveTimeouts.current[field]);
+      saveTimeouts.current[field] = null;
+    }
+    // Persist current snapshot even if there was no pending timeout (supports immediate saves)
+    setProfile(p => {
+      if (!p) return p;
+      persistProfile(p, field);
+      return p;
+    });
+  }, [persistProfile]);
+
+  const handleFieldChange = (field: keyof ProfileDetails, value: string | null, opts?: { immediate?: boolean }) => {
+    // Update local draft immediately for snappy UI
+    setProfile(p => p ? { ...p, [field]: value } : p);
+    if (opts?.immediate) {
+      if (saveTimeouts.current[field]) {
+        clearTimeout(saveTimeouts.current[field]);
+        saveTimeouts.current[field] = null;
+      }
+      // Persist immediately using current draft
+      setProfile(p => {
+        if (!p) return p;
+        persistProfile(p, field);
+        return p;
+      });
+    } else {
+      // Debounce text-ish inputs
+      const isFreeText = ['displayName', 'mobilePhone', 'fiscalNumber'].includes(field);
+      scheduleFieldSave(field, value, isFreeText ? 700 : 250);
+    }
+  };
+
+  // Flush any pending saves on unmount to reduce data loss risk
+  useEffect(() => {
+    // Capture snapshot of timeouts at effect registration
+    const snapshot = saveTimeouts.current;
+    return () => {
+      (Object.keys(snapshot) as (keyof ProfileDetails)[]).forEach(f => {
+        const to = snapshot[f];
+        if (to) {
+          clearTimeout(to);
+          flushFieldSave(f);
+        }
+      });
+    };
+  }, [flushFieldSave]);
 
   if (!isSignedIn) {
     return <div className="p-8 text-center">{t('signInPrompt')}</div>;
@@ -161,20 +231,20 @@ export default function AccountProfilePage() {
                 <h2 className="card-title text-2xl text-primary flex items-center"><FaUser className="mr-2" /> {t('details.title')}</h2>
                 <p className="text-sm opacity-80 mb-6">{t('details.description')}</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="form-control">
-                    <label className="label"><span className="label-text font-semibold flex items-center"><FaUser className="mr-2" />{t('details.displayName')}</span></label>
-                    <input className="input input-bordered" value={profile.displayName} onChange={e => handleFieldChange('displayName', e.target.value)} />
+                  <div className="form-control lg:space-y-2">
+                    <label className="label block mb-1"><span className="label-text font-semibold flex items-center"><FaUser className="mr-2" />{t('details.displayName')}{fieldStatus.displayName === 'saving' && <span className="loading loading-spinner loading-xs ml-2" />}{fieldStatus.displayName === 'saved' && <span className="ml-2 text-success">✓</span>}</span></label>
+                    <input className="input input-bordered" value={profile.displayName} onChange={e => handleFieldChange('displayName', e.target.value)} onBlur={() => flushFieldSave('displayName')} />
                   </div>
-                  <div className="form-control">
-                    <label className="label"><span className="label-text font-semibold flex items-center"><FaVenusMars className="mr-2" />{t('details.gender')}</span></label>
-                    <select className="select select-bordered" value={profile.gender || ''} onChange={e => handleFieldChange('gender', e.target.value || null)}>
+                  <div className="form-control lg:space-y-2">
+                    <label className="label block mb-1"><span className="label-text font-semibold flex items-center"><FaVenusMars className="mr-2" />{t('details.gender')}{fieldStatus.gender === 'saving' && <span className="loading loading-spinner loading-xs ml-2" />}{fieldStatus.gender === 'saved' && <span className="ml-2 text-success">✓</span>}</span></label>
+                    <select className="select select-bordered" value={profile.gender || ''} onChange={e => handleFieldChange('gender', e.target.value || null, { immediate: true })}>
                       <option value="">{t('details.selectGender')}</option>
                       {GENDER_OPTIONS.map(g => <option key={g} value={g}>{t(`genderOptions.${g}`)}</option>)}
                     </select>
                   </div>
-                  <div className="form-control">
-                    <label className="label"><span className="label-text font-semibold flex items-center"><FaBirthdayCake className="mr-2" />{t('details.ageRange')}</span></label>
-                    <select className="select select-bordered" value={profile.literaryAge || ''} onChange={e => handleFieldChange('literaryAge', e.target.value || null)}>
+                  <div className="form-control lg:space-y-2">
+                    <label className="label block mb-1"><span className="label-text font-semibold flex items-center"><FaBirthdayCake className="mr-2" />{t('details.ageRange')}{fieldStatus.literaryAge === 'saving' && <span className="loading loading-spinner loading-xs ml-2" />}{fieldStatus.literaryAge === 'saved' && <span className="ml-2 text-success">✓</span>}</span></label>
+                    <select className="select select-bordered" value={profile.literaryAge || ''} onChange={e => handleFieldChange('literaryAge', e.target.value || null, { immediate: true })}>
                       <option value="">{t('details.selectAge')}</option>
                       {LITERARY_AGE_OPTIONS.map(a => <option key={a} value={a}>{t(`ageOptions.${a}`)}</option>)}
                     </select>
@@ -189,17 +259,17 @@ export default function AccountProfilePage() {
                 <h2 className="card-title text-2xl text-primary flex items-center"><FaEnvelope className="mr-2" /> {t('contact.title')}</h2>
                 <p className="text-sm opacity-80 mb-6">{t('contact.description')}</p>
                 <div className="grid gap-6 md:grid-cols-2">
-                  <div className="form-control">
-                    <label className="label"><span className="label-text font-semibold flex items-center"><FaEnvelope className="mr-2" />{t('contact.email')}</span></label>
+                  <div className="form-control lg:space-y-2">
+                    <label className="label block mb-1"><span className="label-text font-semibold flex items-center"><FaEnvelope className="mr-2" />{t('contact.email')}</span></label>
                     <input type="email" className="input input-bordered" value={profile.email} disabled />
                   </div>
-                  <div className="form-control">
-                    <label className="label"><span className="label-text font-semibold flex items-center"><FaPhone className="mr-2" />{t('contact.mobile')}</span></label>
-                    <input type="tel" className="input input-bordered" value={profile.mobilePhone || ''} onChange={e => handleFieldChange('mobilePhone', e.target.value)} placeholder={t('contact.mobilePlaceholder')} />
+                  <div className="form-control lg:space-y-2">
+                    <label className="label block mb-1"><span className="label-text font-semibold flex items-center"><FaPhone className="mr-2" />{t('contact.mobile')}{fieldStatus.mobilePhone === 'saving' && <span className="loading loading-spinner loading-xs ml-2" />}{fieldStatus.mobilePhone === 'saved' && <span className="ml-2 text-success">✓</span>}</span></label>
+                    <input type="tel" className="input input-bordered" value={profile.mobilePhone || ''} onChange={e => handleFieldChange('mobilePhone', e.target.value)} onBlur={() => flushFieldSave('mobilePhone')} placeholder={t('contact.mobilePlaceholder')} />
                   </div>
-                  <div className="form-control">
-                    <label className="label"><span className="label-text font-semibold flex items-center"><FaGlobe className="mr-2" />{t('contact.language')}</span></label>
-                    <select className="select select-bordered" value={profile.preferredLocale || ''} onChange={e => handleFieldChange('preferredLocale', e.target.value)}>
+                  <div className="form-control lg:space-y-2">
+                    <label className="label block mb-1"><span className="label-text font-semibold flex items-center"><FaGlobe className="mr-2" />{t('contact.language')}{fieldStatus.preferredLocale === 'saving' && <span className="loading loading-spinner loading-xs ml-2" />}{fieldStatus.preferredLocale === 'saved' && <span className="ml-2 text-success">✓</span>}</span></label>
+                    <select className="select select-bordered" value={profile.preferredLocale || ''} onChange={e => handleFieldChange('preferredLocale', e.target.value, { immediate: true })}>
                       {SUPPORTED_LOCALES.map(loc => (
                         <option key={loc} value={loc}>{t(`languages.${loc}`)}</option>
                       ))}
@@ -215,9 +285,9 @@ export default function AccountProfilePage() {
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
                 <h2 className="card-title text-primary flex items-center"><FaCreditCard className="mr-2" /> {t('billing.title')}</h2>
-                <div className="form-control mb-4">
-                  <label className="label"><span className="label-text font-semibold">{t('billing.vatNumber')}</span></label>
-                  <input className="input input-bordered" value={profile.fiscalNumber || ''} onChange={e => handleFieldChange('fiscalNumber', e.target.value)} placeholder={t('billing.vatPlaceholder')} />
+                <div className="form-control lg:space-y-2 mb-4">
+  <label className="label block mb-1"><span className="label-text font-semibold">{t('billing.vatNumber')}{fieldStatus.fiscalNumber === 'saving' && <span className="loading loading-spinner loading-xs ml-2" />}{fieldStatus.fiscalNumber === 'saved' && <span className="ml-2 text-success">✓</span>}</span></label>
+      <input className="input input-bordered" value={profile.fiscalNumber || ''} onChange={e => handleFieldChange('fiscalNumber', e.target.value)} onBlur={() => flushFieldSave('fiscalNumber')} placeholder={t('billing.vatPlaceholder')} />
                 </div>
                 <div className="text-center">
                   <CreditsDisplay credits={credits} />
@@ -229,21 +299,7 @@ export default function AccountProfilePage() {
               </div>
             </div>
 
-            {/* Mobile Save Button moved below Billing for requested layout. fiscalNumber (VAT) included in PATCH body. */}
-            <div className="text-center lg:hidden">
-              <button className="btn btn-primary btn-lg mt-2" disabled={!dirty || saving} onClick={saveChanges}>
-                {saving ? <span className="loading loading-spinner"></span> : <FaSave className="mr-2" />}
-                {saving ? t('actions.saving') : t('actions.save')}
-              </button>
-            </div>
-
-            {/* Save Button for larger screens */}
-            <div className="hidden lg:block text-center">
-              <button className="btn btn-primary btn-lg" disabled={!dirty || saving} onClick={saveChanges}>
-                {saving ? <span className="loading loading-spinner"></span> : <FaSave className="mr-2" />}
-                {saving ? t('actions.saving') : t('actions.save')}
-              </button>
-            </div>
+    {/* (Removed explicit Save buttons; autosave in effect.) */}
 
             {/* Creative Journey */}
             <div className="card bg-base-100 shadow-xl">

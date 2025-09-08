@@ -5,11 +5,11 @@ import { useLocale, useTranslations } from 'next-intl';
 import { FaVenusMars, FaBirthdayCake, FaBullseye, FaUsers, FaLightbulb, FaHeart, FaGift, FaChild, FaBookOpen } from 'react-icons/fa';
 
 // Value lists; labels resolved via i18n (see messages OnboardingProfile.options)
-const GENDER_OPTIONS = ['female','male','prefer_not_to_say'] as const;
-const LITERARY_AGE_OPTIONS = ['school_age','teen','emerging_adult','experienced_adult','midlife_mentor_or_elder'] as const;
-const GOAL_OPTIONS = ['family_keepsake','personalized_gift','child_development','fun_and_creativity','friend_group_memories','company_engagement','other'] as const;
-const AUDIENCE_OPTIONS = ['my_child','family_member','friend_group','myself','a_friend','varies'] as const;
-const INTEREST_OPTIONS = ['adventure_exploration','fantasy_magic','science_discovery','everyday_emotions','sports','comedy_fun','educational'] as const;
+const GENDER_OPTIONS = ['female', 'male', 'prefer_not_to_say'] as const;
+const LITERARY_AGE_OPTIONS = ['school_age', 'teen', 'emerging_adult', 'experienced_adult', 'midlife_mentor_or_elder'] as const;
+const GOAL_OPTIONS = ['family_keepsake', 'personalized_gift', 'child_development', 'fun_and_creativity', 'friend_group_memories', 'company_engagement', 'other'] as const;
+const AUDIENCE_OPTIONS = ['my_child', 'family_member', 'friend_group', 'myself', 'a_friend', 'varies'] as const;
+const INTEREST_OPTIONS = ['adventure_exploration', 'fantasy_magic', 'science_discovery', 'everyday_emotions', 'sports', 'comedy_fun', 'educational'] as const;
 
 
 interface ProfileData {
@@ -82,9 +82,9 @@ export default function OnboardingProfilePage() {
       });
       if (res.ok) {
         const data = await res.json();
-  // Merge server authoritative fields; server returns plural arrays now
-  setProfile(p => ({ ...(p as ProfileData), ...patch, ...data.author }));
-  setSaveMessage('saved'); // marker; actual text comes from i18n key
+        // Merge server authoritative fields; server returns plural arrays now
+        setProfile(p => ({ ...(p as ProfileData), ...patch, ...data.author }));
+        setSaveMessage('saved'); // marker; actual text comes from i18n key
         setTimeout(() => setSaveMessage(null), 2000);
       } else {
         const err = await res.json().catch(() => ({}));
@@ -111,7 +111,7 @@ export default function OnboardingProfilePage() {
   }
 
   if (!profile) {
-    return <div className="p-6 text-center">Could not load profile. Please try again later.</div>;
+    return <div className="p-6 text-center">{t('errors.loadFailed')}</div>;
   }
 
   return (
@@ -161,7 +161,7 @@ export default function OnboardingProfilePage() {
               <div className="card-body">
                 <h2 className="card-title text-primary text-2xl">{t('tailor.section')}</h2>
                 <p></p>
-                
+
                 <div className="space-y-6 mt-4">
                   {/* Gender */}
                   <div className="form-control w-full max-w-xs">

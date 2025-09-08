@@ -2,7 +2,6 @@
   "NotFound": {
     "mainHeading": "Oops! This Page is Lost in the Storybook",
     "description": "It seems the page you're looking for has wandered off into an unwritten chapter! Maybe it's hiding in a fairy tale, or perhaps it got caught up in an adventure of its own.",
-    "funnyMessage": "Our literary elves are searching through every book in the magical library, but this page seems to have gone on its own quest!",
     "suggestions": {
       "title": "While we search for your lost page, you could:",
       "items": [

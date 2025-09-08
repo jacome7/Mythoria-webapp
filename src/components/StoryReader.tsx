@@ -88,12 +88,35 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
 
   // Navigation functions
   const navigateToChapter = (chapterNumber: number) => {
+    // Helper to build locale-aware base path for a public story
+    const buildPublicStoryBase = () => {
+      if (typeof window === 'undefined') return '';
+      const segments = window.location.pathname.split('/').filter(Boolean);
+      // Patterns: /<locale>/p/<slug>(/...) OR /p/<slug>(/...)
+      let localePrefix = '';
+      let idx = 0;
+      if (segments[idx]?.match(/^[a-z]{2}-[A-Z]{2}$/)) {
+        localePrefix = `/${segments[idx]}`;
+        idx++;
+      }
+      if (segments[idx] !== 'p') return '';
+      const slugSeg = segments[idx + 1];
+      if (!slugSeg) return '';
+      return `${localePrefix}/p/${slugSeg}`;
+    };
+
     if (chapterNumber === 0) {
       // Navigate to first page
       if (window.location.pathname.includes('/p/')) {
-        // Public story navigation
-        const slug = window.location.pathname.split('/p/')[1].split('/')[0];
-        router.push(`/p/${slug}`);
+        // Public story navigation (preserve locale if present)
+        const base = buildPublicStoryBase();
+        if (base) {
+          router.push(base);
+        } else {
+          // Fallback to previous logic if parsing fails
+          const slug = window.location.pathname.split('/p/')[1].split('/')[0];
+          router.push(`/p/${slug}`);
+        }
       } else {
         // Private story navigation
         router.push(`/stories/read/${storyId}`);
@@ -101,9 +124,14 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
     } else {
       // Navigate to specific chapter
       if (window.location.pathname.includes('/p/')) {
-        // Public story navigation
-        const slug = window.location.pathname.split('/p/')[1].split('/')[0];
-        router.push(`/p/${slug}/chapter/${chapterNumber}`);
+        // Public story navigation (preserve locale if present)
+        const base = buildPublicStoryBase();
+        if (base) {
+          router.push(`${base}/chapter/${chapterNumber}`);
+        } else {
+          const slug = window.location.pathname.split('/p/')[1].split('/')[0];
+            router.push(`/p/${slug}/chapter/${chapterNumber}`);
+        }
       } else {
         // Private story navigation
         router.push(`/stories/read/${storyId}/chapter/${chapterNumber}`);
@@ -164,13 +192,21 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
           {tStoryReader('storyImaginedBy')} <i className="mythoria-author-emphasis">{story.authorName}</i>{tStoryReader('storyImaginedByEnd')}
         </p>
         <p className="mythoria-message-text">{tStoryReader('craftedWith')}</p>
-        <Image 
-          src={logoUrl} 
-          alt="Mythoria Logo" 
-          className="mythoria-logo"
-          width={400}
-          height={200}
-        />
+        {/* Responsive Mythoria logo: ensure it never overflows small mobile screens */}
+        <div className="mythoria-logo-wrapper w-full flex justify-center px-2 sm:px-0">
+          <Image
+            src={logoUrl}
+            alt="Mythoria Logo"
+            className="mythoria-logo max-w-full h-auto"
+            width={400}
+            height={200}
+            // Provide responsive sizing hints: use ~80vw on very small screens, up to intrinsic 400px
+            sizes="(max-width: 480px) 80vw, (max-width: 768px) 60vw, 400px"
+            // Force responsive scaling (Next.js respects explicit style width/height over intrinsic wrapper width)
+            style={{ width: '100%', height: 'auto', maxWidth: '400px' }}
+            priority
+          />
+        </div>
       </div>
 
       <div className="mythoria-page-break"></div>
@@ -211,7 +247,22 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
               onClick={() => {
                 // Navigate to listen page
                 if (window.location.pathname.includes('/p/')) {
-                  // Public story navigation
+                  // Public story navigation (preserve locale if present)
+                  const segments = window.location.pathname.split('/').filter(Boolean);
+                  let idx = 0;
+                  let localePrefix = '';
+                  if (segments[idx]?.match(/^[a-z]{2}-[A-Z]{2}$/)) {
+                    localePrefix = `/${segments[idx]}`;
+                    idx++;
+                  }
+                  if (segments[idx] === 'p') {
+                    const slug = segments[idx + 1];
+                    if (slug) {
+                      router.push(`${localePrefix}/p/${slug}/listen`);
+                      return;
+                    }
+                  }
+                  // Fallback
                   const slug = window.location.pathname.split('/p/')[1].split('/')[0];
                   router.push(`/p/${slug}/listen`);
                 } else {
