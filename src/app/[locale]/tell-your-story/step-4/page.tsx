@@ -2,13 +2,14 @@
 
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/nextjs";
 import Image from "next/image";
-import { useState, useEffect, useCallback, Suspense } from 'react';
-import { useRouter, useSearchParams, useParams } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import StepNavigation from '@/components/StepNavigation';
-import ProgressIndicator from '@/components/ProgressIndicator';
-import { trackStoryCreation } from '@/lib/analytics';
-import { useStorySessionGuard } from '@/hooks/useStorySessionGuard';
+import { useState, useEffect, useCallback, Suspense } from "react";
+import { useRouter, useSearchParams, useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import StepNavigation from "@/components/StepNavigation";
+import ProgressIndicator from "@/components/ProgressIndicator";
+import { trackStoryCreation } from "@/lib/analytics";
+import { useStorySessionGuard } from "@/hooks/useStorySessionGuard";
+import { fetchStoryData } from "@/lib/story";
 import {
   TargetAudience,
   NovelStyle,
@@ -20,20 +21,7 @@ import {
   getAllNovelStyles,
   getAllGraphicalStyles,
 } from "@/types/story-enums";
-
-interface StoryData {
-  storyId: string;
-  title: string;
-  place: string | null;
-  targetAudience: TargetAudience | null;
-  novelStyle: NovelStyle | null;
-  graphicalStyle: GraphicalStyle | null;
-  plotDescription: string | null;
-  additionalRequests: string | null;
-  imageGenerationInstructions: string | null;
-  chapterCount?: number | null;
-  storyLanguage?: string | null;
-}
+import type { StoryData } from "@/types/story";
 
 export default function Step4PageWrapper() {
   return (
@@ -184,20 +172,12 @@ function Step4Page() {
     }
   }, [showGraphicalStyleDropdown]);
 
-  const fetchStoryData = useCallback(
+  const loadStoryData = useCallback(
     async (storyId: string) => {
       try {
         setLoading(true);
         setError(null);
-
-        const response = await fetch(`/api/my-stories/${storyId}`);
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch story data");
-        }
-
-        const data = await response.json();
-        const story: StoryData = data.story; // Pre-populate form fields
+        const story: StoryData = await fetchStoryData(storyId);
         setTitle(story.title || "");
         setPlace(story.place || "");
         setTargetAudience(story.targetAudience || "");
@@ -236,8 +216,8 @@ function Step4Page() {
   useEffect(() => {
     if (!currentStoryId) return;
 
-    fetchStoryData(currentStoryId);
-  }, [currentStoryId, fetchStoryData]);
+    loadStoryData(currentStoryId);
+  }, [currentStoryId, loadStoryData]);
   const handleNext = async () => {
     // Auto-save before navigating
     if (!title.trim()) {
