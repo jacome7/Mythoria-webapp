@@ -1,20 +1,17 @@
 "use client";
 
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
-import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { useLocale, useTranslations } from 'next-intl';
-import StepNavigation from '@/components/StepNavigation';
-import ProgressIndicator from '@/components/ProgressIndicator';
-import StoryGenerationProgress from '@/components/StoryGenerationProgress';
-import { trackStoryCreation } from '@/lib/analytics';
-import { getStep1Data } from '@/lib/story-session';
-import { useStorySessionGuard } from '@/hooks/useStorySessionGuard';
-
-interface StoryData {
-  storyId: string;
-  title: string;
-}
+import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/nextjs";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import StepNavigation from "@/components/StepNavigation";
+import ProgressIndicator from "@/components/ProgressIndicator";
+import StoryGenerationProgress from "@/components/StoryGenerationProgress";
+import { trackStoryCreation } from "@/lib/analytics";
+import { getStep1Data } from "@/lib/story-session";
+import { fetchStoryData } from "@/lib/story";
+import { useStorySessionGuard } from "@/hooks/useStorySessionGuard";
+import type { StoryData } from "@/types/story";
 
 interface EbookPricing {
   id: string;
@@ -56,22 +53,17 @@ function Step5Page() {
     if (!currentStoryId) return;
 
     Promise.all([
-      fetchStoryData(currentStoryId),
+      loadStoryData(currentStoryId),
       fetchUserCredits(),
       fetchEbookPricing(),
     ]).finally(() => {
       setLoading(false);
     });
   }, [currentStoryId]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const fetchStoryData = async (storyId: string) => {
+  const loadStoryData = async (storyId: string) => {
     try {
-      const response = await fetch(`/api/my-stories/${storyId}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch story data");
-      }
-      const data = await response.json();
-      setStoryData(data.story);
+      const data = await fetchStoryData(storyId);
+      setStoryData(data);
     } catch (error) {
       console.error("Error fetching story data:", error);
       setError(tStoryStepsStep5("alerts.failedToFetchStoryData"));
