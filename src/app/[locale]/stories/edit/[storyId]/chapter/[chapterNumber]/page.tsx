@@ -5,6 +5,10 @@ import { useParams, useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 import { FiArrowLeft, FiRotateCcw, FiRotateCw } from "react-icons/fi";
+import {
+  convertApiChaptersToChapters,
+  type ApiChapter,
+} from "@/utils/chapterConversion";
 
 // Components
 import ChapterEditor from "@/components/chapter-editor/ChapterEditor";
@@ -27,21 +31,6 @@ interface ApiStory {
   backcoverUri?: string;
   targetAudience?: string;
   graphicalStyle?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface ApiChapter {
-  id: string;
-  chapterNumber: number;
-  title: string;
-  imageUri: string | null;
-  imageThumbnailUri: string | null;
-  htmlContent: string;
-  audioUri: string | null;
-  version: number;
-  hasNextVersion: boolean;
-  hasPreviousVersion: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -73,15 +62,6 @@ export default function EditChapterPage() {
     10,
   );
   const locale = (params?.locale as string | undefined) ?? "";
-
-  // Convert API data to component-compatible format
-  const convertApiChaptersToChapters = (apiChapters: ApiChapter[]) => {
-    return apiChapters.map((chapter) => ({
-      ...chapter,
-      createdAt: new Date(chapter.createdAt),
-      updatedAt: new Date(chapter.updatedAt),
-    }));
-  };
 
   // State
   const [storyData, setStoryData] = useState<ApiResponse | null>(null);
