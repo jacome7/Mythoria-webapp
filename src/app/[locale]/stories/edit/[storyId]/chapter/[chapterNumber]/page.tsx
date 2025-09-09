@@ -426,14 +426,14 @@ export default function EditChapterPage() {
   const handleAIEditOptimisticUpdate = (
     _updatedData: Record<string, unknown>,
   ) => {
-    // eslint-disable-line @typescript-eslint/no-unused-vars
-    // This could be used for optimistic UI updates if needed
+    // Mark as intentionally unused for now to avoid lint warnings until optimistic UI is implemented
+    void _updatedData;
   };
 
   // Handle AI edit revert
   const handleAIEditRevertUpdate = (_originalData: Record<string, unknown>) => {
-    // eslint-disable-line @typescript-eslint/no-unused-vars
-    // This could be used to revert optimistic updates
+    // Mark as intentionally unused for now to avoid lint warnings until revert logic is implemented
+    void _originalData;
   };
 
   // Handle image edit
