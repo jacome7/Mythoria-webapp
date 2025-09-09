@@ -1,18 +1,15 @@
 "use client";
 
-import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/nextjs";
-import { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useLocale, useTranslations } from "next-intl";
-import StepNavigation from "@/components/StepNavigation";
-import ProgressIndicator from "@/components/ProgressIndicator";
-import StoryGenerationProgress from "@/components/StoryGenerationProgress";
-import { trackStoryCreation } from "@/lib/analytics";
-import {
-  getCurrentStoryId,
-  hasValidStorySession,
-  getStep1Data,
-} from "@/lib/story-session";
+import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
+import StepNavigation from '@/components/StepNavigation';
+import ProgressIndicator from '@/components/ProgressIndicator';
+import StoryGenerationProgress from '@/components/StoryGenerationProgress';
+import { trackStoryCreation } from '@/lib/analytics';
+import { getStep1Data } from '@/lib/story-session';
+import { useStorySessionGuard } from '@/hooks/useStorySessionGuard';
 
 interface StoryData {
   storyId: string;
@@ -42,7 +39,6 @@ export default function Step5PageWrapper() {
 }
 
 function Step5Page() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const editStoryId = searchParams?.get("edit");
   const locale = useLocale();
@@ -51,32 +47,22 @@ function Step5Page() {
   const [submitting, setSubmitting] = useState(false);
   const [storyGenerationStarted, setStoryGenerationStarted] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentStoryId, setCurrentStoryId] = useState<string | null>(null);
+  const currentStoryId = useStorySessionGuard();
   const [storyData, setStoryData] = useState<StoryData | null>(null);
   const [userCredits, setUserCredits] = useState<number>(0);
   const [ebookPricing, setEbookPricing] = useState<EbookPricing | null>(null);
 
   useEffect(() => {
-    // Check if we have a valid story session
-    if (!hasValidStorySession()) {
-      router.push("/tell-your-story/step-1");
-      return;
-    }
+    if (!currentStoryId) return;
 
-    const storyId = getCurrentStoryId();
-    setCurrentStoryId(storyId);
-    if (storyId) {
-      Promise.all([
-        fetchStoryData(storyId),
-        fetchUserCredits(),
-        fetchEbookPricing(),
-      ]).finally(() => {
-        setLoading(false);
-      });
-    } else {
+    Promise.all([
+      fetchStoryData(currentStoryId),
+      fetchUserCredits(),
+      fetchEbookPricing(),
+    ]).finally(() => {
       setLoading(false);
-    }
-  }, [router]); // eslint-disable-line react-hooks/exhaustive-deps
+    });
+  }, [currentStoryId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchStoryData = async (storyId: string) => {
     try {

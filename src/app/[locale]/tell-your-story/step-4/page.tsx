@@ -2,13 +2,13 @@
 
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/nextjs";
 import Image from "next/image";
-import { useState, useEffect, useCallback, Suspense } from "react";
-import { useRouter, useSearchParams, useParams } from "next/navigation";
-import { useTranslations } from "next-intl";
-import StepNavigation from "@/components/StepNavigation";
-import ProgressIndicator from "@/components/ProgressIndicator";
-import { trackStoryCreation } from "@/lib/analytics";
-import { getCurrentStoryId, hasValidStorySession } from "@/lib/story-session";
+import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useRouter, useSearchParams, useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import StepNavigation from '@/components/StepNavigation';
+import ProgressIndicator from '@/components/ProgressIndicator';
+import { trackStoryCreation } from '@/lib/analytics';
+import { useStorySessionGuard } from '@/hooks/useStorySessionGuard';
 import {
   TargetAudience,
   NovelStyle,
@@ -57,7 +57,7 @@ function Step4Page() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentStoryId, setCurrentStoryId] = useState<string | null>(null); // Form data
+  const currentStoryId = useStorySessionGuard(); // Form data
   const [title, setTitle] = useState("");
   const [place, setPlace] = useState("");
   const [targetAudience, setTargetAudience] = useState<TargetAudience | "">(
@@ -234,19 +234,10 @@ function Step4Page() {
   );
 
   useEffect(() => {
-    // Check if we have a valid story session
-    if (!hasValidStorySession()) {
-      router.push("/tell-your-story/step-1");
-      return;
-    }
+    if (!currentStoryId) return;
 
-    const storyId = getCurrentStoryId();
-    setCurrentStoryId(storyId);
-
-    if (storyId) {
-      fetchStoryData(storyId);
-    }
-  }, [router, fetchStoryData]);
+    fetchStoryData(currentStoryId);
+  }, [currentStoryId, fetchStoryData]);
   const handleNext = async () => {
     // Auto-save before navigating
     if (!title.trim()) {
