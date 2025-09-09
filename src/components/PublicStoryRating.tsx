@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
-import { FiStar } from 'react-icons/fi';
+import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
+import { FiStar } from "react-icons/fi";
+import { formatDate } from "@/utils/date";
 
 interface PublicStoryRatingProps {
   storyId: string;
@@ -29,12 +30,16 @@ interface RatingData {
   userRating: UserRating | null;
 }
 
-export default function PublicStoryRating({ storyId, onRatingSubmitted }: PublicStoryRatingProps) {
-  const tCommonStoryRating = useTranslations('StoryRating');
+export default function PublicStoryRating({
+  storyId,
+  onRatingSubmitted,
+}: PublicStoryRatingProps) {
+  const tCommonStoryRating = useTranslations("StoryRating");
   const [userRating, setUserRating] = useState<number>(0);
   const [hoveredRating, setHoveredRating] = useState<number>(0);
-  const [feedback, setFeedback] = useState<string>('');
-  const [includeNameInFeedback, setIncludeNameInFeedback] = useState<boolean>(false);
+  const [feedback, setFeedback] = useState<string>("");
+  const [includeNameInFeedback, setIncludeNameInFeedback] =
+    useState<boolean>(false);
   const [showFeedbackForm, setShowFeedbackForm] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitted, setSubmitted] = useState<boolean>(false);
@@ -52,11 +57,11 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
           setRatingData(data);
           if (data.userRating) {
             setUserRating(parseInt(data.userRating.rating));
-            setFeedback(data.userRating.feedback || '');
+            setFeedback(data.userRating.feedback || "");
           }
         }
       } catch (error) {
-        console.error('Error fetching rating data:', error);
+        console.error("Error fetching rating data:", error);
       } finally {
         setLoading(false);
       }
@@ -68,7 +73,7 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
     setUserRating(starRating);
     setError(null);
     setHoveredRating(0); // Reset hover state after click
-    
+
     // Show feedback form for ratings 1-3
     if (starRating <= 3) {
       setShowFeedbackForm(true);
@@ -78,15 +83,18 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
     }
   };
 
-  const handleSubmitRating = async (finalRating: number = userRating, finalFeedback: string = feedback) => {
+  const handleSubmitRating = async (
+    finalRating: number = userRating,
+    finalFeedback: string = feedback,
+  ) => {
     setIsSubmitting(true);
     setError(null);
 
     try {
       const response = await fetch(`/api/stories/${storyId}/ratings`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           rating: finalRating.toString(),
@@ -98,14 +106,16 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
       if (!response.ok) {
         const errorData = await response.json();
         if (response.status === 503) {
-          throw new Error(tCommonStoryRating('errors.serviceUnavailable'));
+          throw new Error(tCommonStoryRating("errors.serviceUnavailable"));
         }
-        
-        throw new Error(errorData.error || tCommonStoryRating('errors.submitFailed'));
+
+        throw new Error(
+          errorData.error || tCommonStoryRating("errors.submitFailed"),
+        );
       }
 
       const result = await response.json();
-      
+
       // Update rating data with new user rating
       if (ratingData) {
         setRatingData({
@@ -115,31 +125,36 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
             rating: result.rating.rating,
             feedback: result.rating.feedback,
             createdAt: result.rating.createdAt,
-          }
+          },
         });
       }
-      
+
       setSubmitted(true);
       onRatingSubmitted?.(finalRating);
-      
+
       // Reset form state after successful submission
       setShowFeedbackForm(false);
-      
+
       // Refresh rating data to get updated average
       setTimeout(async () => {
         try {
-          const refreshResponse = await fetch(`/api/stories/${storyId}/ratings`);
+          const refreshResponse = await fetch(
+            `/api/stories/${storyId}/ratings`,
+          );
           if (refreshResponse.ok) {
             const refreshedData = await refreshResponse.json();
             setRatingData(refreshedData);
           }
         } catch (error) {
-          console.error('Error refreshing rating data:', error);
+          console.error("Error refreshing rating data:", error);
         }
       }, 500);
-      
     } catch (err) {
-      setError(err instanceof Error ? err.message : tCommonStoryRating('errors.generic'));
+      setError(
+        err instanceof Error
+          ? err.message
+          : tCommonStoryRating("errors.generic"),
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -154,18 +169,18 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
       // Determine what rating to show:
       // 1. If hovering, show hovered rating
       // 2. Otherwise show average rating
-      const displayRating = hoveredRating || (ratingData?.averageRating || 0);
+      const displayRating = hoveredRating || ratingData?.averageRating || 0;
       const isFilled = star <= displayRating;
       const isHalfFilled = !isFilled && star - 0.5 <= displayRating;
-      
+
       // Determine colors based on state
-      let colorClass = 'text-base-300'; // default empty
+      let colorClass = "text-base-300"; // default empty
       if (hoveredRating && star <= hoveredRating) {
-        colorClass = 'text-warning brightness-110'; // brighter when hovering
+        colorClass = "text-warning brightness-110"; // brighter when hovering
       } else if (isFilled || isHalfFilled) {
-        colorClass = 'text-warning'; // normal filled
+        colorClass = "text-warning"; // normal filled
       }
-      
+
       return (
         <button
           key={star}
@@ -175,17 +190,19 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
           onMouseEnter={() => setHoveredRating(star)}
           onMouseLeave={() => setHoveredRating(0)}
           disabled={isSubmitting}
-          title={tCommonStoryRating('starTooltip', {
+          title={tCommonStoryRating("starTooltip", {
             count: star,
-            plural: star !== 1 ? 's' : '',
+            plural: star !== 1 ? "s" : "",
           })}
         >
-          <FiStar 
+          <FiStar
             className={
-              (hoveredRating && star <= hoveredRating) || isFilled || isHalfFilled
-                ? 'fill-current'
-                : ''
-            } 
+              (hoveredRating && star <= hoveredRating) ||
+              isFilled ||
+              isHalfFilled
+                ? "fill-current"
+                : ""
+            }
           />
         </button>
       );
@@ -212,7 +229,7 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
       <div className="card-body py-2">
         <div className="text-center">
           <h3 className="card-title justify-center mb-2">
-            {tCommonStoryRating('title') || 'Rate this Story'}
+            {tCommonStoryRating("title") || "Rate this Story"}
           </h3>
 
           {/* Unified Star Rating Display */}
@@ -221,7 +238,7 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
             <div className="flex justify-center items-center gap-1 mb-1">
               {renderUnifiedStars()}
             </div>
-            
+
             {/* Rating Information */}
             {ratingData && ratingData.totalRatings > 0 ? (
               <div className="text-center">
@@ -229,28 +246,30 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
                   {ratingData.averageRating.toFixed(1)}/5
                 </p>
                 <p className="text-sm text-base-content/70">
-                  {tCommonStoryRating('basedOnRatings', {
+                  {tCommonStoryRating("basedOnRatings", {
                     count: ratingData.totalRatings,
-                    plural: ratingData.totalRatings !== 1 ? 's' : '',
+                    plural: ratingData.totalRatings !== 1 ? "s" : "",
                   })}
                 </p>
                 {hoveredRating > 0 && (
                   <p className="text-sm text-info mt-2">
-                    {tCommonStoryRating('clickToRate', {
+                    {tCommonStoryRating("clickToRate", {
                       count: hoveredRating,
-                      plural: hoveredRating !== 1 ? 's' : '',
+                      plural: hoveredRating !== 1 ? "s" : "",
                     })}
                   </p>
                 )}
               </div>
             ) : (
               <div className="text-center">
-                <p className="text-base-content/70 mb-2">{tCommonStoryRating('noRatingsYet')}</p>
+                <p className="text-base-content/70 mb-2">
+                  {tCommonStoryRating("noRatingsYet")}
+                </p>
                 {hoveredRating > 0 && (
                   <p className="text-sm text-info">
-                    {tCommonStoryRating('clickToRate', {
+                    {tCommonStoryRating("clickToRate", {
                       count: hoveredRating,
-                      plural: hoveredRating !== 1 ? 's' : '',
+                      plural: hoveredRating !== 1 ? "s" : "",
                     })}
                   </p>
                 )}
@@ -262,10 +281,11 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
           {ratingData?.userRating && !submitted && (
             <div className="mb-3 p-2 bg-info/10 rounded-lg border border-info/20">
               <p className="text-sm text-info">
-                {tCommonStoryRating('yourCurrentRating')}: {ratingData.userRating.rating} ⭐
+                {tCommonStoryRating("yourCurrentRating")}:{" "}
+                {ratingData.userRating.rating} ⭐
                 {ratingData.userRating.createdAt && (
                   <span className="ml-2 text-xs">
-                    ({new Date(ratingData.userRating.createdAt).toLocaleDateString()})
+                    ({formatDate(ratingData.userRating.createdAt)})
                   </span>
                 )}
               </p>
@@ -276,26 +296,32 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
               )}
             </div>
           )}
-          
+
           {/* Feedback Form for low ratings */}
           {showFeedbackForm && (
-            <form onSubmit={handleFeedbackSubmit} className="mt-4 space-y-3 border-tCommonStoryRating pt-3">
+            <form
+              onSubmit={handleFeedbackSubmit}
+              className="mt-4 space-y-3 border-tCommonStoryRating pt-3"
+            >
               <div className="text-center mb-3">
                 <p className="text-sm text-base-content/70">
-                  {tCommonStoryRating('youSelected')} <span className="font-semibold">{userRating} star{userRating !== 1 ? 's' : ''}</span>
+                  {tCommonStoryRating("youSelected")}{" "}
+                  <span className="font-semibold">
+                    {userRating} star{userRating !== 1 ? "s" : ""}
+                  </span>
                 </p>
               </div>
-              
+
               <div className="text-left">
                 <label htmlFor="feedback" className="label">
                   <span className="label-text">
-                    {tCommonStoryRating('feedback.title')}
+                    {tCommonStoryRating("feedback.title")}
                   </span>
                 </label>
                 <textarea
                   id="feedback"
                   className="textarea textarea-bordered w-full h-20 resize-none"
-                  placeholder={tCommonStoryRating('feedback.placeholder')}
+                  placeholder={tCommonStoryRating("feedback.placeholder")}
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
                   disabled={isSubmitting}
@@ -312,7 +338,7 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
                     disabled={isSubmitting}
                   />
                   <span className="label-text">
-                    {tCommonStoryRating('feedback.includeNameLabel')}
+                    {tCommonStoryRating("feedback.includeNameLabel")}
                   </span>
                 </label>
               </div>
@@ -324,7 +350,7 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
                   onClick={() => setShowFeedbackForm(false)}
                   disabled={isSubmitting}
                 >
-                  {tCommonStoryRating('buttons.cancel')}
+                  {tCommonStoryRating("buttons.cancel")}
                 </button>
                 <button
                   type="submit"
@@ -334,10 +360,12 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
                   {isSubmitting ? (
                     <>
                       <span className="loading loading-spinner loading-sm"></span>
-                      {tCommonStoryRating('buttons.submitting')}
+                      {tCommonStoryRating("buttons.submitting")}
                     </>
+                  ) : ratingData?.userRating ? (
+                    tCommonStoryRating("buttons.updateRating")
                   ) : (
-                    ratingData?.userRating ? tCommonStoryRating('buttons.updateRating') : tCommonStoryRating('buttons.submitRating')
+                    tCommonStoryRating("buttons.submitRating")
                   )}
                 </button>
               </div>
@@ -355,7 +383,7 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
           {isSubmitting && !showFeedbackForm && (
             <div className="flex items-center justify-center gap-2 mt-4">
               <span className="loading loading-spinner loading-sm"></span>
-              <span>{tCommonStoryRating('submittingMessage')}</span>
+              <span>{tCommonStoryRating("submittingMessage")}</span>
             </div>
           )}
         </div>
