@@ -1,4 +1,4 @@
-#!/usr/bin/env ts-node
+#!/usr/bin/env node
 /*
   Locale parity checker.
   Walks each locale directory under src/messages, using en-US as the source of truth.

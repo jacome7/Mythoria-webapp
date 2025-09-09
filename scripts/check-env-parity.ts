@@ -1,6 +1,4 @@
-// Replace shebang and imports initialization to work with ts-node/register
-// @ts-ignore
-require('ts-node').register({ transpileOnly: true });
+// Executed via tsx now; ts-node bootstrap removed.
 /*
   Parity / validation script for environment variables across:
     - env.manifest.ts (canonical definitions)

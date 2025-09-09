@@ -1,4 +1,4 @@
-#!/usr/bin/env ts-node
+#!/usr/bin/env node
 /*
   Generates a union type of all translation keys (flattened) for the source locale (en-US)
   and writes it to src/types/translation-keys.d.ts
