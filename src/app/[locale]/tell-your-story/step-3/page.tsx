@@ -1,22 +1,21 @@
 "use client";
 
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/nextjs";
-import { useState, useEffect, useCallback, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
-import StepNavigation from "@/components/StepNavigation";
-import CharacterCard from "@/components/CharacterCard";
-import ProgressIndicator from "@/components/ProgressIndicator";
-import { trackStoryCreation } from "@/lib/analytics";
+import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import StepNavigation from '@/components/StepNavigation';
+import CharacterCard from '@/components/CharacterCard';
+import ProgressIndicator from '@/components/ProgressIndicator';
+import { trackStoryCreation } from '@/lib/analytics';
 import {
-  getCurrentStoryId,
   setStep3Data,
   Character,
-  hasValidStorySession,
   loadExistingStoryData,
   setEditMode,
   isEditMode,
-} from "@/lib/story-session";
+} from '@/lib/story-session';
+import { useStorySessionGuard } from '@/hooks/useStorySessionGuard';
 
 export default function Step3PageWrapper() {
   return (
@@ -29,9 +28,9 @@ export default function Step3PageWrapper() {
 function Step3Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const editStoryId = searchParams?.get("edit") ?? null;
-  const tStoryStepsStep3 = useTranslations("StorySteps.step3");
-  const tCharacters = useTranslations("Characters");
+  const editStoryId = searchParams?.get('edit') ?? null;
+  const tStoryStepsStep3 = useTranslations('StorySteps.step3');
+  const tCharacters = useTranslations('Characters');
   const [characters, setCharacters] = useState<Character[]>([]);
   const [availableCharacters, setAvailableCharacters] = useState<Character[]>(
     [],
@@ -45,6 +44,7 @@ function Step3Page() {
   const [currentStoryId, setCurrentStoryId] = useState<string | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
   const [isInEditMode, setIsInEditMode] = useState(false); // Helper function to format role names for display
+  const sessionStoryId = useStorySessionGuard({ enabled: !editStoryId });
   const formatRoleName = (role: string): string => {
     const roleMap: Record<string, string> = {
       protagonist: "protagonist",
@@ -142,13 +142,13 @@ function Step3Page() {
         );
 
         if (!response.ok) {
-          throw new Error("Failed to fetch available characters");
+          throw new Error('Failed to fetch available characters');
         }
 
         const data = await response.json();
         setAvailableCharacters(data.characters || []);
       } catch (error) {
-        console.error("Error fetching available characters:", error);
+        console.error('Error fetching available characters:', error);
         // Don't show alert for this as it's not critical
       }
     },
@@ -156,7 +156,6 @@ function Step3Page() {
   );
   useEffect(() => {
     const initializeStoryData = async () => {
-      // Check if we're in edit mode
       if (editStoryId) {
         try {
           setLoading(true);
@@ -166,8 +165,8 @@ function Step3Page() {
           // Load existing story data
           const success = await loadExistingStoryData(editStoryId);
           if (!success) {
-            alert(tStoryStepsStep3("alerts.failedToLoadStoryData"));
-            router.push("/my-stories");
+            alert(tStoryStepsStep3('alerts.failedToLoadStoryData'));
+            router.push('/my-stories');
             return;
           }
 
@@ -178,28 +177,23 @@ function Step3Page() {
           await fetchStoryCharacters(editStoryId);
           await fetchAvailableCharacters(editStoryId);
         } catch (error) {
-          console.error("Error initializing edit mode:", error);
-          alert(tStoryStepsStep3("alerts.failedToLoadStoryForEditing"));
-          router.push("/my-stories");
+          console.error('Error initializing edit mode:', error);
+          alert(tStoryStepsStep3('alerts.failedToLoadStoryForEditing'));
+          router.push('/my-stories');
           return;
+        } finally {
+          setLoading(false);
         }
-      } else {
-        // Normal flow - check if we have a valid story session
-        if (!hasValidStorySession()) {
-          router.push("/tell-your-story/step-1");
-          return;
-        }
-
-        const storyId = getCurrentStoryId();
-        setCurrentStoryId(storyId);
-        setIsInEditMode(isEditMode());
-
-        if (storyId) {
-          fetchStoryCharacters(storyId);
-          fetchAvailableCharacters(storyId);
-        }
+        return;
       }
 
+      if (!sessionStoryId) return;
+
+      setCurrentStoryId(sessionStoryId);
+      setIsInEditMode(isEditMode());
+
+      fetchStoryCharacters(sessionStoryId);
+      fetchAvailableCharacters(sessionStoryId);
       setLoading(false);
     };
 
@@ -207,6 +201,7 @@ function Step3Page() {
   }, [
     router,
     editStoryId,
+    sessionStoryId,
     fetchStoryCharacters,
     fetchAvailableCharacters,
     tStoryStepsStep3,
@@ -367,10 +362,9 @@ function Step3Page() {
       // Save step 3 data to localStorage
       setStep3Data({ characters });
       // Track step 3 completion
-      const storyId = getCurrentStoryId();
       trackStoryCreation.step3Completed({
         step: 3,
-        story_id: storyId || undefined,
+        story_id: currentStoryId || undefined,
         character_count: characters.length,
         edit_mode: isInEditMode,
       });
