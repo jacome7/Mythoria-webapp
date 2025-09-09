@@ -1,14 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import Cropper from 'react-easy-crop';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { FiX, FiImage, FiAlertCircle, FiZap, FiUpload, FiTrash2 } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
-import CreditConfirmationModal from './CreditConfirmationModal';
-import JobProgressModal from './JobProgressModal';
 import { toAbsoluteImageUrl } from '../utils/image-url';
-import { createImageEditJob } from '@/utils/async-job-api';
+import CropperModal from './ai-image-editor/Cropper';
+import { useImageEditJob } from './ai-image-editor/useImageEditJob';
 
 interface Story {
   storyId: string;
@@ -58,33 +56,10 @@ export default function AIImageEditor({
   // Removed unused directReplacementPossible state (was only being assigned, never read)
   const [userImageUri, setUserImageUri] = useState<string | null>(null); // gs:// path after upload
   const [showCropper, setShowCropper] = useState(false);
-  const [crop, setCrop] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
   const TARGET_WIDTH = 1024;
   const TARGET_HEIGHT = 1536;
   const RATIO_TOLERANCE = 0.15; // ±15%
   
-  // Credit confirmation state
-  const [showCreditConfirmation, setShowCreditConfirmation] = useState(false);
-  const [creditInfo, setCreditInfo] = useState<{
-    canEdit: boolean;
-    requiredCredits: number;
-    currentBalance: number;
-    editCount: number;
-    nextThreshold: number;
-    isFree: boolean;
-  } | null>(null);
-  const [pendingImageEditData, setPendingImageEditData] = useState<{
-    imageUrl: string;
-    imageType: string;
-    chapterNumber?: number;
-    userRequest: string;
-  } | null>(null);
-
-  // Job progress state
-  const [showJobProgress, setShowJobProgress] = useState(false);
-  const [currentJobId, setCurrentJobId] = useState<string | null>(null);
 
   // Reset state when modal opens/closes
   useEffect(() => {
@@ -118,10 +93,30 @@ export default function AIImageEditor({
     setSelectedFilePreview(null);
     setUserImageError(null);
   // directReplacementPossible removed
-  setConvertToStyle(false);
+    setConvertToStyle(false);
     setUserImageUri(null);
     setShowCropper(false);
   };
+
+  const handleJobComplete = (result: { newImageUrl?: string; [key: string]: unknown }) => {
+    console.log('✅ Image edit job completed:', result);
+    if (result && result.newImageUrl) {
+      setNewImageGenerated(result.newImageUrl);
+      setError(null);
+    } else {
+      setError('Job completed but no image was generated');
+    }
+  };
+
+  const handleJobError = (error: string) => {
+    console.error('❌ Image edit job failed:', error);
+    setError(error || 'Image editing job failed');
+  };
+
+  const { requestJob, CreditConfirmation, JobProgress } = useImageEditJob({
+    onComplete: handleJobComplete,
+    onError: handleJobError,
+  });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -229,109 +224,20 @@ export default function AIImageEditor({
     }
   };
 
-  interface CroppedPixels { x: number; y: number; width: number; height: number }
-  const onCropComplete = useCallback((_ignored: CroppedPixels, croppedAreaPixelsVal: CroppedPixels) => {
-    setCroppedAreaPixels(croppedAreaPixelsVal);
-  }, []);
-
-  const confirmCrop = async () => {
-    if (!selectedFilePreview || !selectedFile || !croppedAreaPixels) {
-      return;
-    }
+  const handleCropConfirm = async (area: { x: number; y: number; width: number; height: number }) => {
+    if (!selectedFile || !selectedFilePreview) return;
     setProcessingUserImage(true);
     try {
-      await processAndUploadUserImage(selectedFile, selectedFilePreview, croppedAreaPixels);
+      await processAndUploadUserImage(selectedFile, selectedFilePreview, area);
       setShowCropper(false);
-    } catch {
-      // handled in inner function
     } finally {
       setProcessingUserImage(false);
     }
   };
 
-  const cancelCrop = () => {
-    // treat as reference anyway? We'll reset so user can reselect
+  const handleCropCancel = () => {
     resetUserImage();
-  };
-
-  // Cropper modal portal
-  const cropperModal = showCropper && selectedFilePreview && (
-              <div className="fixed inset-0 z-[60] bg-black/60 flex items-center justify-center p-6">
-                <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl h-[80vh] flex flex-col">
-                  <div className="p-4 border-b flex items-center justify-between">
-                    <h3 className="font-semibold text-gray-800 text-sm">Crop Image to 1024x1536 (Portrait)</h3>
-                    <button onClick={cancelCrop} className="p-2 rounded hover:bg-gray-100">
-                      <FiX className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <div className="flex-1 relative bg-black">
-                    <Cropper
-                      image={selectedFilePreview}
-                      crop={crop}
-                      zoom={zoom}
-                      aspect={TARGET_WIDTH / TARGET_HEIGHT}
-                      onCropChange={setCrop}
-                      onCropComplete={onCropComplete}
-                      onZoomChange={setZoom}
-                      minZoom={1}
-                      maxZoom={3}
-                      restrictPosition={true}
-                      objectFit="contain"
-                      showGrid={true}
-                    />
-                  </div>
-                  <div className="p-4 border-t flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3 w-full">
-                      <input
-                        type="range"
-                        min={1}
-                        max={3}
-                        step={0.01}
-                        value={zoom}
-                        onChange={(e) => setZoom(Number(e.target.value))}
-                        className="w-full"
-                      />
-                      <span className="text-xs text-gray-500 w-16 text-right">Zoom {zoom.toFixed(2)}x</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button onClick={cancelCrop} className="w-28 px-4 py-2 text-sm rounded-md border border-gray-300 hover:bg-gray-50">Cancel</button>
-                      <button onClick={confirmCrop} disabled={processingUserImage} className="w-28 px-4 py-2 text-sm rounded-md bg-purple-600 text-white hover:bg-purple-700 disabled:bg-gray-300">
-                        {processingUserImage ? 'Processing...' : 'Crop'}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-
-  // Check image edit credits
-  const checkImageEditCredits = async () => {
-    try {
-      console.log('🔍 Checking image edit credits for storyId:', story.storyId);
-      const response = await fetch('/api/ai-edit/check-credits', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          action: 'imageEdit',
-          storyId: story.storyId 
-        })
-      });
-      
-      console.log('📊 Image credit check response status:', response.status);
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log('✅ Image credit check successful:', data);
-        setCreditInfo(data);
-        return data;
-      } else {
-        const errorData = await response.json();
-        console.error('❌ Image credit check failed:', response.status, errorData);
-      }
-    } catch (error) {
-      console.error('💥 Error checking image credits:', error);
-    }
-    return null;
+    setShowCropper(false);
   };
 
   // Handle image edit
@@ -380,115 +286,22 @@ export default function AIImageEditor({
     }
 
     // Converting to style path -> credit check
-    const credits = await checkImageEditCredits();
-    if (!credits) {
-      setError(tAIImageEditor('errors.unableToCheckCredits'));
-      return;
-    }
-    if (!credits.canEdit) {
-      setPendingImageEditData({
-        imageUrl: imageData.imageUri,
-        imageType: imageData.imageType,
-        chapterNumber: imageData.chapterNumber,
-        userRequest: userRequest.trim()
-      });
-      setShowCreditConfirmation(true);
-      return;
-    }
-    await performImageEdit();
-  };
-
-  const performImageEdit = async () => {
     setIsLoading(true);
-    setError(null);
-
-    try {
-      // Prepare job parameters
-      const requestData = pendingImageEditData || {
-        imageUrl: imageData.imageUri,
-        imageType: imageData.imageType,
-        chapterNumber: imageData.chapterNumber,
-        userRequest: userRequest.trim()
-      };
-
-      const jobParams: {
-        storyId: string;
-        imageUrl: string;
-        imageType: 'cover' | 'backcover' | 'chapter';
-        userRequest?: string;
-        chapterNumber?: number;
-        graphicalStyle?: string;
-        userImageUri?: string;
-  convertToStyle?: boolean;
-      } = {
-        storyId: story.storyId,
-        imageUrl: requestData.imageUrl,
-        imageType: requestData.imageType as 'cover' | 'backcover' | 'chapter',
-      };
-      if (userRequest.trim()) {
-        jobParams.userRequest = userRequest.trim();
-      }
-      if (userImageUri) {
-        jobParams.userImageUri = userImageUri;
-        jobParams.convertToStyle = convertToStyle;
-      }
-
-      // Add chapter number only if provided
-      if (requestData.chapterNumber) {
-        jobParams.chapterNumber = requestData.chapterNumber;
-      }
-
-      // Add graphical style if available
-  if (story.graphicalStyle) jobParams.graphicalStyle = story.graphicalStyle;
-
-      // Create async job
-      const jobResponse = await createImageEditJob(jobParams);
-      console.log('🚀 Image edit job created:', jobResponse);
-
-      if (jobResponse.success && jobResponse.jobId) {
-        // Show progress modal and start tracking
-        setCurrentJobId(jobResponse.jobId);
-        setShowJobProgress(true);
-        setIsLoading(false);
-        setPendingImageEditData(null);
-      } else {
-        throw new Error('Failed to create image edit job');
-      }
-
-    } catch (error) {
-      console.error('Error creating image edit job:', error);
-      setError(error instanceof Error ? error.message : tAIImageEditor('errors.failedToGenerate'));
-      setIsLoading(false);
-      setPendingImageEditData(null);
+    const err = await requestJob({
+      storyId: story.storyId,
+      imageUrl: imageData.imageUri,
+      imageType: imageData.imageType,
+      chapterNumber: imageData.chapterNumber,
+      userRequest: userRequest.trim(),
+      graphicalStyle: story.graphicalStyle,
+      userImageUri: userImageUri || undefined,
+      convertToStyle,
+    });
+    if (err) {
+      setError(err);
     }
+    setIsLoading(false);
   };
-
-  const handleJobComplete = (result: { newImageUrl?: string; [key: string]: unknown }) => {
-    console.log('✅ Image edit job completed:', result);
-    setShowJobProgress(false);
-    setCurrentJobId(null);
-    
-    if (result && result.newImageUrl) {
-      setNewImageGenerated(result.newImageUrl);
-      setError(null);
-    } else {
-      setError('Job completed but no image was generated');
-    }
-  };
-
-  const handleJobError = (error: string) => {
-    console.error('❌ Image edit job failed:', error);
-    setShowJobProgress(false);
-    setCurrentJobId(null);
-    setError(error || 'Image editing job failed');
-  };
-
-  const handleJobProgressClose = () => {
-    // Only allow closing if job is completed or failed
-    setShowJobProgress(false);
-    setCurrentJobId(null);
-  };
-
   const handleReplaceImage = async () => {
     if (!newImageGenerated) return;
 
@@ -757,32 +570,17 @@ export default function AIImageEditor({
         </div>
       </div>
 
-      {/* Credit Confirmation Modal */}
-      {showCreditConfirmation && creditInfo && (
-        <CreditConfirmationModal
-          isOpen={showCreditConfirmation}
-          onClose={() => setShowCreditConfirmation(false)}
-          onConfirm={performImageEdit}
-          action="imageEdit"
-          requiredCredits={creditInfo.requiredCredits}
-          currentBalance={creditInfo.currentBalance}
-          editCount={creditInfo.editCount}
-          isFree={creditInfo.isFree}
+      {CreditConfirmation}
+      {JobProgress}
+      {showCropper && selectedFilePreview && (
+        <CropperModal
+          imageSrc={selectedFilePreview}
+          aspect={TARGET_WIDTH / TARGET_HEIGHT}
+          onConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+          processing={processingUserImage}
         />
       )}
-
-      {/* Job Progress Modal */}
-      {showJobProgress && (
-        <JobProgressModal
-          isOpen={showJobProgress}
-          onClose={handleJobProgressClose}
-          jobId={currentJobId}
-          jobType="image_edit"
-          onComplete={handleJobComplete}
-          onError={handleJobError}
-        />
-      )}
-  {cropperModal}
     </div>
   );
 }
