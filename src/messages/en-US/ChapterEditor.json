@@ -14,7 +14,8 @@
       "underline": "Underline",
       "textSize": "Text Size",
       "aiEdit": "AI Edit",
-      "edit": "Edit"
+      "edit": "Edit",
+      "image": "Image"
     },
     "textSizes": {
       "small": "S",

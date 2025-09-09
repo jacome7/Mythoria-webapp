@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import Script from 'next/script';
+import { useEffect } from "react";
+import Script from "next/script";
 
 declare global {
   interface Window {
@@ -18,37 +18,37 @@ interface GoogleAnalyticsProps {
   googleTagId?: string;
 }
 
-export default function GoogleAnalytics({ 
-  measurementId, 
-  googleAdsId, 
-  googleTagId 
+export default function GoogleAnalytics({
+  measurementId,
+  googleAdsId,
+  googleTagId,
 }: GoogleAnalyticsProps) {
   useEffect(() => {
     // Initialize dataLayer if it doesn't exist
-    window.dataLayer = window.dataLayer || [];    // Define gtag function
+    window.dataLayer = window.dataLayer || []; // Define gtag function
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
     function gtag(..._args: any[]) {
       // eslint-disable-next-line prefer-rest-params
       window.dataLayer.push(arguments);
     }
-    
+
     // Make gtag available globally
     window.gtag = gtag;
-    
+
     // Initialize Google Analytics
-    gtag('js', new Date());
-    
+    gtag("js", new Date());
+
     // Configure Google Analytics
-    gtag('config', measurementId);
-    
+    gtag("config", measurementId);
+
     // Configure Google Ads if provided
     if (googleAdsId) {
-      gtag('config', googleAdsId);
+      gtag("config", googleAdsId);
     }
-    
-    // Configure Google Tag if provided  
+
+    // Configure Google Tag if provided
     if (googleTagId) {
-      gtag('config', googleTagId);
+      gtag("config", googleTagId);
     }
   }, [measurementId, googleAdsId, googleTagId]);
 
@@ -70,16 +70,18 @@ export default function GoogleAnalytics({
 }
 
 // Utility functions for tracking events
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const trackEvent = (eventName: string, parameters?: Record<string, any>) => {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', eventName, parameters);
+export const trackEvent = (
+  eventName: string,
+  parameters?: Record<string, unknown>,
+) => {
+  if (typeof window !== "undefined" && window.gtag) {
+    window.gtag("event", eventName, parameters);
   }
 };
 
 export const trackPageView = (url: string) => {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID, {
+  if (typeof window !== "undefined" && window.gtag) {
+    window.gtag("config", process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID, {
       page_location: url,
     });
   }
