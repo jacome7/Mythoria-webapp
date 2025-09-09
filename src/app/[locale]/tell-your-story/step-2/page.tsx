@@ -1,34 +1,36 @@
-'use client';
+"use client";
 
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
-import StepNavigation from '../../../../components/StepNavigation';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import { trackStoryCreation } from '../../../../lib/analytics';
-import MediaCapture from './MediaCapture';
-import CharacterSelection from './CharacterSelection';
-import WritingTips from './WritingTips';
-import { useStep2Session } from '@/hooks/useStep2Session';
-import { useMediaUpload } from '@/hooks/useMediaUpload';
+import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/nextjs";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import StepNavigation from "@/components/StepNavigation";
+import ProgressIndicator from "@/components/ProgressIndicator";
+import { trackStoryCreation } from "@/lib/analytics";
+import MediaCapture from "./MediaCapture";
+import CharacterSelection from "./CharacterSelection";
+import WritingTips from "./WritingTips";
+import { useStep2Session } from "@/hooks/useStep2Session";
+import { useMediaUpload } from "@/hooks/useMediaUpload";
 
-type ContentType = 'text' | 'images' | 'audio';
+type ContentType = "text" | "images" | "audio";
 
 export default function Step2Page() {
   const router = useRouter();
-  const tStoryStepsStep2 = useTranslations('StorySteps.step2');
-  const tStoryStepsCommon = useTranslations('StorySteps.common');
-  
+  const tStoryStepsStep2 = useTranslations("StorySteps.step2");
+  const tStoryStepsCommon = useTranslations("StorySteps.common");
+
   // Modal states
   const [activeModal, setActiveModal] = useState<ContentType | null>(null);
-  
-  
+
   // UI states
   const [isCreatingStory, setIsCreatingStory] = useState(false);
   const [showLoadingModal, setShowLoadingModal] = useState(false);
-  
+
   // Character states
-  const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([]);
+  const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>(
+    [],
+  );
   const {
     storyText,
     setStoryText,
@@ -50,20 +52,20 @@ export default function Step2Page() {
       saveToSession();
 
       // Get the current authenticated user
-      const userResponse = await fetch('/api/auth/me');
+      const userResponse = await fetch("/api/auth/me");
       if (!userResponse.ok) {
-        throw new Error(tStoryStepsStep2('errors.failedGetUser'));
+        throw new Error(tStoryStepsStep2("errors.failedGetUser"));
       }
       const userData = await userResponse.json();
 
       // Create a new story in the database
-      const response = await fetch('/api/stories', {
-        method: 'POST',
+      const response = await fetch("/api/stories", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          title: 'My Story',
+          title: "My Story",
           authorId: userData.authorId,
           plotDescription: storyText || null,
         }),
@@ -71,89 +73,120 @@ export default function Step2Page() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || tStoryStepsStep2('errors.failedCreate'));
+        throw new Error(
+          errorData.error || tStoryStepsStep2("errors.failedCreate"),
+        );
       }
 
       const { story } = await response.json();
-      localStorage.setItem('currentStoryId', story.storyId);
+      localStorage.setItem("currentStoryId", story.storyId);
 
-        // Process with GenAI if any content provided
-        if (storyText.trim() || uploadedImages.length > 0 || uploadedAudio) {
-          console.log('Processing content with GenAI (signed uploads)...');
+      // Process with GenAI if any content provided
+      if (storyText.trim() || uploadedImages.length > 0 || uploadedAudio) {
+        console.log("Processing content with GenAI (signed uploads)...");
 
-          let imageObjectPath: string | undefined;
-          let audioObjectPath: string | undefined;
-          let imageDataB64: string | undefined;
-          let audioDataB64: string | undefined;
+        let imageObjectPath: string | undefined;
+        let audioObjectPath: string | undefined;
+        let imageDataB64: string | undefined;
+        let audioDataB64: string | undefined;
 
-          if (uploadedImages.length > 0) {
-            const { objectPath, dataUrl } = await uploadMedia(story.storyId, 'image', uploadedImages[0].file);
-            imageObjectPath = objectPath;
-            imageDataB64 = dataUrl;
-          }
+        if (uploadedImages.length > 0) {
+          const { objectPath, dataUrl } = await uploadMedia(
+            story.storyId,
+            "image",
+            uploadedImages[0].file,
+          );
+          imageObjectPath = objectPath;
+          imageDataB64 = dataUrl;
+        }
 
-          if (uploadedAudio) {
-            const { objectPath, dataUrl } = await uploadMedia(story.storyId, 'audio', uploadedAudio.file);
-            audioObjectPath = objectPath;
-            audioDataB64 = dataUrl;
-          }
+        if (uploadedAudio) {
+          const { objectPath, dataUrl } = await uploadMedia(
+            story.storyId,
+            "audio",
+            uploadedAudio.file,
+          );
+          audioObjectPath = objectPath;
+          audioDataB64 = dataUrl;
+        }
 
-          // Send to GenAI for processing with object paths
-          const genaiResponse = await fetch('/api/stories/genai-structure', {
-          method: 'POST',
+        // Send to GenAI for processing with object paths
+        const genaiResponse = await fetch("/api/stories/genai-structure", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
-      userDescription: storyText || (imageObjectPath || imageDataB64 ? 'Analyze the images to create a story' : (audioObjectPath || audioDataB64 ? 'Analyze the audio to create a story' : '')),
-      // Prefer object paths; if not available, include base64 data
-      imageObjectPath,
-      audioObjectPath,
-      imageData: imageDataB64,
-      audioData: audioDataB64,
+            userDescription:
+              storyText ||
+              (imageObjectPath || imageDataB64
+                ? "Analyze the images to create a story"
+                : audioObjectPath || audioDataB64
+                  ? "Analyze the audio to create a story"
+                  : ""),
+            // Prefer object paths; if not available, include base64 data
+            imageObjectPath,
+            audioObjectPath,
+            imageData: imageDataB64,
+            audioData: audioDataB64,
             storyId: story.storyId,
-            characterIds: selectedCharacterIds.length > 0 ? selectedCharacterIds : undefined,
+            characterIds:
+              selectedCharacterIds.length > 0
+                ? selectedCharacterIds
+                : undefined,
           }),
         });
 
         const responseData = await genaiResponse.json();
 
         if (genaiResponse.ok) {
-          console.log('GenAI processing successful:', responseData);
-          localStorage.setItem('genaiResults', JSON.stringify({
-            story: responseData.story,
-            characters: responseData.characters,
-            processed: true
-          }));
+          console.log("GenAI processing successful:", responseData);
+          localStorage.setItem(
+            "genaiResults",
+            JSON.stringify({
+              story: responseData.story,
+              characters: responseData.characters,
+              processed: true,
+            }),
+          );
         } else {
-          console.error('GenAI processing failed:', responseData);
+          console.error("GenAI processing failed:", responseData);
         }
       }
-      
+
       // Track step 2 completion
       trackStoryCreation.step2Completed({
         step: 2,
         story_id: story.storyId,
-        content_type: uploadedImages.length > 0 ? 'image' : uploadedAudio ? 'audio' : 'text',
+        content_type:
+          uploadedImages.length > 0
+            ? "image"
+            : uploadedAudio
+              ? "audio"
+              : "text",
         has_text: !!storyText.trim(),
         has_image: uploadedImages.length > 0,
         has_audio: uploadedAudio !== null,
-        processed_with_genai: !!(storyText.trim() || uploadedImages.length > 0 || uploadedAudio)
+        processed_with_genai: !!(
+          storyText.trim() ||
+          uploadedImages.length > 0 ||
+          uploadedAudio
+        ),
       });
-      
-      router.push('/tell-your-story/step-3');
 
+      router.push("/tell-your-story/step-3");
     } catch (error) {
-      console.error('Error creating story:', error);
+      console.error("Error creating story:", error);
       const errorMessage =
-        error instanceof Error ? error.message : tStoryStepsStep2('errors.unknown');
-      alert(tStoryStepsStep2('alerts.failedToCreateStory', { errorMessage }));
+        error instanceof Error
+          ? error.message
+          : tStoryStepsStep2("errors.unknown");
+      alert(tStoryStepsStep2("alerts.failedToCreateStory", { errorMessage }));
     } finally {
       setIsCreatingStory(false);
       setShowLoadingModal(false);
     }
   };
-
 
   return (
     <>
@@ -164,45 +197,18 @@ export default function Step2Page() {
       <SignedIn>
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
-            {/* Progress indicator */}
-            {(() => {
-              const currentStep = 2;
-              const totalSteps = 6;
-              return (
-                <>
-                  {/* Mobile Progress Indicator */}
-                  <div className="block md:hidden mb-8">
-                    <div className="text-center text-sm text-gray-600 mb-2">
-                      {tStoryStepsCommon('stepProgress', { currentStep, totalSteps })}
-                    </div>
-                    <progress 
-                      className="progress progress-primary w-full" 
-                      value={currentStep} 
-                      max={totalSteps}
-                    ></progress>
-                  </div>
-
-                  {/* Desktop Progress Indicator */}
-                  <div className="hidden md:block mb-8">
-                    <ul className="steps steps-horizontal w-full">
-                      <li className="step step-primary" data-content="1"></li>
-                      <li className="step step-primary" data-content="2"></li>
-                      <li className="step" data-content="3"></li>
-                      <li className="step" data-content="4"></li>
-                      <li className="step" data-content="5"></li>
-                      <li className="step" data-content="6"></li>
-                    </ul>
-                  </div>
-                </>
-              );
-            })()}
+            <ProgressIndicator currentStep={2} totalSteps={6} />
 
             {/* Step content */}
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
-                <h1 className="card-title text-3xl mb-6">{tStoryStepsStep2('heading')}</h1>
+                <h1 className="card-title text-3xl mb-6">
+                  {tStoryStepsStep2("heading")}
+                </h1>
                 <div className="prose max-w-none mb-6">
-                  <p className="text-gray-600 text-lg">{tStoryStepsStep2('intro')}</p>
+                  <p className="text-gray-600 text-lg">
+                    {tStoryStepsStep2("intro")}
+                  </p>
                 </div>
 
                 {/* Progress Indicator - Removed */}
@@ -211,45 +217,62 @@ export default function Step2Page() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                   {/* Write Button */}
                   <button
-                    onClick={() => setActiveModal('text')}
+                    onClick={() => setActiveModal("text")}
                     className={`btn h-auto py-3 px-4 flex flex-col items-center gap-2 ${
-                      storyText.trim() ? 'btn-outline btn-primary' : 'btn-outline'
+                      storyText.trim()
+                        ? "btn-outline btn-primary"
+                        : "btn-outline"
                     }`}
                   >
                     <span className="text-2xl">✍️</span>
-                    <span className="text-base font-semibold">{tStoryStepsStep2('tabWrite')}</span>
+                    <span className="text-base font-semibold">
+                      {tStoryStepsStep2("tabWrite")}
+                    </span>
                     {storyText.trim() && (
-                      <span className="badge badge-primary badge-sm">✓ Added</span>
+                      <span className="badge badge-primary badge-sm">
+                        ✓ Added
+                      </span>
                     )}
                   </button>
 
                   {/* Image Button */}
                   <button
-                    onClick={() => setActiveModal('images')}
+                    onClick={() => setActiveModal("images")}
                     className={`btn h-auto py-3 px-4 flex flex-col items-center gap-2 ${
-                      uploadedImages.length > 0 ? 'btn-outline btn-primary' : 'btn-outline'
+                      uploadedImages.length > 0
+                        ? "btn-outline btn-primary"
+                        : "btn-outline"
                     }`}
                   >
                     <span className="text-2xl">📸</span>
-                    <span className="text-base font-semibold">{tStoryStepsStep2('tabImage')}</span>
+                    <span className="text-base font-semibold">
+                      {tStoryStepsStep2("tabImage")}
+                    </span>
                     {uploadedImages.length > 0 && (
                       <span className="badge badge-primary badge-sm">
-                        {uploadedImages.length} {uploadedImages.length === 1 ? tStoryStepsStep2('badgeLabels.image') : tStoryStepsStep2('badgeLabels.images')}
+                        {uploadedImages.length}{" "}
+                        {uploadedImages.length === 1
+                          ? tStoryStepsStep2("badgeLabels.image")
+                          : tStoryStepsStep2("badgeLabels.images")}
                       </span>
                     )}
                   </button>
 
                   {/* Audio Button */}
                   <button
-                    onClick={() => setActiveModal('audio')}
+                    onClick={() => setActiveModal("audio")}
                     className={`btn h-auto py-3 px-4 flex flex-col items-center gap-2 ${
-                      uploadedAudio ? 'btn-outline btn-primary' : 'btn-outline'
+                      uploadedAudio ? "btn-outline btn-primary" : "btn-outline"
                     }`}
                   >
                     <span className="text-2xl">🎤</span>
-                    <span className="text-base font-semibold">{tStoryStepsStep2('tabRecord')}</span>
+                    <span className="text-base font-semibold">
+                      {tStoryStepsStep2("tabRecord")}
+                    </span>
                     {uploadedAudio && (
-                      <span className="badge badge-primary badge-sm">{tStoryStepsStep2('badgeLabels.added')}</span>
+                      <span className="badge badge-primary badge-sm">
+                        {tStoryStepsStep2("badgeLabels.added")}
+                      </span>
                     )}
                   </button>
                 </div>
@@ -260,7 +283,9 @@ export default function Step2Page() {
                   <div className="flex items-start space-x-3">
                     <div className="text-2xl">💡</div>
                     <div>
-                      <p className="text-blue-800 text-sm mt-1">{tStoryStepsStep2('reassurance')}</p>
+                      <p className="text-blue-800 text-sm mt-1">
+                        {tStoryStepsStep2("reassurance")}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -268,7 +293,8 @@ export default function Step2Page() {
                 {/* Auto-save indicator */}
                 {isSaving && (
                   <div className="text-center text-sm text-gray-500 mt-2">
-                    <span className="loading loading-spinner loading-xs"></span> {tStoryStepsCommon('saving')}
+                    <span className="loading loading-spinner loading-xs"></span>{" "}
+                    {tStoryStepsCommon("saving")}
                   </div>
                 )}
 
@@ -279,7 +305,11 @@ export default function Step2Page() {
                   prevHref="/tell-your-story/step-1"
                   nextDisabled={isCreatingStory}
                   onNext={handleNextStep}
-                  nextLabel={isCreatingStory ? tStoryStepsStep2('processing') : tStoryStepsStep2('next')}
+                  nextLabel={
+                    isCreatingStory
+                      ? tStoryStepsStep2("processing")
+                      : tStoryStepsStep2("next")
+                  }
                 />
               </div>
             </div>
@@ -287,11 +317,13 @@ export default function Step2Page() {
         </div>
 
         {/* Text Modal - Improved with better text area */}
-        {activeModal === 'text' && (
+        {activeModal === "text" && (
           <div className="modal modal-open">
             <div className="modal-box max-w-5xl w-11/12 h-[90vh] flex flex-col p-0">
               <div className="modal-header flex justify-between items-center p-6 pb-4 border-b">
-                <h3 className="font-bold text-2xl">✍️ {tStoryStepsStep2('tabWrite')}</h3>
+                <h3 className="font-bold text-2xl">
+                  ✍️ {tStoryStepsStep2("tabWrite")}
+                </h3>
                 <button
                   className="btn btn-sm btn-circle btn-ghost"
                   onClick={() => setActiveModal(null)}
@@ -299,14 +331,14 @@ export default function Step2Page() {
                   ✕
                 </button>
               </div>
-              
+
               <div className="flex-1 flex flex-col overflow-hidden">
                 <div className="flex-1 flex flex-col px-6 py-4">
-                  
                   {/* Enhanced text area with better scrolling */}
                   <div className="flex-1 relative rounded-lg border border-base-300 overflow-hidden">
-                    <style dangerouslySetInnerHTML={{
-                      __html: `
+                    <style
+                      dangerouslySetInnerHTML={{
+                        __html: `
                         .enhanced-textarea {
                           /* Firefox scrollbar */
                           scrollbar-width: thick;
@@ -362,18 +394,21 @@ export default function Step2Page() {
                             border-radius: 12px;
                           }
                         }
-                      `
-                    }} />
+                      `,
+                      }}
+                    />
                     <textarea
                       className="enhanced-textarea w-full h-full p-4 resize-none text-base leading-relaxed border-0 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset"
-                      placeholder={tStoryStepsStep2('textPlaceholder')}
+                      placeholder={tStoryStepsStep2("textPlaceholder")}
                       value={storyText}
                       onChange={(e) => setStoryText(e.target.value)}
                     />
                   </div>
-                  
+
                   <label className="label px-0 pt-2">
-                    <span className="label-text-alt break-words max-w-full whitespace-normal">{tStoryStepsStep2('textHelp')}</span>
+                    <span className="label-text-alt break-words max-w-full whitespace-normal">
+                      {tStoryStepsStep2("textHelp")}
+                    </span>
                   </label>
                 </div>
 
@@ -391,7 +426,7 @@ export default function Step2Page() {
                     saveToSession();
                   }}
                 >
-                  {tStoryStepsStep2('actions.done')}
+                  {tStoryStepsStep2("actions.done")}
                 </button>
               </div>
             </div>
@@ -399,7 +434,11 @@ export default function Step2Page() {
         )}
 
         <MediaCapture
-          activeModal={activeModal === 'images' || activeModal === 'audio' ? activeModal : null}
+          activeModal={
+            activeModal === "images" || activeModal === "audio"
+              ? activeModal
+              : null
+          }
           setActiveModal={setActiveModal}
           uploadedImages={uploadedImages}
           setUploadedImages={setUploadedImages}
@@ -413,17 +452,23 @@ export default function Step2Page() {
           <div className="modal modal-open">
             <div className="modal-box max-w-md">
               <div className="text-center space-y-6">
-                <h3 className="font-bold text-xl">{tStoryStepsStep2('loadingModal.title')}</h3>
-                
+                <h3 className="font-bold text-xl">
+                  {tStoryStepsStep2("loadingModal.title")}
+                </h3>
+
                 <div className="flex justify-center">
                   <span className="loading loading-spinner loading-lg text-primary"></span>
                 </div>
-                
+
                 <div className="space-y-3">
-                  <p className="text-base">{tStoryStepsStep2('loadingModal.message')}</p>
-                  <p className="text-sm font-medium text-primary">{tStoryStepsStep2('loadingModal.pleaseWait')}</p>
+                  <p className="text-base">
+                    {tStoryStepsStep2("loadingModal.message")}
+                  </p>
+                  <p className="text-sm font-medium text-primary">
+                    {tStoryStepsStep2("loadingModal.pleaseWait")}
+                  </p>
                 </div>
-                
+
                 <div className="text-6xl animate-bounce">🍫</div>
               </div>
             </div>
