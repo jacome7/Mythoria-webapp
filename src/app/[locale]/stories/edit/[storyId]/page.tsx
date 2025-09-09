@@ -253,16 +253,12 @@ export default function StoryEditPage() {
   };
 
   // Handle AI edit optimistic update
-  const handleAIEditOptimisticUpdate = (
-    _updatedData: Record<string, unknown>,
-  ) => {
-    // eslint-disable-line @typescript-eslint/no-unused-vars
+  const handleAIEditOptimisticUpdate = () => {
     // This could be used for optimistic UI updates if needed
   };
 
   // Handle AI edit revert
-  const handleAIEditRevertUpdate = (_originalData: Record<string, unknown>) => {
-    // eslint-disable-line @typescript-eslint/no-unused-vars
+  const handleAIEditRevertUpdate = () => {
     // This could be used to revert optimistic updates
   };
 

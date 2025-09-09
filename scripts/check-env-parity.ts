@@ -20,12 +20,11 @@
     * We treat secret-manager sourced vars as satisfied in prod/runtime if present in cloudbuild --set-secrets line.
     * Build scope checks build args & substitutions.
 */
-// Using CommonJS style requires to avoid ESM loader issues when invoked via node -r ts-node/register
-const fs = require('fs');
-const path = require('path');
-const yaml = require('js-yaml');
-const dotenv = require('dotenv');
-const { envManifest, manifestByName } = require('../env.manifest');
+import fs from 'fs';
+import path from 'path';
+import yaml from 'js-yaml';
+import dotenv from 'dotenv';
+import { envManifest, manifestByName } from '../env.manifest';
 
 interface SourceMaps {
   dev: Record<string,string|undefined>;
@@ -48,7 +47,10 @@ function readEnvFile(name: string): Record<string,string|undefined> {
 function parseCloudBuild(): Partial<SourceMaps> {
   const file = path.join(root, 'cloudbuild.yaml');
   if (!fs.existsSync(file)) return {};
-  const doc: any = yaml.load(fs.readFileSync(file, 'utf8'));
+  const doc = yaml.load(fs.readFileSync(file, 'utf8')) as {
+    substitutions?: Record<string,string>;
+    steps?: Array<{ args?: unknown[]; }>;
+  } | undefined;
   const substitutions: Record<string,string> = doc?.substitutions || {};
 
   const setEnvVars: Record<string,string> = {};
@@ -56,9 +58,9 @@ function parseCloudBuild(): Partial<SourceMaps> {
   const buildArgs = new Set<string>();
 
   // Extract --set-env-vars value(s)
-  const deployStep = (doc?.steps || []).find((s: any) => Array.isArray(s.args) && s.args.includes('deploy'));
+  const deployStep = (doc?.steps || []).find((s) => Array.isArray(s.args) && s.args.includes('deploy'));
   if (deployStep) {
-    const args: string[] = deployStep.args || [];
+  const args: string[] = (deployStep.args as string[] | undefined) || [];
     for (let i=0;i<args.length;i++) {
       if (args[i] === '--set-env-vars' && args[i+1]) {
         const csv = args[i+1];
@@ -79,8 +81,8 @@ function parseCloudBuild(): Partial<SourceMaps> {
 
   // Extract build args from docker build command script step
   for (const step of doc?.steps || []) {
-    if (typeof step.args?.[0] === 'string' && step.args[0].includes('docker build')) {
-      const script = step.args.join('\n');
+    if (Array.isArray(step.args) && typeof step.args?.[0] === 'string' && step.args[0].includes('docker build')) {
+      const script = (step.args as string[]).join('\n');
       const buildArgRegex = /--build-arg\s+([A-Z0-9_]+)=/g;
       let m: RegExpExecArray | null;
       while ((m = buildArgRegex.exec(script))) {
@@ -88,7 +90,7 @@ function parseCloudBuild(): Partial<SourceMaps> {
       }
     }
     if (Array.isArray(step.args)) {
-      for (const a of step.args) {
+      for (const a of step.args as unknown[]) {
         if (typeof a === 'string' && a.includes('--build-arg')) {
           const buildArgRegex = /--build-arg\s+([A-Z0-9_]+)=/g;
           let m: RegExpExecArray | null;
@@ -119,7 +121,7 @@ function analyze(sources: SourceMaps) {
     ...Object.keys(sources.cloudBuildSetEnv),
     ...Array.from(sources.cloudBuildSecrets),
     ...Array.from(sources.buildArgs),
-  ...envManifest.map((v: any) => v.name),
+  ...envManifest.map((v) => v.name),
   ]);
 
   function hasInScope(key: string, scope: string): boolean {
@@ -207,6 +209,7 @@ function main() {
   process.exit(missingCount > 0 ? 1 : 0);
 }
 
-if (require.main === module) {
+// Execute if run directly (guard retained for parity with previous behavior)
+if (process.argv[1] && /check-env-parity\.ts$/.test(process.argv[1])) {
   main();
 }

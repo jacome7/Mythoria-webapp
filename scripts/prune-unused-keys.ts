@@ -2,7 +2,9 @@ import { spawn } from 'node:child_process';
 import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
 
-type JsonObject = { [k: string]: any };
+type JsonPrimitive = string | number | boolean | null;
+// Nested JSON structure (values can be primitives or nested objects)
+type JsonObject = { [k: string]: JsonPrimitive | JsonObject };
 
 function run(cmd: string, args: string[], cwd: string): Promise<{ stdout: string; stderr: string; code: number }> {
   return new Promise((resolve) => {
@@ -22,19 +24,19 @@ function run(cmd: string, args: string[], cwd: string): Promise<{ stdout: string
 function deleteByPath(obj: JsonObject, pathParts: string[]) {
   if (!obj) return;
   const last = pathParts[pathParts.length - 1];
-  const parent = pathParts.slice(0, -1).reduce<any>((acc, key) => (acc && typeof acc === 'object' ? acc[key] : undefined), obj);
+  const parent = pathParts.slice(0, -1).reduce<JsonObject | JsonPrimitive | undefined>((acc, key) => (acc && typeof acc === 'object' ? (acc as JsonObject)[key] : undefined), obj);
   if (parent && typeof parent === 'object' && last in parent) {
     delete parent[last];
   }
 }
 
-function pruneEmptyObjects(obj: any) {
-  if (obj && typeof obj === 'object') {
-    for (const key of Object.keys(obj)) {
-      pruneEmptyObjects(obj[key]);
-      if (obj[key] && typeof obj[key] === 'object' && !Array.isArray(obj[key]) && Object.keys(obj[key]).length === 0) {
-        delete obj[key];
-      }
+function pruneEmptyObjects(obj: JsonObject | JsonPrimitive): void {
+  if (!obj || typeof obj !== 'object') return;
+  for (const key of Object.keys(obj)) {
+    pruneEmptyObjects(obj[key] as JsonObject | JsonPrimitive);
+    const child = obj[key];
+    if (child && typeof child === 'object' && !Array.isArray(child) && Object.keys(child as object).length === 0) {
+      delete obj[key];
     }
   }
 }
@@ -52,7 +54,7 @@ async function pruneForNamespace(locale: string, namespace: string) {
     try {
       const keepConfig = JSON.parse(readFileSync(keepConfigPath, 'utf8')) as { keep?: string[] };
       keepPrefixes = Array.isArray(keepConfig.keep) ? keepConfig.keep : [];
-    } catch (e) {
+    } catch {
       // ignore malformed keep file
     }
   }
@@ -131,7 +133,7 @@ async function main() {
   await pruneForNamespace(locale, namespace);
 }
 
-main().catch((e) => {
-  console.error(e);
+main().catch((err: unknown) => {
+  console.error(err);
   process.exit(1);
 });

@@ -2,12 +2,13 @@ import "@testing-library/jest-dom";
 import { TextEncoder, TextDecoder } from "util";
 
 // Polyfill for packages relying on Node's global encoders
-(global as any).TextEncoder = TextEncoder;
-(global as any).TextDecoder = TextDecoder;
+// Narrow global augmentation instead of using 'any'
+(global as unknown as { TextEncoder: typeof TextEncoder }).TextEncoder = TextEncoder;
+(global as unknown as { TextDecoder: typeof TextDecoder }).TextDecoder = TextDecoder;
 
 // Reduce noisy expected logs during tests while preserving real error output
-const originalError = console.error;
-console.error = (...args: unknown[]) => {
+const originalError: typeof console.error = console.error.bind(console);
+console.error = (...args: unknown[]): void => {
 	const first = String(args[0] ?? "");
 	// Silence known expected messages from negative-path tests
 	if (
@@ -17,5 +18,5 @@ console.error = (...args: unknown[]) => {
 	) {
 		return;
 	}
-	originalError.apply(console, args as any);
+	originalError(...(args as unknown[]));
 };

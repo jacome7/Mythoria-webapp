@@ -30,7 +30,8 @@ export interface EnvVarDescriptor {
 }
 
 // Helper to ensure NEXT_PUBLIC_ prefix alignment
-function p(name: string): string { return name.startsWith('NEXT_PUBLIC_') ? name : `NEXT_PUBLIC_${name}`; }
+// Removed unused helper (was previously used for prefix alignment)
+// function p(name: string): string { return name.startsWith('NEXT_PUBLIC_') ? name : `NEXT_PUBLIC_${name}`; }
 
 export const envManifest: EnvVarDescriptor[] = [
   // Core runtime environment

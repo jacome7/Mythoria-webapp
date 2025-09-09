@@ -11,8 +11,9 @@ const MESSAGES_DIR = join(process.cwd(), 'src', 'messages');
 const OUTPUT_DIR = join(process.cwd(), 'src', 'types');
 const SOURCE_LOCALE = 'en-US';
 
-function flatten(obj: any, prefix = '', out: string[] = []): string[] {
-  for (const [k, v] of Object.entries(obj)) {
+function flatten(obj: unknown, prefix = '', out: string[] = []): string[] {
+  if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return out;
+  for (const [k, v] of Object.entries(obj as Record<string, unknown>)) {
     const key = prefix ? `${prefix}.${k}` : k;
     if (v && typeof v === 'object' && !Array.isArray(v)) {
       flatten(v, key, out);
@@ -26,7 +27,7 @@ function flatten(obj: any, prefix = '', out: string[] = []): string[] {
 function collectKeys(locale: string) {
   const dir = join(MESSAGES_DIR, locale);
   const files = readdirSync(dir).filter(f => f.endsWith('.json'));
-  let keys: string[] = [];
+  const keys: string[] = [];
   for (const f of files) {
     const json = JSON.parse(readFileSync(join(dir, f), 'utf8'));
     const flattened = flatten(json);

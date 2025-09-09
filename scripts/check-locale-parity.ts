@@ -14,14 +14,15 @@ import {join, relative} from 'path';
 const MESSAGES_DIR = join(process.cwd(), 'src', 'messages');
 const SOURCE_LOCALE = 'en-US';
 
-interface Tree { [key: string]: any }
+// Generic object tree where leaves can be primitive or nested objects
+interface Tree { [key: string]: unknown }
 
 function flatten(obj: Tree, prefix = ''): Record<string, string> {
   const out: Record<string, string> = {};
   for (const [k, v] of Object.entries(obj)) {
     const key = prefix ? `${prefix}.${k}` : k;
     if (v && typeof v === 'object' && !Array.isArray(v)) {
-      Object.assign(out, flatten(v, key));
+      Object.assign(out, flatten(v as Tree, key));
     } else {
       out[key] = String(v);
     }
