@@ -4,7 +4,7 @@
     "saveButton": "Sauver le chapitre",
     "backButton": "Dos",
     "goBackButton": "Remonter",
-  "imagePlaceholder": "Image du chapitre {number}",
+    "imagePlaceholder": "Image du chapitre {number}",
     "titlePlaceholder": "Entrez le titre du chapitre ...",
     "contentPlaceholder": "Écrivez le contenu de votre chapitre ici ...",
     "saving": "Économie...",
@@ -14,7 +14,8 @@
       "underline": "Souligner",
       "textSize": "Taille de texte",
       "aiEdit": "AI Modifier",
-      "edit": "Modifier"
+      "edit": "Modifier",
+      "image": "Image"
     },
     "textSizes": {
       "small": "S",

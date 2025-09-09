@@ -20,10 +20,9 @@ The manifest system has been converted from a static `manifest.json` file to a d
 
 1. **`/src/app/api/manifest/route.ts`** - API endpoint for dynamic manifest generation
 2. **`/src/lib/manifest.ts`** - Utility functions for manifest generation
-3. **`/src/components/ManifestLink.tsx`** - React component for manifest links
-4. **`/src/messages/*/Metadata.json`** - Added manifest translations
-5. **`/src/app/[locale]/layout.tsx`** - Updated to use dynamic manifest
-6. **`/next.config.ts`** - Updated PWA configuration
+3. **`/src/messages/*/Metadata.json`** - Added manifest translations
+4. **`/src/app/[locale]/layout.tsx`** - Updated to use dynamic manifest
+5. **`/next.config.ts`** - Updated PWA configuration
 
 ### How It Works
 
@@ -61,13 +60,16 @@ The manifest translations are stored in the `Metadata.json` files:
 ### GET `/api/manifest`
 
 **Parameters:**
+
 - `locale` (optional): The locale code (e.g., 'en-US', 'pt-PT')
 
 **Response:**
+
 - Content-Type: `application/manifest+json`
 - Cache-Control: `public, max-age=3600`
 
 **Example:**
+
 ```
 GET /api/manifest?locale=pt-PT
 ```
@@ -86,10 +88,15 @@ GET /api/manifest?locale=pt-PT
 ## Usage Examples
 
 ### In Layout Components
-```tsx
-import { getManifestUrl } from '@/lib/manifest';
 
-export async function generateMetadata({ params }: { params: { locale: string } }) {
+```tsx
+import { getManifestUrl } from "@/lib/manifest";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { locale: string };
+}) {
   return {
     manifest: getManifestUrl(params.locale),
     // ... other metadata
@@ -98,10 +105,11 @@ export async function generateMetadata({ params }: { params: { locale: string } 
 ```
 
 ### Manual Generation
-```typescript
-import { generateManifest } from '@/lib/manifest';
 
-const manifest = await generateManifest('pt-PT');
+```typescript
+import { generateManifest } from "@/lib/manifest";
+
+const manifest = await generateManifest("pt-PT");
 ```
 
 ## Development
