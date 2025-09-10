@@ -4,8 +4,10 @@ import { WebhookEvent } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { authors } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { detectUserLocaleFromEmail } from '@/utils/locale-utils';
+import { authorService } from '@/db/services';
+import { creditLedger } from '@/db/schema';
 
 export async function POST(req: Request) {
   // Get the headers
@@ -82,92 +84,73 @@ export async function POST(req: Request) {
 
 // (Welcome email dispatch removed – now handled fully inside notification-engine)
 
-async function handleUserCreated(evt: WebhookEvent) {
+export async function handleUserCreated(evt: WebhookEvent) {
   if (evt.type !== 'user.created') return;
 
   const { id, email_addresses, first_name, last_name } = evt.data;
-
-  const primaryEmail = email_addresses.find(email => email.id === evt.data.primary_email_address_id);
-  
+  const primaryEmail = email_addresses.find(e => e.id === evt.data.primary_email_address_id);
   if (!primaryEmail) {
     console.error('No primary email found for user:', id);
     return;
   }
 
   const userName = `${first_name || ''} ${last_name || ''}`.trim() || '';
-
   const userLocale = detectUserLocaleFromEmail(primaryEmail.email_address);
 
+  // Idempotency guard: if author already exists (perhaps created on sign-in) just ensure data is up to date.
+  const existing = await db.select({ authorId: authors.authorId }).from(authors).where(eq(authors.clerkUserId, id)).limit(1);
+  if (existing.length > 0) {
+    await db.update(authors)
+      .set({ displayName: userName, preferredLocale: userLocale, lastLoginAt: new Date() })
+      .where(eq(authors.clerkUserId, id));
+
+    // Ensure initial credits exist (race-safe check)
+    await ensureInitialCredits(existing[0].authorId);
+    console.log('Webhook user already existed, ensured initial credits:', id);
+    return;
+  }
+
   try {
-    // Try to insert new user first
-  const [insertedAuthor] = await db.insert(authors).values({
+    const author = await authorService.createAuthor({
       clerkUserId: id,
       email: primaryEmail.email_address,
       displayName: userName,
       preferredLocale: userLocale,
-      lastLoginAt: new Date(),
-      createdAt: new Date(),
-  }).returning({ authorId: authors.authorId });
-  console.log('User created in database:', id, 'for email:', primaryEmail.email_address, 'with locale:', userLocale, 'authorId:', insertedAuthor?.authorId);
-
-  // (Welcome notification no longer sent from webapp. Responsibility moved to notification-engine.)
-
-  } catch (error: unknown) {
-    // Log the full error structure for debugging
-    console.log('Error structure:', JSON.stringify(error, null, 2));
-    
-    // Type guard for error object
-    const isDbError = (err: unknown): err is { code?: string; constraint?: string; cause?: { code?: string; constraint?: string }; message?: string } => {
-      return typeof err === 'object' && err !== null;
-    };
-
-    if (isDbError(error)) {
-      console.log('Error code:', error.code);
-      console.log('Error constraint:', error.constraint);
-      console.log('Error cause:', error.cause);
-
-      // Check if it's a duplicate email constraint violation
-      // Try multiple ways to detect the constraint violation
-      const isDuplicateEmail = (
-        error.code === '23505' && error.constraint === 'authors_email_unique'
-      ) || (
-        error.cause?.code === '23505' && error.cause?.constraint === 'authors_email_unique'
-      ) || (
-        error.message?.includes('duplicate key value violates unique constraint "authors_email_unique"')      );
-
-      if (isDuplicateEmail) {
-        console.log('Duplicate email detected, updating existing user with new clerkUserId:', id);
-        
-        try {
-          // Update existing user with new clerkUserId
-          await db
-            .update(authors)
-            .set({
-              clerkUserId: id, // Update to new clerkId
-              displayName: userName,
-              preferredLocale: userLocale,
-              lastLoginAt: new Date(),
-              // Keep original createdAt, don't update it
-            })
-            .where(eq(authors.email, primaryEmail.email_address));
-
-          console.log('User updated (clerkUserId changed) for email:', primaryEmail.email_address, 'with locale:', userLocale);
-          
-          // (Welcome notification intentionally omitted even on duplicate path.)
-        } catch (updateError) {
-          console.error('Error updating user after duplicate email:', updateError);
-          throw updateError;
-        }
-      } else {
-        // Re-throw other errors
-        console.error('Error creating user in database:', error);
-        throw error;
-      }
+    });
+    console.log('User created in database via webhook service logic:', id, 'email:', primaryEmail.email_address, 'authorId:', author.authorId);
+  } catch (err) {
+    // If creation failed due to duplicate email (possible race with other flow), attempt to link clerkUserId to existing email.
+    const message = (err as { message?: string }).message || '';
+    const isDup = message.includes('duplicate key value') && message.includes('authors_email_unique');
+    if (isDup) {
+      await db.update(authors)
+        .set({ clerkUserId: id, displayName: userName, preferredLocale: userLocale, lastLoginAt: new Date() })
+        .where(eq(authors.email, primaryEmail.email_address));
+      // Fetch updated author to run credit guard
+      const [updated] = await db.select({ authorId: authors.authorId }).from(authors).where(eq(authors.clerkUserId, id));
+      if (updated) await ensureInitialCredits(updated.authorId);
+      console.log('Duplicate email on webhook, updated existing author and ensured credits for:', primaryEmail.email_address);
     } else {
-      // If error doesn't match expected structure, re-throw
-      console.error('Unexpected error creating user in database:', error);
-      throw error;
+      console.error('Failed to create user via webhook:', err);
+      throw err;
     }
+  }
+}
+
+async function ensureInitialCredits(authorId: string) {
+  // Check if initialCredit already exists
+  const existingInitial = await db.select({ id: creditLedger.id })
+    .from(creditLedger)
+    .where(and(eq(creditLedger.authorId, authorId), eq(creditLedger.creditEventType, 'initialCredit')))
+    .limit(1);
+  if (existingInitial.length > 0) return; // Already initialized
+  // Reuse pricingService logic via authorService path already handled normally; here just be safe.
+  // We import dynamically to avoid circular import (pricingService imported indirectly in authorService)
+  const { pricingService } = await import('@/db/services/pricing');
+  const { creditService } = await import('@/db/services');
+  const amount = await pricingService.getInitialAuthorCredits();
+  if (amount > 0) {
+    await creditService.initializeAuthorCredits(authorId, amount); // This function itself will become idempotent after our patch.
   }
 }
 
