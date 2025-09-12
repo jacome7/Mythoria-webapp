@@ -41,6 +41,15 @@ export async function POST(
     // Add character to story
     const relation = await storyCharacterService.addCharacterToStory(storyId, characterId, role);
 
+    // If story was temporary, promote it to draft now that content (a character) is associated
+    try {
+      if (story.status === 'temporary') {
+        await storyService.updateStory(storyId, { status: 'draft' });
+      }
+    } catch (e) {
+      console.warn('[stories/:id/characters] Failed to promote story status:', e);
+    }
+
     return NextResponse.json({ 
       success: true, 
       relation 

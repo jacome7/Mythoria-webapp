@@ -13,8 +13,10 @@ export async function GET() {
       );
     }
 
-    const stories = await storyService.getStoriesByAuthor(author.authorId);
-    return NextResponse.json({ stories });
+  const stories = await storyService.getStoriesByAuthor(author.authorId);
+  // Exclude 'temporary' stories from the listing
+  const filtered = stories.filter(s => s.status !== 'temporary');
+  return NextResponse.json({ stories: filtered });
   } catch (error) {
     console.error("Error fetching user stories:", error);
     return NextResponse.json(

@@ -176,6 +176,7 @@ export const storyService = {  async createStory(storyData: {
     synopsis?: string;
     customAuthor?: string;
     dedicationMessage?: string;
+    status?: 'temporary' | 'draft' | 'writing' | 'published';
   }) {
     const [story] = await db.insert(stories).values(storyData).returning();
     return story;

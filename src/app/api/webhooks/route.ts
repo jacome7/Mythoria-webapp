@@ -84,7 +84,7 @@ export async function POST(req: Request) {
 
 // (Welcome email dispatch removed – now handled fully inside notification-engine)
 
-export async function handleUserCreated(evt: WebhookEvent) {
+async function handleUserCreated(evt: WebhookEvent) {
   if (evt.type !== 'user.created') return;
 
   const { id, email_addresses, first_name, last_name } = evt.data;

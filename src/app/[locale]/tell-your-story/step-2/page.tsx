@@ -59,7 +59,7 @@ export default function Step2Page() {
       const userData = await userResponse.json();
 
       // Create a new story in the database
-      const response = await fetch("/api/stories", {
+    const response = await fetch("/api/stories", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,7 +67,8 @@ export default function Step2Page() {
         body: JSON.stringify({
           title: "My Story",
           authorId: userData.authorId,
-          plotDescription: storyText || null,
+      plotDescription: storyText || null,
+      status: 'temporary',
         }),
       });
 

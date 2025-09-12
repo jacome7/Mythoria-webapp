@@ -10,7 +10,9 @@ export const characterRoleEnum = pgEnum("character_role", CHARACTER_ROLES);
 export const characterAgeEnum = pgEnum("character_age", CHARACTER_AGES);
 export const characterTraitEnum = pgEnum("character_trait", CHARACTER_TRAITS);
 
-export const storyStatusEnum = pgEnum("story_status", ['draft', 'writing', 'published']);
+// Added 'temporary' status to allow ephemeral placeholder stories that can be hidden
+// from user lists until real content (characters, structured data) is added.
+export const storyStatusEnum = pgEnum("story_status", ['temporary', 'draft', 'writing', 'published']);
 export const audiobookStatusEnum = pgEnum("audiobook_status", ['generating', 'completed', 'failed']);
 export const addressTypeEnum = pgEnum("address_type", ['billing', 'delivery']);
 export const paymentProviderEnum = pgEnum("payment_provider", ['stripe', 'paypal', 'revolut', 'other']);

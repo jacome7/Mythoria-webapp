@@ -88,6 +88,22 @@ export async function POST(request: NextRequest) {
     }
 
   console.log('[genai-structure] SGW success');
+
+  // If the story is still temporary and we received any structured data that
+  // indicates progression (e.g., a non-empty title or structure fields), promote to draft.
+  try {
+    const refreshed = await storyService.getStoryById(storyId);
+    if (refreshed && refreshed.status === 'temporary') {
+      // Heuristic: if userDescription provided or GenAI returned anything meaningful, promote.
+      const meaningful = !!userDescription?.trim() || (data && Object.keys(data as Record<string, unknown>).length > 0);
+      if (meaningful) {
+        await storyService.updateStory(storyId, { status: 'draft' });
+      }
+    }
+  } catch (e) {
+    console.warn('[genai-structure] Failed to auto-promote story status:', e);
+  }
+
   return NextResponse.json(data as Record<string, unknown>);
 
   } catch (error) {
