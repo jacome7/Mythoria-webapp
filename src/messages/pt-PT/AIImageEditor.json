@@ -11,6 +11,32 @@
     "newImageLabel": "Nova Imagem Gerada",
     "newImageSuccess": "Nova imagem gerada com sucesso!",
     "generatedImageAlt": "Imagem Gerada",
+    "modes": {
+      "edit": "Editar imagem atual",
+      "upload": "Usar a tua foto"
+    },
+    "labels": {
+      "addYourOwnPhoto": "Adiciona a Tua Foto",
+      "describeChanges": "Descreve as alterações"
+    },
+    "helper": {
+      "uploadIntro": "Coloca aqui uma foto. Usa-a tal como está (grátis) ou aplica estilo para combinar com a vibe da história.",
+      "dragDropOrClick": "Arrasta e larga ou clica para selecionar uma imagem",
+      "selectImage": "Selecionar Imagem",
+      "processing": "A processar...",
+      "editUsesCredit": "Usa 1 crédito de imagem"
+    },
+    "radio": {
+      "legend": "Como devemos usar a tua foto?",
+      "asIs": "Usar a foto como está, sem alterações (grátis)",
+      "convert": "Converter e editar a foto para estilo aguarela (usa 1 crédito)"
+    },
+    "placeholders": {
+      "addNotesStyleDisabled": "Adicionar notas (ativa a conversão para usar)"
+    },
+    "buttons": {
+      "applyPhoto": "Aplicar Foto"
+    },
     "errors": {
       "describeChanges": "Por favor descreva as alterações que quer fazer à imagem",
       "unableToCheckCredits": "Não foi possível verificar os créditos. Tente novamente.",
@@ -21,6 +47,13 @@
       "cover": "Capa",
       "backcover": "Contracapa",
       "chapter": "Capítulo {number}"
+    },
+    "cropper": {
+      "title": "Cortar Imagem para 1024x1536 (Retrato)",
+      "zoom": "Zoom {value}x",
+      "cancel": "Cancelar",
+      "crop": "Cortar",
+      "processing": "A processar..."
     }
   }
 }

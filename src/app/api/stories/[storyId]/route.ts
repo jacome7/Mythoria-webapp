@@ -112,9 +112,7 @@ export async function GET(
     // Get media links from Google Cloud Storage
     const mediaLinks = await getStoryImagesFromStorage(storyId);
     
-    // Debug: Log the media links to see actual filenames
-    console.log('API Route - Media links for story', storyId, ':', mediaLinks);
-    console.log('API Route - Filenames:', Object.keys(mediaLinks || {}));
+  // (Removed verbose debug logging of mediaLinks and filenames)
 
     return NextResponse.json({ 
       story: transformedStory,

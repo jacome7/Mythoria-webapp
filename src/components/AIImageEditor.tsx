@@ -43,6 +43,8 @@ export default function AIImageEditor({
 }: AIImageEditorProps) {
   const tAIImageEditor = useTranslations('AIImageEditor');
   const [userRequest, setUserRequest] = useState('');
+  // mode: 'edit' = Option A (edit current image via prompt); 'upload' = Option B (user supplies photo)
+  const [mode, setMode] = useState<'edit' | 'upload'>('edit');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [newImageGenerated, setNewImageGenerated] = useState<string | null>(null);
@@ -59,7 +61,7 @@ export default function AIImageEditor({
   const TARGET_WIDTH = 1024;
   const TARGET_HEIGHT = 1536;
   const RATIO_TOLERANCE = 0.15; // ±15%
-  
+
 
   // Reset state when modal opens/closes
   useEffect(() => {
@@ -68,6 +70,7 @@ export default function AIImageEditor({
       setError(null);
       setNewImageGenerated(null);
       setIsReplacing(false);
+  setMode('edit'); // default to Option A as requested
     }
   }, [isOpen]);
 
@@ -92,13 +95,13 @@ export default function AIImageEditor({
     if (selectedFilePreview) URL.revokeObjectURL(selectedFilePreview);
     setSelectedFilePreview(null);
     setUserImageError(null);
-  // directReplacementPossible removed
+    // directReplacementPossible removed
     setConvertToStyle(false);
     setUserImageUri(null);
     setShowCropper(false);
   };
 
-  const handleJobComplete = (result: { newImageUrl?: string; [key: string]: unknown }) => {
+  const handleJobComplete = (result: { newImageUrl?: string;[key: string]: unknown }) => {
     console.log('✅ Image edit job completed:', result);
     if (result && result.newImageUrl) {
       setNewImageGenerated(result.newImageUrl);
@@ -157,10 +160,10 @@ export default function AIImageEditor({
         w = Math.round(w * scale);
         h = Math.round(h * scale);
       }
-  const { within } = evaluateAspect(w, h);
+      const { within } = evaluateAspect(w, h);
       const targetRatio = TARGET_WIDTH / TARGET_HEIGHT;
       // If outside tolerance and no manual crop yet, open cropper and exit early
-  if (!within && !manualCroppedArea) {
+      if (!within && !manualCroppedArea) {
         setShowCropper(true);
         setProcessingUserImage(false);
         return; // wait for user crop confirmation
@@ -190,7 +193,7 @@ export default function AIImageEditor({
       // Draw cropped region scaled to target size
       ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, TARGET_WIDTH, TARGET_HEIGHT);
       // If we reached here via a manual crop, the output now matches target exactly => allow as-is replacement
-  // If manual crop performed, image now matches target aspect
+      // If manual crop performed, image now matches target aspect
       const dataUrl = finalCanvas.toDataURL('image/jpeg', 0.9);
       // Upload as prospective story image version (images folder) only when we might apply as-is or convert.
       // We still rely on versioning logic in backend route /api/media/story-image-upload.
@@ -242,21 +245,31 @@ export default function AIImageEditor({
 
   // Handle image edit
   const handleImageEdit = async () => {
-    // Direct as-is replacement path (free): convertToStyle false AND we have an uploaded user image suitable
-  const asIsReplacementPossible = userImageUri && !convertToStyle; // any processed upload (originally correct or cropped)
-
-    if (!asIsReplacementPossible) {
-      // Converting style requires no textual request but we allow optional; existing validation: if no user image & no text -> need text
-  if (!convertToStyle && !userImageUri) {
-        if (!userRequest.trim()) {
-          setError(tAIImageEditor('errors.describeChanges'));
-          return;
-        }
+    // Option A: Edit existing image
+    if (mode === 'edit') {
+      if (!userRequest.trim()) {
+        setError(tAIImageEditor('errors.describeChanges'));
+        return;
       }
+      setIsLoading(true);
+      const err = await requestJob({
+        storyId: story.storyId,
+        imageUrl: imageData.imageUri, // base image
+        imageType: imageData.imageType,
+        chapterNumber: imageData.chapterNumber,
+        userRequest: userRequest.trim(),
+        graphicalStyle: story.graphicalStyle,
+        // no userImageUri, no convertToStyle needed
+      });
+      if (err) setError(err);
+      setIsLoading(false);
+      return;
     }
 
-    // If free path (as-is) just call image-replace immediately
-  if (asIsReplacementPossible) {
+    // Option B: Upload user photo flow
+    // Direct as-is replacement path (free): convertToStyle false AND we have an uploaded user image suitable
+    const asIsReplacementPossible = userImageUri && !convertToStyle;
+    if (asIsReplacementPossible) {
       try {
         setIsLoading(true);
         const response = await fetch('/api/image-replace', {
@@ -277,15 +290,14 @@ export default function AIImageEditor({
           return;
         }
         setError(data.error || tAIImageEditor('errors.failedToReplace'));
-  } catch {
+      } catch {
         setError(tAIImageEditor('errors.failedToReplace'));
       } finally {
         setIsLoading(false);
       }
       return;
     }
-
-    // Converting to style path -> credit check
+    // Style conversion of user photo (credit)
     setIsLoading(true);
     const err = await requestJob({
       storyId: story.storyId,
@@ -297,9 +309,7 @@ export default function AIImageEditor({
       userImageUri: userImageUri || undefined,
       convertToStyle,
     });
-    if (err) {
-      setError(err);
-    }
+    if (err) setError(err);
     setIsLoading(false);
   };
   const handleReplaceImage = async () => {
@@ -336,7 +346,7 @@ export default function AIImageEditor({
 
   const getImageTitle = () => {
     if (imageData.title) return imageData.title;
-    
+
     switch (imageData.imageType) {
       case 'cover':
         return tAIImageEditor('imageTypes.cover');
@@ -357,8 +367,8 @@ export default function AIImageEditor({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-              <FiImage className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+              <FiImage className="w-5 h-5 text-primary" />
             </div>
             <div>
               <h2 className="text-xl font-semibold text-gray-900">
@@ -380,6 +390,7 @@ export default function AIImageEditor({
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
           <div className="space-y-6">
+            {/* Mode Toggle */}
             {/* Current Image */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-700">
@@ -398,16 +409,37 @@ export default function AIImageEditor({
               </div>
             </div>
 
-            {/* Helper / Upload Section */}
+            {/* Mode Toggle (now placed below image) */}
+            <div className="flex gap-2" role="tablist">
+              <button
+                type="button"
+                onClick={() => setMode('edit')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${mode === 'edit' ? 'bg-primary text-white border-primary' : 'bg-base-100 text-base-content border-base-300 hover:bg-base-200'}`}
+                aria-selected={mode === 'edit'}
+              >
+                {tAIImageEditor('modes.edit')}
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode('upload')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${mode === 'upload' ? 'bg-primary text-white border-primary' : 'bg-base-100 text-base-content border-base-300 hover:bg-base-200'}`}
+                aria-selected={mode === 'upload'}
+              >
+                {tAIImageEditor('modes.upload')}
+              </button>
+            </div>
+
+            {/* Helper / Upload Section (Option B) */}
+            {mode === 'upload' && (
             <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700">Add Your Own Photo</label>
+              <label className="block text-sm font-medium text-gray-700">{tAIImageEditor('labels.addYourOwnPhoto')}</label>
               <p className="text-xs text-gray-500 leading-relaxed">
-                Drop in a photo you like. Use it unchanged for free, or turn on the style option to blend it with the story’s artistic vibe.
+                {tAIImageEditor('helper.uploadIntro')}
               </p>
               {!selectedFile && (
                 <div className="border-2 border-dashed rounded-lg p-6 text-center flex flex-col items-center justify-center space-y-3">
                   <FiUpload className="w-8 h-8 text-gray-400" />
-                  <p className="text-sm text-gray-600">Drag & drop or click to select an image</p>
+                  <p className="text-sm text-gray-600">{tAIImageEditor('helper.dragDropOrClick')}</p>
                   <input
                     type="file"
                     accept="image/*"
@@ -415,7 +447,7 @@ export default function AIImageEditor({
                     className="hidden"
                     id="user-image-input"
                   />
-                  <label htmlFor="user-image-input" className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm cursor-pointer hover:bg-gray-50">Select Image</label>
+                  <label htmlFor="user-image-input" className="px-4 py-2 bg-base-100 border border-base-300 rounded-md text-sm cursor-pointer hover:bg-base-200">{tAIImageEditor('helper.selectImage')}</label>
                   {userImageError && <p className="text-xs text-red-600">{userImageError}</p>}
                 </div>
               )}
@@ -424,7 +456,7 @@ export default function AIImageEditor({
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-gray-700 truncate max-w-[60%]">{selectedFile.name}</span>
                     <div className="flex items-center space-x-2">
-                      {processingUserImage && <span className="text-xs text-purple-600">Processing...</span>}
+                      {processingUserImage && <span className="text-xs text-primary">{tAIImageEditor('helper.processing')}</span>}
                       {/* Removed legacy replacement/reference pill */}
                       <button onClick={resetUserImage} className="p-1 rounded hover:bg-gray-200" aria-label="Remove">
                         <FiTrash2 className="w-4 h-4 text-gray-600" />
@@ -438,53 +470,70 @@ export default function AIImageEditor({
                     </div>
                   )}
                   {userImageError && <p className="text-xs text-red-600">{userImageError}</p>}
-                  {!processingUserImage && userImageUri && !convertToStyle && (
-                    <p className="text-xs text-green-700 bg-green-100 rounded px-2 py-1">Using photo as-is (free).</p>
-                  )}
-                  {!processingUserImage && userImageUri && convertToStyle && (
-                    <p className="text-xs text-purple-700 bg-purple-100 rounded px-2 py-1">Will restyle to match story style.</p>
-                  )}
-                  {userImageUri && (
-                    <div className="flex items-center gap-2 pt-2">
-                      <span className="text-xs font-medium text-gray-600">Style Conversion</span>
-                      <button
-                        type="button"
-                        onClick={() => setConvertToStyle(v => !v)}
-                        className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${convertToStyle ? 'bg-purple-600' : 'bg-gray-300'}`}
-                        role="switch"
-                        aria-checked={convertToStyle}
-                      >
-                        <span
-                          aria-hidden="true"
-                          className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ${convertToStyle ? 'translate-x-5' : 'translate-x-0'}`}
-                        />
-                      </button>
-                      <span className="text-xs text-gray-600">
-                        {convertToStyle ? `Convert the photo to the ${story.graphicalStyle || 'story'} style (uses 1 credit)` : 'Use existing photo without modification'}
-                      </span>
-                    </div>
+                  {/* Removed status badges for as-is and style conversion per request */}
+          {userImageUri && (
+                    <fieldset className="pt-2 space-y-2">
+            <legend className="text-xs font-medium text-gray-600">{tAIImageEditor('radio.legend')}</legend>
+                      <div className="flex flex-col gap-2">
+                        <label className="flex items-start gap-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="use-photo-mode"
+                            className="radio radio-primary mt-0.5"
+                            checked={!convertToStyle}
+                            onChange={() => setConvertToStyle(false)}
+                          />
+              <span className="text-xs text-gray-700 leading-snug">{tAIImageEditor('radio.asIs')}</span>
+                        </label>
+                        <label className="flex items-start gap-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="use-photo-mode"
+                            className="radio radio-primary mt-0.5"
+                            checked={convertToStyle}
+                            onChange={() => setConvertToStyle(true)}
+                          />
+              <span className="text-xs text-gray-700 leading-snug">{tAIImageEditor('radio.convert')}</span>
+                        </label>
+                      </div>
+                    </fieldset>
                   )}
                 </div>
               )}
             </div>
+            )}
 
-            {/* User Request */}
-            <div className="space-y-3">
-              <textarea
-                value={userRequest}
-                onChange={(e) => setUserRequest(e.target.value)}
-                placeholder={convertToStyle ? tAIImageEditor('requestPlaceholder') : 'Add notes (enable style conversion to use)'}
-                className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none ${!convertToStyle ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
-                rows={4}
-                maxLength={1000}
-                disabled={!convertToStyle}
-              />
-              <div className="flex justify-between text-xs text-gray-500">
-                <span>{tAIImageEditor('characterCount', { count: userRequest.length, max: 1000 })}</span>
-                {userImageUri && !convertToStyle && <span className="text-green-600">As-is mode (free)</span>}
-                {userImageUri && convertToStyle && <span className="text-purple-600">Conversion will use credits</span>}
+            {/* User Request / Prompt Section */}
+            {mode === 'edit' && (
+              <div className="space-y-3">
+                <label className="block text-sm font-medium text-gray-700">{tAIImageEditor('labels.describeChanges')}</label>
+                <textarea
+                  value={userRequest}
+                  onChange={(e) => setUserRequest(e.target.value)}
+                  placeholder={tAIImageEditor('requestPlaceholder')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none"
+                  rows={4}
+                  maxLength={1000}
+                />
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>{tAIImageEditor('characterCount', { count: userRequest.length, max: 1000 })}</span>
+                  <span className="text-primary">{tAIImageEditor('helper.editUsesCredit')}</span>
+                </div>
               </div>
-            </div>
+            )}
+            {mode === 'upload' && (
+              <div className="space-y-3">
+                <textarea
+                  value={userRequest}
+                  onChange={(e) => setUserRequest(e.target.value)}
+                  placeholder={convertToStyle ? tAIImageEditor('requestPlaceholder') : tAIImageEditor('placeholders.addNotesStyleDisabled')}
+                  className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none ${!convertToStyle ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
+                  rows={4}
+                  maxLength={1000}
+                  disabled={!convertToStyle}
+                />
+              </div>
+            )}
 
             {/* New Image Preview */}
             {newImageGenerated && (
@@ -546,25 +595,35 @@ export default function AIImageEditor({
               >
                 {tAIImageEditor('cancelButton')}
               </button>
-        {!newImageGenerated && (
-          <button
-            onClick={handleImageEdit}
-            disabled={isLoading || processingUserImage || (!convertToStyle && !userImageUri) || (convertToStyle && !userImageUri)}
-            className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center space-x-2 transition-colors"
-          >
-            {isLoading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>{tAIImageEditor('loading')}</span>
-              </>
-            ) : (
-              <>
-                <FiZap className="w-4 h-4" />
-                <span>{convertToStyle ? tAIImageEditor('generateButton') : (userImageUri ? 'Apply Photo' : tAIImageEditor('generateButton'))}</span>
-              </>
-            )}
-          </button>
-        )}
+              {!newImageGenerated && (
+                <button
+                  onClick={handleImageEdit}
+                  disabled={
+                    isLoading ||
+                    (mode === 'upload' && (processingUserImage || (!userImageUri) || (convertToStyle && !userImageUri))) ||
+                    (mode === 'edit' && !userRequest.trim())
+                  }
+                  className="px-6 py-2 btn btn-primary disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center space-x-2 transition-colors"
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>{tAIImageEditor('loading')}</span>
+                    </>
+                  ) : (
+                    <>
+          <FiZap className="w-4 h-4" />
+                      <span>
+                        {mode === 'edit'
+                          ? tAIImageEditor('generateButton')
+                          : convertToStyle
+                            ? tAIImageEditor('generateButton')
+            : (userImageUri ? tAIImageEditor('buttons.applyPhoto') : tAIImageEditor('generateButton'))}
+                      </span>
+                    </>
+                  )}
+                </button>
+              )}
             </div>
           </div>
         </div>

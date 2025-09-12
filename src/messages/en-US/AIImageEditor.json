@@ -11,6 +11,32 @@
     "newImageLabel": "New Generated Image",
     "newImageSuccess": "New image generated successfully!",
     "generatedImageAlt": "Generated Image",
+    "modes": {
+      "edit": "Edit current image",
+      "upload": "Use your photo"
+    },
+    "labels": {
+      "addYourOwnPhoto": "Add Your Own Photo",
+      "describeChanges": "Describe the changes"
+    },
+    "helper": {
+      "uploadIntro": "Drop in a photo you like. Use it unchanged for free, or turn on style to blend it with the tale’s vibe.",
+      "dragDropOrClick": "Drag & drop or click to select an image",
+      "selectImage": "Select Image",
+      "processing": "Processing...",
+      "editUsesCredit": "Uses 1 image credit"
+    },
+    "radio": {
+      "legend": "How should we use your photo?",
+      "asIs": "Using photo as‑is, no modification (free)",
+      "convert": "Convert and edit photo to the watercolor style (uses 1 credit)"
+    },
+    "placeholders": {
+      "addNotesStyleDisabled": "Add notes (enable style conversion to use)"
+    },
+    "buttons": {
+      "applyPhoto": "Apply Photo"
+    },
     "errors": {
       "describeChanges": "Please describe the changes you want to make to the image",
       "unableToCheckCredits": "Unable to check credits. Please try again.",
@@ -21,6 +47,13 @@
       "cover": "Cover",
       "backcover": "Back Cover",
       "chapter": "Chapter {number}"
+    },
+    "cropper": {
+      "title": "Crop Image to 1024x1536 (Portrait)",
+      "zoom": "Zoom {value}x",
+      "cancel": "Cancel",
+      "crop": "Crop",
+      "processing": "Processing..."
     }
   }
 }

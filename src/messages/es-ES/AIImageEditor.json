@@ -11,6 +11,32 @@
     "newImageLabel": "Nueva imagen generada",
     "newImageSuccess": "¡Imagen nueva generada, qué pasada!",
     "generatedImageAlt": "Imagen generada",
+    "modes": {
+      "edit": "Editar imagen actual",
+      "upload": "Usar tu foto"
+    },
+    "labels": {
+      "addYourOwnPhoto": "Añade tu Foto",
+      "describeChanges": "Describe los cambios"
+    },
+    "helper": {
+      "uploadIntro": "Suelta una foto que te guste. Úsala tal cual (gratis) o dale estilo para que respire la magia del cuento.",
+      "dragDropOrClick": "Arrastra y suelta o haz clic para elegir imagen",
+      "selectImage": "Seleccionar Imagen",
+      "processing": "Procesando...",
+      "editUsesCredit": "Usa 1 crédito de imagen"
+    },
+    "radio": {
+      "legend": "¿Cómo usamos tu foto?",
+      "asIs": "Usar la foto tal cual, sin cambios (gratis)",
+      "convert": "Convertir y editar la foto al estilo acuarela (usa 1 crédito)"
+    },
+    "placeholders": {
+      "addNotesStyleDisabled": "Añade notas (activa la conversión para usar)"
+    },
+    "buttons": {
+      "applyPhoto": "Aplicar Foto"
+    },
     "errors": {
       "describeChanges": "Describe los cambios que quieres hacer en la imagen",
       "unableToCheckCredits": "No se pueden comprobar los créditos. Inténtalo de nuevo.",
@@ -21,6 +47,13 @@
       "cover": "Portada",
       "backcover": "Contraportada",
       "chapter": "Capítulo {number}"
+    },
+    "cropper": {
+      "title": "Recortar imagen a 1024x1536 (Vertical)",
+      "zoom": "Zoom {value}x",
+      "cancel": "Cancelar",
+      "crop": "Recortar",
+      "processing": "Procesando..."
     }
   }
 }

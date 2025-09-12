@@ -1,6 +1,6 @@
 {
   "AIImageEditor": {
-  "title": "Éditeur d'image AI - {imageType}",
+    "title": "Éditeur d'image IA - {imageType}",
     "currentImage": "Image actuelle:",
     "requestPlaceholder": "Décrivez comment vous souhaitez modifier cette image ...",
     "characterCount": "{count} / {max} caractères",
@@ -11,6 +11,32 @@
     "newImageLabel": "Nouvelle image générée",
     "newImageSuccess": "Nouvelle image générée avec succès!",
     "generatedImageAlt": "Image générée",
+    "modes": {
+      "edit": "Modifier l'image actuelle",
+      "upload": "Utiliser ta photo"
+    },
+    "labels": {
+      "addYourOwnPhoto": "Ajoute ta Photo",
+      "describeChanges": "Décris les changements"
+    },
+    "helper": {
+      "uploadIntro": "Dépose une photo que tu aimes. Utilise-la telle quelle (gratuit) ou applique un style pour coller à l'esprit de l'histoire.",
+      "dragDropOrClick": "Glisser-déposer ou cliquer pour choisir une image",
+      "selectImage": "Sélectionner l'image",
+      "processing": "Traitement...",
+      "editUsesCredit": "Utilise 1 crédit image"
+    },
+    "radio": {
+      "legend": "Comment utiliser ta photo ?",
+      "asIs": "Utiliser la photo telle quelle, sans modification (gratuit)",
+      "convert": "Convertir et éditer la photo en style aquarelle (utilise 1 crédit)"
+    },
+    "placeholders": {
+      "addNotesStyleDisabled": "Ajouter des notes (activer la conversion pour utiliser)"
+    },
+    "buttons": {
+      "applyPhoto": "Appliquer la Photo"
+    },
     "errors": {
       "describeChanges": "Veuillez décrire les modifications que vous souhaitez apporter à l'image",
       "unableToCheckCredits": "Impossible de vérifier les crédits. Veuillez réessayer.",
@@ -20,7 +46,14 @@
     "imageTypes": {
       "cover": "Couverture",
       "backcover": "Couverture arrière",
-  "chapter": "Chapitre {number}"
+      "chapter": "Chapitre {number}"
+    },
+    "cropper": {
+      "title": "Rogner l'image à 1024x1536 (Portrait)",
+      "zoom": "Zoom {value}x",
+      "cancel": "Annuler",
+      "crop": "Rogner",
+      "processing": "Traitement..."
     }
   }
 }

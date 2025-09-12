@@ -49,7 +49,7 @@ export async function getStoryImagesFromStorage(storyId: string): Promise<Record
       }
     }
 
-    console.log(`Found ${Object.keys(mediaLinks).length} images for story ${storyId}:`, Object.keys(mediaLinks));
+    // (Removed verbose debug logging of discovered image filenames)
     
     return mediaLinks;
   } catch (error) {

@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import Cropper from 'react-easy-crop';
 import { FiX } from 'react-icons/fi';
 
@@ -24,6 +25,7 @@ export default function CropperModal({
   onCancel,
   processing,
 }: CropperProps) {
+  const t = useTranslations('AIImageEditor.cropper');
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedArea, setCroppedArea] = useState<CropArea | null>(null);
@@ -42,7 +44,7 @@ export default function CropperModal({
     <div className="fixed inset-0 z-[60] bg-black/60 flex items-center justify-center p-6">
       <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl h-[80vh] flex flex-col">
         <div className="p-4 border-b flex items-center justify-between">
-          <h3 className="font-semibold text-gray-800 text-sm">Crop Image to 1024x1536 (Portrait)</h3>
+          <h3 className="font-semibold text-gray-800 text-sm">{t('title')}</h3>
           <button onClick={onCancel} className="p-2 rounded hover:bg-gray-100">
             <FiX className="w-4 h-4" />
           </button>
@@ -74,16 +76,16 @@ export default function CropperModal({
               onChange={(e) => setZoom(Number(e.target.value))}
               className="w-full"
             />
-            <span className="text-xs text-gray-500 w-16 text-right">Zoom {zoom.toFixed(2)}x</span>
+            <span className="text-xs text-gray-500 w-20 text-right">{t('zoom', { value: zoom.toFixed(2) })}</span>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={onCancel} className="w-28 px-4 py-2 text-sm rounded-md border border-gray-300 hover:bg-gray-50">Cancel</button>
+            <button onClick={onCancel} className="w-28 px-4 py-2 text-sm rounded-md border border-gray-300 hover:bg-gray-50">{t('cancel')}</button>
             <button
               onClick={handleConfirm}
               disabled={processing}
               className="w-28 px-4 py-2 text-sm rounded-md bg-purple-600 text-white hover:bg-purple-700 disabled:bg-gray-300"
             >
-              {processing ? 'Processing...' : 'Crop'}
+              {processing ? t('processing') : t('crop')}
             </button>
           </div>
         </div>

@@ -139,6 +139,7 @@ When the user presses the Character Icon (even if it is an photo), open a modal 
 
 ----
 
+For design, we use DaisyUI, TailwindCSS and react-icons. The design must follow the existing UI design and be beautifuly simple and clear.
 When generating user facing text, take in consideration that Mythoria voice, represents a very young man (early 20's) and is:
 - A direct and clear voice, but also playful and warm.
 - You may use emojis—very sparingly—and only when they help add emphasis.

@@ -70,9 +70,13 @@ export function useStoriesTable(pageSize = Infinity) {
     return sorted;
   }, [stories, sortField, sortDirection]);
 
-  const pageCount = Math.ceil(sortedStories.length / pageSize);
+  // When pageSize is Infinity the previous implementation produced an empty array because:
+  // start = (currentPage-1) * Infinity => 0 * Infinity = NaN, end = NaN + Infinity = NaN, slice(NaN, NaN) => slice(0,0)
+  // Handle Infinity explicitly so all stories show.
+  const pageCount = pageSize === Infinity ? 1 : Math.ceil(sortedStories.length / pageSize);
   const paginatedStories = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
+    if (pageSize === Infinity) return sortedStories;
+    const start = (currentPage - 1) * pageSize; // currentPage starts at 1
     return sortedStories.slice(start, start + pageSize);
   }, [sortedStories, currentPage, pageSize]);
 
