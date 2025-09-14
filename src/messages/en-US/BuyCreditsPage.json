@@ -25,8 +25,8 @@
     },
     "payment": {
       "title": "Payment Method",
-      "revolutPay": "Revolut Pay",
-      "revolutDescription": "Fast and secure payment with Revolut. Pay with your bank card or Revolut account.",
+      "revolutPay": "Pay with Card (Visa, Mastercard)",
+      "revolutDescription": "Fast and secure checkout powered by Revolut Pay. No account required.",
       "revolutError": "Payment Error",
       "revolutErrorHelp": "If you continue to experience issues, please try using a different payment method or contact support.",
       "mbway": "MB Way",

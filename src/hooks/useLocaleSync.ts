@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useLocale } from 'next-intl';

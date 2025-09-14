@@ -156,23 +156,3 @@ The current application supports the following locales:
 PLEASE ANALYZE VERY CAREFULLY WHAT AS BEEN REQUESTED.
 LOOK THROUGHLY INTO THE EXISTING CODE TO UNDERSTAND WHAT EXISTS.
 IF YOU HAVE ANY QUESTIONS OR SUGGESTIONS, PLEASE ASK (PROMPT) ME BEFORE START CODING.
-
---------------------
-
-# Fix empty "My Story" stories
-On the tell-your-story form, after the user goes from step-2 to step-3, if the user to not provide any input, to be used by the story-structurer API call, a new story is created the the title My story.
-
-If the user doesn't continue with the rest of the process, the user stays with an empty story, named "My story" (not translated) created on his account.
-If he goes back on the form and forward again, a new empty "My Story" is created.
-
-To avoid this we need to:
-## Extend story status enum
-We need to extend the `storyStatusEnum`, located here `src\db\schema\enums.ts`, and add a new Enaum `temporary`.
-When we first create a new Story, on the `src\app\[locale]\tell-your-story\step-2\page.tsx`, we must create the story with the status `temporary`.
-Only, after adding a new character or the `storyStructurer` API called, returned some data, like `title` and other information, the story changes to the status `draft`.
-
-## Hide temporary stories
-When the user access the My-stories `src\app\[locale]\my-stories\page.tsx` page, add a control that:
-1. Do not list stories marked with the status `temporary`.
-
-## Clean temporary stories

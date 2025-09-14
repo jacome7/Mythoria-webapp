@@ -200,3 +200,11 @@ export const audienceForStoriesEnum = pgEnum('audience_for_stories', [
   'a_friend',
   'varies'
 ]);
+
+// Notification preferences for user communication cadence/content
+// 'inspiration' is the default (balanced helpful tips)
+export const notificationPreferenceEnum = pgEnum('notification_preference', [
+  'essential',    // Only critical account & story updates
+  'inspiration',  // Tips & ideas (default)
+  'news'          // Product news & special promos
+]);

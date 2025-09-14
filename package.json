@@ -28,6 +28,7 @@
     "i18n:keys": "tsx scripts/generate-translation-keys.ts",
     "test": "cross-env NODE_OPTIONS=--no-deprecation jest",
     "test:e2e": "playwright test",
+    "test:e2e:anon": "cross-env SKIP_AUTH_SETUP=1 playwright test tests/playwright/missing-translations_anonymous.spec.ts --workers=1",
     "check:env": "tsx ./scripts/check-env-parity.ts"
   },
   "sideEffects": false,

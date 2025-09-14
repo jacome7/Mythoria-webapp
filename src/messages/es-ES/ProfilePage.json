@@ -62,6 +62,25 @@
       "pt-PT": "Portugués (Portugal)",
       "es-ES": "Español (España)",
       "fr-FR": "Francés (Francia)"
+    },
+    "notifications": {
+      "title": "Tus notificaciones",
+      "intro": "Elige cuánto quieres que hablemos. Nunca llenaremos tu bandeja.",
+      "label": "Nivel de notificaciones",
+      "options": {
+        "essential": {
+          "label": "Lo Esencial",
+          "description": "Solo tu cuenta y actividad de historias. Silencio monástico."
+        },
+        "inspiration": {
+          "label": "Inspiración",
+          "description": "Consejos e ideas para tus próximos libros. Una brisa creativa suave — este es el predeterminado."
+        },
+        "news": {
+          "label": "Novedades",
+          "description": "Todo lo anterior más noticias del producto y promociones especiales — como un pregonero amistoso."
+        }
+      }
     }
   }
 }

@@ -5,6 +5,13 @@ import path from 'path';
 // Auth storage state (gitignored)
 const authFile = 'tests/playwright/.auth/user.json';
 
+// Allow completely skipping auth setup for anonymous-only test runs.
+// Usage: set SKIP_AUTH_SETUP=1 (PowerShell: $env:SKIP_AUTH_SETUP="1") before running Playwright.
+if (process.env.SKIP_AUTH_SETUP === '1') {
+  // Mark the single test in this file as skipped immediately.
+  setup.skip(true, 'SKIP_AUTH_SETUP=1 -> skipping authentication setup for anonymous tests.');
+}
+
 // Allow skipping a fresh existing auth file so we don't force a manual login every run.
 // Controls:
 //   REFRESH_AUTH=1  -> force re-auth regardless of file age

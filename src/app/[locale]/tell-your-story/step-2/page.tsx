@@ -82,6 +82,28 @@ export default function Step2Page() {
       const { story } = await response.json();
       localStorage.setItem("currentStoryId", story.storyId);
 
+      // If user selected existing characters, immediately associate them with the story
+      // so that step 3 can load them even if GenAI structuring is skipped.
+      if (selectedCharacterIds.length > 0) {
+        try {
+          await Promise.all(
+            selectedCharacterIds.map(async (characterId) => {
+              try {
+                await fetch(`/api/stories/${story.storyId}/characters`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ characterId }),
+                });
+              } catch (e) {
+                console.warn("Failed to link character to story", characterId, e);
+              }
+            }),
+          );
+        } catch (e) {
+          console.warn("One or more characters failed to link to story", e);
+        }
+      }
+
       // Process with GenAI if any content provided
       if (storyText.trim() || uploadedImages.length > 0 || uploadedAudio) {
         console.log("Processing content with GenAI (signed uploads)...");

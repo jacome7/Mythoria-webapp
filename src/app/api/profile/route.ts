@@ -27,6 +27,7 @@ type ProfilePatchPayload = Partial<{
   fiscalNumber: string | null;
   mobilePhone: string | null;
   preferredLocale: string | null;
+  notificationPreference: Author['notificationPreference'];
 }>;
 
 function sanitizeInterests(interests: unknown): string[] | undefined {
@@ -53,6 +54,7 @@ export async function GET() {
       primaryGoalOther: author.primaryGoalOther,
       audiences: author.audiences || [],
       interests: author.interests || []
+      ,notificationPreference: author.notificationPreference
     }
   });
 }
@@ -67,7 +69,7 @@ export async function PATCH(req: NextRequest) {
     const body: ProfilePatchPayload = await req.json();
 
     // Validation
-    const updates: Partial<Pick<Author, 'displayName' | 'gender' | 'literaryAge' | 'primaryGoals' | 'primaryGoalOther' | 'audiences' | 'interests' | 'fiscalNumber' | 'mobilePhone' | 'preferredLocale'>> = {};
+  const updates: Partial<Pick<Author, 'displayName' | 'gender' | 'literaryAge' | 'primaryGoals' | 'primaryGoalOther' | 'audiences' | 'interests' | 'fiscalNumber' | 'mobilePhone' | 'preferredLocale' | 'notificationPreference'>> = {};
 
     if (body.displayName !== undefined) {
       const name = body.displayName.trim();
@@ -148,6 +150,11 @@ export async function PATCH(req: NextRequest) {
       updates.preferredLocale = pl || null;
     }
 
+    if (body.notificationPreference !== undefined) {
+      // Value constrained by enum at DB, just basic presence validation
+      updates.notificationPreference = body.notificationPreference;
+    }
+
     if (Object.keys(updates).length === 0) {
       return NextResponse.json({ success: true, author });
     }
@@ -199,6 +206,7 @@ export async function PATCH(req: NextRequest) {
         primaryGoalOther: updated.primaryGoalOther,
         audiences: updated.audiences || [],
         interests: updated.interests || []
+        ,notificationPreference: updated.notificationPreference
       }
     });
   } catch (err) {

@@ -62,6 +62,25 @@
       "pt-PT": "Portugais (Portugal)",
       "es-ES": "Espagnol (Espagne)",
       "fr-FR": "Français (France)"
+    },
+    "notifications": {
+      "title": "Vos notifications",
+      "intro": "Choisissez notre niveau de bavardage. Nous ne noierons jamais votre boîte mail.",
+      "label": "Niveau de notifications",
+      "options": {
+        "essential": {
+          "label": "L'Essentiel",
+          "description": "Uniquement votre compte et l'activité de vos histoires. Silence feutré de bibliothèque."
+        },
+        "inspiration": {
+          "label": "Inspiration",
+          "description": "Astuces et idées pour vos prochains livres. Une douce brise créative — valeur par défaut."
+        },
+        "news": {
+          "label": "Actus & Magie",
+          "description": "Tout cela plus nouveautés produit et promos spéciales — tel un héraut bienveillant."
+        }
+      }
     }
   }
 }

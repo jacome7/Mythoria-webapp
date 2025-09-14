@@ -16,6 +16,7 @@ import BillingInformation from "@/components/BillingInformation";
 import CartView from "@/components/CartView";
 import PaymentSelector from "@/components/PaymentSelector";
 import RevolutPayment from "@/components/RevolutPayment";
+import MbwayPaymentModal from "@/components/MbwayPaymentModal";
 import { useCart } from "@/hooks/useCart";
 import { trackCommerce } from "@/lib/analytics";
 import { mapRevolutError } from "@/utils/payment/revolut-error-mapping";
@@ -52,6 +53,10 @@ function BuyCreditsContent() {
   const [creditPackages, setCreditPackages] = useState<CreditPackage[]>([]);
   const [packagesLoading, setPackagesLoading] = useState(true);
   const [packagesError, setPackagesError] = useState<string | null>(null);
+  // MB Way modal state
+  const [showMbwayModal, setShowMbwayModal] = useState(false);
+  const [mbwayPaymentCode, setMbwayPaymentCode] = useState<string>("#XXXX");
+  const [mbwayAmount, setMbwayAmount] = useState<number>(0);
 
   // Ref for cart items section
   const cartItemsRef = useRef<HTMLDivElement>(null);
@@ -308,29 +313,15 @@ function BuyCreditsContent() {
       console.log("Order created successfully:", data);
 
       if (selectedPayment === "mbway") {
-        // For MB Way, show success message and redirect
-        setPaymentStatus("success");
-        setPaymentMessage(tBuyCreditsPage("payment.mbwaySuccess"));
-
-        // Calculate total credits purchased for analytics
-        const totalCredits = cart.reduce((total, item) => {
-          const pkg = getPackageById(item.packageId);
-          return total + (pkg ? pkg.credits * item.quantity : 0);
-        }, 0);
-
-        // Track credit purchase in analytics
-        trackCommerce.creditPurchase({
-          purchase_amount: total,
-          credits_purchased: totalCredits,
-        });
-
-        // Clear cart and reset form
-        clearCart();
-
-        // Redirect to my stories page after a short delay
-        setTimeout(() => {
-          window.location.href = `/${locale}/my-stories`;
-        }, 3000);
+        // Backend returns ticketNumber (e.g., 'A5CD'); display with leading '#'
+        const rawCode: string | undefined = data.ticketNumber || data.ticketId || data.paymentCode;
+        const formattedCode = rawCode ? `#${rawCode.replace(/^#/, "")}` : "#----";
+        setMbwayPaymentCode(formattedCode);
+        setMbwayAmount(data.amount ?? total);
+        setShowMbwayModal(true);
+        // We intentionally do not mark payment as success yet; it's pending manual action
+        setPaymentStatus("idle");
+        setPaymentMessage("");
       } else {
         // Store order details for other payment methods
         setOrderToken(data.orderToken);
@@ -426,265 +417,277 @@ function BuyCreditsContent() {
     setOrderAmount(null);
   };
   return (
-    <div className="min-h-screen bg-base-100 text-base-content">
-      <div className="container mx-auto px-4 py-12">
-        {!isMounted ? (
-          // Loading state to prevent hydration mismatch
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-primary mb-4">
-              {tBuyCreditsPage("header.title")}
-            </h1>
-            <div className="flex justify-center items-center min-h-96">
-              <span className="loading loading-spinner loading-lg"></span>
-            </div>
-          </div>
-        ) : (
-          <>
-            <SignedOut>
-              <div className="text-center space-y-6">
-                <h1 className="text-4xl font-bold">
-                  {tBuyCreditsPage("header.title")}
-                </h1>
-                <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                  {tMyStoriesPage("signedOut.needSignIn")}
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link href={`/${locale}/sign-in`} className="btn btn-primary">
-                    {tMyStoriesPage("signedOut.signIn")}
-                  </Link>
-                  <Link href={`/${locale}/sign-up`} className="btn btn-outline">
-                    {tMyStoriesPage("signedOut.createAccount")}
-                  </Link>
-                </div>
+    <>
+      <div className="min-h-screen bg-base-100 text-base-content">
+        <div className="container mx-auto px-4 py-12">
+          {!isMounted ? (
+            // Loading state to prevent hydration mismatch
+            <div className="text-center">
+              <h1 className="text-4xl font-bold text-primary mb-4">
+                {tBuyCreditsPage("header.title")}
+              </h1>
+              <div className="flex justify-center items-center min-h-96">
+                <span className="loading loading-spinner loading-lg"></span>
               </div>
-            </SignedOut>
-            <SignedIn>
-              {/* Header Section */}
-              <header className="text-center mb-16">
-                <h1 className="text-5xl font-bold text-primary">
-                  {tBuyCreditsPage("header.title")}
-                </h1>
-                <p className="text-xl mt-4 text-gray-700">
-                  {tBuyCreditsPage("header.subtitle")}
-                </p>
-              </header>
-
-              <div className="grid lg:grid-cols-2 gap-12">
-                {/* Left Side - Available Packages */}
-                <div>
-                  <h2 className="text-2xl font-bold mb-6">
-                    {tBuyCreditsPage("packages.title")}
-                  </h2>
-                  {packagesLoading ? (
-                    <div className="flex justify-center items-center py-12">
-                      <span className="loading loading-spinner loading-lg"></span>
-                    </div>
-                  ) : packagesError ? (
-                    <div className="alert alert-error">
-                      <FaExclamationTriangle />
-                      <span>{packagesError}</span>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {creditPackages.map((pkg) => (
-                        <div
-                          key={pkg.id}
-                          className={`card bg-base-200 shadow-lg border-2 ${pkg.bestValue ? "border-accent" : pkg.popular ? "border-secondary" : "border-transparent"}`}
-                        >
-                          {pkg.bestValue && (
-                            <div className="badge badge-accent absolute -top-3 -right-3 p-2">
-                              {tBuyCreditsPage("badges.bestValue")}
-                            </div>
-                          )}
-                          {pkg.popular && (
-                            <div className="badge badge-secondary absolute -top-3 -right-3 p-2">
-                              {tBuyCreditsPage("badges.popular")}
-                            </div>
-                          )}
-                          <div className="card-body">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-4">
-                                <div className="text-3xl text-primary">
-                                  {getIconComponent(pkg.icon)}
-                                </div>
-                                <div>
-                                  <h3 className="text-xl font-bold">
-                                    {pkg.credits}{" "}
-                                    {tPricingPage("creditPackages.credits")}
-                                  </h3>
-                                  <p className="text-lg font-semibold text-primary">
-                                    €{pkg.price.toFixed(2)}
-                                  </p>
-                                </div>
-                              </div>
-                              <button
-                                onClick={() => handleAddToCart(pkg.id)}
-                                className="btn btn-primary"
-                              >
-                                {tBuyCreditsPage("packages.addToCart")}
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Right Side - Shopping Cart */}
-                <div>
-                  <CartView
-                    cart={cart}
-                    creditPackages={creditPackages}
-                    tBuyCreditsPage={tBuyCreditsPage}
-                    tPricingPage={tPricingPage}
-                    updateQuantity={updateQuantity}
-                    removeFromCart={removeFromCart}
-                    subtotal={subtotal}
-                    vatAmount={vatAmount}
-                    total={total}
-                    cartItemsRef={cartItemsRef}
-                  />
-
-                  {/* Billing Information */}
-                  {cart.length > 0 && <BillingInformation />}
-
-                  {/* Payment Status Messages */}
-                  {paymentStatus !== "idle" && (
-                    <div
-                      className={`mb-6 ${
-                        paymentStatus === "success"
-                          ? "alert alert-success"
-                          : paymentStatus === "error"
-                            ? "bg-error/10 border border-error/20 rounded-lg p-4"
-                            : "alert alert-info"
-                      }`}
-                    >
-                      <div className="flex items-center space-x-2">
-                        {paymentStatus === "success" && <FaCheckCircle />}
-                        {paymentStatus === "error" && (
-                          <FaExclamationTriangle className="text-error" />
-                        )}
-                        {paymentStatus === "processing" && (
-                          <span className="loading loading-spinner loading-sm"></span>
-                        )}
-                        <span
-                          className={
-                            paymentStatus === "error" ? "text-error" : ""
-                          }
-                        >
-                          {paymentMessage}
-                        </span>
-                      </div>
-                      {paymentStatus === "error" && (
-                        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-3">
-                          <button
-                            onClick={resetPayment}
-                            className="btn btn-sm btn-outline"
-                          >
-                            {tBuyCreditsPage("actions.tryAgain")}
-                          </button>
-                          {(
-                            window as Window & { mbwayErrorContactUrl?: string }
-                          ).mbwayErrorContactUrl && (
-                            <a
-                              href={
-                                (
-                                  window as Window & {
-                                    mbwayErrorContactUrl?: string;
-                                  }
-                                ).mbwayErrorContactUrl
-                              }
-                              className="btn btn-sm btn-secondary"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              {tBuyCreditsPage("actions.contactSupport")}
-                            </a>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Payment Section */}
-                  {cart.length > 0 && paymentStatus !== "success" && (
-                    <div className="bg-base-200 rounded-lg p-6 mb-6">
-                      <h3 className="text-lg font-bold mb-4">
-                        {tBuyCreditsPage("payment.title")}
-                      </h3>
-
-                      {!orderToken ? (
-                        <PaymentSelector
-                          selected={selectedPayment}
-                          onSelect={(value) => setSelectedPayment(value)}
-                          t={tBuyCreditsPage}
-                        />
-                      ) : (
-                        // Revolut Payment Widget
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between">
-                            <h4 className="font-semibold">
-                              {tBuyCreditsPage("payment.completePayment")}
-                            </h4>
-                            <button
-                              onClick={resetPayment}
-                              className="btn btn-sm btn-outline"
-                              disabled={paymentStatus === "processing"}
-                            >
-                              {tBuyCreditsPage("actions.cancel")}
-                            </button>
-                          </div>
-
-                          <RevolutPayment
-                            orderToken={orderToken}
-                            orderAmount={orderAmount || undefined}
-                            onPaymentSuccess={handlePaymentSuccess}
-                            onPaymentError={handlePaymentError}
-                            onPaymentCancel={handlePaymentCancel}
-                            disabled={paymentStatus === "processing"}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Place Order Button */}
-                  {cart.length > 0 &&
-                    !orderToken &&
-                    paymentStatus !== "success" && (
-                      <button
-                        disabled={!selectedPayment || isCreatingOrder}
-                        onClick={handlePlaceOrder}
-                        className="btn btn-primary btn-lg w-full"
-                      >
-                        {isCreatingOrder ? (
-                          <>
-                            <span className="loading loading-spinner loading-sm"></span>
-                            {tBuyCreditsPage("actions.creatingOrder")}
-                          </>
-                        ) : (
-                          <>
-                            {tBuyCreditsPage("actions.proceedToPayment")} - €
-                            {total.toFixed(2)}
-                          </>
-                        )}
-                      </button>
-                    )}
-
-                  {/* Back to Pricing */}
-                  <div className="mt-6 text-center">
-                    <Link href="/pricing" className="btn btn-outline">
-                      {tBuyCreditsPage("actions.backToPricing")}
+            </div>
+          ) : (
+            <>
+              <SignedOut>
+                <div className="text-center space-y-6">
+                  <h1 className="text-4xl font-bold">
+                    {tBuyCreditsPage("header.title")}
+                  </h1>
+                  <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                    {tMyStoriesPage("signedOut.needSignIn")}
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Link href={`/${locale}/sign-in`} className="btn btn-primary">
+                      {tMyStoriesPage("signedOut.signIn")}
+                    </Link>
+                    <Link href={`/${locale}/sign-up`} className="btn btn-outline">
+                      {tMyStoriesPage("signedOut.createAccount")}
                     </Link>
                   </div>
                 </div>
-              </div>
-            </SignedIn>
-          </>
-        )}
+              </SignedOut>
+              <SignedIn>
+                {/* Header Section */}
+                <header className="text-center mb-16">
+                  <h1 className="text-5xl font-bold text-primary">
+                    {tBuyCreditsPage("header.title")}
+                  </h1>
+                  <p className="text-xl mt-4 text-gray-700">
+                    {tBuyCreditsPage("header.subtitle")}
+                  </p>
+                </header>
+
+                <div className="grid lg:grid-cols-2 gap-12">
+                  {/* Left Side - Available Packages */}
+                  <div>
+                    <h2 className="text-2xl font-bold mb-6">
+                      {tBuyCreditsPage("packages.title")}
+                    </h2>
+                    {packagesLoading ? (
+                      <div className="flex justify-center items-center py-12">
+                        <span className="loading loading-spinner loading-lg"></span>
+                      </div>
+                    ) : packagesError ? (
+                      <div className="alert alert-error">
+                        <FaExclamationTriangle />
+                        <span>{packagesError}</span>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {creditPackages.map((pkg) => (
+                          <div
+                            key={pkg.id}
+                            className={`card bg-base-200 shadow-lg border-2 ${pkg.bestValue ? "border-accent" : pkg.popular ? "border-secondary" : "border-transparent"}`}
+                          >
+                            {pkg.bestValue && (
+                              <div className="badge badge-accent absolute -top-3 -right-3 p-2">
+                                {tBuyCreditsPage("badges.bestValue")}
+                              </div>
+                            )}
+                            {pkg.popular && (
+                              <div className="badge badge-secondary absolute -top-3 -right-3 p-2">
+                                {tBuyCreditsPage("badges.popular")}
+                              </div>
+                            )}
+                            <div className="card-body">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-4">
+                                  <div className="text-3xl text-primary">
+                                    {getIconComponent(pkg.icon)}
+                                  </div>
+                                  <div>
+                                    <h3 className="text-xl font-bold">
+                                      {pkg.credits}{" "}
+                                      {tPricingPage("creditPackages.credits")}
+                                    </h3>
+                                    <p className="text-lg font-semibold text-primary">
+                                      €{pkg.price.toFixed(2)}
+                                    </p>
+                                  </div>
+                                </div>
+                                <button
+                                  onClick={() => handleAddToCart(pkg.id)}
+                                  className="btn btn-primary"
+                                >
+                                  {tBuyCreditsPage("packages.addToCart")}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Right Side - Shopping Cart */}
+                  <div>
+                    <CartView
+                      cart={cart}
+                      creditPackages={creditPackages}
+                      tBuyCreditsPage={tBuyCreditsPage}
+                      tPricingPage={tPricingPage}
+                      updateQuantity={updateQuantity}
+                      removeFromCart={removeFromCart}
+                      subtotal={subtotal}
+                      vatAmount={vatAmount}
+                      total={total}
+                      cartItemsRef={cartItemsRef}
+                    />
+
+                    {/* Billing Information */}
+                    {cart.length > 0 && <BillingInformation />}
+
+                    {/* Payment Status Messages */}
+                    {paymentStatus !== "idle" && (
+                      <div
+                        className={`mb-6 ${
+                          paymentStatus === "success"
+                            ? "alert alert-success"
+                            : paymentStatus === "error"
+                              ? "bg-error/10 border border-error/20 rounded-lg p-4"
+                              : "alert alert-info"
+                        }`}
+                      >
+                        <div className="flex items-center space-x-2">
+                          {paymentStatus === "success" && <FaCheckCircle />}
+                          {paymentStatus === "error" && (
+                            <FaExclamationTriangle className="text-error" />
+                          )}
+                          {paymentStatus === "processing" && (
+                            <span className="loading loading-spinner loading-sm"></span>
+                          )}
+                          <span
+                            className={
+                              paymentStatus === "error" ? "text-error" : ""
+                            }
+                          >
+                            {paymentMessage}
+                          </span>
+                        </div>
+                        {paymentStatus === "error" && (
+                          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-3">
+                            <button
+                              onClick={resetPayment}
+                              className="btn btn-sm btn-outline"
+                            >
+                              {tBuyCreditsPage("actions.tryAgain")}
+                            </button>
+                            {(
+                              window as Window & { mbwayErrorContactUrl?: string }
+                            ).mbwayErrorContactUrl && (
+                              <a
+                                href={
+                                  (
+                                    window as Window & {
+                                      mbwayErrorContactUrl?: string;
+                                    }
+                                  ).mbwayErrorContactUrl
+                                }
+                                className="btn btn-sm btn-secondary"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {tBuyCreditsPage("actions.contactSupport")}
+                              </a>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Payment Section */}
+                    {cart.length > 0 && paymentStatus !== "success" && (
+                      <div className="bg-base-200 rounded-lg p-6 mb-6">
+                        <h3 className="text-lg font-bold mb-4">
+                          {tBuyCreditsPage("payment.title")}
+                        </h3>
+
+                        {!orderToken ? (
+                          <PaymentSelector
+                            selected={selectedPayment}
+                            onSelect={(value) => setSelectedPayment(value)}
+                            t={tBuyCreditsPage}
+                          />
+                        ) : (
+                          // Revolut Payment Widget
+                          <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                              <h4 className="font-semibold">
+                                {tBuyCreditsPage("payment.completePayment")}
+                              </h4>
+                              <button
+                                onClick={resetPayment}
+                                className="btn btn-sm btn-outline"
+                                disabled={paymentStatus === "processing"}
+                              >
+                                {tBuyCreditsPage("actions.cancel")}
+                              </button>
+                            </div>
+
+                            <RevolutPayment
+                              orderToken={orderToken}
+                              orderAmount={orderAmount || undefined}
+                              onPaymentSuccess={handlePaymentSuccess}
+                              onPaymentError={handlePaymentError}
+                              onPaymentCancel={handlePaymentCancel}
+                              disabled={paymentStatus === "processing"}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Place Order Button */}
+                    {cart.length > 0 &&
+                      !orderToken &&
+                      paymentStatus !== "success" && (
+                        <button
+                          disabled={!selectedPayment || isCreatingOrder}
+                          onClick={handlePlaceOrder}
+                          className="btn btn-primary btn-lg w-full"
+                        >
+                          {isCreatingOrder ? (
+                            <>
+                              <span className="loading loading-spinner loading-sm"></span>
+                              {tBuyCreditsPage("actions.creatingOrder")}
+                            </>
+                          ) : (
+                            <>
+                              {tBuyCreditsPage("actions.proceedToPayment")} - €
+                              {total.toFixed(2)}
+                            </>
+                          )}
+                        </button>
+                      )}
+
+                    {/* Back to Pricing */}
+                    <div className="mt-6 text-center">
+                      <Link href="/pricing" className="btn btn-outline">
+                        {tBuyCreditsPage("actions.backToPricing")}
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </SignedIn>
+            </>
+          )}
+        </div>
       </div>
-    </div>
+      <MbwayPaymentModal
+        open={showMbwayModal}
+        onClose={() => {
+          setShowMbwayModal(false);
+          // After closing, clear cart to avoid duplicate attempts
+          if (cart.length > 0) clearCart();
+        }}
+        amount={mbwayAmount}
+        paymentCode={mbwayPaymentCode}
+      />
+    </>
   );
 }
 

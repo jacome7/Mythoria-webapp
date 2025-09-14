@@ -41,18 +41,21 @@ export default function CharacterSelection({ onChange }: Props) {
   }, []);
 
   const toggle = (id: string) => {
-    setSelectedIds(prev => {
-      const next = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id];
-      onChange(next);
-      return next;
-    });
+    // Do not call onChange inside the state updater (runs during render) – causes React warning
+    setSelectedIds(prev => (
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    ));
   };
 
   const selectAll = () => {
     const ids = existingCharacters.map(c => c.characterId);
     setSelectedIds(ids);
-    onChange(ids);
   };
+
+  // Notify parent of selection changes after render commit (safe side-effect phase)
+  useEffect(() => {
+    onChange(selectedIds);
+  }, [selectedIds, onChange]);
 
   if (existingCharacters.length === 0 && !isLoading) {
     return null;

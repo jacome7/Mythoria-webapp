@@ -1,0 +1,17 @@
+{
+  "MbwayModal": {
+    "title": "On y est presque ! Plus qu'une étape...",
+    "intro": "Pour finaliser ton achat, ouvre ton appli MB Way et fais un virement avec ces informations exactes :",
+    "fields": {
+      "amount": "Montant",
+      "phone": "Envoyer à (Numéro de téléphone)",
+      "code": "Description (Code de référence)"
+    },
+    "warning": {
+      "title": "Attention !",
+      "body": "Tu dois inclure le code dans le champ description. C'est comme ça qu'on sait que les crédits sont pour toi."
+    },
+    "footnote": "Comme c'est un traitement manuel, tes crédits seront ajoutés sous 12 heures. On t'enverra un email dès que ce sera prêt. Si tu veux aller plus vite, écris-nous sur WhatsApp et on tentera un peu de magie.",
+    "close": "Parfait, compris !"
+  }
+}

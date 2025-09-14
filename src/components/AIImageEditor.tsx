@@ -413,17 +413,23 @@ export default function AIImageEditor({
             <div className="flex gap-2" role="tablist">
               <button
                 type="button"
+                role="tab"
                 onClick={() => setMode('edit')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${mode === 'edit' ? 'bg-primary text-white border-primary' : 'bg-base-100 text-base-content border-base-300 hover:bg-base-200'}`}
                 aria-selected={mode === 'edit'}
+                aria-controls="ai-image-editor-edit-panel"
+                id="ai-image-editor-edit-tab"
               >
                 {tAIImageEditor('modes.edit')}
               </button>
               <button
                 type="button"
+                role="tab"
                 onClick={() => setMode('upload')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${mode === 'upload' ? 'bg-primary text-white border-primary' : 'bg-base-100 text-base-content border-base-300 hover:bg-base-200'}`}
                 aria-selected={mode === 'upload'}
+                aria-controls="ai-image-editor-upload-panel"
+                id="ai-image-editor-upload-tab"
               >
                 {tAIImageEditor('modes.upload')}
               </button>

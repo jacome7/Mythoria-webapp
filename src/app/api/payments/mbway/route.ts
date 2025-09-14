@@ -174,8 +174,11 @@ export async function POST(request: NextRequest) {
 
     // Send email to user with payment instructions
     try {
-      // Determine user's locale
-      const userLocale = normalizeLocale(author.preferredLocale || locale);
+      // Determine user's locale (kept for future localization logic but currently forcing en-US template)
+      // const userLocale = normalizeLocale(author.preferredLocale || locale);
+      // TEMPORARY: Only en-US template exists for 'mbway-payment-instructions'.
+      // Force language to en-US to avoid template-not-found errors until localized templates are added.
+      const templateLanguage = 'en-US';
       
       const { notificationFetch } = await import('@/lib/notification-client');
       await notificationFetch(`${process.env.NOTIFICATION_ENGINE_URL}/email/template`, {
@@ -185,12 +188,13 @@ export async function POST(request: NextRequest) {
           recipients: [{
             email: author.email,
             name: author.displayName,
-            language: userLocale,
+            language: templateLanguage,
           }],
           variables: {
             userName: author.displayName,
             userEmail: author.email,
             amount: orderTotals.totalAmount,
+            amountFormatted: orderTotals.totalAmount.toFixed(2),
             credits: orderTotals.totalCredits,
             ticketNumber: ticketNumber,
             mbwayPhone: '918957895',

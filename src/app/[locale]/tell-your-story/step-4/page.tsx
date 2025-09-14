@@ -817,7 +817,13 @@ function Step4Page() {
                       : "/tell-your-story/step-3"
                   }
                   onNext={handleNext}
-                  nextDisabled={saving}
+                  nextDisabled={
+                    saving ||
+                    !title.trim() ||
+                    !targetAudience ||
+                    !novelStyle ||
+                    !graphicalStyle
+                  }
                   nextLabel={
                     saving
                       ? tStoryStepsStep4("saving")

@@ -62,6 +62,25 @@
       "pt-PT": "Português (Portugal)",
       "es-ES": "Español (España)",
       "fr-FR": "Français (France)"
+    },
+    "notifications": {
+      "title": "Your Notifications",
+      "intro": "Choose how chatty we should be. We'll never flood your inbox—promise.",
+      "label": "Notification level",
+      "options": {
+        "essential": {
+          "label": "The Essentials",
+          "description": "Only account safety and your story activity. Quiet as a library at midnight."
+        },
+        "inspiration": {
+          "label": "Inspiration",
+          "description": "Smart tips and sparks for your next tale. A gentle creative breeze—this is the default."
+        },
+        "news": {
+          "label": "News & Magic",
+          "description": "All the above plus product updates and special promo scrolls—like a friendly town crier."
+        }
+      }
     }
   }
 }

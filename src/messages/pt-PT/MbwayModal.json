@@ -1,0 +1,17 @@
+{
+  "MbwayModal": {
+    "title": "Está quase! Só falta um passo...",
+    "intro": "Para concluir a tua compra, abre a app MB Way e faz uma transferência com estes dados exatamente:",
+    "fields": {
+      "amount": "Montante",
+      "phone": "Enviar para (Telemóvel)",
+      "code": "Descrição (Código de Referência)"
+    },
+    "warning": {
+      "title": "Atenção!",
+      "body": "Tens de incluir o código no campo da descrição. É assim que sabemos que os créditos são para ti."
+    },
+    "footnote": "Como este é um processo manual, os teus créditos serão adicionados até 12 horas. Enviamos-te um email assim que estiverem prontos. Se quiseres acelerar, manda mensagem no WhatsApp e vemos o que conseguimos fazer.",
+      "close": "Perfeito, já percebi!"
+  }
+}

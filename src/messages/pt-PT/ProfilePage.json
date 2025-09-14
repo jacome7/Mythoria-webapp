@@ -62,6 +62,25 @@
       "pt-PT": "Português (Portugal)",
       "es-ES": "Espanhol (Espanha)",
       "fr-FR": "Francês (França)"
+    },
+    "notifications": {
+      "title": "As tuas Notificações",
+      "intro": "Escolhe o nível de conversa. Nunca vamos encher a tua caixa de correio.",
+      "label": "Nível de notificações",
+      "options": {
+        "essential": {
+          "label": "O Essencial",
+          "description": "Só a tua conta e atividade das tuas histórias. Silêncio de biblioteca à meia-noite."
+        },
+        "inspiration": {
+          "label": "Inspiração",
+          "description": "Dicas e ideias para os teus próximos livros. Uma brisa criativa suave — este é o padrão."
+        },
+        "news": {
+          "label": "Novidades",
+          "description": "Tudo isso mais novidades da plataforma e promoções especiais — como um arauto simpático."
+        }
+      }
     }
   }
 }

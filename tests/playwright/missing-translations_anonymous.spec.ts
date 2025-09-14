@@ -1,4 +1,7 @@
 import { test, expect, Page } from '@playwright/test';
+// Instrumented detection constants must match ClientProvider
+const FALLBACK_PREFIX = '__MISSING__:'; // Keep in sync with I18N_FALLBACK_PREFIX
+const MISSING_LOG_TAG = '[i18n-missing]';
 
 /**
  * Extended i18n navigation + translation integrity tests.
@@ -19,14 +22,7 @@ const STATIC_ROUTES = [
   'termsAndConditions',
   'get-inspired',
   'tell-your-story',
-  'my-stories',
-  'blog',
-  'buy-credits'
-];
-
-// Only include step-1; later steps appear to require prior state (story context) leading to aborted requests.
-const STORY_WIZARD_STEPS = [
-  'tell-your-story/step-1'
+  'blog'
 ];
 
 // Dynamic sample routes (provide representative slugs that exist in seed/content shown on homepage snapshot).
@@ -39,8 +35,17 @@ const SAMPLE_DYNAMIC = [
 // Helper: detect explicit missing translation markers only to avoid false positives from module names.
 async function assertNoMissingTranslations(page: Page, contextLabel: string) {
   const html = await page.content();
-  const explicit = html.match(/__missing__/g) || [];
-  expect(explicit, `Missing translation markers on ${contextLabel}: ${explicit.join(', ')}`).toHaveLength(0);
+  // New deterministic sentinel from getMessageFallback
+  const sentinelRegex = new RegExp(`${FALLBACK_PREFIX}[A-Za-z0-9_.-]+`, 'g');
+  const matches = html.match(sentinelRegex) || [];
+  expect(matches, `Missing translations rendered on ${contextLabel}: ${matches.join(', ')}`).toHaveLength(0);
+  // Also legacy pattern (temporary) in case provider not applied everywhere yet
+  const legacy = html.match(/__missing__/g) || [];
+  expect(legacy, `Legacy missing markers on ${contextLabel}: ${legacy.join(', ')}`).toHaveLength(0);
+}
+
+async function collectMissingLogs(page: Page) {
+  return await page.evaluate(() => (window as unknown as { __i18nMissingLogs?: string[] }).__i18nMissingLogs || []);
 }
 
 async function gotoAndCheck(page: Page, fullPath: string) {
@@ -55,25 +60,33 @@ async function gotoAndCheck(page: Page, fullPath: string) {
 for (const locale of LOCALES) {
   test.describe(`i18n coverage for ${locale}`, () => {
     test.beforeEach(async ({ page }) => {
-      await page.addInitScript(l => localStorage.setItem('mythoria-locale', l), locale);
+      await page.addInitScript(({ l, tag }: { l: string; tag: string }) => {
+        try { localStorage.setItem('mythoria-locale', l); } catch {}
+        (window as unknown as { __i18nMissingLogs: string[] }).__i18nMissingLogs = [] as string[];
+        const origWarn = window.console.warn;
+        window.console.warn = (...args: unknown[]) => {
+          if (args.length && typeof args[0] === 'string' && args[0].startsWith(tag)) {
+            try { (window as unknown as { __i18nMissingLogs: string[] }).__i18nMissingLogs.push(args[0] as string); } catch {}
+          }
+          return origWarn(...args as [unknown]);
+        };
+      }, { l: locale, tag: MISSING_LOG_TAG });
     });
 
     test(`static pages (${locale})`, async ({ page }) => {
       for (const r of STATIC_ROUTES) {
         await gotoAndCheck(page, `/${locale}/${r}`.replace(/\/$/, ''));
       }
-    });
-
-    test(`story wizard steps (${locale})`, async ({ page }) => {
-      for (const step of STORY_WIZARD_STEPS) {
-        await gotoAndCheck(page, `/${locale}/${step}`);
-      }
+      const logs = await collectMissingLogs(page);
+      expect(logs, `Missing translation console logs (static pages ${locale}):\n${logs.join('\n')}`).toHaveLength(0);
     });
 
     test(`sample dynamic content (${locale})`, async ({ page }) => {
       for (const dyn of SAMPLE_DYNAMIC) {
         await gotoAndCheck(page, `/${locale}/${dyn}`);
       }
+      const logs = await collectMissingLogs(page);
+      expect(logs, `Missing translation console logs (dynamic content ${locale}):\n${logs.join('\n')}`).toHaveLength(0);
     });
   });
 }

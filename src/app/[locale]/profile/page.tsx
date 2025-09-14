@@ -16,6 +16,7 @@ interface ProfileDetails {
   email: string;
   mobilePhone: string | null;
   fiscalNumber: string | null;
+  notificationPreference: string | null;
 }
 
 export default function AccountProfilePage() {
@@ -38,7 +39,8 @@ export default function AccountProfilePage() {
     preferredLocale: 'idle',
     email: 'idle',
     mobilePhone: 'idle',
-    fiscalNumber: 'idle'
+    fiscalNumber: 'idle',
+    notificationPreference: 'idle'
   });
   const saveTimeouts = useRef<Record<string, ReturnType<typeof setTimeout> | null>>({});
 
@@ -65,7 +67,8 @@ export default function AccountProfilePage() {
           preferredLocale: pr.author.preferredLocale || locale,
           email: emailAddr,
           mobilePhone: pr.author.mobilePhone || '',
-          fiscalNumber: pr.author.fiscalNumber || ''
+          fiscalNumber: pr.author.fiscalNumber || '',
+          notificationPreference: pr.author.notificationPreference || 'inspiration'
         });
       } else {
         setProfile({
@@ -75,7 +78,8 @@ export default function AccountProfilePage() {
           preferredLocale: locale,
           email: emailAddr,
           mobilePhone: '',
-          fiscalNumber: ''
+          fiscalNumber: '',
+          notificationPreference: 'inspiration'
         });
   }
 
@@ -110,7 +114,8 @@ export default function AccountProfilePage() {
         literaryAge: updated.literaryAge,
         preferredLocale: updated.preferredLocale,
         mobilePhone: updated.mobilePhone,
-        fiscalNumber: updated.fiscalNumber
+        fiscalNumber: updated.fiscalNumber,
+        notificationPreference: updated.notificationPreference
       };
       await fetch('/api/profile', {
         method: 'PATCH',
@@ -275,6 +280,29 @@ export default function AccountProfilePage() {
                       ))}
                     </select>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Notification Preferences */}
+            <div className="card bg-base-100 shadow-xl">
+              <div className="card-body">
+                <h2 className="card-title text-2xl text-primary flex items-center"><FaEnvelope className="mr-2" /> {t('notifications.title')}</h2>
+                <p className="text-sm opacity-80 mb-6">{t('notifications.intro')}</p>
+                <div className="form-control lg:space-y-2 max-w-md">
+                  <label className="label block mb-1"><span className="label-text font-semibold flex items-center">
+                    {t('notifications.label')}
+                    {fieldStatus.notificationPreference === 'saving' && <span className="loading loading-spinner loading-xs ml-2" />}
+                    {fieldStatus.notificationPreference === 'saved' && <span className="ml-2 text-success">✓</span>}
+                  </span></label>
+                  <select className="select select-bordered" value={profile.notificationPreference || 'inspiration'} onChange={e => handleFieldChange('notificationPreference', e.target.value, { immediate: true })}>
+                    <option value="essential">{t('notifications.options.essential.label')}</option>
+                    <option value="inspiration">{t('notifications.options.inspiration.label')}</option>
+                    <option value="news">{t('notifications.options.news.label')}</option>
+                  </select>
+                  <p className="text-sm mt-2 italic opacity-90">
+                    {t(`notifications.options.${profile.notificationPreference || 'inspiration'}.description`)}
+                  </p>
                 </div>
               </div>
             </div>

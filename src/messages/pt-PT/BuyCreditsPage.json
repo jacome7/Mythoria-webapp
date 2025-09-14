@@ -25,8 +25,8 @@
     },
     "payment": {
       "title": "Método de Pagamento",
-      "revolutPay": "Revolut Pay",
-      "revolutDescription": "Pagamento rápido e seguro com Revolut. Pague com o seu cartão bancário ou conta Revolut.",
+      "revolutPay": "Pagar com Cartão (Visa, Mastercard)",
+      "revolutDescription": "Checkout rápido e seguro via Revolut Pay. Não é necessária uma conta.",
       "revolutError": "Erro de Pagamento",
       "revolutErrorHelp": "Se continuar a ter problemas, tente utilizar um método de pagamento diferente ou contacte o suporte.",
       "mbway": "MB Way",

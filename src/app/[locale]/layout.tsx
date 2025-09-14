@@ -1,4 +1,5 @@
-import {NextIntlClientProvider} from 'next-intl';
+// Wrapped provider with instrumentation for missing translation detection
+import ClientProvider from '@/i18n/ClientProvider';
 import {notFound} from 'next/navigation';
 import {routing} from '../../i18n/routing';
 import {setRequestLocale} from 'next-intl/server';
@@ -342,7 +343,7 @@ export default async function LocaleLayout({
   };
 
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
+  <ClientProvider locale={locale} messages={messages} timeZone={'Europe/Lisbon'}>
       <LanguageAttribute locale={locale} />
       <StructuredData data={structuredData} />
       <LocaleSync />
@@ -351,6 +352,6 @@ export default async function LocaleLayout({
         <main className="flex-grow">{children}</main>
         <Footer />
       </div>
-    </NextIntlClientProvider>
+  </ClientProvider>
   );
 }

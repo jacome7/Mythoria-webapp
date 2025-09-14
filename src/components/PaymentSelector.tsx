@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FaCreditCard } from "react-icons/fa";
+import { FaCcMastercard, FaCcVisa } from "react-icons/fa";
 
 type TFunc = (key: string) => string;
 
@@ -26,7 +26,10 @@ export default function PaymentSelector({
           className="radio radio-primary"
         />
         <div className="flex items-center space-x-2">
-          <FaCreditCard className="text-primary" />
+          <div className="flex items-center gap-1">
+            <FaCcVisa className="text-xl" />
+            <FaCcMastercard className="text-xl" />
+          </div>
           <span className="font-semibold">{t("payment.revolutPay")}</span>
         </div>
       </label>
