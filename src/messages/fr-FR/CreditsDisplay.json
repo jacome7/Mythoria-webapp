@@ -21,5 +21,15 @@
       "voucher": "Bon",
       "promotion": "Promotion"
     }
+  },
+  "Voucher": {
+    "haveCode": "Tu as un code ?",
+    "placeholder": "Entre ton code",
+    "apply": "Appliquer",
+  "success": "Bravo ! Tu as débloqué {credits, plural, one {# crédit} other {# crédits}} avec {code}.",
+    "invalid": "Code invalide ou inactif.",
+    "checking": "Vérification...",
+    "sectionHeading": "Code promo ou parrainage",
+    "sectionSubheading": "Un ami ou un partenaire te l’a soufflé ? Entre-le et profite d’un petit boost."
   }
 }

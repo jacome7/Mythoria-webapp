@@ -17,6 +17,7 @@ import CartView from "@/components/CartView";
 import PaymentSelector from "@/components/PaymentSelector";
 import RevolutPayment from "@/components/RevolutPayment";
 import MbwayPaymentModal from "@/components/MbwayPaymentModal";
+import PromotionCodeRedeemer from '@/components/PromotionCodeRedeemer';
 import { useCart } from "@/hooks/useCart";
 import { trackCommerce } from "@/lib/analytics";
 import { mapRevolutError } from "@/utils/payment/revolut-error-mapping";
@@ -38,6 +39,7 @@ function BuyCreditsContent() {
   const tPricingPage = useTranslations("PricingPage");
   const tMyStoriesPage = useTranslations("MyStoriesPage");
   const tRevolutPayment = useTranslations("RevolutPayment");
+  const tVoucher = useTranslations('Voucher');
   const locale = useLocale();
   const { cart, addToCart, updateQuantity, removeFromCart, clearCart } =
     useCart();
@@ -461,6 +463,15 @@ function BuyCreditsContent() {
                   </p>
                 </header>
 
+                {/* Promo / Referral Code Section */}
+                <section className="mb-16">
+                  <h2 className="text-2xl font-bold mb-6">{tVoucher('sectionHeading')}</h2>
+                  <p className="text-base opacity-80 mb-4 max-w-2xl">{tVoucher('sectionSubheading')}</p>
+                  <div className="max-w-xl">
+                    <PromotionCodeRedeemer />
+                  </div>
+                </section>
+
                 <div className="grid lg:grid-cols-2 gap-12">
                   {/* Left Side - Available Packages */}
                   <div>
@@ -537,6 +548,8 @@ function BuyCreditsContent() {
                       total={total}
                       cartItemsRef={cartItemsRef}
                     />
+
+                    {/* Promotion Code Redeemer moved to top section */}
 
                     {/* Billing Information */}
                     {cart.length > 0 && <BillingInformation />}

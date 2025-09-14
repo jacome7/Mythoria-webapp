@@ -1,5 +1,5 @@
 import { db } from "./index";
-import { authors, stories, characters, storyCharacters, creditLedger, authorCreditBalances, storyRatings, aiEdits, chapters } from "./schema";
+import { authors, stories, characters, storyCharacters, creditLedger, authorCreditBalances, storyRatings, aiEdits, chapters, promotionCodes, promotionCodeRedemptions } from "./schema";
 import { eq, and, count, desc, sql, asc, max } from "drizzle-orm";
 import { ClerkUserForSync } from "@/types/clerk";
 import { pricingService } from "./services/pricing";
@@ -484,6 +484,85 @@ export const creditService = {  async addCreditEntry(
     purchaseId?: string
   ) {
     return await this.addCreditEntry(authorId, amount, eventType, undefined, purchaseId);
+  }
+};
+
+// -----------------------------------------------------------------------------
+// Promotion Code (Voucher) Service - Simple implementation
+// -----------------------------------------------------------------------------
+export const promotionCodeService = {
+  async redeem(authorId: string, rawCode: string) {
+    const code = rawCode.trim().toUpperCase();
+    if (!code) {
+      return { ok: false, error: 'invalid_code' as const };
+    }
+
+    // UX Simplification (Phase 1): All failure reasons intentionally mapped to 'invalid_code'.
+    // This keeps user messaging consistent and avoids leaking internal state such as
+    // per-user/global limits or activation windows. Internally we could later add
+    // logging/metrics with distinct reasons without changing the external contract.
+    // Future (Referral Phase): If promo.type === 'REFERRAL', we would also credit the
+    // referrerAuthorId here (when defined) and potentially use a different creditEventType.
+
+    // Fetch code
+    const [promo] = await db.select().from(promotionCodes).where(eq(promotionCodes.code, code));
+    if (!promo || !promo.active) {
+      return { ok: false, error: 'invalid_code' as const }; // unified generic per requirement 4
+    }
+    const now = new Date();
+    if (promo.validFrom && now < promo.validFrom) {
+      return { ok: false, error: 'invalid_code' as const };
+    }
+    if (promo.validUntil && now > promo.validUntil) {
+      return { ok: false, error: 'invalid_code' as const };
+    }
+
+    // Count existing redemptions (simple approach)
+    // Previous implementation used db.execute() and assumed the return value was a plain array.
+    // Depending on the driver (pg vs postgres-js) db.execute can return an object with a rows property,
+    // which caused a runtime TypeError when destructuring. Use Drizzle's query builder + count() instead
+    // which reliably returns an array with a single row containing the aggregate value.
+    const userCountResult = await db
+      .select({ count: count() })
+      .from(promotionCodeRedemptions)
+      .where(
+        and(
+          eq(promotionCodeRedemptions.promotionCodeId, promo.promotionCodeId),
+          eq(promotionCodeRedemptions.authorId, authorId)
+        )
+      );
+    const userCount = userCountResult[0]?.count ?? 0;
+    if (promo.maxRedemptionsPerUser && userCount >= promo.maxRedemptionsPerUser) {
+      return { ok: false, error: 'invalid_code' as const };
+    }
+    if (promo.maxGlobalRedemptions) {
+      const globalCountResult = await db
+        .select({ count: count() })
+        .from(promotionCodeRedemptions)
+        .where(eq(promotionCodeRedemptions.promotionCodeId, promo.promotionCodeId));
+      const globalCount = globalCountResult[0]?.count ?? 0;
+      if (globalCount >= promo.maxGlobalRedemptions) {
+        return { ok: false, error: 'invalid_code' as const };
+      }
+    }
+
+    if (promo.creditAmount <= 0) {
+      return { ok: false, error: 'invalid_code' as const };
+    }
+
+  // Grant credits (recorded as 'voucher'). For referral/other types we may branch here later.
+  const ledger = await creditService.addCredits(authorId, promo.creditAmount, 'voucher');
+
+    // Record redemption
+    await db.insert(promotionCodeRedemptions).values({
+      promotionCodeId: promo.promotionCodeId,
+      authorId,
+      creditsGranted: promo.creditAmount,
+      creditLedgerEntryId: ledger.id
+    });
+
+    const balance = await creditService.getAuthorCreditBalance(authorId);
+    return { ok: true as const, code, creditsGranted: promo.creditAmount, balance };
   }
 };
 

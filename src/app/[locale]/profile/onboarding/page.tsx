@@ -2,7 +2,8 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { FaVenusMars, FaBirthdayCake, FaBullseye, FaUsers, FaLightbulb, FaHeart, FaGift, FaChild, FaBookOpen } from 'react-icons/fa';
+import { FaVenusMars, FaBirthdayCake, FaBullseye, FaUsers, FaLightbulb, FaHeart, FaGift, FaChild, FaBookOpen, FaTicketAlt } from 'react-icons/fa';
+import PromotionCodeRedeemer from '@/components/PromotionCodeRedeemer';
 
 // Value lists; labels resolved via i18n (see messages OnboardingProfile.options)
 const GENDER_OPTIONS = ['female', 'male', 'prefer_not_to_say'] as const;
@@ -30,6 +31,7 @@ const FadeInSection = ({ children, isVisible }: { children: React.ReactNode, isV
 
 export default function OnboardingProfilePage() {
   const t = useTranslations('OnboardingProfile');
+  const tVoucher = useTranslations('Voucher');
   const locale = useLocale();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -290,6 +292,18 @@ export default function OnboardingProfilePage() {
                 <div className="card-actions justify-center mt-4">
                   <Link href={`/${locale}/tell-your-story`} className="btn btn-secondary btn-wide">{t('gift.button.start')}</Link>
                 </div>
+              </div>
+            </div>
+
+            {/* Promo / Referral Code Section (reused component) */}
+            <div className="card bg-base-100 shadow-xl">
+              <div className="card-body">
+                <div className="flex items-center gap-3 mb-2">
+                  <FaTicketAlt className="text-primary text-2xl" />
+                  <h2 className="card-title text-primary text-2xl m-0">{tVoucher('sectionHeading')}</h2>
+                </div>
+                <p className="mb-4 opacity-80">{tVoucher('sectionSubheading')}</p>
+                <PromotionCodeRedeemer compact />
               </div>
             </div>
 

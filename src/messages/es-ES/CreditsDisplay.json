@@ -21,5 +21,15 @@
       "voucher": "Vale",
       "promotion": "Promoción"
     }
+  },
+  "Voucher": {
+    "haveCode": "¿Tienes un código?",
+    "placeholder": "Introduce tu código",
+    "apply": "Aplicar",
+  "success": "¡Genial! Has conseguido {credits, plural, one {# crédito} other {# créditos}} con {code}.",
+    "invalid": "Código inválido o inactivo.",
+    "checking": "Comprobando...",
+    "sectionHeading": "Código promo o de amigo",
+    "sectionSubheading": "¿Te lo pasó un amigo o un partner? Escríbelo y suma un toque extra."
   }
 }
