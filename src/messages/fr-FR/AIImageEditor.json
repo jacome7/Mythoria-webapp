@@ -20,7 +20,6 @@
       "describeChanges": "Décris les changements"
     },
     "helper": {
-      "uploadIntro": "Dépose une photo que tu aimes. Utilise-la telle quelle (gratuit) ou applique un style pour coller à l'esprit de l'histoire.",
       "dragDropOrClick": "Glisser-déposer ou cliquer pour choisir une image",
       "selectImage": "Sélectionner l'image",
       "processing": "Traitement...",
@@ -29,7 +28,8 @@
     "radio": {
       "legend": "Comment utiliser ta photo ?",
       "asIs": "Utiliser la photo telle quelle, sans modification (gratuit)",
-      "convert": "Convertir et éditer la photo en style aquarelle (utilise 1 crédit)"
+      "convert": "Convertir et éditer la photo en style {style} (utilise 1 crédit)",
+      "defaultStyle": "sélectionné"
     },
     "placeholders": {
       "addNotesStyleDisabled": "Ajouter des notes (activer la conversion pour utiliser)"

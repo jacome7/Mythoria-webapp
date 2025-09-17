@@ -20,7 +20,6 @@
       "describeChanges": "Describe los cambios"
     },
     "helper": {
-      "uploadIntro": "Suelta una foto que te guste. Úsala tal cual (gratis) o dale estilo para que respire la magia del cuento.",
       "dragDropOrClick": "Arrastra y suelta o haz clic para elegir imagen",
       "selectImage": "Seleccionar Imagen",
       "processing": "Procesando...",
@@ -29,7 +28,8 @@
     "radio": {
       "legend": "¿Cómo usamos tu foto?",
       "asIs": "Usar la foto tal cual, sin cambios (gratis)",
-      "convert": "Convertir y editar la foto al estilo acuarela (usa 1 crédito)"
+      "convert": "Convertir y editar la foto al estilo {style} (usa 1 crédito)",
+      "defaultStyle": "seleccionado"
     },
     "placeholders": {
       "addNotesStyleDisabled": "Añade notas (activa la conversión para usar)"

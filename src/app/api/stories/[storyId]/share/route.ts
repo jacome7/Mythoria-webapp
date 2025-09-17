@@ -153,7 +153,7 @@ export async function POST(
         success: true,
         linkType: 'public',
         url: `/p/${slug}`,
-        message: t('MyStoriesPage.sharing.publicAccessible')
+  message: t('sharing.publicAccessible')
       });
     }
 
@@ -171,7 +171,7 @@ export async function POST(
         success: true,
         linkType: 'private',
         url: '',
-        message: t('MyStoriesPage.sharing.nowPrivate')
+  message: t('sharing.nowPrivate')
       });
     }    // Handle private sharing
     const accessLevel = allowEdit ? 'edit' : 'view';

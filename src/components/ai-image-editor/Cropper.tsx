@@ -65,8 +65,8 @@ export default function CropperModal({
             showGrid
           />
         </div>
-        <div className="p-4 border-t flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 w-full">
+        <div className="p-4 border-t flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+          <div className="flex w-full flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
             <input
               type="range"
               min={1}
@@ -76,9 +76,11 @@ export default function CropperModal({
               onChange={(e) => setZoom(Number(e.target.value))}
               className="w-full"
             />
-            <span className="text-xs text-gray-500 w-20 text-right">{t('zoom', { value: zoom.toFixed(2) })}</span>
+            <span className="text-xs text-gray-500 sm:w-20 sm:text-right text-center mt-1 sm:mt-0">
+              {t('zoom', { value: Math.abs(zoom - Math.round(zoom)) < 0.01 ? Math.round(zoom).toString() : zoom.toFixed(2) })}
+            </span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 self-end sm:self-auto">
             <button onClick={onCancel} className="w-28 px-4 py-2 text-sm rounded-md border border-gray-300 hover:bg-gray-50">{t('cancel')}</button>
             <button
               onClick={handleConfirm}

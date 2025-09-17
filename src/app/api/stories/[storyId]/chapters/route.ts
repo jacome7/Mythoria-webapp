@@ -31,7 +31,8 @@ export async function GET(
       story = await ensureStoryIdAccess(storyId, currentAuthor.authorId);
     } catch (e) {
       if (e instanceof AccessDeniedError) {
-        return NextResponse.json({ error: 'Not found' }, { status: 404 });
+        // Return 403 to clarify permission issue (client can show access message)
+        return NextResponse.json({ error: 'Access denied' }, { status: 403 });
       }
       throw e;
     }

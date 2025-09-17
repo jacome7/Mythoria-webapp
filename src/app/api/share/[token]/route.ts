@@ -174,12 +174,13 @@ export async function GET(
       }
     }
 
+    // Use the canonical read route so downstream code doesn't mis-route.
     return NextResponse.json({
       success: true,
       story: link.story,
       author: link.author,
       accessLevel: link.accessLevel,
-      redirectUrl: `/stories/${link.storyId}${link.accessLevel === 'edit' ? '?mode=edit' : ''}`
+      redirectUrl: `/stories/read/${link.storyId}${link.accessLevel === 'edit' ? '?mode=edit' : ''}`
     });
 
   } catch (error) {

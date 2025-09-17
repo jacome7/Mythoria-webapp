@@ -1,6 +1,7 @@
 'use client'
 
 import { SignIn } from '@clerk/nextjs'
+import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -11,6 +12,10 @@ interface SignInClientProps {
 
 export default function SignInClient({ locale }: SignInClientProps) {
   const tSignInPage = useTranslations('SignInPage')
+  const search = useSearchParams();
+  const redirectParam = search?.get('redirect');
+  // Allow only internal redirects: must start with '/'
+  const safeRedirect = redirectParam && redirectParam.startsWith('/') ? redirectParam : `/${locale}/my-stories`;
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex">
       {/* Left side - Logo and branding (only on desktop) */}
@@ -94,6 +99,8 @@ export default function SignInClient({ locale }: SignInClientProps) {
             </div>
               <SignIn
               routing="hash"
+              afterSignInUrl={safeRedirect}
+              afterSignUpUrl={safeRedirect}
               fallbackRedirectUrl={`/${locale}/my-stories`}
               appearance={{
                 elements: {

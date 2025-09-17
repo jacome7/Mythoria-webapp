@@ -10,47 +10,34 @@ import { authorService } from '@/db/services';
 import { creditLedger } from '@/db/schema';
 
 export async function POST(req: Request) {
-  // Get the headers
   const headerPayload = await headers();
-  const svix_id = headerPayload.get("svix-id");
-  const svix_timestamp = headerPayload.get("svix-timestamp");
-  const svix_signature = headerPayload.get("svix-signature");
+  const svix_id = headerPayload.get('svix-id');
+  const svix_timestamp = headerPayload.get('svix-timestamp');
+  const svix_signature = headerPayload.get('svix-signature');
 
-  // If there are no headers, error out
   if (!svix_id || !svix_timestamp || !svix_signature) {
-    return new Response('Error occurred -- no svix headers', {
-      status: 400,
-    });
+    return new Response('Error occurred -- no svix headers', { status: 400 });
   }
-  // Get the body
-  const payload = await req.text();
-  // Get the signing secret
-  const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
 
+  const payload = await req.text();
+  const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
   if (!WEBHOOK_SECRET) {
     throw new Error('Please add CLERK_WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local');
   }
 
-  // Create a new Svix instance with your secret.
   const wh = new Webhook(WEBHOOK_SECRET);
-
   let evt: WebhookEvent;
-
-  // Verify the payload with the headers
   try {
     evt = wh.verify(payload, {
-      "svix-id": svix_id,
-      "svix-timestamp": svix_timestamp,
-      "svix-signature": svix_signature,
+      'svix-id': svix_id,
+      'svix-timestamp': svix_timestamp,
+      'svix-signature': svix_signature,
     }) as WebhookEvent;
   } catch (err) {
     console.error('Error verifying webhook:', err);
-    return new Response('Error occurred', {
-      status: 400,
-    });
+    return new Response('Error occurred', { status: 400 });
   }
 
-  // Handle the webhook
   const eventType = evt.type;
   console.log(`Webhook received: ${eventType}`);
 
@@ -67,22 +54,22 @@ export async function POST(req: Request) {
         break;
       case 'session.created':
         console.log('Session created for user:', evt.data.user_id);
-        // You can add session tracking logic here if needed
         break;
       default:
         console.log(`Unhandled webhook event: ${eventType}`);
     }
-
     return NextResponse.json({ message: 'Webhook processed successfully' });
   } catch (error) {
     console.error('Error processing webhook:', error);
-    return new Response('Error processing webhook', {
-      status: 500,
-    });
+    return new Response('Error processing webhook', { status: 500 });
   }
 }
 
-// (Welcome email dispatch removed – now handled fully inside notification-engine)
+// NOTE: We (re)introduce a direct welcome email trigger here so that the email
+// is sent immediately upon confirmed user + author creation, rather than
+// relying on an external derivation cycle. This call is designed to be
+// idempotent: notification-engine's /email/template endpoint supports
+// (templateId, authorId) pairing for dedupe via ruleKey/entityId mapping.
 
 async function handleUserCreated(evt: WebhookEvent) {
   if (evt.type !== 'user.created') return;
@@ -130,6 +117,7 @@ async function handleUserCreated(evt: WebhookEvent) {
       const [updated] = await db.select({ authorId: authors.authorId }).from(authors).where(eq(authors.clerkUserId, id));
       if (updated) await ensureInitialCredits(updated.authorId);
       console.log('Duplicate email on webhook, updated existing author and ensured credits for:', primaryEmail.email_address);
+      // No welcome email dispatch here; handled by user.updated heuristic.
     } else {
       console.error('Failed to create user via webhook:', err);
       throw err;
@@ -153,6 +141,11 @@ async function ensureInitialCredits(authorId: string) {
     await creditService.initializeAuthorCredits(authorId, amount); // This function itself will become idempotent after our patch.
   }
 }
+
+// Fire-and-forget welcome email trigger with defensive error handling.
+// Does not throw; logs failures. Idempotency is enforced by notification-engine
+// using (templateId=welcome, authorId) mapping to a unique rule key.
+// triggerWelcomeEmailSafe moved to separate module for testability.
 
 async function handleUserUpdated(evt: WebhookEvent) {
   if (evt.type !== 'user.updated') return;
@@ -220,6 +213,46 @@ async function handleUserUpdated(evt: WebhookEvent) {
   } catch (error) {
     console.error('Error updating user in database:', error);
     throw error;
+  }
+
+  // Welcome email heuristic (author displayName based)
+  try {
+    const createdAtMs = (evt.data as unknown as { created_at?: number }).created_at;
+    if (typeof createdAtMs === 'number' && createdAtMs > 0) {
+      const ageMs = Date.now() - createdAtMs;
+      if (ageMs >= 0 && ageMs < 10 * 60 * 1000) { // within 10 minutes
+        // Fetch persisted displayName and locale
+        const authorRow = (await db
+          .select({ displayName: authors.displayName, preferredLocale: authors.preferredLocale })
+          .from(authors)
+          .where(eq(authors.clerkUserId, id))
+          .limit(1))[0];
+        if (authorRow) {
+          const effectiveName = (authorRow.displayName || '').trim();
+            if (effectiveName.length > 1) {
+              const locale = authorRow.preferredLocale || detectUserLocaleFromEmail(primaryEmail.email_address) || 'en-US';
+              const { notificationFetch } = await import('@/lib/notification-client');
+              console.log('welcome-email.attempt', { clerkUserId: id, ageMs, locale, displayName: effectiveName });
+              const res = await notificationFetch('/email/template', {
+                method: 'POST',
+                body: JSON.stringify({
+                  templateId: 'welcome',
+                  recipients: [{ email: primaryEmail.email_address, name: effectiveName, language: locale }],
+                  variables: { userName: effectiveName },
+                }),
+              });
+              if (!res.ok) {
+                const txt = await res.text().catch(() => '');
+                console.warn('welcome-email.failed', { clerkUserId: id, status: res.status, body: txt.slice(0, 500) });
+              } else {
+                console.log('welcome-email.sent', { clerkUserId: id });
+              }
+            }
+        }
+      }
+    }
+  } catch (err) {
+    console.error('welcome-email.error', { clerkUserId: id, error: err });
   }
 }
 

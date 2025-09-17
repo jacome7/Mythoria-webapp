@@ -75,42 +75,6 @@ IF YOU HAVE ANY QUESTIONS OR SUGGESTIONS, PLEASE ASK (PROMPT) ME BEFORE START CO
 
 ------------------
 
-# Improve Edit Image feature
-On my `mythoria-webapp` the user can use the component `mythoria-webapp\src\components\AIImageEditor.tsx` to edit an existing story image (it can either be a chapter image or a front or back cover image).
-I want to extend this feature to allow the user to upload an image to be used as reference or, to completely replace the existing image (if the image ratio fits).
-To implement this feature we need to:
-
-## A. Extend the Story-generation-workflow image edit API to accept an image Uri
-We need to extend the existing Async image editing API `\story-generation-workflow\src\routes\async-jobs.ts`, to, optionally, allow to receive a Google Storage image internal URI. Include also a flag, named `useUserImage`, by default, `false`. When the `useUserImage` is true, just replace the existing chapter / cover / backcover image with the provided image, without calling, at all, any GenAI feature.
-
-If an image is received, and the `useUserImage` is either missing or set to `false`, the image must be included on the GenAI prompt to update the existing chapter / cover / backcover image.
-Update the existing prompt for, ONLY when an image is included, to instruct the AI to use it as reference - while keeping all the existing styling options and, if provided the user text.
-
-If no image is provided, just keep the same functionality as it currently exist.
-
-## B. Update the image edit component to allow user uploaded images
-Extend the exiting UI component `mythoria-webapp\src\components\AIImageEditor.tsx`, to allow, bellow the user instructions input box, the user to upload an image.
-Instruct the user that the image works best if in portrait format.
-The image must be JPEG, HEIC/HEIF (.heic) or .PNG format and with a maximum of 8MB.
-
-After the user upload the photo, automatically resize the image if it has a resolution higher than 1536 pixeis, to a maximum of 1536 width or height (keeping the same proprtion).
-Then if the image proportions is +/-15% of the proportion 1536x1024, then just accept it and continue.
-Otherwise, show the image on the UI with an utility for the user to select the desired image crop (to keep the 1536x1024 format).
-
-When the user accepts, the image must be stored, with a new GUID, on the Google Cloud `STORAGE_BUCKET_NAME=mythoria-generated-stories` within the folder `/{storyId}/inputs/`.
-
-Then the image Uri must be sent to the `story-generation-workflow` API request to be used as reference.
-
------
-
-We want to develop this big feature, step-by-step. Start to implement the Step A. Storage.
-
-PLEASE ANALYZE VERY CAREFULLY WHAT AS BEEN REQUESTED.
-LOOK THROUGHLY INTO THE EXISTING CODE TO UNDERSTAND WHAT EXISTS.
-IF YOU HAVE ANY QUESTIONS OR SUGGESTIONS, PLEASE ASK (PROMPT) ME BEFORE START CODING.
-
------
-
 # Allow user to upload a character photo
 When creating or adding a character, allow the user to upload a photo of the character face.
 Extend the CharactetCard component `src\components\CharacterCard.tsx` to:
@@ -156,3 +120,16 @@ The current application supports the following locales:
 PLEASE ANALYZE VERY CAREFULLY WHAT AS BEEN REQUESTED.
 LOOK THROUGHLY INTO THE EXISTING CODE TO UNDERSTAND WHAT EXISTS.
 IF YOU HAVE ANY QUESTIONS OR SUGGESTIONS, PLEASE ASK (PROMPT) ME BEFORE START CODING.
+
+------------------
+
+# Create "Credits and Payments" page
+Add a new menu to the `clerk` `UserButton` on the Header `src\components\Header.tsx`, called "Credits and Payments".
+Use an appropriated icons for this menu.
+
+THis menu must link to a new page, called `credits-and-payments`. This page must support i18n, using `next-intl` (like the rest of the webapp).
+
+This page must show, on top, the number of credits of the users account.
+
+Afterwards, it must show a table, with a scroll-bar if it has more than 10 rows, showing the credits usage.
+

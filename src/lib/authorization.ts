@@ -1,4 +1,7 @@
 import { storyService } from '@/db/services';
+import { db } from '@/db';
+import { storyCollaborators } from '@/db/schema';
+import { eq, and } from 'drizzle-orm';
 
 export class AccessDeniedError extends Error {
   constructor(message = 'Access denied') {
@@ -19,6 +22,13 @@ export async function ensureStoryIdAccess(storyId: string, requesterAuthorId: st
     throw new AccessDeniedError(); // Obscure existence
   }
   if (story.authorId === requesterAuthorId) return story;
-  // TODO: when collaborator logic exists, check here (e.g., storyService.isCollaborator)
+
+  // Check collaborator access (editor or viewer)
+  const collab = await db.select({ userId: storyCollaborators.userId })
+    .from(storyCollaborators)
+    .where(and(eq(storyCollaborators.storyId, storyId), eq(storyCollaborators.userId, requesterAuthorId)))
+    .limit(1);
+  if (collab.length) return story;
+
   throw new AccessDeniedError();
 }

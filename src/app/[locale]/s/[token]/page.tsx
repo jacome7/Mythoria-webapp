@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { FiLoader, FiAlertCircle } from 'react-icons/fi';
@@ -34,13 +34,15 @@ export default function SharedStoryPage() {
   const tStoryReader = useTranslations('StoryReader');
   const tAuth = useTranslations('Auth');
   const tActions = useTranslations('Actions');
-    const token = (params?.token as string | undefined) ?? '';
+  const token = (params?.token as string | undefined) ?? '';
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [storyPreview, setStoryPreview] = useState<StoryPreview | null>(null);
   const [requiresAuth, setRequiresAuth] = useState(false);
   const [accessLevel, setAccessLevel] = useState<string>('');
+
+  const sharedStoryPath = useMemo(() => `/${locale}/s/${token}`, [locale, token]);
 
   useEffect(() => {
     if (!token) return;
@@ -51,8 +53,15 @@ export default function SharedStoryPage() {
         const result: ApiResponse = await response.json();
 
         if (result.success && result.redirectUrl) {
-          // Redirect to the actual story page
-          router.push(`/${locale}${result.redirectUrl}`);
+          // Normalize legacy redirect (if old format /stories/<id>) to /stories/read/<id>
+          let target = result.redirectUrl;
+          const legacyMatch = target.match(/^\/stories\/([^\/\?]+)(.*)$/);
+          if (legacyMatch && !target.startsWith('/stories/read/')) {
+            const id = legacyMatch[1];
+            const suffix = legacyMatch[2] || '';
+            target = `/stories/read/${id}${suffix}`;
+          }
+          router.push(`/${locale}${target}`);
         } else if (result.requiresAuth && result.storyPreview) {
           // Show preview for unauthenticated users
           setStoryPreview(result.storyPreview);
@@ -70,7 +79,9 @@ export default function SharedStoryPage() {
     };
 
     accessSharedStory();
-  }, [token, router, locale, tSharedStoryPage]);  if (loading) {
+  }, [token, router, locale, tSharedStoryPage]);
+
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
@@ -83,6 +94,9 @@ export default function SharedStoryPage() {
   }
 
   if (requiresAuth && storyPreview) {
+    // Build a safe redirect param so that after sign-in/up user returns to this shared story
+    const signInUrl = `/${locale}/sign-in?redirect=${encodeURIComponent(sharedStoryPath)}`;
+    const signUpUrl = `/${locale}/sign-up?redirect=${encodeURIComponent(sharedStoryPath)}`;
     const logoUrl = getLogoForGraphicalStyle(storyPreview.graphicalStyle);
     
     return (
@@ -142,13 +156,13 @@ export default function SharedStoryPage() {
               
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a
-                  href={`/${locale}/sign-in`}
+                  href={signInUrl}
                   className="btn btn-primary btn-lg px-8"
                 >
                   {tAuth('signIn')}
                 </a>
                 <a
-                  href={`/${locale}/sign-up`}
+                  href={signUpUrl}
                   className="btn btn-outline btn-lg px-8"
                 >
                   {tAuth('createAccount')}

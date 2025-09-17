@@ -42,6 +42,7 @@ export default function AIImageEditor({
   onRevertUpdate // eslint-disable-line @typescript-eslint/no-unused-vars
 }: AIImageEditorProps) {
   const tAIImageEditor = useTranslations('AIImageEditor');
+  const tGraphicalStyles = useTranslations('GraphicalStyles');
   const [userRequest, setUserRequest] = useState('');
   // mode: 'edit' = Option A (edit current image via prompt); 'upload' = Option B (user supplies photo)
   const [mode, setMode] = useState<'edit' | 'upload'>('edit');
@@ -70,7 +71,7 @@ export default function AIImageEditor({
       setError(null);
       setNewImageGenerated(null);
       setIsReplacing(false);
-  setMode('edit'); // default to Option A as requested
+      setMode('edit'); // default to Option A as requested
     }
   }, [isOpen]);
 
@@ -151,16 +152,21 @@ export default function AIImageEditor({
         el.onerror = reject;
         el.src = previewUrl;
       });
-      // Scale longest edge to 1536 while preserving aspect
-      let w = img.width;
-      let h = img.height;
-      const longest = Math.max(w, h);
+      // We evaluate aspect ratio potentially using a downscaled virtual size (to keep consistent logic)
+      // BUT we always crop from the ORIGINAL image pixel coordinates. react-easy-crop already gives
+      // us pixel values relative to the natural image size (croppedAreaPixels). The previous logic
+      // incorrectly re-scaled those coordinates, effectively recentring the crop.
+      const originalWidth = img.width;
+      const originalHeight = img.height;
+      let evalWidth = originalWidth;
+      let evalHeight = originalHeight;
+      const longest = Math.max(evalWidth, evalHeight);
       if (longest > 1536) {
-        const scale = 1536 / longest;
-        w = Math.round(w * scale);
-        h = Math.round(h * scale);
+        const evalScale = 1536 / longest; // ONLY for aspect suitability check
+        evalWidth = Math.round(evalWidth * evalScale);
+        evalHeight = Math.round(evalHeight * evalScale);
       }
-      const { within } = evaluateAspect(w, h);
+      const { within } = evaluateAspect(evalWidth, evalHeight);
       const targetRatio = TARGET_WIDTH / TARGET_HEIGHT;
       // If outside tolerance and no manual crop yet, open cropper and exit early
       if (!within && !manualCroppedArea) {
@@ -169,20 +175,24 @@ export default function AIImageEditor({
         return; // wait for user crop confirmation
       }
       // Determine crop area
-      let cropX = 0, cropY = 0, cropW = w, cropH = h;
+      let cropX = 0, cropY = 0, cropW = originalWidth, cropH = originalHeight;
       if (manualCroppedArea) {
-        cropX = manualCroppedArea.x;
-        cropY = manualCroppedArea.y;
-        cropW = manualCroppedArea.width;
-        cropH = manualCroppedArea.height;
+        // Use coordinates exactly as provided (already in original image pixel space)
+        cropX = Math.max(0, Math.floor(manualCroppedArea.x));
+        cropY = Math.max(0, Math.floor(manualCroppedArea.y));
+        cropW = Math.floor(manualCroppedArea.width);
+        cropH = Math.floor(manualCroppedArea.height);
+        // Clamp to original bounds
+        if (cropX + cropW > originalWidth) cropW = originalWidth - cropX;
+        if (cropY + cropH > originalHeight) cropH = originalHeight - cropY;
       } else if (!within) {
         // Should not reach here because we early returned, but safeguard
-        if (w / h > targetRatio) {
-          cropW = Math.round(h * targetRatio);
-          cropX = Math.floor((w - cropW) / 2);
+        if (originalWidth / originalHeight > targetRatio) {
+          cropW = Math.round(originalHeight * targetRatio);
+          cropX = Math.floor((originalWidth - cropW) / 2);
         } else {
-          cropH = Math.round(w / targetRatio);
-          cropY = Math.floor((h - cropH) / 2);
+          cropH = Math.round(originalWidth / targetRatio);
+          cropY = Math.floor((originalHeight - cropH) / 2);
         }
       }
       const finalCanvas = document.createElement('canvas');
@@ -195,6 +205,16 @@ export default function AIImageEditor({
       // If we reached here via a manual crop, the output now matches target exactly => allow as-is replacement
       // If manual crop performed, image now matches target aspect
       const dataUrl = finalCanvas.toDataURL('image/jpeg', 0.9);
+      // Update the user-facing preview immediately after a manual crop so the user
+      // sees the result without needing to re-open the modal.
+      if (manualCroppedArea) {
+        try {
+          if (selectedFilePreview && selectedFilePreview.startsWith('blob:')) {
+            URL.revokeObjectURL(selectedFilePreview);
+          }
+          setSelectedFilePreview(dataUrl);
+        } catch {/* ignore preview revocation errors */ }
+      }
       // Upload as prospective story image version (images folder) only when we might apply as-is or convert.
       // We still rely on versioning logic in backend route /api/media/story-image-upload.
       const mappedType = imageData.imageType === 'cover' ? 'cover' : (imageData.imageType === 'backcover' ? 'backcover' : 'chapter');
@@ -344,6 +364,21 @@ export default function AIImageEditor({
     }
   };
 
+  // When user selects the "Use your photo" tab and no file has been chosen yet,
+  // automatically open the hidden file picker to streamline the flow.
+  const handleSelectUploadMode = () => {
+    if (mode !== 'upload') setMode('upload');
+    if (!selectedFile) {
+      // Defer until after the tab content renders so the input exists in DOM
+      setTimeout(() => {
+        try {
+          const input = document.getElementById('user-image-input') as HTMLInputElement | null;
+          input?.click();
+        } catch { /* ignore */ }
+      }, 0);
+    }
+  };
+
   const getImageTitle = () => {
     if (imageData.title) return imageData.title;
 
@@ -425,7 +460,7 @@ export default function AIImageEditor({
               <button
                 type="button"
                 role="tab"
-                onClick={() => setMode('upload')}
+                onClick={handleSelectUploadMode}
                 className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${mode === 'upload' ? 'bg-primary text-white border-primary' : 'bg-base-100 text-base-content border-base-300 hover:bg-base-200'}`}
                 aria-selected={mode === 'upload'}
                 aria-controls="ai-image-editor-upload-panel"
@@ -437,76 +472,73 @@ export default function AIImageEditor({
 
             {/* Helper / Upload Section (Option B) */}
             {mode === 'upload' && (
-            <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700">{tAIImageEditor('labels.addYourOwnPhoto')}</label>
-              <p className="text-xs text-gray-500 leading-relaxed">
-                {tAIImageEditor('helper.uploadIntro')}
-              </p>
-              {!selectedFile && (
-                <div className="border-2 border-dashed rounded-lg p-6 text-center flex flex-col items-center justify-center space-y-3">
-                  <FiUpload className="w-8 h-8 text-gray-400" />
-                  <p className="text-sm text-gray-600">{tAIImageEditor('helper.dragDropOrClick')}</p>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="hidden"
-                    id="user-image-input"
-                  />
-                  <label htmlFor="user-image-input" className="px-4 py-2 bg-base-100 border border-base-300 rounded-md text-sm cursor-pointer hover:bg-base-200">{tAIImageEditor('helper.selectImage')}</label>
-                  {userImageError && <p className="text-xs text-red-600">{userImageError}</p>}
-                </div>
-              )}
-              {selectedFile && (
-                <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700 truncate max-w-[60%]">{selectedFile.name}</span>
-                    <div className="flex items-center space-x-2">
-                      {processingUserImage && <span className="text-xs text-primary">{tAIImageEditor('helper.processing')}</span>}
-                      {/* Removed legacy replacement/reference pill */}
-                      <button onClick={resetUserImage} className="p-1 rounded hover:bg-gray-200" aria-label="Remove">
-                        <FiTrash2 className="w-4 h-4 text-gray-600" />
-                      </button>
-                    </div>
+              <div className="space-y-3">
+                <label className="block text-sm font-medium text-gray-700">{tAIImageEditor('labels.addYourOwnPhoto')}</label>
+                {!selectedFile && (
+                  <div className="border-2 border-dashed rounded-lg p-6 text-center flex flex-col items-center justify-center space-y-3">
+                    <FiUpload className="w-8 h-8 text-gray-400" />
+                    <p className="text-sm text-gray-600">{tAIImageEditor('helper.dragDropOrClick')}</p>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="hidden"
+                      id="user-image-input"
+                    />
+                    <label htmlFor="user-image-input" className="px-4 py-2 bg-base-100 border border-base-300 rounded-md text-sm cursor-pointer hover:bg-base-200">{tAIImageEditor('helper.selectImage')}</label>
+                    {userImageError && <p className="text-xs text-red-600">{userImageError}</p>}
                   </div>
-                  {selectedFilePreview && (
-                    <div className="relative w-40 h-60 overflow-hidden rounded border bg-white">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={selectedFilePreview} alt="Uploaded preview" className="object-cover w-full h-full" />
-                    </div>
-                  )}
-                  {userImageError && <p className="text-xs text-red-600">{userImageError}</p>}
-                  {/* Removed status badges for as-is and style conversion per request */}
-          {userImageUri && (
-                    <fieldset className="pt-2 space-y-2">
-            <legend className="text-xs font-medium text-gray-600">{tAIImageEditor('radio.legend')}</legend>
-                      <div className="flex flex-col gap-2">
-                        <label className="flex items-start gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="use-photo-mode"
-                            className="radio radio-primary mt-0.5"
-                            checked={!convertToStyle}
-                            onChange={() => setConvertToStyle(false)}
-                          />
-              <span className="text-xs text-gray-700 leading-snug">{tAIImageEditor('radio.asIs')}</span>
-                        </label>
-                        <label className="flex items-start gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="use-photo-mode"
-                            className="radio radio-primary mt-0.5"
-                            checked={convertToStyle}
-                            onChange={() => setConvertToStyle(true)}
-                          />
-              <span className="text-xs text-gray-700 leading-snug">{tAIImageEditor('radio.convert')}</span>
-                        </label>
+                )}
+                {selectedFile && (
+                  <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700 truncate max-w-[60%]">{selectedFile.name}</span>
+                      <div className="flex items-center space-x-2">
+                        {processingUserImage && <span className="text-xs text-primary">{tAIImageEditor('helper.processing')}</span>}
+                        {/* Removed legacy replacement/reference pill */}
+                        <button onClick={resetUserImage} className="p-1 rounded hover:bg-gray-200" aria-label="Remove">
+                          <FiTrash2 className="w-4 h-4 text-gray-600" />
+                        </button>
                       </div>
-                    </fieldset>
-                  )}
-                </div>
-              )}
-            </div>
+                    </div>
+                    {selectedFilePreview && (
+                      <div className="relative w-40 h-60 overflow-hidden rounded border bg-white">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={selectedFilePreview} alt="Uploaded preview" className="object-cover w-full h-full" />
+                      </div>
+                    )}
+                    {userImageError && <p className="text-xs text-red-600">{userImageError}</p>}
+                    {/* Removed status badges for as-is and style conversion per request */}
+                    {userImageUri && (
+                      <fieldset className="pt-2 space-y-2">
+                        <legend className="text-xs font-medium text-gray-600">{tAIImageEditor('radio.legend')}</legend>
+                        <div className="flex flex-col gap-2">
+                          <label className="flex items-start gap-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="use-photo-mode"
+                              className="radio radio-primary mt-0.5"
+                              checked={!convertToStyle}
+                              onChange={() => setConvertToStyle(false)}
+                            />
+                            <span className="text-xs text-gray-700 leading-snug">{tAIImageEditor('radio.asIs')}</span>
+                          </label>
+                          <label className="flex items-start gap-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="use-photo-mode"
+                              className="radio radio-primary mt-0.5"
+                              checked={convertToStyle}
+                              onChange={() => setConvertToStyle(true)}
+                            />
+                            <span className="text-xs text-gray-700 leading-snug">{tAIImageEditor('radio.convert', { style: (story.graphicalStyle ? tGraphicalStyles(story.graphicalStyle) : tAIImageEditor('radio.defaultStyle')) })}</span>
+                          </label>
+                        </div>
+                      </fieldset>
+                    )}
+                  </div>
+                )}
+              </div>
             )}
 
             {/* User Request / Prompt Section */}
@@ -618,13 +650,13 @@ export default function AIImageEditor({
                     </>
                   ) : (
                     <>
-          <FiZap className="w-4 h-4" />
+                      <FiZap className="w-4 h-4" />
                       <span>
                         {mode === 'edit'
                           ? tAIImageEditor('generateButton')
                           : convertToStyle
                             ? tAIImageEditor('generateButton')
-            : (userImageUri ? tAIImageEditor('buttons.applyPhoto') : tAIImageEditor('generateButton'))}
+                            : (userImageUri ? tAIImageEditor('buttons.applyPhoto') : tAIImageEditor('generateButton'))}
                       </span>
                     </>
                   )}

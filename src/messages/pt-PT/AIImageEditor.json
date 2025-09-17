@@ -20,7 +20,6 @@
       "describeChanges": "Descreve as alterações"
     },
     "helper": {
-      "uploadIntro": "Coloca aqui uma foto. Usa-a tal como está (grátis) ou aplica estilo para combinar com a vibe da história.",
       "dragDropOrClick": "Arrasta e larga ou clica para selecionar uma imagem",
       "selectImage": "Selecionar Imagem",
       "processing": "A processar...",
@@ -29,7 +28,8 @@
     "radio": {
       "legend": "Como devemos usar a tua foto?",
       "asIs": "Usar a foto como está, sem alterações (grátis)",
-      "convert": "Converter e editar a foto para estilo aguarela (usa 1 crédito)"
+      "convert": "Converter e editar a foto para o estilo {style} (usa 1 crédito)",
+      "defaultStyle": "selecionado"
     },
     "placeholders": {
       "addNotesStyleDisabled": "Adicionar notas (ativa a conversão para usar)"

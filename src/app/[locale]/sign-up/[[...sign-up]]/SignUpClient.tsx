@@ -1,6 +1,7 @@
 'use client'
 
 import { SignUp } from '@clerk/nextjs'
+import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 
 interface SignUpClientProps {
@@ -20,6 +21,10 @@ interface SignUpClientProps {
 }
 
 export default function SignUpClient({ locale, translations }: SignUpClientProps) {
+  const search = useSearchParams();
+  const redirectParam = search?.get('redirect');
+  const defaultRedirect = `/${locale}/profile/onboarding`;
+  const safeRedirect = redirectParam && redirectParam.startsWith('/') ? redirectParam : defaultRedirect;
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 flex">
       {/* Left side - Logo and branding (only on desktop) */}
@@ -74,7 +79,9 @@ export default function SignUpClient({ locale, translations }: SignUpClientProps
             </div>
               <SignUp 
               routing="hash"
-              fallbackRedirectUrl={`/${locale}/profile/onboarding`}
+              afterSignInUrl={safeRedirect}
+              afterSignUpUrl={safeRedirect}
+              fallbackRedirectUrl={defaultRedirect}
               appearance={{
                 elements: {
                   formButtonPrimary: 

@@ -20,7 +20,6 @@
       "describeChanges": "Describe the changes"
     },
     "helper": {
-      "uploadIntro": "Drop in a photo you like. Use it unchanged for free, or turn on style to blend it with the tale’s vibe.",
       "dragDropOrClick": "Drag & drop or click to select an image",
       "selectImage": "Select Image",
       "processing": "Processing...",
@@ -29,7 +28,8 @@
     "radio": {
       "legend": "How should we use your photo?",
       "asIs": "Using photo as‑is, no modification (free)",
-      "convert": "Convert and edit photo to the watercolor style (uses 1 credit)"
+      "convert": "Convert and edit photo to the {style} style (uses 1 credit)",
+      "defaultStyle": "selected"
     },
     "placeholders": {
       "addNotesStyleDisabled": "Add notes (enable style conversion to use)"
