@@ -3,6 +3,12 @@ import { storyService } from '@/db/services';
 import { blogService, BlogLocale } from '@/db/services/blog';
 import { routing } from '@/i18n/routing';
 
+// Force this route to be dynamic so it can query the database at request time
+// (Next.js App Router hint). This avoids static optimization dropping blog posts.
+export const dynamic = 'force-dynamic';
+// Revalidate (ISR) window – adjust if sitemap churn is higher. 900s = 15m.
+export const revalidate = 900;
+
 const baseUrl = 'https://mythoria.pt';
 const locales = routing.locales as readonly string[];
 
@@ -21,20 +27,18 @@ const staticPages = [
 export async function GET() {
   try {
     const sitemap = await generateSitemap();
-    
     return new NextResponse(sitemap, {
       headers: {
         'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=3600, s-maxage=3600'
+        // Edge/CDN caching: 15m browser, 15m CDN. Adjust as needed.
+        'Cache-Control': 'public, max-age=900, s-maxage=900'
       }
     });
   } catch (error) {
     console.error('Error generating sitemap:', error);
-    // Fallback to static sitemap
-    return new NextResponse(null, { 
-      status: 302,
-      headers: { 'Location': '/sitemap.xml' }
-    });
+    // Provide a minimal valid XML instead of redirect loop.
+    const fallback = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${baseUrl}</loc>\n    <lastmod>${new Date().toISOString()}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>\n</urlset>`;
+    return new NextResponse(fallback, { status: 200, headers: { 'Content-Type': 'application/xml' } });
   }
 }
 
@@ -144,40 +148,41 @@ async function generateSitemap(): Promise<string> {
     }
   }
 
-  // Add blog posts (published) to sitemap with hreflang alternates
-  if (!isBuildTime) {
-    try {
-      // Collect all posts across locales by slugBase to avoid duplicates
-      const seenSlugBases = new Set<string>();
-      for (const locale of locales) {
-        const posts = await blogService.getPublishedList(locale as BlogLocale, { limit: 1000, offset: 0 });
-        for (const post of posts) {
-          if (seenSlugBases.has(post.slugBase)) continue;
-          seenSlugBases.add(post.slugBase);
-          // Fetch translations for hreflang
-          const translations = await blogService.getPublishedTranslationsBySlugBase(post.slugBase);
-          const alternateUrls = translations.map(t => ({
-            url: `${baseUrl}/${t.locale}/blog/${t.slug}/`,
-            locale: t.locale,
-          }));
-          // Prefer using the current locale's URL if available, otherwise the first translation
-          const primary = alternateUrls.find(a => a.locale === locale) || alternateUrls[0];
-          if (primary) {
-            urls.push(
-              createUrlEntryWithHreflang(
-                primary.url,
-                (post.publishedAt ?? new Date()).toISOString(),
-                'weekly',
-                '0.7',
-                alternateUrls
-              )
-            );
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching blog posts for sitemap:', error);
+
+  // Add blog posts (published) to sitemap with hreflang alternates (always runtime)
+  try {
+    // Strategy: build a map slugBase -> translations once to avoid N+1 inside locale loop.
+    // Fetch per-locale lists (paged large) to collect unique slugBases.
+    const slugBases = new Set<string>();
+    for (const locale of locales) {
+      const posts = await blogService.getPublishedList(locale as BlogLocale, { limit: 1000, offset: 0 });
+      posts.forEach(p => slugBases.add(p.slugBase));
     }
+
+    for (const slugBase of slugBases) {
+      const translations = await blogService.getPublishedTranslationsBySlugBase(slugBase);
+      if (!translations.length) continue;
+      const alternateUrls = translations.map(t => ({
+        url: `${baseUrl}/${t.locale}/blog/${t.slug}/`,
+        locale: t.locale,
+      }));
+      // Choose the most recently published translation as primary (better lastmod surfacing)
+      const sortedByDate = [...translations].sort((a, b) => (b.publishedAt?.getTime?.() || 0) - (a.publishedAt?.getTime?.() || 0));
+      const newest = sortedByDate[0];
+      const primary = alternateUrls.find(a => a.locale === newest.locale) || alternateUrls[0];
+      const lastmod = newest.publishedAt instanceof Date ? newest.publishedAt.toISOString() : new Date().toISOString();
+      urls.push(
+        createUrlEntryWithHreflang(
+          primary.url,
+          lastmod,
+          'weekly',
+          '0.7',
+          alternateUrls
+        )
+      );
+    }
+  } catch (error) {
+    console.error('Error fetching blog posts for sitemap:', error);
   }
   
   return `<?xml version="1.0" encoding="UTF-8"?>
