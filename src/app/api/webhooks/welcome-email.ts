@@ -7,11 +7,15 @@ export async function triggerWelcomeEmailSafe(params: WelcomeEmailParams) {
     const { pricingService } = await import('@/db/services/pricing');
     const credits = await pricingService.getInitialAuthorCredits();
     const language = params.locale || 'en-US';
+    // Pass both authorId and entityId (same value) so notification-engine can dedupe on (templateId, entityId)
+    // 'entityId' is the canonical dedupe key. We also retain authorId for downstream enrichment if needed.
     const body = {
       templateId: 'welcome',
       authorId: params.authorId,
+      entityId: params.authorId,
       recipients: [ { email: params.email, name: params.name || undefined, language } ],
-      variables: { name: params.name || undefined, credits, creditsPlural: credits !== 1 }
+      // Align variable names with template expectations (userName + storyCredits)
+      variables: { userName: params.name || undefined, storyCredits: credits, creditsPlural: credits !== 1 }
     };
     const res = await notificationFetch('/email/template', { method: 'POST', body: JSON.stringify(body) });
     if (!res.ok) {

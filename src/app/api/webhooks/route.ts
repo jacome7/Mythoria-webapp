@@ -237,6 +237,9 @@ async function handleUserUpdated(evt: WebhookEvent) {
                 method: 'POST',
                 body: JSON.stringify({
                   templateId: 'welcome',
+                  // Provide both authorId (for enrichment) and entityId (dedupe key)
+                  authorId: id,
+                  entityId: id,
                   recipients: [{ email: primaryEmail.email_address, name: effectiveName, language: locale }],
                   variables: { userName: effectiveName },
                 }),
