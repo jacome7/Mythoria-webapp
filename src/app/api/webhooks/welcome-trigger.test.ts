@@ -17,8 +17,10 @@ describe('triggerWelcomeEmailSafe', () => {
     expect(call[0]).toBe('/email/template');
     const body = JSON.parse(call[1].body);
     expect(body.templateId).toBe('welcome');
-    expect(body.authorId).toBe('11111111-1111-1111-1111-111111111111');
+  expect(body.authorId).toBe('11111111-1111-1111-1111-111111111111');
+  expect(body.entityId).toBe('11111111-1111-1111-1111-111111111111');
     expect(body.recipients[0].email).toBe('user@example.com');
-    expect(body.variables.credits).toBe(7);
+  expect(body.variables.storyCredits).toBe(7);
+  expect(body.variables.userName).toBe('Test User');
   });
 });
