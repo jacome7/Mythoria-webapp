@@ -201,7 +201,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               <ShareButton
                 title={post.title}
                 summary={post.summary}
-                url={`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/${locale}/blog/${post.slug}`}
+                url={`${process.env.NEXT_PUBLIC_BASE_URL || "https://mythoria.pt"}/${locale}/blog/${post.slug}`}
                 shareText={tBlogPost("sharePost")}
               />
             </div>
