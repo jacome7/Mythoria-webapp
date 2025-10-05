@@ -52,12 +52,12 @@ This document is the single source of truth for agents working on the Mythoria w
 
 ## Development & Quality Checklist
 
-Run these commands before committing or opening a PR:
+Run these commands after making code changes and before committing or opening a PR:
 
 - `npm run lint` – ESLint (flat config via `eslint.config.mjs`)
 - `npm run typecheck` – TypeScript `tsc --noEmit`
 - `npm run test` – Jest unit tests (includes React Testing Library and server-side utilities)
-- `npm run format` – Prettier validation (use `npm run format:fix` if formatting issues are reported)
+- `npm run format` – Prettier validation (run this after every code change; use `npm run format:fix` if issues pop up)
 - `npm run i18n:parity` – Ensures locale bundles remain aligned with `en-US`
 - `npm run i18n:keys` – Regenerates `src/types/translation-keys.d.ts` after modifying source translations
 - `npm run test:e2e` – Playwright tests (requires `npm run dev` running separately; auth state auto-refreshes unless `SKIP_AUTH_SETUP=1`)
