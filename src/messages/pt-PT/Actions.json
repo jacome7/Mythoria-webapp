@@ -11,10 +11,10 @@
     "tryAgain": "Tentar Novamente",
     "close": "Fechar",
     "backToStory": "Voltar à História",
-  "createAccount": "Criar Conta",
-  "goBack": "Voltar",
-  "duplicate": "Duplicar",
-  "open": "Abrir",
-  "duplicateTitleSuffix": " - cópia"
+    "createAccount": "Criar Conta",
+    "goBack": "Voltar",
+    "duplicate": "Duplicar",
+    "open": "Abrir",
+    "duplicateTitleSuffix": " - cópia"
   }
 }

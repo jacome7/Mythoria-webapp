@@ -84,8 +84,8 @@
         "help": "If you provide a valid EU VAT, VAT may be excluded where applicable.",
         "errors": {
           "tooShort": "VAT number is too short",
-            "unsupportedCountry": "Unsupported country code",
-            "invalidFormat": "Invalid VAT format for {country}. Expected: {format}"
+          "unsupportedCountry": "Unsupported country code",
+          "invalidFormat": "Invalid VAT format for {country}. Expected: {format}"
         }
       },
       "groups": {

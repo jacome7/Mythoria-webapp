@@ -27,9 +27,7 @@
     },
     "steps": {},
     "narrationMessages": {
-      "default": [
-        "🎙️ Création de votre livre audio ..."
-      ]
+      "default": ["🎙️ Création de votre livre audio ..."]
     }
   }
 }

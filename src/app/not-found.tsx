@@ -18,7 +18,7 @@ async function loadMessages(locale: string): Promise<Messages> {
   try {
     const messagesDir = path.join(process.cwd(), 'src', 'messages', locale);
     const files = await readdir(messagesDir);
-  const messages: Messages = {};
+    const messages: Messages = {};
     for (const file of files) {
       if (!file.endsWith('.json')) continue;
       const filePath = path.join(messagesDir, file);
@@ -52,7 +52,7 @@ async function loadFallbackMessages(): Promise<Messages> {
   try {
     const fallbackDir = path.join(process.cwd(), 'src', 'messages', 'en-US');
     const files = await readdir(fallbackDir);
-  const messages: Messages = {};
+    const messages: Messages = {};
     for (const file of files) {
       if (!file.endsWith('.json')) continue;
       try {
@@ -78,24 +78,26 @@ async function loadFallbackMessages(): Promise<Messages> {
 }
 
 function getLocaleFromCookie(cookieHeader: string | null): Locale | undefined {
-    if (!cookieHeader) return undefined;
-    const cookies = cookieHeader.split(';');
-    const localeCookie = cookies.find(c => c.trim().startsWith('NEXT_LOCALE='));
-    if (localeCookie) {
-        const locale = localeCookie.split('=')[1];
-        if (isValidLocale(locale)) return locale;
-    }
-    return undefined;
+  if (!cookieHeader) return undefined;
+  const cookies = cookieHeader.split(';');
+  const localeCookie = cookies.find((c) => c.trim().startsWith('NEXT_LOCALE='));
+  if (localeCookie) {
+    const locale = localeCookie.split('=')[1];
+    if (isValidLocale(locale)) return locale;
+  }
+  return undefined;
 }
 
 function negotiateLocale(acceptLanguage: string | null, cookieLocale?: Locale): Locale {
   if (cookieLocale) return cookieLocale;
   if (!acceptLanguage) return routing.defaultLocale;
-  const parts = acceptLanguage.split(',').map(s => s.trim());
+  const parts = acceptLanguage.split(',').map((s) => s.trim());
   for (const part of parts) {
     const [tag] = part.split(';');
     if (isValidLocale(tag)) return tag;
-    const match = routing.locales.find(l => l.toLowerCase().startsWith(tag.toLowerCase() + '-')) as Locale | undefined;
+    const match = routing.locales.find((l) =>
+      l.toLowerCase().startsWith(tag.toLowerCase() + '-'),
+    ) as Locale | undefined;
     if (match) return match;
   }
   return routing.defaultLocale;
@@ -105,7 +107,7 @@ export default async function RootNotFound() {
   const hdrs = await headers();
   const acceptLanguage = hdrs.get('accept-language');
   const cookieHeader = hdrs.get('cookie');
-  
+
   const cookieLocale = getLocaleFromCookie(cookieHeader);
   const locale: Locale = negotiateLocale(acceptLanguage, cookieLocale);
   const messages = await loadMessages(locale);

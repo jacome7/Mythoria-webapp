@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getCurrentAuthor } from "@/lib/auth";
-import { storyService } from "@/db/services";
-import { sgwFetch, sgwUrl } from "@/lib/sgw-client";
+import { NextRequest, NextResponse } from 'next/server';
+import { getCurrentAuthor } from '@/lib/auth';
+import { storyService } from '@/db/services';
+import { sgwFetch, sgwUrl } from '@/lib/sgw-client';
 
 // No-op: character role validation is handled on SGW
 
@@ -9,49 +9,50 @@ export async function POST(request: NextRequest) {
   try {
     // Get the current authenticated user
     const currentAuthor = await getCurrentAuthor();
-    
+
     if (!currentAuthor) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }    // Parse the request body
+    } // Parse the request body
     const { userDescription, imageData, audioData, storyId, characterIds } = await request.json();
 
     if (!userDescription?.trim() && !imageData && !audioData) {
       return NextResponse.json(
         { error: 'Story description, image data, or audio data is required' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!storyId) {
-      return NextResponse.json(
-        { error: 'Story ID is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Story ID is required' }, { status: 400 });
     }
 
     // Verify the story belongs to the current author
     const existingStory = await storyService.getStoryById(storyId);
     if (!existingStory || existingStory.authorId !== currentAuthor.authorId) {
-      return NextResponse.json(
-        { error: 'Story not found or access denied' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Story not found or access denied' }, { status: 404 });
     }
 
     // Get existing characters for this author
     // Proxy to SGW
-  // const config = getEnvironmentConfig();
-  const endpoint = sgwUrl('/ai/text/structure');
+    // const config = getEnvironmentConfig();
+    const endpoint = sgwUrl('/ai/text/structure');
 
     // Log proxy details for debugging
-    console.log('[genai-structure] Proxying to SGW', { endpoint, storyId, hasText: !!userDescription, hasImage: !!imageData, hasAudio: !!audioData, characterIdsCount: characterIds?.length || 0 });
+    console.log('[genai-structure] Proxying to SGW', {
+      endpoint,
+      storyId,
+      hasText: !!userDescription,
+      hasImage: !!imageData,
+      hasAudio: !!audioData,
+      characterIdsCount: characterIds?.length || 0,
+    });
 
     const payload: Record<string, unknown> = {
       storyId,
       userDescription,
       imageData,
       audioData,
-      characterIds
+      characterIds,
     };
     // Strip null/undefined fields to avoid schema errors downstream
     Object.keys(payload).forEach((k) => {
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
     const workflowResponse = await sgwFetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
 
     // Try to parse JSON; if it fails, fall back to text for better error messages
@@ -81,39 +82,40 @@ export async function POST(request: NextRequest) {
           error: 'Story-generation-workflow request failed',
           status: workflowResponse.status,
           endpoint,
-          body: data
+          body: data,
         },
-        { status: workflowResponse.status }
+        { status: workflowResponse.status },
       );
     }
 
-  console.log('[genai-structure] SGW success');
+    console.log('[genai-structure] SGW success');
 
-  // If the story is still temporary and we received any structured data that
-  // indicates progression (e.g., a non-empty title or structure fields), promote to draft.
-  try {
-    const refreshed = await storyService.getStoryById(storyId);
-    if (refreshed && refreshed.status === 'temporary') {
-      // Heuristic: if userDescription provided or GenAI returned anything meaningful, promote.
-      const meaningful = !!userDescription?.trim() || (data && Object.keys(data as Record<string, unknown>).length > 0);
-      if (meaningful) {
-        await storyService.updateStory(storyId, { status: 'draft' });
+    // If the story is still temporary and we received any structured data that
+    // indicates progression (e.g., a non-empty title or structure fields), promote to draft.
+    try {
+      const refreshed = await storyService.getStoryById(storyId);
+      if (refreshed && refreshed.status === 'temporary') {
+        // Heuristic: if userDescription provided or GenAI returned anything meaningful, promote.
+        const meaningful =
+          !!userDescription?.trim() ||
+          (data && Object.keys(data as Record<string, unknown>).length > 0);
+        if (meaningful) {
+          await storyService.updateStory(storyId, { status: 'draft' });
+        }
       }
+    } catch (e) {
+      console.warn('[genai-structure] Failed to auto-promote story status:', e);
     }
-  } catch (e) {
-    console.warn('[genai-structure] Failed to auto-promote story status:', e);
-  }
 
-  return NextResponse.json(data as Record<string, unknown>);
-
+    return NextResponse.json(data as Record<string, unknown>);
   } catch (error) {
     console.error('Error in GenAI story processing:', error);
     return NextResponse.json(
-      { 
+      {
         error: error instanceof Error ? error.message : 'Internal server error',
-        details: 'Failed to process story with GenAI'
+        details: 'Failed to process story with GenAI',
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -13,12 +13,12 @@ const ContactPageContent = () => {
   const handleCategoryClick = (categoryKey: string) => {
     // First scroll to the form
     if (formRef.current) {
-      formRef.current.scrollIntoView({ 
+      formRef.current.scrollIntoView({
         behavior: 'smooth',
-        block: 'start'
+        block: 'start',
       });
     }
-    
+
     // Then update the URL without navigation after scroll starts
     setTimeout(() => {
       const currentUrl = new URL(window.location.href);
@@ -38,7 +38,7 @@ const ContactPageContent = () => {
               {tContactUsPage('scrollTitle')}
             </h2>
             <p className="mb-6 text-base-content/80">{tContactUsPage('scrollIntro')}</p>
-            
+
             <CategoryGrid onCategoryClick={handleCategoryClick} />
           </div>
         </div>
@@ -58,7 +58,9 @@ const ContactPageContent = () => {
               {tContactUsPage('bonus.title')}
             </h2>
             <p className="mb-2 text-sm">{tContactUsPage('bonus.content')}</p>
-            <p className="mb-3 text-xs text-base-content/60">{tContactUsPage('bonus.disclaimer')}</p>
+            <p className="mb-3 text-xs text-base-content/60">
+              {tContactUsPage('bonus.disclaimer')}
+            </p>
             <p className="font-semibold text-sm">{tContactUsPage('bonus.closing')}</p>
           </div>
         </div>
@@ -73,7 +75,7 @@ const ContactPageContent = () => {
               {tContactUsPage('join.title')}
             </h2>
             <p className="mb-4 text-base-content/80">{tContactUsPage('join.intro')}</p>
-            
+
             <div className="space-y-3">
               <div className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
@@ -88,7 +90,7 @@ const ContactPageContent = () => {
                 <span className="text-sm">{tContactUsPage('join.developers')}</span>
               </div>
             </div>
-            
+
             <p className="mt-4 font-medium">{tContactUsPage('join.call')}</p>
           </div>
         </div>

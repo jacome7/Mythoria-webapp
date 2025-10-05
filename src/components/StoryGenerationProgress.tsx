@@ -18,14 +18,17 @@ interface StoryProgress {
 }
 
 // Funny Oompa-Loompa messages based on current step
-const getFunnyMessage = (step: string, t: ReturnType<typeof import('next-intl').useTranslations>) => {
+const getFunnyMessage = (
+  step: string,
+  t: ReturnType<typeof import('next-intl').useTranslations>,
+) => {
   const messages = t.raw(`funnyMessages.${step}`) || t.raw('funnyMessages.default');
   return messages[Math.floor(Math.random() * messages.length)];
 };
 
 const calculateEstimatedTime = (
   percentage: number,
-  t: ReturnType<typeof import('next-intl').useTranslations>
+  t: ReturnType<typeof import('next-intl').useTranslations>,
 ): string => {
   const totalEstimatedTime = 14 * 60; // 14 minutes in seconds
   const remainingTime = Math.max(0, totalEstimatedTime - (totalEstimatedTime * percentage) / 100);
@@ -45,16 +48,19 @@ const calculateEstimatedTime = (
     : `${minutes} ${minuteLabel}`;
 };
 
-export default function StoryGenerationProgress({ storyId, onComplete }: StoryGenerationProgressProps) {
+export default function StoryGenerationProgress({
+  storyId,
+  onComplete,
+}: StoryGenerationProgressProps) {
   const tCommonStoryGenerationProgress = useTranslations('StoryGenerationProgress');
   const router = useRouter();
   const params = useParams() as { locale?: string } | null;
-  const locale = (params?.locale && typeof params.locale === 'string') ? params.locale : 'en-US';
-  
+  const locale = params?.locale && typeof params.locale === 'string' ? params.locale : 'en-US';
+
   const [progress, setProgress] = useState<StoryProgress>({
     storyGenerationCompletedPercentage: 0,
     storyGenerationStatus: 'running',
-    status: 'writing'
+    status: 'writing',
   });
   const [currentMessage, setCurrentMessage] = useState('');
   const [isAnimating, setIsAnimating] = useState(false);
@@ -64,11 +70,16 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
     if (progress.status === 'published') {
       return;
     }
-    
+
     const updateMessage = () => {
       setIsAnimating(true);
       setTimeout(() => {
-        setCurrentMessage(getFunnyMessage(progress.currentStep || 'generate_outline', tCommonStoryGenerationProgress));
+        setCurrentMessage(
+          getFunnyMessage(
+            progress.currentStep || 'generate_outline',
+            tCommonStoryGenerationProgress,
+          ),
+        );
         setIsAnimating(false);
       }, 300);
     };
@@ -77,8 +88,9 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
     updateMessage();
 
     // Update message every 8 seconds
-    const messageInterval = setInterval(updateMessage, 8000);    return () => clearInterval(messageInterval);
-  }, [progress.currentStep, progress.status, tCommonStoryGenerationProgress]);// Poll for progress updates
+    const messageInterval = setInterval(updateMessage, 8000);
+    return () => clearInterval(messageInterval);
+  }, [progress.currentStep, progress.status, tCommonStoryGenerationProgress]); // Poll for progress updates
   useEffect(() => {
     // eslint-disable-next-line prefer-const
     let intervalId: NodeJS.Timeout;
@@ -89,17 +101,17 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
         if (response.ok) {
           const data = await response.json();
           const story = data.story;
-            setProgress({
+          setProgress({
             storyGenerationCompletedPercentage: story.storyGenerationCompletedPercentage || 0,
             storyGenerationStatus: story.storyGenerationStatus || 'running',
             status: story.status || 'writing',
-            currentStep: story.currentStep
-          });          // If completed, call onComplete callback
+            currentStep: story.currentStep,
+          }); // If completed, call onComplete callback
           if (story.status === 'published' && onComplete) {
             clearInterval(intervalId);
             onComplete();
           }
-          
+
           // Also stop polling if story is published
           if (story.status === 'published') {
             clearInterval(intervalId);
@@ -128,7 +140,8 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
       <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-8 text-center">
         {/* Completion Header */}
         <div className="mb-6">
-          <div className="text-6xl mb-4">🎉</div>          <h2 className="text-3xl font-bold text-green-800 mb-2">
+          <div className="text-6xl mb-4">🎉</div>{' '}
+          <h2 className="text-3xl font-bold text-green-800 mb-2">
             {tCommonStoryGenerationProgress('completion.title')}
           </h2>
           <p className="text-green-600 text-lg">
@@ -143,11 +156,15 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-40 animate-pulse"></div>
             </div>
           </div>
-          <p className="text-green-800 font-bold text-lg mt-2">{tCommonStoryGenerationProgress('completion.progress')}</p>
+          <p className="text-green-800 font-bold text-lg mt-2">
+            {tCommonStoryGenerationProgress('completion.progress')}
+          </p>
         </div>
 
         {/* Call to Action */}
-        <div className="mb-6">          <button
+        <div className="mb-6">
+          {' '}
+          <button
             onClick={() => router.push(`/${locale}/stories/read/${storyId}`)}
             className="btn btn-primary btn-lg bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 border-none text-white shadow-lg"
           >
@@ -157,7 +174,9 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
 
         {/* Additional Options */}
         <div className="p-4 bg-white/60 rounded-lg border border-green-200">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">            <button
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            {' '}
+            <button
               onClick={() => router.push(`/${locale}/stories`)}
               className="btn btn-outline btn-sm border-green-500 text-green-700 hover:bg-green-500 hover:text-white"
             >
@@ -170,7 +189,9 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
         <div className="mt-6 p-4 bg-green-100 rounded-lg border border-green-300">
           <div className="flex items-center justify-center space-x-2">
             <span className="text-2xl">✨</span>
-            <div>              <p className="text-green-800 font-medium text-sm">
+            <div>
+              {' '}
+              <p className="text-green-800 font-medium text-sm">
                 {tCommonStoryGenerationProgress('completion.celebration.title')}
               </p>
               <p className="text-green-700 text-sm">
@@ -199,11 +220,13 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
       {/* Progress Bar */}
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-base-content">{tCommonStoryGenerationProgress('progress.progressLabel')}</span>
+          <span className="text-sm font-medium text-base-content">
+            {tCommonStoryGenerationProgress('progress.progressLabel')}
+          </span>
           <span className="text-sm font-bold text-primary">{percentage}%</span>
         </div>
         <div className="w-full bg-base-300 rounded-full h-4 relative overflow-hidden">
-          <div 
+          <div
             className="bg-gradient-to-r from-primary to-primary-focus h-4 rounded-full transition-all duration-1000 ease-out relative"
             style={{ width: `${percentage}%` }}
           >
@@ -218,7 +241,9 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
         <div className="flex items-center justify-center space-x-2">
           <span className="text-2xl">⏱️</span>
           <div>
-          <p className="text-sm text-base-content/70">{tCommonStoryGenerationProgress('progress.estimatedTimeLabel')}</p>
+            <p className="text-sm text-base-content/70">
+              {tCommonStoryGenerationProgress('progress.estimatedTimeLabel')}
+            </p>
             <p className="text-lg font-bold text-primary">{estimatedTime}</p>
           </div>
         </div>
@@ -226,7 +251,9 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
 
       {/* Animated Message */}
       <div className="mb-6 min-h-[80px] flex items-center justify-center">
-        <div className={`transition-all duration-300 transform ${isAnimating ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
+        <div
+          className={`transition-all duration-300 transform ${isAnimating ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
+        >
           <div className="bg-base-100 rounded-lg p-4 border border-base-300 shadow-sm">
             <p className="text-base-content font-medium text-lg leading-relaxed">
               {currentMessage}
@@ -239,17 +266,34 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
       <div className="flex justify-center items-center space-x-1 mb-6">
         <span className="text-2xl">✍️</span>
         <div className="flex space-x-1">
-          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+          <div
+            className="w-2 h-2 bg-primary rounded-full animate-bounce"
+            style={{ animationDelay: '0ms' }}
+          ></div>
+          <div
+            className="w-2 h-2 bg-primary rounded-full animate-bounce"
+            style={{ animationDelay: '150ms' }}
+          ></div>
+          <div
+            className="w-2 h-2 bg-primary rounded-full animate-bounce"
+            style={{ animationDelay: '300ms' }}
+          ></div>
         </div>
-        <span className="text-base-content/70 ml-2 font-medium">{tCommonStoryGenerationProgress('progress.creatingMagic')}</span>
+        <span className="text-base-content/70 ml-2 font-medium">
+          {tCommonStoryGenerationProgress('progress.creatingMagic')}
+        </span>
       </div>
 
       {/* Current Step Info */}
       {progress.currentStep && (
         <div className="text-sm text-base-content/70">
-          <p>{tCommonStoryGenerationProgress('progress.currentlyLabel')} <span className="font-semibold">{tCommonStoryGenerationProgress(`steps.${progress.currentStep}`) || progress.currentStep}</span></p>
+          <p>
+            {tCommonStoryGenerationProgress('progress.currentlyLabel')}{' '}
+            <span className="font-semibold">
+              {tCommonStoryGenerationProgress(`steps.${progress.currentStep}`) ||
+                progress.currentStep}
+            </span>
+          </p>
         </div>
       )}
 
@@ -258,7 +302,9 @@ export default function StoryGenerationProgress({ storyId, onComplete }: StoryGe
         <div className="flex items-start space-x-2">
           <span className="text-xl">💡</span>
           <div className="text-left">
-            <p className="text-neutral-content font-medium text-sm mb-1">{tCommonStoryGenerationProgress('progress.tip.title')}</p>
+            <p className="text-neutral-content font-medium text-sm mb-1">
+              {tCommonStoryGenerationProgress('progress.tip.title')}
+            </p>
             <p className="text-neutral-content/80 text-sm">
               {tCommonStoryGenerationProgress('progress.tip.description')}
             </p>

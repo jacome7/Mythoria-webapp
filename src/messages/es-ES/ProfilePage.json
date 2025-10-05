@@ -15,7 +15,7 @@
     "contact": {
       "title": "Información de contacto y preferencias",
       "description": "Tus datos de contacto están seguros con nosotros. Los usamos para proteger tu cuenta y para comunicaciones importantes. ¡Sin spam, lo prometemos!",
-  "email": "Dirección de correo electrónico",
+      "email": "Dirección de correo electrónico",
       "mobile": "Teléfono móvil",
       "mobilePlaceholder": "ej: +34612345678",
       "language": "Idioma preferido"
@@ -30,7 +30,7 @@
     "journey": {
       "title": "Tu viaje creativo",
       "description": "¡Nos encanta ver florecer tu creatividad! Aquí tienes algunas de tus increíbles estadísticas.",
-  "booksCreated": "Historias creadas"
+      "booksCreated": "Historias creadas"
     },
     "actions": {
       "save": "Guardar cambios",

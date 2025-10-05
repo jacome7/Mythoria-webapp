@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  const config = {    clerk: {
+  const config = {
+    clerk: {
       publishableKey: !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
       secretKey: !!process.env.CLERK_SECRET_KEY,
       webhookSecret: !!process.env.CLERK_WEBHOOK_SECRET,
@@ -24,16 +25,18 @@ export async function GET() {
       daisyUiStyling: true,
       mobileResponsive: true,
       desktopLogo: true,
-    }
+    },
   };
 
   return NextResponse.json({
     status: 'Configuration Check',
     timestamp: new Date().toISOString(),
-    config,    recommendations: [
+    config,
+    recommendations: [
       !config.clerk.publishableKey && 'Add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY to .env.local',
       !config.clerk.secretKey && 'Add CLERK_SECRET_KEY to .env.local',
-      !config.clerk.webhookSecret && 'Add CLERK_WEBHOOK_SECRET to .env.local (required for user sync)',
-    ].filter(Boolean)
+      !config.clerk.webhookSecret &&
+        'Add CLERK_WEBHOOK_SECRET to .env.local (required for user sync)',
+    ].filter(Boolean),
   });
 }

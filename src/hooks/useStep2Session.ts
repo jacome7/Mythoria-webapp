@@ -44,7 +44,7 @@ export function useStep2Session() {
     setIsSaving(true);
     const data: SessionData = {
       text: storyText,
-      images: uploadedImages.map(img => img.preview),
+      images: uploadedImages.map((img) => img.preview),
       audio: uploadedAudio?.preview || null,
       lastSaved: Date.now(),
     };

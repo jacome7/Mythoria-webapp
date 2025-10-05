@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { useTranslations } from "next-intl";
-import { useLocale } from "next-intl";
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import {
   FiEdit3,
   FiTrash2,
@@ -12,9 +12,9 @@ import {
   FiPrinter,
   FiMoreVertical,
   FiCopy,
-} from "react-icons/fi";
-import { Story } from "@/types/story";
-import { formatDate, FormatOptions } from "@/utils/date";
+} from 'react-icons/fi';
+import { Story } from '@/types/story';
+import { formatDate, FormatOptions } from '@/utils/date';
 
 interface StoryRowProps {
   story: Story;
@@ -33,9 +33,9 @@ export default function StoryRow({
   onPrint,
   onDuplicate,
 }: StoryRowProps) {
-  const tMyStoriesPage = useTranslations("MyStoriesPage");
-  const tCommonShare = useTranslations("Share");
-  const tCommonActions = useTranslations("Actions");
+  const tMyStoriesPage = useTranslations('MyStoriesPage');
+  const tCommonShare = useTranslations('Share');
+  const tCommonActions = useTranslations('Actions');
   const locale = useLocale();
 
   const [openMenu, setOpenMenu] = useState(false);
@@ -50,38 +50,38 @@ export default function StoryRow({
       if (
         openMenu &&
         !target.closest(`[data-story-menu="${story.storyId}"]`) &&
-        !target.closest(".fixed")
+        !target.closest('.fixed')
       ) {
         setOpenMenu(false);
         setMenuPosition(null);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [openMenu, story.storyId]);
 
   const desktopDateOptions: FormatOptions = {
-    day: "2-digit",
-    month: "2-digit",
-    year: "2-digit",
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
     locale,
   };
   const mobileDateOptions: FormatOptions = {
-    day: "2-digit",
-    month: "2-digit",
+    day: '2-digit',
+    month: '2-digit',
     locale,
   };
 
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
-      case "draft":
-        return "badge badge-secondary";
-      case "writing":
-        return "badge badge-warning";
-      case "published":
-        return "badge badge-success";
+      case 'draft':
+        return 'badge badge-secondary';
+      case 'writing':
+        return 'badge badge-warning';
+      case 'published':
+        return 'badge badge-success';
       default:
-        return "badge badge-ghost";
+        return 'badge badge-ghost';
     }
   };
 
@@ -89,29 +89,29 @@ export default function StoryRow({
     if (!s.storyGenerationStatus) return null;
     const statusMap = {
       queued: {
-        text: tMyStoriesPage("table.status.queued"),
-        class: "badge-info",
-        icon: "⏳",
+        text: tMyStoriesPage('table.status.queued'),
+        class: 'badge-info',
+        icon: '⏳',
       },
       running: {
-        text: tMyStoriesPage("table.status.running"),
-        class: "badge-warning",
-        icon: "🔄",
+        text: tMyStoriesPage('table.status.running'),
+        class: 'badge-warning',
+        icon: '🔄',
       },
       completed: {
-        text: tMyStoriesPage("table.status.completed"),
-        class: "badge-success",
-        icon: "✅",
+        text: tMyStoriesPage('table.status.completed'),
+        class: 'badge-success',
+        icon: '✅',
       },
       failed: {
-        text: tMyStoriesPage("table.status.failed"),
-        class: "badge-error",
-        icon: "❌",
+        text: tMyStoriesPage('table.status.failed'),
+        class: 'badge-error',
+        icon: '❌',
       },
       cancelled: {
-        text: tMyStoriesPage("table.status.cancelled"),
-        class: "badge-neutral",
-        icon: "⏹️",
+        text: tMyStoriesPage('table.status.cancelled'),
+        class: 'badge-neutral',
+        icon: '⏹️',
       },
     } as const;
     const info = statusMap[s.storyGenerationStatus];
@@ -121,13 +121,10 @@ export default function StoryRow({
   return (
     <tr>
       <td className="px-2 py-1 md:px-4 md:py-2">
-        {formatDate(
-          story.createdAt,
-          isMobile ? mobileDateOptions : desktopDateOptions,
-        )}
+        {formatDate(story.createdAt, isMobile ? mobileDateOptions : desktopDateOptions)}
       </td>
       <td className="font-medium px-2 py-1 md:px-4 md:py-2">
-        {story.status === "published" ? (
+        {story.status === 'published' ? (
           <Link
             href={`/${locale}/stories/${story.storyId}`}
             className="text-primary hover:text-primary-focus hover:underline cursor-pointer"
@@ -147,27 +144,22 @@ export default function StoryRow({
           </span>
           {(() => {
             const genStatus = getGenerationStatusInfo(story);
-            if (genStatus && story.status === "writing") {
+            if (genStatus && story.status === 'writing') {
               return (
                 <div className="flex flex-col space-y-1">
-                  <span
-                    className={`badge badge-xs ${genStatus.class} whitespace-nowrap`}
-                  >
+                  <span className={`badge badge-xs ${genStatus.class} whitespace-nowrap`}>
                     {genStatus.icon} {genStatus.text}
                   </span>
-                  {genStatus.percentage > 0 &&
-                    genStatus.text === "Generating" && (
-                      <div className="w-full">
-                        <progress
-                          className="progress progress-primary w-full h-2"
-                          value={genStatus.percentage}
-                          max="100"
-                        ></progress>
-                        <span className="text-xs text-gray-500">
-                          {genStatus.percentage}%
-                        </span>
-                      </div>
-                    )}
+                  {genStatus.percentage > 0 && genStatus.text === 'Generating' && (
+                    <div className="w-full">
+                      <progress
+                        className="progress progress-primary w-full h-2"
+                        value={genStatus.percentage}
+                        max="100"
+                      ></progress>
+                      <span className="text-xs text-gray-500">{genStatus.percentage}%</span>
+                    </div>
+                  )}
                 </div>
               );
             }
@@ -178,14 +170,14 @@ export default function StoryRow({
       <td className="pl-2 pr-1 py-1 md:px-4 md:py-2">
         <div className="hidden md:flex justify-end gap-0.5">
           <button
-            className={`btn btn-ghost btn-sm ${story.status !== "published" ? "btn-disabled" : ""}`}
-            onClick={() => story.status === "published" && onDuplicate(story)}
-            title={tMyStoriesPage("actions.duplicate")}
-            disabled={story.status !== "published"}
+            className={`btn btn-ghost btn-sm ${story.status !== 'published' ? 'btn-disabled' : ''}`}
+            onClick={() => story.status === 'published' && onDuplicate(story)}
+            title={tMyStoriesPage('actions.duplicate')}
+            disabled={story.status !== 'published'}
           >
             <FiCopy className="w-4 h-4" />
           </button>
-          {story.status === "published" && (
+          {story.status === 'published' && (
             <Link
               href={`/${locale}/stories/${story.storyId}`}
               className="btn btn-ghost btn-sm text-primary hover:bg-primary hover:text-primary-content"
@@ -194,19 +186,19 @@ export default function StoryRow({
               <FiBook className="w-4 h-4" />
             </Link>
           )}
-          {story.status === "writing" ? (
+          {story.status === 'writing' ? (
             <button
               className="btn btn-ghost btn-sm btn-disabled"
               disabled
-              title={tCommonShare("tooltips.cannotShareWriting")}
+              title={tCommonShare('tooltips.cannotShareWriting')}
             >
               <FiShare2 className="w-4 h-4" />
             </button>
-          ) : story.status === "draft" ? (
+          ) : story.status === 'draft' ? (
             <button
               className="btn btn-ghost btn-sm btn-disabled"
               disabled
-              title={tCommonShare("tooltips.cannotShareDraft")}
+              title={tCommonShare('tooltips.cannotShareDraft')}
             >
               <FiShare2 className="w-4 h-4" />
             </button>
@@ -214,16 +206,16 @@ export default function StoryRow({
             <button
               className="btn btn-ghost btn-sm"
               onClick={() => onShare(story)}
-              title={tMyStoriesPage("actions.share")}
+              title={tMyStoriesPage('actions.share')}
             >
               <FiShare2 className="w-4 h-4" />
             </button>
           )}
-          {story.status === "published" ? (
+          {story.status === 'published' ? (
             <button
               className="btn btn-ghost btn-sm"
               onClick={() => onPrint(story)}
-              title={tMyStoriesPage("actions.print")}
+              title={tMyStoriesPage('actions.print')}
             >
               <FiPrinter className="w-4 h-4" />
             </button>
@@ -231,12 +223,12 @@ export default function StoryRow({
             <button
               className="btn btn-ghost btn-sm btn-disabled"
               disabled
-              title={tMyStoriesPage("actions.printNotAvailable")}
+              title={tMyStoriesPage('actions.printNotAvailable')}
             >
               <FiPrinter className="w-4 h-4" />
             </button>
           )}
-          {story.status === "writing" ? (
+          {story.status === 'writing' ? (
             <button
               className="btn btn-ghost btn-sm btn-disabled"
               disabled
@@ -244,11 +236,11 @@ export default function StoryRow({
             >
               <FiEdit3 className="w-4 h-4" />
             </button>
-          ) : story.status === "draft" ? (
+          ) : story.status === 'draft' ? (
             <Link
               href={`/${locale}/tell-your-story/step-3?edit=${story.storyId}`}
               className="btn btn-ghost btn-sm"
-              title={tMyStoriesPage("actions.edit")}
+              title={tMyStoriesPage('actions.edit')}
             >
               <FiEdit3 className="w-4 h-4" />
             </Link>
@@ -256,7 +248,7 @@ export default function StoryRow({
             <Link
               href={`/${locale}/stories/edit/${story.storyId}`}
               className="btn btn-ghost btn-sm"
-              title={tMyStoriesPage("actions.edit")}
+              title={tMyStoriesPage('actions.edit')}
             >
               <FiEdit3 className="w-4 h-4" />
             </Link>
@@ -264,7 +256,7 @@ export default function StoryRow({
           <button
             className="btn btn-ghost btn-sm text-error hover:bg-error hover:text-error-content"
             onClick={() => onDelete(story)}
-            title={tMyStoriesPage("actions.delete")}
+            title={tMyStoriesPage('actions.delete')}
           >
             <FiTrash2 className="w-4 h-4" />
           </button>
@@ -293,17 +285,17 @@ export default function StoryRow({
               }}
             >
               <div className="p-2 space-y-1">
-                {story.status === "published" && (
+                {story.status === 'published' && (
                   <Link
                     href={`/${locale}/stories/${story.storyId}`}
                     className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
                     onClick={() => setOpenMenu(false)}
                   >
                     <FiBook className="w-4 h-4" />
-                    {tCommonActions("read")}
+                    {tCommonActions('read')}
                   </Link>
                 )}
-                {story.status === "published" ? (
+                {story.status === 'published' ? (
                   <button
                     className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
                     onClick={() => {
@@ -313,15 +305,15 @@ export default function StoryRow({
                     }}
                   >
                     <FiShare2 className="w-4 h-4" />
-                    {tMyStoriesPage("actions.share")}
+                    {tMyStoriesPage('actions.share')}
                   </button>
                 ) : (
                   <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
                     <FiShare2 className="w-4 h-4" />
-                    {tMyStoriesPage("actions.share")}
+                    {tMyStoriesPage('actions.share')}
                   </div>
                 )}
-                {story.status === "published" ? (
+                {story.status === 'published' ? (
                   <button
                     className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
                     onClick={() => {
@@ -331,20 +323,20 @@ export default function StoryRow({
                     }}
                   >
                     <FiPrinter className="w-4 h-4" />
-                    {tMyStoriesPage("actions.print")}
+                    {tMyStoriesPage('actions.print')}
                   </button>
                 ) : (
                   <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
                     <FiPrinter className="w-4 h-4" />
-                    {tMyStoriesPage("actions.print")}
+                    {tMyStoriesPage('actions.print')}
                   </div>
                 )}
-                {story.status === "writing" ? (
+                {story.status === 'writing' ? (
                   <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
                     <FiEdit3 className="w-4 h-4" />
-                    {tMyStoriesPage("actions.edit")}
+                    {tMyStoriesPage('actions.edit')}
                   </div>
-                ) : story.status === "draft" ? (
+                ) : story.status === 'draft' ? (
                   <Link
                     href={`/${locale}/tell-your-story/step-3?edit=${story.storyId}`}
                     className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
@@ -354,7 +346,7 @@ export default function StoryRow({
                     }}
                   >
                     <FiEdit3 className="w-4 h-4" />
-                    {tMyStoriesPage("actions.edit")}
+                    {tMyStoriesPage('actions.edit')}
                   </Link>
                 ) : (
                   <Link
@@ -366,23 +358,23 @@ export default function StoryRow({
                     }}
                   >
                     <FiEdit3 className="w-4 h-4" />
-                    {tMyStoriesPage("actions.edit")}
+                    {tMyStoriesPage('actions.edit')}
                   </Link>
                 )}
                 <div className="border-t border-base-300 my-1"></div>
                 <button
-                  className={`flex items-center gap-2 px-3 py-2 text-sm rounded-md w-full text-left ${story.status !== "published" ? "opacity-50 cursor-not-allowed" : "hover:bg-base-200"}`}
+                  className={`flex items-center gap-2 px-3 py-2 text-sm rounded-md w-full text-left ${story.status !== 'published' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-base-200'}`}
                   onClick={() => {
-                    if (story.status === "published") {
+                    if (story.status === 'published') {
                       onDuplicate(story);
                     }
                     setOpenMenu(false);
                     setMenuPosition(null);
                   }}
-                  disabled={story.status !== "published"}
+                  disabled={story.status !== 'published'}
                 >
                   <FiCopy className="w-4 h-4" />
-                  {tMyStoriesPage("actions.duplicate")}
+                  {tMyStoriesPage('actions.duplicate')}
                 </button>
                 <button
                   className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-error hover:text-error-content rounded-md w-full text-left text-error"
@@ -393,7 +385,7 @@ export default function StoryRow({
                   }}
                 >
                   <FiTrash2 className="w-4 h-4" />
-                  {tMyStoriesPage("actions.delete")}
+                  {tMyStoriesPage('actions.delete')}
                 </button>
               </div>
             </div>

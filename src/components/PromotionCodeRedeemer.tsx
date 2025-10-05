@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React, { useState } from 'react';
 import { FaTicketAlt } from 'react-icons/fa';
 // Using next-intl directly (pattern consistent with other components like BillingInformation/CreditsDisplay)
@@ -28,7 +28,7 @@ export const PromotionCodeRedeemer: React.FC<Props> = ({ onRedeemed, compact }) 
       const res = await fetch('/api/codes/redeem', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code })
+        body: JSON.stringify({ code }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -36,11 +36,11 @@ export const PromotionCodeRedeemer: React.FC<Props> = ({ onRedeemed, compact }) 
         setMessage(tVoucher('invalid'));
         return;
       }
-  setStatus('success');
-  // Always localize success client-side to respect current locale.
-  setMessage(tVoucher('success', { credits: data.creditsGranted, code: data.code }));
+      setStatus('success');
+      // Always localize success client-side to respect current locale.
+      setMessage(tVoucher('success', { credits: data.creditsGranted, code: data.code }));
       onRedeemed?.(data.creditsGranted, data.newBalance);
-  } catch {
+    } catch {
       setStatus('error');
       setMessage(tVoucher('invalid'));
     }
@@ -48,7 +48,10 @@ export const PromotionCodeRedeemer: React.FC<Props> = ({ onRedeemed, compact }) 
 
   if (!expanded) {
     return (
-      <button onClick={() => setExpanded(true)} className="link link-primary flex items-center gap-2">
+      <button
+        onClick={() => setExpanded(true)}
+        className="link link-primary flex items-center gap-2"
+      >
         <FaTicketAlt /> {tVoucher('haveCode')}
       </button>
     );
@@ -76,11 +79,7 @@ export const PromotionCodeRedeemer: React.FC<Props> = ({ onRedeemed, compact }) 
       {status !== 'idle' && (
         <div
           className={`mt-2 text-sm ${
-            status === 'success'
-              ? 'text-primary'
-              : status === 'error'
-              ? 'text-error'
-              : 'opacity-80'
+            status === 'success' ? 'text-primary' : status === 'error' ? 'text-error' : 'opacity-80'
           }`}
           aria-live="polite"
         >

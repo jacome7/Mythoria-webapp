@@ -24,12 +24,7 @@
       "Fiction",
       "Myth"
     ],
-    "fallbackWords": [
-      "Adventure",
-      "Love Story",
-      "Mystery",
-      "Fairy Tale"
-    ],
+    "fallbackWords": ["Adventure", "Love Story", "Mystery", "Fairy Tale"],
     "altTexts": {
       "kidsBook": "Kids Book",
       "groupsYearbooks": "Groups & Yearbooks",

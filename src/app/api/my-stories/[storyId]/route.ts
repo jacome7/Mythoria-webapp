@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getCurrentAuthor } from "@/lib/auth";
-import { storyService } from "@/db/services";
-import { db } from "@/db";
-import { stories, chapters } from "@/db/schema";
-import { and, asc, eq, max } from "drizzle-orm";
-import { Storage } from "@google-cloud/storage";
+import { NextRequest, NextResponse } from 'next/server';
+import { getCurrentAuthor } from '@/lib/auth';
+import { storyService } from '@/db/services';
+import { db } from '@/db';
+import { stories, chapters } from '@/db/schema';
+import { and, asc, eq, max } from 'drizzle-orm';
+import { Storage } from '@google-cloud/storage';
 
 // Load suffix from i18n messages at runtime based on locale
 type ActionsMessages = {
@@ -15,14 +15,24 @@ type ActionsMessages = {
 async function getDuplicateTitleSuffix(locale?: string): Promise<string> {
   const loc = locale || 'en-US';
   try {
-    const actions = (await import(`@/messages/${loc}/Actions.json`).then(m => m.default)) as ActionsMessages;
-    const ns = actions && Object.prototype.hasOwnProperty.call(actions, 'Actions') && actions.Actions ? actions.Actions : actions;
+    const actions = (await import(`@/messages/${loc}/Actions.json`).then(
+      (m) => m.default,
+    )) as ActionsMessages;
+    const ns =
+      actions && Object.prototype.hasOwnProperty.call(actions, 'Actions') && actions.Actions
+        ? actions.Actions
+        : actions;
     return ns?.duplicateTitleSuffix || ' - copy';
   } catch {
     // Fallback to English if locale file is missing
     try {
-      const actions = (await import(`@/messages/en-US/Actions.json`).then(m => m.default)) as ActionsMessages;
-      const ns = actions && Object.prototype.hasOwnProperty.call(actions, 'Actions') && actions.Actions ? actions.Actions : actions;
+      const actions = (await import(`@/messages/en-US/Actions.json`).then(
+        (m) => m.default,
+      )) as ActionsMessages;
+      const ns =
+        actions && Object.prototype.hasOwnProperty.call(actions, 'Actions') && actions.Actions
+          ? actions.Actions
+          : actions;
       return ns?.duplicateTitleSuffix || ' - copy';
     } catch {
       return ' - copy';
@@ -54,7 +64,7 @@ function parseUri(uri: string): ParsedUri {
   if (/^gs:\/\//i.test(uri)) {
     // gs://bucket/path
     const withoutScheme = uri.replace(/^gs:\/\//i, '');
-    const firstSlash = withoutScheme.indexOf('/')
+    const firstSlash = withoutScheme.indexOf('/');
     const bucket = firstSlash === -1 ? withoutScheme : withoutScheme.slice(0, firstSlash);
     const path = firstSlash === -1 ? '' : withoutScheme.slice(firstSlash + 1);
     return { kind: 'gcs-gs', bucket, path };
@@ -104,7 +114,11 @@ function buildAbsoluteUri(parsed: ParsedUri, newPath: string): string {
 }
 
 // Copy a single image if it exists, returning the new ABSOLUTE URI when copied/repointed
-async function copyImageAndRewriteUri(uri: string | null | undefined, oldStoryId: string, newStoryId: string): Promise<string | null> {
+async function copyImageAndRewriteUri(
+  uri: string | null | undefined,
+  oldStoryId: string,
+  newStoryId: string,
+): Promise<string | null> {
   if (!uri) return null;
 
   const parsed = parseUri(uri);
@@ -114,11 +128,26 @@ async function copyImageAndRewriteUri(uri: string | null | undefined, oldStoryId
   const parts = originalPath.split('/');
   const idx = parts.indexOf(oldStoryId);
   const hasStoryFolder = idx >= 0;
-  const newPath = hasStoryFolder ? (() => { const cp = parts.slice(); cp[idx] = newStoryId; return cp.join('/'); })() : originalPath;
+  const newPath = hasStoryFolder
+    ? (() => {
+        const cp = parts.slice();
+        cp[idx] = newStoryId;
+        return cp.join('/');
+      })()
+    : originalPath;
 
   // Attempt to copy within the same bucket when we can identify a GCS bucket and the path changed
-  const isGcs = parsed.kind === 'gcs-gs' || parsed.kind === 'gcs-https-storage' || parsed.kind === 'gcs-https-bucket' || parsed.kind === 'relative';
-  const effectiveBucket = parsed.kind === 'gcs-gs' || parsed.kind === 'gcs-https-storage' || parsed.kind === 'gcs-https-bucket' ? parsed.bucket : bucketName;
+  const isGcs =
+    parsed.kind === 'gcs-gs' ||
+    parsed.kind === 'gcs-https-storage' ||
+    parsed.kind === 'gcs-https-bucket' ||
+    parsed.kind === 'relative';
+  const effectiveBucket =
+    parsed.kind === 'gcs-gs' ||
+    parsed.kind === 'gcs-https-storage' ||
+    parsed.kind === 'gcs-https-bucket'
+      ? parsed.bucket
+      : bucketName;
 
   if (isGcs && hasStoryFolder && newPath !== originalPath) {
     try {
@@ -140,130 +169,103 @@ async function copyImageAndRewriteUri(uri: string | null | undefined, oldStoryId
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ storyId: string }> }
+  { params }: { params: Promise<{ storyId: string }> },
 ) {
   const { storyId } = await params;
   try {
     const author = await getCurrentAuthor();
-    
+
     if (!author) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const story = await storyService.getStoryById(storyId);
-    
+
     if (!story || story.authorId !== author.authorId) {
-      return NextResponse.json(
-        { error: "Story not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }
 
     return NextResponse.json({ story });
   } catch (error) {
-    console.error("Error fetching story:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch story" },
-      { status: 500 }
-    );
+    console.error('Error fetching story:', error);
+    return NextResponse.json({ error: 'Failed to fetch story' }, { status: 500 });
   }
 }
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ storyId: string }> }
+  { params }: { params: Promise<{ storyId: string }> },
 ) {
   const { storyId } = await params;
   try {
     const author = await getCurrentAuthor();
-    
+
     if (!author) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const story = await storyService.getStoryById(storyId);
-    
+
     if (!story || story.authorId !== author.authorId) {
-      return NextResponse.json(
-        { error: "Story not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }
 
     const updates = await request.json();
     const updatedStory = await storyService.updateStory(storyId, updates);
-    
+
     return NextResponse.json({ story: updatedStory });
   } catch (error) {
-    console.error("Error updating story:", error);
-    return NextResponse.json(
-      { error: "Failed to update story" },
-      { status: 500 }
-    );
+    console.error('Error updating story:', error);
+    return NextResponse.json({ error: 'Failed to update story' }, { status: 500 });
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ storyId: string }> }
+  { params }: { params: Promise<{ storyId: string }> },
 ) {
   const { storyId } = await params;
   try {
     const author = await getCurrentAuthor();
-    
+
     if (!author) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const story = await storyService.getStoryById(storyId);
-    
+
     if (!story || story.authorId !== author.authorId) {
-      return NextResponse.json(
-        { error: "Story not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }
 
     await storyService.deleteStory(storyId);
-    
+
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error deleting story:", error);
-    return NextResponse.json(
-      { error: "Failed to delete story" },
-      { status: 500 }
-    );
+    console.error('Error deleting story:', error);
+    return NextResponse.json({ error: 'Failed to delete story' }, { status: 500 });
   }
 }
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ storyId: string }> }
+  { params }: { params: Promise<{ storyId: string }> },
 ) {
   const { storyId } = await params;
   try {
     const author = await getCurrentAuthor();
     if (!author) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json().catch(() => ({}));
     const action = body?.action as string | undefined;
-  // We previously accepted a `locale` here and applied it immediately to the duplicated
-  // story's storyLanguage. This caused a downstream conflict when initiating a full
-  // translation job (target locale equaled current storyLanguage). Requirement update:
-  // When duplicating, ALWAYS retain the original storyLanguage; language is only changed
-  // after translation completes. We still allow locale for title suffix lookup only.
-  const locale = body?.locale as string | undefined;
+    // We previously accepted a `locale` here and applied it immediately to the duplicated
+    // story's storyLanguage. This caused a downstream conflict when initiating a full
+    // translation job (target locale equaled current storyLanguage). Requirement update:
+    // When duplicating, ALWAYS retain the original storyLanguage; language is only changed
+    // after translation completes. We still allow locale for title suffix lookup only.
+    const locale = body?.locale as string | undefined;
 
     if (action !== 'duplicate') {
       return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
@@ -277,10 +279,13 @@ export async function POST(
 
     // Only allow duplicating published stories
     if (original.status !== 'published') {
-      return NextResponse.json({ error: 'Only published stories can be duplicated' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Only published stories can be duplicated' },
+        { status: 400 },
+      );
     }
 
-  const suffix = await getDuplicateTitleSuffix(locale);
+    const suffix = await getDuplicateTitleSuffix(locale);
     const newTitle = `${original.title}${suffix}`;
 
     // Begin transaction – create new story id, copy images, duplicate chapters
@@ -324,9 +329,17 @@ export async function POST(
 
       const newStoryId = newStory.storyId;
 
-  // 2) Copy only referenced images (cover/backcover and those in chapter image URIs) and compute updated ABSOLUTE URIs
-  const copiedCoverUri = await copyImageAndRewriteUri(original.coverUri, original.storyId, newStoryId);
-  const copiedBackcoverUri = await copyImageAndRewriteUri(original.backcoverUri, original.storyId, newStoryId);
+      // 2) Copy only referenced images (cover/backcover and those in chapter image URIs) and compute updated ABSOLUTE URIs
+      const copiedCoverUri = await copyImageAndRewriteUri(
+        original.coverUri,
+        original.storyId,
+        newStoryId,
+      );
+      const copiedBackcoverUri = await copyImageAndRewriteUri(
+        original.backcoverUri,
+        original.storyId,
+        newStoryId,
+      );
 
       // 3) Compute updated media URIs for story
       const updateFields: Partial<typeof stories.$inferInsert> = {};
@@ -337,7 +350,7 @@ export async function POST(
       if (copiedBackcoverUri) {
         updateFields.backcoverUri = copiedBackcoverUri;
       }
-  // Do not copy or set featureImageUri as per simplified image-copy rules
+      // Do not copy or set featureImageUri as per simplified image-copy rules
 
       // 4) Apply updates to new story
       const [finalStory] = await tx
@@ -375,15 +388,19 @@ export async function POST(
           and(
             eq(chapters.chapterNumber, latestVersions.chapterNumber),
             eq(chapters.version, latestVersions.latestVersion),
-            eq(chapters.storyId, original.storyId)
-          )
+            eq(chapters.storyId, original.storyId),
+          ),
         )
         .orderBy(asc(chapters.chapterNumber));
 
       for (const ch of latestChapters) {
         // Copy chapter images if referenced and point to the same version in the new folder, return ABSOLUTE URIs
         const newImageUri = await copyImageAndRewriteUri(ch.imageUri, original.storyId, newStoryId);
-        const newImageThumbUri = await copyImageAndRewriteUri(ch.imageThumbnailUri, original.storyId, newStoryId);
+        const newImageThumbUri = await copyImageAndRewriteUri(
+          ch.imageThumbnailUri,
+          original.storyId,
+          newStoryId,
+        );
         await tx.insert(chapters).values({
           storyId: newStoryId,
           authorId: author.authorId,

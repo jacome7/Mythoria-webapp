@@ -1,9 +1,11 @@
 # Mythoria Home Experience
 
 ## Mythoria's Take
+
 The landing page is a stage-set montage: the typewriter headline keeps riffing new genres, sample books tease every audience, and the step-by-step timeline explains how the journey works before you even log in. Scroll a little further for the quote of the day and the live counter tallying how many stories Mythorians have already launched. It is the hype reel your imagination deserves.
 
 ## Technical Deep Dive
+
 - Hero band: `src/app/[locale]/page.tsx` uses `TypeAnimation` to cycle translated keywords, displays CTA buttons, and includes signed-out CTAs via Clerk `SignedOut` guard.
 - Sample library: the same file showcases public slugs via static links, responsive cards, and localized alt text.
 - How-it-works timeline: DaisyUI timeline classes pull copy from `HomePage.howItWorks.*` translations to stay locale-friendly.

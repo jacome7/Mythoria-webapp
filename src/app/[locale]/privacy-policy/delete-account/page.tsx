@@ -47,12 +47,8 @@ export default function DeleteAccountPage() {
       <div className="container mx-auto px-4 py-12 max-w-3xl">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-primary mb-4">
-            {tDeleteAccount('title')}
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            {tDeleteAccount('subtitle')}
-          </p>
+          <h1 className="text-4xl font-bold text-primary mb-4">{tDeleteAccount('title')}</h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">{tDeleteAccount('subtitle')}</p>
         </div>
 
         {!isLoaded ? (
@@ -71,7 +67,7 @@ export default function DeleteAccountPage() {
             <p className="text-gray-700 mb-6 text-lg">
               {tDeleteAccount('notLoggedIn.description')}
             </p>
-            
+
             <div className="bg-base-100 border border-base-300 rounded-lg p-6 mb-6">
               <div className="flex items-center gap-2 mb-4">
                 <FaCog className="h-5 w-5 text-primary" />
@@ -89,7 +85,7 @@ export default function DeleteAccountPage() {
                 <li className="pl-2">{tDeleteAccount('notLoggedIn.steps.step4')}</li>
               </ol>
             </div>
-            
+
             <div className="alert alert-warning">
               <FaExclamationTriangle className="h-5 w-5" />
               <div>
@@ -103,13 +99,9 @@ export default function DeleteAccountPage() {
           <div className="bg-white shadow-xl rounded-lg p-8 mb-8">
             <div className="flex items-center gap-3 mb-6">
               <FaTrash className="h-6 w-6 text-error" />
-              <h2 className="text-2xl font-bold text-error">
-                {tDeleteAccount('loggedIn.title')}
-              </h2>
+              <h2 className="text-2xl font-bold text-error">{tDeleteAccount('loggedIn.title')}</h2>
             </div>
-            <p className="text-gray-700 mb-8 text-lg">
-              {tDeleteAccount('loggedIn.description')}
-            </p>
+            <p className="text-gray-700 mb-8 text-lg">{tDeleteAccount('loggedIn.description')}</p>
 
             {/* Warning Alert */}
             <div className="alert alert-warning mb-6">
@@ -146,10 +138,7 @@ export default function DeleteAccountPage() {
               </div>
             </div>
 
-            <button
-              onClick={() => setIsDialogOpen(true)}
-              className="btn btn-error btn-lg w-full"
-            >
+            <button onClick={() => setIsDialogOpen(true)} className="btn btn-error btn-lg w-full">
               <FaTrash className="h-5 w-5" />
               {tDeleteAccount('loggedIn.deleteButton')}
             </button>
@@ -161,18 +150,20 @@ export default function DeleteAccountPage() {
                   <h3 className="font-bold text-lg text-error mb-4">
                     {tDeleteAccount('confirmation.title')}
                   </h3>
-                  <p className="text-gray-700 mb-6">
-                    {tDeleteAccount('confirmation.description')}
-                  </p>
-                  
+                  <p className="text-gray-700 mb-6">{tDeleteAccount('confirmation.description')}</p>
+
                   <div className="form-control mb-6">
                     <label className="label">
-                      <span className="label-text font-medium">{tDeleteAccount('confirmation.emailLabel')}</span>
+                      <span className="label-text font-medium">
+                        {tDeleteAccount('confirmation.emailLabel')}
+                      </span>
                     </label>
                     <input
                       type="email"
                       value={emailConfirmation}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmailConfirmation(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setEmailConfirmation(e.target.value)
+                      }
                       placeholder={user.primaryEmailAddress?.emailAddress}
                       className="input input-bordered w-full"
                     />
@@ -184,7 +175,7 @@ export default function DeleteAccountPage() {
                       </label>
                     )}
                   </div>
-                  
+
                   <div className="modal-action">
                     <button
                       onClick={() => {
@@ -221,12 +212,8 @@ export default function DeleteAccountPage() {
 
         {/* Legal compliance information */}
         <div className="bg-white shadow-xl rounded-lg p-8">
-          <h2 className="text-xl font-bold text-primary mb-4">
-            {tDeleteAccount('legal.title')}
-          </h2>
-          <p className="text-gray-600 leading-relaxed">
-            {tDeleteAccount('legal.description')}
-          </p>
+          <h2 className="text-xl font-bold text-primary mb-4">{tDeleteAccount('legal.title')}</h2>
+          <p className="text-gray-600 leading-relaxed">{tDeleteAccount('legal.description')}</p>
         </div>
       </div>
     </div>

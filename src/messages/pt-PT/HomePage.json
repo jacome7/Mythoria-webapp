@@ -24,12 +24,7 @@
       "Ficção",
       "Mito"
     ],
-    "fallbackWords": [
-      "Aventura",
-      "História de Amor",
-      "Mistério",
-      "Conto de Fadas"
-    ],
+    "fallbackWords": ["Aventura", "História de Amor", "Mistério", "Conto de Fadas"],
     "altTexts": {
       "kidsBook": "Livro Infantil",
       "groupsYearbooks": "Grupos & Álbuns",

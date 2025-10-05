@@ -31,8 +31,8 @@ export default function AIEditModal({ isOpen, onClose, storyId, onEditSuccess }:
       imgs.map((img) =>
         img.latestVersion.url === originalUrl
           ? { ...img, latestVersion: { ...img.latestVersion, url: newUrl } }
-          : img
-      )
+          : img,
+      ),
     );
   };
 

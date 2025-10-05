@@ -18,27 +18,19 @@ export default function PrintOrderPage() {
   return (
     <div className="min-h-screen bg-base-100 p-4">
       <SignedIn>
-  <PrintOrderContent storyId={storyId} />
+        <PrintOrderContent storyId={storyId} />
       </SignedIn>
 
       <SignedOut>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center space-y-6">
             <h1 className="text-4xl font-bold">{tAuth('accessRestricted')}</h1>
-            <p className="text-lg text-gray-600">
-              {tAuth('needSignIn')}
-            </p>
+            <p className="text-lg text-gray-600">{tAuth('needSignIn')}</p>
             <div className="space-x-4">
-              <button
-                onClick={() => router.push(`/${locale}/sign-in`)}
-                className="btn btn-primary"
-              >
+              <button onClick={() => router.push(`/${locale}/sign-in`)} className="btn btn-primary">
                 {tAuth('signIn')}
               </button>
-              <button
-                onClick={() => router.push(`/${locale}/sign-up`)}
-                className="btn btn-outline"
-              >
+              <button onClick={() => router.push(`/${locale}/sign-up`)} className="btn btn-outline">
                 {tAuth('createAccount')}
               </button>
             </div>

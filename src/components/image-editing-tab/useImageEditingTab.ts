@@ -86,9 +86,7 @@ export function useImageEditingTab({
         ...selectedImage,
         latestVersion: { ...selectedVersion, url: newImageGenerated },
       };
-      const updatedImages = storyImages.map((img) =>
-        img === selectedImage ? updatedImage : img
-      );
+      const updatedImages = storyImages.map((img) => (img === selectedImage ? updatedImage : img));
       onImageUpdated(updatedImages);
       setNewImageGenerated(null);
     } finally {

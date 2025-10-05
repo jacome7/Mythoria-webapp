@@ -4,11 +4,7 @@ import {
   normalizeGraphicalStyle,
   normalizeStoryEnums,
 } from '@/utils/enum-normalizers';
-import {
-  TargetAudience,
-  NovelStyle,
-  GraphicalStyle,
-} from '@/types/story-enums';
+import { TargetAudience, NovelStyle, GraphicalStyle } from '@/types/story-enums';
 
 describe('normalizeTargetAudience', () => {
   it('maps common synonyms to enum values', () => {

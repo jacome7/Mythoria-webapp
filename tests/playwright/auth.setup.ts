@@ -26,7 +26,9 @@ if (process.env.SKIP_AUTH_SETUP === '1') {
     const ageMs = Date.now() - mtimeMs;
     if (ageMs < maxAgeHours * 3600_000) {
       const ageH = (ageMs / 3600_000).toFixed(2);
-      console.log(`Existing auth state age: ${ageH}h (< ${maxAgeHours}h). Skipping manual auth setup. Set REFRESH_AUTH=1 to force refresh.`);
+      console.log(
+        `Existing auth state age: ${ageH}h (< ${maxAgeHours}h). Skipping manual auth setup. Set REFRESH_AUTH=1 to force refresh.`,
+      );
       // Skip the whole file (only test) so Playwright moves on; chromium project still loads storageState.
       setup.skip(true, 'Auth state fresh; skipping re-login.');
     }
@@ -58,21 +60,25 @@ setup('authenticate (manual social or magic link only)', async ({ page }) => {
     }
   }
 
-  console.log('Manual authentication required: complete social login or magic link in the headed browser.');
+  console.log(
+    'Manual authentication required: complete social login or magic link in the headed browser.',
+  );
   console.log(`Waiting up to ${manualTimeout / 1000}s for Clerk session (__session cookie).`);
 
   const start = Date.now();
   let authenticated = false;
   while (Date.now() - start < manualTimeout) {
     const cookies = await page.context().cookies();
-    if (cookies.some(c => c.name.includes('__session'))) {
+    if (cookies.some((c) => c.name.includes('__session'))) {
       authenticated = true;
       break;
     }
     await page.waitForTimeout(1000);
   }
   if (!authenticated) {
-    throw new Error('Manual authentication timed out. Increase MANUAL_AUTH_TIMEOUT_MS or ensure the social/magic link flow completed.');
+    throw new Error(
+      'Manual authentication timed out. Increase MANUAL_AUTH_TIMEOUT_MS or ensure the social/magic link flow completed.',
+    );
   }
 
   await page.goto('/en-US/my-stories');

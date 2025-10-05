@@ -1,13 +1,13 @@
 /** @type {import('jest').Config} */
 module.exports = {
-  preset: "ts-jest",
-  testEnvironment: "jsdom",
+  preset: 'ts-jest',
+  testEnvironment: 'jsdom',
   moduleNameMapper: {
-    "^@/(.*)$": "<rootDir>/src/$1",
+    '^@/(.*)$': '<rootDir>/src/$1',
   },
   // Silence haste map collision between root package.json and .next/standalone/package.json
-  modulePathIgnorePatterns: ["<rootDir>/.next/"],
+  modulePathIgnorePatterns: ['<rootDir>/.next/'],
   // Ignore Next build output and Playwright tests (they are executed via `npx playwright test`)
-  testPathIgnorePatterns: ["<rootDir>/.next/", "<rootDir>/tests/playwright/"],
-  setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
+  testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/tests/playwright/'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 };

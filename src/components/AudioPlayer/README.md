@@ -5,22 +5,26 @@ This directory contains shared components for audio playback functionality used 
 ## Components
 
 ### `useAudioPlayer`
+
 A custom hook that manages audio playback state and provides audio control functions.
 
 **Usage:**
+
 ```tsx
 const audioPlayer = useAudioPlayer({
   audioEndpoint: '/api/stories/123/audio', // Base audio API endpoint
   onError: (errorMessage) => setError(errorMessage), // Optional error handler
-  trackingData: { // Optional analytics tracking
+  trackingData: {
+    // Optional analytics tracking
     story_id: 'story-id',
     story_title: 'Story Title',
-    total_chapters: 5
-  }
+    total_chapters: 5,
+  },
 });
 ```
 
 **Returns:**
+
 - `currentlyPlaying: number | null` - Index of currently playing chapter
 - `audioElements: { [key: number]: HTMLAudioElement }` - Audio element instances
 - `audioProgress: { [key: number]: number }` - Progress percentage for each chapter
@@ -30,27 +34,30 @@ const audioPlayer = useAudioPlayer({
 - `stopAudio: (chapterIndex: number) => void` - Stop audio function
 
 ### `AudioChapterList`
+
 A React component that renders a list of audio chapters with playback controls.
 
 **Usage:**
+
 ```tsx
-<AudioChapterList 
-  chapters={audioChapters}
-  {...audioPlayer}
-/>
+<AudioChapterList chapters={audioChapters} {...audioPlayer} />
 ```
 
 **Props:**
+
 - `chapters: AudioChapter[]` - Array of audio chapters
 - All props from `useAudioPlayer` return value
 
 ### Utility Functions
 
 #### `hasAudiobook(audiobookUri: unknown): boolean`
+
 Checks if a story has audiobook data available.
 
 #### `getAudioChapters(audiobookUri: unknown, chapters: Chapter[], fallbackTitleFn: (number) => string): AudioChapter[]`
+
 Extracts audio chapters from audiobook data, supporting multiple formats:
+
 - **Format 1**: `{"chapter_1": "url", "chapter_2": "url", ...}`
 - **Format 2**: `{"1": "url", "2": "url", ...}`
 - **Format 3**: Array of structured audiobook objects
@@ -58,6 +65,7 @@ Extracts audio chapters from audiobook data, supporting multiple formats:
 ## Data Formats
 
 ### AudioChapter Interface
+
 ```tsx
 interface AudioChapter {
   chapterTitle: string;
@@ -68,6 +76,7 @@ interface AudioChapter {
 ```
 
 ### Chapter Interface
+
 ```tsx
 interface Chapter {
   id: string;
@@ -86,6 +95,7 @@ interface Chapter {
 ## Architecture
 
 ### Audio Storage Strategy
+
 The system supports dual storage for audio data:
 
 1. **Story-level**: `story.audiobookUri` (JSONB field) - Used by authenticated users
@@ -99,11 +109,13 @@ The system supports dual storage for audio data:
 ### API Endpoints
 
 #### Authenticated Audio API
+
 - **Endpoint**: `/api/stories/{storyId}/audio/{chapterIndex}`
 - **Authentication**: Required
 - **Data Source**: `story.audiobookUri`
 
 #### Public Audio API
+
 - **Endpoint**: `/api/p/{slug}/audio/{chapterIndex}`
 - **Authentication**: Not required
 - **Data Source**: `chapter.audioUri` (primary), `story.audiobookUri` (fallback)
@@ -111,6 +123,7 @@ The system supports dual storage for audio data:
 ## Error Handling
 
 The components handle various audio playback errors:
+
 - **NotAllowedError**: Browser requires user interaction
 - **NotSupportedError**: Audio format not supported
 - **Network Errors**: Failed to load audio file
@@ -119,6 +132,7 @@ The components handle various audio playback errors:
 ## Integration
 
 ### Public Story Page
+
 ```tsx
 // src/app/[locale]/p/[slug]/listen/page.tsx
 const audioPlayer = useAudioPlayer({
@@ -128,10 +142,10 @@ const audioPlayer = useAudioPlayer({
 
 // In JSX
 {hasAudiobook(data?.story?.audiobookUri) ? (
-  <AudioChapterList 
+  <AudioChapterList
     chapters={getAudioChapters(
-      data.story.audiobookUri, 
-      data.chapters, 
+      data.story.audiobookUri,
+      data.chapters,
       (number) => t('listen.chapterFallback', { number })
     )}
     {...audioPlayer}
@@ -142,6 +156,7 @@ const audioPlayer = useAudioPlayer({
 ```
 
 ### Authenticated Story Page
+
 ```tsx
 // src/app/[locale]/stories/listen/[storyId]/page.tsx
 const audioPlayer = useAudioPlayer({
@@ -155,10 +170,10 @@ const audioPlayer = useAudioPlayer({
 
 // In JSX
 {hasAudiobook(story.audiobookUri) ? (
-  <AudioChapterList 
+  <AudioChapterList
     chapters={getAudioChapters(
-      story.audiobookUri, 
-      [], 
+      story.audiobookUri,
+      [],
       (number) => tCommon('ListenStory.chapterTitle', { number })
     )}
     {...audioPlayer}

@@ -5,12 +5,12 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { trackStoryCreation } from '../lib/analytics';
 import { Character } from '../lib/story-session';
-import { 
+import {
   getCharacterRoleOptions,
   getCharacterAgeOptions,
   getCharacterTraitOptions,
   CharacterType,
-  CharacterTrait
+  CharacterTrait,
 } from '../types/character-enums';
 import GroupedCharacterTypeSelect from './GroupedCharacterTypeSelect';
 import RollableHints from './RollableHints';
@@ -32,7 +32,7 @@ const CHARACTERISTIC_HINT_KEYS = [
   'obsesses_over_cleanliness',
   'mentions_horoscopes_or_superstitions',
   'uses_sophisticated_words',
-  'taps_foot_or_finger'
+  'taps_foot_or_finger',
 ];
 
 const PHYSICAL_DESCRIPTION_HINT_KEYS = [
@@ -50,7 +50,7 @@ const PHYSICAL_DESCRIPTION_HINT_KEYS = [
   'tattoo_sleeve',
   'lean_muscular_arms',
   'hunched_posture',
-  'pale_skin_with_dark_circles'
+  'pale_skin_with_dark_circles',
 ];
 
 interface CharacterCardProps {
@@ -68,7 +68,7 @@ export default function CharacterCard({
   onSave,
   onEdit,
   onDelete,
-  onCancel
+  onCancel,
 }: CharacterCardProps) {
   const tCharacters = useTranslations('Characters');
 
@@ -79,7 +79,7 @@ export default function CharacterCard({
     if (translated === roleKey) {
       return role
         .split('_')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
     }
     return translated;
@@ -90,18 +90,19 @@ export default function CharacterCard({
     const traitKey = `traits.${trait}`;
     const translated = tCharacters(traitKey);
     if (translated === traitKey) {
-      return trait.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      return trait.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
     }
     return translated;
   };
 
   const characterRoles = getCharacterRoleOptions(tCharacters);
-  
+
   // Get age options based on character type
   const getAgeOptions = () => {
     if (!formData.type) return [];
     return getCharacterAgeOptions(tCharacters, formData.type as CharacterType);
-  };  const [formData, setFormData] = useState<Character>({
+  };
+  const [formData, setFormData] = useState<Character>({
     name: character?.name || '',
     type: character?.type || 'boy',
     role: character?.role || 'protagonist',
@@ -109,7 +110,7 @@ export default function CharacterCard({
     traits: character?.traits || [], // Add traits field with empty array default
     characteristics: character?.characteristics || '',
     physicalDescription: character?.physicalDescription || '',
-    ...character
+    ...character,
   });
   const [showOtherTypeInput, setShowOtherTypeInput] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -139,29 +140,45 @@ export default function CharacterCard({
   }, [showTraitDropdown]);
 
   const handleInputChange = (field: keyof Character, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
 
     if (field === 'type') {
       // Check if it's one of our predefined types or a custom value
-      const isPredefinedType = ['boy', 'girl', 'man', 'woman', 'person', 'dog', 'cat', 'bird', 'other_animal', 'dragon', 'elf_fairy_mythical', 'robot_cyborg', 'alien_extraterrestrial', 'other_creature', 'other'].includes(value);
-      
+      const isPredefinedType = [
+        'boy',
+        'girl',
+        'man',
+        'woman',
+        'person',
+        'dog',
+        'cat',
+        'bird',
+        'other_animal',
+        'dragon',
+        'elf_fairy_mythical',
+        'robot_cyborg',
+        'alien_extraterrestrial',
+        'other_creature',
+        'other',
+      ].includes(value);
+
       setShowOtherTypeInput(!isPredefinedType);
-      
+
       // Reset age when changing character type to ensure valid age for new type
-      setFormData(prev => ({ ...prev, age: '' }));
+      setFormData((prev) => ({ ...prev, age: '' }));
     }
   };
 
   const handleTraitToggle = (trait: CharacterTrait) => {
-    setFormData(prev => {
+    setFormData((prev) => {
       const currentTraits = prev.traits || [];
       const hasTraitAlready = currentTraits.includes(trait);
-      
+
       if (hasTraitAlready) {
         // Remove trait
         return {
           ...prev,
-          traits: currentTraits.filter(t => t !== trait)
+          traits: currentTraits.filter((t) => t !== trait),
         };
       } else {
         // Add trait (max 5)
@@ -171,7 +188,7 @@ export default function CharacterCard({
         }
         return {
           ...prev,
-          traits: [...currentTraits, trait]
+          traits: [...currentTraits, trait],
         };
       }
     });
@@ -197,12 +214,13 @@ export default function CharacterCard({
         trackStoryCreation.characterAdded({
           character_name: formData.name,
           character_type: formData.type,
-          character_role: formData.role
-        });      } else if (mode === 'edit') {
+          character_role: formData.role,
+        });
+      } else if (mode === 'edit') {
         trackStoryCreation.characterCustomized({
           character_name: formData.name,
           character_type: formData.type,
-          character_role: formData.role
+          character_role: formData.role,
         });
       }
     } catch (error) {
@@ -232,7 +250,7 @@ export default function CharacterCard({
     if (translated !== typeKey) {
       return translated;
     }
-    return typeValue.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    return typeValue.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
   if (mode === 'view') {
@@ -255,11 +273,12 @@ export default function CharacterCard({
               )}
               <div>
                 <h3 className="card-title text-xl">{formData.name}</h3>
-                <div className="badge badge-primary badge-outline">{formatRoleName(formData.role || 'other')}</div>
+                <div className="badge badge-primary badge-outline">
+                  {formatRoleName(formData.role || 'other')}
+                </div>
               </div>
             </div>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="label">
@@ -267,23 +286,24 @@ export default function CharacterCard({
               </label>
               <p className="text-gray-700">{getTypeDisplayValue(formData.type || '')}</p>
             </div>
-            
+
             {formData.age && (
               <div>
                 <label className="label">
                   <span className="label-text font-semibold">{tCharacters('fields.age')}</span>
                 </label>
                 <p className="text-gray-700">
-                  {getAgeOptions().find(age => age.value === formData.age)?.label || formData.age}
+                  {getAgeOptions().find((age) => age.value === formData.age)?.label || formData.age}
                 </p>
-                {getAgeOptions().find(age => age.value === formData.age)?.description && (
+                {getAgeOptions().find((age) => age.value === formData.age)?.description && (
                   <p className="text-sm text-gray-500 mt-1">
-                    {getAgeOptions().find(age => age.value === formData.age)?.description}
+                    {getAgeOptions().find((age) => age.value === formData.age)?.description}
                   </p>
                 )}
               </div>
             )}
-          </div>          {/* Traits Display in View Mode - show after age */}
+          </div>{' '}
+          {/* Traits Display in View Mode - show after age */}
           {formData.traits && formData.traits.length > 0 && (
             <div className="mb-4">
               <label className="label">
@@ -291,41 +311,35 @@ export default function CharacterCard({
               </label>
               <div className="flex flex-wrap gap-2">
                 {formData.traits.map((trait) => (
-                  <div
-                    key={trait}
-                    className="px-2 py-1 rounded text-sm bg-gray-200 text-gray-700"
-                  >
+                  <div key={trait} className="px-2 py-1 rounded text-sm bg-gray-200 text-gray-700">
                     {getTraitDisplayName(trait)}
                   </div>
                 ))}
               </div>
             </div>
           )}
-
           {formData.characteristics && (
             <div className="mb-4">
               <label className="label">
-                <span className="label-text font-semibold">{tCharacters('fields.characteristics')}</span>
+                <span className="label-text font-semibold">
+                  {tCharacters('fields.characteristics')}
+                </span>
               </label>
               <p className="text-gray-700">{formData.characteristics}</p>
             </div>
           )}
-
           {formData.physicalDescription && (
             <div className="mb-4">
               <label className="label">
-                <span className="label-text font-semibold">{tCharacters('fields.physicalDescription')}</span>
+                <span className="label-text font-semibold">
+                  {tCharacters('fields.physicalDescription')}
+                </span>
               </label>
               <p className="text-gray-700">{formData.physicalDescription}</p>
             </div>
           )}
-
           <div className="card-actions justify-end">
-            <button
-              className="btn btn-outline btn-sm"
-              onClick={onEdit}
-              disabled={deleting}
-            >
+            <button className="btn btn-outline btn-sm" onClick={onEdit} disabled={deleting}>
               ✏️ {tCharacters('actions.edit')}
             </button>
             <button
@@ -345,7 +359,9 @@ export default function CharacterCard({
     <div className="card bg-base-100 shadow-lg border">
       <div className="card-body">
         <h3 className="card-title text-xl mb-4">
-          {mode === 'create' ? `✨ ${tCharacters('titles.addNew')}` : `✏️ ${tCharacters('titles.edit')}`}
+          {mode === 'create'
+            ? `✨ ${tCharacters('titles.addNew')}`
+            : `✏️ ${tCharacters('titles.edit')}`}
         </h3>
 
         <div className="form-control mb-4">
@@ -357,8 +373,10 @@ export default function CharacterCard({
             value={formData.role}
             onChange={(e) => handleInputChange('role', e.target.value)}
           >
-            {characterRoles.map((role: {value: string, label: string}) => (
-              <option key={role.value} value={role.value}>{role.label}</option>
+            {characterRoles.map((role: { value: string; label: string }) => (
+              <option key={role.value} value={role.value}>
+                {role.label}
+              </option>
             ))}
           </select>
         </div>
@@ -409,15 +427,17 @@ export default function CharacterCard({
             onChange={(e) => handleInputChange('age', e.target.value)}
           >
             <option value="">{tCharacters('placeholders.age')}</option>
-            {getAgeOptions().map((age: {value: string, label: string, description: string}) => (
-              <option key={age.value} value={age.value}>{age.label}</option>
+            {getAgeOptions().map((age: { value: string; label: string; description: string }) => (
+              <option key={age.value} value={age.value}>
+                {age.label}
+              </option>
             ))}
           </select>
-          
+
           {/* Show description for selected age */}
-          {formData.age && getAgeOptions().find(age => age.value === formData.age) && (
+          {formData.age && getAgeOptions().find((age) => age.value === formData.age) && (
             <div className="text-sm text-gray-600 mt-2 px-3 py-2 bg-gray-50 rounded-md">
-              {getAgeOptions().find(age => age.value === formData.age)?.description}
+              {getAgeOptions().find((age) => age.value === formData.age)?.description}
             </div>
           )}
         </div>
@@ -425,9 +445,11 @@ export default function CharacterCard({
         {/* Traits Selection */}
         <div className="form-control mb-4">
           <label className="label">
-            <span className="label-text font-semibold">{tCharacters('fields.traits')} ({tCharacters('placeholders.maxTraits')})</span>
+            <span className="label-text font-semibold">
+              {tCharacters('fields.traits')} ({tCharacters('placeholders.maxTraits')})
+            </span>
           </label>
-          
+
           {/* Trait Search */}
           <div className="relative mb-3" ref={traitDropdownRef}>
             <input
@@ -438,49 +460,56 @@ export default function CharacterCard({
               onChange={(e) => handleTraitSearchChange(e.target.value)}
               onFocus={() => setShowTraitDropdown(true)}
             />
-            
+
             {showTraitDropdown && (
               <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                {Object.entries(filteredTraits).map(([category, traits]) => (
-                  traits.length > 0 && (
-                    <div key={category}>
-                      <div className={`px-3 py-2 text-xs font-semibold uppercase tracking-wide ${
-                        category === 'positive' ? 'text-green-700 bg-green-50' :
-                        category === 'negative' ? 'text-red-700 bg-red-50' : 
-                        'text-blue-700 bg-blue-50'
-                      }`}>
-                        {tCharacters(`traitCategories.${category}`)}
-                      </div>
-                      {traits.map((trait) => {
-                        const isSelected = formData.traits?.includes(trait.value);
-                        const isDisabled = !isSelected && (formData.traits?.length || 0) >= 5;
-                        return (
-                          <div
-                            key={trait.value}
-                            className={`px-3 py-2 cursor-pointer border-b border-gray-100 last:border-b-0 ${
-                              isSelected ? 'bg-blue-500 text-white' :
-                              isDisabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' :
-                              'hover:bg-gray-50'
-                            }`}
-                            onClick={() => !isDisabled && handleTraitToggle(trait.value)}
-                          >
-                            <div className="flex items-center justify-between">
-                              <span className="font-medium">{trait.label}</span>
-                              {isSelected && <span className="text-xs">✓</span>}
+                {Object.entries(filteredTraits).map(
+                  ([category, traits]) =>
+                    traits.length > 0 && (
+                      <div key={category}>
+                        <div
+                          className={`px-3 py-2 text-xs font-semibold uppercase tracking-wide ${
+                            category === 'positive'
+                              ? 'text-green-700 bg-green-50'
+                              : category === 'negative'
+                                ? 'text-red-700 bg-red-50'
+                                : 'text-blue-700 bg-blue-50'
+                          }`}
+                        >
+                          {tCharacters(`traitCategories.${category}`)}
+                        </div>
+                        {traits.map((trait) => {
+                          const isSelected = formData.traits?.includes(trait.value);
+                          const isDisabled = !isSelected && (formData.traits?.length || 0) >= 5;
+                          return (
+                            <div
+                              key={trait.value}
+                              className={`px-3 py-2 cursor-pointer border-b border-gray-100 last:border-b-0 ${
+                                isSelected
+                                  ? 'bg-blue-500 text-white'
+                                  : isDisabled
+                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                    : 'hover:bg-gray-50'
+                              }`}
+                              onClick={() => !isDisabled && handleTraitToggle(trait.value)}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="font-medium">{trait.label}</span>
+                                {isSelected && <span className="text-xs">✓</span>}
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )
-                ))}
-                
-                {Object.values(filteredTraits).every(arr => arr.length === 0) && (
+                          );
+                        })}
+                      </div>
+                    ),
+                )}
+
+                {Object.values(filteredTraits).every((arr) => arr.length === 0) && (
                   <div className="px-3 py-4 text-center text-gray-500 text-sm">
                     {tCharacters('messages.noTraitsFound', { searchTerm: traitSearchTerm })}
                   </div>
                 )}
-                
+
                 <div className="px-3 py-2 border-t border-gray-200 bg-gray-50">
                   <button
                     type="button"
@@ -516,14 +545,18 @@ export default function CharacterCard({
                 </div>
               ))
             ) : (
-              <span className="text-gray-400 text-sm">{tCharacters('placeholders.noTraitsSelected')}</span>
+              <span className="text-gray-400 text-sm">
+                {tCharacters('placeholders.noTraitsSelected')}
+              </span>
             )}
           </div>
         </div>
 
         <div className="form-control mb-4">
           <label className="label">
-            <span className="label-text font-semibold">{tCharacters('fields.characteristics')}</span>
+            <span className="label-text font-semibold">
+              {tCharacters('fields.characteristics')}
+            </span>
           </label>
           <textarea
             className="textarea textarea-bordered h-24 w-full"
@@ -532,14 +565,16 @@ export default function CharacterCard({
             onChange={(e) => handleInputChange('characteristics', e.target.value)}
           />
           <RollableHints
-            hints={CHARACTERISTIC_HINT_KEYS.map(k => tCharacters(`characteristicHints.${k}`))}
+            hints={CHARACTERISTIC_HINT_KEYS.map((k) => tCharacters(`characteristicHints.${k}`))}
             className="px-3 py-2 rounded-md border border-gray-200"
           />
         </div>
 
         <div className="form-control mb-4">
           <label className="label">
-            <span className="label-text font-semibold">{tCharacters('fields.physicalDescription')}</span>
+            <span className="label-text font-semibold">
+              {tCharacters('fields.physicalDescription')}
+            </span>
           </label>
           <textarea
             className="textarea textarea-bordered h-24 w-full"
@@ -548,18 +583,16 @@ export default function CharacterCard({
             onChange={(e) => handleInputChange('physicalDescription', e.target.value)}
           />
           <RollableHints
-            hints={PHYSICAL_DESCRIPTION_HINT_KEYS.map(k => tCharacters(`physicalDescriptionHints.${k}`))}
+            hints={PHYSICAL_DESCRIPTION_HINT_KEYS.map((k) =>
+              tCharacters(`physicalDescriptionHints.${k}`),
+            )}
             className="px-3 py-2 rounded-md border border-gray-200"
           />
         </div>
 
         <div className="card-actions justify-end">
           {onCancel && (
-            <button
-              className="btn btn-outline"
-              onClick={onCancel}
-              disabled={saving}
-            >
+            <button className="btn btn-outline" onClick={onCancel} disabled={saving}>
               {tCharacters('actions.cancel')}
             </button>
           )}
@@ -568,7 +601,11 @@ export default function CharacterCard({
             onClick={handleSave}
             disabled={saving || !formData.name.trim()}
           >
-            {saving ? '' : (mode === 'create' ? `➕ ${tCharacters('actions.addCharacter')}` : `💾 ${tCharacters('actions.saveChanges')}`)}
+            {saving
+              ? ''
+              : mode === 'create'
+                ? `➕ ${tCharacters('actions.addCharacter')}`
+                : `💾 ${tCharacters('actions.saveChanges')}`}
           </button>
         </div>
       </div>

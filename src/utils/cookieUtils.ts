@@ -16,10 +16,10 @@ const COOKIE_MAX_AGE = 365 * 24 * 60 * 60; // 1 year in seconds
  */
 export function getAnonymousRating(storyId: string): AnonymousRating | null {
   if (typeof document === 'undefined') return null;
-  
+
   const cookieName = `${COOKIE_PREFIX}${storyId}`;
   const cookies = document.cookie.split(';');
-  
+
   for (const cookie of cookies) {
     const [name, value] = cookie.trim().split('=');
     if (name === cookieName) {
@@ -33,30 +33,26 @@ export function getAnonymousRating(storyId: string): AnonymousRating | null {
       }
     }
   }
-  
+
   return null;
 }
 
 /**
  * Set an anonymous rating in cookies for a specific story
  */
-export function setAnonymousRating(
-  storyId: string, 
-  rating: string, 
-  feedback?: string
-): void {
+export function setAnonymousRating(storyId: string, rating: string, feedback?: string): void {
   if (typeof document === 'undefined') return;
-  
+
   const ratingData: AnonymousRating = {
     rating,
     feedback: feedback || undefined,
     createdAt: new Date().toISOString(),
   };
-  
+
   const cookieName = `${COOKIE_PREFIX}${storyId}`;
   const cookieValue = encodeURIComponent(JSON.stringify(ratingData));
   const expires = new Date(Date.now() + COOKIE_MAX_AGE * 1000).toUTCString();
-  
+
   document.cookie = `${cookieName}=${cookieValue}; expires=${expires}; path=/; SameSite=Lax`;
 }
 
@@ -65,7 +61,7 @@ export function setAnonymousRating(
  */
 export function removeAnonymousRating(storyId: string): void {
   if (typeof document === 'undefined') return;
-  
+
   const cookieName = `${COOKIE_PREFIX}${storyId}`;
   document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
 }
@@ -75,7 +71,7 @@ export function removeAnonymousRating(storyId: string): void {
  */
 export function areCookiesSupported(): boolean {
   if (typeof document === 'undefined') return false;
-  
+
   try {
     const testCookie = 'test_cookie_support';
     document.cookie = `${testCookie}=test; path=/`;

@@ -11,7 +11,7 @@ interface RouteContext {
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const author = await getCurrentAuthor();
-    
+
     if (!author) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -20,14 +20,14 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     // Verify the story belongs to the user
     const story = await storyService.getStoryById(storyId);
-    
+
     if (!story || story.authorId !== author.authorId) {
       return NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }
 
     // Get the real audiobook status from the database
     const audiobookStatus = story.audiobookStatus || 'not_started';
-    
+
     let audiobookGenerationCompletedPercentage = 0;
     let currentStep = 'initializing';
     let chaptersProcessed = 0;
@@ -39,7 +39,9 @@ export async function GET(request: NextRequest, context: RouteContext) {
         // For now, simulate progress based on time elapsed or other factors
         audiobookGenerationCompletedPercentage = Math.min(85, Math.random() * 85);
         currentStep = 'processing_chapters';
-        chaptersProcessed = Math.floor(audiobookGenerationCompletedPercentage / 100 * totalChapters);
+        chaptersProcessed = Math.floor(
+          (audiobookGenerationCompletedPercentage / 100) * totalChapters,
+        );
         break;
       case 'completed':
         audiobookGenerationCompletedPercentage = 100;
@@ -62,12 +64,8 @@ export async function GET(request: NextRequest, context: RouteContext) {
       chaptersProcessed,
       totalChapters,
     });
-
   } catch (error) {
     console.error('Error fetching audiobook progress:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch audiobook progress' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch audiobook progress' }, { status: 500 });
   }
 }

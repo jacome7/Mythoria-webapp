@@ -14,23 +14,30 @@ import {
   FiCreditCard,
   FiLoader,
   FiPrinter,
-  FiCopy
+  FiCopy,
 } from 'react-icons/fi';
 import ToastContainer from '../../../../../components/ToastContainer';
 import { useToast } from '@/hooks/useToast';
 import ShareModal from '../../../../../components/ShareModal';
-import { useAudioPlayer, AudioChapterList, hasAudiobook, getAudioChapters } from '@/components/AudioPlayer';
+import {
+  useAudioPlayer,
+  AudioChapterList,
+  hasAudiobook,
+  getAudioChapters,
+} from '@/components/AudioPlayer';
 
 interface Story {
   storyId: string;
   title: string;
   status: 'draft' | 'writing' | 'published';
-  audiobookUri?: Array<{
-    chapterTitle: string;
-    audioUri: string;
-    duration: number;
-    imageUri?: string;
-  }> | Record<string, string>;
+  audiobookUri?:
+    | Array<{
+        chapterTitle: string;
+        audioUri: string;
+        duration: number;
+        imageUri?: string;
+      }>
+    | Record<string, string>;
   targetAudience?: string;
   graphicalStyle?: string;
   createdAt: string;
@@ -75,7 +82,12 @@ interface VoiceSelectorProps {
   tVoices: (key: string) => string;
 }
 
-function VoiceSelector({ selectedVoice, onVoiceChange, voiceOptions, tVoices }: VoiceSelectorProps) {
+function VoiceSelector({
+  selectedVoice,
+  onVoiceChange,
+  voiceOptions,
+  tVoices,
+}: VoiceSelectorProps) {
   return (
     <div className="space-y-4">
       <div className="form-control w-full">
@@ -94,11 +106,21 @@ function VoiceSelector({ selectedVoice, onVoiceChange, voiceOptions, tVoices }: 
           ))}
         </select>
       </div>
-      
+
       {selectedVoice && (
         <div className="alert alert-info">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            className="stroke-current shrink-0 w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
           </svg>
           <span className="text-sm">{tVoices(`descriptions.${selectedVoice}`)}</span>
         </div>
@@ -138,7 +160,7 @@ export default function ListenStoryPage() {
     trackingData: {
       story_id: storyId,
       story_title: story?.title,
-    }
+    },
   });
 
   // Voice options for narration
@@ -163,20 +185,20 @@ export default function ListenStoryPage() {
         const [storyResponse, creditsResponse, pricingResponse] = await Promise.all([
           fetch(`/api/stories/${storyId}`),
           fetch('/api/my-credits'),
-          fetch('/api/pricing')
+          fetch('/api/pricing'),
         ]);
-        
+
         // Handle story
         if (storyResponse.ok) {
           const storyData = await storyResponse.json();
           console.log('Fetched story data:', storyData);
-          
+
           if (storyData.story.status !== 'published') {
             setError(tErrors('storyNotAvailableYet'));
             return;
           }
           setStory(storyData.story);
-          
+
           // Set chapters data if available
           if (storyData.chapters) {
             setChapters(storyData.chapters);
@@ -207,7 +229,6 @@ export default function ListenStoryPage() {
             setAudiobookCost(pricingData.deliveryOptions.audiobook);
           }
         }
-
       } catch (error) {
         console.error('Error fetching data:', error);
         setError(tErrors('failedToLoad'));
@@ -242,7 +263,10 @@ export default function ListenStoryPage() {
               setIsGeneratingAudio(false);
               setAudioGenerationProgress(tListenStory('generationCompleted'));
               clearInterval(pollInterval);
-            } else if (typeof tempStory.audiobookUri === 'object' && Object.keys(tempStory.audiobookUri).length > 0) {
+            } else if (
+              typeof tempStory.audiobookUri === 'object' &&
+              Object.keys(tempStory.audiobookUri).length > 0
+            ) {
               setStory(tempStory);
               // Update chapters if available
               if (data.chapters) {
@@ -260,36 +284,39 @@ export default function ListenStoryPage() {
     }, 15000); // Poll every 15 seconds
 
     return () => clearInterval(pollInterval);
-  }, [isGeneratingAudio, storyId, tListenStory]);  const handleGenerateAudiobook = async () => {
+  }, [isGeneratingAudio, storyId, tListenStory]);
+  const handleGenerateAudiobook = async () => {
     try {
       setIsGeneratingAudio(true);
       setAudioGenerationProgress(tListenStory('startingGeneration'));
-      
+
       const response = await fetch(`/api/stories/${storyId}/generate-audiobook`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          voice: selectedVoice
-        })
+          voice: selectedVoice,
+        }),
       });
 
       if (response.ok) {
         const result = await response.json();
         setAudioGenerationProgress(tListenStory('generationStarted'));
-        
+
         // Update user credits if provided
         if (result.newBalance !== undefined && userCredits) {
-          setUserCredits(prev => prev ? { ...prev, currentBalance: result.newBalance } : prev);
+          setUserCredits((prev) => (prev ? { ...prev, currentBalance: result.newBalance } : prev));
         }
-        
+
         // Start polling for updates
       } else {
         const errorData = await response.json();
         if (response.status === 402) {
           // Insufficient credits
-          throw new Error(tListenStory('needMoreCreditsGenerate', { shortfall: errorData.shortfall }));
+          throw new Error(
+            tListenStory('needMoreCreditsGenerate', { shortfall: errorData.shortfall }),
+          );
         } else {
           throw new Error(errorData.error || tListenStory('generationFailed'));
         }
@@ -298,7 +325,7 @@ export default function ListenStoryPage() {
       console.error('Error generating audiobook:', error);
       setIsGeneratingAudio(false);
       setAudioGenerationProgress('');
-      
+
       if (error instanceof Error) {
         alert(tErrors('failedToStartAudiobook') + ': ' + error.message);
       } else {
@@ -334,8 +361,8 @@ export default function ListenStoryPage() {
       const resp = await fetch(`/api/my-stories/${storyId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-  // Do not send locale when duplicating; language remains original.
-  body: JSON.stringify({ action: 'duplicate' }),
+        // Do not send locale when duplicating; language remains original.
+        body: JSON.stringify({ action: 'duplicate' }),
       });
       if (!resp.ok) throw new Error(`Duplicate failed: ${resp.status}`);
       const data = await resp.json();
@@ -344,7 +371,7 @@ export default function ListenStoryPage() {
       successWithAction(
         tActions('duplicateSuccess', { default: 'Story duplicated successfully' }),
         tActions('open'),
-        link
+        link,
       );
     } catch (e) {
       console.error('Error duplicating story:', e);
@@ -368,20 +395,12 @@ export default function ListenStoryPage() {
         <div className="container mx-auto px-4 py-8">
           <div className="text-center space-y-6">
             <h1 className="text-4xl font-bold">{tListenStory('accessRestricted')}</h1>
-            <p className="text-lg text-gray-600">
-              {tListenStory('needSignInToListen')}
-            </p>
+            <p className="text-lg text-gray-600">{tListenStory('needSignInToListen')}</p>
             <div className="space-x-4">
-              <button
-                onClick={() => router.push(`/${locale}/sign-in`)}
-                className="btn btn-primary"
-              >
+              <button onClick={() => router.push(`/${locale}/sign-in`)} className="btn btn-primary">
                 {tActions('signIn')}
               </button>
-              <button
-                onClick={() => router.push(`/${locale}/sign-up`)}
-                className="btn btn-outline"
-              >
+              <button onClick={() => router.push(`/${locale}/sign-up`)} className="btn btn-outline">
                 {tActions('createAccount')}
               </button>
             </div>
@@ -394,8 +413,18 @@ export default function ListenStoryPage() {
           <div className="container mx-auto px-4 py-8">
             <div className="text-center space-y-6">
               <div className="alert alert-error">
-                <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="stroke-current shrink-0 h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 <span>{error}</span>
               </div>
@@ -419,51 +448,34 @@ export default function ListenStoryPage() {
                   <FiArrowLeft className="w-4 h-4 mr-2" />
                   <span className="hidden sm:inline">{tActions('backToMyStories')}</span>
                 </button>
-                
+
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={navigateToRead}
-                    className="btn btn-ghost btn-sm"
-                  >
+                  <button onClick={navigateToRead} className="btn btn-ghost btn-sm">
                     <FiBook className="w-4 h-4" />
                     <span className="hidden sm:inline sm:ml-2">{tActions('read')}</span>
                   </button>
-                  
-                  <button
-                    className="btn btn-ghost btn-sm btn-active"
-                  >
+
+                  <button className="btn btn-ghost btn-sm btn-active">
                     <FiVolume2 className="w-4 h-4" />
                     <span className="hidden sm:inline sm:ml-2">{tActions('listen')}</span>
                   </button>
-                  
-                  <button
-                    onClick={navigateToEdit}
-                    className="btn btn-ghost btn-sm"
-                  >
+
+                  <button onClick={navigateToEdit} className="btn btn-ghost btn-sm">
                     <FiEdit3 className="w-4 h-4" />
                     <span className="hidden sm:inline sm:ml-2">{tActions('edit')}</span>
                   </button>
-                  
-                  <button
-                    onClick={navigateToPrint}
-                    className="btn btn-ghost btn-sm"
-                  >
+
+                  <button onClick={navigateToPrint} className="btn btn-ghost btn-sm">
                     <FiPrinter className="w-4 h-4" />
                     <span className="hidden sm:inline sm:ml-2">{tActions('print')}</span>
                   </button>
-                  
-                  <button
-                    onClick={() => setShowShareModal(true)}
-                    className="btn btn-ghost btn-sm"
-                  >
+
+                  <button onClick={() => setShowShareModal(true)} className="btn btn-ghost btn-sm">
                     <FiShare2 className="w-4 h-4" />
                     <span className="hidden sm:inline sm:ml-2">{tActions('share')}</span>
                   </button>
 
-                  <button
-                    onClick={handleDuplicate}
-                    className="btn btn-ghost btn-sm"
-                  >
+                  <button onClick={handleDuplicate} className="btn btn-ghost btn-sm">
                     <FiCopy className="w-4 h-4" />
                     <span className="hidden sm:inline sm:ml-2">{tActions('duplicate')}</span>
                   </button>
@@ -480,15 +492,13 @@ export default function ListenStoryPage() {
                       <FiVolume2 className="w-6 h-6 mr-2" />
                       {tListenStory('listenToStory', { title: story.title })}
                     </h2>
-                    
+
                     {hasAudiobook(story.audiobookUri) ? (
                       <div className="space-y-6">
                         {/* Audiobook Chapters */}
-                        <AudioChapterList 
-                          chapters={getAudioChapters(
-                            story.audiobookUri, 
-                            chapters, 
-                            (number) => tListenStory('chapterTitle', { number })
+                        <AudioChapterList
+                          chapters={getAudioChapters(story.audiobookUri, chapters, (number) =>
+                            tListenStory('chapterTitle', { number }),
                           )}
                           {...audioPlayer}
                         />
@@ -505,7 +515,7 @@ export default function ListenStoryPage() {
                               <p className="text-base-content/70 mb-4">
                                 {tListenStory('newNarrationDescription')}
                               </p>
-                              
+
                               {audiobookCost && userCredits && (
                                 <div className="space-y-6 max-w-md mx-auto">
                                   {/* Voice Selection */}
@@ -515,18 +525,24 @@ export default function ListenStoryPage() {
                                     voiceOptions={voiceOptions}
                                     tVoices={tVoices}
                                   />
-                                  
+
                                   <div className="stats stats-horizontal shadow">
                                     <div className="stat">
                                       <div className="stat-title">{tListenStory('cost')}</div>
-                                      <div className="stat-value text-lg">{audiobookCost.credits} {tCreditsDisplay('credits')}</div>
+                                      <div className="stat-value text-lg">
+                                        {audiobookCost.credits} {tCreditsDisplay('credits')}
+                                      </div>
                                     </div>
                                     <div className="stat">
-                                      <div className="stat-title">{tListenStory('yourBalance')}</div>
-                                      <div className="stat-value text-lg">{userCredits.currentBalance} {tCreditsDisplay('credits')}</div>
+                                      <div className="stat-title">
+                                        {tListenStory('yourBalance')}
+                                      </div>
+                                      <div className="stat-value text-lg">
+                                        {userCredits.currentBalance} {tCreditsDisplay('credits')}
+                                      </div>
                                     </div>
                                   </div>
-                                  
+
                                   {userCredits.currentBalance >= audiobookCost.credits ? (
                                     <div className="space-y-2">
                                       <button
@@ -544,10 +560,25 @@ export default function ListenStoryPage() {
                                   ) : (
                                     <div className="space-y-2">
                                       <div className="alert alert-warning">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          className="stroke-current shrink-0 h-6 w-6"
+                                          fill="none"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                                          />
                                         </svg>
-                                        <span>{tListenStory('needMoreCredits', { credits: audiobookCost.credits - userCredits.currentBalance })}</span>
+                                        <span>
+                                          {tListenStory('needMoreCredits', {
+                                            credits:
+                                              audiobookCost.credits - userCredits.currentBalance,
+                                          })}
+                                        </span>
                                       </div>
                                       <button
                                         onClick={navigateToPricing}
@@ -574,14 +605,24 @@ export default function ListenStoryPage() {
                     ) : isGeneratingAudio ? (
                       <div className="text-center py-16">
                         <FiLoader className="w-16 h-16 mx-auto mb-4 text-primary animate-spin" />
-                        <h3 className="text-xl font-semibold mb-2">{tListenStory('generatingAudiobook')}</h3>
-                        <p className="text-base-content/70 mb-4">
-                          {audioGenerationProgress}
-                        </p>
+                        <h3 className="text-xl font-semibold mb-2">
+                          {tListenStory('generatingAudiobook')}
+                        </h3>
+                        <p className="text-base-content/70 mb-4">{audioGenerationProgress}</p>
                         <div className="max-w-md mx-auto">
                           <div className="alert alert-info">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              className="stroke-current shrink-0 w-6 h-6"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                              ></path>
                             </svg>
                             <span className="text-sm">{tListenStory('checkingUpdates')}</span>
                           </div>
@@ -590,11 +631,13 @@ export default function ListenStoryPage() {
                     ) : (
                       <div className="text-center py-16">
                         <FiVolume2 className="w-16 h-16 mx-auto mb-4 text-base-content/30" />
-                        <h3 className="text-xl font-semibold mb-2">{tListenStory('convertYourStory')}</h3>
+                        <h3 className="text-xl font-semibold mb-2">
+                          {tListenStory('convertYourStory')}
+                        </h3>
                         <p className="text-lg text-base-content/70 mb-6">
                           {tListenStory('convertDescription')}
                         </p>
-                        
+
                         {/* Show pricing and action */}
                         {audiobookCost && userCredits && (
                           <div className="max-w-md mx-auto space-y-6">
@@ -605,20 +648,27 @@ export default function ListenStoryPage() {
                               voiceOptions={voiceOptions}
                               tVoices={tVoices}
                             />
-                            
+
                             <div className="card bg-base-200 shadow-md">
                               <div className="card-body p-4">
-                                <h4 className="font-semibold">{tDeliveryOptions('audiobook.name')}</h4>
-                                <p className="text-sm text-base-content/70 mb-2">{tDeliveryOptions('audiobook.description')}</p>
+                                <h4 className="font-semibold">
+                                  {tDeliveryOptions('audiobook.name')}
+                                </h4>
+                                <p className="text-sm text-base-content/70 mb-2">
+                                  {tDeliveryOptions('audiobook.description')}
+                                </p>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-lg font-bold">{audiobookCost.credits} {tCreditsDisplay('credits')}</span>
+                                  <span className="text-lg font-bold">
+                                    {audiobookCost.credits} {tCreditsDisplay('credits')}
+                                  </span>
                                   <span className="text-sm text-base-content/60">
-                                    {tCreditsDisplay('currentBalance')} {userCredits.currentBalance} {tCreditsDisplay('credits')}
+                                    {tCreditsDisplay('currentBalance')} {userCredits.currentBalance}{' '}
+                                    {tCreditsDisplay('credits')}
                                   </span>
                                 </div>
                               </div>
                             </div>
-                            
+
                             {userCredits.currentBalance >= audiobookCost.credits ? (
                               <button
                                 onClick={handleGenerateAudiobook}
@@ -631,10 +681,24 @@ export default function ListenStoryPage() {
                             ) : (
                               <div className="space-y-2">
                                 <div className="alert alert-warning">
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="stroke-current shrink-0 h-6 w-6"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                                    />
                                   </svg>
-                                  <span>{tListenStory('needMoreCredits', { credits: audiobookCost.credits - userCredits.currentBalance })}</span>
+                                  <span>
+                                    {tListenStory('needMoreCredits', {
+                                      credits: audiobookCost.credits - userCredits.currentBalance,
+                                    })}
+                                  </span>
                                 </div>
                                 <button
                                   onClick={navigateToPricing}

@@ -11,20 +11,14 @@ export class PricingService {
    * Get all pricing entries (including inactive ones - for admin)
    */
   async getAllPricing(): Promise<Pricing[]> {
-    return await db
-      .select()
-      .from(pricing)
-      .orderBy(desc(pricing.createdAt));
+    return await db.select().from(pricing).orderBy(desc(pricing.createdAt));
   }
 
   /**
    * Get all active pricing entries
    */
   async getActivePricing(): Promise<Pricing[]> {
-    return await db
-      .select()
-      .from(pricing)
-      .where(eq(pricing.isActive, true));
+    return await db.select().from(pricing).where(eq(pricing.isActive, true));
   }
 
   /**
@@ -34,14 +28,11 @@ export class PricingService {
     const result = await db
       .select()
       .from(pricing)
-      .where(and(
-        eq(pricing.serviceCode, serviceCode),
-        eq(pricing.isActive, true)
-      ))
+      .where(and(eq(pricing.serviceCode, serviceCode), eq(pricing.isActive, true)))
       .limit(1);
-    
+
     return result[0] || null;
-  }  /**
+  } /**
    * Get all pricing entries for specific service codes
    */
   async getPricingByServiceCodes(serviceCodes: string[]): Promise<Pricing[]> {
@@ -50,10 +41,7 @@ export class PricingService {
     return await db
       .select()
       .from(pricing)
-      .where(and(
-        eq(pricing.isActive, true),
-        inArray(pricing.serviceCode, serviceCodes)
-      ));
+      .where(and(eq(pricing.isActive, true), inArray(pricing.serviceCode, serviceCodes)));
   }
 
   /**
@@ -66,11 +54,14 @@ export class PricingService {
   }> {
     const serviceCodes = ['eBookGeneration', 'printOrder', 'audioBookGeneration'];
     const pricingEntries = await this.getPricingByServiceCodes(serviceCodes);
-    
-    const pricingMap = pricingEntries.reduce((acc, entry) => {
-      acc[entry.serviceCode] = entry;
-      return acc;
-    }, {} as Record<string, Pricing>);
+
+    const pricingMap = pricingEntries.reduce(
+      (acc, entry) => {
+        acc[entry.serviceCode] = entry;
+        return acc;
+      },
+      {} as Record<string, Pricing>,
+    );
 
     return {
       ebook: pricingMap['eBookGeneration'] || null,
@@ -83,11 +74,8 @@ export class PricingService {
    * Create a new pricing entry
    */
   async createPricing(data: NewPricing): Promise<Pricing> {
-    const result = await db
-      .insert(pricing)
-      .values(data)
-      .returning();
-    
+    const result = await db.insert(pricing).values(data).returning();
+
     return result[0];
   }
 
@@ -103,7 +91,7 @@ export class PricingService {
       })
       .where(eq(pricing.id, id))
       .returning();
-    
+
     return result[0] || null;
   }
 
@@ -132,7 +120,7 @@ export class PricingService {
     }
 
     const pricingEntries = await this.getPricingByServiceCodes(serviceCodes);
-    const breakdown = pricingEntries.map(entry => ({
+    const breakdown = pricingEntries.map((entry) => ({
       serviceCode: entry.serviceCode,
       credits: entry.credits,
     }));

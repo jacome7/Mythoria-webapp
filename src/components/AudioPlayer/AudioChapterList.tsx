@@ -23,7 +23,7 @@ export function AudioChapterList({
   playAudio,
   pauseAudio,
   stopAudio,
-  formatDuration = defaultFormatDuration
+  formatDuration = defaultFormatDuration,
 }: AudioChapterListProps) {
   const tPublicStoryPage = useTranslations('PublicStoryPage');
 
@@ -60,7 +60,9 @@ export function AudioChapterList({
               </h3>
               {chapter.duration > 0 && (
                 <p className="text-sm text-gray-600">
-                  {tPublicStoryPage('listen.duration', { duration: formatDuration(chapter.duration) })}
+                  {tPublicStoryPage('listen.duration', {
+                    duration: formatDuration(chapter.duration),
+                  })}
                 </p>
               )}
 
@@ -68,8 +70,8 @@ export function AudioChapterList({
               {audioProgress[index] > 0 && (
                 <div className="mt-2">
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                    <div
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${audioProgress[index]}%` }}
                     />
                   </div>

@@ -26,16 +26,18 @@ export default function PreviewSection({
       </label>
       <div className="max-w-md mx-auto">
         <div className="aspect-square bg-base-200 rounded-lg overflow-hidden">
-          <Image src={previewImage} alt="Preview" width={400} height={400} className="w-full h-full object-cover" />
+          <Image
+            src={previewImage}
+            alt="Preview"
+            width={400}
+            height={400}
+            className="w-full h-full object-cover"
+          />
         </div>
       </div>
       {newImageGenerated && (
         <div className="mt-4 text-center">
-          <button
-            onClick={onReplace}
-            disabled={isReplacing}
-            className="btn btn-success"
-          >
+          <button onClick={onReplace} disabled={isReplacing} className="btn btn-success">
             {isReplacing ? t('buttons.replacingImage') : t('buttons.replaceImageInStory')}
           </button>
         </div>

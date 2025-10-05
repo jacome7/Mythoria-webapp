@@ -22,11 +22,14 @@ export async function POST(request: NextRequest) {
     const resp = await sgwFetch('/ai/media/ack', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ storyId, objectPath })
+      body: JSON.stringify({ storyId, objectPath }),
     });
     const data = await resp.json();
     return NextResponse.json(data, { status: resp.status });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : 'Internal error' }, { status: 500 });
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Internal error' },
+      { status: 500 },
+    );
   }
 }

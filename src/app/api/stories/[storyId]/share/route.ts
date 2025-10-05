@@ -10,13 +10,12 @@ import { authorService } from '@/db/services';
 // Helper function to get locale and translations
 async function getTranslations(request: Request) {
   const acceptLanguage = request.headers.get('accept-language') || '';
-  const locale = request.headers.get('x-locale') || 
-    acceptLanguage.split(',')[0]?.split('-').slice(0, 2).join('-') || 
+  const locale =
+    request.headers.get('x-locale') ||
+    acceptLanguage.split(',')[0]?.split('-').slice(0, 2).join('-') ||
     routing.defaultLocale;
-  
-  const validLocale = locale && isValidLocale(locale) 
-    ? locale 
-    : routing.defaultLocale;
+
+  const validLocale = locale && isValidLocale(locale) ? locale : routing.defaultLocale;
 
   try {
     const messages = await import(`@/messages/${validLocale}/MyStoriesPage.json`);
@@ -30,7 +29,7 @@ async function getTranslations(request: Request) {
           if (value === undefined) return key;
         }
         return value;
-      }
+      },
     };
   } catch (error) {
     // Fallback to default locale if locale-specific messages fail to load
@@ -46,15 +45,12 @@ async function getTranslations(request: Request) {
           if (value === undefined) return key;
         }
         return value;
-      }
+      },
     };
   }
 }
 
-export async function POST(
-  request: Request,
-  context: { params: Promise<{ storyId: string }> }
-) {
+export async function POST(request: Request, context: { params: Promise<{ storyId: string }> }) {
   console.log('[Share API] POST request received');
   try {
     const { userId } = await auth();
@@ -68,25 +64,25 @@ export async function POST(
     const { storyId } = await context.params;
     console.log('[Share API] Story ID:', storyId);
     console.log('[Share API] Context params:', context.params);
-    
+
     // Validate storyId
     if (!storyId || storyId === 'undefined') {
       console.log('[Share API] Invalid story ID');
       return NextResponse.json({ error: 'Invalid story ID' }, { status: 400 });
     }
-    
+
     const body = await request.json();
     console.log('[Share API] Request body:', body);
-    const { allowEdit, makePublic, expiresInDays = 30 } = body;    // Check if user owns the story or is a collaborator with edit permissions
+    const { allowEdit, makePublic, expiresInDays = 30 } = body; // Check if user owns the story or is a collaborator with edit permissions
     console.log('[Share API] Checking story ownership...');
-    
+
     // Get the current user's author record
     const author = await authorService.getAuthorByClerkId(userId);
     if (!author) {
       console.log('[Share API] Author not found');
       return NextResponse.json({ error: 'Author not found' }, { status: 404 });
     }
-    
+
     const story = await db
       .select({
         storyId: stories.storyId,
@@ -106,10 +102,10 @@ export async function POST(
             // User is a collaborator with edit permissions
             and(
               eq(storyCollaborators.userId, author.authorId),
-              eq(storyCollaborators.role, 'editor')
-            )
-          )
-        )
+              eq(storyCollaborators.role, 'editor'),
+            ),
+          ),
+        ),
       )
       .limit(1);
 
@@ -125,10 +121,10 @@ export async function POST(
     // Handle public sharing
     if (makePublic) {
       let slug = storyData.slug;
-        // Generate slug if it doesn't exist
+      // Generate slug if it doesn't exist
       if (!slug) {
         const baseSlug = generateSlug(storyData.title);
-        
+
         // Ensure slug is unique
         slug = await ensureUniqueSlug(baseSlug, async (testSlug) => {
           const existingSlug = await db
@@ -142,10 +138,11 @@ export async function POST(
 
       // Update story to be public
       await db
-        .update(stories)        .set({ 
-          isPublic: true, 
+        .update(stories)
+        .set({
+          isPublic: true,
           slug,
-          updatedAt: new Date()
+          updatedAt: new Date(),
         })
         .where(eq(stories.storyId, storyId));
 
@@ -153,7 +150,7 @@ export async function POST(
         success: true,
         linkType: 'public',
         url: `/p/${slug}`,
-  message: t('sharing.publicAccessible')
+        message: t('sharing.publicAccessible'),
       });
     }
 
@@ -161,9 +158,9 @@ export async function POST(
     if (makePublic === false && storyData.isPublic) {
       await db
         .update(stories)
-        .set({ 
+        .set({
           isPublic: false,
-          updatedAt: new Date()
+          updatedAt: new Date(),
         })
         .where(eq(stories.storyId, storyId));
 
@@ -171,12 +168,13 @@ export async function POST(
         success: true,
         linkType: 'private',
         url: '',
-  message: t('sharing.nowPrivate')
+        message: t('sharing.nowPrivate'),
       });
-    }    // Handle private sharing
+    } // Handle private sharing
     const accessLevel = allowEdit ? 'edit' : 'view';
     const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + expiresInDays);    const shareLink = await db
+    expiresAt.setDate(expiresAt.getDate() + expiresInDays);
+    const shareLink = await db
       .insert(shareLinks)
       .values({
         storyId,
@@ -187,29 +185,23 @@ export async function POST(
       .returning();
 
     const shareToken = shareLink[0].id;
-    const shareUrl = allowEdit ? `/s/${shareToken}/edit` : `/s/${shareToken}`;    return NextResponse.json({
+    const shareUrl = allowEdit ? `/s/${shareToken}/edit` : `/s/${shareToken}`;
+    return NextResponse.json({
       success: true,
       linkType: 'private',
       url: shareUrl,
       token: shareToken,
       accessLevel,
       expiresAt: expiresAt.toISOString(),
-      message: `Private ${accessLevel} link created`
+      message: `Private ${accessLevel} link created`,
     });
-
   } catch (error) {
     console.error('Error creating share link:', error);
-    return NextResponse.json(
-      { error: 'Failed to create share link' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create share link' }, { status: 500 });
   }
 }
 
-export async function GET(
-  request: Request,
-  context: { params: Promise<{ storyId: string }> }
-) {
+export async function GET(request: Request, context: { params: Promise<{ storyId: string }> }) {
   try {
     const { userId } = await auth();
     if (!userId) {
@@ -217,7 +209,7 @@ export async function GET(
     }
 
     const { storyId } = await context.params;
-    
+
     // Validate storyId
     if (!storyId || storyId === 'undefined') {
       return NextResponse.json({ error: 'Invalid story ID' }, { status: 400 });
@@ -229,13 +221,13 @@ export async function GET(
       .from(authors)
       .where(eq(authors.clerkUserId, userId))
       .limit(1);
-    
+
     if (!currentUser.length) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
-    
+
     const currentAuthorId = currentUser[0].authorId;
-    
+
     // Check if user owns the story or is a collaborator with edit permissions
     const story = await db
       .select({ storyId: stories.storyId })
@@ -248,10 +240,10 @@ export async function GET(
             eq(stories.authorId, currentAuthorId),
             and(
               eq(storyCollaborators.userId, currentAuthorId),
-              eq(storyCollaborators.role, 'editor')
-            )
-          )
-        )
+              eq(storyCollaborators.role, 'editor'),
+            ),
+          ),
+        ),
       )
       .limit(1);
 
@@ -267,29 +259,22 @@ export async function GET(
         and(
           eq(shareLinks.storyId, storyId),
           eq(shareLinks.revoked, false),
-          gt(shareLinks.expiresAt, new Date())
-        )
+          gt(shareLinks.expiresAt, new Date()),
+        ),
       )
       .orderBy(shareLinks.createdAt);
 
     return NextResponse.json({
       success: true,
-      shareLinks: links
+      shareLinks: links,
     });
-
   } catch (error) {
     console.error('Error fetching share links:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch share links' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch share links' }, { status: 500 });
   }
 }
 
-export async function DELETE(
-  request: Request,
-  context: { params: Promise<{ storyId: string }> }
-) {
+export async function DELETE(request: Request, context: { params: Promise<{ storyId: string }> }) {
   try {
     const { userId } = await auth();
     if (!userId) {
@@ -297,12 +282,12 @@ export async function DELETE(
     }
 
     const { storyId } = await context.params;
-    
+
     // Validate storyId
     if (!storyId || storyId === 'undefined') {
       return NextResponse.json({ error: 'Invalid story ID' }, { status: 400 });
     }
-    
+
     const { searchParams } = new URL(request.url);
     const linkId = searchParams.get('linkId');
     const revokeAll = searchParams.get('revokeAll') === 'true';
@@ -313,13 +298,13 @@ export async function DELETE(
       .from(authors)
       .where(eq(authors.clerkUserId, userId))
       .limit(1);
-    
+
     if (!currentUser.length) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
-    
+
     const currentAuthorId = currentUser[0].authorId;
-    
+
     // Check if user owns the story or is a collaborator with edit permissions
     const story = await db
       .select({ storyId: stories.storyId })
@@ -332,10 +317,10 @@ export async function DELETE(
             eq(stories.authorId, currentAuthorId),
             and(
               eq(storyCollaborators.userId, currentAuthorId),
-              eq(storyCollaborators.role, 'editor')
-            )
-          )
-        )
+              eq(storyCollaborators.role, 'editor'),
+            ),
+          ),
+        ),
       )
       .limit(1);
 
@@ -343,50 +328,41 @@ export async function DELETE(
       return NextResponse.json({ error: 'Story not found or access denied' }, { status: 404 });
     }
 
-    if (revokeAll) {      // Revoke all share links for this story
+    if (revokeAll) {
+      // Revoke all share links for this story
       await db
         .update(shareLinks)
-        .set({ 
+        .set({
           revoked: true,
-          updatedAt: new Date()
+          updatedAt: new Date(),
         })
         .where(eq(shareLinks.storyId, storyId));
 
       return NextResponse.json({
         success: true,
-        message: 'All share links revoked'
+        message: 'All share links revoked',
       });
     }
 
-    if (linkId) {      // Revoke specific share link
+    if (linkId) {
+      // Revoke specific share link
       await db
         .update(shareLinks)
-        .set({ 
+        .set({
           revoked: true,
-          updatedAt: new Date()
+          updatedAt: new Date(),
         })
-        .where(
-          and(
-            eq(shareLinks.id, linkId),
-            eq(shareLinks.storyId, storyId)
-          )
-        );
+        .where(and(eq(shareLinks.id, linkId), eq(shareLinks.storyId, storyId)));
 
       return NextResponse.json({
         success: true,
-        message: 'Share link revoked'
+        message: 'Share link revoked',
       });
     }
 
-    return NextResponse.json(
-      { error: 'Missing linkId or revokeAll parameter' },
-      { status: 400 }
-    );
-
+    return NextResponse.json({ error: 'Missing linkId or revokeAll parameter' }, { status: 400 });
   } catch (error) {
-    console.error('Error revoking share link:', error);    return NextResponse.json(
-      { error: 'Failed to revoke share link' },
-      { status: 500 }
-    );
+    console.error('Error revoking share link:', error);
+    return NextResponse.json({ error: 'Failed to revoke share link' }, { status: 500 });
   }
 }

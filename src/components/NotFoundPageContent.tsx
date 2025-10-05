@@ -18,15 +18,11 @@ export default function NotFoundPageContent() {
               <div className="text-6xl mb-4">🔍</div>
               <div className="text-4xl">❓</div>
             </div>
-            
+
             {/* Content */}
             <div className="lg:w-1/2 text-center lg:text-left">
-              <h1 className="text-5xl font-bold text-primary mb-6">
-                {t('mainHeading')}
-              </h1>
-              <p className="py-4 text-lg">
-                {t('description')}
-              </p>
+              <h1 className="text-5xl font-bold text-primary mb-6">{t('mainHeading')}</h1>
+              <p className="py-4 text-lg">{t('description')}</p>
             </div>
           </div>
         </div>
@@ -46,17 +42,13 @@ export default function NotFoundPageContent() {
         {/* Funny Quote */}
         <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-box p-8 my-8">
           <blockquote className="text-center">
-            <p className="text-lg italic mb-4">
-              {t('quote')}
-            </p>
+            <p className="text-lg italic mb-4">{t('quote')}</p>
           </blockquote>
         </div>
 
         {/* Animated Elements */}
         <div className="text-center my-8">
-          <div className="inline-flex gap-2 text-4xl animate-bounce">
-            🧙‍♂️📖✨🗺️🎭
-          </div>
+          <div className="inline-flex gap-2 text-4xl animate-bounce">🧙‍♂️📖✨🗺️🎭</div>
         </div>
       </div>
     </div>

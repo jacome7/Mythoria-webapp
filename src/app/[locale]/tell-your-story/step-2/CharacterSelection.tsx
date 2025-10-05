@@ -42,13 +42,11 @@ export default function CharacterSelection({ onChange }: Props) {
 
   const toggle = (id: string) => {
     // Do not call onChange inside the state updater (runs during render) – causes React warning
-    setSelectedIds(prev => (
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-    ));
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
   const selectAll = () => {
-    const ids = existingCharacters.map(c => c.characterId);
+    const ids = existingCharacters.map((c) => c.characterId);
     setSelectedIds(ids);
   };
 
@@ -66,7 +64,9 @@ export default function CharacterSelection({ onChange }: Props) {
       <div className="p-4 flex items-center gap-3">
         <span className="text-xl">👥</span>
         <div>
-          <h3 className="font-semibold text-gray-800">{t('characterSelection.includeExistingTitle')}</h3>
+          <h3 className="font-semibold text-gray-800">
+            {t('characterSelection.includeExistingTitle')}
+          </h3>
           <p className="text-sm text-gray-600">
             {selectedIds.length > 0
               ? t('characterSelection.selectedCount', { count: selectedIds.length })
@@ -98,8 +98,11 @@ export default function CharacterSelection({ onChange }: Props) {
               </div>
             )}
             <div className="space-y-2">
-              {existingCharacters.map(character => (
-                <label key={character.characterId} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 cursor-pointer">
+              {existingCharacters.map((character) => (
+                <label
+                  key={character.characterId}
+                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 cursor-pointer"
+                >
                   <input
                     type="checkbox"
                     className="checkbox checkbox-sm"

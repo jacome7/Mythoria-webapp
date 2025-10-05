@@ -1,32 +1,28 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { Suspense } from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { useTranslations, useLocale } from "next-intl";
-import { SignedIn, SignedOut } from "@clerk/nextjs";
+import Link from 'next/link';
+import { Suspense } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useTranslations, useLocale } from 'next-intl';
+import { SignedIn, SignedOut } from '@clerk/nextjs';
 
-import {
-  FaShoppingCart,
-  FaCheckCircle,
-  FaExclamationTriangle,
-} from "react-icons/fa";
-import BillingInformation from "@/components/BillingInformation";
-import CartView from "@/components/CartView";
-import PaymentSelector from "@/components/PaymentSelector";
-import RevolutPayment from "@/components/RevolutPayment";
-import MbwayPaymentModal from "@/components/MbwayPaymentModal";
+import { FaShoppingCart, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
+import BillingInformation from '@/components/BillingInformation';
+import CartView from '@/components/CartView';
+import PaymentSelector from '@/components/PaymentSelector';
+import RevolutPayment from '@/components/RevolutPayment';
+import MbwayPaymentModal from '@/components/MbwayPaymentModal';
 import PromotionCodeRedeemer from '@/components/PromotionCodeRedeemer';
-import { useCart } from "@/hooks/useCart";
-import { trackCommerce } from "@/lib/analytics";
-import { mapRevolutError } from "@/utils/payment/revolut-error-mapping";
-import type { CreditPackage } from "@/types/cart";
+import { useCart } from '@/hooks/useCart';
+import { trackCommerce } from '@/lib/analytics';
+import { mapRevolutError } from '@/utils/payment/revolut-error-mapping';
+import type { CreditPackage } from '@/types/cart';
 
 // Helper function to convert icon string to React component
 const getIconComponent = (iconName: string) => {
   switch (iconName) {
-    case "FaShoppingCart":
+    case 'FaShoppingCart':
     default:
       return <FaShoppingCart />;
   }
@@ -35,29 +31,28 @@ const getIconComponent = (iconName: string) => {
 // Separate component for search params to handle suspense
 function BuyCreditsContent() {
   const searchParams = useSearchParams();
-  const tBuyCreditsPage = useTranslations("BuyCreditsPage");
-  const tPricingPage = useTranslations("PricingPage");
-  const tMyStoriesPage = useTranslations("MyStoriesPage");
-  const tRevolutPayment = useTranslations("RevolutPayment");
+  const tBuyCreditsPage = useTranslations('BuyCreditsPage');
+  const tPricingPage = useTranslations('PricingPage');
+  const tMyStoriesPage = useTranslations('MyStoriesPage');
+  const tRevolutPayment = useTranslations('RevolutPayment');
   const tVoucher = useTranslations('Voucher');
   const locale = useLocale();
-  const { cart, addToCart, updateQuantity, removeFromCart, clearCart } =
-    useCart();
-  const [selectedPayment, setSelectedPayment] = useState<string>("revolut");
+  const { cart, addToCart, updateQuantity, removeFromCart, clearCart } = useCart();
+  const [selectedPayment, setSelectedPayment] = useState<string>('revolut');
   const [isMounted, setIsMounted] = useState(false);
   const [orderToken, setOrderToken] = useState<string | null>(null);
   const [orderAmount, setOrderAmount] = useState<number | null>(null);
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState<
-    "idle" | "processing" | "success" | "error"
-  >("idle");
-  const [paymentMessage, setPaymentMessage] = useState<string>("");
+  const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>(
+    'idle',
+  );
+  const [paymentMessage, setPaymentMessage] = useState<string>('');
   const [creditPackages, setCreditPackages] = useState<CreditPackage[]>([]);
   const [packagesLoading, setPackagesLoading] = useState(true);
   const [packagesError, setPackagesError] = useState<string | null>(null);
   // MB Way modal state
   const [showMbwayModal, setShowMbwayModal] = useState(false);
-  const [mbwayPaymentCode, setMbwayPaymentCode] = useState<string>("#XXXX");
+  const [mbwayPaymentCode, setMbwayPaymentCode] = useState<string>('#XXXX');
   const [mbwayAmount, setMbwayAmount] = useState<number>(0);
 
   // Ref for cart items section
@@ -72,33 +67,33 @@ function BuyCreditsContent() {
   useEffect(() => {
     if (!isMounted) return;
 
-    const revolutOrderId = searchParams?.get("_rp_oid") ?? null;
-    const revolutFailureReason = searchParams?.get("_rp_fr") ?? null;
-    const paymentStatus = searchParams?.get("payment") ?? null;
+    const revolutOrderId = searchParams?.get('_rp_oid') ?? null;
+    const revolutFailureReason = searchParams?.get('_rp_fr') ?? null;
+    const paymentStatus = searchParams?.get('payment') ?? null;
 
     if (revolutOrderId && revolutFailureReason) {
-      console.log("Revolut error parameters:", {
+      console.log('Revolut error parameters:', {
         revolutOrderId,
         revolutFailureReason,
       });
 
       const errorCode = mapRevolutError(revolutFailureReason);
 
-      console.log("Mapped error code:", errorCode);
+      console.log('Mapped error code:', errorCode);
 
       // Get the localized error message
       let errorMessage: string;
 
       try {
         // Use a safe translation lookup with fallback
-        if (errorCode && errorCode !== "unknown") {
+        if (errorCode && errorCode !== 'unknown') {
           try {
             const translatedMessage = tRevolutPayment(`errors.${errorCode}`);
             // Check if translation was successful (doesn't contain the key path)
-            if (!translatedMessage.includes("RevolutPayment.errors.")) {
+            if (!translatedMessage.includes('RevolutPayment.errors.')) {
               errorMessage = translatedMessage;
             } else {
-              throw new Error("Translation not found");
+              throw new Error('Translation not found');
             }
           } catch {
             // Fallback to the original error message if translation fails
@@ -107,8 +102,8 @@ function BuyCreditsContent() {
         } else {
           // Use unknown error translation or fallback to original message
           try {
-            const unknownMessage = tRevolutPayment("errors.unknown");
-            errorMessage = unknownMessage.includes("RevolutPayment.errors.")
+            const unknownMessage = tRevolutPayment('errors.unknown');
+            errorMessage = unknownMessage.includes('RevolutPayment.errors.')
               ? revolutFailureReason
               : unknownMessage;
           } catch {
@@ -116,24 +111,24 @@ function BuyCreditsContent() {
           }
         }
       } catch (error) {
-        console.warn("Translation lookup failed for error:", errorCode, error);
+        console.warn('Translation lookup failed for error:', errorCode, error);
         // Ultimate fallback to the original error message
         errorMessage = revolutFailureReason;
       }
 
-      setPaymentStatus("error");
+      setPaymentStatus('error');
       setPaymentMessage(errorMessage);
 
       // Clean up the URL parameters
       const newUrl = new URL(window.location.href);
-      newUrl.searchParams.delete("_rp_oid");
-      newUrl.searchParams.delete("_rp_fr");
-      newUrl.searchParams.delete("payment");
-      window.history.replaceState({}, "", newUrl.toString());
-    } else if (paymentStatus === "success") {
+      newUrl.searchParams.delete('_rp_oid');
+      newUrl.searchParams.delete('_rp_fr');
+      newUrl.searchParams.delete('payment');
+      window.history.replaceState({}, '', newUrl.toString());
+    } else if (paymentStatus === 'success') {
       // Handle successful payment redirect
-      setPaymentStatus("success");
-      setPaymentMessage(tBuyCreditsPage("payment.success"));
+      setPaymentStatus('success');
+      setPaymentMessage(tBuyCreditsPage('payment.success'));
 
       // Track credit purchase in analytics (if cart still has items)
       if (cart.length > 0) {
@@ -154,23 +149,23 @@ function BuyCreditsContent() {
 
       // Clean up URL and redirect after short delay
       const newUrl = new URL(window.location.href);
-      newUrl.searchParams.delete("payment");
-      window.history.replaceState({}, "", newUrl.toString());
+      newUrl.searchParams.delete('payment');
+      window.history.replaceState({}, '', newUrl.toString());
 
       setTimeout(() => {
         window.location.href = `/${locale}/my-stories`;
       }, 3000);
-    } else if (paymentStatus === "cancel") {
+    } else if (paymentStatus === 'cancel') {
       // Handle payment cancellation
-      setPaymentStatus("idle");
-      setPaymentMessage("");
+      setPaymentStatus('idle');
+      setPaymentMessage('');
       setOrderToken(null);
       setOrderAmount(null);
 
       // Clean up URL
       const newUrl = new URL(window.location.href);
-      newUrl.searchParams.delete("payment");
-      window.history.replaceState({}, "", newUrl.toString());
+      newUrl.searchParams.delete('payment');
+      window.history.replaceState({}, '', newUrl.toString());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMounted, searchParams, tRevolutPayment, tBuyCreditsPage, locale]);
@@ -178,9 +173,9 @@ function BuyCreditsContent() {
   // Fetch credit packages from API (like pricing page)
   const fetchCreditPackages = useCallback(async () => {
     try {
-      const response = await fetch("/api/pricing/credit-packages");
+      const response = await fetch('/api/pricing/credit-packages');
       if (!response.ok) {
-        throw new Error("Failed to fetch credit packages");
+        throw new Error('Failed to fetch credit packages');
       }
       const data = await response.json();
       // Sort packages by price ascending
@@ -189,8 +184,8 @@ function BuyCreditsContent() {
       );
       setCreditPackages(sortedPackages);
     } catch (error) {
-      console.error("Error fetching credit packages:", error);
-      setPackagesError(tPricingPage("errors.loadingFailed"));
+      console.error('Error fetching credit packages:', error);
+      setPackagesError(tPricingPage('errors.loadingFailed'));
     } finally {
       setPackagesLoading(false);
     }
@@ -202,7 +197,7 @@ function BuyCreditsContent() {
 
   // Pre-select package if coming from pricing page
   useEffect(() => {
-    const packageId = searchParams?.get("package") ?? null;
+    const packageId = searchParams?.get('package') ?? null;
     if (packageId) {
       const id = parseInt(packageId);
       if (creditPackages.find((pkg) => pkg.id === id)) {
@@ -210,7 +205,7 @@ function BuyCreditsContent() {
         addToCart(id);
       }
     }
-           }, [searchParams, creditPackages, addToCart, clearCart]);
+  }, [searchParams, creditPackages, addToCart, clearCart]);
 
   // Function to scroll to cart items on mobile
   const scrollToCartItems = () => {
@@ -225,7 +220,7 @@ function BuyCreditsContent() {
 
       window.scrollTo({
         top: absoluteElementTop - offset,
-        behavior: "smooth",
+        behavior: 'smooth',
       });
     }
   };
@@ -263,12 +258,12 @@ function BuyCreditsContent() {
 
   const handlePlaceOrder = async () => {
     if (cart.length === 0) {
-      alert(tBuyCreditsPage("errors.emptyCart"));
+      alert(tBuyCreditsPage('errors.emptyCart'));
       return;
     }
 
     setIsCreatingOrder(true);
-    setPaymentMessage(tBuyCreditsPage("payment.creatingOrder"));
+    setPaymentMessage(tBuyCreditsPage('payment.creatingOrder'));
 
     try {
       // Prepare credit packages for API
@@ -279,12 +274,12 @@ function BuyCreditsContent() {
 
       let response;
 
-      if (selectedPayment === "mbway") {
+      if (selectedPayment === 'mbway') {
         // Create MB Way payment request
-        response = await fetch("/api/payments/mbway", {
-          method: "POST",
+        response = await fetch('/api/payments/mbway', {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             creditPackages,
@@ -293,10 +288,10 @@ function BuyCreditsContent() {
         });
       } else {
         // Create payment order for other methods
-        response = await fetch("/api/payments/order", {
-          method: "POST",
+        response = await fetch('/api/payments/order', {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             creditPackages,
@@ -307,41 +302,37 @@ function BuyCreditsContent() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.error || tBuyCreditsPage("errors.orderCreationFailed"),
-        );
+        throw new Error(data.error || tBuyCreditsPage('errors.orderCreationFailed'));
       }
 
-      console.log("Order created successfully:", data);
+      console.log('Order created successfully:', data);
 
-      if (selectedPayment === "mbway") {
+      if (selectedPayment === 'mbway') {
         // Backend returns ticketNumber (e.g., 'A5CD'); display with leading '#'
         const rawCode: string | undefined = data.ticketNumber || data.ticketId || data.paymentCode;
-        const formattedCode = rawCode ? `#${rawCode.replace(/^#/, "")}` : "#----";
+        const formattedCode = rawCode ? `#${rawCode.replace(/^#/, '')}` : '#----';
         setMbwayPaymentCode(formattedCode);
         setMbwayAmount(data.amount ?? total);
         setShowMbwayModal(true);
         // We intentionally do not mark payment as success yet; it's pending manual action
-        setPaymentStatus("idle");
-        setPaymentMessage("");
+        setPaymentStatus('idle');
+        setPaymentMessage('');
       } else {
         // Store order details for other payment methods
         setOrderToken(data.orderToken);
         setOrderAmount(data.amount);
-        setPaymentMessage(tBuyCreditsPage("payment.orderCreated"));
+        setPaymentMessage(tBuyCreditsPage('payment.orderCreated'));
       }
     } catch (error) {
-      console.error("Order creation failed:", error);
-      setPaymentStatus("error");
+      console.error('Order creation failed:', error);
+      setPaymentStatus('error');
 
       let errorMessage =
-        error instanceof Error
-          ? error.message
-          : tBuyCreditsPage("errors.orderCreationFailed");
-      let contactUrl = "";
+        error instanceof Error ? error.message : tBuyCreditsPage('errors.orderCreationFailed');
+      let contactUrl = '';
 
       // Check if the error includes a contact URL (for MB Way failures)
-      if (error instanceof Error && error.message.includes("contactUrl")) {
+      if (error instanceof Error && error.message.includes('contactUrl')) {
         try {
           const errorData = JSON.parse(error.message);
           contactUrl = errorData.contactUrl;
@@ -352,16 +343,12 @@ function BuyCreditsContent() {
       }
 
       setPaymentMessage(
-        contactUrl
-          ? `${errorMessage} ${tBuyCreditsPage("errors.contactSupport")} `
-          : errorMessage,
+        contactUrl ? `${errorMessage} ${tBuyCreditsPage('errors.contactSupport')} ` : errorMessage,
       );
 
       // Store contact URL for the "Contact Support" button
       if (contactUrl) {
-        (
-          window as Window & { mbwayErrorContactUrl?: string }
-        ).mbwayErrorContactUrl = contactUrl;
+        (window as Window & { mbwayErrorContactUrl?: string }).mbwayErrorContactUrl = contactUrl;
       }
     } finally {
       setIsCreatingOrder(false);
@@ -369,7 +356,7 @@ function BuyCreditsContent() {
   };
 
   const handlePaymentSuccess = (result: Record<string, unknown>) => {
-    console.log("Payment successful:", result);
+    console.log('Payment successful:', result);
 
     // Calculate total credits purchased for analytics
     const totalCredits = cart.reduce((total, item) => {
@@ -383,8 +370,8 @@ function BuyCreditsContent() {
       credits_purchased: totalCredits,
     });
 
-    setPaymentStatus("success");
-    setPaymentMessage(tBuyCreditsPage("payment.success"));
+    setPaymentStatus('success');
+    setPaymentMessage(tBuyCreditsPage('payment.success'));
 
     // Clear cart and reset form
     clearCart();
@@ -397,24 +384,22 @@ function BuyCreditsContent() {
   };
 
   const handlePaymentError = (error: Record<string, unknown>) => {
-    console.error("Payment failed:", error);
-    setPaymentStatus("error");
-    setPaymentMessage(
-      (error.message as string) || tBuyCreditsPage("errors.paymentFailed"),
-    );
+    console.error('Payment failed:', error);
+    setPaymentStatus('error');
+    setPaymentMessage((error.message as string) || tBuyCreditsPage('errors.paymentFailed'));
   };
 
   const handlePaymentCancel = () => {
-    console.log("Payment cancelled");
-    setPaymentStatus("idle");
-    setPaymentMessage("");
+    console.log('Payment cancelled');
+    setPaymentStatus('idle');
+    setPaymentMessage('');
     setOrderToken(null);
     setOrderAmount(null);
   };
 
   const resetPayment = () => {
-    setPaymentStatus("idle");
-    setPaymentMessage("");
+    setPaymentStatus('idle');
+    setPaymentMessage('');
     setOrderToken(null);
     setOrderAmount(null);
   };
@@ -426,7 +411,7 @@ function BuyCreditsContent() {
             // Loading state to prevent hydration mismatch
             <div className="text-center">
               <h1 className="text-4xl font-bold text-primary mb-4">
-                {tBuyCreditsPage("header.title")}
+                {tBuyCreditsPage('header.title')}
               </h1>
               <div className="flex justify-center items-center min-h-96">
                 <span className="loading loading-spinner loading-lg"></span>
@@ -436,18 +421,16 @@ function BuyCreditsContent() {
             <>
               <SignedOut>
                 <div className="text-center space-y-6">
-                  <h1 className="text-4xl font-bold">
-                    {tBuyCreditsPage("header.title")}
-                  </h1>
+                  <h1 className="text-4xl font-bold">{tBuyCreditsPage('header.title')}</h1>
                   <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                    {tMyStoriesPage("signedOut.needSignIn")}
+                    {tMyStoriesPage('signedOut.needSignIn')}
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Link href={`/${locale}/sign-in`} className="btn btn-primary">
-                      {tMyStoriesPage("signedOut.signIn")}
+                      {tMyStoriesPage('signedOut.signIn')}
                     </Link>
                     <Link href={`/${locale}/sign-up`} className="btn btn-outline">
-                      {tMyStoriesPage("signedOut.createAccount")}
+                      {tMyStoriesPage('signedOut.createAccount')}
                     </Link>
                   </div>
                 </div>
@@ -456,17 +439,17 @@ function BuyCreditsContent() {
                 {/* Header Section */}
                 <header className="text-center mb-16">
                   <h1 className="text-5xl font-bold text-primary">
-                    {tBuyCreditsPage("header.title")}
+                    {tBuyCreditsPage('header.title')}
                   </h1>
-                  <p className="text-xl mt-4 text-gray-700">
-                    {tBuyCreditsPage("header.subtitle")}
-                  </p>
+                  <p className="text-xl mt-4 text-gray-700">{tBuyCreditsPage('header.subtitle')}</p>
                 </header>
 
                 {/* Promo / Referral Code Section */}
                 <section className="mb-16">
                   <h2 className="text-2xl font-bold mb-6">{tVoucher('sectionHeading')}</h2>
-                  <p className="text-base opacity-80 mb-4 max-w-2xl">{tVoucher('sectionSubheading')}</p>
+                  <p className="text-base opacity-80 mb-4 max-w-2xl">
+                    {tVoucher('sectionSubheading')}
+                  </p>
                   <div className="max-w-xl">
                     <PromotionCodeRedeemer />
                   </div>
@@ -475,9 +458,7 @@ function BuyCreditsContent() {
                 <div className="grid lg:grid-cols-2 gap-12">
                   {/* Left Side - Available Packages */}
                   <div>
-                    <h2 className="text-2xl font-bold mb-6">
-                      {tBuyCreditsPage("packages.title")}
-                    </h2>
+                    <h2 className="text-2xl font-bold mb-6">{tBuyCreditsPage('packages.title')}</h2>
                     {packagesLoading ? (
                       <div className="flex justify-center items-center py-12">
                         <span className="loading loading-spinner loading-lg"></span>
@@ -492,16 +473,16 @@ function BuyCreditsContent() {
                         {creditPackages.map((pkg) => (
                           <div
                             key={pkg.id}
-                            className={`card bg-base-200 shadow-lg border-2 ${pkg.bestValue ? "border-accent" : pkg.popular ? "border-secondary" : "border-transparent"}`}
+                            className={`card bg-base-200 shadow-lg border-2 ${pkg.bestValue ? 'border-accent' : pkg.popular ? 'border-secondary' : 'border-transparent'}`}
                           >
                             {pkg.bestValue && (
                               <div className="badge badge-accent absolute -top-3 -right-3 p-2">
-                                {tBuyCreditsPage("badges.bestValue")}
+                                {tBuyCreditsPage('badges.bestValue')}
                               </div>
                             )}
                             {pkg.popular && (
                               <div className="badge badge-secondary absolute -top-3 -right-3 p-2">
-                                {tBuyCreditsPage("badges.popular")}
+                                {tBuyCreditsPage('badges.popular')}
                               </div>
                             )}
                             <div className="card-body">
@@ -512,8 +493,7 @@ function BuyCreditsContent() {
                                   </div>
                                   <div>
                                     <h3 className="text-xl font-bold">
-                                      {pkg.credits}{" "}
-                                      {tPricingPage("creditPackages.credits")}
+                                      {pkg.credits} {tPricingPage('creditPackages.credits')}
                                     </h3>
                                     <p className="text-lg font-semibold text-primary">
                                       €{pkg.price.toFixed(2)}
@@ -524,7 +504,7 @@ function BuyCreditsContent() {
                                   onClick={() => handleAddToCart(pkg.id)}
                                   className="btn btn-primary"
                                 >
-                                  {tBuyCreditsPage("packages.addToCart")}
+                                  {tBuyCreditsPage('packages.addToCart')}
                                 </button>
                               </div>
                             </div>
@@ -555,43 +535,35 @@ function BuyCreditsContent() {
                     {cart.length > 0 && <BillingInformation />}
 
                     {/* Payment Status Messages */}
-                    {paymentStatus !== "idle" && (
+                    {paymentStatus !== 'idle' && (
                       <div
                         className={`mb-6 ${
-                          paymentStatus === "success"
-                            ? "alert alert-success"
-                            : paymentStatus === "error"
-                              ? "bg-error/10 border border-error/20 rounded-lg p-4"
-                              : "alert alert-info"
+                          paymentStatus === 'success'
+                            ? 'alert alert-success'
+                            : paymentStatus === 'error'
+                              ? 'bg-error/10 border border-error/20 rounded-lg p-4'
+                              : 'alert alert-info'
                         }`}
                       >
                         <div className="flex items-center space-x-2">
-                          {paymentStatus === "success" && <FaCheckCircle />}
-                          {paymentStatus === "error" && (
+                          {paymentStatus === 'success' && <FaCheckCircle />}
+                          {paymentStatus === 'error' && (
                             <FaExclamationTriangle className="text-error" />
                           )}
-                          {paymentStatus === "processing" && (
+                          {paymentStatus === 'processing' && (
                             <span className="loading loading-spinner loading-sm"></span>
                           )}
-                          <span
-                            className={
-                              paymentStatus === "error" ? "text-error" : ""
-                            }
-                          >
+                          <span className={paymentStatus === 'error' ? 'text-error' : ''}>
                             {paymentMessage}
                           </span>
                         </div>
-                        {paymentStatus === "error" && (
+                        {paymentStatus === 'error' && (
                           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-3">
-                            <button
-                              onClick={resetPayment}
-                              className="btn btn-sm btn-outline"
-                            >
-                              {tBuyCreditsPage("actions.tryAgain")}
+                            <button onClick={resetPayment} className="btn btn-sm btn-outline">
+                              {tBuyCreditsPage('actions.tryAgain')}
                             </button>
-                            {(
-                              window as Window & { mbwayErrorContactUrl?: string }
-                            ).mbwayErrorContactUrl && (
+                            {(window as Window & { mbwayErrorContactUrl?: string })
+                              .mbwayErrorContactUrl && (
                               <a
                                 href={
                                   (
@@ -604,7 +576,7 @@ function BuyCreditsContent() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
-                                {tBuyCreditsPage("actions.contactSupport")}
+                                {tBuyCreditsPage('actions.contactSupport')}
                               </a>
                             )}
                           </div>
@@ -613,10 +585,10 @@ function BuyCreditsContent() {
                     )}
 
                     {/* Payment Section */}
-                    {cart.length > 0 && paymentStatus !== "success" && (
+                    {cart.length > 0 && paymentStatus !== 'success' && (
                       <div className="bg-base-200 rounded-lg p-6 mb-6">
                         <h3 className="text-lg font-bold mb-4">
-                          {tBuyCreditsPage("payment.title")}
+                          {tBuyCreditsPage('payment.title')}
                         </h3>
 
                         {!orderToken ? (
@@ -630,14 +602,14 @@ function BuyCreditsContent() {
                           <div className="space-y-4">
                             <div className="flex items-center justify-between">
                               <h4 className="font-semibold">
-                                {tBuyCreditsPage("payment.completePayment")}
+                                {tBuyCreditsPage('payment.completePayment')}
                               </h4>
                               <button
                                 onClick={resetPayment}
                                 className="btn btn-sm btn-outline"
-                                disabled={paymentStatus === "processing"}
+                                disabled={paymentStatus === 'processing'}
                               >
-                                {tBuyCreditsPage("actions.cancel")}
+                                {tBuyCreditsPage('actions.cancel')}
                               </button>
                             </div>
 
@@ -647,7 +619,7 @@ function BuyCreditsContent() {
                               onPaymentSuccess={handlePaymentSuccess}
                               onPaymentError={handlePaymentError}
                               onPaymentCancel={handlePaymentCancel}
-                              disabled={paymentStatus === "processing"}
+                              disabled={paymentStatus === 'processing'}
                             />
                           </div>
                         )}
@@ -655,32 +627,29 @@ function BuyCreditsContent() {
                     )}
 
                     {/* Place Order Button */}
-                    {cart.length > 0 &&
-                      !orderToken &&
-                      paymentStatus !== "success" && (
-                        <button
-                          disabled={!selectedPayment || isCreatingOrder}
-                          onClick={handlePlaceOrder}
-                          className="btn btn-primary btn-lg w-full"
-                        >
-                          {isCreatingOrder ? (
-                            <>
-                              <span className="loading loading-spinner loading-sm"></span>
-                              {tBuyCreditsPage("actions.creatingOrder")}
-                            </>
-                          ) : (
-                            <>
-                              {tBuyCreditsPage("actions.proceedToPayment")} - €
-                              {total.toFixed(2)}
-                            </>
-                          )}
-                        </button>
-                      )}
+                    {cart.length > 0 && !orderToken && paymentStatus !== 'success' && (
+                      <button
+                        disabled={!selectedPayment || isCreatingOrder}
+                        onClick={handlePlaceOrder}
+                        className="btn btn-primary btn-lg w-full"
+                      >
+                        {isCreatingOrder ? (
+                          <>
+                            <span className="loading loading-spinner loading-sm"></span>
+                            {tBuyCreditsPage('actions.creatingOrder')}
+                          </>
+                        ) : (
+                          <>
+                            {tBuyCreditsPage('actions.proceedToPayment')} - €{total.toFixed(2)}
+                          </>
+                        )}
+                      </button>
+                    )}
 
                     {/* Back to Pricing */}
                     <div className="mt-6 text-center">
                       <Link href="/pricing" className="btn btn-outline">
-                        {tBuyCreditsPage("actions.backToPricing")}
+                        {tBuyCreditsPage('actions.backToPricing')}
                       </Link>
                     </div>
                   </div>
@@ -714,6 +683,6 @@ export default function BuyCreditsPage() {
 
 function LoadingFallback() {
   // Use the correct translation namespace for the buy credits page
-  const tBuyCreditsPage = useTranslations("BuyCreditsPage");
-  return <div>{tBuyCreditsPage("buyCredits")}</div>;
+  const tBuyCreditsPage = useTranslations('BuyCreditsPage');
+  return <div>{tBuyCreditsPage('buyCredits')}</div>;
 }

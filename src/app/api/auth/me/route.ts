@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   try {
     const author = await getCurrentAuthor();
-    
+
     if (!author) {
       return NextResponse.json({ message: 'No authenticated user' }, { status: 401 });
     }
@@ -17,7 +17,7 @@ export async function GET() {
       mobilePhone: author.mobilePhone,
       lastLoginAt: author.lastLoginAt,
       createdAt: author.createdAt,
-      preferredLocale: author.preferredLocale
+      preferredLocale: author.preferredLocale,
     });
   } catch (error) {
     console.error('Error getting current author:', error);

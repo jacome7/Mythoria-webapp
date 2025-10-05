@@ -1,7 +1,7 @@
 {
   "EditCreditInfo": {
-  "editLabel": "Édition # {number}",
-  "balanceLabel": "Votre solde: {credits} crédits",
+    "editLabel": "Édition # {number}",
+    "balanceLabel": "Votre solde: {credits} crédits",
     "buyCreditsButton": "Acheter des crédits",
     "progressLabel": "Progrès:"
   }

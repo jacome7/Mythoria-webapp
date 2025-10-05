@@ -13,11 +13,11 @@ interface AudiobookGenerationTriggerProps {
 }
 
 export default function AudiobookGenerationTrigger({
-  storyId, 
-  hasAudiobook, 
+  storyId,
+  hasAudiobook,
   isGenerating = false,
   onGenerationStart,
-  onGenerationComplete
+  onGenerationComplete,
 }: AudiobookGenerationTriggerProps) {
   const tAudiobookGenerationTrigger = useTranslations('AudiobookGenerationTrigger');
   const tVoices = useTranslations('Voices');
@@ -28,7 +28,7 @@ export default function AudiobookGenerationTrigger({
   const handleGenerateAudiobook = async () => {
     setIsGeneratingLocal(true);
     setError(null);
-    
+
     if (onGenerationStart) {
       onGenerationStart();
     }
@@ -52,13 +52,14 @@ export default function AudiobookGenerationTrigger({
       // The response will be 202 Accepted, and the workflow will process asynchronously
       const result = await response.json();
       console.log('Audiobook generation started:', result);
-      
+
       // The progress component will now start polling for updates
-      
     } catch (error) {
       console.error('Error generating audiobook:', error);
       setError(
-        error instanceof Error ? error.message : tAudiobookGenerationTrigger('errors.failedToStart'),
+        error instanceof Error
+          ? error.message
+          : tAudiobookGenerationTrigger('errors.failedToStart'),
       );
       setIsGeneratingLocal(false);
     }
@@ -113,10 +114,7 @@ export default function AudiobookGenerationTrigger({
     return (
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body">
-          <AudiobookGenerationProgress 
-            storyId={storyId} 
-            onComplete={handleGenerationComplete}
-          />
+          <AudiobookGenerationProgress storyId={storyId} onComplete={handleGenerationComplete} />
         </div>
       </div>
     );
@@ -129,17 +127,17 @@ export default function AudiobookGenerationTrigger({
           <span className="text-2xl">🎙️</span>
           {tAudiobookGenerationTrigger('generateAudiobook')}
         </h3>
-        
-        <p className="text-gray-600 mb-6">
-          {tAudiobookGenerationTrigger('audiobookDescription')}
-        </p>
+
+        <p className="text-gray-600 mb-6">{tAudiobookGenerationTrigger('audiobookDescription')}</p>
 
         {/* Voice Selection */}
         <div className="mb-6">
           <label className="label">
-            <span className="label-text font-medium">{tAudiobookGenerationTrigger('selectVoice')}</span>
+            <span className="label-text font-medium">
+              {tAudiobookGenerationTrigger('selectVoice')}
+            </span>
           </label>
-          <select 
+          <select
             className="select select-bordered w-full max-w-md"
             value={selectedVoice}
             onChange={(e) => setSelectedVoice(e.target.value)}
@@ -159,7 +157,7 @@ export default function AudiobookGenerationTrigger({
         )}
 
         <div className="card-actions justify-center">
-          <button 
+          <button
             className="btn btn-primary btn-lg"
             onClick={handleGenerateAudiobook}
             disabled={isGeneratingLocal}
@@ -179,8 +177,14 @@ export default function AudiobookGenerationTrigger({
         </div>
 
         <div className="text-sm text-gray-500 mt-4 space-y-1">
-          <p>{tAudiobookGenerationTrigger('estimatedTime')}: {tAudiobookGenerationTrigger('aboutEightMinutes')}</p>
-          <p>{tAudiobookGenerationTrigger('creditCost')}: {tAudiobookGenerationTrigger('creditsRequired')}</p>
+          <p>
+            {tAudiobookGenerationTrigger('estimatedTime')}:{' '}
+            {tAudiobookGenerationTrigger('aboutEightMinutes')}
+          </p>
+          <p>
+            {tAudiobookGenerationTrigger('creditCost')}:{' '}
+            {tAudiobookGenerationTrigger('creditsRequired')}
+          </p>
         </div>
       </div>
     </div>

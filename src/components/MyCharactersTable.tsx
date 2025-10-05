@@ -2,9 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { 
-  FiPlus
-} from 'react-icons/fi';
+import { FiPlus } from 'react-icons/fi';
 import CharacterCard from './CharacterCard';
 import { Character } from '../lib/story-session';
 
@@ -38,7 +36,8 @@ export default function MyCharactersTable() {
     } finally {
       setLoading(false);
     }
-  };  const handleDeleteClick = async (character: CharacterWithDate) => {
+  };
+  const handleDeleteClick = async (character: CharacterWithDate) => {
     setCharacterToDelete(character);
     setDeleteModalOpen(true);
   };
@@ -52,7 +51,7 @@ export default function MyCharactersTable() {
       });
 
       if (response.ok) {
-        setCharacters(characters.filter(c => c.characterId !== characterToDelete.characterId));
+        setCharacters(characters.filter((c) => c.characterId !== characterToDelete.characterId));
         setDeleteModalOpen(false);
         setCharacterToDelete(null);
       }
@@ -77,9 +76,8 @@ export default function MyCharactersTable() {
       }
 
       const { character } = await response.json();
-      setCharacters(prev => [...prev, character]);
+      setCharacters((prev) => [...prev, character]);
       setShowCreateForm(false);
-      
     } catch (error) {
       console.error('Error creating character:', error);
       throw error;
@@ -104,16 +102,16 @@ export default function MyCharactersTable() {
       }
 
       const { character } = await response.json();
-      
-      setCharacters(prev => 
-        prev.map(c => c.characterId === character.characterId ? character : c)
+
+      setCharacters((prev) =>
+        prev.map((c) => (c.characterId === character.characterId ? character : c)),
       );
       setEditingCharacter(null);
-      
     } catch (error) {
       console.error('Error updating character:', error);
       throw error;
-    }  };
+    }
+  };
 
   if (loading) {
     return (
@@ -131,12 +129,10 @@ export default function MyCharactersTable() {
             {tMyCharactersPage('noCharacters.title') || 'No characters yet!'}
           </h2>
           <p className="text-base-content/70">
-            {tMyCharactersPage('noCharacters.subtitle') || 'Start creating characters for your stories to see them here.'}
+            {tMyCharactersPage('noCharacters.subtitle') ||
+              'Start creating characters for your stories to see them here.'}
           </p>
-          <button
-            className="btn btn-primary btn-lg"
-            onClick={() => setShowCreateForm(true)}
-          >
+          <button className="btn btn-primary btn-lg" onClick={() => setShowCreateForm(true)}>
             <FiPlus className="w-5 h-5 mr-2" />
             {tMyCharactersPage('createCharacter') || 'Create Character'}
           </button>
@@ -150,10 +146,7 @@ export default function MyCharactersTable() {
       {/* Add Character Button */}
       {!showCreateForm && !editingCharacter && (
         <div className="flex justify-end">
-          <button
-            className="btn btn-primary"
-            onClick={() => setShowCreateForm(true)}
-          >
+          <button className="btn btn-primary" onClick={() => setShowCreateForm(true)}>
             <FiPlus className="w-5 h-5 mr-2" />
             {tMyCharactersPage('createCharacter') || 'Create Character'}
           </button>
@@ -161,7 +154,9 @@ export default function MyCharactersTable() {
       )}
 
       {/* Character Cards */}
-      <div className="space-y-6">        {/* Existing Characters */}
+      <div className="space-y-6">
+        {' '}
+        {/* Existing Characters */}
         {characters.map((character) => (
           <CharacterCard
             key={character.characterId}
@@ -173,7 +168,6 @@ export default function MyCharactersTable() {
             onCancel={() => setEditingCharacter(null)}
           />
         ))}
-
         {/* Create New Character Form */}
         {showCreateForm && (
           <CharacterCard
@@ -190,19 +184,18 @@ export default function MyCharactersTable() {
       {deleteModalOpen && (
         <div className="modal modal-open">
           <div className="modal-box">
-            <h3 className="font-bold text-lg">{tMyCharactersPage('deleteConfirm.title') || 'Delete Character'}</h3>
-            <p className="py-4">{tMyCharactersPage('deleteConfirm.message') || 'Are you sure you want to delete this character? This action cannot be undone.'}</p>
+            <h3 className="font-bold text-lg">
+              {tMyCharactersPage('deleteConfirm.title') || 'Delete Character'}
+            </h3>
+            <p className="py-4">
+              {tMyCharactersPage('deleteConfirm.message') ||
+                'Are you sure you want to delete this character? This action cannot be undone.'}
+            </p>
             <div className="modal-action">
-              <button
-                className="btn btn-ghost"
-                onClick={() => setDeleteModalOpen(false)}
-              >
+              <button className="btn btn-ghost" onClick={() => setDeleteModalOpen(false)}>
                 {tMyCharactersPage('deleteConfirm.cancel') || 'Cancel'}
               </button>
-              <button
-                className="btn btn-error"
-                onClick={handleDeleteConfirm}
-              >
+              <button className="btn btn-error" onClick={handleDeleteConfirm}>
                 {tMyCharactersPage('deleteConfirm.confirm') || 'Delete'}
               </button>
             </div>

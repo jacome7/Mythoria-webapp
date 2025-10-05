@@ -22,22 +22,26 @@ function needsAuthSetup(): boolean {
 
 const includeSetup = needsAuthSetup();
 if (!includeSetup) {
-  console.log('Playwright auth setup project skipped (existing auth state considered fresh). Set REFRESH_AUTH=1 to force.');
+  console.log(
+    'Playwright auth setup project skipped (existing auth state considered fresh). Set REFRESH_AUTH=1 to force.',
+  );
 }
 
 const projects = [
   ...(includeSetup
-    ? [{
-        name: 'setup',
-        testMatch: /auth\.setup\.ts/,
-        use: { ...devices['Desktop Chrome'] }
-      }]
+    ? [
+        {
+          name: 'setup',
+          testMatch: /auth\.setup\.ts/,
+          use: { ...devices['Desktop Chrome'] },
+        },
+      ]
     : []),
   {
     name: 'chromium',
     use: { ...devices['Desktop Chrome'], storageState: authFile },
-    ...(includeSetup ? { dependencies: ['setup'] } : {})
-  }
+    ...(includeSetup ? { dependencies: ['setup'] } : {}),
+  },
 ];
 
 export default defineConfig({
@@ -50,9 +54,9 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
-    locale: 'en-US'
+    locale: 'en-US',
   },
   projects,
   // Make the authFile path available to tests that may want to reference it dynamically.
-  metadata: { authFile }
+  metadata: { authFile },
 });

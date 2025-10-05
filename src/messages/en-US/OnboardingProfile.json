@@ -1,6 +1,6 @@
 {
   "OnboardingProfile": {
-  "title": "Welcome!",
+    "title": "Welcome!",
     "intro": "We’re thrilled to start this creative journey with you. The first step is done—let’s make it truly yours.",
     "preferredName": {
       "section": "How should we address you?",
@@ -16,7 +16,7 @@
     },
     "audience": { "label": "Who do you usually create stories for?" },
     "interests": { "label": "What kind of stories do you like?" },
-  "pickOne": "Pick one",
+    "pickOne": "Pick one",
     "gift": {
       "section": "A gift to get you started!",
       "copy": "Creativity deserves a little push. We’re giving you {credits} free credits to use on your first story—no strings attached.",
@@ -84,8 +84,8 @@
     "saving": "Saving...",
     "errors": {
       "displayNameRequired": "Name is required",
-  "displayNameTooLong": "Display name too long",
-  "loadFailed": "Could not load profile. Please try again later."
+      "displayNameTooLong": "Display name too long",
+      "loadFailed": "Could not load profile. Please try again later."
     }
   }
 }

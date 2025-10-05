@@ -4,7 +4,7 @@ import { pricingService } from '@/db/services';
 export async function GET() {
   try {
     const pricingData = await pricingService.getDeliveryOptionsPricing();
-    
+
     // Format the response to match the expected structure
     const formattedPricing = {
       ebook: {
@@ -30,16 +30,12 @@ export async function GET() {
       },
     };
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
-      deliveryOptions: formattedPricing 
+      deliveryOptions: formattedPricing,
     });
-
   } catch (error) {
     console.error('Error fetching pricing:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch pricing data' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch pricing data' }, { status: 500 });
   }
 }

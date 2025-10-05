@@ -7,7 +7,7 @@ const ContactFormSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
   email: z.string().email('Invalid email address'),
   category: z.string().optional(),
-  message: z.string().min(1, 'Message is required').max(2000, 'Message too long')
+  message: z.string().min(1, 'Message is required').max(2000, 'Message too long'),
 });
 
 // Get configuration
@@ -24,9 +24,9 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           error: 'Validation failed',
-          details: validationResult.error.issues
+          details: validationResult.error.issues,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -34,13 +34,13 @@ export async function POST(request: NextRequest) {
 
     // Map category values to match backend expectations
     const categoryMapping: Record<string, string> = {
-      'feature_ideas': 'Feature request',
-      'bug_report': 'Bug',
-      'technical_issues': 'Story failure',
-      'delivery': 'Delivery',
-      'credits': 'Credits',
-      'business_partnership': 'Business partner',
-      'general': 'General'
+      feature_ideas: 'Feature request',
+      bug_report: 'Bug',
+      technical_issues: 'Story failure',
+      delivery: 'Delivery',
+      credits: 'Credits',
+      business_partnership: 'Business partner',
+      general: 'General',
     };
 
     // Create ticket in admin system with API key authentication
@@ -57,20 +57,20 @@ export async function POST(request: NextRequest) {
         type: categoryMapping[category || ''] || 'General',
         message: message,
         // Note: userId will be null for anonymous contacts - this is handled in the API
-      })
+      }),
     });
 
     if (!ticketResponse.ok) {
       const errorText = await ticketResponse.text();
       console.error('Failed to create ticket:', errorText);
-      
+
       return NextResponse.json(
         {
           success: false,
           error: 'Failed to create support ticket',
-          details: `Ticket creation error: ${ticketResponse.status}`
+          details: `Ticket creation error: ${ticketResponse.status}`,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -80,19 +80,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'Support ticket created successfully',
-      ticketId: ticketData.id
+      ticketId: ticketData.id,
     });
-
   } catch (error) {
     console.error('Contact form API error:', error);
-    
+
     return NextResponse.json(
       {
         success: false,
         error: 'Internal server error',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

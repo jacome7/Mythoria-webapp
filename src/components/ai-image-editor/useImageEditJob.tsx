@@ -41,7 +41,7 @@ export function useImageEditJob({ onComplete, onError }: UseImageEditJobOptions)
       const response = await fetch('/api/ai-edit/check-credits', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'imageEdit', storyId })
+        body: JSON.stringify({ action: 'imageEdit', storyId }),
       });
       if (response.ok) {
         const data = await response.json();
@@ -90,18 +90,19 @@ export function useImageEditJob({ onComplete, onError }: UseImageEditJobOptions)
     }
   };
 
-  const CreditConfirmation = showCreditConfirmation && creditInfo ? (
-    <CreditConfirmationModal
-      isOpen={showCreditConfirmation}
-      onClose={() => setShowCreditConfirmation(false)}
-      onConfirm={handleConfirmCredits}
-      action="imageEdit"
-      requiredCredits={creditInfo.requiredCredits}
-      currentBalance={creditInfo.currentBalance}
-      editCount={creditInfo.editCount}
-      isFree={creditInfo.isFree}
-    />
-  ) : null;
+  const CreditConfirmation =
+    showCreditConfirmation && creditInfo ? (
+      <CreditConfirmationModal
+        isOpen={showCreditConfirmation}
+        onClose={() => setShowCreditConfirmation(false)}
+        onConfirm={handleConfirmCredits}
+        action="imageEdit"
+        requiredCredits={creditInfo.requiredCredits}
+        currentBalance={creditInfo.currentBalance}
+        editCount={creditInfo.editCount}
+        isFree={creditInfo.isFree}
+      />
+    ) : null;
 
   const JobProgress = showJobProgress ? (
     <JobProgressModal

@@ -15,7 +15,7 @@
     "contact": {
       "title": "Contact Info & Preferences",
       "description": "Your contact details are safe with us. We use them to protect your account and for important communications. No spam, we promise!",
-  "email": "Email Address",
+      "email": "Email Address",
       "mobile": "Mobile Phone",
       "mobilePlaceholder": "e.g., +1234567890",
       "language": "Preferred Language"
@@ -30,7 +30,7 @@
     "journey": {
       "title": "Your Creative Journey",
       "description": "We love to see your creativity flourish! Here are some of your amazing stats.",
-  "booksCreated": "Stories Created"
+      "booksCreated": "Stories Created"
     },
     "actions": {
       "save": "Save Changes",

@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
   try {
     // Get the current authenticated user
     const currentAuthor = await getCurrentAuthor();
-    
+
     if (!currentAuthor) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
@@ -16,11 +16,8 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!characterData.name?.trim()) {
-      return NextResponse.json(
-        { error: 'Character name is required' },
-        { status: 400 }
-      );
-    }    // Create the character
+      return NextResponse.json({ error: 'Character name is required' }, { status: 400 });
+    } // Create the character
     const character = await characterService.createCharacter({
       name: characterData.name.trim(),
       authorId: currentAuthor.authorId,
@@ -33,17 +30,13 @@ export async function POST(request: NextRequest) {
       photoUrl: characterData.photoUrl?.trim() || null,
     });
 
-    return NextResponse.json({ 
-      success: true, 
-      character 
+    return NextResponse.json({
+      success: true,
+      character,
     });
-
   } catch (error) {
     console.error('Error creating character:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -51,7 +44,7 @@ export async function GET() {
   try {
     // Get the current authenticated user
     const currentAuthor = await getCurrentAuthor();
-    
+
     if (!currentAuthor) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
@@ -59,16 +52,12 @@ export async function GET() {
     // Get all characters for this author
     const characters = await characterService.getCharactersByAuthor(currentAuthor.authorId);
 
-    return NextResponse.json({ 
-      success: true, 
-      characters 
+    return NextResponse.json({
+      success: true,
+      characters,
     });
-
   } catch (error) {
     console.error('Error fetching characters:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

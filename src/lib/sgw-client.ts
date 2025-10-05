@@ -30,7 +30,8 @@ export function sgwHeaders(extra?: HeadersInit): HeadersInit {
 }
 
 export async function sgwFetch(input: FetchInput, init?: RequestInit): Promise<Response> {
-  const url = typeof input === 'string' || input instanceof URL ? input.toString() : (input as Request).url;
+  const url =
+    typeof input === 'string' || input instanceof URL ? input.toString() : (input as Request).url;
   const finalUrl = url.startsWith('http') ? url : sgwUrl(url);
   const mergedInit: RequestInit = {
     ...init,

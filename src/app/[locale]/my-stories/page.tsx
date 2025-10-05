@@ -17,8 +17,8 @@ export default function MyStoriesPage() {
   const [credits, setCredits] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'stories' | 'characters'>('stories');
-  
-  useEffect(() => {    
+
+  useEffect(() => {
     const fetchUserData = async () => {
       try {
         // Fetch author data
@@ -59,9 +59,7 @@ export default function MyStoriesPage() {
       <SignedOut>
         <div className="text-center space-y-6">
           <h1 className="text-4xl font-bold">{tMyStoriesPage('signedOut.welcome')}</h1>
-          <p className="text-lg text-gray-600">
-            {tMyStoriesPage('signedOut.needSignIn')}
-          </p>
+          <p className="text-lg text-gray-600">{tMyStoriesPage('signedOut.needSignIn')}</p>
           <div className="space-x-4">
             <Link href={`/${locale}/sign-in`} className="btn btn-primary">
               {tMyStoriesPage('signedOut.signIn')}
@@ -107,11 +105,7 @@ export default function MyStoriesPage() {
 
             {/* Tab Content */}
             <div className="border border-base-300 rounded-b-md p-2 md:p-6 bg-base-100 shadow">
-              {activeTab === 'stories' ? (
-                <MyStoriesTable />
-              ) : (
-                <MyCharactersTable />
-              )}
+              {activeTab === 'stories' ? <MyStoriesTable /> : <MyCharactersTable />}
             </div>
           </div>
         </div>

@@ -1,9 +1,9 @@
-import { paymentService, type CreditPackage } from "./payment";
+import { paymentService, type CreditPackage } from './payment';
 
-describe("paymentService.calculateOrderTotal", () => {
-  it("calculates totals for valid packages", async () => {
+describe('paymentService.calculateOrderTotal', () => {
+  it('calculates totals for valid packages', async () => {
     const getPkgSpy = jest
-      .spyOn(paymentService, "getCreditPackage")
+      .spyOn(paymentService, 'getCreditPackage')
       .mockImplementation(async (id) => {
         if (id === 1) {
           return { id: 1, credits: 100, price: 10 } as CreditPackage;
@@ -25,29 +25,29 @@ describe("paymentService.calculateOrderTotal", () => {
     getPkgSpy.mockRestore();
   });
 
-  it("throws for invalid package id", async () => {
-    jest.spyOn(paymentService, "getCreditPackage").mockResolvedValue(undefined);
+  it('throws for invalid package id', async () => {
+    jest.spyOn(paymentService, 'getCreditPackage').mockResolvedValue(undefined);
     await expect(
       paymentService.calculateOrderTotal([{ packageId: 99, quantity: 1 }]),
-    ).rejects.toThrow("Invalid package ID: 99");
+    ).rejects.toThrow('Invalid package ID: 99');
   });
 });
 
-describe("paymentService.verifyWebhookSignature", () => {
-  const secret = "test_secret";
+describe('paymentService.verifyWebhookSignature', () => {
+  const secret = 'test_secret';
 
   beforeEach(() => {
     process.env.REVOLUT_WEBHOOK_SECRET = secret;
   });
 
-  it("returns true for valid signature", async () => {
-    const payload = JSON.stringify({ order_id: "1" });
+  it('returns true for valid signature', async () => {
+    const payload = JSON.stringify({ order_id: '1' });
     const timestamp = String(Date.now());
-    const crypto = await import("crypto");
+    const crypto = await import('crypto');
     const digest = crypto
-      .createHmac("sha256", secret)
+      .createHmac('sha256', secret)
       .update(`v1.${timestamp}.${payload}`)
-      .digest("hex");
+      .digest('hex');
     const signature = `v1=${digest}`;
 
     await expect(
@@ -55,10 +55,10 @@ describe("paymentService.verifyWebhookSignature", () => {
     ).resolves.toBe(true);
   });
 
-  it("returns false for invalid signature", async () => {
-    const payload = JSON.stringify({ order_id: "1" });
+  it('returns false for invalid signature', async () => {
+    const payload = JSON.stringify({ order_id: '1' });
     const timestamp = String(Date.now());
-    const signature = "v1=invalid";
+    const signature = 'v1=invalid';
     await expect(
       paymentService.verifyWebhookSignature(payload, signature, timestamp),
     ).resolves.toBe(false);

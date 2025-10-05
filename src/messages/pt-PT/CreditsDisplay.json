@@ -26,7 +26,7 @@
     "haveCode": "Tens um código?",
     "placeholder": "Insere o teu código",
     "apply": "Aplicar",
-  "success": "Boa! Desbloqueaste {credits, plural, one {# crédito} other {# créditos}} com {code}.",
+    "success": "Boa! Desbloqueaste {credits, plural, one {# crédito} other {# créditos}} com {code}.",
     "invalid": "Código inválido ou inativo.",
     "checking": "A verificar...",
     "sectionHeading": "Código promocional ou de amigo",

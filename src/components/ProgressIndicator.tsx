@@ -1,23 +1,20 @@
-"use client";
+'use client';
 
-import { useTranslations } from "next-intl";
+import { useTranslations } from 'next-intl';
 
 interface ProgressIndicatorProps {
   currentStep: number;
   totalSteps: number;
 }
 
-export default function ProgressIndicator({
-  currentStep,
-  totalSteps,
-}: ProgressIndicatorProps) {
-  const t = useTranslations("StorySteps.common");
+export default function ProgressIndicator({ currentStep, totalSteps }: ProgressIndicatorProps) {
+  const t = useTranslations('StorySteps.common');
 
   return (
     <>
       <div className="block md:hidden mb-8">
         <div className="text-center text-sm text-gray-600 mb-2">
-          {t("stepProgress", { currentStep, totalSteps })}
+          {t('stepProgress', { currentStep, totalSteps })}
         </div>
         <progress
           className="progress progress-primary w-full"
@@ -31,7 +28,7 @@ export default function ProgressIndicator({
           {Array.from({ length: totalSteps }).map((_, index) => (
             <li
               key={index}
-              className={`step${index < currentStep ? " step-primary" : ""}`}
+              className={`step${index < currentStep ? ' step-primary' : ''}`}
               data-content={index + 1}
             ></li>
           ))}

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -6,16 +6,23 @@ import Link from 'next/link';
 // Separated client component to satisfy lint rules and avoid require()
 const OfflineClient: React.FC = () => {
   const t = useTranslations('Offline');
-  const [online, setOnline] = React.useState(typeof navigator !== 'undefined' ? navigator.onLine : false);
+  const [online, setOnline] = React.useState(
+    typeof navigator !== 'undefined' ? navigator.onLine : false,
+  );
   const [redirecting, setRedirecting] = React.useState(false);
 
   React.useEffect(() => {
     function handleOnline() {
       setOnline(true);
       setRedirecting(true);
-      setTimeout(() => { window.location.replace('/'); }, 1200);
+      setTimeout(() => {
+        window.location.replace('/');
+      }, 1200);
     }
-    function handleOffline() { setOnline(false); setRedirecting(false); }
+    function handleOffline() {
+      setOnline(false);
+      setRedirecting(false);
+    }
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
     return () => {
@@ -37,12 +44,22 @@ const OfflineClient: React.FC = () => {
         </ul>
       </div>
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <button onClick={() => window.history.back()} className="btn btn-primary">{t('actions.goBack')}</button>
-        <button onClick={() => window.location.reload()} className="btn btn-outline">{t('actions.retry')}</button>
-        <Link href="/" className="btn btn-ghost">{t('actions.goHome')}</Link>
+        <button onClick={() => window.history.back()} className="btn btn-primary">
+          {t('actions.goBack')}
+        </button>
+        <button onClick={() => window.location.reload()} className="btn btn-outline">
+          {t('actions.retry')}
+        </button>
+        <Link href="/" className="btn btn-ghost">
+          {t('actions.goHome')}
+        </Link>
       </div>
       <div className="mt-8 text-sm opacity-70" role="status" aria-live="polite">
-        {redirecting ? t('status.backOnline') : (online ? t('status.backOnline') : t('status.stillOffline'))}
+        {redirecting
+          ? t('status.backOnline')
+          : online
+            ? t('status.backOnline')
+            : t('status.stillOffline')}
       </div>
     </div>
   );

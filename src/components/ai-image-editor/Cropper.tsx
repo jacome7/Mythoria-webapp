@@ -77,11 +77,21 @@ export default function CropperModal({
               className="w-full"
             />
             <span className="text-xs text-gray-500 sm:w-20 sm:text-right text-center mt-1 sm:mt-0">
-              {t('zoom', { value: Math.abs(zoom - Math.round(zoom)) < 0.01 ? Math.round(zoom).toString() : zoom.toFixed(2) })}
+              {t('zoom', {
+                value:
+                  Math.abs(zoom - Math.round(zoom)) < 0.01
+                    ? Math.round(zoom).toString()
+                    : zoom.toFixed(2),
+              })}
             </span>
           </div>
           <div className="flex items-center gap-2 self-end sm:self-auto">
-            <button onClick={onCancel} className="w-28 px-4 py-2 text-sm rounded-md border border-gray-300 hover:bg-gray-50">{t('cancel')}</button>
+            <button
+              onClick={onCancel}
+              className="w-28 px-4 py-2 text-sm rounded-md border border-gray-300 hover:bg-gray-50"
+            >
+              {t('cancel')}
+            </button>
             <button
               onClick={handleConfirm}
               disabled={processing}

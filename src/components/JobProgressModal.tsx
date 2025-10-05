@@ -38,7 +38,7 @@ export default function JobProgressModal({
   jobId,
   jobType, // eslint-disable-line @typescript-eslint/no-unused-vars
   onComplete,
-  onError
+  onError,
 }: JobProgressModalProps) {
   const tJobProgressModal = useTranslations('JobProgressModal');
   const [jobStatus, setJobStatus] = useState<JobStatus | null>(null);
@@ -104,17 +104,17 @@ export default function JobProgressModal({
     console.log('🚀 Starting polling for job:', jobId);
     setPolling(true);
     processingJobIdRef.current = jobId;
-    
+
     // Poll immediately
     pollJobStatus();
-    
+
     // Then poll every 3 seconds (reduced from 2 seconds)
     const interval = setInterval(() => {
       if (!completedRef.current) {
         pollJobStatus();
       }
     }, 3000);
-    
+
     setPollingInterval(interval);
   }, [jobId, pollJobStatus]);
 
@@ -203,12 +203,8 @@ export default function JobProgressModal({
           <div className="flex items-center space-x-3">
             {getStatusIcon()}
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">
-                {tJobProgressModal('title')}
-              </h2>
-              <p className="text-sm text-gray-600">
-                {getStatusText()}
-              </p>
+              <h2 className="text-lg font-semibold text-gray-900">{tJobProgressModal('title')}</h2>
+              <p className="text-sm text-gray-600">{getStatusText()}</p>
             </div>
           </div>
           {canClose() && (
@@ -235,8 +231,8 @@ export default function JobProgressModal({
                   jobStatus?.status === 'completed'
                     ? 'bg-green-500'
                     : jobStatus?.status === 'failed'
-                    ? 'bg-red-500'
-                    : 'bg-blue-500'
+                      ? 'bg-red-500'
+                      : 'bg-blue-500'
                 }`}
                 style={{ width: `${Math.min(100, jobStatus?.progress || 0)}%` }}
               />
@@ -251,9 +247,8 @@ export default function JobProgressModal({
                   {tJobProgressModal('labels.elapsed')}: {formatTime(jobStatus.elapsedTime)}
                 </span>
                 <span>
-                  {tJobProgressModal('labels.remaining')}: ~{formatTime(
-                    Math.max(0, jobStatus.remainingTime)
-                  )}
+                  {tJobProgressModal('labels.remaining')}: ~
+                  {formatTime(Math.max(0, jobStatus.remainingTime))}
                 </span>
               </div>
             </div>

@@ -51,12 +51,12 @@ export default function PublicChapterPage() {
   const tActions = useTranslations('Actions');
   const slug = Array.isArray(params?.slug)
     ? (params?.slug[0] ?? '')
-    : (params?.slug as string | undefined) ?? '';
+    : ((params?.slug as string | undefined) ?? '');
   const chapterParam = Array.isArray(params?.chapterNumber)
     ? (params?.chapterNumber[0] ?? '')
-    : (params?.chapterNumber as string | undefined) ?? '';
+    : ((params?.chapterNumber as string | undefined) ?? '');
   const chapterNumber = parseInt(chapterParam || '0', 10);
-  
+
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<PublicChapterData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +66,7 @@ export default function PublicChapterPage() {
       try {
         const response = await fetch(`/api/p/${slug}/chapter/${chapterNumber}`);
         const result = await response.json();
-        
+
         if (result.success) {
           setData(result);
         } else {
@@ -92,7 +92,7 @@ export default function PublicChapterPage() {
       const chapter = data.currentChapter;
       document.title = tPublicStoryChapter('metadata.chapterPageTitle', {
         title: story.title,
-        number: chapter.chapterNumber
+        number: chapter.chapterNumber,
       });
     }
   }, [data, tPublicStoryChapter]);
@@ -114,11 +114,10 @@ export default function PublicChapterPage() {
         <div className="text-center space-y-4">
           <FiAlertCircle className="w-16 h-16 text-error mx-auto" />
           <h1 className="text-2xl font-bold">{tPublicStoryChapter('chapterNotFound')}</h1>
-          <p className="text-base-content/70">{error || tPublicStoryChapter('chapterNotAvailable')}</p>
-          <button
-            onClick={() => window.history.back()}
-            className="btn btn-primary"
-          >
+          <p className="text-base-content/70">
+            {error || tPublicStoryChapter('chapterNotAvailable')}
+          </p>
+          <button onClick={() => window.history.back()} className="btn btn-primary">
             {tActions('goBack')}
           </button>
         </div>
@@ -137,10 +136,10 @@ export default function PublicChapterPage() {
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between">
             <div>
-          <h1 className="text-2xl font-bold">{story.title}</h1>
-          <p className="text-sm text-base-content/70">
+              <h1 className="text-2xl font-bold">{story.title}</h1>
+              <p className="text-sm text-base-content/70">
                 {tPublicStoryChapter('chapter')} {chapterNumber}: {data.currentChapter.title}
-          </p>
+              </p>
             </div>
           </div>
         </div>
@@ -172,16 +171,13 @@ export default function PublicChapterPage() {
             <p className="text-gray-700 text-center mb-6">
               {tPublicStoryChapter('lastChapter.enjoyedDesc')}
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href={`/${locale}`}
-                className="btn btn-primary flex items-center gap-2"
-              >
+              <a href={`/${locale}`} className="btn btn-primary flex items-center gap-2">
                 <FiEdit3 className="w-4 h-4" />
                 {tPublicStoryPage('actions.createOwnStory')}
               </a>
-              
+
               <a
                 href={`/${locale}/stories/print/${story.storyId}`}
                 className="btn btn-secondary flex items-center gap-2"

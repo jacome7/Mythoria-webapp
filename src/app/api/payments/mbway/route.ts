@@ -41,19 +41,13 @@ export async function POST(request: NextRequest) {
 
     // Validate request
     if (!creditPackages || !Array.isArray(creditPackages) || creditPackages.length === 0) {
-      return NextResponse.json(
-        { error: 'Credit packages are required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Credit packages are required' }, { status: 400 });
     }
 
     // Validate each package
     for (const pkg of creditPackages) {
       if (!pkg.packageId || !pkg.quantity || pkg.quantity <= 0) {
-        return NextResponse.json(
-          { error: 'Invalid package data' },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: 'Invalid package data' }, { status: 400 });
       }
 
       // Check if package exists
@@ -61,7 +55,7 @@ export async function POST(request: NextRequest) {
       if (!creditPackage) {
         return NextResponse.json(
           { error: `Invalid package ID: ${pkg.packageId}` },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -107,11 +101,11 @@ export async function POST(request: NextRequest) {
       const ticketError = await ticketResponse.text();
       console.error('Failed to create ticket:', ticketError);
       return NextResponse.json(
-        { 
+        {
           error: 'Failed to create payment request. Please contact support.',
-          contactUrl: `/${normalizeLocale(locale).split('-')[0]}/contact?category=bug&subject=MB Way Payment Error`
+          contactUrl: `/${normalizeLocale(locale).split('-')[0]}/contact?category=bug&subject=MB Way Payment Error`,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -179,17 +173,19 @@ export async function POST(request: NextRequest) {
       // TEMPORARY: Only en-US template exists for 'mbway-payment-instructions'.
       // Force language to en-US to avoid template-not-found errors until localized templates are added.
       const templateLanguage = 'en-US';
-      
+
       const { notificationFetch } = await import('@/lib/notification-client');
       await notificationFetch(`${process.env.NOTIFICATION_ENGINE_URL}/email/template`, {
         method: 'POST',
         body: JSON.stringify({
           templateId: 'mbway-payment-instructions',
-          recipients: [{
-            email: author.email,
-            name: author.displayName,
-            language: templateLanguage,
-          }],
+          recipients: [
+            {
+              email: author.email,
+              name: author.displayName,
+              language: templateLanguage,
+            },
+          ],
           variables: {
             userName: author.displayName,
             userEmail: author.email,
@@ -214,16 +210,15 @@ export async function POST(request: NextRequest) {
       amount: orderTotals.totalAmount,
       credits: orderTotals.totalCredits,
     });
-
   } catch (error) {
     console.error('Error creating MB Way payment request:', error);
-    
+
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to create MB Way payment request',
-        contactUrl: `/${normalizeLocale().split('-')[0]}/contact?category=bug&subject=MB Way Payment Error`
+        contactUrl: `/${normalizeLocale().split('-')[0]}/contact?category=bug&subject=MB Way Payment Error`,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

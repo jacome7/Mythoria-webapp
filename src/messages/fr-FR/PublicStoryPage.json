@@ -36,9 +36,9 @@
       "audioNotAvailableTitle": "Audio non disponible",
       "audioNotAvailableDesc": "Cette histoire n'a pas encore de narration audio disponible.",
       "backToStory": "Retour à l'histoire",
-  "duration": "Durée: {duration}",
-  "chapterFallback": "Chapitre {number}",
-  "chapterImageAlt": "Chapitre {number} illustration",
+      "duration": "Durée: {duration}",
+      "chapterFallback": "Chapitre {number}",
+      "chapterImageAlt": "Chapitre {number} illustration",
       "controls": {
         "play": "Jouer",
         "pause": "Pause",

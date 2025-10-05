@@ -16,10 +16,7 @@ export async function GET(request: NextRequest) {
 
     // Validate limit
     if (limit < 1 || limit > 100) {
-      return NextResponse.json(
-        { error: 'Limit must be between 1 and 100' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Limit must be between 1 and 100' }, { status: 400 });
     }
 
     // Get payment history
@@ -29,12 +26,8 @@ export async function GET(request: NextRequest) {
       success: true,
       payments: paymentHistory,
     });
-
   } catch (error) {
     console.error('Error fetching payment history:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch payment history' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch payment history' }, { status: 500 });
   }
 }

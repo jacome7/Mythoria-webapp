@@ -1,9 +1,9 @@
 {
   "TellYourStoryPage": {
     "signedOut": {
-  "title": "Prêt à raconter votre histoire ?",
-  "subtitle": "Inscrivez-vous pour commencer à créer vos aventures magiques avec Mythoria.",
-  "getStarted": "Commencer"
+      "title": "Prêt à raconter votre histoire ?",
+      "subtitle": "Inscrivez-vous pour commencer à créer vos aventures magiques avec Mythoria.",
+      "getStarted": "Commencer"
     }
   }
 }

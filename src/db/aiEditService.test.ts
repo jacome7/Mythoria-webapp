@@ -26,9 +26,7 @@ describe('aiEditService.recordSuccessfulEdit', () => {
     jest.spyOn(aiEditService, 'calculateRequiredCredits').mockResolvedValue(2);
     const deductSpy = jest
       .spyOn(creditService, 'deductCredits')
-      .mockResolvedValue(
-        {} as unknown as Awaited<ReturnType<typeof creditService.deductCredits>>,
-      );
+      .mockResolvedValue({} as unknown as Awaited<ReturnType<typeof creditService.deductCredits>>);
     const values = jest.fn().mockResolvedValue([]);
     (db.insert as jest.Mock).mockReturnValue({ values });
 

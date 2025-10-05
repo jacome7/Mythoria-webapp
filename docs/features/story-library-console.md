@@ -1,9 +1,11 @@
 # Story Library Console
 
 ## Mythoria's Take
+
 This is the command bridge where every tale you craft parks between voyages. Scan the table, sort by mood, peek at live generation progress, and jump into reading, editing, or listening with one tap. Need to share with the cousins, order a print, or spin a clone for a birthday remix? The console has the switches. It even lets you keep an eye on your credit stash so you never run out of pixie dust mid-adventure.
 
 ## Technical Deep Dive
+
 - Dashboard shell: `src/app/[locale]/my-stories/page.tsx` authenticates with Clerk, fetches author data (`/api/auth/me`) and credit balances (`/api/my-credits`), and renders tabbed views for stories and characters.
 - Stories table: `src/components/MyStoriesTable.tsx` relies on `useStoriesTable` for pagination and sorting, exposing action handlers for delete, share, print, duplicate, and edit.
 - Action menu: `src/components/my-stories/StoryRow.tsx` handles responsive menus, status badges (including generation progress), and deep links to read (`/stories/read/{id}`), listen, print, or edit routes.

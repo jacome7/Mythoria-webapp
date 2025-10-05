@@ -9,12 +9,12 @@ export default function SharedStoryRouteHandler() {
   const router = useRouter();
   const locale = useLocale();
   const tSharedStoryPage = useTranslations('SharedStoryPage');
-  
+
   useEffect(() => {
-  const restParam = params?.rest;
+    const restParam = params?.rest;
     if (Array.isArray(restParam)) {
       const [token, ...rest] = restParam as string[];
-      
+
       if (token) {
         // If there are additional path segments (like 'edit'), include them
         const additionalPath = rest.length > 0 ? `/${rest.join('/')}` : '';

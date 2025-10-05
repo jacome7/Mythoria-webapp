@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import Script from "next/script";
+import { useEffect } from 'react';
+import Script from 'next/script';
 
 declare global {
   interface Window {
@@ -36,19 +36,19 @@ export default function GoogleAnalytics({
     window.gtag = gtag;
 
     // Initialize Google Analytics
-    gtag("js", new Date());
+    gtag('js', new Date());
 
     // Configure Google Analytics
-    gtag("config", measurementId);
+    gtag('config', measurementId);
 
     // Configure Google Ads if provided
     if (googleAdsId) {
-      gtag("config", googleAdsId);
+      gtag('config', googleAdsId);
     }
 
     // Configure Google Tag if provided
     if (googleTagId) {
-      gtag("config", googleTagId);
+      gtag('config', googleTagId);
     }
   }, [measurementId, googleAdsId, googleTagId]);
 
@@ -70,18 +70,15 @@ export default function GoogleAnalytics({
 }
 
 // Utility functions for tracking events
-export const trackEvent = (
-  eventName: string,
-  parameters?: Record<string, unknown>,
-) => {
-  if (typeof window !== "undefined" && window.gtag) {
-    window.gtag("event", eventName, parameters);
+export const trackEvent = (eventName: string, parameters?: Record<string, unknown>) => {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', eventName, parameters);
   }
 };
 
 export const trackPageView = (url: string) => {
-  if (typeof window !== "undefined" && window.gtag) {
-    window.gtag("config", process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID, {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID, {
       page_location: url,
     });
   }

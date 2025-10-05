@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { LexicalComposer } from "@lexical/react/LexicalComposer";
-import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import { ContentEditable } from "@lexical/react/LexicalContentEditable";
-import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
-import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
-import { FiSave, FiImage, FiChevronLeft } from "react-icons/fi";
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { LexicalComposer } from '@lexical/react/LexicalComposer';
+import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
+import { ContentEditable } from '@lexical/react/LexicalContentEditable';
+import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
+import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
+import { FiSave, FiImage, FiChevronLeft } from 'react-icons/fi';
 
-import Toolbar from "./Toolbar";
+import Toolbar from './Toolbar';
 import {
   initialConfig,
   ContentInitializationPlugin,
   ContentChangePlugin,
   createInitialEditorState,
-} from "./lexical";
-import { toAbsoluteImageUrl } from "@/utils/image-url";
+} from './lexical';
+import { toAbsoluteImageUrl } from '@/utils/image-url';
 
 interface ChapterEditorProps {
   initialContent?: string;
@@ -40,12 +40,12 @@ interface ChapterEditorProps {
 }
 
 export default function ChapterEditor({
-  initialContent = "",
-  chapterTitle = "",
+  initialContent = '',
+  chapterTitle = '',
   chapterImageUri = null,
   chapterNumber = 1,
   storyId,
-  locale = "en",
+  locale = 'en',
   onContentChange,
   onTitleChange,
   onSave,
@@ -57,7 +57,7 @@ export default function ChapterEditor({
   const [currentTitle, setCurrentTitle] = useState(chapterTitle);
   const [currentContent, setCurrentContent] = useState(initialContent);
   const [hasChanges, setHasChanges] = useState(false);
-  const t = useTranslations("ChapterEditor");
+  const t = useTranslations('ChapterEditor');
 
   const handleTitleChange = (title: string) => {
     setCurrentTitle(title);
@@ -77,9 +77,7 @@ export default function ChapterEditor({
 
   const handleCancel = () => {
     if (storyId && chapterNumber) {
-      router.push(
-        `/${locale}/stories/read/${storyId}/chapter/${chapterNumber}`,
-      );
+      router.push(`/${locale}/stories/read/${storyId}/chapter/${chapterNumber}`);
     } else {
       router.back();
     }
@@ -94,20 +92,20 @@ export default function ChapterEditor({
           value={currentTitle}
           onChange={(e) => handleTitleChange(e.target.value)}
           className="input input-bordered w-full text-lg font-semibold"
-          placeholder={t("titlePlaceholder")}
+          placeholder={t('titlePlaceholder')}
         />
       </div>
 
       {chapterImageUri && (
         <div className="space-y-2 px-4 md:px-0">
           <label className="block text-sm font-medium text-base-content">
-            {t("imagePlaceholder", { number: chapterNumber })}
+            {t('imagePlaceholder', { number: chapterNumber })}
           </label>
           <div className="border-2 border-dashed border-base-300 rounded-lg p-6 text-center w-full">
             <div className="space-y-4">
               <div className="relative mx-auto max-h-120 w-fit">
                 <Image
-                  src={toAbsoluteImageUrl(chapterImageUri) || ""}
+                  src={toAbsoluteImageUrl(chapterImageUri) || ''}
                   alt={`Chapter ${chapterNumber}`}
                   width={600}
                   height={800}
@@ -119,14 +117,14 @@ export default function ChapterEditor({
                   onClick={() =>
                     onImageEdit({
                       imageUri: chapterImageUri,
-                      imageType: "chapter",
+                      imageType: 'chapter',
                       chapterNumber,
                     })
                   }
                   className="btn btn-sm btn-outline"
                 >
                   <FiImage className="w-4 h-4" />
-                  {t("editImageButton")}
+                  {t('editImageButton')}
                 </button>
               )}
             </div>
@@ -147,12 +145,12 @@ export default function ChapterEditor({
               contentEditable={
                 <ContentEditable
                   className="flex-1 p-4 md:p-4 prose prose-lg max-w-none focus:outline-none"
-                  style={{ minHeight: "400px" }}
+                  style={{ minHeight: '400px' }}
                 />
               }
               placeholder={
                 <div className="absolute top-4 left-4 md:left-4 text-base-content/50 pointer-events-none">
-                  {t("contentPlaceholder")}
+                  {t('contentPlaceholder')}
                 </div>
               }
               ErrorBoundary={LexicalErrorBoundary}
@@ -180,11 +178,11 @@ export default function ChapterEditor({
                     title={
                       storyId
                         ? `Go to reading page for Chapter ${chapterNumber}`
-                        : t("goBackButton")
+                        : t('goBackButton')
                     }
                   >
                     <FiChevronLeft className="w-4 h-4" />
-                    {t("backButton")}
+                    {t('backButton')}
                   </button>
                 )}
               </div>
@@ -199,7 +197,7 @@ export default function ChapterEditor({
                   ) : (
                     <FiSave className="w-4 h-4" />
                   )}
-                  {isLoading ? t("saving") : t("saveButton")}
+                  {isLoading ? t('saving') : t('saveButton')}
                 </button>
               </div>
             </div>

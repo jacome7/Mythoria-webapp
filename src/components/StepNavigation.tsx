@@ -25,7 +25,7 @@ const StepNavigation = ({
   onPrev,
   nextDisabled = false,
   nextLabel,
-  prevLabel
+  prevLabel,
 }: StepNavigationProps) => {
   const router = useRouter();
   const tCommonStepNavigation = useTranslations('StepNavigation');
@@ -56,13 +56,26 @@ const StepNavigation = ({
     <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
       <div>
         {prevHref ? (
-          <Link 
-            href={prevHref} 
+          <Link
+            href={prevHref}
             className="btn btn-outline btn-md md:btn-lg" // Responsive button size
             onClick={handlePrev}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 md:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"> {/* Responsive icon margin */}
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-1 md:mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              {' '}
+              {/* Responsive icon margin */}
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
             {resolvedPrevLabel}
           </Link>
@@ -73,35 +86,62 @@ const StepNavigation = ({
       <div></div>
       <div>
         {nextHref && onNext ? (
-          <button 
+          <button
             onClick={handleNext}
             disabled={nextDisabled}
             className={`btn btn-primary btn-md md:btn-lg ${nextDisabled ? 'btn-disabled' : ''}`} // Responsive button size
           >
-            {currentStep === totalSteps - 1 ? tCommonStepNavigation('finish') : resolvedNextLabel} {/* Shortened "Finish Story" */}
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1 md:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"> {/* Responsive icon margin */}
+            {currentStep === totalSteps - 1 ? tCommonStepNavigation('finish') : resolvedNextLabel}{' '}
+            {/* Shortened "Finish Story" */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 ml-1 md:ml-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              {' '}
+              {/* Responsive icon margin */}
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
         ) : nextHref ? (
-          <Link 
-            href={nextHref} 
+          <Link
+            href={nextHref}
             className={`btn btn-primary btn-md md:btn-lg ${nextDisabled ? 'btn-disabled' : ''}`} // Responsive button size
             onClick={handleNext}
           >
-            {currentStep === totalSteps - 1 ? tCommonStepNavigation('finish') : resolvedNextLabel} {/* Shortened "Finish Story" */}
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1 md:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"> {/* Responsive icon margin */}
+            {currentStep === totalSteps - 1 ? tCommonStepNavigation('finish') : resolvedNextLabel}{' '}
+            {/* Shortened "Finish Story" */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 ml-1 md:ml-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              {' '}
+              {/* Responsive icon margin */}
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </Link>
         ) : onNext ? (
-          <button 
+          <button
             onClick={handleNext}
             disabled={nextDisabled}
             className={`btn btn-primary btn-md md:btn-lg ${nextDisabled ? 'btn-disabled' : ''}`} // Responsive button size
           >
-            {currentStep === totalSteps - 1 ? tCommonStepNavigation('finish') : resolvedNextLabel} {/* Shortened "Finish Story" */}
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1 md:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"> {/* Responsive icon margin */}
+            {currentStep === totalSteps - 1 ? tCommonStepNavigation('finish') : resolvedNextLabel}{' '}
+            {/* Shortened "Finish Story" */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 ml-1 md:ml-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              {' '}
+              {/* Responsive icon margin */}
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>

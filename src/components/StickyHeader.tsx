@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import Header from "./Header";
-import { usePathname } from "next/navigation";
+import Header from './Header';
+import { usePathname } from 'next/navigation';
 
 // Matches routes to EXCLUDE from sticky header behavior
 // Patterns account for the dynamic [locale] prefix and optional trailing segments
@@ -21,7 +21,7 @@ function isExcluded(pathname: string): boolean {
 }
 
 export default function StickyHeader() {
-  const pathname = usePathname() || "/";
+  const pathname = usePathname() || '/';
   const excluded = isExcluded(pathname);
 
   if (excluded) {

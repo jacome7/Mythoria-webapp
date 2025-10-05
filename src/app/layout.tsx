@@ -1,18 +1,16 @@
-import type { Metadata } from "next";
-import {
-  ClerkProvider,
-} from "@clerk/nextjs";
+import type { Metadata } from 'next';
+import { ClerkProvider } from '@clerk/nextjs';
 import { enUS, ptPT, esES, frFR } from '@clerk/localizations';
-import GoogleAnalytics from "../components/GoogleAnalytics";
-import AnalyticsProvider from "../components/AnalyticsProvider";
+import GoogleAnalytics from '../components/GoogleAnalytics';
+import AnalyticsProvider from '../components/AnalyticsProvider';
 import { headers } from 'next/headers';
 import { SUPPORTED_LOCALES } from '@/config/locales';
-import "./globals.css";
+import './globals.css';
 
 // Base metadata for non-localized routes only
 export const metadata: Metadata = {
-  title: "Mythoria",
-  description: "Personalized Books Creator",
+  title: 'Mythoria',
+  description: 'Personalized Books Creator',
 };
 
 export default async function RootLayout({
@@ -71,7 +69,8 @@ export default async function RootLayout({
           <link rel="mask-icon" href="/icon-192.png" />
         </head>
         <body suppressHydrationWarning={true}>
-          <div className="flex flex-col min-h-screen"><AnalyticsProvider>
+          <div className="flex flex-col min-h-screen">
+            <AnalyticsProvider>
               <main className="flex-grow">{children}</main>
             </AnalyticsProvider>
           </div>

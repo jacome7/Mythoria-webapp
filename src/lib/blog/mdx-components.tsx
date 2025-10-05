@@ -35,7 +35,7 @@ const MDXLink: React.FC<{
   className?: string;
 }> = ({ href, children, className = '' }) => {
   const isExternal = href.startsWith('http') || href.startsWith('//');
-  
+
   if (isExternal) {
     return (
       <a
@@ -48,7 +48,7 @@ const MDXLink: React.FC<{
       </a>
     );
   }
-  
+
   return (
     <Link href={href} className={`link link-primary hover:link-secondary ${className}`}>
       {children}
@@ -64,7 +64,7 @@ const MDXBlockquote: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   );
 };
 
-const MDXCodeBlock: React.FC<{ 
+const MDXCodeBlock: React.FC<{
   children: React.ReactNode;
   className?: string;
 }> = ({ children, className = '' }) => {
@@ -82,12 +82,8 @@ const MDXAlert: React.FC<{
     warning: 'alert-warning',
     error: 'alert-error',
   };
-  
-  return (
-    <div className={`alert ${alertClasses[type]} my-6`}>
-      {children}
-    </div>
-  );
+
+  return <div className={`alert ${alertClasses[type]} my-6`}>{children}</div>;
 };
 
 const MDXCard: React.FC<{
@@ -103,11 +99,7 @@ const MDXCard: React.FC<{
           {children}
         </div>
       )}
-      {!title && (
-        <div className="card-body">
-          {children}
-        </div>
-      )}
+      {!title && <div className="card-body">{children}</div>}
     </div>
   );
 };
@@ -145,14 +137,14 @@ export const mdxComponents: MDXComponents = {
       {children}
     </h6>
   ),
-  
+
   // Paragraphs and text
   p: ({ children, ...props }) => (
     <p className="mb-4 leading-relaxed text-base-content" {...props}>
       {children}
     </p>
   ),
-  
+
   // Lists
   ul: ({ children, ...props }) => (
     <ul className="list-disc list-inside mb-4 space-y-1" {...props}>
@@ -169,13 +161,11 @@ export const mdxComponents: MDXComponents = {
       {children}
     </li>
   ),
-  
+
   // Links and images
   a: MDXLink,
-  img: ({ src, alt, ...props }) => (
-    <MDXImage src={src || ''} alt={alt || ''} {...props} />
-  ),
-  
+  img: ({ src, alt, ...props }) => <MDXImage src={src || ''} alt={alt || ''} {...props} />,
+
   // Code
   code: MDXCodeBlock,
   pre: ({ children, ...props }) => (
@@ -183,13 +173,13 @@ export const mdxComponents: MDXComponents = {
       {children}
     </div>
   ),
-  
+
   // Quotes
   blockquote: MDXBlockquote,
-  
+
   // Dividers
   hr: () => <div className="divider my-8"></div>,
-  
+
   // Tables
   table: ({ children, ...props }) => (
     <div className="overflow-x-auto my-6 not-prose">
@@ -203,11 +193,7 @@ export const mdxComponents: MDXComponents = {
       {children}
     </thead>
   ),
-  tbody: ({ children, ...props }) => (
-    <tbody {...props}>
-      {children}
-    </tbody>
-  ),
+  tbody: ({ children, ...props }) => <tbody {...props}>{children}</tbody>,
   tr: ({ children, ...props }) => (
     <tr className="hover:bg-base-100" {...props}>
       {children}
@@ -223,7 +209,7 @@ export const mdxComponents: MDXComponents = {
       {children}
     </td>
   ),
-  
+
   // Custom components
   Alert: MDXAlert,
   Card: MDXCard,

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
@@ -20,9 +20,9 @@ export function useLocaleSync() {
     // This prevents unnecessary updates on every page load
     const userCreatedAt = user.createdAt;
     const twoMinutesAgo = Date.now() - 2 * 60 * 1000;
-    
+
     const isRecentUser = userCreatedAt && userCreatedAt.getTime() > twoMinutesAgo;
-    
+
     if (isRecentUser && !hasScheduledRef.current) {
       hasScheduledRef.current = true; // ensure we only schedule once
       const timeoutId = setTimeout(() => {
@@ -43,8 +43,8 @@ async function updateUserLocale(locale: string) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        preferredLocale: locale
-      })
+        preferredLocale: locale,
+      }),
     });
 
     if (response.ok) {

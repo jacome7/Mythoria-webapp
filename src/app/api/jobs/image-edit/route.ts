@@ -19,8 +19,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Author not found' }, { status: 404 });
     }
 
-  const body = await request.json();
-  const { storyId, imageType, chapterNumber, userRequest, imageUrl, userImageUri, convertToStyle } = body || {};
+    const body = await request.json();
+    const {
+      storyId,
+      imageType,
+      chapterNumber,
+      userRequest,
+      imageUrl,
+      userImageUri,
+      convertToStyle,
+    } = body || {};
 
     if (!storyId) {
       return NextResponse.json({ success: false, error: 'Story ID is required' }, { status: 400 });
@@ -38,18 +46,24 @@ export async function POST(request: NextRequest) {
       body.userRequest = effectiveUserRequest; // mutate forwarded payload
     }
     if (!effectiveUserRequest) {
-      return NextResponse.json({ success: false, error: 'User request is required' }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: 'User request is required' },
+        { status: 400 },
+      );
     }
 
     // Permission / credit pre-check (do NOT deduct here)
     const permission = await aiEditService.checkEditPermission(author.authorId, 'imageEdit');
     if (!permission.canEdit) {
-      return NextResponse.json({
-        success: false,
-        error: permission.message || 'Insufficient credits',
-        requiredCredits: permission.requiredCredits,
-        currentBalance: permission.currentBalance
-      }, { status: 402 }); // 402 Payment Required semantic
+      return NextResponse.json(
+        {
+          success: false,
+          error: permission.message || 'Insufficient credits',
+          requiredCredits: permission.requiredCredits,
+          currentBalance: permission.currentBalance,
+        },
+        { status: 402 },
+      ); // 402 Payment Required semantic
     }
 
     // Forward to workflow service
@@ -63,7 +77,7 @@ export async function POST(request: NextRequest) {
     if (!response.ok || !data?.success || !data?.jobId) {
       return NextResponse.json(
         { success: false, error: data.error || 'Failed to create image edit job' },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
@@ -74,17 +88,13 @@ export async function POST(request: NextRequest) {
       imageType,
       chapterNumber,
       userRequest: effectiveUserRequest,
-      createdAt: Date.now()
+      createdAt: Date.now(),
     });
 
     return NextResponse.json(data);
-
   } catch (error) {
     console.error('Error proxying image edit job request:', error);
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }
 

@@ -13,7 +13,7 @@ const STATIC_ROUTES = [
   'my-stories',
   'profile',
   'blog',
-  'buy-credits'
+  'buy-credits',
 ];
 
 const STORY_WIZARD_STEPS = [
@@ -21,7 +21,7 @@ const STORY_WIZARD_STEPS = [
   'tell-your-story/step-2',
   'tell-your-story/step-3',
   'tell-your-story/step-4',
-  'tell-your-story/step-5'
+  'tell-your-story/step-5',
 ];
 
 const LOCALES = ['en-US', 'pt-PT', 'es-ES', 'fr-FR'];
@@ -32,13 +32,16 @@ async function assertNoMissingTranslations(page: Page) {
   const missingToken = /__missing__|\{[A-Za-z0-9_.-]+\}/g;
   const matches = content.match(missingToken) || [];
   // Filter out curly braces that belong to JSON-LD scripts (structured data) by requiring at least one dot inside
-  const realMisses = matches.filter(m => m.includes('.') || m.includes('__missing__'));
+  const realMisses = matches.filter((m) => m.includes('.') || m.includes('__missing__'));
   expect(realMisses, `Missing translation tokens found: ${realMisses.join(', ')}`).toHaveLength(0);
 }
 
 async function gotoAndCheck(page: Page, urlPath: string) {
   const resp = await page.goto(urlPath, { waitUntil: 'domcontentloaded' });
-  expect(resp?.ok(), `Failed to load ${urlPath}: ${resp?.status()} ${resp?.statusText()}`).toBeTruthy();
+  expect(
+    resp?.ok(),
+    `Failed to load ${urlPath}: ${resp?.status()} ${resp?.statusText()}`,
+  ).toBeTruthy();
   await assertNoMissingTranslations(page);
   // Basic error absence checks
   const consoleErrors = page.locator('text=/error/i');
@@ -52,7 +55,9 @@ for (const locale of LOCALES) {
     test.beforeEach(async ({ page }) => {
       // Set localStorage locale before first navigation to force locale (LanguageSwitcher uses this key)
       await page.addInitScript((loc: string) => {
-        try { localStorage.setItem('mythoria-locale', loc); } catch {}
+        try {
+          localStorage.setItem('mythoria-locale', loc);
+        } catch {}
       }, locale);
     });
 

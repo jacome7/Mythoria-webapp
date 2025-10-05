@@ -55,17 +55,21 @@ interface CommunicationTestResults {
   };
 }
 
-async function testDirectCommunication(serviceUrl: string, endpoint: string, apiKey?: string): Promise<ServiceTestResult> {
+async function testDirectCommunication(
+  serviceUrl: string,
+  endpoint: string,
+  apiKey?: string,
+): Promise<ServiceTestResult> {
   const startTime = Date.now();
-  
+
   try {
     const response = await fetch(`${serviceUrl}${endpoint}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        ...(apiKey ? { 'x-api-key': apiKey } : {})
+        ...(apiKey ? { 'x-api-key': apiKey } : {}),
       },
-      signal: AbortSignal.timeout(10000) // 10 second timeout
+      signal: AbortSignal.timeout(10000), // 10 second timeout
     });
 
     const responseTime = Date.now() - startTime;
@@ -74,24 +78,24 @@ async function testDirectCommunication(serviceUrl: string, endpoint: string, api
       return {
         success: false,
         responseTime,
-        error: `HTTP ${response.status}: ${response.statusText}`
+        error: `HTTP ${response.status}: ${response.statusText}`,
       };
     }
 
     const data = await response.json();
-    
+
     return {
       success: true,
       responseTime,
-      data
+      data,
     };
   } catch (error) {
     const responseTime = Date.now() - startTime;
-    
+
     return {
       success: false,
       responseTime,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
@@ -102,66 +106,69 @@ async function testPingEndpoint(serviceUrl: string, apiKey?: string): Promise<Se
 
 async function testAdminPing(adminUrl: string, apiKey: string): Promise<ServiceTestResult> {
   const startTime = Date.now();
-  
+
   try {
     const response = await fetch(`${adminUrl}/api/ping`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
       },
       // Add timeout to prevent hanging
-      signal: AbortSignal.timeout(10000)
+      signal: AbortSignal.timeout(10000),
     });
 
     const responseTime = Date.now() - startTime;
-    
+
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'Unknown error');
       return {
         success: false,
         responseTime,
-        error: `HTTP ${response.status}: ${errorText}`
+        error: `HTTP ${response.status}: ${errorText}`,
       };
     }
 
     const data = await response.json();
-    
+
     return {
       success: data.success === true,
       responseTime,
-      data: data
+      data: data,
     };
-
   } catch (error) {
     const responseTime = Date.now() - startTime;
-    
+
     return {
       success: false,
       responseTime,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
 
-async function testPubSubCommunication(serviceUrl: string, endpoint: string, apiKey?: string): Promise<ServiceTestResult> {
+async function testPubSubCommunication(
+  serviceUrl: string,
+  endpoint: string,
+  apiKey?: string,
+): Promise<ServiceTestResult> {
   const startTime = Date.now();
-  
+
   try {
     const testMessage = {
       type: 'ping',
       timestamp: new Date().toISOString(),
-      correlationId: `webapp-test-${Date.now()}`
+      correlationId: `webapp-test-${Date.now()}`,
     };
 
     const response = await fetch(`${serviceUrl}${endpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(apiKey ? { 'x-api-key': apiKey } : {})
+        ...(apiKey ? { 'x-api-key': apiKey } : {}),
       },
       body: JSON.stringify(testMessage),
-      signal: AbortSignal.timeout(15000) // 15 second timeout for pub/sub
+      signal: AbortSignal.timeout(15000), // 15 second timeout for pub/sub
     });
 
     const responseTime = Date.now() - startTime;
@@ -170,31 +177,31 @@ async function testPubSubCommunication(serviceUrl: string, endpoint: string, api
       return {
         success: false,
         responseTime,
-        error: `HTTP ${response.status}: ${response.statusText}`
+        error: `HTTP ${response.status}: ${response.statusText}`,
       };
     }
 
     const data = await response.json();
-    
+
     return {
       success: true,
       responseTime,
-      data
+      data,
     };
   } catch (error) {
     const responseTime = Date.now() - startTime;
-    
+
     return {
       success: false,
       responseTime,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
 
 export async function GET() {
   console.log('🔍 Starting communication test between services...');
-  
+
   // Initialize results with configuration URLs and endpoint information
   const results: CommunicationTestResults = {
     timestamp: new Date().toISOString(),
@@ -203,78 +210,84 @@ export async function GET() {
         baseUrl: config.storyGeneration.workflowUrl,
         endpoints: {
           ping: '/ping',
-          pubsubPing: '/test/pubsub-ping'
-        }
+          pubsubPing: '/test/pubsub-ping',
+        },
       },
       notification: {
         baseUrl: config.notification.engineUrl,
         endpoints: {
           ping: '/ping',
-          pubsubPing: '/test/pubsub-ping'
-        }
+          pubsubPing: '/test/pubsub-ping',
+        },
       },
       admin: {
         baseUrl: config.admin.apiUrl,
         endpoints: {
-          ping: '/api/ping'
-        }
-      }
+          ping: '/api/ping',
+        },
+      },
     },
     services: {
       storyGeneration: {
         direct: { success: false, responseTime: 0 },
-        pubsub: { success: false, responseTime: 0 }
+        pubsub: { success: false, responseTime: 0 },
       },
       notification: {
         direct: { success: false, responseTime: 0 },
-        pubsub: { success: false, responseTime: 0 }
+        pubsub: { success: false, responseTime: 0 },
       },
       admin: {
-        ping: { success: false, responseTime: 0 }
-      }
+        ping: { success: false, responseTime: 0 },
+      },
     },
     summary: {
       totalTests: 5, // Updated to include admin test
       passedTests: 0,
       failedTests: 0,
-      overallSuccess: false
-    }
+      overallSuccess: false,
+    },
   };
 
   try {
     // Test Story Generation Workflow Service
     console.log('📖 Testing Story Generation Workflow Service...');
-    
+
     // Direct communication test
     console.log('  - Testing direct communication (ping)...');
-    results.services.storyGeneration.direct = await testPingEndpoint(config.storyGeneration.workflowUrl, config.storyGeneration.apiKey);
-    
+    results.services.storyGeneration.direct = await testPingEndpoint(
+      config.storyGeneration.workflowUrl,
+      config.storyGeneration.apiKey,
+    );
+
     // Pub/Sub communication test
     console.log('  - Testing pub/sub communication...');
     results.services.storyGeneration.pubsub = await testPubSubCommunication(
-      config.storyGeneration.workflowUrl, 
+      config.storyGeneration.workflowUrl,
       '/test/pubsub-ping',
-      config.storyGeneration.apiKey
+      config.storyGeneration.apiKey,
     );
 
     // Test Notification Engine Service
     console.log('🔔 Testing Notification Engine Service...');
-    
+
     // Direct communication test
     console.log('  - Testing direct communication (ping)...');
-    results.services.notification.direct = await testPingEndpoint(config.notification.engineUrl, config.notification.apiKey);
-    
-    // Pub/Sub communication test  
+    results.services.notification.direct = await testPingEndpoint(
+      config.notification.engineUrl,
+      config.notification.apiKey,
+    );
+
+    // Pub/Sub communication test
     console.log('  - Testing pub/sub communication...');
     results.services.notification.pubsub = await testPubSubCommunication(
       config.notification.engineUrl,
       '/test/pubsub-ping',
-      config.notification.apiKey
+      config.notification.apiKey,
     );
 
     // Test Admin Service
     console.log('🔐 Testing Admin Service...');
-    
+
     // Admin ping test with API key authentication
     console.log('  - Testing admin ping with API key authentication...');
     results.services.admin.ping = await testAdminPing(config.admin.apiUrl, config.admin.apiKey);
@@ -285,30 +298,31 @@ export async function GET() {
       results.services.storyGeneration.pubsub,
       results.services.notification.direct,
       results.services.notification.pubsub,
-      results.services.admin.ping
+      results.services.admin.ping,
     ];
 
-    results.summary.passedTests = allTests.filter(test => test.success).length;
-    results.summary.failedTests = allTests.filter(test => !test.success).length;
+    results.summary.passedTests = allTests.filter((test) => test.success).length;
+    results.summary.failedTests = allTests.filter((test) => !test.success).length;
     results.summary.overallSuccess = results.summary.passedTests === results.summary.totalTests;
 
-    console.log(`✅ Communication test completed: ${results.summary.passedTests}/${results.summary.totalTests} tests passed`);
+    console.log(
+      `✅ Communication test completed: ${results.summary.passedTests}/${results.summary.totalTests} tests passed`,
+    );
 
-    return NextResponse.json(results, { 
-      status: results.summary.overallSuccess ? 200 : 207 // 207 = Multi-Status for partial success
+    return NextResponse.json(results, {
+      status: results.summary.overallSuccess ? 200 : 207, // 207 = Multi-Status for partial success
     });
-
   } catch (error) {
     console.error('❌ Communication test failed:', error);
-    
+
     return NextResponse.json(
       {
         success: false,
         error: 'Communication test failed',
         details: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -323,20 +337,19 @@ export async function POST(request: NextRequest) {
 
     // Similar implementation but only test specified services
     // This allows for more targeted testing
-    
+
     return NextResponse.json({
       message: 'Selective testing not yet implemented',
-      requestedServices: services
+      requestedServices: services,
     });
-
   } catch (error) {
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to parse request body',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 }

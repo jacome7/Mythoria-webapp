@@ -15,25 +15,22 @@ export default function TellYourStoryPage() {
   const SignedInContent = () => {
     useEffect(() => {
       router.push(`/${locale}/tell-your-story/step-1`);
-    }, []);    return (
+    }, []);
+    return (
       <div className="text-center py-12">
         <span className="loading loading-spinner loading-lg"></span>
         <p className="text-lg text-gray-600 mt-4">{tLoading('redirecting')}</p>
       </div>
     );
   };
-  
+
   return (
     <div className="container mx-auto px-4 py-8">
       <ClientAuthWrapper
         signedOutFallback={
           <div className="text-center space-y-6">
-            <h1 className="text-4xl font-bold">
-              {tTellYourStoryPage('signedOut.title')}
-            </h1>
-            <p className="text-lg text-gray-600">
-              {tTellYourStoryPage('signedOut.subtitle')}
-            </p>
+            <h1 className="text-4xl font-bold">{tTellYourStoryPage('signedOut.title')}</h1>
+            <p className="text-lg text-gray-600">{tTellYourStoryPage('signedOut.subtitle')}</p>
             <div className="space-x-4">
               <Link href={`/${locale}/sign-up`} className="btn btn-primary">
                 {tTellYourStoryPage('signedOut.getStarted')}

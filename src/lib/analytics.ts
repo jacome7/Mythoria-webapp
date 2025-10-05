@@ -3,16 +3,16 @@
 import { trackMythoriaConversionsEnhanced } from './googleAdsConversions';
 
 // Define event types for better type safety
-export type AnalyticsEvent = 
+export type AnalyticsEvent =
   // Authentication & Onboarding
   | 'sign_up'
   | 'login'
   | 'logout'
   | 'lead_capture'
-  
+
   // Commerce & Credits
   | 'credit_purchase'
-  
+
   // Story Creation Flow
   | 'story_creation_started'
   | 'story_step1_completed'
@@ -23,14 +23,14 @@ export type AnalyticsEvent =
   | 'character_added'
   | 'character_customized'
   | 'story_generation_requested'
-  
+
   // Story Management
   | 'story_viewed'
   | 'story_edited'
   | 'story_shared'
   | 'story_deleted'
   | 'story_listen'
-  
+
   // Contact
   | 'contact_request';
 
@@ -75,10 +75,7 @@ export interface CreditPurchaseEventParams extends AnalyticsEventParams {
  * @param eventName - The name of the event to track
  * @param parameters - Optional parameters to include with the event
  */
-export function trackEvent(
-  eventName: AnalyticsEvent, 
-  parameters: AnalyticsEventParams = {}
-): void {
+export function trackEvent(eventName: AnalyticsEvent, parameters: AnalyticsEventParams = {}): void {
   if (typeof window === 'undefined' || !window.gtag) {
     // If we're on the server side or gtag is not available, log the event for debugging
     console.log(`Analytics event (not sent): ${eventName}`, parameters);
@@ -96,7 +93,7 @@ export function trackEvent(
 
     // Send the event to Google Analytics
     window.gtag('event', eventName, eventParams);
-    
+
     // Log for debugging in development
     if (process.env.NODE_ENV === 'development') {
       console.log(`Analytics event sent: ${eventName}`, eventParams);
@@ -115,12 +112,10 @@ export const trackAuth = {
     // Track Google Ads conversion
     trackMythoriaConversionsEnhanced.signUp(params.user_id as string);
   },
-  
-  login: (params: AuthEventParams = {}) => 
-    trackEvent('login', params),
-  
-  logout: (params: AuthEventParams = {}) => 
-    trackEvent('logout', params),
+
+  login: (params: AuthEventParams = {}) => trackEvent('login', params),
+
+  logout: (params: AuthEventParams = {}) => trackEvent('logout', params),
 };
 
 /**
@@ -131,9 +126,9 @@ export const trackCommerce = {
     trackEvent('credit_purchase', params);
     // Track Google Ads conversion
     trackMythoriaConversionsEnhanced.creditPurchase(
-      params.purchase_amount as number || 0,
+      (params.purchase_amount as number) || 0,
       'EUR', // Adjust currency as needed
-      params.transaction_id as string
+      params.transaction_id as string,
     );
   },
 };
@@ -142,36 +137,29 @@ export const trackCommerce = {
  * Track story creation flow events
  */
 export const trackStoryCreation = {
-  started: (params: StoryEventParams = {}) => 
-    trackEvent('story_creation_started', params),
-  
-  step1Completed: (params: StoryEventParams = {}) => 
-    trackEvent('story_step1_completed', params),
-  
-  step2Completed: (params: StoryEventParams = {}) => 
-    trackEvent('story_step2_completed', params),
-  
-  step3Completed: (params: StoryEventParams = {}) => 
-    trackEvent('story_step3_completed', params),
-  
-  step4Completed: (params: StoryEventParams = {}) => 
-    trackEvent('story_step4_completed', params),
-  
-  step5Completed: (params: StoryEventParams = {}) => 
-    trackEvent('story_step5_completed', params),
-  
-  characterAdded: (params: CharacterEventParams = {}) => 
-    trackEvent('character_added', params),
-  
-  characterCustomized: (params: CharacterEventParams = {}) => 
+  started: (params: StoryEventParams = {}) => trackEvent('story_creation_started', params),
+
+  step1Completed: (params: StoryEventParams = {}) => trackEvent('story_step1_completed', params),
+
+  step2Completed: (params: StoryEventParams = {}) => trackEvent('story_step2_completed', params),
+
+  step3Completed: (params: StoryEventParams = {}) => trackEvent('story_step3_completed', params),
+
+  step4Completed: (params: StoryEventParams = {}) => trackEvent('story_step4_completed', params),
+
+  step5Completed: (params: StoryEventParams = {}) => trackEvent('story_step5_completed', params),
+
+  characterAdded: (params: CharacterEventParams = {}) => trackEvent('character_added', params),
+
+  characterCustomized: (params: CharacterEventParams = {}) =>
     trackEvent('character_customized', params),
-  
+
   generationRequested: (params: StoryEventParams = {}) => {
     trackEvent('story_generation_requested', params);
     // Track Google Ads conversion for story creation
     trackMythoriaConversionsEnhanced.storyCreated(
       params.story_id as string,
-      params.user_id as string
+      params.user_id as string,
     );
   },
 };
@@ -180,28 +168,22 @@ export const trackStoryCreation = {
  * Track story management events
  */
 export const trackStoryManagement = {
-  viewed: (params: StoryEventParams = {}) => 
-    trackEvent('story_viewed', params),
-  
-  edited: (params: StoryEventParams = {}) => 
-    trackEvent('story_edited', params),
-  
-  shared: (params: StoryEventParams = {}) => 
-    trackEvent('story_shared', params),
-  
-  deleted: (params: StoryEventParams = {}) => 
-    trackEvent('story_deleted', params),
-  
-  listen: (params: StoryEventParams = {}) => 
-    trackEvent('story_listen', params),
+  viewed: (params: StoryEventParams = {}) => trackEvent('story_viewed', params),
+
+  edited: (params: StoryEventParams = {}) => trackEvent('story_edited', params),
+
+  shared: (params: StoryEventParams = {}) => trackEvent('story_shared', params),
+
+  deleted: (params: StoryEventParams = {}) => trackEvent('story_deleted', params),
+
+  listen: (params: StoryEventParams = {}) => trackEvent('story_listen', params),
 };
 
 /**
  * Track contact events
  */
 export const trackContact = {
-  request: (params: ContactEventParams = {}) => 
-    trackEvent('contact_request', params),
+  request: (params: ContactEventParams = {}) => trackEvent('contact_request', params),
 };
 
 /**
@@ -215,7 +197,7 @@ export function setUserProperties(properties: Record<string, string | number | b
 
   try {
     window.gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-86D0QFW197', {
-      user_properties: properties
+      user_properties: properties,
     });
   } catch (error) {
     console.error('Error setting user properties:', error);
@@ -233,7 +215,7 @@ export function setUserId(userId: string): void {
 
   try {
     window.gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-86D0QFW197', {
-      user_id: userId
+      user_id: userId,
     });
   } catch (error) {
     console.error('Error setting user ID:', error);

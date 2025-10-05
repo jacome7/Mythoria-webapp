@@ -27,7 +27,7 @@ export function trackConversion(conversionLabel: string, params: ConversionParam
     };
 
     window.gtag('event', 'conversion', eventParams);
-    
+
     if (process.env.NODE_ENV === 'development') {
       console.log(`Conversion event sent: ${conversionLabel}`, eventParams);
     }
@@ -49,7 +49,7 @@ export const trackMythoriaConversions = {
       console.warn('Google Ads ID not configured');
       return;
     }
-    
+
     // Google Ads conversion label: bti2COKh8_kaEJ_Q8ItA
     trackConversion(`${googleAdsId}/bti2COKh8_kaEJ_Q8ItA`, params);
   },
@@ -63,7 +63,7 @@ export const trackMythoriaConversions = {
       console.warn('Google Ads ID not configured');
       return;
     }
-    
+
     // Google Ads conversion label: N0-wCOWh8_kaEJ_Q8ItA
     trackConversion(`${googleAdsId}/N0-wCOWh8_kaEJ_Q8ItA`, {
       value: 1.0,
@@ -81,7 +81,7 @@ export const trackMythoriaConversions = {
       console.warn('Google Ads ID not configured');
       return;
     }
-    
+
     // Google Ads conversion label: BxUzCOih8_kaEJ_Q8ItA
     trackConversion(`${googleAdsId}/BxUzCOih8_kaEJ_Q8ItA`, {
       currency: 'EUR', // Adjust currency as needed

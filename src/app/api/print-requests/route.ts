@@ -17,62 +17,77 @@ export async function GET(request: NextRequest) {
 
     // Build where conditions
     const whereConditions = [];
-    
+
     if (storyId) {
       whereConditions.push(eq(printRequests.storyId, storyId));
     }
-      if (status) {
-      whereConditions.push(eq(printRequests.status, status as 'requested' | 'in_printing' | 'packing' | 'shipped' | 'delivered' | 'cancelled' | 'error'));
+    if (status) {
+      whereConditions.push(
+        eq(
+          printRequests.status,
+          status as
+            | 'requested'
+            | 'in_printing'
+            | 'packing'
+            | 'shipped'
+            | 'delivered'
+            | 'cancelled'
+            | 'error',
+        ),
+      );
     }
 
     const requests = await db
-        .select({
-          id: printRequests.id,
-          storyId: printRequests.storyId,
-          status: printRequests.status,
-          requestedAt: printRequests.requestedAt,
-          printedAt: printRequests.printedAt,
-          updatedAt: printRequests.updatedAt,
-          provider: {
-            id: printProviders.id,
-            name: printProviders.name,
-            companyName: printProviders.companyName,
-            integration: printProviders.integration,
-          },
-          story: {
-            id: stories.storyId,
-            title: stories.title,
-            authorId: stories.authorId,
-          },
-          shippingAddress: {
-            id: addresses.addressId,
-            line1: addresses.line1,
-            line2: addresses.line2,
-            city: addresses.city,
-            postalCode: addresses.postalCode,
-            country: addresses.country,
-            phone: addresses.phone,
-          }
-        })
+      .select({
+        id: printRequests.id,
+        storyId: printRequests.storyId,
+        status: printRequests.status,
+        requestedAt: printRequests.requestedAt,
+        printedAt: printRequests.printedAt,
+        updatedAt: printRequests.updatedAt,
+        provider: {
+          id: printProviders.id,
+          name: printProviders.name,
+          companyName: printProviders.companyName,
+          integration: printProviders.integration,
+        },
+        story: {
+          id: stories.storyId,
+          title: stories.title,
+          authorId: stories.authorId,
+        },
+        shippingAddress: {
+          id: addresses.addressId,
+          line1: addresses.line1,
+          line2: addresses.line2,
+          city: addresses.city,
+          postalCode: addresses.postalCode,
+          country: addresses.country,
+          phone: addresses.phone,
+        },
+      })
       .from(printRequests)
       .leftJoin(printProviders, eq(printRequests.printProviderId, printProviders.id))
       .leftJoin(stories, eq(printRequests.storyId, stories.storyId))
       .leftJoin(addresses, eq(printRequests.shippingId, addresses.addressId))
-      .where(whereConditions.length > 0 ? 
-        (whereConditions.length === 1 ? whereConditions[0] : and(...whereConditions)) 
-        : undefined
+      .where(
+        whereConditions.length > 0
+          ? whereConditions.length === 1
+            ? whereConditions[0]
+            : and(...whereConditions)
+          : undefined,
       )
       .orderBy(desc(printRequests.requestedAt));
 
     return NextResponse.json({
       success: true,
-      requests
+      requests,
     });
   } catch (error) {
     console.error('Error fetching print requests:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch print requests' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -80,20 +95,17 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const author = await getCurrentAuthor();
-    
+
     if (!author) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
-      // Validate required fields
+    // Validate required fields
     if (!body.storyId) {
       return NextResponse.json(
         { success: false, error: 'Missing required fields: storyId' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -106,18 +118,15 @@ export async function POST(request: NextRequest) {
           eq(stories.storyId, body.storyId),
           eq(stories.status, 'published'),
           // Allow if story is public OR if user is the author
-          or(
-            eq(stories.isPublic, true),
-            eq(stories.authorId, author.authorId)
-          )
-        )
+          or(eq(stories.isPublic, true), eq(stories.authorId, author.authorId)),
+        ),
       )
       .limit(1);
 
     if (story.length === 0) {
       return NextResponse.json(
         { success: false, error: 'Story not found, not published, or not accessible for printing' },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -129,7 +138,7 @@ export async function POST(request: NextRequest) {
         .from(addresses)
         .where(eq(addresses.addressId, body.shippingId))
         .limit(1);
-      
+
       if (shippingAddress.length > 0) {
         shippingCountry = shippingAddress[0].country;
       }
@@ -141,14 +150,14 @@ export async function POST(request: NextRequest) {
       .from(printProviders)
       .where(eq(printProviders.isActive, true));
 
-    const suitableProvider = availableProviders.find(provider => {
+    const suitableProvider = availableProviders.find((provider) => {
       const availableCountries = provider.availableCountries as string[];
       return availableCountries.includes(shippingCountry);
     });
     if (!suitableProvider) {
       return NextResponse.json(
         { success: false, error: `No print provider available for country: ${shippingCountry}` },
-        { status: 404 }
+        { status: 404 },
       );
     }
     // ------------------------------------------------------------------
@@ -158,40 +167,46 @@ export async function POST(request: NextRequest) {
     if (!totalCost) {
       return NextResponse.json(
         { success: false, error: 'Total cost not provided' },
-        { status: 400 }
+        { status: 400 },
       );
     }
     const currentBalance = await creditService.getAuthorCreditBalance(author.authorId);
     if (currentBalance < totalCost) {
-      return NextResponse.json({
-        success: false,
-        error: 'Insufficient credits',
-        required: totalCost,
-        available: currentBalance,
-        shortfall: totalCost - currentBalance
-      }, { status: 402 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Insufficient credits',
+          required: totalCost,
+          available: currentBalance,
+          shortfall: totalCost - currentBalance,
+        },
+        { status: 402 },
+      );
     }
 
     // ------------------------------------------------------------------
     // Create the print request record (without deducting credits yet)
     // ------------------------------------------------------------------
-    const newRequest = await db.insert(printRequests).values({
-      authorId: author.authorId,
-      storyId: body.storyId,
-  // PDF is generated asynchronously after the request; store placeholder for now
-  pdfUrl: '',
-      printProviderId: suitableProvider.id,
-      shippingId: body.shippingId || null,
-      printingOptions: {
-        serviceCode: body.printingOption?.serviceCode,
-        credits: body.printingOption?.credits,
-        title: body.printingOption?.title,
-        chapterCount: body.chapterCount,
-        totalCost: totalCost,
-        extraChapters: Math.max(0, (body.chapterCount || 4) - 4),
-      },
-      status: 'requested',
-    }).returning();
+    const newRequest = await db
+      .insert(printRequests)
+      .values({
+        authorId: author.authorId,
+        storyId: body.storyId,
+        // PDF is generated asynchronously after the request; store placeholder for now
+        pdfUrl: '',
+        printProviderId: suitableProvider.id,
+        shippingId: body.shippingId || null,
+        printingOptions: {
+          serviceCode: body.printingOption?.serviceCode,
+          credits: body.printingOption?.credits,
+          title: body.printingOption?.title,
+          chapterCount: body.chapterCount,
+          totalCost: totalCost,
+          extraChapters: Math.max(0, (body.chapterCount || 4) - 4),
+        },
+        status: 'requested',
+      })
+      .returning();
 
     // Fetch the complete request with joined data
     const fullRequest = await db
@@ -208,7 +223,7 @@ export async function POST(request: NextRequest) {
         story: {
           id: stories.storyId,
           title: stories.title,
-        }
+        },
       })
       .from(printRequests)
       .leftJoin(printProviders, eq(printRequests.printProviderId, printProviders.id))
@@ -243,7 +258,7 @@ export async function POST(request: NextRequest) {
             printRequestId: newRequest[0].id,
             requestedAt: new Date().toISOString(),
             status: 'pending_processing',
-          }
+          },
         }),
       });
 
@@ -251,22 +266,30 @@ export async function POST(request: NextRequest) {
         console.error('Ticket creation failed with status:', ticketResponse.status);
         // Roll back the print request row since external orchestration failed
         await db.delete(printRequests).where(eq(printRequests.id, newRequest[0].id));
-        return NextResponse.json({
-          success: false,
-          error: 'We could not complete your print order. Please try again.'
-        }, { status: 500 });
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'We could not complete your print order. Please try again.',
+          },
+          { status: 500 },
+        );
       }
       try {
         const ticketJson = await ticketResponse.json();
         ticketId = ticketJson.id || null;
-      } catch { /* ignore parse issues */ }
+      } catch {
+        /* ignore parse issues */
+      }
     } catch (ticketError) {
       console.error('Ticket creation exception:', ticketError);
       await db.delete(printRequests).where(eq(printRequests.id, newRequest[0].id));
-      return NextResponse.json({
-        success: false,
-        error: 'We could not complete your print order. Please try again.'
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'We could not complete your print order. Please try again.',
+        },
+        { status: 500 },
+      );
     }
 
     // ------------------------------------------------------------------
@@ -279,17 +302,23 @@ export async function POST(request: NextRequest) {
       // Roll back print request (avoid orphan order with no payment)
       await db.delete(printRequests).where(eq(printRequests.id, newRequest[0].id));
       if ((deductError as Error).message === 'Insufficient credits') {
-        return NextResponse.json({
-          success: false,
-          error: 'Insufficient credits',
-          required: totalCost,
-          available: await creditService.getAuthorCreditBalance(author.authorId)
-        }, { status: 402 });
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Insufficient credits',
+            required: totalCost,
+            available: await creditService.getAuthorCreditBalance(author.authorId),
+          },
+          { status: 402 },
+        );
       }
-      return NextResponse.json({
-        success: false,
-        error: 'We could not complete your print order. Please try again.'
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'We could not complete your print order. Please try again.',
+        },
+        { status: 500 },
+      );
     }
 
     // ---------------------------------------------------------------
@@ -303,10 +332,26 @@ export async function POST(request: NextRequest) {
           return;
         }
         // Fetch address details if available
-        let addressRecord: { line1: string; line2: string | null; city: string; stateRegion: string | null; postalCode: string | null; country: string; phone: string | null } | null = null;
+        let addressRecord: {
+          line1: string;
+          line2: string | null;
+          city: string;
+          stateRegion: string | null;
+          postalCode: string | null;
+          country: string;
+          phone: string | null;
+        } | null = null;
         if (body.shippingId) {
           const addr = await db
-            .select({ line1: addresses.line1, line2: addresses.line2, city: addresses.city, stateRegion: addresses.stateRegion, postalCode: addresses.postalCode, country: addresses.country, phone: addresses.phone })
+            .select({
+              line1: addresses.line1,
+              line2: addresses.line2,
+              city: addresses.city,
+              stateRegion: addresses.stateRegion,
+              postalCode: addresses.postalCode,
+              country: addresses.country,
+              phone: addresses.phone,
+            })
             .from(addresses)
             .where(eq(addresses.addressId, body.shippingId))
             .limit(1);
@@ -316,24 +361,31 @@ export async function POST(request: NextRequest) {
         let authorEmail = author.email;
         let authorName = author.displayName || 'Storyteller';
         if (!authorEmail || !authorName) {
-          const dbAuthor = await db.select({ email: authors.email, displayName: authors.displayName }).from(authors).where(eq(authors.authorId, author.authorId)).limit(1);
-            if (dbAuthor.length > 0) {
-              authorEmail = authorEmail || dbAuthor[0].email;
-              authorName = authorName || dbAuthor[0].displayName;
-            }
+          const dbAuthor = await db
+            .select({ email: authors.email, displayName: authors.displayName })
+            .from(authors)
+            .where(eq(authors.authorId, author.authorId))
+            .limit(1);
+          if (dbAuthor.length > 0) {
+            authorEmail = authorEmail || dbAuthor[0].email;
+            authorName = authorName || dbAuthor[0].displayName;
+          }
         }
         // Derive order number from ticket (preferred) or print request id
         const sourceId = ticketId || newRequest[0].id;
         const parts = sourceId.split('-');
-        const orderNumber = parts.length >= 2 ? parts[1].toUpperCase() : sourceId.replace(/-/g, '').substring(0,8).toUpperCase();
-        const orderDate = new Date().toISOString().slice(0,10); // YYYY-MM-DD
+        const orderNumber =
+          parts.length >= 2
+            ? parts[1].toUpperCase()
+            : sourceId.replace(/-/g, '').substring(0, 8).toUpperCase();
+        const orderDate = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
         const listenURL = `https://mythoria.pt/stories/listen/${body.storyId}`;
         const contactURL = 'https://mythoria.pt/contactUs';
         // Always use author's preferredLocale (not story language) for template selection
-  const userLocale = normalizeLocale(author.preferredLocale || undefined);
+        const userLocale = normalizeLocale(author.preferredLocale || undefined);
         const payload = {
           templateId: 'print-request-created',
-          recipients: [ { email: authorEmail, name: authorName, language: userLocale } ],
+          recipients: [{ email: authorEmail, name: authorName, language: userLocale }],
           variables: {
             name: authorName,
             OrderNumber: orderNumber,
@@ -349,16 +401,16 @@ export async function POST(request: NextRequest) {
             country: addressRecord?.country || '',
             phone: addressRecord?.phone || '',
             listenURL,
-            contactURL
-          }
+            contactURL,
+          },
         };
         const resp = await fetch(`${config.notification.engineUrl}/email/template`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-api-key': config.notification.apiKey
+            'x-api-key': config.notification.apiKey,
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         });
         if (!resp.ok) {
           console.warn('Failed to send print request email', resp.status);
@@ -368,11 +420,11 @@ export async function POST(request: NextRequest) {
       }
     })();
 
-  // Trigger print PDF generation (async, non-blocking; failure does not invalidate order)
+    // Trigger print PDF generation (async, non-blocking; failure does not invalidate order)
     try {
       const printPubSub = new PrintPubSubService();
       const runId = uuidv4();
-      
+
       await printPubSub.triggerPrintGeneration(body.storyId, runId);
       console.log('Print generation triggered for story:', body.storyId, 'runId:', runId);
     } catch (printError) {
@@ -382,13 +434,13 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      request: fullRequest[0]
+      request: fullRequest[0],
     });
   } catch (error) {
     console.error('Error creating print request:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to create print request' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,15 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getCurrentAuthor } from "@/lib/auth";
-import { storyService, chapterService } from "@/db/services";
+import { NextRequest, NextResponse } from 'next/server';
+import { getCurrentAuthor } from '@/lib/auth';
+import { storyService, chapterService } from '@/db/services';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ storyId: string }> }
+  { params }: { params: Promise<{ storyId: string }> },
 ) {
   try {
     const author = await getCurrentAuthor();
     if (!author) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { storyId } = await params;
@@ -17,12 +17,12 @@ export async function GET(
     // Get story details
     const story = await storyService.getStoryById(storyId);
     if (!story) {
-      return NextResponse.json({ error: "Story not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }
 
     // Check if user owns the story
     if (story.authorId !== author.authorId) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     // Get all chapters for this story
@@ -33,7 +33,7 @@ export async function GET(
       story: {
         storyId: story.storyId,
         title: story.title,
-  storyLanguage: story.storyLanguage,
+        storyLanguage: story.storyLanguage,
         synopsis: story.synopsis,
         dedicationMessage: story.dedicationMessage,
         customAuthor: story.customAuthor,
@@ -44,7 +44,7 @@ export async function GET(
         createdAt: story.createdAt,
         updatedAt: story.updatedAt,
       },
-      chapters: chapters.map(chapter => ({
+      chapters: chapters.map((chapter) => ({
         id: chapter.id,
         chapterNumber: chapter.chapterNumber,
         title: chapter.title,
@@ -58,22 +58,19 @@ export async function GET(
       })),
     });
   } catch (error) {
-    console.error("Error fetching story for editing:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error('Error fetching story for editing:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ storyId: string }> }
+  { params }: { params: Promise<{ storyId: string }> },
 ) {
   try {
     const author = await getCurrentAuthor();
     if (!author) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { storyId } = await params;
@@ -82,11 +79,11 @@ export async function PATCH(
     // Get story to verify ownership
     const story = await storyService.getStoryById(storyId);
     if (!story) {
-      return NextResponse.json({ error: "Story not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }
 
     if (story.authorId !== author.authorId) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     // Update story metadata
@@ -106,10 +103,7 @@ export async function PATCH(
       story: updatedStory,
     });
   } catch (error) {
-    console.error("Error updating story:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error('Error updating story:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

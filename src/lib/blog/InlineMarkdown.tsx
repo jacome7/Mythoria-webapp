@@ -25,23 +25,30 @@ export default function InlineMarkdown({ text, className }: InlineMarkdownProps)
     // Links: [text](url "optional title")
     // - Whitelist protocols: http(s), mailto, tel; allow relative paths and anchors
     // - Open external http(s) in new tab with safe rel attributes
-    html = html.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g, (_match, linkText: string, rawUrl: string, title?: string) => {
-      const url = (rawUrl || '').trim();
-      const lower = url.toLowerCase();
-      const isRelative = url.startsWith('/') || url.startsWith('./') || url.startsWith('../') || url.startsWith('#');
-      const isHttp = lower.startsWith('http://') || lower.startsWith('https://');
-      const isMailToOrTel = lower.startsWith('mailto:') || lower.startsWith('tel:');
+    html = html.replace(
+      /\[([^\]]+)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g,
+      (_match, linkText: string, rawUrl: string, title?: string) => {
+        const url = (rawUrl || '').trim();
+        const lower = url.toLowerCase();
+        const isRelative =
+          url.startsWith('/') ||
+          url.startsWith('./') ||
+          url.startsWith('../') ||
+          url.startsWith('#');
+        const isHttp = lower.startsWith('http://') || lower.startsWith('https://');
+        const isMailToOrTel = lower.startsWith('mailto:') || lower.startsWith('tel:');
 
-      // Disallow potentially dangerous schemes (e.g., javascript:, data:)
-      if (!(isRelative || isHttp || isMailToOrTel)) {
-        return linkText; // degrade gracefully: show text without link
-      }
+        // Disallow potentially dangerous schemes (e.g., javascript:, data:)
+        if (!(isRelative || isHttp || isMailToOrTel)) {
+          return linkText; // degrade gracefully: show text without link
+        }
 
-      const target = isHttp ? ' target="_blank"' : '';
-      const rel = isHttp ? ' rel="nofollow noreferrer noopener"' : '';
-      const titleAttr = title ? ` title="${title}"` : '';
-      return `<a href="${url}"${target}${rel}${titleAttr}>${linkText}</a>`;
-    });
+        const target = isHttp ? ' target="_blank"' : '';
+        const rel = isHttp ? ' rel="nofollow noreferrer noopener"' : '';
+        const titleAttr = title ? ` title="${title}"` : '';
+        return `<a href="${url}"${target}${rel}${titleAttr}>${linkText}</a>`;
+      },
+    );
 
     // Bold: **text** or __text__
     html = html.replace(/(\*\*|__)(.*?)\1/g, '<strong>$2</strong>');

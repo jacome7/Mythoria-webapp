@@ -29,7 +29,9 @@ interface AddressCardProps {
   defaultAddressType?: 'billing' | 'delivery';
 }
 
-const getCountries = (tAddresses: (key: string) => string): Array<{ value: string, label: string }> => {
+const getCountries = (
+  tAddresses: (key: string) => string,
+): Array<{ value: string; label: string }> => {
   const countries = [
     { value: 'US', label: tAddresses('countries.us') },
     { value: 'GB', label: tAddresses('countries.gb') },
@@ -45,7 +47,7 @@ const getCountries = (tAddresses: (key: string) => string): Array<{ value: strin
     { value: 'JP', label: tAddresses('countries.jp') },
     { value: 'BR', label: tAddresses('countries.br') },
   ];
-  
+
   // Sort countries alphabetically by label
   return countries.sort((a, b) => a.label.localeCompare(b.label));
 };
@@ -58,8 +60,9 @@ export default function AddressCard({
   onDelete,
   onCancel,
   isSelected = false,
-  onSelect,  hideAddressType = false,
-  defaultAddressType = 'delivery'
+  onSelect,
+  hideAddressType = false,
+  defaultAddressType = 'delivery',
 }: AddressCardProps) {
   const tAddresses = useTranslations('Addresses');
   const countries = getCountries(tAddresses);
@@ -73,14 +76,14 @@ export default function AddressCard({
     postalCode: address?.postalCode || '',
     country: address?.country || 'US',
     phone: address?.phone || '',
-    ...address
+    ...address,
   });
 
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   const handleInputChange = (field: keyof Address, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSave = async () => {
@@ -118,11 +121,9 @@ export default function AddressCard({
 
   if (mode === 'view') {
     return (
-      <div 
+      <div
         className={`card border-2 cursor-pointer transition-all ${
-          isSelected 
-            ? 'border-primary bg-primary/10' 
-            : 'border-base-300 hover:border-base-400'
+          isSelected ? 'border-primary bg-primary/10' : 'border-base-300 hover:border-base-400'
         }`}
         onClick={onSelect}
       >
@@ -160,7 +161,7 @@ export default function AddressCard({
               </button>
             </div>
           </div>
-          
+
           <div className="mt-2">
             <p className="font-medium">{address?.line1}</p>
             {address?.line2 && <p>{address.line2}</p>}
@@ -169,7 +170,7 @@ export default function AddressCard({
               {address?.stateRegion && `, ${address.stateRegion}`}
               {address?.postalCode && ` ${address.postalCode}`}
             </p>
-            <p>{countries.find(c => c.value === address?.country)?.label || address?.country}</p>
+            <p>{countries.find((c) => c.value === address?.country)?.label || address?.country}</p>
             {address?.phone && <p className="text-sm text-base-content/70">{address.phone}</p>}
           </div>
         </div>
@@ -184,20 +185,24 @@ export default function AddressCard({
           <h3 className="card-title">
             {mode === 'create' ? tAddresses('addAddress') : tAddresses('editAddress')}
           </h3>
-        </div>        <div className="space-y-4">
+        </div>{' '}
+        <div className="space-y-4">
           {/* Address Type - only show if not hidden */}
           {!hideAddressType && (
             <div className="form-control">
               <label className="label">
                 <span className="label-text">{tAddresses('fields.type')}</span>
-              </label>            <select
-              className="select select-bordered"
-              value={formData.type}
-              onChange={(e) => handleInputChange('type', e.target.value as 'billing' | 'delivery')}
-            >
-              <option value="delivery">{tAddresses('types.delivery')}</option>
-              <option value="billing">{tAddresses('types.billing')}</option>
-            </select>
+              </label>{' '}
+              <select
+                className="select select-bordered"
+                value={formData.type}
+                onChange={(e) =>
+                  handleInputChange('type', e.target.value as 'billing' | 'delivery')
+                }
+              >
+                <option value="delivery">{tAddresses('types.delivery')}</option>
+                <option value="billing">{tAddresses('types.billing')}</option>
+              </select>
             </div>
           )}
 
@@ -303,21 +308,12 @@ export default function AddressCard({
             />
           </div>
         </div>
-
         <div className="card-actions justify-end mt-6">
-          <button
-            className="btn btn-ghost"
-            onClick={onCancel}
-            disabled={saving}
-          >
+          <button className="btn btn-ghost" onClick={onCancel} disabled={saving}>
             <FiX className="w-4 h-4 mr-2" />
             {tAddresses('buttons.cancel')}
           </button>
-          <button
-            className="btn btn-primary"
-            onClick={handleSave}
-            disabled={saving}
-          >
+          <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
             {saving ? (
               <span className="loading loading-spinner loading-sm"></span>
             ) : (

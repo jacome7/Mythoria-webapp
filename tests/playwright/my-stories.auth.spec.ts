@@ -14,7 +14,9 @@ test.describe('Authenticated My Stories page', () => {
     const signInButton = page.getByRole('link', { name: /sign in/i });
     if (await signInButton.isVisible()) {
       // If visible, then auth state failed to load; make this a hard failure with a hint.
-      throw new Error('Expected authenticated session, but sign-in button is visible. Ensure auth.setup.ts ran and credentials are valid.');
+      throw new Error(
+        'Expected authenticated session, but sign-in button is visible. Ensure auth.setup.ts ran and credentials are valid.',
+      );
     }
 
     // Check for tab elements (My Stories / My Characters) using their translated labels.
@@ -22,11 +24,17 @@ test.describe('Authenticated My Stories page', () => {
     const tabCandidates = [/my stories/i, /my characters/i];
     let foundOne = false;
     for (const pattern of tabCandidates) {
-      const locator = page.getByRole('link', { name: pattern }).or(page.getByRole('tab', { name: pattern }));
+      const locator = page
+        .getByRole('link', { name: pattern })
+        .or(page.getByRole('tab', { name: pattern }));
       if (await locator.count()) {
-        foundOne = true; break;
+        foundOne = true;
+        break;
       }
     }
-    expect(foundOne, 'Expected at least one "My Stories" or "My Characters" tab visible.').toBeTruthy();
+    expect(
+      foundOne,
+      'Expected at least one "My Stories" or "My Characters" tab visible.',
+    ).toBeTruthy();
   });
 });

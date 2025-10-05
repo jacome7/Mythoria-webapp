@@ -24,9 +24,15 @@ export async function ensureStoryIdAccess(storyId: string, requesterAuthorId: st
   if (story.authorId === requesterAuthorId) return story;
 
   // Check collaborator access (editor or viewer)
-  const collab = await db.select({ userId: storyCollaborators.userId })
+  const collab = await db
+    .select({ userId: storyCollaborators.userId })
     .from(storyCollaborators)
-    .where(and(eq(storyCollaborators.storyId, storyId), eq(storyCollaborators.userId, requesterAuthorId)))
+    .where(
+      and(
+        eq(storyCollaborators.storyId, storyId),
+        eq(storyCollaborators.userId, requesterAuthorId),
+      ),
+    )
     .limit(1);
   if (collab.length) return story;
 

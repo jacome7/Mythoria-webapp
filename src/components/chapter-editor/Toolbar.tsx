@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useEffect, useState } from 'react';
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import {
   FORMAT_TEXT_COMMAND,
   TextFormatType,
@@ -9,14 +9,10 @@ import {
   $isRangeSelection,
   TextNode,
   COMMAND_PRIORITY_EDITOR,
-} from "lexical";
-import { useTranslations } from "next-intl";
-import { FiBold, FiItalic, FiType, FiImage } from "react-icons/fi";
-import {
-  TEXT_SIZE_OPTIONS,
-  TextSize,
-  FORMAT_TEXT_SIZE_COMMAND,
-} from "./lexical";
+} from 'lexical';
+import { useTranslations } from 'next-intl';
+import { FiBold, FiItalic, FiType, FiImage } from 'react-icons/fi';
+import { TEXT_SIZE_OPTIONS, TextSize, FORMAT_TEXT_SIZE_COMMAND } from './lexical';
 
 interface ToolbarProps {
   onImageInsert?: () => void;
@@ -26,30 +22,28 @@ export default function Toolbar({ onImageInsert }: ToolbarProps) {
   const [editor] = useLexicalComposerContext();
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
-  const [currentTextSize, setCurrentTextSize] = useState<TextSize>("medium");
-  const t = useTranslations("ChapterEditor");
+  const [currentTextSize, setCurrentTextSize] = useState<TextSize>('medium');
+  const t = useTranslations('ChapterEditor');
 
   useEffect(() => {
     const unregister = editor.registerUpdateListener(({ editorState }) => {
       editorState.read(() => {
         const selection = $getSelection();
         if ($isRangeSelection(selection)) {
-          setIsBold(selection.hasFormat("bold"));
-          setIsItalic(selection.hasFormat("italic"));
+          setIsBold(selection.hasFormat('bold'));
+          setIsItalic(selection.hasFormat('italic'));
 
-          let detectedSize: TextSize = "medium";
+          let detectedSize: TextSize = 'medium';
           const nodes = selection.getNodes();
           if (nodes.length > 0) {
-            const firstTextNode = nodes.find(
-              (node) => node instanceof TextNode,
-            ) as TextNode | undefined;
+            const firstTextNode = nodes.find((node) => node instanceof TextNode) as
+              | TextNode
+              | undefined;
             if (firstTextNode) {
               const style = firstTextNode.getStyle();
               const match = style.match(/font-size:\s*([^;]+)/);
               if (match) {
-                const sizeOption = TEXT_SIZE_OPTIONS.find(
-                  (opt) => opt.em === match[1].trim(),
-                );
+                const sizeOption = TEXT_SIZE_OPTIONS.find((opt) => opt.em === match[1].trim());
                 if (sizeOption) detectedSize = sizeOption.value;
               }
             }
@@ -59,9 +53,7 @@ export default function Toolbar({ onImageInsert }: ToolbarProps) {
               const style = anchorNode.getStyle();
               const match = style.match(/font-size:\s*([^;]+)/);
               if (match) {
-                const sizeOption = TEXT_SIZE_OPTIONS.find(
-                  (opt) => opt.em === match[1].trim(),
-                );
+                const sizeOption = TEXT_SIZE_OPTIONS.find((opt) => opt.em === match[1].trim());
                 if (sizeOption) detectedSize = sizeOption.value;
               }
             }
@@ -81,15 +73,13 @@ export default function Toolbar({ onImageInsert }: ToolbarProps) {
         if ($isRangeSelection(selection)) {
           editor.update(() => {
             const styleValue =
-              size && size !== "medium"
+              size && size !== 'medium'
                 ? TEXT_SIZE_OPTIONS.find((opt) => opt.value === size)?.em
-                : "";
+                : '';
             selection.getNodes().forEach((node) => {
               if (node instanceof TextNode) {
                 let currentStyle = node.getStyle();
-                currentStyle = currentStyle
-                  .replace(/font-size:\s*[^;]+;?/g, "")
-                  .trim();
+                currentStyle = currentStyle.replace(/font-size:\s*[^;]+;?/g, '').trim();
                 if (styleValue) {
                   node.setStyle(
                     currentStyle
@@ -97,7 +87,7 @@ export default function Toolbar({ onImageInsert }: ToolbarProps) {
                       : `font-size: ${styleValue}`,
                   );
                 } else {
-                  node.setStyle(currentStyle || "");
+                  node.setStyle(currentStyle || '');
                 }
               }
             });
@@ -123,16 +113,16 @@ export default function Toolbar({ onImageInsert }: ToolbarProps) {
       <div className="flex items-left gap-1 justify-between">
         <div className="flex items-left gap-0">
           <button
-            onClick={() => formatText("bold")}
-            className={`btn btn-sm ${isBold ? "btn-primary" : "btn-ghost"}`}
-            title={t("toolbar.bold")}
+            onClick={() => formatText('bold')}
+            className={`btn btn-sm ${isBold ? 'btn-primary' : 'btn-ghost'}`}
+            title={t('toolbar.bold')}
           >
             <FiBold className="w-4 h-4" />
           </button>
           <button
-            onClick={() => formatText("italic")}
-            className={`btn btn-sm ${isItalic ? "btn-primary" : "btn-ghost"}`}
-            title={t("toolbar.italic")}
+            onClick={() => formatText('italic')}
+            className={`btn btn-sm ${isItalic ? 'btn-primary' : 'btn-ghost'}`}
+            title={t('toolbar.italic')}
           >
             <FiItalic className="w-4 h-4" />
           </button>
@@ -141,7 +131,7 @@ export default function Toolbar({ onImageInsert }: ToolbarProps) {
               tabIndex={0}
               role="button"
               className="btn btn-sm btn-ghost gap-1"
-              title={t("toolbar.textSize")}
+              title={t('toolbar.textSize')}
             >
               <FiType className="w-4 h-4" />
               {t(`textSizes.${currentTextSize}`)}
@@ -154,7 +144,7 @@ export default function Toolbar({ onImageInsert }: ToolbarProps) {
                 <li key={option.value}>
                   <button
                     onClick={() => handleTextSizeChange(option.value)}
-                    className={`text-center ${currentTextSize === option.value ? "active" : ""}`}
+                    className={`text-center ${currentTextSize === option.value ? 'active' : ''}`}
                     style={{ fontSize: option.em }}
                   >
                     {t(`textSizes.${option.value}`)}
@@ -169,10 +159,10 @@ export default function Toolbar({ onImageInsert }: ToolbarProps) {
             <button
               onClick={onImageInsert}
               className="btn btn-sm btn-primary"
-              title={t("toolbar.image")}
+              title={t('toolbar.image')}
             >
               <FiImage className="w-4 h-4" />
-              {t("toolbar.image")}
+              {t('toolbar.image')}
             </button>
           </div>
         )}

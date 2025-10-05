@@ -25,28 +25,99 @@ const Header = () => {
         <div className="navbar-start">
           <div className="dropdown">
             <label tabIndex={0} className="btn btn-ghost lg:hidden">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16m-7 6h7"
+                />
+              </svg>
             </label>
-            <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-            <li><Link href="/" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.homepage')}</Link></li>
-            <li><Link href="/get-inspired" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.getInspired')}</Link></li>
-            <li><Link href="/tell-your-story/step-1" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.tellYourStory')}</Link></li>
-            <li><Link href="/blog" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.blog')}</Link></li>
-            <li><Link href="/pricing" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.pricing')}</Link></li>
-          </ul>
+            <ul
+              tabIndex={0}
+              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+            >
+              <li>
+                <Link
+                  href="/"
+                  className="text-base py-3"
+                  onClick={() => (document.activeElement as HTMLElement)?.blur()}
+                >
+                  {tCommonHeader('navigation.homepage')}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/get-inspired"
+                  className="text-base py-3"
+                  onClick={() => (document.activeElement as HTMLElement)?.blur()}
+                >
+                  {tCommonHeader('navigation.getInspired')}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/tell-your-story/step-1"
+                  className="text-base py-3"
+                  onClick={() => (document.activeElement as HTMLElement)?.blur()}
+                >
+                  {tCommonHeader('navigation.tellYourStory')}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/blog"
+                  className="text-base py-3"
+                  onClick={() => (document.activeElement as HTMLElement)?.blur()}
+                >
+                  {tCommonHeader('navigation.blog')}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/pricing"
+                  className="text-base py-3"
+                  onClick={() => (document.activeElement as HTMLElement)?.blur()}
+                >
+                  {tCommonHeader('navigation.pricing')}
+                </Link>
+              </li>
+            </ul>
           </div>
           <div className="flex items-center">
             <Link href="/" className="btn btn-ghost normal-case text-xl px-1 py-0.5">
-              <Image src="/images/logo/just_lettering.png" alt={tCommonHeader('logoAlt')} width={150} height={49} />
+              <Image
+                src="/images/logo/just_lettering.png"
+                alt={tCommonHeader('logoAlt')}
+                width={150}
+                height={49}
+              />
             </Link>
           </div>
         </div>
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">
-            <li><Link href="/">{tCommonHeader('navigation.homepage')}</Link></li>
-            <li><Link href="/get-inspired">{tCommonHeader('navigation.getInspired')}</Link></li>
-            <li><Link href="/tell-your-story/step-1">{tCommonHeader('navigation.tellYourStory')}</Link></li>
-            <li><Link href="/pricing">{tCommonHeader('navigation.pricing')}</Link></li>
+            <li>
+              <Link href="/">{tCommonHeader('navigation.homepage')}</Link>
+            </li>
+            <li>
+              <Link href="/get-inspired">{tCommonHeader('navigation.getInspired')}</Link>
+            </li>
+            <li>
+              <Link href="/tell-your-story/step-1">
+                {tCommonHeader('navigation.tellYourStory')}
+              </Link>
+            </li>
+            <li>
+              <Link href="/pricing">{tCommonHeader('navigation.pricing')}</Link>
+            </li>
           </ul>
         </div>
         <div className="navbar-end">
@@ -65,34 +136,115 @@ const Header = () => {
       <div className="navbar-start">
         <div className="dropdown">
           <label tabIndex={0} className="btn btn-ghost lg:hidden">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16m-7 6h7"
+              />
+            </svg>
           </label>
-          <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-1 shadow bg-base-100 rounded-box w-52">
-            <li><Link href="/" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.homepage')}</Link></li>
-            <li><Link href="/get-inspired" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.getInspired')}</Link></li>
-            <li><Link href="/tell-your-story/step-1" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.tellYourStory')}</Link></li>
-            <li><Link href="/blog" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.blog')}</Link></li>
-            <li><Link href="/pricing" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.pricing')}</Link></li>
+          <ul
+            tabIndex={0}
+            className="menu menu-sm dropdown-content mt-3 z-[1] p-1 shadow bg-base-100 rounded-box w-52"
+          >
+            <li>
+              <Link
+                href="/"
+                className="text-base py-3"
+                onClick={() => (document.activeElement as HTMLElement)?.blur()}
+              >
+                {tCommonHeader('navigation.homepage')}
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/get-inspired"
+                className="text-base py-3"
+                onClick={() => (document.activeElement as HTMLElement)?.blur()}
+              >
+                {tCommonHeader('navigation.getInspired')}
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/tell-your-story/step-1"
+                className="text-base py-3"
+                onClick={() => (document.activeElement as HTMLElement)?.blur()}
+              >
+                {tCommonHeader('navigation.tellYourStory')}
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/blog"
+                className="text-base py-3"
+                onClick={() => (document.activeElement as HTMLElement)?.blur()}
+              >
+                {tCommonHeader('navigation.blog')}
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/pricing"
+                className="text-base py-3"
+                onClick={() => (document.activeElement as HTMLElement)?.blur()}
+              >
+                {tCommonHeader('navigation.pricing')}
+              </Link>
+            </li>
             {isSignedIn && (
-              <li><Link href="/my-stories" className="text-base py-3" onClick={() => (document.activeElement as HTMLElement)?.blur()}>{tCommonHeader('navigation.myStories')}</Link></li>
+              <li>
+                <Link
+                  href="/my-stories"
+                  className="text-base py-3"
+                  onClick={() => (document.activeElement as HTMLElement)?.blur()}
+                >
+                  {tCommonHeader('navigation.myStories')}
+                </Link>
+              </li>
             )}
           </ul>
         </div>
         <div className="flex items-center">
           <Link href="/" className="btn btn-ghost normal-case text-xl px-0 py-0.5">
-            <Image src="/images/logo/just_lettering.png" alt={tCommonHeader('logoAlt')} width={140} height={45} />
+            <Image
+              src="/images/logo/just_lettering.png"
+              alt={tCommonHeader('logoAlt')}
+              width={140}
+              height={45}
+            />
           </Link>
         </div>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
-          <li><Link href="/">{tCommonHeader('navigation.homepage')}</Link></li>
-          <li><Link href="/get-inspired">{tCommonHeader('navigation.getInspired')}</Link></li>
-          <li><Link href="/tell-your-story/step-1">{tCommonHeader('navigation.tellYourStory')}</Link></li>
-          <li><Link href="/blog">{tCommonHeader('navigation.blog')}</Link></li>
-          <li><Link href="/pricing">{tCommonHeader('navigation.pricing')}</Link></li>
+          <li>
+            <Link href="/">{tCommonHeader('navigation.homepage')}</Link>
+          </li>
+          <li>
+            <Link href="/get-inspired">{tCommonHeader('navigation.getInspired')}</Link>
+          </li>
+          <li>
+            <Link href="/tell-your-story/step-1">{tCommonHeader('navigation.tellYourStory')}</Link>
+          </li>
+          <li>
+            <Link href="/blog">{tCommonHeader('navigation.blog')}</Link>
+          </li>
+          <li>
+            <Link href="/pricing">{tCommonHeader('navigation.pricing')}</Link>
+          </li>
           {isSignedIn && (
-            <li><Link href="/my-stories">{tCommonHeader('navigation.myStories')}</Link></li>
+            <li>
+              <Link href="/my-stories">{tCommonHeader('navigation.myStories')}</Link>
+            </li>
           )}
         </ul>
       </div>
@@ -113,7 +265,20 @@ const Header = () => {
               <UserButton.Link
                 label={tCommonHeader('navigation.myStories')}
                 href={`/${locale}/my-stories`}
-                labelIcon={<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M4 4h12a2 2 0 0 1 2 2v14l-5-3-5 3V6a2 2 0 0 0-2-2z"/></svg>}
+                labelIcon={
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-4 h-4"
+                  >
+                    <path d="M4 4h12a2 2 0 0 1 2 2v14l-5-3-5 3V6a2 2 0 0 0-2-2z" />
+                  </svg>
+                }
               />
             </UserButton.MenuItems>
           </UserButton>

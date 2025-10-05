@@ -13,16 +13,16 @@ export default function StructuredData({ data }: StructuredDataProps) {
     script.type = 'application/ld+json';
     script.text = JSON.stringify(data);
     script.id = 'structured-data';
-    
+
     // Remove existing structured data script if present
     const existingScript = document.getElementById('structured-data');
     if (existingScript) {
       existingScript.remove();
     }
-    
+
     // Add new script to head
     document.head.appendChild(script);
-    
+
     // Cleanup function
     return () => {
       const scriptToRemove = document.getElementById('structured-data');

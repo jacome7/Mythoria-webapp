@@ -4,7 +4,7 @@
     "toggleLabel": "Paramètres de lecture de basculement",
     "cover": "Couverture",
     "coverAndToc": "Couverture et table des matières",
-  "chapterLabel": "Chapitre {number}",
+    "chapterLabel": "Chapitre {number}",
     "resetButton": "Réinitialiser à la valeur par défaut",
     "controls": {
       "fontSize": "Taille de texte",

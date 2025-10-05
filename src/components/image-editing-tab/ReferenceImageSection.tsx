@@ -1,6 +1,12 @@
 import Image from 'next/image';
 import type { useTranslations } from 'next-intl';
-import { StoryImage, ImageVersion, getImageDisplayName, formatVersionNumber, formatRelativeTime } from '@/utils/imageUtils';
+import {
+  StoryImage,
+  ImageVersion,
+  getImageDisplayName,
+  formatVersionNumber,
+  formatRelativeTime,
+} from '@/utils/imageUtils';
 
 type TFunc = ReturnType<typeof useTranslations>;
 
@@ -55,7 +61,9 @@ export default function ReferenceImageSection({
                   onClick={() => onSelectVersion(v)}
                   className={`w-full text-left p-2 rounded border ${selectedVersion === v ? 'bg-base-200' : ''}`}
                 >
-                  <span className="block text-sm font-medium">{formatVersionNumber(v.version)}</span>
+                  <span className="block text-sm font-medium">
+                    {formatVersionNumber(v.version)}
+                  </span>
                   <span className="block text-xs text-base-content/70">
                     {formatRelativeTime(v.timestamp)}
                   </span>

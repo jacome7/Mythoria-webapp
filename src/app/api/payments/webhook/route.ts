@@ -47,25 +47,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: result.message }, { status: 400 });
     }
 
-    return NextResponse.json({ 
-      success: true, 
-      message: result.message 
+    return NextResponse.json({
+      success: true,
+      message: result.message,
     });
-
   } catch (error) {
     console.error('Webhook handler error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 // Health check endpoint for webhook registration
 export async function GET() {
-  return NextResponse.json({ 
+  return NextResponse.json({
     status: 'healthy',
     service: 'revolut-webhook-handler',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }

@@ -25,27 +25,35 @@ const StarRating = ({ rating, count }: { rating: number | null; count: number | 
       <div className="flex">
         {/* Full stars */}
         {Array.from({ length: fullStars }).map((_, i) => (
-          <svg key={`full-${i}`} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-            <path d="M10 15l-5.878 3.09 1.123-6.545L0 6.91l6.564-.955L10 0l3.436 5.955L20 6.91l-5.245 4.635L15.878 18z"/>
+          <svg
+            key={`full-${i}`}
+            className="w-4 h-4 text-yellow-400 fill-current"
+            viewBox="0 0 20 20"
+          >
+            <path d="M10 15l-5.878 3.09 1.123-6.545L0 6.91l6.564-.955L10 0l3.436 5.955L20 6.91l-5.245 4.635L15.878 18z" />
           </svg>
         ))}
         {/* Half star */}
         {hasHalfStar && (
           <div className="relative">
             <svg className="w-4 h-4 text-gray-300 fill-current" viewBox="0 0 20 20">
-              <path d="M10 15l-5.878 3.09 1.123-6.545L0 6.91l6.564-.955L10 0l3.436 5.955L20 6.91l-5.245 4.635L15.878 18z"/>
+              <path d="M10 15l-5.878 3.09 1.123-6.545L0 6.91l6.564-.955L10 0l3.436 5.955L20 6.91l-5.245 4.635L15.878 18z" />
             </svg>
             <div className="absolute inset-0 overflow-hidden w-1/2">
               <svg className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                <path d="M10 15l-5.878 3.09 1.123-6.545L0 6.91l6.564-.955L10 0l3.436 5.955L20 6.91l-5.245 4.635L15.878 18z"/>
+                <path d="M10 15l-5.878 3.09 1.123-6.545L0 6.91l6.564-.955L10 0l3.436 5.955L20 6.91l-5.245 4.635L15.878 18z" />
               </svg>
             </div>
           </div>
         )}
         {/* Empty stars */}
         {Array.from({ length: emptyStars }).map((_, i) => (
-          <svg key={`empty-${i}`} className="w-4 h-4 text-gray-300 fill-current" viewBox="0 0 20 20">
-            <path d="M10 15l-5.878 3.09 1.123-6.545L0 6.91l6.564-.955L10 0l3.436 5.955L20 6.91l-5.245 4.635L15.878 18z"/>
+          <svg
+            key={`empty-${i}`}
+            className="w-4 h-4 text-gray-300 fill-current"
+            viewBox="0 0 20 20"
+          >
+            <path d="M10 15l-5.878 3.09 1.123-6.545L0 6.91l6.564-.955L10 0l3.436 5.955L20 6.91l-5.245 4.635L15.878 18z" />
           </svg>
         ))}
       </div>
@@ -85,7 +93,7 @@ export default function GetInspiredPage() {
   const [filters, setFilters] = useState<Filters>({
     targetAudience: [],
     graphicalStyle: [],
-    storyLanguage: []
+    storyLanguage: [],
   });
 
   const targetAudienceOptions = [
@@ -95,7 +103,7 @@ export default function GetInspiredPage() {
     'children_11-14',
     'young_adult_15-17',
     'adult_18+',
-    'all_ages'
+    'all_ages',
   ];
 
   const graphicalStyleOptions = [
@@ -112,15 +120,10 @@ export default function GetInspiredPage() {
     'disney_style',
     'sketch',
     'oil_painting',
-    'colored_pencil'
+    'colored_pencil',
   ];
 
-  const storyLanguageOptions = [
-    'en-US',
-    'pt-PT',
-    'es-ES',
-    'fr-FR'
-  ];
+  const storyLanguageOptions = ['en-US', 'pt-PT', 'es-ES', 'fr-FR'];
 
   const loadFeaturedStories = useCallback(async () => {
     try {
@@ -147,20 +150,20 @@ export default function GetInspiredPage() {
     let filtered = featuredStories;
 
     if (filters.targetAudience.length > 0) {
-      filtered = filtered.filter(story => 
-        story.targetAudience && filters.targetAudience.includes(story.targetAudience)
+      filtered = filtered.filter(
+        (story) => story.targetAudience && filters.targetAudience.includes(story.targetAudience),
       );
     }
 
     if (filters.graphicalStyle.length > 0) {
-      filtered = filtered.filter(story => 
-        story.graphicalStyle && filters.graphicalStyle.includes(story.graphicalStyle)
+      filtered = filtered.filter(
+        (story) => story.graphicalStyle && filters.graphicalStyle.includes(story.graphicalStyle),
       );
     }
 
     if (filters.storyLanguage.length > 0) {
-      filtered = filtered.filter(story => 
-        story.storyLanguage && filters.storyLanguage.includes(story.storyLanguage)
+      filtered = filtered.filter(
+        (story) => story.storyLanguage && filters.storyLanguage.includes(story.storyLanguage),
       );
     }
 
@@ -168,15 +171,15 @@ export default function GetInspiredPage() {
   }, [featuredStories, filters]);
 
   const handleFilterToggle = (filterType: keyof Filters, value: string) => {
-    setFilters(prev => {
+    setFilters((prev) => {
       const currentFilters = prev[filterType];
       const newFilters = currentFilters.includes(value)
-        ? currentFilters.filter(item => item !== value)
+        ? currentFilters.filter((item) => item !== value)
         : [...currentFilters, value];
-      
+
       return {
         ...prev,
-        [filterType]: newFilters
+        [filterType]: newFilters,
       };
     });
   };
@@ -185,22 +188,19 @@ export default function GetInspiredPage() {
     setFilters({
       targetAudience: [],
       graphicalStyle: [],
-      storyLanguage: []
+      storyLanguage: [],
     });
   };
 
-  const hasActiveFilters = Object.values(filters).some(filterArray => filterArray.length > 0);
+  const hasActiveFilters = Object.values(filters).some((filterArray) => filterArray.length > 0);
 
-  return (<div className="min-h-screen bg-base-100">
+  return (
+    <div className="min-h-screen bg-base-100">
       {/* Gallery Section */}
       <div className="container mx-auto px-4 pt-16 pb-16">
         <div className="text-center mb-12">
-          <h2 className="text-5xl font-bold text-primary">
-            {tGetInspiredPage('gallery.title')}
-          </h2>
-          <p className="text-xl mt-4 text-gray-700">
-            {tGetInspiredPage('gallery.subtitle')}
-          </p>
+          <h2 className="text-5xl font-bold text-primary">{tGetInspiredPage('gallery.title')}</h2>
+          <p className="text-xl mt-4 text-gray-700">{tGetInspiredPage('gallery.subtitle')}</p>
         </div>
 
         {/* Filter Section */}
@@ -210,10 +210,7 @@ export default function GetInspiredPage() {
               {tGetInspiredPage('filters.title')}
             </h3>
             {hasActiveFilters && (
-              <button
-                onClick={clearAllFilters}
-                className="btn btn-outline btn-sm"
-              >
+              <button onClick={clearAllFilters} className="btn btn-outline btn-sm">
                 {tGetInspiredPage('filters.clearAll')}
               </button>
             )}
@@ -231,11 +228,19 @@ export default function GetInspiredPage() {
                     </div>
                   )}
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </div>
               </div>
-              <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow-lg max-h-64 overflow-y-auto">
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow-lg max-h-64 overflow-y-auto"
+              >
                 {targetAudienceOptions.map((option) => (
                   <li key={option}>
                     <label className="cursor-pointer label justify-start gap-3">
@@ -245,7 +250,9 @@ export default function GetInspiredPage() {
                         checked={filters.targetAudience.includes(option)}
                         onChange={() => handleFilterToggle('targetAudience', option)}
                       />
-                      <span className="label-text">{tGetInspiredPage(`targetAudience.${option}`)}</span>
+                      <span className="label-text">
+                        {tGetInspiredPage(`targetAudience.${option}`)}
+                      </span>
                     </label>
                   </li>
                 ))}
@@ -263,11 +270,19 @@ export default function GetInspiredPage() {
                     </div>
                   )}
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </div>
               </div>
-              <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow-lg max-h-64 overflow-y-auto">
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow-lg max-h-64 overflow-y-auto"
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
                   {graphicalStyleOptions.map((option) => (
                     <li key={option} className="w-full">
@@ -278,7 +293,9 @@ export default function GetInspiredPage() {
                           checked={filters.graphicalStyle.includes(option)}
                           onChange={() => handleFilterToggle('graphicalStyle', option)}
                         />
-                        <span className="label-text">{tGetInspiredPage(`graphicalStyle.${option}`)}</span>
+                        <span className="label-text">
+                          {tGetInspiredPage(`graphicalStyle.${option}`)}
+                        </span>
                       </label>
                     </li>
                   ))}
@@ -297,11 +314,19 @@ export default function GetInspiredPage() {
                     </div>
                   )}
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </div>
               </div>
-              <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow-lg max-h-64 overflow-y-auto">
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow-lg max-h-64 overflow-y-auto"
+              >
                 {storyLanguageOptions.map((option) => (
                   <li key={option}>
                     <label className="cursor-pointer label justify-start gap-3">
@@ -311,7 +336,9 @@ export default function GetInspiredPage() {
                         checked={filters.storyLanguage.includes(option)}
                         onChange={() => handleFilterToggle('storyLanguage', option)}
                       />
-                      <span className="label-text">{tGetInspiredPage(`storyLanguage.${option}`)}</span>
+                      <span className="label-text">
+                        {tGetInspiredPage(`storyLanguage.${option}`)}
+                      </span>
                     </label>
                   </li>
                 ))}
@@ -365,7 +392,10 @@ export default function GetInspiredPage() {
         {hasActiveFilters && (
           <div className="text-center mb-8">
             <p className="text-sm text-gray-500">
-              {tGetInspiredPage('gallery.filterResults', { count: filteredStories.length, total: featuredStories.length })}
+              {tGetInspiredPage('gallery.filterResults', {
+                count: filteredStories.length,
+                total: featuredStories.length,
+              })}
             </p>
           </div>
         )}
@@ -379,7 +409,10 @@ export default function GetInspiredPage() {
           /* Featured Stories Gallery */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto mb-12">
             {filteredStories.map((story) => (
-              <div key={story.storyId} className="card bg-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+              <div
+                key={story.storyId}
+                className="card bg-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+              >
                 <figure className="px-4 pt-4">
                   <Link href={`/${locale}/p/${story.slug}`} className="block w-full">
                     <div className="relative w-full h-80 rounded-xl overflow-hidden cursor-pointer">
@@ -389,10 +422,11 @@ export default function GetInspiredPage() {
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover hover:scale-105 transition-transform duration-300"
-            onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                           // Fallback to placeholder if image fails to load
                           try {
-              (e.currentTarget as HTMLImageElement).src = '/Mythoria-logo-white-512x336.jpg';
+                            (e.currentTarget as HTMLImageElement).src =
+                              '/Mythoria-logo-white-512x336.jpg';
                           } catch {}
                         }}
                       />
@@ -404,19 +438,17 @@ export default function GetInspiredPage() {
                     {story.title}
                   </h3>
                   <p className="text-gray-600 mb-2">
-                    {tGetInspiredPage('gallery.createdBy')} <span className="font-semibold">{story.author}</span>
+                    {tGetInspiredPage('gallery.createdBy')}{' '}
+                    <span className="font-semibold">{story.author}</span>
                   </p>
-                  
+
                   {/* Star Rating - only show if story has ratings */}
                   {story.averageRating && story.ratingCount && story.ratingCount > 0 && (
                     <div className="mb-3">
-                      <StarRating 
-                        rating={story.averageRating}
-                        count={story.ratingCount}
-                      />
+                      <StarRating rating={story.averageRating} count={story.ratingCount} />
                     </div>
                   )}
-                  
+
                   {/* Story metadata badges */}
                   <div className="flex flex-wrap justify-center gap-1 mb-4">
                     {story.targetAudience && (
@@ -437,10 +469,7 @@ export default function GetInspiredPage() {
                   </div>
 
                   <div className="card-actions justify-center">
-                    <Link 
-                      href={`/${locale}/p/${story.slug}`}
-                      className="btn btn-primary btn-sm"
-                    >
+                    <Link href={`/${locale}/p/${story.slug}`} className="btn btn-primary btn-sm">
                       {tGetInspiredPage('gallery.viewStory')}
                     </Link>
                   </div>
@@ -453,34 +482,36 @@ export default function GetInspiredPage() {
           <div className="text-center py-16">
             <div className="max-w-md mx-auto">
               <div className="mb-8">
-                <svg className="mx-auto h-24 w-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                <svg
+                  className="mx-auto h-24 w-24 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                  />
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                {hasActiveFilters 
-                  ? tGetInspiredPage('emptyState.noStoriesMatch') 
-                  : tGetInspiredPage('gallery.emptyTitle')
-                }
+                {hasActiveFilters
+                  ? tGetInspiredPage('emptyState.noStoriesMatch')
+                  : tGetInspiredPage('gallery.emptyTitle')}
               </h3>
               <p className="text-gray-600 mb-8">
-                {hasActiveFilters 
+                {hasActiveFilters
                   ? tGetInspiredPage('emptyState.tryAdjustingFilters')
-                  : tGetInspiredPage('gallery.emptyMessage')
-                }
+                  : tGetInspiredPage('gallery.emptyMessage')}
               </p>
               {hasActiveFilters ? (
-                <button 
-                  onClick={clearAllFilters}
-                  className="btn btn-secondary"
-                >
+                <button onClick={clearAllFilters} className="btn btn-secondary">
                   {tGetInspiredPage('filters.clearAll')}
                 </button>
               ) : (
-                <Link 
-                  href={`/${locale}/dashboard`}
-                  className="btn btn-primary"
-                >
+                <Link href={`/${locale}/dashboard`} className="btn btn-primary">
                   {tGetInspiredPage('gallery.createStory')}
                 </Link>
               )}

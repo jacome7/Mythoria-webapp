@@ -1,9 +1,11 @@
 # Mythoria Web App – Agent Guide
 
 ## Purpose & Scope
+
 This document is the single source of truth for agents working on the Mythoria web application. It describes how to set up the project, which quality checks must run before submitting work, and how to keep configuration and documentation in sync with the codebase.
 
 ## Technology Snapshot
+
 - **Framework**: Next.js 15 (App Router, standalone output)
 - **Language**: TypeScript 5 with strict compiler settings
 - **Runtime**: Node.js 22+ (enforced through `package.json` engines and Dockerfile)
@@ -13,6 +15,7 @@ This document is the single source of truth for agents working on the Mythoria w
 - **Testing & QA**: ESLint, TypeScript, Jest, Playwright, i18n parity scripts, Prettier
 
 ## Repository Layout Highlights
+
 - `src/app` – App Router entry points (server components by default, locale-prefixed routes, offline fallbacks)
 - `src/components` – Reusable UI building blocks (`'use client'` when interactivity is required)
 - `src/lib` – Server-side utilities (authentication, analytics, workflow clients, pub/sub helpers, manifest helpers)
@@ -24,6 +27,7 @@ This document is the single source of truth for agents working on the Mythoria w
 - `docs` – High-level product and architecture documentation
 
 ## Local Environment Setup
+
 1. Use Node.js 22 or newer (`nvm use 22` if needed) and install dependencies with `npm install`.
 2. Copy environment variables into `.env.local` (see **Environment Variables** below) and keep them aligned with `env.manifest.ts`.
 3. Validate the configuration by running `npm run check:env`; resolve all reported mismatches.
@@ -31,12 +35,14 @@ This document is the single source of truth for agents working on the Mythoria w
 5. When adding new dependencies, prefer `npm install` (package-lock is committed).
 
 ## Environment Variables
+
 - `env.manifest.ts` is the canonical manifest that describes every variable, its scopes (dev/build/runtime/public), and whether it is a secret. Update this file whenever environment requirements change.
 - Sync `.env.local`, deployment manifests (e.g., `cloudbuild.yaml`), and Docker build args with the manifest. Use `npm run check:env` after every change to confirm parity.
 - `NEXT_PUBLIC_SUPPORTED_LOCALES` controls the locales exposed by the router. Defaults come from `src/config/locales.ts` but should remain consistent across runtime and build environments.
 - Keep secrets out of the repository. Non-public values belong in Secret Manager or your local `.env.local` only.
 
 ## Database Workflow (Drizzle ORM)
+
 - Schema definitions live in `src/db/schema`. Update `schema/index.ts` to re-export new tables/enums so Drizzle migrations and services can import them.
 - Generate SQL migrations with `npm run db:generate` and commit the resulting files under `drizzle/`.
 - Apply migrations locally with `npm run db:migrate` (uses `.env.local` credentials) or `npm run db:push` for schema synchronization.
@@ -45,7 +51,9 @@ This document is the single source of truth for agents working on the Mythoria w
 - Services under `src/db/services` should be covered by Jest tests co-located in the same directory.
 
 ## Development & Quality Checklist
+
 Run these commands before committing or opening a PR:
+
 - `npm run lint` – ESLint (flat config via `eslint.config.mjs`)
 - `npm run typecheck` – TypeScript `tsc --noEmit`
 - `npm run test` – Jest unit tests (includes React Testing Library and server-side utilities)
@@ -59,6 +67,7 @@ Run these commands before committing or opening a PR:
 Only run the localization, env, or database commands when you touch the corresponding areas, but ensure CI-critical checks (`lint`, `typecheck`, `test`) are green for every change set.
 
 ## Localization Workflow
+
 - `src/messages/en-US` is the source-of-truth locale. Mirror file names across every locale directory. HTML fragments (e.g., legal pages) also require parity.
 - Use `useTranslations`/`getTranslations` from `next-intl` with typed keys from `TranslationKey` to avoid runtime typos.
 - After editing translations:
@@ -68,14 +77,17 @@ Only run the localization, env, or database commands when you touch the correspo
 - Keep the allowlist in `src/messages/i18n-keep.json` updated if certain keys must never be pruned.
 
 ## Playwright & PWA Notes
+
 - Playwright stores auth state in `tests/playwright/.auth/user.json`. Force regeneration with `REFRESH_AUTH=1` if credentials expire. Anonymous suites bypass auth state by setting `SKIP_AUTH_SETUP=1`.
 - The application ships with a PWA offline fallback located at `/offline`. Middleware bypasses locale redirects for that route—preserve this behavior when adding new middleware logic.
 
 ## Deployment
+
 - Production builds use `npm run build` (standalone output) followed by `npm run start` for local verification.
 - Google Cloud Run deployment is handled via `npm run deploy:production` (Cloud Build). Update Docker build args and environment substitutions alongside manifest changes.
 
 ## PR & Commit Guidelines
+
 - Follow Conventional Commit messages (e.g., `feat: add X`, `fix: handle Y`).
 - Include updated tests and documentation for any user-facing or behavioral change.
 - Keep the working tree clean: run the commands above, stage intentional changes only, and ensure `git status` is clean before finishing.

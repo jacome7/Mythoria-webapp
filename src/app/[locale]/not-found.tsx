@@ -18,24 +18,18 @@ export default function NotFound() {
               <div className="text-6xl mb-4">🔍</div>
               <div className="text-4xl">❓</div>
             </div>
-            
+
             {/* Content */}
             <div className="lg:w-1/2 text-center lg:text-left">
-              <h1 className="text-5xl font-bold text-primary mb-6">
-                {tNotFound('mainHeading')}
-              </h1>
-              <p className="py-4 text-lg">
-                {tNotFound('description')}
-              </p>
+              <h1 className="text-5xl font-bold text-primary mb-6">{tNotFound('mainHeading')}</h1>
+              <p className="py-4 text-lg">{tNotFound('description')}</p>
             </div>
           </div>
         </div>
 
         {/* Suggestions Section */}
         <div className="bg-base-200 rounded-box p-8 my-8">
-          <h2 className="text-2xl font-bold mb-6 text-center">
-            {tNotFound('suggestions.title')}
-          </h2>
+          <h2 className="text-2xl font-bold mb-6 text-center">{tNotFound('suggestions.title')}</h2>
           <div className="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto">
             {tNotFound.raw('suggestions.items').map((item: string, index: number) => (
               <div key={index} className="flex items-center p-4 bg-base-100 rounded-lg shadow-sm">
@@ -64,17 +58,13 @@ export default function NotFound() {
         {/* Funny Quote */}
         <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-box p-8 my-8">
           <blockquote className="text-center">
-            <p className="text-lg italic mb-4">
-              {tNotFound('quote')}
-            </p>
+            <p className="text-lg italic mb-4">{tNotFound('quote')}</p>
           </blockquote>
         </div>
 
         {/* Animated Elements */}
         <div className="text-center my-8">
-          <div className="inline-flex gap-2 text-4xl animate-bounce">
-            🧙‍♂️📖✨🗺️🎭
-          </div>
+          <div className="inline-flex gap-2 text-4xl animate-bounce">🧙‍♂️📖✨🗺️🎭</div>
         </div>
       </div>
     </div>

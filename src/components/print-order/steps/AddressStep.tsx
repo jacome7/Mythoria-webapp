@@ -51,7 +51,7 @@ export default function AddressStep({
     <div>
       <h2 className="card-title mb-4">{tPrintOrder('steps.address')}</h2>
       <p className="mb-4">{tPrintOrder('addressInfo.selectShipping')}</p>
-      
+
       {showCreateAddress || editingAddress ? (
         <AddressCard
           address={editingAddress || undefined}
@@ -85,30 +85,20 @@ export default function AddressStep({
               ))}
             </div>
           )}
-          
-          <button
-            className="btn btn-outline mb-4"
-            onClick={() => onShowCreateAddress(true)}
-          >
+
+          <button className="btn btn-outline mb-4" onClick={() => onShowCreateAddress(true)}>
             <FiPlus className="w-4 h-4 mr-2" />
             {tPrintOrder('addressInfo.addNewAddress')}
           </button>
         </div>
       )}
-      
+
       {!showCreateAddress && !editingAddress && (
         <div className="card-actions justify-between mt-6">
-          <button 
-            className="btn btn-ghost"
-            onClick={onBack}
-          >
+          <button className="btn btn-ghost" onClick={onBack}>
             {tPrintOrder('buttons.back')}
           </button>
-          <button 
-            className="btn btn-primary"
-            onClick={onNext}
-            disabled={!selectedAddress}
-          >
+          <button className="btn btn-primary" onClick={onNext} disabled={!selectedAddress}>
             {tPrintOrder('buttons.continue')}
           </button>
         </div>

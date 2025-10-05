@@ -12,7 +12,10 @@ export async function GET() {
     }
 
     // Use COUNT(*) for author's stories (excluding maybe soft-deleted if implemented later)
-    const result = await db.select({ count: sql<number>`count(*)` }).from(stories).where(eq(stories.authorId, author.authorId));
+    const result = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(stories)
+      .where(eq(stories.authorId, author.authorId));
     const count = result[0]?.count || 0;
     return NextResponse.json({ count });
   } catch (e) {

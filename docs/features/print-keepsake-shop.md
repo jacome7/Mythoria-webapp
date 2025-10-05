@@ -1,9 +1,11 @@
 # Print Keepsake Shop
 
 ## Mythoria's Take
+
 When a story deserves paper and ink, the Print Keepsake Shop walks you from proud author to package-at-the-door. Preview the finished book, confirm the shipping address, choose softcover or hardcover bundles, and see the credit tally update before you commit. MB Way fans even get a dedicated checkout path, because great tales should travel anywhere.
 
 ## Technical Deep Dive
+
 - Entry route: `src/app/[locale]/stories/print/[storyId]/page.tsx` guards access with Clerk and lazy-loads the print workflow.
 - Wizard core: `src/components/print-order/PrintOrderContent.tsx` coordinates the three steps (story, address, payment), fetching story metadata (`/api/stories/{id}`) and address books (`/api/addresses`).
 - Story preview: `steps/StoryStep.tsx` renders synopsis and cover imagery with defensive fallbacks.

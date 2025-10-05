@@ -11,7 +11,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { storyId, contentType, kind, filename, dataUrl } = body || {};
     if (!storyId || !contentType || !kind || !dataUrl) {
-      return NextResponse.json({ error: 'storyId, contentType, kind and dataUrl are required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'storyId, contentType, kind and dataUrl are required' },
+        { status: 400 },
+      );
     }
 
     const story = await storyService.getStoryById(storyId);
@@ -22,11 +25,14 @@ export async function POST(request: NextRequest) {
     const resp = await sgwFetch('/ai/media/upload', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ storyId, contentType, kind, filename, dataUrl })
+      body: JSON.stringify({ storyId, contentType, kind, filename, dataUrl }),
     });
     const data = await resp.json();
     return NextResponse.json(data, { status: resp.status });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : 'Internal error' }, { status: 500 });
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Internal error' },
+      { status: 500 },
+    );
   }
 }

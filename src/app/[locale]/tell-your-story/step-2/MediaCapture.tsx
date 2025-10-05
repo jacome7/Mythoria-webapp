@@ -38,7 +38,7 @@ export default function MediaCapture({
     const files = event.target.files;
     if (files) {
       const newImages = Array.from(files).slice(0, 3 - uploadedImages.length);
-      const imagePromises = newImages.map(file => {
+      const imagePromises = newImages.map((file) => {
         return new Promise<UploadedImage>((resolve) => {
           const reader = new FileReader();
           reader.onload = (e) => {
@@ -51,7 +51,7 @@ export default function MediaCapture({
         });
       });
 
-      Promise.all(imagePromises).then(results => {
+      Promise.all(imagePromises).then((results) => {
         setUploadedImages([...uploadedImages, ...results].slice(0, 3));
         saveToSession();
       });
@@ -61,7 +61,9 @@ export default function MediaCapture({
   const startCamera = async () => {
     try {
       setIsCapturing(true);
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' },
+      });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         videoRef.current.play();
@@ -82,17 +84,23 @@ export default function MediaCapture({
       canvas.height = video.videoHeight;
       if (context) {
         context.drawImage(video, 0, 0);
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const file = new File([blob], `captured-photo-${Date.now()}.jpg`, { type: 'image/jpeg' });
-            const preview = canvas.toDataURL();
-            setUploadedImages([...uploadedImages, { file, preview }].slice(0, 3));
-            saveToSession();
-            if (uploadedImages.length >= 2) {
-              stopCamera();
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const file = new File([blob], `captured-photo-${Date.now()}.jpg`, {
+                type: 'image/jpeg',
+              });
+              const preview = canvas.toDataURL();
+              setUploadedImages([...uploadedImages, { file, preview }].slice(0, 3));
+              saveToSession();
+              if (uploadedImages.length >= 2) {
+                stopCamera();
+              }
             }
-          }
-        }, 'image/jpeg', 0.8);
+          },
+          'image/jpeg',
+          0.8,
+        );
       }
     }
   };
@@ -100,7 +108,7 @@ export default function MediaCapture({
   const stopCamera = () => {
     if (videoRef.current && videoRef.current.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream;
-      stream.getTracks().forEach(track => track.stop());
+      stream.getTracks().forEach((track) => track.stop());
       videoRef.current.srcObject = null;
     }
     setIsCapturing(false);
@@ -148,7 +156,7 @@ export default function MediaCapture({
         const audioUrl = URL.createObjectURL(audioBlob);
         setUploadedAudio({ file: audioFile, preview: audioUrl });
         saveToSession();
-        stream.getTracks().forEach(track => track.stop());
+        stream.getTracks().forEach((track) => track.stop());
       };
       mediaRecorder.start();
       setIsRecording(true);
@@ -172,21 +180,37 @@ export default function MediaCapture({
           <div className="modal-box max-w-5xl w-11/12 h-[90vh] flex flex-col">
             <div className="modal-header flex justify-between items-center mb-4">
               <h3 className="font-bold text-2xl">📸 {t('tabImage')}</h3>
-              <button className="btn btn-sm btn-circle btn-ghost" onClick={() => { setActiveModal(null); stopCamera(); }}>
+              <button
+                className="btn btn-sm btn-circle btn-ghost"
+                onClick={() => {
+                  setActiveModal(null);
+                  stopCamera();
+                }}
+              >
                 ✕
               </button>
             </div>
             <div className="flex-1 overflow-y-auto">
               {uploadedImages.length > 0 && (
                 <div className="mb-6">
-                  <h4 className="font-semibold mb-3">{t('imageGalleryTitle', { count: uploadedImages.length })}</h4>
+                  <h4 className="font-semibold mb-3">
+                    {t('imageGalleryTitle', { count: uploadedImages.length })}
+                  </h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {uploadedImages.map((img, index) => (
                       <div key={index} className="relative">
                         <div className="aspect-video rounded-lg overflow-hidden bg-base-200">
-                          <Image src={img.preview} alt={`Story image ${index + 1}`} fill className="object-cover" />
+                          <Image
+                            src={img.preview}
+                            alt={`Story image ${index + 1}`}
+                            fill
+                            className="object-cover"
+                          />
                         </div>
-                        <button className="btn btn-sm btn-circle btn-error absolute top-2 right-2" onClick={() => removeImage(index)}>
+                        <button
+                          className="btn btn-sm btn-circle btn-error absolute top-2 right-2"
+                          onClick={() => removeImage(index)}
+                        >
                           ✕
                         </button>
                       </div>
@@ -200,7 +224,10 @@ export default function MediaCapture({
                     <button className="btn btn-primary btn-lg" onClick={startCamera}>
                       📷 {t('takePhoto')}
                     </button>
-                    <button className="btn btn-outline btn-lg" onClick={() => fileInputRef.current?.click()}>
+                    <button
+                      className="btn btn-outline btn-lg"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
                       🖼️ {t('uploadImage')}
                     </button>
                   </div>
@@ -209,9 +236,19 @@ export default function MediaCapture({
               )}
               {isCapturing && (
                 <div className="text-center space-y-4">
-                  <video ref={videoRef} className="w-full max-w-md mx-auto rounded-lg border" autoPlay playsInline muted />
+                  <video
+                    ref={videoRef}
+                    className="w-full max-w-md mx-auto rounded-lg border"
+                    autoPlay
+                    playsInline
+                    muted
+                  />
                   <div className="flex gap-4 justify-center">
-                    <button className="btn btn-primary btn-lg" onClick={capturePhoto} disabled={uploadedImages.length >= 3}>
+                    <button
+                      className="btn btn-primary btn-lg"
+                      onClick={capturePhoto}
+                      disabled={uploadedImages.length >= 3}
+                    >
                       {t('buttons.capture')}
                     </button>
                     <button className="btn btn-outline btn-lg" onClick={stopCamera}>
@@ -220,7 +257,14 @@ export default function MediaCapture({
                   </div>
                 </div>
               )}
-              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} multiple className="hidden" />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                multiple
+                className="hidden"
+              />
               <canvas ref={canvasRef} className="hidden" />
               <div className="mt-6 p-4 bg-base-200 rounded-lg">
                 <h4 className="font-semibold mb-3">{t('photoTips.title')}</h4>
@@ -252,7 +296,10 @@ export default function MediaCapture({
           <div className="modal-box max-w-5xl w-11/12 h-[90vh] flex flex-col">
             <div className="modal-header flex justify-between items-center mb-4">
               <h3 className="font-bold text-2xl">🎤 {t('tabRecord')}</h3>
-              <button className="btn btn-sm btn-circle btn-ghost" onClick={() => setActiveModal(null)}>
+              <button
+                className="btn btn-sm btn-circle btn-ghost"
+                onClick={() => setActiveModal(null)}
+              >
                 ✕
               </button>
             </div>
@@ -263,7 +310,10 @@ export default function MediaCapture({
                     <button className="btn btn-primary btn-lg" onClick={startRecording}>
                       🎤 {t('recordVoice')}
                     </button>
-                    <button className="btn btn-outline btn-lg" onClick={() => audioInputRef.current?.click()}>
+                    <button
+                      className="btn btn-outline btn-lg"
+                      onClick={() => audioInputRef.current?.click()}
+                    >
                       📁 {t('uploadAudio')}
                     </button>
                   </div>
@@ -296,7 +346,11 @@ export default function MediaCapture({
                       <div className="flex items-center justify-center mb-4">
                         <div className="text-6xl">🎵</div>
                       </div>
-                      <audio src={uploadedAudio.preview} controls className="w-full max-w-md mx-auto">
+                      <audio
+                        src={uploadedAudio.preview}
+                        controls
+                        className="w-full max-w-md mx-auto"
+                      >
                         {t('audioSupport.notSupported')}
                       </audio>
                       <div className="card-actions justify-center">

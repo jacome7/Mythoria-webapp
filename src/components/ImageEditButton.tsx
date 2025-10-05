@@ -8,11 +8,7 @@ interface ImageEditButtonProps {
   imageUri: string;
   imageType: 'cover' | 'backcover' | 'chapter';
   chapterNumber?: number;
-  onEdit: (imageData: {
-    imageUri: string;
-    imageType: string;
-    chapterNumber?: number;
-  }) => void;
+  onEdit: (imageData: { imageUri: string; imageType: string; chapterNumber?: number }) => void;
   className?: string;
   children?: React.ReactNode;
 }
@@ -23,7 +19,7 @@ export default function ImageEditButton({
   chapterNumber,
   onEdit,
   className = '',
-  children
+  children,
 }: ImageEditButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
   const tImageEditButton = useTranslations('ImageEditButton');
@@ -32,7 +28,7 @@ export default function ImageEditButton({
     onEdit({
       imageUri,
       imageType,
-      chapterNumber
+      chapterNumber,
     });
   };
 

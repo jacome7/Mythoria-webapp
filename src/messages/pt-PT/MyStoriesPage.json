@@ -31,8 +31,8 @@
     "share": "Partilhar",
     "print": "Imprimir",
     "delete": "Eliminar",
-  "printNotAvailable": "Impressão Não Disponível",
-  "duplicate": "Duplicar"
+    "printNotAvailable": "Impressão Não Disponível",
+    "duplicate": "Duplicar"
   },
   "sharing": {
     "publicAccessible": "A história está agora publicamente acessível",

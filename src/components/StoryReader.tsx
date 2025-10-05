@@ -39,7 +39,12 @@ interface StoryReaderProps {
   currentChapter?: number;
 }
 
-export default function StoryReader({ storyId, story, chapters, currentChapter }: StoryReaderProps) {
+export default function StoryReader({
+  storyId,
+  story,
+  chapters,
+  currentChapter,
+}: StoryReaderProps) {
   const tStoryReader = useTranslations('StoryReader');
   const tActions = useTranslations('Actions');
   const tAltTexts = useTranslations('AltTexts');
@@ -51,7 +56,9 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
   // Determine what to show based on current chapter
   const isFirstPage = !currentChapter || currentChapter === 0;
 
-  const currentChapterData = currentChapter ? chapters.find(ch => ch.chapterNumber === currentChapter) : null;
+  const currentChapterData = currentChapter
+    ? chapters.find((ch) => ch.chapterNumber === currentChapter)
+    : null;
   const totalChapters = chapters.length;
 
   // Load appropriate CSS theme based on story metadata
@@ -130,7 +137,7 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
           router.push(`${base}/chapter/${chapterNumber}`);
         } else {
           const slug = window.location.pathname.split('/p/')[1].split('/')[0];
-            router.push(`/p/${slug}/chapter/${chapterNumber}`);
+          router.push(`/p/${slug}/chapter/${chapterNumber}`);
         }
       } else {
         // Private story navigation
@@ -161,14 +168,13 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
   // Render first page content
   const renderFirstPage = () => (
     <div className="story-container">
-      
       {/* Front Cover */}
       {story.coverUri && toAbsoluteImageUrl(story.coverUri) && (
         <>
           <div className="mythoria-front-cover">
-            <Image 
-              src={toAbsoluteImageUrl(story.coverUri)!} 
-              alt="Book Front Cover" 
+            <Image
+              src={toAbsoluteImageUrl(story.coverUri)!}
+              alt="Book Front Cover"
               className="mythoria-cover-image"
               width={400}
               height={600}
@@ -177,19 +183,23 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
           <div className="mythoria-page-break"></div>
         </>
       )}
-      
+
       {/* Author Dedicatory */}
       {story.dedicationMessage && (
         <div className="mythoria-dedicatory">{story.dedicationMessage}</div>
       )}
-      
+
       {/* Author Name */}
-      <div className="mythoria-author-name">{tStoryReader('byAuthor', { authorName: story.authorName })}</div>
+      <div className="mythoria-author-name">
+        {tStoryReader('byAuthor', { authorName: story.authorName })}
+      </div>
 
       {/* Mythoria Message */}
       <div className="mythoria-message">
         <p className="mythoria-message-text">
-          {tStoryReader('storyImaginedBy')} <i className="mythoria-author-emphasis">{story.authorName}</i>{tStoryReader('storyImaginedByEnd')}
+          {tStoryReader('storyImaginedBy')}{' '}
+          <i className="mythoria-author-emphasis">{story.authorName}</i>
+          {tStoryReader('storyImaginedByEnd')}
         </p>
         <p className="mythoria-message-text">{tStoryReader('craftedWith')}</p>
         {/* Responsive Mythoria logo: ensure it never overflows small mobile screens */}
@@ -240,7 +250,7 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
           >
             {tStoryReader('startReading')}
           </button>
-          
+
           {/* Listen Button */}
           {story.hasAudio && (
             <button
@@ -291,10 +301,7 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
             <p className="text-lg text-base-content/70 mb-6">
               {tStoryReader('chapterNotFoundDescription')}
             </p>
-            <button
-              onClick={() => navigateToChapter(0)}
-              className="btn btn-primary"
-            >
+            <button onClick={() => navigateToChapter(0)} className="btn btn-primary">
               {tStoryReader('backToStory')}
             </button>
           </div>
@@ -306,12 +313,12 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
       <div className="story-container">
         <div className="mythoria-chapter" id={`chapter-${currentChapterData.chapterNumber}`}>
           <h2 className="mythoria-chapter-title">{currentChapterData.title}</h2>
-          
+
           {/* Chapter Image */}
           {currentChapterData.imageUri && toAbsoluteImageUrl(currentChapterData.imageUri) && (
             <div className="mythoria-chapter-image">
-              <Image 
-                src={toAbsoluteImageUrl(currentChapterData.imageUri)!} 
+              <Image
+                src={toAbsoluteImageUrl(currentChapterData.imageUri)!}
                 alt={tAltTexts('chapterIllustration', { number: currentChapterData.chapterNumber })}
                 className="mythoria-chapter-img"
                 width={600}
@@ -319,13 +326,12 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
               />
             </div>
           )}
-          
+
           {/* Chapter Content */}
-          <div 
+          <div
             className="mythoria-chapter-content"
             dangerouslySetInnerHTML={{ __html: currentChapterData.htmlContent }}
           />
-
         </div>
 
         <div className="mythoria-page-break"></div>
@@ -344,13 +350,13 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
               <div></div>
             )}
           </div>
-          
+
           <div className="text-center flex-shrink-0 min-w-0">
             <span className="text-xs md:text-sm text-base-content/70 whitespace-nowrap">
               Ch. {currentChapter} of {totalChapters}
             </span>
           </div>
-          
+
           <div className="flex-shrink-0">
             {currentChapter && currentChapter < totalChapters ? (
               <button
@@ -369,7 +375,7 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
   };
 
   // Table of Contents Modal
-  const renderTableOfContentsModal = () => (
+  const renderTableOfContentsModal = () =>
     showTableOfContents && (
       <div className="modal modal-open">
         <div className="modal-box">
@@ -403,39 +409,41 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
             ))}
           </ul>
           <div className="modal-action">
-            <button
-              onClick={() => setShowTableOfContents(false)}
-              className="btn btn-sm"
-            >
+            <button onClick={() => setShowTableOfContents(false)} className="btn btn-sm">
               {tActions('close')}
             </button>
           </div>
         </div>
       </div>
-    )
-  );
+    );
 
   return (
     <div className="story-reader min-h-screen px-0 bg-base-100">
       {/* Reading Toolbar */}
-      <ReadingToolbar 
+      <ReadingToolbar
         onSettingsChange={handleReadingSettingsChange}
         chapters={chapters}
         currentChapter={currentChapter || 0}
         onChapterChange={navigateToChapter}
       />
-      
+
       {/* Story Content */}
-      <div 
+      <div
         className="mythoria-story-scope"
         style={{
           // Provide CSS variables as fallbacks for dynamic scaling if templates use them
           // Note: concrete font-size/line-height are controlled via CSS overrides and variables
-          ...( {
-            '--reading-font-scale': readingSettings?.fontSize ? String(readingSettings.fontSize / 100) : undefined,
-            '--reading-line-height-scale': readingSettings?.lineHeight ? String(readingSettings.lineHeight / 100) : undefined,
-            '--reading-margin-scale': readingSettings?.margins ? String(readingSettings.margins / 100) : undefined,
-          } as React.CSSProperties ),
+          ...({
+            '--reading-font-scale': readingSettings?.fontSize
+              ? String(readingSettings.fontSize / 100)
+              : undefined,
+            '--reading-line-height-scale': readingSettings?.lineHeight
+              ? String(readingSettings.lineHeight / 100)
+              : undefined,
+            '--reading-margin-scale': readingSettings?.margins
+              ? String(readingSettings.margins / 100)
+              : undefined,
+          } as React.CSSProperties),
         }}
       >
         <div className="w-full px-0 md:px-0 py-0">
@@ -462,18 +470,18 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
         .story-reader {
           transition: all 0.3s ease;
         }
-        
-  /* Remove default prose styles that might conflict with our custom CSS */
-  :global(.mythoria-story-content.prose) {
+
+        /* Remove default prose styles that might conflict with our custom CSS */
+        :global(.mythoria-story-content.prose) {
           max-width: none;
           color: inherit;
         }
-        
+
         /* Ensure mythoria styles take precedence */
         :global(.mythoria-story-scope) {
           /* This will scope our story-specific styles */
         }
-        
+
         /* Custom button styles for TOC links */
         .mythoria-toc-link {
           background: none;
@@ -484,7 +492,7 @@ export default function StoryReader({ storyId, story, chapters, currentChapter }
           padding: 0;
           font: inherit;
         }
-        
+
         .mythoria-toc-link:hover {
           color: #0066cc;
         }

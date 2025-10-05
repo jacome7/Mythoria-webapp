@@ -6,7 +6,11 @@ type JsonPrimitive = string | number | boolean | null;
 // Nested JSON structure (values can be primitives or nested objects)
 type JsonObject = { [k: string]: JsonPrimitive | JsonObject };
 
-function run(cmd: string, args: string[], cwd: string): Promise<{ stdout: string; stderr: string; code: number }> {
+function run(
+  cmd: string,
+  args: string[],
+  cwd: string,
+): Promise<{ stdout: string; stderr: string; code: number }> {
   return new Promise((resolve) => {
     const child = spawn(cmd, args, {
       cwd,
@@ -24,7 +28,11 @@ function run(cmd: string, args: string[], cwd: string): Promise<{ stdout: string
 function deleteByPath(obj: JsonObject, pathParts: string[]) {
   if (!obj) return;
   const last = pathParts[pathParts.length - 1];
-  const parent = pathParts.slice(0, -1).reduce<JsonObject | JsonPrimitive | undefined>((acc, key) => (acc && typeof acc === 'object' ? (acc as JsonObject)[key] : undefined), obj);
+  const parent = pathParts
+    .slice(0, -1)
+    .reduce<
+      JsonObject | JsonPrimitive | undefined
+    >((acc, key) => (acc && typeof acc === 'object' ? (acc as JsonObject)[key] : undefined), obj);
   if (parent && typeof parent === 'object' && last in parent) {
     delete parent[last];
   }
@@ -35,7 +43,12 @@ function pruneEmptyObjects(obj: JsonObject | JsonPrimitive): void {
   for (const key of Object.keys(obj)) {
     pruneEmptyObjects(obj[key] as JsonObject | JsonPrimitive);
     const child = obj[key];
-    if (child && typeof child === 'object' && !Array.isArray(child) && Object.keys(child as object).length === 0) {
+    if (
+      child &&
+      typeof child === 'object' &&
+      !Array.isArray(child) &&
+      Object.keys(child as object).length === 0
+    ) {
       delete obj[key];
     }
   }

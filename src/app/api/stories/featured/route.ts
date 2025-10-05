@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { storyService } from "@/db/services";
+import { NextResponse } from 'next/server';
+import { storyService } from '@/db/services';
 
 export async function GET(request: Request) {
   try {
@@ -16,10 +16,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ stories: featuredStories });
   } catch (error) {
-    console.error("Error fetching featured stories:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch featured stories" },
-      { status: 500 }
-    );
+    console.error('Error fetching featured stories:', error);
+    return NextResponse.json({ error: 'Failed to fetch featured stories' }, { status: 500 });
   }
 }

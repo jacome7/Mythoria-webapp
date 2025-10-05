@@ -6,14 +6,19 @@ interface UploadResult {
 }
 
 export function useMediaUpload() {
-  const fileToDataUrl = (file: File) => new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = (e) => reject(e);
-    reader.readAsDataURL(file);
-  });
+  const fileToDataUrl = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (e) => reject(e);
+      reader.readAsDataURL(file);
+    });
 
-  const uploadMedia = async (storyId: string, kind: 'image' | 'audio', file: File): Promise<UploadResult> => {
+  const uploadMedia = async (
+    storyId: string,
+    kind: 'image' | 'audio',
+    file: File,
+  ): Promise<UploadResult> => {
     const contentType = file.type || (kind === 'image' ? 'image/jpeg' : 'audio/wav');
     const dataUrl = await fileToDataUrl(file);
     const resp = await fetch('/api/media/signed-upload', {

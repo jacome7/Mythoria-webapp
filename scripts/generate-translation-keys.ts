@@ -4,8 +4,8 @@
   and writes it to src/types/translation-keys.d.ts
   This enables: type TKey = TranslationKey; then enforce t<TKey>('key').
 */
-import {readdirSync, readFileSync, statSync, mkdirSync, writeFileSync} from 'fs';
-import {join} from 'path';
+import { readdirSync, readFileSync, statSync, mkdirSync, writeFileSync } from 'fs';
+import { join } from 'path';
 
 const MESSAGES_DIR = join(process.cwd(), 'src', 'messages');
 const OUTPUT_DIR = join(process.cwd(), 'src', 'types');
@@ -26,12 +26,12 @@ function flatten(obj: unknown, prefix = '', out: string[] = []): string[] {
 
 function collectKeys(locale: string) {
   const dir = join(MESSAGES_DIR, locale);
-  const files = readdirSync(dir).filter(f => f.endsWith('.json'));
+  const files = readdirSync(dir).filter((f) => f.endsWith('.json'));
   const keys: string[] = [];
   for (const f of files) {
     const json = JSON.parse(readFileSync(join(dir, f), 'utf8'));
     const flattened = flatten(json);
-    keys.push(...flattened.map(k => k));
+    keys.push(...flattened.map((k) => k));
   }
   // de-duplicate & sort
   return Array.from(new Set(keys)).sort();
@@ -43,8 +43,11 @@ if (!statSync(join(MESSAGES_DIR, SOURCE_LOCALE)).isDirectory()) {
 }
 
 const keys = collectKeys(SOURCE_LOCALE);
-mkdirSync(OUTPUT_DIR, {recursive: true});
+mkdirSync(OUTPUT_DIR, { recursive: true });
 const banner = `// AUTO-GENERATED FILE. Run: npm run i18n:keys\n// Total keys: ${keys.length}\n`;
-const union = keys.map(k => JSON.stringify(k)).join(' | ');
-writeFileSync(join(OUTPUT_DIR, 'translation-keys.d.ts'), `${banner}export type TranslationKey = ${union};\n`);
+const union = keys.map((k) => JSON.stringify(k)).join(' | ');
+writeFileSync(
+  join(OUTPUT_DIR, 'translation-keys.d.ts'),
+  `${banner}export type TranslationKey = ${union};\n`,
+);
 console.log(`Generated translation-keys.d.ts with ${keys.length} keys.`);

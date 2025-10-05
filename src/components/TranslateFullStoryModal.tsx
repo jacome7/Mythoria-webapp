@@ -53,9 +53,9 @@ export default function TranslateFullStoryModal({
       const opts = tStep4.raw('languageOptions') as Array<{ value: string; label: string }>;
       setLanguages(opts);
       // default selection: first different from current
-      const firstAlt = opts.find(o => o.value !== currentLanguage);
+      const firstAlt = opts.find((o) => o.value !== currentLanguage);
       setTargetLocale(firstAlt?.value || '');
-  } catch {
+    } catch {
       // fallback empty
       setLanguages([]);
     }
@@ -87,7 +87,7 @@ export default function TranslateFullStoryModal({
         } else {
           setError(data?.error || tModal('errors.unableToCheckCredits'));
         }
-  } catch {
+      } catch {
         setError(tModal('errors.unableToCheckCredits'));
       } finally {
         setChecking(false);
@@ -186,10 +186,15 @@ export default function TranslateFullStoryModal({
             </div>
             <div>
               <h2 className="text-lg font-semibold text-gray-900">{tModal('title')}</h2>
-              <p className="text-sm text-gray-600">{tModal('currentLanguage', { lang: currentLanguage })}</p>
+              <p className="text-sm text-gray-600">
+                {tModal('currentLanguage', { lang: currentLanguage })}
+              </p>
             </div>
           </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors">
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
+          >
             <FiX className="w-4 h-4 text-gray-600" />
           </button>
         </div>
@@ -198,27 +203,35 @@ export default function TranslateFullStoryModal({
         <div className="p-6 space-y-5">
           {/* Target language */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{tModal('targetLanguage')}</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {tModal('targetLanguage')}
+            </label>
             <select
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               value={targetLocale}
               onChange={(e) => setTargetLocale(e.target.value)}
             >
-              {languages.map(opt => (
+              {languages.map((opt) => (
                 <option key={opt.value} value={opt.value} disabled={opt.value === currentLanguage}>
                   {opt.label}
                 </option>
               ))}
             </select>
             {targetEqualsCurrent && (
-              <p className="text-xs text-red-600 mt-1">{tModal('errors.selectDifferentLanguage')}</p>
+              <p className="text-xs text-red-600 mt-1">
+                {tModal('errors.selectDifferentLanguage')}
+              </p>
             )}
           </div>
 
           {/* Duplicate checkbox */}
           <div className="space-y-2">
             <label className="inline-flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={duplicate} onChange={(e) => setDuplicate(e.target.checked)} />
+              <input
+                type="checkbox"
+                checked={duplicate}
+                onChange={(e) => setDuplicate(e.target.checked)}
+              />
               {tModal('duplicateLabel')}
             </label>
             <p className="text-xs text-gray-600 whitespace-pre-line">
@@ -258,7 +271,10 @@ export default function TranslateFullStoryModal({
             {tModal('cancel')}
           </button>
           {insufficientCredits ? (
-            <Link href="/buy-credits" className="px-5 py-2 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600">
+            <Link
+              href="/buy-credits"
+              className="px-5 py-2 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600"
+            >
               {tModal('buyCredits')}
             </Link>
           ) : (
@@ -277,7 +293,10 @@ export default function TranslateFullStoryModal({
       {showProgress && (
         <JobProgressModal
           isOpen={showProgress}
-          onClose={() => { setShowProgress(false); setJobId(null); }}
+          onClose={() => {
+            setShowProgress(false);
+            setJobId(null);
+          }}
           jobId={jobId}
           jobType="text_edit"
           onComplete={handleJobComplete}

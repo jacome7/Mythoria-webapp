@@ -17,7 +17,7 @@ export interface DatabaseConfig {
  * This centralizes the VPC detection logic used across the application
  */
 export function isVpcDirectEgress(): boolean {
-  return process.env.DB_HOST === "10.19.192.3" || (process.env.DB_HOST?.startsWith("10.") ?? false);
+  return process.env.DB_HOST === '10.19.192.3' || (process.env.DB_HOST?.startsWith('10.') ?? false);
 }
 
 /**
@@ -26,9 +26,9 @@ export function isVpcDirectEgress(): boolean {
  */
 export function getDatabaseConfig(): DatabaseConfig {
   const isVpcConnection = isVpcDirectEgress();
-  const isProduction = process.env.NODE_ENV === "production";
+  const isProduction = process.env.NODE_ENV === 'production';
   const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build';
-  
+
   // During build time, provide default values to prevent build failures
   if (isBuildTime) {
     return {
@@ -41,7 +41,7 @@ export function getDatabaseConfig(): DatabaseConfig {
       maxConnections: parseInt(process.env.DB_MAX_CONNECTIONS || '20'),
     };
   }
-  
+
   // Validate required environment variables for runtime
   if (!process.env.DB_PASSWORD) {
     throw new Error('Database password is required');
@@ -73,18 +73,20 @@ export function getDatabaseConfig(): DatabaseConfig {
 export function getPoolConfig() {
   const config = getDatabaseConfig();
   const isVpcConnection = isVpcDirectEgress();
-  
-  const poolConfig = config.connectionString ? {
-    connectionString: config.connectionString,
-    ssl: config.ssl,
-  } : {
-    host: config.host,
-    port: config.port,
-    user: config.user,
-    password: config.password,
-    database: config.database,
-    ssl: config.ssl,
-  };
+
+  const poolConfig = config.connectionString
+    ? {
+        connectionString: config.connectionString,
+        ssl: config.ssl,
+      }
+    : {
+        host: config.host,
+        port: config.port,
+        user: config.user,
+        password: config.password,
+        database: config.database,
+        ssl: config.ssl,
+      };
 
   return {
     ...poolConfig,

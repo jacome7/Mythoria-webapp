@@ -43,10 +43,7 @@ export default function ToastContainer({ toasts, onRemove }: ToastContainerProps
     // High z-index to ensure toast overlays all UI (drawers, modals, editors)
     <div className="toast toast-top toast-end z-[9999]">
       {toasts.map((toast) => (
-        <div
-          key={toast.id}
-          className={`alert ${getToastClass(toast.type)} shadow-lg`}
-        >
+        <div key={toast.id} className={`alert ${getToastClass(toast.type)} shadow-lg`}>
           {getToastIcon(toast.type)}
           <span>{toast.message}</span>
           {toast.actionHref && toast.actionLabel && (
@@ -54,10 +51,7 @@ export default function ToastContainer({ toasts, onRemove }: ToastContainerProps
               {toast.actionLabel}
             </a>
           )}
-          <button
-            onClick={() => onRemove(toast.id)}
-            className="btn btn-ghost btn-sm btn-square"
-          >
+          <button onClick={() => onRemove(toast.id)} className="btn btn-ghost btn-sm btn-square">
             <FiX className="w-4 h-4" />
           </button>
         </div>

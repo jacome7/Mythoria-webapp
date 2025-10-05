@@ -7,18 +7,21 @@ This guide covers deploying the Mythoria Web App to Google Cloud Platform using 
 ## Prerequisites
 
 ### Required Tools
+
 - **Google Cloud SDK**: Latest version with authentication
 - **Docker**: For local container building and testing
 - **Node.js**: Version 18+ for local development
 - **Git**: Version control access to the repository
 
 ### Google Cloud Setup
+
 - **Project ID**: `oceanic-beach-460916-n5`
 - **Region**: `europe-west9` (Paris)
 - **Service Account**: Configured with necessary permissions
 - **APIs Enabled**: Cloud Run, Cloud Build, Secret Manager, Cloud SQL
 
 ### Required Permissions
+
 ```bash
 # Enable required Google Cloud APIs
 gcloud services enable cloudbuild.googleapis.com
@@ -31,42 +34,44 @@ gcloud services enable artifactregistry.googleapis.com
 ## Environment Configuration
 
 ### Production Environment Variables
+
 ```yaml
 # Database Configuration
-DATABASE_URL: "postgresql://username:password@host:port/database"
-DB_HOST: "10.94.208.3"  # Cloud SQL private IP
-DB_PORT: "5432"
-DB_NAME: "mythoria_production"
-DB_USER: "mythoria_user"
+DATABASE_URL: 'postgresql://username:password@host:port/database'
+DB_HOST: '10.94.208.3' # Cloud SQL private IP
+DB_PORT: '5432'
+DB_NAME: 'mythoria_production'
+DB_USER: 'mythoria_user'
 
 # Authentication (Clerk)
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_live_..."
-CLERK_SECRET_KEY: "sk_live_..."
-CLERK_WEBHOOK_SECRET: "whsec_..."
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: 'pk_live_...'
+CLERK_SECRET_KEY: 'sk_live_...'
+CLERK_WEBHOOK_SECRET: 'whsec_...'
 
 # External Services
-NEXT_PUBLIC_SGW_API_URL: "https://story-generation-workflow-803421888801.europe-west9.run.app"
-NOTIFICATION_ENGINE_URL: "https://notification-engine-803421888801.europe-west9.run.app"
+NEXT_PUBLIC_SGW_API_URL: 'https://story-generation-workflow-803421888801.europe-west9.run.app'
+NOTIFICATION_ENGINE_URL: 'https://notification-engine-803421888801.europe-west9.run.app'
 
 # Google Cloud
-GOOGLE_CLOUD_PROJECT_ID: "oceanic-beach-460916-n5"
-GOOGLE_APPLICATION_CREDENTIALS: "/app/service-account-key.json"
+GOOGLE_CLOUD_PROJECT_ID: 'oceanic-beach-460916-n5'
+GOOGLE_APPLICATION_CREDENTIALS: '/app/service-account-key.json'
 
 # Analytics & Monitoring
-NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: "G-XXXXXXXXXX"
-SENTRY_DSN: "https://..."
+NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: 'G-XXXXXXXXXX'
+SENTRY_DSN: 'https://...'
 
 # Feature Flags
 NEXT_PUBLIC_FEATURE_FLAGS: '{"ai_generation": true, "audiobooks": true}'
 
 # Security
-NEXTAUTH_SECRET: "your-secret-key"
-NEXTAUTH_URL: "https://app.mythoria.com"
+NEXTAUTH_SECRET: 'your-secret-key'
+NEXTAUTH_URL: 'https://app.mythoria.com'
 ```
 
 ## Google Secret Manager Configuration
 
 ### Storing Secrets
+
 ```bash
 # Database credentials
 gcloud secrets create mythoria-webapp-database-url --data-file=db-url.txt
@@ -81,6 +86,7 @@ gcloud secrets create mythoria-webapp-service-account --data-file=service-accoun
 ## Container Configuration
 
 ### Dockerfile
+
 ```dockerfile
 # Multi-stage build for optimization
 FROM node:18-alpine AS base
@@ -115,6 +121,7 @@ CMD ["node", "server.js"]
 ## Cloud Run Deployment
 
 ### Deployment Commands
+
 ```bash
 # Deploy to Cloud Run
 gcloud run deploy mythoria-webapp \
@@ -136,50 +143,59 @@ gcloud run deploy mythoria-webapp \
 ## CI/CD Pipeline
 
 ### Cloud Build Configuration
+
 ```yaml
 # cloudbuild.yaml
 steps:
-# Build dependencies
-- name: 'node:18'
-  entrypoint: npm
-  args: ['ci']
+  # Build dependencies
+  - name: 'node:18'
+    entrypoint: npm
+    args: ['ci']
 
-# Run tests
-- name: 'node:18'
-  entrypoint: npm
-  args: ['run', 'test']
+  # Run tests
+  - name: 'node:18'
+    entrypoint: npm
+    args: ['run', 'test']
 
-# Build Next.js application
-- name: 'node:18'
-  entrypoint: npm
-  args: ['run', 'build']
+  # Build Next.js application
+  - name: 'node:18'
+    entrypoint: npm
+    args: ['run', 'build']
 
-# Build container image
-- name: 'gcr.io/cloud-builders/docker'
-  args: [
-    'build',
-    '-t',
-    'europe-west9-docker.pkg.dev/${PROJECT_ID}/mythoria/mythoria-webapp:${COMMIT_SHA}',
-    '-t',
-    'europe-west9-docker.pkg.dev/${PROJECT_ID}/mythoria/mythoria-webapp:latest',
-    '.'
-  ]
+  # Build container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'build',
+        '-t',
+        'europe-west9-docker.pkg.dev/${PROJECT_ID}/mythoria/mythoria-webapp:${COMMIT_SHA}',
+        '-t',
+        'europe-west9-docker.pkg.dev/${PROJECT_ID}/mythoria/mythoria-webapp:latest',
+        '.',
+      ]
 
-# Deploy to Cloud Run
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  entrypoint: gcloud
-  args: [
-    'run', 'deploy', 'mythoria-webapp',
-    '--image', 'europe-west9-docker.pkg.dev/${PROJECT_ID}/mythoria/mythoria-webapp:${COMMIT_SHA}',
-    '--region', 'europe-west9',
-    '--platform', 'managed',
-    '--allow-unauthenticated'
-  ]
+  # Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      [
+        'run',
+        'deploy',
+        'mythoria-webapp',
+        '--image',
+        'europe-west9-docker.pkg.dev/${PROJECT_ID}/mythoria/mythoria-webapp:${COMMIT_SHA}',
+        '--region',
+        'europe-west9',
+        '--platform',
+        'managed',
+        '--allow-unauthenticated',
+      ]
 ```
 
 ## Monitoring & Troubleshooting
 
 ### Health Checks
+
 ```typescript
 // pages/api/health.ts
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -188,9 +204,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     timestamp: new Date().toISOString(),
     version: process.env.npm_package_version,
     environment: process.env.NODE_ENV,
-    uptime: process.uptime()
+    uptime: process.uptime(),
   };
-  
+
   res.status(200).json(health);
 }
 ```
@@ -198,6 +214,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 ### Common Issues
 
 #### Deployment Failures
+
 ```bash
 # Check build logs
 gcloud builds list --limit 10
@@ -208,12 +225,14 @@ gcloud run services describe mythoria-webapp --region europe-west9
 ```
 
 #### Database Connection Issues
+
 ```bash
 # Test database connectivity
 gcloud sql connect mythoria-postgres --user mythoria_user
 ```
 
 ### Recovery Procedures
+
 ```bash
 # Rollback to previous version
 gcloud run services update mythoria-webapp \

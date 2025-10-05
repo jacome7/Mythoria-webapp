@@ -7,11 +7,13 @@ The Mythoria Web App provides a comprehensive REST API for story management, use
 ## Authentication
 
 ### Authentication Methods
+
 - **User Authentication**: JWT tokens via Clerk authentication
 - **API Keys**: Service-to-service authentication for internal services
 - **Session Cookies**: Browser-based authentication for web interface
 
 ### Headers
+
 ```http
 Authorization: Bearer <jwt_token>
 Content-Type: application/json
@@ -19,6 +21,7 @@ X-API-Version: v1
 ```
 
 ## Base URL
+
 ```
 Production: https://app.mythoria.com/api
 Staging: https://staging.mythoria.com/api
@@ -30,11 +33,13 @@ Development: http://localhost:3000/api
 ### User Management
 
 #### Get User Profile
+
 ```http
 GET /api/user/profile
 ```
 
 **Response:**
+
 ```json
 {
   "id": "user_123",
@@ -54,11 +59,13 @@ GET /api/user/profile
 ```
 
 #### Update User Profile
+
 ```http
 PUT /api/user/profile
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "John Doe",
@@ -71,11 +78,13 @@ PUT /api/user/profile
 ```
 
 #### Get User Preferences
+
 ```http
 GET /api/user/preferences
 ```
 
 #### Update User Preferences
+
 ```http
 PUT /api/user/preferences
 ```
@@ -83,11 +92,13 @@ PUT /api/user/preferences
 ### Story Management
 
 #### List Stories
+
 ```http
 GET /api/stories?page=1&limit=10&status=all&sort=created_at
 ```
 
 **Query Parameters:**
+
 - `page` (optional): Page number (default: 1)
 - `limit` (optional): Items per page (default: 10, max: 100)
 - `status` (optional): Filter by status (all, draft, published, archived)
@@ -95,6 +106,7 @@ GET /api/stories?page=1&limit=10&status=all&sort=created_at
 - `order` (optional): Sort order (asc, desc)
 
 **Response:**
+
 ```json
 {
   "stories": [
@@ -120,11 +132,13 @@ GET /api/stories?page=1&limit=10&status=all&sort=created_at
 ```
 
 #### Create Story
+
 ```http
 POST /api/stories
 ```
 
 **Request Body:**
+
 ```json
 {
   "title": "My New Story",
@@ -137,11 +151,13 @@ POST /api/stories
 ```
 
 #### Get Story Details
+
 ```http
 GET /api/stories/{story_id}
 ```
 
 **Response:**
+
 ```json
 {
   "id": "story_123",
@@ -173,11 +189,13 @@ GET /api/stories/{story_id}
 ```
 
 #### Update Story
+
 ```http
 PUT /api/stories/{story_id}
 ```
 
 #### Delete Story
+
 ```http
 DELETE /api/stories/{story_id}
 ```
@@ -185,16 +203,19 @@ DELETE /api/stories/{story_id}
 ### Story Elements Management
 
 #### Get Story Elements
+
 ```http
 GET /api/stories/{story_id}/elements
 ```
 
 #### Create Story Element
+
 ```http
 POST /api/stories/{story_id}/elements
 ```
 
 **Request Body:**
+
 ```json
 {
   "type": "chapter",
@@ -209,11 +230,13 @@ POST /api/stories/{story_id}/elements
 ```
 
 #### Update Story Element
+
 ```http
 PUT /api/stories/{story_id}/elements/{element_id}
 ```
 
 #### Delete Story Element
+
 ```http
 DELETE /api/stories/{story_id}/elements/{element_id}
 ```
@@ -221,11 +244,13 @@ DELETE /api/stories/{story_id}/elements/{element_id}
 ### AI Generation
 
 #### Generate Story Outline
+
 ```http
 POST /api/ai/generate-outline
 ```
 
 **Request Body:**
+
 ```json
 {
   "prompt": "A story about a young wizard learning magic",
@@ -238,6 +263,7 @@ POST /api/ai/generate-outline
 ```
 
 **Response:**
+
 ```json
 {
   "outline": {
@@ -264,11 +290,13 @@ POST /api/ai/generate-outline
 ```
 
 #### Generate Chapter
+
 ```http
 POST /api/ai/generate-chapter
 ```
 
 **Request Body:**
+
 ```json
 {
   "story_id": "story_123",
@@ -281,11 +309,13 @@ POST /api/ai/generate-chapter
 ```
 
 #### Enhance Text
+
 ```http
 POST /api/ai/enhance-text
 ```
 
 **Request Body:**
+
 ```json
 {
   "text": "The wizard walked into the room.",
@@ -296,11 +326,13 @@ POST /api/ai/enhance-text
 ```
 
 #### Generate Image
+
 ```http
 POST /api/ai/generate-image
 ```
 
 **Request Body:**
+
 ```json
 {
   "prompt": "A young wizard casting their first spell",
@@ -313,11 +345,13 @@ POST /api/ai/generate-image
 ### Export Operations
 
 #### Generate PDF Export
+
 ```http
 POST /api/export/pdf
 ```
 
 **Request Body:**
+
 ```json
 {
   "story_id": "story_123",
@@ -329,6 +363,7 @@ POST /api/export/pdf
 ```
 
 **Response:**
+
 ```json
 {
   "export_id": "export_123",
@@ -338,11 +373,13 @@ POST /api/export/pdf
 ```
 
 #### Check Export Status
+
 ```http
 GET /api/export/{export_id}/status
 ```
 
 **Response:**
+
 ```json
 {
   "export_id": "export_123",
@@ -353,11 +390,13 @@ GET /api/export/{export_id}/status
 ```
 
 #### Generate Audiobook
+
 ```http
 POST /api/export/audiobook
 ```
 
 **Request Body:**
+
 ```json
 {
   "story_id": "story_123",
@@ -371,11 +410,13 @@ POST /api/export/audiobook
 ### Analytics
 
 #### Get Story Analytics
+
 ```http
 GET /api/stories/{story_id}/analytics
 ```
 
 #### Get User Analytics
+
 ```http
 GET /api/user/analytics?period=30d
 ```
@@ -383,6 +424,7 @@ GET /api/user/analytics?period=30d
 ## Error Handling
 
 ### Standard Error Response
+
 ```json
 {
   "error": {
@@ -398,6 +440,7 @@ GET /api/user/analytics?period=30d
 ```
 
 ### HTTP Status Codes
+
 - `200` - Success
 - `201` - Created
 - `400` - Bad Request
@@ -409,6 +452,7 @@ GET /api/user/analytics?period=30d
 - `500` - Internal Server Error
 
 ### Error Codes
+
 - `VALIDATION_ERROR` - Request validation failed
 - `AUTHENTICATION_ERROR` - Authentication required or failed
 - `AUTHORIZATION_ERROR` - Insufficient permissions
@@ -421,11 +465,13 @@ GET /api/user/analytics?period=30d
 ## Rate Limiting
 
 ### Limits by Plan
+
 - **Free Plan**: 100 requests per hour
-- **Premium Plan**: 1000 requests per hour  
+- **Premium Plan**: 1000 requests per hour
 - **Enterprise Plan**: 5000 requests per hour
 
 ### Rate Limit Headers
+
 ```http
 X-RateLimit-Limit: 1000
 X-RateLimit-Remaining: 999
@@ -435,6 +481,7 @@ X-RateLimit-Reset: 1640995200
 ## Webhooks
 
 ### Webhook Events
+
 - `story.created` - New story created
 - `story.updated` - Story updated
 - `story.completed` - Story marked as completed
@@ -442,6 +489,7 @@ X-RateLimit-Reset: 1640995200
 - `user.upgraded` - User plan upgraded
 
 ### Webhook Payload Example
+
 ```json
 {
   "event": "story.completed",
@@ -458,6 +506,7 @@ X-RateLimit-Reset: 1640995200
 ## SDK Libraries
 
 ### JavaScript/TypeScript
+
 ```bash
 npm install @mythoria/api-client
 ```
@@ -467,13 +516,14 @@ import { MythoriaClient } from '@mythoria/api-client';
 
 const client = new MythoriaClient({
   apiKey: 'your-api-key',
-  baseUrl: 'https://app.mythoria.com/api'
+  baseUrl: 'https://app.mythoria.com/api',
 });
 
 const stories = await client.stories.list();
 ```
 
 ### Python
+
 ```bash
 pip install mythoria-python
 ```

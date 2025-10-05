@@ -1,15 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getCurrentAuthor } from "@/lib/auth";
-import { chapterService, storyService } from "@/db/services";
+import { NextRequest, NextResponse } from 'next/server';
+import { getCurrentAuthor } from '@/lib/auth';
+import { chapterService, storyService } from '@/db/services';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ storyId: string; chapterNumber: string }> }
+  { params }: { params: Promise<{ storyId: string; chapterNumber: string }> },
 ) {
   try {
     const author = await getCurrentAuthor();
     if (!author) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { storyId, chapterNumber } = await params;
@@ -19,17 +19,17 @@ export async function POST(
     // Check if user owns the story
     const story = await storyService.getStoryById(storyId);
     if (!story) {
-      return NextResponse.json({ error: "Story not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }
 
     if (story.authorId !== author.authorId) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     // Get current chapter to determine next version
     const currentChapter = await chapterService.getStoryChapter(storyId, chapterNum);
     if (!currentChapter) {
-      return NextResponse.json({ error: "Chapter not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Chapter not found' }, { status: 404 });
     }
 
     // Create new chapter version
@@ -55,22 +55,19 @@ export async function POST(
       chapter: newChapter,
     });
   } catch (error) {
-    console.error("Error saving chapter:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error('Error saving chapter:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ storyId: string; chapterNumber: string }> }
+  { params }: { params: Promise<{ storyId: string; chapterNumber: string }> },
 ) {
   try {
     const author = await getCurrentAuthor();
     if (!author) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { storyId, chapterNumber } = await params;
@@ -80,21 +77,21 @@ export async function PUT(
     // Check if user owns the story
     const story = await storyService.getStoryById(storyId);
     if (!story) {
-      return NextResponse.json({ error: "Story not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }
 
     if (story.authorId !== author.authorId) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     // Get chapters to find the requested version
     const chapters = await chapterService.getChaptersByStory(storyId);
     const targetChapter = chapters.find(
-      c => c.chapterNumber === chapterNum && c.version === version
+      (c) => c.chapterNumber === chapterNum && c.version === version,
     );
 
     if (!targetChapter) {
-      return NextResponse.json({ error: "Chapter version not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Chapter version not found' }, { status: 404 });
     }
 
     return NextResponse.json({
@@ -113,10 +110,7 @@ export async function PUT(
       },
     });
   } catch (error) {
-    console.error("Error fetching chapter version:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error('Error fetching chapter version:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

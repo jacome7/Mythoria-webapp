@@ -6,77 +6,65 @@ import { eq, and } from 'drizzle-orm';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ storyId: string }> }
+  { params }: { params: Promise<{ storyId: string }> },
 ) {
   try {
     const { userId } = await auth();
     const { storyId } = await params;
-    
+
     if (!storyId) {
-      return NextResponse.json(
-        { error: 'Story ID is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Story ID is required' }, { status: 400 });
     }
 
     const body = await request.json();
     const { rating, feedback, includeNameInFeedback } = body;
 
     if (!rating || !['1', '2', '3', '4', '5'].includes(rating)) {
-      return NextResponse.json(
-        { error: 'Valid rating (1-5) is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Valid rating (1-5) is required' }, { status: 400 });
     }
 
     // Check if the story exists
-    const story = await db.select()
-      .from(stories)
-      .where(eq(stories.storyId, storyId))
-      .limit(1);
+    const story = await db.select().from(stories).where(eq(stories.storyId, storyId)).limit(1);
 
     if (!story.length) {
-      return NextResponse.json(
-        { error: 'Story not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }
 
     let authorId = null;
-    
+
     // If user is authenticated, get their author record
     if (userId) {
-      const author = await db.select()
+      const author = await db
+        .select()
         .from(authors)
         .where(eq(authors.clerkUserId, userId))
         .limit(1);
-      
+
       if (author.length > 0) {
         authorId = author[0].authorId;
       }
-    }    // For ratings 1-3, feedback is optional but might be provided
+    } // For ratings 1-3, feedback is optional but might be provided
     // For ratings 4-5, feedback is not expected but we'll accept it if provided
-    const isAnonymous = !userId || !includeNameInFeedback;    // Check if user already has a rating for this story
+    const isAnonymous = !userId || !includeNameInFeedback; // Check if user already has a rating for this story
     let existingRating = null;
     if (authorId) {
-      const existing = await db.select()
+      const existing = await db
+        .select()
         .from(storyRatings)
-        .where(and(
-          eq(storyRatings.storyId, storyId),
-          eq(storyRatings.userId, authorId)
-        ))
+        .where(and(eq(storyRatings.storyId, storyId), eq(storyRatings.userId, authorId)))
         .limit(1);
-      
+
       if (existing.length > 0) {
         existingRating = existing[0];
       }
     }
 
     let resultRating;
-    
+
     if (existingRating) {
       // Update existing rating
-      resultRating = await db.update(storyRatings)
+      resultRating = await db
+        .update(storyRatings)
         .set({
           rating: rating as '1' | '2' | '3' | '4' | '5',
           feedback: feedback || null,
@@ -87,92 +75,95 @@ export async function POST(
         .returning();
     } else {
       // Insert new rating
-      resultRating = await db.insert(storyRatings).values({
-        storyId,
-        userId: authorId,
-        rating: rating as '1' | '2' | '3' | '4' | '5',
-        feedback: feedback || null,
-        isAnonymous,
-        includeNameInFeedback: includeNameInFeedback || false,
-      }).returning();
-    }    return NextResponse.json({
+      resultRating = await db
+        .insert(storyRatings)
+        .values({
+          storyId,
+          userId: authorId,
+          rating: rating as '1' | '2' | '3' | '4' | '5',
+          feedback: feedback || null,
+          isAnonymous,
+          includeNameInFeedback: includeNameInFeedback || false,
+        })
+        .returning();
+    }
+    return NextResponse.json({
       success: true,
       rating: resultRating[0],
-      message: existingRating ? 'Rating updated successfully' : 'Rating submitted successfully'
+      message: existingRating ? 'Rating updated successfully' : 'Rating submitted successfully',
     });
-
   } catch (error) {
     console.error('Error submitting story rating:', error);
-    
+
     // Check if the error is due to missing table
-    if (error instanceof Error && error.message.includes('relation "story_ratings" does not exist')) {
+    if (
+      error instanceof Error &&
+      error.message.includes('relation "story_ratings" does not exist')
+    ) {
       return NextResponse.json(
         { error: 'Rating system is currently being set up. Please try again later.' },
-        { status: 503 }
+        { status: 503 },
       );
     }
-    
-    return NextResponse.json(
-      { error: 'Failed to submit rating' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Failed to submit rating' }, { status: 500 });
   }
 }
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ storyId: string }> }
+  { params }: { params: Promise<{ storyId: string }> },
 ) {
   try {
     const { userId } = await auth();
     const { storyId } = await params;
-    
+
     if (!storyId) {
-      return NextResponse.json(
-        { error: 'Story ID is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Story ID is required' }, { status: 400 });
     }
 
     // Get current user's author ID if authenticated
     let currentUserAuthorId = null;
     if (userId) {
-      const author = await db.select()
+      const author = await db
+        .select()
         .from(authors)
         .where(eq(authors.clerkUserId, userId))
         .limit(1);
-      
+
       if (author.length > 0) {
         currentUserAuthorId = author[0].authorId;
       }
     }
 
     // Get all ratings for the story (for statistics)
-    const ratings = await db.select({
-      ratingId: storyRatings.ratingId,
-      rating: storyRatings.rating,
-      feedback: storyRatings.feedback,
-      isAnonymous: storyRatings.isAnonymous,
-      includeNameInFeedback: storyRatings.includeNameInFeedback,
-      createdAt: storyRatings.createdAt,
-      displayName: authors.displayName,
-      userId: storyRatings.userId,
-    })
-    .from(storyRatings)
-    .leftJoin(authors, eq(storyRatings.userId, authors.authorId))
-    .where(eq(storyRatings.storyId, storyId))
-    .orderBy(storyRatings.createdAt);
+    const ratings = await db
+      .select({
+        ratingId: storyRatings.ratingId,
+        rating: storyRatings.rating,
+        feedback: storyRatings.feedback,
+        isAnonymous: storyRatings.isAnonymous,
+        includeNameInFeedback: storyRatings.includeNameInFeedback,
+        createdAt: storyRatings.createdAt,
+        displayName: authors.displayName,
+        userId: storyRatings.userId,
+      })
+      .from(storyRatings)
+      .leftJoin(authors, eq(storyRatings.userId, authors.authorId))
+      .where(eq(storyRatings.storyId, storyId))
+      .orderBy(storyRatings.createdAt);
 
     // Find current user's rating if they're authenticated
-    const userRating = currentUserAuthorId 
-      ? ratings.find(rating => rating.userId === currentUserAuthorId)
+    const userRating = currentUserAuthorId
+      ? ratings.find((rating) => rating.userId === currentUserAuthorId)
       : null;
 
     // Calculate statistics
     const totalRatings = ratings.length;
-    const averageRating = totalRatings > 0 
-      ? ratings.reduce((sum: number, r) => sum + parseInt(r.rating), 0) / totalRatings
-      : 0;
+    const averageRating =
+      totalRatings > 0
+        ? ratings.reduce((sum: number, r) => sum + parseInt(r.rating), 0) / totalRatings
+        : 0;
 
     const ratingDistribution = {
       5: ratings.filter((r) => r.rating === '5').length,
@@ -189,39 +180,43 @@ export async function GET(
       feedback: rating.feedback,
       isAnonymous: rating.isAnonymous,
       includeNameInFeedback: rating.includeNameInFeedback,
-      authorName: !rating.isAnonymous && rating.includeNameInFeedback && rating.displayName 
-        ? rating.displayName 
-        : null,
+      authorName:
+        !rating.isAnonymous && rating.includeNameInFeedback && rating.displayName
+          ? rating.displayName
+          : null,
       createdAt: rating.createdAt,
-    }));    return NextResponse.json({
+    }));
+    return NextResponse.json({
       totalRatings,
       averageRating: Math.round(averageRating * 100) / 100,
       ratingDistribution,
       ratings: publicRatings,
-      userRating: userRating ? {
-        ratingId: userRating.ratingId,
-        rating: userRating.rating,
-        feedback: userRating.feedback,
-        createdAt: userRating.createdAt,
-      } : null,
+      userRating: userRating
+        ? {
+            ratingId: userRating.ratingId,
+            rating: userRating.rating,
+            feedback: userRating.feedback,
+            createdAt: userRating.createdAt,
+          }
+        : null,
     });
   } catch (error) {
     console.error('Error fetching story ratings:', error);
-    
+
     // Check if the error is due to missing table
-    if (error instanceof Error && error.message.includes('relation "story_ratings" does not exist')) {
+    if (
+      error instanceof Error &&
+      error.message.includes('relation "story_ratings" does not exist')
+    ) {
       return NextResponse.json({
         totalRatings: 0,
         averageRating: 0,
         ratingDistribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
         ratings: [],
-        message: 'Rating system is currently being set up'
+        message: 'Rating system is currently being set up',
       });
     }
-    
-    return NextResponse.json(
-      { error: 'Failed to fetch ratings' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Failed to fetch ratings' }, { status: 500 });
   }
 }

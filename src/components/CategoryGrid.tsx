@@ -1,7 +1,15 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { FaBug, FaCogs, FaTruck, FaCoins, FaComments, FaLightbulb, FaHandshake } from 'react-icons/fa';
+import {
+  FaBug,
+  FaCogs,
+  FaTruck,
+  FaCoins,
+  FaComments,
+  FaLightbulb,
+  FaHandshake,
+} from 'react-icons/fa';
 
 interface CategoryGridProps {
   onCategoryClick: (category: string) => void;
@@ -15,44 +23,44 @@ const CategoryGrid = ({ onCategoryClick }: CategoryGridProps) => {
       key: 'feature_ideas',
       icon: FaLightbulb,
       color: 'text-warning',
-      label: tContactUsPage('categories.featureIdeas')
+      label: tContactUsPage('categories.featureIdeas'),
     },
     {
       key: 'bug_report',
       icon: FaBug,
       color: 'text-error',
-      label: tContactUsPage('categories.reportBug')
+      label: tContactUsPage('categories.reportBug'),
     },
     {
       key: 'technical_issues',
       icon: FaCogs,
       color: 'text-info',
-      label: tContactUsPage('categories.troubles')
+      label: tContactUsPage('categories.troubles'),
     },
     {
       key: 'delivery',
       icon: FaTruck,
       color: 'text-success',
-      label: tContactUsPage('categories.delivery')
+      label: tContactUsPage('categories.delivery'),
     },
     {
       key: 'credits',
       icon: FaCoins,
       color: 'text-accent',
-      label: tContactUsPage('categories.credits')
+      label: tContactUsPage('categories.credits'),
     },
     {
       key: 'business_partnership',
       icon: FaHandshake,
       color: 'text-secondary',
-      label: tContactUsPage('categories.businessPartnership')
+      label: tContactUsPage('categories.businessPartnership'),
     },
     {
       key: 'general',
       icon: FaComments,
       color: 'text-primary',
-      label: tContactUsPage('categories.general')
-    }
+      label: tContactUsPage('categories.general'),
+    },
   ];
 
   const handleCategoryClick = (categoryKey: string) => {

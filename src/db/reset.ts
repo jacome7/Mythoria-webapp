@@ -1,29 +1,31 @@
-import { Pool } from "pg";
-import { config } from "dotenv";
+import { Pool } from 'pg';
+import { config } from 'dotenv';
 
 // Load environment variables
-config({ path: ".env.local" });
+config({ path: '.env.local' });
 
 async function resetDatabase() {
-  console.log("🗑️ Resetting database - dropping all tables...");
-  
+  console.log('🗑️ Resetting database - dropping all tables...');
+
   const pool = new Pool({
     host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT || "5432"),
+    port: parseInt(process.env.DB_PORT || '5432'),
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    ssl: process.env.NODE_ENV === "production" 
-      ? {
-          rejectUnauthorized: true,
-          ca: process.env.DB_SSL_CA,
-          key: process.env.DB_SSL_KEY,
-          cert: process.env.DB_SSL_CERT,
-        }
-      : { rejectUnauthorized: false },
+    ssl:
+      process.env.NODE_ENV === 'production'
+        ? {
+            rejectUnauthorized: true,
+            ca: process.env.DB_SSL_CA,
+            key: process.env.DB_SSL_KEY,
+            cert: process.env.DB_SSL_CERT,
+          }
+        : { rejectUnauthorized: false },
   });
-  
-  try {    // Drop all tables and types in the correct order (considering foreign key constraints)
+
+  try {
+    // Drop all tables and types in the correct order (considering foreign key constraints)
     const dropQueries = [
       // Drop tables that reference other tables first
       'DROP TABLE IF EXISTS story_characters CASCADE;',
@@ -42,17 +44,18 @@ async function resetDatabase() {
       'DROP TABLE IF EXISTS credit_ledger CASCADE;',
       'DROP TABLE IF EXISTS pricing CASCADE;',
       'DROP TABLE IF EXISTS users CASCADE;', // Drop old users table if it exists
-        // Drop custom types (enums)
+      // Drop custom types (enums)
       'DROP TYPE IF EXISTS story_status CASCADE;',
       'DROP TYPE IF EXISTS address_type CASCADE;',
       'DROP TYPE IF EXISTS payment_provider CASCADE;',
       'DROP TYPE IF EXISTS credit_event_type CASCADE;',
-      
+
       // Drop the drizzle migration table
-      'DROP TABLE IF EXISTS __drizzle_migrations CASCADE;'
+      'DROP TABLE IF EXISTS __drizzle_migrations CASCADE;',
     ];
-    
-    for (const query of dropQueries) {      try {
+
+    for (const query of dropQueries) {
+      try {
         await pool.query(query);
         console.log(`✅ Executed: ${query}`);
       } catch {
@@ -60,11 +63,10 @@ async function resetDatabase() {
         console.log(`ℹ️ Skipped: ${query} (table/type doesn't exist)`);
       }
     }
-    
-    console.log("✅ Database reset completed successfully!");
-    
+
+    console.log('✅ Database reset completed successfully!');
   } catch (error) {
-    console.error("❌ Database reset failed:", error);
+    console.error('❌ Database reset failed:', error);
     process.exit(1);
   } finally {
     await pool.end();

@@ -4,12 +4,7 @@
     "description": "Parece que la página que buscas se ha escapado a un capítulo sin escribir. Igual está de aventura por ahí.",
     "suggestions": {
       "title": "Mientras la buscamos, puedes:",
-      "items": [
-        null,
-        null,
-        null,
-        null
-      ]
+      "items": [null, null, null, null]
     },
     "actions": {
       "goHome": "Ir a inicio",

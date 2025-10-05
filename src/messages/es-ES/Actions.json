@@ -12,9 +12,9 @@
     "close": "Cerrar",
     "goBack": "Volver",
     "backToStory": "Volver a la historia",
-  "createAccount": "Crear cuenta",
-  "duplicate": "Duplicar",
-  "open": "Abrir",
-  "duplicateTitleSuffix": " - copia"
+    "createAccount": "Crear cuenta",
+    "duplicate": "Duplicar",
+    "open": "Abrir",
+    "duplicateTitleSuffix": " - copia"
   }
 }

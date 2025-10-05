@@ -58,10 +58,10 @@ export function setStep1Data(data: StorySessionData['step1Data']): void {
  */
 export function getStep1Data(): StorySessionData['step1Data'] | null {
   if (typeof window === 'undefined') return null;
-  
+
   const data = localStorage.getItem('step1Data');
   if (!data) return null;
-  
+
   try {
     return JSON.parse(data);
   } catch (error) {
@@ -75,10 +75,10 @@ export function getStep1Data(): StorySessionData['step1Data'] | null {
  */
 export function getStep2Data(): StorySessionData['step2Data'] | null {
   if (typeof window === 'undefined') return null;
-  
+
   const data = localStorage.getItem('step2Data');
   if (!data) return null;
-  
+
   try {
     return JSON.parse(data);
   } catch (error) {
@@ -100,10 +100,10 @@ export function setStep3Data(data: StorySessionData['step3Data']): void {
  */
 export function getStep3Data(): StorySessionData['step3Data'] | null {
   if (typeof window === 'undefined') return null;
-  
+
   const data = localStorage.getItem('step3Data');
   if (!data) return null;
-  
+
   try {
     return JSON.parse(data);
   } catch (error) {
@@ -117,22 +117,22 @@ export function getStep3Data(): StorySessionData['step3Data'] | null {
  */
 export async function loadExistingStoryData(storyId: string): Promise<boolean> {
   if (typeof window === 'undefined') return false;
-  
+
   try {
     // Fetch story data
     const response = await fetch(`/api/my-stories/${storyId}`);
     if (!response.ok) {
       throw new Error('Failed to fetch story data');
     }
-    
+
     await response.json(); // just to consume the response
     // Set the story ID
     setCurrentStoryId(storyId);
-    
+
     // Load existing step data if available
     // For now, we'll focus on step 3 (characters)
     // You can extend this to load step 2 data as well
-    
+
     return true;
   } catch (error) {
     console.error('Error loading existing story data:', error);
@@ -165,7 +165,7 @@ export function setEditMode(isEdit: boolean): void {
  */
 export function clearStorySession(): void {
   if (typeof window === 'undefined') return;
-  
+
   localStorage.removeItem('currentStoryId');
   localStorage.removeItem('step1Data');
   localStorage.removeItem('step2Data');

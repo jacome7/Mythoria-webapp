@@ -5,19 +5,16 @@ import { stories, storyCollaborators, chapters } from '@/db/schema';
 import { eq, and, or, asc, max } from 'drizzle-orm';
 import { authorService } from '@/db/services';
 
-export async function GET(
-  request: Request,
-  context: { params: Promise<{ storyId: string }> }
-) {
+export async function GET(request: Request, context: { params: Promise<{ storyId: string }> }) {
   console.log('[Story Content API] GET request received');
   try {
     const { userId } = await auth();
     const { storyId } = await context.params;
-    
+
     console.log('[Story Content API] Story ID:', storyId);
-    console.log('[Story Content API] User ID:', userId);    // Check if user has access to the story (owner or collaborator)
-  let story;
-    
+    console.log('[Story Content API] User ID:', userId); // Check if user has access to the story (owner or collaborator)
+    let story;
+
     if (userId) {
       // If user is authenticated, check ownership, collaboration, or public access
       // Get the current user's author record
@@ -26,7 +23,7 @@ export async function GET(
         console.log('[Story Content API] Author not found');
         return NextResponse.json({ error: 'Author not found' }, { status: 404 });
       }
-      
+
       story = await db
         .select({
           storyId: stories.storyId,
@@ -45,15 +42,12 @@ export async function GET(
               // User is a collaborator
               and(
                 eq(storyCollaborators.userId, author.authorId),
-                or(
-                  eq(storyCollaborators.role, 'editor'),
-                  eq(storyCollaborators.role, 'viewer')
-                )
+                or(eq(storyCollaborators.role, 'editor'), eq(storyCollaborators.role, 'viewer')),
               ),
               // Story is public
-              eq(stories.isPublic, true)
-            )
-          )
+              eq(stories.isPublic, true),
+            ),
+          ),
         )
         .limit(1);
     } else {
@@ -66,12 +60,7 @@ export async function GET(
           isPublic: stories.isPublic,
         })
         .from(stories)
-        .where(
-          and(
-            eq(stories.storyId, storyId),
-            eq(stories.isPublic, true)
-          )
-        )
+        .where(and(eq(stories.storyId, storyId), eq(stories.isPublic, true)))
         .limit(1);
     }
 
@@ -81,10 +70,10 @@ export async function GET(
     }
 
     const storyData = story[0];
-    console.log('[Story Content API] Story data:', { 
-      storyId: storyData.storyId, 
+    console.log('[Story Content API] Story data:', {
+      storyId: storyData.storyId,
       title: storyData.title,
-      isPublic: storyData.isPublic 
+      isPublic: storyData.isPublic,
     });
 
     // Compose HTML content from the latest version of each chapter
@@ -112,8 +101,8 @@ export async function GET(
         and(
           eq(chapters.storyId, latestVersionsSubquery.storyId),
           eq(chapters.chapterNumber, latestVersionsSubquery.chapterNumber),
-          eq(chapters.version, latestVersionsSubquery.latestVersion)
-        )
+          eq(chapters.version, latestVersionsSubquery.latestVersion),
+        ),
       )
       .where(eq(chapters.storyId, storyData.storyId))
       .orderBy(asc(chapters.chapterNumber));
@@ -123,7 +112,10 @@ export async function GET(
     }
 
     const body = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${storyData.title}</title></head><body>${chapterRows
-      .map((c) => `<article data-chapter="${c.chapterNumber}"><h2>Chapter ${c.chapterNumber}: ${c.title}</h2>${c.htmlContent}</article>`)
+      .map(
+        (c) =>
+          `<article data-chapter="${c.chapterNumber}"><h2>Chapter ${c.chapterNumber}: ${c.title}</h2>${c.htmlContent}</article>`,
+      )
       .join('')}</body></html>`;
 
     return new NextResponse(body, {
@@ -133,12 +125,8 @@ export async function GET(
         'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
       },
     });
-
   } catch (error) {
     console.error('[Story Content API] Error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch story content' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch story content' }, { status: 500 });
   }
 }

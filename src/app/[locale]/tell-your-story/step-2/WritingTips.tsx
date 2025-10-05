@@ -19,7 +19,7 @@ export default function WritingTips() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTipIndex(prev => (prev + 1) % WRITING_TIPS.length);
+      setCurrentTipIndex((prev) => (prev + 1) % WRITING_TIPS.length);
     }, 5000);
     return () => clearInterval(interval);
   }, []);

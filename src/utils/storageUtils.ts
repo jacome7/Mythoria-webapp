@@ -7,18 +7,40 @@ const bucketName = process.env.STORAGE_BUCKET_NAME || 'mythoria-generated-storie
 /**
  * Get all image files from Google Cloud Storage for a specific story
  */
-export async function getStoryImagesFromStorage(storyId: string): Promise<Record<string, { url: string; timeCreated?: string; updated?: string; size?: string | number; contentType?: string }>> {
+export async function getStoryImagesFromStorage(
+  storyId: string,
+): Promise<
+  Record<
+    string,
+    {
+      url: string;
+      timeCreated?: string;
+      updated?: string;
+      size?: string | number;
+      contentType?: string;
+    }
+  >
+> {
   try {
     const bucket = storage.bucket(bucketName);
     const prefix = `${storyId}/images/`;
-    
+
     // List all files in the story's images folder
     const [files] = await bucket.getFiles({
       prefix,
-      delimiter: '/' // Only get files in the direct folder, not subfolders
+      delimiter: '/', // Only get files in the direct folder, not subfolders
     });
 
-    const mediaLinks: Record<string, { url: string; timeCreated?: string; updated?: string; size?: string | number; contentType?: string }> = {};
+    const mediaLinks: Record<
+      string,
+      {
+        url: string;
+        timeCreated?: string;
+        updated?: string;
+        size?: string | number;
+        contentType?: string;
+      }
+    > = {};
 
     // Process each file and create the media links object with metadata
     for (const file of files) {
@@ -29,28 +51,28 @@ export async function getStoryImagesFromStorage(storyId: string): Promise<Record
 
       // Extract filename without the prefix
       const filename = file.name.replace(prefix, '');
-      
+
       // Only include image files
       if (/\.(png|jpg|jpeg|webp|gif)$/i.test(filename)) {
         // Get file metadata
         const [metadata] = await file.getMetadata();
-        
+
         // Generate public URL
         const publicUrl = `https://storage.googleapis.com/${bucketName}/${file.name}`;
-        
+
         // Store both URL and metadata
         mediaLinks[filename] = {
           url: publicUrl,
           timeCreated: metadata.timeCreated,
           updated: metadata.updated,
           size: metadata.size,
-          contentType: metadata.contentType
+          contentType: metadata.contentType,
         };
       }
     }
 
     // (Removed verbose debug logging of discovered image filenames)
-    
+
     return mediaLinks;
   } catch (error) {
     console.error('Error fetching story images from Google Cloud Storage:', error);

@@ -22,7 +22,8 @@ const StoryCounter = () => {
           const errData = await response.json();
           if (errData && errData.error) {
             errorBody = errData.error;
-          }        } catch {
+          }
+        } catch {
           try {
             errorBody = await response.text();
           } catch {
@@ -35,7 +36,7 @@ const StoryCounter = () => {
       const data = await response.json();
 
       if (typeof data.count === 'number') {
-        setStoryCount(data.count*2+100); // Example transformation: double the count and add 100
+        setStoryCount(data.count * 2 + 100); // Example transformation: double the count and add 100
       } else if (typeof data.count === 'string') {
         const parsedCount = parseInt(data.count, 10);
         if (!isNaN(parsedCount)) {
@@ -45,9 +46,13 @@ const StoryCounter = () => {
         }
       } else {
         throw new Error(`Unexpected count type: ${typeof data.count} value: ${data.count}`);
-      }    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred while fetching story count.";
-      console.error("Failed to fetch story count:", err); 
+      }
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : 'An unknown error occurred while fetching story count.';
+      console.error('Failed to fetch story count:', err);
       setError(errorMessage);
       setStoryCount(null); // Clear count on error
     } finally {
@@ -67,13 +72,20 @@ const StoryCounter = () => {
       <div className="stat">
         <div className="stat-figure">
           <FaBookReader className="text-3xl" />
-        </div>        {isLoading && <div className="stat-value"><span className="loading loading-dots loading-md"></span></div>}
-        {error && <div className="stat-value text-error text-sm">{tCommonStoryCounter('error')}</div>}
+        </div>{' '}
+        {isLoading && (
+          <div className="stat-value">
+            <span className="loading loading-dots loading-md"></span>
+          </div>
+        )}
+        {error && (
+          <div className="stat-value text-error text-sm">{tCommonStoryCounter('error')}</div>
+        )}
         {!isLoading && !error && storyCount !== null && (
           <div className="stat-value">{storyCount.toLocaleString()}</div>
         )}
         {!isLoading && !error && storyCount === null && (
-            <div className="stat-value">{tCommonStoryCounter('notAvailable')}</div>
+          <div className="stat-value">{tCommonStoryCounter('notAvailable')}</div>
         )}
         <div className="stat-desc text-primary-content">{tCommonStoryCounter('description')}</div>
       </div>

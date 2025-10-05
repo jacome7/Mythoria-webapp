@@ -48,7 +48,6 @@ config.json
 secrets.json
 
 # IDE
-.vscode/
 .idea/
 *.swp
 *.swo

@@ -35,7 +35,7 @@ export default function SharedStoryPage() {
   const tAuth = useTranslations('Auth');
   const tActions = useTranslations('Actions');
   const token = (params?.token as string | undefined) ?? '';
-  
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [storyPreview, setStoryPreview] = useState<StoryPreview | null>(null);
@@ -98,7 +98,7 @@ export default function SharedStoryPage() {
     const signInUrl = `/${locale}/sign-in?redirect=${encodeURIComponent(sharedStoryPath)}`;
     const signUpUrl = `/${locale}/sign-up?redirect=${encodeURIComponent(sharedStoryPath)}`;
     const logoUrl = getLogoForGraphicalStyle(storyPreview.graphicalStyle);
-    
+
     return (
       <div className="min-h-screen bg-base-100">
         <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -106,13 +106,13 @@ export default function SharedStoryPage() {
             {/* Story Preview Section */}
             <div className="space-y-6">
               <h1 className="text-4xl font-bold text-gray-900">{storyPreview.title}</h1>
-              
+
               {/* Cover Image */}
               {storyPreview.coverUri && toAbsoluteImageUrl(storyPreview.coverUri) && (
                 <div className="flex justify-center">
                   <div className="relative">
-                    <Image 
-                      src={toAbsoluteImageUrl(storyPreview.coverUri)!} 
+                    <Image
+                      src={toAbsoluteImageUrl(storyPreview.coverUri)!}
                       alt={`${storyPreview.title} - Book Cover`}
                       className="rounded-lg shadow-lg max-w-sm w-full h-auto"
                       width={400}
@@ -122,12 +122,12 @@ export default function SharedStoryPage() {
                   </div>
                 </div>
               )}
-              
+
               {/* Author Name */}
               <p className="text-xl text-gray-700">
                 {tStoryReader('byAuthor', { authorName: storyPreview.authorName })}
               </p>
-              
+
               {/* Synopsis */}
               {storyPreview.synopsis && (
                 <div className="bg-base-200 rounded-lg p-6 text-left max-w-2xl mx-auto">
@@ -143,28 +143,20 @@ export default function SharedStoryPage() {
                 <h2 className="text-2xl font-bold text-gray-900">
                   {accessLevel === 'edit'
                     ? tSharedStoryPage('auth.signInToEdit')
-                    : tSharedStoryPage('auth.signInToRead')
-                  }
+                    : tSharedStoryPage('auth.signInToRead')}
                 </h2>
                 <p className="text-gray-600 text-lg">
                   {accessLevel === 'edit'
                     ? tSharedStoryPage('auth.createAccountToCollaborate')
-                    : tSharedStoryPage('auth.createAccountToReadFull')
-                  }
+                    : tSharedStoryPage('auth.createAccountToReadFull')}
                 </p>
               </div>
-              
+
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a
-                  href={signInUrl}
-                  className="btn btn-primary btn-lg px-8"
-                >
+                <a href={signInUrl} className="btn btn-primary btn-lg px-8">
                   {tAuth('signIn')}
                 </a>
-                <a
-                  href={signUpUrl}
-                  className="btn btn-outline btn-lg px-8"
-                >
+                <a href={signUpUrl} className="btn btn-outline btn-lg px-8">
                   {tAuth('createAccount')}
                 </a>
               </div>
@@ -172,12 +164,10 @@ export default function SharedStoryPage() {
 
             {/* Mythoria Branding */}
             <div className="space-y-4">
-              <p className="text-gray-600">
-                {tStoryReader('craftedWith')}
-              </p>
-              <Image 
-                src={logoUrl} 
-                alt="Mythoria Logo" 
+              <p className="text-gray-600">{tStoryReader('craftedWith')}</p>
+              <Image
+                src={logoUrl}
+                alt="Mythoria Logo"
                 className="mx-auto max-w-xs w-full h-auto"
                 width={300}
                 height={150}
@@ -193,21 +183,17 @@ export default function SharedStoryPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4 max-w-md mx-auto px-4">
           <FiAlertCircle className="text-4xl text-red-500 mx-auto" />
-          <h2 className="text-xl font-semibold text-gray-900">{tSharedStoryPage('errors.unableToAccess')}</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            {tSharedStoryPage('errors.unableToAccess')}
+          </h2>
           <p className="text-gray-600">{error}</p>
-          
+
           <div className="space-y-2">
-            <button
-              onClick={() => window.location.reload()}
-              className="btn btn-outline btn-sm"
-            >
+            <button onClick={() => window.location.reload()} className="btn btn-outline btn-sm">
               {tActions('tryAgain')}
             </button>
             <div>
-              <a
-                href={`/${locale}`}
-                className="btn btn-primary btn-sm"
-              >
+              <a href={`/${locale}`} className="btn btn-primary btn-sm">
                 {tActions('goToHomepage')}
               </a>
             </div>

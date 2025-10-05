@@ -78,9 +78,7 @@
         "✨ ¡Todo listo! Los Oompa-Loompas se van a por un cacao.",
         "🏆 ¡Misión cumplida! Tu historia encantará a todos."
       ],
-      "default": [
-        "⚡ Oompa-Loompas mágicos dan rienda suelta a su creatividad."
-      ]
+      "default": ["⚡ Oompa-Loompas mágicos dan rienda suelta a su creatividad."]
     },
     "timeUnits": {
       "second": "segundo",

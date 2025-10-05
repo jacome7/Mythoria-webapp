@@ -1,8 +1,4 @@
-import {
-  toAbsoluteImageUrl,
-  toRelativeImagePath,
-  formatImageUrl,
-} from '@/utils/image-url';
+import { toAbsoluteImageUrl, toRelativeImagePath, formatImageUrl } from '@/utils/image-url';
 
 const BASE = 'https://storage.googleapis.com/mythoria-generated-stories';
 

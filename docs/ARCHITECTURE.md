@@ -7,6 +7,7 @@ The Mythoria Web App is the frontend component of the Mythoria platform, built a
 ## System Architecture
 
 ### High-Level Architecture
+
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
 │     Users       │───►│  Load Balancer   │───►│  Mythoria       │
@@ -24,6 +25,7 @@ The Mythoria Web App is the frontend component of the Mythoria platform, built a
 ```
 
 ### Component Architecture
+
 ```
 mythoria-webapp/
 ├── Frontend Layer (React/Next.js)
@@ -53,6 +55,7 @@ mythoria-webapp/
 ## Technology Stack
 
 ### Frontend Technologies
+
 - **Framework**: Next.js 15 with App Router
 - **React Version**: React 19 RC
 - **Language**: TypeScript 5.x (strict mode)
@@ -63,7 +66,8 @@ mythoria-webapp/
 - **Animations**: Framer Motion for smooth interactions
 
 ### Backend Technologies
-- **Runtime**: Node.js 18+ 
+
+- **Runtime**: Node.js 18+
 - **API Framework**: Next.js API Routes with TypeScript
 - **Database**: PostgreSQL with connection pooling
 - **ORM**: Drizzle ORM for type-safe database operations
@@ -71,6 +75,7 @@ mythoria-webapp/
 - **Authentication**: Clerk for user management and session handling
 
 ### Infrastructure & Deployment
+
 - **Hosting Platform**: Google Cloud Run (europe-west9)
 - **Database**: Google Cloud SQL PostgreSQL
 - **Build System**: Google Cloud Build with automated CI/CD
@@ -80,6 +85,7 @@ mythoria-webapp/
 - **Analytics**: Google Analytics 4
 
 ### Development Tools
+
 - **Package Manager**: npm with package-lock.json
 - **Linting**: ESLint with TypeScript support
 - **Code Formatting**: Prettier with consistent configuration
@@ -89,6 +95,7 @@ mythoria-webapp/
 ## Architectural Patterns
 
 ### Clean Architecture Implementation
+
 The application follows clean architecture principles:
 
 1. **Presentation Layer**: React components and Next.js pages
@@ -98,9 +105,9 @@ The application follows clean architecture principles:
 5. **Infrastructure**: External service adapters
 
 ### Authentication Architecture
+
 ```yaml
-authentication_flow:
-  1. User initiates login via Clerk
+authentication_flow: 1. User initiates login via Clerk
   2. Clerk handles OAuth/password authentication
   3. JWT token issued and stored in secure cookies
   4. Next.js middleware validates tokens on protected routes
@@ -108,6 +115,7 @@ authentication_flow:
 ```
 
 ### Database Architecture
+
 The application uses a relational database design with the following key entities:
 
 - **Users**: Authentication and profile information
@@ -118,6 +126,7 @@ The application uses a relational database design with the following key entitie
 - **Usage Tracking**: Analytics and billing information
 
 ### API Design Patterns
+
 - **RESTful endpoints**: Standard HTTP methods and status codes
 - **Consistent error handling**: Standardized error responses
 - **Input validation**: Zod schemas for request validation
@@ -129,24 +138,28 @@ The application uses a relational database design with the following key entitie
 ### External Service Integrations
 
 #### Clerk Authentication
+
 - **Purpose**: User authentication and session management
 - **Integration**: Next.js middleware and React components
 - **Data Flow**: User registration/login → Webhook → Local database sync
 - **Security**: JWT tokens with secure cookie storage
 
 #### Story Generation Workflow
+
 - **Purpose**: AI-powered story generation and processing
 - **Communication**: REST API calls to SGW service
 - **Authentication**: Service-to-service JWT tokens
 - **Data Exchange**: JSON payloads with story metadata and content
 
 #### Notification Engine
+
 - **Purpose**: User notifications and communications
 - **Communication**: REST API calls for notification requests
 - **Integration**: Event-driven notifications for story completion
 - **Channels**: Email, push notifications, in-app messages
 
 #### Google Cloud Services
+
 - **Cloud Storage**: File uploads and media storage
 - **Secret Manager**: Secure configuration management
 - **Cloud Logging**: Application logging and monitoring
@@ -155,12 +168,14 @@ The application uses a relational database design with the following key entitie
 ## Security Architecture
 
 ### Authentication & Authorization
+
 - **User Authentication**: Clerk-managed with OAuth and password options
 - **Session Management**: Secure JWT tokens with refresh capabilities
 - **Role-Based Access**: User, premium, and admin role distinctions
 - **API Security**: Bearer token validation on all protected endpoints
 
 ### Data Protection
+
 - **Encryption at Rest**: Database encryption via Cloud SQL
 - **Encryption in Transit**: HTTPS/TLS for all communications
 - **Input Validation**: Comprehensive validation using Zod schemas
@@ -168,6 +183,7 @@ The application uses a relational database design with the following key entitie
 - **CSRF Protection**: Next.js built-in CSRF protection
 
 ### Infrastructure Security
+
 - **Container Security**: Distroless container images
 - **Network Security**: VPC configuration and firewall rules
 - **Secrets Management**: Google Secret Manager integration
@@ -176,6 +192,7 @@ The application uses a relational database design with the following key entitie
 ## Performance Considerations
 
 ### Frontend Optimization
+
 - **Code Splitting**: Automatic route-based and manual component splitting
 - **Image Optimization**: Next.js Image component with WebP conversion
 - **Lazy Loading**: Components and images loaded on demand
@@ -183,12 +200,14 @@ The application uses a relational database design with the following key entitie
 - **Bundle Optimization**: Tree shaking and minification
 
 ### Backend Optimization
+
 - **Database Connection Pooling**: Efficient database connection management
 - **Query Optimization**: Indexed queries and efficient data fetching
 - **Caching Strategy**: API response caching and static asset caching
 - **Async Processing**: Non-blocking operations for AI generation
 
 ### Infrastructure Optimization
+
 - **Auto Scaling**: Cloud Run automatic scaling based on demand
 - **CDN Integration**: Static asset delivery via Cloud CDN
 - **Regional Deployment**: Europe-west9 for optimal latency
@@ -197,18 +216,21 @@ The application uses a relational database design with the following key entitie
 ## Monitoring & Observability
 
 ### Application Monitoring
+
 - **Error Tracking**: Comprehensive error logging and alerting
 - **Performance Metrics**: Response times, throughput, and resource usage
 - **User Analytics**: Google Analytics 4 for user behavior tracking
 - **Custom Metrics**: Business-specific metrics and KPIs
 
 ### Infrastructure Monitoring
+
 - **Cloud Run Metrics**: Request count, latency, and error rates
 - **Database Monitoring**: Connection pool, query performance, and storage
 - **Resource Monitoring**: CPU, memory, and network usage
 - **Uptime Monitoring**: Service availability and health checks
 
 ### Logging Strategy
+
 - **Structured Logging**: JSON-formatted logs with correlation IDs
 - **Log Levels**: Debug, info, warn, error with appropriate filtering
 - **Centralized Logging**: Google Cloud Logging aggregation
@@ -217,18 +239,21 @@ The application uses a relational database design with the following key entitie
 ## Scalability Considerations
 
 ### Horizontal Scaling
+
 - **Stateless Design**: No server-side session storage
 - **Database Scaling**: Read replicas and connection pooling
 - **Service Decomposition**: Microservices architecture preparation
 - **Load Distribution**: Load balancing across multiple instances
 
 ### Vertical Scaling
+
 - **Resource Optimization**: Efficient memory and CPU usage
 - **Database Optimization**: Query optimization and indexing
 - **Caching Implementation**: Multi-layer caching strategy
 - **Asset Optimization**: Compressed images and optimized bundles
 
 ### Deployment Strategy
+
 - Containerized application using Next.js standalone output
 - Multi-stage Docker builds for optimized image size
 - Automatic scaling from zero instances

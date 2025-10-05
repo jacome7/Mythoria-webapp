@@ -9,16 +9,13 @@ import { and, eq, sql } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ jobId: string }> }
+  { params }: { params: Promise<{ jobId: string }> },
 ) {
   try {
     const { jobId } = await params;
-    
+
     if (!jobId) {
-      return NextResponse.json(
-        { success: false, error: 'Job ID is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'Job ID is required' }, { status: 400 });
     }
 
     // Forward the request to the story-generation-workflow service
@@ -32,7 +29,7 @@ export async function GET(
     if (!response.ok) {
       return NextResponse.json(
         { success: false, error: data.error || 'Failed to get job status' },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
@@ -50,14 +47,17 @@ export async function GET(
             if (storyId) {
               // Idempotency: check if we've already recorded this jobId in aiEdits metadata
               // We stored jobId inside metadata.jobId when recording; search by JSON extraction where supported.
-              const alreadyRecorded = await db.select({ id: aiEdits.id })
+              const alreadyRecorded = await db
+                .select({ id: aiEdits.id })
                 .from(aiEdits)
-                .where(and(
-                  eq(aiEdits.authorId, author.authorId),
-                  eq(aiEdits.storyId, storyId as string),
-                  // Fallback simple LIKE match on serialized metadata (portable) since Drizzle JSON path may vary
-                  sql`CAST(${aiEdits.metadata} AS TEXT) LIKE ${`%"jobId":"${jobId}"%`}`
-                ))
+                .where(
+                  and(
+                    eq(aiEdits.authorId, author.authorId),
+                    eq(aiEdits.storyId, storyId as string),
+                    // Fallback simple LIKE match on serialized metadata (portable) since Drizzle JSON path may vary
+                    sql`CAST(${aiEdits.metadata} AS TEXT) LIKE ${`%"jobId":"${jobId}"%`}`,
+                  ),
+                )
                 .limit(1);
 
               if (alreadyRecorded.length === 0) {
@@ -72,8 +72,8 @@ export async function GET(
                     userRequest: pending?.userRequest,
                     // Provide new image URL if present in result
                     newImageUrl: data.job.result?.newImageUrl,
-                    timestamp: new Date().toISOString()
-                  }
+                    timestamp: new Date().toISOString(),
+                  },
                 );
               }
 
@@ -88,12 +88,8 @@ export async function GET(
     }
 
     return NextResponse.json(data);
-
   } catch (error) {
     console.error('Error proxying job status request:', error);
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

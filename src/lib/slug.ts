@@ -13,15 +13,18 @@ export function generateSlug(title: string): string {
 /**
  * Ensure slug is unique by checking against existing slugs
  */
-export async function ensureUniqueSlug(baseSlug: string, checkFunction: (slug: string) => Promise<boolean>): Promise<string> {
+export async function ensureUniqueSlug(
+  baseSlug: string,
+  checkFunction: (slug: string) => Promise<boolean>,
+): Promise<string> {
   let slug = baseSlug;
   let counter = 1;
-  
+
   while (await checkFunction(slug)) {
     slug = `${baseSlug}-${counter}`;
     counter++;
   }
-  
+
   return slug;
 }
 

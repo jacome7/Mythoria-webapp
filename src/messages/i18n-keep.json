@@ -1,7 +1,3 @@
 {
-  "keep": [
-    "Characters.traits",
-    "Voices",
-    "common.voices"
-  ]
+  "keep": ["Characters.traits", "Voices", "common.voices"]
 }

@@ -90,13 +90,9 @@ GET /api/manifest?locale=pt-PT
 ### In Layout Components
 
 ```tsx
-import { getManifestUrl } from "@/lib/manifest";
+import { getManifestUrl } from '@/lib/manifest';
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { locale: string };
-}) {
+export async function generateMetadata({ params }: { params: { locale: string } }) {
   return {
     manifest: getManifestUrl(params.locale),
     // ... other metadata
@@ -107,9 +103,9 @@ export async function generateMetadata({
 ### Manual Generation
 
 ```typescript
-import { generateManifest } from "@/lib/manifest";
+import { generateManifest } from '@/lib/manifest';
 
-const manifest = await generateManifest("pt-PT");
+const manifest = await generateManifest('pt-PT');
 ```
 
 ## Development

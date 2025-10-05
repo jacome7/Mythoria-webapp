@@ -3,10 +3,7 @@ import { db } from '@/db';
 import { stories, authors } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 
-export async function GET(
-  request: Request,
-  context: { params: Promise<{ slug: string }> }
-) {
+export async function GET(request: Request, context: { params: Promise<{ slug: string }> }) {
   try {
     const { slug } = await context.params;
 
@@ -20,16 +17,11 @@ export async function GET(
         graphicalStyle: stories.graphicalStyle,
         author: {
           displayName: authors.displayName,
-        }
+        },
       })
       .from(stories)
       .leftJoin(authors, eq(authors.authorId, stories.authorId))
-      .where(
-        and(
-          eq(stories.slug, slug),
-          eq(stories.isPublic, true)
-        )
-      )
+      .where(and(eq(stories.slug, slug), eq(stories.isPublic, true)))
       .limit(1);
 
     if (!story.length) {
@@ -63,19 +55,27 @@ export async function GET(
         </text>
         
         <!-- Synopsis snippet -->
-        ${storyData.synopsis ? `
+        ${
+          storyData.synopsis
+            ? `
           <text x="600" y="400" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-family="Arial, sans-serif" font-size="18">
             ${storyData.synopsis.length > 60 ? storyData.synopsis.substring(0, 60) + '...' : storyData.synopsis}
           </text>
-        ` : ''}
+        `
+            : ''
+        }
         
         <!-- Audience badge -->
-        ${storyData.targetAudience ? `
+        ${
+          storyData.targetAudience
+            ? `
           <rect x="500" y="480" width="200" height="30" fill="rgba(255,255,255,0.2)" rx="15"/>
           <text x="600" y="500" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14">
             ${storyData.targetAudience.replace('_', ' ').replace('-', ' to ')}
           </text>
-        ` : ''}
+        `
+            : ''
+        }
         
         <!-- Footer -->
         <text x="600" y="570" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-family="Arial, sans-serif" font-size="16">
@@ -90,7 +90,6 @@ export async function GET(
         'Cache-Control': 'public, max-age=31536000, immutable',
       },
     });
-
   } catch (error) {
     console.error('Error generating OG image:', error);
     return new NextResponse('Error generating image', { status: 500 });

@@ -7,25 +7,18 @@ import { eq } from 'drizzle-orm';
 export async function GET() {
   try {
     const { userId } = await auth();
-    
+
     if (!userId) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     // Find the author by clerk user ID
-    const author = await db
-      .select()
-      .from(authors)
-      .where(eq(authors.clerkUserId, userId))
-      .limit(1);
+    const author = await db.select().from(authors).where(eq(authors.clerkUserId, userId)).limit(1);
 
     if (author.length === 0) {
       return NextResponse.json({
         success: true,
-        addresses: []
+        addresses: [],
       });
     }
 
@@ -34,16 +27,16 @@ export async function GET() {
       .select()
       .from(addresses)
       .where(eq(addresses.authorId, author[0].authorId));
-    
+
     return NextResponse.json({
       success: true,
-      addresses: userAddresses
+      addresses: userAddresses,
     });
   } catch (error) {
     console.error('Error fetching addresses:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch addresses' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -51,37 +44,27 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
-    
+
     if (!userId) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
-    
+
     // Validate required fields
     if (!body.line1 || !body.city || !body.country) {
       return NextResponse.json(
         { success: false, error: 'Missing required fields: line1, city, country' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Find the author by clerk user ID
-    const author = await db
-      .select()
-      .from(authors)
-      .where(eq(authors.clerkUserId, userId))
-      .limit(1);
+    const author = await db.select().from(authors).where(eq(authors.clerkUserId, userId)).limit(1);
 
     if (author.length === 0) {
-      return NextResponse.json(
-        { success: false, error: 'Author not found' },
-        { status: 404 }
-      );
-    }    // Create the address
+      return NextResponse.json({ success: false, error: 'Author not found' }, { status: 404 });
+    } // Create the address
     const newAddress = await db
       .insert(addresses)
       .values({
@@ -96,16 +79,16 @@ export async function POST(request: NextRequest) {
         phone: body.phone || null,
       })
       .returning();
-    
+
     return NextResponse.json({
       success: true,
-      address: newAddress[0]
+      address: newAddress[0],
     });
   } catch (error) {
     console.error('Error creating address:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to create address' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

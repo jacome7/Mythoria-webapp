@@ -23,7 +23,7 @@
           "description": "Pour les créateurs de l'histoire ultime!"
         }
       },
-  "buyButton": "Acheter {credits} crédits",
+      "buyButton": "Acheter {credits} crédits",
       "credits": "Crédits"
     },
     "serviceCosts": {

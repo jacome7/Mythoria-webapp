@@ -32,13 +32,16 @@ export default function CreditConfirmationModal({
   isLoading = false,
   isFullStory = false,
   chapterCount,
-  message
+  message,
 }: CreditConfirmationModalProps) {
   const tCommonCreditConfirmation = useTranslations('CreditConfirmation');
 
   if (!isOpen) return null;
 
-  const actionLabel = action === 'textEdit' ? tCommonCreditConfirmation('textEdit') : tCommonCreditConfirmation('imageEdit');
+  const actionLabel =
+    action === 'textEdit'
+      ? tCommonCreditConfirmation('textEdit')
+      : tCommonCreditConfirmation('imageEdit');
   const remainingBalance = currentBalance - requiredCredits;
 
   return (
@@ -52,11 +55,11 @@ export default function CreditConfirmationModal({
             </div>
             <div>
               <h2 className="text-lg font-bold">
-                {isFree ? tCommonCreditConfirmation('freeEditTitle') : tCommonCreditConfirmation('confirmEditTitle')}
+                {isFree
+                  ? tCommonCreditConfirmation('freeEditTitle')
+                  : tCommonCreditConfirmation('confirmEditTitle')}
               </h2>
-              <p className="text-sm text-base-content/70">
-                {actionLabel}
-              </p>
+              <p className="text-sm text-base-content/70">{actionLabel}</p>
             </div>
           </div>
           <button
@@ -75,15 +78,11 @@ export default function CreditConfirmationModal({
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex items-center space-x-2 mb-2">
                 <FiZap className="w-4 h-4 text-blue-600" />
-                <span className="text-sm font-medium text-blue-900">
-                  Full Story Edit
-                </span>
+                <span className="text-sm font-medium text-blue-900">Full Story Edit</span>
               </div>
               <p className="text-sm text-blue-800 mb-2">{message}</p>
               {chapterCount && (
-                <p className="text-xs text-blue-600">
-                  Editing {chapterCount} chapters
-                </p>
+                <p className="text-xs text-blue-600">Editing {chapterCount} chapters</p>
               )}
             </div>
           )}
@@ -92,33 +91,35 @@ export default function CreditConfirmationModal({
           {!isFullStory && (
             <div className="bg-base-200 rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">{tCommonCreditConfirmation('editProgress')}</span>
+                <span className="text-sm font-medium">
+                  {tCommonCreditConfirmation('editProgress')}
+                </span>
                 <span className="text-xs text-base-content/70">
                   {editCount} {tCommonCreditConfirmation('editsCompleted')}
                 </span>
               </div>
-              
+
               {action === 'textEdit' ? (
                 <div>
-                  <progress 
-                    className="progress progress-primary w-full" 
-                    value={editCount % 5} 
+                  <progress
+                    className="progress progress-primary w-full"
+                    value={editCount % 5}
                     max={5}
                   ></progress>
                   <p className="text-xs text-base-content/60 mt-1">
-                    {editCount < 5 
-                      ? tCommonCreditConfirmation('textEditFreeRemaining', { remaining: 5 - editCount })
-                      : tCommonCreditConfirmation('textEditPaidMode')
-                    }
+                    {editCount < 5
+                      ? tCommonCreditConfirmation('textEditFreeRemaining', {
+                          remaining: 5 - editCount,
+                        })
+                      : tCommonCreditConfirmation('textEditPaidMode')}
                   </p>
                 </div>
               ) : (
                 <div>
                   <p className="text-xs text-base-content/60">
-                    {editCount === 0 
+                    {editCount === 0
                       ? tCommonCreditConfirmation('imageEditFirstFree')
-                      : tCommonCreditConfirmation('imageEditPaidMode')
-                    }
+                      : tCommonCreditConfirmation('imageEditPaidMode')}
                   </p>
                 </div>
               )}
@@ -128,7 +129,9 @@ export default function CreditConfirmationModal({
           {/* Credit Information */}
           <div className="bg-base-200 rounded-lg p-4">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-medium">{tCommonCreditConfirmation('creditBalance')}</span>
+              <span className="text-sm font-medium">
+                {tCommonCreditConfirmation('creditBalance')}
+              </span>
               <div className="flex items-center gap-1">
                 <FiZap className="w-4 h-4 text-warning" />
                 <span className="font-bold">{currentBalance}</span>
@@ -143,7 +146,9 @@ export default function CreditConfirmationModal({
                 </div>
                 <div className="border-tCommonCreditConfirmation border-base-300 pt-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">{tCommonCreditConfirmation('remainingBalance')}</span>
+                    <span className="text-sm font-medium">
+                      {tCommonCreditConfirmation('remainingBalance')}
+                    </span>
                     <div className="flex items-center gap-1">
                       <FiZap className="w-4 h-4 text-warning" />
                       <span className="font-bold">{remainingBalance}</span>
@@ -163,8 +168,18 @@ export default function CreditConfirmationModal({
           {/* Low Credit Warning */}
           {!isFree && remainingBalance < 2 && (
             <div className="alert alert-warning">
-              <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.996-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="stroke-current shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.996-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"
+                />
               </svg>
               <div>
                 <h3 className="font-bold">{tCommonCreditConfirmation('lowCreditsWarning')}</h3>
@@ -184,7 +199,7 @@ export default function CreditConfirmationModal({
           >
             {tCommonCreditConfirmation('cancel')}
           </button>
-          
+
           {currentBalance >= requiredCredits ? (
             <button
               type="button"
@@ -207,16 +222,16 @@ export default function CreditConfirmationModal({
                   ) : (
                     <>
                       <FiCreditCard className="w-4 h-4" />
-                      {tCommonCreditConfirmation('proceedWithCredits', { credits: requiredCredits })}
+                      {tCommonCreditConfirmation('proceedWithCredits', {
+                        credits: requiredCredits,
+                      })}
                     </>
                   )}
                 </>
               )}
-            </button>          ) : (
-            <Link
-              href="/buy-credits"
-              className="btn btn-warning flex-1"
-            >
+            </button>
+          ) : (
+            <Link href="/buy-credits" className="btn btn-warning flex-1">
               <FiCreditCard className="w-4 h-4" />
               {tCommonCreditConfirmation('buyCredits')}
             </Link>

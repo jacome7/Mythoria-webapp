@@ -2,20 +2,20 @@
  * Utility functions for mapping story graphical styles to logo images
  */
 
-export type GraphicalStyle = 
-  | 'cartoon' 
-  | 'realistic' 
-  | 'watercolor' 
-  | 'digital_art' 
-  | 'hand_drawn' 
-  | 'minimalist' 
-  | 'vintage' 
-  | 'comic_book' 
-  | 'anime' 
-  | 'pixar_style' 
-  | 'disney_style' 
-  | 'sketch' 
-  | 'oil_painting' 
+export type GraphicalStyle =
+  | 'cartoon'
+  | 'realistic'
+  | 'watercolor'
+  | 'digital_art'
+  | 'hand_drawn'
+  | 'minimalist'
+  | 'vintage'
+  | 'comic_book'
+  | 'anime'
+  | 'pixar_style'
+  | 'disney_style'
+  | 'sketch'
+  | 'oil_painting'
   | 'colored_pencil';
 
 /**
@@ -45,11 +45,11 @@ const GRAPHICAL_STYLE_TO_LOGO: Record<GraphicalStyle, string> = {
  */
 export function getLogoForGraphicalStyle(graphicalStyle?: string): string {
   const baseUrl = 'https://mythoria.pt/images/logo/';
-  
+
   if (!graphicalStyle) {
     return `${baseUrl}Logo.jpg`; // Default logo
   }
-  
+
   const logoFilename = GRAPHICAL_STYLE_TO_LOGO[graphicalStyle as GraphicalStyle];
   return `${baseUrl}${logoFilename || 'Logo.jpg'}`;
 }
@@ -63,6 +63,6 @@ export function getLogoFilename(graphicalStyle?: string): string {
   if (!graphicalStyle) {
     return 'Logo.jpg'; // Default logo
   }
-  
+
   return GRAPHICAL_STYLE_TO_LOGO[graphicalStyle as GraphicalStyle] || 'Logo.jpg';
 }

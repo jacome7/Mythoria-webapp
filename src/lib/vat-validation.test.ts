@@ -28,8 +28,8 @@ describe('formatVATNumber', () => {
 describe('getSupportedVATCountries', () => {
   it('includes Germany in the list', () => {
     const countries = getSupportedVATCountries();
-    expect(countries).toEqual(expect.arrayContaining([
-      expect.objectContaining({ code: 'DE', name: 'Germany' }),
-    ]));
+    expect(countries).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: 'DE', name: 'Germany' })]),
+    );
   });
 });

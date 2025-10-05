@@ -1,24 +1,21 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
-import { useTranslations } from "next-intl";
-import { FiArrowLeft, FiRotateCcw, FiRotateCw } from "react-icons/fi";
-import {
-  convertApiChaptersToChapters,
-  type ApiChapter,
-} from "@/utils/chapterConversion";
+import { useEffect, useState, useCallback } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
+import { useTranslations } from 'next-intl';
+import { FiArrowLeft, FiRotateCcw, FiRotateCw } from 'react-icons/fi';
+import { convertApiChaptersToChapters, type ApiChapter } from '@/utils/chapterConversion';
 
 // Components
-import ChapterEditor from "@/components/chapter-editor/ChapterEditor";
-import ChapterNavigation from "../../../../../../../components/ChapterNavigation";
-import ToastContainer from "../../../../../../../components/ToastContainer";
-import AITextStoryEditor from "../../../../../../../components/AITextStoryEditor";
-import AIImageEditor from "../../../../../../../components/AIImageEditor";
+import ChapterEditor from '@/components/chapter-editor/ChapterEditor';
+import ChapterNavigation from '../../../../../../../components/ChapterNavigation';
+import ToastContainer from '../../../../../../../components/ToastContainer';
+import AITextStoryEditor from '../../../../../../../components/AITextStoryEditor';
+import AIImageEditor from '../../../../../../../components/AIImageEditor';
 
 // Hooks
-import { useToast } from "../../../../../../../hooks/useToast";
+import { useToast } from '../../../../../../../hooks/useToast';
 
 // API types (matching the route response)
 interface ApiStory {
@@ -49,19 +46,16 @@ export default function EditChapterPage() {
   }>();
   const router = useRouter();
   const { user } = useUser();
-  const tLoading = useTranslations("Loading");
-  const tErrors = useTranslations("Errors");
-  const tActions = useTranslations("Actions");
-  const tChapterEditor = useTranslations("ChapterEditor");
-  const tStoryInfoEditor = useTranslations("StoryInfoEditor");
-  const tEditor = useTranslations("Editor");
+  const tLoading = useTranslations('Loading');
+  const tErrors = useTranslations('Errors');
+  const tActions = useTranslations('Actions');
+  const tChapterEditor = useTranslations('ChapterEditor');
+  const tStoryInfoEditor = useTranslations('StoryInfoEditor');
+  const tEditor = useTranslations('Editor');
 
-  const storyId = (params?.storyId as string | undefined) ?? "";
-  const chapterNumber = parseInt(
-    (params?.chapterNumber as string | undefined) ?? "0",
-    10,
-  );
-  const locale = (params?.locale as string | undefined) ?? "";
+  const storyId = (params?.storyId as string | undefined) ?? '';
+  const chapterNumber = parseInt((params?.chapterNumber as string | undefined) ?? '0', 10);
+  const locale = (params?.locale as string | undefined) ?? '';
 
   // State
   const [storyData, setStoryData] = useState<ApiResponse | null>(null);
@@ -71,7 +65,7 @@ export default function EditChapterPage() {
   const [showAIImageEditor, setShowAIImageEditor] = useState(false);
   const [selectedImageData, setSelectedImageData] = useState<{
     imageUri: string;
-    imageType: "cover" | "backcover" | "chapter";
+    imageType: 'cover' | 'backcover' | 'chapter';
     chapterNumber?: number;
     title?: string;
   } | null>(null);
@@ -80,9 +74,7 @@ export default function EditChapterPage() {
   const { toasts, addToast, removeToast } = useToast();
 
   // Calculate current chapter data
-  const currentChapterData = storyData?.chapters.find(
-    (c) => c.chapterNumber === chapterNumber,
-  );
+  const currentChapterData = storyData?.chapters.find((c) => c.chapterNumber === chapterNumber);
 
   // Load story data
   const loadStoryData = useCallback(async () => {
@@ -93,7 +85,7 @@ export default function EditChapterPage() {
       const response = await fetch(`/api/stories/${storyId}/edit`);
 
       if (!response.ok) {
-        throw new Error("Failed to load story data");
+        throw new Error('Failed to load story data');
       }
 
       const data: ApiResponse = await response.json();
@@ -102,14 +94,14 @@ export default function EditChapterPage() {
 
         // Verify the requested chapter exists
         if (!data.chapters.some((c) => c.chapterNumber === chapterNumber)) {
-          throw new Error(tEditor("chapterNotFound"));
+          throw new Error(tEditor('chapterNotFound'));
         }
       } else {
-        throw new Error("Failed to load story");
+        throw new Error('Failed to load story');
       }
     } catch (error) {
-      console.error("Error loading story:", error);
-      addToast(tChapterEditor("errors.failedToLoadStoryData"), "error");
+      console.error('Error loading story:', error);
+      addToast(tChapterEditor('errors.failedToLoadStoryData'), 'error');
     } finally {
       setLoading(false);
     }
@@ -122,25 +114,22 @@ export default function EditChapterPage() {
     try {
       setSaving(true);
 
-      const response = await fetch(
-        `/api/stories/${storyId}/chapters/${chapterNumber}/edit`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            title: title || `Chapter ${chapterNumber}`,
-            htmlContent: content,
-            imageUri: currentChapterData?.imageUri || null,
-            imageThumbnailUri: currentChapterData?.imageThumbnailUri || null,
-            audioUri: currentChapterData?.audioUri || null,
-          }),
+      const response = await fetch(`/api/stories/${storyId}/chapters/${chapterNumber}/edit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify({
+          title: title || `Chapter ${chapterNumber}`,
+          htmlContent: content,
+          imageUri: currentChapterData?.imageUri || null,
+          imageThumbnailUri: currentChapterData?.imageThumbnailUri || null,
+          audioUri: currentChapterData?.audioUri || null,
+        }),
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to save chapter");
+        throw new Error('Failed to save chapter');
       }
 
       const result = await response.json();
@@ -164,14 +153,14 @@ export default function EditChapterPage() {
       });
 
       addToast(
-        tStoryInfoEditor("messages.chapterSavedWithVersion", {
+        tStoryInfoEditor('messages.chapterSavedWithVersion', {
           version: result.chapter.version,
         }),
-        "success",
+        'success',
       );
     } catch (error) {
-      console.error("Error saving chapter:", error);
-      addToast(tStoryInfoEditor("messages.failedToSaveChapter"), "error");
+      console.error('Error saving chapter:', error);
+      addToast(tStoryInfoEditor('messages.failedToSaveChapter'), 'error');
     } finally {
       setSaving(false);
     }
@@ -182,24 +171,21 @@ export default function EditChapterPage() {
     if (!storyData || !currentChapterData) return;
 
     if (currentChapterData.version <= 1) {
-      addToast(tStoryInfoEditor("messages.noPreviousVersion"), "warning");
+      addToast(tStoryInfoEditor('messages.noPreviousVersion'), 'warning');
       return;
     }
 
     try {
-      const response = await fetch(
-        `/api/stories/${storyId}/chapters/${chapterNumber}/edit`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ version: currentChapterData.version - 1 }),
+      const response = await fetch(`/api/stories/${storyId}/chapters/${chapterNumber}/edit`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify({ version: currentChapterData.version - 1 }),
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to undo chapter");
+        throw new Error('Failed to undo chapter');
       }
 
       const result = await response.json();
@@ -223,14 +209,14 @@ export default function EditChapterPage() {
       });
 
       addToast(
-        tStoryInfoEditor("messages.revertedToVersion", {
+        tStoryInfoEditor('messages.revertedToVersion', {
           version: result.chapter.version,
         }),
-        "success",
+        'success',
       );
     } catch (error) {
-      console.error("Error undoing chapter:", error);
-      addToast(tStoryInfoEditor("messages.failedToUndoChapter"), "error");
+      console.error('Error undoing chapter:', error);
+      addToast(tStoryInfoEditor('messages.failedToUndoChapter'), 'error');
     }
   };
 
@@ -239,16 +225,13 @@ export default function EditChapterPage() {
     if (!storyData || !currentChapterData) return;
 
     try {
-      const response = await fetch(
-        `/api/stories/${storyId}/chapters/${chapterNumber}/edit`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ version: currentChapterData.version + 1 }),
+      const response = await fetch(`/api/stories/${storyId}/chapters/${chapterNumber}/edit`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify({ version: currentChapterData.version + 1 }),
+      });
 
       if (!response.ok) {
         // Silently fail if no newer version exists
@@ -276,13 +259,13 @@ export default function EditChapterPage() {
       });
 
       addToast(
-        tStoryInfoEditor("messages.advancedToVersion", {
+        tStoryInfoEditor('messages.advancedToVersion', {
           version: result.chapter.version,
         }),
-        "success",
+        'success',
       );
     } catch (error) {
-      console.error("Error redoing chapter:", error);
+      console.error('Error redoing chapter:', error);
     }
   };
 
@@ -299,9 +282,7 @@ export default function EditChapterPage() {
       router.push(`/${locale}/stories/edit/${storyId}`);
     } else {
       // Navigate to different chapter edit page
-      router.push(
-        `/${locale}/stories/edit/${storyId}/chapter/${newChapterNumber}`,
-      );
+      router.push(`/${locale}/stories/edit/${storyId}/chapter/${newChapterNumber}`);
     }
   };
 
@@ -319,12 +300,12 @@ export default function EditChapterPage() {
 
   // Handle AI edit success
   const handleAIEditSuccess = async (updatedData: Record<string, unknown>) => {
-    console.log("AI Edit Success - Updated Data:", updatedData);
+    console.log('AI Edit Success - Updated Data:', updatedData);
 
     // Handle full story edit - redirect to main story page
-    if (updatedData.scope === "story") {
+    if (updatedData.scope === 'story') {
       const storyEditData = updatedData as {
-        scope: "story";
+        scope: 'story';
         updatedChapters: Array<{
           chapterNumber: number;
           success: boolean;
@@ -344,20 +325,17 @@ export default function EditChapterPage() {
         const failedChapters = storyEditData.updatedChapters
           .filter((ch) => !ch.success)
           .map((ch) => ch.chapterNumber)
-          .join(", ");
+          .join(', ');
 
         addToast(
-          tEditor("chapterUpdates.chaptersUpdatedSuccessfully", {
+          tEditor('chapterUpdates.chaptersUpdatedSuccessfully', {
             successCount,
             failedChapters,
           }),
-          "warning",
+          'warning',
         );
       } else {
-        addToast(
-          tEditor("chapterUpdates.allChaptersUpdated", { successCount }),
-          "success",
-        );
+        addToast(tEditor('chapterUpdates.allChaptersUpdated', { successCount }), 'success');
       }
 
       // Redirect to main story edit page
@@ -366,10 +344,7 @@ export default function EditChapterPage() {
     }
 
     // Handle single chapter edit
-    if (
-      updatedData.updatedHtml &&
-      typeof updatedData.updatedHtml === "string"
-    ) {
+    if (updatedData.updatedHtml && typeof updatedData.updatedHtml === 'string') {
       // Update the specific chapter content immediately
       setStoryData((prev) => {
         if (!prev) return prev;
@@ -388,24 +363,16 @@ export default function EditChapterPage() {
         return { ...prev, chapters: updatedChapters };
       });
 
-      addToast(
-        tStoryInfoEditor("messages.chapterUpdatedSuccessfully"),
-        "success",
-      );
+      addToast(tStoryInfoEditor('messages.chapterUpdatedSuccessfully'), 'success');
     } else {
       // Fallback: reload story data to get the latest changes
       await loadStoryData();
-      addToast(
-        tStoryInfoEditor("messages.contentUpdatedSuccessfully"),
-        "success",
-      );
+      addToast(tStoryInfoEditor('messages.contentUpdatedSuccessfully'), 'success');
     }
   };
 
   // Handle AI edit optimistic update
-  const handleAIEditOptimisticUpdate = (
-    _updatedData: Record<string, unknown>,
-  ) => {
+  const handleAIEditOptimisticUpdate = (_updatedData: Record<string, unknown>) => {
     // Mark as intentionally unused for now to avoid lint warnings until optimistic UI is implemented
     void _updatedData;
   };
@@ -424,9 +391,9 @@ export default function EditChapterPage() {
   }) => {
     setSelectedImageData({
       imageUri: imageData.imageUri,
-      imageType: imageData.imageType as "cover" | "backcover" | "chapter",
+      imageType: imageData.imageType as 'cover' | 'backcover' | 'chapter',
       chapterNumber: imageData.chapterNumber,
-      title: tEditor("imageEditor.chapterTitle", {
+      title: tEditor('imageEditor.chapterTitle', {
         chapterNumber: imageData.chapterNumber ?? 0,
       }),
     });
@@ -444,7 +411,7 @@ export default function EditChapterPage() {
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center">
           <div className="loading loading-spinner loading-lg text-primary mb-4"></div>
-          <p className="text-lg font-medium">{tLoading("default")}</p>
+          <p className="text-lg font-medium">{tLoading('default')}</p>
         </div>
       </div>
     );
@@ -456,16 +423,14 @@ export default function EditChapterPage() {
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center max-w-md">
           <div className="text-6xl mb-4">😞</div>
-          <h1 className="text-2xl font-bold mb-2">{tErrors("generic")}</h1>
-          <p className="text-base-content/70 mb-6">
-            {tEditor("chapterNotFound")}
-          </p>
+          <h1 className="text-2xl font-bold mb-2">{tErrors('generic')}</h1>
+          <p className="text-base-content/70 mb-6">{tEditor('chapterNotFound')}</p>
           <button
             onClick={() => router.push(`/${locale}/stories/edit/${storyId}`)}
             className="btn btn-primary"
           >
             <FiArrowLeft className="w-4 h-4 mr-2" />
-            {tEditor("backToStory")}
+            {tEditor('backToStory')}
           </button>
         </div>
       </div>
@@ -483,9 +448,7 @@ export default function EditChapterPage() {
           <div className="flex items-center gap-3">
             <button onClick={handleGoBack} className="btn btn-ghost btn-sm">
               <FiArrowLeft className="w-4 h-4" />
-              <span className="hidden sm:inline ml-2">
-                {tActions("goBack")}
-              </span>
+              <span className="hidden sm:inline ml-2">{tActions('goBack')}</span>
             </button>
 
             <h1 className="text-xl font-bold">{storyData.story.title}</h1>
@@ -504,7 +467,7 @@ export default function EditChapterPage() {
               onClick={undoChapter}
               disabled={!canUndo}
               className="btn btn-outline btn-sm"
-              title={tEditor("undoPreviousVersion")}
+              title={tEditor('undoPreviousVersion')}
             >
               <FiRotateCcw className="w-4 h-4" />
             </button>
@@ -513,7 +476,7 @@ export default function EditChapterPage() {
               onClick={redoChapter}
               disabled={!canRedo}
               className="btn btn-outline btn-sm"
-              title={tEditor("redoNextVersion")}
+              title={tEditor('redoNextVersion')}
             >
               <FiRotateCw className="w-4 h-4" />
             </button>

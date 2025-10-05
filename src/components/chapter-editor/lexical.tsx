@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   $getRoot,
   $createParagraphNode,
@@ -8,49 +8,49 @@ import {
   createCommand,
   LexicalCommand,
   type EditorState,
-} from "lexical";
-import { $generateHtmlFromNodes, $generateNodesFromDOM } from "@lexical/html";
-import { HeadingNode, QuoteNode } from "@lexical/rich-text";
-import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import type { DOMConversionMap, DOMConversionOutput } from "lexical";
+} from 'lexical';
+import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html';
+import { HeadingNode, QuoteNode } from '@lexical/rich-text';
+import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import type { DOMConversionMap, DOMConversionOutput } from 'lexical';
 
 // Text size definitions
-export type TextSize = "small" | "medium" | "large" | "xlarge";
+export type TextSize = 'small' | 'medium' | 'large' | 'xlarge';
 
 export const TEXT_SIZE_OPTIONS = [
-  { value: "small" as TextSize, em: "0.875em" },
-  { value: "medium" as TextSize, em: "1em" },
-  { value: "large" as TextSize, em: "1.25em" },
-  { value: "xlarge" as TextSize, em: "1.5em" },
+  { value: 'small' as TextSize, em: '0.875em' },
+  { value: 'medium' as TextSize, em: '1em' },
+  { value: 'large' as TextSize, em: '1.25em' },
+  { value: 'xlarge' as TextSize, em: '1.5em' },
 ];
 
-export const FORMAT_TEXT_SIZE_COMMAND: LexicalCommand<TextSize | null> =
-  createCommand("FORMAT_TEXT_SIZE_COMMAND");
+export const FORMAT_TEXT_SIZE_COMMAND: LexicalCommand<TextSize | null> = createCommand(
+  'FORMAT_TEXT_SIZE_COMMAND',
+);
 
 export function normalizeHtmlContent(content: string): string {
   if (!content || !content.trim()) {
-    return "<p><br></p>";
+    return '<p><br></p>';
   }
 
   const trimmed = content.trim();
-  const hasBlockElements =
-    /<(p|div|h[1-6]|ul|ol|li|blockquote|pre)\b[^>]*>/i.test(trimmed);
+  const hasBlockElements = /<(p|div|h[1-6]|ul|ol|li|blockquote|pre)\b[^>]*>/i.test(trimmed);
 
   if (hasBlockElements) {
     return trimmed;
   }
 
-  const hasLineBreaks = trimmed.includes("\n") || trimmed.includes("<br");
+  const hasLineBreaks = trimmed.includes('\n') || trimmed.includes('<br');
 
   if (hasLineBreaks) {
     const paragraphs = trimmed
       .split(/\n\s*\n/)
-      .map((para) => para.replace(/\n/g, "<br>").trim())
+      .map((para) => para.replace(/\n/g, '<br>').trim())
       .filter((para) => para.length > 0)
       .map((para) => `<p>${para}</p>`)
-      .join("");
-    return paragraphs || "<p><br></p>";
+      .join('');
+    return paragraphs || '<p><br></p>';
   }
 
   return `<p>${trimmed}</p>`;
@@ -64,7 +64,7 @@ const fontSizeSpanConversion: DOMConversionMap = {
     return {
       priority: 2,
       conversion: (node: HTMLElement): DOMConversionOutput => {
-        const textNode = $createTextNode(node.textContent ?? "");
+        const textNode = $createTextNode(node.textContent ?? '');
         const existingStyle = textNode.getStyle();
         const newStyle = existingStyle
           ? `${existingStyle}; font-size: ${fontSize}`
@@ -77,18 +77,18 @@ const fontSizeSpanConversion: DOMConversionMap = {
 };
 
 export const initialConfig = {
-  namespace: "ChapterEditor",
+  namespace: 'ChapterEditor',
   theme: {
     text: {
-      bold: "font-bold",
-      italic: "italic",
-      underline: "underline",
+      bold: 'font-bold',
+      italic: 'italic',
+      underline: 'underline',
     },
-    paragraph: "mb-2",
+    paragraph: 'mb-2',
     heading: {
-      h1: "text-2xl font-bold mb-4",
-      h2: "text-xl font-bold mb-3",
-      h3: "text-lg font-bold mb-2",
+      h1: 'text-2xl font-bold mb-4',
+      h2: 'text-xl font-bold mb-3',
+      h3: 'text-lg font-bold mb-2',
     },
   },
   nodes: [HeadingNode, QuoteNode],
@@ -96,7 +96,7 @@ export const initialConfig = {
     import: fontSizeSpanConversion,
   },
   onError: (error: Error) => {
-    console.error("Lexical editor error:", error);
+    console.error('Lexical editor error:', error);
   },
 };
 
@@ -119,37 +119,30 @@ export function ContentInitializationPlugin({
 
           const normalizedContent = normalizeHtmlContent(initialContent);
 
-          if (normalizedContent && normalizedContent !== "<p><br></p>") {
+          if (normalizedContent && normalizedContent !== '<p><br></p>') {
             try {
               const parser = new DOMParser();
-              const dom = parser.parseFromString(
-                normalizedContent,
-                "text/html",
-              );
+              const dom = parser.parseFromString(normalizedContent, 'text/html');
               const nodes = $generateNodesFromDOM(editor, dom);
 
               if (nodes.length > 0) {
                 root.append(...nodes);
               } else {
-                const tempDiv = document.createElement("div");
+                const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = normalizedContent;
-                const textContent =
-                  tempDiv.textContent || tempDiv.innerText || "";
+                const textContent = tempDiv.textContent || tempDiv.innerText || '';
 
                 if (textContent.trim()) {
                   try {
                     const fallbackDom = parser.parseFromString(
                       `<p>${normalizedContent}</p>`,
-                      "text/html",
+                      'text/html',
                     );
-                    const fallbackNodes = $generateNodesFromDOM(
-                      editor,
-                      fallbackDom,
-                    );
+                    const fallbackNodes = $generateNodesFromDOM(editor, fallbackDom);
                     if (fallbackNodes.length > 0) {
                       root.append(...fallbackNodes);
                     } else {
-                      throw new Error("No nodes generated");
+                      throw new Error('No nodes generated');
                     }
                   } catch {
                     const paragraph = $createParagraphNode();
@@ -161,10 +154,9 @@ export function ContentInitializationPlugin({
                 }
               }
             } catch {
-              const tempDiv = document.createElement("div");
+              const tempDiv = document.createElement('div');
               tempDiv.innerHTML = initialContent;
-              const textContent =
-                tempDiv.textContent || tempDiv.innerText || "";
+              const textContent = tempDiv.textContent || tempDiv.innerText || '';
 
               const paragraph = $createParagraphNode();
               if (textContent.trim()) {
@@ -179,7 +171,7 @@ export function ContentInitializationPlugin({
 
         setIsInitialized(true);
       } catch (error) {
-        console.error("❌ Failed to initialize editor:", error);
+        console.error('❌ Failed to initialize editor:', error);
         editor.update(() => {
           const root = $getRoot();
           root.clear();
@@ -217,9 +209,7 @@ export function ContentChangePlugin({
     editorState.read(() => {
       const htmlString = $generateHtmlFromNodes(editor);
       onContentChange?.(htmlString);
-      onHasChanges(
-        currentTitle !== chapterTitle || htmlString !== initialContent,
-      );
+      onHasChanges(currentTitle !== chapterTitle || htmlString !== initialContent);
     });
   };
 

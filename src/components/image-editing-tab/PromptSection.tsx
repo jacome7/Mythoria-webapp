@@ -24,7 +24,9 @@ export default function PromptSection({
       <div>
         <label className="label">
           <span className="label-text font-medium">{t('editRequest.label')}</span>
-          <span className="label-text-alt">{t('editRequest.charactersCount', { current: userRequest.length, max: 2000 })}</span>
+          <span className="label-text-alt">
+            {t('editRequest.charactersCount', { current: userRequest.length, max: 2000 })}
+          </span>
         </label>
         <textarea
           value={userRequest}
@@ -36,8 +38,16 @@ export default function PromptSection({
           required
         />
       </div>
-      {error && <div className="alert alert-error"><span>{error}</span></div>}
-      <button type="submit" className="btn btn-primary w-full" disabled={isLoading || !userRequest.trim()}>
+      {error && (
+        <div className="alert alert-error">
+          <span>{error}</span>
+        </div>
+      )}
+      <button
+        type="submit"
+        className="btn btn-primary w-full"
+        disabled={isLoading || !userRequest.trim()}
+      >
         {isLoading ? t('buttons.editingImage') : t('buttons.generateNewVersion')}
       </button>
     </form>

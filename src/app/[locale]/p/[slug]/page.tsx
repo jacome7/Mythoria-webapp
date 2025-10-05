@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
 import {
   FiLoader,
   FiAlertCircle,
@@ -13,10 +13,10 @@ import {
   FiPrinter,
   FiVolume2,
   FiEdit3,
-} from "react-icons/fi";
-import PublicStoryRating from "@/components/PublicStoryRating";
-import StoryReader from "@/components/StoryReader";
-import { formatDate } from "@/utils/date";
+} from 'react-icons/fi';
+import PublicStoryRating from '@/components/PublicStoryRating';
+import StoryReader from '@/components/StoryReader';
+import { formatDate } from '@/utils/date';
 
 interface Chapter {
   id: string;
@@ -59,19 +59,19 @@ interface PublicStoryData {
     hasAudio?: boolean;
   };
   chapters: Chapter[];
-  accessLevel: "public";
+  accessLevel: 'public';
   error?: string;
 }
 
 export default function PublicStoryPage() {
   const params = useParams();
   const locale = useLocale();
-  const tPublicStoryPage = useTranslations("PublicStoryPage");
-  const tActions = useTranslations("Actions");
-  const tGetInspiredPage = useTranslations("GetInspiredPage");
+  const tPublicStoryPage = useTranslations('PublicStoryPage');
+  const tActions = useTranslations('Actions');
+  const tGetInspiredPage = useTranslations('GetInspiredPage');
   const slug = Array.isArray(params?.slug)
-    ? (params?.slug[0] ?? "")
-    : ((params?.slug as string | undefined) ?? "");
+    ? (params?.slug[0] ?? '')
+    : ((params?.slug as string | undefined) ?? '');
 
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<PublicStoryData | null>(null);
@@ -85,28 +85,23 @@ export default function PublicStoryPage() {
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.error("[Public Page] Response error:", errorText);
-          throw new Error(
-            `HTTP error! status: ${response.status}, message: ${errorText}`,
-          );
+          console.error('[Public Page] Response error:', errorText);
+          throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
         }
 
         const result = await response.json();
-        console.log("[Public Page] Response data:", result);
+        console.log('[Public Page] Response data:', result);
         if (result.success) {
           // Story data fetched successfully
           setData(result);
         } else {
-          console.error("[Public Page] API returned error:", result.error);
-          setError(result.error || tPublicStoryPage("errors.notFound"));
+          console.error('[Public Page] API returned error:', result.error);
+          setError(result.error || tPublicStoryPage('errors.notFound'));
         }
       } catch (err) {
-        console.error("[Public Page] Error fetching public story:", err);
-        const errorMessage =
-          err instanceof Error ? err.message : "Unknown error";
-        setError(
-          `${tPublicStoryPage("errors.failedToLoadStory")}: ${errorMessage}`,
-        );
+        console.error('[Public Page] Error fetching public story:', err);
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+        setError(`${tPublicStoryPage('errors.failedToLoadStory')}: ${errorMessage}`);
       } finally {
         setLoading(false);
       }
@@ -122,19 +117,17 @@ export default function PublicStoryPage() {
       document.title = `${story.title} | Mythoria`;
 
       // Set meta description
-      const metaDescription = document.querySelector(
-        'meta[name="description"]',
-      );
+      const metaDescription = document.querySelector('meta[name="description"]');
       const description =
         story.synopsis ||
         story.plotDescription ||
-        tPublicStoryPage("metadata.defaultDescription", { title: story.title });
+        tPublicStoryPage('metadata.defaultDescription', { title: story.title });
 
       if (metaDescription) {
-        metaDescription.setAttribute("content", description);
+        metaDescription.setAttribute('content', description);
       } else {
-        const meta = document.createElement("meta");
-        meta.name = "description";
+        const meta = document.createElement('meta');
+        meta.name = 'description';
         meta.content = description;
         document.head.appendChild(meta);
       }
@@ -143,42 +136,42 @@ export default function PublicStoryPage() {
       const setMetaTag = (property: string, content: string) => {
         let meta = document.querySelector(`meta[property="${property}"]`);
         if (!meta) {
-          meta = document.createElement("meta");
-          meta.setAttribute("property", property);
+          meta = document.createElement('meta');
+          meta.setAttribute('property', property);
           document.head.appendChild(meta);
         }
-        meta.setAttribute("content", content);
+        meta.setAttribute('content', content);
       };
 
       const baseUrl = window.location.origin;
-      setMetaTag("og:title", `${story.title} | Mythoria`);
-      setMetaTag("og:description", description);
-      setMetaTag("og:type", "article");
-      setMetaTag("og:url", window.location.href);
-      setMetaTag("og:site_name", "Mythoria");
-      setMetaTag("og:image", `${baseUrl}/api/og/story/${slug}`);
-      setMetaTag("og:image:width", "1200");
-      setMetaTag("og:image:height", "630");
+      setMetaTag('og:title', `${story.title} | Mythoria`);
+      setMetaTag('og:description', description);
+      setMetaTag('og:type', 'article');
+      setMetaTag('og:url', window.location.href);
+      setMetaTag('og:site_name', 'Mythoria');
+      setMetaTag('og:image', `${baseUrl}/api/og/story/${slug}`);
+      setMetaTag('og:image:width', '1200');
+      setMetaTag('og:image:height', '630');
       setMetaTag(
-        "og:image:alt",
-        tPublicStoryPage("metadata.coverImageAlt", { title: story.title }),
+        'og:image:alt',
+        tPublicStoryPage('metadata.coverImageAlt', { title: story.title }),
       );
 
       // Twitter Card tags
       const setTwitterTag = (name: string, content: string) => {
         let meta = document.querySelector(`meta[name="${name}"]`);
         if (!meta) {
-          meta = document.createElement("meta");
-          meta.setAttribute("name", name);
+          meta = document.createElement('meta');
+          meta.setAttribute('name', name);
           document.head.appendChild(meta);
         }
-        meta.setAttribute("content", content);
+        meta.setAttribute('content', content);
       };
 
-      setTwitterTag("twitter:card", "summary_large_image");
-      setTwitterTag("twitter:title", `${story.title} | Mythoria`);
-      setTwitterTag("twitter:description", description);
-      setTwitterTag("twitter:image", `${baseUrl}/api/og/story/${slug}`);
+      setTwitterTag('twitter:card', 'summary_large_image');
+      setTwitterTag('twitter:title', `${story.title} | Mythoria`);
+      setTwitterTag('twitter:description', description);
+      setTwitterTag('twitter:image', `${baseUrl}/api/og/story/${slug}`);
     }
   }, [data, slug, tPublicStoryPage]);
   if (loading) {
@@ -186,12 +179,8 @@ export default function PublicStoryPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <FiLoader className="animate-spin text-4xl text-primary mx-auto" />
-          <h2 className="text-xl font-semibold">
-            {tPublicStoryPage("loading.title")}
-          </h2>
-          <p className="text-gray-600">
-            {tPublicStoryPage("loading.subtitle")}
-          </p>
+          <h2 className="text-xl font-semibold">{tPublicStoryPage('loading.title')}</h2>
+          <p className="text-gray-600">{tPublicStoryPage('loading.subtitle')}</p>
         </div>
       </div>
     );
@@ -202,15 +191,13 @@ export default function PublicStoryPage() {
         <div className="text-center space-y-4 max-w-md mx-auto px-4">
           <FiAlertCircle className="text-4xl text-red-500 mx-auto" />
           <h2 className="text-xl font-semibold text-gray-900">
-            {tPublicStoryPage("errors.notFound")}
+            {tPublicStoryPage('errors.notFound')}
           </h2>
-          <p className="text-gray-600">
-            {error || tPublicStoryPage("errors.notFoundDesc")}
-          </p>
+          <p className="text-gray-600">{error || tPublicStoryPage('errors.notFoundDesc')}</p>
 
           <div className="space-y-2">
             <a href={`/${locale}`} className="btn btn-primary btn-sm">
-              {tActions("goToHomepage")}
+              {tActions('goToHomepage')}
             </a>
           </div>
         </div>
@@ -228,9 +215,7 @@ export default function PublicStoryPage() {
           <div className="max-w-4xl mx-auto">
             <div className="flex flex-col gap-4">
               {/* Title */}
-              <h1 className="text-3xl font-bold text-gray-900">
-                {story.title}
-              </h1>
+              <h1 className="text-3xl font-bold text-gray-900">{story.title}</h1>
 
               {/* Actions - Mobile responsive layout */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -242,11 +227,9 @@ export default function PublicStoryPage() {
                   >
                     <FiPrinter className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span className="hidden min-[480px]:inline">
-                      {tPublicStoryPage("actions.orderPrint")}
+                      {tPublicStoryPage('actions.orderPrint')}
                     </span>
-                    <span className="min-[480px]:hidden">
-                      {tPublicStoryPage("actions.print")}
-                    </span>
+                    <span className="min-[480px]:hidden">{tPublicStoryPage('actions.print')}</span>
                   </a>
                   {story.hasAudio && (
                     <a
@@ -255,10 +238,10 @@ export default function PublicStoryPage() {
                     >
                       <FiVolume2 className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span className="hidden min-[480px]:inline">
-                        {tPublicStoryPage("actions.listen")}
+                        {tPublicStoryPage('actions.listen')}
                       </span>
                       <span className="min-[480px]:hidden">
-                        {tPublicStoryPage("actions.listenMobile")}
+                        {tPublicStoryPage('actions.listenMobile')}
                       </span>
                     </a>
                   )}
@@ -270,8 +253,8 @@ export default function PublicStoryPage() {
               <div className="flex items-center gap-1">
                 <FiUser />
                 <span>
-                  {tPublicStoryPage("labels.by")}{" "}
-                  {story.authorName || tPublicStoryPage("labels.unknownAuthor")}
+                  {tPublicStoryPage('labels.by')}{' '}
+                  {story.authorName || tPublicStoryPage('labels.unknownAuthor')}
                 </span>
               </div>
               <div className="flex items-center gap-1">
@@ -282,9 +265,8 @@ export default function PublicStoryPage() {
                 <div className="flex items-center gap-1">
                   <FiTag />
                   <span>
-                    {tGetInspiredPage(
-                      `targetAudience.${story.targetAudience}`,
-                    ) || story.targetAudience.replace("_", " ")}
+                    {tGetInspiredPage(`targetAudience.${story.targetAudience}`) ||
+                      story.targetAudience.replace('_', ' ')}
                   </span>
                 </div>
               )}
@@ -293,9 +275,8 @@ export default function PublicStoryPage() {
                 <div className="flex items-center gap-1">
                   <FiEye />
                   <span>
-                    {tGetInspiredPage(
-                      `graphicalStyle.${story.graphicalStyle}`,
-                    ) || story.graphicalStyle.replace("_", " ")}
+                    {tGetInspiredPage(`graphicalStyle.${story.graphicalStyle}`) ||
+                      story.graphicalStyle.replace('_', ' ')}
                   </span>
                 </div>
               )}
@@ -305,7 +286,7 @@ export default function PublicStoryPage() {
                   <FiTag />
                   <span>
                     {tGetInspiredPage(`novelStyle.${story.novelStyle}`) ||
-                      story.novelStyle.replace("_", " ")}
+                      story.novelStyle.replace('_', ' ')}
                   </span>
                 </div>
               )}
@@ -314,7 +295,7 @@ export default function PublicStoryPage() {
             {(story.synopsis || story.plotDescription) && (
               <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                 <h3 className="font-bold text-gray-900 mb-2">
-                  {tPublicStoryPage("labels.synopsis")}
+                  {tPublicStoryPage('labels.synopsis')}
                 </h3>
                 <p className="text-gray-700 leading-relaxed text-sm">
                   {story.synopsis || story.plotDescription}
@@ -349,10 +330,10 @@ export default function PublicStoryPage() {
               <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
                 <FiAlertCircle className="text-4xl text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  {tPublicStoryPage("errors.contentNotAvailable")}
+                  {tPublicStoryPage('errors.contentNotAvailable')}
                 </h3>
                 <p className="text-gray-600">
-                  {tPublicStoryPage("errors.contentNotAvailableDesc")}
+                  {tPublicStoryPage('errors.contentNotAvailableDesc')}
                 </p>
               </div>
             </div>
@@ -364,19 +345,16 @@ export default function PublicStoryPage() {
           <div className="max-w-4xl mx-auto">
             <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 border border-blue-200 print:hidden">
               <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">
-                {tPublicStoryPage("storyComplete.enjoyedTitle")}
+                {tPublicStoryPage('storyComplete.enjoyedTitle')}
               </h3>
               <p className="text-gray-700 text-center mb-6">
-                {tPublicStoryPage("storyComplete.enjoyedDesc")}
+                {tPublicStoryPage('storyComplete.enjoyedDesc')}
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a
-                  href={`/${locale}`}
-                  className="btn btn-primary flex items-center gap-2"
-                >
+                <a href={`/${locale}`} className="btn btn-primary flex items-center gap-2">
                   <FiEdit3 className="w-4 h-4" />
-                  {tPublicStoryPage("actions.createOwnStory")}
+                  {tPublicStoryPage('actions.createOwnStory')}
                 </a>
 
                 <a
@@ -384,7 +362,7 @@ export default function PublicStoryPage() {
                   className="btn btn-secondary flex items-center gap-2"
                 >
                   <FiPrinter className="w-4 h-4" />
-                  {tPublicStoryPage("actions.orderPrintedBook")}
+                  {tPublicStoryPage('actions.orderPrintedBook')}
                 </a>
               </div>
             </div>
@@ -397,7 +375,7 @@ export default function PublicStoryPage() {
             <PublicStoryRating
               storyId={story.storyId}
               onRatingSubmitted={(rating) => {
-                console.log("Rating submitted:", rating);
+                console.log('Rating submitted:', rating);
               }}
             />
           </div>

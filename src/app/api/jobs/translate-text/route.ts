@@ -17,17 +17,13 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       return NextResponse.json(
         { success: false, error: data.error || 'Failed to create translation job' },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
     return NextResponse.json(data);
-
   } catch (error) {
     console.error('Error proxying translation job request:', error);
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

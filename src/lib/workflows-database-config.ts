@@ -1,7 +1,7 @@
 // Workflows database configuration utility
 // This provides connection to the workflows database from mythoria-webapp
 
-import { getDatabaseConfig } from "./database-config";
+import { getDatabaseConfig } from './database-config';
 
 export interface WorkflowsDatabaseConfig {
   host: string;
@@ -20,7 +20,7 @@ export interface WorkflowsDatabaseConfig {
  */
 export function getWorkflowsDatabaseConfig(): WorkflowsDatabaseConfig {
   const mainDbConfig = getDatabaseConfig();
-  
+
   const config: WorkflowsDatabaseConfig = {
     host: mainDbConfig.host,
     port: mainDbConfig.port,
@@ -32,7 +32,11 @@ export function getWorkflowsDatabaseConfig(): WorkflowsDatabaseConfig {
   };
 
   // Build connection string for workflows database
-  const sslParam = config.ssl ? (typeof config.ssl === 'object' ? '&sslmode=require' : '&ssl=true') : '';
+  const sslParam = config.ssl
+    ? typeof config.ssl === 'object'
+      ? '&sslmode=require'
+      : '&ssl=true'
+    : '';
   config.connectionString = `postgresql://${config.user}:${config.password}@${config.host}:${config.port}/${config.database}?${sslParam}`;
 
   return config;

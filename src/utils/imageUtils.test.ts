@@ -14,7 +14,7 @@ describe('extractStoryImages', () => {
     expect(images[0].versions).toHaveLength(2);
     expect(images[0].latestVersion.version).toBe('v002');
 
-    const chapter = images.find(i => i.type === 'chapter')!;
+    const chapter = images.find((i) => i.type === 'chapter')!;
     expect(chapter.chapterNumber).toBe(1);
     expect(chapter.versions).toHaveLength(2);
     expect(chapter.latestVersion.version).toBe('v002');

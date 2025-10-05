@@ -78,9 +78,7 @@
         "✨ C'est terminé ! Les Oompa-Loompas prennent une pause cacao bien méritée !",
         "🏆 Mission accomplie ! Votre histoire est complète et prête à enchanter !"
       ],
-      "default": [
-        "⚡ Nos Oompa-Loompas magiques déploient leurs merveilles créatives !"
-      ]
+      "default": ["⚡ Nos Oompa-Loompas magiques déploient leurs merveilles créatives !"]
     },
     "timeUnits": {
       "second": "seconde",

@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useState, useEffect, useCallback } from "react";
-import { useLocale, useTranslations } from "next-intl";
-import StepNavigation from "@/components/StepNavigation";
-import ClientAuthWrapper from "@/components/ClientAuthWrapper";
-import ProgressIndicator from "@/components/ProgressIndicator";
-import { trackStoryCreation } from "@/lib/analytics";
-import { setStep1Data, getStep1Data } from "@/lib/story-session";
+import Link from 'next/link';
+import { useState, useEffect, useCallback } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import StepNavigation from '@/components/StepNavigation';
+import ClientAuthWrapper from '@/components/ClientAuthWrapper';
+import ProgressIndicator from '@/components/ProgressIndicator';
+import { trackStoryCreation } from '@/lib/analytics';
+import { setStep1Data, getStep1Data } from '@/lib/story-session';
 
 interface AuthorData {
   authorId: string;
@@ -22,20 +22,20 @@ interface AuthorData {
 
 export default function Step1Page() {
   const locale = useLocale();
-  const tStoryStepsStep1 = useTranslations("StorySteps.step1");
+  const tStoryStepsStep1 = useTranslations('StorySteps.step1');
   const [, setAuthorData] = useState<AuthorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   // Form data
-  const [customAuthor, setCustomAuthor] = useState("");
-  const [dedicationMessage, setDedicationMessage] = useState("");
+  const [customAuthor, setCustomAuthor] = useState('');
+  const [dedicationMessage, setDedicationMessage] = useState('');
   // Original values to track changes
   const [originalValues, setOriginalValues] = useState<{
     customAuthor: string;
     dedicationMessage: string;
   }>({
-    customAuthor: "",
-    dedicationMessage: "",
+    customAuthor: '',
+    dedicationMessage: '',
   });
   // Flag to track if any field has been edited
   const [hasChanges, setHasChanges] = useState(false);
@@ -45,10 +45,10 @@ export default function Step1Page() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch("/api/auth/me");
+      const response = await fetch('/api/auth/me');
 
       if (!response.ok) {
-        throw new Error(tStoryStepsStep1("messages.fetchFailed"));
+        throw new Error(tStoryStepsStep1('messages.fetchFailed'));
       }
 
       const data: AuthorData = await response.json();
@@ -56,9 +56,8 @@ export default function Step1Page() {
 
       // Load existing step 1 data from session storage
       const step1Data = getStep1Data();
-      const initialCustomAuthor =
-        step1Data?.customAuthor || data.displayName || "";
-      const initialDedicationMessage = step1Data?.dedicationMessage || "";
+      const initialCustomAuthor = step1Data?.customAuthor || data.displayName || '';
+      const initialDedicationMessage = step1Data?.dedicationMessage || '';
 
       setCustomAuthor(initialCustomAuthor);
       setDedicationMessage(initialDedicationMessage);
@@ -72,8 +71,8 @@ export default function Step1Page() {
       // Reset changes flag
       setHasChanges(false);
     } catch (error) {
-      console.error("Error fetching author data:", error);
-      setError(tStoryStepsStep1("messages.loadFailed"));
+      console.error('Error fetching author data:', error);
+      setError(tStoryStepsStep1('messages.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -88,10 +87,7 @@ export default function Step1Page() {
     });
   }, [fetchAuthorData]);
   // Function to check if current values differ from original values
-  const checkForChanges = (
-    currentCustomAuthor: string,
-    currentDedicationMessage: string,
-  ) => {
+  const checkForChanges = (currentCustomAuthor: string, currentDedicationMessage: string) => {
     const hasChanged =
       currentCustomAuthor !== originalValues.customAuthor ||
       currentDedicationMessage !== originalValues.dedicationMessage;
@@ -100,7 +96,7 @@ export default function Step1Page() {
   };
   const handleNext = async (): Promise<boolean> => {
     if (!customAuthor) {
-      setError(tStoryStepsStep1("messages.required"));
+      setError(tStoryStepsStep1('messages.required'));
       return false; // Prevent navigation
     }
 
@@ -134,8 +130,8 @@ export default function Step1Page() {
 
       return true; // Allow navigation
     } catch (err) {
-      console.error("Failed to save author data:", err);
-      setError(tStoryStepsStep1("messages.saveFailed"));
+      console.error('Failed to save author data:', err);
+      setError(tStoryStepsStep1('messages.saveFailed'));
       return false; // Prevent navigation
     } finally {
       setLoading(false);
@@ -146,24 +142,16 @@ export default function Step1Page() {
       <ClientAuthWrapper
         signedOutFallback={
           <div className="text-center space-y-6 max-w-2xl mx-auto">
-            <h1 className="text-4xl font-bold">
-              {tStoryStepsStep1("unauthenticated.title")}
-            </h1>
+            <h1 className="text-4xl font-bold">{tStoryStepsStep1('unauthenticated.title')}</h1>
             <p className="text-lg text-gray-600">
-              {tStoryStepsStep1("unauthenticated.description")}
+              {tStoryStepsStep1('unauthenticated.description')}
             </p>
             <div className="space-y-4 sm:space-y-0 sm:space-x-4">
-              <Link
-                href={`/${locale}/sign-in`}
-                className="btn btn-primary btn-lg"
-              >
-                {tStoryStepsStep1("unauthenticated.signIn")}
+              <Link href={`/${locale}/sign-in`} className="btn btn-primary btn-lg">
+                {tStoryStepsStep1('unauthenticated.signIn')}
               </Link>
-              <Link
-                href={`/${locale}/sign-up`}
-                className="btn btn-outline btn-lg"
-              >
-                {tStoryStepsStep1("unauthenticated.signUp")}
+              <Link href={`/${locale}/sign-up`} className="btn btn-outline btn-lg">
+                {tStoryStepsStep1('unauthenticated.signUp')}
               </Link>
             </div>
           </div>
@@ -175,21 +163,19 @@ export default function Step1Page() {
           {/* Step content */}
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
-              <h1 className="card-title text-3xl mb-6">
-                {tStoryStepsStep1("heading")}
-              </h1>
+              <h1 className="card-title text-3xl mb-6">{tStoryStepsStep1('heading')}</h1>
 
               {loading ? (
                 <div className="text-center py-12">
                   <span className="loading loading-spinner loading-lg"></span>
                   <p className="text-lg text-gray-600 mt-4">
-                    {tStoryStepsStep1("messages.loadingProfile")}
+                    {tStoryStepsStep1('messages.loadingProfile')}
                   </p>
                 </div>
               ) : (
                 <div className="space-y-6">
                   <div className="prose max-w-none mb-6">
-                    <p className="text-gray-600">{tStoryStepsStep1("intro")}</p>
+                    <p className="text-gray-600">{tStoryStepsStep1('intro')}</p>
                   </div>
 
                   {error && (
@@ -216,7 +202,7 @@ export default function Step1Page() {
                     <div className="form-control">
                       <label className="label">
                         <span className="label-text font-semibold">
-                          {tStoryStepsStep1("fields.authorName")}
+                          {tStoryStepsStep1('fields.authorName')}
                         </span>
                       </label>
                       <input
@@ -226,15 +212,13 @@ export default function Step1Page() {
                           setCustomAuthor(e.target.value);
                           checkForChanges(e.target.value, dedicationMessage);
                         }}
-                        placeholder={tStoryStepsStep1(
-                          "fields.authorNamePlaceholder",
-                        )}
+                        placeholder={tStoryStepsStep1('fields.authorNamePlaceholder')}
                         className="input input-bordered w-full"
                         required
                       />
                       <label className="label">
                         <span className="label-text-alt break-words max-w-full whitespace-normal">
-                          {tStoryStepsStep1("fields.authorNameHelp")}
+                          {tStoryStepsStep1('fields.authorNameHelp')}
                         </span>
                       </label>
                     </div>
@@ -243,10 +227,10 @@ export default function Step1Page() {
                     <div className="form-control">
                       <label className="label">
                         <span className="label-text font-semibold">
-                          {tStoryStepsStep1("fields.dedication")}
+                          {tStoryStepsStep1('fields.dedication')}
                         </span>
                         <span className="label-text-alt break-words max-w-full whitespace-normal">
-                          {tStoryStepsStep1("fields.optional")}
+                          {tStoryStepsStep1('fields.optional')}
                         </span>
                       </label>
                       <textarea
@@ -255,15 +239,13 @@ export default function Step1Page() {
                           setDedicationMessage(e.target.value);
                           checkForChanges(customAuthor, e.target.value);
                         }}
-                        placeholder={tStoryStepsStep1(
-                          "fields.dedicationPlaceholder",
-                        )}
+                        placeholder={tStoryStepsStep1('fields.dedicationPlaceholder')}
                         className="textarea textarea-bordered h-24 w-full"
                         rows={4}
                       />
                       <label className="label">
                         <span className="label-text-alt break-words max-w-full whitespace-normal">
-                          {tStoryStepsStep1("fields.dedicationHelp")}
+                          {tStoryStepsStep1('fields.dedicationHelp')}
                         </span>
                       </label>
                     </div>

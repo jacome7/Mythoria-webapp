@@ -8,7 +8,7 @@ export class PrintPubSubService {
   constructor() {
     const config = getEnvironmentConfig();
     this.pubsub = new PubSub({
-      projectId: config.googleCloud.projectId
+      projectId: config.googleCloud.projectId,
     });
   }
 
@@ -16,12 +16,12 @@ export class PrintPubSubService {
     try {
       const data = JSON.stringify({
         storyId,
-        runId
+        runId,
       });
 
       const dataBuffer = Buffer.from(data);
       const messageId = await this.pubsub.topic(this.topicName).publish(dataBuffer);
-      
+
       console.log(`Print generation message published with ID: ${messageId}`);
     } catch (error) {
       console.error('Error publishing print generation message:', error);

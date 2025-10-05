@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
-import type { CartItem } from "@/types/cart";
+import { useState, useCallback } from 'react';
+import type { CartItem } from '@/types/cart';
 
 export const useCart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -13,9 +13,7 @@ export const useCart = () => {
       const existing = prev.find((item) => item.packageId === packageId);
       if (existing) {
         return prev.map((item) =>
-          item.packageId === packageId
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
+          item.packageId === packageId ? { ...item, quantity: item.quantity + 1 } : item,
         );
       }
       return [...prev, { packageId, quantity: 1 }];
@@ -29,9 +27,7 @@ export const useCart = () => {
         return;
       }
       setCart((prev) =>
-        prev.map((item) =>
-          item.packageId === packageId ? { ...item, quantity } : item,
-        ),
+        prev.map((item) => (item.packageId === packageId ? { ...item, quantity } : item)),
       );
     },
     [removeFromCart],

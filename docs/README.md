@@ -17,6 +17,7 @@ The `archive/` folder contains historical implementation documents, feature spec
 ## Documentation Standards
 
 All documentation follows these standards:
+
 - **Markdown format** with consistent formatting
 - **Version information** included in each document
 - **Last updated dates** maintained
@@ -27,6 +28,7 @@ All documentation follows these standards:
 ## For Developers
 
 When contributing to this service:
+
 1. Update relevant documentation when making changes
 2. Follow the existing documentation structure and style
 3. Include code examples for new UI components or features
@@ -36,6 +38,7 @@ When contributing to this service:
 ## For AI Agents
 
 This documentation is structured for both human and AI agent consumption:
+
 - **AGENTS.md** in the service root contains AI-readable technical specifications
 - **Structured metadata** in YAML format where appropriate
 - **Consistent terminology** across all documentation

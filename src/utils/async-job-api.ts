@@ -69,7 +69,7 @@ export async function createImageEditJob(params: {
     headers: {
       'Content-Type': 'application/json',
     },
-  body: JSON.stringify(params),
+    body: JSON.stringify(params),
   });
 
   if (!response.ok) {
@@ -128,21 +128,21 @@ export async function createTranslateJob(params: {
 export async function waitForJobCompletion(
   jobId: string,
   onProgress?: (progress: number, status: string) => void,
-  pollInterval: number = 2000
+  pollInterval: number = 2000,
 ): Promise<{ [key: string]: unknown }> {
   return new Promise((resolve, reject) => {
     const poll = async () => {
       try {
         const response = await getJobStatus(jobId);
-        
+
         if (response.success && response.job) {
           const { status, progress, result, error } = response.job;
-          
+
           // Call progress callback if provided
           if (onProgress) {
             onProgress(progress, status);
           }
-          
+
           if (status === 'completed') {
             resolve(result || {});
           } else if (status === 'failed') {
@@ -158,7 +158,7 @@ export async function waitForJobCompletion(
         reject(error);
       }
     };
-    
+
     poll();
   });
 }

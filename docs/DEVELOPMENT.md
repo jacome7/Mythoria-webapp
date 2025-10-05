@@ -7,6 +7,7 @@ This guide covers setting up a local development environment for the Mythoria We
 ## Requirements
 
 ### System Requirements
+
 - **Operating System**: Windows 10/11, macOS, or Linux
 - **Node.js**: Version 18 or newer (LTS recommended)
 - **npm**: Version 8+ (comes with Node.js)
@@ -14,6 +15,7 @@ This guide covers setting up a local development environment for the Mythoria We
 - **Visual Studio Code**: Recommended IDE with extensions
 
 ### External Services
+
 - **PostgreSQL**: Version 15+ (local installation or cloud instance)
 - **Google Cloud SDK**: For deployment and cloud services
 - **Clerk Account**: For authentication services
@@ -22,6 +24,7 @@ This guide covers setting up a local development environment for the Mythoria We
 ## Initial Setup
 
 ### 1. Repository Setup
+
 ```powershell
 # Clone the repository
 git clone <repository-url>
@@ -35,6 +38,7 @@ npm audit
 ```
 
 ### 2. Environment Configuration
+
 ```powershell
 # Create environment file
 cp .env.example .env.local
@@ -44,6 +48,7 @@ notepad .env.local  # or your preferred editor
 ```
 
 ### Required Environment Variables
+
 ```bash
 # Database Configuration
 DATABASE_URL="postgresql://user:password@localhost:5432/mythoria_dev"
@@ -70,6 +75,7 @@ NEXT_PUBLIC_FEATURE_FLAGS='{"ai_generation": true, "debug_mode": true}'
 ### 3. Database Setup
 
 #### Local PostgreSQL Installation
+
 ```powershell
 # Windows (using Chocolatey)
 choco install postgresql
@@ -84,6 +90,7 @@ createdb mythoria_dev
 ```
 
 #### Database Initialization
+
 ```powershell
 # Generate and apply database schema
 npm run db:generate
@@ -99,6 +106,7 @@ npm run db:studio
 ### 4. Clerk Authentication Setup
 
 #### Clerk Dashboard Configuration
+
 1. Visit [Clerk Dashboard](https://dashboard.clerk.com/)
 2. Create a new application or use existing
 3. Configure OAuth providers (Google, GitHub, etc.)
@@ -106,6 +114,7 @@ npm run db:studio
 5. Copy API keys to environment file
 
 #### Webhook Configuration
+
 ```bash
 # Webhook endpoint for user sync
 https://your-local-domain.ngrok.io/api/webhooks/clerk
@@ -117,6 +126,7 @@ https://your-local-domain.ngrok.io/api/webhooks/clerk
 ```
 
 ### 5. Development Server Startup
+
 ```powershell
 # Start development server
 npm run dev
@@ -131,6 +141,7 @@ DEBUG=* npm run dev
 ## Development Workflow
 
 ### Code Organization
+
 ```
 src/
 ├── app/                    # Next.js App Router pages
@@ -160,6 +171,7 @@ src/
 ```
 
 ### Development Scripts
+
 ```bash
 # Development server
 npm run dev              # Start development server with hot reload
@@ -192,7 +204,9 @@ npm run analyze          # Analyze bundle size
 ## Code Quality & Standards
 
 ### TypeScript Configuration
+
 The project uses strict TypeScript settings:
+
 ```json
 {
   "compilerOptions": {
@@ -205,7 +219,9 @@ The project uses strict TypeScript settings:
 ```
 
 ### Linting Rules
+
 ESLint configuration includes:
+
 - TypeScript specific rules
 - React and Next.js best practices
 - Accessibility rules
@@ -213,7 +229,9 @@ ESLint configuration includes:
 - Code complexity limits
 
 ### Code Formatting
+
 Prettier configuration:
+
 ```json
 {
   "semi": true,
@@ -225,7 +243,9 @@ Prettier configuration:
 ```
 
 ### Commit Standards
+
 Follow Conventional Commits:
+
 ```bash
 feat: add new story creation flow
 fix: resolve authentication redirect issue
@@ -239,6 +259,7 @@ chore: update dependencies
 ## Testing Strategy
 
 ### Unit Testing
+
 ```typescript
 // Example component test
 import { render, screen } from '@testing-library/react';
@@ -247,21 +268,22 @@ import { StoryCard } from '@/components/story/story-card';
 describe('StoryCard', () => {
   it('renders story title correctly', () => {
     render(
-      <StoryCard 
-        story={{ 
-          id: '1', 
+      <StoryCard
+        story={{
+          id: '1',
           title: 'Test Story',
-          status: 'draft' 
-        }} 
+          status: 'draft'
+        }}
       />
     );
-    
+
     expect(screen.getByText('Test Story')).toBeInTheDocument();
   });
 });
 ```
 
 ### Integration Testing
+
 ```typescript
 // Example API route test
 import { POST } from '@/app/api/stories/route';
@@ -273,8 +295,8 @@ describe('/api/stories', () => {
       method: 'POST',
       body: JSON.stringify({
         title: 'New Story',
-        outline: 'Story outline'
-      })
+        outline: 'Story outline',
+      }),
     });
 
     const response = await POST(request);
@@ -284,6 +306,7 @@ describe('/api/stories', () => {
 ```
 
 ### Testing Commands
+
 ```bash
 # Run all tests
 npm run test
@@ -301,6 +324,7 @@ npm run test:watch
 ## Database Development
 
 ### Schema Management
+
 ```typescript
 // Example schema definition
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
@@ -311,11 +335,12 @@ export const stories = pgTable('stories', {
   outline: text('outline'),
   userId: text('user_id').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow()
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 ```
 
 ### Migration Workflow
+
 ```bash
 # 1. Modify schema in src/db/schema.ts
 # 2. Generate migration
@@ -330,6 +355,7 @@ npm run db:push
 ```
 
 ### Seeding Data
+
 ```typescript
 // Example seed data
 export async function seed() {
@@ -337,16 +363,16 @@ export async function seed() {
     {
       id: '1',
       email: 'user@example.com',
-      name: 'Test User'
-    }
+      name: 'Test User',
+    },
   ]);
 
   await db.insert(stories).values([
     {
       title: 'Sample Story',
       outline: 'A sample story for development',
-      userId: '1'
-    }
+      userId: '1',
+    },
   ]);
 }
 ```
@@ -356,6 +382,7 @@ export async function seed() {
 ### Common Development Issues
 
 #### Port Already in Use
+
 ```bash
 # Find process using port 3000
 netstat -ano | findstr :3000
@@ -368,6 +395,7 @@ PORT=3001 npm run dev
 ```
 
 #### Database Connection Issues
+
 ```bash
 # Check PostgreSQL service status
 net start postgresql-x64-15
@@ -381,6 +409,7 @@ npm run db:seed
 ```
 
 #### Clerk Authentication Issues
+
 ```bash
 # Check webhook URL is accessible
 ngrok http 3000
@@ -393,6 +422,7 @@ rm -rf .next/cache
 ```
 
 #### Build Errors
+
 ```bash
 # Clear Next.js cache
 rm -rf .next
@@ -408,11 +438,13 @@ npm run type-check
 ### Debugging Tools
 
 #### Next.js Development Tools
+
 - React Developer Tools browser extension
 - Next.js built-in error overlay
 - Performance profiler in browser DevTools
 
 #### Database Debugging
+
 ```bash
 # Open Drizzle Studio for visual database management
 npm run db:studio
@@ -422,16 +454,17 @@ DEBUG=drizzle:* npm run dev
 ```
 
 #### API Debugging
+
 ```typescript
 // Add logging to API routes
 import { logger } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
-  logger.info('API request received', { 
-    method: request.method, 
-    url: request.url 
+  logger.info('API request received', {
+    method: request.method,
+    url: request.url,
   });
-  
+
   // ... rest of handler
 }
 ```
@@ -439,6 +472,7 @@ export async function POST(request: NextRequest) {
 ## Performance Optimization
 
 ### Development Performance
+
 ```bash
 # Enable Next.js Turbopack (experimental)
 npm run dev -- --turbo
@@ -451,6 +485,7 @@ node --inspect npm run dev
 ```
 
 ### Code Optimization
+
 - Use dynamic imports for large components
 - Implement proper memoization with React.memo
 - Optimize database queries with proper indexing
@@ -459,6 +494,7 @@ node --inspect npm run dev
 ## Visual Studio Code Setup
 
 ### Recommended Extensions
+
 ```json
 {
   "recommendations": [
@@ -474,6 +510,7 @@ node --inspect npm run dev
 ```
 
 ### Workspace Settings
+
 ```json
 {
   "editor.formatOnSave": true,
@@ -489,6 +526,7 @@ node --inspect npm run dev
 ## Deployment Testing
 
 ### Local Production Build
+
 ```bash
 # Build for production
 npm run build
@@ -501,6 +539,7 @@ curl http://localhost:3000/api/health
 ```
 
 ### Environment Testing
+
 ```bash
 # Test with staging environment
 cp .env.staging .env.local
@@ -518,6 +557,7 @@ npm run dev
 **Component Version**: 0.1.1
 
 ### 4. Start Development Server
+
 ```powershell
 npm run dev
 ```
@@ -527,17 +567,20 @@ The application will be available at `http://localhost:3000`.
 ## Development Workflow
 
 ### Database Operations
+
 - **View data**: `npm run db:studio` (opens Drizzle Studio)
 - **Generate migrations**: `npm run db:generate`
 - **Apply migrations**: `npm run db:migrate`
 - **Reset database**: `npm run db:reset`
 
 ### Code Quality
+
 - **Linting**: `npm run lint`
 - **Type checking**: `npm run type-check`
 - **Build verification**: `npm run build`
 
 ### Testing
+
 - **Unit tests**: `npm run test`
 - **E2E tests**: `npm run test:e2e`
 - **Test coverage**: `npm run test:coverage`
@@ -545,13 +588,16 @@ The application will be available at `http://localhost:3000`.
 ## Local Development with External Services
 
 ### Clerk Authentication
+
 1. Create a Clerk application at [clerk.com](https://clerk.com)
 2. Configure development instance URLs
 3. Copy API keys to `.env.local`
 4. Set up webhook for user synchronization (see ngrok section)
 
 ### PostgreSQL Database
+
 **Option 1: Local PostgreSQL**
+
 ```powershell
 # Install PostgreSQL (Windows)
 # Create database: mythoria
@@ -559,11 +605,13 @@ createdb mythoria
 ```
 
 **Option 2: Cloud SQL**
+
 - Create Cloud SQL PostgreSQL instance
 - Configure connection in `.env.local`
 - Ensure your IP is allowlisted
 
 ### Google Cloud Services
+
 ```powershell
 # Authenticate with Google Cloud
 gcloud auth login
@@ -579,6 +627,7 @@ gcloud services enable run.googleapis.com
 For testing Clerk webhooks locally, use ngrok to expose your development server:
 
 ### Installation
+
 ```powershell
 # Install ngrok
 npm install -g ngrok
@@ -587,6 +636,7 @@ npm install -g ngrok
 ```
 
 ### Usage
+
 ```powershell
 # Start your dev server
 npm run dev
@@ -596,10 +646,13 @@ ngrok http 3000
 ```
 
 Copy the ngrok HTTPS URL (e.g., `https://abc123.ngrok.io`) and use it in your Clerk webhook configuration:
+
 - Webhook URL: `https://abc123.ngrok.io/api/webhooks`
 
 ### Webhook Events to Enable
+
 In Clerk Dashboard → Webhooks:
+
 - `user.created` - New user registration
 - `user.updated` - User profile changes
 - `user.deleted` - User account deletion
@@ -625,6 +678,7 @@ src/
 ## Useful Development Commands
 
 ### Database Inspection
+
 ```powershell
 # Open database studio
 npm run db:studio
@@ -637,6 +691,7 @@ npm run db:status
 ```
 
 ### AI Integration Testing
+
 ```powershell
 # Test Vertex AI connection
 npm run test:genai
@@ -646,6 +701,7 @@ npm run test:story-structure
 ```
 
 ### Deployment Testing
+
 ```powershell
 # Build production version
 npm run build
@@ -660,21 +716,25 @@ npm run deploy:staging
 ## Common Development Issues
 
 ### Authentication Not Working
+
 - Verify Clerk keys in `.env.local`
 - Check if webhook URL is accessible (use ngrok)
 - Ensure database user sync is working
 
 ### Database Connection Issues
+
 - Verify PostgreSQL is running
 - Check connection string format
 - Ensure database exists and user has permissions
 
 ### Build Failures
+
 - Clear Next.js cache: `rm -rf .next`
 - Reinstall dependencies: `rm -rf node_modules && npm install`
 - Check for TypeScript errors: `npm run type-check`
 
 ### AI Integration Problems
+
 - Verify Google Cloud authentication: `gcloud auth list`
 - Check Vertex AI API is enabled
 - Ensure project ID is correct in environment

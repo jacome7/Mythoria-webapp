@@ -19,14 +19,17 @@ interface AudiobookProgress {
 }
 
 // Funny narrator messages based on current step
-const getFunnyMessage = (step: string, t: ReturnType<typeof import('next-intl').useTranslations>) => {
+const getFunnyMessage = (
+  step: string,
+  t: ReturnType<typeof import('next-intl').useTranslations>,
+) => {
   const messages = t.raw(`narrationMessages.${step}`) || t.raw('narrationMessages.default');
   return messages[Math.floor(Math.random() * messages.length)];
 };
 
 const calculateEstimatedTime = (
   percentage: number,
-  t: ReturnType<typeof import('next-intl').useTranslations>
+  t: ReturnType<typeof import('next-intl').useTranslations>,
 ): string => {
   const totalEstimatedTime = 8 * 60; // 8 minutes in seconds (typically faster than story generation)
   const remainingTime = Math.max(0, totalEstimatedTime - (totalEstimatedTime * percentage) / 100);
@@ -46,12 +49,15 @@ const calculateEstimatedTime = (
     : `${minutes} ${minuteLabel}`;
 };
 
-export default function AudiobookGenerationProgress({ storyId, onComplete }: AudiobookGenerationProgressProps) {
+export default function AudiobookGenerationProgress({
+  storyId,
+  onComplete,
+}: AudiobookGenerationProgressProps) {
   const tAudiobookGenerationProgress = useTranslations('AudiobookGenerationProgress');
   const router = useRouter();
   const params = useParams() as { locale?: string } | null;
-  const locale = (params?.locale && typeof params.locale === 'string') ? params.locale : 'en-US';
-  
+  const locale = params?.locale && typeof params.locale === 'string' ? params.locale : 'en-US';
+
   const [progress, setProgress] = useState<AudiobookProgress>({
     audiobookGenerationCompletedPercentage: 0,
     audiobookGenerationStatus: 'generating',
@@ -110,10 +116,7 @@ export default function AudiobookGenerationProgress({ storyId, onComplete }: Aud
           <span>{error}</span>
         </div>
         <div className="mt-4 text-center">
-          <button 
-            className="btn btn-primary"
-            onClick={() => window.location.reload()}
-          >
+          <button className="btn btn-primary" onClick={() => window.location.reload()}>
             {tAudiobookGenerationProgress('retry')}
           </button>
         </div>
@@ -145,7 +148,9 @@ export default function AudiobookGenerationProgress({ storyId, onComplete }: Aud
       <div className="max-w-2xl mx-auto p-6 text-center">
         <div className="mb-6">
           <div className="text-6xl mb-4">🎉</div>
-          <h2 className="text-3xl font-bold text-success mb-2">{tAudiobookGenerationProgress('generationComplete')}</h2>
+          <h2 className="text-3xl font-bold text-success mb-2">
+            {tAudiobookGenerationProgress('generationComplete')}
+          </h2>
           <p className="text-lg">{tAudiobookGenerationProgress('audiobookReady')}</p>
         </div>
 
@@ -164,7 +169,9 @@ export default function AudiobookGenerationProgress({ storyId, onComplete }: Aud
   return (
     <div className="max-w-2xl mx-auto p-6">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold mb-4">{tAudiobookGenerationProgress('generatingAudiobook')}</h2>
+        <h2 className="text-2xl font-bold mb-4">
+          {tAudiobookGenerationProgress('generatingAudiobook')}
+        </h2>
         <p className="text-gray-600">{tAudiobookGenerationProgress('processingMessage')}</p>
       </div>
 
@@ -176,23 +183,24 @@ export default function AudiobookGenerationProgress({ storyId, onComplete }: Aud
             {progress.audiobookGenerationCompletedPercentage}%
           </span>
         </div>
-        <progress 
-          className="progress progress-primary w-full h-3" 
-          value={progress.audiobookGenerationCompletedPercentage} 
+        <progress
+          className="progress progress-primary w-full h-3"
+          value={progress.audiobookGenerationCompletedPercentage}
           max={100}
         />
         <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
           <span>
-            {tAudiobookGenerationProgress('estimatedTimeRemaining')}: {calculateEstimatedTime(
+            {tAudiobookGenerationProgress('estimatedTimeRemaining')}:{' '}
+            {calculateEstimatedTime(
               progress.audiobookGenerationCompletedPercentage,
-              tAudiobookGenerationProgress
+              tAudiobookGenerationProgress,
             )}
           </span>
           {progress.chaptersProcessed && progress.totalChapters && (
             <span>
               {tAudiobookGenerationProgress('chaptersProcessed', {
                 processed: progress.chaptersProcessed,
-                total: progress.totalChapters
+                total: progress.totalChapters,
               })}
             </span>
           )}
@@ -205,7 +213,9 @@ export default function AudiobookGenerationProgress({ storyId, onComplete }: Aud
           <div className="flex items-center gap-3">
             <div className="loading loading-spinner loading-sm"></div>
             <div>
-              <p className="font-medium">{tAudiobookGenerationProgress(`steps.${progress.currentStep}`)}</p>
+              <p className="font-medium">
+                {tAudiobookGenerationProgress(`steps.${progress.currentStep}`)}
+              </p>
               {currentMessage && (
                 <p className="text-sm text-gray-600 mt-1 italic">&ldquo;{currentMessage}&rdquo;</p>
               )}
@@ -216,12 +226,8 @@ export default function AudiobookGenerationProgress({ storyId, onComplete }: Aud
 
       {/* Status Messages */}
       <div className="text-center space-y-2">
-        <p className="text-sm text-gray-600">
-          {tAudiobookGenerationProgress('statusMessage')}
-        </p>
-        <p className="text-xs text-gray-500">
-          {tAudiobookGenerationProgress('doNotClose')}
-        </p>
+        <p className="text-sm text-gray-600">{tAudiobookGenerationProgress('statusMessage')}</p>
+        <p className="text-xs text-gray-500">{tAudiobookGenerationProgress('doNotClose')}</p>
       </div>
     </div>
   );

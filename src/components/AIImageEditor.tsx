@@ -39,7 +39,7 @@ export default function AIImageEditor({
   imageData,
   onImageEditSuccess,
   onOptimisticUpdate, // eslint-disable-line @typescript-eslint/no-unused-vars
-  onRevertUpdate // eslint-disable-line @typescript-eslint/no-unused-vars
+  onRevertUpdate, // eslint-disable-line @typescript-eslint/no-unused-vars
 }: AIImageEditorProps) {
   const tAIImageEditor = useTranslations('AIImageEditor');
   const tGraphicalStyles = useTranslations('GraphicalStyles');
@@ -62,7 +62,6 @@ export default function AIImageEditor({
   const TARGET_WIDTH = 1024;
   const TARGET_HEIGHT = 1536;
   const RATIO_TOLERANCE = 0.15; // ±15%
-
 
   // Reset state when modal opens/closes
   useEffect(() => {
@@ -102,7 +101,7 @@ export default function AIImageEditor({
     setShowCropper(false);
   };
 
-  const handleJobComplete = (result: { newImageUrl?: string;[key: string]: unknown }) => {
+  const handleJobComplete = (result: { newImageUrl?: string; [key: string]: unknown }) => {
     console.log('✅ Image edit job completed:', result);
     if (result && result.newImageUrl) {
       setNewImageGenerated(result.newImageUrl);
@@ -126,7 +125,8 @@ export default function AIImageEditor({
     const file = e.target.files?.[0];
     if (!file) return;
     setUserImageError(null);
-    if (file.size > 8 * 1024 * 1024) { // >8MB
+    if (file.size > 8 * 1024 * 1024) {
+      // >8MB
       setUserImageError('File is larger than 8MB. Please choose a smaller image.');
       return;
     }
@@ -142,7 +142,11 @@ export default function AIImageEditor({
     void processAndUploadUserImage(file, previewUrl);
   };
 
-  const processAndUploadUserImage = async (file: File, previewUrl: string, manualCroppedArea?: { x: number; y: number; width: number; height: number }) => {
+  const processAndUploadUserImage = async (
+    file: File,
+    previewUrl: string,
+    manualCroppedArea?: { x: number; y: number; width: number; height: number },
+  ) => {
     try {
       setProcessingUserImage(true);
       // Load image into canvas
@@ -175,7 +179,10 @@ export default function AIImageEditor({
         return; // wait for user crop confirmation
       }
       // Determine crop area
-      let cropX = 0, cropY = 0, cropW = originalWidth, cropH = originalHeight;
+      let cropX = 0,
+        cropY = 0,
+        cropW = originalWidth,
+        cropH = originalHeight;
       if (manualCroppedArea) {
         // Use coordinates exactly as provided (already in original image pixel space)
         cropX = Math.max(0, Math.floor(manualCroppedArea.x));
@@ -213,11 +220,18 @@ export default function AIImageEditor({
             URL.revokeObjectURL(selectedFilePreview);
           }
           setSelectedFilePreview(dataUrl);
-        } catch {/* ignore preview revocation errors */ }
+        } catch {
+          /* ignore preview revocation errors */
+        }
       }
       // Upload as prospective story image version (images folder) only when we might apply as-is or convert.
       // We still rely on versioning logic in backend route /api/media/story-image-upload.
-      const mappedType = imageData.imageType === 'cover' ? 'cover' : (imageData.imageType === 'backcover' ? 'backcover' : 'chapter');
+      const mappedType =
+        imageData.imageType === 'cover'
+          ? 'cover'
+          : imageData.imageType === 'backcover'
+            ? 'backcover'
+            : 'chapter';
       const uploadResp = await fetch('/api/media/story-image-upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -227,8 +241,8 @@ export default function AIImageEditor({
           chapterNumber: imageData.chapterNumber,
           contentType: 'image/jpeg',
           dataUrl,
-          currentImageUrl: imageData.imageUri
-        })
+          currentImageUrl: imageData.imageUri,
+        }),
       });
       const uploadData = await uploadResp.json();
       if (!uploadResp.ok || !uploadData.success) {
@@ -247,7 +261,12 @@ export default function AIImageEditor({
     }
   };
 
-  const handleCropConfirm = async (area: { x: number; y: number; width: number; height: number }) => {
+  const handleCropConfirm = async (area: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }) => {
     if (!selectedFile || !selectedFilePreview) return;
     setProcessingUserImage(true);
     try {
@@ -300,8 +319,8 @@ export default function AIImageEditor({
             imageType: imageData.imageType,
             newImageUrl: userImageUri,
             chapterNumber: imageData.chapterNumber,
-            mode: 'as_is'
-          })
+            mode: 'as_is',
+          }),
         });
         const data = await response.json();
         if (response.ok && data.success) {
@@ -344,8 +363,8 @@ export default function AIImageEditor({
           storyId: story.storyId,
           imageType: imageData.imageType,
           newImageUrl: newImageGenerated,
-          chapterNumber: imageData.chapterNumber
-        })
+          chapterNumber: imageData.chapterNumber,
+        }),
       });
 
       const data = await response.json();
@@ -374,7 +393,9 @@ export default function AIImageEditor({
         try {
           const input = document.getElementById('user-image-input') as HTMLInputElement | null;
           input?.click();
-        } catch { /* ignore */ }
+        } catch {
+          /* ignore */
+        }
       }, 0);
     }
   };
@@ -409,9 +430,7 @@ export default function AIImageEditor({
               <h2 className="text-xl font-semibold text-gray-900">
                 {tAIImageEditor('title', { imageType: getImageTitle() })}
               </h2>
-              <p className="text-sm text-gray-600">
-                {story.title}
-              </p>
+              <p className="text-sm text-gray-600">{story.title}</p>
             </div>
           </div>
           <button
@@ -473,11 +492,15 @@ export default function AIImageEditor({
             {/* Helper / Upload Section (Option B) */}
             {mode === 'upload' && (
               <div className="space-y-3">
-                <label className="block text-sm font-medium text-gray-700">{tAIImageEditor('labels.addYourOwnPhoto')}</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  {tAIImageEditor('labels.addYourOwnPhoto')}
+                </label>
                 {!selectedFile && (
                   <div className="border-2 border-dashed rounded-lg p-6 text-center flex flex-col items-center justify-center space-y-3">
                     <FiUpload className="w-8 h-8 text-gray-400" />
-                    <p className="text-sm text-gray-600">{tAIImageEditor('helper.dragDropOrClick')}</p>
+                    <p className="text-sm text-gray-600">
+                      {tAIImageEditor('helper.dragDropOrClick')}
+                    </p>
                     <input
                       type="file"
                       accept="image/*"
@@ -485,18 +508,33 @@ export default function AIImageEditor({
                       className="hidden"
                       id="user-image-input"
                     />
-                    <label htmlFor="user-image-input" className="px-4 py-2 bg-base-100 border border-base-300 rounded-md text-sm cursor-pointer hover:bg-base-200">{tAIImageEditor('helper.selectImage')}</label>
+                    <label
+                      htmlFor="user-image-input"
+                      className="px-4 py-2 bg-base-100 border border-base-300 rounded-md text-sm cursor-pointer hover:bg-base-200"
+                    >
+                      {tAIImageEditor('helper.selectImage')}
+                    </label>
                     {userImageError && <p className="text-xs text-red-600">{userImageError}</p>}
                   </div>
                 )}
                 {selectedFile && (
                   <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-700 truncate max-w-[60%]">{selectedFile.name}</span>
+                      <span className="text-sm font-medium text-gray-700 truncate max-w-[60%]">
+                        {selectedFile.name}
+                      </span>
                       <div className="flex items-center space-x-2">
-                        {processingUserImage && <span className="text-xs text-primary">{tAIImageEditor('helper.processing')}</span>}
+                        {processingUserImage && (
+                          <span className="text-xs text-primary">
+                            {tAIImageEditor('helper.processing')}
+                          </span>
+                        )}
                         {/* Removed legacy replacement/reference pill */}
-                        <button onClick={resetUserImage} className="p-1 rounded hover:bg-gray-200" aria-label="Remove">
+                        <button
+                          onClick={resetUserImage}
+                          className="p-1 rounded hover:bg-gray-200"
+                          aria-label="Remove"
+                        >
                           <FiTrash2 className="w-4 h-4 text-gray-600" />
                         </button>
                       </div>
@@ -504,14 +542,20 @@ export default function AIImageEditor({
                     {selectedFilePreview && (
                       <div className="relative w-40 h-60 overflow-hidden rounded border bg-white">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={selectedFilePreview} alt="Uploaded preview" className="object-cover w-full h-full" />
+                        <img
+                          src={selectedFilePreview}
+                          alt="Uploaded preview"
+                          className="object-cover w-full h-full"
+                        />
                       </div>
                     )}
                     {userImageError && <p className="text-xs text-red-600">{userImageError}</p>}
                     {/* Removed status badges for as-is and style conversion per request */}
                     {userImageUri && (
                       <fieldset className="pt-2 space-y-2">
-                        <legend className="text-xs font-medium text-gray-600">{tAIImageEditor('radio.legend')}</legend>
+                        <legend className="text-xs font-medium text-gray-600">
+                          {tAIImageEditor('radio.legend')}
+                        </legend>
                         <div className="flex flex-col gap-2">
                           <label className="flex items-start gap-2 cursor-pointer">
                             <input
@@ -521,7 +565,9 @@ export default function AIImageEditor({
                               checked={!convertToStyle}
                               onChange={() => setConvertToStyle(false)}
                             />
-                            <span className="text-xs text-gray-700 leading-snug">{tAIImageEditor('radio.asIs')}</span>
+                            <span className="text-xs text-gray-700 leading-snug">
+                              {tAIImageEditor('radio.asIs')}
+                            </span>
                           </label>
                           <label className="flex items-start gap-2 cursor-pointer">
                             <input
@@ -531,7 +577,13 @@ export default function AIImageEditor({
                               checked={convertToStyle}
                               onChange={() => setConvertToStyle(true)}
                             />
-                            <span className="text-xs text-gray-700 leading-snug">{tAIImageEditor('radio.convert', { style: (story.graphicalStyle ? tGraphicalStyles(story.graphicalStyle) : tAIImageEditor('radio.defaultStyle')) })}</span>
+                            <span className="text-xs text-gray-700 leading-snug">
+                              {tAIImageEditor('radio.convert', {
+                                style: story.graphicalStyle
+                                  ? tGraphicalStyles(story.graphicalStyle)
+                                  : tAIImageEditor('radio.defaultStyle'),
+                              })}
+                            </span>
                           </label>
                         </div>
                       </fieldset>
@@ -544,7 +596,9 @@ export default function AIImageEditor({
             {/* User Request / Prompt Section */}
             {mode === 'edit' && (
               <div className="space-y-3">
-                <label className="block text-sm font-medium text-gray-700">{tAIImageEditor('labels.describeChanges')}</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  {tAIImageEditor('labels.describeChanges')}
+                </label>
                 <textarea
                   value={userRequest}
                   onChange={(e) => setUserRequest(e.target.value)}
@@ -554,7 +608,9 @@ export default function AIImageEditor({
                   maxLength={1000}
                 />
                 <div className="flex justify-between text-xs text-gray-500">
-                  <span>{tAIImageEditor('characterCount', { count: userRequest.length, max: 1000 })}</span>
+                  <span>
+                    {tAIImageEditor('characterCount', { count: userRequest.length, max: 1000 })}
+                  </span>
                   <span className="text-primary">{tAIImageEditor('helper.editUsesCredit')}</span>
                 </div>
               </div>
@@ -564,7 +620,11 @@ export default function AIImageEditor({
                 <textarea
                   value={userRequest}
                   onChange={(e) => setUserRequest(e.target.value)}
-                  placeholder={convertToStyle ? tAIImageEditor('requestPlaceholder') : tAIImageEditor('placeholders.addNotesStyleDisabled')}
+                  placeholder={
+                    convertToStyle
+                      ? tAIImageEditor('requestPlaceholder')
+                      : tAIImageEditor('placeholders.addNotesStyleDisabled')
+                  }
                   className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none ${!convertToStyle ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
                   rows={4}
                   maxLength={1000}
@@ -638,7 +698,10 @@ export default function AIImageEditor({
                   onClick={handleImageEdit}
                   disabled={
                     isLoading ||
-                    (mode === 'upload' && (processingUserImage || (!userImageUri) || (convertToStyle && !userImageUri))) ||
+                    (mode === 'upload' &&
+                      (processingUserImage ||
+                        !userImageUri ||
+                        (convertToStyle && !userImageUri))) ||
                     (mode === 'edit' && !userRequest.trim())
                   }
                   className="px-6 py-2 btn btn-primary disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center space-x-2 transition-colors"
@@ -656,7 +719,9 @@ export default function AIImageEditor({
                           ? tAIImageEditor('generateButton')
                           : convertToStyle
                             ? tAIImageEditor('generateButton')
-                            : (userImageUri ? tAIImageEditor('buttons.applyPhoto') : tAIImageEditor('generateButton'))}
+                            : userImageUri
+                              ? tAIImageEditor('buttons.applyPhoto')
+                              : tAIImageEditor('generateButton')}
                       </span>
                     </>
                   )}

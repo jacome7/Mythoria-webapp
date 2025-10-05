@@ -17,19 +17,13 @@ export async function POST(request: NextRequest) {
 
     // Validate request
     if (!creditPackages || !Array.isArray(creditPackages) || creditPackages.length === 0) {
-      return NextResponse.json(
-        { error: 'Credit packages are required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Credit packages are required' }, { status: 400 });
     }
 
     // Validate each package
     for (const pkg of creditPackages) {
       if (!pkg.packageId || !pkg.quantity || pkg.quantity <= 0) {
-        return NextResponse.json(
-          { error: 'Invalid package data' },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: 'Invalid package data' }, { status: 400 });
       }
 
       // Check if package exists
@@ -37,7 +31,7 @@ export async function POST(request: NextRequest) {
       if (!creditPackage) {
         return NextResponse.json(
           { error: `Invalid package ID: ${pkg.packageId}` },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -62,21 +56,17 @@ export async function POST(request: NextRequest) {
       currency: order.currency,
       credits: (order.creditBundle as { credits: number }).credits,
     });
-
   } catch (error) {
     console.error('Error creating payment order:', error);
-    
+
     // Check if it's a Revolut API error
     if (error instanceof Error && error.message.includes('Revolut API error')) {
       return NextResponse.json(
         { error: 'Payment service unavailable. Please try again later.' },
-        { status: 503 }
+        { status: 503 },
       );
     }
 
-    return NextResponse.json(
-      { error: 'Failed to create payment order' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create payment order' }, { status: 500 });
   }
 }

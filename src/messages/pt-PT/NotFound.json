@@ -4,12 +4,7 @@
     "description": "Parece que a página que procura se perdeu num capítulo por escrever! Talvez esteja escondida num conto de fadas, ou talvez tenha sido apanhada numa aventura própria.",
     "suggestions": {
       "title": "Enquanto procuramos a sua página perdida, pode:",
-      "items": [
-        null,
-        null,
-        null,
-        null
-      ]
+      "items": [null, null, null, null]
     },
     "actions": {
       "goHome": "Voltar à Página Inicial",

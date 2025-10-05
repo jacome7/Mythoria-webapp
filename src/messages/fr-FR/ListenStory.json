@@ -9,7 +9,7 @@
     "yourBalance": "Votre équilibre",
     "narrateStoryAgain": "Raconter l'histoire à nouveau",
     "replaceCurrentNarration": "Cela remplacera votre narration actuelle",
-  "needMoreCredits": "Vous avez besoin de {credits} crédits de plus pour générer une nouvelle narration.",
+    "needMoreCredits": "Vous avez besoin de {credits} crédits de plus pour générer une nouvelle narration.",
     "buyMoreCredits": "Achetez plus de crédits",
     "loadingPricing": "Chargement des informations sur les prix ...",
     "convertYourStory": "Convertir votre histoire",
@@ -18,10 +18,10 @@
     "generatingAudiobook": "Générer votre livre audio",
     "checkingUpdates": "Nous vérifions les mises à jour toutes les 15 secondes. Veuillez garder cette page ouverte.",
     "generationCompleted": "Génération audiobice terminée!",
-  "chapterTitle": "Chapitre {number}",
+    "chapterTitle": "Chapitre {number}",
     "startingGeneration": "Démarrage de la génération de livres audio ...",
     "generationStarted": "La génération de livres audio a commencé! Les Elfe Mythoria prendront environ 5 minutes pour raconter toute l'histoire.",
-  "needMoreCreditsGenerate": "Vous avez besoin de {shortfall} crédits de plus pour générer un livre audio.",
+    "needMoreCreditsGenerate": "Vous avez besoin de {shortfall} crédits de plus pour générer un livre audio.",
     "generationFailed": "Échec du démarrage de la génération audio",
     "tryAgainLater": "Veuillez réessayer plus tard."
   }

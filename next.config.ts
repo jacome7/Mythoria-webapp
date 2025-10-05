@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 import withPWAInit from '@ducanh2912/next-pwa';
 
@@ -14,7 +14,7 @@ const withPWA = withPWAInit({
     disableDevLogs: true,
     // Ensure offline route is always precached (avoids bad-precaching-response if auto detection fails)
     additionalManifestEntries: [
-      { url: '/offline', revision: process.env.npm_package_version || '1' }
+      { url: '/offline', revision: process.env.npm_package_version || '1' },
     ],
   },
   fallbacks: {
@@ -48,17 +48,17 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  
+
   // Other existing configurations...
   experimental: {
     // Enable optimizations - expanded for better tree shaking
     optimizePackageImports: [
-      '@clerk/nextjs', 
+      '@clerk/nextjs',
       'next-intl',
       'react-icons',
       'daisyui',
       'drizzle-orm',
-      'react-type-animation'
+      'react-type-animation',
     ],
   },
   // Keep webpack config minimal; avoid overriding Next.js optimization to prevent chunk/runtime issues
@@ -66,13 +66,13 @@ const nextConfig: NextConfig = {
     // Keep aliasing minimal; no VertexAI alias required anymore
     config.resolve.alias = {
       ...config.resolve.alias,
-  // Force using userland punycode implementation instead of deprecated Node builtin
-  punycode: require.resolve('punycode/')
+      // Force using userland punycode implementation instead of deprecated Node builtin
+      punycode: require.resolve('punycode/'),
     };
-  // Note: Node's internal loader may emit DEP0040 before webpack aliasing takes effect
-  // during Next build (some Next scripts reference the builtin early). This alias prevents
-  // your application code from pulling the deprecated builtin at runtime, but cannot fully
-  // silence early bootstrap warnings in Node 22.
+    // Note: Node's internal loader may emit DEP0040 before webpack aliasing takes effect
+    // during Next build (some Next scripts reference the builtin early). This alias prevents
+    // your application code from pulling the deprecated builtin at runtime, but cannot fully
+    // silence early bootstrap warnings in Node 22.
     return config;
   },
 };

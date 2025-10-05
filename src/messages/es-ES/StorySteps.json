@@ -132,8 +132,7 @@
         "failedGetUser": "No se pudo obtener la información del usuario.",
         "failedCreate": "No se pudo crear la historia.",
         "unknown": "Ha ocurrido un error desconocido."
-      }
-      ,
+      },
       "characterSelection": {
         "includeExistingTitle": "Incluir tus personajes existentes",
         "noneSelected": "Selecciona personajes para incluir en tu historia",

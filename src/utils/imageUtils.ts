@@ -28,7 +28,7 @@ function parseImageFilename(filename: string): {
 } | null {
   // Remove path and extension
   const nameWithoutPath = filename.split('/').pop() || '';
-  const nameWithoutExt = nameWithoutPath.replace(/\.[^/.]+$/, '');  // Patterns for different image types
+  const nameWithoutExt = nameWithoutPath.replace(/\.[^/.]+$/, ''); // Patterns for different image types
   const patterns = [
     // Simple frontcover.png
     {
@@ -36,8 +36,8 @@ function parseImageFilename(filename: string): {
       type: 'frontcover' as const,
       getMetadata: () => ({
         version: 'v001',
-        timestamp: 'current'
-      })
+        timestamp: 'current',
+      }),
     },
     // frontcover_v001.png, frontcover_v002.png (no timestamp, just version)
     {
@@ -45,8 +45,8 @@ function parseImageFilename(filename: string): {
       type: 'frontcover' as const,
       getMetadata: (match: RegExpMatchArray) => ({
         version: `v${match[1].padStart(3, '0')}`,
-        timestamp: 'current'
-      })
+        timestamp: 'current',
+      }),
     },
     // frontcover_v002_2025-06-20T10-54-21-533Z.png (version with timestamp)
     {
@@ -54,8 +54,8 @@ function parseImageFilename(filename: string): {
       type: 'frontcover' as const,
       getMetadata: (match: RegExpMatchArray) => ({
         version: `v${match[1].padStart(3, '0')}`,
-        timestamp: match[2]
-      })
+        timestamp: match[2],
+      }),
     },
     // frontcover_2025-06-20T10-54-21-533Z.png (timestamp only, default to v001)
     {
@@ -63,8 +63,8 @@ function parseImageFilename(filename: string): {
       type: 'frontcover' as const,
       getMetadata: (match: RegExpMatchArray) => ({
         version: 'v001', // Default version for legacy images
-        timestamp: match[1]
-      })
+        timestamp: match[1],
+      }),
     },
     // Simple backcover.png
     {
@@ -72,8 +72,8 @@ function parseImageFilename(filename: string): {
       type: 'backcover' as const,
       getMetadata: () => ({
         version: 'v001',
-        timestamp: 'current'
-      })
+        timestamp: 'current',
+      }),
     },
     // backcover_v001.png (version only, no timestamp)
     {
@@ -81,8 +81,8 @@ function parseImageFilename(filename: string): {
       type: 'backcover' as const,
       getMetadata: (match: RegExpMatchArray) => ({
         version: `v${match[1].padStart(3, '0')}`,
-        timestamp: 'current'
-      })
+        timestamp: 'current',
+      }),
     },
     // backcover_v001_2025-06-20T10-55-12-493Z.png (version with timestamp)
     {
@@ -90,8 +90,8 @@ function parseImageFilename(filename: string): {
       type: 'backcover' as const,
       getMetadata: (match: RegExpMatchArray) => ({
         version: `v${match[1].padStart(3, '0')}`,
-        timestamp: match[2]
-      })
+        timestamp: match[2],
+      }),
     },
     // backcover_2025-06-20T10-55-12-493Z.png (timestamp only, default to v001)
     {
@@ -99,8 +99,8 @@ function parseImageFilename(filename: string): {
       type: 'backcover' as const,
       getMetadata: (match: RegExpMatchArray) => ({
         version: 'v001', // Default version for legacy images
-        timestamp: match[1]
-      })
+        timestamp: match[1],
+      }),
     },
     // Simple chapter_1.png
     {
@@ -109,8 +109,8 @@ function parseImageFilename(filename: string): {
       getMetadata: (match: RegExpMatchArray) => ({
         chapterNumber: parseInt(match[1]),
         version: 'v001',
-        timestamp: 'current'
-      })
+        timestamp: 'current',
+      }),
     },
     // chapter_1_v001.png (chapter with version, no timestamp)
     {
@@ -119,8 +119,8 @@ function parseImageFilename(filename: string): {
       getMetadata: (match: RegExpMatchArray) => ({
         chapterNumber: parseInt(match[1]),
         version: `v${match[2].padStart(3, '0')}`,
-        timestamp: 'current'
-      })
+        timestamp: 'current',
+      }),
     },
     // chapter_1__v001_2025-06-20T10-26-09-584Z.png (double underscore with version and timestamp)
     {
@@ -129,8 +129,8 @@ function parseImageFilename(filename: string): {
       getMetadata: (match: RegExpMatchArray) => ({
         chapterNumber: parseInt(match[1]),
         version: `v${match[2].padStart(3, '0')}`,
-        timestamp: match[3]
-      })
+        timestamp: match[3],
+      }),
     },
     // chapter_1_2025-06-20T10-26-09-584Z.png (chapter with timestamp, default to v001)
     {
@@ -139,9 +139,9 @@ function parseImageFilename(filename: string): {
       getMetadata: (match: RegExpMatchArray) => ({
         chapterNumber: parseInt(match[1]),
         version: 'v001', // Default version for legacy images
-        timestamp: match[2]
-      })
-    }
+        timestamp: match[2],
+      }),
+    },
   ];
   for (const pattern of patterns) {
     const match = nameWithoutExt.match(pattern.regex);
@@ -149,17 +149,22 @@ function parseImageFilename(filename: string): {
       console.log('Debug: Pattern matched!', {
         regex: pattern.regex.toString(),
         match,
-        type: pattern.type
+        type: pattern.type,
       });
       const metadata = pattern.getMetadata(match);
       return {
         type: pattern.type,
-        ...metadata
+        ...metadata,
       };
     }
   }
 
-  console.log('Debug: No pattern matched for filename:', filename, 'nameWithoutExt:', nameWithoutExt);
+  console.log(
+    'Debug: No pattern matched for filename:',
+    filename,
+    'nameWithoutExt:',
+    nameWithoutExt,
+  );
 
   return null;
 }
@@ -167,25 +172,47 @@ function parseImageFilename(filename: string): {
 /**
  * Extract and organize story images from Google Cloud Storage data
  */
-export function extractStoryImages(storageData: Record<string, { url: string; timeCreated?: string; updated?: string; size?: string | number; contentType?: string }>): StoryImage[] {
+export function extractStoryImages(
+  storageData: Record<
+    string,
+    {
+      url: string;
+      timeCreated?: string;
+      updated?: string;
+      size?: string | number;
+      contentType?: string;
+    }
+  >,
+): StoryImage[] {
   if (!storageData || typeof storageData !== 'object') {
     return [];
   }
 
-  const imageUrls: Array<{ url: string; filename: string; timeCreated?: string; updated?: string }> = [];
+  const imageUrls: Array<{
+    url: string;
+    filename: string;
+    timeCreated?: string;
+    updated?: string;
+  }> = [];
 
   // Extract all image URLs from Google Cloud Storage data
   for (const [filename, value] of Object.entries(storageData)) {
     if (value && typeof value === 'object' && 'url' in value) {
       // Google Storage format with metadata
-      const imageData = value as { url: string; timeCreated?: string; updated?: string; size?: string | number; contentType?: string };
+      const imageData = value as {
+        url: string;
+        timeCreated?: string;
+        updated?: string;
+        size?: string | number;
+        contentType?: string;
+      };
       if (typeof imageData.url === 'string' && imageData.url.includes('storage.googleapis.com')) {
         if (/\.(png|jpg|jpeg|webp|gif)$/i.test(filename)) {
           imageUrls.push({
             url: imageData.url,
             filename,
             timeCreated: imageData.timeCreated,
-            updated: imageData.updated
+            updated: imageData.updated,
           });
         }
       }
@@ -196,23 +223,21 @@ export function extractStoryImages(storageData: Record<string, { url: string; ti
   const imageGroups = new Map<string, ImageVersion[]>();
   for (const { url, filename, timeCreated, updated } of imageUrls) {
     const parsed = parseImageFilename(filename);
-    
+
     console.log('Debug: Processing image file:', {
       filename,
       parsed,
       timeCreated,
-      updated
+      updated,
     });
-    
+
     if (!parsed) {
       console.log('Debug: Could not parse filename:', filename);
       continue;
     }
 
     // Create a unique key for each image type
-    const key = parsed.type === 'chapter' 
-      ? `${parsed.type}_${parsed.chapterNumber}`
-      : parsed.type;
+    const key = parsed.type === 'chapter' ? `${parsed.type}_${parsed.chapterNumber}` : parsed.type;
 
     if (!imageGroups.has(key)) {
       imageGroups.set(key, []);
@@ -225,14 +250,14 @@ export function extractStoryImages(storageData: Record<string, { url: string; ti
       key,
       version: parsed.version,
       actualTimestamp,
-      filename
+      filename,
     });
 
     imageGroups.get(key)!.push({
       url,
       version: parsed.version,
       timestamp: actualTimestamp,
-      filename
+      filename,
     });
   }
 
@@ -248,22 +273,22 @@ export function extractStoryImages(storageData: Record<string, { url: string; ti
     });
 
     const latestVersion = versions[versions.length - 1];
-    
+
     let storyImage: StoryImage;
-    
+
     if (key.startsWith('chapter_')) {
       const chapterNumber = parseInt(key.split('_')[1]);
       storyImage = {
         type: 'chapter',
         chapterNumber,
         versions,
-        latestVersion
+        latestVersion,
       };
     } else {
       storyImage = {
         type: key as 'frontcover' | 'backcover',
         versions,
-        latestVersion
+        latestVersion,
       };
     }
 
@@ -275,15 +300,15 @@ export function extractStoryImages(storageData: Record<string, { url: string; ti
     const order = { frontcover: 0, backcover: 1, chapter: 2 };
     const aOrder = order[a.type];
     const bOrder = order[b.type];
-    
+
     if (aOrder !== bOrder) {
       return aOrder - bOrder;
     }
-    
+
     if (a.type === 'chapter' && b.type === 'chapter') {
       return (a.chapterNumber || 0) - (b.chapterNumber || 0);
     }
-    
+
     return 0;
   });
 
@@ -325,12 +350,12 @@ export function formatRelativeTime(timestamp: string): string {
     const date = new Date(timestamp);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
-    
+
     // If invalid date, return "unknown time"
     if (isNaN(date.getTime())) {
       return 'unknown time';
     }
-    
+
     const diffSeconds = Math.floor(diffMs / 1000);
     const diffMinutes = Math.floor(diffSeconds / 60);
     const diffHours = Math.floor(diffMinutes / 60);

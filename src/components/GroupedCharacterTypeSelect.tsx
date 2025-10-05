@@ -2,7 +2,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { FiChevronDown, FiChevronRight } from 'react-icons/fi';
-import { CHARACTER_TYPE_GROUPS, findCharacterTypeGroup, getCharacterTypeLabel } from '@/types/character-types';
+import {
+  CHARACTER_TYPE_GROUPS,
+  findCharacterTypeGroup,
+  getCharacterTypeLabel,
+} from '@/types/character-types';
 import { useTranslations } from 'next-intl';
 
 interface GroupedCharacterTypeSelectProps {
@@ -15,8 +19,8 @@ interface GroupedCharacterTypeSelectProps {
 export default function GroupedCharacterTypeSelect({
   value,
   onChange,
-  placeholder = "Select character type...",
-  className = ""
+  placeholder = 'Select character type...',
+  className = '',
 }: GroupedCharacterTypeSelectProps) {
   const tGroupedCharacterTypeSelect = useTranslations('GroupedCharacterTypeSelect');
   const tCharacters = useTranslations('Characters');
@@ -39,7 +43,9 @@ export default function GroupedCharacterTypeSelect({
   };
 
   const getDisplayPlaceholder = () => {
-    return placeholder === "Select character type..." ? tGroupedCharacterTypeSelect('placeholder') : placeholder;
+    return placeholder === 'Select character type...'
+      ? tGroupedCharacterTypeSelect('placeholder')
+      : placeholder;
   };
 
   // Initialize expanded groups based on current value or default to 'human'
@@ -47,11 +53,11 @@ export default function GroupedCharacterTypeSelect({
     if (value) {
       const group = findCharacterTypeGroup(value);
       if (group) {
-        setExpandedGroups(prev => ({ ...prev, [group.key]: true }));
+        setExpandedGroups((prev) => ({ ...prev, [group.key]: true }));
       }
     } else {
       // Default to expanding 'human' group for first-time editing
-      setExpandedGroups(prev => ({ ...prev, 'human': true }));
+      setExpandedGroups((prev) => ({ ...prev, human: true }));
     }
   }, [value]);
 
@@ -68,9 +74,9 @@ export default function GroupedCharacterTypeSelect({
   }, []);
 
   const toggleGroup = (groupKey: string) => {
-    setExpandedGroups(prev => ({
+    setExpandedGroups((prev) => ({
       ...prev,
-      [groupKey]: !prev[groupKey]
+      [groupKey]: !prev[groupKey],
     }));
   };
 
@@ -89,10 +95,8 @@ export default function GroupedCharacterTypeSelect({
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 rounded-md bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
       >
-        <span className={value ? "text-gray-900" : "text-gray-500"}>
-          {displayValue}
-        </span>
-        <FiChevronDown 
+        <span className={value ? 'text-gray-900' : 'text-gray-500'}>{displayValue}</span>
+        <FiChevronDown
           className={`h-5 w-5 text-gray-400 transition-transform duration-200 ${
             isOpen ? 'transform rotate-180' : ''
           }`}
@@ -127,8 +131,8 @@ export default function GroupedCharacterTypeSelect({
                       type="button"
                       onClick={() => handleOptionSelect(option.value)}
                       className={`w-full text-left px-6 py-2 text-sm hover:bg-blue-50 focus:outline-none focus:bg-blue-50 ${
-                        value === option.value 
-                          ? 'bg-blue-100 text-blue-900 font-medium' 
+                        value === option.value
+                          ? 'bg-blue-100 text-blue-900 font-medium'
                           : 'text-gray-700'
                       }`}
                     >

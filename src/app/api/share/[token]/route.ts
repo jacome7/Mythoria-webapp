@@ -5,10 +5,7 @@ import { stories, shareLinks, storyCollaborators, authors } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { authorService } from '@/db/services';
 
-export async function GET(
-  request: Request,
-  context: { params: Promise<{ token: string }> }
-) {
+export async function GET(request: Request, context: { params: Promise<{ token: string }> }) {
   try {
     const { token } = await context.params;
     const { userId } = await auth();
@@ -34,7 +31,7 @@ export async function GET(
         },
         author: {
           displayName: authors.displayName,
-        }
+        },
       })
       .from(shareLinks)
       .leftJoin(stories, eq(stories.storyId, shareLinks.storyId))
@@ -50,29 +47,35 @@ export async function GET(
 
     // Check if link is expired or revoked
     if (link.revoked || new Date(link.expiresAt) < new Date()) {
-      return NextResponse.json({ error: 'Share link has expired or been revoked' }, { status: 410 });
+      return NextResponse.json(
+        { error: 'Share link has expired or been revoked' },
+        { status: 410 },
+      );
     }
 
     // For edit and view links, authentication is required
     if ((link.accessLevel === 'edit' || link.accessLevel === 'view') && !userId) {
-      return NextResponse.json({
-        success: false,
-        requiresAuth: true,
-        storyPreview: {
-          title: link.story?.title || 'Untitled Story',
-          synopsis: link.story?.synopsis || '',
-          authorName: link.author?.displayName || 'Unknown Author',
-          coverUri: link.story?.coverUri || undefined,
-          targetAudience: link.story?.targetAudience || undefined,
-          graphicalStyle: link.story?.graphicalStyle || undefined
+      return NextResponse.json(
+        {
+          success: false,
+          requiresAuth: true,
+          storyPreview: {
+            title: link.story?.title || 'Untitled Story',
+            synopsis: link.story?.synopsis || '',
+            authorName: link.author?.displayName || 'Unknown Author',
+            coverUri: link.story?.coverUri || undefined,
+            targetAudience: link.story?.targetAudience || undefined,
+            graphicalStyle: link.story?.graphicalStyle || undefined,
+          },
+          accessLevel: link.accessLevel,
         },
-        accessLevel: link.accessLevel
-      }, { status: 401 });
+        { status: 401 },
+      );
     }
 
     // Get current user's author ID for collaborator management
     let currentAuthorId: string | null = null;
-    
+
     if (userId) {
       // First try to find existing user
       const existingAuthor = await db
@@ -84,7 +87,7 @@ export async function GET(
       if (!existingAuthor.length) {
         // User doesn't exist in authors table, create them or update existing with new clerkUserId
         console.log('Creating/updating author for user accessing shared link:', userId);
-        
+
         try {
           // Get user details from Clerk
           const clerkUser = await currentUser();
@@ -95,19 +98,21 @@ export async function GET(
           // Use syncUserOnSignIn which handles both creation and updating existing users
           const author = await authorService.syncUserOnSignIn({
             id: userId,
-            emailAddresses: clerkUser.emailAddresses?.map(email => ({
-              id: email.id,
-              emailAddress: email.emailAddress
-            })) || [],
+            emailAddresses:
+              clerkUser.emailAddresses?.map((email) => ({
+                id: email.id,
+                emailAddress: email.emailAddress,
+              })) || [],
             primaryEmailAddressId: clerkUser.primaryEmailAddressId,
-            phoneNumbers: clerkUser.phoneNumbers?.map(phone => ({
-              id: phone.id,
-              phoneNumber: phone.phoneNumber
-            })) || [],
+            phoneNumbers:
+              clerkUser.phoneNumbers?.map((phone) => ({
+                id: phone.id,
+                phoneNumber: phone.phoneNumber,
+              })) || [],
             primaryPhoneNumberId: clerkUser.primaryPhoneNumberId,
             firstName: clerkUser.firstName,
             lastName: clerkUser.lastName,
-            username: clerkUser.username
+            username: clerkUser.username,
           });
 
           currentAuthorId = author.authorId;
@@ -131,20 +136,18 @@ export async function GET(
           .where(
             and(
               eq(storyCollaborators.storyId, link.storyId),
-              eq(storyCollaborators.userId, currentAuthorId)
-            )
+              eq(storyCollaborators.userId, currentAuthorId),
+            ),
           )
           .limit(1);
 
         if (!existingCollaborator.length) {
           // Add as editor collaborator
-          await db
-            .insert(storyCollaborators)
-            .values({
-              storyId: link.storyId,
-              userId: currentAuthorId,
-              role: 'editor',
-            });
+          await db.insert(storyCollaborators).values({
+            storyId: link.storyId,
+            userId: currentAuthorId,
+            role: 'editor',
+          });
           console.log('Added user as editor collaborator:', currentAuthorId);
         }
       } else if (link.accessLevel === 'view') {
@@ -155,20 +158,18 @@ export async function GET(
           .where(
             and(
               eq(storyCollaborators.storyId, link.storyId),
-              eq(storyCollaborators.userId, currentAuthorId)
-            )
+              eq(storyCollaborators.userId, currentAuthorId),
+            ),
           )
           .limit(1);
 
         if (!existingCollaborator.length) {
           // Add as viewer collaborator
-          await db
-            .insert(storyCollaborators)
-            .values({
-              storyId: link.storyId,
-              userId: currentAuthorId,
-              role: 'viewer',
-            });
+          await db.insert(storyCollaborators).values({
+            storyId: link.storyId,
+            userId: currentAuthorId,
+            role: 'viewer',
+          });
           console.log('Added user as viewer collaborator:', currentAuthorId);
         }
       }
@@ -180,14 +181,10 @@ export async function GET(
       story: link.story,
       author: link.author,
       accessLevel: link.accessLevel,
-      redirectUrl: `/stories/read/${link.storyId}${link.accessLevel === 'edit' ? '?mode=edit' : ''}`
+      redirectUrl: `/stories/read/${link.storyId}${link.accessLevel === 'edit' ? '?mode=edit' : ''}`,
     });
-
   } catch (error) {
     console.error('Error accessing shared story:', error);
-    return NextResponse.json(
-      { error: 'Failed to access shared story' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to access shared story' }, { status: 500 });
   }
 }

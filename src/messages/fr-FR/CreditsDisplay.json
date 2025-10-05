@@ -1,6 +1,6 @@
 {
   "CreditsDisplay": {
-  "button": "Crédits disponibles: {credits}",
+    "button": "Crédits disponibles: {credits}",
     "creditHistory": "Historique de crédit",
     "currentBalance": "Solde disponible:",
     "credits": "crédits",
@@ -26,7 +26,7 @@
     "haveCode": "Tu as un code ?",
     "placeholder": "Entre ton code",
     "apply": "Appliquer",
-  "success": "Bravo ! Tu as débloqué {credits, plural, one {# crédit} other {# crédits}} avec {code}.",
+    "success": "Bravo ! Tu as débloqué {credits, plural, one {# crédit} other {# crédits}} avec {code}.",
     "invalid": "Code invalide ou inactif.",
     "checking": "Vérification...",
     "sectionHeading": "Code promo ou parrainage",

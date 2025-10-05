@@ -37,11 +37,11 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
     stateRegion: '',
     postalCode: '',
     country: '',
-    phone: ''
+    phone: '',
   });
   const [vatValidation, setVatValidation] = useState<VATValidationResult>({ isValid: true });
   const [isLoadingUserData, setIsLoadingUserData] = useState(false);
-  
+
   // Use ref to store the latest callback to avoid dependency issues
   const onBillingInfoChangeRef = useRef(onBillingInfoChange);
   onBillingInfoChangeRef.current = onBillingInfoChange;
@@ -52,7 +52,7 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
 
   const loadUserBillingData = useCallback(async () => {
     if (!user) return;
-    
+
     setIsLoadingUserData(true);
     try {
       // For now, we'll use the data from Clerk and local state
@@ -63,9 +63,9 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
         email: user.primaryEmailAddress?.emailAddress || '',
         // Other fields would come from your database if you store them
       };
-      
+
       setBillingInfo(updatedInfo);
-      
+
       // Notify parent component after state update, not during
       setTimeout(() => {
         onBillingInfoChangeRef.current?.(updatedInfo);
@@ -96,12 +96,12 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
   const handleInputChange = (field: keyof BillingInfo, value: string) => {
     const updatedInfo = { ...billingInfo, [field]: value };
     setBillingInfo(updatedInfo);
-    
+
     // Special handling for VAT number validation
     if (field === 'fiscalNumber') {
       if (value.trim()) {
         const validation = validateVATNumber(value);
-        
+
         // Translate error messages
         let translatedError: string | undefined = undefined;
         if (validation.error) {
@@ -112,18 +112,18 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
           } else if (validation.error.includes('Invalid') && validation.country) {
             translatedError = tBuyCreditsPage('vatValidation.errors.invalidFormat', {
               country: validation.country,
-              format: validation.error.split('Expected format: ')[1] || ''
+              format: validation.error.split('Expected format: ')[1] || '',
             });
           } else {
             translatedError = validation.error; // Fallback to original error
           }
         }
-        
+
         setVatValidation({
           ...validation,
-          error: translatedError
+          error: translatedError,
         });
-        
+
         if (validation.isValid && validation.formattedVAT) {
           updatedInfo.fiscalNumber = validation.formattedVAT;
         }
@@ -131,7 +131,7 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
         setVatValidation({ isValid: true }); // Empty is valid (optional field)
       }
     }
-    
+
     // Notify parent component using ref to avoid dependency issues
     // Use setTimeout to avoid calling during render
     setTimeout(() => {
@@ -149,10 +149,12 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
   return (
     <div className="bg-base-200 rounded-lg mb-6">
       {/* Header - Always visible */}
-      <div 
+      <div
         className="flex items-center justify-between p-6 cursor-pointer hover:bg-base-300 transition-colors rounded-lg"
         onClick={() => setIsExpanded(!isExpanded)}
-      >        <div className="flex items-center space-x-3">
+      >
+        {' '}
+        <div className="flex items-center space-x-3">
           <FaFileInvoice className="text-primary text-xl" />
           <div>
             <h3 className="text-lg font-bold">{tBuyCreditsPage('title')}</h3>
@@ -161,7 +163,6 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
             </p>
           </div>
         </div>
-        
         <div className="flex items-center space-x-2">
           {isExpanded ? (
             <FaChevronUp className="text-gray-500" />
@@ -180,7 +181,7 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
               <span className="ml-2">{tBuyCreditsPage('loading')}</span>
             </div>
           )}
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             {/* Personal Information */}
             <div className="space-y-4">
@@ -188,7 +189,7 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
                 <FaUser className="text-primary" />
                 <h4 className="font-semibold">{tBuyCreditsPage('personalDetails')}</h4>
               </div>
-              
+
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">{tBuyCreditsPage('fields.fullName')}</span>
@@ -231,7 +232,9 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
                 />
                 {vatValidation.error && (
                   <label className="label">
-                    <span className="label-text-alt text-error break-words">{vatValidation.error}</span>
+                    <span className="label-text-alt text-error break-words">
+                      {vatValidation.error}
+                    </span>
                   </label>
                 )}
                 {vatValidation.isValid && vatValidation.country && billingInfo.fiscalNumber && (
@@ -247,7 +250,7 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
                   </span>
                 </label>
               </div>
-               <div className="form-control">
+              <div className="form-control">
                 <label className="label">
                   <span className="label-text">{tBuyCreditsPage('fields.phoneOptional')}</span>
                 </label>
@@ -283,7 +286,9 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">{tBuyCreditsPage('fields.addressLine2Optional')}</span>
+                  <span className="label-text">
+                    {tBuyCreditsPage('fields.addressLine2Optional')}
+                  </span>
                 </label>
                 <input
                   type="text"

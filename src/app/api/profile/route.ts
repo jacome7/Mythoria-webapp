@@ -13,7 +13,7 @@ const ALLOWED_INTERESTS = [
   'everyday_emotions',
   'sports',
   'comedy_fun',
-  'educational'
+  'educational',
 ] as const;
 
 type ProfilePatchPayload = Partial<{
@@ -33,8 +33,10 @@ type ProfilePatchPayload = Partial<{
 function sanitizeInterests(interests: unknown): string[] | undefined {
   if (!Array.isArray(interests)) return undefined;
   return interests
-    .map(i => String(i))
-    .filter((i): i is typeof ALLOWED_INTERESTS[number] => ALLOWED_INTERESTS.includes(i as typeof ALLOWED_INTERESTS[number]));
+    .map((i) => String(i))
+    .filter((i): i is (typeof ALLOWED_INTERESTS)[number] =>
+      ALLOWED_INTERESTS.includes(i as (typeof ALLOWED_INTERESTS)[number]),
+    );
 }
 
 export async function GET() {
@@ -53,9 +55,9 @@ export async function GET() {
       primaryGoals: author.primaryGoals || [],
       primaryGoalOther: author.primaryGoalOther,
       audiences: author.audiences || [],
-      interests: author.interests || []
-      ,notificationPreference: author.notificationPreference
-    }
+      interests: author.interests || [],
+      notificationPreference: author.notificationPreference,
+    },
   });
 }
 
@@ -69,7 +71,22 @@ export async function PATCH(req: NextRequest) {
     const body: ProfilePatchPayload = await req.json();
 
     // Validation
-  const updates: Partial<Pick<Author, 'displayName' | 'gender' | 'literaryAge' | 'primaryGoals' | 'primaryGoalOther' | 'audiences' | 'interests' | 'fiscalNumber' | 'mobilePhone' | 'preferredLocale' | 'notificationPreference'>> = {};
+    const updates: Partial<
+      Pick<
+        Author,
+        | 'displayName'
+        | 'gender'
+        | 'literaryAge'
+        | 'primaryGoals'
+        | 'primaryGoalOther'
+        | 'audiences'
+        | 'interests'
+        | 'fiscalNumber'
+        | 'mobilePhone'
+        | 'preferredLocale'
+        | 'notificationPreference'
+      >
+    > = {};
 
     if (body.displayName !== undefined) {
       const name = body.displayName.trim();
@@ -96,7 +113,13 @@ export async function PATCH(req: NextRequest) {
     const legacyPrimaryGoal = (body as unknown as { primaryGoal?: unknown }).primaryGoal;
     const legacyAudience = (body as unknown as { audience?: unknown }).audience;
     if (legacyPrimaryGoal !== undefined || legacyAudience !== undefined) {
-      return NextResponse.json({ error: 'Legacy fields primaryGoal/audience no longer supported. Use primaryGoals[] / audiences[]' }, { status: 400 });
+      return NextResponse.json(
+        {
+          error:
+            'Legacy fields primaryGoal/audience no longer supported. Use primaryGoals[] / audiences[]',
+        },
+        { status: 400 },
+      );
     }
 
     if (body.primaryGoals !== undefined) {
@@ -115,7 +138,11 @@ export async function PATCH(req: NextRequest) {
     }
 
     // If 'other' selected but no primaryGoalOther provided, keep existing (frontend may send separately)
-    if (updates.primaryGoals && (updates.primaryGoals as string[]).includes('other') && body.primaryGoalOther === undefined) {
+    if (
+      updates.primaryGoals &&
+      (updates.primaryGoals as string[]).includes('other') &&
+      body.primaryGoalOther === undefined
+    ) {
       // no-op
     } else if (updates.primaryGoals && !(updates.primaryGoals as string[]).includes('other')) {
       // Clear other text if 'other' removed
@@ -166,7 +193,12 @@ export async function PATCH(req: NextRequest) {
       .returning();
 
     if (!updated) {
-      console.error('Profile PATCH: database update returned no row for authorId', author.authorId, 'updates attempted:', Object.keys(updates));
+      console.error(
+        'Profile PATCH: database update returned no row for authorId',
+        author.authorId,
+        'updates attempted:',
+        Object.keys(updates),
+      );
       return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
     }
 
@@ -183,19 +215,20 @@ export async function PATCH(req: NextRequest) {
             primaryGoals: updated.primaryGoals || [],
             primaryGoalOther: updated.primaryGoalOther || null,
             audiences: updated.audiences || [],
-            interests: updated.interests || []
-          }
+            interests: updated.interests || [],
+          },
         },
         publicMetadata: {
-          displayName: updated.displayName
-        }
+          displayName: updated.displayName,
+        },
       });
     } catch (e) {
       console.warn('Failed to sync Clerk metadata (non-fatal):', e);
     }
 
     return NextResponse.json({
-      success: true, author: {
+      success: true,
+      author: {
         displayName: updated.displayName,
         gender: updated.gender,
         literaryAge: updated.literaryAge,
@@ -205,9 +238,9 @@ export async function PATCH(req: NextRequest) {
         primaryGoals: updated.primaryGoals || [],
         primaryGoalOther: updated.primaryGoalOther,
         audiences: updated.audiences || [],
-        interests: updated.interests || []
-        ,notificationPreference: updated.notificationPreference
-      }
+        interests: updated.interests || [],
+        notificationPreference: updated.notificationPreference,
+      },
     });
   } catch (err) {
     console.error('Profile PATCH error', err);

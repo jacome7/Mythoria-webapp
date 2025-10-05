@@ -26,7 +26,7 @@
     "haveCode": "Have a code?",
     "placeholder": "Enter your code",
     "apply": "Apply",
-  "success": "Success! You unlocked {credits, plural, one {# credit} other {# credits}} with {code}.",
+    "success": "Success! You unlocked {credits, plural, one {# credit} other {# credits}} with {code}.",
     "invalid": "Invalid or inactive code.",
     "checking": "Checking...",
     "sectionHeading": "Promo or referral code",

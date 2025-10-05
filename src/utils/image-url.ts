@@ -13,12 +13,12 @@ const STORAGE_BASE_URL = 'https://storage.googleapis.com/mythoria-generated-stor
  */
 export function toAbsoluteImageUrl(relativePath: string | null | undefined): string | null {
   if (!relativePath) return null;
-  
+
   // If it's already an absolute URL, return as is
   if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
     return relativePath;
   }
-  
+
   // Convert relative path to absolute URL
   return `${STORAGE_BASE_URL}/${relativePath}`;
 }
@@ -36,17 +36,17 @@ export const formatImageUrl = toAbsoluteImageUrl;
  */
 export function toRelativeImagePath(absoluteUrl: string | null | undefined): string | null {
   if (!absoluteUrl) return null;
-  
+
   // If it's already a relative path, return as is
   if (!absoluteUrl.startsWith('http://') && !absoluteUrl.startsWith('https://')) {
     return absoluteUrl;
   }
-  
+
   // Convert absolute URL to relative path
   if (absoluteUrl.startsWith(STORAGE_BASE_URL)) {
     return absoluteUrl.replace(`${STORAGE_BASE_URL}/`, '');
   }
-  
+
   // If it's an external URL, return as is
   return absoluteUrl;
 }

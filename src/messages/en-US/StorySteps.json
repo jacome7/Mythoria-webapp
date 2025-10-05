@@ -132,8 +132,7 @@
         "failedGetUser": "Failed to get user information.",
         "failedCreate": "Failed to create story.",
         "unknown": "Unknown error occurred."
-      }
-      ,
+      },
       "characterSelection": {
         "includeExistingTitle": "Include your existing characters",
         "noneSelected": "Select characters to include in your story",

@@ -43,13 +43,13 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chart, id }) => {
         try {
           // Clear previous content
           containerRef.current.innerHTML = '';
-          
+
           // Render the mermaid chart
           const { svg } = await mermaid.render(chartId, chart);
-          
+
           if (containerRef.current) {
             containerRef.current.innerHTML = svg;
-            
+
             // Apply additional styling to the SVG
             const svgElement = containerRef.current.querySelector('svg');
             if (svgElement) {
@@ -76,7 +76,7 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chart, id }) => {
 
   return (
     <div className="my-6 overflow-x-auto">
-      <div 
+      <div
         ref={containerRef}
         className="flex justify-center items-center min-h-[200px] bg-base-100 rounded-lg p-4 border border-base-300"
       />

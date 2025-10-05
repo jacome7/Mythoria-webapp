@@ -4,12 +4,7 @@
     "description": "It seems the page you're looking for has wandered off into an unwritten chapter! Maybe it's hiding in a fairy tale, or perhaps it got caught up in an adventure of its own.",
     "suggestions": {
       "title": "While we search for your lost page, you could:",
-      "items": [
-        null,
-        null,
-        null,
-        null
-      ]
+      "items": [null, null, null, null]
     },
     "actions": {
       "goHome": "Return to Homepage",

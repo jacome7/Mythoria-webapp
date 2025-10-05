@@ -18,7 +18,7 @@ export default function ShareButton({ title, summary, url, shareText }: ShareBut
           text: summary,
           url,
         });
-  } catch {
+      } catch {
         // User cancelled sharing or other error
         console.log('Share cancelled');
       }
@@ -28,17 +28,14 @@ export default function ShareButton({ title, summary, url, shareText }: ShareBut
         await navigator.clipboard.writeText(url);
         // You could add a toast notification here
         console.log('URL copied to clipboard');
-  } catch {
+      } catch {
         console.error('Failed to copy URL');
       }
     }
   };
 
   return (
-    <button
-      className="btn btn-outline btn-sm gap-2"
-      onClick={handleShare}
-    >
+    <button className="btn btn-outline btn-sm gap-2" onClick={handleShare}>
       <FiShare2 className="w-4 h-4" />
       {shareText}
     </button>

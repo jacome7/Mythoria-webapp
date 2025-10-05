@@ -1,6 +1,6 @@
 {
   "OnboardingProfile": {
-  "title": "Bem-vindo!",
+    "title": "Bem-vindo!",
     "intro": "Estamos entusiasmados por começar esta jornada criativa contigo. O primeiro passo está dado — agora vamos torná-la verdadeiramente tua.",
     "preferredName": {
       "section": "Como devemos tratar-te?",
@@ -16,7 +16,7 @@
     },
     "audience": { "label": "Para quem costumas criar histórias?" },
     "interests": { "label": "Que tipo de histórias gostas?" },
-  "pickOne": "Escolhe uma",
+    "pickOne": "Escolhe uma",
     "gift": {
       "section": "Um presente para começares!",
       "copy": "A criatividade merece um empurrão. Oferecemos-te {credits} créditos gratuitos para usares na tua primeira história, sem compromisso.",
@@ -84,8 +84,8 @@
     "saving": "A guardar...",
     "errors": {
       "displayNameRequired": "O nome é obrigatório",
-  "displayNameTooLong": "Nome demasiado comprido",
-  "loadFailed": "Não foi possível carregar o perfil. Tenta novamente mais tarde."
+      "displayNameTooLong": "Nome demasiado comprido",
+      "loadFailed": "Não foi possível carregar o perfil. Tenta novamente mais tarde."
     }
   }
 }

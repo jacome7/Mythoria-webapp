@@ -4,7 +4,12 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { FiLoader, FiAlertCircle, FiVolume2, FiArrowLeft } from 'react-icons/fi';
-import { useAudioPlayer, AudioChapterList, hasAudiobook, getAudioChapters } from '@/components/AudioPlayer';
+import {
+  useAudioPlayer,
+  AudioChapterList,
+  hasAudiobook,
+  getAudioChapters,
+} from '@/components/AudioPlayer';
 
 interface Chapter {
   id: string;
@@ -26,12 +31,14 @@ interface PublicStoryData {
     title: string;
     authorName: string;
     synopsis?: string;
-    audiobookUri?: Array<{
-      chapterTitle: string;
-      audioUri: string;
-      duration: number;
-      imageUri?: string;
-    }> | Record<string, string>;
+    audiobookUri?:
+      | Array<{
+          chapterTitle: string;
+          audioUri: string;
+          duration: number;
+          imageUri?: string;
+        }>
+      | Record<string, string>;
     targetAudience?: string;
     graphicalStyle?: string;
     createdAt: string;
@@ -51,8 +58,8 @@ export default function PublicListenPage() {
   const tActions = useTranslations('Actions');
   const slug = Array.isArray(params?.slug)
     ? (params?.slug[0] ?? '')
-    : (params?.slug as string | undefined) ?? '';
-  
+    : ((params?.slug as string | undefined) ?? '');
+
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<PublicStoryData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -71,24 +78,24 @@ export default function PublicListenPage() {
         console.log('[Public Listen Page] Fetching story for slug:', slug);
         const response = await fetch(`/api/p/${slug}`);
         console.log('[Public Listen Page] Response status:', response.status);
-        
+
         if (!response.ok) {
           const errorText = await response.text();
           console.error('[Public Listen Page] Response error:', errorText);
           throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
         }
-        
+
         const result = await response.json();
         console.log('[Public Listen Page] Response data:', result);
 
         if (result.success) {
           setData(result);
-          
+
           // Check if story has audio
           if (!result.story.hasAudio) {
             setError(tPublicStoryPage('listen.audioNotAvailable'));
           }
-          
+
           console.log('[Public Listen Page] Story loaded successfully');
         } else {
           console.error('[Public Listen Page] API returned error:', result.error);
@@ -104,7 +111,7 @@ export default function PublicListenPage() {
     };
 
     fetchPublicStory();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
   // Set page title when data is loaded
@@ -136,14 +143,13 @@ export default function PublicListenPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4 max-w-md mx-auto px-4">
           <FiAlertCircle className="text-4xl text-red-500 mx-auto" />
-          <h2 className="text-xl font-semibold text-gray-900">{tPublicStoryPage('errors.notFound')}</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            {tPublicStoryPage('errors.notFound')}
+          </h2>
           <p className="text-gray-600">{error || tPublicStoryPage('errors.notFoundDesc')}</p>
-          
+
           <div className="space-y-2">
-            <button
-              onClick={navigateBackToStory}
-              className="btn btn-primary btn-sm"
-            >
+            <button onClick={navigateBackToStory} className="btn btn-primary btn-sm">
               {tActions('goBack')}
             </button>
           </div>
@@ -161,49 +167,39 @@ export default function PublicListenPage() {
         <div className="container mx-auto px-4 py-4">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between">
-              <button
-                onClick={navigateBackToStory}
-                className="btn btn-ghost btn-sm"
-              >
+              <button onClick={navigateBackToStory} className="btn btn-ghost btn-sm">
                 <FiArrowLeft className="w-4 h-4 mr-2" />
                 <span className="hidden sm:inline">{tActions('backToStory')}</span>
                 <span className="sm:hidden">{tPublicStoryPage('listen.backMobile')}</span>
               </button>
-              
               <h1 className="text-xl font-semibold text-gray-900 text-center flex-1 mx-4">
                 <FiVolume2 className="w-5 h-5 inline mr-2" />
                 {tPublicStoryPage('listen.title', { title: story.title })}
               </h1>
-              
               <div className="w-20"></div> {/* Spacer for centering */}
             </div>
           </div>
         </div>
       </div>
-      
+
       {/* Audio Content */}
       <div className="container mx-auto px-4 py-6">
         <div className="max-w-4xl mx-auto">
           {hasAudiobook(data?.story?.audiobookUri) ? (
-            <AudioChapterList 
-              chapters={getAudioChapters(
-                data.story.audiobookUri, 
-                data.chapters, 
-                (number) => tPublicStoryPage('listen.chapterFallback', { number })
+            <AudioChapterList
+              chapters={getAudioChapters(data.story.audiobookUri, data.chapters, (number) =>
+                tPublicStoryPage('listen.chapterFallback', { number }),
               )}
               {...audioPlayer}
             />
           ) : (
             <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
               <FiAlertCircle className="text-4xl text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">{tPublicStoryPage('listen.audioNotAvailableTitle')}</h3>
-              <p className="text-gray-600">
-                {tPublicStoryPage('listen.audioNotAvailableDesc')}
-              </p>
-              <button
-                onClick={navigateBackToStory}
-                className="btn btn-primary mt-4"
-              >
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                {tPublicStoryPage('listen.audioNotAvailableTitle')}
+              </h3>
+              <p className="text-gray-600">{tPublicStoryPage('listen.audioNotAvailableDesc')}</p>
+              <button onClick={navigateBackToStory} className="btn btn-primary mt-4">
                 {tPublicStoryPage('listen.backToStory')}
               </button>
             </div>

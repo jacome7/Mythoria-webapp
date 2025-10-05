@@ -1,19 +1,15 @@
-import { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { setRequestLocale, getTranslations } from "next-intl/server";
-import Link from "next/link";
-import Image from "next/image";
-import { FiCalendar, FiClock } from "react-icons/fi";
-import {
-  blogService,
-  BlogLocale,
-  BLOG_SUPPORTED_LOCALES,
-} from "@/db/services/blog";
-import InlineMarkdown from "@/lib/blog/InlineMarkdown";
-import { routing } from "@/i18n/routing";
-import { calculateReadingTimeFromMdx } from "@/lib/blog/readingTime";
-import { generateHreflangLinks } from "@/lib/hreflang";
-import { formatDate } from "@/utils/date";
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
+import Link from 'next/link';
+import Image from 'next/image';
+import { FiCalendar, FiClock } from 'react-icons/fi';
+import { blogService, BlogLocale, BLOG_SUPPORTED_LOCALES } from '@/db/services/blog';
+import InlineMarkdown from '@/lib/blog/InlineMarkdown';
+import { routing } from '@/i18n/routing';
+import { calculateReadingTimeFromMdx } from '@/lib/blog/readingTime';
+import { generateHreflangLinks } from '@/lib/hreflang';
+import { formatDate } from '@/utils/date';
 
 interface BlogListPageProps {
   params: Promise<{
@@ -32,29 +28,29 @@ export async function generateMetadata({
   const { locale } = await params;
   const tBlogMetadata = await getTranslations({
     locale,
-    namespace: "Blog.metadata",
+    namespace: 'Blog.metadata',
   });
-  const baseUrl = "https://mythoria.pt";
+  const baseUrl = 'https://mythoria.pt';
   const hreflangLinks = generateHreflangLinks(locale, `/${locale}/blog`);
 
   return {
-    title: tBlogMetadata("listTitle"),
-    description: tBlogMetadata("listDescription"),
-    robots: "index,follow,max-snippet:-1,max-image-preview:large",
+    title: tBlogMetadata('listTitle'),
+    description: tBlogMetadata('listDescription'),
+    robots: 'index,follow,max-snippet:-1,max-image-preview:large',
     alternates: {
       canonical: `${baseUrl}/${locale}/blog/`,
       languages: hreflangLinks,
     },
     openGraph: {
-      title: tBlogMetadata("listTitle"),
-      description: tBlogMetadata("listDescription"),
-      type: "website",
+      title: tBlogMetadata('listTitle'),
+      description: tBlogMetadata('listDescription'),
+      type: 'website',
       url: `${baseUrl}/${locale}/blog/`,
     },
     twitter: {
-      card: "summary_large_image",
-      title: tBlogMetadata("listTitle"),
-      description: tBlogMetadata("listDescription"),
+      card: 'summary_large_image',
+      title: tBlogMetadata('listTitle'),
+      description: tBlogMetadata('listDescription'),
     },
   };
 }
@@ -65,10 +61,7 @@ export function generateStaticParams() {
 
 // Note: use calculateReadingTimeFromMdx from '@/lib/blog/readingTime'
 
-export default async function BlogListPage({
-  params,
-  searchParams,
-}: BlogListPageProps) {
+export default async function BlogListPage({ params, searchParams }: BlogListPageProps) {
   const { locale } = await params;
   const { page } = await searchParams;
 
@@ -84,8 +77,8 @@ export default async function BlogListPage({
     notFound();
   }
 
-  const t = await getTranslations("Blog.list");
-  const currentPage = parseInt(page || "1", 10);
+  const t = await getTranslations('Blog.list');
+  const currentPage = parseInt(page || '1', 10);
   const postsPerPage = 10;
   const offset = (currentPage - 1) * postsPerPage;
 
@@ -100,8 +93,8 @@ export default async function BlogListPage({
         <div className="container mx-auto px-4 py-12">
           {/* Header Section */}
           <header className="text-center mb-8">
-            <h1 className="text-5xl font-bold text-primary">{t("title")}</h1>
-            <p className="text-xl mt-4 text-gray-700">{t("subtitle")}</p>
+            <h1 className="text-5xl font-bold text-primary">{t('title')}</h1>
+            <p className="text-xl mt-4 text-gray-700">{t('subtitle')}</p>
           </header>
 
           {/* Blog Posts */}
@@ -110,11 +103,9 @@ export default async function BlogListPage({
               <div className="text-center py-16">
                 <div className="mb-8">
                   <div className="text-6xl mb-4">📜</div>
-                  <h2 className="text-2xl font-bold mb-4">
-                    {t("noPostsFound")}
-                  </h2>
+                  <h2 className="text-2xl font-bold mb-4">{t('noPostsFound')}</h2>
                   <p className="text-base-content/70 max-w-md mx-auto">
-                    {t("noPostsFoundDescription")}
+                    {t('noPostsFoundDescription')}
                   </p>
                 </div>
               </div>
@@ -124,21 +115,19 @@ export default async function BlogListPage({
                   <article
                     key={post.id}
                     className={`card lg:card-side bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300 border border-base-300 ${
-                      index % 2 === 1 ? "lg:flex-row-reverse" : ""
+                      index % 2 === 1 ? 'lg:flex-row-reverse' : ''
                     }`}
                   >
                     {/* Post Image */}
                     <div className="lg:w-2/5">
                       <figure className="h-64 lg:h-full">
                         <Image
-                          src={
-                            post.heroImageUrl || "/placeholder-story-image.jpg"
-                          }
+                          src={post.heroImageUrl || '/placeholder-story-image.jpg'}
                           alt={post.title}
                           width={600}
                           height={400}
                           className="w-full h-full object-cover"
-                          unoptimized={post.heroImageUrl?.startsWith("http")}
+                          unoptimized={post.heroImageUrl?.startsWith('http')}
                         />
                       </figure>
                     </div>
@@ -149,22 +138,20 @@ export default async function BlogListPage({
                         <div className="flex items-center gap-2">
                           <FiCalendar className="w-4 h-4" />
                           <span>
-                            {t("publishedOn")}{" "}
+                            {t('publishedOn')}{' '}
                             {formatDate(post.publishedAt!, {
                               locale,
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
                             })}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
                           <FiClock className="w-4 h-4" />
                           <span>
-                            {calculateReadingTimeFromMdx(
-                              post.contentMdx ?? post.summary,
-                            )}{" "}
-                            {t("readingTime", { ns: "BlogPost" })}
+                            {calculateReadingTimeFromMdx(post.contentMdx ?? post.summary)}{' '}
+                            {t('readingTime', { ns: 'BlogPost' })}
                           </span>
                         </div>
                       </div>
@@ -188,7 +175,7 @@ export default async function BlogListPage({
                           href={`/${locale}/blog/${post.slug}`}
                           className="btn btn-primary btn-outline hover:btn-primary"
                         >
-                          {t("readMore")}
+                          {t('readMore')}
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-4 w-4 ml-2"
@@ -218,7 +205,7 @@ export default async function BlogListPage({
                   href={`/${locale}/blog?page=${currentPage + 1}`}
                   className="btn btn-primary btn-lg"
                 >
-                  {t("loadMore")}
+                  {t('loadMore')}
                 </Link>
               </div>
             )}
@@ -227,14 +214,14 @@ export default async function BlogListPage({
       </div>
     );
   } catch (error) {
-    console.error("Failed to load blog posts:", error);
+    console.error('Failed to load blog posts:', error);
     return (
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">🔮</div>
-          <h1 className="text-2xl font-bold mb-4">{t("error")}</h1>
+          <h1 className="text-2xl font-bold mb-4">{t('error')}</h1>
           <Link href={`/${locale}/blog`} className="btn btn-primary">
-            {t("tryAgain")}
+            {t('tryAgain')}
           </Link>
         </div>
       </div>

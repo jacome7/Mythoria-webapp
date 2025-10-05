@@ -16,7 +16,7 @@ export function useAuthTracking() {
     if (!isLoaded) return;
 
     const prevSignedIn = prevSignedInRef.current;
-    const currentSignedIn = isSignedIn;    // Track sign up (user went from not signed in to signed in, and it's a new user)
+    const currentSignedIn = isSignedIn; // Track sign up (user went from not signed in to signed in, and it's a new user)
     if (!prevSignedIn && currentSignedIn && user && user.createdAt) {
       const createdAt = new Date(user.createdAt);
       const now = new Date();
@@ -26,15 +26,15 @@ export function useAuthTracking() {
       if (isNewUser && !hasTrackedSignupRef.current) {
         trackAuth.signUp({
           user_id: user.id,
-          sign_up_method: user.primaryEmailAddress ? 'email' : 'social'
+          sign_up_method: user.primaryEmailAddress ? 'email' : 'social',
         });
-        
+
         hasTrackedSignupRef.current = true;
       } else if (!hasTrackedSignupRef.current) {
         // Existing user logging in
         trackAuth.login({
           user_id: user.id,
-          login_method: user.primaryEmailAddress ? 'email' : 'social'
+          login_method: user.primaryEmailAddress ? 'email' : 'social',
         });
       }
 
@@ -43,7 +43,7 @@ export function useAuthTracking() {
       setUserProperties({
         signup_date: user.createdAt.toISOString(),
         email_verified: !!user.primaryEmailAddress?.verification.status,
-        profile_complete: !!(user.firstName && user.lastName)
+        profile_complete: !!(user.firstName && user.lastName),
       });
     }
 
@@ -59,6 +59,6 @@ export function useAuthTracking() {
   return {
     isSignedIn,
     user,
-    isLoaded
+    isLoaded,
   };
 }

@@ -66,18 +66,20 @@ export default function PaymentStep({
       if (!response.ok) {
         throw new Error('Failed to fetch pricing data');
       }
-      
+
       const data: ServicesApiResponse = await response.json();
-      
+
       // Filter for print-related services that are active
-      const printServices = data.services.filter((service: ServiceResponse) => 
-        ['printedSoftCover', 'printedHardcover', 'printedPremium'].includes(service.serviceCode) &&
-        service.isActive
+      const printServices = data.services.filter(
+        (service: ServiceResponse) =>
+          ['printedSoftCover', 'printedHardcover', 'printedPremium'].includes(
+            service.serviceCode,
+          ) && service.isActive,
       );
 
       // Get extra chapter cost
-      const extraChapter = data.services.find((service: ServiceResponse) => 
-        service.serviceCode === 'extraChapterCost'
+      const extraChapter = data.services.find(
+        (service: ServiceResponse) => service.serviceCode === 'extraChapterCost',
       );
       if (extraChapter) {
         setExtraChapterCost(extraChapter.cost);
@@ -107,7 +109,7 @@ export default function PaymentStep({
           credits: service.cost,
           isActive: true,
           title,
-          description
+          description,
         };
       });
 
@@ -147,7 +149,7 @@ export default function PaymentStep({
   const calculateTotalCost = () => {
     if (!selectedPrintingOption) return 0;
     const extraChapters = calculateExtraChapters();
-    return selectedPrintingOption.credits + (extraChapters * extraChapterCost);
+    return selectedPrintingOption.credits + extraChapters * extraChapterCost;
   };
 
   const hasInsufficientCredits = () => {
@@ -200,7 +202,7 @@ export default function PaymentStep({
   return (
     <div>
       <h2 className="card-title mb-4">{tPrintOrder('payment.selectBookType')}</h2>
-      
+
       <p className="text-base-content/70 mb-6">{tPrintOrder('payment.chooseQuality')}</p>
 
       {/* Printing Options */}
@@ -214,11 +216,15 @@ export default function PaymentStep({
                 : 'border-base-300 hover:border-primary/50'
             }`}
             onClick={() => onSelectPrintingOption(option)}
-          > <div className="card-body p-4">
+          >
+            {' '}
+            <div className="card-body p-4">
               <div className="flex flex-col h-full">
                 <div className="flex-1">
                   <h3 className="font-bold text-lg mb-2">{option.title}</h3>
-                  <p className="text-sm text-base-content/70 mb-3 min-h-[3rem]">{option.description}</p>
+                  <p className="text-sm text-base-content/70 mb-3 min-h-[3rem]">
+                    {option.description}
+                  </p>
                 </div>
                 <div className="flex items-center justify-between mt-auto">
                   <div className="text-lg font-semibold text-primary">
@@ -235,7 +241,7 @@ export default function PaymentStep({
           </div>
         ))}
       </div>
-      
+
       {/* Price Notes */}
       <div className="alert alert-info mb-6">
         <div className="text-sm">
@@ -244,7 +250,10 @@ export default function PaymentStep({
           <p className="mt-2">
             <strong>{tPrintOrder('payment.yourStory')}:</strong> {story.chapterCount} chapters
             {calculateExtraChapters() > 0 && (
-              <span> ({calculateExtraChapters()} {tPrintOrder('payment.extraChaptersNote')})</span>
+              <span>
+                {' '}
+                ({calculateExtraChapters()} {tPrintOrder('payment.extraChaptersNote')})
+              </span>
             )}
           </p>
         </div>
@@ -260,14 +269,21 @@ export default function PaymentStep({
               <div className="flex justify-between">
                 <span>{tPrintOrder('payment.selectedOption')}:</span>
                 <span>{selectedPrintingOption.title}</span>
-              </div>              <div className="flex justify-between">
+              </div>{' '}
+              <div className="flex justify-between">
                 <span>{tPrintOrder('payment.basePrice')}:</span>
-                <span>{selectedPrintingOption.credits} {tPrintOrder('payment.credits')}</span>
+                <span>
+                  {selectedPrintingOption.credits} {tPrintOrder('payment.credits')}
+                </span>
               </div>
               {calculateExtraChapters() > 0 && (
                 <div className="flex justify-between">
-                  <span>{tPrintOrder('payment.extraChapters')} ({calculateExtraChapters()}):</span>
-                  <span>{calculateExtraChapters() * extraChapterCost} {tPrintOrder('payment.credits')}</span>
+                  <span>
+                    {tPrintOrder('payment.extraChapters')} ({calculateExtraChapters()}):
+                  </span>
+                  <span>
+                    {calculateExtraChapters() * extraChapterCost} {tPrintOrder('payment.credits')}
+                  </span>
                 </div>
               )}
               <div className="flex justify-between">
@@ -277,7 +293,9 @@ export default function PaymentStep({
               <div className="divider"></div>
               <div className="flex justify-between font-bold text-lg">
                 <span>{tPrintOrder('payment.total')}:</span>
-                <span>{calculateTotalCost()} {tPrintOrder('payment.credits')}</span>
+                <span>
+                  {calculateTotalCost()} {tPrintOrder('payment.credits')}
+                </span>
               </div>
             </div>
           </div>
@@ -289,36 +307,43 @@ export default function PaymentStep({
               <div className="alert alert-info">
                 <FiCreditCard className="w-5 h-5" />
                 <span>{tPrintOrder('payment.creditsInfo')}</span>
-              </div>              {/* Credits Balance */}
+              </div>{' '}
+              {/* Credits Balance */}
               <div className="card bg-base-200 p-4">
                 <div className="flex justify-center items-center gap-8">
                   <div className="text-center">
-                    <span className="text-sm text-gray-600 block mb-1">{tPrintOrder('payment.cost')}</span>
+                    <span className="text-sm text-gray-600 block mb-1">
+                      {tPrintOrder('payment.cost')}
+                    </span>
                     <div className="text-2xl font-bold text-primary">
                       {calculateTotalCost()} {tPrintOrder('payment.credits')}
                     </div>
                   </div>
                   <div className="text-center">
-                    <span className="text-sm text-gray-600 block mb-1">{tPrintOrder('payment.yourCredits')}</span>
-                    <div className={`text-2xl font-bold ${hasInsufficientCredits() ? 'text-error' : 'text-success'}`}>
+                    <span className="text-sm text-gray-600 block mb-1">
+                      {tPrintOrder('payment.yourCredits')}
+                    </span>
+                    <div
+                      className={`text-2xl font-bold ${hasInsufficientCredits() ? 'text-error' : 'text-success'}`}
+                    >
                       {userCredits} {tPrintOrder('payment.credits')}
                     </div>
                   </div>
                 </div>
               </div>
-
               {/* Insufficient Credits Warning */}
               {hasInsufficientCredits() && (
                 <div className="alert alert-warning">
                   <div className="flex flex-col items-center">
-                    <span className="font-semibold">{tPrintOrder('payment.insufficientCreditsTitle')}</span>
-                    <span className="text-sm mt-2">
-                      {tPrintOrder('payment.needMoreCredits', { count: calculateTotalCost() - userCredits })}
+                    <span className="font-semibold">
+                      {tPrintOrder('payment.insufficientCreditsTitle')}
                     </span>
-                    <a
-                      href={`/${locale}/pricing`}
-                      className="btn btn-outline btn-sm mt-2"
-                    >
+                    <span className="text-sm mt-2">
+                      {tPrintOrder('payment.needMoreCredits', {
+                        count: calculateTotalCost() - userCredits,
+                      })}
+                    </span>
+                    <a href={`/${locale}/pricing`} className="btn btn-outline btn-sm mt-2">
                       {tPrintOrder('payment.getMoreCredits')}
                     </a>
                   </div>

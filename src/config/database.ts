@@ -10,7 +10,8 @@ type PostgresSslOption = boolean | { rejectUnauthorized: boolean };
 export const createDatabaseConnection = (): PostgresJsDatabase => {
   const config = getDatabaseConfig();
 
-  const connectionString = config.connectionString ||
+  const connectionString =
+    config.connectionString ||
     `postgres://${config.user}:${config.password}@${config.host}:${config.port}/${config.database}`;
 
   const ssl: PostgresSslOption = config.ssl;

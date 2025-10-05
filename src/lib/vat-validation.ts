@@ -21,12 +21,20 @@ const VAT_PATTERNS: Record<string, { pattern: RegExp; name: string; format: stri
   DK: { pattern: /^DK\d{8}$/, name: 'Denmark', format: 'DK12345678' },
   EE: { pattern: /^EE\d{9}$/, name: 'Estonia', format: 'EE123456789' },
   EL: { pattern: /^EL\d{9}$/, name: 'Greece', format: 'EL123456789' },
-  ES: { pattern: /^ES[A-Z]\d{7}[A-Z]$|^ES[A-Z][0-9]{7}[0-9A-Z]$|^ES[0-9]{8}[A-Z]$/, name: 'Spain', format: 'ESA12345674' },
+  ES: {
+    pattern: /^ES[A-Z]\d{7}[A-Z]$|^ES[A-Z][0-9]{7}[0-9A-Z]$|^ES[0-9]{8}[A-Z]$/,
+    name: 'Spain',
+    format: 'ESA12345674',
+  },
   FI: { pattern: /^FI\d{8}$/, name: 'Finland', format: 'FI12345678' },
   FR: { pattern: /^FR[A-HJ-NP-Z0-9]{2}\d{9}$/, name: 'France', format: 'FR12345678901' },
   HR: { pattern: /^HR\d{11}$/, name: 'Croatia', format: 'HR12345678901' },
   HU: { pattern: /^HU\d{8}$/, name: 'Hungary', format: 'HU12345678' },
-  IE: { pattern: /^IE\d{7}[A-WY][A-I]?|IE[0-9+][A-Z+][0-9]{5}[A-WY]$/, name: 'Ireland', format: 'IE1234567WA' },
+  IE: {
+    pattern: /^IE\d{7}[A-WY][A-I]?|IE[0-9+][A-Z+][0-9]{5}[A-WY]$/,
+    name: 'Ireland',
+    format: 'IE1234567WA',
+  },
   IT: { pattern: /^IT\d{11}$/, name: 'Italy', format: 'IT12345678901' },
   LT: { pattern: /^LT\d{9,12}$/, name: 'Lithuania', format: 'LT123456789' },
   LU: { pattern: /^LU\d{8}$/, name: 'Luxembourg', format: 'LU12345678' },
@@ -40,7 +48,11 @@ const VAT_PATTERNS: Record<string, { pattern: RegExp; name: string; format: stri
   SI: { pattern: /^SI\d{8}$/, name: 'Slovenia', format: 'SI12345678' },
   SK: { pattern: /^SK\d{10}$/, name: 'Slovakia', format: 'SK1234567890' },
   // Non-EU countries that use similar VAT systems
-  GB: { pattern: /^GB\d{9}$|^GB\d{12}$|^GBGD\d{3}$|^GBHA\d{3}$/, name: 'United Kingdom', format: 'GB123456789' },
+  GB: {
+    pattern: /^GB\d{9}$|^GB\d{12}$|^GBGD\d{3}$|^GBHA\d{3}$/,
+    name: 'United Kingdom',
+    format: 'GB123456789',
+  },
   NO: { pattern: /^NO\d{9}MVA$/, name: 'Norway', format: 'NO123456789MVA' },
   CH: { pattern: /^CHE\d{9}(MWST|TVA|IVA)$/, name: 'Switzerland', format: 'CHE123456789MWST' },
 };
@@ -62,36 +74,36 @@ export function validateVATNumber(input: string): VATValidationResult {
   if (!input || input.length < 4) {
     return {
       isValid: false,
-      error: 'VAT number is too short'
+      error: 'VAT number is too short',
     };
   }
 
   const cleanedVAT = cleanVATNumber(input);
-  
+
   // Extract country code (first 2 characters)
   const countryCode = cleanedVAT.substring(0, 2);
-  
+
   if (!VAT_PATTERNS[countryCode]) {
     return {
       isValid: false,
-      error: `Unsupported country code: ${countryCode}. Please use an EU VAT number.`
+      error: `Unsupported country code: ${countryCode}. Please use an EU VAT number.`,
     };
   }
 
   const countryPattern = VAT_PATTERNS[countryCode];
-  
+
   if (!countryPattern.pattern.test(cleanedVAT)) {
     return {
       isValid: false,
       country: countryPattern.name,
-      error: `Invalid ${countryPattern.name} VAT number format. Expected format: ${countryPattern.format}`
+      error: `Invalid ${countryPattern.name} VAT number format. Expected format: ${countryPattern.format}`,
     };
   }
 
   return {
     isValid: true,
     country: countryPattern.name,
-    formattedVAT: cleanedVAT
+    formattedVAT: cleanedVAT,
   };
 }
 
@@ -101,7 +113,7 @@ export function validateVATNumber(input: string): VATValidationResult {
 export function formatVATNumber(input: string): string {
   const cleaned = cleanVATNumber(input);
   const countryCode = cleaned.substring(0, 2);
-  
+
   if (!VAT_PATTERNS[countryCode]) {
     return cleaned;
   }
@@ -129,6 +141,6 @@ export function getSupportedVATCountries(): Array<{ code: string; name: string; 
   return Object.entries(VAT_PATTERNS).map(([code, info]) => ({
     code,
     name: info.name,
-    format: info.format
+    format: info.format,
   }));
 }

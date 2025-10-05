@@ -27,7 +27,7 @@ export default function StoryStep({ story, onNext }: StoryStepProps) {
         <div className="prose max-w-none">
           <p>{story.synopsis}</p>
         </div>
-        
+
         {/* Front Cover Image - Desktop: right side, Mobile: below synopsis */}
         {story.frontCoverImageUrl && (
           <div className="flex justify-center md:justify-end">
@@ -43,12 +43,9 @@ export default function StoryStep({ story, onNext }: StoryStepProps) {
           </div>
         )}
       </div>
-      
+
       <div className="card-actions justify-end mt-6">
-        <button 
-          className="btn btn-primary"
-          onClick={onNext}
-        >
+        <button className="btn btn-primary" onClick={onNext}>
           {tPrintOrder('buttons.continue')}
         </button>
       </div>

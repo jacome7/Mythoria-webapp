@@ -1,67 +1,67 @@
 {
-    "AboutUs": {
-        "hero": {
-            "title": "Mythoria",
-            "subtitle": "Histórias criadas por um sonhador de 18 anos … e uma legião de Umpa-lumpas.",
-            "cta": "Comece a sua própria história"
-        },
-        "founder": {
-            "title": "O Jovem Fundador",
-            "description": "Conheça o Rodrigo, que transformou o seu fascínio de infância por histórias numa fábrica de aventuras. Aos 18 anos, combina uma enorme imaginação com uma pitada de inteligência artificial para criar contos personalizados para cada criança ou adulto.",
-            "ageLabel": "18 anos",
-            "ageHover": "ainda a evoluir",
-            "imageAlt": "Rodrigo - Fundador da Mythoria",
-            "badges": {
-                "founder": "Fundador",
-                "aiEnthusiast": "Entusiasta de IA",
-                "storyteller": "Contador de Histórias"
-            }
-        },
-        "aiTeam": {
-            "title": "Conheça os Umpa-lumpas 2.0",
-            "subtitle": "Ao contrário da fábrica do Wonka, os nossos Umpa-lumpas são puro silício—éticos, incansáveis e infinitamente escaláveis.",
-            "quillBot": {
-                "name": "Quill-Bot",
-                "description": "Escreve reviravoltas mais rápido do que consegue dizer expelliarmus"
-            },
-            "brushBot": {
-                "name": "Brush-Bot",
-                "description": "Pinta mundos em Pixar, manga ou aguarela com um clique"
-            },
-            "voiceBot": {
-                "name": "Voice-Bot",
-                "description": "Dá a cada herói uma voz única—sem bilhete dourado necessário"
-            }
-        },
-        "progress": {
-            "title": "Laboratório em Desenvolvimento",
-            "milestone1": "Livro de feitiços beta – primeiras 100 famílias já criando contos",
-            "milestone2": "Caldeirão de feedback da comunidade – cada sugestão aparece aqui",
-            "milestone3": "Portal de lançamento global – agendado para setembro de 2025",
-            "feedbackButton": "🪄 Sugira um feitiço",
-            "milestoneLabels": {
-                "betaSpellbook": "Livro de Feitiços Beta",
-                "feedbackCauldron": "Caldeirão de Feedback",
-                "globalPortal": "Portal Global"
-            }
-        },
-        "news": {
-            "title": "Notícias do Reino",
-            "breaking": "Última Hora 🗞️ — Rodrigo ganha o Prémio InovaGaia 2025 de Jovem Inovador com a Mythoria!"
-        },
-        "investors": {
-            "title": "Investidores: Juntem-se à Aventura",
-            "description": "Os dragões amam ouro; nós amamos parceiros. Se também veem o tesouro, abram o pergaminho."
-        }
+  "AboutUs": {
+    "hero": {
+      "title": "Mythoria",
+      "subtitle": "Histórias criadas por um sonhador de 18 anos … e uma legião de Umpa-lumpas.",
+      "cta": "Comece a sua própria história"
     },
-    "AboutUsModal": {
-        "feedback": {
-            "title": "🪄 Lance o Seu Feitiço de Feedback",
-            "placeholder": "Partilhe as suas sugestões mágicas...",
-            "submit": "Enviar Feitiço ✨"
-        },
-        "investors": {
-            "button": "Abrir o Pergaminho 📜"
-        }
+    "founder": {
+      "title": "O Jovem Fundador",
+      "description": "Conheça o Rodrigo, que transformou o seu fascínio de infância por histórias numa fábrica de aventuras. Aos 18 anos, combina uma enorme imaginação com uma pitada de inteligência artificial para criar contos personalizados para cada criança ou adulto.",
+      "ageLabel": "18 anos",
+      "ageHover": "ainda a evoluir",
+      "imageAlt": "Rodrigo - Fundador da Mythoria",
+      "badges": {
+        "founder": "Fundador",
+        "aiEnthusiast": "Entusiasta de IA",
+        "storyteller": "Contador de Histórias"
+      }
+    },
+    "aiTeam": {
+      "title": "Conheça os Umpa-lumpas 2.0",
+      "subtitle": "Ao contrário da fábrica do Wonka, os nossos Umpa-lumpas são puro silício—éticos, incansáveis e infinitamente escaláveis.",
+      "quillBot": {
+        "name": "Quill-Bot",
+        "description": "Escreve reviravoltas mais rápido do que consegue dizer expelliarmus"
+      },
+      "brushBot": {
+        "name": "Brush-Bot",
+        "description": "Pinta mundos em Pixar, manga ou aguarela com um clique"
+      },
+      "voiceBot": {
+        "name": "Voice-Bot",
+        "description": "Dá a cada herói uma voz única—sem bilhete dourado necessário"
+      }
+    },
+    "progress": {
+      "title": "Laboratório em Desenvolvimento",
+      "milestone1": "Livro de feitiços beta – primeiras 100 famílias já criando contos",
+      "milestone2": "Caldeirão de feedback da comunidade – cada sugestão aparece aqui",
+      "milestone3": "Portal de lançamento global – agendado para setembro de 2025",
+      "feedbackButton": "🪄 Sugira um feitiço",
+      "milestoneLabels": {
+        "betaSpellbook": "Livro de Feitiços Beta",
+        "feedbackCauldron": "Caldeirão de Feedback",
+        "globalPortal": "Portal Global"
+      }
+    },
+    "news": {
+      "title": "Notícias do Reino",
+      "breaking": "Última Hora 🗞️ — Rodrigo ganha o Prémio InovaGaia 2025 de Jovem Inovador com a Mythoria!"
+    },
+    "investors": {
+      "title": "Investidores: Juntem-se à Aventura",
+      "description": "Os dragões amam ouro; nós amamos parceiros. Se também veem o tesouro, abram o pergaminho."
     }
+  },
+  "AboutUsModal": {
+    "feedback": {
+      "title": "🪄 Lance o Seu Feitiço de Feedback",
+      "placeholder": "Partilhe as suas sugestões mágicas...",
+      "submit": "Enviar Feitiço ✨"
+    },
+    "investors": {
+      "button": "Abrir o Pergaminho 📜"
+    }
+  }
 }

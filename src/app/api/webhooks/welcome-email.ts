@@ -1,5 +1,10 @@
 // Isolated welcome email trigger for testability
-export interface WelcomeEmailParams { authorId: string; email: string; name: string; locale: string; }
+export interface WelcomeEmailParams {
+  authorId: string;
+  email: string;
+  name: string;
+  locale: string;
+}
 
 export async function triggerWelcomeEmailSafe(params: WelcomeEmailParams) {
   try {
@@ -13,18 +18,31 @@ export async function triggerWelcomeEmailSafe(params: WelcomeEmailParams) {
       templateId: 'welcome',
       authorId: params.authorId,
       entityId: params.authorId,
-      recipients: [ { email: params.email, name: params.name || undefined, language } ],
+      recipients: [{ email: params.email, name: params.name || undefined, language }],
       // Align variable names with template expectations (userName + storyCredits)
-      variables: { userName: params.name || undefined, storyCredits: credits, creditsPlural: credits !== 1 }
+      variables: {
+        userName: params.name || undefined,
+        storyCredits: credits,
+        creditsPlural: credits !== 1,
+      },
     };
-    const res = await notificationFetch('/email/template', { method: 'POST', body: JSON.stringify(body) });
+    const res = await notificationFetch('/email/template', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
     if (!res.ok) {
       const text = await res.text();
       console.warn('Welcome email API responded non-OK', res.status, text);
     } else {
-      console.log('Welcome email dispatched (template)', { authorId: params.authorId, email: params.email });
+      console.log('Welcome email dispatched (template)', {
+        authorId: params.authorId,
+        email: params.email,
+      });
     }
   } catch (err) {
-    console.warn('Welcome email trigger failed (ignored)', err instanceof Error ? err.message : err);
+    console.warn(
+      'Welcome email trigger failed (ignored)',
+      err instanceof Error ? err.message : err,
+    );
   }
 }

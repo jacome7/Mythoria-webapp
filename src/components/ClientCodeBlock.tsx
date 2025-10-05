@@ -31,28 +31,22 @@ const ClientCodeBlock: React.FC<ClientCodeBlockProps> = ({ children, className =
   };
 
   const isInline = !className.includes('language-');
-  
+
   if (isInline) {
-    return (
-      <code className="bg-base-200 px-2 py-1 rounded font-mono text-sm">
-        {children}
-      </code>
-    );
+    return <code className="bg-base-200 px-2 py-1 rounded font-mono text-sm">{children}</code>;
   }
-  
+
   // Check if this is a mermaid code block
   if (className.includes('language-mermaid')) {
     // Extract the text content from children
     const chartContent = getStringFromNode(children).trim();
     return <MermaidChart chart={chartContent} />;
   }
-  
+
   return (
     <div className="mockup-code my-6">
       <pre className="px-4 py-2">
-        <code className={className}>
-          {children}
-        </code>
+        <code className={className}>{children}</code>
       </pre>
     </div>
   );

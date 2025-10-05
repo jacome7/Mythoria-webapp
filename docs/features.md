@@ -1,9 +1,11 @@
 # Mythoria Web App - Features
 
 ## Overview
+
 Mythoria knits together guided creation tools, AI-assisted editing, audience-ready publishing, and a flexible credit economy so storytellers can craft, share, and scale their tales without friction.
 
 ## Feature Directory
+
 - **Story Creation Forge** – Five guided steps capture author details, creative briefs, characters, styles, and launch generation with credit awareness. [Learn more](features/story-creation-forge.md)
 - **Character Atelier** – Build, edit, and reuse richly described characters with trait pickers and story linking. [Learn more](features/character-atelier.md)
 - **AI Story Studio** – Lexical-powered chapter editing, AI text and image revisions, translation jobs, and version history controls. [Learn more](features/ai-story-studio.md)
@@ -21,4 +23,5 @@ Mythoria knits together guided creation tools, AI-assisted editing, audience-rea
 - **Mythoria Blog & Editorial** – Localised blog listing, MDX-powered articles, reading time indicators, and SEO-friendly navigation. [Learn more](features/mythoria-blog.md)
 
 ## Last Updated
+
 September 2025

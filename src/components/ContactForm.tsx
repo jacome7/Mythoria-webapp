@@ -12,7 +12,7 @@ interface ContactFormProps {
 }
 
 // Separate component for search params to handle suspense
-function ContactFormContent({ className = "" }: ContactFormProps) {
+function ContactFormContent({ className = '' }: ContactFormProps) {
   const tContactForm = useTranslations('ContactForm');
   const searchParams = useSearchParams();
   const { user, isSignedIn } = useUser();
@@ -20,7 +20,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
     name: '',
     email: '',
     category: '',
-    message: ''
+    message: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [responseMessage, setResponseMessage] = useState('');
@@ -31,9 +31,9 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
   useEffect(() => {
     const categoryParam = searchParams?.get('category');
     if (categoryParam) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        category: categoryParam
+        category: categoryParam,
       }));
     }
   }, [searchParams]);
@@ -42,12 +42,12 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
   useEffect(() => {
     if (isSignedIn && user) {
       const updates: Partial<typeof formData> = {};
-      
+
       // Auto-fill email if available
       if (user.primaryEmailAddress?.emailAddress) {
         updates.email = user.primaryEmailAddress.emailAddress;
       }
-      
+
       // Auto-fill name if available (firstName + lastName)
       if (user.firstName || user.lastName) {
         const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
@@ -55,27 +55,29 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
           updates.name = fullName;
         }
       }
-      
+
       // Only update if we have something to update
       if (Object.keys(updates).length > 0) {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          ...updates
+          ...updates,
         }));
       }
     }
   }, [isSignedIn, user]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
       setResponseMessage(tContactForm('errors.fillRequired'));
       setIsSuccess(false);
@@ -92,7 +94,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
         inquiry_type: formData.category || 'general',
         has_name: !!formData.name.trim(),
         has_email: !!formData.email.trim(),
-        has_message: !!formData.message.trim()
+        has_message: !!formData.message.trim(),
       });
 
       const response = await fetch('/api/contact', {
@@ -104,36 +106,35 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
           name: formData.name.trim(),
           email: formData.email.trim(),
           category: formData.category,
-          message: formData.message.trim()
-        })
+          message: formData.message.trim(),
+        }),
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         setResponseMessage(tContactForm('success.ticketCreated'));
         setIsSuccess(true);
         setShowModal(true);
-        
+
         // Clear form
         setFormData({
           name: '',
           email: '',
           category: '',
-          message: ''
+          message: '',
         });
 
         // Redirect to homepage after 4 seconds
         setTimeout(() => {
           window.location.href = '/';
         }, 4000);
-        
       } else {
         setResponseMessage(result.error || tContactForm('errors.createFailed'));
         setIsSuccess(false);
         setShowModal(true);
       }
-        } catch (error) {
+    } catch (error) {
       console.error('Contact form error:', error);
       setResponseMessage(tContactForm('errors.createFailed'));
       setIsSuccess(false);
@@ -150,7 +151,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
           <FaTicketAlt className="text-xl text-primary" />
           <h2 className="text-xl font-semibold">{tContactForm('form.title')}</h2>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="form-control">
             <label className="label py-1" htmlFor="name">
@@ -168,7 +169,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
               required
             />
           </div>
-          
+
           <div className="form-control">
             <label className="label py-1" htmlFor="email">
               <span className="label-text font-medium text-sm">{tContactForm('form.email')}</span>
@@ -185,29 +186,34 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
               required
             />
           </div>
-          
+
           <div className="form-control">
             <label className="label py-1" htmlFor="category">
-              <span className="label-text font-medium text-sm">{tContactForm('form.category')}</span>
+              <span className="label-text font-medium text-sm">
+                {tContactForm('form.category')}
+              </span>
             </label>
-            <select 
-              id="category" 
+            <select
+              id="category"
               name="category"
               value={formData.category}
               onChange={handleInputChange}
               className="select select-bordered select-primary w-full h-10 focus:outline-none focus:ring-2 focus:ring-primary/20"
               disabled={isLoading}
             >
-              <option value="">{tContactForm('form.selectCategory')}</option>              <option value="feature_ideas">{tContactForm('categoriesShort.featureIdeas')}</option>
+              <option value="">{tContactForm('form.selectCategory')}</option>{' '}
+              <option value="feature_ideas">{tContactForm('categoriesShort.featureIdeas')}</option>
               <option value="bug_report">{tContactForm('categoriesShort.reportBug')}</option>
               <option value="technical_issues">{tContactForm('categoriesShort.troubles')}</option>
               <option value="delivery">{tContactForm('categoriesShort.delivery')}</option>
               <option value="credits">{tContactForm('categoriesShort.credits')}</option>
-              <option value="business_partnership">{tContactForm('categoriesShort.businessPartnership')}</option>
+              <option value="business_partnership">
+                {tContactForm('categoriesShort.businessPartnership')}
+              </option>
               <option value="general">{tContactForm('categoriesShort.general')}</option>
             </select>
           </div>
-          
+
           <div className="form-control">
             <label className="label py-1" htmlFor="message">
               <span className="label-text font-medium text-sm">{tContactForm('form.message')}</span>
@@ -223,9 +229,9 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
               required
             ></textarea>
           </div>
-          
-          <button 
-            type="submit" 
+
+          <button
+            type="submit"
             disabled={isLoading}
             className="btn btn-primary btn-block h-10 mt-4"
           >
@@ -239,7 +245,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
             )}
           </button>
         </form>
-        
+
         {/* Success/Error Modal */}
         {showModal && (
           <div className="modal modal-open">
@@ -254,9 +260,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
               <h3 className="font-bold text-lg text-center mb-4">
                 {isSuccess ? tContactForm('modal.ticketCreated') : tContactForm('modal.oops')}
               </h3>
-              <p className="text-center text-base-content/80">
-                {responseMessage}
-              </p>
+              <p className="text-center text-base-content/80">{responseMessage}</p>
               {isSuccess && (
                 <p className="text-center text-sm text-base-content/60 mt-2">
                   {tContactForm('modal.redirectingMessage')}
@@ -264,18 +268,12 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
               )}
               <div className="modal-action">
                 {!isSuccess && (
-                  <button 
-                    className="btn btn-primary" 
-                    onClick={() => setShowModal(false)}
-                  >
+                  <button className="btn btn-primary" onClick={() => setShowModal(false)}>
                     {tContactForm('modal.tryAgain')}
                   </button>
                 )}
                 {isSuccess && (
-                  <button 
-                    className="btn btn-primary" 
-                    onClick={() => window.location.href = '/'}
-                  >
+                  <button className="btn btn-primary" onClick={() => (window.location.href = '/')}>
                     {tContactForm('modal.goToHomepage')}
                   </button>
                 )}
@@ -288,7 +286,7 @@ function ContactFormContent({ className = "" }: ContactFormProps) {
   );
 }
 
-const ContactForm = ({ className = "" }: ContactFormProps) => {
+const ContactForm = ({ className = '' }: ContactFormProps) => {
   return (
     <Suspense fallback={<div className="loading loading-spinner loading-lg"></div>}>
       <ContactFormContent className={className} />

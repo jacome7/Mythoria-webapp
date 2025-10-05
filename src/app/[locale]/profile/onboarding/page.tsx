@@ -1,17 +1,56 @@
-"use client";
+'use client';
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { FaVenusMars, FaBirthdayCake, FaBullseye, FaUsers, FaLightbulb, FaHeart, FaGift, FaChild, FaBookOpen, FaTicketAlt } from 'react-icons/fa';
+import {
+  FaVenusMars,
+  FaBirthdayCake,
+  FaBullseye,
+  FaUsers,
+  FaLightbulb,
+  FaHeart,
+  FaGift,
+  FaChild,
+  FaBookOpen,
+  FaTicketAlt,
+} from 'react-icons/fa';
 import PromotionCodeRedeemer from '@/components/PromotionCodeRedeemer';
 
 // Value lists; labels resolved via i18n (see messages OnboardingProfile.options)
 const GENDER_OPTIONS = ['female', 'male', 'prefer_not_to_say'] as const;
-const LITERARY_AGE_OPTIONS = ['school_age', 'teen', 'emerging_adult', 'experienced_adult', 'midlife_mentor_or_elder'] as const;
-const GOAL_OPTIONS = ['family_keepsake', 'personalized_gift', 'child_development', 'fun_and_creativity', 'friend_group_memories', 'company_engagement', 'other'] as const;
-const AUDIENCE_OPTIONS = ['my_child', 'family_member', 'friend_group', 'myself', 'a_friend', 'varies'] as const;
-const INTEREST_OPTIONS = ['adventure_exploration', 'fantasy_magic', 'science_discovery', 'everyday_emotions', 'sports', 'comedy_fun', 'educational'] as const;
-
+const LITERARY_AGE_OPTIONS = [
+  'school_age',
+  'teen',
+  'emerging_adult',
+  'experienced_adult',
+  'midlife_mentor_or_elder',
+] as const;
+const GOAL_OPTIONS = [
+  'family_keepsake',
+  'personalized_gift',
+  'child_development',
+  'fun_and_creativity',
+  'friend_group_memories',
+  'company_engagement',
+  'other',
+] as const;
+const AUDIENCE_OPTIONS = [
+  'my_child',
+  'family_member',
+  'friend_group',
+  'myself',
+  'a_friend',
+  'varies',
+] as const;
+const INTEREST_OPTIONS = [
+  'adventure_exploration',
+  'fantasy_magic',
+  'science_discovery',
+  'everyday_emotions',
+  'sports',
+  'comedy_fun',
+  'educational',
+] as const;
 
 interface ProfileData {
   displayName: string;
@@ -23,8 +62,16 @@ interface ProfileData {
   interests: string[];
 }
 
-const FadeInSection = ({ children, isVisible }: { children: React.ReactNode, isVisible: boolean }) => (
-  <div className={`transition-opacity duration-700 ease-in-out ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+const FadeInSection = ({
+  children,
+  isVisible,
+}: {
+  children: React.ReactNode;
+  isVisible: boolean;
+}) => (
+  <div
+    className={`transition-opacity duration-700 ease-in-out ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+  >
     {isVisible && children}
   </div>
 );
@@ -58,7 +105,7 @@ export default function OnboardingProfilePage() {
             primaryGoals: data.author.primaryGoals || [],
             primaryGoalOther: data.author.primaryGoalOther,
             audiences: data.author.audiences || [],
-            interests: data.author.interests || []
+            interests: data.author.interests || [],
           };
           setProfile(p);
           // Pre-fill visibility if data exists
@@ -73,36 +120,42 @@ export default function OnboardingProfilePage() {
     })();
   }, []);
 
-  const patchProfile = useCallback(async (patch: Partial<ProfileData>) => {
-    if (!profile) return;
-    setSaving(true);
-    try {
-      const res = await fetch('/api/profile', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(patch)
-      });
-      if (res.ok) {
-        const data = await res.json();
-        // Merge server authoritative fields; server returns plural arrays now
-        setProfile(p => ({ ...(p as ProfileData), ...patch, ...data.author }));
-        setSaveMessage('saved'); // marker; actual text comes from i18n key
-        setTimeout(() => setSaveMessage(null), 2000);
-      } else {
-        const err = await res.json().catch(() => ({}));
-        alert(err.error || 'Save failed');
+  const patchProfile = useCallback(
+    async (patch: Partial<ProfileData>) => {
+      if (!profile) return;
+      setSaving(true);
+      try {
+        const res = await fetch('/api/profile', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(patch),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          // Merge server authoritative fields; server returns plural arrays now
+          setProfile((p) => ({ ...(p as ProfileData), ...patch, ...data.author }));
+          setSaveMessage('saved'); // marker; actual text comes from i18n key
+          setTimeout(() => setSaveMessage(null), 2000);
+        } else {
+          const err = await res.json().catch(() => ({}));
+          alert(err.error || 'Save failed');
+        }
+      } catch {
+        alert('Network error');
+      } finally {
+        setSaving(false);
       }
-    } catch {
-      alert('Network error');
-    } finally {
-      setSaving(false);
-    }
-  }, [profile]);
+    },
+    [profile],
+  );
 
-  const debouncedPatch = useCallback((patch: Partial<ProfileData>) => {
-    if (debounceTimer.current) clearTimeout(debounceTimer.current);
-    debounceTimer.current = setTimeout(() => patchProfile(patch), 500);
-  }, [patchProfile]);
+  const debouncedPatch = useCallback(
+    (patch: Partial<ProfileData>) => {
+      if (debounceTimer.current) clearTimeout(debounceTimer.current);
+      debounceTimer.current = setTimeout(() => patchProfile(patch), 500);
+    },
+    [patchProfile],
+  );
 
   if (loading) {
     return (
@@ -122,7 +175,9 @@ export default function OnboardingProfilePage() {
         <div className="hero bg-base-100 rounded-box shadow-xl mb-8">
           <div className="hero-content text-center w-full">
             <div className="w-full max-w-3xl mx-auto px-2">
-              <h1 className="text-4xl md:text-5xl font-bold text-primary leading-tight">{t('title')}</h1>
+              <h1 className="text-4xl md:text-5xl font-bold text-primary leading-tight">
+                {t('title')}
+              </h1>
               <p className="py-6 text-lg md:text-xl">{t('intro')}</p>
             </div>
           </div>
@@ -137,14 +192,18 @@ export default function OnboardingProfilePage() {
                 <p>{t('preferredName.help')}</p>
                 <div className="form-control w-full max-w-xs">
                   <label className="label">
-                    <span className="label-text flex flex-wrap items-center gap-2 whitespace-normal break-words">{t('preferredName.label')}</span>
+                    <span className="label-text flex flex-wrap items-center gap-2 whitespace-normal break-words">
+                      {t('preferredName.label')}
+                    </span>
                   </label>
                   <input
                     type="text"
                     placeholder="Type here"
                     className="input input-bordered w-full"
                     value={profile.displayName}
-                    onChange={e => setProfile(p => p ? { ...p, displayName: e.target.value } : p)}
+                    onChange={(e) =>
+                      setProfile((p) => (p ? { ...p, displayName: e.target.value } : p))
+                    }
                     onBlur={() => {
                       if (profile.displayName.trim()) {
                         patchProfile({ displayName: profile.displayName.trim() });
@@ -167,21 +226,55 @@ export default function OnboardingProfilePage() {
                 <div className="space-y-6 mt-4">
                   {/* Gender */}
                   <div className="form-control w-full max-w-xs">
-                    <label className="label"><span className="label-text flex flex-wrap items-start gap-2 whitespace-normal break-words"><FaVenusMars className="mt-0.5" /> {t('gender.label')}</span></label>
-                    <select className="select select-bordered" value={profile.gender || ''} onChange={e => { debouncedPatch({ gender: e.target.value || null }); setGenderAnswered(true); }}>
-                      <option disabled value="">{t('pickOne')}</option>
-                      {GENDER_OPTIONS.map(v => <option key={v} value={v}>{t(`options.gender.${v}`)}</option>)}
+                    <label className="label">
+                      <span className="label-text flex flex-wrap items-start gap-2 whitespace-normal break-words">
+                        <FaVenusMars className="mt-0.5" /> {t('gender.label')}
+                      </span>
+                    </label>
+                    <select
+                      className="select select-bordered"
+                      value={profile.gender || ''}
+                      onChange={(e) => {
+                        debouncedPatch({ gender: e.target.value || null });
+                        setGenderAnswered(true);
+                      }}
+                    >
+                      <option disabled value="">
+                        {t('pickOne')}
+                      </option>
+                      {GENDER_OPTIONS.map((v) => (
+                        <option key={v} value={v}>
+                          {t(`options.gender.${v}`)}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
                   {/* Literary Age */}
                   <FadeInSection isVisible={genderAnswered}>
                     <div className="form-control w-full max-w-xs">
-                      <label className="label"><span className="label-text flex flex-wrap items-start gap-2 whitespace-normal break-words"><FaBirthdayCake className="mt-0.5" /> {t('literaryAge.label')}</span></label>
-                      <select className="select select-bordered" value={profile.literaryAge || ''} onChange={e => { debouncedPatch({ literaryAge: e.target.value || null }); setAgeAnswered(true); }}>
-                        <option disabled value="">{t('pickOne')}</option>
-                        {LITERARY_AGE_OPTIONS.map(v => (
-                          <option key={v} value={v}>{t(`options.ageOptions.${v}`, { fallback: t(`options.literaryAge.${v}`) })}</option>
+                      <label className="label">
+                        <span className="label-text flex flex-wrap items-start gap-2 whitespace-normal break-words">
+                          <FaBirthdayCake className="mt-0.5" /> {t('literaryAge.label')}
+                        </span>
+                      </label>
+                      <select
+                        className="select select-bordered"
+                        value={profile.literaryAge || ''}
+                        onChange={(e) => {
+                          debouncedPatch({ literaryAge: e.target.value || null });
+                          setAgeAnswered(true);
+                        }}
+                      >
+                        <option disabled value="">
+                          {t('pickOne')}
+                        </option>
+                        {LITERARY_AGE_OPTIONS.map((v) => (
+                          <option key={v} value={v}>
+                            {t(`options.ageOptions.${v}`, {
+                              fallback: t(`options.literaryAge.${v}`),
+                            })}
+                          </option>
                         ))}
                       </select>
                     </div>
@@ -190,19 +283,26 @@ export default function OnboardingProfilePage() {
                   {/* Primary Goals (multi-select) */}
                   <FadeInSection isVisible={ageAnswered}>
                     <div className="form-control w-full">
-                      <label className="label"><span className="label-text flex flex-wrap items-start gap-2 whitespace-normal break-words"><FaBullseye className="mt-0.5" /> {t('primaryGoal.label')}</span></label>
+                      <label className="label">
+                        <span className="label-text flex flex-wrap items-start gap-2 whitespace-normal break-words">
+                          <FaBullseye className="mt-0.5" /> {t('primaryGoal.label')}
+                        </span>
+                      </label>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {GOAL_OPTIONS.map(v => {
+                        {GOAL_OPTIONS.map((v) => {
                           const checked = profile.primaryGoals.includes(v);
                           return (
-                            <label key={v} className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-base-200">
+                            <label
+                              key={v}
+                              className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-base-200"
+                            >
                               <input
                                 type="checkbox"
                                 className="checkbox checkbox-primary"
                                 checked={checked}
                                 onChange={() => {
                                   const next = checked
-                                    ? profile.primaryGoals.filter(val => val !== v)
+                                    ? profile.primaryGoals.filter((val) => val !== v)
                                     : [...profile.primaryGoals, v];
                                   patchProfile({ primaryGoals: next });
                                   setGoalsAnswered(next.length > 0);
@@ -220,8 +320,14 @@ export default function OnboardingProfilePage() {
                             placeholder={t('primaryGoal.otherPlaceholder')}
                             className="input input-bordered w-full max-w-sm"
                             value={profile.primaryGoalOther || ''}
-                            onChange={e => setProfile(p => p ? { ...p, primaryGoalOther: e.target.value } : p)}
-                            onBlur={() => patchProfile({ primaryGoalOther: profile.primaryGoalOther || '' })}
+                            onChange={(e) =>
+                              setProfile((p) =>
+                                p ? { ...p, primaryGoalOther: e.target.value } : p,
+                              )
+                            }
+                            onBlur={() =>
+                              patchProfile({ primaryGoalOther: profile.primaryGoalOther || '' })
+                            }
                           />
                         </div>
                       )}
@@ -231,19 +337,26 @@ export default function OnboardingProfilePage() {
                   {/* Audiences (multi-select) */}
                   <FadeInSection isVisible={goalsAnswered}>
                     <div className="form-control w-full">
-                      <label className="label"><span className="label-text flex flex-wrap items-start gap-2 whitespace-normal break-words"><FaUsers className="mt-0.5" /> {t('audience.label')}</span></label>
+                      <label className="label">
+                        <span className="label-text flex flex-wrap items-start gap-2 whitespace-normal break-words">
+                          <FaUsers className="mt-0.5" /> {t('audience.label')}
+                        </span>
+                      </label>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {AUDIENCE_OPTIONS.map(v => {
+                        {AUDIENCE_OPTIONS.map((v) => {
                           const checked = profile.audiences.includes(v);
                           return (
-                            <label key={v} className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-base-200">
+                            <label
+                              key={v}
+                              className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-base-200"
+                            >
                               <input
                                 type="checkbox"
                                 className="checkbox checkbox-primary"
                                 checked={checked}
                                 onChange={() => {
                                   const next = checked
-                                    ? profile.audiences.filter(val => val !== v)
+                                    ? profile.audiences.filter((val) => val !== v)
                                     : [...profile.audiences, v];
                                   patchProfile({ audiences: next });
                                   setAudiencesAnswered(next.length > 0);
@@ -260,16 +373,30 @@ export default function OnboardingProfilePage() {
                   {/* Interests */}
                   <FadeInSection isVisible={audiencesAnswered}>
                     <div className="form-control w-full">
-                      <label className="label"><span className="label-text flex flex-wrap items-start gap-2 whitespace-normal break-words"><FaLightbulb className="mt-0.5" /> {t('interests.label')}</span></label>
+                      <label className="label">
+                        <span className="label-text flex flex-wrap items-start gap-2 whitespace-normal break-words">
+                          <FaLightbulb className="mt-0.5" /> {t('interests.label')}
+                        </span>
+                      </label>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {INTEREST_OPTIONS.map(v => {
+                        {INTEREST_OPTIONS.map((v) => {
                           const checked = profile.interests.includes(v);
                           return (
-                            <label key={v} className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-base-200">
-                              <input type="checkbox" checked={checked} className="checkbox checkbox-primary" onChange={() => {
-                                const next = checked ? profile.interests.filter(i => i !== v) : [...profile.interests, v];
-                                debouncedPatch({ interests: next });
-                              }} />
+                            <label
+                              key={v}
+                              className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-base-200"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                className="checkbox checkbox-primary"
+                                onChange={() => {
+                                  const next = checked
+                                    ? profile.interests.filter((i) => i !== v)
+                                    : [...profile.interests, v];
+                                  debouncedPatch({ interests: next });
+                                }}
+                              />
                               <span>{t(`options.interests.${v}`)}</span>
                             </label>
                           );
@@ -290,7 +417,9 @@ export default function OnboardingProfilePage() {
                 <h2 className="card-title text-2xl">{t('gift.section')}</h2>
                 <p>{t.rich('gift.copy', { credits: 5 })}</p>
                 <div className="card-actions justify-center mt-4">
-                  <Link href={`/${locale}/tell-your-story`} className="btn btn-secondary btn-wide">{t('gift.button.start')}</Link>
+                  <Link href={`/${locale}/tell-your-story`} className="btn btn-secondary btn-wide">
+                    {t('gift.button.start')}
+                  </Link>
                 </div>
               </div>
             </div>
@@ -300,7 +429,9 @@ export default function OnboardingProfilePage() {
               <div className="card-body">
                 <div className="flex items-center gap-3 mb-2">
                   <FaTicketAlt className="text-primary text-2xl" />
-                  <h2 className="card-title text-primary text-2xl m-0">{tVoucher('sectionHeading')}</h2>
+                  <h2 className="card-title text-primary text-2xl m-0">
+                    {tVoucher('sectionHeading')}
+                  </h2>
                 </div>
                 <p className="mb-4 opacity-80">{tVoucher('sectionSubheading')}</p>
                 <PromotionCodeRedeemer compact />
@@ -313,9 +444,18 @@ export default function OnboardingProfilePage() {
                 <h2 className="card-title text-primary text-2xl">{t('ideas.section')}</h2>
                 <p></p>
                 <ul className="list-none space-y-2 mt-4">
-                  <li className="flex items-start"><FaChild className="text-primary mr-3 mt-1 flex-shrink-0" /><span>{t('ideas.item1')}</span></li>
-                  <li className="flex items-start"><FaHeart className="text-primary mr-3 mt-1 flex-shrink-0" /><span>{t('ideas.item2')}</span></li>
-                  <li className="flex items-start"><FaGift className="text-primary mr-3 mt-1 flex-shrink-0" /><span>{t('ideas.item3')}</span></li>
+                  <li className="flex items-start">
+                    <FaChild className="text-primary mr-3 mt-1 flex-shrink-0" />
+                    <span>{t('ideas.item1')}</span>
+                  </li>
+                  <li className="flex items-start">
+                    <FaHeart className="text-primary mr-3 mt-1 flex-shrink-0" />
+                    <span>{t('ideas.item2')}</span>
+                  </li>
+                  <li className="flex items-start">
+                    <FaGift className="text-primary mr-3 mt-1 flex-shrink-0" />
+                    <span>{t('ideas.item3')}</span>
+                  </li>
                 </ul>
               </div>
             </div>

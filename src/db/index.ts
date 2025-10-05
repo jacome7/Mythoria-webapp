@@ -1,10 +1,11 @@
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
-import * as schema from "./schema";
-import { getPoolConfig } from "@/lib/database-config";
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
+import * as schema from './schema';
+import { getPoolConfig } from '@/lib/database-config';
 
 // Check if we're in build time
-const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build' || process.env.NODE_ENV === 'test';
+const isBuildTime =
+  process.env.NEXT_PHASE === 'phase-production-build' || process.env.NODE_ENV === 'test';
 
 let pool: Pool | null = null;
 let dbInstance: ReturnType<typeof drizzle> | null = null;
@@ -26,8 +27,7 @@ function initializeDatabase() {
   pool.on('error', (err) => {
     console.error('Unexpected error on idle client', err);
   });
-  pool.on('connect', () => {
-  });
+  pool.on('connect', () => {});
   pool.on('acquire', () => {
     // Pool client acquired
   });
@@ -46,12 +46,12 @@ export const db = new Proxy({} as ReturnType<typeof drizzle>, {
       // During build time, return empty functions to prevent execution
       return () => Promise.resolve([]);
     }
-    
+
     const instance = initializeDatabase();
     if (!instance) {
       throw new Error('Database not available during build time');
     }
-    
+
     return instance[prop as keyof typeof instance];
-  }
+  },
 });

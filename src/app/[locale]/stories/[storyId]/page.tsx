@@ -19,7 +19,8 @@ export default function StoryPage() {
   }, [storyId, locale, router]);
 
   // Show loading while redirecting
-  return (<div className="container mx-auto px-4 py-8">
+  return (
+    <div className="container mx-auto px-4 py-8">
       <div className="flex justify-center items-center min-h-96">
         <span className="loading loading-spinner loading-lg"></span>
       </div>

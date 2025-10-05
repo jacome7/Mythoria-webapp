@@ -34,11 +34,9 @@ export default function AnimatedLogo({ className = '' }: AnimatedLogoProps) {
   useEffect(() => {
     const interval = setInterval(() => {
       setIsVisible(false);
-      
+
       setTimeout(() => {
-        setCurrentStyleIndex((prevIndex) => 
-          (prevIndex + 1) % GRAPHICAL_STYLES.length
-        );
+        setCurrentStyleIndex((prevIndex) => (prevIndex + 1) % GRAPHICAL_STYLES.length);
         setIsVisible(true);
       }, 1000); // 1 second fade-out duration
     }, 8000); // 8 seconds display duration
@@ -67,10 +65,10 @@ export default function AnimatedLogo({ className = '' }: AnimatedLogoProps) {
           priority
         />
       </div>
-      
+
       {/* Style label positioned below the logo, aligned to the right */}
       <div className="flex justify-end mt-2">
-        <span 
+        <span
           className={`
             text-sm md:text-base text-base-content/70 italic 
             transition-opacity duration-1000 ease-in-out

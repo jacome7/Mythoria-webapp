@@ -11,18 +11,10 @@ import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { 
-  $getRoot, 
-  $createParagraphNode, 
-  $createTextNode,
-  EditorState
-} from 'lexical';
+import { $getRoot, $createParagraphNode, $createTextNode, EditorState } from 'lexical';
 import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html';
-import { 
-  HeadingNode, 
-  QuoteNode 
-} from '@lexical/rich-text';
-import { 
+import { HeadingNode, QuoteNode } from '@lexical/rich-text';
+import {
   FORMAT_TEXT_COMMAND,
   TextFormatType,
   $getSelection,
@@ -32,17 +24,17 @@ import {
   LexicalCommand,
   TextNode,
   DOMConversionMap,
-  DOMConversionOutput
+  DOMConversionOutput,
 } from 'lexical';
-import { 
-  FiBold, 
-  FiItalic, 
-  FiUnderline, 
+import {
+  FiBold,
+  FiItalic,
+  FiUnderline,
   FiSave,
   FiZap,
   FiImage,
   FiType,
-  FiChevronLeft
+  FiChevronLeft,
 } from 'react-icons/fi';
 import { toAbsoluteImageUrl } from '../utils/image-url';
 
@@ -58,7 +50,9 @@ const TEXT_SIZE_OPTIONS = [
 ];
 
 // Custom command for text size formatting
-export const FORMAT_TEXT_SIZE_COMMAND: LexicalCommand<TextSize | null> = createCommand('FORMAT_TEXT_SIZE_COMMAND');
+export const FORMAT_TEXT_SIZE_COMMAND: LexicalCommand<TextSize | null> = createCommand(
+  'FORMAT_TEXT_SIZE_COMMAND',
+);
 
 // Helper function to ensure proper HTML structure for Lexical while preserving inline styles
 function normalizeHtmlContent(content: string): string {
@@ -68,26 +62,26 @@ function normalizeHtmlContent(content: string): string {
 
   // Remove extra whitespace and normalize, but preserve inline styles
   const trimmed = content.trim();
-  
+
   // Check if content already has proper block-level elements
   const hasBlockElements = /<(p|div|h[1-6]|ul|ol|li|blockquote|pre)\b[^>]*>/i.test(trimmed);
-  
+
   if (hasBlockElements) {
     // Content has block elements, return as-is to preserve styling
     return trimmed;
   } else {
     // Plain text or inline elements only - wrap in paragraph but preserve existing tags
     const hasLineBreaks = trimmed.includes('\n') || trimmed.includes('<br');
-    
+
     if (hasLineBreaks) {
       // Convert line breaks to paragraphs while preserving inline elements
       const paragraphs = trimmed
         .split(/\n\s*\n/) // Split on double line breaks
-        .map(para => para.replace(/\n/g, '<br>').trim())
-        .filter(para => para.length > 0)
-        .map(para => `<p>${para}</p>`)
+        .map((para) => para.replace(/\n/g, '<br>').trim())
+        .filter((para) => para.length > 0)
+        .map((para) => `<p>${para}</p>`)
         .join('');
-      
+
       return paragraphs || '<p><br></p>';
     } else {
       // Single line/paragraph - wrap but preserve inline elements
@@ -107,14 +101,14 @@ const fontSizeSpanConversion: DOMConversionMap = {
       priority: 2, // higher than the default span converter (priority 1)
       conversion: (node: HTMLElement): DOMConversionOutput => {
         const textNode = $createTextNode(node.textContent ?? '');
-        
+
         // Preserve the font-size style
         const existingStyle = textNode.getStyle();
-        const newStyle = existingStyle 
-          ? `${existingStyle}; font-size: ${fontSize}` 
+        const newStyle = existingStyle
+          ? `${existingStyle}; font-size: ${fontSize}`
           : `font-size: ${fontSize}`;
         textNode.setStyle(newStyle);
-        
+
         return { node: textNode };
       },
     };
@@ -164,21 +158,21 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
           setIsBold(selection.hasFormat('bold'));
           setIsItalic(selection.hasFormat('italic'));
           setIsUnderline(selection.hasFormat('underline'));
-          
+
           // Detect text size from selection
           let detectedSize: TextSize = 'medium';
-          
+
           const nodes = selection.getNodes();
           if (nodes.length > 0) {
             // Check the first text node for font-size
-            const firstTextNode = nodes.find(node => node instanceof TextNode) as TextNode;
+            const firstTextNode = nodes.find((node) => node instanceof TextNode) as TextNode;
             if (firstTextNode) {
               const style = firstTextNode.getStyle();
               const fontSizeMatch = style.match(/font-size:\s*([^;]+)/);
               if (fontSizeMatch) {
                 const fontSize = fontSizeMatch[1].trim();
                 // Find matching size option
-                const sizeOption = TEXT_SIZE_OPTIONS.find(opt => opt.em === fontSize);
+                const sizeOption = TEXT_SIZE_OPTIONS.find((opt) => opt.em === fontSize);
                 if (sizeOption) {
                   detectedSize = sizeOption.value;
                 }
@@ -192,14 +186,14 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
               const fontSizeMatch = style.match(/font-size:\s*([^;]+)/);
               if (fontSizeMatch) {
                 const fontSize = fontSizeMatch[1].trim();
-                const sizeOption = TEXT_SIZE_OPTIONS.find(opt => opt.em === fontSize);
+                const sizeOption = TEXT_SIZE_OPTIONS.find((opt) => opt.em === fontSize);
                 if (sizeOption) {
                   detectedSize = sizeOption.value;
                 }
               }
             }
           }
-          
+
           setCurrentTextSize(detectedSize);
         }
       });
@@ -216,15 +210,16 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
         const selection = $getSelection();
         if ($isRangeSelection(selection)) {
           editor.update(() => {
-            const styleValue = size && size !== 'medium' 
-              ? TEXT_SIZE_OPTIONS.find(opt => opt.value === size)?.em 
-              : '';
-            
+            const styleValue =
+              size && size !== 'medium'
+                ? TEXT_SIZE_OPTIONS.find((opt) => opt.value === size)?.em
+                : '';
+
             // Get selected nodes
             const nodes = selection.getNodes();
             const anchor = selection.anchor;
             const focus = selection.focus;
-            
+
             // Handle collapsed selection (cursor position)
             if (selection.isCollapsed()) {
               // For collapsed selection, apply to the word at cursor or create a new styled node
@@ -233,10 +228,10 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
                 // Apply style to entire text node at cursor
                 let currentStyle = anchorNode.getStyle();
                 currentStyle = currentStyle.replace(/font-size:\s*[^;]+;?/g, '').trim();
-                
+
                 if (styleValue) {
-                  const newStyle = currentStyle 
-                    ? `${currentStyle}; font-size: ${styleValue}` 
+                  const newStyle = currentStyle
+                    ? `${currentStyle}; font-size: ${styleValue}`
                     : `font-size: ${styleValue}`;
                   anchorNode.setStyle(newStyle);
                 } else {
@@ -245,35 +240,35 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
               }
               return true;
             }
-            
+
             // Handle range selection
             nodes.forEach((node) => {
               if (node instanceof TextNode) {
                 const textContent = node.getTextContent();
                 const nodeKey = node.getKey();
-                
+
                 // Determine selection boundaries for this node
                 let startOffset = 0;
                 let endOffset = textContent.length;
-                
+
                 if (anchor.getNode().getKey() === nodeKey) {
                   startOffset = anchor.offset;
                 }
                 if (focus.getNode().getKey() === nodeKey) {
                   endOffset = focus.offset;
                 }
-                
+
                 // Ensure correct order
                 if (startOffset > endOffset) {
                   [startOffset, endOffset] = [endOffset, startOffset];
                 }
-                
+
                 // If partial selection within the node, split it
                 if (startOffset > 0 || endOffset < textContent.length) {
                   const beforeText = textContent.slice(0, startOffset);
                   const selectedText = textContent.slice(startOffset, endOffset);
                   const afterText = textContent.slice(endOffset);
-                  
+
                   // Preserve original formatting
                   const originalFormat = {
                     bold: node.hasFormat('bold'),
@@ -282,15 +277,15 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
                     strikethrough: node.hasFormat('strikethrough'),
                     code: node.hasFormat('code'),
                     subscript: node.hasFormat('subscript'),
-                    superscript: node.hasFormat('superscript')
+                    superscript: node.hasFormat('superscript'),
                   };
-                  
+
                   const originalStyle = node.getStyle();
                   const baseStyle = originalStyle.replace(/font-size:\s*[^;]+;?/g, '').trim();
-                  
+
                   // Create replacement nodes
                   const newNodes = [];
-                  
+
                   // Before text (unchanged)
                   if (beforeText) {
                     const beforeNode = $createTextNode(beforeText);
@@ -300,21 +295,23 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
                     beforeNode.setStyle(baseStyle);
                     newNodes.push(beforeNode);
                   }
-                  
+
                   // Selected text (with new font-size)
                   if (selectedText) {
                     const selectedNode = $createTextNode(selectedText);
                     Object.entries(originalFormat).forEach(([format, hasFormat]) => {
                       if (hasFormat) selectedNode.toggleFormat(format as TextFormatType);
                     });
-                    
-                    const newStyle = styleValue 
-                      ? (baseStyle ? `${baseStyle}; font-size: ${styleValue}` : `font-size: ${styleValue}`)
+
+                    const newStyle = styleValue
+                      ? baseStyle
+                        ? `${baseStyle}; font-size: ${styleValue}`
+                        : `font-size: ${styleValue}`
                       : baseStyle;
                     selectedNode.setStyle(newStyle);
                     newNodes.push(selectedNode);
                   }
-                  
+
                   // After text (unchanged)
                   if (afterText) {
                     const afterNode = $createTextNode(afterText);
@@ -324,21 +321,20 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
                     afterNode.setStyle(baseStyle);
                     newNodes.push(afterNode);
                   }
-                  
+
                   // Replace the original node
-                  newNodes.forEach(newNode => {
+                  newNodes.forEach((newNode) => {
                     node.insertBefore(newNode);
                   });
                   node.remove();
-                  
                 } else {
                   // Entire node is selected
                   let currentStyle = node.getStyle();
                   currentStyle = currentStyle.replace(/font-size:\s*[^;]+;?/g, '').trim();
-                  
+
                   if (styleValue) {
-                    const newStyle = currentStyle 
-                      ? `${currentStyle}; font-size: ${styleValue}` 
+                    const newStyle = currentStyle
+                      ? `${currentStyle}; font-size: ${styleValue}`
                       : `font-size: ${styleValue}`;
                     node.setStyle(newStyle);
                   } else {
@@ -351,7 +347,7 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
         }
         return true;
       },
-      COMMAND_PRIORITY_EDITOR
+      COMMAND_PRIORITY_EDITOR,
     );
 
     return unregister;
@@ -390,20 +386,20 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
           >
             <FiUnderline className="w-4 h-4" />
           </button>
-          
+
           {/* Text Size Dropdown */}
           <div className="dropdown">
-            <div 
-              tabIndex={0} 
-              role="button" 
+            <div
+              tabIndex={0}
+              role="button"
               className="btn btn-sm btn-ghost gap-1"
               title={tChapterEditor('toolbar.textSize')}
             >
               <FiType className="w-4 h-4" />
               {tChapterEditor(`textSizes.${currentTextSize}`)}
             </div>
-            <ul 
-              tabIndex={0} 
+            <ul
+              tabIndex={0}
               className="dropdown-content menu bg-base-100 rounded-box z-[1] w-20 p-2 shadow"
             >
               {TEXT_SIZE_OPTIONS.map((option) => (
@@ -420,7 +416,7 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
             </ul>
           </div>
         </div>
-        
+
         {onAIEdit && (
           <div className="flex items-center gap-2">
             <button
@@ -439,9 +435,9 @@ function EditorToolbar({ onAIEdit }: { onAIEdit?: () => void }) {
 }
 
 // Content initialization plugin to handle HTML from database
-function ContentInitializationPlugin({ 
+function ContentInitializationPlugin({
   initialContent,
-  chapterNumber 
+  chapterNumber,
 }: {
   initialContent: string;
   chapterNumber: number;
@@ -458,11 +454,11 @@ function ContentInitializationPlugin({
 
           // Normalize HTML content to ensure proper structure while preserving styles
           const normalizedContent = normalizeHtmlContent(initialContent);
-          
-          console.log('🔄 Initializing content:', { 
+
+          console.log('🔄 Initializing content:', {
             originalContent: initialContent,
             normalizedContent,
-            chapterNumber 
+            chapterNumber,
           });
 
           if (normalizedContent && normalizedContent !== '<p><br></p>') {
@@ -470,19 +466,22 @@ function ContentInitializationPlugin({
               // Parse the normalized HTML with better DOM handling
               const parser = new DOMParser();
               const dom = parser.parseFromString(normalizedContent, 'text/html');
-              
+
               // Log the parsed DOM to debug
               console.log('📄 Parsed DOM:', dom.body.innerHTML);
-              
+
               // Use more robust HTML to Lexical conversion
               const nodes = $generateNodesFromDOM(editor, dom);
-              
-              console.log('🔧 Generated nodes:', nodes.map(node => ({
-                type: node.getType(),
-                textContent: node.getTextContent(),
-                style: node instanceof TextNode ? node.getStyle() : 'N/A'
-              })));
-              
+
+              console.log(
+                '🔧 Generated nodes:',
+                nodes.map((node) => ({
+                  type: node.getType(),
+                  textContent: node.getTextContent(),
+                  style: node instanceof TextNode ? node.getStyle() : 'N/A',
+                })),
+              );
+
               if (nodes.length > 0) {
                 root.append(...nodes);
               } else {
@@ -490,11 +489,14 @@ function ContentInitializationPlugin({
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = normalizedContent;
                 const textContent = tempDiv.textContent || tempDiv.innerText || '';
-                
+
                 if (textContent.trim()) {
                   // Try to parse as HTML one more time with a different approach
                   try {
-                    const fallbackDom = parser.parseFromString(`<p>${normalizedContent}</p>`, 'text/html');
+                    const fallbackDom = parser.parseFromString(
+                      `<p>${normalizedContent}</p>`,
+                      'text/html',
+                    );
                     const fallbackNodes = $generateNodesFromDOM(editor, fallbackDom);
                     if (fallbackNodes.length > 0) {
                       root.append(...fallbackNodes);
@@ -516,7 +518,7 @@ function ContentInitializationPlugin({
               const tempDiv = document.createElement('div');
               tempDiv.innerHTML = initialContent;
               const textContent = tempDiv.textContent || tempDiv.innerText || '';
-              
+
               const paragraph = $createParagraphNode();
               if (textContent.trim()) {
                 paragraph.append($createTextNode(textContent));
@@ -551,12 +553,12 @@ function ContentInitializationPlugin({
 
   return null;
 }
-function ContentChangePlugin({ 
-  onContentChange, 
-  onHasChanges, 
-  initialContent, 
-  currentTitle, 
-  chapterTitle 
+function ContentChangePlugin({
+  onContentChange,
+  onHasChanges,
+  initialContent,
+  currentTitle,
+  chapterTitle,
 }: {
   onContentChange?: (content: string) => void;
   onHasChanges: (hasChanges: boolean) => void;
@@ -565,7 +567,7 @@ function ContentChangePlugin({
   chapterTitle: string;
 }) {
   const [editor] = useLexicalComposerContext();
-  
+
   const handleChange = (editorState: EditorState) => {
     editorState.read(() => {
       const htmlString = $generateHtmlFromNodes(editor);
@@ -625,7 +627,7 @@ export default function ChapterEditor({
       chapterNumber,
       chapterTitle,
       locale,
-      hasInitialContent: !!initialContent
+      hasInitialContent: !!initialContent,
     });
   }, [storyId, chapterNumber, chapterTitle, locale, initialContent]);
 
@@ -659,7 +661,7 @@ export default function ChapterEditor({
   // Handle cancel - navigate to reading page
   const handleCancel = () => {
     console.log('🔍 Cancel button clicked with:', { storyId, chapterNumber, locale });
-    
+
     if (storyId && chapterNumber) {
       const readingUrl = `/${locale}/stories/read/${storyId}/chapter/${chapterNumber}`;
       console.log('📍 Navigating to:', readingUrl);
@@ -710,11 +712,13 @@ export default function ChapterEditor({
               </div>
               {onImageEdit && (
                 <button
-                  onClick={() => onImageEdit({
-                    imageUri: chapterImageUri,
-                    imageType: 'chapter',
-                    chapterNumber: chapterNumber
-                  })}
+                  onClick={() =>
+                    onImageEdit({
+                      imageUri: chapterImageUri,
+                      imageType: 'chapter',
+                      chapterNumber: chapterNumber,
+                    })
+                  }
                   className="btn btn-sm btn-outline"
                 >
                   <FiImage className="w-4 h-4" />
@@ -728,21 +732,21 @@ export default function ChapterEditor({
 
       {/* Lexical Editor */}
       <div className="flex-1 flex flex-col">
-        <LexicalComposer 
+        <LexicalComposer
           initialConfig={{
             ...initialConfig,
             editorState: createInitialEditorState(),
           }}
         >
           <EditorToolbar onAIEdit={onAIEdit} />
-          
-          <div 
+
+          <div
             className="flex-1 flex flex-col border-0 md:border border-base-300 md:rounded-lg overflow-hidden relative"
             data-lexical-editor
           >
             <RichTextPlugin
               contentEditable={
-                <ContentEditable 
+                <ContentEditable
                   className="flex-1 p-4 md:p-4 prose prose-lg max-w-none focus:outline-none"
                   style={{ minHeight: '400px' }}
                 />
@@ -754,13 +758,13 @@ export default function ChapterEditor({
               }
               ErrorBoundary={LexicalErrorBoundary}
             />
-            
+
             <HistoryPlugin />
-            <ContentInitializationPlugin 
+            <ContentInitializationPlugin
               initialContent={initialContent}
               chapterNumber={chapterNumber}
             />
-            <ContentChangePlugin 
+            <ContentChangePlugin
               onContentChange={handleContentChange}
               onHasChanges={setHasChanges}
               initialContent={initialContent}
@@ -778,7 +782,11 @@ export default function ChapterEditor({
                   <button
                     onClick={handleCancel}
                     className="btn btn-ghost btn-sm"
-                    title={storyId ? `Go to reading page for Chapter ${chapterNumber}` : tChapterEditor('goBackButton')}
+                    title={
+                      storyId
+                        ? `Go to reading page for Chapter ${chapterNumber}`
+                        : tChapterEditor('goBackButton')
+                    }
                   >
                     <FiChevronLeft className="w-4 h-4" />
                     {tChapterEditor('backButton')}

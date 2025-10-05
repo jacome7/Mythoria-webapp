@@ -5,12 +5,10 @@ interface BlogContentProps {
   className?: string;
 }
 
-export const BlogContent: React.FC<BlogContentProps> = ({ 
-  children, 
-  className = '' 
-}) => {
+export const BlogContent: React.FC<BlogContentProps> = ({ children, className = '' }) => {
   return (
-    <div className={`
+    <div
+      className={`
       blog-content 
       prose prose-lg max-w-none
       prose-headings:text-primary
@@ -31,7 +29,8 @@ export const BlogContent: React.FC<BlogContentProps> = ({
       prose-img:rounded-lg prose-img:shadow-md prose-img:mx-auto
       prose-hr:border-base-300 prose-hr:my-8
       ${className}
-    `}>
+    `}
+    >
       {children}
     </div>
   );

@@ -78,9 +78,7 @@
         "✨ All done! The Oompa-Loompas are taking a well-deserved cocoa break!",
         "🏆 Mission accomplished! Your story is complete and ready to enchant!"
       ],
-      "default": [
-        "⚡ Our magical Oompa-Loompas are working their creative wonders!"
-      ]
+      "default": ["⚡ Our magical Oompa-Loompas are working their creative wonders!"]
     },
     "timeUnits": {
       "second": "second",

@@ -1,8 +1,6 @@
-import type { ApiChapter, Chapter } from "@/types/chapter";
+import type { ApiChapter, Chapter } from '@/types/chapter';
 
-export const convertApiChaptersToChapters = (
-  apiChapters: ApiChapter[],
-): Chapter[] => {
+export const convertApiChaptersToChapters = (apiChapters: ApiChapter[]): Chapter[] => {
   return apiChapters.map((chapter) => ({
     ...chapter,
     createdAt: new Date(chapter.createdAt),

@@ -19,19 +19,19 @@ export interface EditCreditResult {
 export async function checkEditCredits(
   authorId: string,
   action: 'textEdit' | 'imageEdit',
-  locale?: string
+  locale?: string,
 ): Promise<EditCreditResult> {
   void locale;
   try {
     const permission = await aiEditService.checkEditPermission(authorId, action);
-    
+
     return {
       success: true,
       canEdit: permission.canEdit,
       requiredCredits: permission.requiredCredits,
       currentBalance: permission.currentBalance,
       editCount: permission.editCount,
-      message: permission.message
+      message: permission.message,
     };
   } catch (error) {
     console.error(`Error checking edit credits for ${action}:`, error);
@@ -41,7 +41,7 @@ export async function checkEditCredits(
       requiredCredits: 0,
       currentBalance: 0,
       editCount: 0,
-  error: error instanceof Error ? error.message : 'Failed to check edit credits'
+      error: error instanceof Error ? error.message : 'Failed to check edit credits',
     };
   }
 }
@@ -54,25 +54,25 @@ export async function recordEditAndDeductCredits(
   storyId: string,
   action: 'textEdit' | 'imageEdit',
   metadata?: Record<string, unknown>,
-  locale?: string
+  locale?: string,
 ): Promise<{ success: boolean; error?: string; newBalance?: number }> {
   void locale;
   try {
     // This function handles both credit deduction and edit recording
     await aiEditService.recordSuccessfulEdit(authorId, storyId, action, metadata);
-    
+
     // Get the updated balance to return
     const newBalance = await creditService.getAuthorCreditBalance(authorId);
-    
+
     return {
       success: true,
-      newBalance
+      newBalance,
     };
   } catch (error) {
     console.error(`Error recording edit and deducting credits for ${action}:`, error);
     return {
       success: false,
-  error: error instanceof Error ? error.message : 'Failed to record edit and deduct credits'
+      error: error instanceof Error ? error.message : 'Failed to record edit and deduct credits',
     };
   }
 }
@@ -84,7 +84,7 @@ export async function getEditCountMessage(
   action: 'textEdit' | 'imageEdit',
   editCount: number,
   requiredCredits: number,
-  locale?: string
+  locale?: string,
 ): Promise<string> {
   void locale;
   if (action === 'textEdit') {
@@ -112,6 +112,6 @@ export async function getEditCountMessage(
         : `Next edit will cost ${requiredCredits} credits`;
     }
   }
-  
+
   return '';
 }

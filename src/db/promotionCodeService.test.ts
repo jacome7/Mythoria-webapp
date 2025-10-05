@@ -18,7 +18,11 @@ describe('promotionCodeService.redeem', () => {
   it('redeems successfully and returns balance', async () => {
     // Mock db.select().from().where() chain by spying on promotionCodeService.redeem internals not easily.
     // Instead we mock db.* via monkey patch on global (simple approach) -> adapt: we'll spy on creditService.addCredits & getAuthorCreditBalance
-  jest.spyOn(creditService, 'addCredits').mockResolvedValue({ id: 'ledger1' } as unknown as ReturnType<typeof creditService.addCreditEntry>);
+    jest
+      .spyOn(creditService, 'addCredits')
+      .mockResolvedValue({ id: 'ledger1' } as unknown as ReturnType<
+        typeof creditService.addCreditEntry
+      >);
     jest.spyOn(creditService, 'getAuthorCreditBalance').mockResolvedValue(50);
 
     // Monkey patch db.select to return our promo object once.

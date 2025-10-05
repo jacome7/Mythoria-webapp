@@ -4,7 +4,7 @@
 const forbiddenPatterns = [
   /(^|\n)\s*import\b/, // static import
   /(^|\n)\s*export\b/, // export statements
-  /import\s*\(/,        // dynamic import
+  /import\s*\(/, // dynamic import
 ];
 
 export function validateMdxSource(src: string): { ok: true } | { ok: false; reason: string } {

@@ -13,7 +13,7 @@ export default function PrivacyPolicyPage() {
           <h1 className="text-4xl font-bold text-center mb-8 text-primary">
             {tPrivacyPolicy('title')}
           </h1>
-          
+
           <div className="prose prose-lg max-w-none">
             {/* At-a-Glance Section */}
             <div className="bg-blue-50 border-l-4 border-blue-400 p-6 mb-8 rounded-r-lg">
@@ -26,7 +26,6 @@ export default function PrivacyPolicyPage() {
                 <p>{tPrivacyPolicy('atAGlance.summary3')}</p>
               </div>
             </div>
-
             {/* Main Content Sections */}
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4 text-primary">
@@ -34,7 +33,9 @@ export default function PrivacyPolicyPage() {
               </h2>
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-medium mb-2">{tPrivacyPolicy('section1.controller.title')}</h3>
+                  <h3 className="text-lg font-medium mb-2">
+                    {tPrivacyPolicy('section1.controller.title')}
+                  </h3>
                   <div className="pl-4 space-y-1">
                     <p>{tPrivacyPolicy('section1.controller.company')}</p>
                     <p>{tPrivacyPolicy('section1.controller.address')}</p>
@@ -44,19 +45,19 @@ export default function PrivacyPolicyPage() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-lg font-medium mb-2">{tPrivacyPolicy('section1.authority.title')}</h3>
+                  <h3 className="text-lg font-medium mb-2">
+                    {tPrivacyPolicy('section1.authority.title')}
+                  </h3>
                   <p className="pl-4">{tPrivacyPolicy('section1.authority.contact')}</p>
                 </div>
               </div>
             </section>
-
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4 text-primary">
                 {tPrivacyPolicy('section2.title')}
               </h2>
               <p>{tPrivacyPolicy('section2.content')}</p>
             </section>
-
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4 text-primary">
                 {tPrivacyPolicy('section3.title')}
@@ -101,7 +102,6 @@ export default function PrivacyPolicyPage() {
               </div>
               <p className="mt-4 text-sm text-gray-600">{tPrivacyPolicy('section3.note')}</p>
             </section>
-
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4 text-primary">
                 {tPrivacyPolicy('section4.title')}
@@ -146,31 +146,32 @@ export default function PrivacyPolicyPage() {
               </div>
               <p className="mt-4 text-sm text-gray-600">{tPrivacyPolicy('section4.note')}</p>
             </section>
-
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4 text-primary">
                 {tPrivacyPolicy('section5.title')}
               </h2>
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-medium mb-2">{tPrivacyPolicy('section5.openai.title')}</h3>
+                  <h3 className="text-lg font-medium mb-2">
+                    {tPrivacyPolicy('section5.openai.title')}
+                  </h3>
                   <p>{tPrivacyPolicy('section5.openai.description')}</p>
                 </div>
                 <div>
-                  <h3 className="text-lg font-medium mb-2">{tPrivacyPolicy('section5.google.title')}</h3>
+                  <h3 className="text-lg font-medium mb-2">
+                    {tPrivacyPolicy('section5.google.title')}
+                  </h3>
                   <p>{tPrivacyPolicy('section5.google.description')}</p>
                 </div>
                 <p className="text-sm text-gray-600">{tPrivacyPolicy('section5.note')}</p>
               </div>
             </section>
-
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4 text-primary">
                 {tPrivacyPolicy('section6.title')}
               </h2>
               <p>{tPrivacyPolicy('section6.content')}</p>
             </section>
-
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4 text-primary">
                 {tPrivacyPolicy('section7.title')}
@@ -215,7 +216,6 @@ export default function PrivacyPolicyPage() {
               </div>
               <p className="mt-4 text-sm text-gray-600">{tPrivacyPolicy('section7.note')}</p>
             </section>
-
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4 text-primary">
                 {tPrivacyPolicy('section8.title')}
@@ -253,13 +253,13 @@ export default function PrivacyPolicyPage() {
                 </table>
               </div>
             </section>
-
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4 text-primary">
                 {tPrivacyPolicy('section9.title')}
               </h2>
               <p>{tPrivacyPolicy('section9.content')}</p>
-            </section>            <section className="mb-8">
+            </section>{' '}
+            <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4 text-primary">
                 {tPrivacyPolicy('section10.title')}
               </h2>
@@ -267,7 +267,7 @@ export default function PrivacyPolicyPage() {
                 <p>{tPrivacyPolicy('section10.content')}</p>
                 <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
                   <p className="text-blue-700 mb-2">{tPrivacyPolicy('section10.deleteAccount')}</p>
-                  <Link 
+                  <Link
                     href="/privacy-policy/delete-account"
                     className="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors duration-200"
                   >
@@ -276,7 +276,6 @@ export default function PrivacyPolicyPage() {
                 </div>
               </div>
             </section>
-
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4 text-primary">
                 {tPrivacyPolicy('section11.title')}
@@ -289,21 +288,18 @@ export default function PrivacyPolicyPage() {
                 </ul>
               </div>
             </section>
-
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4 text-primary">
                 {tPrivacyPolicy('section12.title')}
               </h2>
               <p>{tPrivacyPolicy('section12.content')}</p>
             </section>
-
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4 text-primary">
                 {tPrivacyPolicy('section13.title')}
               </h2>
               <p>{tPrivacyPolicy('section13.content')}</p>
             </section>
-
             <div className="text-center mt-12 pt-8 border-tPrivacyPolicy border-gray-200">
               <p className="text-sm text-gray-600">{tPrivacyPolicy('lastUpdated')}</p>
             </div>

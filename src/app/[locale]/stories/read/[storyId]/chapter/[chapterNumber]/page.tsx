@@ -42,7 +42,7 @@ export default function ReadChapterPage() {
   const tErrors = useTranslations('Errors');
   const tActions = useTranslations('Actions');
   const storyId = (params?.storyId as string | undefined) ?? '';
-  const chapterNumber = parseInt(((params?.chapterNumber as string | undefined) ?? '0'), 10);
+  const chapterNumber = parseInt((params?.chapterNumber as string | undefined) ?? '0', 10);
   const [story, setStory] = useState<Story | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [currentChapter, setCurrentChapter] = useState<Chapter | null>(null);
@@ -67,7 +67,7 @@ export default function ReadChapterPage() {
             story_status: 'published',
             target_audience: data.story.targetAudience,
             graphical_style: data.story.graphicalStyle,
-            chapter_number: chapterNumber
+            chapter_number: chapterNumber,
           });
         } else if (response.status === 404) {
           setError(tErrors('storyNotFoundGeneric'));
@@ -127,10 +127,7 @@ export default function ReadChapterPage() {
           <div className="text-6xl mb-4">📚</div>
           <h1 className="text-3xl font-bold mb-4">{tErrors('oops')}</h1>
           <p className="text-lg mb-6">{error}</p>
-          <button
-            onClick={() => router.back()}
-            className="btn btn-primary"
-          >
+          <button onClick={() => router.back()} className="btn btn-primary">
             {tActions('goBack')}
           </button>
         </div>
@@ -162,43 +159,28 @@ export default function ReadChapterPage() {
         {/* Action Bar */}
         <div className="bg-base-200 border-b border-base-300 p-4 print:hidden">
           <div className="max-w-6xl mx-auto flex items-center justify-between">
-            <button
-              onClick={navigateToMyStories}
-              className="btn btn-ghost btn-sm"
-            >
+            <button onClick={navigateToMyStories} className="btn btn-ghost btn-sm">
               <FiArrowLeft className="w-4 h-4 mr-2" />
               <span className="hidden sm:inline">{tActions('backToMyStories')}</span>
             </button>
-            
+
             <div className="flex items-center gap-2">
-              <button
-                onClick={navigateToListen}
-                className="btn btn-ghost btn-sm"
-              >
+              <button onClick={navigateToListen} className="btn btn-ghost btn-sm">
                 <FiVolume2 className="w-4 h-4" />
                 <span className="hidden sm:inline sm:ml-2">{tActions('listen')}</span>
               </button>
-              
-              <button
-                onClick={navigateToEdit}
-                className="btn btn-ghost btn-sm"
-              >
+
+              <button onClick={navigateToEdit} className="btn btn-ghost btn-sm">
                 <FiEdit3 className="w-4 h-4" />
                 <span className="hidden sm:inline sm:ml-2">{tActions('edit')}</span>
               </button>
-              
-              <button
-                onClick={handlePrint}
-                className="btn btn-ghost btn-sm"
-              >
+
+              <button onClick={handlePrint} className="btn btn-ghost btn-sm">
                 <FiPrinter className="w-4 h-4" />
                 <span className="hidden sm:inline sm:ml-2">{tActions('print')}</span>
               </button>
-              
-              <button
-                onClick={handleShare}
-                className="btn btn-ghost btn-sm"
-              >
+
+              <button onClick={handleShare} className="btn btn-ghost btn-sm">
                 <FiShare2 className="w-4 h-4" />
                 <span className="hidden sm:inline sm:ml-2">{tActions('share')}</span>
               </button>
@@ -234,10 +216,7 @@ export default function ReadChapterPage() {
             <div className="text-6xl mb-4">🔒</div>
             <h1 className="text-3xl font-bold mb-4">{tErrors('authRequired')}</h1>
             <p className="text-lg mb-6">{tErrors('pleaseSignIn')}</p>
-            <button
-              onClick={() => router.push(`/${locale}/sign-in`)}
-              className="btn btn-primary"
-            >
+            <button onClick={() => router.push(`/${locale}/sign-in`)} className="btn btn-primary">
               {tActions('signIn')}
             </button>
           </div>

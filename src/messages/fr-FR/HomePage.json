@@ -24,12 +24,7 @@
       "Fiction",
       "Mythe"
     ],
-    "fallbackWords": [
-      "Aventure",
-      "Histoire d'amour",
-      "Mystère",
-      "Conte de fées"
-    ],
+    "fallbackWords": ["Aventure", "Histoire d'amour", "Mystère", "Conte de fées"],
     "altTexts": {
       "kidsBook": "Livre pour enfants",
       "groupsYearbooks": "Groupes et annuaires",

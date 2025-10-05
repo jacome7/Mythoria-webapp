@@ -125,9 +125,7 @@ export default function MyStoriesTable() {
             <h2 className="text-2xl font-semibold text-base-content">
               {tMyStoriesPage('noStories.title')}
             </h2>
-            <p className="text-base-content/70">
-              {tMyStoriesPage('noStories.subtitle')}
-            </p>
+            <p className="text-base-content/70">{tMyStoriesPage('noStories.subtitle')}</p>
             <Link href="/tell-your-story/step-1" className="btn btn-primary btn-lg">
               {tMyStoriesPage('noStories.action')}
             </Link>

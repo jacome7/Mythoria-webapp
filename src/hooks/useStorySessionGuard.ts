@@ -8,9 +8,7 @@ interface Options {
   enabled?: boolean;
 }
 
-export function useStorySessionGuard(
-  options: Options = {},
-): string | null {
+export function useStorySessionGuard(options: Options = {}): string | null {
   const { enabled = true } = options;
   const router = useRouter();
   const [storyId, setStoryId] = useState<string | null>(null);

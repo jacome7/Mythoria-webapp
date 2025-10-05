@@ -40,25 +40,25 @@ interface AITextStoryEditorProps {
 
 type EditScope = 'chapter' | 'story';
 
-export default function AITextStoryEditor({ 
-  isOpen, 
-  onClose, 
+export default function AITextStoryEditor({
+  isOpen,
+  onClose,
   story,
   chapters,
   currentChapter,
   onEditSuccess,
   onOptimisticUpdate, // eslint-disable-line @typescript-eslint/no-unused-vars
-  onRevertUpdate // eslint-disable-line @typescript-eslint/no-unused-vars
+  onRevertUpdate, // eslint-disable-line @typescript-eslint/no-unused-vars
 }: AITextStoryEditorProps) {
   const tAITextStoryEditor = useTranslations('AITextStoryEditor');
   const [editScope, setEditScope] = useState<EditScope>(currentChapter ? 'chapter' : 'story');
   const [selectedChapter, setSelectedChapter] = useState<number | null>(
-    currentChapter ? currentChapter.chapterNumber : null
+    currentChapter ? currentChapter.chapterNumber : null,
   );
   const [userRequest, setUserRequest] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Credit confirmation state
   const [showCreditConfirmation, setShowCreditConfirmation] = useState(false);
   const [creditInfo, setCreditInfo] = useState<{
@@ -84,51 +84,56 @@ export default function AITextStoryEditor({
   const checkEditCredits = useCallback(async () => {
     try {
       console.log('🔍 Checking edit credits for storyId:', story.storyId, 'scope:', editScope);
-      
+
       // Use different endpoints based on edit scope
-      const endpoint = editScope === 'story' 
-        ? '/api/ai-edit/check-full-story-credits'
-        : '/api/ai-edit/check-credits';
-      
-      const requestBody = editScope === 'story'
-        ? { storyId: story.storyId }
-        : { action: 'textEdit', storyId: story.storyId };
-      
+      const endpoint =
+        editScope === 'story'
+          ? '/api/ai-edit/check-full-story-credits'
+          : '/api/ai-edit/check-credits';
+
+      const requestBody =
+        editScope === 'story'
+          ? { storyId: story.storyId }
+          : { action: 'textEdit', storyId: story.storyId };
+
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
       });
-      
+
       console.log('📊 Credit check response status:', response.status);
-      
+
       if (response.ok) {
         const data = await response.json();
         console.log('✅ Credit check successful:', data);
-        
+
         // Normalize the response format
-        const normalizedData = editScope === 'story' ? {
-          canEdit: data.canEdit,
-          requiredCredits: data.totalCredits,
-          currentBalance: data.currentBalance,
-          editCount: 0, // Not relevant for full story
-          nextThreshold: 0, // Not relevant for full story
-          isFree: data.totalCredits === 0,
-          chapterCount: data.chapterCount,
-          totalCredits: data.totalCredits,
-          freeEdits: data.freeEdits,
-          paidEdits: data.paidEdits,
-          message: data.message
-        } : {
-          canEdit: data.canEdit,
-          requiredCredits: data.requiredCredits,
-          currentBalance: data.currentBalance,
-          editCount: data.editCount,
-          nextThreshold: data.nextThreshold,
-          isFree: data.isFree,
-          message: data.message
-        };
-        
+        const normalizedData =
+          editScope === 'story'
+            ? {
+                canEdit: data.canEdit,
+                requiredCredits: data.totalCredits,
+                currentBalance: data.currentBalance,
+                editCount: 0, // Not relevant for full story
+                nextThreshold: 0, // Not relevant for full story
+                isFree: data.totalCredits === 0,
+                chapterCount: data.chapterCount,
+                totalCredits: data.totalCredits,
+                freeEdits: data.freeEdits,
+                paidEdits: data.paidEdits,
+                message: data.message,
+              }
+            : {
+                canEdit: data.canEdit,
+                requiredCredits: data.requiredCredits,
+                currentBalance: data.currentBalance,
+                editCount: data.editCount,
+                nextThreshold: data.nextThreshold,
+                isFree: data.isFree,
+                message: data.message,
+              };
+
         setCreditInfo(normalizedData);
         return normalizedData;
       } else {
@@ -194,7 +199,7 @@ export default function AITextStoryEditor({
       } = {
         storyId: story.storyId,
         userRequest: userRequest.trim(),
-        scope: editScope
+        scope: editScope,
       };
 
       // Add chapter number only if editing a specific chapter
@@ -214,7 +219,6 @@ export default function AITextStoryEditor({
       } else {
         throw new Error('Failed to create text edit job');
       }
-
     } catch (error) {
       console.error('Error creating text edit job:', error);
       setError(error instanceof Error ? error.message : tAITextStoryEditor('errors.failedToEdit'));
@@ -222,19 +226,19 @@ export default function AITextStoryEditor({
     }
   };
 
-  const handleJobComplete = (result: { 
-    updatedChapters?: unknown[]; 
-    totalChapters?: number; 
-    successfulEdits?: number; 
-    failedEdits?: number; 
-    tokensUsed?: number; 
-    timestamp?: string; 
-    [key: string]: unknown; 
+  const handleJobComplete = (result: {
+    updatedChapters?: unknown[];
+    totalChapters?: number;
+    successfulEdits?: number;
+    failedEdits?: number;
+    tokensUsed?: number;
+    timestamp?: string;
+    [key: string]: unknown;
   }) => {
     console.log('✅ Text edit job completed:', result);
     setShowJobProgress(false);
     setCurrentJobId(null);
-    
+
     // Handle different response types based on edit scope
     if (editScope === 'story') {
       // Full story edit - show results and redirect
@@ -246,15 +250,15 @@ export default function AITextStoryEditor({
         failedEdits: result.failedEdits || 0,
         tokensUsed: result.tokensUsed || 0,
         timestamp: result.timestamp || new Date().toISOString(),
-        autoSaved: true // Indicate that changes were automatically saved
+        autoSaved: true, // Indicate that changes were automatically saved
       };
-      
+
       onEditSuccess(storyEditData);
     } else {
       // Single chapter edit
       onEditSuccess(result);
     }
-    
+
     onClose();
   };
 
@@ -290,7 +294,7 @@ export default function AITextStoryEditor({
                 {currentChapter
                   ? tAITextStoryEditor('chapterOption', {
                       number: currentChapter.chapterNumber,
-                      title: currentChapter.title
+                      title: currentChapter.title,
                     })
                   : tAITextStoryEditor('fullStoryTitle')}
               </p>
@@ -352,7 +356,7 @@ export default function AITextStoryEditor({
                     <option key={chapter.id} value={chapter.chapterNumber}>
                       {tAITextStoryEditor('chapterOption', {
                         number: chapter.chapterNumber,
-                        title: chapter.title
+                        title: chapter.title,
                       })}
                     </option>
                   ))}
@@ -374,7 +378,9 @@ export default function AITextStoryEditor({
                 maxLength={2000}
               />
               <div className="flex justify-between text-xs text-gray-500">
-                <span>{tAITextStoryEditor('characterCount', { count: userRequest.length, max: 2000 })}</span>
+                <span>
+                  {tAITextStoryEditor('characterCount', { count: userRequest.length, max: 2000 })}
+                </span>
               </div>
             </div>
 
@@ -414,20 +420,20 @@ export default function AITextStoryEditor({
                       {creditInfo.freeEdits && creditInfo.freeEdits > 0 && (
                         <p className="text-blue-600">
                           {tAITextStoryEditor('costEstimation.freeChapterEdits', {
-                            count: creditInfo.freeEdits
+                            count: creditInfo.freeEdits,
                           })}
                         </p>
                       )}
                       {creditInfo.paidEdits && creditInfo.paidEdits > 0 && (
                         <p className="text-blue-600">
                           {tAITextStoryEditor('costEstimation.paidChapterEdits', {
-                            count: creditInfo.paidEdits
+                            count: creditInfo.paidEdits,
                           })}
                         </p>
                       )}
                       <p className="text-blue-600">
                         {tAITextStoryEditor('costEstimation.currentBalance', {
-                          credits: creditInfo.currentBalance
+                          credits: creditInfo.currentBalance,
                         })}
                       </p>
                     </>
@@ -439,26 +445,26 @@ export default function AITextStoryEditor({
                           ? tAITextStoryEditor('costEstimation.freeEdit')
                           : tAITextStoryEditor('costEstimation.costEdit', {
                               credits: creditInfo.requiredCredits,
-                              plural: creditInfo.requiredCredits === 1 ? '' : 's'
+                              plural: creditInfo.requiredCredits === 1 ? '' : 's',
                             })}
                       </p>
                       <p className="text-blue-600">
                         {tAITextStoryEditor('costEstimation.currentBalance', {
-                          credits: creditInfo.currentBalance
+                          credits: creditInfo.currentBalance,
                         })}
                       </p>
                       {!creditInfo.isFree && (
                         <p className="text-blue-600">
                           {tAITextStoryEditor('costEstimation.editCount', {
                             count: creditInfo.editCount,
-                            threshold: creditInfo.nextThreshold
+                            threshold: creditInfo.nextThreshold,
                           })}
                         </p>
                       )}
                       {creditInfo.message && (
                         <p className="text-blue-600 mt-1">
                           {tAITextStoryEditor('costEstimation.message', {
-                            message: creditInfo.message
+                            message: creditInfo.message,
                           })}
                         </p>
                       )}

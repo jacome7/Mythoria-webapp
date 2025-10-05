@@ -28,12 +28,8 @@ export default function ClientAuthWrapper({ children, signedOutFallback }: Clien
 
   return (
     <>
-      <SignedOut>
-        {signedOutFallback}
-      </SignedOut>
-      <SignedIn>
-        {children}
-      </SignedIn>
+      <SignedOut>{signedOutFallback}</SignedOut>
+      <SignedIn>{children}</SignedIn>
     </>
   );
 }

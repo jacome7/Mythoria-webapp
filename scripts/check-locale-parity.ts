@@ -8,14 +8,16 @@
     - Files present in one locale but missing in another
   Exits with non‑zero code if mismatches found (good for CI).
 */
-import {readdirSync, readFileSync, statSync} from 'fs';
-import {join, relative} from 'path';
+import { readdirSync, readFileSync, statSync } from 'fs';
+import { join, relative } from 'path';
 
 const MESSAGES_DIR = join(process.cwd(), 'src', 'messages');
 const SOURCE_LOCALE = 'en-US';
 
 // Generic object tree where leaves can be primitive or nested objects
-interface Tree { [key: string]: unknown }
+interface Tree {
+  [key: string]: unknown;
+}
 
 function flatten(obj: Tree, prefix = ''): Record<string, string> {
   const out: Record<string, string> = {};
@@ -36,7 +38,9 @@ function loadJson(path: string) {
 
 function collectLocaleFiles(locale: string): string[] {
   const dir = join(MESSAGES_DIR, locale);
-  return readdirSync(dir).filter(f => f.endsWith('.json')).map(f => join(dir, f));
+  return readdirSync(dir)
+    .filter((f) => f.endsWith('.json'))
+    .map((f) => join(dir, f));
 }
 
 function buildLocaleMap(locale: string) {
@@ -53,7 +57,9 @@ function buildLocaleMap(locale: string) {
   return map;
 }
 
-const locales = readdirSync(MESSAGES_DIR).filter(d => statSync(join(MESSAGES_DIR, d)).isDirectory());
+const locales = readdirSync(MESSAGES_DIR).filter((d) =>
+  statSync(join(MESSAGES_DIR, d)).isDirectory(),
+);
 if (!locales.includes(SOURCE_LOCALE)) {
   console.error(`Source locale ${SOURCE_LOCALE} not found in ${MESSAGES_DIR}`);
   process.exit(1);
@@ -68,8 +74,8 @@ for (const locale of locales) {
   // File level parity
   const sourceFiles = Object.keys(sourceMap).sort();
   const targetFiles = Object.keys(targetMap).sort();
-  const missingFiles = sourceFiles.filter(f => !targetFiles.includes(f));
-  const extraFiles = targetFiles.filter(f => !sourceFiles.includes(f));
+  const missingFiles = sourceFiles.filter((f) => !targetFiles.includes(f));
+  const extraFiles = targetFiles.filter((f) => !sourceFiles.includes(f));
 
   if (missingFiles.length || extraFiles.length) {
     hasDiff = true;
@@ -83,13 +89,13 @@ for (const locale of locales) {
     if (!targetMap[file]) continue; // already reported missing file
     const sourceKeys = Object.keys(sourceMap[file]);
     const targetKeys = Object.keys(targetMap[file]);
-    const missingKeys = sourceKeys.filter(k => !targetKeys.includes(k));
-    const extraKeys = targetKeys.filter(k => !sourceKeys.includes(k));
+    const missingKeys = sourceKeys.filter((k) => !targetKeys.includes(k));
+    const extraKeys = targetKeys.filter((k) => !sourceKeys.includes(k));
     if (missingKeys.length || extraKeys.length) {
       hasDiff = true;
       console.log(`\n[Key Parity] ${locale} -> ${file}`);
-      if (missingKeys.length) console.log('  Missing keys:', missingKeys.slice(0,50).join(', '));
-      if (extraKeys.length) console.log('  Extra keys:', extraKeys.slice(0,50).join(', '));
+      if (missingKeys.length) console.log('  Missing keys:', missingKeys.slice(0, 50).join(', '));
+      if (extraKeys.length) console.log('  Extra keys:', extraKeys.slice(0, 50).join(', '));
     }
   }
 }

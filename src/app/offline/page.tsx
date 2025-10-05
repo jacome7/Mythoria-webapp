@@ -78,7 +78,7 @@ async function loadFallbackMessages(): Promise<Messages> {
 function getLocaleFromCookie(cookieHeader: string | null): Locale | undefined {
   if (!cookieHeader) return undefined;
   const cookies = cookieHeader.split(';');
-  const localeCookie = cookies.find(c => c.trim().startsWith('NEXT_LOCALE='));
+  const localeCookie = cookies.find((c) => c.trim().startsWith('NEXT_LOCALE='));
   if (localeCookie) {
     const locale = localeCookie.split('=')[1];
     if (isValidLocale(locale)) return locale;
@@ -89,11 +89,13 @@ function getLocaleFromCookie(cookieHeader: string | null): Locale | undefined {
 function negotiateLocale(acceptLanguage: string | null, cookieLocale?: Locale): Locale {
   if (cookieLocale) return cookieLocale;
   if (!acceptLanguage) return routing.defaultLocale;
-  const parts = acceptLanguage.split(',').map(s => s.trim());
+  const parts = acceptLanguage.split(',').map((s) => s.trim());
   for (const part of parts) {
     const [tag] = part.split(';');
     if (isValidLocale(tag)) return tag as Locale;
-    const match = routing.locales.find(l => l.toLowerCase().startsWith(tag.toLowerCase() + '-')) as Locale | undefined;
+    const match = routing.locales.find((l) =>
+      l.toLowerCase().startsWith(tag.toLowerCase() + '-'),
+    ) as Locale | undefined;
     if (match) return match;
   }
   return routing.defaultLocale;

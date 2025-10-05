@@ -33,9 +33,10 @@ describe('pricingService.createPricing', () => {
     const values = jest.fn().mockReturnValue({ returning });
     (db.insert as jest.Mock).mockReturnValue({ values });
 
-    const result = await pricingService.createPricing(
-      { serviceCode: 'S', credits: 5 } as NewPricing,
-    );
+    const result = await pricingService.createPricing({
+      serviceCode: 'S',
+      credits: 5,
+    } as NewPricing);
     expect(result).toEqual({ id: '1', serviceCode: 'S', credits: 5 });
     expect(values).toHaveBeenCalledWith({ serviceCode: 'S', credits: 5 });
   });
@@ -58,9 +59,7 @@ describe('pricingService.deactivatePricing', () => {
   it('delegates to updatePricing', async () => {
     const updateSpy = jest
       .spyOn(pricingService, 'updatePricing')
-      .mockResolvedValue(
-        {} as unknown as Awaited<ReturnType<typeof pricingService.updatePricing>>,
-      );
+      .mockResolvedValue({} as unknown as Awaited<ReturnType<typeof pricingService.updatePricing>>);
     await pricingService.deactivatePricing('1');
     expect(updateSpy).toHaveBeenCalledWith('1', { isActive: false });
   });
