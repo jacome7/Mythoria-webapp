@@ -9,6 +9,7 @@ import { SignedOut } from '@clerk/nextjs';
 import StoryCounter from '@/components/StoryCounter';
 import QuoteOfTheDay from '@/components/QuoteOfTheDay';
 import AnimatedLogo from '@/components/AnimatedLogo';
+import WhyChooseMythoria from '@/components/WhyChooseMythoria';
 
 export default function Home() {
   const tHomePage = useTranslations('HomePage');
@@ -253,8 +254,13 @@ export default function Home() {
         </section>
 
         <div className="divider my-16"></div>
+
+        {/* Why Choose Mythoria Section */}
+        <WhyChooseMythoria />
+
+        <div className="divider my-16"></div>
         {/* How It Works Section */}
-        <section className="my-16">
+        <section id="how-it-works" className="my-16">
           <h2 className="text-3xl font-bold text-center mb-10">{tHomePage('howItWorks.title')}</h2>
           <ul className="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical">
             <li>

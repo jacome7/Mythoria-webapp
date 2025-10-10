@@ -99,6 +99,57 @@
       "subtitle": "Sign up today and get 5 free credits to create your first personalized story!",
       "button": "Try It For Free"
     },
+    "whyChooseMythoria": {
+      "title": "Why Choose Mythoria?",
+      "subtitle": "Creating your own story should feel like magic, not homework. Here's what makes Mythoria different.",
+      "features": {
+        "youOwnTheStory": {
+          "title": "You Own the Story",
+          "description": "Keep all rights to your AI-generated book. Print unlimited copies, share as you please, showcase publicly only if you want.",
+          "details": "Your story, your rules—no hidden licenses, no surprise claims."
+        },
+        "ideaToBookFast": {
+          "title": "From Idea to Book—Fast",
+          "description": "Write, speak, or sketch your idea and watch it transform into a fully illustrated story ready to read, listen, or print.",
+          "details": "Like hitting fast-forward on the creative montage, minus the coffee stains."
+        },
+        "fullStoryEditing": {
+          "title": "Full Story Editing",
+          "description": "Tweak titles, chapters, dialogue, and pacing anytime. Invite AI to punch up scenes or rewind to earlier versions.",
+          "details": "The story stays alive—edit until it feels unmistakably yours."
+        },
+        "multipleArtStyles": {
+          "title": "Multiple Art Styles",
+          "description": "Choose from cartoon, watercolor, digital art, hand-drawn, minimalist, vintage, comic book, anime, and more.",
+          "details": "Match the visuals to your vibe—serious, playful, or somewhere dreamy."
+        },
+        "addYourOwnPhotos": {
+          "title": "Add Your Own Photos",
+          "description": "Drop in family photos, class pictures, or special moments to personalize your tale.",
+          "details": "Turn real memories into illustrated magic."
+        },
+        "privateByDefault": {
+          "title": "Private by Default",
+          "description": "Drafts stay private. Share a link with loved ones when you're ready, or opt in to the public showcase.",
+          "details": "No unwanted spotlights—your story, your timeline."
+        },
+        "madeForEveryAudience": {
+          "title": "Made for Every Audience",
+          "description": "Create for babies, kids, teens, or adults. Tune tone and reading level to fit your reader perfectly.",
+          "details": "One platform, infinite voices."
+        },
+        "gentleCreditSystem": {
+          "title": "Gentle Credit System",
+          "description": "Start with 5 free credits. Top up only when you need extra chapters, illustrations, or prints.",
+          "details": "No subscriptions, no pressure—pay as you dream."
+        },
+        "inspirationOnTap": {
+          "title": "Inspiration on Tap",
+          "description": "Browse featured examples by age, art style, and language to spark your next creation.",
+          "details": "See what's possible, then make it yours."
+        }
+      }
+    },
     "features": {
       "title": "Why choose Mythoria?",
       "feature1": {

@@ -99,6 +99,57 @@
       "subtitle": "Inscrivez-vous aujourd'hui et obtenez 5 crédits gratuits pour créer votre première histoire personnalisée!",
       "button": "Essayez-le gratuitement"
     },
+    "whyChooseMythoria": {
+      "title": "Pourquoi Choisir Mythoria ?",
+      "subtitle": "Créer votre propre histoire devrait ressembler à de la magie, pas à des devoirs. Voici ce qui rend Mythoria différent.",
+      "features": {
+        "youOwnTheStory": {
+          "title": "L'Histoire Vous Appartient",
+          "description": "Conservez tous les droits sur votre livre généré par IA. Imprimez des copies illimitées, partagez comme vous le souhaitez, exposez publiquement seulement si vous le voulez.",
+          "details": "Votre histoire, vos règles—pas de licences cachées, pas de mauvaises surprises."
+        },
+        "ideaToBookFast": {
+          "title": "De l'Idée au Livre—Vite",
+          "description": "Écrivez, parlez ou dessinez votre idée et regardez-la se transformer en une histoire entièrement illustrée, prête à lire, écouter ou imprimer.",
+          "details": "Comme accélérer le montage créatif, sans les taches de café."
+        },
+        "fullStoryEditing": {
+          "title": "Édition Complète de l'Histoire",
+          "description": "Ajustez les titres, chapitres, dialogues et rythme à tout moment. Invitez l'IA à améliorer des scènes ou revenir à des versions antérieures.",
+          "details": "L'histoire reste vivante—éditez jusqu'à ce qu'elle soit indéniablement vôtre."
+        },
+        "multipleArtStyles": {
+          "title": "Multiples Styles Artistiques",
+          "description": "Choisissez parmi dessin animé, aquarelle, art numérique, dessiné à la main, minimaliste, vintage, bande dessinée, anime et bien plus.",
+          "details": "Accordez les visuels à votre ambiance—sérieux, ludique ou quelque part rêveur."
+        },
+        "addYourOwnPhotos": {
+          "title": "Ajoutez Vos Propres Photos",
+          "description": "Insérez des photos de famille, des photos de classe ou des moments spéciaux pour personnaliser votre conte.",
+          "details": "Transformez de vrais souvenirs en magie illustrée."
+        },
+        "privateByDefault": {
+          "title": "Privé par Défaut",
+          "description": "Les brouillons restent privés. Partagez un lien avec vos proches quand vous êtes prêt, ou choisissez l'exposition publique.",
+          "details": "Pas de projecteurs non désirés—votre histoire, votre calendrier."
+        },
+        "madeForEveryAudience": {
+          "title": "Fait pour Tous les Publics",
+          "description": "Créez pour les bébés, enfants, adolescents ou adultes. Ajustez le ton et le niveau de lecture pour correspondre parfaitement à votre lecteur.",
+          "details": "Une plateforme, voix infinies."
+        },
+        "gentleCreditSystem": {
+          "title": "Système de Crédits Doux",
+          "description": "Commencez avec 5 crédits gratuits. Rechargez uniquement lorsque vous avez besoin de chapitres, d'illustrations ou d'impressions supplémentaires.",
+          "details": "Pas d'abonnements, pas de pression—payez au fur et à mesure que vous rêvez."
+        },
+        "inspirationOnTap": {
+          "title": "Inspiration à Portée de Main",
+          "description": "Parcourez des exemples en vedette par âge, style artistique et langue pour déclencher votre prochaine création.",
+          "details": "Voyez ce qui est possible, puis faites-le vôtre."
+        }
+      }
+    },
     "features": {
       "title": "Pourquoi choisir Mythoria?",
       "feature1": {
