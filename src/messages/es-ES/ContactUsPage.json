@@ -7,7 +7,6 @@
     "categories": {
       "featureIdeas": "Ideas de Funciones (Inspíranos como Tolkien)",
       "reportBug": "Reportar un Bug (¡Hasta Sherlock Holmes necesitaba pistas!)",
-      "troubles": "Problemas al Generar una Historia (Cuando los hechizos se tuercen)",
       "delivery": "Envío del Libro Impreso (Nuestras lechuzas quizá necesiten indicaciones)",
       "credits": "Créditos y Pagos (¡Los duendes de Gringotts no perdonan!)",
       "general": "Encantamiento General (Soporte)",
@@ -16,7 +15,6 @@
     "categoriesShort": {
       "featureIdeas": "Ideas de Funciones",
       "reportBug": "Reportar un Bug",
-      "troubles": "Problemas de Generación",
       "delivery": "Envío del Libro",
       "credits": "Créditos y Pagos",
       "businessPartnership": "Colaboración Empresarial",

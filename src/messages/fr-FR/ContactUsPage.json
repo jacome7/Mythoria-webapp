@@ -7,7 +7,6 @@
     "categories": {
       "featureIdeas": "Idées de fonctionnalités (inspirer comme Tolkien)",
       "reportBug": "Signaler un bug (même Sherlock Holmes avait besoin d'indices!)",
-      "troubles": "Troubles de la génération d'histoires (quand les sorts magiques tournent mal)",
       "delivery": "Livraison du livre imprimé (nos hiboux peuvent avoir besoin de directions)",
       "credits": "Crédits et paiements (les gobelins de Gringotts sont stricts!)",
       "general": "Enchantement général (soutien)",
@@ -16,7 +15,6 @@
     "categoriesShort": {
       "featureIdeas": "Idées de fonctionnalités",
       "reportBug": "Signaler un bug",
-      "troubles": "Troubles de la génération d'histoires",
       "delivery": "Livraison du livre imprimé",
       "credits": "Crédits et paiements",
       "businessPartnership": "Partenariat commercial",

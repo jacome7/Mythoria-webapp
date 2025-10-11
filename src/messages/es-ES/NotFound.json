@@ -12,27 +12,5 @@
       "myStories": "Mis historias"
     },
     "quote": "\"No todos los que vagan están perdidos... ¡pero esta página sí!\" – Un hobbit despistado"
-  },
-  "Header": {
-    "navigation": {
-      "homepage": "Página Principal",
-      "getInspired": "Inspírate",
-      "tellYourStory": "Cuenta Tu Historia",
-      "blog": "El Blog",
-      "myStories": "Mis Historias",
-      "pricing": "Precios"
-    },
-    "auth": {
-      "signIn": "Iniciar Sesión"
-    },
-    "logoAlt": "Logotipo de Mythoria"
-  },
-  "Footer": {
-    "aboutFounder": "Me llamo Rodrigo, acabo de cumplir 18 años y me encanta escuchar historias desde pequeño.",
-    "readMyStory": "Lee mi historia",
-    "privacyPolicy": "Privacidad y Cookies",
-    "termsConditions": "Términos y Condiciones",
-    "contactUs": "Contáctanos",
-    "copyright": "Aventuras Contemporâneas, Lda"
   }
 }

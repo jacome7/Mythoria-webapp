@@ -1,67 +1,58 @@
 {
-  "AboutUs": {
-    "hero": {
-      "title": "Mythoria",
-      "subtitle": "Historias cocinadas por un soñador de 18 años… y una legión de Oompa-Loompas.",
-      "cta": "Empieza tu propia historia"
+  "hero": {
+    "title": "¡Hola! Qué bien que estés aquí.",
+    "intro": "Mythoria nació de un sentimiento muy sencillo: la pasión por las historias. De esas que nos contaban al dormirnos y de esas que, ya de adultos, nos hacen soñar despiertos. Creemos, desde el fondo del corazón, que todos tenemos una historia especial dentro de nosotros, esperando una oportunidad para brillar.",
+    "tagline": "Nuestro único objetivo es darte esa oportunidad."
+  },
+  "mission": {
+    "title": "Nuestra Misión",
+    "paragraph1": "Nuestro sueño es ver los ojos de un niño brillar al leer un libro que ayudó a crear. Es ver a un adulto sonreír, redescubriendo esa chispa de imaginación que a veces la rutina nos hace olvidar.",
+    "paragraph2": "Creamos Mythoria para ser ese puente. Un puente seguro y mágico entre una idea tuya — por pequeña que sea, como un garabato o un recuerdo — y un libro ilustrado, real y palpable, que puedas guardar para siempre. Queremos que crear un libro sea un acto de alegría, no un desafío."
+  },
+  "team": {
+    "title": "Las Personas Detrás del Sueño",
+    "subtitle": "Somos un equipo pequeño, pero con un corazón enorme dedicado a este proyecto:",
+    "rodrigo": {
+      "title": "Rodrigo Jácome - El joven Soñador",
+      "description": "Rodrigo es el alma de Mythoria. Es un joven apasionado por dos cosas que parecen distantes, pero que él unió: el calor de los libros y la magia de la Inteligencia Artificial. Es él quien diseña cada detalle de tu experiencia como cliente, quien responde a tus dudas y quien trabaja todos los días para que Mythoria sea tan fácil y bonita de usar como sea posible. Este proyecto es su sueño hecho realidad.",
+      "ariaLabel": "Ver foto alternativa de Rodrigo",
+      "altSmiling": "Rodrigo Jácome sonriendo"
     },
-    "founder": {
-      "title": "El Joven Fundador",
-      "description": "Conoce a Rodrigo, quien convirtió su fascinación infantil por los relatos en una fábrica de aventuras. Con 18 años, combina una imaginación desbordante con una pizca de inteligencia artificial para crear historias personalizadas para cada niño o adulto.",
-      "ageLabel": "18 años",
-      "ageHover": "subiendo de nivel",
-      "imageAlt": "Rodrigo - Fundador de Mythoria",
-      "badges": {
-        "founder": "Fundador",
-        "aiEnthusiast": "Apasionado de la IA",
-        "storyteller": "Narrador"
-      }
+    "andre": {
+      "title": "André Silva - El Mentor",
+      "description": "Con su enorme experiencia en crear productos y empresas, es él quien nos aconseja y nos ayuda a garantizar que este sueño nuestro tiene piernas para caminar y crecer de forma saludable. Es la voz de la calma y la estrategia que nos permite seguir soñando, pero con los pies bien puestos en la tierra.",
+      "ariaLabel": "Ver foto alternativa de André",
+      "altSmiling": "André Silva sonriendo"
     },
-    "aiTeam": {
-      "title": "Conoce a los Oompa-Loompas 2.0",
-      "subtitle": "A diferencia de la fábrica de Wonka, nuestros Oompa-Loompas son de silicio puro — éticos, incansables y escalables sin límite.",
-      "quillBot": {
-        "name": "Quill-Bot",
-        "description": "Escribe giros de guion más rápido de lo que tardas en decir expelliarmus"
-      },
-      "brushBot": {
-        "name": "Brush-Bot",
-        "description": "Pinta mundos en estilo Pixar, manga o acuarela con un clic"
-      },
-      "voiceBot": {
-        "name": "Voice-Bot",
-        "description": "Da a cada héroe una voz única — sin billete dorado"
-      }
-    },
-    "progress": {
-      "title": "Laboratorio en Proceso",
-      "milestone1": "Libro de hechizos beta – las primeras 100 familias ya están forjando relatos",
-      "milestone2": "Caldero de comentarios – aquí cae cada sugerencia",
-      "milestone3": "Portal de lanzamiento global – previsto para septiembre de 2025",
-      "feedbackButton": "🪄 Sugiere un hechizo",
-      "milestoneLabels": {
-        "betaSpellbook": "Libro de Hechizos Beta",
-        "feedbackCauldron": "Caldero de Comentarios",
-        "globalPortal": "Portal Global"
-      }
-    },
-    "news": {
-      "title": "Noticias del Reino",
-      "breaking": "Última Pluma 🗞️ — ¡Rodrigo gana el Premio Joven Innovador InovaGaia 2025 por Mythoria!"
-    },
-    "investors": {
-      "title": "Inversores: Únete a la Aventura",
-      "description": "A los dragones les encanta el oro; a nosotros, los socios. Si también ves el tesoro, abre el pergamino."
+    "oumpaLoompas": {
+      "title": "Nuestros Oompa-Loompas",
+      "description": "Tenemos un equipo de ayudantes incansables que trabajan entre bastidores: nuestros Oompa-Loompas de IA. Ellos se encargan de todas las tareas técnicas y complejas — desde ayudar a generar las imágenes hasta garantizar que el sitio funciona perfectamente. Son nuestro equipo de apoyo, que nos libera tiempo para dedicarnos a lo que más importa: nuestras historias y las personas que las crean, como tú.",
+      "ariaLabel": "Ver foto alternativa de los Oompa-Loompas",
+      "altSmiling": "Oompa-Loompas sonriendo"
     }
   },
-  "AboutUsModal": {
-    "feedback": {
-      "title": "🪄 Lanza tu Hechizo de Feedback",
-      "placeholder": "Comparte tus sugerencias mágicas...",
-      "submit": "Enviar Hechizo ✨"
-    },
-    "investors": {
-      "button": "Abrir el Pergamino 📜"
-    }
+  "commitment": {
+    "title": "Nuestro Compromiso",
+    "paragraph1": "Hablamos mucho de tecnología, digitalización e IA, pero ¿sabes por qué? Nuestro gran desafío es hacer que la tecnología sea tan perfecta que se vuelva invisible para ti.",
+    "paragraph2": "Queremos automatizar todo lo que es complicado para que tu única preocupación sea imaginar. Nuestro compromiso es que el proceso de crear tu libro sea sencillo, rápido y, sobre todo, mágico."
+  },
+  "ourStory": {
+    "title": "Nuestra Historia",
+    "paragraph1": "Creemos tanto en el poder de una buena historia que, como no podía ser de otra manera, decidimos transformar el nacimiento de Mythoria en nuestra propia aventura.",
+    "paragraph2Start": "Escribimos un pequeño libro que cuenta este viaje nuestro. En él, mezclamos los recuerdos y los hechos reales — como uno de nuestros primeros momentos de gran alegría, cuando recibimos el Premio al Mejor Proyecto Escolar en el Boostcamp de",
+    "paragraph2End": "— con todo el recorrido y los desafíos que sentimos hasta lanzar la primera versión de nuestro sueño.",
+    "paragraph3": "No es una lectura obligatoria, claro, sino una invitación. Si tienes curiosidad y un poco de tiempo, nos encantaría que la leyeras. Puedes encontrar el libro completo aquí:",
+    "button": "Leer Nuestra Historia",
+    "inovaGaiaText": "InovaGaia"
+  },
+  "transparency": {
+    "title": "Una Nota de Transparencia",
+    "textStart": "Para que sepas que este proyecto nuestro es serio y está construido para durar, Mythoria nació en el seno de nuestra empresa familiar, la",
+    "textEnd": ", registrada en Portugal con el NIPC 515 716 979. Tenemos nuestra sede en Vila Nova de Gaia, Portugal, desde el 31 de octubre de 2019 con un capital social de 10.000,00 €.",
+    "companyName": "Aventuras Contemporâneas, Lda."
+  },
+  "closing": {
+    "title": "Gracias por haberte tomado un poco de tu tiempo para conocernos.",
+    "subtitle": "Ahora, estamos ansiosos por conocer tu historia."
   }
 }

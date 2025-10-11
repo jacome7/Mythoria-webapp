@@ -7,9 +7,7 @@ const bucketName = process.env.STORAGE_BUCKET_NAME || 'mythoria-generated-storie
 /**
  * Get all image files from Google Cloud Storage for a specific story
  */
-export async function getStoryImagesFromStorage(
-  storyId: string,
-): Promise<
+export async function getStoryImagesFromStorage(storyId: string): Promise<
   Record<
     string,
     {

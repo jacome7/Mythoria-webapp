@@ -62,9 +62,15 @@ const Footer = () => {
             </div>
             {/* Links */}
             <div className="flex flex-col items-center md:items-end gap-2">
-              <Link href="/contactUs" className="link link-hover text-sm underline text-primary">
-                {tCommonFooter('contactUs')}
-              </Link>
+              <div className="flex items-center gap-2 text-sm">
+                <Link href="/aboutUs" className="link link-hover underline text-primary">
+                  {tCommonFooter('aboutUs')}
+                </Link>
+                <span>|</span>
+                <Link href="/contactUs" className="link link-hover underline text-primary">
+                  {tCommonFooter('contactUs')}
+                </Link>
+              </div>
             </div>
           </div>
         </div>

@@ -93,6 +93,7 @@ npm run db:studio     # Launch Drizzle Studio inspector
 ```
 
 ### Development Server
+
 ```bash
 npm run dev           # Start Turbopack dev server (http://localhost:3000)
 ```

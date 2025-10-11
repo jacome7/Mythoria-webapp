@@ -7,7 +7,6 @@
     "categories": {
       "featureIdeas": "Ideias de Funcionalidades (Inspire-nos como Tolkien)",
       "reportBug": "Reportar um Erro (Até Sherlock Holmes precisava de pistas!)",
-      "troubles": "Problemas na Geração de Histórias (Quando os feitiços falham)",
       "delivery": "Entrega de Livro Impresso (As nossas corujas podem precisar de direções)",
       "credits": "Créditos & Pagamentos (Os duendes de Gringotes são exigentes!)",
       "general": "Encantamento Geral (Suporte)",
@@ -16,7 +15,6 @@
     "categoriesShort": {
       "featureIdeas": "Ideias de Funcionalidades",
       "reportBug": "Reportar um Erro",
-      "troubles": "Problemas na Geração de Histórias",
       "delivery": "Entrega de Livro Impresso",
       "credits": "Créditos & Pagamentos",
       "businessPartnership": "Parceria de Negócios",

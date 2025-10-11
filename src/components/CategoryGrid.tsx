@@ -1,15 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import {
-  FaBug,
-  FaCogs,
-  FaTruck,
-  FaCoins,
-  FaComments,
-  FaLightbulb,
-  FaHandshake,
-} from 'react-icons/fa';
+import { FaBug, FaTruck, FaCoins, FaComments, FaLightbulb, FaHandshake } from 'react-icons/fa';
 
 interface CategoryGridProps {
   onCategoryClick: (category: string) => void;
@@ -30,12 +22,6 @@ const CategoryGrid = ({ onCategoryClick }: CategoryGridProps) => {
       icon: FaBug,
       color: 'text-error',
       label: tContactUsPage('categories.reportBug'),
-    },
-    {
-      key: 'technical_issues',
-      icon: FaCogs,
-      color: 'text-info',
-      label: tContactUsPage('categories.troubles'),
     },
     {
       key: 'delivery',

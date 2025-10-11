@@ -432,6 +432,25 @@ export default function Home() {
             </div>
           </section>
         </SignedOut>
+
+        {/* ProductHunt Badge Section */}
+        <section className="my-16 flex justify-center">
+          <a
+            href="https://www.producthunt.com/products/mythoria?utm_source=badge-follow&utm_medium=badge&utm_source=badge-mythoria"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://api.producthunt.com/widgets/embed-image/v1/follow.svg?product_id=1103104&theme=neutral"
+              alt="Mythoria - Turn real memories into illustrated books with AI | Product Hunt"
+              style={{ width: '250px', height: '54px' }}
+              width={250}
+              height={54}
+            />
+          </a>
+        </section>
       </div>
     </div>
   );

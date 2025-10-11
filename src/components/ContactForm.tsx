@@ -204,7 +204,6 @@ function ContactFormContent({ className = '' }: ContactFormProps) {
               <option value="">{tContactForm('form.selectCategory')}</option>{' '}
               <option value="feature_ideas">{tContactForm('categoriesShort.featureIdeas')}</option>
               <option value="bug_report">{tContactForm('categoriesShort.reportBug')}</option>
-              <option value="technical_issues">{tContactForm('categoriesShort.troubles')}</option>
               <option value="delivery">{tContactForm('categoriesShort.delivery')}</option>
               <option value="credits">{tContactForm('categoriesShort.credits')}</option>
               <option value="business_partnership">

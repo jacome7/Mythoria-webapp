@@ -12,27 +12,5 @@
       "myStories": "As Minhas Histórias"
     },
     "quote": "\"Nem todos os que vagueiam estão perdidos... mas esta página definitivamente está!\" - Um Hobbit confuso"
-  },
-  "Header": {
-    "navigation": {
-      "homepage": "Página Inicial",
-      "getInspired": "Inspire-se",
-      "tellYourStory": "Conte a Sua História",
-      "blog": "O Blog",
-      "myStories": "As Minhas Histórias",
-      "pricing": "Preços"
-    },
-    "auth": {
-      "signIn": "Entrar"
-    },
-    "logoAlt": "Logótipo da Mythoria"
-  },
-  "Footer": {
-    "aboutFounder": "Chamo-me Rodrigo, acabei de fazer 18 anos e adoro ouvir histórias desde pequeno.",
-    "readMyStory": "Leia a minha história",
-    "privacyPolicy": "Privacidade e Cookies",
-    "termsConditions": "Termos e Condições",
-    "contactUs": "Contacte-nos",
-    "copyright": "Aventuras Contemporâneas, Lda"
   }
 }
