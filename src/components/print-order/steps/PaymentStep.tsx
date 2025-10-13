@@ -72,9 +72,7 @@ export default function PaymentStep({
       // Filter for print-related services that are active
       const printServices = data.services.filter(
         (service: ServiceResponse) =>
-          ['printedSoftCover', 'printedHardcover', 'printedPremium'].includes(
-            service.serviceCode,
-          ) && service.isActive,
+          service.serviceCode === 'printedSoftCover' && service.isActive,
       );
 
       // Get extra chapter cost
@@ -95,10 +93,6 @@ export default function PaymentStep({
             title = tPrintOrder('payment.softcoverTitle');
             description = tPrintOrder('payment.softcoverDescription');
             break;
-          case 'printedHardcover':
-            title = tPrintOrder('payment.hardcoverTitle');
-            description = tPrintOrder('payment.hardcoverDescription');
-            break;
           default:
             title = service.name;
             description = service.name;
@@ -114,11 +108,16 @@ export default function PaymentStep({
       });
 
       setPrintingOptions(options);
+
+      // Auto-select the first option (softcover) if no option is selected yet
+      if (options.length > 0 && !selectedPrintingOption) {
+        onSelectPrintingOption(options[0]);
+      }
     } catch (error) {
       console.error('Error fetching printing options:', error);
       setError(tPrintOrder('errors.loadPricingFailed'));
     }
-  }, [tPrintOrder]);
+  }, [tPrintOrder, selectedPrintingOption, onSelectPrintingOption]);
 
   const fetchUserCredits = useCallback(async () => {
     try {
@@ -143,7 +142,8 @@ export default function PaymentStep({
     fetchData();
   }, [fetchPrintingOptions, fetchUserCredits]);
   const calculateExtraChapters = () => {
-    return Math.max(0, story.chapterCount - 2);
+    // Base price includes first 4 chapters, charge for additional chapters only
+    return Math.max(0, story.chapterCount - 4);
   };
 
   const calculateTotalCost = () => {

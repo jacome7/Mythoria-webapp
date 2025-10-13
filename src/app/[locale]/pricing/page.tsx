@@ -215,18 +215,6 @@ export default function PricingPage() {
                         <span className="font-semibold">{getServiceCost('printedSoftCover')}</span>
                       </li>
                       <li className="flex items-center justify-between">
-                        <span className="flex items-center">
-                          * {tPricingPage('serviceCosts.services.hardCover')}
-                          <button
-                            onClick={() => handleInfoClick('printedBooks')}
-                            className="ml-2 text-info hover:text-info-focus"
-                          >
-                            <FaInfoCircle className="text-sm" />
-                          </button>
-                        </span>
-                        <span className="font-semibold">{getServiceCost('printedHardcover')}</span>
-                      </li>
-                      <li className="flex items-center justify-between">
                         <span>* {tPricingPage('serviceCosts.services.extraChapterCost')}</span>
                         <span className="font-semibold">{getServiceCost('extraChapterCost')}</span>
                       </li>

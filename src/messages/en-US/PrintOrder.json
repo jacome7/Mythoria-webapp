@@ -28,18 +28,13 @@
       "addNewAddress": "Add New Address"
     },
     "formats": {
-      "paperback": "Paperback",
-      "hardcover": "Hardcover"
+      "paperback": "Paperback"
     },
     "payment": {
       "selectBookType": "Select Your Book Type",
       "chooseQuality": "Choose the printing quality that suits you best:",
       "softcoverTitle": "📖 Softcover",
       "softcoverDescription": "Flexible paperback with a glossy finish. Ideal for daily reading and handling.",
-      "hardcoverTitle": "📚 Hardcover",
-      "hardcoverDescription": "Rigid cover, sturdy binding. Perfect as a gift or to keep for a long time.",
-      "premiumTitle": "🌟 Premium",
-      "premiumDescription": "Deluxe hardcover edition with premium materials. Exceptional quality for special occasions.",
       "priceNote": "All prices include 4 chapter printing in full-color printing and delivery.",
       "extraChapterNote": "Each additional chapter costs 2 credits.",
       "yourStory": "Your story",

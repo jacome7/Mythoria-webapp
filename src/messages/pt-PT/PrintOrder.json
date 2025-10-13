@@ -28,18 +28,13 @@
       "addNewAddress": "Adicionar Nova Morada"
     },
     "formats": {
-      "paperback": "Capa Mole",
-      "hardcover": "Capa Dura"
+      "paperback": "Capa Mole"
     },
     "payment": {
       "selectBookType": "Escolha o Tipo de Livro",
       "chooseQuality": "Escolha a qualidade de impressão mais adequada para si:",
       "softcoverTitle": "📖 Capa Mole",
       "softcoverDescription": "Capa flexível com acabamento brilhante. Ideal para leitura frequente e fácil manuseamento.",
-      "hardcoverTitle": "📚 Capa Dura",
-      "hardcoverDescription": "Capa rígida com encadernação resistente. Perfeito para oferta ou para guardar por muito tempo.",
-      "premiumTitle": "🌟 Premium",
-      "premiumDescription": "Edição de luxo com capa rígida e materiais premium. Qualidade excecional para ocasiões especiais.",
       "priceNote": "Todos os preços incluem impressão de 4 capítulos a cores e entrega.",
       "extraChapterNote": "Cada capítulo adicional tem um custo de 2 créditos.",
       "yourStory": "A sua história",

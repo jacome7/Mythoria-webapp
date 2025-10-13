@@ -36,11 +36,10 @@
         "editBook": "Editar un libro:",
         "manualEditing": "Edición manual",
         "textReviewAI": "Revisión de texto con IA",
-        "generateNewImages": "Generar imágenes nuevas",
+        "generateNewImages": "Generar nuevas imágenes",
         "printShipBook": "Imprimir y enviar libro:",
         "softCover": "Tapa blanda",
-        "hardCover": "Tapa dura",
-        "extraChapterCost": "Coste por capítulo extra"
+        "extraChapterCost": "Coste de capítulo adicional"
       },
       "serviceNames": {
         "ebook": "Generar un libro digital (eBook)",

@@ -37,10 +37,9 @@
         "manualEditing": "Édition manuelle",
         "textReviewAI": "Revue de texte avec AI",
         "generateNewImages": "Générer de nouvelles images",
-        "printShipBook": "Livre d'impression et de navire:",
+        "printShipBook": "Imprimer et expédier le livre:",
         "softCover": "Couverture souple",
-        "hardCover": "Couverture dure",
-        "extraChapterCost": "Coût de chapitre supplémentaire"
+        "extraChapterCost": "Coût du chapitre supplémentaire"
       },
       "serviceNames": {
         "ebook": "Générer un livre numérique (ebook)",

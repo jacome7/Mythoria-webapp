@@ -39,13 +39,12 @@
         "generateNewImages": "Generate new images",
         "printShipBook": "Print and ship book:",
         "softCover": "Soft cover",
-        "hardCover": "Hard Cover",
         "extraChapterCost": "Extra chapter Cost"
       },
       "serviceNames": {
         "ebook": "Generate a digital book (eBook)",
         "audiobook": "Generate an audiobook",
-        "printed_book": "Order a printed & shipped hardcover book"
+        "printed_book": "Order a printed & shipped softcover book"
       },
       "tableHeaders": {
         "service": "Service",
@@ -67,10 +66,10 @@
           "description": "Transform your story into an engaging audiobook with professional narration."
         },
         "printedBook": {
-          "title": "Order printed & shipped hardcover book",
-          "description": "Get a beautiful physical hardcover book delivered to your door.",
+          "title": "Order printed & shipped softcover book",
+          "description": "Get a beautiful physical softcover book delivered to your door.",
           "printingOptions": [
-            "Premium hardcover binding",
+            "Premium softcover binding",
             "High-quality paper and printing",
             "Professional cover design",
             "Worldwide shipping available"

@@ -23,24 +23,19 @@
       "fetchCreditsFailed": "Error al obtener tu saldo de créditos"
     },
     "addressInfo": {
-      "selectShipping": "Selecciona una dirección de envío para tu libro impreso.",
-      "noAddresses": "No tienes direcciones guardadas. Añade una dirección para continuar.",
+      "selectShipping": "Por favor, seleccione una dirección de envío para su libro impreso.",
+      "noAddresses": "No tiene ninguna dirección guardada. Por favor, añada una dirección de envío para continuar.",
       "addNewAddress": "Añadir Nueva Dirección"
     },
     "formats": {
-      "paperback": "Tapa blanda",
-      "hardcover": "Tapa dura"
+      "paperback": "Tapa blanda"
     },
     "payment": {
       "selectBookType": "Selecciona tu Tipo de Libro",
-      "chooseQuality": "Elige la calidad de impresión que mejor se adapte a ti:",
+      "chooseQuality": "Elija la calidad de impresión que mejor se adapte a usted:",
       "softcoverTitle": "📖 Tapa blanda",
-      "softcoverDescription": "Libro flexible con acabado brillante. Ideal para el día a día.",
-      "hardcoverTitle": "📚 Tapa dura",
-      "hardcoverDescription": "Cubierta rígida y encuadernación resistente. Perfecto como regalo o para conservar.",
-      "premiumTitle": "🌟 Premium",
-      "premiumDescription": "Edición de tapa dura de lujo con materiales premium. Calidad excepcional para ocasiones especiales.",
-      "priceNote": "Todos los precios incluyen la impresión a color de 4 capítulos y el envío.",
+      "softcoverDescription": "Cubierta flexible con acabado brillante. Ideal para lectura frecuente y fácil manejo.",
+      "priceNote": "Todos los precios incluyen la impresión de 4 capítulos a todo color y la entrega.",
       "extraChapterNote": "Cada capítulo extra cuesta 2 créditos.",
       "yourStory": "Tu historia",
       "extraChaptersNote": "capítulos extra",

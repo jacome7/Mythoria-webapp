@@ -23,24 +23,19 @@
       "fetchCreditsFailed": "Échec de l'obtention du solde de crédit"
     },
     "addressInfo": {
-      "selectShipping": "Veuillez sélectionner une adresse d'expédition pour votre livre imprimé.",
-      "noAddresses": "Vous n'avez aucune adresse enregistrée. Veuillez ajouter une adresse d'expédition pour continuer.",
-      "addNewAddress": "Ajouter une nouvelle adresse"
+      "selectShipping": "Veuillez sélectionner une adresse de livraison pour votre livre imprimé.",
+      "noAddresses": "Vous n'avez aucune adresse enregistrée. Veuillez ajouter une adresse de livraison pour continuer.",
+      "addNewAddress": "Ajouter une Nouvelle Adresse"
     },
     "formats": {
-      "paperback": "Livre de poche",
-      "hardcover": "Couverture rigide"
+      "paperback": "Couverture souple"
     },
     "payment": {
       "selectBookType": "Sélectionnez votre type de livre",
       "chooseQuality": "Choisissez la qualité d'impression qui vous convient le mieux:",
       "softcoverTitle": "📖 Couverture souple",
-      "softcoverDescription": "Broché flexible avec une finition brillante. Idéal pour la lecture et la manipulation quotidiennes.",
-      "hardcoverTitle": "📚 Couverture rigide",
-      "hardcoverDescription": "Couverture rigide, liaison robuste. Parfait en cadeau ou pour rester longtemps.",
-      "premiumTitle": "🌟 Premium",
-      "premiumDescription": "Édition de luxe à couverture rigide avec matériaux premium. Qualité exceptionnelle pour les occasions spéciales.",
-      "priceNote": "Tous les prix comprennent une impression de 4 chapitres dans l'impression et la livraison en couleur.",
+      "softcoverDescription": "Couverture flexible avec finition brillante. Idéal pour la lecture quotidienne et manipulation.",
+      "priceNote": "Tous les prix incluent l'impression de 4 chapitres en couleur et la livraison.",
       "extraChapterNote": "Chaque chapitre supplémentaire coûte 2 crédits.",
       "yourStory": "Votre histoire",
       "extraChaptersNote": "chapitres supplémentaires",
