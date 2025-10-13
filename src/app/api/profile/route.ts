@@ -186,6 +186,12 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ success: true, author });
     }
 
+    // Check if this is a first-time displayName update (for welcome email trigger)
+    const isFirstTimeNameUpdate =
+      updates.displayName &&
+      updates.displayName.trim().length > 1 &&
+      author.displayName.trim().length <= 1;
+
     const [updated] = await db
       .update(authors)
       .set(updates)
@@ -200,6 +206,38 @@ export async function PATCH(req: NextRequest) {
         Object.keys(updates),
       );
       return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
+    }
+
+    // Trigger welcome email if this is the first time setting a meaningful name
+    if (isFirstTimeNameUpdate && updated.createdAt) {
+      const ageMs = Date.now() - new Date(updated.createdAt).getTime();
+      // Only send if account was created within the last 10 minutes
+      if (ageMs >= 0 && ageMs < 10 * 60 * 1000) {
+        try {
+          const { triggerWelcomeEmailSafe } = await import('../webhooks/welcome-email');
+          const effectiveLocale = updated.preferredLocale || 'en-US';
+          console.log('welcome-email.attempt.profile-update', {
+            authorId: updated.authorId,
+            ageMs,
+            locale: effectiveLocale,
+            displayName: updated.displayName,
+          });
+          // Fire and forget - don't await
+          triggerWelcomeEmailSafe({
+            authorId: updated.clerkUserId,
+            email: updated.email,
+            name: updated.displayName,
+            locale: effectiveLocale,
+          }).catch((err) => {
+            console.error('welcome-email.error.profile-update', {
+              authorId: updated.authorId,
+              error: err,
+            });
+          });
+        } catch (err) {
+          console.error('welcome-email.import-error', { error: err });
+        }
+      }
     }
 
     // Sync Clerk metadata: full profile only in private; public only displayName

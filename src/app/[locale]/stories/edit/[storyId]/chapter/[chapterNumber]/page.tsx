@@ -499,6 +499,7 @@ export default function EditChapterPage() {
             onContentChange={handleContentChange}
             onTitleChange={handleTitleChange}
             onSave={saveChapterContent}
+            onAIEdit={() => setShowAITextEditor(true)}
             onImageEdit={handleImageEdit}
             isLoading={saving}
           />
