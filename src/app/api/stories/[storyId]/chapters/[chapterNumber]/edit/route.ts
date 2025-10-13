@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
+import { ensureStoryIdAccess, AccessDeniedError } from '@/lib/authorization';
 import { chapterService, storyService } from '@/db/services';
 
 export async function POST(
@@ -16,14 +17,14 @@ export async function POST(
     const chapterNum = parseInt(chapterNumber);
     const { title, htmlContent, imageUri, imageThumbnailUri, audioUri } = await request.json();
 
-    // Check if user owns the story
-    const story = await storyService.getStoryById(storyId);
-    if (!story) {
-      return NextResponse.json({ error: 'Story not found' }, { status: 404 });
-    }
-
-    if (story.authorId !== author.authorId) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    // Check if user has access (owner or collaborator)
+    try {
+      await ensureStoryIdAccess(storyId, author.authorId);
+    } catch (e) {
+      if (e instanceof AccessDeniedError) {
+        return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      }
+      throw e;
     }
 
     // Get current chapter to determine next version
@@ -74,14 +75,14 @@ export async function PUT(
     const chapterNum = parseInt(chapterNumber);
     const { version } = await request.json();
 
-    // Check if user owns the story
-    const story = await storyService.getStoryById(storyId);
-    if (!story) {
-      return NextResponse.json({ error: 'Story not found' }, { status: 404 });
-    }
-
-    if (story.authorId !== author.authorId) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    // Check if user has access (owner or collaborator)
+    try {
+      await ensureStoryIdAccess(storyId, author.authorId);
+    } catch (e) {
+      if (e instanceof AccessDeniedError) {
+        return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      }
+      throw e;
     }
 
     // Get chapters to find the requested version

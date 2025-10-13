@@ -1,7 +1,8 @@
 {
   "Errors": {
-    "authRequired": "Autenticación requerida",
-    "pleaseSignIn": "Inicia sesión para continuar",
+    "generic": "Ha ocurrido un error. Por favor, inténtalo de nuevo.",
+    "authRequired": "Autenticación Requerida",
+    "pleaseSignIn": "Por favor, inicia sesión para continuar",
     "storyNotAvailableYet": "Esta historia aún no está disponible.",
     "storyNotFoundGeneric": "Historia no encontrada.",
     "noPermission": "No tienes permiso para acceder a esta historia.",

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
+import { ensureStoryIdAccess, AccessDeniedError } from '@/lib/authorization';
 import { storyService, chapterService } from '@/db/services';
 
 export async function GET(
@@ -14,15 +15,15 @@ export async function GET(
 
     const { storyId } = await params;
 
-    // Get story details
-    const story = await storyService.getStoryById(storyId);
-    if (!story) {
-      return NextResponse.json({ error: 'Story not found' }, { status: 404 });
-    }
-
-    // Check if user owns the story
-    if (story.authorId !== author.authorId) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    // Check if user has access (owner or collaborator)
+    let story;
+    try {
+      story = await ensureStoryIdAccess(storyId, author.authorId);
+    } catch (e) {
+      if (e instanceof AccessDeniedError) {
+        return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      }
+      throw e;
     }
 
     // Get all chapters for this story
@@ -76,14 +77,14 @@ export async function PATCH(
     const { storyId } = await params;
     const updates = await request.json();
 
-    // Get story to verify ownership
-    const story = await storyService.getStoryById(storyId);
-    if (!story) {
-      return NextResponse.json({ error: 'Story not found' }, { status: 404 });
-    }
-
-    if (story.authorId !== author.authorId) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    // Check if user has access (owner or collaborator)
+    try {
+      await ensureStoryIdAccess(storyId, author.authorId);
+    } catch (e) {
+      if (e instanceof AccessDeniedError) {
+        return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      }
+      throw e;
     }
 
     // Update story metadata

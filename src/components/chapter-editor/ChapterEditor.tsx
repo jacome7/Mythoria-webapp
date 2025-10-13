@@ -30,6 +30,7 @@ interface ChapterEditorProps {
   onContentChange?: (content: string) => void;
   onTitleChange?: (title: string) => void;
   onSave?: (content: string, title: string) => void;
+  onAIEdit?: () => void;
   onImageInsert?: () => void;
   onImageEdit?: (imageData: {
     imageUri: string;
@@ -49,6 +50,7 @@ export default function ChapterEditor({
   onContentChange,
   onTitleChange,
   onSave,
+  onAIEdit,
   onImageInsert,
   onImageEdit,
   isLoading = false,
@@ -139,7 +141,7 @@ export default function ChapterEditor({
             editorState: createInitialEditorState(),
           }}
         >
-          <Toolbar onImageInsert={onImageInsert} />
+          <Toolbar onImageInsert={onImageInsert} onAIEdit={onAIEdit} />
           <div className="flex-1 flex flex-col border-0 md:border border-base-300 md:rounded-lg overflow-hidden relative">
             <RichTextPlugin
               contentEditable={

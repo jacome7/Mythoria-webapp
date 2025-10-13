@@ -1,5 +1,6 @@
 {
   "Errors": {
+    "generic": "An error occurred. Please try again.",
     "authRequired": "Authentication Required",
     "pleaseSignIn": "Please sign in to continue",
     "storyNotAvailableYet": "This story is not available yet.",

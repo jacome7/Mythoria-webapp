@@ -11,14 +11,15 @@ import {
   COMMAND_PRIORITY_EDITOR,
 } from 'lexical';
 import { useTranslations } from 'next-intl';
-import { FiBold, FiItalic, FiType, FiImage } from 'react-icons/fi';
+import { FiBold, FiItalic, FiType, FiImage, FiZap } from 'react-icons/fi';
 import { TEXT_SIZE_OPTIONS, TextSize, FORMAT_TEXT_SIZE_COMMAND } from './lexical';
 
 interface ToolbarProps {
   onImageInsert?: () => void;
+  onAIEdit?: () => void;
 }
 
-export default function Toolbar({ onImageInsert }: ToolbarProps) {
+export default function Toolbar({ onImageInsert, onAIEdit }: ToolbarProps) {
   const [editor] = useLexicalComposerContext();
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
@@ -154,8 +155,18 @@ export default function Toolbar({ onImageInsert }: ToolbarProps) {
             </ul>
           </div>
         </div>
-        {onImageInsert && (
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
+          {onAIEdit && (
+            <button
+              onClick={onAIEdit}
+              className="btn btn-sm btn-primary"
+              title={t('toolbar.aiEdit')}
+            >
+              <FiZap className="w-4 h-4" />
+              {t('toolbar.edit')}
+            </button>
+          )}
+          {onImageInsert && (
             <button
               onClick={onImageInsert}
               className="btn btn-sm btn-primary"
@@ -164,8 +175,8 @@ export default function Toolbar({ onImageInsert }: ToolbarProps) {
               <FiImage className="w-4 h-4" />
               {t('toolbar.image')}
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

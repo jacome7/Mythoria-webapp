@@ -1,5 +1,6 @@
 {
   "Errors": {
+    "generic": "Une erreur s'est produite. Veuillez réessayer.",
     "authRequired": "Authentification requise",
     "pleaseSignIn": "Veuillez vous connecter pour continuer",
     "storyNotAvailableYet": "Cette histoire n'est pas encore disponible.",

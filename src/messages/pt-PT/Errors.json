@@ -1,5 +1,6 @@
 {
   "Errors": {
+    "generic": "Ocorreu um erro. Por favor, tente novamente.",
     "authRequired": "Autenticação Necessária",
     "pleaseSignIn": "Por favor, inicie sessão para continuar",
     "storyNotAvailableYet": "Esta história ainda não está disponível.",
