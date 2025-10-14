@@ -212,6 +212,8 @@ When implementing new features or major changes:
 6. **Does this integrate with external services?** → Encapsulate in `src/lib/` and use existing client patterns (e.g., `sgw-client.ts`)
 7. **Will this affect the PWA offline experience?** → Verify `/offline` route continues to work
 
+8. **Was it requested to create a documentation file?** → If the user didn't clearly specified to create a documentation file, DO NOT CREEATE IT.
+
 ---
 
 _Last updated: 2025-10-04_

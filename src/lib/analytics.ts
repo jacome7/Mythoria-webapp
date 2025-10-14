@@ -2,6 +2,16 @@
 
 import { trackMythoriaConversionsEnhanced } from './googleAdsConversions';
 
+// Extend Window interface to include gtag
+declare global {
+  interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    gtag: (...args: any[]) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dataLayer: any[];
+  }
+}
+
 // Define event types for better type safety
 export type AnalyticsEvent =
   // Authentication & Onboarding
@@ -66,8 +76,12 @@ export interface ContactEventParams extends AnalyticsEventParams {
 }
 
 export interface CreditPurchaseEventParams extends AnalyticsEventParams {
+  /** Purchase amount in euros (NOT cents). E.g., 5.00 for €5 */
   purchase_amount?: number;
+  /** Number of credits purchased */
   credits_purchased?: number;
+  /** Payment method used (revolut, mbway, etc.) */
+  payment_method?: string;
 }
 
 /**
@@ -75,15 +89,17 @@ export interface CreditPurchaseEventParams extends AnalyticsEventParams {
  * @param eventName - The name of the event to track
  * @param parameters - Optional parameters to include with the event
  */
-export function trackEvent(eventName: AnalyticsEvent, parameters: AnalyticsEventParams = {}): void {
-  if (typeof window === 'undefined' || !window.gtag) {
-    // If we're on the server side or gtag is not available, log the event for debugging
-    console.log(`Analytics event (not sent): ${eventName}`, parameters);
+export function trackEvent(eventName: string, parameters?: Record<string, unknown>): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  if (!window.gtag) {
+    console.warn('⚠️ [Analytics] gtag not available yet for event:', eventName);
     return;
   }
 
   try {
-    // Add timestamp and common parameters
     const eventParams = {
       ...parameters,
       timestamp: new Date().toISOString(),
@@ -91,15 +107,14 @@ export function trackEvent(eventName: AnalyticsEvent, parameters: AnalyticsEvent
       page_title: document.title,
     };
 
-    // Send the event to Google Analytics
     window.gtag('event', eventName, eventParams);
 
-    // Log for debugging in development
+    // Development-only console log for debugging
     if (process.env.NODE_ENV === 'development') {
-      console.log(`Analytics event sent: ${eventName}`, eventParams);
+      console.log('📊 [Analytics] Event tracked:', eventName, eventParams);
     }
   } catch (error) {
-    console.error('Error tracking analytics event:', error);
+    console.error('❌ [Analytics] Error tracking event:', eventName, error);
   }
 }
 
@@ -122,12 +137,19 @@ export const trackAuth = {
  * Track commerce and credit events
  */
 export const trackCommerce = {
+  /**
+   * Track credit purchase
+   * @param params.purchase_amount - Amount in euros (NOT cents). E.g., 5.00 for €5
+   * @param params.credits_purchased - Number of credits purchased
+   * @param params.transaction_id - Unique transaction identifier
+   */
   creditPurchase: (params: CreditPurchaseEventParams = {}) => {
     trackEvent('credit_purchase', params);
-    // Track Google Ads conversion
+
+    // Track Google Ads conversion (expects amount in euros)
     trackMythoriaConversionsEnhanced.creditPurchase(
       (params.purchase_amount as number) || 0,
-      'EUR', // Adjust currency as needed
+      'EUR',
       params.transaction_id as string,
     );
   },

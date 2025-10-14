@@ -42,6 +42,7 @@ function BuyCreditsContent() {
   const [isMounted, setIsMounted] = useState(false);
   const [orderToken, setOrderToken] = useState<string | null>(null);
   const [orderAmount, setOrderAmount] = useState<number | null>(null);
+  const [orderCredits, setOrderCredits] = useState<number | null>(null);
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>(
     'idle',
@@ -58,9 +59,17 @@ function BuyCreditsContent() {
   // Ref for cart items section
   const cartItemsRef = useRef<HTMLDivElement>(null);
 
+  // Ref to track if we've already processed the payment success
+  const hasProcessedPayment = useRef(false);
+
   // Handle client-side mounting to prevent hydration issues
   useEffect(() => {
     setIsMounted(true);
+
+    // Reset processed flag on mount (e.g., when coming back to page)
+    return () => {
+      hasProcessedPayment.current = false;
+    };
   }, []);
 
   // Check for Revolut error parameters in URL
@@ -126,21 +135,37 @@ function BuyCreditsContent() {
       newUrl.searchParams.delete('payment');
       window.history.replaceState({}, '', newUrl.toString());
     } else if (paymentStatus === 'success') {
-      // Handle successful payment redirect
+      // Prevent processing the same payment multiple times
+      if (hasProcessedPayment.current) {
+        return;
+      }
+
+      // Mark as processed immediately to prevent duplicate tracking
+      hasProcessedPayment.current = true;
+
+      // Get purchase data from URL parameters
+      const purchaseAmount = searchParams?.get('amount');
+      const purchaseCredits = searchParams?.get('credits');
+      const transactionId = searchParams?.get('_rp_oid');
+
       setPaymentStatus('success');
       setPaymentMessage(tBuyCreditsPage('payment.success'));
 
-      // Track credit purchase in analytics (if cart still has items)
-      if (cart.length > 0) {
-        const totalCredits = cart.reduce((total, item) => {
-          const pkg = getPackageById(item.packageId);
-          return total + (pkg ? pkg.credits * item.quantity : 0);
-        }, 0);
+      // Track credit purchase in analytics using URL parameters
+      if (purchaseAmount && purchaseCredits) {
+        const trackingAmountCents = parseFloat(purchaseAmount);
+        const trackingCredits = parseInt(purchaseCredits, 10);
 
-        trackCommerce.creditPurchase({
-          purchase_amount: total,
-          credits_purchased: totalCredits,
-        });
+        if (trackingAmountCents > 0 && trackingCredits > 0) {
+          // Convert cents to euros for analytics (500 cents = 5.00 euros)
+          const trackingAmountEuros = trackingAmountCents / 100;
+
+          trackCommerce.creditPurchase({
+            purchase_amount: trackingAmountEuros,
+            credits_purchased: trackingCredits,
+            transaction_id: transactionId || undefined,
+          });
+        }
       }
 
       // Clear cart and redirect
@@ -150,9 +175,13 @@ function BuyCreditsContent() {
       // Clean up URL and redirect after short delay
       const newUrl = new URL(window.location.href);
       newUrl.searchParams.delete('payment');
+      newUrl.searchParams.delete('amount');
+      newUrl.searchParams.delete('credits');
       window.history.replaceState({}, '', newUrl.toString());
 
       setTimeout(() => {
+        // Reset the processed flag before navigating away
+        hasProcessedPayment.current = false;
         window.location.href = `/${locale}/my-stories`;
       }, 3000);
     } else if (paymentStatus === 'cancel') {
@@ -314,6 +343,26 @@ function BuyCreditsContent() {
         setMbwayPaymentCode(formattedCode);
         setMbwayAmount(data.amount ?? total);
         setShowMbwayModal(true);
+
+        // Track MB Way purchase intent for analytics
+        // Note: This tracks when user initiates payment, not when it's completed
+        // MB Way requires manual confirmation, so we track the intent immediately
+        const amountCents = data.amount ?? total;
+        const amountEuros = amountCents / 100;
+        const credits =
+          data.credits ||
+          cart.reduce((sum, item) => {
+            const pkg = getPackageById(item.packageId);
+            return sum + (pkg ? pkg.credits * item.quantity : 0);
+          }, 0);
+
+        trackCommerce.creditPurchase({
+          purchase_amount: amountEuros,
+          credits_purchased: credits,
+          transaction_id: data.orderId || data.ticketNumber,
+          payment_method: 'mbway',
+        });
+
         // We intentionally do not mark payment as success yet; it's pending manual action
         setPaymentStatus('idle');
         setPaymentMessage('');
@@ -321,6 +370,7 @@ function BuyCreditsContent() {
         // Store order details for other payment methods
         setOrderToken(data.orderToken);
         setOrderAmount(data.amount);
+        setOrderCredits(data.credits);
         setPaymentMessage(tBuyCreditsPage('payment.orderCreated'));
       }
     } catch (error) {
@@ -356,7 +406,9 @@ function BuyCreditsContent() {
   };
 
   const handlePaymentSuccess = (result: Record<string, unknown>) => {
-    console.log('Payment successful:', result);
+    console.log('🎉 [Buy Credits] handlePaymentSuccess called with result:', result);
+    console.log('🛒 [Buy Credits] Current cart:', cart);
+    console.log('💵 [Buy Credits] Total amount:', total);
 
     // Calculate total credits purchased for analytics
     const totalCredits = cart.reduce((total, item) => {
@@ -364,11 +416,18 @@ function BuyCreditsContent() {
       return total + (pkg ? pkg.credits * item.quantity : 0);
     }, 0);
 
+    console.log('📊 [Buy Credits] Tracking credit purchase:', {
+      purchase_amount: total,
+      credits_purchased: totalCredits,
+    });
+
     // Track credit purchase in analytics
     trackCommerce.creditPurchase({
       purchase_amount: total,
       credits_purchased: totalCredits,
     });
+
+    console.log('✅ [Buy Credits] Analytics tracking completed');
 
     setPaymentStatus('success');
     setPaymentMessage(tBuyCreditsPage('payment.success'));
@@ -616,6 +675,7 @@ function BuyCreditsContent() {
                             <RevolutPayment
                               orderToken={orderToken}
                               orderAmount={orderAmount || undefined}
+                              orderCredits={orderCredits || undefined}
                               onPaymentSuccess={handlePaymentSuccess}
                               onPaymentError={handlePaymentError}
                               onPaymentCancel={handlePaymentCancel}

@@ -25,7 +25,9 @@ export default function GoogleAnalytics({
 }: GoogleAnalyticsProps) {
   useEffect(() => {
     // Initialize dataLayer if it doesn't exist
-    window.dataLayer = window.dataLayer || []; // Define gtag function
+    window.dataLayer = window.dataLayer || [];
+
+    // Define gtag function
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
     function gtag(..._args: any[]) {
       // eslint-disable-next-line prefer-rest-params

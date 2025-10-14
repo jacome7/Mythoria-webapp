@@ -7,6 +7,7 @@ import RevolutCheckout from '@revolut/checkout';
 interface RevolutPaymentProps {
   orderToken: string;
   orderAmount?: number;
+  orderCredits?: number;
   onPaymentSuccess: (result: Record<string, unknown>) => void;
   onPaymentError: (error: Record<string, unknown>) => void;
   onPaymentCancel?: () => void;
@@ -16,6 +17,7 @@ interface RevolutPaymentProps {
 export default function RevolutPayment({
   orderToken,
   orderAmount,
+  orderCredits,
   onPaymentSuccess,
   onPaymentError,
   onPaymentCancel,
@@ -82,12 +84,12 @@ export default function RevolutPayment({
             return { publicId: orderToken };
           },
           redirectUrls: {
-            success: `${window.location.origin}${window.location.pathname}?payment=success`,
+            success: `${window.location.origin}${window.location.pathname}?payment=success&amount=${orderAmount || 0}&credits=${orderCredits || 0}`,
             failure: `${window.location.origin}${window.location.pathname}?payment=failure`,
             cancel: `${window.location.origin}${window.location.pathname}?payment=cancel`,
           },
           mobileRedirectUrls: {
-            success: `${window.location.origin}${window.location.pathname}?payment=success`,
+            success: `${window.location.origin}${window.location.pathname}?payment=success&amount=${orderAmount || 0}&credits=${orderCredits || 0}`,
             failure: `${window.location.origin}${window.location.pathname}?payment=failure`,
             cancel: `${window.location.origin}${window.location.pathname}?payment=cancel`,
           },
@@ -145,6 +147,7 @@ export default function RevolutPayment({
   }, [
     orderToken,
     orderAmount,
+    orderCredits,
     disabled,
     onPaymentSuccess,
     onPaymentError,
