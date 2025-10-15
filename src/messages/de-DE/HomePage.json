@@ -1,183 +1,183 @@
 {
   "HomePage": {
-    "title": "Welcome",
+    "title": "Willkommen",
     "hero": {
-      "writeYourOwn": "Write your own",
-      "subtitle": "Turn anyone into the hero of a beautifully illustrated book — for children, grown-ups or entire teams.",
-      "subtitleEmphasized": "anyone",
-      "tellYourOwnStory": "Write your own story"
+      "writeYourOwn": "Schreib deine eigene",
+      "subtitle": "Mach aus jedem Menschen den Star eines wunderschön illustrierten Buchs – für Kinder, Erwachsene oder ganze Teams.",
+      "subtitleEmphasized": "wirklich jede:n",
+      "tellYourOwnStory": "Schreib deine eigene Geschichte"
     },
     "words": [
-      "Story",
-      "Adventure",
-      "Memory",
-      "Chronicle",
-      "Fiction",
-      "Fable",
-      "Odyssey",
-      "Prose",
-      "Book",
-      "Novel",
-      "Romance",
-      "Manuscript",
-      "Tale",
-      "Fiction",
-      "Myth"
+      "Geschichte",
+      "Abenteuer",
+      "Erinnerung",
+      "Chronik",
+      "Fiktion",
+      "Fabel",
+      "Odyssee",
+      "Prosa",
+      "Buch",
+      "Roman",
+      "Liebesgeschichte",
+      "Manuskript",
+      "Erzählung",
+      "Fantastik",
+      "Mythos"
     ],
-    "fallbackWords": ["Adventure", "Love Story", "Mystery", "Fairy Tale"],
+    "fallbackWords": ["Abenteuer", "Liebesgeschichte", "Geheimnis", "Märchen"],
     "altTexts": {
-      "kidsBook": "Kids Book",
-      "groupsYearbooks": "Groups & Yearbooks",
-      "adultBook": "How I met your mother",
-      "companyBook": "Company Book"
+      "kidsBook": "Kinderbuch",
+      "groupsYearbooks": "Gruppen & Jahrbücher",
+      "adultBook": "Wie ich deine Mutter traf",
+      "companyBook": "Firmenbuch"
     },
     "comingSoon": {
-      "title": "Our story is just beginning...",
-      "subtitle": "Mythoria is crafting something magical! I'm working hard, alongside AI, to bring you a new world of personalized storytelling. Stay tuned, the adventure will be available soon! 🧙‍♂️📚✨"
+      "title": "Unsere Geschichte fängt gerade erst an...",
+      "subtitle": "Mythoria erschafft etwas Magisches! Ich arbeite gemeinsam mit KI daran, dir eine neue Welt personalisierter Geschichten zu bringen. Bleib dran, das Abenteuer startet bald! 🧙‍♂️📚✨"
     },
     "audiences": {
       "kids": {
-        "title": "Kids",
-        "description": "Turn your child, grandchild, nephew, or niece into the hero of their own magical adventure!"
+        "title": "Kinder",
+        "description": "Mach dein Kind, Enkelkind, deine Nichte oder deinen Neffen zum Star ihres eigenen magischen Abenteuers!"
       },
       "groups": {
-        "title": "Groups & Yearbooks",
-        "description": "Immortalize your team spirit and your group's memories!"
+        "title": "Gruppen & Jahrbücher",
+        "description": "Verewige euren Teamgeist und die Erinnerungen eurer Gruppe!"
       },
       "adults": {
-        "title": "Adults",
-        "description": "Relive your love story or a once-in-a-lifetime trip as a stunning illustrated memoir."
+        "title": "Erwachsene",
+        "description": "Erlebe eure Liebesgeschichte oder die Reise eures Lebens als beeindruckend illustrierte Memoiren neu."
       },
       "companies": {
-        "title": "Companies",
-        "description": "Gift customers or staff families a branded, personalised storybook that keeps your logo on the bookshelf."
+        "title": "Unternehmen",
+        "description": "Schenke Kund:innen oder den Familien deiner Mitarbeitenden ein gebrandetes, personalisiertes Geschichtenbuch, das euer Logo im Regal strahlen lässt."
       }
     },
     "howItWorks": {
-      "title": "With Mythoria, creating your own story is easy:",
+      "title": "Mit Mythoria wird deine eigene Geschichte zum Kinderspiel:",
       "steps": {
         "step1": {
-          "title": "The Author",
-          "description": "Log in and let Mythoria know who you are. You'll be the proud author and owner of your unique story."
+          "title": "Autor:in",
+          "description": "Meld dich an und zeig Mythoria, wer du bist. Du bist die stolze Autorin oder der stolze Autor deiner einzigartigen Geschichte."
         },
         "step2": {
-          "title": "The Story",
-          "description": "Easily share your story idea by writing, speaking, or even drawing on paper. Mythoria captures and transforms your concept into magic."
+          "title": "Die Geschichte",
+          "description": "Teil deine Idee ganz entspannt – geschrieben, gesprochen oder sogar als Zeichnung. Mythoria fängt sie ein und verwandelt sie in Magie."
         },
         "step3": {
-          "title": "The Characters",
-          "description": "Mythoria identifies the characters, but you can personalize every detail. Describe their appearance, passions, and unique traits."
+          "title": "Die Figuren",
+          "description": "Mythoria erkennt die Figuren, aber du personalisierst jedes Detail. Beschreib ihr Aussehen, ihre Leidenschaften und ihre besonderen Eigenheiten."
         },
         "step4": {
-          "title": "The Plot",
-          "description": "Shape your story exactly as you wish—select the graphic style, set the tone, choose your audience, and fine-tune every detail."
+          "title": "Die Handlung",
+          "description": "Form deine Geschichte genau so, wie du sie willst – wähl den Grafikstil, setz den Ton, bestimm dein Publikum und feile an jedem Detail."
         },
         "step5": {
-          "title": "The Gift",
-          "description": "Choose how you'd like to receive your masterpiece: as an eBook, an audiobook, or a beautifully printed book."
+          "title": "Das Geschenk",
+          "description": "Wähl, wie du dein Meisterwerk erhalten möchtest: als E-Book, Hörbuch oder wunderschön gedrucktes Buch."
         },
         "step6": {
-          "title": "Experience the Magic",
-          "description": "Children will be captivated seeing themselves in exciting adventures, while adults will be delighted by reliving cherished memories and sharing heartfelt moments."
+          "title": "Erleb die Magie",
+          "description": "Kinder sind fasziniert, wenn sie sich selbst in aufregenden Abenteuern sehen, und Erwachsene lieben es, kostbare Erinnerungen neu zu erleben und zu teilen."
         }
       },
       "stepLabels": {
-        "step1": "Step 1",
-        "step2": "Step 2",
-        "step3": "Step 3",
-        "step4": "Step 4",
-        "step5": "Step 5",
-        "step6": "Step 6"
+        "step1": "Schritt 1",
+        "step2": "Schritt 2",
+        "step3": "Schritt 3",
+        "step4": "Schritt 4",
+        "step5": "Schritt 5",
+        "step6": "Schritt 6"
       },
-      "conclusion": "Our Story Factory Oompa-Loompas will handle everything else, bringing your story to life!"
+      "conclusion": "Unsere Story-Factory-Oompa-Loompas kümmern sich um den Rest und lassen deine Geschichte lebendig werden!"
     },
     "community": {
-      "title": "Join Our Growing Community of Storytellers!"
+      "title": "Werd Teil unserer wachsenden Geschichtenerzähler-Community!"
     },
     "cta": {
-      "title": "Ready to start your storytelling journey?",
-      "subtitle": "Sign up today and get 5 free credits to create your first personalized story!",
-      "button": "Try It For Free"
+      "title": "Bereit, deine Storytelling-Reise zu starten?",
+      "subtitle": "Meld dich heute an und hol dir 5 Gratis-Credits für deine erste personalisierte Geschichte!",
+      "button": "Jetzt gratis ausprobieren"
     },
     "whyChooseMythoria": {
-      "title": "Why Choose Mythoria?",
-      "subtitle": "Creating your own story should feel like magic, not homework. Here's what makes Mythoria different.",
+      "title": "Warum Mythoria?",
+      "subtitle": "Eigene Geschichten zu erschaffen soll sich magisch anfühlen, nicht nach Hausaufgaben. Darum ist Mythoria anders.",
       "features": {
         "youOwnTheStory": {
-          "title": "You Own the Story",
-          "description": "Keep all rights to your AI-generated book. Print unlimited copies, share as you please, showcase publicly only if you want.",
-          "details": "Your story, your rules—no hidden licenses, no surprise claims."
+          "title": "Du besitzt die Geschichte",
+          "description": "Behalte alle Rechte an deinem KI-erschaffenen Buch. Druck unbegrenzt Exemplare, teil sie, wie du möchtest, und zeig sie öffentlich nur, wenn du willst.",
+          "details": "Deine Story, deine Regeln – keine versteckten Lizenzen, keine Überraschungen."
         },
         "ideaToBookFast": {
-          "title": "From Idea to Book—Fast",
-          "description": "Write, speak, or sketch your idea and watch it transform into a fully illustrated story ready to read, listen, or print.",
-          "details": "Like hitting fast-forward on the creative montage, minus the coffee stains."
+          "title": "Von der Idee zum Buch – superschnell",
+          "description": "Schreib, sprich oder skizziere deine Idee und sieh zu, wie daraus eine vollständig illustrierte Geschichte entsteht, bereit zum Lesen, Hören oder Drucken.",
+          "details": "Wie Vorspulen durch die kreative Montage – nur ohne Kaffeeflecken."
         },
         "fullStoryEditing": {
-          "title": "Full Story Editing",
-          "description": "Tweak titles, chapters, dialogue, and pacing anytime. Invite AI to punch up scenes or rewind to earlier versions.",
-          "details": "The story stays alive—edit until it feels unmistakably yours."
+          "title": "Volle Story-Bearbeitung",
+          "description": "Feile jederzeit an Titeln, Kapiteln, Dialogen und Tempo. Hol dir die KI dazu, um Szenen aufzupolieren, oder spring zu früheren Versionen zurück.",
+          "details": "Die Story bleibt lebendig – du editierst, bis sie sich unverkennbar nach dir anfühlt."
         },
         "multipleArtStyles": {
-          "title": "Multiple Art Styles",
-          "description": "Choose from cartoon, watercolor, digital art, hand-drawn, minimalist, vintage, comic book, anime, and more.",
-          "details": "Match the visuals to your vibe—serious, playful, or somewhere dreamy."
+          "title": "Viele Artstyles",
+          "description": "Wähl aus Cartoon, Aquarell, Digital Art, Handzeichnung, Minimalismus, Vintage, Comic, Anime und mehr.",
+          "details": "Pass die Visuals deiner Stimmung an – seriös, verspielt oder verträumt."
         },
         "addYourOwnPhotos": {
-          "title": "Add Your Own Photos",
-          "description": "Drop in family photos, class pictures, or special moments to personalize your tale.",
-          "details": "Turn real memories into illustrated magic."
+          "title": "Eigene Fotos einfügen",
+          "description": "Lad Familienfotos, Klassenbilder oder besondere Momente hoch, um deine Story noch persönlicher zu machen.",
+          "details": "Mach aus echten Erinnerungen illustrierte Magie."
         },
         "privateByDefault": {
-          "title": "Private by Default",
-          "description": "Drafts stay private. Share a link with loved ones when you're ready, or opt in to the public showcase.",
-          "details": "No unwanted spotlights—your story, your timeline."
+          "title": "Standardmäßig privat",
+          "description": "Entwürfe bleiben privat. Teil einen Link mit Lieblingsmenschen, wenn du bereit bist, oder entscheide dich für die öffentliche Galerie.",
+          "details": "Kein ungewolltes Rampenlicht – deine Story, dein Timing."
         },
         "madeForEveryAudience": {
-          "title": "Made for Every Audience",
-          "description": "Create for babies, kids, teens, or adults. Tune tone and reading level to fit your reader perfectly.",
-          "details": "One platform, infinite voices."
+          "title": "Für jedes Publikum gemacht",
+          "description": "Kreiere für Babys, Kids, Teens oder Erwachsene. Stell Ton und Lesestufe perfekt auf dein Publikum ein.",
+          "details": "Eine Plattform, unendlich viele Stimmen."
         },
         "gentleCreditSystem": {
-          "title": "Gentle Credit System",
-          "description": "Start with 5 free credits. Top up only when you need extra chapters, illustrations, or prints.",
-          "details": "No subscriptions, no pressure—pay as you dream."
+          "title": "Sanftes Credit-System",
+          "description": "Starte mit 5 Gratis-Credits. Lade nur auf, wenn du extra Kapitel, Illustrationen oder Prints brauchst.",
+          "details": "Keine Abos, kein Druck – zahl, wann immer du träumst."
         },
         "inspirationOnTap": {
-          "title": "Inspiration on Tap",
-          "description": "Browse featured examples by age, art style, and language to spark your next creation.",
-          "details": "See what's possible, then make it yours."
+          "title": "Inspiration auf Abruf",
+          "description": "Stöber durch kuratierte Beispiele nach Alter, Artstyle und Sprache, um deine nächste Kreation zu zünden.",
+          "details": "Sieh, was möglich ist – und mach es zu deiner Geschichte."
         }
       }
     },
     "features": {
-      "title": "Why choose Mythoria?",
+      "title": "Darum Mythoria",
       "feature1": {
-        "title": "100% Personalized",
-        "description": "Every story is unique and created just for you."
+        "title": "100 % personalisiert",
+        "description": "Jede Geschichte ist einzigartig und nur für dich gemacht."
       },
       "feature2": {
-        "title": "AI-Powered",
-        "description": "Our artificial intelligence creates magical and engaging stories."
+        "title": "KI-gestützt",
+        "description": "Unsere KI erschafft magische, mitreißende Geschichten."
       },
       "feature3": {
-        "title": "Beautiful Illustrations",
-        "description": "Each story comes with stunning, custom illustrations."
+        "title": "Wunderschöne Illustrationen",
+        "description": "Jede Story kommt mit beeindruckenden, individuellen Illustrationen."
       },
       "feature4": {
-        "title": "Physical Books",
-        "description": "Turn your digital story into a real book you can hold and treasure."
+        "title": "Gedruckte Bücher",
+        "description": "Mach aus deiner digitalen Geschichte ein echtes Buch zum Anfassen und Liebhaben."
       }
     },
     "testimonials": {
-      "title": "What our families are saying",
+      "title": "Das sagen unsere Familien",
       "testimonial1": {
-        "quote": "My daughter absolutely loved seeing herself as the main character in her adventure. It's something she'll treasure forever!",
-        "author": "Maria S., mother of 2"
+        "quote": "Meine Tochter hat es geliebt, sich selbst als Hauptfigur in ihrem Abenteuer zu sehen. Das wird sie für immer schätzen!",
+        "author": "Maria S., Mutter von zwei Kindern"
       },
       "testimonial2": {
-        "quote": "The quality of the story and illustrations exceeded our expectations. Mythoria has created something truly special.",
-        "author": "João P., grandfather"
+        "quote": "Die Qualität der Story und der Illustrationen hat unsere Erwartungen übertroffen. Mythoria hat etwas wirklich Besonderes geschaffen.",
+        "author": "João P., Großvater"
       }
     }
   }
