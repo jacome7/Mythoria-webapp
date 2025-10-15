@@ -1,91 +1,91 @@
 {
   "OnboardingProfile": {
-    "title": "Welcome!",
-    "intro": "We’re thrilled to start this creative journey with you. The first step is done—let’s make it truly yours.",
+    "title": "Willkommen!",
+    "intro": "Wir freuen uns riesig, diese kreative Reise mit dir zu starten. Der erste Schritt ist geschafft – jetzt machen wir sie ganz zu deiner.",
     "preferredName": {
-      "section": "How should we address you?",
-      "help": "To keep things friendly and personal, tell us how you prefer to be called.",
-      "label": "Your preferred name"
+      "section": "Wie dürfen wir dich nennen?",
+      "help": "Damit alles persönlich und locker bleibt, sag uns, wie du genannt werden möchtest.",
+      "label": "Dein bevorzugter Name"
     },
-    "tailor": { "section": "Help us tailor your experience (Optional)" },
-    "gender": { "label": "Gender" },
-    "literaryAge": { "label": "Literary Age" },
+    "tailor": { "section": "Hilf uns, dein Erlebnis zu personalisieren (optional)" },
+    "gender": { "label": "Geschlecht" },
+    "literaryAge": { "label": "Literarisches Alter" },
     "primaryGoal": {
-      "label": "What’s your main goal when creating a book with us?",
-      "otherPlaceholder": "(Optional) Tell us more"
+      "label": "Was ist dein Hauptziel, wenn du mit uns ein Buch erschaffst?",
+      "otherPlaceholder": "(Optional) Erzähl uns mehr"
     },
-    "audience": { "label": "Who do you usually create stories for?" },
-    "interests": { "label": "What kind of stories do you like?" },
-    "pickOne": "Pick one",
+    "audience": { "label": "Für wen erzählst du normalerweise Geschichten?" },
+    "interests": { "label": "Welche Art von Geschichten magst du?" },
+    "pickOne": "Wähle eine Option",
     "gift": {
-      "section": "A gift to get you started!",
-      "copy": "Creativity deserves a little push. We’re giving you {credits} free credits to use on your first story—no strings attached.",
-      "button": { "claimed": "You already have your credits", "start": "Start Your Story" }
+      "section": "Ein kleines Geschenk zum Start!",
+      "copy": "Kreativität verdient einen kleinen Schub. Wir schenken dir {credits} kostenlose Credits für deine erste Geschichte – ganz ohne Haken.",
+      "button": { "claimed": "Du hast deine Credits bereits", "start": "Starte deine Geschichte" }
     },
     "ideas": {
-      "section": "What can you create? Here are some ideas:",
-      "item1": "Personalized bedtime stories where the child is the hero.",
-      "item2": "Family adventures—turn holidays and milestones into epic tales.",
-      "item3": "A unique gift for a birthday, baptism, or just to say ‘I care.’"
+      "section": "Was kannst du erschaffen? Hier ein paar Ideen:",
+      "item1": "Personalisierte Gutenachtgeschichten, in denen das Kind die Hauptrolle spielt.",
+      "item2": "Familienabenteuer – verwandle Feiertage und besondere Momente in epische Erzählungen.",
+      "item3": "Ein einzigartiges Geschenk zum Geburtstag, zur Taufe oder einfach, um zu zeigen: „Du bist mir wichtig.“"
     },
     "inspiration": {
-      "section": "Your muse awaits",
-      "copy": "Stuck for ideas? Our Inspiration page is packed with prompts and themes.",
-      "button": "Take me to Inspiration"
+      "section": "Deine Muse wartet",
+      "copy": "Dir fehlt die zündende Idee? Auf unserer Inspirationsseite findest du jede Menge Impulse und Themen.",
+      "button": "Zur Inspiration"
     },
     "options": {
       "gender": {
-        "female": "Female",
-        "male": "Male",
-        "prefer_not_to_say": "Prefer not to say"
+        "female": "Weiblich",
+        "male": "Männlich",
+        "prefer_not_to_say": "Möchte ich nicht sagen"
       },
       "literaryAge": {
-        "school_age": "School Age",
-        "teen": "Teen",
-        "emerging_adult": "Emerging Adult",
-        "experienced_adult": "Experienced Adult",
-        "midlife_mentor_or_elder": "Midlife Mentor or Elder"
+        "school_age": "Schulkind",
+        "teen": "Teenager",
+        "emerging_adult": "Junge Erwachsene",
+        "experienced_adult": "Erfahrene Erwachsene",
+        "midlife_mentor_or_elder": "Mentor*in in der Lebensmitte oder älter"
       },
       "ageOptions": {
-        "school_age": "School Age (6–12)",
-        "teen": "Teen (13–17)",
-        "emerging_adult": "Emerging Adult (18–24)",
-        "experienced_adult": "Experienced Adult (25–49)",
-        "midlife_mentor_or_elder": "Mentor / Elder (50+)"
+        "school_age": "Schulkind (6–12)",
+        "teen": "Teenager (13–17)",
+        "emerging_adult": "Junge Erwachsene (18–24)",
+        "experienced_adult": "Erfahrene Erwachsene (25–49)",
+        "midlife_mentor_or_elder": "Mentor*in / Senior*in (50+)"
       },
       "primaryGoals": {
-        "family_keepsake": "Create a family keepsake",
-        "personalized_gift": "Give a unique, personalized gift",
-        "child_development": "Support a child's growth/education",
-        "fun_and_creativity": "Just for fun & creativity",
-        "friend_group_memories": "Preserve memories of a friend group",
-        "company_engagement": "Energize my company",
-        "other": "Other"
+        "family_keepsake": "Eine Familienerinnerung schaffen",
+        "personalized_gift": "Ein einzigartiges, personalisiertes Geschenk machen",
+        "child_development": "Die Entwicklung oder Bildung eines Kindes fördern",
+        "fun_and_creativity": "Einfach aus Spaß und Kreativität",
+        "friend_group_memories": "Erinnerungen für meinen Freundeskreis festhalten",
+        "company_engagement": "Mein Unternehmen begeistern",
+        "other": "Sonstiges"
       },
       "audiences": {
-        "my_child": "My child",
-        "family_member": "A family member",
-        "friend_group": "A group of friends",
-        "myself": "Myself",
-        "a_friend": "A friend",
-        "varies": "It varies"
+        "my_child": "Mein Kind",
+        "family_member": "Ein Familienmitglied",
+        "friend_group": "Eine Freundesgruppe",
+        "myself": "Mich selbst",
+        "a_friend": "Eine*n Freund*in",
+        "varies": "Ganz unterschiedlich"
       },
       "interests": {
-        "adventure_exploration": "Adventure & Exploration",
-        "fantasy_magic": "Fantasy & Magic",
-        "science_discovery": "Science & Discovery",
-        "everyday_emotions": "Everyday Life & Emotions",
-        "sports": "Sports",
-        "comedy_fun": "Comedy & Fun",
-        "educational": "Educational"
+        "adventure_exploration": "Abenteuer & Entdeckungen",
+        "fantasy_magic": "Fantasy & Magie",
+        "science_discovery": "Wissenschaft & Forschung",
+        "everyday_emotions": "Alltag & Gefühle",
+        "sports": "Sport",
+        "comedy_fun": "Comedy & Spaß",
+        "educational": "Lehrreiche Geschichten"
       }
     },
-    "saved": "Saved ✓",
-    "saving": "Saving...",
+    "saved": "Gespeichert ✓",
+    "saving": "Speichern...",
     "errors": {
-      "displayNameRequired": "Name is required",
-      "displayNameTooLong": "Display name too long",
-      "loadFailed": "Could not load profile. Please try again later."
+      "displayNameRequired": "Name ist erforderlich",
+      "displayNameTooLong": "Anzeigename ist zu lang",
+      "loadFailed": "Profil konnte nicht geladen werden. Versuch es später noch einmal."
     }
   }
 }
