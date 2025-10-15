@@ -1,20 +1,20 @@
 {
   "Actions": {
-    "signIn": "Sign In",
-    "read": "Read",
-    "listen": "Listen",
-    "edit": "Edit",
-    "print": "Print",
-    "share": "Share",
-    "backToMyStories": "Back to My Stories",
-    "goToHomepage": "Go to Homepage",
-    "tryAgain": "Try Again",
-    "close": "Close",
-    "goBack": "Go Back",
-    "backToStory": "Back to Story",
-    "createAccount": "Create Account",
-    "duplicate": "Duplicate",
-    "open": "Open",
-    "duplicateTitleSuffix": " - copy"
+    "signIn": "Anmelden",
+    "read": "Lesen",
+    "listen": "Anhören",
+    "edit": "Bearbeiten",
+    "print": "Drucken",
+    "share": "Teilen",
+    "backToMyStories": "Zurück zu meinen Geschichten",
+    "goToHomepage": "Zur Startseite",
+    "tryAgain": "Erneut versuchen",
+    "close": "Schließen",
+    "goBack": "Zurück",
+    "backToStory": "Zurück zur Story",
+    "createAccount": "Konto erstellen",
+    "duplicate": "Duplizieren",
+    "open": "Öffnen",
+    "duplicateTitleSuffix": " - Kopie"
   }
 }

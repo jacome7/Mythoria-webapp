@@ -1,17 +1,17 @@
 {
   "PublicStoryChapter": {
-    "chapterNotFound": "Chapter Not Found",
-    "chapterNotAvailable": "This chapter is not available.",
-    "chapter": "Chapter",
+    "chapterNotFound": "Kapitel nicht gefunden",
+    "chapterNotAvailable": "Dieses Kapitel ist nicht verfügbar.",
+    "chapter": "Kapitel",
     "errors": {
-      "failedToLoadChapter": "Failed to load chapter"
+      "failedToLoadChapter": "Kapitel konnte nicht geladen werden"
     },
     "metadata": {
-      "chapterPageTitle": "{title} - Chapter {number} | Mythoria"
+      "chapterPageTitle": "{title} – Kapitel {number} | Mythoria"
     },
     "lastChapter": {
-      "enjoyedTitle": "Enjoyed this story?",
-      "enjoyedDesc": "Create your own personalized story or order a beautiful printed copy!"
+      "enjoyedTitle": "Diese Geschichte hat dir gefallen?",
+      "enjoyedDesc": "Erstelle deine eigene personalisierte Story oder bestelle ein wunderschön gedrucktes Exemplar!"
     }
   }
 }
