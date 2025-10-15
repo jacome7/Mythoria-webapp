@@ -1,39 +1,39 @@
 {
   "AITextStoryEditor": {
-    "title": "AI Text Editor - {storyTitle}",
-    "fullStoryTitle": "Full Story",
-    "requestPlaceholder": "Enter your editing request...",
-    "characterCount": "{count}/{max} characters",
-    "editButton": "Edit Story",
-    "cancelButton": "Cancel",
-    "loading": "Processing...",
+    "title": "KI-Texteditor – {storyTitle}",
+    "fullStoryTitle": "Komplette Geschichte",
+    "requestPlaceholder": "Gib deine Bearbeitungsanfrage ein...",
+    "characterCount": "{count}/{max} Zeichen",
+    "editButton": "Geschichte bearbeiten",
+    "cancelButton": "Abbrechen",
+    "loading": "Wird verarbeitet...",
     "errors": {
-      "enterRequest": "Please enter your editing request",
-      "unableToCheckCredits": "Unable to check credits. Please try again.",
-      "failedToEdit": "Failed to edit story. Please try again."
+      "enterRequest": "Bitte gib deine Bearbeitungsanfrage ein",
+      "unableToCheckCredits": "Credits konnten nicht überprüft werden. Bitte versuche es noch einmal.",
+      "failedToEdit": "Geschichte konnte nicht bearbeitet werden. Bitte versuche es noch einmal."
     },
-    "editScopeLabel": "Edit Scope",
-    "currentChapterOnly": "Current Chapter Only",
-    "allChapters": "All Chapters",
-    "selectChapterLabel": "Select Chapter",
-    "chapterOption": "Chapter {number}: {title}",
-    "editRequestLabel": "Edit Request",
+    "editScopeLabel": "Bearbeitungsumfang",
+    "currentChapterOnly": "Nur aktuelles Kapitel",
+    "allChapters": "Alle Kapitel",
+    "selectChapterLabel": "Kapitel auswählen",
+    "chapterOption": "Kapitel {number}: {title}",
+    "editRequestLabel": "Bearbeitungsanfrage",
     "fullStoryExplanation": {
-      "title": "How Full Story Edit Works",
-      "item1": "AI will apply your request to all chapters in the story",
-      "item2": "Each chapter edit counts as one edit towards your credit usage",
-      "item3": "All successful changes will be automatically saved",
-      "item4": "You can review the changes after the edit is complete",
-      "item5": "If some chapters fail to edit, the successful ones will still be saved"
+      "title": "So funktioniert die Bearbeitung der gesamten Geschichte",
+      "item1": "Die KI wendet deine Anfrage auf alle Kapitel der Geschichte an",
+      "item2": "Jede Kapitelbearbeitung zählt als eine Bearbeitung für deinen Credit-Verbrauch",
+      "item3": "Alle erfolgreichen Änderungen werden automatisch gespeichert",
+      "item4": "Du kannst die Änderungen nach Abschluss prüfen",
+      "item5": "Wenn einzelne Kapitel fehlschlagen, werden die erfolgreichen trotzdem gespeichert"
     },
     "costEstimation": {
-      "title": "Cost Estimation",
-      "freeEdit": "This edit is free!",
-      "costEdit": "This edit will cost {credits} credit{plural}",
-      "currentBalance": "• Current balance: {credits} credits",
-      "editCount": "• Edit count: {count} (next threshold: {threshold})",
-      "freeChapterEdits": "• {count} free chapter edits",
-      "paidChapterEdits": "• {count} paid chapter edits",
+      "title": "Kostenabschätzung",
+      "freeEdit": "Diese Bearbeitung ist kostenlos!",
+      "costEdit": "Diese Bearbeitung kostet {credits} Credit{plural}",
+      "currentBalance": "• Aktueller Stand: {credits} Credits",
+      "editCount": "• Bearbeitungsanzahl: {count} (nächster Schwellenwert: {threshold})",
+      "freeChapterEdits": "• {count} kostenlose Kapitelbearbeitungen",
+      "paidChapterEdits": "• {count} kostenpflichtige Kapitelbearbeitungen",
       "message": "• {message}"
     }
   }
