@@ -1,42 +1,42 @@
 {
   "AIEditModal": {
-    "title": "Story Editor",
-    "description": "Enhance your story with Mythoria",
+    "title": "Story-Editor",
+    "description": "Verbessere deine Geschichte mit Mythoria",
     "tabs": {
       "text": "Text",
-      "images": "Images"
+      "images": "Bilder"
     },
     "editSelection": {
-      "label": "What would you like to edit?",
-      "entireStory": "Entire Story"
+      "label": "Was möchtest du bearbeiten?",
+      "entireStory": "Gesamte Geschichte"
     },
     "editRequest": {
-      "label": "What changes would you like to make?",
-      "placeholder": "Describe the changes you'd like to make to your story...",
-      "charactersCount": "{current}/{max} characters"
+      "label": "Welche Änderungen möchtest du vornehmen?",
+      "placeholder": "Beschreibe die Änderungen, die du an deiner Geschichte vornehmen möchtest...",
+      "charactersCount": "{current}/{max} Zeichen"
     },
     "buttons": {
-      "cancel": "Cancel",
-      "close": "Close",
-      "applyChanges": "Apply Changes",
-      "processing": "Processing..."
+      "cancel": "Abbrechen",
+      "close": "Schließen",
+      "applyChanges": "Änderungen anwenden",
+      "processing": "Wird verarbeitet..."
     },
     "loadingState": {
-      "title": "Processing your request...",
-      "description": "This may take 5-60 seconds depending on the scope of changes."
+      "title": "Deine Anfrage wird verarbeitet...",
+      "description": "Das kann je nach Umfang der Änderungen 5-60 Sekunden dauern."
     },
     "errors": {
-      "enterRequest": "Please enter your editing request",
-      "requestTooLong": "Request must be 2000 characters or less",
-      "editFailed": "Failed to edit story. Please try again.",
-      "checkCreditsFailed": "Failed to check credit requirements",
-      "checkCreditsFailedRetry": "Failed to check credit requirements. Please try again.",
-      "insufficientCredits": "Insufficient credits for this edit",
-      "updateImageFailed": "Failed to update image. Please try again."
+      "enterRequest": "Bitte gib deine Bearbeitungsanfrage ein",
+      "requestTooLong": "Die Anfrage darf maximal 2000 Zeichen lang sein",
+      "editFailed": "Geschichte konnte nicht bearbeitet werden. Bitte versuche es erneut.",
+      "checkCreditsFailed": "Credit-Anforderungen konnten nicht geprüft werden",
+      "checkCreditsFailedRetry": "Credit-Anforderungen konnten nicht geprüft werden. Bitte versuche es erneut.",
+      "insufficientCredits": "Nicht genügend Credits für diese Bearbeitung",
+      "updateImageFailed": "Bild konnte nicht aktualisiert werden. Bitte versuche es erneut."
     },
     "imageSave": {
-      "title": "Saving Image Changes",
-      "description": "Please wait while we save your image changes to the story..."
+      "title": "Bildänderungen werden gespeichert",
+      "description": "Bitte warte, während wir deine Bildänderungen in der Geschichte speichern..."
     }
   }
 }

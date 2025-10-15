@@ -1,53 +1,53 @@
 {
   "DeleteAccount": {
-    "title": "Delete Account",
-    "subtitle": "Permanently remove your account and all associated data from Mythoria",
+    "title": "Konto löschen",
+    "subtitle": "Entferne dein Konto und alle zugehörigen Daten dauerhaft aus Mythoria",
     "notLoggedIn": {
-      "title": "Account Deletion Instructions",
-      "description": "To delete your account, you need to be logged in first.",
+      "title": "Anleitung zur Kontolöschung",
+      "description": "Um dein Konto zu löschen, musst du zuerst angemeldet sein.",
       "steps": {
-        "title": "How to Delete Your Account:",
-        "step1": "Click on the user icon in the top-right corner of the page",
-        "step2": "Select 'Manage Account' from the dropdown menu",
-        "step3": "In the left sidebar, choose 'Security'",
-        "step4": "Click the 'Delete Account' button and follow the confirmation process"
+        "title": "So löschst du dein Konto:",
+        "step1": "Klicke auf das Benutzersymbol in der oberen rechten Ecke der Seite",
+        "step2": "Wähle 'Konto verwalten' aus dem Dropdown-Menü",
+        "step3": "Wähle in der linken Seitenleiste 'Sicherheit'",
+        "step4": "Klicke auf den Button 'Konto löschen' und folge dem Bestätigungsprozess"
       }
     },
     "loggedIn": {
-      "title": "Delete Your Account",
-      "description": "This action will permanently delete your account and cannot be undone.",
+      "title": "Dein Konto löschen",
+      "description": "Diese Aktion löscht dein Konto dauerhaft und kann nicht rückgängig gemacht werden.",
       "consequences": {
-        "title": "What will be deleted:",
-        "item1": "Your profile and personal information",
-        "item2": "All your created books and stories",
-        "item3": "Any pending credits in your account",
-        "item4": "Your account history and preferences"
+        "title": "Was wird gelöscht:",
+        "item1": "Dein Profil und persönliche Informationen",
+        "item2": "Alle deine erstellten Bücher und Geschichten",
+        "item3": "Alle ausstehenden Credits auf deinem Konto",
+        "item4": "Dein Kontoverlauf und Einstellungen"
       },
-      "deleteButton": "Delete My Account"
+      "deleteButton": "Mein Konto löschen"
     },
     "confirmation": {
-      "title": "Confirm Account Deletion",
-      "description": "This action cannot be undone. To confirm, please enter your email address below.",
-      "emailLabel": "Email",
-      "emailMismatch": "Email address does not match your account email",
-      "cancel": "Cancel",
-      "confirmDelete": "Delete Account",
-      "deleting": "Deleting..."
+      "title": "Kontolöschung bestätigen",
+      "description": "Diese Aktion kann nicht rückgängig gemacht werden. Bitte gib zur Bestätigung deine E-Mail-Adresse unten ein.",
+      "emailLabel": "E-Mail",
+      "emailMismatch": "E-Mail-Adresse stimmt nicht mit deiner Konto-E-Mail überein",
+      "cancel": "Abbrechen",
+      "confirmDelete": "Konto löschen",
+      "deleting": "Wird gelöscht..."
     },
     "warning": {
-      "title": "Warning: This action is irreversible",
-      "description": "Once your account is deleted, all your data including created books, pending credits, and personal information will be permanently removed and cannot be recovered."
+      "title": "Warnung: Diese Aktion ist nicht umkehrbar",
+      "description": "Sobald dein Konto gelöscht ist, werden alle deine Daten einschließlich erstellter Bücher, ausstehender Credits und persönlicher Informationen dauerhaft entfernt und können nicht wiederhergestellt werden."
     },
     "legal": {
-      "title": "Legal Compliance",
-      "description": "This deletion process complies with GDPR Article 17 (Right to Erasure) and Facebook Platform Terms Section 3(d)(i), ensuring your right to have your personal data removed."
+      "title": "Rechtliche Konformität",
+      "description": "Dieser Löschvorgang entspricht DSGVO Artikel 17 (Recht auf Löschung) und den Facebook-Plattform-Bestimmungen Abschnitt 3(d)(i) und gewährleistet dein Recht auf Entfernung deiner persönlichen Daten."
     },
     "errors": {
-      "deletionFailed": "Account deletion failed. Please try again or contact support if the problem persists.",
-      "networkError": "Network error occurred. Please check your connection and try again.",
-      "failedToDeleteAccount": "Failed to delete account. Please try again later.",
-      "deletionError": "An error occurred while deleting your account. Please contact support for assistance.",
-      "deletionAlert": "An error occurred while deleting your account. Please try again or contact support."
+      "deletionFailed": "Kontolöschung fehlgeschlagen. Bitte versuche es erneut oder kontaktiere den Support, falls das Problem weiterhin besteht.",
+      "networkError": "Netzwerkfehler aufgetreten. Bitte überprüfe deine Verbindung und versuche es erneut.",
+      "failedToDeleteAccount": "Konto konnte nicht gelöscht werden. Bitte versuche es später erneut.",
+      "deletionError": "Ein Fehler ist beim Löschen deines Kontos aufgetreten. Bitte kontaktiere den Support für Hilfe.",
+      "deletionAlert": "Ein Fehler ist beim Löschen deines Kontos aufgetreten. Bitte versuche es erneut oder kontaktiere den Support."
     }
   }
 }

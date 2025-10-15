@@ -1,33 +1,33 @@
 {
   "Metadata": {
-    "title": "Mythoria | Personalized Books Creator",
-    "description": "Create unique, fully illustrated books with Mythoria's generative-AI. Turn any story into an e-book, audiobook or printed gift in minutes.",
+    "title": "Mythoria | Personalisierte Bücher erstellen",
+    "description": "Erstelle einzigartige, vollständig illustrierte Bücher mit Mythorias generativer KI. Verwandle jede Geschichte in wenigen Minuten in ein E-Book, Hörbuch oder gedrucktes Geschenk.",
     "defaultTitle": "Mythoria",
-    "defaultDescription": "Personalized Books Creator",
+    "defaultDescription": "Personalisierte Bücher erstellen",
     "brand": {
       "name": "Mythoria",
-      "tagline": "Personalized Books Creator"
+      "tagline": "Personalisierte Bücher erstellen"
     },
     "openGraph": {
-      "title": "Mythoria | Personalized Books Creator",
-      "description": "Turn your ideas into personalised, beautifully illustrated books — read, listen or print.",
+      "title": "Mythoria | Personalisierte Bücher erstellen",
+      "description": "Verwandle deine Ideen in personalisierte, wunderschön illustrierte Bücher – lesen, hören oder drucken.",
       "image": "https://mythoria.pt/Mythoria-logo-white-512x336.jpg",
       "url": "https://mythoria.pt/de-DE/"
     },
     "structuredData": {
       "name": "Mythoria",
-      "description": "Mythoria lets anyone create and customize fully illustrated books using generative AI.",
+      "description": "Mit Mythoria kann jeder vollständig illustrierte Bücher mithilfe generativer KI erstellen und anpassen.",
       "inLanguage": "de-DE"
     },
     "manifest": {
-      "name": "Mythoria - Personalized Books Creator",
+      "name": "Mythoria - Personalisierte Bücher erstellen",
       "short_name": "Mythoria",
-      "description": "Create unique, fully illustrated books",
+      "description": "Erstelle einzigartige, vollständig illustrierte Bücher",
       "shortcuts": {
         "createStory": {
-          "name": "Create Story",
-          "short_name": "Create",
-          "description": "Start creating a new story"
+          "name": "Geschichte erstellen",
+          "short_name": "Erstellen",
+          "description": "Beginne eine neue Geschichte zu erstellen"
         }
       }
     }

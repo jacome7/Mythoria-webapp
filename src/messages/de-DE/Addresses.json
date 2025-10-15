@@ -1,55 +1,55 @@
 {
   "Addresses": {
-    "addAddress": "Add New Address",
-    "editAddress": "Edit Address",
-    "confirmDelete": "Are you sure you want to delete this address?",
+    "addAddress": "Neue Adresse hinzufügen",
+    "editAddress": "Adresse bearbeiten",
+    "confirmDelete": "Bist du sicher, dass du diese Adresse löschen möchtest?",
     "validation": {
-      "requiredFields": "Please fill in all required fields (Address Line 1, City, Country)"
+      "requiredFields": "Bitte fülle alle Pflichtfelder aus (Adresszeile 1, Stadt, Land)"
     },
     "errors": {
-      "saveFailed": "Failed to save address. Please try again.",
-      "deleteFailed": "Failed to delete address. Please try again."
+      "saveFailed": "Adresse konnte nicht gespeichert werden. Bitte versuche es erneut.",
+      "deleteFailed": "Adresse konnte nicht gelöscht werden. Bitte versuche es erneut."
     },
     "fields": {
-      "type": "Address Type",
-      "line1": "Address Line 1",
-      "line2": "Address Line 2",
-      "city": "City",
-      "stateRegion": "State/Region",
-      "postalCode": "Postal Code",
-      "country": "Country",
-      "phone": "Phone Number"
+      "type": "Adresstyp",
+      "line1": "Adresszeile 1",
+      "line2": "Adresszeile 2",
+      "city": "Stadt",
+      "stateRegion": "Bundesland/Region",
+      "postalCode": "Postleitzahl",
+      "country": "Land",
+      "phone": "Telefonnummer"
     },
     "placeholders": {
-      "line1": "Enter street address",
-      "line2": "Apartment, suite, etc. (optional)",
-      "city": "Enter city",
-      "stateRegion": "Enter state or region",
-      "postalCode": "Enter postal code",
-      "phone": "Enter phone number"
+      "line1": "Straße und Hausnummer eingeben",
+      "line2": "Wohnung, Etage usw. (optional)",
+      "city": "Stadt eingeben",
+      "stateRegion": "Bundesland oder Region eingeben",
+      "postalCode": "Postleitzahl eingeben",
+      "phone": "Telefonnummer eingeben"
     },
     "types": {
-      "delivery": "Delivery",
-      "billing": "Billing"
+      "delivery": "Lieferadresse",
+      "billing": "Rechnungsadresse"
     },
     "countries": {
-      "us": "United States",
-      "gb": "United Kingdom",
-      "de": "Germany",
-      "fr": "France",
-      "es": "Spain",
-      "it": "Italy",
+      "us": "Vereinigte Staaten",
+      "gb": "Vereinigtes Königreich",
+      "de": "Deutschland",
+      "fr": "Frankreich",
+      "es": "Spanien",
+      "it": "Italien",
       "pt": "Portugal",
-      "nl": "Netherlands",
-      "be": "Belgium",
-      "ca": "Canada",
-      "au": "Australia",
+      "nl": "Niederlande",
+      "be": "Belgien",
+      "ca": "Kanada",
+      "au": "Australien",
       "jp": "Japan",
-      "br": "Brazil"
+      "br": "Brasilien"
     },
     "buttons": {
-      "save": "Save Address",
-      "cancel": "Cancel"
+      "save": "Adresse speichern",
+      "cancel": "Abbrechen"
     }
   }
 }

@@ -457,6 +457,14 @@ export const envManifest: EnvVarDescriptor[] = [
     scopes: ['build', 'runtime'],
     note: 'Injected automatically by npm scripts.',
   },
+
+  // E2E Testing
+  {
+    name: 'CLERK_E2E_EMAIL',
+    required: false,
+    scopes: ['dev'],
+    note: 'Optional email for Playwright E2E authentication tests.',
+  },
 ];
 
 export function manifestByName() {
