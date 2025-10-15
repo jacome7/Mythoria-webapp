@@ -1,0 +1,59 @@
+{
+  "AIImageEditor": {
+    "title": "AI Image Editor - {imageType}",
+    "currentImage": "Current Image:",
+    "requestPlaceholder": "Describe how you want to modify this image...",
+    "characterCount": "{count}/{max} characters",
+    "generateButton": "Generate New Image",
+    "replaceButton": "Replace Original",
+    "cancelButton": "Cancel",
+    "loading": "Generating...",
+    "newImageLabel": "New Generated Image",
+    "newImageSuccess": "New image generated successfully!",
+    "generatedImageAlt": "Generated Image",
+    "modes": {
+      "edit": "Edit current image",
+      "upload": "Use your photo"
+    },
+    "labels": {
+      "addYourOwnPhoto": "Add Your Own Photo",
+      "describeChanges": "Describe the changes"
+    },
+    "helper": {
+      "dragDropOrClick": "Drag & drop or click to select an image",
+      "selectImage": "Select Image",
+      "processing": "Processing...",
+      "editUsesCredit": "Uses 1 image credit"
+    },
+    "radio": {
+      "legend": "How should we use your photo?",
+      "asIs": "Using photo as‑is, no modification (free)",
+      "convert": "Convert and edit photo to the {style} style (uses 1 credit)",
+      "defaultStyle": "selected"
+    },
+    "placeholders": {
+      "addNotesStyleDisabled": "Add notes (enable style conversion to use)"
+    },
+    "buttons": {
+      "applyPhoto": "Apply Photo"
+    },
+    "errors": {
+      "describeChanges": "Please describe the changes you want to make to the image",
+      "unableToCheckCredits": "Unable to check credits. Please try again.",
+      "failedToGenerate": "Failed to generate new image. Please try again.",
+      "failedToReplace": "Failed to replace image. Please try again."
+    },
+    "imageTypes": {
+      "cover": "Cover",
+      "backcover": "Back Cover",
+      "chapter": "Chapter {number}"
+    },
+    "cropper": {
+      "title": "Crop Image to 1024x1536 (Portrait)",
+      "zoom": "Zoom {value}x",
+      "cancel": "Cancel",
+      "crop": "Crop",
+      "processing": "Processing..."
+    }
+  }
+}

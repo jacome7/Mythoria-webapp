@@ -1,0 +1,35 @@
+{
+  "CreditsDisplay": {
+    "button": "Credits available: {credits}",
+    "creditHistory": "Credit History",
+    "currentBalance": "Available Balance:",
+    "credits": "credits",
+    "addCredits": "Add Credits",
+    "headers": {
+      "date": "Date",
+      "eventType": "Event Type",
+      "amount": "Amount",
+      "balance": "Balance"
+    },
+    "eventTypes": {
+      "initialCredit": "Initial Credit",
+      "creditPurchase": "Credit Purchase",
+      "eBookGeneration": "eBook Generation",
+      "audioBookGeneration": "AudioBook Generation",
+      "printOrder": "Print Order",
+      "refund": "Refund",
+      "voucher": "Voucher",
+      "promotion": "Promotion"
+    }
+  },
+  "Voucher": {
+    "haveCode": "Have a code?",
+    "placeholder": "Enter your code",
+    "apply": "Apply",
+    "success": "Success! You unlocked {credits, plural, one {# credit} other {# credits}} with {code}.",
+    "invalid": "Invalid or inactive code.",
+    "checking": "Checking...",
+    "sectionHeading": "Promo or referral code",
+    "sectionSubheading": "Got a secret share from a friend or a partner? Drop it here and unlock extra magic."
+  }
+}

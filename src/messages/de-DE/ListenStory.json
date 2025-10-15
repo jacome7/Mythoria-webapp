@@ -1,0 +1,28 @@
+{
+  "ListenStory": {
+    "accessRestricted": "Access Restricted",
+    "needSignInToListen": "You need to be signed in to listen to stories.",
+    "listenToStory": "Listen to \"{title}\"",
+    "wantNewNarration": "Want a New Narration?",
+    "newNarrationDescription": "You can generate a new narration of your story with different voice characteristics.",
+    "cost": "Cost",
+    "yourBalance": "Your Balance",
+    "narrateStoryAgain": "Narrate Story Again",
+    "replaceCurrentNarration": "This will replace your current narration",
+    "needMoreCredits": "You need {credits} more credits to generate a new narration.",
+    "buyMoreCredits": "Buy More Credits",
+    "loadingPricing": "Loading pricing information...",
+    "convertYourStory": "Convert Your Story",
+    "convertDescription": "Convert your story into a beautifully narrated story with the help of Mythoria elfs",
+    "narrateYourStory": "Narrate Your Story",
+    "generatingAudiobook": "Generating Your Audiobook",
+    "checkingUpdates": "We're checking for updates every 15 seconds. Please keep this page open.",
+    "generationCompleted": "Audiobook generation completed!",
+    "chapterTitle": "Chapter {number}",
+    "startingGeneration": "Starting audiobook generation...",
+    "generationStarted": "Audiobook generation started! The Mythoria elfs will take around 5 minutes to narrate all the story.",
+    "needMoreCreditsGenerate": "You need {shortfall} more credits to generate an audiobook.",
+    "generationFailed": "Failed to start audiobook generation",
+    "tryAgainLater": "Please try again later."
+  }
+}

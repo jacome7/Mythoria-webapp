@@ -1,0 +1,21 @@
+{
+  "Errors": {
+    "generic": "An error occurred. Please try again.",
+    "authRequired": "Authentication Required",
+    "pleaseSignIn": "Please sign in to continue",
+    "storyNotAvailableYet": "This story is not available yet.",
+    "storyNotFoundGeneric": "Story not found.",
+    "noPermission": "You do not have permission to access this story.",
+    "failedToLoad": "Failed to load the story. Please try again.",
+    "oops": "Oops!",
+    "noChaptersFound": "No Chapters Found",
+    "noChaptersFoundDesc": "This story doesn't have any chapters!",
+    "chapterNotFound": "Chapter Not Found",
+    "chapterNotFoundDesc": "The requested chapter could not be found.",
+    "failedToStartAudiobook": "Failed to start audiobook generation",
+    "failedToPlayAudio": "Failed to play audio. Please try again.",
+    "failedToLoadAudio": "Failed to load audio. Please check your internet connection and try again.",
+    "audioPlaybackInteractionRequired": "Audio playback requires user interaction. Please try clicking the play button again.",
+    "audioFormatNotSupported": "This audio format is not supported by your browser."
+  }
+}

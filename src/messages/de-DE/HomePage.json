@@ -1,0 +1,184 @@
+{
+  "HomePage": {
+    "title": "Welcome",
+    "hero": {
+      "writeYourOwn": "Write your own",
+      "subtitle": "Turn anyone into the hero of a beautifully illustrated book — for children, grown-ups or entire teams.",
+      "subtitleEmphasized": "anyone",
+      "tellYourOwnStory": "Write your own story"
+    },
+    "words": [
+      "Story",
+      "Adventure",
+      "Memory",
+      "Chronicle",
+      "Fiction",
+      "Fable",
+      "Odyssey",
+      "Prose",
+      "Book",
+      "Novel",
+      "Romance",
+      "Manuscript",
+      "Tale",
+      "Fiction",
+      "Myth"
+    ],
+    "fallbackWords": ["Adventure", "Love Story", "Mystery", "Fairy Tale"],
+    "altTexts": {
+      "kidsBook": "Kids Book",
+      "groupsYearbooks": "Groups & Yearbooks",
+      "adultBook": "How I met your mother",
+      "companyBook": "Company Book"
+    },
+    "comingSoon": {
+      "title": "Our story is just beginning...",
+      "subtitle": "Mythoria is crafting something magical! I'm working hard, alongside AI, to bring you a new world of personalized storytelling. Stay tuned, the adventure will be available soon! 🧙‍♂️📚✨"
+    },
+    "audiences": {
+      "kids": {
+        "title": "Kids",
+        "description": "Turn your child, grandchild, nephew, or niece into the hero of their own magical adventure!"
+      },
+      "groups": {
+        "title": "Groups & Yearbooks",
+        "description": "Immortalize your team spirit and your group's memories!"
+      },
+      "adults": {
+        "title": "Adults",
+        "description": "Relive your love story or a once-in-a-lifetime trip as a stunning illustrated memoir."
+      },
+      "companies": {
+        "title": "Companies",
+        "description": "Gift customers or staff families a branded, personalised storybook that keeps your logo on the bookshelf."
+      }
+    },
+    "howItWorks": {
+      "title": "With Mythoria, creating your own story is easy:",
+      "steps": {
+        "step1": {
+          "title": "The Author",
+          "description": "Log in and let Mythoria know who you are. You'll be the proud author and owner of your unique story."
+        },
+        "step2": {
+          "title": "The Story",
+          "description": "Easily share your story idea by writing, speaking, or even drawing on paper. Mythoria captures and transforms your concept into magic."
+        },
+        "step3": {
+          "title": "The Characters",
+          "description": "Mythoria identifies the characters, but you can personalize every detail. Describe their appearance, passions, and unique traits."
+        },
+        "step4": {
+          "title": "The Plot",
+          "description": "Shape your story exactly as you wish—select the graphic style, set the tone, choose your audience, and fine-tune every detail."
+        },
+        "step5": {
+          "title": "The Gift",
+          "description": "Choose how you'd like to receive your masterpiece: as an eBook, an audiobook, or a beautifully printed book."
+        },
+        "step6": {
+          "title": "Experience the Magic",
+          "description": "Children will be captivated seeing themselves in exciting adventures, while adults will be delighted by reliving cherished memories and sharing heartfelt moments."
+        }
+      },
+      "stepLabels": {
+        "step1": "Step 1",
+        "step2": "Step 2",
+        "step3": "Step 3",
+        "step4": "Step 4",
+        "step5": "Step 5",
+        "step6": "Step 6"
+      },
+      "conclusion": "Our Story Factory Oompa-Loompas will handle everything else, bringing your story to life!"
+    },
+    "community": {
+      "title": "Join Our Growing Community of Storytellers!"
+    },
+    "cta": {
+      "title": "Ready to start your storytelling journey?",
+      "subtitle": "Sign up today and get 5 free credits to create your first personalized story!",
+      "button": "Try It For Free"
+    },
+    "whyChooseMythoria": {
+      "title": "Why Choose Mythoria?",
+      "subtitle": "Creating your own story should feel like magic, not homework. Here's what makes Mythoria different.",
+      "features": {
+        "youOwnTheStory": {
+          "title": "You Own the Story",
+          "description": "Keep all rights to your AI-generated book. Print unlimited copies, share as you please, showcase publicly only if you want.",
+          "details": "Your story, your rules—no hidden licenses, no surprise claims."
+        },
+        "ideaToBookFast": {
+          "title": "From Idea to Book—Fast",
+          "description": "Write, speak, or sketch your idea and watch it transform into a fully illustrated story ready to read, listen, or print.",
+          "details": "Like hitting fast-forward on the creative montage, minus the coffee stains."
+        },
+        "fullStoryEditing": {
+          "title": "Full Story Editing",
+          "description": "Tweak titles, chapters, dialogue, and pacing anytime. Invite AI to punch up scenes or rewind to earlier versions.",
+          "details": "The story stays alive—edit until it feels unmistakably yours."
+        },
+        "multipleArtStyles": {
+          "title": "Multiple Art Styles",
+          "description": "Choose from cartoon, watercolor, digital art, hand-drawn, minimalist, vintage, comic book, anime, and more.",
+          "details": "Match the visuals to your vibe—serious, playful, or somewhere dreamy."
+        },
+        "addYourOwnPhotos": {
+          "title": "Add Your Own Photos",
+          "description": "Drop in family photos, class pictures, or special moments to personalize your tale.",
+          "details": "Turn real memories into illustrated magic."
+        },
+        "privateByDefault": {
+          "title": "Private by Default",
+          "description": "Drafts stay private. Share a link with loved ones when you're ready, or opt in to the public showcase.",
+          "details": "No unwanted spotlights—your story, your timeline."
+        },
+        "madeForEveryAudience": {
+          "title": "Made for Every Audience",
+          "description": "Create for babies, kids, teens, or adults. Tune tone and reading level to fit your reader perfectly.",
+          "details": "One platform, infinite voices."
+        },
+        "gentleCreditSystem": {
+          "title": "Gentle Credit System",
+          "description": "Start with 5 free credits. Top up only when you need extra chapters, illustrations, or prints.",
+          "details": "No subscriptions, no pressure—pay as you dream."
+        },
+        "inspirationOnTap": {
+          "title": "Inspiration on Tap",
+          "description": "Browse featured examples by age, art style, and language to spark your next creation.",
+          "details": "See what's possible, then make it yours."
+        }
+      }
+    },
+    "features": {
+      "title": "Why choose Mythoria?",
+      "feature1": {
+        "title": "100% Personalized",
+        "description": "Every story is unique and created just for you."
+      },
+      "feature2": {
+        "title": "AI-Powered",
+        "description": "Our artificial intelligence creates magical and engaging stories."
+      },
+      "feature3": {
+        "title": "Beautiful Illustrations",
+        "description": "Each story comes with stunning, custom illustrations."
+      },
+      "feature4": {
+        "title": "Physical Books",
+        "description": "Turn your digital story into a real book you can hold and treasure."
+      }
+    },
+    "testimonials": {
+      "title": "What our families are saying",
+      "testimonial1": {
+        "quote": "My daughter absolutely loved seeing herself as the main character in her adventure. It's something she'll treasure forever!",
+        "author": "Maria S., mother of 2"
+      },
+      "testimonial2": {
+        "quote": "The quality of the story and illustrations exceeded our expectations. Mythoria has created something truly special.",
+        "author": "João P., grandfather"
+      }
+    }
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "PricingPage": {
+    "header": {
+      "title": "Our Pricing",
+      "subtitle": "Simple, flexible, and designed for your storytelling needs."
+    },
+    "creditPackages": {
+      "badges": {
+        "bestValue": "Best Value",
+        "popular": "Popular"
+      },
+      "packages": {
+        "credits5": {
+          "description": "Perfect for trying things out."
+        },
+        "credits10": {
+          "description": "Great for a couple of stories."
+        },
+        "credits30": {
+          "description": "Ideal for avid storytellers."
+        },
+        "credits100": {
+          "description": "For the ultimate story creators!"
+        }
+      },
+      "buyButton": "Buy {credits} Credits",
+      "credits": "Credits"
+    },
+    "serviceCosts": {
+      "loading": "Loading pricing information...",
+      "availableServices": "Our services:",
+      "creditsHeader": "Credits",
+      "services": {
+        "generateEbook": "Generate a digital eBook",
+        "narrateAudiobook": "Narrate a book (audio-book)",
+        "editBook": "Edit a book:",
+        "manualEditing": "Manual editing",
+        "textReviewAI": "Text review with AI",
+        "generateNewImages": "Generate new images",
+        "printShipBook": "Print and ship book:",
+        "softCover": "Soft cover",
+        "extraChapterCost": "Extra chapter Cost"
+      },
+      "serviceNames": {
+        "ebook": "Generate a digital book (eBook)",
+        "audiobook": "Generate an audiobook",
+        "printed_book": "Order a printed & shipped softcover book"
+      },
+      "tableHeaders": {
+        "service": "Service",
+        "cost": "Cost in Credits"
+      },
+      "creditsUnit": "Credits"
+    },
+    "infoModal": {
+      "title": "Service Information",
+      "header": "Service Information",
+      "button": "More Info",
+      "services": {
+        "ebook": {
+          "title": "Generate a digital eBook",
+          "description": "Create a personalized digital book that can be read on any device."
+        },
+        "audiobook": {
+          "title": "Narrate a book (audio-book)",
+          "description": "Transform your story into an engaging audiobook with professional narration."
+        },
+        "printedBook": {
+          "title": "Order printed & shipped softcover book",
+          "description": "Get a beautiful physical softcover book delivered to your door.",
+          "printingOptions": [
+            "Premium softcover binding",
+            "High-quality paper and printing",
+            "Professional cover design",
+            "Worldwide shipping available"
+          ]
+        }
+      },
+      "close": "Close"
+    },
+    "newUserMessage": "Every new user gets 5 credits. Your first story is on us!",
+    "infoTexts": {
+      "textReview": "The first 5 edits are free. We only charge per group of 5 text changes.",
+      "imageGeneration": "The first image editing is free.",
+      "printedBooks": "Both printed soft and hard cover include the first 4 chapters at no additional costs."
+    },
+    "whyCredits": {
+      "title": "Why a Credit-Based System?",
+      "benefits": {
+        "flexibility": {
+          "title": "Flexibility:",
+          "description": "Purchase credits in bundles and use them for any service, anytime."
+        },
+        "savings": {
+          "title": "Savings:",
+          "description": "Enjoy better value with larger credit packages. The more you buy, the more you save!"
+        },
+        "gifting": {
+          "title": "Gifting Made Easy:",
+          "description": "Credits can be a perfect gift for friends and family, allowing them to choose their own storytelling adventure. (Gifting feature coming soon!)"
+        },
+        "simplicity": {
+          "title": "Simplicity:",
+          "description": "Understand the costs upfront for all our creative services. No hidden fees."
+        }
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "questions": {
+        "expiration": {
+          "question": "Do credits expire?",
+          "answer": "No, your Mythoria credits never expire! You can use them whenever inspiration strikes."
+        },
+        "refund": {
+          "question": "Can I get a refund on unused credits?",
+          "answer": "Currently, credits are non-refundable. However, they can be used for any of our services or gifted to another user in the future."
+        },
+        "payment": {
+          "question": "What payment methods do you accept?",
+          "answer": "We plan to accept all major credit cards (Visa, MasterCard, American Express) and PayPal. (Payment integration coming soon)"
+        },
+        "shipping": {
+          "question": "How are printed books shipped?",
+          "answer": "Printed books are shipped via standard postal services. Shipping times and costs may vary depending on your location. You'll see detailed shipping information at checkout when ordering a printed book."
+        }
+      }
+    },
+    "errors": {
+      "loadingFailed": "Failed to load pricing information"
+    }
+  },
+  "RevolutPayment": {
+    "loading": "Loading payment options...",
+    "securityNote": "Your payment is secured by Revolut's encryption",
+    "encryptionNote": "256-bit SSL encryption",
+    "errors": {
+      "sdkLoadFailed": "Failed to load payment service. Please refresh the page.",
+      "initializationFailed": "Failed to initialize payment. Please try again."
+    }
+  }
+}

@@ -1,4 +1,4 @@
-const DEFAULT_SUPPORTED_LOCALES = ['en-US', 'pt-PT', 'es-ES', 'fr-FR'] as const;
+const DEFAULT_SUPPORTED_LOCALES = ['en-US', 'pt-PT', 'es-ES', 'fr-FR', 'de-DE'] as const;
 
 export const SUPPORTED_LOCALES = (process.env.NEXT_PUBLIC_SUPPORTED_LOCALES?.split(',').map((l) =>
   l.trim(),

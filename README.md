@@ -3,7 +3,7 @@
 ## Product snapshot
 
 - Next.js 15 App Router experience that brings Mythoria stories to life across web and PWA entry points.
-- Multi-locale (en-US, pt-PT, es-ES, fr-FR) storytelling with tailored copy, SEO metadata, and Clerk-protected user spaces.
+- Multi-locale (en-US, pt-PT, es-ES, fr-FR, de-DE) storytelling with tailored copy, SEO metadata, and Clerk-protected user spaces.
 - Serves as the customer-facing bridge into the Mythoria micro-service constellation: Admin, Story Generation Workflows, and Notification Engine.
 
 ## Key experiences

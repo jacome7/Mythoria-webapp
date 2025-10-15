@@ -1,0 +1,145 @@
+{
+  "BuyCreditsPage": {
+    "header": {
+      "title": "Buy Credits",
+      "subtitle": "Purchase credits to unlock premium features and create amazing stories."
+    },
+    "packages": {
+      "title": "Available Credit Packages",
+      "addToCart": "Add to Cart"
+    },
+    "badges": {
+      "bestValue": "Best Value",
+      "popular": "Popular"
+    },
+    "cart": {
+      "title": "Shopping Cart",
+      "empty": "Your cart is empty. Add some credit packages to get started!",
+      "each": "each"
+    },
+    "summary": {
+      "title": "Order Summary",
+      "subtotal": "Subtotal",
+      "vat": "VAT (6%)",
+      "total": "Total"
+    },
+    "payment": {
+      "title": "Payment Method",
+      "revolutPay": "Pay with Card (Visa, Mastercard)",
+      "revolutDescription": "Fast and secure checkout powered by Revolut Pay. No account required.",
+      "revolutError": "Payment Error",
+      "revolutErrorHelp": "If you continue to experience issues, please try using a different payment method or contact support.",
+      "mbway": "MB Way",
+      "mbwayDescription": "Pay using your Portuguese MB Way mobile application.",
+      "comingSoon": "Coming Soon",
+      "completePayment": "Complete Your Payment",
+      "creatingOrder": "Creating your order...",
+      "orderCreated": "Order created successfully",
+      "success": "Payment successful! Redirecting to your stories...",
+      "mbwaySuccess": "MB Way payment request created! Check your email for payment instructions. Redirecting to your stories...",
+      "processing": "Processing payment..."
+    },
+    "actions": {
+      "proceedToPayment": "Proceed to Payment",
+      "creatingOrder": "Creating Order...",
+      "cancel": "Cancel",
+      "tryAgain": "Try Again",
+      "contactSupport": "Contact Support",
+      "backToPricing": "Back to Pricing"
+    },
+    "errors": {
+      "emptyCart": "Your cart is empty. Please add some credit packages first.",
+      "orderCreationFailed": "Failed to create order. Please try again.",
+      "paymentFailed": "Payment failed. Please try again.",
+      "contactSupport": "Please contact our support team for assistance."
+    },
+    "billing": {
+      "title": "Billing Information",
+      "expand": "Click to expand and enter billing details (optional)",
+      "collapse": "Click to collapse billing details",
+      "loading": "Loading your billing info...",
+      "personalDetails": "Personal / Company Details",
+      "billingAddress": "Billing Address",
+      "selectCountry": "Select a country",
+      "fields": {
+        "fullName": "Full Name / Company",
+        "email": "Email",
+        "vatNumberOptional": "VAT / Tax Number (optional)",
+        "phoneOptional": "Phone (optional)",
+        "addressLine1": "Address Line 1",
+        "addressLine2Optional": "Address Line 2 (optional)",
+        "addressLine2": "Address Line 2",
+        "city": "City",
+        "stateRegion": "State / Region",
+        "postalCode": "Postal Code",
+        "country": "Country"
+      },
+      "placeholders": {
+        "vatNumber": "e.g. PT123456789",
+        "phone": "+44 20 1234 5678",
+        "postalCode": "e.g. 75001"
+      },
+      "vatValidation": {
+        "valid": "Valid VAT number",
+        "help": "If you provide a valid EU VAT, VAT may be excluded where applicable.",
+        "errors": {
+          "tooShort": "VAT number is too short",
+          "unsupportedCountry": "Unsupported country code",
+          "invalidFormat": "Invalid VAT format for {country}. Expected: {format}"
+        }
+      },
+      "groups": {
+        "eu": "European Union",
+        "otherEurope": "Other Europe",
+        "other": "Other"
+      },
+      "countries": {
+        "at": "Austria",
+        "be": "Belgium",
+        "bg": "Bulgaria",
+        "hr": "Croatia",
+        "cy": "Cyprus",
+        "cz": "Czech Republic",
+        "dk": "Denmark",
+        "ee": "Estonia",
+        "fi": "Finland",
+        "fr": "France",
+        "de": "Germany",
+        "gr": "Greece",
+        "hu": "Hungary",
+        "ie": "Ireland",
+        "it": "Italy",
+        "lv": "Latvia",
+        "lt": "Lithuania",
+        "lu": "Luxembourg",
+        "mt": "Malta",
+        "nl": "Netherlands",
+        "pl": "Poland",
+        "pt": "Portugal",
+        "ro": "Romania",
+        "sk": "Slovakia",
+        "si": "Slovenia",
+        "es": "Spain",
+        "se": "Sweden",
+        "ch": "Switzerland",
+        "no": "Norway",
+        "gb": "United Kingdom",
+        "us": "United States",
+        "ca": "Canada",
+        "au": "Australia",
+        "jp": "Japan",
+        "br": "Brazil",
+        "mx": "Mexico",
+        "in": "India",
+        "sg": "Singapore"
+      },
+      "info": {
+        "title": "Why provide billing info?",
+        "description1": "Helps us produce compliant invoices for your purchases.",
+        "description2": "VAT handling may improve with a valid VAT / Tax number.",
+        "description3": "Filling details now saves you time on future purchases.",
+        "description4": "Optional – you can skip this section if you prefer."
+      }
+    }
+  }
+}

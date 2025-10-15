@@ -9,7 +9,7 @@ const MISSING_LOG_TAG = '[i18n-missing]';
  * and assert that no obvious missing translation tokens appear.
  */
 
-const LOCALES = ['en-US', 'pt-PT', 'es-ES', 'fr-FR'];
+const LOCALES = ['en-US', 'pt-PT', 'es-ES', 'fr-FR', 'de-DE'];
 
 // Static (non-auth) base routes (avoid dynamic segments needing data or auth)
 const STATIC_ROUTES = [

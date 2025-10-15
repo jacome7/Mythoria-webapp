@@ -123,7 +123,7 @@ export default function GetInspiredPage() {
     'colored_pencil',
   ];
 
-  const storyLanguageOptions = ['en-US', 'pt-PT', 'es-ES', 'fr-FR'];
+  const storyLanguageOptions = ['en-US', 'pt-PT', 'es-ES', 'fr-FR', 'de-DE'];
 
   const loadFeaturedStories = useCallback(async () => {
     try {

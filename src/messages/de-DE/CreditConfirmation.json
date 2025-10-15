@@ -1,0 +1,25 @@
+{
+  "CreditConfirmation": {
+    "textEdit": "Text Edit",
+    "imageEdit": "Image Edit",
+    "freeEditTitle": "Free Edit Available",
+    "confirmEditTitle": "Confirm Edit",
+    "editProgress": "Edit Progress",
+    "editsCompleted": "edits completed",
+    "textEditFreeRemaining": "{remaining} free text edits remaining",
+    "textEditPaidMode": "You're in paid mode - 1 credit per 5 edits",
+    "imageEditFirstFree": "Your first image edit is free!",
+    "imageEditPaidMode": "1 credit per image edit",
+    "creditBalance": "Credit Balance",
+    "thisEditCosts": "This edit costs:",
+    "remainingBalance": "Remaining balance:",
+    "freeEdit": "This edit is free!",
+    "lowCreditsWarning": "Low Credits",
+    "lowCreditsMessage": "Consider purchasing more credits to continue editing.",
+    "cancel": "Cancel",
+    "processing": "Processing...",
+    "proceedFree": "Proceed (Free)",
+    "proceedWithCredits": "Use {credits} Credits",
+    "buyCredits": "Buy Credits"
+  }
+}

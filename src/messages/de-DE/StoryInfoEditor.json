@@ -1,0 +1,58 @@
+{
+  "StoryInfoEditor": {
+    "title": "Story Information",
+    "storyTitle": "Story Title",
+    "titlePlaceholder": "Enter story title",
+    "synopsis": "Synopsis",
+    "synopsisPlaceholder": "Brief description of your story",
+    "dedicationMessage": "Dedication Message",
+    "dedicationPlaceholder": "A personal dedication for this story",
+    "authorName": "Author Name",
+    "authorPlaceholder": "How should the author be credited?",
+    "targetAudience": "Target Audience",
+    "targetAudiencePlaceholder": "Select target audience",
+    "saveButton": "Save Changes",
+    "saving": "Saving...",
+    "frontCover": "Front Cover",
+    "backCover": "Back Cover",
+    "noCoverImage": "No cover image",
+    "noBackCover": "No back cover",
+    "editCover": "Edit Cover",
+    "editBackCover": "Edit Back Cover",
+    "addCover": "Add Cover",
+    "addBackCover": "Add Back Cover",
+    "storyDetails": "Story Details",
+    "language": "Story language",
+    "translate": "Translate full story",
+    "graphicalStyleLabel": "Graphical Style:",
+    "created": "Created:",
+    "lastUpdated": "Last Updated:",
+    "notSpecified": "Not specified",
+    "targetAudienceOptions": {
+      "children_0-2": "Children 0-2 (Babies/Toddlers)",
+      "children_3-6": "Children 3-6 (Preschoolers)",
+      "children_7-10": "Children 7-10 (Early Elementary)",
+      "children_11-14": "Children 11-14 (Middle Grade)",
+      "young_adult_15-17": "Young Adult 15-17",
+      "adult_18+": "Adult 18+",
+      "all_ages": "All Ages"
+    },
+    "altTexts": {
+      "storyCover": "Story cover",
+      "storyBackCover": "Story back cover"
+    },
+    "messages": {
+      "chapterSavedWithVersion": "Chapter saved as version {version}",
+      "failedToSaveChapter": "Failed to save chapter",
+      "noPreviousVersion": "No previous version available",
+      "revertedToVersion": "Reverted to version {version}",
+      "advancedToVersion": "Advanced to version {version}",
+      "failedToUndoChapter": "Failed to undo chapter",
+      "chapterUpdatedSuccessfully": "Chapter updated successfully",
+      "contentUpdatedSuccessfully": "Content updated successfully"
+    },
+    "logging": {
+      "errorSavingStoryInfo": "Error saving story info:"
+    }
+  }
+}

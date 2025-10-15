@@ -24,7 +24,7 @@ const STORY_WIZARD_STEPS = [
   'tell-your-story/step-5',
 ];
 
-const LOCALES = ['en-US', 'pt-PT', 'es-ES', 'fr-FR'];
+const LOCALES = ['en-US', 'pt-PT', 'es-ES', 'fr-FR', 'de-DE'];
 
 // Helper to scan page for missing translation markers: "__missing__" or patterns like {Some.Key}
 async function assertNoMissingTranslations(page: Page) {

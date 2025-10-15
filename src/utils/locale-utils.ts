@@ -20,6 +20,9 @@ export function normalizeLocale(locale?: string): SupportedLocale {
     case 'fr':
     case 'fr-fr':
       return 'fr-FR';
+    case 'de':
+    case 'de-de':
+      return 'de-DE';
     default:
       return 'en-US';
   }
@@ -33,6 +36,7 @@ export function detectUserLocaleFromEmail(email?: string | null): SupportedLocal
   if (lower.endsWith('.pt') || lower.includes('.pt')) return 'pt-PT';
   if (lower.endsWith('.es') || lower.includes('.es')) return 'es-ES';
   if (lower.endsWith('.fr') || lower.includes('.fr')) return 'fr-FR';
+  if (lower.endsWith('.de') || lower.includes('.de')) return 'de-DE';
   return 'en-US';
 }
 

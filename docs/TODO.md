@@ -129,6 +129,7 @@ The current application supports the following locales:
 2. European Portuguese `pt-PT` - as spoken in Lisbon, Portugal.
 3. European Spanish `es-ES` - as spoken in Madrid, Spain.
 4. European French `fr-FR` - as spoken in Paris, France.
+5. Standard German `de-DE` - as spoken in Berlin, Germany.
 
 ---
 

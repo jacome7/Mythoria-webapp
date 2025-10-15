@@ -1,0 +1,7 @@
+{
+  "StoryCounter": {
+    "error": "Error loading",
+    "notAvailable": "N/A",
+    "description": "stories created and counting..."
+  }
+}
