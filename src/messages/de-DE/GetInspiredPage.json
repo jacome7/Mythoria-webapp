@@ -1,64 +1,64 @@
 {
   "GetInspiredPage": {
     "filters": {
-      "title": "Filter Stories",
-      "targetAudience": "Target Audience",
-      "graphicalStyle": "Art Style",
-      "storyLanguage": "Language",
-      "clearAll": "Clear Filters",
-      "showingAll": "Showing All Stories"
+      "title": "Geschichten filtern",
+      "targetAudience": "Zielgruppe",
+      "graphicalStyle": "Zeichenstil",
+      "storyLanguage": "Sprache",
+      "clearAll": "Filter zurücksetzen",
+      "showingAll": "Alle Geschichten werden angezeigt"
     },
     "targetAudience": {
-      "all": "All Ages",
-      "children_0-2": "Babies & Toddlers (0-2)",
-      "children_3-6": "Preschoolers (3-6)",
-      "children_7-10": "Early Elementary (7-10)",
-      "children_11-14": "Middle Grade (11-14)",
-      "young_adult_15-17": "Young Adults (15-17)",
-      "adult_18+": "Adults (18+)",
-      "all_ages": "All Ages"
+      "all": "Alle Altersstufen",
+      "children_0-2": "Babys & Kleinkinder (0–2)",
+      "children_3-6": "Vorschulkinder (3–6)",
+      "children_7-10": "Grundschulkinder (7–10)",
+      "children_11-14": "Mittelstufe (11–14)",
+      "young_adult_15-17": "Jugendliche (15–17)",
+      "adult_18+": "Erwachsene (18+)",
+      "all_ages": "Alle Altersstufen"
     },
     "graphicalStyle": {
-      "all": "All Styles",
+      "all": "Alle Stile",
       "cartoon": "Cartoon",
-      "realistic": "Realistic",
-      "watercolor": "Watercolor",
-      "digital_art": "Digital Art",
-      "hand_drawn": "Hand Drawn",
-      "minimalist": "Minimalist",
+      "realistic": "Realistisch",
+      "watercolor": "Aquarell",
+      "digital_art": "Digitale Kunst",
+      "hand_drawn": "Handgezeichnet",
+      "minimalist": "Minimalistisch",
       "vintage": "Vintage",
-      "comic_book": "Comic Book",
+      "comic_book": "Comic-Stil",
       "anime": "Anime",
-      "pixar_style": "Pixar Style",
-      "disney_style": "Disney Style",
-      "sketch": "Sketch",
-      "oil_painting": "Oil Painting",
-      "colored_pencil": "Colored Pencil"
+      "pixar_style": "Pixar-Stil",
+      "disney_style": "Disney-Stil",
+      "sketch": "Skizze",
+      "oil_painting": "Ölgemälde",
+      "colored_pencil": "Farbstift"
     },
     "storyLanguage": {
-      "all": "All Languages",
-      "en-US": "English",
-      "pt-PT": "Portuguese",
-      "fr-FR": "French",
-      "de-DE": "German",
-      "es-ES": "Spanish"
+      "all": "Alle Sprachen",
+      "en-US": "Englisch",
+      "pt-PT": "Portugiesisch",
+      "fr-FR": "Französisch",
+      "de-DE": "Deutsch",
+      "es-ES": "Spanisch"
     },
     "gallery": {
-      "title": "Featured Stories",
-      "subtitle": "Stories that have inspired families around the world",
-      "viewStory": "View Story",
-      "createdBy": "Created by",
-      "emptyTitle": "No Featured Stories Yet",
-      "emptyMessage": "Create your own story and share it with the world!",
-      "createStory": "Create Your Story",
-      "storyCoverAlt": "Story cover",
-      "filterResults": "{count} of {total} stories shown"
+      "title": "Ausgewählte Geschichten",
+      "subtitle": "Geschichten, die Familien auf der ganzen Welt inspiriert haben",
+      "viewStory": "Geschichte ansehen",
+      "createdBy": "Erstellt von",
+      "emptyTitle": "Noch keine ausgewählten Geschichten",
+      "emptyMessage": "Erstelle deine eigene Geschichte und teile sie mit der Welt!",
+      "createStory": "Eigene Geschichte erstellen",
+      "storyCoverAlt": "Titelbild der Geschichte",
+      "filterResults": "{count} von {total} Geschichten angezeigt"
     },
     "emptyState": {
-      "noStoriesMatch": "No stories match your filters",
-      "tryAdjustingFilters": "Try adjusting your filters or browse all stories to discover new adventures.",
-      "noStoriesAvailable": "No stories available",
-      "browseAllStories": "Browse All Stories"
+      "noStoriesMatch": "Keine Geschichten passen zu deinen Filtern",
+      "tryAdjustingFilters": "Passe deine Filter an oder stöbere durch alle Geschichten, um neue Abenteuer zu entdecken.",
+      "noStoriesAvailable": "Keine Geschichten verfügbar",
+      "browseAllStories": "Alle Geschichten durchsuchen"
     }
   }
 }
