@@ -1,21 +1,21 @@
 {
   "ChapterEditor": {
-    "editImageButton": "Edit Chapter Image",
-    "saveButton": "Save Chapter",
-    "backButton": "Back",
-    "goBackButton": "Go back",
-    "imagePlaceholder": "Chapter {number} Image",
-    "titlePlaceholder": "Enter chapter title...",
-    "contentPlaceholder": "Write your chapter content here...",
-    "saving": "Saving...",
+    "editImageButton": "Kapitelbild bearbeiten",
+    "saveButton": "Kapitel speichern",
+    "backButton": "Zurück",
+    "goBackButton": "Zurückgehen",
+    "imagePlaceholder": "Kapitel {number} Bild",
+    "titlePlaceholder": "Kapitelüberschrift eingeben...",
+    "contentPlaceholder": "Schreibe hier den Inhalt deines Kapitels...",
+    "saving": "Wird gespeichert...",
     "toolbar": {
-      "bold": "Bold",
-      "italic": "Italic",
-      "underline": "Underline",
-      "textSize": "Text Size",
-      "aiEdit": "AI Edit",
-      "edit": "Edit",
-      "image": "Image"
+      "bold": "Fett",
+      "italic": "Kursiv",
+      "underline": "Unterstreichen",
+      "textSize": "Schriftgröße",
+      "aiEdit": "KI-Bearbeitung",
+      "edit": "Bearbeiten",
+      "image": "Bild"
     },
     "textSizes": {
       "small": "S",
@@ -24,7 +24,7 @@
       "xlarge": "XL"
     },
     "errors": {
-      "failedToLoadStoryData": "Failed to load story data"
+      "failedToLoadStoryData": "Storydaten konnten nicht geladen werden"
     }
   }
 }

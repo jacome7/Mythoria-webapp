@@ -1,16 +1,16 @@
 {
   "NotFound": {
-    "mainHeading": "Oops! This Page is Lost in the Storybook",
-    "description": "It seems the page you're looking for has wandered off into an unwritten chapter! Maybe it's hiding in a fairy tale, or perhaps it got caught up in an adventure of its own.",
+    "mainHeading": "Ups! Diese Seite hat sich im Geschichtenbuch verirrt",
+    "description": "Anscheinend ist die Seite, die du suchst, in ein ungeschriebenes Kapitel entschwunden! Vielleicht versteckt sie sich in einem Märchen oder ist auf ihr eigenes Abenteuer gegangen.",
     "suggestions": {
-      "title": "While we search for your lost page, you could:",
+      "title": "Während wir deine verlorene Seite suchen, kannst du:",
       "items": [null, null, null, null]
     },
     "actions": {
-      "goHome": "Return to Homepage",
-      "createStory": "Create a New Story",
-      "myStories": "My Stories"
+      "goHome": "Zurück zur Startseite",
+      "createStory": "Neue Geschichte erstellen",
+      "myStories": "Meine Geschichten"
     },
-    "quote": "\"Not all those who wander are lost... but this page definitely is!\" - A confused Hobbit"
+    "quote": "\"Nicht alle, die wandern, sind verloren ... aber diese Seite definitiv!\" – Ein verwirrter Hobbit"
   }
 }

@@ -1,7 +1,7 @@
 {
   "StoryCounter": {
-    "error": "Error loading",
-    "notAvailable": "N/A",
-    "description": "stories created and counting..."
+    "error": "Fehler beim Laden",
+    "notAvailable": "k. A.",
+    "description": "erstellte Geschichten – und es werden mehr..."
   }
 }

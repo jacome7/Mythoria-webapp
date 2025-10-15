@@ -1,16 +1,16 @@
 {
   "DeliveryOptions": {
     "audiobook": {
-      "name": "Audiobook",
-      "description": "Receive your story as a narrated audiobook"
+      "name": "Hörbuch",
+      "description": "Erhalte deine Geschichte als gesprochenes Hörbuch"
     },
     "ebook": {
-      "name": "Digital (eBook)",
-      "description": "Receive your story as a digital eBook"
+      "name": "Digital (E-Book)",
+      "description": "Erhalte deine Geschichte als digitales E-Book"
     },
     "printed": {
-      "name": "Printed Book",
-      "description": "Receive a beautifully printed physical copy of your story"
+      "name": "Gedrucktes Buch",
+      "description": "Erhalte ein wunderschön gedrucktes Exemplar deiner Geschichte"
     }
   }
 }
