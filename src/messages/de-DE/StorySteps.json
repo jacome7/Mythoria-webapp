@@ -1,328 +1,328 @@
 {
   "StorySteps": {
     "common": {
-      "stepProgress": "Step {currentStep} of {totalSteps}",
-      "saving": "Saving..."
+      "stepProgress": "Schritt {currentStep} von {totalSteps}",
+      "saving": "Wird gespeichert..."
     },
     "step1": {
       "unauthenticated": {
-        "title": "Oops! Looks like you're trying to sneak into the author's lounge!",
-        "description": "While we appreciate your enthusiasm for storytelling, you'll need to sign in first. Don't worry, it's easier than convincing a dragon to share its treasure! 🐉",
-        "signIn": "🔐 Sign In to Start Your Adventure",
-        "signUp": "✨ Create Your Author Account"
+        "title": "Hoppla! Sieht so aus, als würdest du versuchen, dich in die Autor*innen-Lounge zu schleichen!",
+        "description": "Wir freuen uns über deine Begeisterung fürs Geschichtenerzählen, aber du musst dich zuerst anmelden. Keine Sorge, das ist leichter, als einen Drachen dazu zu bringen, seinen Schatz zu teilen! 🐉",
+        "signIn": "🔐 Anmelden und Abenteuer starten",
+        "signUp": "✨ Autor*innenkonto erstellen"
       },
-      "heading": "Chapter 1 - The Author",
-      "intro": "Welcome, storyteller! Before we dive into your magical adventure, let's set up the author information for your story. You can use your own name or create a custom author name for this tale.",
+      "heading": "Kapitel 1 – Die Autor*innen",
+      "intro": "Willkommen, Geschichtenerzähler*in! Bevor wir in dein magisches Abenteuer eintauchen, lass uns die Autor*innenangaben für deine Geschichte festlegen. Du kannst deinen eigenen Namen verwenden oder einen speziellen Autor*innennamen für dieses Märchen erfinden.",
       "fields": {
-        "authorName": "Author Name(s) *",
-        "authorNameHelp": "Who should be credited as the author of this story?",
-        "authorNamePlaceholder": "e.g., André and Matilde",
-        "dedication": "Dedication Message",
-        "dedicationPlaceholder": "Write a personalized dedication message for the first page of your book...",
-        "dedicationHelp": "This message will appear on the first page of your story",
+        "authorName": "Autor*innenname(n) *",
+        "authorNameHelp": "Wer soll als Autor*in dieser Geschichte genannt werden?",
+        "authorNamePlaceholder": "z. B. André und Matilde",
+        "dedication": "Widmungstext",
+        "dedicationPlaceholder": "Schreibe eine persönliche Widmung für die erste Seite deines Buchs...",
+        "dedicationHelp": "Dieser Text erscheint auf der ersten Seite deiner Geschichte",
         "optional": "Optional"
       },
       "messages": {
-        "loadingProfile": "Loading your author profile...",
-        "required": "Please provide an author name for your story",
-        "saveFailed": "Failed to save author information. Please try again.",
-        "fetchFailed": "Failed to fetch user data",
-        "loadFailed": "Failed to load user information. Please try again."
+        "loadingProfile": "Dein Autor*innenprofil wird geladen...",
+        "required": "Bitte gib einen Autor*innennamen für deine Geschichte an",
+        "saveFailed": "Autor*innendaten konnten nicht gespeichert werden. Bitte versuch es erneut.",
+        "fetchFailed": "Benutzerdaten konnten nicht abgerufen werden",
+        "loadFailed": "Benutzerinformationen konnten nicht geladen werden. Bitte versuch es erneut."
       }
     },
     "step2": {
-      "heading": "Chapter 2 - The Story",
-      "intro": "You can create your story by drawing it, recording it, or simply writing it down.",
-      "tellYourStoryLabel": "Tell your story...",
-      "textPlaceholder": "Once upon a time... Let your imagination run wild! Share your adventure, your dreams, or any story that's close to your heart.",
-      "textHelp": "Write as much or as little as you'd like. You can always edit this later!",
-      "tabWrite": "Write",
-      "tabImage": "Image",
-      "tabRecord": "Record",
-      "takePhoto": "Take Photo",
-      "uploadImage": "Upload Image",
-      "recordVoice": "Record your voice",
-      "uploadAudio": "Upload Audio File",
-      "imageHelp": "Draw your story, take a photo of it, or upload an existing image that tells your tale.",
-      "audioHelp": "Record your story directly or upload an audio file. Perfect for those who prefer to speak their tales!",
-      "recordingHelp": "Tell your story! Speak clearly into your microphone.",
-      "reassurance": "If you've written text or uploaded an image above, our Oompa-Loompas will work hard to extract characters, settings, and themes. Otherwise, the next steps will guide you through creating your story step by step.",
-      "processing": "Processing with AI...",
-      "next": "Next",
+      "heading": "Kapitel 2 – Die Geschichte",
+      "intro": "Du kannst deine Geschichte zeichnen, aufnehmen oder einfach aufschreiben.",
+      "tellYourStoryLabel": "Erzähl deine Geschichte...",
+      "textPlaceholder": "Es war einmal ... Lass deiner Fantasie freien Lauf! Teile dein Abenteuer, deine Träume oder jede Geschichte, die dir am Herzen liegt.",
+      "textHelp": "Schreib so viel oder so wenig du möchtest. Du kannst alles später noch bearbeiten!",
+      "tabWrite": "Schreiben",
+      "tabImage": "Bild",
+      "tabRecord": "Aufnehmen",
+      "takePhoto": "Foto aufnehmen",
+      "uploadImage": "Bild hochladen",
+      "recordVoice": "Nimm deine Stimme auf",
+      "uploadAudio": "Audiodatei hochladen",
+      "imageHelp": "Zeichne deine Geschichte, mach ein Foto davon oder lade ein bestehendes Bild hoch, das deine Geschichte erzählt.",
+      "audioHelp": "Nimm deine Geschichte direkt auf oder lade eine Audiodatei hoch. Perfekt, wenn du deine Geschichten lieber erzählst!",
+      "recordingHelp": "Erzähl deine Geschichte! Sprich deutlich in dein Mikrofon.",
+      "reassurance": "Wenn du oben schon Text geschrieben oder ein Bild hochgeladen hast, arbeiten unsere Oompa-Loompas fleißig daran, Figuren, Schauplätze und Themen herauszufiltern. Ansonsten führen dich die nächsten Schritte Schritt für Schritt durch das Erstellen deiner Geschichte.",
+      "processing": "Wird mit KI verarbeitet...",
+      "next": "Weiter",
       "buttons": {
-        "capture": "📸 Capture",
-        "cancel": "❌ Cancel"
+        "capture": "📸 Aufnehmen",
+        "cancel": "❌ Abbrechen"
       },
       "writingTips": [
         {
-          "text": "Where does your story take place? Describe the world - is it a magical kingdom, a cozy town, or somewhere beyond imagination?"
+          "text": "Wo spielt deine Geschichte? Beschreibe die Welt – ist es ein magisches Königreich, eine gemütliche Stadt oder ein Ort jenseits der Vorstellungskraft?"
         },
         {
-          "text": "Who are the main characters? What makes them special or unique? What are their dreams and fears?"
+          "text": "Wer sind die Hauptfiguren? Was macht sie besonders oder einzigartig? Wovon träumen sie, wovor haben sie Angst?"
         },
         {
-          "text": "Outline the basic plot for your story."
+          "text": "Skizziere den Grundplot deiner Geschichte."
         },
         {
-          "text": "Just write what is in your heart."
+          "text": "Schreib einfach, was dir am Herzen liegt."
         },
         {
-          "text": "Write about a child memory or upcoming event!"
+          "text": "Schreib über eine Kindheitserinnerung oder ein bevorstehendes Ereignis!"
         },
         {
-          "text": "What do your characters want to achieve? Give them a clear goal to work towards."
+          "text": "Was möchten deine Figuren erreichen? Gib ihnen ein klares Ziel, auf das sie hinarbeiten."
         },
         {
-          "text": "What makes your story unique? Add special elements that only exist in your world!"
+          "text": "Was macht deine Geschichte einzigartig? Füge besondere Elemente hinzu, die es nur in deiner Welt gibt!"
         }
       ],
       "badgeLabels": {
-        "added": "Added",
-        "image": "image",
-        "images": "images"
+        "added": "Hinzugefügt",
+        "image": "Bild",
+        "images": "Bilder"
       },
-      "imageGalleryTitle": "Your Images ({count}/3)",
+      "imageGalleryTitle": "Deine Bilder ({count}/3)",
       "photoTips": {
-        "title": "📸 Photo Tips",
+        "title": "📸 Foto-Tipps",
         "tips": [
-          "Take photos of drawings, scenes, or written notes",
-          "You can add up to 3 images to tell your story",
-          "Our AI will analyze images to help create your story",
-          "Mix photos with text or audio for a richer story"
+          "Fotografiere Zeichnungen, Szenen oder handschriftliche Notizen",
+          "Du kannst bis zu 3 Bilder hinzufügen, um deine Geschichte zu erzählen",
+          "Unsere KI analysiert die Bilder, um deine Geschichte zu unterstützen",
+          "Kombiniere Fotos mit Text oder Audio für eine noch lebendigere Geschichte"
         ]
       },
       "recordingTips": {
-        "title": "Recording Tips",
+        "title": "Aufnahme-Tipps",
         "tips": [
-          "Speak clearly and at a comfortable pace",
-          "Describe your story as if telling it to a friend",
-          "Include details about characters, settings, and events",
-          "Don't worry about being perfect - just tell your story!"
+          "Sprich deutlich und in angenehmem Tempo",
+          "Erzähl deine Geschichte so, als würdest du sie einem Freund erzählen",
+          "Füge Details zu Figuren, Schauplätzen und Ereignissen hinzu",
+          "Mach dir keine Sorgen um Perfektion – erzähl einfach deine Geschichte!"
         ]
       },
-      "writingTipsTitle": "Writing Tips",
+      "writingTipsTitle": "Schreib-Tipps",
       "actions": {
-        "done": "Done",
-        "remove": "Remove",
-        "recordAgain": "Record Again",
-        "stopRecording": "Stop Recording",
-        "recording": "Recording..."
+        "done": "Fertig",
+        "remove": "Entfernen",
+        "recordAgain": "Noch einmal aufnehmen",
+        "stopRecording": "Aufnahme stoppen",
+        "recording": "Aufnahme läuft..."
       },
       "audioSupport": {
-        "notSupported": "Your browser does not support the audio element."
+        "notSupported": "Dein Browser unterstützt das Audioelement nicht."
       },
       "alerts": {
-        "uploadError": "Failed to upload file. Please try again.",
-        "recordingError": "Failed to start recording. Please check your microphone permissions.",
-        "processingError": "Failed to process your story. Please try again.",
-        "cameraPermissionError": "Camera permission denied. Please allow camera access to take photos.",
-        "microphonePermissionError": "Microphone permission denied. Please allow microphone access to record audio.",
-        "analyzeImageRequest": "Analyze the image and describe what you see...",
-        "genAIError": "GenAI request failed. Please try again.",
-        "cameraIssue": "Camera access issue. Please check your camera permissions.",
-        "microphoneIssue": "Microphone access issue. Please check your microphone permissions.",
-        "failedToCreateStory": "Failed to create story: {errorMessage}. Please try again."
+        "uploadError": "Datei konnte nicht hochgeladen werden. Bitte versuch es erneut.",
+        "recordingError": "Aufnahme konnte nicht gestartet werden. Bitte prüf deine Mikrofonberechtigungen.",
+        "processingError": "Deine Geschichte konnte nicht verarbeitet werden. Bitte versuch es erneut.",
+        "cameraPermissionError": "Kamerazugriff verweigert. Bitte erlaube den Kamerazugriff, um Fotos zu machen.",
+        "microphonePermissionError": "Mikrofonzugriff verweigert. Bitte erlaube den Mikrofonzugriff, um Audio aufzunehmen.",
+        "analyzeImageRequest": "Analysiere das Bild und beschreibe, was du siehst...",
+        "genAIError": "GenAI-Anfrage fehlgeschlagen. Bitte versuch es erneut.",
+        "cameraIssue": "Problem beim Kamerazugriff. Bitte prüf deine Kameraberechtigungen.",
+        "microphoneIssue": "Problem beim Mikrofonzugriff. Bitte prüf deine Mikrofonberechtigungen.",
+        "failedToCreateStory": "Geschichte konnte nicht erstellt werden: {errorMessage}. Bitte versuch es erneut."
       },
       "loadingModal": {
-        "title": "✨ Creating Your Story",
-        "message": "Our magical Oompa Loompas are hard at work preparing your story! This might take a moment...",
-        "pleaseWait": "Please wait while we work our magic! ✨"
+        "title": "✨ Deine Geschichte wird erstellt",
+        "message": "Unsere magischen Oompa Loompas arbeiten fleißig an deiner Geschichte! Das kann einen Moment dauern...",
+        "pleaseWait": "Bitte hab einen Moment Geduld, während wir unsere Magie wirken lassen! ✨"
       },
       "errors": {
-        "failedGetUser": "Failed to get user information.",
-        "failedCreate": "Failed to create story.",
-        "unknown": "Unknown error occurred."
+        "failedGetUser": "Benutzerinformationen konnten nicht abgerufen werden.",
+        "failedCreate": "Geschichte konnte nicht erstellt werden.",
+        "unknown": "Es ist ein unbekannter Fehler aufgetreten."
       },
       "characterSelection": {
-        "includeExistingTitle": "Include your existing characters",
-        "noneSelected": "Select characters to include in your story",
-        "selectedCount": "{count, plural, =1 {# character selected} other {# characters selected}}",
-        "selectAll": "Select all ({count} characters)",
-        "loading": "Loading characters..."
+        "includeExistingTitle": "Deine vorhandenen Figuren übernehmen",
+        "noneSelected": "Wähle Figuren aus, die in deiner Geschichte vorkommen sollen",
+        "selectedCount": "{count, plural, =1 {# Figur ausgewählt} other {# Figuren ausgewählt}}",
+        "selectAll": "Alle auswählen ({count} Figuren)",
+        "loading": "Figuren werden geladen..."
       }
     },
     "step3": {
-      "heading": "Chapter 3 - The Characters",
-      "intro": "Who are the heroes, friends, and magical creatures in your story? Create characters that will bring your adventure to life!",
-      "addCharacter": "➕ Add Character",
-      "chooseMethod": "Choose how to add a character:",
-      "createNew": "✨ Create New Character",
-      "useExisting": "📚 Use Existing Character",
-      "orChooseExisting": "Or choose from your existing characters:",
-      "cancel": "Cancel",
-      "loadingCharacters": "Loading your characters...",
-      "readyTitle": "Ready to meet your characters?",
-      "readyDescription": "Every great story needs amazing characters! Click \"Add Character\" to create new heroes or add existing characters from your library to this story.",
-      "greatWork": "Great work! You've created {count, plural, =1 {# character} other {# characters}}.",
-      "youCanAlways": "You can always add more characters later or continue to the next chapter to develop your story further.",
-      "continuing": "Continuing...",
+      "heading": "Kapitel 3 – Die Figuren",
+      "intro": "Wer sind die Held*innen, Freund*innen und magischen Wesen in deiner Geschichte? Erstelle Figuren, die dein Abenteuer lebendig machen!",
+      "addCharacter": "➕ Figur hinzufügen",
+      "chooseMethod": "Wähle, wie du eine Figur hinzufügen möchtest:",
+      "createNew": "✨ Neue Figur erstellen",
+      "useExisting": "📚 Vorhandene Figur verwenden",
+      "orChooseExisting": "Oder wähle aus deinen vorhandenen Figuren:",
+      "cancel": "Abbrechen",
+      "loadingCharacters": "Deine Figuren werden geladen...",
+      "readyTitle": "Bereit, deine Figuren kennenzulernen?",
+      "readyDescription": "Jede großartige Geschichte braucht tolle Figuren! Klick auf \"Figur hinzufügen\", um neue Held*innen zu erstellen oder vorhandene Figuren aus deiner Bibliothek zu dieser Geschichte hinzuzufügen.",
+      "greatWork": "Großartig! Du hast {count, plural, =1 {# Figur} other {# Figuren}} erstellt.",
+      "youCanAlways": "Du kannst später jederzeit weitere Figuren hinzufügen oder zum nächsten Kapitel weitergehen, um deine Geschichte weiter auszuarbeiten.",
+      "continuing": "Es geht weiter...",
       "progress": {
-        "stepLabel": "Step {currentStep} of {totalSteps}"
+        "stepLabel": "Schritt {currentStep} von {totalSteps}"
       },
       "badges": {
-        "editingDraft": "Editing Draft Story"
+        "editingDraft": "Entwurfs-Geschichte wird bearbeitet"
       },
       "navigation": {
-        "backToMyStories": "Back to My Stories"
+        "backToMyStories": "Zurück zu meinen Geschichten"
       },
       "alerts": {
-        "failedToLoadStoryCharacters": "Failed to load story characters. Please try again.",
-        "characterLoadError": "Error loading characters. Please refresh the page.",
-        "failedToLoadStoryData": "Failed to load story data. Please try again.",
-        "failedToLoadStoryForEditing": "Failed to load story for editing. Please try again.",
-        "failedToAddCharacter": "Failed to add character to story. Please try again.",
-        "failedToContinue": "Failed to continue. Please try again."
+        "failedToLoadStoryCharacters": "Geschichtsfiguren konnten nicht geladen werden. Bitte versuch es erneut.",
+        "characterLoadError": "Fehler beim Laden der Figuren. Bitte lade die Seite neu.",
+        "failedToLoadStoryData": "Geschichtsdaten konnten nicht geladen werden. Bitte versuch es erneut.",
+        "failedToLoadStoryForEditing": "Geschichte zum Bearbeiten konnte nicht geladen werden. Bitte versuch es erneut.",
+        "failedToAddCharacter": "Figur konnte der Geschichte nicht hinzugefügt werden. Bitte versuch es erneut.",
+        "failedToContinue": "Fortfahren fehlgeschlagen. Bitte versuch es erneut."
       },
-      "next": "Next"
+      "next": "Weiter"
     },
     "step4": {
-      "heading": "Chapter 4 - The Plot",
-      "intro": "Now let's define the core elements of your story. Tell us about the world you want to create, who you're writing for, and how you envision your story looking.",
+      "heading": "Kapitel 4 – Die Handlung",
+      "intro": "Jetzt legen wir die Kernelemente deiner Geschichte fest. Erzähl uns, welche Welt du erschaffen willst, für wen du schreibst und wie deine Geschichte aussehen soll.",
       "fields": {
-        "title": "Book Title *",
-        "titleHelp": "Choose a captivating title for your story",
-        "place": "Setting/Place",
-        "placeHelp": "Where does your story take place? (real or imaginary)",
-        "audience": "Target Audience",
-        "audienceHelp": "Who is this story written for?",
-        "novelStyle": "Novel Style",
-        "novelStyleHelp": "What genre/style should your story be?",
-        "graphicStyle": "Graphic Style",
-        "graphicStyleHelp": "Choose the artistic style for your story's illustrations",
-        "imageInstructions": "Custom Image Instructions",
-        "imageInstructionsHelp": "Provide specific instructions to customize the AI-generated images. Describe character appearances, visual style preferences, or any special elements you'd like included.",
-        "bookSize": "Book Size",
-        "bookSizeHelp": "Number of chapters/paragraphs in your story",
-        "storyLanguage": "Story Language",
-        "storyLanguageHelp": "The language for your story content. This was detected from your input or you can change it here.",
-        "outline": "Story Outline",
-        "outlineHelp": "Describe your story's plot, characters, and key events",
-        "additional": "Additional Requests",
-        "additionalHelp": "Any special requests or specific elements you want included"
+        "title": "Buchtitel *",
+        "titleHelp": "Wähle einen fesselnden Titel für deine Geschichte",
+        "place": "Schauplatz/Ort",
+        "placeHelp": "Wo spielt deine Geschichte? (real oder ausgedacht)",
+        "audience": "Zielgruppe",
+        "audienceHelp": "Für wen ist diese Geschichte geschrieben?",
+        "novelStyle": "Romanstil",
+        "novelStyleHelp": "Welches Genre bzw. welcher Stil soll deine Geschichte haben?",
+        "graphicStyle": "Grafikstil",
+        "graphicStyleHelp": "Wähle den künstlerischen Stil für die Illustrationen deiner Geschichte",
+        "imageInstructions": "Individuelle Bildanweisungen",
+        "imageInstructionsHelp": "Gib konkrete Anweisungen, um die KI-generierten Bilder anzupassen. Beschreibe das Aussehen der Figuren, gewünschte Bildstile oder besondere Elemente.",
+        "bookSize": "Buchumfang",
+        "bookSizeHelp": "Anzahl der Kapitel/Abschnitte deiner Geschichte",
+        "storyLanguage": "Sprache der Geschichte",
+        "storyLanguageHelp": "Die Sprache für deine Geschichte. Sie wurde aus deinen Eingaben erkannt oder du kannst sie hier ändern.",
+        "outline": "Handlungsübersicht",
+        "outlineHelp": "Beschreibe den Plot, die Figuren und die wichtigsten Ereignisse deiner Geschichte",
+        "additional": "Zusätzliche Wünsche",
+        "additionalHelp": "Gibt es besondere Wünsche oder Elemente, die unbedingt vorkommen sollen?"
       },
       "placeholders": {
-        "selectAudience": "Select target audience...",
-        "selectNovelStyle": "Select novel style...",
-        "selectGraphicStyle": "Select graphic style...",
-        "imageInstructions": "Describe how you'd like the characters to look, specific visual elements, colors, or artistic details for your story images...",
-        "outlinePlaceholder": "Describe all the details you'd like in the story...",
-        "storyLanguageHelp": "Your story will be written and generated in the selected language."
+        "selectAudience": "Zielgruppe auswählen...",
+        "selectNovelStyle": "Romanstil auswählen...",
+        "selectGraphicStyle": "Grafikstil auswählen...",
+        "imageInstructions": "Beschreibe, wie die Figuren aussehen sollen, welche visuellen Elemente, Farben oder künstlerischen Details du dir für die Bilder wünschst...",
+        "outlinePlaceholder": "Beschreibe alle Details, die in der Geschichte vorkommen sollen...",
+        "storyLanguageHelp": "Deine Geschichte wird in der ausgewählten Sprache geschrieben und erstellt."
       },
       "languageOptions": [
         {
           "value": "nl-NL",
-          "label": "Dutch (Nederlands)"
+          "label": "Niederländisch (Nederlands)"
         },
         {
           "value": "en-US",
-          "label": "English"
+          "label": "Englisch"
         },
         {
           "value": "fr-FR",
-          "label": "French (Français)"
+          "label": "Französisch (Français)"
         },
         {
           "value": "de-DE",
-          "label": "German (Deutsch)"
+          "label": "Deutsch (Deutsch)"
         },
         {
           "value": "it-IT",
-          "label": "Italian (Italiano)"
+          "label": "Italienisch (Italiano)"
         },
         {
           "value": "pl-PL",
-          "label": "Polish (Polski)"
+          "label": "Polnisch (Polski)"
         },
         {
           "value": "pt-BR",
-          "label": "Portuguese (Brazil)"
+          "label": "Portugiesisch (Brasilien)"
         },
         {
           "value": "pt-PT",
-          "label": "Portuguese (Portugal)"
+          "label": "Portugiesisch (Portugal)"
         },
         {
           "value": "es-ES",
-          "label": "Spanish (Español)"
+          "label": "Spanisch (Español)"
         }
       ],
       "chapterCounts": {
-        "short": "Short (3-5 chapters)",
-        "medium": "Medium (6-8 chapters)",
-        "long": "Long (9-12 chapters)"
+        "short": "Kurz (3-5 Kapitel)",
+        "medium": "Mittel (6-8 Kapitel)",
+        "long": "Lang (9-12 Kapitel)"
       },
       "plurals": {
-        "chapter": "chapter",
-        "chapters": "chapters"
+        "chapter": "Kapitel",
+        "chapters": "Kapitel"
       },
       "sections": {
-        "storyBasics": "Story Basics",
-        "styleSetting": "Style & Setting",
-        "contentDetails": "Content Details",
-        "required": "Required"
+        "storyBasics": "Grundlagen der Geschichte",
+        "styleSetting": "Stil & Setting",
+        "contentDetails": "Inhaltsdetails",
+        "required": "Erforderlich"
       },
       "previews": {
-        "storyOutlineProvided": "Story outline provided",
-        "additionalRequestsProvided": "Additional requests provided",
-        "customImageInstructions": "Custom image instructions"
+        "storyOutlineProvided": "Handlungsübersicht vorhanden",
+        "additionalRequestsProvided": "Zusätzliche Wünsche angegeben",
+        "customImageInstructions": "Individuelle Bildanweisungen"
       },
       "modal": {
-        "title": "Graphical Style Samples",
-        "close": "Close",
-        "selected": "Selected",
-        "samples": "Samples",
-        "altText": "{style} sample"
+        "title": "Grafikstil-Beispiele",
+        "close": "Schließen",
+        "selected": "Ausgewählt",
+        "samples": "Beispiele",
+        "altText": "Beispiel für {style}"
       },
       "progress": {
-        "stepLabel": "Step {currentStep} of {totalSteps}"
+        "stepLabel": "Schritt {currentStep} von {totalSteps}"
       },
       "errors": {
-        "titleRequired": "Title is required before proceeding to the next step.",
-        "audienceRequired": "Target audience is required before proceeding to the next step.",
-        "novelStyleRequired": "Novel style is required before proceeding to the next step. Please open the \"Style & Setting\" section.",
-        "graphicStyleRequired": "Graphic style is required before proceeding to the next step. Please open the \"Style & Setting\" section.",
-        "noStoryFound": "No story found. Please start from step 1.",
-        "saveFailed": "Failed to save story details",
-        "saveFailedTryAgain": "Failed to save story details. Please try again.",
-        "loadFailed": "Failed to load story information. Please try again."
+        "titleRequired": "Vor dem nächsten Schritt benötigst du einen Titel.",
+        "audienceRequired": "Vor dem nächsten Schritt brauchst du eine Zielgruppe.",
+        "novelStyleRequired": "Vor dem nächsten Schritt brauchst du einen Romanstil. Bitte öffne den Bereich \"Stil & Setting\".",
+        "graphicStyleRequired": "Vor dem nächsten Schritt brauchst du einen Grafikstil. Bitte öffne den Bereich \"Stil & Setting\".",
+        "noStoryFound": "Keine Geschichte gefunden. Bitte beginne bei Schritt 1.",
+        "saveFailed": "Geschichtsdaten konnten nicht gespeichert werden",
+        "saveFailedTryAgain": "Geschichtsdaten konnten nicht gespeichert werden. Bitte versuch es erneut.",
+        "loadFailed": "Geschichtsinformationen konnten nicht geladen werden. Bitte versuch es erneut."
       },
-      "saving": "Saving...",
-      "next": "Next"
+      "saving": "Wird gespeichert...",
+      "next": "Weiter"
     },
     "step5": {
-      "heading": "Chapter 5 - The Finale",
-      "intro": "Choose how you'd like to receive your story. You can select multiple delivery formats to enjoy your story in different ways.",
-      "deliveryOptions": "Delivery Options",
-      "creating": "Creating...",
-      "insufficientCredits": "Insufficient Credits",
-      "createStory": "Create story",
-      "buyMoreCredits": "Buy More Credits",
-      "buyMoreCreditsInfo": "Credit purchasing functionality is coming soon! Stay tuned for updates.",
-      "close": "Close",
-      "loadingStoryData": "Loading story data...",
-      "readyToGenerate": "Ready to Generate Your Story!",
-      "aboutToStart": "We're about to start creating your personalized story:",
-      "ebookGeneration": "📖 eBook Generation",
-      "cost": "Cost:",
-      "yourCredits": "Your Credits:",
-      "credits": "credits",
-      "insufficientCreditsTitle": "💳 Insufficient Credits",
-      "needMoreCredits": "You need {count} more credits to generate your story.",
-      "getMoreCredits": "Get More Credits",
-      "startingGeneration": "Starting Story Generation...",
-      "generateMyStory": "🚀 Generate My Story",
-      "storyDataNotAvailable": "Story data not available. Please try again.",
-      "stepProgress": "Step {currentStep} of {totalSteps}",
+      "heading": "Kapitel 5 – Das Finale",
+      "intro": "Wähle, wie du deine Geschichte erhalten möchtest. Du kannst mehrere Lieferformate auswählen, um dein Abenteuer auf unterschiedliche Arten zu genießen.",
+      "deliveryOptions": "Lieferoptionen",
+      "creating": "Wird erstellt...",
+      "insufficientCredits": "Nicht genügend Credits",
+      "createStory": "Geschichte erstellen",
+      "buyMoreCredits": "Mehr Credits kaufen",
+      "buyMoreCreditsInfo": "Der Kauf von Credits ist bald verfügbar! Bleib dran für Updates.",
+      "close": "Schließen",
+      "loadingStoryData": "Geschichtsdaten werden geladen...",
+      "readyToGenerate": "Bereit, deine Geschichte zu erstellen!",
+      "aboutToStart": "Gleich geht es los – wir erstellen deine persönliche Geschichte:",
+      "ebookGeneration": "📖 E-Book-Erstellung",
+      "cost": "Kosten:",
+      "yourCredits": "Deine Credits:",
+      "credits": "Credits",
+      "insufficientCreditsTitle": "💳 Nicht genügend Credits",
+      "needMoreCredits": "Du brauchst {count} weitere Credits, um deine Geschichte zu erstellen.",
+      "getMoreCredits": "Mehr Credits holen",
+      "startingGeneration": "Geschichtenerstellung wird gestartet...",
+      "generateMyStory": "🚀 Meine Geschichte generieren",
+      "storyDataNotAvailable": "Geschichtsdaten nicht verfügbar. Bitte versuch es erneut.",
+      "stepProgress": "Schritt {currentStep} von {totalSteps}",
       "alerts": {
-        "failedToFetchStoryData": "Failed to fetch story data. Please try again.",
-        "failedToFetchUserCredits": "Failed to fetch user credits. Please try again.",
-        "failedToFetchPricingData": "Failed to fetch pricing data. Please try again.",
-        "failedToDeductCredits": "Failed to deduct credits. Please try again.",
-        "dataFetchError": "Error fetching data. Please check your connection and try again.",
-        "failedToLoadCreditInformation": "Failed to load credit information. Please try again.",
-        "failedToLoadPricingInformation": "Failed to load pricing information. Please try again.",
-        "insufficientCreditsError": "You have insufficient credits. Please purchase more credits to continue.",
-        "failedToCompleteStory": "Failed to complete story. Please try again."
+        "failedToFetchStoryData": "Geschichtsdaten konnten nicht abgerufen werden. Bitte versuch es erneut.",
+        "failedToFetchUserCredits": "Credits konnten nicht abgerufen werden. Bitte versuch es erneut.",
+        "failedToFetchPricingData": "Preisdaten konnten nicht abgerufen werden. Bitte versuch es erneut.",
+        "failedToDeductCredits": "Credits konnten nicht abgebucht werden. Bitte versuch es erneut.",
+        "dataFetchError": "Fehler beim Abrufen der Daten. Bitte prüf deine Verbindung und versuch es erneut.",
+        "failedToLoadCreditInformation": "Credit-Informationen konnten nicht geladen werden. Bitte versuch es erneut.",
+        "failedToLoadPricingInformation": "Preis-Informationen konnten nicht geladen werden. Bitte versuch es erneut.",
+        "insufficientCreditsError": "Du hast nicht genügend Credits. Bitte kauf weitere Credits, um fortzufahren.",
+        "failedToCompleteStory": "Geschichte konnte nicht abgeschlossen werden. Bitte versuch es erneut."
       }
     }
   }
