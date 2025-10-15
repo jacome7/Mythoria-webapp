@@ -1,0 +1,64 @@
+{
+  "GetInspiredPage": {
+    "filters": {
+      "title": "Geschichten filtern",
+      "targetAudience": "Zielgruppe",
+      "graphicalStyle": "Zeichenstil",
+      "storyLanguage": "Sprache",
+      "clearAll": "Filter zurücksetzen",
+      "showingAll": "Alle Geschichten werden angezeigt"
+    },
+    "targetAudience": {
+      "all": "Alle Altersstufen",
+      "children_0-2": "Babys & Kleinkinder (0–2)",
+      "children_3-6": "Vorschulkinder (3–6)",
+      "children_7-10": "Grundschulkinder (7–10)",
+      "children_11-14": "Mittelstufe (11–14)",
+      "young_adult_15-17": "Jugendliche (15–17)",
+      "adult_18+": "Erwachsene (18+)",
+      "all_ages": "Alle Altersstufen"
+    },
+    "graphicalStyle": {
+      "all": "Alle Stile",
+      "cartoon": "Cartoon",
+      "realistic": "Realistisch",
+      "watercolor": "Aquarell",
+      "digital_art": "Digitale Kunst",
+      "hand_drawn": "Handgezeichnet",
+      "minimalist": "Minimalistisch",
+      "vintage": "Vintage",
+      "comic_book": "Comic-Stil",
+      "anime": "Anime",
+      "pixar_style": "Pixar-Stil",
+      "disney_style": "Disney-Stil",
+      "sketch": "Skizze",
+      "oil_painting": "Ölgemälde",
+      "colored_pencil": "Farbstift"
+    },
+    "storyLanguage": {
+      "all": "Alle Sprachen",
+      "en-US": "Englisch",
+      "pt-PT": "Portugiesisch",
+      "fr-FR": "Französisch",
+      "de-DE": "Deutsch",
+      "es-ES": "Spanisch"
+    },
+    "gallery": {
+      "title": "Ausgewählte Geschichten",
+      "subtitle": "Geschichten, die Familien auf der ganzen Welt inspiriert haben",
+      "viewStory": "Geschichte ansehen",
+      "createdBy": "Erstellt von",
+      "emptyTitle": "Noch keine ausgewählten Geschichten",
+      "emptyMessage": "Erstelle deine eigene Geschichte und teile sie mit der Welt!",
+      "createStory": "Eigene Geschichte erstellen",
+      "storyCoverAlt": "Titelbild der Geschichte",
+      "filterResults": "{count} von {total} Geschichten angezeigt"
+    },
+    "emptyState": {
+      "noStoriesMatch": "Keine Geschichten passen zu deinen Filtern",
+      "tryAdjustingFilters": "Passe deine Filter an oder stöbere durch alle Geschichten, um neue Abenteuer zu entdecken.",
+      "noStoriesAvailable": "Keine Geschichten verfügbar",
+      "browseAllStories": "Alle Geschichten durchsuchen"
+    }
+  }
+}

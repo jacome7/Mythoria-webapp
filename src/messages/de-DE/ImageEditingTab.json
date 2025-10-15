@@ -1,0 +1,54 @@
+{
+  "ImageEditingTab": {
+    "noImages": {
+      "title": "Keine Bilder gefunden",
+      "description": "Für diese Geschichte sind noch keine Bilder verfügbar. Sobald welche generiert werden, erscheinen sie hier."
+    },
+    "imageSelection": {
+      "label": "Wähle ein Bild zum Bearbeiten aus:",
+      "versionsAvailable": "{count} Version{plural} verfügbar",
+      "latestVersion": "Neueste Version: {version}"
+    },
+    "versionSelection": {
+      "label": "Wähle eine Version zum Bearbeiten:",
+      "versionsInfo": "{count} Version{plural} verfügbar",
+      "currentlySelected": "Aktuell ausgewählt: {version}",
+      "changeImageButton": "Bild in der Geschichte austauschen",
+      "changingImage": "Bild wird ausgetauscht...",
+      "changeImageDescription": "Dadurch wird das aktuelle Bild in deiner Geschichte durch die ausgewählte Version ersetzt."
+    },
+    "imagePreview": {
+      "label": "Aktuelles Bild:"
+    },
+    "editRequest": {
+      "label": "Welche Änderungen möchtest du an diesem Bild vornehmen?",
+      "placeholder": "Beschreibe die Änderungen, die du am Bild vornehmen möchtest...",
+      "charactersCount": "{current}/{max} Zeichen"
+    },
+    "loadingState": {
+      "title": "Deine Bildbearbeitung wird verarbeitet...",
+      "description": "Je nach Umfang der Änderungen kann das bis zu 3 Minuten dauern."
+    },
+    "buttons": {
+      "generateNewVersion": "Neue Version erstellen",
+      "editingImage": "Bild wird bearbeitet...",
+      "replaceImageInStory": "Bild in der Geschichte ersetzen",
+      "replacingImage": "Bild wird ersetzt..."
+    },
+    "success": {
+      "title": "Neue Bildversion erfolgreich erstellt!",
+      "description": "Klicke unten auf den Button, um das aktuelle Bild in deiner Geschichte durch die neue Version zu ersetzen."
+    },
+    "errors": {
+      "selectImage": "Bitte wähle ein Bild zum Bearbeiten aus",
+      "enterChanges": "Bitte beschreibe, welche Änderungen du vornehmen möchtest",
+      "requestTooLong": "Die Anfrage darf höchstens 2000 Zeichen umfassen",
+      "editFailed": "Bildbearbeitung fehlgeschlagen. Bitte versuche es noch einmal.",
+      "noNewImage": "Kein neues Bild zum Ersetzen vorhanden",
+      "replaceImageFailed": "Bild konnte in der Geschichte nicht ersetzt werden. Bitte versuche es noch einmal.",
+      "noVersionSelected": "Keine Bildversion zum Wechseln ausgewählt",
+      "changeImageFailed": "Bild konnte in der Geschichte nicht gewechselt werden. Bitte versuche es noch einmal.",
+      "sameVersion": "Die ausgewählte Version ist bereits die aktuelle"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "Offline": {
+    "title": "Du bist offline",
+    "description": "Es sieht so aus, als hättest du die Verbindung verloren. Inhalte, die du bereits geöffnet hast, könnten weiterhin verfügbar sein. Wir versuchen automatisch, die Verbindung wiederherzustellen.",
+    "tipsTitle": "Das kannst du trotzdem tun:",
+    "tips": {
+      "readCached": "Bereits geöffnete Seiten lesen (sie sind im Cache gespeichert).",
+      "reuseNav": "Mit dem Zurück-Button zu zwischengespeicherten Inhalten springen.",
+      "wait": "Kurz abwarten – sobald du wieder online bist, aktualisieren wir automatisch."
+    },
+    "actions": {
+      "goBack": "Zurück",
+      "retry": "Erneut versuchen",
+      "goHome": "Startseite"
+    },
+    "status": {
+      "backOnline": "Verbindung wiederhergestellt. Aktualisiere...",
+      "stillOffline": "Noch offline..."
+    }
+  }
+}

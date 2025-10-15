@@ -1,0 +1,26 @@
+{
+  "TranslateFullStoryModal": {
+    "title": "Komplette Geschichte übersetzen",
+    "currentLanguage": "Aktuell: {lang}",
+    "targetLanguage": "Zielsprache",
+    "duplicateLabel": "Story duplizieren",
+    "duplicateOff": "Deine Story wird mit der neuen Übersetzung überschrieben.",
+    "duplicateOn": "Deine Originalstory bleibt erhalten. Eine neue Story mit der Übersetzung wird erstellt.",
+    "cost": {
+      "title": "Geschätzte Kosten",
+      "freeEdits": "• {count} kostenlose Kapitelbearbeitungen",
+      "paidEdits": "• {count} kostenpflichtige Kapitelbearbeitungen",
+      "balance": "• Aktueller Kontostand: {credits} Credits"
+    },
+    "cancel": "Abbrechen",
+    "translate": "Übersetzen",
+    "processing": "Starte...",
+    "buyCredits": "Credits kaufen",
+    "errors": {
+      "unableToCheckCredits": "Credits konnten nicht überprüft werden.",
+      "selectDifferentLanguage": "Bitte wähle eine andere Sprache.",
+      "unableToStart": "Übersetzung konnte nicht gestartet werden.",
+      "failed": "Übersetzung fehlgeschlagen. Bitte versuche es noch einmal."
+    }
+  }
+}

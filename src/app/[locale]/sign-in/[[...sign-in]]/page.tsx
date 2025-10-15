@@ -7,6 +7,7 @@ export function generateStaticParams() {
     { locale: 'pt-PT', 'sign-in': [] },
     { locale: 'es-ES', 'sign-in': [] },
     { locale: 'fr-FR', 'sign-in': [] },
+    { locale: 'de-DE', 'sign-in': [] },
   ];
 }
 

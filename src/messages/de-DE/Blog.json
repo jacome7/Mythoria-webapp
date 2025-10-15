@@ -1,0 +1,19 @@
+{
+  "Blog": {
+    "list": {
+      "title": "Der Blog",
+      "subtitle": "Chroniken aus dem Reich des Geschichtenerzählens",
+      "readMore": "Weiterlesen",
+      "publishedOn": "Veröffentlicht am",
+      "readingTime": "Min. Lesezeit",
+      "noPostsFound": "Noch keine Chroniken",
+      "noPostsFoundDescription": "Unsere Schreibenden feilen noch an den ersten Abenteuern. Schau bald wieder vorbei für neue epische Geschichten aus Mythoria!",
+      "loadMore": "Mehr Chroniken laden",
+      "error": "Chroniken konnten nicht geladen werden"
+    },
+    "metadata": {
+      "listTitle": "Alle Chroniken von Mythoria",
+      "listDescription": "Entdecke unsere komplette Sammlung von Chroniken – von epischen Abenteuern bis zu vergessenen Legenden aus dem Reich Mythoria."
+    }
+  }
+}

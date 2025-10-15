@@ -1,0 +1,19 @@
+{
+  "SharedStoryPage": {
+    "loading": {
+      "title": "Geteilte Geschichte wird geladen...",
+      "subtitle": "Bitte warte, während wir die Geschichte laden"
+    },
+    "redirecting": "Weiterleitung...",
+    "errors": {
+      "unableToAccess": "Zugriff auf die geteilte Geschichte nicht möglich",
+      "failedToAccess": "Die geteilte Geschichte konnte nicht aufgerufen werden"
+    },
+    "auth": {
+      "signInToEdit": "Melde dich an, um an dieser Geschichte mitzuschreiben",
+      "signInToRead": "Melde dich an, um diese Geschichte zu lesen",
+      "createAccountToCollaborate": "Erstelle ein Konto, um direkt mitzumachen und dieser Geschichte Leben einzuhauchen!",
+      "createAccountToReadFull": "Erstelle ein Konto, um die komplette Geschichte mit allen Kapiteln zu entdecken!"
+    }
+  }
+}

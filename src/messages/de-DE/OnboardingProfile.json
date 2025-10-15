@@ -1,0 +1,91 @@
+{
+  "OnboardingProfile": {
+    "title": "Willkommen!",
+    "intro": "Wir freuen uns riesig, diese kreative Reise mit dir zu starten. Der erste Schritt ist geschafft – jetzt machen wir sie ganz zu deiner.",
+    "preferredName": {
+      "section": "Wie dürfen wir dich nennen?",
+      "help": "Damit alles persönlich und locker bleibt, sag uns, wie du genannt werden möchtest.",
+      "label": "Dein bevorzugter Name"
+    },
+    "tailor": { "section": "Hilf uns, dein Erlebnis zu personalisieren (optional)" },
+    "gender": { "label": "Geschlecht" },
+    "literaryAge": { "label": "Literarisches Alter" },
+    "primaryGoal": {
+      "label": "Was ist dein Hauptziel, wenn du mit uns ein Buch erschaffst?",
+      "otherPlaceholder": "(Optional) Erzähl uns mehr"
+    },
+    "audience": { "label": "Für wen erzählst du normalerweise Geschichten?" },
+    "interests": { "label": "Welche Art von Geschichten magst du?" },
+    "pickOne": "Wähle eine Option",
+    "gift": {
+      "section": "Ein kleines Geschenk zum Start!",
+      "copy": "Kreativität verdient einen kleinen Schub. Wir schenken dir {credits} kostenlose Credits für deine erste Geschichte – ganz ohne Haken.",
+      "button": { "claimed": "Du hast deine Credits bereits", "start": "Starte deine Geschichte" }
+    },
+    "ideas": {
+      "section": "Was kannst du erschaffen? Hier ein paar Ideen:",
+      "item1": "Personalisierte Gutenachtgeschichten, in denen das Kind die Hauptrolle spielt.",
+      "item2": "Familienabenteuer – verwandle Feiertage und besondere Momente in epische Erzählungen.",
+      "item3": "Ein einzigartiges Geschenk zum Geburtstag, zur Taufe oder einfach, um zu zeigen: „Du bist mir wichtig.“"
+    },
+    "inspiration": {
+      "section": "Deine Muse wartet",
+      "copy": "Dir fehlt die zündende Idee? Auf unserer Inspirationsseite findest du jede Menge Impulse und Themen.",
+      "button": "Zur Inspiration"
+    },
+    "options": {
+      "gender": {
+        "female": "Weiblich",
+        "male": "Männlich",
+        "prefer_not_to_say": "Möchte ich nicht sagen"
+      },
+      "literaryAge": {
+        "school_age": "Schulkind",
+        "teen": "Teenager",
+        "emerging_adult": "Junge Erwachsene",
+        "experienced_adult": "Erfahrene Erwachsene",
+        "midlife_mentor_or_elder": "Mentor*in in der Lebensmitte oder älter"
+      },
+      "ageOptions": {
+        "school_age": "Schulkind (6–12)",
+        "teen": "Teenager (13–17)",
+        "emerging_adult": "Junge Erwachsene (18–24)",
+        "experienced_adult": "Erfahrene Erwachsene (25–49)",
+        "midlife_mentor_or_elder": "Mentor*in / Senior*in (50+)"
+      },
+      "primaryGoals": {
+        "family_keepsake": "Eine Familienerinnerung schaffen",
+        "personalized_gift": "Ein einzigartiges, personalisiertes Geschenk machen",
+        "child_development": "Die Entwicklung oder Bildung eines Kindes fördern",
+        "fun_and_creativity": "Einfach aus Spaß und Kreativität",
+        "friend_group_memories": "Erinnerungen für meinen Freundeskreis festhalten",
+        "company_engagement": "Mein Unternehmen begeistern",
+        "other": "Sonstiges"
+      },
+      "audiences": {
+        "my_child": "Mein Kind",
+        "family_member": "Ein Familienmitglied",
+        "friend_group": "Eine Freundesgruppe",
+        "myself": "Mich selbst",
+        "a_friend": "Eine*n Freund*in",
+        "varies": "Ganz unterschiedlich"
+      },
+      "interests": {
+        "adventure_exploration": "Abenteuer & Entdeckungen",
+        "fantasy_magic": "Fantasy & Magie",
+        "science_discovery": "Wissenschaft & Forschung",
+        "everyday_emotions": "Alltag & Gefühle",
+        "sports": "Sport",
+        "comedy_fun": "Comedy & Spaß",
+        "educational": "Lehrreiche Geschichten"
+      }
+    },
+    "saved": "Gespeichert ✓",
+    "saving": "Speichern...",
+    "errors": {
+      "displayNameRequired": "Name ist erforderlich",
+      "displayNameTooLong": "Anzeigename ist zu lang",
+      "loadFailed": "Profil konnte nicht geladen werden. Versuch es später noch einmal."
+    }
+  }
+}

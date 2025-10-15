@@ -1,0 +1,28 @@
+{
+  "ListenStory": {
+    "accessRestricted": "Zugriff eingeschränkt",
+    "needSignInToListen": "Du musst angemeldet sein, um Geschichten zu hören.",
+    "listenToStory": "\"{title}\" anhören",
+    "wantNewNarration": "Du möchtest eine neue Vertonung?",
+    "newNarrationDescription": "Du kannst eine neue Vertonung deiner Geschichte mit anderen Stimmcharakteristiken erzeugen.",
+    "cost": "Kosten",
+    "yourBalance": "Dein Guthaben",
+    "narrateStoryAgain": "Story erneut vertonen",
+    "replaceCurrentNarration": "Dadurch wird deine aktuelle Vertonung ersetzt",
+    "needMoreCredits": "Du benötigst {credits} Credits mehr, um eine neue Vertonung zu erstellen.",
+    "buyMoreCredits": "Mehr Credits kaufen",
+    "loadingPricing": "Preisinformationen werden geladen...",
+    "convertYourStory": "Verwandle deine Geschichte",
+    "convertDescription": "Verwandle deine Geschichte in eine wunderschön erzählte Version mit Hilfe der Mythoria-Elfen",
+    "narrateYourStory": "Vertone deine Geschichte",
+    "generatingAudiobook": "Dein Hörbuch wird erstellt",
+    "checkingUpdates": "Wir prüfen alle 15 Sekunden auf Updates. Bitte lass diese Seite geöffnet.",
+    "generationCompleted": "Hörbucherstellung abgeschlossen!",
+    "chapterTitle": "Kapitel {number}",
+    "startingGeneration": "Starte die Hörbucherstellung...",
+    "generationStarted": "Hörbucherstellung gestartet! Die Mythoria-Elfen brauchen ungefähr 5 Minuten, um die ganze Geschichte einzusprechen.",
+    "needMoreCreditsGenerate": "Du benötigst {shortfall} Credits mehr, um ein Hörbuch zu erstellen.",
+    "generationFailed": "Hörbucherstellung konnte nicht gestartet werden",
+    "tryAgainLater": "Bitte versuche es später noch einmal."
+  }
+}

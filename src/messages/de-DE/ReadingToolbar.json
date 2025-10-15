@@ -1,0 +1,24 @@
+{
+  "ReadingToolbar": {
+    "title": "Leseeinstellungen",
+    "toggleLabel": "Leseeinstellungen ein-/ausblenden",
+    "cover": "Cover",
+    "coverAndToc": "Cover & Inhaltsverzeichnis",
+    "chapterLabel": "Kapitel {number}",
+    "resetButton": "Auf Standard zurücksetzen",
+    "controls": {
+      "fontSize": "Schriftgröße",
+      "lineHeight": "Zeilenabstand",
+      "margins": "Ränder",
+      "fontSizeLabel": "Schriftgröße anpassen",
+      "lineHeightLabel": "Zeilenabstand anpassen",
+      "marginsLabel": "Ränder anpassen",
+      "decreaseFontSize": "Schrift verkleinern",
+      "increaseFontSize": "Schrift vergrößern",
+      "decreaseLineHeight": "Zeilenabstand verringern",
+      "increaseLineHeight": "Zeilenabstand vergrößern",
+      "decreaseMargins": "Ränder verringern",
+      "increaseMargins": "Ränder vergrößern"
+    }
+  }
+}

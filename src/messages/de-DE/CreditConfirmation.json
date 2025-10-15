@@ -1,0 +1,25 @@
+{
+  "CreditConfirmation": {
+    "textEdit": "Textbearbeitung",
+    "imageEdit": "Bildbearbeitung",
+    "freeEditTitle": "Kostenlose Bearbeitung verfügbar",
+    "confirmEditTitle": "Bearbeitung bestätigen",
+    "editProgress": "Bearbeitungsfortschritt",
+    "editsCompleted": "Bearbeitungen abgeschlossen",
+    "textEditFreeRemaining": "{remaining} kostenlose Textbearbeitungen übrig",
+    "textEditPaidMode": "Du bist im Bezahlmodus – 1 Credit pro 5 Bearbeitungen",
+    "imageEditFirstFree": "Deine erste Bildbearbeitung ist kostenlos!",
+    "imageEditPaidMode": "1 Credit pro Bildbearbeitung",
+    "creditBalance": "Credit-Guthaben",
+    "thisEditCosts": "Diese Bearbeitung kostet:",
+    "remainingBalance": "Verbleibendes Guthaben:",
+    "freeEdit": "Diese Bearbeitung ist kostenlos!",
+    "lowCreditsWarning": "Wenig Credits",
+    "lowCreditsMessage": "Überlege, weitere Credits zu kaufen, um weiter bearbeiten zu können.",
+    "cancel": "Abbrechen",
+    "processing": "Wird verarbeitet...",
+    "proceedFree": "Fortfahren (kostenlos)",
+    "proceedWithCredits": "{credits} Credits verwenden",
+    "buyCredits": "Credits kaufen"
+  }
+}

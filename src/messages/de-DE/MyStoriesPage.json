@@ -1,0 +1,64 @@
+{
+  "title": "Hallo",
+  "description": "Alle deine erstellten Geschichten ansehen und verwalten",
+  "writeNewStory": "Neue Geschichte",
+  "noStories": {
+    "title": "Noch keine Geschichten",
+    "subtitle": "Du hast noch keine Geschichte erstellt. Starte jetzt in dein Erzählabenteuer!",
+    "action": "Erstelle deine erste Geschichte"
+  },
+  "table": {
+    "date": "Datum",
+    "title": "Titel",
+    "status": {
+      "header": "Status",
+      "queued": "In Warteschlange",
+      "running": "Wird erstellt",
+      "completed": "Fertig",
+      "failed": "Fehlgeschlagen",
+      "cancelled": "Abgebrochen"
+    },
+    "actions": "Aktionen"
+  },
+  "status": {
+    "draft": "Entwurf",
+    "writing": "Wird geschrieben",
+    "published": "Veröffentlicht"
+  },
+  "actions": {
+    "read": "Lesen",
+    "edit": "Bearbeiten",
+    "share": "Teilen",
+    "duplicate": "Duplizieren",
+    "print": "Drucken",
+    "delete": "Löschen",
+    "printNotAvailable": "Drucken nicht verfügbar"
+  },
+  "duplicate": {
+    "success": "Geschichte erfolgreich dupliziert",
+    "error": "Geschichte konnte nicht dupliziert werden"
+  },
+  "sharing": {
+    "publicAccessible": "Die Geschichte ist jetzt öffentlich sichtbar",
+    "nowPrivate": "Die Geschichte ist jetzt privat"
+  },
+  "deleteConfirm": {
+    "title": "Geschichte löschen",
+    "message": "Möchtest du diese Geschichte wirklich löschen? Das kann nicht rückgängig gemacht werden.",
+    "cancel": "Abbrechen",
+    "confirm": "Löschen"
+  },
+  "signedOut": {
+    "welcome": "Willkommen bei Meine Geschichten",
+    "needSignIn": "Jede Geschichtenerzählerin und jeder Geschichtenerzähler braucht ein Konto, um die magischen Credits sicher aufzubewahren!",
+    "signIn": "Anmelden",
+    "createAccount": "Konto erstellen"
+  },
+  "defaults": {
+    "authorName": "Geschichtenerzähler"
+  },
+  "tabs": {
+    "myStories": "Meine Geschichten",
+    "myCharacters": "Meine Figuren"
+  }
+}

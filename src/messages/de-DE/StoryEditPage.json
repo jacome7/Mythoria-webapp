@@ -1,0 +1,34 @@
+{
+  "StoryEditPage": {
+    "language": {
+      "label": "Sprache der Geschichte",
+      "translate": "Komplette Geschichte übersetzen"
+    },
+    "errors": {
+      "failedToLoadStoryData": "Geschichtendaten konnten nicht geladen werden",
+      "failedToLoadStory": "Geschichte konnte nicht geladen werden",
+      "failedToUpdateStoryInfo": "Geschichteninformationen konnten nicht aktualisiert werden",
+      "failedToLoadStoryDataToast": "Geschichtendaten konnten nicht geladen werden",
+      "errorEmoji": "😞"
+    },
+    "success": {
+      "storyInfoUpdated": "Geschichteninformationen wurden erfolgreich aktualisiert",
+      "storyUpdated": "Geschichte wurde erfolgreich aktualisiert",
+      "chapterUpdated": "Kapitel wurde erfolgreich aktualisiert",
+      "contentUpdated": "Inhalt wurde erfolgreich aktualisiert"
+    },
+    "chapterUpdates": {
+      "chaptersUpdatedSuccessfully": "{successCount} Kapitel wurden erfolgreich aktualisiert. Kapitel {failedChapters} konnte nicht bearbeitet werden.",
+      "allChaptersUpdated": "Alle {successCount} Kapitel wurden erfolgreich aktualisiert. Änderungen wurden automatisch gespeichert."
+    },
+    "imageTypes": {
+      "frontCover": "Titelbild",
+      "backCover": "Rückseite"
+    },
+    "logging": {
+      "errorLoadingStory": "Fehler beim Laden der Geschichte:",
+      "errorUpdatingStoryInfo": "Fehler beim Aktualisieren der Geschichteninformationen:",
+      "aiEditSuccessUpdatedData": "KI-Bearbeitung erfolgreich – aktualisierte Daten:"
+    }
+  }
+}

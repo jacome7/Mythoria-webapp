@@ -10,7 +10,7 @@ Mythoria WebApp is a Next.js 15 full-stack application for creating AI-powered p
 
 ### Routing & App Structure
 
-- **Locale-first routing**: All routes start with `[locale]` segment (en-US, pt-PT, es-ES, fr-FR)
+- **Locale-first routing**: All routes start with `[locale]` segment (en-US, pt-PT, es-ES, fr-FR, de-DE)
 - **Server components by default**: Only add `'use client'` when hooks, browser APIs, or interactivity are required
 - **Middleware coordination**: `src/middleware.ts` chains Clerk auth + next-intl locale routing. Preserve `/offline` bypass for PWA fallback
 - **Path aliasing**: Use `@/` imports (configured in tsconfig.json) instead of relative paths
@@ -34,7 +34,7 @@ Mythoria WebApp is a Next.js 15 full-stack application for creating AI-powered p
 - **Source of truth**: `src/messages/en-US/` is canonical. All locales must mirror file structure
 - **Translation workflow**:
   1. Update `en-US` JSON files
-  2. Propagate structure to all locales (pt-PT, es-ES, fr-FR)
+  2. Propagate structure to all locales (pt-PT, es-ES, fr-FR, de-DE)
   3. Run `npm run i18n:keys` to regenerate `src/types/translation-keys.d.ts`
   4. Run `npm run i18n:parity` to verify no missing/extra keys
 - **Usage**: Import `useTranslations`/`getTranslations` from `next-intl`. Never hardcode user-facing strings
@@ -183,7 +183,8 @@ src/
 │   ├── en-US/            # Source locale
 │   ├── pt-PT/
 │   ├── es-ES/
-│   └── fr-FR/
+│   ├── fr-FR/
+│   └── de-DE/
 ├── types/                 # TypeScript types (translation-keys.d.ts is generated)
 ├── config/                # Configuration (locales, feature flags)
 └── constants/             # Static values

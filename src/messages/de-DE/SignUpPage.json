@@ -1,0 +1,14 @@
+{
+  "SignUpPage": {
+    "title": "Erstelle dein Mythoria-Konto",
+    "subtitle": "Schließe dich tausenden Geschichtenerzähler*innen an und beginne noch heute mit magischen Abenteuern.",
+    "pageTitle": "Konto erstellen",
+    "pageSubtitle": "Starte noch heute mit uns in dein Storytelling-Abenteuer.",
+    "features": {
+      "free": "🆓 Erste Geschichte komplett kostenlos",
+      "character": "👤 Einzigartige Charaktergestaltung",
+      "quality": "📖 Qualität wie im gedruckten Buch",
+      "creativity": "🚀 Grenzenlose Kreativität"
+    }
+  }
+}

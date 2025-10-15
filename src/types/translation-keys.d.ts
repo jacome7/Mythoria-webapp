@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE. Run: npm run i18n:keys
-// Total keys: 1959
+// Total keys: 1961
 export type TranslationKey =
   | 'AIEditModal.buttons.applyChanges'
   | 'AIEditModal.buttons.cancel'
@@ -722,6 +722,7 @@ export type TranslationKey =
   | 'GetInspiredPage.graphicalStyle.vintage'
   | 'GetInspiredPage.graphicalStyle.watercolor'
   | 'GetInspiredPage.storyLanguage.all'
+  | 'GetInspiredPage.storyLanguage.de-DE'
   | 'GetInspiredPage.storyLanguage.en-US'
   | 'GetInspiredPage.storyLanguage.es-ES'
   | 'GetInspiredPage.storyLanguage.fr-FR'
@@ -1310,6 +1311,7 @@ export type TranslationKey =
   | 'ProfilePage.journey.booksCreated'
   | 'ProfilePage.journey.description'
   | 'ProfilePage.journey.title'
+  | 'ProfilePage.languages.de-DE'
   | 'ProfilePage.languages.en-US'
   | 'ProfilePage.languages.es-ES'
   | 'ProfilePage.languages.fr-FR'

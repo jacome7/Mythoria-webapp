@@ -1,0 +1,213 @@
+{
+  "PrivacyPolicy": {
+    "title": "Datenschutzerklärung",
+    "atAGlance": {
+      "title": "Auf einen Blick (Zusammenfassung)",
+      "summary1": "Mythoria erhebt nur die Mindestdaten, die für die Einrichtung eines Kontos erforderlich sind (Name, E-Mail-Adresse und Telefonnummer) und um anhand Ihrer Eingaben personalisierte Geschichten zu erstellen.",
+      "summary2": "Sämtliche Inhalte werden in Google-Cloud-Rechenzentren innerhalb der EU gespeichert; Story-Prompts werden an die OpenAI Enterprise API übermittelt, die sie höchstens 30 Tage lang ausschließlich zur Missbrauchserkennung vorhält und sie niemals zum Training öffentlicher Modelle nutzt, sofern Sie nicht ausdrücklich zustimmen. Sie können Ihr Konto jederzeit löschen und – abgesehen von gesetzlichen Archiven (z. B. Rechnungen) – werden Ihre personenbezogenen Daten innerhalb von 30 Tagen aus aktiven Systemen entfernt.",
+      "summary3": "Nachfolgend finden Sie sämtliche gesetzlich vorgeschriebenen DSGVO-Informationen, die Datenschutzbestimmungen für Kinder (digitales Einwilligungsalter in Portugal: 13 Jahre), Cookie-Details sowie Ihre Rechte."
+    },
+    "section1": {
+      "title": "1. Wer wir sind",
+      "controller": {
+        "title": "Verantwortlicher",
+        "company": "Aventuras Contemporâneas, Lda.",
+        "address": "Rua Cais do Lugan, nº 224, 2.º Direito, 4400-492 Vila Nova de Gaia, Portugal",
+        "email": "E-Mail (allgemein): geral@mythoria.pt",
+        "privacy": "Anfragen zum Datenschutz / Rechteausübung: privacy@mythoria.pt",
+        "dpo": "Datenschutzbeauftragter: dpo@mythoria.pt (Art. 37 DSGVO)"
+      },
+      "authority": {
+        "title": "Aufsichtsbehörde",
+        "contact": "Comissão Nacional de Proteção de Dados (CNPD) – Av. D. Carlos I, 134, 1º, 1200-651 Lissabon, geral@cnpd.pt"
+      }
+    },
+    "section2": {
+      "title": "2. Geltungsbereich dieser Erklärung",
+      "content": "Dieser Hinweis gilt für mythoria.pt sowie alle mobilen oder Desktop-Apps unter der Marke \"Mythoria\". Externe Links mit eigenen Datenschutzbestimmungen sind nicht umfasst."
+    },
+    "section3": {
+      "title": "3. Welche Daten wir erfassen",
+      "table": {
+        "category": "Kategorie",
+        "examples": "Beispiele",
+        "source": "Quelle",
+        "rows": {
+          "account": {
+            "category": "Kontodaten",
+            "examples": "Name, E-Mail-Adresse, Mobiltelefonnummer",
+            "source": "Vom Nutzer bereitgestellt"
+          },
+          "story": {
+            "category": "Geschichtseingaben",
+            "examples": "Texteingaben, Figurennamen, von Ihnen hochgeladene Bilder",
+            "source": "Vom Nutzer bereitgestellt"
+          },
+          "generated": {
+            "category": "Generierte Inhalte",
+            "examples": "Die Geschichten/Bücher, die unsere KI Ihnen liefert",
+            "source": "Vom Dienst erstellt"
+          },
+          "usage": {
+            "category": "Nutzungsprotokolle & Telemetrie",
+            "examples": "IP-Adresse, Browsertyp, Geräte-ID, Zeitstempel",
+            "source": "Automatisch erfasst"
+          },
+          "cookies": {
+            "category": "Cookies / Local Storage",
+            "examples": "siehe § 7",
+            "source": "Browser"
+          }
+        }
+      },
+      "note": "Bitte geben Sie keine besonderen Kategorien personenbezogener Daten (Gesundheit, biometrische Daten, politische Ansichten usw.) an. Wenn Sie personenbezogene Daten Dritter eingeben, bestätigen Sie, dass Sie hierfür eine rechtmäßige Grundlage besitzen (Art. 14 DSGVO)."
+    },
+    "section4": {
+      "title": "4. Warum wir Ihre Daten verarbeiten & Rechtsgrundlagen",
+      "table": {
+        "purpose": "Zweck",
+        "data": "Daten",
+        "legalBasis": "Rechtsgrundlage (Art. 6 DSGVO)",
+        "rows": {
+          "stories": {
+            "purpose": "Personalisierte Geschichten erstellen & bereitstellen",
+            "data": "Kontodaten, Geschichtseingaben, generierte Inhalte",
+            "legalBasis": "Vertrag – zur Erbringung der von Ihnen angeforderten Leistung"
+          },
+          "account": {
+            "purpose": "Kontoverwaltung & Sicherheit",
+            "data": "Kontodaten, Protokolle",
+            "legalBasis": "Berechtigtes Interesse an einem sicheren Betrieb (Erwägungsgrund 47)"
+          },
+          "abuse": {
+            "purpose": "Missbrauchsvermeidung & Spamfilter",
+            "data": "Geschichtseingaben, die kurzzeitig von OpenAI analysiert werden",
+            "legalBasis": "Berechtigtes Interesse"
+          },
+          "analytics": {
+            "purpose": "Analytik & Produktverbesserung",
+            "data": "Nutzungsprotokolle, aggregierte Cookie-Daten",
+            "legalBasis": "Einwilligung über das Cookie-Banner (§ 7)"
+          },
+          "legal": {
+            "purpose": "Gesetzliche Pflichten & Rechnungslegung",
+            "data": "Kontodaten, Zahlungen (falls vorhanden)",
+            "legalBasis": "Rechtliche Verpflichtung (Steuerrecht)"
+          }
+        }
+      },
+      "note": "OpenAI und Google agieren als Auftragsverarbeiter gemäß Art. 28 DSGVO; Details in § 5."
+    },
+    "section5": {
+      "title": "5. Offenlegung zu KI & Cloud",
+      "openai": {
+        "title": "OpenAI Enterprise API",
+        "description": "Story-Prompts und Ausgaben werden an den EU-Endpunkt von OpenAI übermittelt. Sie werden höchstens 30 Tage gespeichert, um Missbrauch zu erkennen, und standardmäßig nicht zum Training von OpenAI-Modellen verwendet."
+      },
+      "google": {
+        "title": "Google Cloud",
+        "description": "Alle Datenbanken und die Dateispeicherung befinden sich in der europäischen Multi-Region. Für Übermittlungen außerhalb des EWR stützt sich Google auf die Standardvertragsklauseln der Kommission."
+      },
+      "note": "Keine weiteren Dritten erhalten identifizierbare Daten, es sei denn, Sie aktivieren ausdrücklich optionale Dienste (z. B. Zahlung, Newsletter); in diesem Fall werden die jeweiligen Auftragsverarbeiter vor Inbetriebnahme hier aufgeführt."
+    },
+    "section6": {
+      "title": "6. Datenschutz für Kinder",
+      "content": "Portugal hat das digitale Einwilligungsalter auf 13 Jahre festgelegt: Ist eine Nutzerin oder ein Nutzer jünger, muss eine erziehungsberechtigte Person die Verarbeitung genehmigen (Lei 58/2019, Art. 16). Mythoria-Geschichten können sich an Kinder richten, Konten müssen jedoch von Personen ab 13 Jahren und ggf. mit Zustimmung der Eltern erstellt werden."
+    },
+    "section7": {
+      "title": "7. Cookies & ähnliche Technologien",
+      "table": {
+        "cookie": "Cookie / Storage-Key",
+        "purpose": "Zweck",
+        "expiry": "Speicherdauer",
+        "consent": "Einwilligung erforderlich?",
+        "rows": {
+          "session": {
+            "cookie": "myth_session",
+            "purpose": "Hält Sie angemeldet",
+            "expiry": "Sitzung",
+            "consent": "Nein (unbedingt erforderlich)"
+          },
+          "auth": {
+            "cookie": "__Secure-next-auth.session-token",
+            "purpose": "Authentifiziert API-Aufrufe",
+            "expiry": "1 Tag",
+            "consent": "Nein"
+          },
+          "analytics": {
+            "cookie": "_ga, _gid (Google Analytics)",
+            "purpose": "Aggregierte Nutzungsstatistiken",
+            "expiry": "13 Monate / 24 Std.",
+            "consent": "Ja"
+          },
+          "consent": {
+            "cookie": "cookie_consent",
+            "purpose": "Merkt sich Ihre Präferenzen",
+            "expiry": "6 Monate",
+            "consent": "Nein"
+          }
+        }
+      },
+      "note": "Der bei Ihrem ersten Besuch angezeigte Banner folgt den EDPB Consent Guidelines 05/2020 und dem Bericht der Cookie-Banner-Taskforce (keine vorausgewählten Kästchen, Ablehnen-Schaltfläche bereits in der ersten Ebene)."
+    },
+    "section8": {
+      "title": "8. Wie lange wir Ihre Daten speichern",
+      "table": {
+        "dataSet": "Datensatz",
+        "retention": "Aufbewahrungsregel",
+        "rows": {
+          "account": {
+            "dataSet": "Aktive Kontodaten",
+            "retention": "Solange das Konto aktiv ist + 30 Tage, anschließend gelöscht oder anonymisiert"
+          },
+          "openai": {
+            "dataSet": "Story-Prompts & Ausgaben bei OpenAI",
+            "retention": "≤ 30 Tage (Auftragsverarbeiter)"
+          },
+          "logs": {
+            "dataSet": "Serverprotokolle",
+            "retention": "90 Tage für Sicherheitsprüfungen"
+          },
+          "backups": {
+            "dataSet": "Back-ups",
+            "retention": "Verschlüsselt, rollierender 30-Tage-Zyklus"
+          },
+          "financial": {
+            "dataSet": "Finanz-/Rechnungsunterlagen",
+            "retention": "10 Jahre (Decreto-Lei 28/2019)"
+          }
+        }
+      }
+    },
+    "section9": {
+      "title": "9. Sicherheitsmaßnahmen",
+      "content": "Wir setzen an ISO 27001 angelehnte Kontrollen ein: Verschlüsselung während der Übertragung (TLS 1.3) und im Ruhezustand (AES-256), Least-Privilege-Zugriffe, MFA für Mitarbeitende, automatisches Patchen sowie jährliche Penetrationstests. Unser Incident-Response-Prozess folgt den Meldepflichten bei Datenschutzverletzungen nach Art. 33 DSGVO."
+    },
+    "section10": {
+      "title": "10. Ihre Rechte",
+      "content": "Sie können Ihre personenbezogenen Daten einsehen, berichtigen, löschen, einschränken, der Verarbeitung widersprechen oder sie übertragen lassen und eine Einwilligung jederzeit widerrufen. Anfragen an dpo@mythoria.pt beantworten wir innerhalb eines Monats (Art. 12 DSGVO). Wenn Sie der Ansicht sind, dass Ihre Rechte verletzt wurden, können Sie bei der CNPD Beschwerde einlegen (Kontaktdaten in § 1).",
+      "deleteAccount": "Wenn Sie Ihr Recht auf Löschung (Art. 17 DSGVO) ausüben und Ihr Konto dauerhaft entfernen möchten, können Sie dies über unsere spezielle Seite zur Kontolöschung tun.",
+      "deleteAccountButton": "Konto löschen"
+    },
+    "section11": {
+      "title": "11. Internationale Datenübermittlungen",
+      "content1": "Werden Daten außerhalb des EWR übermittelt (z. B. an in den USA gehostete OpenAI-Disaster-Recovery-Server), stützen wir die Übermittlungen auf:",
+      "list": {
+        "item1": "Standardvertragsklauseln (Google Cloud, OpenAI)",
+        "item2": "Verschlüsselung und strenge Zugriffskontrollen (§ 9)."
+      }
+    },
+    "section12": {
+      "title": "12. Änderungen dieser Erklärung",
+      "content": "Wir können diesen Hinweis aktualisieren, um rechtliche oder technische Änderungen abzubilden. Bei wesentlichen Anpassungen informieren wir Kontoinhaberinnen und -inhaber per E-Mail und zeigen mindestens 15 Tage vor Inkrafttreten einen Hinweis in der App an. Den Versionsverlauf finden Sie oben auf dieser Seite."
+    },
+    "section13": {
+      "title": "13. Kontakt",
+      "content": "Fragen zum Datenschutz? Schreiben Sie an dpo@mythoria.pt oder an die in § 1 genannte Postanschrift. Wir helfen gern weiter!"
+    },
+    "links": {
+      "deleteAccount": "Konto löschen"
+    },
+    "lastUpdated": "Zuletzt aktualisiert: 2. Juni 2025"
+  }
+}

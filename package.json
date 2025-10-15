@@ -11,6 +11,7 @@
     "typecheck": "rimraf .next/types && tsc --noEmit",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
+    "format_fix": "npm run format:fix",
     "logs": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/get-cloud-run-logs.ps1",
     "i18n:prune:pt-PT:common": "tsx scripts/prune-unused-keys.ts pt-PT common.json",
     "db:generate": "drizzle-kit generate",

@@ -1,0 +1,43 @@
+{
+  "ShareModal": {
+    "title": "Story teilen",
+    "chooseOptions": "Wähle unten deine Freigabeoptionen",
+    "allowEdit": "Empfänger*innen dürfen bearbeiten",
+    "allowEditDesc": "Empfänger*innen können mitarbeiten und Änderungen vornehmen",
+    "makePublic": "Story öffentlich machen",
+    "makePublicDesc": "Alle können sie ohne Login ansehen",
+    "generateLink": "Freigabelink erstellen",
+    "shareUrl": "Freigabe-URL",
+    "copy": "Kopieren",
+    "copied": "Kopiert!",
+    "shareVia": "Teilen via:",
+    "whatsapp": "WhatsApp",
+    "facebook": "Facebook",
+    "email": "E-Mail",
+    "more": "Mehr",
+    "createAnother": "Weitere erstellen",
+    "done": "Fertig",
+    "optionsExplained": "Freigabeoptionen erklärt:",
+    "privateView": "Private Ansicht: Empfänger*innen müssen sich anmelden, um die Story zu sehen",
+    "privateEdit": "Private Bearbeitung: Empfänger*innen können gemeinsam bearbeiten",
+    "publicOption": "Öffentlich: Alle können die Story ohne Anmeldung ansehen",
+    "privateExpires": "Privater Link läuft in 30 Tagen ab",
+    "publicStoryTitle": "Öffentliche Story",
+    "publicStoryDesc": "Diese Story ist derzeit öffentlich und kann von allen angesehen werden.",
+    "publicUrl": "Öffentliche URL",
+    "makePrivate": "Story privat machen",
+    "makePrivateDesc": "Öffentlichen Zugriff entfernen und die Story privat machen",
+    "errors": {
+      "createLinkFailed": "Fehler beim Erstellen des Freigabelinks: Bitte versuche es später erneut.",
+      "shareLinkCreationFailed": "Freigabelink konnte nicht erstellt werden. Bitte versuche es noch einmal."
+    },
+    "alerts": {
+      "invalidStoryId": "Ungültige Story-ID"
+    },
+    "shareMessages": {
+      "checkOut": "Schau dir \"{storyTitle}\" auf Mythoria an 📚",
+      "emailSubject": "Schau dir \"{storyTitle}\" an",
+      "emailBody": "Ich wollte diese Story mit dir teilen:\n\n\"{storyTitle}\"\n\n{url}\n\nViel Spaß beim Lesen! 📚"
+    }
+  }
+}

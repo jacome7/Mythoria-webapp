@@ -61,7 +61,8 @@
       "en-US": "English (US)",
       "pt-PT": "Português (Portugal)",
       "es-ES": "Español (España)",
-      "fr-FR": "Français (France)"
+      "fr-FR": "Français (France)",
+      "de-DE": "German (Germany)"
     },
     "notifications": {
       "title": "Your Notifications",

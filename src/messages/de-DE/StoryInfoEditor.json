@@ -1,0 +1,58 @@
+{
+  "StoryInfoEditor": {
+    "title": "Story-Informationen",
+    "storyTitle": "Storytitel",
+    "titlePlaceholder": "Storytitel eingeben",
+    "synopsis": "Kurzbeschreibung",
+    "synopsisPlaceholder": "Kurze Beschreibung deiner Story",
+    "dedicationMessage": "Widmung",
+    "dedicationPlaceholder": "Eine persönliche Widmung für diese Story",
+    "authorName": "Name der Autorin oder des Autors",
+    "authorPlaceholder": "Wie soll die Autorin oder der Autor genannt werden?",
+    "targetAudience": "Zielgruppe",
+    "targetAudiencePlaceholder": "Zielgruppe auswählen",
+    "saveButton": "Änderungen speichern",
+    "saving": "Speichern...",
+    "frontCover": "Titelbild",
+    "backCover": "Rückseite",
+    "noCoverImage": "Kein Titelbild",
+    "noBackCover": "Keine Rückseite",
+    "editCover": "Cover bearbeiten",
+    "editBackCover": "Rückseite bearbeiten",
+    "addCover": "Cover hinzufügen",
+    "addBackCover": "Rückseite hinzufügen",
+    "storyDetails": "Story-Details",
+    "language": "Sprache der Story",
+    "translate": "Komplette Story übersetzen",
+    "graphicalStyleLabel": "Grafikstil:",
+    "created": "Erstellt:",
+    "lastUpdated": "Zuletzt aktualisiert:",
+    "notSpecified": "Nicht angegeben",
+    "targetAudienceOptions": {
+      "children_0-2": "Kinder 0–2 (Babys/Kleinkinder)",
+      "children_3-6": "Kinder 3–6 (Vorschulalter)",
+      "children_7-10": "Kinder 7–10 (Grundschulalter)",
+      "children_11-14": "Kinder 11–14 (Mittelstufe)",
+      "young_adult_15-17": "Jugendliche 15–17",
+      "adult_18+": "Erwachsene 18+",
+      "all_ages": "Alle Altersgruppen"
+    },
+    "altTexts": {
+      "storyCover": "Story-Cover",
+      "storyBackCover": "Rückseite der Story"
+    },
+    "messages": {
+      "chapterSavedWithVersion": "Kapitel als Version {version} gespeichert",
+      "failedToSaveChapter": "Kapitel konnte nicht gespeichert werden",
+      "noPreviousVersion": "Keine vorherige Version verfügbar",
+      "revertedToVersion": "Zur Version {version} zurückgesetzt",
+      "advancedToVersion": "Auf Version {version} vorgerückt",
+      "failedToUndoChapter": "Kapitel konnte nicht rückgängig gemacht werden",
+      "chapterUpdatedSuccessfully": "Kapitel erfolgreich aktualisiert",
+      "contentUpdatedSuccessfully": "Inhalt erfolgreich aktualisiert"
+    },
+    "logging": {
+      "errorSavingStoryInfo": "Fehler beim Speichern der Story-Informationen:"
+    }
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "StoryGenerationProgress": {
+    "completion": {
+      "title": "Deine Geschichte ist fertig!",
+      "description": "Glückwunsch! Deine magische Geschichte wurde erstellt und wartet darauf, gelesen zu werden.",
+      "progress": "Zu 100 % fertig!",
+      "buttons": {
+        "readStory": "📖 Lies deine Geschichte jetzt",
+        "myStories": "📚 Meine Geschichten"
+      },
+      "celebration": {
+        "title": "Deine Geschichte gehört jetzt zur Mythoria-Sammlung!",
+        "description": "Teil sie mit Freund*innen oder starte gleich das nächste magische Abenteuer."
+      }
+    },
+    "progress": {
+      "title": "🏭 Die Geschichtswerkstatt läuft heiß!",
+      "description": "Deine Geschichte ist in bis zu 14 Minuten bereit.",
+      "progressLabel": "Fortschritt",
+      "estimatedTimeLabel": "Geschätzte verbleibende Zeit",
+      "creatingMagic": "Magie entsteht...",
+      "currentlyLabel": "Gerade passiert:",
+      "tip": {
+        "title": "Tipp:",
+        "description": "Während du wartest, kannst du in \"Meine Geschichten\" den Fortschritt live verfolgen oder direkt die nächste Story starten!"
+      }
+    },
+    "steps": {
+      "generate_outline": "Wir schmieden den Handlungsentwurf deiner Geschichte",
+      "write_chapters": "Wir schreiben magische Kapitel",
+      "generate_front_cover": "Wir gestalten das Cover",
+      "generate_back_cover": "Wir zaubern die Rückseite",
+      "generate_images": "Wir malen wunderschöne Illustrationen",
+      "assemble": "Wir binden deine Geschichte zusammen",
+      "generate_audiobook": "Wir nehmen dein Hörbuch auf",
+      "done": "Letzte Feinschliffe"
+    },
+    "funnyMessages": {
+      "generate_outline": [
+        "🍫 Unsere Oompa-Loompas skizzieren deinen Story-Plan auf Schokopapier!",
+        "📋 Die Schreibelfen kartieren dein Abenteuer mit verzauberten Federn!",
+        "✨ Story-Architekt*innen entwerfen die perfekte Handlung!"
+      ],
+      "write_chapters": [
+        "📖 Oompa-Loompas tippen eifrig auf ihren winzigen Schreibmaschinen!",
+        "✍️ Unsere Literatur-Elfen weben deine Geschichte mit goldenen Fäden!",
+        "🎭 Storieschreiber*innen erwecken deine Figuren mit Zaubertinte zum Leben!",
+        "📚 Kapitelzaubernde versehen jede Seite mit literarischen Sprüchen!"
+      ],
+      "generate_front_cover": [
+        "🎨 Unsere kreativen Oompa-Loompas mischen magische Farben für dein Cover!",
+        "🖌️ Meisterillustrator*innen zeichnen dein Cover mit Regenbogenpinseln!",
+        "🌟 Coverdesigner*innen streuen Sternenstaub auf das Gesicht deines Buchs!"
+      ],
+      "generate_back_cover": [
+        "🎭 Rückseiten-Poet*innen schreiben geheimnisvolle Klappentexte mit unsichtbarer Tinte!",
+        "📖 Unsere Klappentext-Schreiber*innen formulieren den perfekten Teaser!",
+        "✨ Cover-Finish-Elfen setzen die letzten magischen Details!"
+      ],
+      "generate_images": [
+        "🖼️ Illustrations-Oompa-Loompas malen jede Szene mit ganz viel Gefühl!",
+        "🎨 Bildmagier*innen erwecken deine Figuren farbenfroh zum Leben!",
+        "🌈 Kunstfeen verleihen jeder Illustration magische Details!",
+        "🖌️ Bilderzähler*innen erschaffen Fenster in deine Welt!"
+      ],
+      "assemble": [
+        "📚 Buchbindende Oompa-Loompas nähen alles sorgfältig zusammen!",
+        "🔧 Montage-Elfen stellen sicher, dass jede Seite sitzt!",
+        "📋 Qualitätszaubernde prüfen jedes magische Detail!"
+      ],
+      "generate_audiobook": [
+        "🎤 Sprecher-Oompa-Loompas erzählen deine Geschichte!",
+        "🎵 Audiozaubernde geben ihr den perfekten Erzählrhythmus!",
+        "🎧 Klangingenieur*innen polieren jedes magische Wort!"
+      ],
+      "done": [
+        "🎉 Tadaa! Deine magische Geschichte ist bereit für ihr großes Abenteuer!",
+        "✨ Geschafft! Die Oompa-Loompas gönnen sich jetzt eine wohlverdiente Kakao-Pause!",
+        "🏆 Mission erfüllt! Deine Geschichte ist fertig und bereit zu verzaubern!"
+      ],
+      "default": ["⚡ Unsere magischen Oompa-Loompas wirken an ihren kreativen Wundern!"]
+    },
+    "timeUnits": {
+      "second": "Sekunde",
+      "seconds": "Sekunden",
+      "minute": "Minute",
+      "minutes": "Minuten"
+    }
+  }
+}

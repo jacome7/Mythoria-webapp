@@ -306,7 +306,7 @@ export const envManifest: EnvVarDescriptor[] = [
     name: 'NEXT_PUBLIC_SUPPORTED_LOCALES',
     required: false,
     scopes: ['prod', 'build', 'dev', 'public'],
-    default: 'en,pt',
+    default: 'en,pt,es,fr,de',
     note: 'Comma-separated list; default falls back to internal constant.',
   },
   {

@@ -1,0 +1,58 @@
+{
+  "hero": {
+    "title": "Hey! So glad you're here.",
+    "intro": "Mythoria was born from something real simple: a passion for stories. The kind they told us at bedtime and the kind that, even as adults, make us daydream. We believe, from the bottom of our hearts, that everyone has a special story inside them, just waiting for a chance to shine.",
+    "tagline": "Our only goal is to give you that chance."
+  },
+  "mission": {
+    "title": "Our Mission",
+    "paragraph1": "Our dream is to see a child's eyes light up reading a book they helped create. To see an adult smile, rediscovering that spark of imagination that sometimes the daily grind makes us forget.",
+    "paragraph2": "We created Mythoria to be that bridge. A safe and magical bridge between your idea — no matter how small, like a doodle or a memory — and an illustrated book, real and tangible, that you can keep forever. We want creating a book to be an act of joy, not a challenge."
+  },
+  "team": {
+    "title": "The People Behind the Dream",
+    "subtitle": "We're a small team, but with a huge heart dedicated to this project:",
+    "rodrigo": {
+      "title": "Rodrigo Jácome - The Young Dreamer",
+      "description": "Rodrigo is the soul of Mythoria. He's a young guy passionate about two things that seem far apart, but he brought together: the warmth of books and the magic of Artificial Intelligence. He's the one who designs every detail of your customer journey, answers your questions, and works every day to make Mythoria as easy and beautiful to use as possible. This project is his dream come true.",
+      "ariaLabel": "See alternative photo of Rodrigo",
+      "altSmiling": "Rodrigo Jácome smiling"
+    },
+    "andre": {
+      "title": "André Silva - The Mentor",
+      "description": "With his huge experience in creating products and companies, he's the one who advises us and helps ensure this dream of ours has legs to walk and grow healthily. He's the voice of calm and strategy that allows us to keep dreaming, but with our feet firmly on the ground.",
+      "ariaLabel": "See alternative photo of André",
+      "altSmiling": "André Silva smiling"
+    },
+    "oumpaLoompas": {
+      "title": "Our Oompa-Loompas",
+      "description": "We have a team of tireless helpers working behind the scenes: our AI Oompa-Loompas. They handle all the technical and complex tasks — from helping generate images to making sure the site runs perfectly. They're our support team, freeing up our time to focus on what matters most: our stories and the people who create them, like you.",
+      "ariaLabel": "See alternative photo of the Oompa-Loompas",
+      "altSmiling": "Oompa-Loompas smiling"
+    }
+  },
+  "commitment": {
+    "title": "Our Commitment",
+    "paragraph1": "We talk a lot about technology, digitalization, and AI, but you know why? Our big challenge is to make technology so perfect that it becomes invisible to you.",
+    "paragraph2": "We want to automate everything that's complicated so your only concern is to imagine. Our commitment is that the process of creating your book is simple, quick, and above all, magical."
+  },
+  "ourStory": {
+    "title": "Our Story",
+    "paragraph1": "We believe so much in the power of a good story that, naturally, we decided to turn the birth of Mythoria into our own adventure.",
+    "paragraph2Start": "We wrote a little book that tells our journey. In it, we mix memories and real facts — like one of our first moments of great joy, when we received the Best School Project Award at the InovaGaia Boostcamp —",
+    "paragraph2End": "with the whole path and challenges we faced until launching the first version of our dream.",
+    "paragraph3": "It's not required reading, of course, but an invitation. If you're curious and have a bit of time, we'd love for you to read it. You can find the complete book here:",
+    "button": "Read Our Story",
+    "inovaGaiaText": "InovaGaia"
+  },
+  "transparency": {
+    "title": "A Note on Transparency",
+    "textStart": "So you know this project of ours is serious and built to last, Mythoria was born within our family company,",
+    "textEnd": ", registered in Portugal with NIPC 515 716 979. We're based in Vila Nova de Gaia, Portugal, since October 31, 2019 with a share capital of €10,000.00.",
+    "companyName": "Aventuras Contemporâneas, Lda."
+  },
+  "closing": {
+    "title": "Thanks for taking a bit of your time to get to know us.",
+    "subtitle": "Now, we're excited to get to know your story."
+  }
+}

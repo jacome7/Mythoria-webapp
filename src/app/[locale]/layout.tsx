@@ -255,6 +255,18 @@ export async function generateMetadata({
           image: 'https://mythoria.pt/Mythoria-logo-white-512x336.jpg',
         },
       };
+    } else if (locale === 'de-DE') {
+      metadata = {
+        title: 'Mythoria | Personalisierter Buchgenerator',
+        description:
+          'Erstelle einzigartige, vollständig illustrierte Bücher mit der generativen KI von Mythoria. Verwandle jede Geschichte in wenigen Minuten in ein E-Book, Hörbuch oder gedrucktes Geschenk.',
+        openGraph: {
+          title: 'Mythoria | Personalisierter Buchgenerator',
+          description:
+            'Verwandle deine Ideen in personalisierte, wunderschön illustrierte Bücher – lesen, anhören oder drucken.',
+          image: 'https://mythoria.pt/Mythoria-logo-white-512x336.jpg',
+        },
+      };
     }
   } catch (error) {
     console.error(`Failed to load metadata for locale ${locale}:`, error);

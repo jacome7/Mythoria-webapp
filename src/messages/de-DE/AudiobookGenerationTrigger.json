@@ -1,0 +1,16 @@
+{
+  "AudiobookGenerationTrigger": {
+    "generateAudiobook": "Hörbuch erzeugen",
+    "audiobookDescription": "Verwandle deine Geschichte in ein fesselndes Hörbuch.",
+    "selectVoice": "Stimme auswählen",
+    "generating": "Wird erzeugt...",
+    "createAudiobook": "Hörbuch erstellen",
+    "estimatedTime": "Geschätzte Dauer",
+    "aboutEightMinutes": "Etwa 8 Minuten",
+    "creditCost": "Credit-Kosten",
+    "creditsRequired": "10 Credits",
+    "errors": {
+      "failedToStart": "Hörbucherstellung konnte nicht gestartet werden"
+    }
+  }
+}

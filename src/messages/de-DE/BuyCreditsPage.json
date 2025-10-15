@@ -1,0 +1,145 @@
+{
+  "BuyCreditsPage": {
+    "header": {
+      "title": "Credits kaufen",
+      "subtitle": "Kaufe Credits, um Premium-Funktionen freizuschalten und fantastische Geschichten zu erstellen."
+    },
+    "packages": {
+      "title": "Verfügbare Credit-Pakete",
+      "addToCart": "In den Warenkorb"
+    },
+    "badges": {
+      "bestValue": "Bester Deal",
+      "popular": "Beliebt"
+    },
+    "cart": {
+      "title": "Warenkorb",
+      "empty": "Dein Warenkorb ist leer. Füge ein paar Credit-Pakete hinzu, um loszulegen!",
+      "each": "pro Stück"
+    },
+    "summary": {
+      "title": "Bestellübersicht",
+      "subtotal": "Zwischensumme",
+      "vat": "MwSt. (6 %)",
+      "total": "Gesamt"
+    },
+    "payment": {
+      "title": "Zahlungsmethode",
+      "revolutPay": "Mit Karte bezahlen (Visa, Mastercard)",
+      "revolutDescription": "Schneller und sicherer Checkout mit Revolut Pay. Kein Konto nötig.",
+      "revolutError": "Zahlungsfehler",
+      "revolutErrorHelp": "Wenn das Problem weiterhin besteht, probiere bitte eine andere Zahlungsmethode oder kontaktiere den Support.",
+      "mbway": "MB Way",
+      "mbwayDescription": "Bezahle mit deiner portugiesischen MB-Way-App.",
+      "comingSoon": "Bald verfügbar",
+      "completePayment": "Zahlung abschließen",
+      "creatingOrder": "Deine Bestellung wird erstellt...",
+      "orderCreated": "Bestellung erfolgreich erstellt",
+      "success": "Zahlung erfolgreich! Du wirst zu deinen Geschichten weitergeleitet...",
+      "mbwaySuccess": "MB-Way-Zahlungsanforderung erstellt! Schau in dein E-Mail-Postfach für die Zahlungsanweisungen. Du wirst zu deinen Geschichten weitergeleitet...",
+      "processing": "Zahlung wird verarbeitet..."
+    },
+    "actions": {
+      "proceedToPayment": "Zur Zahlung weiter",
+      "creatingOrder": "Bestellung wird erstellt...",
+      "cancel": "Abbrechen",
+      "tryAgain": "Erneut versuchen",
+      "contactSupport": "Support kontaktieren",
+      "backToPricing": "Zur Preisübersicht"
+    },
+    "errors": {
+      "emptyCart": "Dein Warenkorb ist leer. Bitte füge zuerst ein paar Credit-Pakete hinzu.",
+      "orderCreationFailed": "Die Bestellung konnte nicht erstellt werden. Bitte versuch es noch einmal.",
+      "paymentFailed": "Die Zahlung ist fehlgeschlagen. Bitte versuch es noch einmal.",
+      "contactSupport": "Bitte wende dich an unser Support-Team für Hilfe."
+    },
+    "billing": {
+      "title": "Rechnungsinformationen",
+      "expand": "Klicke, um Rechnungsdetails einzugeben (optional)",
+      "collapse": "Klicke, um die Rechnungsdetails einzuklappen",
+      "loading": "Deine Rechnungsinformationen werden geladen...",
+      "personalDetails": "Persönliche / Unternehmensangaben",
+      "billingAddress": "Rechnungsadresse",
+      "selectCountry": "Land auswählen",
+      "fields": {
+        "fullName": "Vollständiger Name / Unternehmen",
+        "email": "E-Mail",
+        "vatNumberOptional": "USt-IdNr. / Steuernummer (optional)",
+        "phoneOptional": "Telefon (optional)",
+        "addressLine1": "Adresszeile 1",
+        "addressLine2Optional": "Adresszeile 2 (optional)",
+        "addressLine2": "Adresszeile 2",
+        "city": "Stadt",
+        "stateRegion": "Bundesland / Region",
+        "postalCode": "Postleitzahl",
+        "country": "Land"
+      },
+      "placeholders": {
+        "vatNumber": "z. B. PT123456789",
+        "phone": "z. B. +49 30 1234 5678",
+        "postalCode": "z. B. 10115"
+      },
+      "vatValidation": {
+        "valid": "Gültige USt-IdNr.",
+        "help": "Mit einer gültigen EU-USt-IdNr. kann die MwSt. gegebenenfalls entfallen.",
+        "errors": {
+          "tooShort": "Die USt-IdNr. ist zu kurz",
+          "unsupportedCountry": "Nicht unterstützter Ländercode",
+          "invalidFormat": "Ungültiges USt-Format für {country}. Erwartet: {format}"
+        }
+      },
+      "groups": {
+        "eu": "Europäische Union",
+        "otherEurope": "Weiteres Europa",
+        "other": "Andere"
+      },
+      "countries": {
+        "at": "Österreich",
+        "be": "Belgien",
+        "bg": "Bulgarien",
+        "hr": "Kroatien",
+        "cy": "Zypern",
+        "cz": "Tschechien",
+        "dk": "Dänemark",
+        "ee": "Estland",
+        "fi": "Finnland",
+        "fr": "Frankreich",
+        "de": "Deutschland",
+        "gr": "Griechenland",
+        "hu": "Ungarn",
+        "ie": "Irland",
+        "it": "Italien",
+        "lv": "Lettland",
+        "lt": "Litauen",
+        "lu": "Luxemburg",
+        "mt": "Malta",
+        "nl": "Niederlande",
+        "pl": "Polen",
+        "pt": "Portugal",
+        "ro": "Rumänien",
+        "sk": "Slowakei",
+        "si": "Slowenien",
+        "es": "Spanien",
+        "se": "Schweden",
+        "ch": "Schweiz",
+        "no": "Norwegen",
+        "gb": "Vereinigtes Königreich",
+        "us": "Vereinigte Staaten",
+        "ca": "Kanada",
+        "au": "Australien",
+        "jp": "Japan",
+        "br": "Brasilien",
+        "mx": "Mexiko",
+        "in": "Indien",
+        "sg": "Singapur"
+      },
+      "info": {
+        "title": "Warum Rechnungsinformationen angeben?",
+        "description1": "Damit können wir gesetzeskonforme Rechnungen für deine Käufe ausstellen.",
+        "description2": "Mit einer gültigen USt-IdNr. oder Steuernummer können wir die MwSt.-Behandlung optimieren.",
+        "description3": "Wenn du die Angaben jetzt ausfüllst, sparst du bei künftigen Käufen Zeit.",
+        "description4": "Optional – du kannst diesen Abschnitt überspringen, wenn du möchtest."
+      }
+    }
+  }
+}

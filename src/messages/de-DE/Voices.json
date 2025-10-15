@@ -1,0 +1,31 @@
+{
+  "Voices": {
+    "selectVoice": "Stimme auswählen",
+    "names": {
+      "alloy": "Alloy",
+      "ash": "Ash",
+      "ballad": "Ballad",
+      "coral": "Coral",
+      "echo": "Echo",
+      "fable": "Fable",
+      "nova": "Nova",
+      "onyx": "Onyx",
+      "sage": "Sage",
+      "shimmer": "Shimmer",
+      "verse": "Verse"
+    },
+    "descriptions": {
+      "alloy": "Eine neutrale, ausgewogene Stimme – perfekt für allgemeine Erzählungen und Informationsinhalte.",
+      "ash": "Eine klare, präzise Stimme, ideal für Anleitungen und technische Erklärungen.",
+      "ballad": "Eine melodische, weiche Stimme, die sich wunderbar für Geschichten und erzählerische Inhalte eignet.",
+      "coral": "Eine warme, freundliche Stimme – ideal für Dialoge und den direkten Kontakt mit deinem Publikum.",
+      "echo": "Eine resonante, tiefe Stimme mit starker Präsenz für Ankündigungen und formelle Botschaften.",
+      "fable": "Eine warme, fesselnde Stimme mit erzählerischem Flair – perfekt für immersive Geschichten.",
+      "nova": "Eine helle, energiegeladene Stimme, großartig für schwungvolle Inhalte und begeisterte Ansagen.",
+      "onyx": "Eine tiefe, autoritäre Stimme, die Seriosität und Vertrauen vermittelt.",
+      "sage": "Eine ruhige, nachdenkliche Stimme, ideal für reflektierende Inhalte und Orientierung.",
+      "shimmer": "Eine strahlende, lebendige Stimme, die deinem Audio zusätzlichen Glanz verleiht.",
+      "verse": "Eine vielseitige, ausdrucksstarke Stimme, die sich an ganz unterschiedliche Tonlagen anpasst."
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "Header": {
+    "navigation": {
+      "homepage": "Startseite",
+      "getInspired": "Lass dich inspirieren",
+      "tellYourStory": "Erzähl deine Geschichte",
+      "blog": "Der Blog",
+      "myStories": "Meine Geschichten",
+      "pricing": "Preise"
+    },
+    "auth": {
+      "signIn": "Anmelden"
+    },
+    "logoAlt": "Mythoria-Logo"
+  }
+}

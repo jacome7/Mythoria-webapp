@@ -1,0 +1,59 @@
+{
+  "AIImageEditor": {
+    "title": "KI-Bildeditor – {imageType}",
+    "currentImage": "Aktuelles Bild:",
+    "requestPlaceholder": "Beschreibe, wie du dieses Bild verändern möchtest...",
+    "characterCount": "{count}/{max} Zeichen",
+    "generateButton": "Neues Bild erstellen",
+    "replaceButton": "Original ersetzen",
+    "cancelButton": "Abbrechen",
+    "loading": "Wird generiert...",
+    "newImageLabel": "Neu generiertes Bild",
+    "newImageSuccess": "Neues Bild wurde erfolgreich erstellt!",
+    "generatedImageAlt": "Generiertes Bild",
+    "modes": {
+      "edit": "Aktuelles Bild bearbeiten",
+      "upload": "Eigenes Foto verwenden"
+    },
+    "labels": {
+      "addYourOwnPhoto": "Eigenes Foto hinzufügen",
+      "describeChanges": "Beschreibe die Änderungen"
+    },
+    "helper": {
+      "dragDropOrClick": "Ziehe ein Bild hierher oder klicke, um eines auszuwählen",
+      "selectImage": "Bild auswählen",
+      "processing": "Wird verarbeitet...",
+      "editUsesCredit": "Verbraucht 1 Bild-Credit"
+    },
+    "radio": {
+      "legend": "Wie sollen wir dein Foto verwenden?",
+      "asIs": "Foto unverändert verwenden (kostenlos)",
+      "convert": "Foto in den Stil {style} umwandeln und bearbeiten (verbraucht 1 Credit)",
+      "defaultStyle": "ausgewählt"
+    },
+    "placeholders": {
+      "addNotesStyleDisabled": "Notizen hinzufügen (Stilumwandlung aktivieren, um sie zu verwenden)"
+    },
+    "buttons": {
+      "applyPhoto": "Foto übernehmen"
+    },
+    "errors": {
+      "describeChanges": "Bitte beschreibe, welche Änderungen du am Bild vornehmen möchtest",
+      "unableToCheckCredits": "Credits konnten nicht überprüft werden. Bitte versuche es noch einmal.",
+      "failedToGenerate": "Neues Bild konnte nicht erstellt werden. Bitte versuche es noch einmal.",
+      "failedToReplace": "Bild konnte nicht ersetzt werden. Bitte versuche es noch einmal."
+    },
+    "imageTypes": {
+      "cover": "Cover",
+      "backcover": "Rückseite",
+      "chapter": "Kapitel {number}"
+    },
+    "cropper": {
+      "title": "Bild auf 1024x1536 (Hochformat) zuschneiden",
+      "zoom": "Zoom {value}x",
+      "cancel": "Abbrechen",
+      "crop": "Zuschneiden",
+      "processing": "Wird verarbeitet..."
+    }
+  }
+}

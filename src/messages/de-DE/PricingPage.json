@@ -1,0 +1,142 @@
+{
+  "PricingPage": {
+    "header": {
+      "title": "Unsere Preise",
+      "subtitle": "Einfach, flexibel und auf deine Storytelling-Bedürfnisse zugeschnitten."
+    },
+    "creditPackages": {
+      "badges": {
+        "bestValue": "Bester Deal",
+        "popular": "Beliebt"
+      },
+      "packages": {
+        "credits5": {
+          "description": "Perfekt, um alles auszuprobieren."
+        },
+        "credits10": {
+          "description": "Ideal für ein paar Geschichten."
+        },
+        "credits30": {
+          "description": "Ideal für alle, die ständig neue Geschichten schreiben."
+        },
+        "credits100": {
+          "description": "Für alle, die Geschichten am laufenden Band erschaffen!"
+        }
+      },
+      "buyButton": "Jetzt {credits} Credits kaufen",
+      "credits": "Credits"
+    },
+    "serviceCosts": {
+      "loading": "Preisinformationen werden geladen...",
+      "availableServices": "Unsere Services:",
+      "creditsHeader": "Credits",
+      "services": {
+        "generateEbook": "Digitales E-Book erstellen",
+        "narrateAudiobook": "Buch vertonen (Hörbuch)",
+        "editBook": "Ein Buch bearbeiten:",
+        "manualEditing": "Manuelle Bearbeitung",
+        "textReviewAI": "Textprüfung mit KI",
+        "generateNewImages": "Neue Bilder generieren",
+        "printShipBook": "Buch drucken und versenden:",
+        "softCover": "Softcover",
+        "extraChapterCost": "Kosten für zusätzliche Kapitel"
+      },
+      "serviceNames": {
+        "ebook": "Digitales Buch (E-Book) erstellen",
+        "audiobook": "Ein Hörbuch erstellen",
+        "printed_book": "Ein gedrucktes Softcover-Buch bestellen und liefern lassen"
+      },
+      "tableHeaders": {
+        "service": "Service",
+        "cost": "Kosten in Credits"
+      },
+      "creditsUnit": "Credits"
+    },
+    "infoModal": {
+      "title": "Serviceinformationen",
+      "header": "Serviceinformationen",
+      "button": "Mehr Infos",
+      "services": {
+        "ebook": {
+          "title": "Digitales E-Book erstellen",
+          "description": "Erstelle ein personalisiertes digitales Buch, das auf jedem Gerät gelesen werden kann."
+        },
+        "audiobook": {
+          "title": "Buch vertonen (Hörbuch)",
+          "description": "Verwandle deine Geschichte in ein mitreißendes Hörbuch mit professioneller Vertonung."
+        },
+        "printedBook": {
+          "title": "Gedrucktes Softcover-Buch bestellen und versenden",
+          "description": "Erhalte ein wunderschönes Softcover-Buch direkt zu dir nach Hause geliefert.",
+          "printingOptions": [
+            "Premium-Softcover-Bindung",
+            "Hochwertiges Papier und Druck",
+            "Professionelles Cover-Design",
+            "Weltweiter Versand möglich"
+          ]
+        }
+      },
+      "close": "Schließen"
+    },
+    "newUserMessage": "Alle neuen Nutzer:innen bekommen 5 Credits. Deine erste Geschichte geht auf uns!",
+    "infoTexts": {
+      "textReview": "Die ersten 5 Korrekturen sind gratis. Wir berechnen nur pro Paket von 5 Textänderungen.",
+      "imageGeneration": "Die erste Bildbearbeitung ist kostenlos.",
+      "printedBooks": "Gedruckte Soft- und Hardcover enthalten die ersten 4 Kapitel ohne Zusatzkosten."
+    },
+    "whyCredits": {
+      "title": "Warum ein Credit-System?",
+      "benefits": {
+        "flexibility": {
+          "title": "Flexibilität:",
+          "description": "Kaufe Credits im Paket und nutze sie jederzeit für jeden Service."
+        },
+        "savings": {
+          "title": "Sparen:",
+          "description": "Profitiere von besseren Konditionen bei größeren Credit-Paketen. Je mehr du kaufst, desto mehr sparst du!"
+        },
+        "gifting": {
+          "title": "Verschenken leicht gemacht:",
+          "description": "Credits sind das perfekte Geschenk für Freund:innen und Familie – sie wählen selbst ihr Storytelling-Abenteuer. (Geschenkfunktion kommt bald!)"
+        },
+        "simplicity": {
+          "title": "Einfachheit:",
+          "description": "Behalte die Kosten für all unsere kreativen Services im Blick. Keine versteckten Gebühren."
+        }
+      }
+    },
+    "faq": {
+      "title": "Häufig gestellte Fragen",
+      "questions": {
+        "expiration": {
+          "question": "Verfallen Credits?",
+          "answer": "Nein, deine Mythoria-Credits verfallen nie! Nutze sie, wann immer dich die Inspiration packt."
+        },
+        "refund": {
+          "question": "Kann ich ungenutzte Credits erstatten lassen?",
+          "answer": "Aktuell sind Credits nicht erstattbar. Du kannst sie aber für jeden unserer Services einsetzen oder später an andere Nutzer:innen verschenken."
+        },
+        "payment": {
+          "question": "Welche Zahlungsmethoden akzeptiert ihr?",
+          "answer": "Wir planen, alle gängigen Kreditkarten (Visa, Mastercard, American Express) sowie PayPal zu unterstützen. (Zahlungsintegration folgt in Kürze)"
+        },
+        "shipping": {
+          "question": "Wie werden gedruckte Bücher verschickt?",
+          "answer": "Gedruckte Bücher versenden wir über den regulären Postweg. Versandzeiten und -kosten hängen von deinem Standort ab. Beim Checkout für gedruckte Bücher siehst du alle Details."
+        }
+      }
+    },
+    "errors": {
+      "loadingFailed": "Preisinformationen konnten nicht geladen werden"
+    }
+  },
+  "RevolutPayment": {
+    "loading": "Zahlungsoptionen werden geladen...",
+    "securityNote": "Deine Zahlung ist durch die Verschlüsselung von Revolut geschützt",
+    "encryptionNote": "256-Bit-SSL-Verschlüsselung",
+    "errors": {
+      "sdkLoadFailed": "Zahlungsdienst konnte nicht geladen werden. Bitte lade die Seite neu.",
+      "initializationFailed": "Zahlung konnte nicht initialisiert werden. Bitte versuch es noch einmal."
+    }
+  }
+}

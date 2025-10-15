@@ -1,0 +1,16 @@
+{
+  "BlogPost": {
+    "backToList": "Zurück zu den Chroniken",
+    "sharePost": "Chronik teilen",
+    "readingTime": "Min. Lesezeit",
+    "publishedOn": "Veröffentlicht am {date}",
+    "previousPost": "Vorherige Chronik",
+    "nextPost": "Nächste Chronik",
+    "notFound": "Chronik nicht gefunden",
+    "notFoundDescription": "Die gesuchte Chronik existiert nicht oder ist nicht mehr verfügbar.",
+    "notAvailable": "Chronik nicht verfügbar",
+    "notAvailableDescription": "Diese Chronik ist in deiner Sprache nicht verfügbar.",
+    "error": "Chronik konnte nicht geladen werden",
+    "errorDescription": "Wir konnten die Chronik nicht laden. Bitte versuche es später noch einmal."
+  }
+}

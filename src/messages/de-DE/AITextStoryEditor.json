@@ -1,0 +1,40 @@
+{
+  "AITextStoryEditor": {
+    "title": "KI-Texteditor – {storyTitle}",
+    "fullStoryTitle": "Komplette Geschichte",
+    "requestPlaceholder": "Gib deine Bearbeitungsanfrage ein...",
+    "characterCount": "{count}/{max} Zeichen",
+    "editButton": "Geschichte bearbeiten",
+    "cancelButton": "Abbrechen",
+    "loading": "Wird verarbeitet...",
+    "errors": {
+      "enterRequest": "Bitte gib deine Bearbeitungsanfrage ein",
+      "unableToCheckCredits": "Credits konnten nicht überprüft werden. Bitte versuche es noch einmal.",
+      "failedToEdit": "Geschichte konnte nicht bearbeitet werden. Bitte versuche es noch einmal."
+    },
+    "editScopeLabel": "Bearbeitungsumfang",
+    "currentChapterOnly": "Nur aktuelles Kapitel",
+    "allChapters": "Alle Kapitel",
+    "selectChapterLabel": "Kapitel auswählen",
+    "chapterOption": "Kapitel {number}: {title}",
+    "editRequestLabel": "Bearbeitungsanfrage",
+    "fullStoryExplanation": {
+      "title": "So funktioniert die Bearbeitung der gesamten Geschichte",
+      "item1": "Die KI wendet deine Anfrage auf alle Kapitel der Geschichte an",
+      "item2": "Jede Kapitelbearbeitung zählt als eine Bearbeitung für deinen Credit-Verbrauch",
+      "item3": "Alle erfolgreichen Änderungen werden automatisch gespeichert",
+      "item4": "Du kannst die Änderungen nach Abschluss prüfen",
+      "item5": "Wenn einzelne Kapitel fehlschlagen, werden die erfolgreichen trotzdem gespeichert"
+    },
+    "costEstimation": {
+      "title": "Kostenabschätzung",
+      "freeEdit": "Diese Bearbeitung ist kostenlos!",
+      "costEdit": "Diese Bearbeitung kostet {credits} Credit{plural}",
+      "currentBalance": "• Aktueller Stand: {credits} Credits",
+      "editCount": "• Bearbeitungsanzahl: {count} (nächster Schwellenwert: {threshold})",
+      "freeChapterEdits": "• {count} kostenlose Kapitelbearbeitungen",
+      "paidChapterEdits": "• {count} kostenpflichtige Kapitelbearbeitungen",
+      "message": "• {message}"
+    }
+  }
+}

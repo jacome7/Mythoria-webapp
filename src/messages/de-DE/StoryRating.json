@@ -1,0 +1,36 @@
+{
+  "StoryRating": {
+    "title": "Bewerte diese Geschichte",
+    "titleUpdate": "Aktualisiere deine Bewertung",
+    "currentRating": "Aktuelles Rating",
+    "basedOnRatings": "Basierend auf {count} Rating{plural}",
+    "clickToRate": "Klicke, um {count} Star{plural} zu vergeben",
+    "noRatingsYet": "Noch keine Bewertungen",
+    "yourCurrentRating": "Dein aktuelles Rating",
+    "youSelected": "Du hast ausgewählt:",
+    "starTooltip": "Mit {count} Star{plural} bewerten",
+    "feedback": {
+      "title": "Was können wir verbessern? (Optional)",
+      "placeholder": "Dein Feedback hilft uns, noch bessere Geschichten zu erschaffen...",
+      "includeNameLabel": "Autor*in darf meinen Namen zusammen mit diesem Feedback sehen"
+    },
+    "buttons": {
+      "cancel": "Abbrechen",
+      "submitRating": "Rating absenden",
+      "updateRating": "Rating aktualisieren",
+      "submitting": "Wird gesendet..."
+    },
+    "success": {
+      "title": "Danke für deine Bewertung!",
+      "titleUpdated": "Bewertung aktualisiert!",
+      "message": "Dein Feedback hilft uns, unsere Geschichten zu verbessern.",
+      "messageUpdated": "Deine Bewertung wurde erfolgreich aktualisiert!"
+    },
+    "submittingMessage": "Deine Bewertung wird gesendet...",
+    "errors": {
+      "serviceUnavailable": "Das Bewertungssystem wird gerade eingerichtet. Bitte versuche es in ein paar Minuten erneut.",
+      "submitFailed": "Bewertung konnte nicht gesendet werden",
+      "generic": "Es ist ein Fehler aufgetreten"
+    }
+  }
+}

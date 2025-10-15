@@ -1,0 +1,16 @@
+{
+  "DeliveryOptions": {
+    "audiobook": {
+      "name": "Hörbuch",
+      "description": "Erhalte deine Geschichte als gesprochenes Hörbuch"
+    },
+    "ebook": {
+      "name": "Digital (E-Book)",
+      "description": "Erhalte deine Geschichte als digitales E-Book"
+    },
+    "printed": {
+      "name": "Gedrucktes Buch",
+      "description": "Erhalte ein wunderschön gedrucktes Exemplar deiner Geschichte"
+    }
+  }
+}

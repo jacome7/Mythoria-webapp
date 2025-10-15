@@ -1,0 +1,18 @@
+{
+  "GraphicalStyles": {
+    "cartoon": "Cartoon",
+    "realistic": "Realistisch",
+    "watercolor": "Aquarell",
+    "digital_art": "Digitale Kunst",
+    "hand_drawn": "Handgezeichnet",
+    "minimalist": "Minimalistisch",
+    "vintage": "Vintage",
+    "comic_book": "Comic-Stil",
+    "anime": "Anime",
+    "pixar_style": "Pixar-Stil",
+    "disney_style": "Disney-Stil",
+    "sketch": "Skizze",
+    "oil_painting": "Ölgemälde",
+    "colored_pencil": "Farbstift"
+  }
+}
