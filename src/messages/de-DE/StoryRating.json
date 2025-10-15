@@ -1,36 +1,36 @@
 {
   "StoryRating": {
-    "title": "Rate this story",
-    "titleUpdate": "Update Your Rating",
-    "currentRating": "Current Rating",
-    "basedOnRatings": "Based on {count} rating{plural}",
-    "clickToRate": "Click to rate {count} star{plural}",
-    "noRatingsYet": "No ratings yet",
-    "yourCurrentRating": "Your current rating",
-    "youSelected": "You selected:",
-    "starTooltip": "Rate {count} star{plural}",
+    "title": "Bewerte diese Geschichte",
+    "titleUpdate": "Aktualisiere deine Bewertung",
+    "currentRating": "Aktuelles Rating",
+    "basedOnRatings": "Basierend auf {count} Rating{plural}",
+    "clickToRate": "Klicke, um {count} Star{plural} zu vergeben",
+    "noRatingsYet": "Noch keine Bewertungen",
+    "yourCurrentRating": "Dein aktuelles Rating",
+    "youSelected": "Du hast ausgewählt:",
+    "starTooltip": "Mit {count} Star{plural} bewerten",
     "feedback": {
-      "title": "What could we improve? (Optional)",
-      "placeholder": "Your feedback helps us create better stories...",
-      "includeNameLabel": "Allow the author to see my name with this feedback"
+      "title": "Was können wir verbessern? (Optional)",
+      "placeholder": "Dein Feedback hilft uns, noch bessere Geschichten zu erschaffen...",
+      "includeNameLabel": "Autor*in darf meinen Namen zusammen mit diesem Feedback sehen"
     },
     "buttons": {
-      "cancel": "Cancel",
-      "submitRating": "Submit Rating",
-      "updateRating": "Update Rating",
-      "submitting": "Submitting..."
+      "cancel": "Abbrechen",
+      "submitRating": "Rating absenden",
+      "updateRating": "Rating aktualisieren",
+      "submitting": "Wird gesendet..."
     },
     "success": {
-      "title": "Thank you for your rating!",
-      "titleUpdated": "Rating Updated!",
-      "message": "Your feedback helps us improve our stories.",
-      "messageUpdated": "Your rating has been updated successfully!"
+      "title": "Danke für deine Bewertung!",
+      "titleUpdated": "Bewertung aktualisiert!",
+      "message": "Dein Feedback hilft uns, unsere Geschichten zu verbessern.",
+      "messageUpdated": "Deine Bewertung wurde erfolgreich aktualisiert!"
     },
-    "submittingMessage": "Submitting your rating...",
+    "submittingMessage": "Deine Bewertung wird gesendet...",
     "errors": {
-      "serviceUnavailable": "The rating system is currently being set up. Please try again in a few minutes.",
-      "submitFailed": "Failed to submit rating",
-      "generic": "An error occurred"
+      "serviceUnavailable": "Das Bewertungssystem wird gerade eingerichtet. Bitte versuche es in ein paar Minuten erneut.",
+      "submitFailed": "Bewertung konnte nicht gesendet werden",
+      "generic": "Es ist ein Fehler aufgetreten"
     }
   }
 }

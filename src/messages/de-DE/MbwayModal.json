@@ -1,17 +1,17 @@
 {
   "MbwayModal": {
-    "title": "Almost there! Just one last step...",
-    "intro": "To finalize your purchase, open your MB Way app and make a transfer using these exact details:",
+    "title": "Fast geschafft! Nur noch ein letzter Schritt...",
+    "intro": "Um deinen Kauf abzuschließen, öffne die MB Way App und führe eine Überweisung mit genau diesen Angaben durch:",
     "fields": {
-      "amount": "Amount",
-      "phone": "Send to (Phone Number)",
-      "code": "Description (Reference Code)"
+      "amount": "Betrag",
+      "phone": "Senden an (Telefonnummer)",
+      "code": "Verwendungszweck (Referenzcode)"
     },
     "warning": {
-      "title": "Heads up!",
-      "body": "You must include the code in the description field. It's how we know the credits are for you."
+      "title": "Achtung!",
+      "body": "Du musst den Code im Feld Verwendungszweck eintragen. Nur so wissen wir, dass die Credits für dich sind."
     },
-    "footnote": "Since this is a manual process, your credits will be added within 12 hours. We'll send you an email the moment they're ready. If you want to speed it up, ping us on WhatsApp and we'll try to work a little magic.",
-    "close": "Okay, got it!"
+    "footnote": "Da dieser Prozess manuell ist, werden deine Credits innerhalb von 12 Stunden gutgeschrieben. Wir schicken dir eine E-Mail, sobald alles fertig ist. Wenn du es beschleunigen möchtest, schreib uns auf WhatsApp und wir versuchen, ein wenig Magie zu wirken.",
+    "close": "Alles klar!"
   }
 }

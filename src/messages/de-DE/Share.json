@@ -1,8 +1,8 @@
 {
   "Share": {
     "tooltips": {
-      "cannotShareWriting": "Cannot share story while it's being written",
-      "cannotShareDraft": "Cannot share story until it's published"
+      "cannotShareWriting": "Geschichte kann nicht geteilt werden, während sie noch geschrieben wird",
+      "cannotShareDraft": "Geschichte kann erst geteilt werden, wenn sie veröffentlicht ist"
     }
   }
 }

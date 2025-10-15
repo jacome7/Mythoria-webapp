@@ -1,21 +1,21 @@
 {
   "Offline": {
-    "title": "You're Offline",
-    "description": "It looks like you've lost your connection. Content you've already opened may still be available. We'll try to reconnect automatically.",
-    "tipsTitle": "You can still:",
+    "title": "Du bist offline",
+    "description": "Es sieht so aus, als hättest du die Verbindung verloren. Inhalte, die du bereits geöffnet hast, könnten weiterhin verfügbar sein. Wir versuchen automatisch, die Verbindung wiederherzustellen.",
+    "tipsTitle": "Das kannst du trotzdem tun:",
     "tips": {
-      "readCached": "Read pages already opened (they're cached).",
-      "reuseNav": "Use the Back button to revisit cached content.",
-      "wait": "Wait a moment—when you're back online we'll refresh."
+      "readCached": "Bereits geöffnete Seiten lesen (sie sind im Cache gespeichert).",
+      "reuseNav": "Mit dem Zurück-Button zu zwischengespeicherten Inhalten springen.",
+      "wait": "Kurz abwarten – sobald du wieder online bist, aktualisieren wir automatisch."
     },
     "actions": {
-      "goBack": "Go Back",
-      "retry": "Try Again",
-      "goHome": "Home"
+      "goBack": "Zurück",
+      "retry": "Erneut versuchen",
+      "goHome": "Startseite"
     },
     "status": {
-      "backOnline": "Connection restored. Refreshing...",
-      "stillOffline": "Still offline..."
+      "backOnline": "Verbindung wiederhergestellt. Aktualisiere...",
+      "stillOffline": "Noch offline..."
     }
   }
 }

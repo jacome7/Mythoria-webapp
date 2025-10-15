@@ -1,24 +1,24 @@
 {
   "ReadingToolbar": {
-    "title": "Reading Settings",
-    "toggleLabel": "Toggle reading settings",
+    "title": "Leseeinstellungen",
+    "toggleLabel": "Leseeinstellungen ein-/ausblenden",
     "cover": "Cover",
-    "coverAndToc": "Cover & Table of Contents",
-    "chapterLabel": "Chapter {number}",
-    "resetButton": "Reset to Default",
+    "coverAndToc": "Cover & Inhaltsverzeichnis",
+    "chapterLabel": "Kapitel {number}",
+    "resetButton": "Auf Standard zurücksetzen",
     "controls": {
-      "fontSize": "Text Size",
-      "lineHeight": "Line Height",
-      "margins": "Margins",
-      "fontSizeLabel": "Adjust text size",
-      "lineHeightLabel": "Adjust line height",
-      "marginsLabel": "Adjust margins",
-      "decreaseFontSize": "Decrease text size",
-      "increaseFontSize": "Increase text size",
-      "decreaseLineHeight": "Decrease line height",
-      "increaseLineHeight": "Increase line height",
-      "decreaseMargins": "Decrease margins",
-      "increaseMargins": "Increase margins"
+      "fontSize": "Schriftgröße",
+      "lineHeight": "Zeilenabstand",
+      "margins": "Ränder",
+      "fontSizeLabel": "Schriftgröße anpassen",
+      "lineHeightLabel": "Zeilenabstand anpassen",
+      "marginsLabel": "Ränder anpassen",
+      "decreaseFontSize": "Schrift verkleinern",
+      "increaseFontSize": "Schrift vergrößern",
+      "decreaseLineHeight": "Zeilenabstand verringern",
+      "increaseLineHeight": "Zeilenabstand vergrößern",
+      "decreaseMargins": "Ränder verringern",
+      "increaseMargins": "Ränder vergrößern"
     }
   }
 }

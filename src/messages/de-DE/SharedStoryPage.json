@@ -1,19 +1,19 @@
 {
   "SharedStoryPage": {
     "loading": {
-      "title": "Loading shared story...",
-      "subtitle": "Please wait while we load the story"
+      "title": "Geteilte Geschichte wird geladen...",
+      "subtitle": "Bitte warte, während wir die Geschichte laden"
     },
-    "redirecting": "Redirecting...",
+    "redirecting": "Weiterleitung...",
     "errors": {
-      "unableToAccess": "Unable to access shared story",
-      "failedToAccess": "Failed to access shared story"
+      "unableToAccess": "Zugriff auf die geteilte Geschichte nicht möglich",
+      "failedToAccess": "Die geteilte Geschichte konnte nicht aufgerufen werden"
     },
     "auth": {
-      "signInToEdit": "Sign in to collaborate on this story",
-      "signInToRead": "Sign in to read this story",
-      "createAccountToCollaborate": "Create an account to start collaborating and help bring this story to life!",
-      "createAccountToReadFull": "Create an account to read the full story and discover all its chapters!"
+      "signInToEdit": "Melde dich an, um an dieser Geschichte mitzuschreiben",
+      "signInToRead": "Melde dich an, um diese Geschichte zu lesen",
+      "createAccountToCollaborate": "Erstelle ein Konto, um direkt mitzumachen und dieser Geschichte Leben einzuhauchen!",
+      "createAccountToReadFull": "Erstelle ein Konto, um die komplette Geschichte mit allen Kapiteln zu entdecken!"
     }
   }
 }

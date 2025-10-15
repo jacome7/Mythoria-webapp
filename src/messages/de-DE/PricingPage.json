@@ -1,142 +1,142 @@
 {
   "PricingPage": {
     "header": {
-      "title": "Our Pricing",
-      "subtitle": "Simple, flexible, and designed for your storytelling needs."
+      "title": "Unsere Preise",
+      "subtitle": "Einfach, flexibel und auf deine Storytelling-Bedürfnisse zugeschnitten."
     },
     "creditPackages": {
       "badges": {
-        "bestValue": "Best Value",
-        "popular": "Popular"
+        "bestValue": "Bester Deal",
+        "popular": "Beliebt"
       },
       "packages": {
         "credits5": {
-          "description": "Perfect for trying things out."
+          "description": "Perfekt, um alles auszuprobieren."
         },
         "credits10": {
-          "description": "Great for a couple of stories."
+          "description": "Ideal für ein paar Geschichten."
         },
         "credits30": {
-          "description": "Ideal for avid storytellers."
+          "description": "Ideal für alle, die ständig neue Geschichten schreiben."
         },
         "credits100": {
-          "description": "For the ultimate story creators!"
+          "description": "Für alle, die Geschichten am laufenden Band erschaffen!"
         }
       },
-      "buyButton": "Buy {credits} Credits",
+      "buyButton": "Jetzt {credits} Credits kaufen",
       "credits": "Credits"
     },
     "serviceCosts": {
-      "loading": "Loading pricing information...",
-      "availableServices": "Our services:",
+      "loading": "Preisinformationen werden geladen...",
+      "availableServices": "Unsere Services:",
       "creditsHeader": "Credits",
       "services": {
-        "generateEbook": "Generate a digital eBook",
-        "narrateAudiobook": "Narrate a book (audio-book)",
-        "editBook": "Edit a book:",
-        "manualEditing": "Manual editing",
-        "textReviewAI": "Text review with AI",
-        "generateNewImages": "Generate new images",
-        "printShipBook": "Print and ship book:",
-        "softCover": "Soft cover",
-        "extraChapterCost": "Extra chapter Cost"
+        "generateEbook": "Digitales E-Book erstellen",
+        "narrateAudiobook": "Buch vertonen (Hörbuch)",
+        "editBook": "Ein Buch bearbeiten:",
+        "manualEditing": "Manuelle Bearbeitung",
+        "textReviewAI": "Textprüfung mit KI",
+        "generateNewImages": "Neue Bilder generieren",
+        "printShipBook": "Buch drucken und versenden:",
+        "softCover": "Softcover",
+        "extraChapterCost": "Kosten für zusätzliche Kapitel"
       },
       "serviceNames": {
-        "ebook": "Generate a digital book (eBook)",
-        "audiobook": "Generate an audiobook",
-        "printed_book": "Order a printed & shipped softcover book"
+        "ebook": "Digitales Buch (E-Book) erstellen",
+        "audiobook": "Ein Hörbuch erstellen",
+        "printed_book": "Ein gedrucktes Softcover-Buch bestellen und liefern lassen"
       },
       "tableHeaders": {
         "service": "Service",
-        "cost": "Cost in Credits"
+        "cost": "Kosten in Credits"
       },
       "creditsUnit": "Credits"
     },
     "infoModal": {
-      "title": "Service Information",
-      "header": "Service Information",
-      "button": "More Info",
+      "title": "Serviceinformationen",
+      "header": "Serviceinformationen",
+      "button": "Mehr Infos",
       "services": {
         "ebook": {
-          "title": "Generate a digital eBook",
-          "description": "Create a personalized digital book that can be read on any device."
+          "title": "Digitales E-Book erstellen",
+          "description": "Erstelle ein personalisiertes digitales Buch, das auf jedem Gerät gelesen werden kann."
         },
         "audiobook": {
-          "title": "Narrate a book (audio-book)",
-          "description": "Transform your story into an engaging audiobook with professional narration."
+          "title": "Buch vertonen (Hörbuch)",
+          "description": "Verwandle deine Geschichte in ein mitreißendes Hörbuch mit professioneller Vertonung."
         },
         "printedBook": {
-          "title": "Order printed & shipped softcover book",
-          "description": "Get a beautiful physical softcover book delivered to your door.",
+          "title": "Gedrucktes Softcover-Buch bestellen und versenden",
+          "description": "Erhalte ein wunderschönes Softcover-Buch direkt zu dir nach Hause geliefert.",
           "printingOptions": [
-            "Premium softcover binding",
-            "High-quality paper and printing",
-            "Professional cover design",
-            "Worldwide shipping available"
+            "Premium-Softcover-Bindung",
+            "Hochwertiges Papier und Druck",
+            "Professionelles Cover-Design",
+            "Weltweiter Versand möglich"
           ]
         }
       },
-      "close": "Close"
+      "close": "Schließen"
     },
-    "newUserMessage": "Every new user gets 5 credits. Your first story is on us!",
+    "newUserMessage": "Alle neuen Nutzer:innen bekommen 5 Credits. Deine erste Geschichte geht auf uns!",
     "infoTexts": {
-      "textReview": "The first 5 edits are free. We only charge per group of 5 text changes.",
-      "imageGeneration": "The first image editing is free.",
-      "printedBooks": "Both printed soft and hard cover include the first 4 chapters at no additional costs."
+      "textReview": "Die ersten 5 Korrekturen sind gratis. Wir berechnen nur pro Paket von 5 Textänderungen.",
+      "imageGeneration": "Die erste Bildbearbeitung ist kostenlos.",
+      "printedBooks": "Gedruckte Soft- und Hardcover enthalten die ersten 4 Kapitel ohne Zusatzkosten."
     },
     "whyCredits": {
-      "title": "Why a Credit-Based System?",
+      "title": "Warum ein Credit-System?",
       "benefits": {
         "flexibility": {
-          "title": "Flexibility:",
-          "description": "Purchase credits in bundles and use them for any service, anytime."
+          "title": "Flexibilität:",
+          "description": "Kaufe Credits im Paket und nutze sie jederzeit für jeden Service."
         },
         "savings": {
-          "title": "Savings:",
-          "description": "Enjoy better value with larger credit packages. The more you buy, the more you save!"
+          "title": "Sparen:",
+          "description": "Profitiere von besseren Konditionen bei größeren Credit-Paketen. Je mehr du kaufst, desto mehr sparst du!"
         },
         "gifting": {
-          "title": "Gifting Made Easy:",
-          "description": "Credits can be a perfect gift for friends and family, allowing them to choose their own storytelling adventure. (Gifting feature coming soon!)"
+          "title": "Verschenken leicht gemacht:",
+          "description": "Credits sind das perfekte Geschenk für Freund:innen und Familie – sie wählen selbst ihr Storytelling-Abenteuer. (Geschenkfunktion kommt bald!)"
         },
         "simplicity": {
-          "title": "Simplicity:",
-          "description": "Understand the costs upfront for all our creative services. No hidden fees."
+          "title": "Einfachheit:",
+          "description": "Behalte die Kosten für all unsere kreativen Services im Blick. Keine versteckten Gebühren."
         }
       }
     },
     "faq": {
-      "title": "Frequently Asked Questions",
+      "title": "Häufig gestellte Fragen",
       "questions": {
         "expiration": {
-          "question": "Do credits expire?",
-          "answer": "No, your Mythoria credits never expire! You can use them whenever inspiration strikes."
+          "question": "Verfallen Credits?",
+          "answer": "Nein, deine Mythoria-Credits verfallen nie! Nutze sie, wann immer dich die Inspiration packt."
         },
         "refund": {
-          "question": "Can I get a refund on unused credits?",
-          "answer": "Currently, credits are non-refundable. However, they can be used for any of our services or gifted to another user in the future."
+          "question": "Kann ich ungenutzte Credits erstatten lassen?",
+          "answer": "Aktuell sind Credits nicht erstattbar. Du kannst sie aber für jeden unserer Services einsetzen oder später an andere Nutzer:innen verschenken."
         },
         "payment": {
-          "question": "What payment methods do you accept?",
-          "answer": "We plan to accept all major credit cards (Visa, MasterCard, American Express) and PayPal. (Payment integration coming soon)"
+          "question": "Welche Zahlungsmethoden akzeptiert ihr?",
+          "answer": "Wir planen, alle gängigen Kreditkarten (Visa, Mastercard, American Express) sowie PayPal zu unterstützen. (Zahlungsintegration folgt in Kürze)"
         },
         "shipping": {
-          "question": "How are printed books shipped?",
-          "answer": "Printed books are shipped via standard postal services. Shipping times and costs may vary depending on your location. You'll see detailed shipping information at checkout when ordering a printed book."
+          "question": "Wie werden gedruckte Bücher verschickt?",
+          "answer": "Gedruckte Bücher versenden wir über den regulären Postweg. Versandzeiten und -kosten hängen von deinem Standort ab. Beim Checkout für gedruckte Bücher siehst du alle Details."
         }
       }
     },
     "errors": {
-      "loadingFailed": "Failed to load pricing information"
+      "loadingFailed": "Preisinformationen konnten nicht geladen werden"
     }
   },
   "RevolutPayment": {
-    "loading": "Loading payment options...",
-    "securityNote": "Your payment is secured by Revolut's encryption",
-    "encryptionNote": "256-bit SSL encryption",
+    "loading": "Zahlungsoptionen werden geladen...",
+    "securityNote": "Deine Zahlung ist durch die Verschlüsselung von Revolut geschützt",
+    "encryptionNote": "256-Bit-SSL-Verschlüsselung",
     "errors": {
-      "sdkLoadFailed": "Failed to load payment service. Please refresh the page.",
-      "initializationFailed": "Failed to initialize payment. Please try again."
+      "sdkLoadFailed": "Zahlungsdienst konnte nicht geladen werden. Bitte lade die Seite neu.",
+      "initializationFailed": "Zahlung konnte nicht initialisiert werden. Bitte versuch es noch einmal."
     }
   }
 }

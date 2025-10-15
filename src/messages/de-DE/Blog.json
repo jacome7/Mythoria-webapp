@@ -1,19 +1,19 @@
 {
   "Blog": {
     "list": {
-      "title": "The Blog",
-      "subtitle": "Chronicles from the realm of storytelling",
-      "readMore": "Continue Reading",
-      "publishedOn": "Published on",
-      "readingTime": "min read",
-      "noPostsFound": "No chronicles yet",
-      "noPostsFoundDescription": "Our scribes are penning the first adventures. Check back soon for fresh epic tales from Mythoria!",
-      "loadMore": "Load More Chronicles",
-      "error": "Failed to load chronicles"
+      "title": "Der Blog",
+      "subtitle": "Chroniken aus dem Reich des Geschichtenerzählens",
+      "readMore": "Weiterlesen",
+      "publishedOn": "Veröffentlicht am",
+      "readingTime": "Min. Lesezeit",
+      "noPostsFound": "Noch keine Chroniken",
+      "noPostsFoundDescription": "Unsere Schreibenden feilen noch an den ersten Abenteuern. Schau bald wieder vorbei für neue epische Geschichten aus Mythoria!",
+      "loadMore": "Mehr Chroniken laden",
+      "error": "Chroniken konnten nicht geladen werden"
     },
     "metadata": {
-      "listTitle": "All Chronicles of Mythoria",
-      "listDescription": "Explore our complete collection of chronicles, from epic adventures to forgotten legends of the realm of Mythoria."
+      "listTitle": "Alle Chroniken von Mythoria",
+      "listDescription": "Entdecke unsere komplette Sammlung von Chroniken – von epischen Abenteuern bis zu vergessenen Legenden aus dem Reich Mythoria."
     }
   }
 }

@@ -1,18 +1,18 @@
 {
   "GraphicalStyles": {
     "cartoon": "Cartoon",
-    "realistic": "Realistic",
-    "watercolor": "Watercolor",
-    "digital_art": "Digital Art",
-    "hand_drawn": "Hand Drawn",
-    "minimalist": "Minimalist",
+    "realistic": "Realistisch",
+    "watercolor": "Aquarell",
+    "digital_art": "Digitale Kunst",
+    "hand_drawn": "Handgezeichnet",
+    "minimalist": "Minimalistisch",
     "vintage": "Vintage",
-    "comic_book": "Comic Book",
+    "comic_book": "Comic-Stil",
     "anime": "Anime",
-    "pixar_style": "Pixar Style",
-    "disney_style": "Disney Style",
-    "sketch": "Sketch",
-    "oil_painting": "Oil Painting",
-    "colored_pencil": "Colored Pencil"
+    "pixar_style": "Pixar-Stil",
+    "disney_style": "Disney-Stil",
+    "sketch": "Skizze",
+    "oil_painting": "Ölgemälde",
+    "colored_pencil": "Farbstift"
   }
 }

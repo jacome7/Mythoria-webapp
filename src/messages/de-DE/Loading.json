@@ -1,8 +1,8 @@
 {
   "Loading": {
-    "redirecting": "Redirecting...",
-    "redirectingToSharedStory": "Redirecting to shared story...",
-    "default": "Loading...",
-    "buyCredits": "Loading..."
+    "redirecting": "Weiterleitung...",
+    "redirectingToSharedStory": "Weiterleitung zur geteilten Geschichte...",
+    "default": "Wird geladen...",
+    "buyCredits": "Wird geladen..."
   }
 }

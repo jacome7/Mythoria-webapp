@@ -1,85 +1,85 @@
 {
   "ProfilePage": {
-    "title": "Your Profile & Preferences",
-    "intro": "Welcome to your personal dashboard. Here you can manage your information, view your credits, and track your creative journey. Let's make your experience uniquely yours!",
-    "signInPrompt": "Please sign in to view your profile. We're excited to have you!",
+    "title": "Dein Profil & deine Einstellungen",
+    "intro": "Willkommen in deinem persönlichen Dashboard. Hier kannst du deine Angaben verwalten, deine Credits ansehen und deine kreative Reise verfolgen. Machen wir dieses Erlebnis ganz zu deinem eigenen!",
+    "signInPrompt": "Melde dich an, um dein Profil zu sehen. Wir freuen uns auf dich!",
     "details": {
-      "title": "Your Profile Details",
-      "description": "This is the info that helps us personalize your experience. Don't be shy, update it whenever you feel like it!",
-      "displayName": "Preferred Name",
-      "gender": "Gender",
-      "selectGender": "Select your gender",
-      "ageRange": "Your Age Range",
-      "selectAge": "Select your age range"
+      "title": "Deine Profildetails",
+      "description": "Das sind die Infos, mit denen wir dein Erlebnis personalisieren. Sei ruhig mutig und aktualisiere sie, wann immer dir danach ist!",
+      "displayName": "Bevorzugter Name",
+      "gender": "Geschlecht",
+      "selectGender": "Wähle dein Geschlecht",
+      "ageRange": "Deine Altersgruppe",
+      "selectAge": "Wähle deine Altersgruppe"
     },
     "contact": {
-      "title": "Contact Info & Preferences",
-      "description": "Your contact details are safe with us. We use them to protect your account and for important communications. No spam, we promise!",
-      "email": "Email Address",
-      "mobile": "Mobile Phone",
-      "mobilePlaceholder": "e.g., +1234567890",
-      "language": "Preferred Language"
+      "title": "Kontaktinfos & Präferenzen",
+      "description": "Deine Kontaktdaten sind bei uns sicher. Wir nutzen sie, um dein Konto zu schützen und dir wichtige Infos zu schicken. Kein Spam, versprochen!",
+      "email": "E-Mail-Adresse",
+      "mobile": "Mobilnummer",
+      "mobilePlaceholder": "z. B. +491234567890",
+      "language": "Bevorzugte Sprache"
     },
     "billing": {
-      "title": "Your billing account",
-      "vatNumber": "Your VAT Number",
-      "vatPlaceholder": "e.g., PT123456789",
-      "historyHint": "Click on your balance to view your transaction history.",
-      "addCredits": "Add Credits"
+      "title": "Dein Abrechnungskonto",
+      "vatNumber": "Deine USt-IdNr.",
+      "vatPlaceholder": "z. B. DE123456789",
+      "historyHint": "Klick auf dein Guthaben, um deine Transaktionshistorie zu sehen.",
+      "addCredits": "Credits aufladen"
     },
     "journey": {
-      "title": "Your Creative Journey",
-      "description": "We love to see your creativity flourish! Here are some of your amazing stats.",
-      "booksCreated": "Stories Created"
+      "title": "Deine kreative Reise",
+      "description": "Wir lieben es zu sehen, wie deine Kreativität aufblüht! Hier findest du ein paar deiner großartigen Zahlen.",
+      "booksCreated": "Erstellte Geschichten"
     },
     "actions": {
-      "save": "Save Changes",
-      "saving": "Saving..."
+      "save": "Änderungen speichern",
+      "saving": "Speichern..."
     },
     "errors": {
-      "loadFailed": "Oops! Failed to load your profile data. Please try again later.",
-      "saveFailed": "Oh no! Failed to save your changes. Please give it another go."
+      "loadFailed": "Ups! Dein Profil konnte nicht geladen werden. Versuch es später noch einmal.",
+      "saveFailed": "Oh nein! Deine Änderungen konnten nicht gespeichert werden. Probier es bitte noch einmal."
     },
     "success": {
-      "saved": "Success! Your profile has been updated."
+      "saved": "Geschafft! Dein Profil wurde aktualisiert."
     },
     "genderOptions": {
-      "male": "Male",
-      "female": "Female",
-      "non_binary": "Non-binary",
-      "other": "Other",
-      "prefer_not_to_say": "Prefer not to say"
+      "male": "Männlich",
+      "female": "Weiblich",
+      "non_binary": "Nicht-binär",
+      "other": "Anderes",
+      "prefer_not_to_say": "Keine Angabe"
     },
     "ageOptions": {
-      "school_age": "School Age (6–12)",
-      "teen": "Teen (13–17)",
-      "emerging_adult": "Emerging Adult (18–24)",
-      "experienced_adult": "Experienced Adult (25–49)",
-      "midlife_mentor_or_elder": "Mentor / Elder (50+)"
+      "school_age": "Schulalter (6–12)",
+      "teen": "Teenager (13–17)",
+      "emerging_adult": "Junge Erwachsene (18–24)",
+      "experienced_adult": "Erfahrene Erwachsene (25–49)",
+      "midlife_mentor_or_elder": "Mentor oder Senior (50+)"
     },
     "languages": {
-      "en-US": "English (US)",
-      "pt-PT": "Português (Portugal)",
-      "es-ES": "Español (España)",
-      "fr-FR": "Français (France)",
-      "de-DE": "German (Germany)"
+      "en-US": "Englisch (USA)",
+      "pt-PT": "Portugiesisch (Portugal)",
+      "es-ES": "Spanisch (Spanien)",
+      "fr-FR": "Französisch (Frankreich)",
+      "de-DE": "Deutsch (Deutschland)"
     },
     "notifications": {
-      "title": "Your Notifications",
-      "intro": "Choose how chatty we should be. We'll never flood your inbox—promise.",
-      "label": "Notification level",
+      "title": "Deine Benachrichtigungen",
+      "intro": "Entscheide, wie gesprächig wir sein sollen. Wir fluten dein Postfach nie – versprochen.",
+      "label": "Benachrichtigungsstufe",
       "options": {
         "essential": {
-          "label": "The Essentials",
-          "description": "Only account safety and your story activity. Quiet as a library at midnight."
+          "label": "Das Wichtigste",
+          "description": "Nur Kontosicherheit und deine Story-Aktivitäten. So leise wie die Bibliothek um Mitternacht."
         },
         "inspiration": {
           "label": "Inspiration",
-          "description": "Smart tips and sparks for your next tale. A gentle creative breeze—this is the default."
+          "description": "Schlaue Tipps und Funken für deine nächste Geschichte. Eine sanfte kreative Brise – das ist die Standardeinstellung."
         },
         "news": {
-          "label": "News & Magic",
-          "description": "All the above plus product updates and special promo scrolls—like a friendly town crier."
+          "label": "Neuigkeiten & Magie",
+          "description": "Alles oben plus Produktupdates und besondere Promo-Schriftrollen – wie ein freundlicher Stadtausrufer."
         }
       }
     }

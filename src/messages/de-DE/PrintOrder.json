@@ -1,75 +1,75 @@
 {
   "PrintOrder": {
-    "title": "Order Printed Copy",
-    "backToStories": "Back to My Stories",
-    "signInToContinue": "Sign in to continue",
-    "signInOrCreateAccount": "You need to sign in or create an account to place a print order.",
-    "signIn": "Sign In",
-    "createAccount": "Create Account",
+    "title": "Gedrucktes Exemplar bestellen",
+    "backToStories": "Zurück zu meinen Stories",
+    "signInToContinue": "Zum Fortfahren anmelden",
+    "signInOrCreateAccount": "Du musst dich anmelden oder ein Konto erstellen, um eine Druckbestellung aufzugeben.",
+    "signIn": "Anmelden",
+    "createAccount": "Konto erstellen",
     "steps": {
       "story": "Story",
-      "address": "Shipping Address",
-      "payment": "Print Options",
-      "confirmation": "Confirmation"
+      "address": "Lieferadresse",
+      "payment": "Druckoptionen",
+      "confirmation": "Bestätigung"
     },
     "errors": {
-      "storyNotFound": "Story not found",
-      "storyNotPublished": "Only published stories can be printed",
-      "loadingFailed": "Failed to load story data",
-      "missingRequiredFields": "Please complete all required fields",
-      "orderFailed": "Failed to place print order",
-      "insufficientCredits": "Insufficient credits.",
-      "loadPricingFailed": "Failed to load pricing information",
-      "fetchCreditsFailed": "Failed to fetch credit balance"
+      "storyNotFound": "Story nicht gefunden",
+      "storyNotPublished": "Nur veröffentlichte Stories können gedruckt werden",
+      "loadingFailed": "Story-Daten konnten nicht geladen werden",
+      "missingRequiredFields": "Bitte fülle alle Pflichtfelder aus",
+      "orderFailed": "Druckauftrag konnte nicht aufgegeben werden",
+      "insufficientCredits": "Nicht genug Credits.",
+      "loadPricingFailed": "Preisinfos konnten nicht geladen werden",
+      "fetchCreditsFailed": "Credit-Guthaben konnte nicht abgerufen werden"
     },
     "addressInfo": {
-      "selectShipping": "Please select a shipping address for your printed book.",
-      "noAddresses": "You don't have any saved addresses. Please add a shipping address to continue.",
-      "addNewAddress": "Add New Address"
+      "selectShipping": "Bitte wähle eine Lieferadresse für dein gedrucktes Buch.",
+      "noAddresses": "Du hast noch keine gespeicherten Adressen. Bitte füge eine Lieferadresse hinzu, um fortzufahren.",
+      "addNewAddress": "Neue Adresse hinzufügen"
     },
     "formats": {
-      "paperback": "Paperback"
+      "paperback": "Taschenbuch"
     },
     "payment": {
-      "selectBookType": "Select Your Book Type",
-      "chooseQuality": "Choose the printing quality that suits you best:",
+      "selectBookType": "Wähle deinen Buchtyp",
+      "chooseQuality": "Wähle die Druckqualität, die am besten zu dir passt:",
       "softcoverTitle": "📖 Softcover",
-      "softcoverDescription": "Flexible paperback with a glossy finish. Ideal for daily reading and handling.",
-      "priceNote": "All prices include 4 chapter printing in full-color printing and delivery.",
-      "extraChapterNote": "Each additional chapter costs 2 credits.",
-      "yourStory": "Your story",
-      "extraChaptersNote": "extra chapters",
-      "orderSummary": "Order Summary",
-      "selectedOption": "Selected Option",
-      "basePrice": "Base Price",
-      "extraChapters": "Extra Chapters",
-      "shipping": "Shipping",
-      "included": "Included",
-      "printOrderFee": "Print Order Processing",
-      "total": "Total",
-      "credits": "credits",
-      "cost": "Cost",
-      "yourCredits": "Your Credits",
-      "insufficientCreditsTitle": "Insufficient Credits",
-      "needMoreCredits": "You need {count} more credits to place this order.",
-      "getMoreCredits": "Get More Credits",
-      "method": "Payment Method",
-      "creditsInfo": "Payment will be deducted from your credits balance when you place the order.",
-      "pleaseSelectOption": "Please select a printing option to continue.",
-      "confirmOrder": "Confirm Your Print Order",
-      "confirmOrderDescription": "Due to high demand, the delivery can take up to 4 weeks. Are you sure you want to proceed with your order?"
+      "softcoverDescription": "Flexibles Taschenbuch mit glänzendem Finish. Ideal für den täglichen Gebrauch.",
+      "priceNote": "Alle Preise beinhalten den Druck von 4 Kapiteln in Vollfarbe sowie die Lieferung.",
+      "extraChapterNote": "Jedes zusätzliche Kapitel kostet 2 Credits.",
+      "yourStory": "Deine Story",
+      "extraChaptersNote": "zusätzliche Kapitel",
+      "orderSummary": "Bestellübersicht",
+      "selectedOption": "Gewählte Option",
+      "basePrice": "Grundpreis",
+      "extraChapters": "Zusätzliche Kapitel",
+      "shipping": "Versand",
+      "included": "Inklusive",
+      "printOrderFee": "Bearbeitung des Druckauftrags",
+      "total": "Gesamt",
+      "credits": "Credits",
+      "cost": "Kosten",
+      "yourCredits": "Deine Credits",
+      "insufficientCreditsTitle": "Nicht genug Credits",
+      "needMoreCredits": "Du brauchst {count} Credits mehr, um diese Bestellung aufzugeben.",
+      "getMoreCredits": "Mehr Credits holen",
+      "method": "Zahlungsmethode",
+      "creditsInfo": "Die Zahlung wird beim Absenden der Bestellung von deinem Credit-Guthaben abgezogen.",
+      "pleaseSelectOption": "Bitte wähle eine Druckoption, um fortzufahren.",
+      "confirmOrder": "Bestätige deinen Druckauftrag",
+      "confirmOrderDescription": "Aufgrund der hohen Nachfrage kann die Lieferung bis zu 4 Wochen dauern. Bist du sicher, dass du fortfahren möchtest?"
     },
     "confirmation": {
-      "title": "Order Placed Successfully!",
-      "message": "Your print request has been submitted. You will receive updates on the printing and shipping status via email."
+      "title": "Bestellung erfolgreich aufgegeben!",
+      "message": "Dein Druckauftrag wurde übermittelt. Du erhältst Updates zum Druck- und Versandstatus per E-Mail."
     },
     "buttons": {
-      "continue": "Continue",
-      "back": "Back",
-      "placeOrder": "Place Order",
-      "backToStories": "Back to My Stories",
-      "confirm": "Confirm Order",
-      "cancel": "Cancel"
+      "continue": "Weiter",
+      "back": "Zurück",
+      "placeOrder": "Bestellung aufgeben",
+      "backToStories": "Zurück zu meinen Stories",
+      "confirm": "Bestätigen",
+      "cancel": "Abbrechen"
     }
   }
 }

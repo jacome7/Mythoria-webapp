@@ -1,7 +1,7 @@
 {
   "StepNavigation": {
-    "next": "Next",
-    "prev": "Prev",
-    "finish": "Finish"
+    "next": "Weiter",
+    "prev": "Zurück",
+    "finish": "Abschließen"
   }
 }
