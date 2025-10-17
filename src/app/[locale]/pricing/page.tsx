@@ -47,6 +47,7 @@ export default function PricingPage() {
     textReview: tPricingPage('infoTexts.textReview'),
     imageGeneration: tPricingPage('infoTexts.imageGeneration'),
     printedBooks: tPricingPage('infoTexts.printedBooks'),
+    extraChapterCost: tPricingPage('infoTexts.extraChapterCost'),
   };
 
   const handleInfoClick = (infoType: string) => {
@@ -215,8 +216,24 @@ export default function PricingPage() {
                         <span className="font-semibold">{getServiceCost('printedSoftCover')}</span>
                       </li>
                       <li className="flex items-center justify-between">
-                        <span>* {tPricingPage('serviceCosts.services.extraChapterCost')}</span>
+                        <span>* {tPricingPage('serviceCosts.services.extraBookCopy')}</span>
+                        <span className="font-semibold">{getServiceCost('extraBookCopy')}</span>
+                      </li>
+                      <li className="flex items-center justify-between">
+                        <span className="flex items-center">
+                          * {tPricingPage('serviceCosts.services.extraChapterCost')}
+                          <button
+                            onClick={() => handleInfoClick('extraChapterCost')}
+                            className="ml-2 text-info hover:text-info-focus"
+                          >
+                            <FaInfoCircle className="text-sm" />
+                          </button>
+                        </span>
                         <span className="font-semibold">{getServiceCost('extraChapterCost')}</span>
+                      </li>
+                      <li className="flex items-center justify-between">
+                        <span>* {tPricingPage('serviceCosts.services.shippingCost')}</span>
+                        <span className="font-semibold">{getServiceCost('shippingCost')}</span>
                       </li>
                     </ul>
                   </li>
@@ -380,10 +397,14 @@ export default function PricingPage() {
       {selectedInfo && (
         <div className="modal modal-open">
           <div className="modal-box w-10/12 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-4">
-            <h3 className="font-bold text-lg mb-4">{tPricingPage('infoModal.title')}</h3>
-            <p className="py-2">{infoTexts[selectedInfo as keyof typeof infoTexts]}</p>
+            <div className="flex items-start gap-3">
+              <FaInfoCircle className="text-info text-2xl mt-1 flex-shrink-0" />
+              <p className="text-base leading-relaxed flex-1">
+                {infoTexts[selectedInfo as keyof typeof infoTexts]}
+              </p>
+            </div>
             <div className="modal-action">
-              <button className="btn" onClick={closeModal}>
+              <button className="btn btn-sm" onClick={closeModal}>
                 {tPricingPage('infoModal.close')}
               </button>
             </div>

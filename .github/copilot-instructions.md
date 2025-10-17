@@ -121,6 +121,7 @@ Mythoria's voice represents a young man in his early 20s:
 2. **European Portuguese** (`pt-PT`) - as spoken in Lisbon
 3. **European Spanish** (`es-ES`) - as spoken in Madrid
 4. **European French** (`fr-FR`) - as spoken in Paris
+5. **German** (`de-DE`) - as spoken in Berlin
 
 ## Common Gotchas
 

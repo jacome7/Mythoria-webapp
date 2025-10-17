@@ -39,7 +39,9 @@
         "generateNewImages": "Générer de nouvelles images",
         "printShipBook": "Imprimer et expédier le livre:",
         "softCover": "Couverture souple",
-        "extraChapterCost": "Coût du chapitre supplémentaire"
+        "extraBookCopy": "Copie supplémentaire du livre",
+        "extraChapterCost": "Coût du chapitre supplémentaire",
+        "shippingCost": "Frais d'expédition"
       },
       "serviceNames": {
         "ebook": "Générer un livre numérique (ebook)",
@@ -82,7 +84,8 @@
     "infoTexts": {
       "textReview": "Les 5 premières modifications sont gratuites. Nous ne facturons que par groupe de 5 changements de texte.",
       "imageGeneration": "Le premier montage d'image est gratuit.",
-      "printedBooks": "La couverture douce et dure imprimée comprend les 4 premiers chapitres sans frais supplémentaires."
+      "printedBooks": "Inclut les 4 premiers chapitres.",
+      "extraChapterCost": "S'applique à chaque copie au-delà des 4 premiers chapitres."
     },
     "whyCredits": {
       "title": "Pourquoi un système basé sur le crédit?",

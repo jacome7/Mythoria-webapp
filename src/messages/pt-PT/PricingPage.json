@@ -39,7 +39,9 @@
         "generateNewImages": "Gerar novas imagens",
         "printShipBook": "Imprimir e enviar livro:",
         "softCover": "Capa mole",
-        "extraChapterCost": "Custo de capítulo extra"
+        "extraBookCopy": "Cópia extra do livro",
+        "extraChapterCost": "Custo de capítulo extra",
+        "shippingCost": "Custo de envio"
       },
       "serviceNames": {
         "ebook": "Gerar um livro digital (eBook)",
@@ -82,7 +84,8 @@
     "infoTexts": {
       "textReview": "As primeiras 5 edições são gratuitas. Apenas cobramos por cada grupo de 5 alterações de texto.",
       "imageGeneration": "A primeira edição de imagem é gratuita.",
-      "printedBooks": "Tanto a capa mole como a capa dura incluem os primeiros 4 capítulos sem custos adicionais."
+      "printedBooks": "Inclui os primeiros 4 capítulos.",
+      "extraChapterCost": "Aplica-se a cada cópia para além dos primeiros 4 capítulos."
     },
     "whyCredits": {
       "title": "Porquê um Sistema Baseado em Créditos?",
