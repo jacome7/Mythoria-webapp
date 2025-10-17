@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { FiCreditCard, FiCheck } from 'react-icons/fi';
+import { FiCreditCard } from 'react-icons/fi';
 import { useState, useEffect, useCallback } from 'react';
 import { useLocale } from 'next-intl';
 
@@ -53,9 +53,11 @@ export default function PaymentStep({
 }: PaymentStepProps) {
   const tPrintOrder = useTranslations('PrintOrder');
   const locale = useLocale();
-  const [printingOptions, setPrintingOptions] = useState<PrintingOption[]>([]);
   const [extraChapterCost, setExtraChapterCost] = useState<number>(0);
+  const [extraBookCopyCost, setExtraBookCopyCost] = useState<number>(0);
+  const [shippingCost, setShippingCost] = useState<number>(0);
   const [userCredits, setUserCredits] = useState<number>(0);
+  const [numberOfCopies, setNumberOfCopies] = useState<number>(1);
   const [loadingData, setLoadingData] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -83,35 +85,32 @@ export default function PaymentStep({
         setExtraChapterCost(extraChapter.cost);
       }
 
-      // Map services to printing options with localized titles and descriptions
-      const options: PrintingOption[] = printServices.map((service: ServiceResponse) => {
-        let title = '';
-        let description = '';
+      // Get extra book copy cost
+      const extraBookCopy = data.services.find(
+        (service: ServiceResponse) => service.serviceCode === 'extraBookCopy',
+      );
+      if (extraBookCopy) {
+        setExtraBookCopyCost(extraBookCopy.cost);
+      }
 
-        switch (service.serviceCode) {
-          case 'printedSoftCover':
-            title = tPrintOrder('payment.softcoverTitle');
-            description = tPrintOrder('payment.softcoverDescription');
-            break;
-          default:
-            title = service.name;
-            description = service.name;
-        }
+      // Get shipping cost
+      const shipping = data.services.find(
+        (service: ServiceResponse) => service.serviceCode === 'shippingCost',
+      );
+      if (shipping) {
+        setShippingCost(shipping.cost);
+      }
 
-        return {
-          serviceCode: service.serviceCode,
-          credits: service.cost,
+      // Auto-select softcover option if not already selected
+      if (printServices.length > 0 && !selectedPrintingOption) {
+        const softCoverService = printServices[0];
+        onSelectPrintingOption({
+          serviceCode: softCoverService.serviceCode,
+          credits: softCoverService.cost,
           isActive: true,
-          title,
-          description,
-        };
-      });
-
-      setPrintingOptions(options);
-
-      // Auto-select the first option (softcover) if no option is selected yet
-      if (options.length > 0 && !selectedPrintingOption) {
-        onSelectPrintingOption(options[0]);
+          title: tPrintOrder('payment.softcoverTitle'),
+          description: tPrintOrder('payment.softcoverDescription'),
+        });
       }
     } catch (error) {
       console.error('Error fetching printing options:', error);
@@ -146,10 +145,18 @@ export default function PaymentStep({
     return Math.max(0, story.chapterCount - 4);
   };
 
+  const calculateExtraCopiesCost = () => {
+    // First copy is included in base price, charge for additional copies
+    const extraCopies = Math.max(0, numberOfCopies - 1);
+    return extraCopies * extraBookCopyCost;
+  };
+
   const calculateTotalCost = () => {
     if (!selectedPrintingOption) return 0;
     const extraChapters = calculateExtraChapters();
-    return selectedPrintingOption.credits + extraChapters * extraChapterCost;
+    const extraChaptersCostTotal = extraChapters * extraChapterCost * numberOfCopies; // Each copy needs extra chapters
+    const extraCopiesCost = calculateExtraCopiesCost();
+    return selectedPrintingOption.credits + extraChaptersCostTotal + extraCopiesCost + shippingCost;
   };
 
   const hasInsufficientCredits = () => {
@@ -201,94 +208,80 @@ export default function PaymentStep({
 
   return (
     <div>
-      <h2 className="card-title mb-4">{tPrintOrder('payment.selectBookType')}</h2>
-
-      <p className="text-base-content/70 mb-6">{tPrintOrder('payment.chooseQuality')}</p>
-
-      {/* Printing Options */}
-      <div className="grid md:grid-cols-3 gap-4 mb-6">
-        {printingOptions.map((option) => (
-          <div
-            key={option.serviceCode}
-            className={`card bg-base-100 border-2 cursor-pointer transition-all hover:shadow-lg ${
-              selectedPrintingOption?.serviceCode === option.serviceCode
-                ? 'border-primary bg-primary/5'
-                : 'border-base-300 hover:border-primary/50'
-            }`}
-            onClick={() => onSelectPrintingOption(option)}
-          >
-            {' '}
-            <div className="card-body p-4">
-              <div className="flex flex-col h-full">
-                <div className="flex-1">
-                  <h3 className="font-bold text-lg mb-2">{option.title}</h3>
-                  <p className="text-sm text-base-content/70 mb-3 min-h-[3rem]">
-                    {option.description}
-                  </p>
-                </div>
-                <div className="flex items-center justify-between mt-auto">
-                  <div className="text-lg font-semibold text-primary">
-                    {option.credits} {tPrintOrder('payment.credits')}
-                  </div>
-                  {selectedPrintingOption?.serviceCode === option.serviceCode && (
-                    <div className="text-primary">
-                      <FiCheck className="w-5 h-5" />
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Price Notes */}
-      <div className="alert alert-info mb-6">
-        <div className="text-sm">
-          <p className="font-semibold mb-1">{tPrintOrder('payment.priceNote')}</p>
-          <p>{tPrintOrder('payment.extraChapterNote')}</p>
-          <p className="mt-2">
-            <strong>{tPrintOrder('payment.yourStory')}:</strong> {story.chapterCount} chapters
-            {calculateExtraChapters() > 0 && (
-              <span>
-                {' '}
-                ({calculateExtraChapters()} {tPrintOrder('payment.extraChaptersNote')})
-              </span>
-            )}
-          </p>
-        </div>
-      </div>
-
       {/* Order Summary & Credits Info */}
       {selectedPrintingOption && (
         <div className="grid md:grid-cols-2 gap-6 mb-6">
           {/* Order Summary */}
           <div>
             <h3 className="text-lg font-semibold mb-4">{tPrintOrder('payment.orderSummary')}</h3>
+            <p className="text-sm text-base-content/70 mb-4">
+              {tPrintOrder('payment.paperbackDescriptionWithChapters', { chapters: story.chapterCount })}
+            </p>
+            
+            {/* Number of Copies Control */}
             <div className="space-y-2">
+              <div className="flex justify-between items-center py-2">
+                <span className="font-semibold">{tPrintOrder('payment.numberOfCopies')}:</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    className="btn btn-sm btn-circle btn-outline"
+                    onClick={() => setNumberOfCopies(Math.max(1, numberOfCopies - 1))}
+                    disabled={numberOfCopies <= 1}
+                  >
+                    −
+                  </button>
+                  <input
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={numberOfCopies}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value) || 1;
+                      setNumberOfCopies(Math.min(10, Math.max(1, value)));
+                    }}
+                    className="input input-sm input-bordered w-16 text-center"
+                  />
+                  <button
+                    className="btn btn-sm btn-circle btn-outline"
+                    onClick={() => setNumberOfCopies(Math.min(10, numberOfCopies + 1))}
+                    disabled={numberOfCopies >= 10}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <div className="divider my-2"></div>
+
               <div className="flex justify-between">
-                <span>{tPrintOrder('payment.selectedOption')}:</span>
-                <span>{selectedPrintingOption.title}</span>
-              </div>{' '}
-              <div className="flex justify-between">
-                <span>{tPrintOrder('payment.basePrice')}:</span>
+                <span>{tPrintOrder('payment.basePrice')} ({tPrintOrder('payment.includesFourChapters')}):</span>
                 <span>
                   {selectedPrintingOption.credits} {tPrintOrder('payment.credits')}
                 </span>
               </div>
+              {numberOfCopies > 1 && (
+                <div className="flex justify-between">
+                  <span>{tPrintOrder('payment.extraBookCopies')} ({numberOfCopies - 1}):</span>
+                  <span>
+                    {calculateExtraCopiesCost()} {tPrintOrder('payment.credits')}
+                  </span>
+                </div>
+              )}
               {calculateExtraChapters() > 0 && (
                 <div className="flex justify-between">
                   <span>
-                    {tPrintOrder('payment.extraChapters')} ({calculateExtraChapters()}):
+                    {tPrintOrder('payment.extraChapters')} ({calculateExtraChapters()}{numberOfCopies > 1 ? ` × ${numberOfCopies} ${tPrintOrder('payment.copiesLabel')}` : ''}):
                   </span>
                   <span>
-                    {calculateExtraChapters() * extraChapterCost} {tPrintOrder('payment.credits')}
+                    {calculateExtraChapters() * extraChapterCost * numberOfCopies} {tPrintOrder('payment.credits')}
                   </span>
                 </div>
               )}
               <div className="flex justify-between">
-                <span>{tPrintOrder('payment.shipping')}:</span>
-                <span className="text-success">{tPrintOrder('payment.included')}</span>
+                <span>{tPrintOrder('payment.shippingCost')}:</span>
+                <span>
+                  {shippingCost} {tPrintOrder('payment.credits')}
+                </span>
               </div>
               <div className="divider"></div>
               <div className="flex justify-between font-bold text-lg">
@@ -351,13 +344,6 @@ export default function PaymentStep({
               )}
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Error for no selection */}
-      {!selectedPrintingOption && (
-        <div className="alert alert-warning mb-6">
-          <span>{tPrintOrder('payment.pleaseSelectOption')}</span>
         </div>
       )}
 

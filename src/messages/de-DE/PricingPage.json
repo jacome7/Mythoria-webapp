@@ -39,7 +39,9 @@
         "generateNewImages": "Neue Bilder generieren",
         "printShipBook": "Buch drucken und versenden:",
         "softCover": "Softcover",
-        "extraChapterCost": "Kosten für zusätzliche Kapitel"
+        "extraBookCopy": "Extra Buchexemplar",
+        "extraChapterCost": "Kosten für zusätzliche Kapitel",
+        "shippingCost": "Versandkosten"
       },
       "serviceNames": {
         "ebook": "Digitales Buch (E-Book) erstellen",
@@ -82,7 +84,8 @@
     "infoTexts": {
       "textReview": "Die ersten 5 Korrekturen sind gratis. Wir berechnen nur pro Paket von 5 Textänderungen.",
       "imageGeneration": "Die erste Bildbearbeitung ist kostenlos.",
-      "printedBooks": "Gedruckte Soft- und Hardcover enthalten die ersten 4 Kapitel ohne Zusatzkosten."
+      "printedBooks": "Beinhaltet die ersten 4 Kapitel.",
+      "extraChapterCost": "Gilt für jede Kopie über die ersten 4 Kapitel hinaus."
     },
     "whyCredits": {
       "title": "Warum ein Credit-System?",

@@ -39,7 +39,9 @@
         "generateNewImages": "Generar nuevas imágenes",
         "printShipBook": "Imprimir y enviar libro:",
         "softCover": "Tapa blanda",
-        "extraChapterCost": "Coste de capítulo adicional"
+        "extraBookCopy": "Copia extra del libro",
+        "extraChapterCost": "Coste de capítulo adicional",
+        "shippingCost": "Coste de envío"
       },
       "serviceNames": {
         "ebook": "Generar un libro digital (eBook)",
@@ -82,7 +84,8 @@
     "infoTexts": {
       "textReview": "Las primeras 5 ediciones son gratis. Solo cobramos por grupos de 5 cambios de texto.",
       "imageGeneration": "La primera edición de imagen es gratis.",
-      "printedBooks": "La impresión en tapa blanda o dura incluye los 4 primeros capítulos sin coste adicional."
+      "printedBooks": "Incluye los primeros 4 capítulos.",
+      "extraChapterCost": "Se aplica a cada copia más allá de los primeros 4 capítulos."
     },
     "whyCredits": {
       "title": "¿Por qué un sistema de créditos?",

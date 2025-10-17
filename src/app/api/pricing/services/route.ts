@@ -53,6 +53,10 @@ export async function GET(request: NextRequest) {
           name = 'Printed Soft Cover';
           icon = 'FaPrint';
           break;
+        case 'extraBookCopy':
+          name = 'Extra Book Copy';
+          icon = 'FaPrint';
+          break;
         case 'extraChapterCost':
           name = 'Extra Chapter Cost';
           icon = 'FaFileDownload';
