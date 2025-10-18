@@ -1,6 +1,7 @@
 import { NextIntlClientProvider } from 'next-intl';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import GoogleAnalytics from '@/components/GoogleAnalytics';
 import { headers } from 'next/headers';
 import { readdir, readFile } from 'fs/promises';
 import path from 'path';
@@ -113,14 +114,21 @@ export default async function RootNotFound() {
   const messages = await loadMessages(locale);
 
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
-      <div className="flex flex-col min-h-screen">
-        <Header />
-        <main className="flex-grow">
-          <NotFoundPageContent />
-        </main>
-        <Footer />
-      </div>
-    </NextIntlClientProvider>
+    <>
+      <GoogleAnalytics
+        measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-86D0QFW197'}
+        googleAdsId={process.env.NEXT_PUBLIC_GOOGLE_ADS_ID}
+        googleTagId={process.env.NEXT_PUBLIC_GOOGLE_TAG_ID}
+      />
+      <NextIntlClientProvider locale={locale} messages={messages}>
+        <div className="flex flex-col min-h-screen">
+          <Header />
+          <main className="flex-grow">
+            <NotFoundPageContent />
+          </main>
+          <Footer />
+        </div>
+      </NextIntlClientProvider>
+    </>
   );
 }
