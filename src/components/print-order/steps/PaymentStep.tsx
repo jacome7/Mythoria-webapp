@@ -27,7 +27,7 @@ interface PaymentStepProps {
   selectedPrintingOption: PrintingOption | null;
   onSelectPrintingOption: (option: PrintingOption) => void;
   onBack: () => void;
-  onPlaceOrder: () => void;
+  onPlaceOrder: (numberOfCopies: number) => void;
   loading: boolean;
 }
 
@@ -176,7 +176,7 @@ export default function PaymentStep({
 
   const handleConfirmOrder = () => {
     setShowConfirmModal(false);
-    onPlaceOrder();
+    onPlaceOrder(numberOfCopies);
   };
 
   if (loadingData) {
