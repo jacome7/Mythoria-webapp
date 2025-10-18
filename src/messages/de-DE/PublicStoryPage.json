@@ -1,53 +1,53 @@
 {
   "PublicStoryPage": {
     "loading": {
-      "title": "Loading Story",
-      "subtitle": "Please wait while we load your story..."
+      "title": "Geschichte wird geladen",
+      "subtitle": "Bitte warte, während wir deine Geschichte laden..."
     },
     "errors": {
-      "notFound": "Story Not Found",
-      "notFoundDesc": "The story you're looking for doesn't exist or is no longer public.",
-      "contentNotAvailable": "Content Not Available",
-      "contentNotAvailableDesc": "The story content is not currently available for reading.",
-      "failedToLoadStory": "Failed to load story"
+      "notFound": "Geschichte nicht gefunden",
+      "notFoundDesc": "Die Geschichte, die du suchst, existiert nicht oder ist nicht mehr öffentlich.",
+      "contentNotAvailable": "Inhalt nicht verfügbar",
+      "contentNotAvailableDesc": "Der Inhalt der Geschichte ist derzeit nicht zum Lesen verfügbar.",
+      "failedToLoadStory": "Geschichte konnte nicht geladen werden"
     },
     "actions": {
-      "orderPrint": "Order Print",
-      "listen": "Listen",
-      "print": "Print",
-      "listenMobile": "Listen",
-      "createOwnStory": "Create Your Own Story",
-      "orderPrintedBook": "Order Printed Book"
+      "orderPrint": "Druck bestellen",
+      "listen": "Anhören",
+      "print": "Drucken",
+      "listenMobile": "Anhören",
+      "createOwnStory": "Eigene Geschichte erstellen",
+      "orderPrintedBook": "Gedrucktes Buch bestellen"
     },
     "labels": {
-      "by": "by",
-      "synopsis": "Synopsis",
-      "unknownAuthor": "Unknown Author"
+      "by": "von",
+      "synopsis": "Zusammenfassung",
+      "unknownAuthor": "Unbekannter Autor"
     },
     "metadata": {
-      "defaultDescription": "Read \"{title}\" on Mythoria",
-      "coverImageAlt": "Cover image for \"{title}\"",
-      "listenPageTitle": "Listen to \"{title}\" | Mythoria"
+      "defaultDescription": "Lies \"{title}\" auf Mythoria",
+      "coverImageAlt": "Titelbild für \"{title}\"",
+      "listenPageTitle": "Höre \"{title}\" | Mythoria"
     },
     "listen": {
-      "title": "Listen to \"{title}\"",
-      "backMobile": "Back",
-      "audioNotAvailable": "This story does not have audio narration available.",
-      "audioNotAvailableTitle": "Audio not available",
-      "audioNotAvailableDesc": "This story does not have audio narration available yet.",
-      "backToStory": "Back to Story",
-      "duration": "Duration: {duration}",
-      "chapterFallback": "Chapter {number}",
-      "chapterImageAlt": "Chapter {number} illustration",
+      "title": "Höre \"{title}\"",
+      "backMobile": "Zurück",
+      "audioNotAvailable": "Diese Geschichte hat keine Audioerzählung verfügbar.",
+      "audioNotAvailableTitle": "Audio nicht verfügbar",
+      "audioNotAvailableDesc": "Diese Geschichte hat noch keine Audioerzählung verfügbar.",
+      "backToStory": "Zurück zur Geschichte",
+      "duration": "Dauer: {duration}",
+      "chapterFallback": "Kapitel {number}",
+      "chapterImageAlt": "Illustration zu Kapitel {number}",
       "controls": {
-        "play": "Play",
-        "pause": "Pause",
-        "stop": "Stop"
+        "play": "Abspielen",
+        "pause": "Pausieren",
+        "stop": "Stoppen"
       }
     },
     "storyComplete": {
-      "enjoyedTitle": "Did you enjoy this story?",
-      "enjoyedDesc": "Ready to create your own magical tale or get a beautiful printed version of this story?"
+      "enjoyedTitle": "Hat dir diese Geschichte gefallen?",
+      "enjoyedDesc": "Bereit, deine eigene magische Geschichte zu erstellen oder eine wunderschöne gedruckte Version dieser Geschichte zu bekommen?"
     }
   }
 }

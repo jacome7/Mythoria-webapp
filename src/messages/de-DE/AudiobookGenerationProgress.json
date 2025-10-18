@@ -1,33 +1,33 @@
 {
   "AudiobookGenerationProgress": {
-    "title": "Audiobook Generation Progress",
-    "generatingAudiobook": "Generating Your Audiobook",
-    "processingMessage": "Please keep this page open while we narrate your story.",
-    "progress": "Progress",
-    "estimatedTimeRemaining": "Estimated time remaining",
-    "chaptersProcessed": "Chapters {processed} of {total}",
-    "generationFailed": "Audiobook generation failed",
-    "generationFailedMessage": "We couldn't complete your audiobook.",
-    "backToStory": "Back to story",
-    "generationComplete": "Generation complete!",
-    "audiobookReady": "Your audiobook is ready.",
-    "listenToAudiobook": "Listen to audiobook",
-    "retry": "Retry",
-    "statusMessage": "Our elves are working on your narration...",
-    "doNotClose": "Please do not close this tab.",
+    "title": "Hörbuch-Generierung läuft",
+    "generatingAudiobook": "Dein Hörbuch wird erstellt",
+    "processingMessage": "Bitte lass diese Seite geöffnet, während wir deine Geschichte vertonen.",
+    "progress": "Fortschritt",
+    "estimatedTimeRemaining": "Geschätzte Restzeit",
+    "chaptersProcessed": "Kapitel {processed} von {total}",
+    "generationFailed": "Hörbuch-Generierung fehlgeschlagen",
+    "generationFailedMessage": "Wir konnten dein Hörbuch nicht fertigstellen.",
+    "backToStory": "Zurück zur Geschichte",
+    "generationComplete": "Generierung abgeschlossen!",
+    "audiobookReady": "Dein Hörbuch ist fertig.",
+    "listenToAudiobook": "Hörbuch anhören",
+    "retry": "Erneut versuchen",
+    "statusMessage": "Unsere Elfen arbeiten an deiner Vertonung...",
+    "doNotClose": "Bitte schließe diesen Tab nicht.",
     "errors": {
-      "failedToFetch": "Failed to fetch audiobook progress",
-      "failedToLoad": "Failed to load audiobook generation progress"
+      "failedToFetch": "Hörbuch-Fortschritt konnte nicht abgerufen werden",
+      "failedToLoad": "Hörbuch-Generierungsfortschritt konnte nicht geladen werden"
     },
     "timeUnits": {
-      "second": "second",
-      "seconds": "seconds",
-      "minute": "minute",
-      "minutes": "minutes"
+      "second": "Sekunde",
+      "seconds": "Sekunden",
+      "minute": "Minute",
+      "minutes": "Minuten"
     },
     "steps": {},
     "narrationMessages": {
-      "default": ["\uD83C\uDF99\uFE0F Crafting your audiobook..."]
+      "default": ["🎙️ Dein Hörbuch entsteht..."]
     }
   }
 }

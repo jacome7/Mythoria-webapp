@@ -1,38 +1,38 @@
 {
   "ContactForm": {
     "form": {
-      "title": "Contact Support",
+      "title": "Support kontaktieren",
       "name": "Name",
-      "email": "Email",
-      "category": "Category",
-      "message": "Message",
-      "submit": "Create Support Ticket",
-      "namePlaceholder": "Enter your name",
-      "emailPlaceholder": "Enter your email address",
-      "messagePlaceholder": "Describe your issue or question...",
-      "selectCategory": "Select a category..."
+      "email": "E-Mail",
+      "category": "Kategorie",
+      "message": "Nachricht",
+      "submit": "Support-Ticket erstellen",
+      "namePlaceholder": "Gib deinen Namen ein",
+      "emailPlaceholder": "Gib deine E-Mail-Adresse ein",
+      "messagePlaceholder": "Beschreibe dein Anliegen oder deine Frage...",
+      "selectCategory": "Kategorie auswählen..."
     },
     "categoriesShort": {
-      "featureIdeas": "Feature Ideas & Suggestions",
-      "reportBug": "Report a Bug",
-      "delivery": "Printing & Delivery",
-      "credits": "Credits & Billing",
-      "businessPartnership": "Business Partnership",
-      "general": "General Questions"
+      "featureIdeas": "Feature-Ideen & Vorschläge",
+      "reportBug": "Fehler melden",
+      "delivery": "Druck & Lieferung",
+      "credits": "Credits & Abrechnung",
+      "businessPartnership": "Geschäftspartnerschaft",
+      "general": "Allgemeine Fragen"
     },
     "errors": {
-      "fillRequired": "Please fill in all required fields",
-      "createFailed": "Failed to create support ticket. Please try again."
+      "fillRequired": "Bitte fülle alle Pflichtfelder aus",
+      "createFailed": "Support-Ticket konnte nicht erstellt werden. Bitte versuche es erneut."
     },
     "success": {
-      "ticketCreated": "Support ticket created successfully! We'll get back to you soon."
+      "ticketCreated": "Support-Ticket erfolgreich erstellt! Wir melden uns bald bei dir."
     },
     "modal": {
-      "ticketCreated": "Ticket Created!",
-      "oops": "Oops!",
-      "tryAgain": "Try Again",
-      "goToHomepage": "Go to Homepage",
-      "redirectingMessage": "Redirecting to homepage in a few seconds..."
+      "ticketCreated": "Ticket erstellt!",
+      "oops": "Hoppla!",
+      "tryAgain": "Erneut versuchen",
+      "goToHomepage": "Zur Startseite",
+      "redirectingMessage": "Leite in wenigen Sekunden zur Startseite weiter..."
     }
   }
 }

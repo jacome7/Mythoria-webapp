@@ -121,7 +121,7 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
       setLoading(false);
     }
   };
-  const handlePlaceOrder = async () => {
+  const handlePlaceOrder = async (numberOfCopies: number) => {
     if (!story || !selectedAddress || !selectedPrintingOption) {
       setError(tPrintOrder('errors.missingRequiredFields'));
       return;
@@ -150,6 +150,7 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
           },
           chapterCount: story.chapterCount,
           totalCost: totalCost,
+          numberOfCopies: numberOfCopies,
         }),
       });
 

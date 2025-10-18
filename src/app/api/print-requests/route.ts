@@ -253,6 +253,7 @@ export async function POST(request: NextRequest) {
             title: body.printingOption?.title,
             credits: body.printingOption?.credits,
           },
+          numberOfCopies: body.numberOfCopies || 1,
           totalCost: totalCost,
           orderDetails: {
             printRequestId: newRequest[0].id,
@@ -391,6 +392,7 @@ export async function POST(request: NextRequest) {
             OrderNumber: orderNumber,
             OrderDate: orderDate,
             CreditCost: totalCost,
+            numberOfCopies: body.numberOfCopies || 1,
             storyTitle: story[0]?.title || '',
             CoverImageURL: story[0]?.featureImageUri || '',
             line1: addressRecord?.line1 || '',

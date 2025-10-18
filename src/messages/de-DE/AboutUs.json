@@ -1,58 +1,58 @@
 {
   "hero": {
-    "title": "Hey! So glad you're here.",
-    "intro": "Mythoria was born from something real simple: a passion for stories. The kind they told us at bedtime and the kind that, even as adults, make us daydream. We believe, from the bottom of our hearts, that everyone has a special story inside them, just waiting for a chance to shine.",
-    "tagline": "Our only goal is to give you that chance."
+    "title": "Hey! Schön, dass du da bist.",
+    "intro": "Mythoria ist aus etwas ganz Einfachem entstanden: einer Leidenschaft für Geschichten. Die Art von Geschichten, die man uns zur Schlafenszeit erzählt hat, und die uns auch als Erwachsene noch zum Träumen bringen. Wir glauben von ganzem Herzen, dass jeder eine besondere Geschichte in sich trägt, die nur darauf wartet, zu glänzen.",
+    "tagline": "Unser einziges Ziel ist es, dir diese Chance zu geben."
   },
   "mission": {
-    "title": "Our Mission",
-    "paragraph1": "Our dream is to see a child's eyes light up reading a book they helped create. To see an adult smile, rediscovering that spark of imagination that sometimes the daily grind makes us forget.",
-    "paragraph2": "We created Mythoria to be that bridge. A safe and magical bridge between your idea — no matter how small, like a doodle or a memory — and an illustrated book, real and tangible, that you can keep forever. We want creating a book to be an act of joy, not a challenge."
+    "title": "Unsere Mission",
+    "paragraph1": "Unser Traum ist es, die Augen eines Kindes leuchten zu sehen, wenn es ein Buch liest, das es mitgestaltet hat. Einen Erwachsenen lächeln zu sehen, der diesen Funken der Fantasie wiederentdeckt, den der Alltag uns manchmal vergessen lässt.",
+    "paragraph2": "Wir haben Mythoria geschaffen, um diese Brücke zu sein. Eine sichere und magische Brücke zwischen deiner Idee — egal wie klein, wie eine Skizze oder eine Erinnerung — und einem illustrierten Buch, echt und greifbar, das du für immer behalten kannst. Wir möchten, dass das Erstellen eines Buches eine Freude ist, keine Herausforderung."
   },
   "team": {
-    "title": "The People Behind the Dream",
-    "subtitle": "We're a small team, but with a huge heart dedicated to this project:",
+    "title": "Die Menschen hinter dem Traum",
+    "subtitle": "Wir sind ein kleines Team, aber mit einem riesigen Herzen für dieses Projekt:",
     "rodrigo": {
-      "title": "Rodrigo Jácome - The Young Dreamer",
-      "description": "Rodrigo is the soul of Mythoria. He's a young guy passionate about two things that seem far apart, but he brought together: the warmth of books and the magic of Artificial Intelligence. He's the one who designs every detail of your customer journey, answers your questions, and works every day to make Mythoria as easy and beautiful to use as possible. This project is his dream come true.",
-      "ariaLabel": "See alternative photo of Rodrigo",
-      "altSmiling": "Rodrigo Jácome smiling"
+      "title": "Rodrigo Jácome - Der junge Träumer",
+      "description": "Rodrigo ist die Seele von Mythoria. Er ist ein junger Kerl, der für zwei Dinge brennt, die weit auseinander liegen scheinen, die er aber zusammengebracht hat: die Wärme von Büchern und die Magie der künstlichen Intelligenz. Er gestaltet jedes Detail deiner Customer Journey, beantwortet deine Fragen und arbeitet jeden Tag daran, Mythoria so einfach und schön wie möglich zu machen. Dieses Projekt ist sein Traum, der wahr wird.",
+      "ariaLabel": "Alternatives Foto von Rodrigo ansehen",
+      "altSmiling": "Rodrigo Jácome lächelnd"
     },
     "andre": {
-      "title": "André Silva - The Mentor",
-      "description": "With his huge experience in creating products and companies, he's the one who advises us and helps ensure this dream of ours has legs to walk and grow healthily. He's the voice of calm and strategy that allows us to keep dreaming, but with our feet firmly on the ground.",
-      "ariaLabel": "See alternative photo of André",
-      "altSmiling": "André Silva smiling"
+      "title": "André Silva - Der Mentor",
+      "description": "Mit seiner riesigen Erfahrung im Aufbau von Produkten und Unternehmen ist er derjenige, der uns berät und dafür sorgt, dass dieser Traum von uns Beine zum Laufen hat und gesund wachsen kann. Er ist die Stimme der Ruhe und Strategie, die es uns ermöglicht, weiter zu träumen, aber mit beiden Beinen fest auf dem Boden.",
+      "ariaLabel": "Alternatives Foto von André ansehen",
+      "altSmiling": "André Silva lächelnd"
     },
     "oumpaLoompas": {
-      "title": "Our Oompa-Loompas",
-      "description": "We have a team of tireless helpers working behind the scenes: our AI Oompa-Loompas. They handle all the technical and complex tasks — from helping generate images to making sure the site runs perfectly. They're our support team, freeing up our time to focus on what matters most: our stories and the people who create them, like you.",
-      "ariaLabel": "See alternative photo of the Oompa-Loompas",
-      "altSmiling": "Oompa-Loompas smiling"
+      "title": "Unsere Oompa-Loompas",
+      "description": "Wir haben ein Team unermüdlicher Helfer, die hinter den Kulissen arbeiten: unsere KI-Oompa-Loompas. Sie kümmern sich um alle technischen und komplexen Aufgaben — von der Unterstützung bei der Bildgenerierung bis hin dazu, dass die Website perfekt läuft. Sie sind unser Support-Team und schaffen uns so die Zeit, uns auf das Wichtigste zu konzentrieren: unsere Geschichten und die Menschen, die sie erschaffen, wie dich.",
+      "ariaLabel": "Alternatives Foto der Oompa-Loompas ansehen",
+      "altSmiling": "Oompa-Loompas lächelnd"
     }
   },
   "commitment": {
-    "title": "Our Commitment",
-    "paragraph1": "We talk a lot about technology, digitalization, and AI, but you know why? Our big challenge is to make technology so perfect that it becomes invisible to you.",
-    "paragraph2": "We want to automate everything that's complicated so your only concern is to imagine. Our commitment is that the process of creating your book is simple, quick, and above all, magical."
+    "title": "Unser Versprechen",
+    "paragraph1": "Wir reden viel über Technologie, Digitalisierung und KI, aber weißt du warum? Unsere große Herausforderung ist es, die Technologie so perfekt zu machen, dass sie für dich unsichtbar wird.",
+    "paragraph2": "Wir wollen alles Komplizierte automatisieren, damit deine einzige Sorge das Träumen ist. Unser Versprechen ist, dass der Prozess der Bucherstellung einfach, schnell und vor allem magisch ist."
   },
   "ourStory": {
-    "title": "Our Story",
-    "paragraph1": "We believe so much in the power of a good story that, naturally, we decided to turn the birth of Mythoria into our own adventure.",
-    "paragraph2Start": "We wrote a little book that tells our journey. In it, we mix memories and real facts — like one of our first moments of great joy, when we received the Best School Project Award at the InovaGaia Boostcamp —",
-    "paragraph2End": "with the whole path and challenges we faced until launching the first version of our dream.",
-    "paragraph3": "It's not required reading, of course, but an invitation. If you're curious and have a bit of time, we'd love for you to read it. You can find the complete book here:",
-    "button": "Read Our Story",
+    "title": "Unsere Geschichte",
+    "paragraph1": "Wir glauben so sehr an die Kraft einer guten Geschichte, dass wir natürlich beschlossen haben, die Geburt von Mythoria in unser eigenes Abenteuer zu verwandeln.",
+    "paragraph2Start": "Wir haben ein kleines Buch geschrieben, das unsere Reise erzählt. Darin mischen wir Erinnerungen und echte Fakten — wie einen unserer ersten großen Freudemomente, als wir den Best School Project Award beim InovaGaia Boostcamp gewonnen haben —",
+    "paragraph2End": "mit dem ganzen Weg und den Herausforderungen, denen wir uns gestellt haben, bis wir die erste Version unseres Traums gelauncht haben.",
+    "paragraph3": "Es ist natürlich keine Pflichtlektüre, sondern eine Einladung. Wenn du neugierig bist und ein bisschen Zeit hast, würden wir uns freuen, wenn du es liest. Das vollständige Buch findest du hier:",
+    "button": "Unsere Geschichte lesen",
     "inovaGaiaText": "InovaGaia"
   },
   "transparency": {
-    "title": "A Note on Transparency",
-    "textStart": "So you know this project of ours is serious and built to last, Mythoria was born within our family company,",
-    "textEnd": ", registered in Portugal with NIPC 515 716 979. We're based in Vila Nova de Gaia, Portugal, since October 31, 2019 with a share capital of €10,000.00.",
+    "title": "Eine Anmerkung zur Transparenz",
+    "textStart": "Damit du weißt, dass dieses Projekt von uns ernst gemeint und auf Dauer angelegt ist: Mythoria wurde innerhalb unseres Familienunternehmens geboren,",
+    "textEnd": ", registriert in Portugal mit NIPC 515 716 979. Wir haben unseren Sitz in Vila Nova de Gaia, Portugal, seit dem 31. Oktober 2019 mit einem Stammkapital von 10.000,00 €.",
     "companyName": "Aventuras Contemporâneas, Lda."
   },
   "closing": {
-    "title": "Thanks for taking a bit of your time to get to know us.",
-    "subtitle": "Now, we're excited to get to know your story."
+    "title": "Danke, dass du dir die Zeit genommen hast, uns kennenzulernen.",
+    "subtitle": "Jetzt freuen wir uns darauf, deine Geschichte kennenzulernen."
   }
 }
