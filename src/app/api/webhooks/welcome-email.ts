@@ -19,10 +19,10 @@ export async function triggerWelcomeEmailSafe(params: WelcomeEmailParams) {
       authorId: params.authorId,
       entityId: params.authorId,
       recipients: [{ email: params.email, name: params.name || undefined, language }],
-      // Align variable names with template expectations (userName + storyCredits)
+      // Align variable names with template expectations (credits + creditsPlural)
       variables: {
-        userName: params.name || undefined,
-        storyCredits: credits,
+        name: params.name || undefined,
+        credits: credits,
         creditsPlural: credits !== 1,
       },
     };

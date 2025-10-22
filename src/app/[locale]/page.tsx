@@ -253,7 +253,7 @@ export default function Home() {
         {/* What Drives Us Section */}
         <section className="my-16">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-8">{tHomePage('whatDrivesUs.title')}</h2>
+            <h2 className="text-4xl font-bold mb-8">{tHomePage('whatDrivesUs.title')}</h2>
             <div className="prose prose-lg mx-auto">
               <p className="text-lg leading-relaxed mb-6">
                 {tHomePage('whatDrivesUs.paragraph1')}
@@ -265,7 +265,7 @@ export default function Home() {
                   .replace('—', ' — ')}
               </p>
               <p className="text-lg leading-relaxed">
-                <Link href="/about-us" className="link link-primary font-semibold hover:underline">
+                <Link href="/aboutUs" className="link link-primary font-semibold hover:underline">
                   {tHomePage('whatDrivesUs.linkText')}
                 </Link>
               </p>

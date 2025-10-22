@@ -168,11 +168,8 @@ export async function POST(request: NextRequest) {
 
     // Send email to user with payment instructions
     try {
-      // Determine user's locale (kept for future localization logic but currently forcing en-US template)
-      // const userLocale = normalizeLocale(author.preferredLocale || locale);
-      // TEMPORARY: Only en-US template exists for 'mbway-payment-instructions'.
-      // Force language to en-US to avoid template-not-found errors until localized templates are added.
-      const templateLanguage = 'en-US';
+  // Determine user's locale and fall back to en-US if unsupported or missing.
+  const templateLanguage = normalizeLocale(author.preferredLocale || locale);
 
       const { notificationFetch } = await import('@/lib/notification-client');
       await notificationFetch(`${process.env.NOTIFICATION_ENGINE_URL}/email/template`, {

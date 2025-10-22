@@ -31,6 +31,7 @@ export const authorService = {
     email: string;
     displayName: string;
     preferredLocale?: string;
+    mobilePhone?: string;
   }) {
     const normalizedLocale = normalizeLocale(authorData.preferredLocale);
     const [author] = await db
@@ -40,6 +41,7 @@ export const authorService = {
         email: authorData.email,
         displayName: authorData.displayName,
         preferredLocale: normalizedLocale,
+        ...(authorData.mobilePhone && { mobilePhone: authorData.mobilePhone }),
       })
       .returning();
 
@@ -51,6 +53,16 @@ export const authorService = {
   },
   async syncUserOnSignIn(clerkUser: ClerkUserForSync) {
     const currentTime = new Date();
+
+    // Debug logging to see what Clerk provides
+    console.log('[syncUserOnSignIn] Clerk user data:', {
+      userId: clerkUser.id,
+      hasPhoneNumbers: !!clerkUser.phoneNumbers,
+      phoneNumbersCount: clerkUser.phoneNumbers?.length || 0,
+      primaryPhoneNumberId: clerkUser.primaryPhoneNumberId,
+      phoneNumbers: clerkUser.phoneNumbers,
+      emailAddresses: clerkUser.emailAddresses?.map(e => ({ id: e.id, email: e.emailAddress })),
+    });
 
     // Try to find existing user by clerkUserId first
     const existingAuthor = await this.getAuthorByClerkId(clerkUser.id);
@@ -70,9 +82,20 @@ export const authorService = {
       const primaryEmail = clerkUser.emailAddresses?.find(
         (email) => email.id === clerkUser.primaryEmailAddressId,
       );
-      const primaryPhone = clerkUser.phoneNumbers?.find(
-        (phone) => phone.id === clerkUser.primaryPhoneNumberId,
-      );
+      
+      // Try to get primary phone, or fall back to first phone if primary is not set
+      const primaryPhone = clerkUser.primaryPhoneNumberId
+        ? clerkUser.phoneNumbers?.find(
+            (phone) => phone.id === clerkUser.primaryPhoneNumberId,
+          )
+        : clerkUser.phoneNumbers?.[0]; // Fallback to first phone
+      
+      console.log('[syncUserOnSignIn] Primary phone extraction:', {
+        primaryPhoneNumberId: clerkUser.primaryPhoneNumberId,
+        foundPrimaryPhone: !!primaryPhone,
+        phoneNumber: primaryPhone?.phoneNumber,
+        usedFallback: !clerkUser.primaryPhoneNumberId && !!primaryPhone,
+      });
 
       const email = primaryEmail?.emailAddress || clerkUser.emailAddresses?.[0]?.emailAddress || '';
       const detectedLocale = detectUserLocaleFromEmail(email);
@@ -85,6 +108,13 @@ export const authorService = {
         preferredLocale: normalizeLocale(detectedLocale),
         ...(primaryPhone?.phoneNumber && { mobilePhone: primaryPhone.phoneNumber }),
       };
+      
+      console.log('[syncUserOnSignIn] Creating author with data:', {
+        clerkUserId: clerkUser.id,
+        email,
+        hasMobilePhone: !!newAuthorData.mobilePhone,
+        mobilePhone: newAuthorData.mobilePhone,
+      });
 
       try {
         // Try to insert new user
@@ -97,6 +127,8 @@ export const authorService = {
           'Created new user on sign-in:',
           newAuthor.clerkUserId,
           `with ${initialCredits} initial credits`,
+          'mobilePhone:',
+          newAuthor.mobilePhone,
         );
         return newAuthor;
       } catch (error: unknown) {

@@ -74,12 +74,34 @@ export async function POST(req: Request) {
 async function handleUserCreated(evt: WebhookEvent) {
   if (evt.type !== 'user.created') return;
 
-  const { id, email_addresses, first_name, last_name } = evt.data;
+  const { id, email_addresses, first_name, last_name, phone_numbers, primary_phone_number_id } = evt.data;
+  
+  // Debug logging to see what Clerk sends
+  console.log('[webhook.user.created] Event data:', {
+    userId: id,
+    hasPhoneNumbers: !!phone_numbers,
+    phoneNumbersCount: phone_numbers?.length || 0,
+    primaryPhoneNumberId: primary_phone_number_id,
+    phoneNumbers: phone_numbers,
+  });
+  
   const primaryEmail = email_addresses.find((e) => e.id === evt.data.primary_email_address_id);
   if (!primaryEmail) {
     console.error('No primary email found for user:', id);
     return;
   }
+
+  // Try to get primary phone, or fall back to first phone if primary is not set
+  const primaryPhone = primary_phone_number_id
+    ? phone_numbers?.find((p) => p.id === primary_phone_number_id)
+    : phone_numbers?.[0]; // Fallback to first phone
+    
+  console.log('[webhook.user.created] Primary phone extraction:', {
+    primaryPhoneNumberId: primary_phone_number_id,
+    foundPrimaryPhone: !!primaryPhone,
+    phoneNumber: primaryPhone?.phone_number,
+    usedFallback: !primary_phone_number_id && !!primaryPhone,
+  });
 
   const userName = `${first_name || ''} ${last_name || ''}`.trim() || '';
   const userLocale = detectUserLocaleFromEmail(primaryEmail.email_address);
@@ -91,9 +113,22 @@ async function handleUserCreated(evt: WebhookEvent) {
     .where(eq(authors.clerkUserId, id))
     .limit(1);
   if (existing.length > 0) {
+    const updateData = {
+      displayName: userName,
+      preferredLocale: userLocale,
+      lastLoginAt: new Date(),
+      ...(primaryPhone?.phone_number && { mobilePhone: primaryPhone.phone_number }),
+    };
+    
+    console.log('[webhook.user.created] Existing author, updating with:', {
+      authorId: existing[0].authorId,
+      hasMobilePhone: !!updateData.mobilePhone,
+      mobilePhone: updateData.mobilePhone,
+    });
+    
     await db
       .update(authors)
-      .set({ displayName: userName, preferredLocale: userLocale, lastLoginAt: new Date() })
+      .set(updateData)
       .where(eq(authors.clerkUserId, id));
 
     // Ensure initial credits exist (race-safe check)
@@ -103,12 +138,22 @@ async function handleUserCreated(evt: WebhookEvent) {
   }
 
   try {
-    const author = await authorService.createAuthor({
+    const authorData = {
       clerkUserId: id,
       email: primaryEmail.email_address,
       displayName: userName,
       preferredLocale: userLocale,
+      ...(primaryPhone?.phone_number && { mobilePhone: primaryPhone.phone_number }),
+    };
+    
+    console.log('[webhook.user.created] Creating author with data:', {
+      clerkUserId: id,
+      email: primaryEmail.email_address,
+      hasMobilePhone: !!authorData.mobilePhone,
+      mobilePhone: authorData.mobilePhone,
     });
+    
+    const author = await authorService.createAuthor(authorData);
     console.log(
       'User created in database via webhook service logic:',
       id,
@@ -116,6 +161,8 @@ async function handleUserCreated(evt: WebhookEvent) {
       primaryEmail.email_address,
       'authorId:',
       author.authorId,
+      'mobilePhone:',
+      author.mobilePhone,
     );
   } catch (err) {
     // If creation failed due to duplicate email (possible race with other flow), attempt to link clerkUserId to existing email.
@@ -123,14 +170,23 @@ async function handleUserCreated(evt: WebhookEvent) {
     const isDup =
       message.includes('duplicate key value') && message.includes('authors_email_unique');
     if (isDup) {
+      const updateData = {
+        clerkUserId: id,
+        displayName: userName,
+        preferredLocale: userLocale,
+        lastLoginAt: new Date(),
+        ...(primaryPhone?.phone_number && { mobilePhone: primaryPhone.phone_number }),
+      };
+      
+      console.log('[webhook.user.created] Duplicate email, updating with:', {
+        email: primaryEmail.email_address,
+        hasMobilePhone: !!updateData.mobilePhone,
+        mobilePhone: updateData.mobilePhone,
+      });
+      
       await db
         .update(authors)
-        .set({
-          clerkUserId: id,
-          displayName: userName,
-          preferredLocale: userLocale,
-          lastLoginAt: new Date(),
-        })
+        .set(updateData)
         .where(eq(authors.email, primaryEmail.email_address));
       // Fetch updated author to run credit guard
       const [updated] = await db
@@ -178,7 +234,16 @@ async function ensureInitialCredits(authorId: string) {
 async function handleUserUpdated(evt: WebhookEvent) {
   if (evt.type !== 'user.updated') return;
 
-  const { id, email_addresses, first_name, last_name } = evt.data;
+  const { id, email_addresses, first_name, last_name, phone_numbers, primary_phone_number_id } = evt.data;
+
+  // Debug logging
+  console.log('[webhook.user.updated] Event data:', {
+    userId: id,
+    hasPhoneNumbers: !!phone_numbers,
+    phoneNumbersCount: phone_numbers?.length || 0,
+    primaryPhoneNumberId: primary_phone_number_id,
+    phoneNumbers: phone_numbers,
+  });
 
   const primaryEmail = email_addresses.find(
     (email) => email.id === evt.data.primary_email_address_id,
@@ -188,6 +253,18 @@ async function handleUserUpdated(evt: WebhookEvent) {
     console.error('No primary email found for user:', id);
     return;
   }
+
+  // Try to get primary phone, or fall back to first phone if primary is not set
+  const primaryPhone = primary_phone_number_id
+    ? phone_numbers?.find((p) => p.id === primary_phone_number_id)
+    : phone_numbers?.[0]; // Fallback to first phone
+    
+  console.log('[webhook.user.updated] Primary phone extraction:', {
+    primaryPhoneNumberId: primary_phone_number_id,
+    foundPrimaryPhone: !!primaryPhone,
+    phoneNumber: primaryPhone?.phone_number,
+    usedFallback: !primary_phone_number_id && !!primaryPhone,
+  });
 
   try {
     // Respect a user-defined preferred name if present in private metadata (set via profile PATCH)
@@ -213,13 +290,22 @@ async function handleUserUpdated(evt: WebhookEvent) {
     const newDisplayName = preferredName ?? rebuiltName;
 
     // Try updating by clerkUserId first
+    const updateData = {
+      email: primaryEmail.email_address,
+      displayName: newDisplayName,
+      lastLoginAt: new Date(),
+      ...(primaryPhone?.phone_number && { mobilePhone: primaryPhone.phone_number }),
+    };
+    
+    console.log('[webhook.user.updated] Updating author with data:', {
+      clerkUserId: id,
+      hasMobilePhone: !!updateData.mobilePhone,
+      mobilePhone: updateData.mobilePhone,
+    });
+    
     const updateResult = await db
       .update(authors)
-      .set({
-        email: primaryEmail.email_address,
-        displayName: newDisplayName,
-        lastLoginAt: new Date(),
-      })
+      .set(updateData)
       .where(eq(authors.clerkUserId, id)); // If no rows were updated, the clerkUserId might have changed
     // Try to find and update by email instead
     if ((updateResult.rowCount || 0) === 0) {
@@ -236,6 +322,7 @@ async function handleUserUpdated(evt: WebhookEvent) {
           clerkUserId: id, // Update the clerkUserId
           displayName: newDisplayName,
           lastLoginAt: new Date(),
+          ...(primaryPhone?.phone_number && { mobilePhone: primaryPhone.phone_number }),
         })
         .where(eq(authors.email, primaryEmail.email_address));
 

@@ -187,10 +187,14 @@ export async function PATCH(req: NextRequest) {
     }
 
     // Check if this is a first-time displayName update (for welcome email trigger)
-    const isFirstTimeNameUpdate =
-      updates.displayName &&
-      updates.displayName.trim().length > 1 &&
-      author.displayName.trim().length <= 1;
+    // The welcome email should be sent when the user sets their name during onboarding
+    // within 10 minutes of account creation. We detect this by checking if:
+    // 1. displayName is being updated
+    // 2. The new name is meaningful (> 1 char)
+    // 3. The update happens within 10 minutes of account creation
+    // Note: We don't check the old displayName length because Clerk may pre-populate it
+    // from email/username, but onboarding is still the first intentional name setting
+    const isUpdatingDisplayName = updates.displayName && updates.displayName.trim().length > 1;
 
     const [updated] = await db
       .update(authors)
@@ -208,8 +212,8 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
     }
 
-    // Trigger welcome email if this is the first time setting a meaningful name
-    if (isFirstTimeNameUpdate && updated.createdAt) {
+    // Trigger welcome email if displayName was updated and account is new (within 10 minutes)
+    if (isUpdatingDisplayName && updated.createdAt) {
       const ageMs = Date.now() - new Date(updated.createdAt).getTime();
       // Only send if account was created within the last 10 minutes
       if (ageMs >= 0 && ageMs < 10 * 60 * 1000) {
@@ -218,9 +222,12 @@ export async function PATCH(req: NextRequest) {
           const effectiveLocale = updated.preferredLocale || 'en-US';
           console.log('welcome-email.attempt.profile-update', {
             authorId: updated.authorId,
+            clerkUserId: updated.clerkUserId,
             ageMs,
+            accountAgeMinutes: Math.floor(ageMs / 60000),
             locale: effectiveLocale,
             displayName: updated.displayName,
+            email: updated.email,
           });
           // Fire and forget - don't await
           triggerWelcomeEmailSafe({
@@ -231,12 +238,19 @@ export async function PATCH(req: NextRequest) {
           }).catch((err) => {
             console.error('welcome-email.error.profile-update', {
               authorId: updated.authorId,
+              clerkUserId: updated.clerkUserId,
               error: err,
             });
           });
         } catch (err) {
           console.error('welcome-email.import-error', { error: err });
         }
+      } else {
+        console.log('welcome-email.skipped.account-too-old', {
+          authorId: updated.authorId,
+          ageMs,
+          accountAgeMinutes: Math.floor(ageMs / 60000),
+        });
       }
     }
 

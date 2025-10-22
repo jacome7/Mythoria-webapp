@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import AnimatedLogo from '@/components/AnimatedLogo';
 
 export default function AboutUsPage() {
   const t = useTranslations('AboutUs');
@@ -25,13 +26,17 @@ export default function AboutUsPage() {
       <div className="container mx-auto px-4 py-4">
         {/* Hero Section */}
         <header className="hero min-h-[40vh] bg-base-200 rounded-box my-4">
-          <div className="hero-content text-center">
-            <div className="max-w-4xl">
+          <div className="hero-content flex-col lg:flex-row w-full">
+            <div className="lg:w-1/2 text-center lg:text-left">
               <h1 className="text-4xl md:text-5xl font-bold text-primary mb-8">
                 ✨ {t('hero.title')}
               </h1>
               <p className="text-lg leading-relaxed">{t('hero.intro')}</p>
               <p className="py-6 text-xl font-semibold text-primary">{t('hero.tagline')}</p>
+            </div>
+            {/* Right Side: Logo */}
+            <div className="lg:w-1/2 flex justify-center lg:justify-end mt-4 lg:mt-0">
+              <AnimatedLogo />
             </div>
           </div>
         </header>
