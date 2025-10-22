@@ -53,6 +53,13 @@
         "description": "Clients cadeaux ou familles du personnel un livre de contes de marque personnalisé qui maintient votre logo sur la bibliothèque."
       }
     },
+    "whatDrivesUs": {
+      "title": "Qu'est-ce qui nous anime?",
+      "paragraph1": "Nous croyons qu'à l'intérieur de chaque personne se trouve une histoire spéciale, attendant simplement sa chance de briller. Notre rêve est simple : voir les yeux d'un enfant s'illuminer en lisant un livre qu'il a aidé à créer, ou voir un adulte sourire en redécouvrant cette étincelle d'imagination.",
+      "paragraph2": "Mythoria est ce pont magique—un endroit où vos souvenirs et vos idées deviennent de beaux livres tangibles. Nous l'avons construit pour que créer votre histoire soit un acte de joie, pas un défi.",
+      "paragraph2Bold": "Mythoria est ce pont magique",
+      "linkText": "Venez rencontrer les rêveurs derrière la magie."
+    },
     "howItWorks": {
       "title": "Avec Mythoria, créer votre propre histoire est facile:",
       "steps": {

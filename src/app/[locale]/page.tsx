@@ -93,11 +93,6 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Quote of the Day Section */}
-        <section className="my-8">
-          <QuoteOfTheDay />
-        </section>
-
         {/* Audience Sections */}
         <section className="my-16">
           {/* Desktop Grid */}
@@ -249,6 +244,31 @@ export default function Home() {
                 <h2 className="card-title text-xl">{tHomePage('audiences.companies.title')}</h2>
                 <p className="text-sm">{tHomePage('audiences.companies.description')}</p>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <div className="divider my-16"></div>
+
+        {/* What Drives Us Section */}
+        <section className="my-16">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl font-bold mb-8">{tHomePage('whatDrivesUs.title')}</h2>
+            <div className="prose prose-lg mx-auto">
+              <p className="text-lg leading-relaxed mb-6">
+                {tHomePage('whatDrivesUs.paragraph1')}
+              </p>
+              <p className="text-lg leading-relaxed mb-6">
+                <strong>{tHomePage('whatDrivesUs.paragraph2Bold')}</strong>
+                {tHomePage('whatDrivesUs.paragraph2')
+                  .replace(tHomePage('whatDrivesUs.paragraph2Bold'), '')
+                  .replace('—', ' — ')}
+              </p>
+              <p className="text-lg leading-relaxed">
+                <Link href="/about-us" className="link link-primary font-semibold hover:underline">
+                  {tHomePage('whatDrivesUs.linkText')}
+                </Link>
+              </p>
             </div>
           </div>
         </section>
@@ -450,6 +470,11 @@ export default function Home() {
               height={54}
             />
           </a>
+        </section>
+
+        {/* Quote of the Day Section */}
+        <section className="my-8">
+          <QuoteOfTheDay />
         </section>
       </div>
     </div>

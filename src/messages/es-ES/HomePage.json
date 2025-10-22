@@ -52,6 +52,13 @@
         "description": "Regala a clientes o familias de empleados un libro personalizado con tu marca que mantenga tu logo en la estantería."
       }
     },
+    "whatDrivesUs": {
+      "title": "¿Qué nos impulsa?",
+      "paragraph1": "Creemos que dentro de cada persona hay una historia especial, esperando su oportunidad para brillar. Nuestro sueño es sencillo: ver los ojos de un niño iluminarse al leer un libro que ayudó a crear, o ver sonreír a un adulto, redescubriendo esa chispa de imaginación.",
+      "paragraph2": "Mythoria es ese puente mágico—un lugar donde tus recuerdos e ideas se convierten en libros hermosos y tangibles. Lo construimos para que crear tu historia sea un acto de alegría, no un desafío.",
+      "paragraph2Bold": "Mythoria es ese puente mágico",
+      "linkText": "Ven a conocer a los soñadores detrás de la magia."
+    },
     "howItWorks": {
       "title": "Con Mythoria, crear tu propia historia es fácil:",
       "steps": {

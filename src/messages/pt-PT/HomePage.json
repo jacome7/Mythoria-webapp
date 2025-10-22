@@ -53,6 +53,13 @@
         "description": "Ofereça aos clientes ou às famílias dos funcionários um livro de histórias personalizado com marca que mantém o seu logótipo na estante."
       }
     },
+    "whatDrivesUs": {
+      "title": "O que nos move?",
+      "paragraph1": "Acreditamos que dentro de cada pessoa existe uma história especial, apenas à espera de uma oportunidade para brilhar. O nosso sonho é simples: ver os olhos de uma criança iluminarem-se ao ler um livro que ajudou a criar, ou ver um adulto sorrir, redescobrindo aquela centelha de imaginação.",
+      "paragraph2": "A Mythoria é essa ponte mágica—um lugar onde as suas memórias e ideias se tornam livros bonitos e tangíveis. Construímo-la para que criar a sua história seja um ato de alegria, não um desafio.",
+      "paragraph2Bold": "A Mythoria é essa ponte mágica",
+      "linkText": "Venha conhecer os sonhadores por trás da magia."
+    },
     "howItWorks": {
       "title": "Com a Mythoria, criar a sua própria história é fácil:",
       "steps": {

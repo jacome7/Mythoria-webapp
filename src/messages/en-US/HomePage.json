@@ -53,6 +53,13 @@
         "description": "Gift customers or staff families a branded, personalised storybook that keeps your logo on the bookshelf."
       }
     },
+    "whatDrivesUs": {
+      "title": "What drives us?",
+      "paragraph1": "We believe that inside every person is a special story, just waiting for a chance to shine. Our dream is simple: to see a child's eyes light up reading a book they helped create, or to see an adult smile, rediscovering that spark of imagination.",
+      "paragraph2": "Mythoria is that magical bridge—a place where your memories and ideas become beautiful, tangible books. We built it so that creating your story is an act of joy, not a challenge.",
+      "paragraph2Bold": "Mythoria is that magical bridge",
+      "linkText": "Come and meet the dreamers behind the magic."
+    },
     "howItWorks": {
       "title": "With Mythoria, creating your own story is easy:",
       "steps": {

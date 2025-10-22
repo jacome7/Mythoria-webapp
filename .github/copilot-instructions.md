@@ -117,11 +117,11 @@ Mythoria's voice represents a young man in his early 20s:
 
 ### Supported Locales
 
-1. **American English** (`en-US`) - as spoken in New York
-2. **European Portuguese** (`pt-PT`) - as spoken in Lisbon
-3. **European Spanish** (`es-ES`) - as spoken in Madrid
-4. **European French** (`fr-FR`) - as spoken in Paris
-5. **German** (`de-DE`) - as spoken in Berlin
+1. **American English** (`en-US`) - as spoken in New York, USA
+2. **European Portuguese** (`pt-PT`) - as spoken in Lisbon, Portugal
+3. **European Spanish** (`es-ES`) - as spoken in Madrid, Spain
+4. **European French** (`fr-FR`) - as spoken in Paris, France
+5. **German** (`de-DE`) - as spoken in Berlin, Germany
 
 ## Common Gotchas
 

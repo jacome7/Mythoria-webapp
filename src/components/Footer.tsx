@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { FaFacebook, FaInstagram, FaLinkedin } from 'react-icons/fa';
+import { FaFacebook, FaInstagram, FaLinkedin, FaYoutube } from 'react-icons/fa';
 import { useTranslations } from 'next-intl';
 
 const Footer = () => {
@@ -10,22 +10,13 @@ const Footer = () => {
   return (
     <footer className="bg-base-200 text-base-content p-6">
       <div className="container mx-auto">
-        {/* Main footer content with left and right sections */}
-        <div className="flex flex-col md:flex-row justify-between items-start mb-8">
-          <div className="mb-6 md:mb-0">
-            <div className="max-w-sm">
-              <p className="text-xs text-left mb-2">{tCommonFooter('aboutFounder')}</p>
-              <Link href="/aboutUs" className="link link-hover text-xs underline text-primary">
-                {tCommonFooter('readMyStory')}
-              </Link>
-            </div>
-          </div>
-
-          {/* Right section - Social icons and links */}
-          <div className="w-full md:w-auto flex flex-col items-center md:items-end">
+        {/* Main footer content - centered */}
+        <div className="flex flex-col items-center mb-8">
+          {/* Social icons and links */}
+          <div className="w-full flex flex-col items-center">
             {/* Social icons */}
             <div className="mb-4">
-              <div className="flex gap-4 justify-center md:justify-end">
+              <div className="flex gap-4 justify-center">
                 <a
                   href="https://www.facebook.com/MythoriaOfficial"
                   target="_blank"
@@ -50,19 +41,23 @@ const Footer = () => {
                 >
                   <FaLinkedin size={24} />
                 </a>
+                <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="link link-hover">
+                  <FaYoutube size={24} />
+                </a>
                 {/*}
                 <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="link link-hover">
                   <FaTiktok size={24} />
-                </a>
-                <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="link link-hover">
-                  <FaYoutube size={24} />
                 </a>
                 */}
               </div>
             </div>
             {/* Links */}
-            <div className="flex flex-col items-center md:items-end gap-2">
+            <div className="flex flex-col items-center gap-2">
               <div className="flex items-center gap-2 text-sm">
+                <Link href="/pricing" className="link link-hover underline text-primary">
+                  {tCommonFooter('pricingServices')}
+                </Link>
+                <span>|</span>
                 <Link href="/aboutUs" className="link link-hover underline text-primary">
                   {tCommonFooter('aboutUs')}
                 </Link>

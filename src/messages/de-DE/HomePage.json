@@ -53,6 +53,13 @@
         "description": "Schenke Kund:innen oder den Familien deiner Mitarbeitenden ein gebrandetes, personalisiertes Geschichtenbuch, das euer Logo im Regal strahlen lässt."
       }
     },
+    "whatDrivesUs": {
+      "title": "Was treibt uns an?",
+      "paragraph1": "Wir glauben, dass in jedem Menschen eine besondere Geschichte steckt, die nur darauf wartet, zum Vorschein zu kommen. Unser Traum ist einfach: die Augen eines Kindes leuchten zu sehen, wenn es ein Buch liest, das es mitgestaltet hat, oder ein Lächeln auf dem Gesicht eines Erwachsenen, der den Funken der Fantasie wiederentdeckt.",
+      "paragraph2": "Mythoria ist diese magische Brücke—ein Ort, an dem eure Erinnerungen und Ideen zu wunderschönen, greifbaren Büchern werden. Wir haben es geschaffen, damit das Erschaffen eurer Geschichte ein Akt der Freude ist, keine Herausforderung.",
+      "paragraph2Bold": "Mythoria ist diese magische Brücke",
+      "linkText": "Komm und lerne die Träumer hinter der Magie kennen."
+    },
     "howItWorks": {
       "title": "Mit Mythoria wird deine eigene Geschichte zum Kinderspiel:",
       "steps": {
