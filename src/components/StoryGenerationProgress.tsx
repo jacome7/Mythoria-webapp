@@ -92,7 +92,6 @@ export default function StoryGenerationProgress({
     return () => clearInterval(messageInterval);
   }, [progress.currentStep, progress.status, tCommonStoryGenerationProgress]); // Poll for progress updates
   useEffect(() => {
-    // eslint-disable-next-line prefer-const
     let intervalId: NodeJS.Timeout;
 
     const fetchProgress = async () => {

@@ -5,9 +5,7 @@ import Script from 'next/script';
 
 declare global {
   interface Window {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     gtag: (...args: any[]) => void;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     dataLayer: any[];
   }
 }
@@ -28,9 +26,7 @@ export default function GoogleAnalytics({
     window.dataLayer = window.dataLayer || [];
 
     // Define gtag function
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
     function gtag(..._args: any[]) {
-      // eslint-disable-next-line prefer-rest-params
       window.dataLayer.push(arguments);
     }
 

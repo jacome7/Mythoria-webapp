@@ -51,7 +51,7 @@ const ContactPageContent = () => {
 
       {/* Bonus Section - Third on mobile */}
       <div className="order-3 lg:col-span-2">
-        <div className="card bg-gradient-to-r from-accent/10 to-warning/10 border border-accent/20 max-w-2xl mx-auto">
+        <div className="card bg-gradient-to-r from-accent/10 to-warning/10 border border-accent/20 max-w-4xl mx-auto">
           <div className="card-body p-6">
             <h2 className="text-lg font-semibold mb-3 flex items-center gap-3">
               <FaHeart className="text-accent" />

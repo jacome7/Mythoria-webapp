@@ -11,7 +11,15 @@ interface Options {
 export function useStorySessionGuard(options: Options = {}): string | null {
   const { enabled = true } = options;
   const router = useRouter();
-  const [storyId, setStoryId] = useState<string | null>(null);
+
+  // Get initial story ID during initialization
+  const getInitialStoryId = (): string | null => {
+    if (typeof window === 'undefined' || !enabled) return null;
+    if (!hasValidStorySession()) return null;
+    return getCurrentStoryId();
+  };
+
+  const [storyId] = useState<string | null>(getInitialStoryId);
 
   useEffect(() => {
     if (!enabled) return;
@@ -20,8 +28,6 @@ export function useStorySessionGuard(options: Options = {}): string | null {
       router.push('/tell-your-story/step-1');
       return;
     }
-
-    setStoryId(getCurrentStoryId());
   }, [router, enabled]);
 
   return storyId;

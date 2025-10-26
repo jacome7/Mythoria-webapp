@@ -61,7 +61,7 @@ export const authorService = {
       phoneNumbersCount: clerkUser.phoneNumbers?.length || 0,
       primaryPhoneNumberId: clerkUser.primaryPhoneNumberId,
       phoneNumbers: clerkUser.phoneNumbers,
-      emailAddresses: clerkUser.emailAddresses?.map(e => ({ id: e.id, email: e.emailAddress })),
+      emailAddresses: clerkUser.emailAddresses?.map((e) => ({ id: e.id, email: e.emailAddress })),
     });
 
     // Try to find existing user by clerkUserId first
@@ -82,14 +82,12 @@ export const authorService = {
       const primaryEmail = clerkUser.emailAddresses?.find(
         (email) => email.id === clerkUser.primaryEmailAddressId,
       );
-      
+
       // Try to get primary phone, or fall back to first phone if primary is not set
       const primaryPhone = clerkUser.primaryPhoneNumberId
-        ? clerkUser.phoneNumbers?.find(
-            (phone) => phone.id === clerkUser.primaryPhoneNumberId,
-          )
+        ? clerkUser.phoneNumbers?.find((phone) => phone.id === clerkUser.primaryPhoneNumberId)
         : clerkUser.phoneNumbers?.[0]; // Fallback to first phone
-      
+
       console.log('[syncUserOnSignIn] Primary phone extraction:', {
         primaryPhoneNumberId: clerkUser.primaryPhoneNumberId,
         foundPrimaryPhone: !!primaryPhone,
@@ -108,7 +106,7 @@ export const authorService = {
         preferredLocale: normalizeLocale(detectedLocale),
         ...(primaryPhone?.phoneNumber && { mobilePhone: primaryPhone.phoneNumber }),
       };
-      
+
       console.log('[syncUserOnSignIn] Creating author with data:', {
         clerkUserId: clerkUser.id,
         email,

@@ -168,8 +168,8 @@ export async function POST(request: NextRequest) {
 
     // Send email to user with payment instructions
     try {
-  // Determine user's locale and fall back to en-US if unsupported or missing.
-  const templateLanguage = normalizeLocale(author.preferredLocale || locale);
+      // Determine user's locale and fall back to en-US if unsupported or missing.
+      const templateLanguage = normalizeLocale(author.preferredLocale || locale);
 
       const { notificationFetch } = await import('@/lib/notification-client');
       await notificationFetch(`${process.env.NOTIFICATION_ENGINE_URL}/email/template`, {

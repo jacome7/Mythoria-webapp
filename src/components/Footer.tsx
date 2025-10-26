@@ -41,7 +41,12 @@ const Footer = () => {
                 >
                   <FaLinkedin size={24} />
                 </a>
-                <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="link link-hover">
+                <a
+                  href="https://youtube.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="link link-hover"
+                >
                   <FaYoutube size={24} />
                 </a>
                 {/*}

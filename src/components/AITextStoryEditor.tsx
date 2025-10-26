@@ -47,8 +47,8 @@ export default function AITextStoryEditor({
   chapters,
   currentChapter,
   onEditSuccess,
-  onOptimisticUpdate, // eslint-disable-line @typescript-eslint/no-unused-vars
-  onRevertUpdate, // eslint-disable-line @typescript-eslint/no-unused-vars
+  onOptimisticUpdate,
+  onRevertUpdate,
 }: AITextStoryEditorProps) {
   const tAITextStoryEditor = useTranslations('AITextStoryEditor');
   const [editScope, setEditScope] = useState<EditScope>(currentChapter ? 'chapter' : 'story');

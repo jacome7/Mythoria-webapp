@@ -51,21 +51,27 @@ export default function ReadingToolbar({
   onChapterChange,
 }: ReadingToolbarProps) {
   const tReadingToolbar = useTranslations('ReadingToolbar');
-  const [settings, setSettings] = useState<ReadingSettings>(DEFAULT_SETTINGS);
-  const [isExpanded, setIsExpanded] = useState(false);
 
-  // Load settings from localStorage on mount
-  useEffect(() => {
+  // Load settings from localStorage during initialization
+  const getInitialSettings = (): ReadingSettings => {
+    if (typeof window === 'undefined') return DEFAULT_SETTINGS;
+
     const savedSettings = localStorage.getItem('mythoria-reading-settings');
     if (savedSettings) {
       try {
         const parsed = JSON.parse(savedSettings);
-        setSettings({ ...DEFAULT_SETTINGS, ...parsed });
+        return { ...DEFAULT_SETTINGS, ...parsed };
       } catch (error) {
         console.warn('Failed to parse saved reading settings:', error);
       }
     }
-  }, []); // Apply settings to document root
+    return DEFAULT_SETTINGS;
+  };
+
+  const [settings, setSettings] = useState<ReadingSettings>(getInitialSettings);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  // Apply settings to document root
   useEffect(() => {
     const root = document.documentElement;
 

@@ -20,25 +20,27 @@ interface SessionData {
 }
 
 export function useStep2Session() {
-  const [storyText, setStoryText] = useState('');
-  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
-  const [uploadedAudio, setUploadedAudio] = useState<UploadedAudio | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Load from sessionStorage during initialization
+  const getInitialStoryText = (): string => {
+    if (typeof window === 'undefined') return '';
 
-  // Load from sessionStorage on mount
-  useEffect(() => {
     const savedData = sessionStorage.getItem('step2Data');
     if (savedData) {
       try {
         const data: SessionData = JSON.parse(savedData);
-        setStoryText(data.text || '');
-        // Only previews are stored, not actual files
+        return data.text || '';
       } catch (error) {
         console.error('Error loading saved data:', error);
       }
     }
-  }, []);
+    return '';
+  };
+
+  const [storyText, setStoryText] = useState(getInitialStoryText);
+  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+  const [uploadedAudio, setUploadedAudio] = useState<UploadedAudio | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const saveToSession = useCallback(() => {
     setIsSaving(true);

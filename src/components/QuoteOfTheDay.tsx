@@ -67,19 +67,22 @@ const quotes = [
 ];
 
 export default function QuoteOfTheDay() {
-  const [currentQuote, setCurrentQuote] = useState(quotes[0]);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    // Get a consistent quote based on the current date
+  // Get a consistent quote based on the current date
+  const getQuoteOfTheDay = () => {
     const today = new Date();
     const dayOfYear = Math.floor(
       (today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / 86400000,
     );
     const quoteIndex = dayOfYear % quotes.length;
-    setCurrentQuote(quotes[quoteIndex]);
+    return quotes[quoteIndex];
+  };
 
-    // Trigger animation
+  const [currentQuote] = useState(getQuoteOfTheDay);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    // Trigger animation after mount
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Animation trigger after initial mount
     setIsVisible(true);
   }, []);
 

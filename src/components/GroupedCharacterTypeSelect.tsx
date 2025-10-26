@@ -25,7 +25,21 @@ export default function GroupedCharacterTypeSelect({
   const tGroupedCharacterTypeSelect = useTranslations('GroupedCharacterTypeSelect');
   const tCharacters = useTranslations('Characters');
   const [isOpen, setIsOpen] = useState(false);
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+
+  // Initialize expanded groups based on current value or default to 'human'
+  const getInitialExpandedGroups = () => {
+    if (value) {
+      const group = findCharacterTypeGroup(value);
+      if (group) {
+        return { [group.key]: true };
+      }
+    }
+    // Default to expanding 'human' group for first-time editing
+    return { human: true };
+  };
+
+  const [expandedGroups, setExpandedGroups] =
+    useState<Record<string, boolean>>(getInitialExpandedGroups);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const getGroupLabel = (groupKey: string) => {
@@ -47,19 +61,6 @@ export default function GroupedCharacterTypeSelect({
       ? tGroupedCharacterTypeSelect('placeholder')
       : placeholder;
   };
-
-  // Initialize expanded groups based on current value or default to 'human'
-  useEffect(() => {
-    if (value) {
-      const group = findCharacterTypeGroup(value);
-      if (group) {
-        setExpandedGroups((prev) => ({ ...prev, [group.key]: true }));
-      }
-    } else {
-      // Default to expanding 'human' group for first-time editing
-      setExpandedGroups((prev) => ({ ...prev, human: true }));
-    }
-  }, [value]);
 
   // Close dropdown when clicking outside
   useEffect(() => {

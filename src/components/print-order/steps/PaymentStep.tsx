@@ -215,9 +215,11 @@ export default function PaymentStep({
           <div>
             <h3 className="text-lg font-semibold mb-4">{tPrintOrder('payment.orderSummary')}</h3>
             <p className="text-sm text-base-content/70 mb-4">
-              {tPrintOrder('payment.paperbackDescriptionWithChapters', { chapters: story.chapterCount })}
+              {tPrintOrder('payment.paperbackDescriptionWithChapters', {
+                chapters: story.chapterCount,
+              })}
             </p>
-            
+
             {/* Number of Copies Control */}
             <div className="space-y-2">
               <div className="flex justify-between items-center py-2">
@@ -254,14 +256,19 @@ export default function PaymentStep({
               <div className="divider my-2"></div>
 
               <div className="flex justify-between">
-                <span>{tPrintOrder('payment.basePrice')} ({tPrintOrder('payment.includesFourChapters')}):</span>
+                <span>
+                  {tPrintOrder('payment.basePrice')} ({tPrintOrder('payment.includesFourChapters')}
+                  ):
+                </span>
                 <span>
                   {selectedPrintingOption.credits} {tPrintOrder('payment.credits')}
                 </span>
               </div>
               {numberOfCopies > 1 && (
                 <div className="flex justify-between">
-                  <span>{tPrintOrder('payment.extraBookCopies')} ({numberOfCopies - 1}):</span>
+                  <span>
+                    {tPrintOrder('payment.extraBookCopies')} ({numberOfCopies - 1}):
+                  </span>
                   <span>
                     {calculateExtraCopiesCost()} {tPrintOrder('payment.credits')}
                   </span>
@@ -270,10 +277,15 @@ export default function PaymentStep({
               {calculateExtraChapters() > 0 && (
                 <div className="flex justify-between">
                   <span>
-                    {tPrintOrder('payment.extraChapters')} ({calculateExtraChapters()}{numberOfCopies > 1 ? ` × ${numberOfCopies} ${tPrintOrder('payment.copiesLabel')}` : ''}):
+                    {tPrintOrder('payment.extraChapters')} ({calculateExtraChapters()}
+                    {numberOfCopies > 1
+                      ? ` × ${numberOfCopies} ${tPrintOrder('payment.copiesLabel')}`
+                      : ''}
+                    ):
                   </span>
                   <span>
-                    {calculateExtraChapters() * extraChapterCost * numberOfCopies} {tPrintOrder('payment.credits')}
+                    {calculateExtraChapters() * extraChapterCost * numberOfCopies}{' '}
+                    {tPrintOrder('payment.credits')}
                   </span>
                 </div>
               )}

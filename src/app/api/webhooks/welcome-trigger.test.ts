@@ -26,7 +26,8 @@ describe('triggerWelcomeEmailSafe', () => {
     expect(body.authorId).toBe('11111111-1111-1111-1111-111111111111');
     expect(body.entityId).toBe('11111111-1111-1111-1111-111111111111');
     expect(body.recipients[0].email).toBe('user@example.com');
-    expect(body.variables.storyCredits).toBe(7);
-    expect(body.variables.userName).toBe('Test User');
+    expect(body.variables.credits).toBe(7);
+    expect(body.variables.creditsPlural).toBe(true);
+    expect(body.variables.name).toBe('Test User');
   });
 });

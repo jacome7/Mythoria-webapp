@@ -3,7 +3,7 @@ PowerShell deployment script for Mythoria webapp to Google Cloud Run
 Usage: .\deploy.ps1 [-Staging] [-Fast] [-Help]
 
 Modes:
- - Normal (default): installs deps, lint, typecheck, tests, build, then deploy via Cloud Build
+ - Normal (default): runs lint, typecheck, tests, then deploys via Cloud Build
  - Fast: reuses the last built image (no build/lint/tests) and deploys directly to Cloud Run
 #>
 
@@ -18,11 +18,11 @@ param(
 $ErrorActionPreference = 'Stop'
 
 # ---- Configuration ----------------------------------------------------------
-$PROJECT_ID        = 'oceanic-beach-460916-n5'
+$PROJECT_ID = 'oceanic-beach-460916-n5'
 $BASE_SERVICE_NAME = 'mythoria-webapp'
-$SERVICE_NAME      = if ($Staging) { "$BASE_SERVICE_NAME-staging" } else { $BASE_SERVICE_NAME }
-$REGION            = 'europe-west9'
-$IMAGE_NAME        = "gcr.io/$PROJECT_ID/$SERVICE_NAME"
+$SERVICE_NAME = if ($Staging) { "$BASE_SERVICE_NAME-staging" } else { $BASE_SERVICE_NAME }
+$REGION = 'europe-west9'
+$IMAGE_NAME = "gcr.io/$PROJECT_ID/$SERVICE_NAME"
 # -----------------------------------------------------------------------------
 
 function Show-Help {
@@ -38,10 +38,10 @@ function Show-Help {
 }
 
 # --- Console helpers ---------------------------------------------------------
-function Write-Info     { param([string]$Msg) Write-Host "[INFO] $Msg" -ForegroundColor Blue }
-function Write-Success  { param([string]$Msg) Write-Host "[SUCCESS] $Msg" -ForegroundColor Green }
-function Write-Warn     { param([string]$Msg) Write-Host "[WARN] $Msg" -ForegroundColor Yellow }
-function Write-Err      { param([string]$Msg) Write-Host "[ERROR] $Msg" -ForegroundColor Red }
+function Write-Info { param([string]$Msg) Write-Host "[INFO] $Msg" -ForegroundColor Blue }
+function Write-Success { param([string]$Msg) Write-Host "[SUCCESS] $Msg" -ForegroundColor Green }
+function Write-Warn { param([string]$Msg) Write-Host "[WARN] $Msg" -ForegroundColor Yellow }
+function Write-Err { param([string]$Msg) Write-Host "[ERROR] $Msg" -ForegroundColor Red }
 # -----------------------------------------------------------------------------
 
 # Helper function to get a value from .env.production file
@@ -69,7 +69,8 @@ function Test-Prerequisites {
     try {
         & gcloud --version  | Out-Null
         Write-Success "Google Cloud CLI is available"
-    } catch {
+    }
+    catch {
         Write-Err "Google Cloud CLI is not installed or not on PATH."
         throw
     }
@@ -82,7 +83,8 @@ function Test-Prerequisites {
             throw "Unauthenticated"
         }
         Write-Success "Authenticated as $account"
-    } catch {
+    }
+    catch {
         throw
     }
 
@@ -90,18 +92,14 @@ function Test-Prerequisites {
     Write-Success "Using project $PROJECT_ID"
 }
 
-function Build-Application {
-    Write-Info "Installing dependencies (npm ci)"
-    & npm ci
+function Run-PreDeploymentChecks {
     Write-Info "Linting (npm run lint)"
     & npm run lint
     Write-Info "Typecheck (npm run typecheck)"
     & npm run typecheck
     Write-Info "Running tests (npm test)"
     & npm test
-    Write-Info "Building production bundle (npm run build)"
-    & npm run build
-    Write-Success "Build completed"
+    Write-Success "Pre-deployment checks passed"
 }
 
 function Deploy-With-CloudBuild {
@@ -134,7 +132,8 @@ function Test-Deployment {
         Write-Host "Service URL: $serviceUrl" -ForegroundColor Cyan
         Write-Host "Console: https://console.cloud.google.com/run/detail/$REGION/$SERVICE_NAME" -ForegroundColor Cyan
         Write-Host ""
-    } else {
+    }
+    else {
         Write-Err "Unable to determine service URL"
         throw "Describe failed"
     }
@@ -149,8 +148,9 @@ function Main {
     Test-Prerequisites
     if ($Fast) {
         Deploy-Fast
-    } else {
-        Build-Application
+    }
+    else {
+        Run-PreDeploymentChecks
         Deploy-With-CloudBuild
     }
 
@@ -160,7 +160,8 @@ function Main {
 
 try {
     Main
-} catch {
+}
+catch {
     Write-Err "Deployment failed:`n$($_.Exception.Message)"
     exit 1
 }

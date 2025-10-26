@@ -48,19 +48,14 @@ export default function StoryInfoEditor({
     customAuthor: story.customAuthor || '',
     targetAudience: story.targetAudience || '',
   });
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  // Track changes
-  useEffect(() => {
-    const hasChanges =
-      formData.title !== (story.title || '') ||
-      formData.synopsis !== (story.synopsis || '') ||
-      formData.dedicationMessage !== (story.dedicationMessage || '') ||
-      formData.customAuthor !== (story.customAuthor || '') ||
-      formData.targetAudience !== (story.targetAudience || '');
-
-    setHasUnsavedChanges(hasChanges);
-  }, [formData, story]);
+  // Compute if there are unsaved changes (derived state)
+  const hasUnsavedChanges =
+    formData.title !== (story.title || '') ||
+    formData.synopsis !== (story.synopsis || '') ||
+    formData.dedicationMessage !== (story.dedicationMessage || '') ||
+    formData.customAuthor !== (story.customAuthor || '') ||
+    formData.targetAudience !== (story.targetAudience || '');
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -74,7 +69,14 @@ export default function StoryInfoEditor({
 
     try {
       await onSave(formData);
-      setHasUnsavedChanges(false);
+      // Reset form data to match saved story (this will make hasUnsavedChanges false)
+      setFormData({
+        title: story.title || '',
+        synopsis: story.synopsis || '',
+        dedicationMessage: story.dedicationMessage || '',
+        customAuthor: story.customAuthor || '',
+        targetAudience: story.targetAudience || '',
+      });
     } catch (error) {
       console.error(tStoryInfoEditor('logging.errorSavingStoryInfo'), error);
     }

@@ -1,18 +1,23 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { SUPPORTED_LOCALES } from '@/config/locales';
+import { useTransition } from 'react';
 
 const LanguageSwitcher = () => {
   const locale = useLocale();
   const pathname = usePathname();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
   const handleLanguageChange = (newLocale: string) => {
     // Store the language preference in localStorage
     localStorage.setItem('mythoria-locale', newLocale);
 
     // Remove the current locale from the pathname
-    const safePathname = pathname || window.location.pathname;
+    const safePathname =
+      pathname || (typeof window !== 'undefined' ? window.location.pathname : '');
     const segments = safePathname.split('/');
     if (SUPPORTED_LOCALES.includes(segments[1])) {
       segments[1] = newLocale;
@@ -21,7 +26,12 @@ const LanguageSwitcher = () => {
     }
 
     const newPath = segments.join('/');
-    window.location.href = newPath;
+
+    // Use Next.js router for navigation with full page reload for locale change
+    startTransition(() => {
+      router.push(newPath);
+      router.refresh();
+    });
   };
 
   const getLanguageLabel = (loc: string) => {

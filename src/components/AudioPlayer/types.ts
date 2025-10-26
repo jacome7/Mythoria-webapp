@@ -8,7 +8,7 @@ export interface AudioChapter {
 
 export interface AudioPlayerState {
   currentlyPlaying: number | null;
-  audioElements: { [key: number]: HTMLAudioElement };
+  getAudioElement: (index: number) => HTMLAudioElement | undefined;
   audioProgress: { [key: number]: number };
   audioLoading: { [key: number]: boolean };
 }

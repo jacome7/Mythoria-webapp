@@ -11,7 +11,9 @@ interface ClientAuthWrapperProps {
 export default function ClientAuthWrapper({ children, signedOutFallback }: ClientAuthWrapperProps) {
   const [mounted, setMounted] = useState(false);
 
+  // This effect is necessary to prevent hydration mismatches with Clerk's auth state
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Required for hydration safety with Clerk auth
     setMounted(true);
   }, []);
 

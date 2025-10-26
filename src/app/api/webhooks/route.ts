@@ -74,8 +74,9 @@ export async function POST(req: Request) {
 async function handleUserCreated(evt: WebhookEvent) {
   if (evt.type !== 'user.created') return;
 
-  const { id, email_addresses, first_name, last_name, phone_numbers, primary_phone_number_id } = evt.data;
-  
+  const { id, email_addresses, first_name, last_name, phone_numbers, primary_phone_number_id } =
+    evt.data;
+
   // Debug logging to see what Clerk sends
   console.log('[webhook.user.created] Event data:', {
     userId: id,
@@ -84,7 +85,7 @@ async function handleUserCreated(evt: WebhookEvent) {
     primaryPhoneNumberId: primary_phone_number_id,
     phoneNumbers: phone_numbers,
   });
-  
+
   const primaryEmail = email_addresses.find((e) => e.id === evt.data.primary_email_address_id);
   if (!primaryEmail) {
     console.error('No primary email found for user:', id);
@@ -95,7 +96,7 @@ async function handleUserCreated(evt: WebhookEvent) {
   const primaryPhone = primary_phone_number_id
     ? phone_numbers?.find((p) => p.id === primary_phone_number_id)
     : phone_numbers?.[0]; // Fallback to first phone
-    
+
   console.log('[webhook.user.created] Primary phone extraction:', {
     primaryPhoneNumberId: primary_phone_number_id,
     foundPrimaryPhone: !!primaryPhone,
@@ -119,17 +120,14 @@ async function handleUserCreated(evt: WebhookEvent) {
       lastLoginAt: new Date(),
       ...(primaryPhone?.phone_number && { mobilePhone: primaryPhone.phone_number }),
     };
-    
+
     console.log('[webhook.user.created] Existing author, updating with:', {
       authorId: existing[0].authorId,
       hasMobilePhone: !!updateData.mobilePhone,
       mobilePhone: updateData.mobilePhone,
     });
-    
-    await db
-      .update(authors)
-      .set(updateData)
-      .where(eq(authors.clerkUserId, id));
+
+    await db.update(authors).set(updateData).where(eq(authors.clerkUserId, id));
 
     // Ensure initial credits exist (race-safe check)
     await ensureInitialCredits(existing[0].authorId);
@@ -145,14 +143,14 @@ async function handleUserCreated(evt: WebhookEvent) {
       preferredLocale: userLocale,
       ...(primaryPhone?.phone_number && { mobilePhone: primaryPhone.phone_number }),
     };
-    
+
     console.log('[webhook.user.created] Creating author with data:', {
       clerkUserId: id,
       email: primaryEmail.email_address,
       hasMobilePhone: !!authorData.mobilePhone,
       mobilePhone: authorData.mobilePhone,
     });
-    
+
     const author = await authorService.createAuthor(authorData);
     console.log(
       'User created in database via webhook service logic:',
@@ -177,17 +175,14 @@ async function handleUserCreated(evt: WebhookEvent) {
         lastLoginAt: new Date(),
         ...(primaryPhone?.phone_number && { mobilePhone: primaryPhone.phone_number }),
       };
-      
+
       console.log('[webhook.user.created] Duplicate email, updating with:', {
         email: primaryEmail.email_address,
         hasMobilePhone: !!updateData.mobilePhone,
         mobilePhone: updateData.mobilePhone,
       });
-      
-      await db
-        .update(authors)
-        .set(updateData)
-        .where(eq(authors.email, primaryEmail.email_address));
+
+      await db.update(authors).set(updateData).where(eq(authors.email, primaryEmail.email_address));
       // Fetch updated author to run credit guard
       const [updated] = await db
         .select({ authorId: authors.authorId })
@@ -234,7 +229,8 @@ async function ensureInitialCredits(authorId: string) {
 async function handleUserUpdated(evt: WebhookEvent) {
   if (evt.type !== 'user.updated') return;
 
-  const { id, email_addresses, first_name, last_name, phone_numbers, primary_phone_number_id } = evt.data;
+  const { id, email_addresses, first_name, last_name, phone_numbers, primary_phone_number_id } =
+    evt.data;
 
   // Debug logging
   console.log('[webhook.user.updated] Event data:', {
@@ -258,7 +254,7 @@ async function handleUserUpdated(evt: WebhookEvent) {
   const primaryPhone = primary_phone_number_id
     ? phone_numbers?.find((p) => p.id === primary_phone_number_id)
     : phone_numbers?.[0]; // Fallback to first phone
-    
+
   console.log('[webhook.user.updated] Primary phone extraction:', {
     primaryPhoneNumberId: primary_phone_number_id,
     foundPrimaryPhone: !!primaryPhone,
@@ -296,13 +292,13 @@ async function handleUserUpdated(evt: WebhookEvent) {
       lastLoginAt: new Date(),
       ...(primaryPhone?.phone_number && { mobilePhone: primaryPhone.phone_number }),
     };
-    
+
     console.log('[webhook.user.updated] Updating author with data:', {
       clerkUserId: id,
       hasMobilePhone: !!updateData.mobilePhone,
       mobilePhone: updateData.mobilePhone,
     });
-    
+
     const updateResult = await db
       .update(authors)
       .set(updateData)

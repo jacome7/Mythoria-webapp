@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useId } from 'react';
 import mermaid from 'mermaid';
 
 interface MermaidChartProps {
@@ -10,7 +10,9 @@ interface MermaidChartProps {
 
 const MermaidChart: React.FC<MermaidChartProps> = ({ chart, id }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const chartId = id || `mermaid-${Math.random().toString(36).substr(2, 9)}`;
+  const generatedId = useId();
+  // Generate a stable ID that doesn't change on re-renders
+  const chartId = id || `mermaid-${generatedId.replace(/:/g, '-')}`;
 
   useEffect(() => {
     // Initialize mermaid with configuration

@@ -14,7 +14,9 @@ const Header = () => {
   const [isClient, setIsClient] = useState(false);
   const locale = useLocale();
 
+  // This effect is necessary to prevent hydration mismatches with Clerk's auth state
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Required for hydration safety with Clerk auth
     setIsClient(true);
   }, []);
 

@@ -255,9 +255,7 @@ export default function Home() {
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-4xl font-bold mb-8">{tHomePage('whatDrivesUs.title')}</h2>
             <div className="prose prose-lg mx-auto">
-              <p className="text-lg leading-relaxed mb-6">
-                {tHomePage('whatDrivesUs.paragraph1')}
-              </p>
+              <p className="text-lg leading-relaxed mb-6">{tHomePage('whatDrivesUs.paragraph1')}</p>
               <p className="text-lg leading-relaxed mb-6">
                 <strong>{tHomePage('whatDrivesUs.paragraph2Bold')}</strong>
                 {tHomePage('whatDrivesUs.paragraph2')

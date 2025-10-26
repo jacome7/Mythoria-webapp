@@ -38,8 +38,8 @@ export default function AIImageEditor({
   story,
   imageData,
   onImageEditSuccess,
-  onOptimisticUpdate, // eslint-disable-line @typescript-eslint/no-unused-vars
-  onRevertUpdate, // eslint-disable-line @typescript-eslint/no-unused-vars
+  onOptimisticUpdate,
+  onRevertUpdate,
 }: AIImageEditorProps) {
   const tAIImageEditor = useTranslations('AIImageEditor');
   const tGraphicalStyles = useTranslations('GraphicalStyles');

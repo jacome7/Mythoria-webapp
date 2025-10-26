@@ -16,7 +16,7 @@ export async function getCurrentAuthor() {
     userId: user.id,
     hasPhoneNumbers: !!user.phoneNumbers,
     phoneNumbersCount: user.phoneNumbers?.length || 0,
-    phoneNumbers: user.phoneNumbers?.map(p => ({
+    phoneNumbers: user.phoneNumbers?.map((p) => ({
       id: p.id,
       phoneNumber: p.phoneNumber,
     })),

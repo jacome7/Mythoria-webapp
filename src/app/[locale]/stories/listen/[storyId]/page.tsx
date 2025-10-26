@@ -338,7 +338,6 @@ export default function ListenStoryPage() {
     router.push(`/${locale}/stories/read/${storyId}`);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const navigateToListen = () => {
     // Already on listen page, do nothing
     return;

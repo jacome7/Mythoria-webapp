@@ -13,18 +13,14 @@ export function useAudioPlayer({
 
   // Audio playback states
   const [currentlyPlaying, setCurrentlyPlaying] = useState<number | null>(null);
-  const [audioElements, setAudioElements] = useState<{ [key: number]: HTMLAudioElement }>({});
   const [audioProgress, setAudioProgress] = useState<{ [key: number]: number }>({});
   const [audioLoading, setAudioLoading] = useState<{ [key: number]: boolean }>({});
 
   // Refs to always-current state for event handlers (auto-advance logic)
-  const audioElementsRef = useRef(audioElements);
+  const audioElementsRef = useRef<{ [key: number]: HTMLAudioElement }>({});
   const totalChaptersRef = useRef<number>(totalChapters ?? trackingData?.total_chapters ?? 0);
   const playAudioRef = useRef<(i: number) => Promise<void>>(async () => {});
 
-  useEffect(() => {
-    audioElementsRef.current = audioElements;
-  }, [audioElements]);
   useEffect(() => {
     totalChaptersRef.current = totalChapters ?? trackingData?.total_chapters ?? 0;
   }, [totalChapters, trackingData]);
@@ -33,8 +29,8 @@ export function useAudioPlayer({
     async (chapterIndex: number) => {
       try {
         // Stop and properly clean up any currently playing audio
-        if (currentlyPlaying !== null && audioElements[currentlyPlaying]) {
-          const currentAudio = audioElements[currentlyPlaying];
+        if (currentlyPlaying !== null && audioElementsRef.current[currentlyPlaying]) {
+          const currentAudio = audioElementsRef.current[currentlyPlaying];
           currentAudio.pause();
           currentAudio.currentTime = 0;
           // Reset the audio element to free up resources
@@ -47,7 +43,7 @@ export function useAudioPlayer({
         const proxyAudioUri = `${audioEndpoint}/${chapterIndex}`;
 
         // Create new audio element if it doesn't exist
-        if (!audioElements[chapterIndex]) {
+        if (!audioElementsRef.current[chapterIndex]) {
           const audio = new Audio();
           audio.preload = 'metadata';
 
@@ -88,7 +84,7 @@ export function useAudioPlayer({
             alert(`${errorMessage} (Chapter ${chapterIndex + 1})`);
           });
 
-          setAudioElements((prev) => ({ ...prev, [chapterIndex]: audio }));
+          audioElementsRef.current[chapterIndex] = audio;
 
           // Set the source and start playing with proper error handling
           audio.src = proxyAudioUri;
@@ -120,7 +116,7 @@ export function useAudioPlayer({
           }
         } else {
           // Use existing audio element
-          const audio = audioElements[chapterIndex];
+          const audio = audioElementsRef.current[chapterIndex];
 
           // Always reset the audio element when switching sources
           if (audio.src !== proxyAudioUri) {
@@ -186,7 +182,7 @@ export function useAudioPlayer({
         }
       }
     },
-    [currentlyPlaying, audioElements, audioEndpoint, tErrors, onError, trackingData],
+    [currentlyPlaying, audioEndpoint, tErrors, onError, trackingData],
   );
 
   // Keep ref of latest playAudio for ended event handlers
@@ -194,46 +190,46 @@ export function useAudioPlayer({
     playAudioRef.current = playAudio;
   }, [playAudio]);
 
-  const pauseAudio = useCallback(
-    (chapterIndex: number) => {
-      if (audioElements[chapterIndex]) {
-        audioElements[chapterIndex].pause();
-        setCurrentlyPlaying(null);
-      }
-    },
-    [audioElements],
-  );
+  const pauseAudio = useCallback((chapterIndex: number) => {
+    if (audioElementsRef.current[chapterIndex]) {
+      audioElementsRef.current[chapterIndex].pause();
+      setCurrentlyPlaying(null);
+    }
+  }, []);
 
-  const stopAudio = useCallback(
-    (chapterIndex: number) => {
-      if (audioElements[chapterIndex]) {
-        const audio = audioElements[chapterIndex];
-        audio.pause();
-        audio.currentTime = 0;
-        // Reset the audio element to free up resources
-        audio.load();
-        setCurrentlyPlaying(null);
-        setAudioProgress((prev) => ({ ...prev, [chapterIndex]: 0 }));
-      }
-    },
-    [audioElements],
-  );
+  const stopAudio = useCallback((chapterIndex: number) => {
+    if (audioElementsRef.current[chapterIndex]) {
+      const audio = audioElementsRef.current[chapterIndex];
+      audio.pause();
+      audio.currentTime = 0;
+      // Reset the audio element to free up resources
+      audio.load();
+      setCurrentlyPlaying(null);
+      setAudioProgress((prev) => ({ ...prev, [chapterIndex]: 0 }));
+    }
+  }, []);
 
   // Cleanup audio elements when component unmounts
   useEffect(() => {
+    // Copy ref to local variable for cleanup to satisfy exhaustive-deps
+    const elements = audioElementsRef.current;
     return () => {
-      Object.values(audioElements).forEach((audio) => {
+      Object.values(elements).forEach((audio) => {
         audio.pause();
         audio.currentTime = 0;
         audio.removeAttribute('src'); // Remove source to stop download
         audio.load(); // Reset the element
       });
     };
-  }, [audioElements]);
+  }, []);
+
+  const getAudioElement = useCallback((index: number) => {
+    return audioElementsRef.current[index];
+  }, []);
 
   return {
     currentlyPlaying,
-    audioElements,
+    getAudioElement,
     audioProgress,
     audioLoading,
     playAudio,
