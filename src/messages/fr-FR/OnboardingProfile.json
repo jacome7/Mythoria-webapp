@@ -51,14 +51,12 @@
         "prefer_not_to_say": "Préfère ne pas préciser"
       },
       "literaryAge": {
-        "school_age": "Âge scolaire",
         "teen": "Adolescent",
         "emerging_adult": "Jeune adulte",
         "experienced_adult": "Adulte expérimenté",
         "midlife_mentor_or_elder": "Mentor ou aîné"
       },
       "ageOptions": {
-        "school_age": "Âge scolaire (6–12)",
         "teen": "Adolescent (13–17)",
         "emerging_adult": "Jeune adulte émergent (18–24)",
         "experienced_adult": "Adulte expérimenté (25–49)",

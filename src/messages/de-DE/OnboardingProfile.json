@@ -40,14 +40,12 @@
         "prefer_not_to_say": "Möchte ich nicht sagen"
       },
       "literaryAge": {
-        "school_age": "Schulkind",
         "teen": "Teenager",
         "emerging_adult": "Junge Erwachsene",
         "experienced_adult": "Erfahrene Erwachsene",
         "midlife_mentor_or_elder": "Mentor*in in der Lebensmitte oder älter"
       },
       "ageOptions": {
-        "school_age": "Schulkind (6–12)",
         "teen": "Teenager (13–17)",
         "emerging_adult": "Junge Erwachsene (18–24)",
         "experienced_adult": "Erfahrene Erwachsene (25–49)",

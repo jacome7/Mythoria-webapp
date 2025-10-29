@@ -5,7 +5,6 @@ export const GENDER_OPTIONS = ['female', 'male', 'prefer_not_to_say'] as const;
 export type GenderOption = (typeof GENDER_OPTIONS)[number];
 
 export const LITERARY_AGE_OPTIONS = [
-  'school_age',
   'teen',
   'emerging_adult',
   'experienced_adult',

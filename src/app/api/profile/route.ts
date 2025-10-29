@@ -215,8 +215,10 @@ export async function PATCH(req: NextRequest) {
     // Trigger welcome email if displayName was updated and account is new (within 10 minutes)
     if (isUpdatingDisplayName && updated.createdAt) {
       const ageMs = Date.now() - new Date(updated.createdAt).getTime();
-      // Only send if account was created within the last 10 minutes
-      if (ageMs >= 0 && ageMs < 10 * 60 * 1000) {
+      // Only send if:
+      // 1. Account was created within the last 10 minutes
+      // 2. Welcome email has NOT been sent yet (welcomeEmailSentAt is null)
+      if (ageMs >= 0 && ageMs < 10 * 60 * 1000 && !updated.welcomeEmailSentAt) {
         try {
           const { triggerWelcomeEmailSafe } = await import('../webhooks/welcome-email');
           const effectiveLocale = updated.preferredLocale || 'en-US';
@@ -229,27 +231,53 @@ export async function PATCH(req: NextRequest) {
             displayName: updated.displayName,
             email: updated.email,
           });
+          
           // Fire and forget - don't await
           triggerWelcomeEmailSafe({
             authorId: updated.clerkUserId,
             email: updated.email,
             name: updated.displayName,
             locale: effectiveLocale,
-          }).catch((err) => {
-            console.error('welcome-email.error.profile-update', {
-              authorId: updated.authorId,
-              clerkUserId: updated.clerkUserId,
-              error: err,
+          })
+            .then(async () => {
+              // Mark the welcome email as sent in the database
+              try {
+                await db
+                  .update(authors)
+                  .set({ welcomeEmailSentAt: new Date() })
+                  .where(eq(authors.authorId, updated.authorId));
+                console.log('welcome-email.sent-timestamp-recorded', {
+                  authorId: updated.authorId,
+                });
+              } catch (dbErr) {
+                console.error('welcome-email.timestamp-update-failed', {
+                  authorId: updated.authorId,
+                  error: dbErr,
+                });
+              }
+            })
+            .catch((err) => {
+              console.error('welcome-email.error.profile-update', {
+                authorId: updated.authorId,
+                clerkUserId: updated.clerkUserId,
+                error: err,
+              });
             });
-          });
         } catch (err) {
           console.error('welcome-email.import-error', { error: err });
         }
       } else {
-        console.log('welcome-email.skipped.account-too-old', {
+        const skipReason = updated.welcomeEmailSentAt
+          ? 'already-sent'
+          : ageMs >= 10 * 60 * 1000
+            ? 'account-too-old'
+            : 'unknown';
+        console.log('welcome-email.skipped.profile-update', {
           authorId: updated.authorId,
+          reason: skipReason,
           ageMs,
           accountAgeMinutes: Math.floor(ageMs / 60000),
+          welcomeEmailSentAt: updated.welcomeEmailSentAt,
         });
       }
     }

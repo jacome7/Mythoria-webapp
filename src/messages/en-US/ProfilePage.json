@@ -51,7 +51,6 @@
       "prefer_not_to_say": "Prefer not to say"
     },
     "ageOptions": {
-      "school_age": "School Age (6–12)",
       "teen": "Teen (13–17)",
       "emerging_adult": "Emerging Adult (18–24)",
       "experienced_adult": "Experienced Adult (25–49)",

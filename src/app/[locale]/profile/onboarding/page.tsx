@@ -19,7 +19,6 @@ import PromotionCodeRedeemer from '@/components/PromotionCodeRedeemer';
 // Value lists; labels resolved via i18n (see messages OnboardingProfile.options)
 const GENDER_OPTIONS = ['female', 'male', 'prefer_not_to_say'] as const;
 const LITERARY_AGE_OPTIONS = [
-  'school_age',
   'teen',
   'emerging_adult',
   'experienced_adult',
@@ -85,6 +84,8 @@ export default function OnboardingProfilePage() {
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null); // non-null indicates last save completed
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+  // Track if welcome email has been triggered this session (localStorage-backed)
+  const welcomeEmailTriggeredRef = useRef<boolean>(false);
 
   // State for interactive questions
   const [genderAnswered, setGenderAnswered] = useState(false);
@@ -113,6 +114,15 @@ export default function OnboardingProfilePage() {
           if (p.literaryAge) setAgeAnswered(true);
           if (p.primaryGoals.length) setGoalsAnswered(true);
           if (p.audiences.length) setAudiencesAnswered(true);
+          
+          // Check if welcome email was already triggered in localStorage
+          if (typeof window !== 'undefined') {
+            const storageKey = `welcome_email_sent_${data.author.email || 'unknown'}`;
+            const alreadySent = localStorage.getItem(storageKey);
+            if (alreadySent === 'true') {
+              welcomeEmailTriggeredRef.current = true;
+            }
+          }
         }
       } finally {
         setLoading(false);
@@ -136,6 +146,15 @@ export default function OnboardingProfilePage() {
           setProfile((p) => ({ ...(p as ProfileData), ...patch, ...data.author }));
           setSaveMessage('saved'); // marker; actual text comes from i18n key
           setTimeout(() => setSaveMessage(null), 2000);
+          
+          // If displayName was updated and welcome email not yet triggered, mark it in localStorage
+          if (patch.displayName && !welcomeEmailTriggeredRef.current && typeof window !== 'undefined') {
+            const email = (data.author as { email?: string }).email || 'unknown';
+            const storageKey = `welcome_email_sent_${email}`;
+            // Mark locally to prevent duplicate client-side triggers
+            localStorage.setItem(storageKey, 'true');
+            welcomeEmailTriggeredRef.current = true;
+          }
         } else {
           const err = await res.json().catch(() => ({}));
           alert(err.error || 'Save failed');
