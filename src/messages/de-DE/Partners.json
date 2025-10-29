@@ -1,0 +1,142 @@
+{
+  "Partners": {
+    "metadata": {
+      "title": "Werde Partner von Mythoria",
+      "description": "Schließe dich Mythoria als Druckpartner, Attraktion oder Einzelhandelsmarke an. Lass dein Geschäft wachsen, indem du dich mit Tausenden kreativen Familien verbindest. Bewirb dich jetzt, um ein vertrauenswürdiger Partner zu werden.",
+      "keywords": [
+        "Partnerschaftsmöglichkeiten",
+        "Druckdienstleistungspartnerschaft",
+        "Attraktionspartnerschaft",
+        "Einzelhandelsmarkenzusammenarbeit",
+        "Geschäftspartnerschaft",
+        "Druck auf Abruf",
+        "Familienunterhaltungspartnerschaft",
+        "Souvenirpartnerschaft"
+      ],
+      "ogTitle": "Werde Partner von Mythoria - Lass Dein Geschäft Wachsen",
+      "ogDescription": "Verbinde dich mit Tausenden kreativen Familien. Werde Druckpartner, Attraktion oder Einzelhandelsmarkenpartner von Mythoria. Bewirb dich jetzt.",
+      "ogImageAlt": "Mythoria Partnerschaftsprogramm",
+      "twitterTitle": "Werde Partner von Mythoria - Lass Dein Geschäft Wachsen",
+      "twitterDescription": "Tritt unserem Partnerschaftsprogramm bei und verbinde dich mit Tausenden kreativen Familien, die einzigartige Storytelling-Erlebnisse suchen."
+    },
+    "hero": {
+      "title": "Lass Dein Geschäft mit Mythoria Wachsen.",
+      "subtitle": "Wir stellen dir Tausende kreative Familien vor. Du gewinnst neue, treue Kunden.",
+      "tagline": "Es ist das perfekte nächste Kapitel für dein Geschäft.",
+      "cta": "Jetzt Bewerben"
+    },
+    "partnershipTypes": {
+      "title": "Eine Partnerschaft, die zu Deinem Geschäft Passt.",
+      "subtitle": "Ob du eine lokale Druckerei oder eine nationale Attraktion bist, wir haben einen Weg, gemeinsam zu wachsen.",
+      "printing": {
+        "title": "Für Druckdienstleistungen",
+        "description": "Werde die vertrauenswürdige lokale Druckerei für Mythoria-Familien. Wir senden dir einen stetigen Strom von Druckaufträgen auf Abruf, komplett mit druckfertigen Dateien. Du kümmerst dich einfach um die Magie, unsere digitalen Geschichten in reale Schätze zu verwandeln."
+      },
+      "attractions": {
+        "title": "Für Attraktionen und Veranstaltungsorte",
+        "description": "Verwandle deinen Park, Zoo oder dein Aquarium in den Schauplatz eines einzigartigen Abenteuers. Biete ein perfektes Souvenir an, das den Ticketverkauf ankurbelt und Familien eine magische Möglichkeit gibt, sich an ihren Besuch zu erinnern, lange nachdem sie nach Hause gegangen sind."
+      },
+      "retailers": {
+        "title": "Für Einzelhändler und Marken",
+        "description": "Biete deinen Kunden ein einzigartiges Co-Branding-Erlebnis. Lass uns gemeinsam eine individuelle Version von Mythoria erstellen oder mache deine Geschäfte zum exklusiven, vertrauenswürdigen Ort, an dem Familien ihre einzigartigen Bücher abholen können."
+      }
+    },
+    "howItWorks": {
+      "title": "Der Einstieg ist Einfach",
+      "step1": {
+        "title": "Erzähle uns Deine Geschichte",
+        "description": "Fülle das einfache Formular unten aus, um dein Geschäft und das, was du tust, vorzustellen."
+      },
+      "step2": {
+        "title": "Wir Planen Unsere Quest",
+        "description": "Unser Team wird deine Bewerbung prüfen und dich kontaktieren, um über die perfekte Passung zu sprechen."
+      },
+      "step3": {
+        "title": "Starte das Abenteuer",
+        "description": "Nach der Genehmigung werden wir dich einbinden und beginnen, neue Kunden zu dir zu schicken."
+      }
+    },
+    "benefits": {
+      "title": "Warum Partner von Mythoria Werden?",
+      "accessFamilies": {
+        "title": "Zugang zu Tausenden von Familien",
+        "description": "Verbinde dich mit unserer wachsenden Gemeinschaft kreativer, engagierter Familien, die nach einzigartigen Erlebnissen suchen."
+      },
+      "seamlessIntegration": {
+        "title": "Nahtlose Integration",
+        "description": "Wir kümmern uns um die Technik, das Marketing und die Kundenakquise. Du konzentrierst dich auf das, was du am besten kannst."
+      },
+      "recurringRevenue": {
+        "title": "Wiederkehrende Einnahmen",
+        "description": "Baue einen stetigen Geschäftsstrom durch unser Abonnementmodell und unseren treuen Kundenstamm auf."
+      },
+      "brandAssociation": {
+        "title": "Markenassoziation",
+        "description": "Bringe dein Geschäft mit einer vertrauenswürdigen, innovativen Marke in Verbindung, die Familien lieben."
+      }
+    },
+    "form": {
+      "title": "Bereit, Teil der Geschichte zu Werden?",
+      "subtitle": "Lass uns ins Gespräch kommen. Fülle das Formular aus und unser Partnerschaftsteam wird sich melden.",
+      "fields": {
+        "name": {
+          "label": "Dein Name",
+          "placeholder": "Max Mustermann"
+        },
+        "companyName": {
+          "label": "Firmenname",
+          "placeholder": "Deine Firma GmbH"
+        },
+        "email": {
+          "label": "Deine E-Mail",
+          "placeholder": "max@firma.com"
+        },
+        "phone": {
+          "label": "Mobiltelefon",
+          "placeholder": "+49 170 123 4567"
+        },
+        "website": {
+          "label": "Website",
+          "placeholder": "https://deinefirma.com"
+        },
+        "primaryLocation": {
+          "label": "Hauptstandort",
+          "placeholder": "Wähle ein Land"
+        },
+        "partnershipType": {
+          "label": "Welche Art von Partnerschaft interessiert dich?",
+          "placeholder": "Wähle eine Option"
+        },
+        "businessDescription": {
+          "label": "Erzähle uns ein bisschen über dein Geschäft",
+          "placeholder": "Erzähle uns über dein Geschäft und was dich zu einem idealen Partner für Mythoria macht..."
+        }
+      },
+      "countries": {
+        "PT": "Portugal",
+        "ES": "Spanien",
+        "FR": "Frankreich",
+        "US": "Vereinigte Staaten",
+        "GB": "Vereinigtes Königreich",
+        "DE": "Deutschland",
+        "IT": "Italien",
+        "BR": "Brasilien"
+      },
+      "partnershipTypes": {
+        "printing_service": "Druckdienstleistung",
+        "attraction_venue": "Attraktion / Veranstaltungsort",
+        "retail_brand": "Einzelhandel / Marke",
+        "other": "Andere"
+      },
+      "submit": "Bewerbung Senden",
+      "validationError": "Bitte fülle alle erforderlichen Felder aus.",
+      "successTitle": "Bewerbung Erhalten!",
+      "errorTitle": "Hoppla!",
+      "successMessage": "Vielen Dank für dein Interesse! Wir haben deine Bewerbung erhalten und unser Partnerschaftsteam wird sie in Kürze prüfen. Wir melden uns innerhalb von 2-3 Werktagen.",
+      "redirectMessage": "Weiterleitung zur Startseite in einem Moment...",
+      "errorMessage": "Fehler beim Senden der Partnerschaftsbewerbung. Bitte versuche es erneut.",
+      "tryAgain": "Erneut Versuchen",
+      "goToHomepage": "Zur Startseite"
+    }
+  }
+}

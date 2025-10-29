@@ -231,7 +231,7 @@ export async function PATCH(req: NextRequest) {
             displayName: updated.displayName,
             email: updated.email,
           });
-          
+
           // Fire and forget - don't await
           triggerWelcomeEmailSafe({
             authorId: updated.clerkUserId,

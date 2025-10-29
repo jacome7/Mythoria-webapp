@@ -11,20 +11,6 @@ export async function getCurrentAuthor() {
     return null;
   }
 
-  // Debug: Log full user object structure to see what Clerk provides
-  console.log('[getCurrentAuthor] Clerk currentUser() data:', {
-    userId: user.id,
-    hasPhoneNumbers: !!user.phoneNumbers,
-    phoneNumbersCount: user.phoneNumbers?.length || 0,
-    phoneNumbers: user.phoneNumbers?.map((p) => ({
-      id: p.id,
-      phoneNumber: p.phoneNumber,
-    })),
-    primaryPhoneNumberId: user.primaryPhoneNumberId,
-    hasEmailAddresses: !!user.emailAddresses,
-    emailAddressesCount: user.emailAddresses?.length || 0,
-  });
-
   // Try to find the author in our database
   let [author] = await db.select().from(authors).where(eq(authors.clerkUserId, user.id)).limit(1);
 

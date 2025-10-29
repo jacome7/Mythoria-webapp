@@ -14,6 +14,16 @@ This document is the single source of truth for agents working on the Mythoria w
 - **Data Layer**: PostgreSQL via Drizzle ORM (schema in `src/db/schema`, SQL artifacts under `drizzle/`)
 - **Testing & QA**: ESLint, TypeScript, Jest, Playwright, i18n parity scripts, Prettier
 
+### Styling Best Practices
+
+Following Next.js recommendations for CSS management:
+
+- **Prefer Tailwind utility classes** for most styling needs (buttons, layouts, spacing, colors)
+- **Use CSS Modules** (`*.module.css`) for component-specific custom styles when Tailwind utilities aren't sufficient
+- **Avoid custom classes in `globals.css`** when working with client components and animations—CSS load order and specificity conflicts with Tailwind/DaisyUI can cause styles to not apply consistently
+- **Use inline React styles** (`style` prop with `CSSProperties`) for dynamic animations and critical styles that must be guaranteed to apply (e.g., `ScrollFadeIn` component uses inline styles to avoid CSS loading issues)
+- **Reserve `globals.css`** for truly global base styles (like font families) and theme customizations only
+
 ## Repository Layout Highlights
 
 - `src/app` – App Router entry points (server components by default, locale-prefixed routes, offline fallbacks)

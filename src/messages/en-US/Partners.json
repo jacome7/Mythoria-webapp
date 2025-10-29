@@ -1,0 +1,142 @@
+{
+  "Partners": {
+    "metadata": {
+      "title": "Partner with Mythoria",
+      "description": "Join Mythoria as a printing partner, attraction venue, or retail brand. Grow your business by connecting with thousands of creative families. Apply now to become a trusted partner.",
+      "keywords": [
+        "partnership opportunities",
+        "printing services partnership",
+        "attraction venue partnership",
+        "retail brand collaboration",
+        "business partnership",
+        "printing on demand",
+        "family entertainment partnership",
+        "venue souvenir partnership"
+      ],
+      "ogTitle": "Partner with Mythoria - Grow Your Business",
+      "ogDescription": "Connect with thousands of creative families. Become a Mythoria printing partner, attraction venue, or retail brand partner. Apply now.",
+      "ogImageAlt": "Mythoria Partnership Program",
+      "twitterTitle": "Partner with Mythoria - Grow Your Business",
+      "twitterDescription": "Join our partnership program and connect with thousands of creative families seeking unique storytelling experiences."
+    },
+    "hero": {
+      "title": "Grow Your Business with Mythoria.",
+      "subtitle": "We introduce you to thousands of creative families. You get new, loyal customers.",
+      "tagline": "It's the perfect next chapter for your business.",
+      "cta": "Apply Now"
+    },
+    "partnershipTypes": {
+      "title": "A Partnership That Fits Your Business.",
+      "subtitle": "Whether you're a local print shop or a national attraction, we have a way to grow together.",
+      "printing": {
+        "title": "For Printing Services",
+        "description": "Become a go-to local printer for Mythoria families. We send you a steady stream of print-on-demand orders, complete with print-ready files. You just handle the magic of turning our digital stories into real-world treasures."
+      },
+      "attractions": {
+        "title": "For Attractions & Venues",
+        "description": "Turn your park, zoo, or aquarium into the setting for a unique adventure. Offer a perfect souvenir that drives ticket sales and gives families a magical way to remember their visit, long after they've gone home."
+      },
+      "retailers": {
+        "title": "For Retailers & Brands",
+        "description": "Offer your customers a unique co-branded experience. Let's create a custom version of Mythoria, or make your stores the exclusive, trusted spot for families to pick up their one-of-a-kind books."
+      }
+    },
+    "howItWorks": {
+      "title": "Getting Started is Easy",
+      "step1": {
+        "title": "Tell Us Your Story",
+        "description": "Fill out the simple form below to introduce your business and what you do."
+      },
+      "step2": {
+        "title": "We'll Map Our Quest",
+        "description": "Our team will review your application and contact you to chat about a perfect fit."
+      },
+      "step3": {
+        "title": "Start the Adventure",
+        "description": "Once approved, we'll onboard you and start sending new customers your way."
+      }
+    },
+    "benefits": {
+      "title": "Why Partner with Mythoria?",
+      "accessFamilies": {
+        "title": "Access to Thousands of Families",
+        "description": "Tap into our growing community of creative, engaged families looking for unique experiences."
+      },
+      "seamlessIntegration": {
+        "title": "Seamless Integration",
+        "description": "We handle the tech, marketing, and customer acquisition. You focus on what you do best."
+      },
+      "recurringRevenue": {
+        "title": "Recurring Revenue",
+        "description": "Build a steady stream of business through our subscription model and loyal customer base."
+      },
+      "brandAssociation": {
+        "title": "Brand Association",
+        "description": "Align your business with a trusted, innovative brand that families love."
+      }
+    },
+    "form": {
+      "title": "Ready to Join the Story?",
+      "subtitle": "Let's start the conversation. Fill out the form and our partnership team will get in touch.",
+      "fields": {
+        "name": {
+          "label": "Your Name",
+          "placeholder": "John Doe"
+        },
+        "companyName": {
+          "label": "Company Name",
+          "placeholder": "Your Company Ltd."
+        },
+        "email": {
+          "label": "Your Email",
+          "placeholder": "john@company.com"
+        },
+        "phone": {
+          "label": "Mobile Phone",
+          "placeholder": "+351 912 345 678"
+        },
+        "website": {
+          "label": "Website",
+          "placeholder": "https://yourcompany.com"
+        },
+        "primaryLocation": {
+          "label": "Primary Location",
+          "placeholder": "Select a country"
+        },
+        "partnershipType": {
+          "label": "What kind of partnership interests you?",
+          "placeholder": "Select an option"
+        },
+        "businessDescription": {
+          "label": "Tell us a bit about your business",
+          "placeholder": "Tell us about your business and what makes you a great fit for partnering with Mythoria..."
+        }
+      },
+      "countries": {
+        "PT": "Portugal",
+        "ES": "Spain",
+        "FR": "France",
+        "US": "United States",
+        "GB": "United Kingdom",
+        "DE": "Germany",
+        "IT": "Italy",
+        "BR": "Brazil"
+      },
+      "partnershipTypes": {
+        "printing_service": "Printing Service",
+        "attraction_venue": "Attraction / Venue",
+        "retail_brand": "Retail / Brand",
+        "other": "Other"
+      },
+      "submit": "Send Application",
+      "validationError": "Please fill in all required fields.",
+      "successTitle": "Application Received!",
+      "errorTitle": "Oops!",
+      "successMessage": "Thank you for your interest! We've received your application and our partnership team will review it shortly. We'll be in touch within 2-3 business days.",
+      "redirectMessage": "Redirecting to homepage in a moment...",
+      "errorMessage": "Failed to submit partnership application. Please try again.",
+      "tryAgain": "Try Again",
+      "goToHomepage": "Go to Homepage"
+    }
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "Partners": {
+    "metadata": {
+      "title": "Hazte Socio de Mythoria",
+      "description": "Únete a Mythoria como socio de impresión, centro de atracciones o marca minorista. Haz crecer tu negocio conectándote con miles de familias creativas. Solicita ahora convertirte en un socio de confianza.",
+      "keywords": [
+        "oportunidades de asociación",
+        "asociación de servicios de impresión",
+        "asociación de centro de atracciones",
+        "colaboración de marca minorista",
+        "asociación empresarial",
+        "impresión bajo demanda",
+        "asociación de entretenimiento familiar",
+        "asociación de recuerdos de lugares"
+      ],
+      "ogTitle": "Hazte Socio de Mythoria - Haz Crecer Tu Negocio",
+      "ogDescription": "Conéctate con miles de familias creativas. Conviértete en socio de impresión, centro de atracciones o marca minorista de Mythoria. Solicita ahora.",
+      "ogImageAlt": "Programa de Asociación de Mythoria",
+      "twitterTitle": "Hazte Socio de Mythoria - Haz Crecer Tu Negocio",
+      "twitterDescription": "Únete a nuestro programa de asociación y conéctate con miles de familias creativas que buscan experiencias únicas de narración."
+    },
+    "hero": {
+      "title": "Haz Crecer Tu Negocio con Mythoria.",
+      "subtitle": "Te presentamos a miles de familias creativas. Consigues nuevos clientes leales.",
+      "tagline": "Es el próximo capítulo perfecto para tu negocio.",
+      "cta": "Solicita Ahora"
+    },
+    "partnershipTypes": {
+      "title": "Una Asociación Hecha a Medida para Tu Negocio.",
+      "subtitle": "Seas una imprenta local o una atracción nacional, tenemos una forma de crecer juntos.",
+      "printing": {
+        "title": "Para Servicios de Impresión",
+        "description": "Conviértete en la imprenta local de confianza para las familias de Mythoria. Te enviamos un flujo constante de pedidos de impresión bajo demanda, completos con archivos listos para imprimir. Tú solo te encargas de la magia de convertir nuestras historias digitales en tesoros del mundo real."
+      },
+      "attractions": {
+        "title": "Para Atracciones y Lugares",
+        "description": "Convierte tu parque, zoológico o acuario en el escenario de una aventura única. Ofrece un recuerdo perfecto que impulsa la venta de entradas y da a las familias una forma mágica de recordar su visita, mucho después de haber vuelto a casa."
+      },
+      "retailers": {
+        "title": "Para Minoristas y Marcas",
+        "description": "Ofrece a tus clientes una experiencia única de marca compartida. Creemos juntos una versión personalizada de Mythoria, o convierte tus tiendas en el lugar exclusivo y de confianza para que las familias recojan sus libros únicos."
+      }
+    },
+    "howItWorks": {
+      "title": "Empezar es Fácil",
+      "step1": {
+        "title": "Cuéntanos Tu Historia",
+        "description": "Rellena el sencillo formulario a continuación para presentar tu negocio y lo que haces."
+      },
+      "step2": {
+        "title": "Trazaremos Nuestra Búsqueda",
+        "description": "Nuestro equipo revisará tu solicitud y se pondrá en contacto contigo para hablar sobre la combinación perfecta."
+      },
+      "step3": {
+        "title": "Comienza la Aventura",
+        "description": "Una vez aprobado, te incorporaremos y comenzaremos a enviarte nuevos clientes."
+      }
+    },
+    "benefits": {
+      "title": "¿Por Qué Ser Socio de Mythoria?",
+      "accessFamilies": {
+        "title": "Acceso a Miles de Familias",
+        "description": "Conéctate con nuestra creciente comunidad de familias creativas y comprometidas que buscan experiencias únicas."
+      },
+      "seamlessIntegration": {
+        "title": "Integración Perfecta",
+        "description": "Nosotros nos encargamos de la tecnología, el marketing y la captación de clientes. Tú te centras en lo que mejor sabes hacer."
+      },
+      "recurringRevenue": {
+        "title": "Ingresos Recurrentes",
+        "description": "Construye un flujo constante de negocio a través de nuestro modelo de suscripción y base de clientes leales."
+      },
+      "brandAssociation": {
+        "title": "Asociación de Marca",
+        "description": "Alinea tu negocio con una marca confiable e innovadora que las familias adoran."
+      }
+    },
+    "form": {
+      "title": "¿Listo para Unirte a la Historia?",
+      "subtitle": "Empecemos la conversación. Rellena el formulario y nuestro equipo de asociaciones se pondrá en contacto.",
+      "fields": {
+        "name": {
+          "label": "Tu Nombre",
+          "placeholder": "Juan Pérez"
+        },
+        "companyName": {
+          "label": "Nombre de la Empresa",
+          "placeholder": "Tu Empresa S.L."
+        },
+        "email": {
+          "label": "Tu Email",
+          "placeholder": "juan@empresa.com"
+        },
+        "phone": {
+          "label": "Teléfono Móvil",
+          "placeholder": "+34 912 345 678"
+        },
+        "website": {
+          "label": "Sitio Web",
+          "placeholder": "https://tuempresa.com"
+        },
+        "primaryLocation": {
+          "label": "Ubicación Principal",
+          "placeholder": "Selecciona un país"
+        },
+        "partnershipType": {
+          "label": "¿Qué tipo de asociación te interesa?",
+          "placeholder": "Selecciona una opción"
+        },
+        "businessDescription": {
+          "label": "Cuéntanos un poco sobre tu negocio",
+          "placeholder": "Cuéntanos sobre tu negocio y qué lo hace perfecto para asociarse con Mythoria..."
+        }
+      },
+      "countries": {
+        "PT": "Portugal",
+        "ES": "España",
+        "FR": "Francia",
+        "US": "Estados Unidos",
+        "GB": "Reino Unido",
+        "DE": "Alemania",
+        "IT": "Italia",
+        "BR": "Brasil"
+      },
+      "partnershipTypes": {
+        "printing_service": "Servicio de Impresión",
+        "attraction_venue": "Atracción / Lugar",
+        "retail_brand": "Minorista / Marca",
+        "other": "Otro"
+      },
+      "submit": "Enviar Solicitud",
+      "validationError": "Por favor, rellena todos los campos obligatorios.",
+      "successTitle": "¡Solicitud Recibida!",
+      "errorTitle": "¡Ups!",
+      "successMessage": "¡Gracias por tu interés! Hemos recibido tu solicitud y nuestro equipo de asociaciones la revisará en breve. Nos pondremos en contacto dentro de 2-3 días laborables.",
+      "redirectMessage": "Redirigiendo a la página de inicio en un momento...",
+      "errorMessage": "Error al enviar la solicitud de asociación. Por favor, inténtalo de nuevo.",
+      "tryAgain": "Intentar de Nuevo",
+      "goToHomepage": "Ir a la Página de Inicio"
+    }
+  }
+}

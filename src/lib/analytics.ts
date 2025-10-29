@@ -40,7 +40,11 @@ export type AnalyticsEvent =
   | 'story_listen'
 
   // Contact
-  | 'contact_request';
+  | 'contact_request'
+
+  // Partnership
+  | 'partnership_application_started'
+  | 'partnership_application_submitted';
 
 // Event parameters interface
 export interface AnalyticsEventParams {
@@ -71,6 +75,15 @@ export interface AuthEventParams extends AnalyticsEventParams {
 export interface ContactEventParams extends AnalyticsEventParams {
   form_type?: string;
   inquiry_type?: string;
+}
+
+export interface PartnershipEventParams extends AnalyticsEventParams {
+  company_name?: string;
+  partnership_type?: string;
+  primary_location?: string;
+  has_phone?: boolean;
+  has_website?: boolean;
+  has_description?: boolean;
 }
 
 export interface CreditPurchaseEventParams extends AnalyticsEventParams {
@@ -204,6 +217,17 @@ export const trackStoryManagement = {
  */
 export const trackContact = {
   request: (params: ContactEventParams = {}) => trackEvent('contact_request', params),
+};
+
+/**
+ * Track partnership application events
+ */
+export const trackPartnership = {
+  started: (params: PartnershipEventParams = {}) =>
+    trackEvent('partnership_application_started', params),
+
+  submitted: (params: PartnershipEventParams = {}) =>
+    trackEvent('partnership_application_submitted', params),
 };
 
 /**

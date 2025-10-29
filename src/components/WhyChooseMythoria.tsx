@@ -13,6 +13,7 @@ import {
   LuCoins,
   LuSparkles,
 } from 'react-icons/lu';
+import ScrollFadeIn from './ScrollFadeIn';
 
 interface FeatureCardProps {
   icon: React.ReactNode;
@@ -119,19 +120,27 @@ export default function WhyChooseMythoria() {
 
   return (
     <section className="my-16">
-      <div className="text-center mb-12">
-        <h2 className="text-4xl font-bold mb-4">{t('title')}</h2>
-        <p className="text-lg opacity-80 max-w-2xl mx-auto">{t('subtitle')}</p>
-      </div>
+      <ScrollFadeIn threshold={0.1} rootMargin="0px 0px -20px 0px">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold mb-4">{t('title')}</h2>
+          <p className="text-lg opacity-80 max-w-2xl mx-auto">{t('subtitle')}</p>
+        </div>
+      </ScrollFadeIn>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {features.map((feature, index) => (
-          <FeatureCard
+          <ScrollFadeIn
             key={index}
-            {...feature}
-            isExpanded={expandedCard === index}
-            onToggle={() => setExpandedCard(expandedCard === index ? null : index)}
-          />
+            delay={50 + index * 50}
+            threshold={0.1}
+            rootMargin="0px 0px -20px 0px"
+          >
+            <FeatureCard
+              {...feature}
+              isExpanded={expandedCard === index}
+              onToggle={() => setExpandedCard(expandedCard === index ? null : index)}
+            />
+          </ScrollFadeIn>
         ))}
       </div>
     </section>

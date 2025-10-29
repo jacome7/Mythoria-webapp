@@ -114,7 +114,7 @@ export default function OnboardingProfilePage() {
           if (p.literaryAge) setAgeAnswered(true);
           if (p.primaryGoals.length) setGoalsAnswered(true);
           if (p.audiences.length) setAudiencesAnswered(true);
-          
+
           // Check if welcome email was already triggered in localStorage
           if (typeof window !== 'undefined') {
             const storageKey = `welcome_email_sent_${data.author.email || 'unknown'}`;
@@ -146,9 +146,13 @@ export default function OnboardingProfilePage() {
           setProfile((p) => ({ ...(p as ProfileData), ...patch, ...data.author }));
           setSaveMessage('saved'); // marker; actual text comes from i18n key
           setTimeout(() => setSaveMessage(null), 2000);
-          
+
           // If displayName was updated and welcome email not yet triggered, mark it in localStorage
-          if (patch.displayName && !welcomeEmailTriggeredRef.current && typeof window !== 'undefined') {
+          if (
+            patch.displayName &&
+            !welcomeEmailTriggeredRef.current &&
+            typeof window !== 'undefined'
+          ) {
             const email = (data.author as { email?: string }).email || 'unknown';
             const storageKey = `welcome_email_sent_${email}`;
             // Mark locally to prevent duplicate client-side triggers

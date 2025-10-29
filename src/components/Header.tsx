@@ -202,17 +202,15 @@ const Header = () => {
                 {tCommonHeader('navigation.pricing')}
               </Link>
             </li>
-            {isSignedIn && (
-              <li>
-                <Link
-                  href="/my-stories"
-                  className="text-base py-3"
-                  onClick={() => (document.activeElement as HTMLElement)?.blur()}
-                >
-                  {tCommonHeader('navigation.myStories')}
-                </Link>
-              </li>
-            )}
+            <li>
+              <Link
+                href="/partners"
+                className="text-base py-3"
+                onClick={() => (document.activeElement as HTMLElement)?.blur()}
+              >
+                {tCommonHeader('navigation.partners')}
+              </Link>
+            </li>
           </ul>
         </div>
         <div className="flex items-center">
@@ -243,11 +241,9 @@ const Header = () => {
           <li>
             <Link href="/pricing">{tCommonHeader('navigation.pricing')}</Link>
           </li>
-          {isSignedIn && (
-            <li>
-              <Link href="/my-stories">{tCommonHeader('navigation.myStories')}</Link>
-            </li>
-          )}
+          <li>
+            <Link href="/partners">{tCommonHeader('navigation.partners')}</Link>
+          </li>
         </ul>
       </div>
 

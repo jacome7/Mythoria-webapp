@@ -1,0 +1,142 @@
+{
+  "Partners": {
+    "metadata": {
+      "title": "Devenez Partenaire de Mythoria",
+      "description": "Rejoignez Mythoria en tant que partenaire d'impression, lieu d'attraction ou marque de vente au détail. Développez votre entreprise en vous connectant à des milliers de familles créatives. Postulez maintenant pour devenir un partenaire de confiance.",
+      "keywords": [
+        "opportunités de partenariat",
+        "partenariat de services d'impression",
+        "partenariat de lieu d'attraction",
+        "collaboration de marque de vente au détail",
+        "partenariat commercial",
+        "impression à la demande",
+        "partenariat de divertissement familial",
+        "partenariat de souvenirs de lieu"
+      ],
+      "ogTitle": "Devenez Partenaire de Mythoria - Développez Votre Entreprise",
+      "ogDescription": "Connectez-vous à des milliers de familles créatives. Devenez partenaire d'impression, lieu d'attraction ou marque de vente au détail de Mythoria. Postulez maintenant.",
+      "ogImageAlt": "Programme de Partenariat Mythoria",
+      "twitterTitle": "Devenez Partenaire de Mythoria - Développez Votre Entreprise",
+      "twitterDescription": "Rejoignez notre programme de partenariat et connectez-vous à des milliers de familles créatives à la recherche d'expériences de narration uniques."
+    },
+    "hero": {
+      "title": "Développez Votre Entreprise avec Mythoria.",
+      "subtitle": "Nous vous présentons des milliers de familles créatives. Vous gagnez de nouveaux clients fidèles.",
+      "tagline": "C'est le prochain chapitre parfait pour votre entreprise.",
+      "cta": "Postulez Maintenant"
+    },
+    "partnershipTypes": {
+      "title": "Un Partenariat Adapté à Votre Entreprise.",
+      "subtitle": "Que vous soyez une imprimerie locale ou une attraction nationale, nous avons un moyen de grandir ensemble.",
+      "printing": {
+        "title": "Pour les Services d'Impression",
+        "description": "Devenez l'imprimerie locale de confiance des familles Mythoria. Nous vous envoyons un flux régulier de commandes d'impression à la demande, avec des fichiers prêts à imprimer. Vous gérez simplement la magie de transformer nos histoires numériques en trésors du monde réel."
+      },
+      "attractions": {
+        "title": "Pour les Attractions et Lieux",
+        "description": "Transformez votre parc, zoo ou aquarium en cadre d'une aventure unique. Offrez un souvenir parfait qui stimule la vente de billets et donne aux familles un moyen magique de se souvenir de leur visite, longtemps après leur retour à la maison."
+      },
+      "retailers": {
+        "title": "Pour les Détaillants et Marques",
+        "description": "Offrez à vos clients une expérience unique de co-branding. Créons ensemble une version personnalisée de Mythoria, ou faites de vos magasins le lieu exclusif et de confiance où les familles peuvent récupérer leurs livres uniques."
+      }
+    },
+    "howItWorks": {
+      "title": "Commencer est Facile",
+      "step1": {
+        "title": "Racontez-nous Votre Histoire",
+        "description": "Remplissez le formulaire simple ci-dessous pour présenter votre entreprise et ce que vous faites."
+      },
+      "step2": {
+        "title": "Nous Tracerons Notre Quête",
+        "description": "Notre équipe examinera votre candidature et vous contactera pour discuter de la combinaison parfaite."
+      },
+      "step3": {
+        "title": "Commencez l'Aventure",
+        "description": "Une fois approuvé, nous vous intégrerons et commencerons à vous envoyer de nouveaux clients."
+      }
+    },
+    "benefits": {
+      "title": "Pourquoi Devenir Partenaire de Mythoria ?",
+      "accessFamilies": {
+        "title": "Accès à des Milliers de Familles",
+        "description": "Connectez-vous à notre communauté croissante de familles créatives et engagées à la recherche d'expériences uniques."
+      },
+      "seamlessIntegration": {
+        "title": "Intégration Transparente",
+        "description": "Nous nous occupons de la technologie, du marketing et de l'acquisition de clients. Vous vous concentrez sur ce que vous faites de mieux."
+      },
+      "recurringRevenue": {
+        "title": "Revenus Récurrents",
+        "description": "Construisez un flux régulier d'affaires grâce à notre modèle d'abonnement et à notre base de clients fidèles."
+      },
+      "brandAssociation": {
+        "title": "Association de Marque",
+        "description": "Alignez votre entreprise avec une marque de confiance et innovante que les familles adorent."
+      }
+    },
+    "form": {
+      "title": "Prêt à Rejoindre l'Histoire ?",
+      "subtitle": "Commençons la conversation. Remplissez le formulaire et notre équipe de partenariat vous contactera.",
+      "fields": {
+        "name": {
+          "label": "Votre Nom",
+          "placeholder": "Jean Dupont"
+        },
+        "companyName": {
+          "label": "Nom de l'Entreprise",
+          "placeholder": "Votre Entreprise SARL"
+        },
+        "email": {
+          "label": "Votre Email",
+          "placeholder": "jean@entreprise.com"
+        },
+        "phone": {
+          "label": "Téléphone Mobile",
+          "placeholder": "+33 6 12 34 56 78"
+        },
+        "website": {
+          "label": "Site Web",
+          "placeholder": "https://votreentreprise.com"
+        },
+        "primaryLocation": {
+          "label": "Emplacement Principal",
+          "placeholder": "Sélectionnez un pays"
+        },
+        "partnershipType": {
+          "label": "Quel type de partenariat vous intéresse ?",
+          "placeholder": "Sélectionnez une option"
+        },
+        "businessDescription": {
+          "label": "Parlez-nous un peu de votre entreprise",
+          "placeholder": "Parlez-nous de votre entreprise et de ce qui fait de vous un partenaire idéal pour Mythoria..."
+        }
+      },
+      "countries": {
+        "PT": "Portugal",
+        "ES": "Espagne",
+        "FR": "France",
+        "US": "États-Unis",
+        "GB": "Royaume-Uni",
+        "DE": "Allemagne",
+        "IT": "Italie",
+        "BR": "Brésil"
+      },
+      "partnershipTypes": {
+        "printing_service": "Service d'Impression",
+        "attraction_venue": "Attraction / Lieu",
+        "retail_brand": "Détaillant / Marque",
+        "other": "Autre"
+      },
+      "submit": "Envoyer la Candidature",
+      "validationError": "Veuillez remplir tous les champs obligatoires.",
+      "successTitle": "Candidature Reçue !",
+      "errorTitle": "Oups !",
+      "successMessage": "Merci pour votre intérêt ! Nous avons reçu votre candidature et notre équipe de partenariat l'examinera sous peu. Nous vous contacterons dans 2-3 jours ouvrables.",
+      "redirectMessage": "Redirection vers la page d'accueil dans un instant...",
+      "errorMessage": "Échec de l'envoi de la candidature de partenariat. Veuillez réessayer.",
+      "tryAgain": "Réessayer",
+      "goToHomepage": "Aller à la Page d'Accueil"
+    }
+  }
+}
