@@ -19,6 +19,7 @@ export * from './ratings';
 export * from './print';
 export * from './ai-edits';
 export * from './promotion-codes';
+export * from './leads';
 
 // Relations
 export * from './relations';
