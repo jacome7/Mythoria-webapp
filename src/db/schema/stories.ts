@@ -83,15 +83,11 @@ export const stories = pgTable(
       table.createdAt,
     ),
     authorIdStatusIdx: index('stories_author_id_status_idx').on(table.authorId, table.status),
-    isPublicIdx: index('stories_is_public_idx')
-      .on(table.isPublic)
-      .where(eq(table.isPublic, true)),
+    isPublicIdx: index('stories_is_public_idx').on(table.isPublic).where(eq(table.isPublic, true)),
     isFeaturedIdx: index('stories_is_featured_idx')
       .on(table.isFeatured)
       .where(eq(table.isFeatured, true)),
-    slugIdx: index('stories_slug_idx')
-      .on(table.slug)
-      .where(isNotNull(table.slug)),
+    slugIdx: index('stories_slug_idx').on(table.slug).where(isNotNull(table.slug)),
   }),
 );
 

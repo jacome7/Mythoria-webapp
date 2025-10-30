@@ -6,8 +6,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 // Allow switching env files without leaking secrets in the config itself
-const inferredEnvFile = process.env.DRIZZLE_ENV_FILE
-  ?? (process.env.DRIZZLE_ENV ? `.env.${process.env.DRIZZLE_ENV}` : '.env.local');
+const inferredEnvFile =
+  process.env.DRIZZLE_ENV_FILE ??
+  (process.env.DRIZZLE_ENV ? `.env.${process.env.DRIZZLE_ENV}` : '.env.local');
 const resolvedEnvPath = path.resolve(inferredEnvFile);
 
 if (fs.existsSync(resolvedEnvPath)) {
