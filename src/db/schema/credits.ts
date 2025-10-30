@@ -1,4 +1,5 @@
 import { pgTable, uuid, timestamp, integer, index } from 'drizzle-orm/pg-core';
+import { isNotNull } from 'drizzle-orm';
 import { authors } from './authors';
 import { stories } from './stories';
 import { creditEventTypeEnum } from './enums';
@@ -30,7 +31,9 @@ export const creditLedger = pgTable(
     ),
     creditEventTypeIdx: index('credit_ledger_event_type_idx').on(table.creditEventType),
     createdAtIdx: index('credit_ledger_created_at_idx').on(table.createdAt),
-    storyIdIdx: index('credit_ledger_story_id_idx').on(table.storyId),
+    storyIdIdx: index('credit_ledger_story_id_idx')
+      .on(table.storyId)
+      .where(isNotNull(table.storyId)),
   }),
 );
 
