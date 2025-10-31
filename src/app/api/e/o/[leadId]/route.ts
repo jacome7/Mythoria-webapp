@@ -29,7 +29,7 @@ export async function GET(
 
   try {
     // Serve the Mythoria logo from public directory
-    const logoPath = path.join(process.cwd(), 'public', 'Mythoria-Logo-landscape-512x252.jpg');
+    const logoPath = path.join(process.cwd(), 'public', 'Mythoria-logo-white-512x336.jpg');
     const imageBuffer = await fs.readFile(logoPath);
 
     return new NextResponse(imageBuffer as unknown as BodyInit, {
