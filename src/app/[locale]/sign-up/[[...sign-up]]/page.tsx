@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { setRequestLocale } from 'next-intl/server';
 import SignUpClient from './SignUpClient';
+import { getLeadSession } from '@/lib/lead-session';
 
 export function generateStaticParams() {
   return [
@@ -32,5 +33,8 @@ export default async function SignUpPage({ params }: { params: Promise<{ locale:
     },
   };
 
-  return <SignUpClient locale={locale} translations={translations} />;
+  // Check for lead session to pre-fill form
+  const leadSession = await getLeadSession();
+
+  return <SignUpClient locale={locale} translations={translations} leadSession={leadSession} />;
 }

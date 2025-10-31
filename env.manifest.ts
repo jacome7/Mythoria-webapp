@@ -450,6 +450,23 @@ export const envManifest: EnvVarDescriptor[] = [
     note: 'Reserved for future Claude integration.',
   },
 
+  // Lead Marketing & Bounce API
+  {
+    name: 'LEAD_BOUNCE_API_SECRET',
+    required: true,
+    scopes: ['prod', 'runtime'],
+    secret: true,
+    source: 'secret-manager',
+    note: 'Bearer token for bounce API authentication (Google Apps Script).',
+  },
+  {
+    name: 'NEXT_PUBLIC_APP_DOMAIN',
+    required: false,
+    scopes: ['prod', 'public'],
+    default: 'mythoria.pt',
+    note: 'Domain for lead session cookies (e.g., .mythoria.pt). Optional in dev.',
+  },
+
   // Internal diagnostics
   {
     name: 'npm_package_version',

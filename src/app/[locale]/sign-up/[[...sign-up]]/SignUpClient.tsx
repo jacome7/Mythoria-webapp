@@ -3,6 +3,9 @@
 import { SignUp } from '@clerk/nextjs';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
+import { useMemo } from 'react';
+import type { LeadSessionData } from '@/types/lead';
+import { formatPhoneNumberForClerk } from '@/utils/phone-number';
 
 interface SignUpClientProps {
   locale: string;
@@ -18,14 +21,36 @@ interface SignUpClientProps {
       creativity: string;
     };
   };
+  leadSession: LeadSessionData | null;
 }
 
-export default function SignUpClient({ locale, translations }: SignUpClientProps) {
+export default function SignUpClient({ locale, translations, leadSession }: SignUpClientProps) {
   const search = useSearchParams();
   const redirectParam = search?.get('redirect');
   const defaultRedirect = `/${locale}/profile/onboarding`;
   const safeRedirect =
     redirectParam && redirectParam.startsWith('/') ? redirectParam : defaultRedirect;
+
+  // Prepare initial values for Clerk form (using the proper Clerk API)
+  const initialValues = useMemo(() => {
+    if (!leadSession) return undefined;
+
+    // Split name into first and last name
+    const nameParts = leadSession.name?.trim().split(/\s+/) || [];
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
+    // Format phone number with proper country code based on user's locale
+    const formattedPhone = formatPhoneNumberForClerk(leadSession.mobilePhone, leadSession.language);
+
+    return {
+      emailAddress: leadSession.email,
+      ...(formattedPhone && { phoneNumber: formattedPhone }),
+      ...(firstName && { firstName }),
+      ...(lastName && { lastName }),
+    };
+  }, [leadSession]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 flex">
       {/* Left side - Logo and branding (only on desktop) */}
@@ -66,6 +91,7 @@ export default function SignUpClient({ locale, translations }: SignUpClientProps
                 height={84}
               />
             </div>
+
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-2">{translations.pageTitle}</h2>
               <p className="text-gray-600">{translations.pageSubtitle}</p>
@@ -75,6 +101,7 @@ export default function SignUpClient({ locale, translations }: SignUpClientProps
               afterSignInUrl={safeRedirect}
               afterSignUpUrl={safeRedirect}
               fallbackRedirectUrl={defaultRedirect}
+              initialValues={initialValues}
               appearance={{
                 elements: {
                   formButtonPrimary:

@@ -1,0 +1,24 @@
+{
+  "invalidRequest": {
+    "title": "Invalid Request",
+    "message": "The unsubscribe link appears to be invalid. Please contact support if you need assistance."
+  },
+  "notFound": {
+    "title": "Not Found",
+    "message": "We could not find this subscription in our system. You may have already been unsubscribed."
+  },
+  "alreadyUnsubscribed": {
+    "title": "Already Unsubscribed",
+    "message": "You have already been unsubscribed. You will not receive further emails from us at <strong>{email}</strong>."
+  },
+  "success": {
+    "title": "Unsubscribed Successfully",
+    "message": "You have been successfully unsubscribed. You will no longer receive emails from us at <strong>{email}</strong>.",
+    "farewell": "We're sorry to see you go, but we respect your choice. May your inbox be peaceful and your stories ever adventurous."
+  },
+  "error": {
+    "title": "Error",
+    "message": "An error occurred while processing your unsubscribe request. Please try again later or contact support."
+  },
+  "returnHome": "Return to Mythoria"
+}

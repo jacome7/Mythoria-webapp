@@ -1,0 +1,24 @@
+{
+  "invalidRequest": {
+    "title": "Solicitud Inválida",
+    "message": "El enlace de cancelación de suscripción parece ser inválido. Por favor, contacta con soporte si necesitas ayuda."
+  },
+  "notFound": {
+    "title": "No Encontrado",
+    "message": "No pudimos encontrar esta suscripción en nuestro sistema. Es posible que ya hayas cancelado la suscripción anteriormente."
+  },
+  "alreadyUnsubscribed": {
+    "title": "Suscripción Ya Cancelada",
+    "message": "Ya has cancelado tu suscripción anteriormente. No recibirás más correos electrónicos nuestros en <strong>{email}</strong>."
+  },
+  "success": {
+    "title": "Suscripción Cancelada con Éxito",
+    "message": "Has cancelado tu suscripción con éxito. Ya no recibirás correos electrónicos nuestros en <strong>{email}</strong>.",
+    "farewell": "Lamentamos verte partir, pero respetamos tu elección. Que tu bandeja de entrada sea tranquila y tus historias siempre aventureras."
+  },
+  "error": {
+    "title": "Error",
+    "message": "Ocurrió un error al procesar tu solicitud de cancelación de suscripción. Por favor, inténtalo de nuevo más tarde o contacta con soporte."
+  },
+  "returnHome": "Volver a Mythoria"
+}

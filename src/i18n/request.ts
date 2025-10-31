@@ -57,6 +57,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     privacyPolicyMessages,
     storyStepsMessages,
     partnersMessages,
+    unsubscribeMessages,
   ] = await Promise.all([
     import(`../messages/${locale}/Header.json`).then((module) => module.default),
     import(`../messages/${locale}/Footer.json`).then((module) => module.default),
@@ -105,6 +106,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     import(`../messages/${locale}/PrivacyPolicy.json`).then((module) => module.default),
     import(`../messages/${locale}/StorySteps.json`).then((module) => module.default),
     import(`../messages/${locale}/Partners.json`).then((module) => module.default),
+    import(`../messages/${locale}/Unsubscribe.json`).then((module) => module.default),
   ]);
 
   // Ensure each domain is properly namespaced. Some JSON files are flat (e.g., {"title": ...})
@@ -165,6 +167,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ...ns(privacyPolicyMessages, 'PrivacyPolicy'),
       ...ns(storyStepsMessages, 'StorySteps'),
       ...ns(partnersMessages, 'Partners'),
+      ...ns(unsubscribeMessages, 'Unsubscribe'),
     },
   };
 });

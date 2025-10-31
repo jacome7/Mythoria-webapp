@@ -1,0 +1,24 @@
+{
+  "invalidRequest": {
+    "title": "Ungültige Anfrage",
+    "message": "Der Abmeldelink scheint ungültig zu sein. Bitte kontaktiere den Support, wenn du Hilfe benötigst."
+  },
+  "notFound": {
+    "title": "Nicht Gefunden",
+    "message": "Wir konnten dieses Abonnement nicht in unserem System finden. Du hast dich möglicherweise bereits abgemeldet."
+  },
+  "alreadyUnsubscribed": {
+    "title": "Bereits Abgemeldet",
+    "message": "Du hast dich bereits abgemeldet. Du erhältst keine weiteren E-Mails von uns an <strong>{email}</strong>."
+  },
+  "success": {
+    "title": "Erfolgreich Abgemeldet",
+    "message": "Du hast dich erfolgreich abgemeldet. Du erhältst keine E-Mails mehr von uns an <strong>{email}</strong>.",
+    "farewell": "Wir bedauern, dich gehen zu sehen, aber wir respektieren deine Entscheidung. Möge dein Posteingang friedlich sein und deine Geschichten immer abenteuerlich."
+  },
+  "error": {
+    "title": "Fehler",
+    "message": "Bei der Verarbeitung deiner Abmeldeanfrage ist ein Fehler aufgetreten. Bitte versuche es später erneut oder kontaktiere den Support."
+  },
+  "returnHome": "Zurück zu Mythoria"
+}

@@ -1,0 +1,1 @@
+ALTER TABLE "leads" ADD COLUMN "last_updated_at" timestamp with time zone DEFAULT now() NOT NULL;

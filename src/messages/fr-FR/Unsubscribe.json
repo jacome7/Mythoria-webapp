@@ -1,0 +1,24 @@
+{
+  "invalidRequest": {
+    "title": "Demande Invalide",
+    "message": "Le lien de désabonnement semble être invalide. Veuillez contacter le support si vous avez besoin d'aide."
+  },
+  "notFound": {
+    "title": "Non Trouvé",
+    "message": "Nous n'avons pas pu trouver cet abonnement dans notre système. Vous vous êtes peut-être déjà désabonné."
+  },
+  "alreadyUnsubscribed": {
+    "title": "Déjà Désabonné",
+    "message": "Vous êtes déjà désabonné. Vous ne recevrez plus d'emails de notre part à <strong>{email}</strong>."
+  },
+  "success": {
+    "title": "Désabonnement Réussi",
+    "message": "Vous vous êtes désabonné avec succès. Vous ne recevrez plus d'emails de notre part à <strong>{email}</strong>.",
+    "farewell": "Nous sommes désolés de vous voir partir, mais nous respectons votre choix. Que votre boîte de réception soit paisible et vos histoires toujours aventureuses."
+  },
+  "error": {
+    "title": "Erreur",
+    "message": "Une erreur s'est produite lors du traitement de votre demande de désabonnement. Veuillez réessayer plus tard ou contacter le support."
+  },
+  "returnHome": "Retourner à Mythoria"
+}
