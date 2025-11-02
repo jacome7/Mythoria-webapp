@@ -61,6 +61,29 @@ interface ProfileData {
   interests: string[];
 }
 
+function mapAuthorToProfile(author: {
+  displayName?: string | null;
+  gender?: string | null;
+  literaryAge?: string | null;
+  primaryGoals?: string[] | null;
+  primaryGoalOther?: string | null;
+  audiences?: string[] | null;
+  interests?: string[] | null;
+}): ProfileData {
+  const primaryGoals = Array.isArray(author.primaryGoals) ? [...author.primaryGoals] : [];
+  const audiences = Array.isArray(author.audiences) ? [...author.audiences] : [];
+  const interests = Array.isArray(author.interests) ? [...author.interests] : [];
+  return {
+    displayName: (author.displayName ?? '').toString(),
+    gender: author.gender ?? null,
+    literaryAge: author.literaryAge ?? null,
+    primaryGoals,
+    primaryGoalOther: author.primaryGoalOther ?? null,
+    audiences,
+    interests,
+  };
+}
+
 const FadeInSection = ({
   children,
   isVisible,
@@ -86,6 +109,8 @@ export default function OnboardingProfilePage() {
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
   // Track if welcome email has been triggered this session (localStorage-backed)
   const welcomeEmailTriggeredRef = useRef<boolean>(false);
+  const storageKeyRef = useRef<string | null>(null);
+  const lastSavedDisplayNameRef = useRef<string>('');
 
   // State for interactive questions
   const [genderAnswered, setGenderAnswered] = useState(false);
@@ -99,16 +124,9 @@ export default function OnboardingProfilePage() {
         const res = await fetch('/api/profile');
         if (res.ok) {
           const data = await res.json();
-          const p = {
-            displayName: data.author.displayName,
-            gender: data.author.gender,
-            literaryAge: data.author.literaryAge,
-            primaryGoals: data.author.primaryGoals || [],
-            primaryGoalOther: data.author.primaryGoalOther,
-            audiences: data.author.audiences || [],
-            interests: data.author.interests || [],
-          };
+          const p = mapAuthorToProfile(data.author);
           setProfile(p);
+          lastSavedDisplayNameRef.current = p.displayName.trim();
           // Pre-fill visibility if data exists
           if (p.gender) setGenderAnswered(true);
           if (p.literaryAge) setAgeAnswered(true);
@@ -117,9 +135,19 @@ export default function OnboardingProfilePage() {
 
           // Check if welcome email was already triggered in localStorage
           if (typeof window !== 'undefined') {
-            const storageKey = `welcome_email_sent_${data.author.email || 'unknown'}`;
-            const alreadySent = localStorage.getItem(storageKey);
-            if (alreadySent === 'true') {
+            const dedupeId = data.author.email || data.author.authorId;
+            if (dedupeId) {
+              const storageKey = `welcome_email_sent_${dedupeId}`;
+              storageKeyRef.current = storageKey;
+              const alreadySent = localStorage.getItem(storageKey);
+              const serverReportedSent = Boolean(data.author.welcomeEmailSentAt);
+              if (serverReportedSent && alreadySent !== 'true') {
+                localStorage.setItem(storageKey, 'true');
+              }
+              if (alreadySent === 'true' || serverReportedSent) {
+                welcomeEmailTriggeredRef.current = true;
+              }
+            } else if (data.author.welcomeEmailSentAt) {
               welcomeEmailTriggeredRef.current = true;
             }
           }
@@ -133,30 +161,67 @@ export default function OnboardingProfilePage() {
   const patchProfile = useCallback(
     async (patch: Partial<ProfileData>) => {
       if (!profile) return;
+
+      const preparedPatch: Partial<ProfileData> = { ...patch };
+      if (preparedPatch.displayName !== undefined) {
+        const trimmed = preparedPatch.displayName.trim();
+        if (!trimmed) {
+          alert(t('errors.displayNameRequired'));
+          return;
+        }
+        if (trimmed === lastSavedDisplayNameRef.current) {
+          setProfile((p) => (p ? { ...p, displayName: trimmed } : p));
+          return;
+        }
+        preparedPatch.displayName = trimmed;
+      }
+
       setSaving(true);
       try {
         const res = await fetch('/api/profile', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(patch),
+          body: JSON.stringify(preparedPatch),
         });
         if (res.ok) {
           const data = await res.json();
-          // Merge server authoritative fields; server returns plural arrays now
-          setProfile((p) => ({ ...(p as ProfileData), ...patch, ...data.author }));
+          const nextProfile = mapAuthorToProfile(data.author);
+          setProfile(nextProfile);
+          lastSavedDisplayNameRef.current = nextProfile.displayName.trim();
+          if (storageKeyRef.current === null && typeof window !== 'undefined') {
+            const dedupeId = data.author?.email || data.author?.authorId;
+            if (dedupeId) {
+              storageKeyRef.current = `welcome_email_sent_${dedupeId}`;
+            }
+          }
           setSaveMessage('saved'); // marker; actual text comes from i18n key
           setTimeout(() => setSaveMessage(null), 2000);
 
           // If displayName was updated and welcome email not yet triggered, mark it in localStorage
           if (
-            patch.displayName &&
+            preparedPatch.displayName &&
             !welcomeEmailTriggeredRef.current &&
             typeof window !== 'undefined'
           ) {
-            const email = (data.author as { email?: string }).email || 'unknown';
-            const storageKey = `welcome_email_sent_${email}`;
-            // Mark locally to prevent duplicate client-side triggers
-            localStorage.setItem(storageKey, 'true');
+            let storageKey = storageKeyRef.current;
+            if (!storageKey) {
+              const dedupeId = data.author?.email || data.author?.authorId;
+              if (dedupeId) {
+                storageKey = `welcome_email_sent_${dedupeId}`;
+                storageKeyRef.current = storageKey;
+              }
+            }
+            if (storageKey) {
+              // Mark locally to prevent duplicate client-side triggers
+              localStorage.setItem(storageKey, 'true');
+            }
+            welcomeEmailTriggeredRef.current = true;
+          }
+          if (data.author?.welcomeEmailSentAt && typeof window !== 'undefined') {
+            const storageKey = storageKeyRef.current;
+            if (storageKey) {
+              localStorage.setItem(storageKey, 'true');
+            }
             welcomeEmailTriggeredRef.current = true;
           }
         } else {
@@ -169,7 +234,7 @@ export default function OnboardingProfilePage() {
         setSaving(false);
       }
     },
-    [profile],
+    [profile, t],
   );
 
   const debouncedPatch = useCallback(
@@ -228,8 +293,10 @@ export default function OnboardingProfilePage() {
                       setProfile((p) => (p ? { ...p, displayName: e.target.value } : p))
                     }
                     onBlur={() => {
-                      if (profile.displayName.trim()) {
-                        patchProfile({ displayName: profile.displayName.trim() });
+                      const trimmed = profile.displayName.trim();
+                      if (trimmed) {
+                        setProfile((p) => (p ? { ...p, displayName: trimmed } : p));
+                        patchProfile({ displayName: trimmed });
                       } else {
                         alert(t('errors.displayNameRequired'));
                       }

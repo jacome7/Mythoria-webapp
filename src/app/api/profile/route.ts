@@ -46,6 +46,7 @@ export async function GET() {
   }
   return NextResponse.json({
     author: {
+      authorId: author.authorId,
       displayName: author.displayName,
       gender: author.gender,
       literaryAge: author.literaryAge,
@@ -57,6 +58,8 @@ export async function GET() {
       audiences: author.audiences || [],
       interests: author.interests || [],
       notificationPreference: author.notificationPreference,
+      email: author.email,
+      welcomeEmailSentAt: author.welcomeEmailSentAt,
     },
   });
 }
@@ -191,10 +194,18 @@ export async function PATCH(req: NextRequest) {
     // within 10 minutes of account creation. We detect this by checking if:
     // 1. displayName is being updated
     // 2. The new name is meaningful (> 1 char)
-    // 3. The update happens within 10 minutes of account creation
+    // 3. The new name differs from the current stored name
+    // 4. The update happens within 10 minutes of account creation
     // Note: We don't check the old displayName length because Clerk may pre-populate it
     // from email/username, but onboarding is still the first intentional name setting
-    const isUpdatingDisplayName = updates.displayName && updates.displayName.trim().length > 1;
+    const existingDisplayName = (author.displayName || '').trim();
+    const normalizedExisting = existingDisplayName.toLowerCase();
+    const normalizedIncoming =
+      updates.displayName !== undefined ? updates.displayName.toLowerCase() : undefined;
+    const shouldTriggerWelcomeEmail =
+      updates.displayName !== undefined &&
+      updates.displayName.length > 1 &&
+      normalizedIncoming !== normalizedExisting;
 
     const [updated] = await db
       .update(authors)
@@ -213,7 +224,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     // Trigger welcome email if displayName was updated and account is new (within 10 minutes)
-    if (isUpdatingDisplayName && updated.createdAt) {
+    if (shouldTriggerWelcomeEmail && updated.createdAt) {
       const ageMs = Date.now() - new Date(updated.createdAt).getTime();
       // Only send if:
       // 1. Account was created within the last 10 minutes
@@ -234,7 +245,7 @@ export async function PATCH(req: NextRequest) {
 
           // Fire and forget - don't await
           triggerWelcomeEmailSafe({
-            authorId: updated.clerkUserId,
+            authorId: updated.authorId,
             email: updated.email,
             name: updated.displayName,
             locale: effectiveLocale,
@@ -309,6 +320,7 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({
       success: true,
       author: {
+        authorId: updated.authorId,
         displayName: updated.displayName,
         gender: updated.gender,
         literaryAge: updated.literaryAge,
@@ -320,6 +332,8 @@ export async function PATCH(req: NextRequest) {
         audiences: updated.audiences || [],
         interests: updated.interests || [],
         notificationPreference: updated.notificationPreference,
+        email: updated.email,
+        welcomeEmailSentAt: updated.welcomeEmailSentAt,
       },
     });
   } catch (err) {
