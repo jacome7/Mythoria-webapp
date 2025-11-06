@@ -3,15 +3,7 @@ import { setRequestLocale } from 'next-intl/server';
 import SignUpClient from './SignUpClient';
 import { getLeadSession } from '@/lib/lead-session';
 
-export function generateStaticParams() {
-  return [
-    { locale: 'en-US', 'sign-up': [] },
-    { locale: 'pt-PT', 'sign-up': [] },
-    { locale: 'es-ES', 'sign-up': [] },
-    { locale: 'fr-FR', 'sign-up': [] },
-    { locale: 'de-DE', 'sign-up': [] },
-  ];
-}
+export const dynamic = 'force-dynamic';
 
 export default async function SignUpPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

@@ -1,0 +1,262 @@
+﻿[
+  {
+    "id": "amor-no-electrico-28",
+    "title": "Amor nos Carris",
+    "synopses": "O nosso encontro no Elétrico 28.",
+    "locale": "pt-PT",
+    "intents": "romance_milestones",
+    "recipients": "partner,spouse",
+    "tags": "romance,lisbon,travel,anniversary",
+    "style": "watercolor"
+  },
+  {
+    "id": "un-mosaico-de-nosotros",
+    "title": "Un mosaico de nosotros",
+    "synopses": "Parc Güell, Nuestro Comienzo",
+    "locale": "es-ES",
+    "intents": "romance_milestones",
+    "recipients": "partner,spouse",
+    "tags": "Barcelona,ParcGuell,anniversary,color",
+    "style": "comic_book"
+  },
+  {
+    "id": "pijama-galo-barcelos",
+    "title": "O Pijama do Galo de Barcelos",
+    "synopses": "Até o galo mais colorido precisa de descansar o bico.",
+    "locale": "pt-PT",
+    "intents": "kids_bedtime_habits",
+    "recipients": "child",
+    "tags": "tradição, humor, cores, portugal",
+    "style": "cartoon"
+  },
+  {
+    "id": "banda-desenhada-joao",
+    "title": "A Banda Desenhada do João",
+    "synopses": "Quando os super-heróis também precisam de dormir.",
+    "locale": "pt-PT",
+    "intents": "kids_bedtime_habits",
+    "recipients": "child, teen",
+    "tags": "heróis, dormir, rotina, divertido",
+    "style": "comic_book"
+  },
+  {
+    "id": "parfums-maman-fr",
+    "title": "Les Parfums de Maman",
+    "synopses": "Sentir sa présence au quotidien",
+    "locale": "fr-FR",
+    "intents": "grief_remembrance",
+    "recipients": "child,parent",
+    "tags": "mère,odeurs,réconfort",
+    "style": "hand_drawn"
+  },
+  {
+    "id": "recordar-avo-manuel-porto",
+    "title": "Recordar o Avô Manuel",
+    "synopses": "Histórias e saudades junto ao Douro.",
+    "locale": "pt-PT",
+    "intents": "grief_remembrance",
+    "recipients": "child,parent,family,grandparent",
+    "tags": "remembrance,feelings,memories,grandparent",
+    "style": "watercolor"
+  },
+  {
+    "id": "as-cartas-da-avo-rosa-lisboa",
+    "title": "As Cartas da Avó Rosa",
+    "synopses": "Guardar memórias com amor.",
+    "locale": "pt-PT",
+    "intents": "grief_remembrance",
+    "recipients": "child,parent,family,grandparent",
+    "tags": "remembrance,feelings,memories,letters",
+    "style": "minimalist"
+  },
+  {
+    "id": "es-madrid-warner",
+    "title": "¡Acción en Parque Warner!",
+    "synopses": "Montañas rusas y superhéroes con los García",
+    "locale": "es-ES",
+    "intents": "family_travel_souvenirs",
+    "recipients": "family,child,teen",
+    "tags": "theme-park,fun,madrid",
+    "style": "comic_book"
+  },
+  {
+    "id": "de-berlin-museum",
+    "title": "Museumsinsel Entdeckungen",
+    "synopses": "Kulturreise nach Berlin",
+    "locale": "de-DE",
+    "intents": "family_travel_souvenirs",
+    "recipients": "adult,couple,self",
+    "tags": "culture,history,berlin",
+    "style": "minimalist"
+  },
+  {
+    "id": "london-museum-day",
+    "title": "London Museum Day",
+    "synopses": "Dinosaurs, raindrops, and hot chocolate near South Kensington.",
+    "locale": "en-UK",
+    "intents": "family_travel_souvenirs",
+    "recipients": "family,child",
+    "tags": "travel,memories,souvenir,weekend",
+    "style": "digital_art"
+  },
+  {
+    "id": "uk-sarah-40",
+    "title": "Fabulous at Forty",
+    "synopses": "Sarah's London Celebration",
+    "locale": "en-UK",
+    "intents": "birthdays_milestones",
+    "recipients": "adult,friend,self",
+    "tags": "40th-birthday,party,glam",
+    "style": "sketch"
+  },
+  {
+    "id": "fr-retraite-pierre",
+    "title": "Bonne Retraite, Pierre !",
+    "synopses": "En route vers le sud",
+    "locale": "fr-FR",
+    "intents": "birthdays_milestones",
+    "recipients": "adult,colleague,friend",
+    "tags": "retirement,milestone,celebration",
+    "style": "watercolor"
+  },
+  {
+    "id": "fr-esprit-rugby",
+    "title": "L'Esprit du Rugby",
+    "synopses": "Courage et camaraderie sur le terrain de Toulouse",
+    "locale": "fr-FR",
+    "intents": "sports_teams",
+    "recipients": "team,teen",
+    "tags": "rugby, toulouse, valeurs",
+    "style": "sketch"
+  },
+  {
+    "id": "de-berliner-kicker",
+    "title": "Die Berliner Kicker",
+    "synopses": "Tore, Tränen und Triumph im Pokalfinale",
+    "locale": "de-DE",
+    "intents": "sports_teams",
+    "recipients": "team,parent,child",
+    "tags": "fussball, berlin, emotionen",
+    "style": "anime"
+  },
+  {
+    "id": "it-ragazze-del-volley",
+    "title": "Le Ragazze del Volley",
+    "synopses": "Schiacciate vincenti a Milano",
+    "locale": "it-IT",
+    "intents": "sports_teams",
+    "recipients": "team,teen,friend",
+    "tags": "pallavolo, milano, amicizia",
+    "style": "comic_book"
+  },
+  {
+    "id": "es-nd-01",
+    "title": "El Rincón de Calma de Leo",
+    "synopses": "Mi espacio seguro en Madrid",
+    "locale": "es-ES",
+    "intents": "neurodiversity_support",
+    "recipients": "child,class",
+    "tags": "self-regulation,anxiety,school",
+    "style": "minimalist"
+  },
+  {
+    "id": "sesta-no-alentejo",
+    "title": "Sesta no Alentejo",
+    "synopses": "O cão mais preguiçoso do mundo",
+    "locale": "pt-PT",
+    "intents": "pets_adventures",
+    "recipients": "family,adult",
+    "tags": "dog, relaxing, funny, countryside",
+    "style": "watercolor"
+  },
+  {
+    "id": "baxter-in-london",
+    "title": "Baxter in London",
+    "synopses": "A Corgi's Royal Adventure",
+    "locale": "en-UK",
+    "intents": "pets_adventures",
+    "recipients": "child,family",
+    "tags": "dog, london, funny, travel",
+    "style": "disney_style"
+  },
+  {
+    "id": "minou-a-paris",
+    "title": "Minou à Paris",
+    "synopses": "Un chat sur les toits",
+    "locale": "fr-FR",
+    "intents": "pets_adventures",
+    "recipients": "family,child",
+    "tags": "cat, paris, dreamy, travel",
+    "style": "disney_style"
+  },
+  {
+    "id": "bello-im-biergarten",
+    "title": "Bello im Biergarten",
+    "synopses": "Ein Dackel auf Abwegen",
+    "locale": "de-DE",
+    "intents": "pets_adventures",
+    "recipients": "adult,family",
+    "tags": "dog, munich, funny, culture",
+    "style": "cartoon"
+  },
+  {
+    "id": "beatriz-constelacoes-planetario-porto",
+    "title": "Beatriz e as Constelações no Planetário do Porto",
+    "synopses": "Interesses fortes guiados por um calendário visual.",
+    "locale": "pt-PT",
+    "intents": "neurodiversity_support",
+    "recipients": "child,class",
+    "tags": "neurodiversity,inclusion,routine,strengths",
+    "style": "digital_art"
+  },
+  {
+    "id": "il-tesoro-di-orta",
+    "title": "Il Tesoro di Orta",
+    "synopses": "Luca e Sofia seguono bigliettini piegati come barchette sul lago d’Orta e scoprono una mappa che li guida a un “tesoro” fatto de ricordi di famiglia sull’isola di San Giulio.",
+    "locale": "it-IT",
+    "intents": "kids_adventures",
+    "recipients": "child,family",
+    "tags": "Orta,barchette,mappa,tesoro,famiglia",
+    "style": "watercolor"
+  },
+  {
+    "id": "penguin-wee-waddle-edinburgh-uk-01",
+    "title": "Alfie & Isla at the Penguin Wee Waddle",
+    "synopses": "In Edinburgh, Alfie and Isla join the reimagined “Wee Waddle,” meeting gentoo, rockhopper, and king penguins as they learn why the parade is now on the birds’ terms—and how caring for wildlife starts with respect. edinburghzoo.org.uk",
+    "locale": "en-UK",
+    "intents": "amusement_parks",
+    "recipients": "child,family",
+    "tags": "zoo,edinburgh,penguins,gentoo,rockhopper",
+    "style": "colored_pencil"
+  },
+  {
+    "id": "mia-felix-eismeer-hagenbeck-de-01",
+    "title": "Mia und Felix im Eismeer von Hagenbeck",
+    "synopses": "Im Eismeer entdecken Mia und Felix Eisbären, Walrosse und Pinguine aus nächster Nähe und lernen, wie das arktische Lebensraum-Design Einblicke über und unter Wasser ermöglicht—und warum Schutzprojekte so wichtig sind. hamburg-travel.com",
+    "locale": "de-DE",
+    "intents": "amusement_parks",
+    "recipients": "child,family",
+    "tags": "hagenbeck,eismeer,eisbaer,walross,pinguin",
+    "style": "watercolor"
+  },
+  {
+    "id": "lena-jonas-europa-park-de-02",
+    "title": "Lena und Jonas im Europa-Park: Blaues Feuer & Silberstern",
+    "synopses": "Zwischen Launch und Luftigkeit meistern Lena und Jonas Mutproben auf dem blue fire Megacoaster und dem Silver Star—und entdecken, dass Teamgeist der beste Coaster-Trick ist. Europa-Park Erlebnis-Resort+1",
+    "locale": "de-DE",
+    "intents": "amusement_parks",
+    "recipients": "child,family",
+    "tags": "europa-park,blue-fire,silver-star,coaster,teamgeist",
+    "style": "pixar_style"
+  },
+  {
+    "id": "marco-giulia-acquario-genova-it-01",
+    "title": "Marco e Giulia all’Acquario di Genova: Tra Lamantini e Squali",
+    "synopses": "Nel più grande acquario d’Europa, Marco e Giulia seguono un percorso tra lamantini, pinguini e squali, scoprendo come la biodiversità del mare unisce meraviglia e responsabilità. acquariodigenova.it",
+    "locale": "it-IT",
+    "intents": "amusement_parks",
+    "recipients": "child,family",
+    "tags": "acquario-di-genova,lamantini,squali,pinguini,porto-antico",
+    "style": "colored_pencil"
+  }
+]

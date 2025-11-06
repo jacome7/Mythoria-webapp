@@ -3,15 +3,7 @@ import { redirect } from 'next/navigation';
 import SignInClient from './SignInClient';
 import { getLeadSession, updateLeadSession, isFirstLeadAccess } from '@/lib/lead-session';
 
-export function generateStaticParams() {
-  return [
-    { locale: 'en-US', 'sign-in': [] },
-    { locale: 'pt-PT', 'sign-in': [] },
-    { locale: 'es-ES', 'sign-in': [] },
-    { locale: 'fr-FR', 'sign-in': [] },
-    { locale: 'de-DE', 'sign-in': [] },
-  ];
-}
+export const dynamic = 'force-dynamic';
 
 export default async function SignInPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
