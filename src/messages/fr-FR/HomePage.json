@@ -186,6 +186,14 @@
         "quote": "La qualité de l'histoire et des illustrations a dépassé nos attentes. Mythoria a créé quelque chose de vraiment spécial.",
         "author": "João P., grand-père"
       }
+    },
+    "gallery": {
+      "loading": "Chargement de plus de livres...",
+      "noMore": "Vous avez vu tous nos livres d'échantillons!",
+      "closeModal": "Fermer",
+      "tags": "Étiquettes",
+      "style": "Style",
+      "synopsis": "Synopsis"
     }
   }
 }

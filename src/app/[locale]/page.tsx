@@ -8,7 +8,7 @@ import { useMemo } from 'react';
 import { SignedOut } from '@clerk/nextjs';
 import StoryCounter from '@/components/StoryCounter';
 import QuoteOfTheDay from '@/components/QuoteOfTheDay';
-import AnimatedLogo from '@/components/AnimatedLogo';
+import InfiniteGallery from '@/components/InfiniteGallery';
 import WhyChooseMythoria from '@/components/WhyChooseMythoria';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
 
@@ -87,9 +87,9 @@ export default function Home() {
                 {tHomePage('hero.tellYourOwnStory')}
               </Link>
             </div>
-            {/* Right Side: Logo */}
+            {/* Right Side: Gallery */}
             <div className="lg:w-1/2 flex justify-center lg:justify-end mt-4 lg:mt-0">
-              <AnimatedLogo />
+              <InfiniteGallery />
             </div>
           </div>
         </header>

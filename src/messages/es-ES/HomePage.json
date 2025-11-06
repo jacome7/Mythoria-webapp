@@ -185,6 +185,14 @@
         "quote": "La calidad de la historia y de las ilustraciones superó nuestras expectativas. Mythoria ha creado algo realmente especial.",
         "author": "Juan P., abuelo"
       }
+    },
+    "gallery": {
+      "loading": "Cargando más libros...",
+      "noMore": "¡Has visto todos nuestros libros de muestra!",
+      "closeModal": "Cerrar",
+      "tags": "Etiquetas",
+      "style": "Estilo",
+      "synopsis": "Sinopsis"
     }
   }
 }

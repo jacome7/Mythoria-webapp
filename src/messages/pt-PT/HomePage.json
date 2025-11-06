@@ -186,6 +186,14 @@
         "quote": "A qualidade da história e das ilustrações superou as nossas expectativas. A Mythoria criou algo verdadeiramente especial.",
         "author": "João P., avô"
       }
+    },
+    "gallery": {
+      "loading": "A carregar mais livros...",
+      "noMore": "Já viu todos os nossos livros de amostra!",
+      "closeModal": "Fechar",
+      "tags": "Etiquetas",
+      "style": "Estilo",
+      "synopsis": "Sinopse"
     }
   }
 }
