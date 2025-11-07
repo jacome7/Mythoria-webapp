@@ -275,23 +275,6 @@ export default function AboutUsPage() {
           </section>
         </ScrollFadeIn>
 
-        {/* Company Transparency Section */}
-        <ScrollFadeIn delay={100}>
-          <section className="my-16">
-            <div className="card bg-base-200 shadow-xl">
-              <div className="card-body p-8 md:p-12">
-                <h2 className="card-title text-3xl md:text-4xl font-bold mb-6 text-primary">
-                  {t('transparency.title')}
-                </h2>
-                <p className="text-lg leading-relaxed">
-                  {t('transparency.textStart')} <strong>{t('transparency.companyName')}</strong>
-                  {t('transparency.textEnd')}
-                </p>
-              </div>
-            </div>
-          </section>
-        </ScrollFadeIn>
-
         {/* Partners Section */}
         <ScrollFadeIn delay={100}>
           <section className="my-16">
@@ -349,6 +332,24 @@ export default function AboutUsPage() {
           </section>
         </ScrollFadeIn>
 
+
+        {/* Company Transparency Section */}
+        <ScrollFadeIn delay={100}>
+          <section className="my-16">
+            <div className="card bg-base-200 shadow-xl">
+              <div className="card-body p-8 md:p-12">
+                <h2 className="card-title text-3xl md:text-4xl font-bold mb-6 text-primary">
+                  {t('transparency.title')}
+                </h2>
+                <p className="text-lg leading-relaxed">
+                  {t('transparency.textStart')} <strong>{t('transparency.companyName')}</strong>
+                  {t('transparency.textEnd')}
+                </p>
+              </div>
+            </div>
+          </section>
+        </ScrollFadeIn>
+        
         {/* Closing Message */}
         <ScrollFadeIn delay={200}>
           <section className="my-16 text-center">
