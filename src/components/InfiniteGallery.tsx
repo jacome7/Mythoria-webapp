@@ -30,7 +30,7 @@ const AUTO_SCROLL_INTERVAL = 5000; // 5 seconds
 function sortBooksByContext(
   books: SampleBook[],
   currentLocale: string,
-  intentContext?: IntentContext
+  intentContext?: IntentContext,
 ): SampleBook[] {
   // If no intent context, use simple locale-based sorting (existing behavior)
   if (!intentContext?.intent) {
@@ -116,7 +116,7 @@ export default function InfiniteGallery({ intentContext }: InfiniteGalleryProps)
     if (allBooks.length === 0 || isTransitioning) return;
 
     setIsTransitioning(true);
-    
+
     // Wait for fade-out, then change index, then fade-in
     setTimeout(() => {
       setCurrentIndex((prev) => (prev + 1) % allBooks.length);
@@ -255,13 +255,13 @@ export default function InfiniteGallery({ intentContext }: InfiniteGalleryProps)
                     <span className="text-base-content/50 text-sm">Image not available</span>
                   </div>
                 )}
-                
+
                 {/* Hover Synopsis Overlay - Desktop Only */}
                 <div className="hidden md:block absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/80 to-transparent p-4 translate-y-full md:group-hover:translate-y-0 transition-transform duration-300 ease-out">
                   <p className="text-sm text-white line-clamp-4">{currentBook.synopses}</p>
                 </div>
               </figure>
-              
+
               {/* Synopsis Text Below Image - Mobile Only */}
               <div className="card-body p-4 h-24 md:hidden">
                 <p className="text-sm text-base-content/70 line-clamp-3">{currentBook.synopses}</p>
@@ -273,20 +273,20 @@ export default function InfiniteGallery({ intentContext }: InfiniteGalleryProps)
         {/* Navigation Arrows */}
         <button
           onClick={goToPrevious}
-          className="absolute left-2 top-1/2 -translate-y-1/2 btn btn-circle btn-md btn-ghost bg-base-100/60 hover:bg-base-100/80 z-10"
+          className="absolute left-2 top-1/2 -translate-y-1/2 btn btn-circle btn-lg btn-ghost bg-base-100/30 hover:bg-base-100/50 z-10"
           aria-label="Previous book"
           disabled={isTransitioning}
         >
-          <FaChevronLeft className="text-xl" />
+          <FaChevronLeft className="text-2xl" />
         </button>
 
         <button
           onClick={handleNext}
-          className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-circle btn-md btn-ghost bg-base-100/60 hover:bg-base-100/80 z-10"
+          className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-circle btn-lg btn-ghost bg-base-100/30 hover:bg-base-100/50 z-10"
           aria-label="Next book"
           disabled={isTransitioning}
         >
-          <FaChevronRight className="text-xl" />
+          <FaChevronRight className="text-2xl" />
         </button>
       </div>
 
@@ -298,11 +298,11 @@ export default function InfiniteGallery({ intentContext }: InfiniteGalleryProps)
               {/* Close button */}
               <form method="dialog">
                 <button
-                  className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+                  className="btn btn-md btn-circle btn-ghost absolute right-2 top-2"
                   aria-label={tHomePage('gallery.closeModal')}
                   onClick={closeModal}
                 >
-                  ✕
+                  <span className="text-2xl">✕</span>
                 </button>
               </form>
 
@@ -355,6 +355,15 @@ export default function InfiniteGallery({ intentContext }: InfiniteGalleryProps)
                   {tHomePage('gallery.synopsis')}:
                 </h4>
                 <p className="text-base leading-relaxed">{selectedBook.synopses}</p>
+              </div>
+
+              {/* Close button at bottom */}
+              <div className="modal-action">
+                <form method="dialog">
+                  <button className="btn btn-primary" onClick={closeModal}>
+                    {tHomePage('gallery.closeModal')}
+                  </button>
+                </form>
               </div>
             </>
           )}

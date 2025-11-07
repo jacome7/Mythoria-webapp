@@ -11,17 +11,14 @@ import {
 /**
  * Intent detection route handler (without recipient)
  * Pattern: /i/{intent}
- * 
+ *
  * This route:
  * 1. Validates intent from URL params
  * 2. Detects user's preferred locale
  * 3. Stores context in cookies
  * 4. Redirects to the localized homepage
  */
-export async function GET(
-  request: NextRequest,
-  context: { params: Promise<{ intent: string }> }
-) {
+export async function GET(request: NextRequest, context: { params: Promise<{ intent: string }> }) {
   const { intent: rawIntent } = await context.params;
 
   // Normalize and validate intent
@@ -77,7 +74,7 @@ function detectUserLocale(request: NextRequest): SupportedLocale {
     // Find first match from supported locales
     for (const lang of preferredLanguages) {
       const supportedLocale = SUPPORTED_LOCALES.find(
-        (supported) => supported.toLowerCase() === lang.toLowerCase()
+        (supported) => supported.toLowerCase() === lang.toLowerCase(),
       ) as SupportedLocale | undefined;
       if (supportedLocale) {
         return supportedLocale;

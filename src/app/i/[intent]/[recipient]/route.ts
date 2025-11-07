@@ -12,7 +12,7 @@ import {
 /**
  * Intent detection route handler (with recipient)
  * Pattern: /i/{intent}/{recipient}
- * 
+ *
  * This route:
  * 1. Validates intent and recipient from URL params
  * 2. Detects user's preferred locale
@@ -21,7 +21,7 @@ import {
  */
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ intent: string; recipient: string }> }
+  context: { params: Promise<{ intent: string; recipient: string }> },
 ) {
   const { intent: rawIntent, recipient: rawRecipient } = await context.params;
 
@@ -85,7 +85,7 @@ function detectUserLocale(request: NextRequest): SupportedLocale {
     // Find first match from supported locales
     for (const lang of preferredLanguages) {
       const supportedLocale = SUPPORTED_LOCALES.find(
-        (supported) => supported.toLowerCase() === lang.toLowerCase()
+        (supported) => supported.toLowerCase() === lang.toLowerCase(),
       ) as SupportedLocale | undefined;
       if (supportedLocale) {
         return supportedLocale;

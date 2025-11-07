@@ -77,7 +77,7 @@ export async function GET(
   if (linkId === 'unsubscribe') {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://mythoria.pt';
     const unsubscribeUrl = new URL(`/api/e/unsub/${leadId}`, baseUrl);
-    
+
     console.log('[ClickTracking] Redirecting to unsubscribe endpoint:', {
       leadId,
       redirectUrl: unsubscribeUrl.toString(),

@@ -26,7 +26,7 @@ interface SampleBook {
 function sortBooksByContext(
   books: SampleBook[],
   currentLocale: string,
-  intentContext?: IntentContext
+  intentContext?: IntentContext,
 ): SampleBook[] {
   // If no intent context, use simple locale-based sorting (existing behavior)
   if (!intentContext?.intent) {

@@ -15,7 +15,7 @@ export function useIntentContext(): IntentContext | null {
     // Read from cookie
     const cookies = document.cookie.split(';');
     const contextCookie = cookies.find((cookie) =>
-      cookie.trim().startsWith(`${INTENT_CONTEXT_COOKIE}=`)
+      cookie.trim().startsWith(`${INTENT_CONTEXT_COOKIE}=`),
     );
 
     if (contextCookie) {

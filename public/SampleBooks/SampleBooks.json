@@ -94,7 +94,7 @@
     "title": "Fabulous at Forty",
     "synopses": "Sarah Thompson never imagined turning forty would feel this good. Her closest friends—Emma, Kate, and Priya—plan a surprise celebration across London: brunch at The Ivy, a private tour of the National Portrait Gallery, and cocktails on a rooftop bar overlooking the Thames. As the city lights sparkle below, Sarah realizes that forty isn't about leaving youth behind—it's about embracing confidence, friendship, and all the adventures still to come. A glamorous tribute to midlife magic and the power of sisterhood.",
     "locale": "en-UK",
-    "intent": "birthdays_milestones",
+    "intent": "milestones_celebrations",
     "recipients": ["adult","friend","self"],
     "tags": "40th-birthday,party,glam",
     "style": "sketch"
@@ -104,7 +104,7 @@
     "title": "Bonne Retraite, Pierre !",
     "synopses": "Après quarante ans de carrière à Paris, Pierre Dubois range son attaché-case et prend la route vers le sud. Ses collègues—Marie, Laurent, et toute l'équipe—organisent une fête surprise pleine d'anecdotes, de rires et de quelques larmes. Entre les discours émouvants et les cadeaux personnalisés, Pierre réalise que ce n'est pas une fin, mais un nouveau chapitre : des matins tranquilles en Provence, du temps pour peindre, et enfin ce potager dont il rêvait. Un hommage chaleureux à une vie de travail et aux nouveaux horizons qui attendent.",
     "locale": "fr-FR",
-    "intent": "birthdays_milestones",
+    "intent": "milestones_celebrations",
     "recipients": ["adult","colleague","friend"],
     "tags": "retirement,milestone,celebration",
     "style": "watercolor"
@@ -154,7 +154,7 @@
     "title": "Sesta no Alentejo",
     "synopses": "O Bolacha é um rafeiro alentejano que conquistou o título de cão mais preguiçoso do mundo. Enquanto a família Silva tenta levá-lo a passear pelos campos dourados, a explorar as aldeias brancas, ou a nadar no rio, o Bolacha tem apenas um objetivo: encontrar o melhor sítio para a sesta. Debaixo de uma oliveira centenária? Perfeito. À sombra do alpendre? Ainda melhor. Uma história hilariante sobre o ritmo tranquilo da vida no Alentejo, onde até os cães sabem que não há pressa nenhuma.",
     "locale": "pt-PT",
-    "intent": "pets_adventures",
+    "intent": "pet_stories",
     "recipients": ["family","adult"],
     "tags": "dog, relaxing, funny, countryside",
     "style": "watercolor"
@@ -164,7 +164,7 @@
     "title": "Baxter in London",
     "synopses": "Baxter is a cheeky Corgi with big dreams and even bigger ears. When his family, the Wilsons, takes him on a grand London adventure, Baxter is convinced he's royal—after all, Corgis are the Queen's favourite! From chasing pigeons in Trafalgar Square to posing majestically in front of Buckingham Palace, Baxter struts through the city like he owns it. Young Oliver and his sister Charlotte can barely keep up with their four-legged explorer. With plenty of treats, belly rubs, and a few muddy paw prints along the way, Baxter discovers that every dog can feel like royalty with the right family by their side. A delightfully funny tail—er, tale—of canine confidence and London sightseeing.",
     "locale": "en-UK",
-    "intent": "pets_adventures",
+    "intent": "pet_stories",
     "recipients": ["child","family"],
     "tags": "dog, london, funny, travel",
     "style": "disney_style"
@@ -174,7 +174,7 @@
     "title": "Minou à Paris",
     "synopses": "Minou est un chat parisien avec une âme d'aventurier. Chaque nuit, pendant que la petite Lucie dort, il sort par la fenêtre et explore les toits de Paris : les cheminées de Montmartre, les jardins secrets du Marais, et même les gargouilles de Notre-Dame. Il rencontre d'autres chats—Félix le philosophe, Grisette la chanteuse—et ensemble ils dansent sous la lune. Mais chaque matin, Minou rentre toujours avant l'aube pour se blottir contre Lucie. Une aventure onirique à travers la Ville Lumière, vue d'en haut.",
     "locale": "fr-FR",
-    "intent": "pets_adventures",
+    "intent": "pet_stories",
     "recipients": ["family","child"],
     "tags": "cat, paris, dreamy, travel",
     "style": "disney_style"
@@ -184,7 +184,7 @@
     "title": "Bello im Biergarten",
     "synopses": "Bello ist ein neugieriger Dackel aus München, der eines sonnigen Nachmittags seine Familie im Biergarten verliert. Was als Panik beginnt, wird zum größten Abenteuer seines Lebens: Er stibitzt Würstchen von Tischen, tanzt mit einer Blaskapelle, und macht Freundschaft mit anderen Hunden unter den Kastanienbäumen. Am Ende findet ihn sein Herrchen Thomas—mit vollem Bauch und einem Siegerlächeln. Eine lustige Geschichte über bayerische Gemütlichkeit und einen Hund, der das Leben in vollen Zügen genießt.",
     "locale": "de-DE",
-    "intent": "pets_adventures",
+    "intent": "pet_stories",
     "recipients": ["adult","family"],
     "tags": "dog, munich, funny, culture",
     "style": "cartoon"
@@ -254,7 +254,7 @@
     "title": "Roma Scienza al MAXXI",
     "synopses": "La classe 3B del Liceo Scientifico Cavour—guidata dalla professoressa Romani e con gli studenti Alessandro, Francesca, Matteo e Giulia—visita il MAXXI di Roma per esplorare l'incrocio tra scienza, architettura contemporanea e creatività. Tra le curve audaci di Zaha Hadid e le installazioni interattive, i ragazzi scoprono come la geometria si trasforma in emozione, come la luce plasma lo spazio, e come l'arte può raccontare formule scientifiche. Alessandro, inizialmente scettico, trova ispirazione per il suo progetto di fisica; Francesca fotografa angoli impossibili; e l'intera classe capisce che la scienza e l'arte parlano la stessa lingua universale. Un'esperienza educativa che illumina menti curiose nella capitale eterna.",
     "locale": "it-IT",
-    "intent": "school_classroom",
+    "intent": "school_projects",
     "recipients": ["class","teen"],
     "tags": "roma, maxxi, architettura, arte",
     "style": "sketch"
@@ -264,7 +264,7 @@
     "title": "Turma 4A no Planetário do Porto",
     "synopses": "A Turma 4A da Escola Básica da Bandeira está em polvorosa: hoje é o dia da visita ao Planetário do Porto! A professora Sofia organizou tudo ao pormenor, e os alunos—o curioso Martim, a sonhadora Leonor, o engraçado Gonçalo, e a estudiosa Carolina—não conseguem conter a excitação. Na viagem de autocarro, cantam canções sobre planetas; à chegada, maravilham-se com o teto estrelado que os transporta para o espaço. Aprendem sobre constelações, veem Júpiter de perto (bem, quase!), e descobrem que o universo é muito maior do que a sua pequena sala de aula. No final, cada criança leva para casa um brilho novo nos olhos e mil perguntas sobre o cosmos. Uma aventura educativa que transforma alunos em pequenos astronautas do conhecimento.",
     "locale": "pt-PT",
-    "intent": "school_classroom",
+    "intent": "school_projects",
     "recipients": ["class","child"],
     "tags": "porto, planetario, astronomia",
     "style": "comic_book"
@@ -288,6 +288,66 @@
     "recipients": ["partner","spouse","family","adult"],
     "tags": "romance,beach,Viana-do-Castelo,engagement,gift",
     "style": "sketch"
+  },
+  {
+    "id": "clube-da-natureza-no-jardim-botanico-do-porto",
+    "title": "Clube da Natureza no Jardim Botânico do Porto",
+    "synopses": "O Clube da Natureza da Escola de São Lázaro—formado pelos entusiastas Rodrigo, Beatriz, André e Mariana, sob a orientação do professor Nuno—embarca numa expedição de descoberta ao Jardim Botânico do Porto. Armados com lupas, cadernos de campo e curiosidade infinita, exploram a diversidade de plantas de todos os continentes, observam insetos polinizadores em ação, e aprendem como cada organismo desempenha um papel vital no ecossistema. Rodrigo fica fascinado com as plantas carnívoras; Beatriz fotografa borboletas com detalhes científicos; André identifica árvores centenárias; e Mariana descobre sementes exóticas. Entre trilhos verdes e estufas perfumadas, a turma compreende que a biodiversidade não está apenas nos livros—está viva, a respirar, mesmo no coração da cidade. Uma experiência educativa ao ar livre que transforma crianças em jovens cientistas e guardiões da natureza.",
+    "locale": "pt-PT",
+    "intent": "school_projects",
+    "recipients": ["class","child"],
+    "tags": "porto, jardim botanico, biodiversidade",
+    "style": "watercolor"
+  },
+  {
+    "id": "paris-montmartre-nous-deux",
+    "title": "Montmartre, Nous Deux",
+    "synopses": "Camille et Louis se sont rencontrés sur les escaliers de Montmartre, elle montant avec un portfolio d'art, lui descendant avec sa guitare. Ce fut le début d'un amour tissé de petits matins dorés, de croissants encore chauds partagés au café du coin, et de musique de rue qui faisait danser les passants. Chaque dimanche, ils revenaient au Sacré-Cœur pour voir Paris s'étendre sous leurs pieds—une ville qui semblait exister uniquement pour eux. Un jour, sous un accordéon qui jouait «La Vie en Rose», Louis s'agenouilla et promit à Camille une vie sans détour, pleine de créativité et d'authenticité. Elle dit oui, les larmes aux yeux et le sourire aux lèvres. Aujourd'hui, ils revisitent ces escaliers—plus vieux, plus sages, mais toujours aussi amoureux. Ce livre célèbre leur parcours romantique dans le cœur artistique de Paris, où l'amour et la bohème ne font qu'un.",
+    "locale": "fr-FR",
+    "intent": "romance",
+    "recipients": ["partner","spouse","family","adult"],
+    "tags": "romance,Paris,Montmartre,anniversary,gift",
+    "style": "vintage"
+  },
+  {
+    "id": "berlin-spree-tower-yes",
+    "title": "Ja an der Spree",
+    "synopses": "Anna und Lukas lernten sich im Sommer an der Spree kennen—sie joggte, er skizzierte die Skyline mit dem Fernsehturm im Hintergrund. Ein schüchternes «Hallo» führte zu Kaffee, dann zu Spaziergängen entlang des Flusses, wo sie über Träume, Ängste und die Zukunft sprachen. Monate vergingen, und jede Brücke, jede Uferpromenade wurde Teil ihrer gemeinsamen Geschichte. An einem Abend im Dezember, als Lichterketten die Bäume erleuchteten und die Stadt in Wintermagie getaucht war, blieb Lukas stehen. Mit dem Fernsehturm als stiller Zeuge und der Spree sanft plätschernd im Hintergrund, fragte er spontan: «Willst du für immer mit mir am Ufer entlanggehen?» Anna lachte, weinte, und sagte «Ja»—ein einfaches Wort, das alles bedeutete. Diese Geschichte feiert die Magie unerwarteter Momente und die Liebe, die an den Ufern Berlins wächst, wo moderne Architektur und alte Romantik sich treffen.",
+    "locale": "de-DE",
+    "intent": "romance",
+    "recipients": ["partner","spouse","adult","family"],
+    "tags": "romance,Berlin,proposal,city,anniversary",
+    "style": "digital_art"
+  },
+  {
+    "id": "aventura-zoo-de-lisboa-pt-02",
+    "title": "João e Inês no Jardim Zoológico de Lisboa",
+    "synopses": "João e Inês, dois irmãos inseparáveis de oito e dez anos, acordam cedo para a aventura que esperavam há semanas: um dia inteiro no Jardim Zoológico de Lisboa! Acompanhados pelos pais, seguem primeiro as pegadas misteriosas do tigre-de-Sumatra, aprendendo sobre esta espécie ameaçada e como cada um pode ajudar na conservação. Inês fica impressionada com as riscas laranja-fogo; João promete adotar simbolicamente um tigre. Na Baía dos Golfinhos, assistem a uma apresentação emocionante onde os golfinhos saltam, rodam e mostram a inteligência que os torna tão especiais. Os educadores explicam como a proteção da natureza começa com pequenos gestos—reciclar, poupar água, respeitar os animais. No final do dia, quando já pensam que a visita terminou, uma grande surpresa felina os espera: um encontro inesperado com uma cria de leão que os deixa boquiabertos. João e Inês regressam a casa com corações cheios, memórias vivas e um compromisso renovado de cuidar do planeta. Uma aventura que mistura diversão, aprendizagem e amor pelos animais. Jardim Zoológico de Lisboa.",
+    "locale": "pt-PT",
+    "intent": "amusement_parks",
+    "recipients": ["child","family"],
+    "tags": "zoo,lisboa,tigres,golfinhos,aventura",
+    "style": "pixar_style"
+  },
+  {
+    "id": "lea-hugo-parc-asterix-fr-01",
+    "title": "Léa et Hugo à Parc Astérix: Dans l'ombre d'OzIris",
+    "synopses": "Léa et Hugo, cousins inséparables de neuf et onze ans, ont attendu toute l'année cette sortie au Parc Astérix avec leurs parents. Armés d'une carte farfelue dessinée par le druide Panoramix (enfin, c'est ce qu'ils croient!), ils se lancent dans une quête gauloise à travers le parc. Leur première épreuve: affronter les vrilles vertigineuses d'OzIris, les montagnes russes suspendues où le courage est testé à chaque looping. Hugo hurle de peur puis d'excitation; Léa lève les bras en criant victoire. Ensuite, direction Tonnerre 2 Zeus, où les nouvelles sensations les projettent dans l'univers des dieux grecs avec une vitesse foudroyante. Entre deux attractions, ils croisent Astérix et Obélix pour des photos hilarantes, goûtent des sangliers en barbe à papa, et découvrent que l'amitié et le courage sont leurs meilleurs boucliers—bien plus puissants que la potion magique! Une aventure épique mêlant frissons, rires gaulois et complicité familiale au cœur du parc le plus déjanté de France. parcasterix.fr",
+    "locale": "fr-FR",
+    "intent": "amusement_parks",
+    "recipients": ["child","family"],
+    "tags": "parc-asterix,oziris,tonnerre-2-zeus,gaulois,aventure",
+    "style": "disney_style"
+  },
+  {
+    "id": "camille-noe-futuroscope-fr-02",
+    "title": "Camille et Noé au Futuroscope: Danse avec les Robots",
+    "synopses": "Camille et Noé, frère et sœur passionnés de technologie, ont toujours rêvé de visiter le Futuroscope—ce parc où le futur devient réalité. Accompagnés de leur papa ingénieur et leur maman professeure de danse, ils découvrent un monde où science et spectacle fusionnent. L'expérience phare de leur journée? Apprendre la chorégraphie synchronisée d'un robot géant de neuf mètres de haut! Guidés par un animateur enthousiaste, Camille et Noé tentent de reproduire les mouvements mécaniques, rient de leurs erreurs, et finalement réussissent à danser en harmonie avec la machine. Noé s'émerveille de la précision robotique; Camille comprend que même les robots ont besoin d'âme—et que l'inventivité humaine brille le plus quand on bouge ensemble. Entre projections 4D, simulateurs futuristes et attractions immersives, la famille découvre que la technologie n'est pas froide: elle devient magique quand elle rassemble les gens. Une aventure cinétique au Futuroscope qui prouve que l'avenir est fait de collaboration, de créativité et de quelques pas de danse à neuf mètres de haut. Futuroscope.",
+    "locale": "fr-FR",
+    "intent": "amusement_parks",
+    "recipients": ["child","family"],
+    "tags": "futuroscope,robots,danse,technologie,famille",
+    "style": "pixar_style"
   },
   {
     "id": "pijama-galo-barcelos",

@@ -332,7 +332,6 @@ export default function AboutUsPage() {
           </section>
         </ScrollFadeIn>
 
-
         {/* Company Transparency Section */}
         <ScrollFadeIn delay={100}>
           <section className="my-16">
@@ -349,7 +348,7 @@ export default function AboutUsPage() {
             </div>
           </section>
         </ScrollFadeIn>
-        
+
         {/* Closing Message */}
         <ScrollFadeIn delay={200}>
           <section className="my-16 text-center">

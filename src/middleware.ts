@@ -12,7 +12,11 @@ export default clerkMiddleware(
     // Allow the PWA offline fallback route to remain at root without locale prefix.
     // We skip the i18n middleware so it doesn't redirect /offline -> /en-US/offline (which 404s)
     // Also allow /i/ intent detection routes to bypass both i18n and auth
-    if (pathname === '/offline' || pathname.startsWith('/SampleBooks/') || pathname.startsWith('/i/')) {
+    if (
+      pathname === '/offline' ||
+      pathname.startsWith('/SampleBooks/') ||
+      pathname.startsWith('/i/')
+    ) {
       const res = NextResponse.next();
       res.headers.set('x-pathname', pathname);
       return res;
