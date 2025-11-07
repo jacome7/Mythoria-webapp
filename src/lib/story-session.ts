@@ -1,5 +1,7 @@
 // Utility functions for managing story session data across steps
 
+import type { IntentContext } from '@/types/intent-context';
+
 export interface Character {
   characterId?: string;
   name: string;
@@ -178,4 +180,39 @@ export function clearStorySession(): void {
  */
 export function hasValidStorySession(): boolean {
   return getCurrentStoryId() !== null;
+}
+
+/**
+ * Set intent context in localStorage (client-side fallback)
+ * Note: Primary storage is via server-side cookies
+ */
+export function setIntentContext(context: IntentContext): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem('intentContext', JSON.stringify(context));
+}
+
+/**
+ * Get intent context from localStorage (client-side fallback)
+ * Note: Primary storage is via server-side cookies
+ */
+export function getIntentContext(): IntentContext | null {
+  if (typeof window === 'undefined') return null;
+
+  const data = localStorage.getItem('intentContext');
+  if (!data) return null;
+
+  try {
+    return JSON.parse(data);
+  } catch (error) {
+    console.error('Error parsing intentContext:', error);
+    return null;
+  }
+}
+
+/**
+ * Clear intent context from localStorage
+ */
+export function clearIntentContext(): void {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem('intentContext');
 }

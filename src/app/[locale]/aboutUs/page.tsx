@@ -292,6 +292,63 @@ export default function AboutUsPage() {
           </section>
         </ScrollFadeIn>
 
+        {/* Partners Section */}
+        <ScrollFadeIn delay={100}>
+          <section className="my-16">
+            <div className="card bg-base-100 shadow-xl">
+              <div className="card-body p-8 md:p-12">
+                <h2 className="card-title text-3xl md:text-4xl font-bold mb-6 text-primary">
+                  {t('partners.title')}
+                </h2>
+                <div className="space-y-8">
+                  {/* InovaGaia */}
+                  <div className="flex flex-col lg:flex-row gap-8 items-center">
+                    <div className="lg:w-2/5 flex justify-center">
+                      <div className="relative w-full max-w-xs">
+                        <Image
+                          src="/images/AboutUs/inovagaia_768x183.png"
+                          alt="InovaGaia"
+                          width={768}
+                          height={183}
+                          className="rounded-lg"
+                          priority
+                        />
+                      </div>
+                    </div>
+                    <div className="lg:w-3/5 text-center lg:text-left">
+                      <p className="text-lg leading-relaxed">{t('partners.inovaGaia')}</p>
+                    </div>
+                  </div>
+
+                  {/* Google for Startups */}
+                  <div className="flex flex-col lg:flex-row-reverse gap-8 items-center">
+                    <div className="lg:w-2/5 flex justify-center">
+                      <div className="relative w-full max-w-xs">
+                        <Image
+                          src="/images/AboutUs/google-for-startups_768x243.jpg"
+                          alt="Google for Startups"
+                          width={768}
+                          height={243}
+                          className="rounded-lg"
+                          priority
+                        />
+                      </div>
+                    </div>
+                    <div className="lg:w-3/5 text-center lg:text-left">
+                      <p className="text-lg leading-relaxed">{t('partners.googleForStartups')}</p>
+                    </div>
+                  </div>
+
+                  {/* Disclaimer */}
+                  <div className="text-center mt-8 text-sm text-base-content/60">
+                    <p>* {t('partners.disclaimer')}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </ScrollFadeIn>
+
         {/* Closing Message */}
         <ScrollFadeIn delay={200}>
           <section className="my-16 text-center">

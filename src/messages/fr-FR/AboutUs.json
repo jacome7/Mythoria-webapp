@@ -51,6 +51,12 @@
     "textEnd": ", enregistrée au Portugal avec le NIPC 515 716 979. Nous avons notre siège à Vila Nova de Gaia, Portugal, depuis le 31 octobre 2019 avec un capital social de 10 000,00 €.",
     "companyName": "Aventuras Contemporâneas, Lda."
   },
+  "partners": {
+    "title": "Nos Partenaires et Soutiens",
+    "googleForStartups": "Nous faisons partie du programme Google for Startups Cloud. Ce soutien aide Mythoria à accélérer la narration alimentée par l'IA avec l'infrastructure, la formation et la communauté de Google Cloud.",
+    "inovaGaia": "InovaGaia a joué un rôle fondamental dans notre parcours, en fournissant mentorat, ressources et une communauté entrepreneuriale dynamique qui nous a aidés à transformer notre vision en réalité.",
+    "disclaimer": "Google et Google Cloud sont des marques déposées de Google LLC."
+  },
   "closing": {
     "title": "Merci d'avoir pris un peu de votre temps pour nous connaître.",
     "subtitle": "Maintenant, nous sommes impatients de découvrir votre histoire."

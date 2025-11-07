@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import { useTranslations, useLocale } from 'next-intl';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import type { IntentContext } from '@/types/intent-context';
 
 // Type definition matching the JSON structure
 interface SampleBook {
@@ -11,15 +12,71 @@ interface SampleBook {
   title: string;
   synopses: string;
   locale: string;
-  intents: string;
-  recipients: string;
+  intent: string;
+  recipients: string[];
   tags: string;
   style: string;
 }
 
 const AUTO_SCROLL_INTERVAL = 5000; // 5 seconds
 
-export default function InfiniteGallery() {
+/**
+ * Sort books by priority:
+ * 1. Intent match (if intent context provided)
+ * 2. Locale match
+ * 3. Recipient match (if recipient context provided)
+ * 4. Original order
+ */
+function sortBooksByContext(
+  books: SampleBook[],
+  currentLocale: string,
+  intentContext?: IntentContext
+): SampleBook[] {
+  // If no intent context, use simple locale-based sorting (existing behavior)
+  if (!intentContext?.intent) {
+    return [
+      ...books.filter((book) => book.locale === currentLocale),
+      ...books.filter((book) => book.locale !== currentLocale),
+    ];
+  }
+
+  // Sort with intent context
+  const { intent, recipient } = intentContext;
+
+  return [...books].sort((a, b) => {
+    // Priority 1: Intent match
+    const aIntentMatch = a.intent === intent;
+    const bIntentMatch = b.intent === intent;
+    if (aIntentMatch !== bIntentMatch) {
+      return aIntentMatch ? -1 : 1;
+    }
+
+    // Priority 2: Locale match (within same intent priority)
+    const aLocaleMatch = a.locale === currentLocale;
+    const bLocaleMatch = b.locale === currentLocale;
+    if (aLocaleMatch !== bLocaleMatch) {
+      return aLocaleMatch ? -1 : 1;
+    }
+
+    // Priority 3: Recipient match (if recipient context provided)
+    if (recipient) {
+      const aRecipientMatch = a.recipients.includes(recipient);
+      const bRecipientMatch = b.recipients.includes(recipient);
+      if (aRecipientMatch !== bRecipientMatch) {
+        return aRecipientMatch ? -1 : 1;
+      }
+    }
+
+    // Maintain original order for equal priority
+    return 0;
+  });
+}
+
+interface InfiniteGalleryProps {
+  intentContext?: IntentContext;
+}
+
+export default function InfiniteGallery({ intentContext }: InfiniteGalleryProps) {
   const tHomePage = useTranslations('HomePage');
   const currentLocale = useLocale();
 
@@ -42,11 +99,8 @@ export default function InfiniteGallery() {
         }
         const books: SampleBook[] = await response.json();
 
-        // Sort: current locale first, then others in original order
-        const sortedBooks = [
-          ...books.filter((book) => book.locale === currentLocale),
-          ...books.filter((book) => book.locale !== currentLocale),
-        ];
+        // Sort books based on intent context
+        const sortedBooks = sortBooksByContext(books, currentLocale, intentContext);
 
         setAllBooks(sortedBooks);
       } catch (error) {
@@ -55,7 +109,7 @@ export default function InfiniteGallery() {
     };
 
     loadBooks();
-  }, [currentLocale]);
+  }, [currentLocale, intentContext]);
 
   // Navigate to next slide
   const goToNext = useCallback(() => {

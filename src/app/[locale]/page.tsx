@@ -11,9 +11,11 @@ import QuoteOfTheDay from '@/components/QuoteOfTheDay';
 import InfiniteGallery from '@/components/InfiniteGallery';
 import WhyChooseMythoria from '@/components/WhyChooseMythoria';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
+import { useIntentContext } from '@/hooks/useIntentContext';
 
 export default function Home() {
   const tHomePage = useTranslations('HomePage');
+  const intentContext = useIntentContext();
 
   // Note: Carousel removed in favor of a vertical mobile layout
 
@@ -89,7 +91,7 @@ export default function Home() {
             </div>
             {/* Right Side: Gallery */}
             <div className="lg:w-1/2 flex justify-center lg:justify-end mt-4 lg:mt-0">
-              <InfiniteGallery />
+              <InfiniteGallery intentContext={intentContext ?? undefined} />
             </div>
           </div>
         </header>
