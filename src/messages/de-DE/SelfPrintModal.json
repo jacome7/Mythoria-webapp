@@ -1,0 +1,53 @@
+{
+  "SelfPrintModal": {
+    "title": "PDF per E-Mail senden",
+    "subtitle": "Bereit für den Druck von \"{title}\"? Wir erstellen frische PDFs und mailen dir die Links, sobald sie fertig sind.",
+    "loading": {
+      "title": "Deine Anfrage wird vorbereitet",
+      "subtitle": "Kurzer Check: Wir prüfen Credits und starten den Workflow."
+    },
+    "errors": {
+      "loadFailed": "Die Druck-Anfrage konnte nicht geladen werden. Bitte schließe das Fenster und versuche es erneut.",
+      "insufficientCredits": "Du brauchst {shortfall} weitere Credits für dieses PDF.",
+      "authRequired": "Melde dich erneut an, um fortzufahren.",
+      "generic": "Etwas ist schiefgelaufen. Versuch es gleich nochmal.",
+      "workflowQueueFailed": "Wir konnten die Dateien nicht in die Warteschlange stellen. Deine Credits wurden zurückerstattet.",
+      "invalidEmails": "Einige E-Mail-Adressen sehen falsch aus: {emails}."
+    },
+    "costSection": {
+      "required": "Benötigte Credits",
+      "credits": "Credits",
+      "youHave": "Du hast",
+      "needMore": "Fehlen dir ein paar Credits?",
+      "needMoreDescription": "Lade {shortfall} Credits auf, um den Download anzustoßen."
+    },
+    "emailSection": {
+      "label": "CC-Empfänger hinzufügen",
+      "optional": "Optional",
+      "placeholder": "freund@example.com, bibliothek@example.com",
+      "helper": "Wir schicken die Dateien immer an {email}. Füge weitere Adressen hinzu, um sie in CC zu setzen.",
+      "multiHelper": "Trenne Adressen mit Kommas, Leerzeichen oder Zeilenumbrüchen.",
+      "yourAccount": "deine Konto-E-Mail",
+      "accountMissing": "Wir konnten deine Konto-E-Mail nicht finden. Aktualisiere dein Profil und versuch es erneut."
+    },
+    "finePrint": {
+      "deduction": "Credits werden abgebucht, sobald das PDF in die Warteschlange wandert.",
+      "support": "Falls die E-Mail nicht in ein paar Minuten da ist, check mal den Spam-Ordner. Ansonsten schreib uns einfach an <email>support@mythoria.pt</email>"
+    },
+    "actions": {
+      "buyCredits": "Credits kaufen",
+      "cancel": "Abbrechen",
+      "confirm": "Download-E-Mail senden",
+      "close": "Schließen",
+      "buyMoreCredits": "Mehr Credits hinzufügen"
+    },
+    "success": {
+      "title": "Mail ist unterwegs!",
+      "description": "Dein PDF steht in der Warteschlange. Die Links landen gleich in deinem Postfach.",
+      "recipientsHeading": "Wir schicken die Links an:",
+      "noRecipients": "Für diese Anfrage wurden keine Empfänger gefunden.",
+      "spamNotice": "Wenn du die Mail nicht erhältst, prüfe deinen Spam-Ordner. Ansonsten",
+      "contactUs": "kontaktiere uns und wir helfen dir"
+    }
+  }
+}

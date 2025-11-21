@@ -31,8 +31,10 @@
     "share": "Compartir",
     "duplicate": "Duplicar",
     "print": "Imprimir",
+    "downloadPdf": "Descargar PDF",
     "delete": "Eliminar",
-    "printNotAvailable": "Impresión no disponible"
+    "printNotAvailable": "Impresión no disponible",
+    "downloadNotAvailable": "Descarga no disponible"
   },
   "duplicate": {
     "success": "Historia duplicada correctamente",

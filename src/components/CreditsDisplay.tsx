@@ -66,6 +66,7 @@ export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
       refund: tCommonCreditsDisplay('eventTypes.refund'),
       voucher: tCommonCreditsDisplay('eventTypes.voucher'),
       promotion: tCommonCreditsDisplay('eventTypes.promotion'),
+      selfPrinting: tCommonCreditsDisplay('eventTypes.selfPrinting'),
     };
     return eventTypes[eventType] || eventType;
   };

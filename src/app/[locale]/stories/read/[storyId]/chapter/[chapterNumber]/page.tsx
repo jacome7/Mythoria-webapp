@@ -5,11 +5,12 @@ import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiVolume2, FiEdit3, FiShare2, FiArrowLeft, FiPrinter } from 'react-icons/fi';
+import { FiVolume2, FiEdit3, FiShare2, FiArrowLeft, FiPrinter, FiDownload } from 'react-icons/fi';
 import { trackStoryManagement } from '../../../../../../../lib/analytics';
 import StoryReader from '../../../../../../../components/StoryReader';
 import StoryRating from '../../../../../../../components/StoryRating';
 import ShareModal from '../../../../../../../components/ShareModal';
+import { SelfPrintModal } from '../../../../../../../components/self-print/SelfPrintModal';
 
 interface Chapter {
   id: string;
@@ -49,6 +50,7 @@ export default function ReadChapterPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showSelfPrintModal, setShowSelfPrintModal] = useState(false);
 
   useEffect(() => {
     const fetchChapter = async () => {
@@ -107,6 +109,10 @@ export default function ReadChapterPage() {
 
   const handleShare = () => {
     setShowShareModal(true);
+  };
+
+  const handleDownload = () => {
+    setShowSelfPrintModal(true);
   };
 
   if (loading) {
@@ -180,6 +186,11 @@ export default function ReadChapterPage() {
                 <span className="hidden sm:inline sm:ml-2">{tActions('print')}</span>
               </button>
 
+              <button onClick={handleDownload} className="btn btn-ghost btn-sm">
+                <FiDownload className="w-4 h-4" />
+                <span className="hidden sm:inline sm:ml-2">{tActions('downloadPdf')}</span>
+              </button>
+
               <button onClick={handleShare} className="btn btn-ghost btn-sm">
                 <FiShare2 className="w-4 h-4" />
                 <span className="hidden sm:inline sm:ml-2">{tActions('share')}</span>
@@ -207,6 +218,13 @@ export default function ReadChapterPage() {
           storyTitle={story.title}
           isOpen={showShareModal}
           onClose={() => setShowShareModal(false)}
+        />
+
+        <SelfPrintModal
+          isOpen={showSelfPrintModal}
+          storyId={storyId}
+          storyTitle={story?.title}
+          onClose={() => setShowSelfPrintModal(false)}
         />
       </SignedIn>
 

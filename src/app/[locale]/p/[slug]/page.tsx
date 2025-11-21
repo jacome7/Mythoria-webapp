@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import {
@@ -13,7 +14,9 @@ import {
   FiPrinter,
   FiVolume2,
   FiEdit3,
+  FiDownload,
 } from 'react-icons/fi';
+import { SelfPrintModal } from '@/components/self-print/SelfPrintModal';
 import PublicStoryRating from '@/components/PublicStoryRating';
 import StoryReader from '@/components/StoryReader';
 import { formatDate } from '@/utils/date';
@@ -76,6 +79,7 @@ export default function PublicStoryPage() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<PublicStoryData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showSelfPrintModal, setShowSelfPrintModal] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
@@ -206,6 +210,7 @@ export default function PublicStoryPage() {
   }
 
   const { story } = data;
+  const openSelfPrintModal = () => setShowSelfPrintModal(true);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -231,6 +236,24 @@ export default function PublicStoryPage() {
                     </span>
                     <span className="min-[480px]:hidden">{tPublicStoryPage('actions.print')}</span>
                   </a>
+                  <SignedIn>
+                    <button
+                      className="btn btn-outline btn-sm flex items-center gap-2 text-xs sm:text-sm"
+                      onClick={openSelfPrintModal}
+                    >
+                      <FiDownload className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span>{tPublicStoryPage('actions.downloadPdf')}</span>
+                    </button>
+                  </SignedIn>
+                  <SignedOut>
+                    <a
+                      href={`/${locale}/sign-in?redirectUrl=${encodeURIComponent(`/${locale}/p/${slug}`)}`}
+                      className="btn btn-outline btn-sm flex items-center gap-2 text-xs sm:text-sm"
+                    >
+                      <FiDownload className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span>{tPublicStoryPage('actions.downloadPdf')}</span>
+                    </a>
+                  </SignedOut>
                   {story.hasAudio && (
                     <a
                       href={`/${locale}/p/${slug}/listen`}
@@ -364,6 +387,22 @@ export default function PublicStoryPage() {
                   <FiPrinter className="w-4 h-4" />
                   {tPublicStoryPage('actions.orderPrintedBook')}
                 </a>
+
+                <SignedIn>
+                  <button className="btn btn-outline flex items-center gap-2" onClick={openSelfPrintModal}>
+                    <FiDownload className="w-4 h-4" />
+                    {tPublicStoryPage('actions.downloadPdf')}
+                  </button>
+                </SignedIn>
+                <SignedOut>
+                  <a
+                    href={`/${locale}/sign-in?redirectUrl=${encodeURIComponent(`/${locale}/p/${slug}`)}`}
+                    className="btn btn-outline flex items-center gap-2"
+                  >
+                    <FiDownload className="w-4 h-4" />
+                    {tPublicStoryPage('actions.downloadPdf')}
+                  </a>
+                </SignedOut>
               </div>
             </div>
           </div>
@@ -380,6 +419,15 @@ export default function PublicStoryPage() {
             />
           </div>
         </div>
+
+        <SignedIn>
+          <SelfPrintModal
+            isOpen={showSelfPrintModal}
+            storyId={story.storyId}
+            storyTitle={story.title}
+            onClose={() => setShowSelfPrintModal(false)}
+          />
+        </SignedIn>
       </div>
 
       {/* Custom CSS for responsive design */}

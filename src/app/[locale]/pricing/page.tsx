@@ -11,9 +11,11 @@ import {
   FaQuestionCircle,
   FaPalette,
   FaInfoCircle,
+  FaFileDownload,
 } from 'react-icons/fa';
 import { useTranslations } from 'next-intl';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
+import { SELF_PRINTING_SERVICE_CODE } from '@/constants/pricing';
 
 interface CreditPackage {
   id: number;
@@ -152,6 +154,16 @@ export default function PricingPage() {
                         {tPricingPage('serviceCosts.services.generateEbook')}
                       </span>
                       <span className="font-semibold">{getServiceCost('eBookGeneration')}</span>
+                    </li>
+
+                    <li className="flex items-center justify-between">
+                      <span className="flex items-center">
+                        <FaFileDownload className="mr-2 text-primary" />
+                        {tPricingPage('serviceCosts.services.downloadPdf')}
+                      </span>
+                      <span className="font-semibold">
+                        {getServiceCost(SELF_PRINTING_SERVICE_CODE)}
+                      </span>
                     </li>
 
                     <li className="flex items-center justify-between">

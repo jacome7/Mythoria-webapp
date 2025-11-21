@@ -8,6 +8,7 @@ import { FiChevronUp, FiChevronDown } from 'react-icons/fi';
 import ShareModal from './ShareModal';
 import ToastContainer from './ToastContainer';
 import StoryRow from './my-stories/StoryRow';
+import { SelfPrintModal } from './self-print/SelfPrintModal';
 import { useStoriesTable } from '@/hooks/useStoriesTable';
 import { Story, SortField } from '@/types/story';
 import { useToast } from '@/hooks/useToast';
@@ -32,6 +33,8 @@ export default function MyStoriesTable() {
   const [storyToDelete, setStoryToDelete] = useState<Story | null>(null);
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [storyToShare, setStoryToShare] = useState<Story | null>(null);
+  const [selfPrintStory, setSelfPrintStory] = useState<Story | null>(null);
+  const [isSelfPrintOpen, setIsSelfPrintOpen] = useState(false);
   const { toasts, removeToast, successWithAction, error } = useToast();
   const [isMobile, setIsMobile] = useState(false);
 
@@ -77,6 +80,12 @@ export default function MyStoriesTable() {
 
   const handlePrint = (story: Story) => {
     window.location.href = `/${locale}/stories/print/${story.storyId}`;
+  };
+
+  const handleDownload = (story: Story) => {
+    if (story.status !== 'published') return;
+    setSelfPrintStory(story);
+    setIsSelfPrintOpen(true);
   };
 
   const handleDuplicate = async (story: Story) => {
@@ -178,6 +187,7 @@ export default function MyStoriesTable() {
                   onShare={handleShare}
                   onPrint={handlePrint}
                   onDuplicate={handleDuplicate}
+                  onDownload={handleDownload}
                 />
               ))}
             </tbody>
@@ -236,6 +246,18 @@ export default function MyStoriesTable() {
               }
             };
             refresh();
+          }}
+        />
+      )}
+
+      {selfPrintStory && (
+        <SelfPrintModal
+          isOpen={isSelfPrintOpen}
+          storyId={selfPrintStory.storyId}
+          storyTitle={selfPrintStory.title}
+          onClose={() => {
+            setIsSelfPrintOpen(false);
+            setSelfPrintStory(null);
           }}
         />
       )}

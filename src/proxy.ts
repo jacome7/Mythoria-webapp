@@ -1,11 +1,11 @@
 import { clerkMiddleware } from '@clerk/nextjs/server';
 import createMiddleware from 'next-intl/middleware';
-import { routing } from './i18n/routing';
 import { NextRequest, NextResponse } from 'next/server';
+import { routing } from './i18n/routing';
 
 const intlMiddleware = createMiddleware(routing);
 
-export default clerkMiddleware(
+export const proxy = clerkMiddleware(
   async (auth, req: NextRequest) => {
     const pathname = req.nextUrl.pathname;
 

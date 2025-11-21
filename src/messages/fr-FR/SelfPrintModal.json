@@ -1,0 +1,53 @@
+{
+  "SelfPrintModal": {
+    "title": "Envoyer le PDF par email",
+    "subtitle": "Prêt à imprimer \"{title}\" ? On génère des PDFs tout frais et on t'envoie les liens dès qu'ils sont prêts.",
+    "loading": {
+      "title": "Préparation de ta demande",
+      "subtitle": "Encore un instant : on vérifie tes crédits et on lance le workflow."
+    },
+    "errors": {
+      "loadFailed": "Impossible de charger la demande d'impression. Ferme et réessaie, s'il te plaît.",
+      "insufficientCredits": "Il te manque {shortfall} crédits pour lancer ce PDF.",
+      "authRequired": "Reconnecte-toi pour continuer.",
+      "generic": "Un souci est survenu. Réessaie dans un instant.",
+      "workflowQueueFailed": "Nous n'avons pas pu mettre les fichiers en file d'attente. Tes crédits ont été remboursés.",
+      "invalidEmails": "Certaines adresses semblent incorrectes : {emails}."
+    },
+    "costSection": {
+      "required": "Crédits nécessaires",
+      "credits": "crédits",
+      "youHave": "Tu as",
+      "needMore": "Il te manque quelques crédits ?",
+      "needMoreDescription": "Ajoute {shortfall} crédits pour envoyer la demande."
+    },
+    "emailSection": {
+      "label": "Ajouter des destinataires en CC",
+      "optional": "Optionnel",
+      "placeholder": "ami@example.com, librairie@example.com",
+      "helper": "On enverra toujours les fichiers à {email}. Ajoute d'autres adresses pour les mettre en CC.",
+      "multiHelper": "Sépare les emails avec des virgules, des espaces ou des retours à la ligne.",
+      "yourAccount": "l'email de ton compte",
+      "accountMissing": "Impossible de trouver l'email de ton compte. Mets ton profil à jour et réessaie."
+    },
+    "finePrint": {
+      "deduction": "Les crédits sont débités dès que tu mets le PDF en file d'attente.",
+      "support": "Si l'e-mail n'arrive pas dans quelques minutes, vérifie tes spams. Sinon, envoie un petit message à <email>support@mythoria.pt</email>"
+    },
+    "actions": {
+      "buyCredits": "Acheter des crédits",
+      "cancel": "Annuler",
+      "confirm": "Envoyer l'email de téléchargement",
+      "close": "Fermer",
+      "buyMoreCredits": "Ajouter des crédits"
+    },
+    "success": {
+      "title": "Email en route !",
+      "description": "Ton PDF est en file d'attente. Les liens arrivent dans ta boîte très bientôt.",
+      "recipientsHeading": "Nous enverrons les liens à :",
+      "noRecipients": "Aucun destinataire n'a été trouvé pour cette demande.",
+      "spamNotice": "Si tu ne reçois pas l'email, vérifie ton dossier Spam. Sinon,",
+      "contactUs": "contacte-nous et on t'aide"
+    }
+  }
+}

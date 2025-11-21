@@ -15,6 +15,7 @@ import {
   FiLoader,
   FiPrinter,
   FiCopy,
+  FiDownload,
 } from 'react-icons/fi';
 import ToastContainer from '../../../../../components/ToastContainer';
 import { useToast } from '@/hooks/useToast';
@@ -25,6 +26,7 @@ import {
   hasAudiobook,
   getAudioChapters,
 } from '@/components/AudioPlayer';
+import { SelfPrintModal } from '../../../../../components/self-print/SelfPrintModal';
 
 interface Story {
   storyId: string;
@@ -145,6 +147,7 @@ export default function ListenStoryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showSelfPrintModal, setShowSelfPrintModal] = useState(false);
   const [userCredits, setUserCredits] = useState<UserCredits | null>(null);
   const [audiobookCost, setAudiobookCost] = useState<AudiobookCost | null>(null);
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
@@ -355,6 +358,10 @@ export default function ListenStoryPage() {
     router.push(`/${locale}/pricing`);
   };
 
+  const handleDownload = () => {
+    setShowSelfPrintModal(true);
+  };
+
   const handleDuplicate = async () => {
     try {
       const resp = await fetch(`/api/my-stories/${storyId}`, {
@@ -467,6 +474,11 @@ export default function ListenStoryPage() {
                   <button onClick={navigateToPrint} className="btn btn-ghost btn-sm">
                     <FiPrinter className="w-4 h-4" />
                     <span className="hidden sm:inline sm:ml-2">{tActions('print')}</span>
+                  </button>
+
+                  <button onClick={handleDownload} className="btn btn-ghost btn-sm">
+                    <FiDownload className="w-4 h-4" />
+                    <span className="hidden sm:inline sm:ml-2">{tActions('downloadPdf')}</span>
                   </button>
 
                   <button onClick={() => setShowShareModal(true)} className="btn btn-ghost btn-sm">
@@ -739,6 +751,15 @@ export default function ListenStoryPage() {
           onShareSuccess={(shareData) => {
             console.log('Share successful:', shareData);
           }}
+        />
+      )}
+
+      {story && (
+        <SelfPrintModal
+          isOpen={showSelfPrintModal}
+          storyId={story.storyId}
+          storyTitle={story.title}
+          onClose={() => setShowSelfPrintModal(false)}
         />
       )}
       {/* Toasts */}

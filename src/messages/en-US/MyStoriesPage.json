@@ -31,8 +31,10 @@
     "share": "Share",
     "duplicate": "Duplicate",
     "print": "Print",
+    "downloadPdf": "Download PDF",
     "delete": "Delete",
-    "printNotAvailable": "Print Not Available"
+    "printNotAvailable": "Print Not Available",
+    "downloadNotAvailable": "Download Not Available"
   },
   "duplicate": {
     "success": "Story duplicated successfully",

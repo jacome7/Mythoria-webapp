@@ -38,6 +38,7 @@ export type AnalyticsEvent =
   | 'story_shared'
   | 'story_deleted'
   | 'story_listen'
+  | 'story_downloaded'
 
   // Contact
   | 'contact_request'
@@ -210,6 +211,8 @@ export const trackStoryManagement = {
   deleted: (params: StoryEventParams = {}) => trackEvent('story_deleted', params),
 
   listen: (params: StoryEventParams = {}) => trackEvent('story_listen', params),
+
+  downloaded: (params: StoryEventParams = {}) => trackEvent('story_downloaded', params),
 };
 
 /**

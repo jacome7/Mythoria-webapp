@@ -1,11 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { useParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { FiLoader, FiAlertCircle, FiEdit3, FiPrinter } from 'react-icons/fi';
+import { FiLoader, FiAlertCircle, FiEdit3, FiPrinter, FiDownload } from 'react-icons/fi';
 import StoryReader from '@/components/StoryReader';
 import PublicStoryRating from '@/components/PublicStoryRating';
+import { SelfPrintModal } from '@/components/self-print/SelfPrintModal';
 
 interface Chapter {
   id: string;
@@ -60,6 +62,7 @@ export default function PublicChapterPage() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<PublicChapterData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showSelfPrintModal, setShowSelfPrintModal] = useState(false);
 
   useEffect(() => {
     const fetchPublicChapter = async () => {
@@ -128,6 +131,7 @@ export default function PublicChapterPage() {
   const story = data.story;
   const chapters = data.chapters;
   const isLastChapter = chapterNumber === chapters.length;
+  const openSelfPrintModal = () => setShowSelfPrintModal(true);
 
   return (
     <div className="min-h-screen bg-base-100">
@@ -185,6 +189,22 @@ export default function PublicChapterPage() {
                 <FiPrinter className="w-4 h-4" />
                 {tPublicStoryPage('actions.orderPrintedBook')}
               </a>
+
+              <SignedIn>
+                <button className="btn btn-outline flex items-center gap-2" onClick={openSelfPrintModal}>
+                  <FiDownload className="w-4 h-4" />
+                  {tPublicStoryPage('actions.downloadPdf')}
+                </button>
+              </SignedIn>
+              <SignedOut>
+                <a
+                  href={`/${locale}/sign-in?redirectUrl=${encodeURIComponent(`/${locale}/p/${slug}/chapter/${chapterNumber}`)}`}
+                  className="btn btn-outline flex items-center gap-2"
+                >
+                  <FiDownload className="w-4 h-4" />
+                  {tPublicStoryPage('actions.downloadPdf')}
+                </a>
+              </SignedOut>
             </div>
           </div>
         </div>
@@ -194,6 +214,15 @@ export default function PublicChapterPage() {
       <div className="max-w-4xl mx-auto p-4 print:hidden">
         <PublicStoryRating storyId={story.storyId} />
       </div>
+
+      <SignedIn>
+        <SelfPrintModal
+          isOpen={showSelfPrintModal}
+          storyId={story.storyId}
+          storyTitle={story.title}
+          onClose={() => setShowSelfPrintModal(false)}
+        />
+      </SignedIn>
     </div>
   );
 }

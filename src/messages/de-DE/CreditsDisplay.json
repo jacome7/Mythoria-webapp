@@ -17,6 +17,7 @@
       "eBookGeneration": "eBook-Generierung",
       "audioBookGeneration": "Hörbuch-Generierung",
       "printOrder": "Druckauftrag",
+      "selfPrinting": "PDF-Download",
       "refund": "Rückerstattung",
       "voucher": "Gutschein",
       "promotion": "Promotion"

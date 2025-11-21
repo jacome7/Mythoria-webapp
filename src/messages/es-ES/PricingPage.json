@@ -32,6 +32,7 @@
       "creditsHeader": "Créditos",
       "services": {
         "generateEbook": "Generar un eBook digital",
+        "downloadPdf": "Descargar un PDF imprimible",
         "narrateAudiobook": "Narrar un libro (audiolibro)",
         "editBook": "Editar un libro:",
         "manualEditing": "Edición manual",

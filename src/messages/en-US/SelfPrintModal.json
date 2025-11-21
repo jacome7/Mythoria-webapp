@@ -1,0 +1,53 @@
+{
+  "SelfPrintModal": {
+    "title": "Email printable PDF",
+    "subtitle": "Ready to print \"{title}\"? We'll spin up fresh PDFs and email the links as soon as they're ready.",
+    "loading": {
+      "title": "Queuing your print job",
+      "subtitle": "Hang tight while we verify credits and boot the workflow."
+    },
+    "errors": {
+      "loadFailed": "We couldn't load the self-print info. Please close and try again.",
+      "insufficientCredits": "You need {shortfall} more credits to queue this PDF.",
+      "authRequired": "Please sign in again to continue.",
+      "generic": "Something went wrong. Please try again in a moment.",
+      "workflowQueueFailed": "We could not queue the printable files right now. Your credits have been refunded.",
+      "invalidEmails": "A few addresses look off: {emails}."
+    },
+    "costSection": {
+      "required": "Credits required",
+      "credits": "credits",
+      "youHave": "You have",
+      "needMore": "Need a few more credits?",
+      "needMoreDescription": "Add {shortfall} more credits to queue the download."
+    },
+    "emailSection": {
+      "label": "Add CC recipients",
+      "optional": "Optional",
+      "placeholder": "friend@example.com, librarian@example.com",
+      "helper": "We'll always send the files to {email}. Add extra addresses to CC them.",
+      "multiHelper": "Separate emails with commas, spaces, or line breaks.",
+      "yourAccount": "your account email",
+      "accountMissing": "We couldn't find your account email. Update your profile and try again."
+    },
+    "finePrint": {
+      "deduction": "Credits are deducted the moment you queue a printable PDF.",
+      "support": "If the email hasn't landed after a few minutes, check the spam folder. Otherwise, drop a message to <email>support@mythoria.pt</email>"
+    },
+    "actions": {
+      "buyCredits": "Buy credits",
+      "cancel": "Cancel",
+      "confirm": "Send download email",
+      "close": "Close",
+      "buyMoreCredits": "Add more credits"
+    },
+    "success": {
+      "title": "Email on the way!",
+      "description": "We queued your printable PDFs. They'll hit your inbox shortly.",
+      "recipientsHeading": "We'll send the links to:",
+      "noRecipients": "No recipients were captured for this request.",
+      "spamNotice": "If you do not receive the email, please check your Spam. Otherwise,",
+      "contactUs": "contact us and we will help you"
+    }
+  }
+}

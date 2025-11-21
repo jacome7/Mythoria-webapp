@@ -545,6 +545,7 @@ export const creditService = {
       | 'eBookGeneration'
       | 'audioBookGeneration'
       | 'printOrder'
+      | 'selfPrinting'
       | 'refund'
       | 'voucher'
       | 'promotion'
@@ -621,7 +622,13 @@ export const creditService = {
   async deductCredits(
     authorId: string,
     amount: number,
-    eventType: 'eBookGeneration' | 'audioBookGeneration' | 'printOrder' | 'textEdit' | 'imageEdit',
+    eventType:
+      | 'eBookGeneration'
+      | 'audioBookGeneration'
+      | 'printOrder'
+      | 'selfPrinting'
+      | 'textEdit'
+      | 'imageEdit',
     storyId?: string,
   ) {
     const canAfford = await this.canAfford(authorId, amount);

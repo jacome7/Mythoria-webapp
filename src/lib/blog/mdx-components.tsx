@@ -147,17 +147,17 @@ export const mdxComponents: MDXComponents = {
 
   // Lists
   ul: ({ children, ...props }) => (
-    <ul className="list-disc list-inside mb-4 space-y-1" {...props}>
+    <ul className="list-disc list-outside ml-6 mb-4 space-y-2" {...props}>
       {children}
     </ul>
   ),
   ol: ({ children, ...props }) => (
-    <ol className="list-decimal list-inside mb-4 space-y-1" {...props}>
+    <ol className="list-decimal list-outside ml-6 mb-4 space-y-2" {...props}>
       {children}
     </ol>
   ),
   li: ({ children, ...props }) => (
-    <li className="mb-1" {...props}>
+    <li className="mb-2 pl-2" {...props}>
       {children}
     </li>
   ),

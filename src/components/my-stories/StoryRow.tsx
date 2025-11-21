@@ -12,6 +12,7 @@ import {
   FiPrinter,
   FiMoreVertical,
   FiCopy,
+  FiDownload,
 } from 'react-icons/fi';
 import { Story } from '@/types/story';
 import { formatDate, FormatOptions } from '@/utils/date';
@@ -23,6 +24,7 @@ interface StoryRowProps {
   onShare: (story: Story) => void;
   onPrint: (story: Story) => void;
   onDuplicate: (story: Story) => void;
+  onDownload: (story: Story) => void;
 }
 
 export default function StoryRow({
@@ -32,6 +34,7 @@ export default function StoryRow({
   onShare,
   onPrint,
   onDuplicate,
+  onDownload,
 }: StoryRowProps) {
   const tMyStoriesPage = useTranslations('MyStoriesPage');
   const tCommonShare = useTranslations('Share');
@@ -228,6 +231,23 @@ export default function StoryRow({
               <FiPrinter className="w-4 h-4" />
             </button>
           )}
+          {story.status === 'published' ? (
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={() => onDownload(story)}
+              title={tMyStoriesPage('actions.downloadPdf')}
+            >
+              <FiDownload className="w-4 h-4" />
+            </button>
+          ) : (
+            <button
+              className="btn btn-ghost btn-sm btn-disabled"
+              disabled
+              title={tMyStoriesPage('actions.downloadNotAvailable')}
+            >
+              <FiDownload className="w-4 h-4" />
+            </button>
+          )}
           {story.status === 'writing' ? (
             <button
               className="btn btn-ghost btn-sm btn-disabled"
@@ -329,6 +349,24 @@ export default function StoryRow({
                   <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
                     <FiPrinter className="w-4 h-4" />
                     {tMyStoriesPage('actions.print')}
+                  </div>
+                )}
+                {story.status === 'published' ? (
+                  <button
+                    className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
+                    onClick={() => {
+                      onDownload(story);
+                      setOpenMenu(false);
+                      setMenuPosition(null);
+                    }}
+                  >
+                    <FiDownload className="w-4 h-4" />
+                    {tMyStoriesPage('actions.downloadPdf')}
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
+                    <FiDownload className="w-4 h-4" />
+                    {tMyStoriesPage('actions.downloadPdf')}
                   </div>
                 )}
                 {story.status === 'writing' ? (

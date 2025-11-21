@@ -13,6 +13,7 @@ import {
   FiPrinter,
   FiBook,
   FiCopy,
+  FiDownload,
 } from 'react-icons/fi';
 import { trackStoryManagement } from '../../../../../lib/analytics';
 import StoryReader from '../../../../../components/StoryReader';
@@ -20,6 +21,7 @@ import StoryRating from '../../../../../components/StoryRating';
 import ShareModal from '../../../../../components/ShareModal';
 import { useToast } from '@/hooks/useToast';
 import ToastContainer from '../../../../../components/ToastContainer';
+import { SelfPrintModal } from '../../../../../components/self-print/SelfPrintModal';
 
 interface Chapter {
   id: string;
@@ -60,6 +62,7 @@ export default function ReadStoryPage() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showSelfPrintModal, setShowSelfPrintModal] = useState(false);
   const { toasts, successWithAction, error: toastError, removeToast } = useToast();
 
   useEffect(() => {
@@ -122,6 +125,10 @@ export default function ReadStoryPage() {
 
   const handleShare = () => {
     setShowShareModal(true);
+  };
+
+  const handleDownload = () => {
+    setShowSelfPrintModal(true);
   };
 
   const handleDuplicate = async () => {
@@ -233,6 +240,11 @@ export default function ReadStoryPage() {
                 <span className="hidden sm:inline sm:ml-2">{tActions('print')}</span>
               </button>
 
+              <button onClick={handleDownload} className="btn btn-ghost btn-sm">
+                <FiDownload className="w-4 h-4" />
+                <span className="hidden sm:inline sm:ml-2">{tActions('downloadPdf')}</span>
+              </button>
+
               <button onClick={handleShare} className="btn btn-ghost btn-sm">
                 <FiShare2 className="w-4 h-4" />
                 <span className="hidden sm:inline sm:ml-2">{tActions('share')}</span>
@@ -265,6 +277,13 @@ export default function ReadStoryPage() {
           storyTitle={story.title}
           isOpen={showShareModal}
           onClose={() => setShowShareModal(false)}
+        />
+
+        <SelfPrintModal
+          isOpen={showSelfPrintModal}
+          storyId={storyId}
+          storyTitle={story?.title}
+          onClose={() => setShowSelfPrintModal(false)}
         />
       </SignedIn>
 

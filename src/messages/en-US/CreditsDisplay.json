@@ -17,6 +17,7 @@
       "eBookGeneration": "eBook Generation",
       "audioBookGeneration": "AudioBook Generation",
       "printOrder": "Print Order",
+      "selfPrinting": "Download PDF",
       "refund": "Refund",
       "voucher": "Voucher",
       "promotion": "Promotion"

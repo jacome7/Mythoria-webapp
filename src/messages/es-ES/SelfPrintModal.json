@@ -1,0 +1,53 @@
+{
+  "SelfPrintModal": {
+    "title": "Enviar PDF por correo",
+    "subtitle": "¿Listo para imprimir \"{title}\"? Generamos nuevos PDFs y te enviaremos los enlaces por correo en cuanto estén listos.",
+    "loading": {
+      "title": "Preparando tu solicitud",
+      "subtitle": "Solo un momento: comprobamos créditos y encendemos el workflow."
+    },
+    "errors": {
+      "loadFailed": "No pudimos cargar la solicitud de impresión. Cierra e inténtalo de nuevo, por favor.",
+      "insufficientCredits": "Necesitas {shortfall} créditos más para pedir este PDF.",
+      "authRequired": "Inicia sesión otra vez para continuar.",
+      "generic": "Algo salió mal. Vuelve a intentarlo en un momento.",
+      "workflowQueueFailed": "No pudimos poner los archivos en la cola de impresión. Tus créditos han sido devueltos.",
+      "invalidEmails": "Algunos correos no se ven bien: {emails}."
+    },
+    "costSection": {
+      "required": "Créditos necesarios",
+      "credits": "créditos",
+      "youHave": "Tienes",
+      "needMore": "¿Te faltan algunos créditos?",
+      "needMoreDescription": "Añade {shortfall} créditos para seguir con la descarga."
+    },
+    "emailSection": {
+      "label": "Añadir destinatarios en CC",
+      "optional": "Opcional",
+      "placeholder": "amigo@example.com, biblioteca@example.com",
+      "helper": "Siempre enviaremos los archivos a {email}. Agrega más direcciones para ponerlas en CC.",
+      "multiHelper": "Separa los correos con comas, espacios o saltos de línea.",
+      "yourAccount": "el correo de tu cuenta",
+      "accountMissing": "No encontramos el correo de tu cuenta. Actualiza el perfil e inténtalo de nuevo."
+    },
+    "finePrint": {
+      "deduction": "Los créditos se descuentan en cuanto pones el PDF en la cola.",
+      "support": "Si el correo no llega en unos minutos, mira en la carpeta de spam. Si no, escríbenos a <email>support@mythoria.pt</email>"
+    },
+    "actions": {
+      "buyCredits": "Comprar créditos",
+      "cancel": "Cancelar",
+      "confirm": "Enviar correo de descarga",
+      "close": "Cerrar",
+      "buyMoreCredits": "Añadir créditos"
+    },
+    "success": {
+      "title": "¡Correo en camino!",
+      "description": "Tu PDF quedó en cola y enviaremos los enlaces muy pronto.",
+      "recipientsHeading": "Enviaremos los enlaces a:",
+      "noRecipients": "No encontramos destinatarios para esta solicitud.",
+      "spamNotice": "Si no recibes el correo, revisa tu carpeta de Spam. Si no,",
+      "contactUs": "contáctanos y te ayudamos"
+    }
+  }
+}

@@ -29,10 +29,12 @@
     "read": "Ler",
     "edit": "Editar",
     "share": "Partilhar",
+    "duplicate": "Duplicar",
     "print": "Imprimir",
+    "downloadPdf": "Descarregar PDF",
     "delete": "Eliminar",
     "printNotAvailable": "Impressão Não Disponível",
-    "duplicate": "Duplicar"
+    "downloadNotAvailable": "Download não disponível"
   },
   "sharing": {
     "publicAccessible": "A história está agora publicamente acessível",

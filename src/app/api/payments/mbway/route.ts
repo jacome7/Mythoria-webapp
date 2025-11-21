@@ -69,11 +69,14 @@ export async function POST(request: NextRequest) {
       throw new Error('ADMIN_API_KEY environment variable is not set');
     }
 
+    const adminAuthorization = `Bearer ${adminApiKey}`;
+    const requestedAt = new Date().toISOString();
+
     const ticketResponse = await fetch(`${process.env.ADMIN_API_URL}/api/tickets`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': adminApiKey,
+        Authorization: adminAuthorization,
       },
       body: JSON.stringify({
         userId: author.authorId,
@@ -83,6 +86,8 @@ export async function POST(request: NextRequest) {
         description: `User requested MB Way payment processing for amount: €${orderTotals.totalAmount}`,
         metadata: {
           paymentMethod: 'mbway',
+          workflowType: 'mbway_auto_review',
+          requestedAt,
           amount: orderTotals.totalAmount,
           credits: orderTotals.totalCredits,
           phone: author.mobilePhone || '',
@@ -92,6 +97,10 @@ export async function POST(request: NextRequest) {
             name: author.displayName,
             email: author.email,
             phone: author.mobilePhone || '',
+          },
+          mbwayPayment: {
+            status: 'pending',
+            requestedAt,
           },
         },
       }),
@@ -118,7 +127,7 @@ export async function POST(request: NextRequest) {
       const managersResponse = await fetch(`${process.env.ADMIN_API_URL}/api/admin/managers`, {
         method: 'GET',
         headers: {
-          'x-api-key': adminApiKey,
+          Authorization: adminAuthorization,
         },
       });
 
@@ -176,6 +185,7 @@ export async function POST(request: NextRequest) {
         method: 'POST',
         body: JSON.stringify({
           templateId: 'mbway-payment-instructions',
+          entityId: ticket.id,
           recipients: [
             {
               email: author.email,
