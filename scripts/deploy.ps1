@@ -30,7 +30,7 @@ function Show-Help {
     Write-Host ""
     Write-Host "Options:" -ForegroundColor Yellow
     Write-Host "  -Staging     Deploy to the staging service ($BASE_SERVICE_NAME-staging)" -ForegroundColor White
-    Write-Host "  -Fast        Reuse last built image (skip build/lint/tests) and deploy to Cloud Run" -ForegroundColor White
+    Write-Host "  -Fast        Skip local lint/typecheck/tests, submit to Cloud Build for deployment" -ForegroundColor White
     Write-Host "  -Help        Show this help message" -ForegroundColor White
     Write-Host ""
     Write-Host "Note: This script now uses Google Secret Manager for sensitive data." -ForegroundColor Cyan
@@ -110,16 +110,9 @@ function Deploy-With-CloudBuild {
 }
 
 function Deploy-Fast {
-    Write-Info "Fast deploy: reusing last built image from Container Registry"
-    $digest = (& gcloud container images list-tags $IMAGE_NAME --format="get(digest)" --limit=1 --sort-by=~timestamp 2>$null)
-    if (-not $digest) {
-        Write-Err "No prior image found for $IMAGE_NAME. Fast deploy requires an existing image."
-        throw "Missing image"
-    }
-    $imageRef = "$IMAGE_NAME@sha256:$digest"
-    Write-Info "Deploying image $imageRef to Cloud Run service $SERVICE_NAME in $REGION"
-    & gcloud run deploy $SERVICE_NAME --image $imageRef --region $REGION --platform managed --quiet
-    Write-Success "Fast deploy submitted"
+    Write-Info "Fast deploy: skipping local lint/typecheck/tests, submitting to Cloud Build"
+    Write-Info "Cloud Build will build and deploy the latest code from the repository"
+    Deploy-With-CloudBuild
 }
 
 function Test-Deployment {
@@ -147,6 +140,7 @@ function Main {
 
     Test-Prerequisites
     if ($Fast) {
+        Write-Info "Fast mode: skipping lint, typecheck, and tests"
         Deploy-Fast
     }
     else {
