@@ -22,12 +22,25 @@ interface PrintingOption {
   description: string;
 }
 
+export interface PaymentOrderBreakdown {
+  basePrice: number;
+  extraChaptersCost: number;
+  extraCopiesCost: number;
+  shippingCost: number;
+}
+
+export interface PaymentOrderDetails {
+  numberOfCopies: number;
+  totalCost: number;
+  breakdown: PaymentOrderBreakdown;
+}
+
 interface PaymentStepProps {
   story: Story;
   selectedPrintingOption: PrintingOption | null;
   onSelectPrintingOption: (option: PrintingOption) => void;
   onBack: () => void;
-  onPlaceOrder: (numberOfCopies: number) => void;
+  onPlaceOrder: (order: PaymentOrderDetails) => void;
   loading: boolean;
 }
 
@@ -151,12 +164,30 @@ export default function PaymentStep({
     return extraCopies * extraBookCopyCost;
   };
 
-  const calculateTotalCost = () => {
-    if (!selectedPrintingOption) return 0;
+  const getCostBreakdown = (): PaymentOrderBreakdown | null => {
+    if (!selectedPrintingOption) {
+      return null;
+    }
     const extraChapters = calculateExtraChapters();
-    const extraChaptersCostTotal = extraChapters * extraChapterCost * numberOfCopies; // Each copy needs extra chapters
-    const extraCopiesCost = calculateExtraCopiesCost();
-    return selectedPrintingOption.credits + extraChaptersCostTotal + extraCopiesCost + shippingCost;
+    return {
+      basePrice: selectedPrintingOption.credits,
+      extraChaptersCost: extraChapters * extraChapterCost * numberOfCopies,
+      extraCopiesCost: calculateExtraCopiesCost(),
+      shippingCost,
+    };
+  };
+
+  const calculateTotalCost = () => {
+    const breakdown = getCostBreakdown();
+    if (!breakdown) {
+      return 0;
+    }
+    return (
+      breakdown.basePrice +
+      breakdown.extraChaptersCost +
+      breakdown.extraCopiesCost +
+      breakdown.shippingCost
+    );
   };
 
   const hasInsufficientCredits = () => {
@@ -175,8 +206,16 @@ export default function PaymentStep({
   };
 
   const handleConfirmOrder = () => {
+    const breakdown = getCostBreakdown();
+    if (!breakdown) {
+      return;
+    }
     setShowConfirmModal(false);
-    onPlaceOrder(numberOfCopies);
+    onPlaceOrder({
+      numberOfCopies,
+      totalCost: calculateTotalCost(),
+      breakdown,
+    });
   };
 
   if (loadingData) {

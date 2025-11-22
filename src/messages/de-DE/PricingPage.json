@@ -32,14 +32,14 @@
       "creditsHeader": "Credits",
       "services": {
         "generateEbook": "Digitales E-Book erstellen",
-        "downloadPdf": "Ein druckbares PDF herunterladen",
+        "downloadPdf": "Selbstausdruck (PDF herunterladen)",
         "narrateAudiobook": "Buch vertonen (Hörbuch)",
         "editBook": "Ein Buch bearbeiten:",
         "manualEditing": "Manuelle Bearbeitung",
         "textReviewAI": "Textprüfung mit KI",
         "generateNewImages": "Neue Bilder generieren",
-        "printShipBook": "Buch drucken und versenden:",
-        "softCover": "Softcover",
+        "printShipBook": "Online-Druck (Drucken & Versenden):",
+        "softCover": "Gedrucktes Buch",
         "extraBookCopy": "Extra Buchexemplar",
         "extraChapterCost": "Kosten für zusätzliche Kapitel",
         "shippingCost": "Versandkosten"
@@ -47,7 +47,7 @@
       "serviceNames": {
         "ebook": "Digitales Buch (E-Book) erstellen",
         "audiobook": "Ein Hörbuch erstellen",
-        "printed_book": "Ein gedrucktes Softcover-Buch bestellen und liefern lassen"
+        "printed_book": "Ein gedrucktes Buch bestellen und liefern lassen"
       },
       "tableHeaders": {
         "service": "Service",
@@ -69,10 +69,10 @@
           "description": "Verwandle deine Geschichte in ein mitreißendes Hörbuch mit professioneller Vertonung."
         },
         "printedBook": {
-          "title": "Gedrucktes Softcover-Buch bestellen und versenden",
-          "description": "Erhalte ein wunderschönes Softcover-Buch direkt zu dir nach Hause geliefert.",
+          "title": "Gedrucktes Buch bestellen und versenden",
+          "description": "Erhalte ein wunderschönes physisches Buch direkt zu dir nach Hause geliefert.",
           "printingOptions": [
-            "Premium-Softcover-Bindung",
+            "Premium-Bindung",
             "Hochwertiges Papier und Druck",
             "Professionelles Cover-Design",
             "Weltweiter Versand möglich"
@@ -86,7 +86,8 @@
       "textReview": "Die ersten 5 Korrekturen sind gratis. Wir berechnen nur pro Paket von 5 Textänderungen.",
       "imageGeneration": "Die erste Bildbearbeitung ist kostenlos.",
       "printedBooks": "Beinhaltet die ersten 4 Kapitel.",
-      "extraChapterCost": "Gilt für jede Kopie über die ersten 4 Kapitel hinaus."
+      "extraChapterCost": "Gilt für jede Kopie über die ersten 4 Kapitel hinaus.",
+      "selfPrinting": "Enthält formatierte PDF-Dateien und Druckanleitung. Drucke so viele Exemplare wie du möchtest in deiner lokalen Druckerei."
     },
     "whyCredits": {
       "title": "Warum ein Credit-System?",

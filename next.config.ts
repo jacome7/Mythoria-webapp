@@ -46,6 +46,12 @@ const nextConfig: NextConfig = {
         hostname: 'storage.googleapis.com',
         pathname: '/mythoria-public/**',
       },
+      // ElevenLabs CDN
+      {
+        protocol: 'https',
+        hostname: 'eleven-public-cdn.elevenlabs.io',
+        pathname: '/**',
+      },
     ],
   },
 

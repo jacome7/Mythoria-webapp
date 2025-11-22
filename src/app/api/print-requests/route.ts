@@ -160,6 +160,9 @@ export async function POST(request: NextRequest) {
         { status: 404 },
       );
     }
+    // Normalize number of copies (web UI caps between 1 and 10)
+    const numberOfCopies = Math.max(1, Math.min(body.numberOfCopies ?? 1, 10));
+
     // ------------------------------------------------------------------
     // PRE-CHECK: Validate total cost & credit sufficiency (do NOT deduct yet)
     // ------------------------------------------------------------------
@@ -203,6 +206,7 @@ export async function POST(request: NextRequest) {
           chapterCount: body.chapterCount,
           totalCost: totalCost,
           extraChapters: Math.max(0, (body.chapterCount || 4) - 4),
+          numberOfCopies,
         },
         status: 'requested',
       })
@@ -253,7 +257,7 @@ export async function POST(request: NextRequest) {
             title: body.printingOption?.title,
             credits: body.printingOption?.credits,
           },
-          numberOfCopies: body.numberOfCopies || 1,
+          numberOfCopies,
           totalCost: totalCost,
           orderDetails: {
             printRequestId: newRequest[0].id,
@@ -392,7 +396,7 @@ export async function POST(request: NextRequest) {
             OrderNumber: orderNumber,
             OrderDate: orderDate,
             CreditCost: totalCost,
-            numberOfCopies: body.numberOfCopies || 1,
+            numberOfCopies,
             storyTitle: story[0]?.title || '',
             CoverImageURL: story[0]?.featureImageUri || '',
             line1: addressRecord?.line1 || '',

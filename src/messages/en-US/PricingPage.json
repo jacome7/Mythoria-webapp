@@ -32,14 +32,14 @@
       "creditsHeader": "Credits",
       "services": {
         "generateEbook": "Generate a digital eBook",
-        "downloadPdf": "Download a printable PDF",
+        "downloadPdf": "Self Printing (Download PDF)",
         "narrateAudiobook": "Narrate a book (audio-book)",
         "editBook": "Edit a book:",
         "manualEditing": "Manual editing",
         "textReviewAI": "Text review with AI",
         "generateNewImages": "Generate new images",
-        "printShipBook": "Print and ship book:",
-        "softCover": "Soft cover",
+        "printShipBook": "Online Printing (Print & Ship):",
+        "softCover": "Printed Book",
         "extraBookCopy": "Extra book copy",
         "extraChapterCost": "Extra chapter Cost",
         "shippingCost": "Shipping cost"
@@ -47,7 +47,7 @@
       "serviceNames": {
         "ebook": "Generate a digital book (eBook)",
         "audiobook": "Generate an audiobook",
-        "printed_book": "Order a printed & shipped softcover book"
+        "printed_book": "Order a printed & shipped book"
       },
       "tableHeaders": {
         "service": "Service",
@@ -69,10 +69,10 @@
           "description": "Transform your story into an engaging audiobook with professional narration."
         },
         "printedBook": {
-          "title": "Order printed & shipped softcover book",
-          "description": "Get a beautiful physical softcover book delivered to your door.",
+          "title": "Order printed & shipped book",
+          "description": "Get a beautiful physical book delivered to your door.",
           "printingOptions": [
-            "Premium softcover binding",
+            "Premium binding",
             "High-quality paper and printing",
             "Professional cover design",
             "Worldwide shipping available"
@@ -86,7 +86,8 @@
       "textReview": "The first 5 edits are free. We only charge per group of 5 text changes.",
       "imageGeneration": "The first image editing is free.",
       "printedBooks": "Includes first 4 chapters.",
-      "extraChapterCost": "Applies to every copy beyond the first 4 chapters."
+      "extraChapterCost": "Applies to every copy beyond the first 4 chapters.",
+      "selfPrinting": "Includes formatted PDF files and printing guide. Print as many copies as you want at your local print shop."
     },
     "whyCredits": {
       "title": "Why a Credit-Based System?",

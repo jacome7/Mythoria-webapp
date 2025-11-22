@@ -32,14 +32,14 @@
       "creditsHeader": "Créditos",
       "services": {
         "generateEbook": "Gerar um eBook digital",
-        "downloadPdf": "Descarregar um PDF imprimível",
+        "downloadPdf": "Impressão Própria (Descarregar PDF)",
         "narrateAudiobook": "Narrar um livro (audiolivro)",
         "editBook": "Editar um livro:",
         "manualEditing": "Edição manual",
         "textReviewAI": "Revisão de texto com IA",
         "generateNewImages": "Gerar novas imagens",
-        "printShipBook": "Imprimir e enviar livro:",
-        "softCover": "Capa mole",
+        "printShipBook": "Impressão Online (Imprimir e Enviar):",
+        "softCover": "Livro Impresso",
         "extraBookCopy": "Cópia extra do livro",
         "extraChapterCost": "Custo de capítulo extra",
         "shippingCost": "Custo de envio"
@@ -70,9 +70,9 @@
         },
         "printedBook": {
           "title": "Encomendar livro impresso e enviado",
-          "description": "Receba um belo livro físico de capa dura entregue na sua porta.",
+          "description": "Receba um belo livro físico entregue na sua porta.",
           "printingOptions": [
-            "Encadernação premium de capa dura",
+            "Encadernação premium",
             "Papel e impressão de alta qualidade",
             "Design de capa profissional",
             "Envio mundial disponível"
@@ -86,7 +86,8 @@
       "textReview": "As primeiras 5 edições são gratuitas. Apenas cobramos por cada grupo de 5 alterações de texto.",
       "imageGeneration": "A primeira edição de imagem é gratuita.",
       "printedBooks": "Inclui os primeiros 4 capítulos.",
-      "extraChapterCost": "Aplica-se a cada cópia para além dos primeiros 4 capítulos."
+      "extraChapterCost": "Aplica-se a cada cópia para além dos primeiros 4 capítulos.",
+      "selfPrinting": "Inclui ficheiros PDF formatados e guia de impressão. Imprima quantas cópias quiser na sua gráfica local."
     },
     "whyCredits": {
       "title": "Porquê um Sistema Baseado em Créditos?",

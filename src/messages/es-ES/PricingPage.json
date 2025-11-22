@@ -32,14 +32,14 @@
       "creditsHeader": "Créditos",
       "services": {
         "generateEbook": "Generar un eBook digital",
-        "downloadPdf": "Descargar un PDF imprimible",
-        "narrateAudiobook": "Narrar un libro (audiolibro)",
+        "downloadPdf": "Autoimpresión (Descargar PDF)",
+        "narrateAudiobook": "Narrar un libro (audiolivro)",
         "editBook": "Editar un libro:",
         "manualEditing": "Edición manual",
         "textReviewAI": "Revisión de texto con IA",
         "generateNewImages": "Generar nuevas imágenes",
-        "printShipBook": "Imprimir y enviar libro:",
-        "softCover": "Tapa blanda",
+        "printShipBook": "Impresión Online (Imprimir y Enviar):",
+        "softCover": "Libro Impreso",
         "extraBookCopy": "Copia extra del libro",
         "extraChapterCost": "Coste de capítulo adicional",
         "shippingCost": "Coste de envío"
@@ -47,7 +47,7 @@
       "serviceNames": {
         "ebook": "Generar un libro digital (eBook)",
         "audiobook": "Generar un audiolibro",
-        "printed_book": "Pedir un libro en tapa dura impreso y enviado"
+        "printed_book": "Pedir un libro impreso y enviado"
       },
       "tableHeaders": {
         "service": "Servicio",
@@ -69,10 +69,10 @@
           "description": "Transforma tu historia en un audiolibro cautivador con narración profesional."
         },
         "printedBook": {
-          "title": "Pedir un libro en tapa dura impreso y enviado",
-          "description": "Recibe un precioso libro físico de tapa dura en tu puerta.",
+          "title": "Pedir un libro impreso y enviado",
+          "description": "Recibe un precioso libro físico en tu puerta.",
           "printingOptions": [
-            "Encuadernación de tapa dura premium",
+            "Encuadernación premium",
             "Papel e impresión de alta calidad",
             "Diseño de portada profesional",
             "Envío disponible a todo el mundo"
@@ -86,7 +86,8 @@
       "textReview": "Las primeras 5 ediciones son gratis. Solo cobramos por grupos de 5 cambios de texto.",
       "imageGeneration": "La primera edición de imagen es gratis.",
       "printedBooks": "Incluye los primeros 4 capítulos.",
-      "extraChapterCost": "Se aplica a cada copia más allá de los primeros 4 capítulos."
+      "extraChapterCost": "Se aplica a cada copia más allá de los primeros 4 capítulos.",
+      "selfPrinting": "Incluye archivos PDF formateados y guía de impresión. Imprime tantas copias como quieras en tu imprenta local."
     },
     "whyCredits": {
       "title": "¿Por qué un sistema de créditos?",

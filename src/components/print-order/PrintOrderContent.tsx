@@ -7,6 +7,7 @@ import { FiArrowLeft, FiMapPin, FiPrinter, FiBook } from 'react-icons/fi';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { type Address as AddressType } from '@/components/AddressCard';
+import type { PaymentOrderDetails } from '@/components/print-order/steps/PaymentStep';
 
 // Lazy load step components
 const StoryStep = dynamic(() => import('@/components/print-order/steps/StoryStep'));
@@ -121,16 +122,11 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
       setLoading(false);
     }
   };
-  const handlePlaceOrder = async (numberOfCopies: number) => {
+  const handlePlaceOrder = async ({ numberOfCopies, totalCost }: PaymentOrderDetails) => {
     if (!story || !selectedAddress || !selectedPrintingOption) {
       setError(tPrintOrder('errors.missingRequiredFields'));
       return;
     }
-
-    // Calculate total cost including extra chapters
-    const extraChapters = Math.max(0, story.chapterCount - 4);
-    const extraChapterCost = 2; // This should ideally come from the pricing API
-    const totalCost = selectedPrintingOption.credits + extraChapters * extraChapterCost;
 
     try {
       setOrderLoading(true);

@@ -32,14 +32,14 @@
       "creditsHeader": "Crédits",
       "services": {
         "generateEbook": "Générer un ebook numérique",
-        "downloadPdf": "Télécharger un PDF imprimable",
+        "downloadPdf": "Auto-impression (Télécharger PDF)",
         "narrateAudiobook": "Raconter un livre (audio-book)",
         "editBook": "Modifier un livre:",
         "manualEditing": "Édition manuelle",
         "textReviewAI": "Revue de texte avec AI",
         "generateNewImages": "Générer de nouvelles images",
-        "printShipBook": "Imprimer et expédier le livre:",
-        "softCover": "Couverture souple",
+        "printShipBook": "Impression en ligne (Imprimer et expédier):",
+        "softCover": "Livre Imprimé",
         "extraBookCopy": "Copie supplémentaire du livre",
         "extraChapterCost": "Coût du chapitre supplémentaire",
         "shippingCost": "Frais d'expédition"
@@ -47,7 +47,7 @@
       "serviceNames": {
         "ebook": "Générer un livre numérique (ebook)",
         "audiobook": "Générer un livre audio",
-        "printed_book": "Commandez un livre à couverture rigide imprimée et expédiée"
+        "printed_book": "Commander un livre imprimé et expédié"
       },
       "tableHeaders": {
         "service": "Service",
@@ -69,10 +69,10 @@
           "description": "Transformez votre histoire en un livre audio engageant avec une narration professionnelle."
         },
         "printedBook": {
-          "title": "Commandez un livre à couverture rigide imprimée et expédiée",
-          "description": "Obtenez un beau livre à couverture rigide physique livré à votre porte.",
+          "title": "Commander un livre imprimé et expédié",
+          "description": "Obtenez un beau livre physique livré à votre porte.",
           "printingOptions": [
-            "Reliure à couverture rigide premium",
+            "Reliure premium",
             "Papier et impression de haute qualité",
             "Conception de couverture professionnelle",
             "Expédition mondiale disponible"
@@ -86,7 +86,8 @@
       "textReview": "Les 5 premières modifications sont gratuites. Nous ne facturons que par groupe de 5 changements de texte.",
       "imageGeneration": "Le premier montage d'image est gratuit.",
       "printedBooks": "Inclut les 4 premiers chapitres.",
-      "extraChapterCost": "S'applique à chaque copie au-delà des 4 premiers chapitres."
+      "extraChapterCost": "S'applique à chaque copie au-delà des 4 premiers chapitres.",
+      "selfPrinting": "Comprend des fichiers PDF formatés et un guide d'impression. Imprimez autant d'exemplaires que vous le souhaitez chez votre imprimeur local."
     },
     "whyCredits": {
       "title": "Pourquoi un système basé sur le crédit?",

@@ -322,6 +322,31 @@ export default function AboutUsPage() {
                     </div>
                   </div>
 
+                  {/* ElevenLabs */}
+                  <div className="flex flex-col lg:flex-row gap-8 items-center">
+                    <div className="lg:w-2/5 flex justify-center">
+                      <div className="relative w-full max-w-xs flex justify-center">
+                        <a
+                          href="https://elevenlabs.io/startup-grants"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Image
+                            src="https://eleven-public-cdn.elevenlabs.io/payloadcms/pwsc4vchsqt-ElevenLabsGrants.webp"
+                            alt="ElevenLabs"
+                            width={250}
+                            height={100}
+                            style={{ width: '250px', height: 'auto' }}
+                            className="rounded-lg hover:opacity-90 transition-opacity"
+                          />
+                        </a>
+                      </div>
+                    </div>
+                    <div className="lg:w-3/5 text-center lg:text-left">
+                      <p className="text-lg leading-relaxed">{t('partners.elevenLabs')}</p>
+                    </div>
+                  </div>
+
                   {/* Disclaimer */}
                   <div className="text-center mt-8 text-sm text-base-content/60">
                     <p>* {t('partners.disclaimer')}</p>

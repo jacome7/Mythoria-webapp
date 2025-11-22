@@ -51,6 +51,7 @@ export default function PricingPage() {
     imageGeneration: tPricingPage('infoTexts.imageGeneration'),
     printedBooks: tPricingPage('infoTexts.printedBooks'),
     extraChapterCost: tPricingPage('infoTexts.extraChapterCost'),
+    selfPrinting: tPricingPage('infoTexts.selfPrinting'),
   };
 
   const handleInfoClick = (infoType: string) => {
@@ -158,16 +159,6 @@ export default function PricingPage() {
 
                     <li className="flex items-center justify-between">
                       <span className="flex items-center">
-                        <FaFileDownload className="mr-2 text-primary" />
-                        {tPricingPage('serviceCosts.services.downloadPdf')}
-                      </span>
-                      <span className="font-semibold">
-                        {getServiceCost(SELF_PRINTING_SERVICE_CODE)}
-                      </span>
-                    </li>
-
-                    <li className="flex items-center justify-between">
-                      <span className="flex items-center">
                         <FaVolumeUp className="mr-2 text-primary" />
                         {tPricingPage('serviceCosts.services.narrateAudiobook')}
                       </span>
@@ -211,6 +202,22 @@ export default function PricingPage() {
                           <span className="font-semibold">{getServiceCost('AiImageEditing')}</span>
                         </li>
                       </ul>
+                    </li>
+
+                    <li className="flex items-center justify-between">
+                      <span className="flex items-center">
+                        <FaFileDownload className="mr-2 text-primary" />
+                        {tPricingPage('serviceCosts.services.downloadPdf')}
+                        <button
+                          onClick={() => handleInfoClick('selfPrinting')}
+                          className="ml-2 text-info hover:text-info-focus"
+                        >
+                          <FaInfoCircle className="text-sm" />
+                        </button>
+                      </span>
+                      <span className="font-semibold">
+                        {getServiceCost(SELF_PRINTING_SERVICE_CODE)}
+                      </span>
                     </li>
 
                     <li>
