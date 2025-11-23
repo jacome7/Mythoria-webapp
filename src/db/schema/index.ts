@@ -20,6 +20,7 @@ export * from './print';
 export * from './ai-edits';
 export * from './promotion-codes';
 export * from './leads';
+export * from './faq';
 
 // Relations
 export * from './relations';

@@ -110,27 +110,6 @@
         }
       }
     },
-    "faq": {
-      "title": "Häufig gestellte Fragen",
-      "questions": {
-        "expiration": {
-          "question": "Verfallen Credits?",
-          "answer": "Nein, deine Mythoria-Credits verfallen nie! Nutze sie, wann immer dich die Inspiration packt."
-        },
-        "refund": {
-          "question": "Kann ich ungenutzte Credits erstatten lassen?",
-          "answer": "Aktuell sind Credits nicht erstattbar. Du kannst sie aber für jeden unserer Services einsetzen oder später an andere Nutzer:innen verschenken."
-        },
-        "payment": {
-          "question": "Welche Zahlungsmethoden akzeptiert ihr?",
-          "answer": "Wir planen, alle gängigen Kreditkarten (Visa, Mastercard, American Express) sowie PayPal zu unterstützen. (Zahlungsintegration folgt in Kürze)"
-        },
-        "shipping": {
-          "question": "Wie werden gedruckte Bücher verschickt?",
-          "answer": "Gedruckte Bücher versenden wir über den regulären Postweg. Versandzeiten und -kosten hängen von deinem Standort ab. Beim Checkout für gedruckte Bücher siehst du alle Details."
-        }
-      }
-    },
     "errors": {
       "loadingFailed": "Preisinformationen konnten nicht geladen werden"
     }

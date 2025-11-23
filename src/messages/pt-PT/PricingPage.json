@@ -110,27 +110,6 @@
         }
       }
     },
-    "faq": {
-      "title": "Perguntas Frequentes",
-      "questions": {
-        "expiration": {
-          "question": "Os créditos expiram?",
-          "answer": "Não, os seus créditos Mythoria nunca expiram! Pode usá-los sempre que a inspiração surgir."
-        },
-        "refund": {
-          "question": "Posso obter um reembolso dos créditos não utilizados?",
-          "answer": "Atualmente, os créditos não são reembolsáveis. No entanto, podem ser usados para qualquer um dos nossos serviços ou oferecidos a outro utilizador no futuro."
-        },
-        "payment": {
-          "question": "Que métodos de pagamento aceitam?",
-          "answer": "Planeamos aceitar todos os principais cartões de crédito (Visa, MasterCard, American Express) e PayPal. (Integração de pagamento em breve)"
-        },
-        "shipping": {
-          "question": "Como são enviados os livros impressos?",
-          "answer": "Os livros impressos são enviados via serviços postais standard. Os tempos e custos de envio podem variar dependendo da sua localização. Verá informações detalhadas de envio no checkout ao encomendar um livro impresso."
-        }
-      }
-    },
     "errors": {
       "loadingFailed": "Falha ao carregar informação de preços"
     }

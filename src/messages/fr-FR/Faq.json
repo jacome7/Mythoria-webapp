@@ -1,0 +1,26 @@
+{
+  "Faq": {
+    "searchPlaceholder": "Rechercher dans la FAQ...",
+    "allSections": "Tous les Sujets",
+    "noResults": "Aucune question fréquente ne correspond à votre recherche. Essayez des mots-clés différents ou parcourez tous les sujets.",
+    "loading": "Chargement de la FAQ...",
+    "error": "Impossible de charger la FAQ. Veuillez réessayer plus tard.",
+    "viewAllInSection": "Voir toutes les {count} questions dans {section}",
+    "sections": {
+      "getting-started-and-accounts": "Premiers Pas et Comptes",
+      "story-creation-and-workflow": "Création d'Histoires et Flux de Travail",
+      "characters-and-personalization": "Personnages et Personnalisation",
+      "art-styles-images-and-photos": "Styles Artistiques, Images et Photos",
+      "ai-editing-translations-and-advanced-tools": "Édition IA, Traductions et Outils Avancés",
+      "credits-pricing-and-payments": "Crédits, Tarification et Paiements",
+      "printing-shipping-and-physical-books": "Impression, Expédition et Livres Physiques",
+      "audiobooks-and-listening-experience": "Livres Audio et Expérience d'Écoute",
+      "reading-sharing-and-public-stories": "Lecture, Partage et Histoires Publiques",
+      "privacy-safety-and-children": "Confidentialité, Sécurité et Enfants",
+      "ownership-copyright-and-ai": "Propriété, Droits d'Auteur et IA",
+      "languages-locales-and-accessibility": "Langues, Régions et Accessibilité",
+      "partners-companies-and-schools": "Partenaires, Entreprises et Écoles",
+      "technical-issues-billing-and-support": "Problèmes Techniques, Facturation et Support"
+    }
+  }
+}

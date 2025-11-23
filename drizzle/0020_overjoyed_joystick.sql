@@ -1,0 +1,1 @@
+ALTER TABLE "faq_entries" DROP COLUMN "summary";

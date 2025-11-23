@@ -22,7 +22,8 @@ export async function fetchSelfPrintPricing(init?: RequestInit): Promise<SelfPri
   const data = (await response.json()) as SelfPrintPricingResponse;
 
   if (!response.ok || !data.success) {
-    const errorMessage = (!data.success && 'error' in data && data.error) || 'Unable to load self-print pricing';
+    const errorMessage =
+      (!data.success && 'error' in data && data.error) || 'Unable to load self-print pricing';
     throw new Error(errorMessage);
   }
 

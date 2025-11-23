@@ -17,10 +17,22 @@ export async function GET(
   const acceptLanguage = request.headers.get('accept-language') || '';
   const locale = detectLocale(acceptLanguage);
 
+  // Determine base URL to avoid 0.0.0.0 in containerized environments
+  let baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  if (!baseUrl) {
+    const host = request.headers.get('host');
+    const protocol = request.headers.get('x-forwarded-proto') || 'https';
+    if (host && !host.includes('0.0.0.0')) {
+      baseUrl = `${protocol}://${host}`;
+    }
+  }
+  // Fallback to hardcoded production URL if all else fails
+  const base = baseUrl || 'https://mythoria.pt';
+
   // Validate UUID format
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!uuidRegex.test(leadId)) {
-    return NextResponse.redirect(new URL(`/${locale}/unsubscribe?status=invalid`, request.url));
+    return NextResponse.redirect(new URL(`/${locale}/unsubscribe?status=invalid`, base));
   }
 
   try {
@@ -28,7 +40,7 @@ export async function GET(
     const lead = await leadService.getLeadById(leadId);
 
     if (!lead) {
-      return NextResponse.redirect(new URL(`/${locale}/unsubscribe?status=not-found`, request.url));
+      return NextResponse.redirect(new URL(`/${locale}/unsubscribe?status=not-found`, base));
     }
 
     // Check if already unsubscribed
@@ -37,7 +49,7 @@ export async function GET(
       return NextResponse.redirect(
         new URL(
           `/${locale}/unsubscribe?status=already-unsubscribed&email=${encodeURIComponent(sanitizedEmail)}`,
-          request.url,
+          base,
         ),
       );
     }
@@ -54,13 +66,13 @@ export async function GET(
     return NextResponse.redirect(
       new URL(
         `/${locale}/unsubscribe?status=success&email=${encodeURIComponent(sanitizedEmail)}`,
-        request.url,
+        base,
       ),
     );
   } catch (error) {
     console.error('[Unsubscribe] Error processing unsubscribe:', error);
 
-    return NextResponse.redirect(new URL(`/${locale}/unsubscribe?status=error`, request.url));
+    return NextResponse.redirect(new URL(`/${locale}/unsubscribe?status=error`, base));
   }
 }
 

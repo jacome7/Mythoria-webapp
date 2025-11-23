@@ -1,7 +1,15 @@
 import { db } from '../index';
-import { paymentOrders, paymentEvents, paymentMethods, type PaymentOrder } from '../schema';
+import {
+  paymentOrders,
+  paymentEvents,
+  paymentMethods,
+  authors,
+  type PaymentOrder,
+} from '../schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { creditPackagesService } from './credit-packages';
+import { notificationClient } from '../../lib/notifications/client';
+import { ga4Service } from '../../lib/analytics/ga4';
 
 export interface CreditPackage {
   id: number;
@@ -330,6 +338,51 @@ export const paymentService = {
         `Order ${order.orderId} completed - ${creditBundle.credits} credits added to user ${order.authorId}`,
       );
     });
+
+    // Send GA4 Purchase Event
+    try {
+      const creditBundle = order.creditBundle as { credits: number; price: number };
+      // We don't have the client_id here easily unless we stored it in the order metadata
+      // But we have the user_id (authorId) which is good for cross-device tracking if User-ID is enabled
+      await ga4Service.sendPurchaseEvent({
+        user_id: order.authorId,
+        transaction_id: order.orderId,
+        value: creditBundle.price,
+        currency: order.currency || 'EUR',
+        items: [
+          {
+            item_id: `credits-${creditBundle.credits}`,
+            item_name: `${creditBundle.credits} Credits Bundle`,
+            price: creditBundle.price,
+            quantity: 1,
+          },
+        ],
+      });
+    } catch (error) {
+      console.error('Failed to send GA4 purchase event:', error);
+    }
+
+    // Send notification to user
+    try {
+      // Fetch author details
+      const [author] = await db.select().from(authors).where(eq(authors.authorId, order.authorId));
+
+      if (author) {
+        const creditBundle = order.creditBundle as { credits: number; price: number };
+        await notificationClient.sendCreditsAddedNotification({
+          email: author.email,
+          name: author.displayName,
+          credits: creditBundle.credits,
+          preferredLocale: author.preferredLocale,
+          authorId: author.authorId,
+          source: 'revolut',
+          entityId: order.orderId,
+        });
+      }
+    } catch (error) {
+      console.error('Failed to send credits added notification:', error);
+      // Don't fail the webhook if notification fails
+    }
 
     // Save payment method if it's a new card (outside transaction - not critical)
     if (payload.payment_method && payload.payment_method.type === 'card') {

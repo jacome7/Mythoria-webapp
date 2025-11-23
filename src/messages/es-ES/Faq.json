@@ -1,0 +1,26 @@
+{
+  "Faq": {
+    "searchPlaceholder": "Buscar preguntas frecuentes...",
+    "allSections": "Todos los Temas",
+    "noResults": "No se encontraron preguntas frecuentes que coincidan con tu búsqueda. Prueba con palabras clave diferentes o navega por todos los temas.",
+    "loading": "Cargando preguntas frecuentes...",
+    "error": "No se pudieron cargar las preguntas frecuentes. Por favor, inténtalo de nuevo más tarde.",
+    "viewAllInSection": "Ver todas las {count} preguntas en {section}",
+    "sections": {
+      "getting-started-and-accounts": "Primeros Pasos y Cuentas",
+      "story-creation-and-workflow": "Creación de Historias y Flujo de Trabajo",
+      "characters-and-personalization": "Personajes y Personalización",
+      "art-styles-images-and-photos": "Estilos Artísticos, Imágenes y Fotos",
+      "ai-editing-translations-and-advanced-tools": "Edición con IA, Traducciones y Herramientas Avanzadas",
+      "credits-pricing-and-payments": "Créditos, Precios y Pagos",
+      "printing-shipping-and-physical-books": "Impresión, Envío y Libros Físicos",
+      "audiobooks-and-listening-experience": "Audiolibros y Experiencia de Escucha",
+      "reading-sharing-and-public-stories": "Lectura, Compartir e Historias Públicas",
+      "privacy-safety-and-children": "Privacidad, Seguridad y Niños",
+      "ownership-copyright-and-ai": "Propiedad, Derechos de Autor e IA",
+      "languages-locales-and-accessibility": "Idiomas, Regiones y Accesibilidad",
+      "partners-companies-and-schools": "Socios, Empresas y Escuelas",
+      "technical-issues-billing-and-support": "Problemas Técnicos, Facturación y Soporte"
+    }
+  }
+}

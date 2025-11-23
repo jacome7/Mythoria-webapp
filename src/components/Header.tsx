@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useLocale } from 'next-intl';
+import { MdAccountBalanceWallet } from 'react-icons/md';
 
 const Header = () => {
   const tCommonHeader = useTranslations('Header');
@@ -277,6 +278,11 @@ const Header = () => {
                     <path d="M4 4h12a2 2 0 0 1 2 2v14l-5-3-5 3V6a2 2 0 0 0-2-2z" />
                   </svg>
                 }
+              />
+              <UserButton.Link
+                label={tCommonHeader('navigation.creditsAndPayments')}
+                href={`/${locale}/credits-and-payments`}
+                labelIcon={<MdAccountBalanceWallet className="w-4 h-4" />}
               />
             </UserButton.MenuItems>
           </UserButton>

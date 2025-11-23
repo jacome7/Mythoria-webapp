@@ -317,6 +317,14 @@ export const envManifest: EnvVarDescriptor[] = [
     note: 'Analytics instrumentation id.',
   },
   {
+    name: 'GOOGLE_ANALYTICS_API_SECRET',
+    required: true,
+    scopes: ['prod', 'runtime'],
+    secret: true,
+    source: 'secret-manager',
+    note: 'Required for server-side Measurement Protocol events.',
+  },
+  {
     name: 'NEXT_PUBLIC_GOOGLE_ADS_ID',
     required: true,
     scopes: ['prod', 'build', 'public'],

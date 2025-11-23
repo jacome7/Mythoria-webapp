@@ -389,7 +389,10 @@ export default function PublicStoryPage() {
                 </a>
 
                 <SignedIn>
-                  <button className="btn btn-outline flex items-center gap-2" onClick={openSelfPrintModal}>
+                  <button
+                    className="btn btn-outline flex items-center gap-2"
+                    onClick={openSelfPrintModal}
+                  >
                     <FiDownload className="w-4 h-4" />
                     {tPublicStoryPage('actions.downloadPdf')}
                   </button>

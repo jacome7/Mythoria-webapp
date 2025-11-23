@@ -102,6 +102,10 @@ export async function POST(request: NextRequest) {
             status: 'pending',
             requestedAt,
           },
+          analytics: {
+            client_id: request.cookies.get('_ga')?.value,
+            session_id: request.cookies.get('_ga_G3P')?.value, // Assuming G3P is part of the measurement ID, but generic _ga is safer
+          },
         },
       }),
     });

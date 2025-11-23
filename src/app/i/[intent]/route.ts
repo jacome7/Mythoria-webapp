@@ -34,8 +34,24 @@ export async function GET(request: NextRequest, context: { params: Promise<{ int
   // Detect user's preferred locale
   const locale = detectUserLocale(request);
 
+  // Determine the base URL for the redirect to avoid 0.0.0.0 in containerized environments
+  let baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
+  if (!baseUrl) {
+    const host = request.headers.get('host');
+    const protocol = request.headers.get('x-forwarded-proto') || 'https';
+    if (host && !host.includes('0.0.0.0')) {
+      baseUrl = `${protocol}://${host}`;
+    }
+  }
+
+  // Fallback to hardcoded production URL if all else fails
+  if (!baseUrl) {
+    baseUrl = 'https://mythoria.pt';
+  }
+
   // Create redirect response
-  const redirectUrl = new URL(`/${locale}`, request.url);
+  const redirectUrl = new URL(`/${locale}`, baseUrl);
   const response = NextResponse.redirect(redirectUrl);
 
   // Store context in cookies if we have valid data

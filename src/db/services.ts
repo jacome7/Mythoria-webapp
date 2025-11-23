@@ -23,6 +23,7 @@ import { normalizeLocale, detectUserLocaleFromEmail } from '@/utils/locale-utils
 export { paymentService } from './services/payment';
 export { creditPackagesService } from './services/credit-packages';
 export { blogService } from './services/blog';
+export { faqService } from './services/faq';
 
 // Author operations
 export const authorService = {

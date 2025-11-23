@@ -16,6 +16,7 @@ import {
 import { useTranslations } from 'next-intl';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
 import { SELF_PRINTING_SERVICE_CODE } from '@/constants/pricing';
+import FaqComponent from '@/components/faq/FaqComponent';
 
 interface CreditPackage {
   id: number;
@@ -39,6 +40,7 @@ interface Service {
 
 export default function PricingPage() {
   const tPricingPage = useTranslations('PricingPage');
+  const tFaq = useTranslations('Faq');
   const [services, setServices] = useState<Service[]>([]);
   const [creditPackages, setCreditPackages] = useState<CreditPackage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -376,59 +378,19 @@ export default function PricingPage() {
 
         <div className="divider my-16"></div>
 
-        {/* FAQ Section */}
-        <ScrollFadeIn delay={200}>
-          <section id="faq" className="my-16 px-2 sm:px-4">
-            <h2 className="text-4xl font-bold text-center mb-10">{tPricingPage('faq.title')}</h2>
-            <div className="space-y-4 max-w-4xl mx-auto px-0 sm:px-4">
-              <div
-                tabIndex={0}
-                className="collapse collapse-plus border border-base-300 bg-base-200 rounded-box"
-              >
-                <div className="collapse-title text-sm sm:text-l font-medium flex items-center">
-                  <FaQuestionCircle className="mr-2 text-primary" />{' '}
-                  {tPricingPage('faq.questions.expiration.question')}
-                </div>
-                <div className="collapse-content">
-                  <p>{tPricingPage('faq.questions.expiration.answer')}</p>
-                </div>
-              </div>
-              <div
-                tabIndex={1}
-                className="collapse collapse-plus border border-base-300 bg-base-200 rounded-box"
-              >
-                <div className="collapse-title text-sm sm:text-l font-medium flex items-center">
-                  <FaQuestionCircle className="mr-2 text-primary" />{' '}
-                  {tPricingPage('faq.questions.refund.question')}
-                </div>
-                <div className="collapse-content">
-                  <p>{tPricingPage('faq.questions.refund.answer')}</p>
-                </div>
-              </div>
-              <div
-                tabIndex={2}
-                className="collapse collapse-plus border border-base-300 bg-base-200 rounded-box"
-              >
-                <div className="collapse-title text-sm sm:text-l font-medium flex items-center">
-                  <FaQuestionCircle className="mr-2 text-primary" />{' '}
-                  {tPricingPage('faq.questions.payment.question')}
-                </div>
-                <div className="collapse-content">
-                  <p>{tPricingPage('faq.questions.payment.answer')}</p>
-                </div>
-              </div>
-              <div
-                tabIndex={3}
-                className="collapse collapse-plus border border-base-300 bg-base-200 rounded-box"
-              >
-                <div className="collapse-title text-sm sm:text-l font-medium flex items-center">
-                  <FaQuestionCircle className="mr-2 text-primary" />{' '}
-                  {tPricingPage('faq.questions.shipping.question')}
-                </div>
-                <div className="collapse-content">
-                  <p>{tPricingPage('faq.questions.shipping.answer')}</p>
-                </div>
-              </div>
+        {/* New FAQ Component Section - Pricing Related */}
+        <ScrollFadeIn delay={300}>
+          <section id="faq-pricing" className="my-16 px-2 sm:px-4">
+            <h2 className="text-4xl font-bold text-center mb-10">More Pricing Questions?</h2>
+            <div className="max-w-4xl mx-auto">
+              <FaqComponent
+                initialSection="credits-pricing-and-payments"
+                searchPlaceholder={tFaq('searchPlaceholder')}
+                allSectionsLabel={tFaq('allSections')}
+                noResultsMessage={tFaq('noResults')}
+                loadingMessage={tFaq('loading')}
+                errorMessage={tFaq('error')}
+              />
             </div>
           </section>
         </ScrollFadeIn>

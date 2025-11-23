@@ -1,0 +1,26 @@
+{
+  "Faq": {
+    "searchPlaceholder": "FAQs durchsuchen...",
+    "allSections": "Alle Themen",
+    "noResults": "Keine FAQs gefunden, die Ihrer Suche entsprechen. Versuchen Sie andere Suchbegriffe oder durchsuchen Sie alle Themen.",
+    "loading": "FAQs werden geladen...",
+    "error": "FAQs konnten nicht geladen werden. Bitte versuchen Sie es später erneut.",
+    "viewAllInSection": "Alle {count} Fragen in {section} anzeigen",
+    "sections": {
+      "getting-started-and-accounts": "Erste Schritte & Konten",
+      "story-creation-and-workflow": "Geschichtenerstellung & Workflow",
+      "characters-and-personalization": "Charaktere & Personalisierung",
+      "art-styles-images-and-photos": "Kunststile, Bilder & Fotos",
+      "ai-editing-translations-and-advanced-tools": "KI-Bearbeitung, Übersetzungen & Erweiterte Tools",
+      "credits-pricing-and-payments": "Guthaben, Preise & Zahlungen",
+      "printing-shipping-and-physical-books": "Druck, Versand & Physische Bücher",
+      "audiobooks-and-listening-experience": "Hörbücher & Hörerlebnis",
+      "reading-sharing-and-public-stories": "Lesen, Teilen & Öffentliche Geschichten",
+      "privacy-safety-and-children": "Datenschutz, Sicherheit & Kinder",
+      "ownership-copyright-and-ai": "Eigentum, Urheberrecht & KI",
+      "languages-locales-and-accessibility": "Sprachen, Regionen & Barrierefreiheit",
+      "partners-companies-and-schools": "Partner, Unternehmen & Schulen",
+      "technical-issues-billing-and-support": "Technische Probleme, Abrechnung & Support"
+    }
+  }
+}

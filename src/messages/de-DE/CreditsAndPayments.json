@@ -1,0 +1,30 @@
+{
+  "title": "Guthaben und Zahlungen",
+  "subtitle": "Verwalte dein Guthaben und sieh dir deinen Transaktionsverlauf an",
+  "currentBalance": "Aktuelles Guthaben",
+  "creditsAvailable": "Verfügbare Credits",
+  "needMore": "Knapp bei Kasse?",
+  "checkPricing": "Sieh dir unsere Pakete an",
+  "historyTitle": "Transaktionsverlauf",
+  "credits": "Credits",
+  "buyCredits": "Credits kaufen",
+  "table": {
+    "date": "Datum",
+    "event": "Ereignis",
+    "amount": "Betrag",
+    "balance": "Saldo"
+  },
+  "eventTypes": {
+    "initialCredit": "Startguthaben",
+    "creditPurchase": "Credit-Kauf",
+    "eBookGeneration": "eBook-Erstellung",
+    "audioBookGeneration": "Hörbuch-Erstellung",
+    "printOrder": "Druckauftrag",
+    "refund": "Rückerstattung",
+    "voucher": "Gutschein",
+    "promotion": "Aktion",
+    "selfPrinting": "Selbstausdruck",
+    "textEdit": "Textbearbeitung",
+    "imageEdit": "Bildbearbeitung"
+  }
+}

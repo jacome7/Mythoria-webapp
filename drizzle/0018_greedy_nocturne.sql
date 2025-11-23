@@ -1,1 +1,1 @@
-ALTER TABLE "leads" ADD COLUMN "last_updated_at" timestamp with time zone DEFAULT now() NOT NULL;
+ALTER TABLE "leads" ADD COLUMN IF NOT EXISTS "last_updated_at" timestamp with time zone DEFAULT now() NOT NULL;

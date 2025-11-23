@@ -1,6 +1,11 @@
 import '@testing-library/jest-dom';
 import { TextEncoder, TextDecoder } from 'util';
 
+// Mock uuid before any imports
+jest.mock('uuid', () => ({
+  v4: () => 'test-uuid-1234-5678-1234-567890abcdef',
+}));
+
 // Polyfill for packages relying on Node's global encoders
 // Narrow global augmentation instead of using 'any'
 (global as unknown as { TextEncoder: typeof TextEncoder }).TextEncoder = TextEncoder;

@@ -28,9 +28,7 @@ interface SelfPrintWorkflowErrorResponse {
   message?: string;
 }
 
-type SelfPrintWorkflowResponse =
-  | SelfPrintWorkflowSuccessResponse
-  | SelfPrintWorkflowErrorResponse;
+type SelfPrintWorkflowResponse = SelfPrintWorkflowSuccessResponse | SelfPrintWorkflowErrorResponse;
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -236,9 +234,6 @@ export async function POST(
     });
   } catch (error) {
     console.error('Error handling self-print request', error);
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 },
-    );
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

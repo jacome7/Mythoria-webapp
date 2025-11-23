@@ -1,0 +1,30 @@
+{
+  "title": "Crédits et Paiements",
+  "subtitle": "Gère ton solde et consulte l'historique de tes transactions",
+  "currentBalance": "Solde Actuel",
+  "creditsAvailable": "Crédits disponibles",
+  "needMore": "Tu manques de crédits ?",
+  "checkPricing": "Découvre nos forfaits",
+  "historyTitle": "Historique des Transactions",
+  "credits": "crédits",
+  "buyCredits": "Acheter des Crédits",
+  "table": {
+    "date": "Date",
+    "event": "Événement",
+    "amount": "Montant",
+    "balance": "Solde"
+  },
+  "eventTypes": {
+    "initialCredit": "Crédit Initial",
+    "creditPurchase": "Achat de Crédits",
+    "eBookGeneration": "Génération d'eBook",
+    "audioBookGeneration": "Génération de Livre Audio",
+    "printOrder": "Commande d'Impression",
+    "refund": "Remboursement",
+    "voucher": "Bon d'achat",
+    "promotion": "Promotion",
+    "selfPrinting": "Auto-impression",
+    "textEdit": "Édition de Texte",
+    "imageEdit": "Édition d'Image"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "Faq": {
+    "searchPlaceholder": "Pesquisar FAQs...",
+    "allSections": "Todos os Tópicos",
+    "noResults": "Não foram encontradas FAQs correspondentes à sua pesquisa. Tente palavras-chave diferentes ou navegue por todos os tópicos.",
+    "loading": "A carregar FAQs...",
+    "error": "Não foi possível carregar as FAQs. Por favor, tente novamente mais tarde.",
+    "viewAllInSection": "Ver todas as {count} perguntas em {section}",
+    "sections": {
+      "getting-started-and-accounts": "Primeiros Passos e Contas",
+      "story-creation-and-workflow": "Criação de Histórias e Fluxo de Trabalho",
+      "characters-and-personalization": "Personagens e Personalização",
+      "art-styles-images-and-photos": "Estilos Artísticos, Imagens e Fotos",
+      "ai-editing-translations-and-advanced-tools": "Edição com IA, Traduções e Ferramentas Avançadas",
+      "credits-pricing-and-payments": "Créditos, Preços e Pagamentos",
+      "printing-shipping-and-physical-books": "Impressão, Envio e Livros Físicos",
+      "audiobooks-and-listening-experience": "Audiolivros e Experiência de Audição",
+      "reading-sharing-and-public-stories": "Leitura, Partilha e Histórias Públicas",
+      "privacy-safety-and-children": "Privacidade, Segurança e Crianças",
+      "ownership-copyright-and-ai": "Propriedade, Direitos de Autor e IA",
+      "languages-locales-and-accessibility": "Idiomas, Regiões e Acessibilidade",
+      "partners-companies-and-schools": "Parceiros, Empresas e Escolas",
+      "technical-issues-billing-and-support": "Questões Técnicas, Faturação e Suporte"
+    }
+  }
+}

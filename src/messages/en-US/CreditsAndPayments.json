@@ -1,0 +1,30 @@
+{
+  "title": "Credits and Payments",
+  "subtitle": "Manage your balance and view your transaction history",
+  "currentBalance": "Current Balance",
+  "creditsAvailable": "Credits available for use",
+  "needMore": "Running low?",
+  "checkPricing": "Check our packages",
+  "historyTitle": "Transaction History",
+  "credits": "credits",
+  "buyCredits": "Buy Credits",
+  "table": {
+    "date": "Date",
+    "event": "Event",
+    "amount": "Amount",
+    "balance": "Balance"
+  },
+  "eventTypes": {
+    "initialCredit": "Initial Credit",
+    "creditPurchase": "Credit Purchase",
+    "eBookGeneration": "eBook Generation",
+    "audioBookGeneration": "Audiobook Generation",
+    "printOrder": "Print Order",
+    "refund": "Refund",
+    "voucher": "Voucher",
+    "promotion": "Promotion",
+    "selfPrinting": "Self Printing",
+    "textEdit": "Text Edit",
+    "imageEdit": "Image Edit"
+  }
+}
