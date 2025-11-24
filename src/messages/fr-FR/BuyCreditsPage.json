@@ -6,7 +6,8 @@
     },
     "packages": {
       "title": "Packages de crédit disponibles",
-      "addToCart": "Ajouter au panier"
+      "addToCart": "Ajouter au panier",
+      "addToCartShort": "Ajouter"
     },
     "badges": {
       "bestValue": "Meilleur rapport qualité-prix",

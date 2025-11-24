@@ -1,17 +1,17 @@
 {
   "MbwayModal": {
-    "title": "Fast geschafft! Nur noch ein letzter Schritt...",
-    "intro": "Um deinen Kauf abzuschließen, öffne die MB Way App und führe eine Überweisung mit genau diesen Angaben durch:",
+    "title": "MB Way Zahlung",
+    "intro": "Nutzen Sie die Option \"Geld senden\" mit folgenden Details:",
     "fields": {
       "amount": "Betrag",
-      "phone": "Senden an (Telefonnummer)",
-      "code": "Verwendungszweck (Referenzcode)"
+      "phone": "Nummer",
+      "code": "Nachricht (Erforderlich)"
     },
     "warning": {
-      "title": "Achtung!",
-      "body": "Du musst den Code im Feld Verwendungszweck eintragen. Nur so wissen wir, dass die Credits für dich sind."
+      "title": "Wichtig:",
+      "body": "Der Code in der Nachricht dient zur Identifizierung Ihrer Zahlung."
     },
-    "footnote": "Da dieser Prozess manuell ist, werden deine Credits innerhalb von 12 Stunden gutgeschrieben. Wir schicken dir eine E-Mail, sobald alles fertig ist. Wenn du es beschleunigen möchtest, schreib uns auf WhatsApp und wir versuchen, ein wenig Magie zu wirken.",
-    "close": "Alles klar!"
+    "footnote": "Die Validierung kann bis zu 6 Std. dauern. Sie erhalten eine E-Mail, sobald die Credits verfügbar sind. Bei Dringlichkeit schreiben Sie uns auf WhatsApp.",
+    "close": "Schließen"
   }
 }

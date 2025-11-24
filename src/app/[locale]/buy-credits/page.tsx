@@ -269,22 +269,24 @@ function BuyCreditsContent() {
   };
 
   const calculateSubtotal = () => {
+    // Prices in the database include VAT, so we need to extract the price without VAT
     return cart.reduce((total, item) => {
       const pkg = getPackageById(item.packageId);
-      return total + (pkg ? pkg.price * item.quantity : 0);
+      if (!pkg) return total;
+      // Remove VAT from price: priceWithoutVAT = priceWithVAT / 1.06
+      const priceWithoutVAT = pkg.price / 1.06;
+      return total + priceWithoutVAT * item.quantity;
     }, 0);
   };
 
   const calculateVAT = (subtotal: number) => {
-    // Since prices include VAT, calculate the VAT portion
-    // VAT = (Price with VAT / 1.06) * 0.06
-    const priceWithoutVAT = subtotal / 1.06;
-    return subtotal - priceWithoutVAT;
+    // VAT is 6% of the price without VAT
+    return subtotal * 0.06;
   };
 
   const subtotal = calculateSubtotal();
   const vatAmount = calculateVAT(subtotal);
-  const total = subtotal;
+  const total = subtotal + vatAmount;
 
   const handlePlaceOrder = async () => {
     if (cart.length === 0) {
@@ -554,26 +556,27 @@ function BuyCreditsContent() {
                                   {tBuyCreditsPage('badges.popular')}
                                 </div>
                               )}
-                              <div className="card-body">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center space-x-4">
-                                    <div className="text-3xl text-primary">
+                              <div className="card-body p-4 sm:p-8">
+                                <div className="flex items-center justify-between gap-2">
+                                  <div className="flex items-center space-x-2 sm:space-x-4">
+                                    <div className="text-2xl sm:text-3xl text-primary">
                                       {getIconComponent(pkg.icon)}
                                     </div>
                                     <div>
-                                      <h3 className="text-xl font-bold">
+                                      <h3 className="text-base sm:text-xl font-bold whitespace-nowrap">
                                         {pkg.credits} {tPricingPage('creditPackages.credits')}
                                       </h3>
-                                      <p className="text-lg font-semibold text-primary">
+                                      <p className="text-base sm:text-lg font-semibold text-primary">
                                         €{pkg.price.toFixed(2)}
                                       </p>
                                     </div>
                                   </div>
                                   <button
                                     onClick={() => handleAddToCart(pkg.id)}
-                                    className="btn btn-primary"
+                                    className="btn btn-primary btn-sm sm:btn-md whitespace-nowrap"
                                   >
-                                    {tBuyCreditsPage('packages.addToCart')}
+                                    <span className="hidden sm:inline">{tBuyCreditsPage('packages.addToCart')}</span>
+                                    <span className="sm:hidden">{tBuyCreditsPage('packages.addToCartShort')}</span>
                                   </button>
                                 </div>
                               </div>

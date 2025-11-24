@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { formatDate } from '@/utils/date';
 
@@ -21,14 +20,6 @@ interface CreditsHistoryTableProps {
 export default function CreditsHistoryTable({ history }: CreditsHistoryTableProps) {
   const t = useTranslations('CreditsAndPayments');
   const locale = useLocale();
-  const tableEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Scroll to the end of the table on mount
-    if (tableEndRef.current) {
-      tableEndRef.current.scrollIntoView({ behavior: 'auto' });
-    }
-  }, []);
 
   const formatEventType = (eventType: string) => {
     // We use the keys from the JSON file which match the enum values usually
@@ -92,11 +83,8 @@ export default function CreditsHistoryTable({ history }: CreditsHistoryTableProp
               </td>
             </tr>
           ))}
-          {/* Empty row to ensure scrolling to bottom shows the last item clearly if needed, 
-              but scrollIntoView on the div below is better */}
         </tbody>
       </table>
-      <div ref={tableEndRef} />
     </div>
   );
 }

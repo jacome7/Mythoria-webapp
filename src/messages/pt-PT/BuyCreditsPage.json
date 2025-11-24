@@ -6,7 +6,8 @@
     },
     "packages": {
       "title": "Pacotes de Créditos Disponíveis",
-      "addToCart": "Adicionar ao Carrinho"
+      "addToCart": "Adicionar ao Carrinho",
+      "addToCartShort": "Adicionar"
     },
     "badges": {
       "bestValue": "Melhor Valor",

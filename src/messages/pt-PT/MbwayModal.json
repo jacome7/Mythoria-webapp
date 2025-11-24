@@ -1,17 +1,17 @@
 {
   "MbwayModal": {
-    "title": "Está quase! Só falta um passo...",
-    "intro": "Para concluir a tua compra, abre a app MB Way e faz uma transferência com estes dados exatamente:",
+    "title": "Pagamento MB Way",
+    "intro": "Utilize a opção \"Enviar Dinheiro\" com os seguintes dados:",
     "fields": {
-      "amount": "Montante",
-      "phone": "Enviar para (Telemóvel)",
-      "code": "Descrição (Código de Referência)"
+      "amount": "Valor",
+      "phone": "Número",
+      "code": "Mensagem (Obrigatório)"
     },
     "warning": {
-      "title": "Atenção!",
-      "body": "Tens de incluir o código no campo da descrição. É assim que sabemos que os créditos são para ti."
+      "title": "Importante:",
+      "body": "O código na mensagem serve para identificar o seu pagamento."
     },
-    "footnote": "Como este é um processo manual, os teus créditos serão adicionados até 12 horas. Enviamos-te um email assim que estiverem prontos. Se quiseres acelerar, manda mensagem no WhatsApp e vemos o que conseguimos fazer.",
-    "close": "Perfeito, já percebi!"
+    "footnote": "A validação pode demorar até 6h. Receberá um email assim que os créditos estiverem disponíveis. Se tiver urgência, envie-nos mensagem no WhatsApp.",
+    "close": "Fechar"
   }
 }

@@ -6,7 +6,8 @@
     },
     "packages": {
       "title": "Paquetes de créditos disponibles",
-      "addToCart": "Añadir al carrito"
+      "addToCart": "Añadir al carrito",
+      "addToCartShort": "Añadir"
     },
     "badges": {
       "bestValue": "La mejor ganga",

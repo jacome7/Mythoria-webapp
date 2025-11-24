@@ -6,7 +6,8 @@
     },
     "packages": {
       "title": "Verfügbare Credit-Pakete",
-      "addToCart": "In den Warenkorb"
+      "addToCart": "In den Warenkorb",
+      "addToCartShort": "Hinzufügen"
     },
     "badges": {
       "bestValue": "Bester Deal",

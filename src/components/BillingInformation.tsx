@@ -401,13 +401,28 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
             </div>
           </div>
 
-          <div className="mt-6 p-4 bg-info/10 rounded-lg">
-            <h5 className="font-medium text-info mb-2">ℹ️ {tBuyCreditsPage('info.title')}</h5>
-            <ul className="text-sm text-gray-600 space-y-1">
-              <li>• {tBuyCreditsPage('info.description1')}</li>
-              <li>• {tBuyCreditsPage('info.description2')}</li>
-              <li>• {tBuyCreditsPage('info.description3')}</li>
-              <li>• {tBuyCreditsPage('info.description4')}</li>
+          <div className="mt-6 p-5 bg-base-100 rounded-lg border border-base-300 shadow-sm">
+            <h5 className="font-bold text-base-content mb-3 flex items-center gap-2">
+              <span className="text-info text-lg">ℹ️</span>
+              {tBuyCreditsPage('info.title')}
+            </h5>
+            <ul className="text-sm text-base-content/80 space-y-2 pl-1">
+              <li className="flex items-start gap-2">
+                <span className="mt-1">•</span>
+                <span>{tBuyCreditsPage('info.description1')}</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-1">•</span>
+                <span>{tBuyCreditsPage('info.description2')}</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-1">•</span>
+                <span>{tBuyCreditsPage('info.description3')}</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-1">•</span>
+                <span>{tBuyCreditsPage('info.description4')}</span>
+              </li>
             </ul>
           </div>
         </div>
