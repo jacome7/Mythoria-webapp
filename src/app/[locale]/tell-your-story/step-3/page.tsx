@@ -31,6 +31,7 @@ function Step3Page() {
   const editStoryId = searchParams?.get('edit') ?? null;
   const tStoryStepsStep3 = useTranslations('StorySteps.step3');
   const tCharacters = useTranslations('Characters');
+  const tActions = useTranslations('Actions');
   const [characters, setCharacters] = useState<Character[]>([]);
   const [availableCharacters, setAvailableCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);
@@ -534,7 +535,7 @@ function Step3Page() {
                   nextLabel={
                     isNavigating ? tStoryStepsStep3('continuing') : tStoryStepsStep3('next')
                   }
-                  prevLabel={isInEditMode ? 'Back to My Stories' : undefined}
+                  prevLabel={isInEditMode ? tActions('back') : undefined}
                 />
               </div>
             </div>

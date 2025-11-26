@@ -335,65 +335,13 @@ async function handleUserUpdated(evt: WebhookEvent) {
     throw error;
   }
 
-  // Welcome email heuristic (author displayName based)
-  try {
-    const createdAtMs = (evt.data as unknown as { created_at?: number }).created_at;
-    if (typeof createdAtMs === 'number' && createdAtMs > 0) {
-      const ageMs = Date.now() - createdAtMs;
-      if (ageMs >= 0 && ageMs < 10 * 60 * 1000) {
-        // within 10 minutes
-        // Fetch persisted displayName and locale
-        const authorRow = (
-          await db
-            .select({ displayName: authors.displayName, preferredLocale: authors.preferredLocale })
-            .from(authors)
-            .where(eq(authors.clerkUserId, id))
-            .limit(1)
-        )[0];
-        if (authorRow) {
-          const effectiveName = (authorRow.displayName || '').trim();
-          if (effectiveName.length > 1) {
-            const locale =
-              authorRow.preferredLocale ||
-              detectUserLocaleFromEmail(primaryEmail.email_address) ||
-              'en-US';
-            const { notificationFetch } = await import('@/lib/notification-client');
-            console.log('welcome-email.attempt', {
-              clerkUserId: id,
-              ageMs,
-              locale,
-              displayName: effectiveName,
-            });
-            const res = await notificationFetch('/email/template', {
-              method: 'POST',
-              body: JSON.stringify({
-                templateId: 'welcome',
-                // Provide both authorId (for enrichment) and entityId (dedupe key)
-                authorId: id,
-                entityId: id,
-                recipients: [
-                  { email: primaryEmail.email_address, name: effectiveName, language: locale },
-                ],
-                variables: { userName: effectiveName },
-              }),
-            });
-            if (!res.ok) {
-              const txt = await res.text().catch(() => '');
-              console.warn('welcome-email.failed', {
-                clerkUserId: id,
-                status: res.status,
-                body: txt.slice(0, 500),
-              });
-            } else {
-              console.log('welcome-email.sent', { clerkUserId: id });
-            }
-          }
-        }
-      }
-    }
-  } catch (err) {
-    console.error('welcome-email.error', { clerkUserId: id, error: err });
-  }
+  // NOTE: Welcome email is intentionally NOT triggered here.
+  // The welcome email is sent via the profile PATCH route (/api/profile) when the user
+  // updates their displayName during onboarding. That route has proper guards:
+  // - Checks welcomeEmailSentAt to prevent duplicates
+  // - Updates welcomeEmailSentAt after successful send
+  // - Has a 10-minute window check from account creation
+  // Triggering here would cause duplicate emails due to race condition with profile PATCH.
 }
 
 async function handleUserDeleted(evt: WebhookEvent) {
