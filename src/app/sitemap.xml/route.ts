@@ -17,6 +17,7 @@ const staticPages = [
   '', // Home page
   'aboutUs',
   'contactUs',
+  'faqs',
   'pricing',
   'privacy-policy',
   'termsAndConditions',
