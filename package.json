@@ -1,6 +1,6 @@
 {
   "name": "mythoria-webapp",
-  "version": "0.6rm .nexty.0",
+  "version": "0.6",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",

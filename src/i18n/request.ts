@@ -60,6 +60,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     unsubscribeMessages,
     contactUsPageMessages,
     faqMessages,
+    faqPageMessages,
     creditsAndPaymentsMessages,
   ] = await Promise.all([
     import(`../messages/${locale}/Header.json`).then((module) => module.default),
@@ -112,6 +113,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     import(`../messages/${locale}/Unsubscribe.json`).then((module) => module.default),
     import(`../messages/${locale}/ContactUsPage.json`).then((module) => module.default),
     import(`../messages/${locale}/Faq.json`).then((module) => module.default),
+    import(`../messages/${locale}/FaqPage.json`).then((module) => module.default),
     import(`../messages/${locale}/CreditsAndPayments.json`).then((module) => module.default),
   ]);
 
@@ -176,6 +178,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ...ns(unsubscribeMessages, 'Unsubscribe'),
       ...ns(contactUsPageMessages, 'ContactUsPage'),
       ...ns(faqMessages, 'Faq'),
+      ...ns(faqPageMessages, 'FaqPage'),
       ...ns(creditsAndPaymentsMessages, 'CreditsAndPayments'),
     },
   };

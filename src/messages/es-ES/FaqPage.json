@@ -1,9 +1,7 @@
 {
   "FaqPage": {
-    "eyebrow": "Centro de ayuda",
     "title": "Preguntas Frecuentes",
     "subtitle": "Consulta todas las preguntas que hemos respondido sobre Mythoria.",
-    "description": "Todas las secciones están abiertas por defecto para que los buscadores y las personas puedan leer cada respuesta. Usa los filtros de abajo para ir directo a lo que más te interesa.",
     "metaTitle": "Mythoria FAQs | Todas las preguntas en un solo lugar",
     "metaDescription": "Explora todas las preguntas frecuentes de Mythoria por sección, con búsqueda y filtros. Todas las respuestas son visibles para mejorar el SEO y la descubribilidad."
   }

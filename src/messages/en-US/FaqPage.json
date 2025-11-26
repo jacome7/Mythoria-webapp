@@ -1,9 +1,7 @@
 {
   "FaqPage": {
-    "eyebrow": "Help center",
     "title": "Frequently Asked Questions",
     "subtitle": "Browse every question we've answered about Mythoria.",
-    "description": "All sections are expanded by default so search engines and humans can scan every answer. Use the filters below to jump to what matters most.",
     "metaTitle": "Mythoria FAQs | All questions in one place",
     "metaDescription": "Explore every Mythoria FAQ by section with search and filters. All answers are visible to improve SEO and discoverability."
   }

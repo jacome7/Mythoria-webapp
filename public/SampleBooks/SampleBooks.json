@@ -1,4 +1,64 @@
 ﻿[
+   {
+    "id": "sara-a-dentista-de-tubaroes",
+    "title": "Sara - A dentista de Tubarões",
+    "synopses": "A pequena Sara é convidada a ajudar um tubarão do Oceanário de Lisboa que tem uma grande dor de dentes. Entre tanques gigantes e corredores silenciosos, ela veste uma bata especial, recebe uma escova mágica e aprende a falar a língua dos animais marinhos. Com a ajuda de raias curiosas, peixinhos-palhaço e um polvo trapalhão, a Sara descobre que o medo diminui quando percebemos o que está a acontecer. No fim, o tubarão volta a sorrir e o Oceanário celebra a nova heroína: a dentista de tubarões mais corajosa de Portugal.",
+    "locale": "pt-PT",
+    "intent": "amusement_parks",
+    "recipients": ["family", "child"],
+    "tags": "oceanário,lisboa,mar,tubarões,coragem",
+    "style": "pixar"
+  },
+  {
+    "id": "mateus_e_o_leao",
+    "title": "Mateus e o Leão",
+    "synopses": "Um menino carinhoso de 4 anos, o Mateus, que inicialmente teme animais, encontra e adopta um leão bebé chamado Simba em Lanhela, uma vila rural de Portugal. Leva-o para viver no seu apartamento no Porto, onde têm de esconder o novo amigo dos vizinhos curiosos e aprender regras para que o leão não cause confusão. Quando o Simba começa a crescer, a família percebe que o seu lugar verdadeiro é na natureza. Juntos, embarcam numa viagem até à selva africana para o libertar, numa jornada de amizade, crescimento e coragem que o Mateus nunca mais irá esquecer.",
+    "locale": "pt-PT",
+    "intent": "amusement_parks",
+    "recipients": ["child", "family"],
+    "tags": "lanhela,porto,leão,simba,amizade,coragem,família,africa",
+    "style": "colored_pencil"
+  },
+  {
+    "id": "zoomarine-golfinho",
+    "title": "O Salto do Golfinho Azul",
+    "synopses": "A Mariana sonha ser treinadora no Zoomarine. Num dia de calor no Algarve, ela descobre que consegue ouvir os pensamentos dos golfinhos. Juntos, preparam uma acrobacia secreta que vai surpreender toda a plateia no espetáculo final.",
+    "locale": "pt-PT",
+    "intent": "amusement_parks",
+    "recipients": ["child", "teen"],
+    "tags": "algarve,verão,golfinhos,sonhos",
+    "style": "watercolor"
+  },
+  {
+    "id": "badoca-safari",
+    "title": "Safari no Alentejo",
+    "synopses": "O Tiago vai ao Badoca Safari Park e, durante o passeio de jipe, a sua imaginação toma conta dele. As girafas transformam-se em dinossauros herbívoros e o Alentejo vira uma selva pré-histórica onde ele é o explorador chefe em busca de um tesouro escondido.",
+    "locale": "pt-PT",
+    "intent": "amusement_parks",
+    "recipients": ["child", "family"],
+    "tags": "alentejo,safari,imaginação,dinossauros",
+    "style": "colored_pencil"
+  },
+  {
+    "id": "portugal-pequenitos",
+    "title": "O Gigante de Coimbra",
+    "synopses": "O Lucas visita o Portugal dos Pequenitos em Coimbra e sente-se um verdadeiro gigante. Mas quando anoitece, as casinhas ganham vida e os bonecos pedem a ajuda dele para alcançar a estrela que ficou presa no topo da Torre de Belém em miniatura.",
+    "locale": "pt-PT",
+    "intent": "amusement_parks",
+    "recipients": ["child", "parent"],
+    "tags": "coimbra,miniatura,magia,noite",
+    "style": "disney_style"
+  },
+  {
+    "id": "magikland-fantasma",
+    "title": "A Montanha Russa Fantasma",
+    "synopses": "Em Penafiel, na Magikland, a Beatriz e os primos descobrem que a montanha russa antiga tem uma carruagem extra que só aparece à meia-noite. Embarcam numa viagem alucinante que desafia a gravidade e os leva ao mundo da Magia.",
+    "locale": "pt-PT",
+    "intent": "amusement_parks",
+    "recipients": ["child", "friend", "team"],
+    "tags": "diversão,penafiel,magia,amigos",
+    "style": "cartoon"
+  },
   {
     "id": "amor-no-electrico-28",
     "title": "Amor nos Carris",

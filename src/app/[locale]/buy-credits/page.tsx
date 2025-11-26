@@ -575,8 +575,12 @@ function BuyCreditsContent() {
                                     onClick={() => handleAddToCart(pkg.id)}
                                     className="btn btn-primary btn-sm sm:btn-md whitespace-nowrap"
                                   >
-                                    <span className="hidden sm:inline">{tBuyCreditsPage('packages.addToCart')}</span>
-                                    <span className="sm:hidden">{tBuyCreditsPage('packages.addToCartShort')}</span>
+                                    <span className="hidden sm:inline">
+                                      {tBuyCreditsPage('packages.addToCart')}
+                                    </span>
+                                    <span className="sm:hidden">
+                                      {tBuyCreditsPage('packages.addToCartShort')}
+                                    </span>
                                   </button>
                                 </div>
                               </div>
