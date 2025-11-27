@@ -350,8 +350,10 @@ function BuyCreditsContent() {
         // Track MB Way purchase intent for analytics
         // Note: This tracks when user initiates payment, not when it's completed
         // MB Way requires manual confirmation, so we track the intent immediately
-        const amountCents = data.amount ?? total;
-        const amountEuros = amountCents / 100;
+
+        // data.amount from MBWay API is in Euros (e.g. 5.00), unlike Revolut which uses cents
+        const amountEuros = data.amount ?? total;
+
         const credits =
           data.credits ||
           cart.reduce((sum, item) => {
@@ -359,11 +361,23 @@ function BuyCreditsContent() {
             return sum + (pkg ? pkg.credits * item.quantity : 0);
           }, 0);
 
+        // Construct items for GA4
+        const items = cart.map((item) => {
+          const pkg = getPackageById(item.packageId);
+          return {
+            item_id: `credit_package_${item.packageId}`,
+            item_name: pkg ? `${pkg.credits} Credits` : `Credit Package ${item.packageId}`,
+            price: pkg ? pkg.price : 0,
+            quantity: item.quantity,
+          };
+        });
+
         trackCommerce.creditPurchase({
           purchase_amount: amountEuros,
           credits_purchased: credits,
           transaction_id: data.orderId || data.ticketNumber,
           payment_method: 'mbway',
+          items,
         });
 
         // We intentionally do not mark payment as success yet; it's pending manual action
@@ -419,15 +433,28 @@ function BuyCreditsContent() {
       return total + (pkg ? pkg.credits * item.quantity : 0);
     }, 0);
 
+    // Construct items for GA4
+    const items = cart.map((item) => {
+      const pkg = getPackageById(item.packageId);
+      return {
+        item_id: `credit_package_${item.packageId}`,
+        item_name: pkg ? `${pkg.credits} Credits` : `Credit Package ${item.packageId}`,
+        price: pkg ? pkg.price : 0,
+        quantity: item.quantity,
+      };
+    });
+
     console.log('📊 [Buy Credits] Tracking credit purchase:', {
       purchase_amount: total,
       credits_purchased: totalCredits,
+      items,
     });
 
     // Track credit purchase in analytics
     trackCommerce.creditPurchase({
       purchase_amount: total,
       credits_purchased: totalCredits,
+      items,
     });
 
     console.log('✅ [Buy Credits] Analytics tracking completed');
