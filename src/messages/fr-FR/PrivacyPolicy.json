@@ -116,23 +116,31 @@
     },
     "section7": {
       "title": "7. Cookies et technologies similaires",
+      "intro": "Nous utilisons des cookies et des technologies similaires pour faire fonctionner le site et comprendre comment vous l'utilisez. Vous contrôlez quels cookies sont définis via notre bannière de consentement.",
+      "consentMode": {
+        "title": "Comment nous gérons vos choix",
+        "description": "Nous utilisons Google Consent Mode v2 pour respecter vos préférences de confidentialité. Cela signifie :",
+        "analytics": "Les cookies d'analyse nous aident à voir comment les visiteurs utilisent le site (pages visitées, temps passé). Lorsqu'ils sont refusés, nous ne recevons que des données anonymes et agrégées.",
+        "advertising": "Les cookies publicitaires aident à mesurer l'efficacité des campagnes et à afficher des publicités pertinentes. Lorsqu'ils sont refusés, aucune donnée publicitaire n'est collectée ni partagée.",
+        "essential": "Les cookies essentiels vous maintiennent connecté et le site sécurisé. Ils sont toujours actifs car sans eux le site ne fonctionnerait pas correctement."
+      },
       "table": {
         "cookie": "Cookie / clé de stockage",
         "purpose": "But",
         "expiry": "Expiration",
-        "consent": "Consentement nécessaire?",
+        "consent": "Consentement nécessaire ?",
         "rows": {
           "session": {
-            "cookie": "Myth_Session",
+            "cookie": "myth_session",
             "purpose": "Vous garder connecté",
             "expiry": "Session",
-            "consent": "Non (strictement nécessaire)"
+            "consent": "Non (essentiel)"
           },
           "auth": {
-            "cookie": "__Secure-next-Auth.Session-token",
-            "purpose": "Authentifier les appels d'API",
-            "expiry": "1 jour",
-            "consent": "Non"
+            "cookie": "__clerk*",
+            "purpose": "Authentifier votre session",
+            "expiry": "Session / 1 jour",
+            "consent": "Non (essentiel)"
           },
           "analytics": {
             "cookie": "_ga, _gid (Google Analytics)",
@@ -140,15 +148,22 @@
             "expiry": "13 mois / 24 h",
             "consent": "Oui"
           },
+          "ads": {
+            "cookie": "_gcl_* (Google Ads)",
+            "purpose": "Mesurer les conversions publicitaires",
+            "expiry": "90 jours",
+            "consent": "Oui"
+          },
           "consent": {
-            "cookie": "cookie_consent",
-            "purpose": "Souvenez-vous de vos préférences",
-            "expiry": "6 mois",
-            "consent": "Non"
+            "cookie": "mythoria_consent",
+            "purpose": "Mémoriser vos préférences de cookies",
+            "expiry": "12 mois",
+            "consent": "Non (essentiel)"
           }
         }
       },
-      "note": "La bannière indiquée lors de la première visite suit les directives de consentement EDPB 05/2020 et le rapport de force tâche de cookie-banner (les boîtes pré-cueillies sont désactivées, le bouton de rejet est la première couche)."
+      "note": "Notre bannière de consentement suit les Lignes directrices EDPB 05/2020 : pas de cases pré-cochées, et le bouton Refuser est aussi facile à cliquer que le bouton Accepter.",
+      "changePreferences": "Vous pouvez modifier vos préférences de cookies à tout moment via notre page Conditions Générales."
     },
     "section8": {
       "title": "8. Combien de temps nous gardons vos données",
@@ -208,6 +223,6 @@
     "links": {
       "deleteAccount": "Supprimer le compte / Eliminar Conta"
     },
-    "lastUpdated": "Dernière mise à jour: 2 juin 2025"
+"lastUpdated": "Dernière mise à jour : 27 novembre 2025"
   }
 }

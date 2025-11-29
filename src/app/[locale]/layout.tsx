@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import StructuredData from '@/components/StructuredData';
 import LanguageAttribute from '@/components/LanguageAttribute';
 import LocaleSync from '@/components/LocaleSync';
+import CookieConsentBanner from '@/components/CookieConsentBanner';
 import { generateServerHreflangLinks } from '@/lib/hreflang';
 import { readdir, readFile } from 'fs/promises';
 import path from 'path';
@@ -372,6 +373,7 @@ export default async function LocaleLayout({
         <main className="flex-grow">{children}</main>
         <Footer />
       </div>
+      <CookieConsentBanner />
     </ClientProvider>
   );
 }

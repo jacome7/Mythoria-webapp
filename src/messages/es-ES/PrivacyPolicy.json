@@ -116,6 +116,14 @@
     },
     "section7": {
       "title": "7. Cookies y tecnologías similares",
+      "intro": "Usamos cookies y tecnologías similares para que el sitio funcione correctamente y para entender cómo lo usas. Tú controlas qué cookies se establecen a través de nuestro banner de consentimiento.",
+      "consentMode": {
+        "title": "Cómo gestionamos tus elecciones",
+        "description": "Usamos Google Consent Mode v2 para respetar tus preferencias de privacidad. Esto significa:",
+        "analytics": "Las cookies de análisis nos ayudan a ver cómo los visitantes usan el sitio (páginas visitadas, tiempo empleado). Cuando se rechazan, solo recibimos datos anónimos y agregados.",
+        "advertising": "Las cookies de publicidad ayudan a medir la eficacia de las campañas y a mostrar anuncios relevantes. Cuando se rechazan, no se recoge ni comparte ningún dato publicitario.",
+        "essential": "Las cookies esenciales te mantienen conectado y el sitio seguro. Están siempre activas porque sin ellas el sitio no funcionaría correctamente."
+      },
       "table": {
         "cookie": "Cookie / clave de almacenamiento",
         "purpose": "Finalidad",
@@ -126,13 +134,13 @@
             "cookie": "myth_session",
             "purpose": "Mantener tu sesión iniciada",
             "expiry": "Sesión",
-            "consent": "No (estrictamente necesaria)"
+            "consent": "No (esencial)"
           },
           "auth": {
-            "cookie": "__Secure-next-auth.session-token",
-            "purpose": "Autenticar llamadas API",
-            "expiry": "1 día",
-            "consent": "No"
+            "cookie": "__clerk*",
+            "purpose": "Autenticar tu sesión",
+            "expiry": "Sesión / 1 día",
+            "consent": "No (esencial)"
           },
           "analytics": {
             "cookie": "_ga, _gid (Google Analytics)",
@@ -140,15 +148,22 @@
             "expiry": "13 meses / 24 h",
             "consent": "Sí"
           },
+          "ads": {
+            "cookie": "_gcl_* (Google Ads)",
+            "purpose": "Medir conversiones de anuncios",
+            "expiry": "90 días",
+            "consent": "Sí"
+          },
           "consent": {
-            "cookie": "cookie_consent",
-            "purpose": "Recordar tus preferencias",
-            "expiry": "6 meses",
-            "consent": "No"
+            "cookie": "mythoria_consent",
+            "purpose": "Recordar tus preferencias de cookies",
+            "expiry": "12 meses",
+            "consent": "No (esencial)"
           }
         }
       },
-      "note": "La banda mostrada en la primera visita sigue las Directrices 05/2020 del CEPD sobre consentimiento y el informe del Grupo de trabajo sobre banners de cookies (los botones preseleccionados están deshabilitados, el botón de rechazar aparece en la primera capa)."
+      "note": "Nuestro banner de consentimiento sigue las Directrices 05/2020 del CEPD: sin casillas premarcadas, y el botón Rechazar es tan fácil de pulsar como el de Aceptar.",
+      "changePreferences": "Puedes cambiar tus preferencias de cookies en cualquier momento a través de nuestra página de Términos y Condiciones."
     },
     "section8": {
       "title": "8. Cuánto tiempo conservamos tus datos",
@@ -208,6 +223,6 @@
     "links": {
       "deleteAccount": "Eliminar cuenta"
     },
-    "lastUpdated": "Última actualización: 2 de junio de 2025"
+    "lastUpdated": "Última actualización: 27 de noviembre de 2025"
   }
 }
