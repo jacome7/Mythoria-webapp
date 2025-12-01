@@ -3,6 +3,8 @@
     "generateAudiobook": "Generate Audiobook",
     "audiobookDescription": "Turn your story into an immersive audiobook.",
     "selectVoice": "Select Voice",
+    "includeBackgroundMusic": "Include background music",
+    "backgroundMusicDescription": "Adds gentle ambient music that matches your story's mood.",
     "generating": "Generating...",
     "createAudiobook": "Create Audiobook",
     "estimatedTime": "Estimated time",

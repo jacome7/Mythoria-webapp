@@ -17,7 +17,7 @@ export async function POST(
 
     const { storyId } = await params;
     const body = await request.json();
-    const { voice = 'coral' } = body;
+    const { voice = 'coral', includeBackgroundMusic = true } = body;
 
     // Validate that the story belongs to the user and get story data
     const story = await storyService.getStoryById(storyId);
@@ -80,6 +80,7 @@ export async function POST(
         storyId: storyId,
         runId: runId,
         voice: voice,
+        includeBackgroundMusic: includeBackgroundMusic,
         timestamp: new Date().toISOString(),
       });
 

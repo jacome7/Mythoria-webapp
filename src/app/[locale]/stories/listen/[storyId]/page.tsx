@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
@@ -27,6 +27,7 @@ import {
   getAudioChapters,
 } from '@/components/AudioPlayer';
 import { SelfPrintModal } from '../../../../../components/self-print/SelfPrintModal';
+import { getAvailableVoices, getDefaultVoice } from '@/lib/voice-options';
 
 interface Story {
   storyId: string;
@@ -124,7 +125,7 @@ function VoiceSelector({
               d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             ></path>
           </svg>
-          <span className="text-sm">{tVoices(`descriptions.${selectedVoice}`)}</span>
+          <span className="text-sm">{tVoices(`descriptions.${selectedVoice.toLowerCase()}`)}</span>
         </div>
       )}
     </div>
@@ -152,7 +153,8 @@ export default function ListenStoryPage() {
   const [audiobookCost, setAudiobookCost] = useState<AudiobookCost | null>(null);
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
   const [audioGenerationProgress, setAudioGenerationProgress] = useState<string>('');
-  const [selectedVoice, setSelectedVoice] = useState<string>('coral');
+  const [selectedVoice, setSelectedVoice] = useState<string>(getDefaultVoice());
+  const [includeBackgroundMusic, setIncludeBackgroundMusic] = useState(true);
   const { toasts, removeToast, successWithAction, error: toastError } = useToast();
 
   // Initialize audio player hook
@@ -166,20 +168,14 @@ export default function ListenStoryPage() {
     },
   });
 
-  // Voice options for narration
-  const voiceOptions = [
-    { value: 'alloy', label: tVoices('names.alloy') },
-    { value: 'ash', label: tVoices('names.ash') },
-    { value: 'ballad', label: tVoices('names.ballad') },
-    { value: 'coral', label: tVoices('names.coral') },
-    { value: 'echo', label: tVoices('names.echo') },
-    { value: 'fable', label: tVoices('names.fable') },
-    { value: 'nova', label: tVoices('names.nova') },
-    { value: 'onyx', label: tVoices('names.onyx') },
-    { value: 'sage', label: tVoices('names.sage') },
-    { value: 'shimmer', label: tVoices('names.shimmer') },
-    { value: 'verse', label: tVoices('names.verse') },
-  ];
+  // Voice options for narration - based on configured TTS provider
+  const voiceOptions = useMemo(() => {
+    const voices = getAvailableVoices();
+    return voices.map((voice) => ({
+      value: voice.value,
+      label: tVoices(voice.labelKey),
+    }));
+  }, [tVoices]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -300,6 +296,7 @@ export default function ListenStoryPage() {
         },
         body: JSON.stringify({
           voice: selectedVoice,
+          includeBackgroundMusic,
         }),
       });
 
@@ -537,6 +534,24 @@ export default function ListenStoryPage() {
                                     tVoices={tVoices}
                                   />
 
+                                  {/* Background Music Toggle */}
+                                  <div className="form-control">
+                                    <label className="label cursor-pointer justify-center gap-3">
+                                      <span className="label-text font-medium">
+                                        {tListenStory('includeBackgroundMusic')}
+                                      </span>
+                                      <input
+                                        type="checkbox"
+                                        className="toggle toggle-primary"
+                                        checked={includeBackgroundMusic}
+                                        onChange={(e) => setIncludeBackgroundMusic(e.target.checked)}
+                                      />
+                                    </label>
+                                    <p className="text-sm text-base-content/60 text-center">
+                                      {tListenStory('backgroundMusicDescription')}
+                                    </p>
+                                  </div>
+
                                   <div className="stats stats-horizontal shadow">
                                     <div className="stat">
                                       <div className="stat-title">{tListenStory('cost')}</div>
@@ -659,6 +674,24 @@ export default function ListenStoryPage() {
                               voiceOptions={voiceOptions}
                               tVoices={tVoices}
                             />
+
+                            {/* Background Music Toggle */}
+                            <div className="form-control">
+                              <label className="label cursor-pointer justify-center gap-3">
+                                <span className="label-text font-medium">
+                                  {tListenStory('includeBackgroundMusic')}
+                                </span>
+                                <input
+                                  type="checkbox"
+                                  className="toggle toggle-primary"
+                                  checked={includeBackgroundMusic}
+                                  onChange={(e) => setIncludeBackgroundMusic(e.target.checked)}
+                                />
+                              </label>
+                              <p className="text-sm text-base-content/60 text-center">
+                                {tListenStory('backgroundMusicDescription')}
+                              </p>
+                            </div>
 
                             <div className="card bg-base-200 shadow-md">
                               <div className="card-body p-4">

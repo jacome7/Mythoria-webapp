@@ -32,7 +32,6 @@ export interface EnvironmentConfig {
   googleCloud: {
     projectId: string;
     location: string;
-    modelId: string;
     pubsubTopic: string;
   };
   storyGeneration: {
@@ -81,7 +80,6 @@ export const getEnvironmentConfig = (): EnvironmentConfig => {
     googleCloud: {
       projectId: process.env.GOOGLE_CLOUD_PROJECT_ID || 'oceanic-beach-460916-n5',
       location: process.env.GOOGLE_CLOUD_LOCATION || 'europe-west9',
-      modelId: process.env.MODEL_ID || 'gemini-2.5-flash',
       pubsubTopic: process.env.PUBSUB_TOPIC || 'mythoria-story-requests',
     },
     storyGeneration: {

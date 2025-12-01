@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import AudiobookGenerationProgress from '@/components/AudiobookGenerationProgress';
+import { getAvailableVoices, getDefaultVoice } from '@/lib/voice-options';
 
 interface AudiobookGenerationTriggerProps {
   storyId: string;
@@ -23,7 +24,8 @@ export default function AudiobookGenerationTrigger({
   const tVoices = useTranslations('Voices');
   const [isGeneratingLocal, setIsGeneratingLocal] = useState(isGenerating);
   const [error, setError] = useState<string | null>(null);
-  const [selectedVoice, setSelectedVoice] = useState('nova');
+  const [selectedVoice, setSelectedVoice] = useState(getDefaultVoice());
+  const [includeBackgroundMusic, setIncludeBackgroundMusic] = useState(true);
 
   const handleGenerateAudiobook = async () => {
     setIsGeneratingLocal(true);
@@ -41,6 +43,7 @@ export default function AudiobookGenerationTrigger({
         },
         body: JSON.stringify({
           voice: selectedVoice,
+          includeBackgroundMusic,
         }),
       });
 
@@ -72,39 +75,15 @@ export default function AudiobookGenerationTrigger({
     }
   };
 
-  // Voice options for OpenAI TTS
-  const voiceOptions = [
-    {
-      value: 'alloy',
-      label: tVoices('names.alloy'),
-      description: tVoices('descriptions.alloy'),
-    },
-    {
-      value: 'echo',
-      label: tVoices('names.echo'),
-      description: tVoices('descriptions.echo'),
-    },
-    {
-      value: 'fable',
-      label: tVoices('names.fable'),
-      description: tVoices('descriptions.fable'),
-    },
-    {
-      value: 'nova',
-      label: tVoices('names.nova'),
-      description: tVoices('descriptions.nova'),
-    },
-    {
-      value: 'onyx',
-      label: tVoices('names.onyx'),
-      description: tVoices('descriptions.onyx'),
-    },
-    {
-      value: 'shimmer',
-      label: tVoices('names.shimmer'),
-      description: tVoices('descriptions.shimmer'),
-    },
-  ];
+  // Get voice options based on the configured TTS provider
+  const voiceOptions = useMemo(() => {
+    const voices = getAvailableVoices();
+    return voices.map((voice) => ({
+      value: voice.value,
+      label: tVoices(voice.labelKey),
+      description: tVoices(voice.descriptionKey),
+    }));
+  }, [tVoices]);
 
   if (hasAudiobook) {
     return null; // Don't show if audiobook already exists
@@ -148,6 +127,24 @@ export default function AudiobookGenerationTrigger({
               </option>
             ))}
           </select>
+        </div>
+
+        {/* Background Music Toggle */}
+        <div className="mb-6">
+          <label className="label cursor-pointer justify-center gap-3">
+            <span className="label-text font-medium">
+              {tAudiobookGenerationTrigger('includeBackgroundMusic')}
+            </span>
+            <input
+              type="checkbox"
+              className="toggle toggle-primary"
+              checked={includeBackgroundMusic}
+              onChange={(e) => setIncludeBackgroundMusic(e.target.checked)}
+            />
+          </label>
+          <p className="text-sm text-gray-500 mt-1">
+            {tAudiobookGenerationTrigger('backgroundMusicDescription')}
+          </p>
         </div>
 
         {error && (

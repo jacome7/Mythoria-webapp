@@ -27,6 +27,7 @@
   },
   "actions": {
     "read": "Read",
+    "listen": "Listen",
     "edit": "Edit",
     "share": "Share",
     "duplicate": "Duplicate",
@@ -34,7 +35,8 @@
     "downloadPdf": "Download PDF",
     "delete": "Delete",
     "printNotAvailable": "Print Not Available",
-    "downloadNotAvailable": "Download Not Available"
+    "downloadNotAvailable": "Download Not Available",
+    "listenNotAvailable": "Listen Not Available"
   },
   "duplicate": {
     "success": "Story duplicated successfully",

@@ -3,14 +3,16 @@
     "generateAudiobook": "Generar Audiolibro",
     "audiobookDescription": "Convierte tu historia en un audiolibro inmersivo.",
     "selectVoice": "Seleccionar Voz",
+    "includeBackgroundMusic": "Incluir musica de fondo",
+    "backgroundMusicDescription": "Anade musica ambiental suave que combina con el tono de tu historia.",
     "generating": "Generando...",
     "createAudiobook": "Crear Audiolibro",
     "estimatedTime": "Tiempo estimado",
     "aboutEightMinutes": "Unos 8 minutos",
-    "creditCost": "Costo en créditos",
-    "creditsRequired": "10 créditos",
+    "creditCost": "Costo en creditos",
+    "creditsRequired": "10 creditos",
     "errors": {
-      "failedToStart": "Error al iniciar la generación del audiolibro"
+      "failedToStart": "Error al iniciar la generacion del audiolibro"
     }
   }
 }

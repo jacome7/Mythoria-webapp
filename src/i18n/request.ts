@@ -62,6 +62,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     faqMessages,
     faqPageMessages,
     creditsAndPaymentsMessages,
+    cookieConsentMessages,
   ] = await Promise.all([
     import(`../messages/${locale}/Header.json`).then((module) => module.default),
     import(`../messages/${locale}/Footer.json`).then((module) => module.default),
@@ -115,6 +116,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     import(`../messages/${locale}/Faq.json`).then((module) => module.default),
     import(`../messages/${locale}/FaqPage.json`).then((module) => module.default),
     import(`../messages/${locale}/CreditsAndPayments.json`).then((module) => module.default),
+    import(`../messages/${locale}/CookieConsent.json`).then((module) => module.default),
   ]);
 
   // Ensure each domain is properly namespaced. Some JSON files are flat (e.g., {"title": ...})
@@ -180,6 +182,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ...ns(faqMessages, 'Faq'),
       ...ns(faqPageMessages, 'FaqPage'),
       ...ns(creditsAndPaymentsMessages, 'CreditsAndPayments'),
+      ...ns(cookieConsentMessages, 'CookieConsent'),
     },
   };
 });

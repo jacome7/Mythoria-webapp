@@ -12,7 +12,15 @@
       "onyx": "Onyx",
       "sage": "Sage",
       "shimmer": "Shimmer",
-      "verse": "Verse"
+      "verse": "Verse",
+      "charon": "Charon",
+      "aoede": "Aoede",
+      "puck": "Puck",
+      "kore": "Kore",
+      "fenrir": "Fenrir",
+      "orus": "Orus",
+      "zephyr": "Zephyr",
+      "sulafat": "Sulafat"
     },
     "descriptions": {
       "alloy": "Une voix neutre et équilibrée, adaptée à la narration générale et à la diffusion d'informations.",
@@ -25,7 +33,15 @@
       "onyx": "Une voix profonde et autoritaire qui inspire confiance et sérieux.",
       "sage": "Une voix calme et réfléchie, bien adaptée aux contenus guidants et à la réflexion.",
       "shimmer": "Une voix brillante et énergique qui apporte éclat et dynamisme à votre audio.",
-      "verse": "Une voix polyvalente et expressive qui s'adapte à un large éventail de tonalités."
+      "verse": "Une voix polyvalente et expressive qui s'adapte à un large éventail de tonalités.",
+      "charon": "Une voix masculine informative et claire, excellente pour la narration et le contenu éducatif.",
+      "aoede": "Une voix féminine légère et décontractée, parfaite pour une narration agréable et tranquille.",
+      "puck": "Une voix masculine animée et énergique, apportant un dynamisme ludique à vos histoires.",
+      "kore": "Une voix féminine ferme et confiante, idéale pour une narration claire et autoritaire.",
+      "fenrir": "Une voix masculine excitante et dynamique, parfaite pour des récits pleins d'action.",
+      "orus": "Une voix masculine ferme et stable, transmettant fiabilité et force dans la narration.",
+      "zephyr": "Une voix féminine brillante et joyeuse, ajoutant chaleur et positivité à votre audio.",
+      "sulafat": "Une voix féminine chaleureuse et accueillante, créant une atmosphère confortable et agréable."
     }
   }
 }

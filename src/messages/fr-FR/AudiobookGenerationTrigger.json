@@ -1,16 +1,18 @@
 {
   "AudiobookGenerationTrigger": {
-    "generateAudiobook": "Générer du livre audio",
+    "generateAudiobook": "Generer du livre audio",
     "audiobookDescription": "Transformez votre histoire en livre audio immersif.",
-    "selectVoice": "Sélectionner la voix",
-    "generating": "Générateur...",
-    "createAudiobook": "Créer un livre audio",
-    "estimatedTime": "Temps estimé",
+    "selectVoice": "Selectionner la voix",
+    "includeBackgroundMusic": "Inclure la musique de fond",
+    "backgroundMusicDescription": "Ajoute une musique d'ambiance douce qui correspond a l'atmosphere de votre histoire.",
+    "generating": "Generation en cours...",
+    "createAudiobook": "Creer un livre audio",
+    "estimatedTime": "Temps estime",
     "aboutEightMinutes": "Environ 8 minutes",
-    "creditCost": "Coût du crédit",
-    "creditsRequired": "10 crédits",
+    "creditCost": "Cout en credits",
+    "creditsRequired": "10 credits",
     "errors": {
-      "failedToStart": "Échec du démarrage de la génération audio"
+      "failedToStart": "Echec du demarrage de la generation audio"
     }
   }
 }
