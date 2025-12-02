@@ -103,9 +103,9 @@ function Run-PreDeploymentChecks {
 }
 
 function Deploy-With-CloudBuild {
-    Write-Info "Starting Cloud Build submission (beta)"
+    Write-Info "Starting Cloud Build submission"
     # Pass service name and region as substitutions
-    & gcloud beta builds submit --config cloudbuild.yaml --substitutions "_SERVICE_NAME=$SERVICE_NAME,_REGION=$REGION"
+    & gcloud builds submit --config cloudbuild.yaml --substitutions "_SERVICE_NAME=$SERVICE_NAME,_REGION=$REGION"
     Write-Success "Cloud Build finished"
 }
 

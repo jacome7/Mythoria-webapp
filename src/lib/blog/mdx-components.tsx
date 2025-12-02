@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { MDXComponents } from 'mdx/types';
 import ClientCodeBlock from '@/components/ClientCodeBlock';
 import ClientMermaidChart from '@/components/ClientMermaidChart';
+import MDXAudioPlayer from '@/components/MDXAudioPlayer';
 
 // Safe HTML components for blog MDX content
 // Only allowing a curated set of components for security
@@ -215,6 +216,7 @@ export const mdxComponents: MDXComponents = {
   Card: MDXCard,
   Image: MDXImage,
   Mermaid: ClientMermaidChart,
+  AudioPlayer: MDXAudioPlayer,
 };
 
 export default mdxComponents;

@@ -1,6 +1,6 @@
 {
   "name": "mythoria-webapp",
-  "version": "0.6rm .nexty.0",
+  "version": "0.6",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -79,6 +79,7 @@
     "@types/jest": "^30.0.0",
     "@types/js-yaml": "^4.0.9",
     "@types/pg": "^8.15.6",
+    "baseline-browser-mapping": "^2.8.32",
     "cross-env": "^10.1.0",
     "dotenv": "^17.2.3",
     "eslint": "^9",

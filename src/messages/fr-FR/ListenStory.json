@@ -22,7 +22,9 @@
     "startingGeneration": "Démarrage de la génération de livres audio ...",
     "generationStarted": "La génération de livres audio a commencé! Les Elfe Mythoria prendront environ 5 minutes pour raconter toute l'histoire.",
     "needMoreCreditsGenerate": "Vous avez besoin de {shortfall} crédits de plus pour générer un livre audio.",
-    "generationFailed": "Échec du démarrage de la génération audio",
-    "tryAgainLater": "Veuillez réessayer plus tard."
+    "generationFailed": "Echec du demarrage de la generation audio",
+    "tryAgainLater": "Veuillez reessayer plus tard.",
+    "includeBackgroundMusic": "Inclure la musique de fond",
+    "backgroundMusicDescription": "Ajoute une musique d'ambiance douce qui correspond a l'atmosphere de votre histoire."
   }
 }

@@ -27,6 +27,7 @@
   },
   "actions": {
     "read": "Leer",
+    "listen": "Escuchar",
     "edit": "Editar",
     "share": "Compartir",
     "duplicate": "Duplicar",
@@ -34,7 +35,8 @@
     "downloadPdf": "Descargar PDF",
     "delete": "Eliminar",
     "printNotAvailable": "Impresión no disponible",
-    "downloadNotAvailable": "Descarga no disponible"
+    "downloadNotAvailable": "Descarga no disponible",
+    "listenNotAvailable": "Escucha no disponible"
   },
   "duplicate": {
     "success": "Historia duplicada correctamente",

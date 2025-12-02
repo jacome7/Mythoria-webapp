@@ -22,7 +22,9 @@
     "startingGeneration": "Starte die Hörbucherstellung...",
     "generationStarted": "Hörbucherstellung gestartet! Die Mythoria-Elfen brauchen ungefähr 5 Minuten, um die ganze Geschichte einzusprechen.",
     "needMoreCreditsGenerate": "Du benötigst {shortfall} Credits mehr, um ein Hörbuch zu erstellen.",
-    "generationFailed": "Hörbucherstellung konnte nicht gestartet werden",
-    "tryAgainLater": "Bitte versuche es später noch einmal."
+    "generationFailed": "Hoerbucherstellung konnte nicht gestartet werden",
+    "tryAgainLater": "Bitte versuche es spaeter noch einmal.",
+    "includeBackgroundMusic": "Hintergrundmusik einschliessen",
+    "backgroundMusicDescription": "Fuegt sanfte Hintergrundmusik hinzu, die zur Stimmung deiner Geschichte passt."
   }
 }

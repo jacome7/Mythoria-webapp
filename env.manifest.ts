@@ -196,14 +196,6 @@ export const envManifest: EnvVarDescriptor[] = [
     source: 'substitution',
   },
   {
-    name: 'MODEL_ID',
-    required: true,
-    scopes: ['prod', 'runtime', 'dev'],
-    default: 'gemini-2.5-flash',
-    source: 'substitution',
-    note: 'Primary model id for AI interactions.',
-  },
-  {
     name: 'PUBSUB_TOPIC',
     required: true,
     scopes: ['prod', 'runtime', 'dev'],
@@ -406,6 +398,14 @@ export const envManifest: EnvVarDescriptor[] = [
     scopes: ['prod', 'build', 'public', 'dev'],
     default: 'false',
     note: 'Feature flag to show coming soon page.',
+  },
+  {
+    name: 'NEXT_PUBLIC_TTS_PROVIDER',
+    required: false,
+    scopes: ['prod', 'build', 'public', 'dev'],
+    default: 'openai',
+    source: 'substitution',
+    note: 'TTS provider for audiobooks: openai or google-genai.',
   },
 
   // Non-public Clerk URLs used at runtime (not exposed publicly without prefix)

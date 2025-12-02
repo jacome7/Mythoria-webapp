@@ -31,6 +31,7 @@ interface FaqComponentProps {
   noResultsMessage: string;
   loadingMessage: string;
   errorMessage: string;
+  showAllEntries?: boolean;
 }
 
 export default function FaqComponent({
@@ -40,6 +41,7 @@ export default function FaqComponent({
   noResultsMessage,
   loadingMessage,
   errorMessage,
+  showAllEntries = false,
 }: FaqComponentProps) {
   const t = useTranslations('Faq');
   const locale = useLocale();
@@ -155,7 +157,7 @@ export default function FaqComponent({
           {filteredSections.map((section) => {
             const isAllTopics = selectedSection === null;
             const isSearching = searchQuery.trim().length > 0;
-            const shouldLimit = isAllTopics && !isSearching;
+            const shouldLimit = !showAllEntries && isAllTopics && !isSearching;
             const limit = 3;
 
             const displayedEntries = shouldLimit

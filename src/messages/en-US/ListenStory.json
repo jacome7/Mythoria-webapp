@@ -23,6 +23,8 @@
     "generationStarted": "Audiobook generation started! The Mythoria elfs will take around 5 minutes to narrate all the story.",
     "needMoreCreditsGenerate": "You need {shortfall} more credits to generate an audiobook.",
     "generationFailed": "Failed to start audiobook generation",
-    "tryAgainLater": "Please try again later."
+    "tryAgainLater": "Please try again later.",
+    "includeBackgroundMusic": "Include background music",
+    "backgroundMusicDescription": "Adds gentle ambient music that matches your story's mood."
   }
 }

@@ -13,6 +13,7 @@ import {
   FiMoreVertical,
   FiCopy,
   FiDownload,
+  FiVolume2,
 } from 'react-icons/fi';
 import { Story } from '@/types/story';
 import { formatDate, FormatOptions } from '@/utils/date';
@@ -43,7 +44,8 @@ export default function StoryRow({
 
   const [openMenu, setOpenMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState<{
-    top: number;
+    top?: number;
+    bottom?: number;
     right: number;
   } | null>(null);
 
@@ -189,6 +191,23 @@ export default function StoryRow({
               <FiBook className="w-4 h-4" />
             </Link>
           )}
+          {story.status === 'published' ? (
+            <Link
+              href={`/${locale}/stories/listen/${story.storyId}`}
+              className="btn btn-ghost btn-sm"
+              title={tMyStoriesPage('actions.listen')}
+            >
+              <FiVolume2 className="w-4 h-4" />
+            </Link>
+          ) : (
+            <button
+              className="btn btn-ghost btn-sm btn-disabled"
+              disabled
+              title={tMyStoriesPage('actions.listenNotAvailable')}
+            >
+              <FiVolume2 className="w-4 h-4" />
+            </button>
+          )}
           {story.status === 'writing' ? (
             <button
               className="btn btn-ghost btn-sm btn-disabled"
@@ -287,10 +306,19 @@ export default function StoryRow({
             data-story-menu={story.storyId}
             onClick={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
-              setMenuPosition({
-                top: rect.bottom + 4,
-                right: window.innerWidth - rect.right,
-              });
+              const spaceBelow = window.innerHeight - rect.bottom;
+              // If less than 350px space below, open upwards
+              if (spaceBelow < 350) {
+                setMenuPosition({
+                  bottom: window.innerHeight - rect.top + 4,
+                  right: window.innerWidth - rect.right,
+                });
+              } else {
+                setMenuPosition({
+                  top: rect.bottom + 4,
+                  right: window.innerWidth - rect.right,
+                });
+              }
               setOpenMenu((prev) => !prev);
             }}
           >
@@ -300,7 +328,8 @@ export default function StoryRow({
             <div
               className="fixed z-[9999] bg-base-100 border border-base-300 rounded-lg shadow-xl min-w-48"
               style={{
-                top: `${menuPosition.top}px`,
+                top: menuPosition.top ? `${menuPosition.top}px` : 'auto',
+                bottom: menuPosition.bottom ? `${menuPosition.bottom}px` : 'auto',
                 right: `${menuPosition.right}px`,
               }}
             >
@@ -314,6 +343,21 @@ export default function StoryRow({
                     <FiBook className="w-4 h-4" />
                     {tCommonActions('read')}
                   </Link>
+                )}
+                {story.status === 'published' ? (
+                  <Link
+                    href={`/${locale}/stories/listen/${story.storyId}`}
+                    className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
+                    onClick={() => setOpenMenu(false)}
+                  >
+                    <FiVolume2 className="w-4 h-4" />
+                    {tMyStoriesPage('actions.listen')}
+                  </Link>
+                ) : (
+                  <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
+                    <FiVolume2 className="w-4 h-4" />
+                    {tMyStoriesPage('actions.listen')}
+                  </div>
                 )}
                 {story.status === 'published' ? (
                   <button

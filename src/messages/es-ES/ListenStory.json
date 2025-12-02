@@ -22,7 +22,9 @@
     "startingGeneration": "Iniciando generación...",
     "generationStarted": "¡Generación iniciada! Los elfos tardarán unos 5 minutos.",
     "needMoreCreditsGenerate": "Necesitas {shortfall} créditos más para generar el audiolibro.",
-    "generationFailed": "Error al iniciar la generación",
-    "tryAgainLater": "Inténtalo más tarde."
+    "generationFailed": "Error al iniciar la generacion",
+    "tryAgainLater": "Intentalo mas tarde.",
+    "includeBackgroundMusic": "Incluir musica de fondo",
+    "backgroundMusicDescription": "Anade musica ambiental suave que combina con el tono de tu historia."
   }
 }

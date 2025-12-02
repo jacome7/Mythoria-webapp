@@ -20,6 +20,7 @@ export type AnalyticsEvent =
 
   // Commerce & Credits
   | 'credit_purchase'
+  | 'purchase'
 
   // Story Creation Flow
   | 'story_creation_started'
@@ -49,7 +50,13 @@ export type AnalyticsEvent =
 
 // Event parameters interface
 export interface AnalyticsEventParams {
-  [key: string]: string | number | boolean | undefined;
+  [key: string]:
+    | string
+    | number
+    | boolean
+    | undefined
+    | Record<string, unknown>[]
+    | Record<string, unknown>;
 }
 
 // Specific parameter interfaces for type safety
@@ -94,6 +101,15 @@ export interface CreditPurchaseEventParams extends AnalyticsEventParams {
   credits_purchased?: number;
   /** Payment method used (revolut, mbway, etc.) */
   payment_method?: string;
+  /** Items purchased (for GA4 ecommerce) */
+  items?: Array<{
+    item_id: string;
+    item_name: string;
+    price: number;
+    quantity: number;
+  }>;
+  /** Transaction ID */
+  transaction_id?: string;
 }
 
 /**
@@ -157,6 +173,21 @@ export const trackCommerce = {
    */
   creditPurchase: (params: CreditPurchaseEventParams = {}) => {
     trackEvent('credit_purchase', params);
+
+    // Track standard GA4 purchase event for revenue tracking
+    trackEvent('purchase', {
+      transaction_id: params.transaction_id,
+      value: params.purchase_amount,
+      currency: 'EUR',
+      items: params.items || [
+        {
+          item_id: 'credit_pack', // Generic fallback
+          item_name: `${params.credits_purchased} Credits`,
+          price: params.purchase_amount,
+          quantity: 1,
+        },
+      ],
+    });
 
     // Track Google Ads conversion (expects amount in euros)
     trackMythoriaConversionsEnhanced.creditPurchase(

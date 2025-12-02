@@ -2,13 +2,9 @@
 
 import { useEffect } from 'react';
 import Script from 'next/script';
+import { getStoredConsent, getDefaultConsent } from '@/lib/consent';
 
-declare global {
-  interface Window {
-    gtag: (...args: any[]) => void;
-    dataLayer: any[];
-  }
-}
+// Note: Window.gtag and Window.dataLayer are declared in src/lib/analytics.ts
 
 interface GoogleAnalyticsProps {
   measurementId: string;
@@ -25,15 +21,41 @@ export default function GoogleAnalytics({
     // Initialize dataLayer if it doesn't exist
     window.dataLayer = window.dataLayer || [];
 
-    // Define gtag function
-    function gtag(..._args: any[]) {
-      window.dataLayer.push(arguments);
+    // Define gtag function - use arguments object for compatibility with gtag API
+    function gtag(...args: unknown[]) {
+      window.dataLayer.push(args);
     }
 
     // Make gtag available globally
     window.gtag = gtag;
 
-    // Initialize Google Analytics
+    // ============================================
+    // GOOGLE CONSENT MODE v2 - Set defaults FIRST
+    // ============================================
+
+    // Check if user has previously made a consent choice
+    const storedConsent = getStoredConsent();
+    const consentState = storedConsent?.state || getDefaultConsent();
+
+    // Set consent defaults BEFORE any config calls
+    gtag('consent', 'default', {
+      ad_storage: consentState.ad_storage,
+      ad_user_data: consentState.ad_user_data,
+      ad_personalization: consentState.ad_personalization,
+      analytics_storage: consentState.analytics_storage,
+      wait_for_update: 500, // Wait 500ms for consent banner interaction
+    });
+
+    // Enable ads data redaction when ad_storage is denied
+    gtag('set', 'ads_data_redaction', true);
+
+    // Enable URL passthrough for better attribution when consent is denied
+    gtag('set', 'url_passthrough', true);
+
+    // ============================================
+    // Initialize and configure Google tags
+    // ============================================
+
     gtag('js', new Date());
 
     // Configure Google Analytics

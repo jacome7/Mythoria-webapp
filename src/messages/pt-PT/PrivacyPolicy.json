@@ -116,6 +116,14 @@
     },
     "section7": {
       "title": "7. Cookies e tecnologias semelhantes",
+      "intro": "Usamos cookies e tecnologias semelhantes para manter o site a funcionar e para perceber como o usas. Tu controlas que cookies são definidos através do nosso banner de consentimento.",
+      "consentMode": {
+        "title": "Como tratamos as tuas escolhas",
+        "description": "Usamos o Google Consent Mode v2 para respeitar as tuas preferências de privacidade. Isto significa:",
+        "analytics": "Os cookies de análise ajudam-nos a ver como os visitantes usam o site (páginas visitadas, tempo passado). Quando recusados, recebemos apenas dados anónimos e agregados.",
+        "advertising": "Os cookies de publicidade ajudam a medir a eficácia das campanhas e a mostrar anúncios relevantes. Quando recusados, nenhum dado publicitário é recolhido ou partilhado.",
+        "essential": "Os cookies essenciais mantêm-te ligado e o site seguro. Estão sempre ativos porque sem eles o site não funcionaria corretamente."
+      },
       "table": {
         "cookie": "Cookie / chave de armazenamento",
         "purpose": "Finalidade",
@@ -129,9 +137,9 @@
             "consent": "Não (estritamente necessário)"
           },
           "auth": {
-            "cookie": "__Secure-next-auth.session-token",
-            "purpose": "Autenticar chamadas API",
-            "expiry": "1 dia",
+            "cookie": "__clerk*",
+            "purpose": "Autenticação e tokens de sessão Clerk",
+            "expiry": "Sessão / 7 dias",
             "consent": "Não"
           },
           "analytics": {
@@ -140,15 +148,22 @@
             "expiry": "13 meses / 24 h",
             "consent": "Sim"
           },
+          "ads": {
+            "cookie": "_gcl_* (Google Ads)",
+            "purpose": "Acompanhamento de conversões de anúncios",
+            "expiry": "90 dias",
+            "consent": "Sim"
+          },
           "consent": {
-            "cookie": "cookie_consent",
-            "purpose": "Guardar preferências",
-            "expiry": "6 meses",
+            "cookie": "mythoria_consent",
+            "purpose": "Guardar preferências de cookies",
+            "expiry": "12 meses",
             "consent": "Não"
           }
         }
       },
-      "note": "O banner apresentado na primeira visita segue as Orientações de Consentimento do EDPB 05/2020 e o relatório da Task-force sobre banners de cookies (caixas pré-assinaladas desativadas, botão ‘rejeitar’ na primeira camada)."
+      "note": "O nosso banner de consentimento segue as Orientações do EDPB 05/2020 (caixas pré-assinaladas desativadas, botão rejeitar na primeira camada).",
+      "changePreferences": "Podes alterar as tuas preferências de cookies a qualquer momento através da página de Termos e Condições."
     },
     "section8": {
       "title": "8. Durante quanto tempo conservamos os seus dados",
@@ -208,6 +223,6 @@
     "links": {
       "deleteAccount": "Delete Account / Eliminar Conta"
     },
-    "lastUpdated": "Última atualização: 2 de junho de 2025"
+    "lastUpdated": "Última atualização: 27 de novembro de 2025"
   }
 }

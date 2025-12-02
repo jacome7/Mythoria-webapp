@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
+import ManageCookiesButton from '@/components/ManageCookiesButton';
 
 interface TermsAndConditionsPageProps {
   params: Promise<{ locale: string }>;
@@ -11,6 +12,7 @@ export default async function TermsAndConditionsPage({ params }: TermsAndConditi
   setRequestLocale(locale);
   const filePath = path.join(process.cwd(), 'src', 'messages', locale, 'termsAndConditions.html');
   const bodyHtml = await fs.readFile(filePath, 'utf8');
+  const t = await getTranslations('CookieConsent');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-base-100 to-base-200">
@@ -28,6 +30,15 @@ export default async function TermsAndConditionsPage({ params }: TermsAndConditi
               [&_em]:break-words"
             dangerouslySetInnerHTML={{ __html: bodyHtml }}
           />
+
+          {/* Cookie Settings Section */}
+          <div className="mt-8 pt-6 border-t border-gray-200">
+            <h2 className="text-xl sm:text-2xl font-semibold text-gray-700 mb-4">
+              {t('manageCookies')}
+            </h2>
+            <p className="text-gray-600 mb-4">{t('manageCookiesDescription')}</p>
+            <ManageCookiesButton />
+          </div>
         </div>
       </div>
     </div>

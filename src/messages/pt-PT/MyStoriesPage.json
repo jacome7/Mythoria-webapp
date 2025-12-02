@@ -27,6 +27,7 @@
   },
   "actions": {
     "read": "Ler",
+    "listen": "Ouvir",
     "edit": "Editar",
     "share": "Partilhar",
     "duplicate": "Duplicar",
@@ -34,7 +35,8 @@
     "downloadPdf": "Descarregar PDF",
     "delete": "Eliminar",
     "printNotAvailable": "Impressão Não Disponível",
-    "downloadNotAvailable": "Download não disponível"
+    "downloadNotAvailable": "Download não disponível",
+    "listenNotAvailable": "Audição Não Disponível"
   },
   "sharing": {
     "publicAccessible": "A história está agora publicamente acessível",

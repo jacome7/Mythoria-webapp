@@ -22,7 +22,9 @@
     "startingGeneration": "A iniciar geração do audiolivro...",
     "generationStarted": "Geração do audiolivro iniciada! Os elfos da Mythoria vão demorar cerca de 5 minutos para narrar toda a história.",
     "needMoreCreditsGenerate": "Precisa de mais {shortfall} créditos para gerar um audiolivro.",
-    "generationFailed": "Falha ao iniciar geração do audiolivro",
-    "tryAgainLater": "Por favor tente novamente mais tarde."
+    "generationFailed": "Falha ao iniciar geracao do audiolivro",
+    "tryAgainLater": "Por favor tente novamente mais tarde.",
+    "includeBackgroundMusic": "Incluir musica de fundo",
+    "backgroundMusicDescription": "Adiciona musica ambiente suave que combina com o tom da sua historia."
   }
 }

@@ -1,16 +1,18 @@
 {
   "AudiobookGenerationTrigger": {
-    "generateAudiobook": "Hörbuch erzeugen",
-    "audiobookDescription": "Verwandle deine Geschichte in ein fesselndes Hörbuch.",
-    "selectVoice": "Stimme auswählen",
+    "generateAudiobook": "Hoerbuch erzeugen",
+    "audiobookDescription": "Verwandle deine Geschichte in ein fesselndes Hoerbuch.",
+    "selectVoice": "Stimme auswaehlen",
+    "includeBackgroundMusic": "Hintergrundmusik einschliessen",
+    "backgroundMusicDescription": "Fuegt sanfte Hintergrundmusik hinzu, die zur Stimmung deiner Geschichte passt.",
     "generating": "Wird erzeugt...",
-    "createAudiobook": "Hörbuch erstellen",
-    "estimatedTime": "Geschätzte Dauer",
+    "createAudiobook": "Hoerbuch erstellen",
+    "estimatedTime": "Geschaetzte Dauer",
     "aboutEightMinutes": "Etwa 8 Minuten",
     "creditCost": "Credit-Kosten",
     "creditsRequired": "10 Credits",
     "errors": {
-      "failedToStart": "Hörbucherstellung konnte nicht gestartet werden"
+      "failedToStart": "Hoerbucherstellung konnte nicht gestartet werden"
     }
   }
 }
