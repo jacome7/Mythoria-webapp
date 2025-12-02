@@ -1,6 +1,7 @@
 import { toAbsoluteImageUrl, toRelativeImagePath, formatImageUrl } from '@/utils/image-url';
 
 const BASE = 'https://storage.googleapis.com/mythoria-generated-stories';
+const MYTHORIA_SITE = 'https://mythoria.pt';
 
 describe('toAbsoluteImageUrl', () => {
   it('returns null for falsy paths', () => {
@@ -8,17 +9,21 @@ describe('toAbsoluteImageUrl', () => {
     expect(toAbsoluteImageUrl('')).toBeNull();
   });
 
-  it('passes through absolute URLs', () => {
+  it('passes through absolute URLs (non-mythoria.pt)', () => {
     const url = 'https://example.com/test.png';
     expect(toAbsoluteImageUrl(url)).toBe(url);
   });
 
-  it('converts relative paths', () => {
+  it('converts relative paths to GCS URLs', () => {
     expect(toAbsoluteImageUrl('story/img.png')).toBe(`${BASE}/story/img.png`);
   });
 
-  it('handles leading slashes', () => {
-    expect(toAbsoluteImageUrl('/root.png')).toBe(`${BASE}//root.png`);
+  it('preserves local paths starting with /', () => {
+    expect(toAbsoluteImageUrl('/SampleBooks/test.jpg')).toBe('/SampleBooks/test.jpg');
+  });
+
+  it('converts mythoria.pt URLs to relative paths', () => {
+    expect(toAbsoluteImageUrl(`${MYTHORIA_SITE}/SampleBooks/test.jpg`)).toBe('/SampleBooks/test.jpg');
   });
 
   it('formatImageUrl alias works', () => {
@@ -39,6 +44,10 @@ describe('toRelativeImagePath', () => {
   it('converts absolute storage URLs', () => {
     const rel = 'story/img.png';
     expect(toRelativeImagePath(`${BASE}/${rel}`)).toBe(rel);
+  });
+
+  it('converts mythoria.pt URLs to relative paths', () => {
+    expect(toRelativeImagePath(`${MYTHORIA_SITE}/SampleBooks/test.jpg`)).toBe('/SampleBooks/test.jpg');
   });
 
   it('returns external URLs unchanged', () => {

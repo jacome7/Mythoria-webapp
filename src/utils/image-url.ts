@@ -4,6 +4,7 @@
  */
 
 const STORAGE_BASE_URL = 'https://storage.googleapis.com/mythoria-generated-stories';
+const MYTHORIA_SITE_URL = 'https://mythoria.pt';
 
 /**
  * Converts a relative image path to an absolute URL
@@ -14,12 +15,23 @@ const STORAGE_BASE_URL = 'https://storage.googleapis.com/mythoria-generated-stor
 export function toAbsoluteImageUrl(relativePath: string | null | undefined): string | null {
   if (!relativePath) return null;
 
-  // If it's already an absolute URL, return as is
+  // If it's a mythoria.pt URL, convert to relative path for local assets
+  // This prevents Next.js Image from fetching from itself (causing loops/500 errors)
+  if (relativePath.startsWith(MYTHORIA_SITE_URL)) {
+    return relativePath.replace(MYTHORIA_SITE_URL, '');
+  }
+
+  // If it's already an absolute URL (e.g., GCS), return as is
   if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
     return relativePath;
   }
 
-  // Convert relative path to absolute URL
+  // If it starts with /, it's a local asset - return as is
+  if (relativePath.startsWith('/')) {
+    return relativePath;
+  }
+
+  // Convert relative path to absolute GCS URL
   return `${STORAGE_BASE_URL}/${relativePath}`;
 }
 
@@ -42,9 +54,14 @@ export function toRelativeImagePath(absoluteUrl: string | null | undefined): str
     return absoluteUrl;
   }
 
-  // Convert absolute URL to relative path
+  // Convert GCS absolute URL to relative path
   if (absoluteUrl.startsWith(STORAGE_BASE_URL)) {
     return absoluteUrl.replace(`${STORAGE_BASE_URL}/`, '');
+  }
+
+  // Convert mythoria.pt URLs to relative paths (prevents self-referential image optimization)
+  if (absoluteUrl.startsWith(MYTHORIA_SITE_URL)) {
+    return absoluteUrl.replace(MYTHORIA_SITE_URL, '');
   }
 
   // If it's an external URL, return as is
