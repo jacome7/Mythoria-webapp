@@ -23,7 +23,9 @@ describe('toAbsoluteImageUrl', () => {
   });
 
   it('converts mythoria.pt URLs to relative paths', () => {
-    expect(toAbsoluteImageUrl(`${MYTHORIA_SITE}/SampleBooks/test.jpg`)).toBe('/SampleBooks/test.jpg');
+    expect(toAbsoluteImageUrl(`${MYTHORIA_SITE}/SampleBooks/test.jpg`)).toBe(
+      '/SampleBooks/test.jpg',
+    );
   });
 
   it('formatImageUrl alias works', () => {
@@ -47,7 +49,9 @@ describe('toRelativeImagePath', () => {
   });
 
   it('converts mythoria.pt URLs to relative paths', () => {
-    expect(toRelativeImagePath(`${MYTHORIA_SITE}/SampleBooks/test.jpg`)).toBe('/SampleBooks/test.jpg');
+    expect(toRelativeImagePath(`${MYTHORIA_SITE}/SampleBooks/test.jpg`)).toBe(
+      '/SampleBooks/test.jpg',
+    );
   });
 
   it('returns external URLs unchanged', () => {

@@ -544,7 +544,9 @@ export default function ListenStoryPage() {
                                         type="checkbox"
                                         className="toggle toggle-primary"
                                         checked={includeBackgroundMusic}
-                                        onChange={(e) => setIncludeBackgroundMusic(e.target.checked)}
+                                        onChange={(e) =>
+                                          setIncludeBackgroundMusic(e.target.checked)
+                                        }
                                       />
                                     </label>
                                     <p className="text-sm text-base-content/60 text-center">

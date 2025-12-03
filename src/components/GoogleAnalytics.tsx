@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
 import Script from 'next/script';
-import { getStoredConsent, getDefaultConsent } from '@/lib/consent';
+import { getDefaultConsent, CONSENT_COOKIE_NAME } from '@/lib/consent';
 
-// Note: Window.gtag and Window.dataLayer are declared in src/lib/analytics.ts
+const isDebugModeEnabled = process.env.NEXT_PUBLIC_GA_DEBUG_MODE === 'true';
 
 interface GoogleAnalyticsProps {
   measurementId: string;
@@ -17,61 +16,6 @@ export default function GoogleAnalytics({
   googleAdsId,
   googleTagId,
 }: GoogleAnalyticsProps) {
-  useEffect(() => {
-    // Initialize dataLayer if it doesn't exist
-    window.dataLayer = window.dataLayer || [];
-
-    // Define gtag function - use arguments object for compatibility with gtag API
-    function gtag(...args: unknown[]) {
-      window.dataLayer.push(args);
-    }
-
-    // Make gtag available globally
-    window.gtag = gtag;
-
-    // ============================================
-    // GOOGLE CONSENT MODE v2 - Set defaults FIRST
-    // ============================================
-
-    // Check if user has previously made a consent choice
-    const storedConsent = getStoredConsent();
-    const consentState = storedConsent?.state || getDefaultConsent();
-
-    // Set consent defaults BEFORE any config calls
-    gtag('consent', 'default', {
-      ad_storage: consentState.ad_storage,
-      ad_user_data: consentState.ad_user_data,
-      ad_personalization: consentState.ad_personalization,
-      analytics_storage: consentState.analytics_storage,
-      wait_for_update: 500, // Wait 500ms for consent banner interaction
-    });
-
-    // Enable ads data redaction when ad_storage is denied
-    gtag('set', 'ads_data_redaction', true);
-
-    // Enable URL passthrough for better attribution when consent is denied
-    gtag('set', 'url_passthrough', true);
-
-    // ============================================
-    // Initialize and configure Google tags
-    // ============================================
-
-    gtag('js', new Date());
-
-    // Configure Google Analytics
-    gtag('config', measurementId);
-
-    // Configure Google Ads if provided
-    if (googleAdsId) {
-      gtag('config', googleAdsId);
-    }
-
-    // Configure Google Tag if provided
-    if (googleTagId) {
-      gtag('config', googleTagId);
-    }
-  }, [measurementId, googleAdsId, googleTagId]);
-
   if (!measurementId) {
     return null;
   }
@@ -79,8 +23,63 @@ export default function GoogleAnalytics({
   // Use the primary measurement ID for the script source
   const scriptId = googleTagId || measurementId;
 
+  // Generate the inline script to initialize gtag and set consent defaults.
+  // We read the cookie manually here because this script runs before React hydration.
+  const initScript = `
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+
+    // 1. Parse stored consent from cookie (synchronously)
+    var storedConsent = null;
+    try {
+      var match = document.cookie.match(new RegExp('(^| )${CONSENT_COOKIE_NAME}=([^;]+)'));
+      if (match) {
+        storedConsent = JSON.parse(decodeURIComponent(match[2]));
+      }
+    } catch (e) {}
+
+    // 2. Determine consent state (stored or default)
+    var consentState = storedConsent ? storedConsent.state : ${JSON.stringify(getDefaultConsent())};
+
+    // 3. Set consent defaults BEFORE any config
+    // We use wait_for_update: 500 to give the consent banner a chance to load and update consent
+    // if this is the first visit, although we default to denied anyway.
+    gtag('consent', 'default', {
+      ad_storage: consentState.ad_storage,
+      ad_user_data: consentState.ad_user_data,
+      ad_personalization: consentState.ad_personalization,
+      analytics_storage: consentState.analytics_storage,
+      wait_for_update: 500
+    });
+
+    // 4. Set other flags
+    gtag('set', 'ads_data_redaction', true);
+    gtag('set', 'url_passthrough', true);
+    
+    // Set developer ID for Next.js integration tracking
+    gtag('set', 'developer_id.dZTNiMT', true);
+
+    // 5. Initialize the library
+    gtag('js', new Date());
+
+    // 6. Configure Google Tag (Initial config)
+    // Note: We DO NOT configure the measurementId here to avoid duplicate page views.
+    // The useGoogleAnalytics hook handles the initial page view and subsequent route changes.
+    
+    ${googleAdsId ? `gtag('config', '${googleAdsId}');` : ''}
+    ${googleTagId ? `gtag('config', '${googleTagId}');` : ''}
+  `;
+
   return (
     <>
+      {/* Inline script to initialize Consent Mode and gtag immediately */}
+      <Script
+        id="gtag-init"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{ __html: initScript }}
+      />
+
+      {/* External Google Tag script */}
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${scriptId}`}
         strategy="afterInteractive"
@@ -88,18 +87,3 @@ export default function GoogleAnalytics({
     </>
   );
 }
-
-// Utility functions for tracking events
-export const trackEvent = (eventName: string, parameters?: Record<string, unknown>) => {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', eventName, parameters);
-  }
-};
-
-export const trackPageView = (url: string) => {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID, {
-      page_location: url,
-    });
-  }
-};

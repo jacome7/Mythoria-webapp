@@ -119,14 +119,23 @@ export function clearConsent(): void {
  * Update Google Consent Mode with the given state
  */
 export function updateGoogleConsent(state: ConsentState): void {
-  if (typeof window === 'undefined' || !window.gtag) {
+  if (typeof window === 'undefined') {
     return;
   }
 
-  window.gtag('consent', 'update', {
+  const consentPayload = {
     ad_storage: state.ad_storage,
     ad_user_data: state.ad_user_data,
     ad_personalization: state.ad_personalization,
     analytics_storage: state.analytics_storage,
-  });
+  };
+
+  if (window.gtag) {
+    window.gtag('consent', 'update', consentPayload);
+    return;
+  }
+
+  // gtag not ready yet; queue the update so it runs once the script loads
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push(['consent', 'update', consentPayload]);
 }
