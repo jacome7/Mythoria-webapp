@@ -103,13 +103,13 @@ export default function CharacterCard({
     return getCharacterAgeOptions(tCharacters, formData.type as CharacterType);
   };
   const [formData, setFormData] = useState<Character>({
-    name: character?.name || '',
-    type: character?.type || 'boy',
-    role: character?.role || 'protagonist',
-    age: character?.age || '', // Add age field with empty default
-    traits: character?.traits || [], // Add traits field with empty array default
-    characteristics: character?.characteristics || '',
-    physicalDescription: character?.physicalDescription || '',
+    name: character?.name ?? '',
+    type: character?.type ?? 'boy',
+    role: character?.role ?? 'protagonist',
+    age: character?.age ?? '', // Add age field with empty default
+    traits: character?.traits ?? [], // Add traits field with empty array default
+    characteristics: character?.characteristics ?? '',
+    physicalDescription: character?.physicalDescription ?? '',
     ...character,
   });
   const [showOtherTypeInput, setShowOtherTypeInput] = useState(false);

@@ -1,0 +1,10 @@
+diff --git a/node_modules/daisyui/base/properties/object.js b/node_modules/daisyui/base/properties/object.js
+index cac4d9c..09bc3a1 100644
+--- a/node_modules/daisyui/base/properties/object.js
++++ b/node_modules/daisyui/base/properties/object.js
+@@ -1 +1,2 @@
+-export default {"@property --radialprogress":{"syntax":"\"<percentage>\"","inherits":"true","initial-value":"0%"}};
+\ No newline at end of file
++// Patched to avoid emitting @property (Lightning CSS warns on this rule during Next.js builds)
++export default {};
+\ No newline at end of file

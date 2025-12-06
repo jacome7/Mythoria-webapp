@@ -8,11 +8,11 @@ const config: Config = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  plugins: [typography, daisyui],
-  // @ts-expect-error - DaisyUI adds its own types at runtime only
-  daisyui: {
-    themes: ['autumn'],
-  },
+  plugins: [
+    typography,
+    // Pass DaisyUI options directly so we can drop the properties base (emits @property)
+    daisyui({ themes: ['autumn'], exclude: ['properties'] }),
+  ],
 } satisfies Config;
 
 export default config;
