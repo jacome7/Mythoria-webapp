@@ -20,6 +20,9 @@ import {
   getAllTargetAudiences,
   getAllNovelStyles,
   getAllGraphicalStyles,
+  LiteraryPersona,
+  LiteraryPersonaMetadata,
+  getAllLiteraryPersonas,
 } from '@/types/story-enums';
 import type { StoryData } from '@/types/story';
 
@@ -50,6 +53,7 @@ function Step4Page() {
   );
   const [novelStyle, setNovelStyle] = useState<NovelStyle | ''>('');
   const [graphicalStyle, setGraphicalStyle] = useState<GraphicalStyle | ''>('');
+  const [literaryPersona, setLiteraryPersona] = useState<LiteraryPersona | ''>('');
   const [plotDescription, setPlotDescription] = useState('');
   const [additionalRequests, setAdditionalRequests] = useState('');
   const [imageGenerationInstructions, setImageGenerationInstructions] = useState('');
@@ -63,14 +67,48 @@ function Step4Page() {
 
   // Dropdown state
   const [showGraphicalStyleDropdown, setShowGraphicalStyleDropdown] = useState(false);
+  const [showLiteraryPersonaDropdown, setShowLiteraryPersonaDropdown] = useState(false);
 
   // Language options from translation
   const languageOptions = tStoryStepsStep4.raw('languageOptions') as Array<{
     value: string;
     label: string;
   }>;
+  const literaryPersonaMessages = tStoryStepsStep4.raw('literaryPersona') as
+    | {
+        label?: string;
+        helper?: string;
+        placeholder?: string;
+        autoSelected?: string;
+        options?: Record<
+          LiteraryPersona,
+          {
+            name?: string;
+            description?: string;
+          }
+        >;
+      }
+    | undefined;
+
+  const literaryPersonaOptions = getAllLiteraryPersonas().map((value) => ({
+    value,
+    name: literaryPersonaMessages?.options?.[value]?.name || value,
+    description: literaryPersonaMessages?.options?.[value]?.description || '',
+    metadata: LiteraryPersonaMetadata[value],
+  }));
+
+  const literaryPersonaOptionMap = Object.fromEntries(
+    literaryPersonaOptions.map((option) => [option.value, option]),
+  ) as Record<LiteraryPersona, (typeof literaryPersonaOptions)[number]>;
+
   const hasStyleSettingData = () => {
-    return place.trim() || novelStyle || graphicalStyle || imageGenerationInstructions.trim();
+    return (
+      place.trim() ||
+      novelStyle ||
+      graphicalStyle ||
+      literaryPersona ||
+      imageGenerationInstructions.trim()
+    );
   };
 
   const hasContentDetailsData = () => {
@@ -79,6 +117,8 @@ function Step4Page() {
 
   const getStyleSettingPreview = () => {
     const parts = [];
+    if (literaryPersona && literaryPersonaOptionMap[literaryPersona])
+      parts.push(literaryPersonaOptionMap[literaryPersona].name);
     if (novelStyle) parts.push(NovelStyleLabels[novelStyle]);
     if (graphicalStyle) parts.push(GraphicalStyleLabels[graphicalStyle]);
     if (place.trim()) parts.push(place.trim());
@@ -146,17 +186,16 @@ function Step4Page() {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (showGraphicalStyleDropdown) {
-          setShowGraphicalStyleDropdown(false);
-        }
+        if (showGraphicalStyleDropdown) setShowGraphicalStyleDropdown(false);
+        if (showLiteraryPersonaDropdown) setShowLiteraryPersonaDropdown(false);
       }
     };
 
-    if (showGraphicalStyleDropdown) {
+    if (showGraphicalStyleDropdown || showLiteraryPersonaDropdown) {
       document.addEventListener('keydown', handleEscape);
       return () => document.removeEventListener('keydown', handleEscape);
     }
-  }, [showGraphicalStyleDropdown]);
+  }, [showGraphicalStyleDropdown, showLiteraryPersonaDropdown]);
 
   const loadStoryData = useCallback(
     async (storyId: string) => {
@@ -169,6 +208,7 @@ function Step4Page() {
         setTargetAudience(story.targetAudience || '');
         setNovelStyle(story.novelStyle || '');
         setGraphicalStyle(story.graphicalStyle || '');
+        setLiteraryPersona((story.literaryPersona as LiteraryPersona | null) || '');
         setPlotDescription(story.plotDescription || '');
         setAdditionalRequests(story.additionalRequests || '');
         setImageGenerationInstructions(story.imageGenerationInstructions || '');
@@ -244,6 +284,7 @@ function Step4Page() {
           targetAudience: targetAudience || null,
           novelStyle: novelStyle || null,
           graphicalStyle: graphicalStyle || null,
+          literaryPersona: literaryPersona || null,
           plotDescription: plotDescription.trim() || null,
           additionalRequests: additionalRequests.trim() || null,
           imageGenerationInstructions: imageGenerationInstructions.trim() || null,
@@ -264,6 +305,7 @@ function Step4Page() {
         target_audience: targetAudience || undefined,
         novel_style: novelStyle || undefined,
         graphical_style: graphicalStyle || undefined,
+        literary_persona: literaryPersona || undefined,
         chapter_count: chapterCount,
         has_plot_description: !!plotDescription.trim(),
         has_additional_requests: !!additionalRequests.trim(),
@@ -291,13 +333,13 @@ function Step4Page() {
       </SignedOut>
 
       <SignedIn>
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-2 sm:px-3 md:px-5 py-8">
           <div className="max-w-4xl mx-auto">
             <ProgressIndicator currentStep={4} totalSteps={5} />
 
             {/* Step content */}
             <div className="card bg-base-100 shadow-xl">
-              <div className="card-body">
+              <div className="card-body p-3 sm:p-5">
                 <h1 className="card-title text-3xl mb-6">{tStoryStepsStep4('heading')}</h1>
 
                 {loading ? (
@@ -497,6 +539,50 @@ function Step4Page() {
                             </label>
                           </div>
 
+                          {/* Literary Persona Field */}
+                          <div className="form-control md:col-span-2">
+                            <label className="label">
+                              <span className="label-text font-semibold">
+                                {literaryPersonaMessages?.label ||
+                                  tStoryStepsStep4('fields.literaryPersona')}
+                              </span>
+                            </label>
+                            <button
+                              type="button"
+                              className={`w-full text-left border border-base-300 rounded-lg bg-base-100 px-4 py-3 focus:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                                !literaryPersona ? 'text-gray-500' : ''
+                              }`}
+                              onClick={() => setShowLiteraryPersonaDropdown(true)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
+                                  setShowLiteraryPersonaDropdown(true);
+                                }
+                              }}
+                            >
+                              <div className="flex flex-col items-start gap-1">
+                                <span className="font-semibold whitespace-normal leading-snug">
+                                  {literaryPersona
+                                    ? literaryPersonaOptionMap[literaryPersona]?.name ||
+                                      literaryPersona
+                                    : literaryPersonaMessages?.placeholder ||
+                                      tStoryStepsStep4('placeholders.selectLiteraryPersona')}
+                                </span>
+                                <span className="text-xs text-gray-600 whitespace-normal leading-snug">
+                                  {literaryPersona &&
+                                  literaryPersonaOptionMap[literaryPersona]?.description
+                                    ? literaryPersonaOptionMap[literaryPersona].description
+                                    : literaryPersonaMessages?.helper || ''}
+                                </span>
+                              </div>
+                            </button>
+                            <label className="label">
+                              <span className="label-text-alt break-words max-w-full whitespace-normal">
+                                {literaryPersonaMessages?.helper || ''}
+                              </span>
+                            </label>
+                          </div>
+
                           {/* Novel Style Field */}
                           <div className="form-control">
                             <label className="label">
@@ -661,6 +747,87 @@ function Step4Page() {
                         </div>
                       </div>
                     </div>
+                  </div>
+                )}
+
+                {/* Literary Persona Selector */}
+                {showLiteraryPersonaDropdown && (
+                  <div className="modal modal-open">
+                    <div className="modal-box max-w-4xl h-3/4 max-h-screen">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="font-bold text-lg">
+                          {literaryPersonaMessages?.label ||
+                            tStoryStepsStep4('fields.literaryPersona')}
+                        </h3>
+                        <button
+                          className="btn btn-sm btn-circle btn-ghost"
+                          onClick={() => setShowLiteraryPersonaDropdown(false)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Escape') {
+                              setShowLiteraryPersonaDropdown(false);
+                            }
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      <div className="overflow-y-auto max-h-full space-y-4">
+                        {literaryPersonaOptions.map((option) => (
+                          <div
+                            key={option.value}
+                            className={`card bg-base-100 shadow-sm hover:shadow-lg transition-shadow cursor-pointer border ${
+                              literaryPersona === option.value
+                                ? 'border-primary'
+                                : 'border-transparent'
+                            }`}
+                            onClick={() => {
+                              setLiteraryPersona(option.value);
+                              setShowLiteraryPersonaDropdown(false);
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                setLiteraryPersona(option.value);
+                                setShowLiteraryPersonaDropdown(false);
+                              }
+                            }}
+                            tabIndex={0}
+                          >
+                            <div className="card-body p-4 gap-3">
+                              <div className="flex items-start justify-between gap-3">
+                                <div>
+                                  <h4 className="card-title text-base">{option.name}</h4>
+                                  {option.description && (
+                                    <p className="text-sm text-gray-600 mt-1">
+                                      {option.description}
+                                    </p>
+                                  )}
+                                </div>
+                                {literaryPersona === option.value && (
+                                  <div className="badge badge-primary">
+                                    {tStoryStepsStep4('modal.selected')}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="modal-action">
+                        <button
+                          className="btn"
+                          onClick={() => setShowLiteraryPersonaDropdown(false)}
+                        >
+                          {tStoryStepsStep4('modal.close')}
+                        </button>
+                      </div>
+                    </div>
+                    <div
+                      className="modal-backdrop"
+                      onClick={() => setShowLiteraryPersonaDropdown(false)}
+                    ></div>
                   </div>
                 )}
 

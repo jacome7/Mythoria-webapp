@@ -189,6 +189,8 @@
         "novelStyleHelp": "Quel genre / style pour votre histoire ?",
         "graphicStyle": "Style graphique",
         "graphicStyleHelp": "Choisissez le style artistique des illustrations de votre histoire",
+        "literaryPersona": "Persona narrative",
+        "literaryPersonaHelp": "Choisissez la vibe du narrateur que l’IA doit imiter.",
         "imageInstructions": "Instructions personnalisées pour les images",
         "imageInstructionsHelp": "Fournissez des instructions spécifiques pour personnaliser les images générées par l’IA. Décrivez l’apparence des personnages, les préférences de style visuel ou tout élément spécial à inclure.",
         "bookSize": "Taille du livre",
@@ -204,9 +206,41 @@
         "selectAudience": "Sélectionnez le public cible...",
         "selectNovelStyle": "Sélectionnez le style du roman...",
         "selectGraphicStyle": "Sélectionnez le style graphique...",
+        "selectLiteraryPersona": "Sélectionner une persona littéraire...",
         "imageInstructions": "Décrivez l’apparence souhaitée des personnages, éléments visuels spécifiques, couleurs ou détails artistiques pour les images de votre histoire...",
         "outlinePlaceholder": "Décrivez tous les détails que vous souhaitez dans l’histoire...",
         "storyLanguageHelp": "Votre histoire sera écrite et générée dans la langue sélectionnée."
+      },
+      "literaryPersona": {
+        "label": "Persona narrative",
+        "helper": "Choisissez le type de narrateur pour guider le style.",
+        "placeholder": "Sélectionner une persona littéraire...",
+        "options": {
+          "storyteller": {
+            "name": "Le Conteur",
+            "description": "Voix chaleureuse et empathique, comme un grand-parent qui partage ses souvenirs; centrée sur les émotions et de petites morales."
+          },
+          "adventurous-narrator": {
+            "name": "Le Narrateur Aventurier",
+            "description": "Transforme l’ordinaire en épique avec une énergie joueuse en 2e personne et des touches de fantaisie."
+          },
+          "fun-reporter": {
+            "name": "Le Reporter Amusant",
+            "description": "Chronique vive et malicieuse des péripéties du groupe, avec rythme rapide et citations."
+          },
+          "friendly-educator": {
+            "name": "L’Éducateur Bienveillant",
+            "description": "Voix douce et claire qui enseigne avec des questions simples et des exemples concrets."
+          },
+          "institutional-chronicler": {
+            "name": "Le Chroniqueur Institutionnel",
+            "description": "Tonalité biographique formelle et précise, toujours factuelle et ordonnée."
+          },
+          "pub-buddy-narrator": {
+            "name": "Le Pote du Bar",
+            "description": "Récit ultra informel et blagueur, comme un ami qui raconte la soirée autour d’un verre."
+          }
+        }
       },
       "languageOptions": [
         {

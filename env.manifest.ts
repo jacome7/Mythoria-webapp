@@ -141,6 +141,14 @@ export const envManifest: EnvVarDescriptor[] = [
     source: 'secret-manager',
   },
   {
+    name: 'SGW_WEBHOOK_SECRET',
+    required: true,
+    scopes: ['prod', 'runtime'],
+    secret: true,
+    source: 'secret-manager',
+    note: 'Shared secret to validate SGW text-edit webhooks (uses STORY_GENERATION_WORKFLOW_API_KEY secret).',
+  },
+  {
     name: 'WORKFLOWS_DB_NAME',
     required: false,
     scopes: ['prod', 'runtime', 'dev'],

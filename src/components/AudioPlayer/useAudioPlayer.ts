@@ -15,15 +15,52 @@ export function useAudioPlayer({
   const [currentlyPlaying, setCurrentlyPlaying] = useState<number | null>(null);
   const [audioProgress, setAudioProgress] = useState<{ [key: number]: number }>({});
   const [audioLoading, setAudioLoading] = useState<{ [key: number]: boolean }>({});
+  const [audioDurations, setAudioDurations] = useState<{ [key: number]: number }>({});
+  const [playbackSpeed, setPlaybackSpeedState] = useState(1);
 
   // Refs to always-current state for event handlers (auto-advance logic)
   const audioElementsRef = useRef<{ [key: number]: HTMLAudioElement }>({});
   const totalChaptersRef = useRef<number>(totalChapters ?? trackingData?.total_chapters ?? 0);
   const playAudioRef = useRef<(i: number) => Promise<void>>(async () => {});
+  const playbackSpeedRef = useRef(playbackSpeed);
+
+  useEffect(() => {
+    playbackSpeedRef.current = playbackSpeed;
+  }, [playbackSpeed]);
 
   useEffect(() => {
     totalChaptersRef.current = totalChapters ?? trackingData?.total_chapters ?? 0;
   }, [totalChapters, trackingData]);
+
+  const setPlaybackSpeed = useCallback(
+    (speed: number) => {
+      setPlaybackSpeedState(speed);
+      if (currentlyPlaying !== null && audioElementsRef.current[currentlyPlaying]) {
+        audioElementsRef.current[currentlyPlaying].playbackRate = speed;
+      }
+    },
+    [currentlyPlaying],
+  );
+
+  const seekAudio = useCallback((chapterIndex: number, time: number) => {
+    if (audioElementsRef.current[chapterIndex]) {
+      audioElementsRef.current[chapterIndex].currentTime = time;
+    }
+  }, []);
+
+  const skipForward = useCallback((chapterIndex: number, seconds: number) => {
+    if (audioElementsRef.current[chapterIndex]) {
+      const audio = audioElementsRef.current[chapterIndex];
+      audio.currentTime = Math.min(audio.currentTime + seconds, audio.duration);
+    }
+  }, []);
+
+  const skipBackward = useCallback((chapterIndex: number, seconds: number) => {
+    if (audioElementsRef.current[chapterIndex]) {
+      const audio = audioElementsRef.current[chapterIndex];
+      audio.currentTime = Math.max(audio.currentTime - seconds, 0);
+    }
+  }, []);
 
   const playAudio = useCallback(
     async (chapterIndex: number) => {
@@ -49,6 +86,9 @@ export function useAudioPlayer({
 
           audio.addEventListener('loadedmetadata', () => {
             setAudioLoading((prev) => ({ ...prev, [chapterIndex]: false }));
+            if (audio.duration && audio.duration !== Infinity) {
+              setAudioDurations((prev) => ({ ...prev, [chapterIndex]: audio.duration }));
+            }
           });
 
           audio.addEventListener('timeupdate', () => {
@@ -88,6 +128,7 @@ export function useAudioPlayer({
 
           // Set the source and start playing with proper error handling
           audio.src = proxyAudioUri;
+          audio.playbackRate = playbackSpeedRef.current;
 
           try {
             await audio.play();
@@ -125,6 +166,8 @@ export function useAudioPlayer({
             audio.load(); // Reset the element
             audio.src = proxyAudioUri;
           }
+
+          audio.playbackRate = playbackSpeedRef.current;
 
           try {
             await audio.play();
@@ -232,8 +275,14 @@ export function useAudioPlayer({
     getAudioElement,
     audioProgress,
     audioLoading,
+    audioDurations,
+    playbackSpeed,
     playAudio,
     pauseAudio,
     stopAudio,
+    setPlaybackSpeed,
+    seekAudio,
+    skipForward,
+    skipBackward,
   };
 }

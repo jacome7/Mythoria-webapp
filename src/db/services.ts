@@ -411,6 +411,7 @@ export const characterService = {
     characteristics?: string;
     physicalDescription?: string;
     photoUrl?: string;
+    photoGcsUri?: string;
   }) {
     // Only validate age, type is now free text
     const validatedData = {
@@ -421,6 +422,7 @@ export const characterService = {
           ? (characterData.age as CharacterAge)
           : undefined,
       photoUrl: toRelativeImagePath(characterData.photoUrl),
+      photoGcsUri: characterData.photoGcsUri || undefined,
     };
 
     console.log('[characterService.createCharacter] Input type:', characterData.type);
@@ -439,7 +441,8 @@ export const characterService = {
     const characterResults = await db
       .select()
       .from(characters)
-      .where(eq(characters.authorId, authorId));
+      .where(eq(characters.authorId, authorId))
+      .orderBy(desc(characters.createdAt));
 
     return characterResults.map((character) => ({
       ...character,
@@ -457,6 +460,28 @@ export const characterService = {
     return {
       ...character,
       photoUrl: toAbsoluteImageUrl(character.photoUrl),
+    };
+  },
+
+  async updateCharacterPhoto(
+    characterId: string,
+    photoUrl: string | null,
+    photoGcsUri: string | null,
+  ) {
+    const [updated] = await db
+      .update(characters)
+      .set({
+        photoUrl: photoUrl ? toRelativeImagePath(photoUrl) : null,
+        photoGcsUri: photoGcsUri,
+      })
+      .where(eq(characters.characterId, characterId))
+      .returning();
+
+    if (!updated) return null;
+
+    return {
+      ...updated,
+      photoUrl: toAbsoluteImageUrl(updated.photoUrl),
     };
   },
 };

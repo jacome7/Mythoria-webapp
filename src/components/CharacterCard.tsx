@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import { FiCamera } from 'react-icons/fi';
 import { trackStoryCreation } from '../lib/analytics';
 import { Character } from '../lib/story-session';
 import {
@@ -14,6 +15,7 @@ import {
 } from '../types/character-enums';
 import GroupedCharacterTypeSelect from './GroupedCharacterTypeSelect';
 import RollableHints from './RollableHints';
+import CharacterPhotoUpload from './CharacterPhotoUpload';
 
 // Translation keys for hints (mapped at render time)
 const CHARACTERISTIC_HINT_KEYS = [
@@ -117,7 +119,42 @@ export default function CharacterCard({
   const [deleting, setDeleting] = useState(false);
   const [traitSearchTerm, setTraitSearchTerm] = useState('');
   const [showTraitDropdown, setShowTraitDropdown] = useState(false);
+  const [showPhotoUpload, setShowPhotoUpload] = useState(false);
   const traitDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Map character type to icon filename
+  const getCharacterIconPath = (type: string | undefined): string => {
+    if (!type) return '/CharacterIcons/other.png';
+    // Normalize type to lowercase for icon lookup
+    const normalizedType = type.toLowerCase();
+    // List of known icon types
+    const knownTypes = [
+      'boy',
+      'girl',
+      'man',
+      'woman',
+      'person',
+      'dog',
+      'cat',
+      'bird',
+      'other_animal',
+      'dragon',
+      'elf_fairy_mythical',
+      'robot_cyborg',
+      'alien_extraterrestrial',
+      'other_creature',
+      'other',
+    ];
+    if (knownTypes.includes(normalizedType)) {
+      return `/CharacterIcons/${normalizedType}.png`;
+    }
+    return '/CharacterIcons/other.png';
+  };
+
+  // Handle photo update from upload modal
+  const handlePhotoUpdated = (photoUrl: string | null) => {
+    setFormData((prev) => ({ ...prev, photoUrl: photoUrl || undefined }));
+  };
 
   // Get filtered traits based on search term
   const filteredTraits = getCharacterTraitOptions(traitSearchTerm, tCharacters);
@@ -259,18 +296,26 @@ export default function CharacterCard({
         <div className="card-body">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center space-x-3">
-              {formData.photoUrl && (
-                <div className="avatar">
-                  <div className="w-16 h-16 rounded-full relative overflow-hidden">
+              {/* Character photo or type icon */}
+              <div className="avatar">
+                <div className="w-16 h-16 rounded-full relative overflow-hidden bg-base-200">
+                  {formData.photoUrl ? (
                     <Image
                       src={formData.photoUrl}
                       alt={formData.name}
                       fill
                       className="object-cover"
                     />
-                  </div>
+                  ) : (
+                    <Image
+                      src={getCharacterIconPath(formData.type)}
+                      alt={formData.type || 'character'}
+                      fill
+                      className="object-cover p-1"
+                    />
+                  )}
                 </div>
-              )}
+              </div>
               <div>
                 <h3 className="card-title text-xl">{formData.name}</h3>
                 <div className="badge badge-primary badge-outline">
@@ -358,11 +403,60 @@ export default function CharacterCard({
   return (
     <div className="card bg-base-100 shadow-lg border">
       <div className="card-body">
-        <h3 className="card-title text-xl mb-4">
-          {mode === 'create'
-            ? `✨ ${tCharacters('titles.addNew')}`
-            : `✏️ ${tCharacters('titles.edit')}`}
-        </h3>
+        {/* Header with photo and title */}
+        <div className="flex items-center gap-4 mb-4">
+          {/* Clickable photo/icon - opens upload modal in edit mode */}
+          {mode === 'edit' && formData.characterId ? (
+            <button
+              type="button"
+              onClick={() => setShowPhotoUpload(true)}
+              className="relative group"
+              title={
+                formData.photoUrl
+                  ? tCharacters('photoUpload.changePhoto')
+                  : tCharacters('photoUpload.selectPhoto')
+              }
+            >
+              <div className="w-16 h-16 rounded-full overflow-hidden bg-base-200 border-2 border-dashed border-primary/50 group-hover:border-primary transition-colors">
+                {formData.photoUrl ? (
+                  <Image
+                    src={formData.photoUrl}
+                    alt={formData.name || 'character'}
+                    width={64}
+                    height={64}
+                    className="object-cover w-full h-full"
+                  />
+                ) : (
+                  <Image
+                    src={getCharacterIconPath(formData.type)}
+                    alt={formData.type || 'character'}
+                    width={64}
+                    height={64}
+                    className="object-cover w-full h-full p-1 opacity-60"
+                  />
+                )}
+              </div>
+              <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                <FiCamera className="w-6 h-6 text-white" />
+              </div>
+            </button>
+          ) : (
+            <div className="w-16 h-16 rounded-full overflow-hidden bg-base-200 flex items-center justify-center">
+              <Image
+                src={getCharacterIconPath(formData.type)}
+                alt={formData.type || 'character'}
+                width={64}
+                height={64}
+                className="object-cover w-full h-full p-1 opacity-60"
+              />
+            </div>
+          )}
+          <h3 className="card-title text-xl">
+            {mode === 'create'
+              ? `✨ ${tCharacters('titles.addNew')}`
+              : `✏️ ${tCharacters('titles.edit')}`}
+          </h3>
+        </div>
 
         <div className="form-control mb-4">
           <label className="label">
@@ -609,6 +703,20 @@ export default function CharacterCard({
           </button>
         </div>
       </div>
+
+      {/* Photo Upload Modal */}
+      {formData.characterId && (
+        <CharacterPhotoUpload
+          isOpen={showPhotoUpload}
+          onClose={() => setShowPhotoUpload(false)}
+          characterId={formData.characterId}
+          currentPhotoUrl={formData.photoUrl}
+          onPhotoUpdated={handlePhotoUpdated}
+          onDescriptionExtracted={(description) => {
+            setFormData((prev) => ({ ...prev, physicalDescription: description }));
+          }}
+        />
+      )}
     </div>
   );
 }

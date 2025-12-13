@@ -189,6 +189,8 @@
         "novelStyleHelp": "Que género/estilo deve ter a tua história?",
         "graphicStyle": "Estilo Gráfico",
         "graphicStyleHelp": "Escolhe o estilo artístico das ilustrações da tua história",
+        "literaryPersona": "Persona Narrativa",
+        "literaryPersonaHelp": "Escolhe a vibe de narrador que queres que a IA imite.",
         "imageInstructions": "Instruções de Imagem Personalizadas",
         "imageInstructionsHelp": "Fornece instruções específicas para personalizar as imagens geradas por IA. Descreve a aparência das personagens, preferências de estilo visual ou quaisquer elementos especiais que queiras incluir.",
         "bookSize": "Tamanho do Livro",
@@ -204,9 +206,41 @@
         "selectAudience": "Selecionar público-alvo...",
         "selectNovelStyle": "Selecionar estilo de romance...",
         "selectGraphicStyle": "Selecionar estilo gráfico...",
+        "selectLiteraryPersona": "Selecionar persona literária...",
         "imageInstructions": "Descreve como gostarias que as personagens aparentassem, elementos visuais específicos, cores ou detalhes artísticos para as imagens da tua história...",
         "outlinePlaceholder": "Descreva todos os detalhes que gostaria na história...",
         "storyLanguageHelp": "A tua história será escrita e gerada no idioma selecionado."
+      },
+      "literaryPersona": {
+        "label": "Persona Narrativa",
+        "helper": "Escolhe o tipo de narrador para orientar o estilo.",
+        "placeholder": "Selecionar persona literária...",
+        "options": {
+          "storyteller": {
+            "name": "O Contador de Histórias",
+            "description": "Voz quente e empática, como um avô a partilhar memórias; foca-se em sentimentos e pequenas lições."
+          },
+          "adventurous-narrator": {
+            "name": "O Narrador Aventureiro",
+            "description": "Transforma o quotidiano em épico com energia divertida em 2.ª pessoa e toques de fantasia."
+          },
+          "fun-reporter": {
+            "name": "O Repórter Divertido",
+            "description": "Crónica leve e espirituosa das peripécias do grupo, com ritmo rápido e citações."
+          },
+          "friendly-educator": {
+            "name": "O Educador Amigável",
+            "description": "Voz gentil e clara que ensina com perguntas simples e exemplos concretos."
+          },
+          "institutional-chronicler": {
+            "name": "O Cronista Institucional",
+            "description": "Tom biográfico formal e preciso que mantém tudo factual e organizado."
+          },
+          "pub-buddy-narrator": {
+            "name": "O Amigo do Bar",
+            "description": "Narrativa super informal e cheia de piadas, como um amigo a recordar a noite com bebidas."
+          }
+        }
       },
       "languageOptions": [
         {

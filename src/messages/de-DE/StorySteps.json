@@ -189,6 +189,8 @@
         "novelStyleHelp": "Welches Genre bzw. welcher Stil soll deine Geschichte haben?",
         "graphicStyle": "Grafikstil",
         "graphicStyleHelp": "Wähle den künstlerischen Stil für die Illustrationen deiner Geschichte",
+        "literaryPersona": "Erzähl-Persona",
+        "literaryPersonaHelp": "Wähle, welchen Erzähler-Vibe die KI nachahmen soll.",
         "imageInstructions": "Individuelle Bildanweisungen",
         "imageInstructionsHelp": "Gib konkrete Anweisungen, um die KI-generierten Bilder anzupassen. Beschreibe das Aussehen der Figuren, gewünschte Bildstile oder besondere Elemente.",
         "bookSize": "Buchumfang",
@@ -204,9 +206,41 @@
         "selectAudience": "Zielgruppe auswählen...",
         "selectNovelStyle": "Romanstil auswählen...",
         "selectGraphicStyle": "Grafikstil auswählen...",
+        "selectLiteraryPersona": "Literarische Persona auswählen...",
         "imageInstructions": "Beschreibe, wie die Figuren aussehen sollen, welche visuellen Elemente, Farben oder künstlerischen Details du dir für die Bilder wünschst...",
         "outlinePlaceholder": "Beschreibe alle Details, die in der Geschichte vorkommen sollen...",
         "storyLanguageHelp": "Deine Geschichte wird in der ausgewählten Sprache geschrieben und erstellt."
+      },
+      "literaryPersona": {
+        "label": "Erzähl-Persona",
+        "helper": "Wähle den Erzähler-Typ, der den Stil vorgibt.",
+        "placeholder": "Literarische Persona auswählen...",
+        "options": {
+          "storyteller": {
+            "name": "Der Geschichtenerzähler",
+            "description": "Warme, einfühlsame Stimme wie ein Großelternteil, das Erinnerungen teilt; Gefühle und sanfte Moral im Fokus."
+          },
+          "adventurous-narrator": {
+            "name": "Der Abenteuer-Narrator",
+            "description": "Macht Alltagsmomente episch mit verspielter Ansprache in der 2. Person und Fantasie-Tupfern."
+          },
+          "fun-reporter": {
+            "name": "Der Spaß-Reporter",
+            "description": "Lockere, witzige Chronik der Gruppenaktionen mit hohem Tempo und Zitaten."
+          },
+          "friendly-educator": {
+            "name": "Der Freundliche Erklärer",
+            "description": "Sanfte, klare Lehrer-Stimme mit einfachen Fragen und Beispielen."
+          },
+          "institutional-chronicler": {
+            "name": "Der Institutionelle Chronist",
+            "description": "Formaler, präziser Biografie-Ton, der Fakten geordnet hält."
+          },
+          "pub-buddy-narrator": {
+            "name": "Der Kneipen-Kumpel",
+            "description": "Super lockere, scherzhafte Erzählung wie ein Freund, der den Abend bei Drinks nacherzählt."
+          }
+        }
       },
       "languageOptions": [
         {

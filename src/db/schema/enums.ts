@@ -106,6 +106,15 @@ export const graphicalStyleEnum = pgEnum('graphical_style', [
   'colored_pencil',
 ]);
 
+export const literaryPersonaEnum = pgEnum('literary_persona', [
+  'storyteller',
+  'adventurous-narrator',
+  'fun-reporter',
+  'friendly-educator',
+  'institutional-chronicler',
+  'pub-buddy-narrator',
+]);
+
 export const aiActionTypeEnum = pgEnum('ai_action_type', [
   'story_structure',
   'story_outline',

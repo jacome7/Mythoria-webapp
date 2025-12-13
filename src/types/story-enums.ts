@@ -47,6 +47,110 @@ export enum GraphicalStyle {
   COLORED_PENCIL = 'colored_pencil',
 }
 
+export enum LiteraryPersona {
+  STORYTELLER = 'storyteller',
+  ADVENTUROUS_NARRATOR = 'adventurous-narrator',
+  FUN_REPORTER = 'fun-reporter',
+  FRIENDLY_EDUCATOR = 'friendly-educator',
+  INSTITUTIONAL_CHRONICLER = 'institutional-chronicler',
+  PUB_BUDDY_NARRATOR = 'pub-buddy-narrator',
+}
+
+export type LiteraryPersonaProfile = {
+  pov: '1st' | '2nd' | '3rd-limited' | '3rd-omniscient' | 'objective';
+  povAlternatives?: Array<'1st' | '2nd' | '3rd-limited' | '3rd-omniscient' | 'objective'>;
+  tone: number;
+  formality: number;
+  rhythm: number;
+  vocabulary: number;
+  fictionality: number;
+  dialogueDensity?: number;
+  sensoriality?: number;
+  subtextIrony?: number;
+  techniques?: string[];
+};
+
+export const LiteraryPersonaMetadata: Record<LiteraryPersona, LiteraryPersonaProfile> = {
+  [LiteraryPersona.STORYTELLER]: {
+    pov: '1st',
+    povAlternatives: ['3rd-limited'],
+    tone: 2,
+    formality: 2,
+    rhythm: 2,
+    vocabulary: 3,
+    fictionality: 3,
+    dialogueDensity: 3,
+    sensoriality: 4,
+    subtextIrony: 2,
+    techniques: ['free-indirect-discourse'],
+  },
+  [LiteraryPersona.ADVENTUROUS_NARRATOR]: {
+    pov: '2nd',
+    povAlternatives: ['3rd-limited'],
+    tone: 4,
+    formality: 1,
+    rhythm: 5,
+    vocabulary: 3,
+    fictionality: 5,
+    dialogueDensity: 4,
+    sensoriality: 4,
+    subtextIrony: 3,
+    techniques: ['4th-wall-break'],
+  },
+  [LiteraryPersona.FUN_REPORTER]: {
+    pov: 'objective',
+    povAlternatives: ['3rd-limited'],
+    tone: 4,
+    formality: 3,
+    rhythm: 4,
+    vocabulary: 3,
+    fictionality: 2,
+    dialogueDensity: 4,
+    sensoriality: 3,
+    subtextIrony: 4,
+    techniques: ['4th-wall-break'],
+  },
+  [LiteraryPersona.FRIENDLY_EDUCATOR]: {
+    pov: '2nd',
+    povAlternatives: ['1st'],
+    tone: 3,
+    formality: 2,
+    rhythm: 3,
+    vocabulary: 2,
+    fictionality: 2,
+    dialogueDensity: 3,
+    sensoriality: 4,
+    subtextIrony: 1,
+    techniques: [],
+  },
+  [LiteraryPersona.INSTITUTIONAL_CHRONICLER]: {
+    pov: 'objective',
+    povAlternatives: ['3rd-limited'],
+    tone: 2,
+    formality: 5,
+    rhythm: 3,
+    vocabulary: 4,
+    fictionality: 1,
+    dialogueDensity: 1,
+    sensoriality: 2,
+    subtextIrony: 1,
+    techniques: [],
+  },
+  [LiteraryPersona.PUB_BUDDY_NARRATOR]: {
+    pov: '1st',
+    povAlternatives: ['3rd-limited'],
+    tone: 5,
+    formality: 1,
+    rhythm: 4,
+    vocabulary: 2,
+    fictionality: 3,
+    dialogueDensity: 5,
+    sensoriality: 3,
+    subtextIrony: 4,
+    techniques: ['unreliable-narrator', '4th-wall-break'],
+  },
+};
+
 // Human-readable labels for UI display
 export const TargetAudienceLabels: Record<TargetAudience, string> = {
   [TargetAudience.CHILDREN_0_2]: 'Babies & Toddlers (0-2 years)',
@@ -100,6 +204,8 @@ export const getAllTargetAudiences = (): TargetAudience[] => Object.values(Targe
 export const getAllNovelStyles = (): NovelStyle[] => Object.values(NovelStyle);
 
 export const getAllGraphicalStyles = (): GraphicalStyle[] => Object.values(GraphicalStyle);
+
+export const getAllLiteraryPersonas = (): LiteraryPersona[] => Object.values(LiteraryPersona);
 
 // Helper functions to map between enum values and labels
 export const getTargetAudienceLabel = (value: TargetAudience): string =>

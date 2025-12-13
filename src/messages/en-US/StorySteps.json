@@ -189,6 +189,8 @@
         "novelStyleHelp": "What genre/style should your story be?",
         "graphicStyle": "Graphic Style",
         "graphicStyleHelp": "Choose the artistic style for your story's illustrations",
+        "literaryPersona": "Narrator Persona",
+        "literaryPersonaHelp": "Pick the narrator vibe you want the AI to emulate.",
         "imageInstructions": "Custom Image Instructions",
         "imageInstructionsHelp": "Provide specific instructions to customize the AI-generated images. Describe character appearances, visual style preferences, or any special elements you'd like included.",
         "bookSize": "Book Size",
@@ -204,9 +206,41 @@
         "selectAudience": "Select target audience...",
         "selectNovelStyle": "Select novel style...",
         "selectGraphicStyle": "Select graphic style...",
+        "selectLiteraryPersona": "Select a literary persona...",
         "imageInstructions": "Describe how you'd like the characters to look, specific visual elements, colors, or artistic details for your story images...",
         "outlinePlaceholder": "Describe all the details you'd like in the story...",
         "storyLanguageHelp": "Your story will be written and generated in the selected language."
+      },
+      "literaryPersona": {
+        "label": "Narrator Persona",
+        "helper": "Choose the narrator vibe to guide the writing style.",
+        "placeholder": "Select a literary persona...",
+        "options": {
+          "storyteller": {
+            "name": "The Storyteller",
+            "description": "Warm, empathetic voice like a grandparent sharing memories; feelings-forward with gentle morals."
+          },
+          "adventurous-narrator": {
+            "name": "The Adventurous Narrator",
+            "description": "Turns ordinary moments epic with playful second-person energy and fantasy flourishes."
+          },
+          "fun-reporter": {
+            "name": "The Fun Reporter",
+            "description": "Upbeat, witty chronicle of group antics with quick beats and quotes."
+          },
+          "friendly-educator": {
+            "name": "The Friendly Educator",
+            "description": "Gentle, clear teacher voice that uses simple questions and examples."
+          },
+          "institutional-chronicler": {
+            "name": "The Institutional Chronicler",
+            "description": "Formal, precise biographical tone that keeps details factual and organized."
+          },
+          "pub-buddy-narrator": {
+            "name": "The Pub Buddy Narrator",
+            "description": "Ultra-casual, jokey storytelling like a friend recounting the night over drinks."
+          }
+        }
       },
       "languageOptions": [
         {

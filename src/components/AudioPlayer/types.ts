@@ -11,12 +11,18 @@ export interface AudioPlayerState {
   getAudioElement: (index: number) => HTMLAudioElement | undefined;
   audioProgress: { [key: number]: number };
   audioLoading: { [key: number]: boolean };
+  audioDurations: { [key: number]: number };
+  playbackSpeed: number;
 }
 
 export interface AudioPlayerActions {
   playAudio: (chapterIndex: number) => Promise<void>;
   pauseAudio: (chapterIndex: number) => void;
   stopAudio: (chapterIndex: number) => void;
+  setPlaybackSpeed: (speed: number) => void;
+  seekAudio: (chapterIndex: number, time: number) => void;
+  skipForward: (chapterIndex: number, seconds: number) => void;
+  skipBackward: (chapterIndex: number, seconds: number) => void;
 }
 
 export interface AudioPlayerHookProps {

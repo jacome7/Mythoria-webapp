@@ -1,0 +1,2 @@
+CREATE TYPE "public"."literary_persona" AS ENUM('storyteller', 'adventurous-narrator', 'fun-reporter', 'friendly-educator', 'institutional-chronicler', 'pub-buddy-narrator');--> statement-breakpoint
+ALTER TABLE "stories" ADD COLUMN "literary_persona" "literary_persona";

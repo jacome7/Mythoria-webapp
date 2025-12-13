@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { sgwFetch } from '@/lib/sgw-client';
-import { aiEditService, authorService } from '@/db/services';
+import { aiEditService, authorService, chapterService } from '@/db/services';
 import { db } from '@/db';
 import { getPendingImageJob, deletePendingImageJob } from '../image-edit-store';
 import { aiEdits } from '@/db/schema';
@@ -31,6 +31,155 @@ export async function GET(
         { success: false, error: data.error || 'Failed to get job status' },
         { status: response.status },
       );
+    }
+
+    // Persist completed text edits (full-story or single-chapter) and then record credits
+    if (data?.success && data?.job?.status === 'completed' && data?.job?.type === 'text_edit') {
+      try {
+        // Auth is optional for persistence; without it we still save content but skip credit recording
+        const { userId } = await auth();
+        const author = userId ? await authorService.getAuthorByClerkId(userId) : null;
+
+        const jobResult = (data.job?.result || {}) as {
+          scope?: 'chapter' | 'story';
+          type?: string;
+          storyId?: string;
+          chapterNumber?: number;
+          editedContent?: string;
+          updatedHtml?: string;
+          updatedChapters?: Array<{
+            chapterNumber: number;
+            editedContent?: string;
+            updatedHtml?: string;
+            originalLength?: number;
+            editedLength?: number;
+            error?: string;
+          }>;
+          editedChapters?: Array<{
+            chapterNumber: number;
+            editedContent?: string;
+            updatedHtml?: string;
+            originalLength?: number;
+            editedLength?: number;
+            error?: string;
+          }>;
+          userRequest?: string;
+        };
+
+        const storyId = jobResult.storyId || data.job?.metadata?.storyId;
+        const userRequest =
+          jobResult.userRequest || (data.job?.metadata as { userRequest?: string })?.userRequest;
+
+        // Infer scope if missing
+        const inferredScope: 'story' | 'chapter' | undefined =
+          jobResult.scope ||
+          (Array.isArray(jobResult.editedChapters || jobResult.updatedChapters)
+            ? 'story'
+            : jobResult.chapterNumber
+              ? 'chapter'
+              : undefined);
+
+        // Normalize chapters array
+        const chaptersArray = jobResult.editedChapters || jobResult.updatedChapters;
+
+        console.info('[job-status] text_edit completed', {
+          jobId,
+          inferredScope,
+          storyId,
+          chapterNumber: jobResult.chapterNumber,
+          chaptersCount: Array.isArray(chaptersArray) ? chaptersArray.length : 0,
+        });
+
+        if (inferredScope === 'story' && storyId && Array.isArray(chaptersArray)) {
+          const updatedChapters: Array<{ chapterNumber: number; success: boolean }> = [];
+
+          for (const chapter of chaptersArray) {
+            try {
+              const content = chapter.editedContent || chapter.updatedHtml;
+
+              if (content && !chapter.error) {
+                await chapterService.updateChapterContent(storyId, chapter.chapterNumber, content);
+
+                if (author) {
+                  await aiEditService.recordSuccessfulEdit(author.authorId, storyId, 'textEdit', {
+                    chapterNumber: chapter.chapterNumber,
+                    userRequest,
+                    timestamp: new Date().toISOString(),
+                    originalLength: chapter.originalLength,
+                    editedLength: chapter.editedLength,
+                  });
+                }
+
+                updatedChapters.push({ chapterNumber: chapter.chapterNumber, success: true });
+              } else {
+                updatedChapters.push({ chapterNumber: chapter.chapterNumber, success: false });
+              }
+            } catch (chapterErr) {
+              console.error(
+                `Failed to persist chapter ${chapter.chapterNumber} from text_edit job ${data.job.id}:`,
+                chapterErr,
+              );
+              updatedChapters.push({ chapterNumber: chapter.chapterNumber, success: false });
+            }
+          }
+
+          // Overwrite result with persisted status to keep client consistent with sync route
+          data.job.result = {
+            success: true,
+            scope: 'story',
+            updatedChapters,
+            totalChapters: chaptersArray.length,
+            successfulEdits: updatedChapters.filter((c) => c.success).length,
+            failedEdits: updatedChapters.filter((c) => !c.success).length,
+            tokensUsed: data.job?.metadata?.tokensUsed || 0,
+            timestamp: new Date().toISOString(),
+          };
+        } else if (
+          storyId &&
+          jobResult.chapterNumber &&
+          (jobResult.editedContent || jobResult.updatedHtml)
+        ) {
+          const editedContent = jobResult.editedContent || jobResult.updatedHtml || '';
+
+          console.info('[job-status] text_edit persisting single chapter', {
+            jobId,
+            storyId,
+            chapterNumber: jobResult.chapterNumber,
+            contentLength: editedContent.length,
+          });
+
+          try {
+            await chapterService.updateChapterContent(
+              storyId,
+              jobResult.chapterNumber,
+              editedContent,
+            );
+
+            if (author) {
+              await aiEditService.recordSuccessfulEdit(author.authorId, storyId, 'textEdit', {
+                chapterNumber: jobResult.chapterNumber,
+                userRequest,
+                timestamp: new Date().toISOString(),
+              });
+            }
+
+            data.job.result = {
+              success: true,
+              scope: 'chapter',
+              updatedHtml: editedContent,
+              tokensUsed: data.job?.metadata?.tokensUsed || 0,
+              chapterNumber: jobResult.chapterNumber,
+            };
+          } catch (chapterErr) {
+            console.error(
+              `Failed to persist chapter ${jobResult.chapterNumber} from text_edit job ${data.job.id}:`,
+              chapterErr,
+            );
+          }
+        }
+      } catch (textPersistErr) {
+        console.error('Failed to persist completed text_edit job:', textPersistErr);
+      }
     }
 
     // Only attempt credit recording for completed image_edit jobs

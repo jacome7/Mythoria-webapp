@@ -162,9 +162,11 @@ export default function ListenStoryPage() {
     audioEndpoint: `/api/stories/${storyId}/audio`,
     // Remove onError callback to prevent page crashes - let audio player handle errors internally
     onError: undefined,
+    totalChapters: chapters.length,
     trackingData: {
       story_id: storyId,
       story_title: story?.title,
+      total_chapters: chapters.length,
     },
   });
 

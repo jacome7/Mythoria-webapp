@@ -12,6 +12,7 @@ export interface Character {
   characteristics?: string;
   physicalDescription?: string;
   photoUrl?: string;
+  photoGcsUri?: string; // Full GCS path for the character photo
 }
 
 export interface StorySessionData {
