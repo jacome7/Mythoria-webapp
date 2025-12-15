@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useMemo } from 'react';
 import Image from 'next/image';
 import {
   FiBook,
@@ -10,11 +12,13 @@ import {
   FiFastForward,
 } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
-import { AudioChapter, AudioPlayerState, AudioPlayerActions } from './types';
+import { CastButton } from './CastButton';
+import { AudioChapter, AudioPlayerState, AudioPlayerActions, CastControlsState } from './types';
 
 interface AudioChapterListProps extends AudioPlayerState, AudioPlayerActions {
   chapters: AudioChapter[];
   formatDuration?: (seconds: number) => string;
+  castControls?: CastControlsState;
 }
 
 const defaultFormatDuration = (seconds: number): string => {
@@ -38,12 +42,36 @@ export function AudioChapterList({
   seekAudio,
   skipForward,
   skipBackward,
+  castControls,
   formatDuration = defaultFormatDuration,
 }: AudioChapterListProps) {
   const tPublicStoryPage = useTranslations('PublicStoryPage');
+  const castLabels = useMemo(
+    () => ({
+      cast: tPublicStoryPage('listen.cast.castButton'),
+      stop: tPublicStoryPage('listen.cast.stopCasting'),
+      unavailable: tPublicStoryPage('listen.cast.unavailable'),
+      castingTo: (device: string) =>
+        tPublicStoryPage('listen.cast.castingTo', {
+          device: device || tPublicStoryPage('listen.cast.deviceFallback'),
+        }),
+    }),
+    [tPublicStoryPage],
+  );
 
   return (
     <div className="space-y-4">
+      {castControls && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white rounded-lg border p-3 shadow-sm">
+          <div className="text-sm text-gray-700">
+            {castControls.isCasting
+              ? castLabels.castingTo(castControls.castingDeviceName || '')
+              : tPublicStoryPage('listen.cast.ready')}
+          </div>
+          <CastButton controls={castControls} labels={castLabels} />
+        </div>
+      )}
+
       {chapters.map((chapter, index) => {
         const duration = audioDurations?.[index] || chapter.duration || 0;
 

@@ -40,6 +40,14 @@
       "duration": "Duração: {duration}",
       "chapterFallback": "Capítulo {number}",
       "chapterImageAlt": "Ilustração do Capítulo {number}",
+      "cast": {
+        "castButton": "Transmitir",
+        "stopCasting": "Parar Cast",
+        "unavailable": "Nenhum dispositivo Cast disponível",
+        "castingTo": "A reproduzir em {device}",
+        "deviceFallback": "coluna",
+        "ready": "Reproduza aqui ou escolha um dispositivo Cast."
+      },
       "controls": {
         "play": "Reproduzir",
         "pause": "Pausar",

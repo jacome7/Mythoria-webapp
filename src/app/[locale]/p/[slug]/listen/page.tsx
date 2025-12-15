@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { FiLoader, FiAlertCircle, FiVolume2, FiArrowLeft } from 'react-icons/fi';
 import {
-  useAudioPlayer,
+  useCastAudioPlayer,
   AudioChapterList,
   hasAudiobook,
   getAudioChapters,
@@ -64,11 +64,23 @@ export default function PublicListenPage() {
   const [data, setData] = useState<PublicStoryData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Initialize audio player hook
-  const audioPlayer = useAudioPlayer({
+  const audioChapters = useMemo(
+    () =>
+      data && hasAudiobook(data.story.audiobookUri)
+        ? getAudioChapters(data.story.audiobookUri, data.chapters, (number) =>
+            tPublicStoryPage('listen.chapterFallback', { number }),
+          )
+        : [],
+    [data, tPublicStoryPage],
+  );
+
+  const audioPlayer = useCastAudioPlayer({
     audioEndpoint: `/api/p/${slug}/audio`,
     onError: (errorMessage) => setError(errorMessage),
+    chapters: audioChapters,
+    storyTitle: data?.story.title || '',
   });
+  const { cast, ...audioControls } = audioPlayer;
 
   useEffect(() => {
     if (!slug) return;
@@ -187,10 +199,9 @@ export default function PublicListenPage() {
         <div className="max-w-4xl mx-auto">
           {hasAudiobook(data?.story?.audiobookUri) ? (
             <AudioChapterList
-              chapters={getAudioChapters(data.story.audiobookUri, data.chapters, (number) =>
-                tPublicStoryPage('listen.chapterFallback', { number }),
-              )}
-              {...audioPlayer}
+              chapters={audioChapters}
+              {...audioControls}
+              castControls={cast}
             />
           ) : (
             <div className="bg-white rounded-lg shadow-sm border p-8 text-center">

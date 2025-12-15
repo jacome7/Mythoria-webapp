@@ -21,7 +21,7 @@ import ToastContainer from '../../../../../components/ToastContainer';
 import { useToast } from '@/hooks/useToast';
 import ShareModal from '../../../../../components/ShareModal';
 import {
-  useAudioPlayer,
+  useCastAudioPlayer,
   AudioChapterList,
   hasAudiobook,
   getAudioChapters,
@@ -158,9 +158,16 @@ export default function ListenStoryPage() {
   const { toasts, removeToast, successWithAction, error: toastError } = useToast();
 
   // Initialize audio player hook
-  const audioPlayer = useAudioPlayer({
+  const audioChapters = useMemo(
+    () =>
+      story && hasAudiobook(story.audiobookUri)
+        ? getAudioChapters(story.audiobookUri, chapters, (number) => tListenStory('chapterTitle', { number }))
+        : [],
+    [chapters, story, tListenStory],
+  );
+
+  const audioPlayer = useCastAudioPlayer({
     audioEndpoint: `/api/stories/${storyId}/audio`,
-    // Remove onError callback to prevent page crashes - let audio player handle errors internally
     onError: undefined,
     totalChapters: chapters.length,
     trackingData: {
@@ -168,7 +175,10 @@ export default function ListenStoryPage() {
       story_title: story?.title,
       total_chapters: chapters.length,
     },
+    chapters: audioChapters,
+    storyTitle: story?.title ?? '',
   });
+  const { cast, ...audioControls } = audioPlayer;
 
   // Voice options for narration - based on configured TTS provider
   const voiceOptions = useMemo(() => {
@@ -507,10 +517,9 @@ export default function ListenStoryPage() {
                       <div className="space-y-6">
                         {/* Audiobook Chapters */}
                         <AudioChapterList
-                          chapters={getAudioChapters(story.audiobookUri, chapters, (number) =>
-                            tListenStory('chapterTitle', { number }),
-                          )}
-                          {...audioPlayer}
+                          chapters={audioChapters}
+                          {...audioControls}
+                          castControls={cast}
                         />
 
                         {/* Re-narrate Section */}
