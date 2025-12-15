@@ -9,6 +9,7 @@ This directory contains comprehensive documentation for the Mythoria WebApp fron
 - **[api-reference.md](./api-reference.md)** - Frontend API integration and backend communication
 - **[deployment.md](./deployment.md)** - Production deployment guide for Google Cloud Platform
 - **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Local development setup and contribution guide
+- **[google-cast-integration.md](./google-cast-integration.md)** - Google Cast sender integration plan for the audiobook player
 
 ## Archive
 

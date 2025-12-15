@@ -40,6 +40,14 @@
       "duration": "Durée: {duration}",
       "chapterFallback": "Chapitre {number}",
       "chapterImageAlt": "Chapitre {number} illustration",
+      "cast": {
+        "castButton": "Caster",
+        "stopCasting": "Arrêter le Cast",
+        "unavailable": "Aucun appareil Cast disponible",
+        "castingTo": "Lecture sur {device}",
+        "deviceFallback": "enceinte",
+        "ready": "Écoutez ici ou choisissez un appareil Cast."
+      },
       "controls": {
         "play": "Jouer",
         "pause": "Pause",
