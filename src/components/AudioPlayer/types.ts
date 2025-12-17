@@ -39,3 +39,15 @@ export interface AudioPlayerHookProps {
     total_chapters?: number;
   };
 }
+
+export interface CastControlsState {
+  castReady: boolean;
+  castState: cast.framework.CastState | null;
+  hasDevices: boolean;
+  isCasting: boolean;
+  castingDeviceName?: string;
+  startCasting: (chapterIndex?: number) => Promise<void>;
+  stopCasting: () => Promise<void>;
+}
+
+export type CastAwareAudioPlayer = AudioPlayerState & AudioPlayerActions & { cast: CastControlsState };
