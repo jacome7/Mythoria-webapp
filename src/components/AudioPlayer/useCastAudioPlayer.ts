@@ -28,6 +28,10 @@ type CastEventHandler = {
   handler: (event: { type: cast.framework.RemotePlayerEventType; target: cast.framework.RemotePlayer }) => void;
 };
 
+type CastMediaClient = {
+  queueLoad: (request: chrome.cast.media.QueueLoadRequestData) => Promise<void>;
+};
+
 const getCastContextOptions = () => {
   const receiverApplicationId =
     (typeof window !== 'undefined' && window.chrome?.cast?.media?.DEFAULT_MEDIA_RECEIVER_APP_ID) || 'CC1AD845';
@@ -43,6 +47,37 @@ const getCastContextOptions = () => {
 const getRepeatOffMode = () =>
   (typeof window !== 'undefined' ? window.chrome?.cast?.media?.RepeatMode?.OFF : undefined) ||
   ('REPEAT_OFF' as chrome.cast.media.RepeatMode);
+
+const isCastCancel = (error: unknown) => {
+  // ErrorCode.CANCEL is not exposed in the type definitions, check string value
+  const code = (error as { code?: unknown })?.code;
+  if (code === 'cancel' || code === 'CANCEL') return true;
+  if (typeof error === 'string' && error.toLowerCase() === 'cancel') return true;
+  return false;
+};
+
+const resolveMediaClient = async (session: cast.framework.CastSession): Promise<CastMediaClient> => {
+  const tries = 20;
+  const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+  for (let i = 0; i < tries; i += 1) {
+    // CastSession.queueLoad is the documented API method
+    const sessionAsClient = session as unknown as CastMediaClient;
+    if (typeof sessionAsClient.queueLoad === 'function') {
+      return sessionAsClient;
+    }
+
+    await delay(100 + 50 * i);
+  }
+
+  const castState = cast.framework.CastContext.getInstance().getCastState?.();
+  console.warn('Cast media client unavailable after retries', {
+    castState,
+  });
+
+  // Return the session itself as it should support queueLoad
+  return session as unknown as CastMediaClient;
+};
 
 export function useCastAudioPlayer({
   chapters,
@@ -143,10 +178,19 @@ export function useCastAudioPlayer({
   );
 
   const updateFromRemotePlayer = useCallback(
-    (player: cast.framework.RemotePlayer) => {
-      const trackNumber = (player.mediaInfo?.metadata as { trackNumber?: number } | undefined)?.trackNumber;
+    (player?: cast.framework.RemotePlayer | null) => {
+      if (!player) {
+        return;
+      }
+
+      const mediaInfo = player.mediaInfo;
+      if (!mediaInfo) {
+        return;
+      }
+
+      const trackNumber = (mediaInfo.metadata as { trackNumber?: number } | undefined)?.trackNumber;
       const derivedIndex = typeof trackNumber === 'number' ? trackNumber - 1 : currentCastChapterRef.current;
-      const duration = player.duration || player.mediaInfo?.duration || (derivedIndex != null ? chapters[derivedIndex]?.duration : 0) || 0;
+      const duration = player.duration || mediaInfo.duration || (derivedIndex != null ? chapters[derivedIndex]?.duration : 0) || 0;
       const progress = duration ? (player.currentTime / duration) * 100 : 0;
 
       if (derivedIndex != null) {
@@ -323,19 +367,42 @@ export function useCastAudioPlayer({
         }
 
         const { chapterIndex: currentChapter, currentTime, playbackRate } = getLocalSnapshot();
-        if (currentChapter != null) {
-          audioPlayer.pauseAudio(currentChapter);
-        }
         const startIndex = chapterIndex ?? currentChapter ?? 0;
         const startTime = startIndex === currentChapter ? currentTime : 0;
 
-        const session = await context.requestSession();
-        await session.queueLoad({
+        const existingSession = context.getCurrentSession();
+
+        const session =
+          existingSession ||
+          (await context
+            .requestSession()
+            .catch((error) => {
+              if (isCastCancel(error)) {
+                // User dismissed the device picker; quietly abort.
+                return null;
+              }
+              throw error;
+            }));
+
+        if (!session) {
+          return;
+        }
+
+        const mediaClient = await resolveMediaClient(session);
+
+        if (currentChapter != null) {
+          audioPlayer.pauseAudio(currentChapter);
+        }
+
+        await mediaClient.queueLoad({
           items: queueItems,
           startIndex,
           repeatMode: getRepeatOffMode(),
           startTime,
         });
+
+        setCurrentCastChapter(startIndex);
+        setCastAudioProgress((prev) => ({ ...prev, [startIndex]: 0 }));
 
         if (remotePlayerRef.current) {
           remotePlayerRef.current.playbackRate = playbackRate;
@@ -345,13 +412,17 @@ export function useCastAudioPlayer({
         attachRemotePlayer(session);
         setCastPlaybackSpeed(playbackRate || 1);
       } catch (error) {
+        teardownCasting(true);
+        if (isCastCancel(error)) {
+          return;
+        }
         console.error('Failed to start casting', error);
         if (onError) {
           onError(tErrors('failedToPlayAudio'));
         }
       }
     },
-    [attachRemotePlayer, audioPlayer, buildQueueItems, getLocalSnapshot, onError, tErrors],
+    [attachRemotePlayer, audioPlayer, buildQueueItems, getLocalSnapshot, onError, tErrors, teardownCasting],
   );
 
   const playOnCast = useCallback(
@@ -363,14 +434,31 @@ export function useCastAudioPlayer({
         return;
       }
 
+      let mediaClient: CastMediaClient | null = null;
       try {
-        await session.queueLoad({
+        mediaClient = await resolveMediaClient(session);
+      } catch (error) {
+        if (isCastCancel(error)) {
+          return;
+        }
+        console.warn('Retrying startCasting after media client resolution failure', error);
+        await startCasting(chapterIndex);
+        return;
+      }
+
+      try {
+        await mediaClient.queueLoad({
           items: buildQueueItems(),
           startIndex: chapterIndex,
           repeatMode: getRepeatOffMode(),
           startTime: 0,
         });
+        setCurrentCastChapter(chapterIndex);
+        setCastAudioProgress((prev) => ({ ...prev, [chapterIndex]: 0 }));
       } catch (error) {
+        if (isCastCancel(error)) {
+          return;
+        }
         console.error('Failed to switch Cast queue item', error);
         if (onError) {
           onError(tErrors('failedToPlayAudio'));

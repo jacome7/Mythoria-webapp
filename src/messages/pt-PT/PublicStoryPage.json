@@ -46,7 +46,8 @@
         "unavailable": "Nenhum dispositivo Cast disponível",
         "castingTo": "A reproduzir em {device}",
         "deviceFallback": "coluna",
-        "ready": "Reproduza aqui ou escolha um dispositivo Cast."
+        "ready": "Reproduza aqui ou escolha um dispositivo Cast.",
+        "delayHint": "A transmissão pode demorar alguns segundos a arrancar (até 20s)."
       },
       "controls": {
         "play": "Reproduzir",

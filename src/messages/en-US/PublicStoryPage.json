@@ -46,7 +46,8 @@
         "unavailable": "No Cast devices available",
         "castingTo": "Casting to {device}",
         "deviceFallback": "speaker",
-        "ready": "Play here or choose a Cast device."
+        "ready": "Play here or choose a Cast device.",
+        "delayHint": "Casting can take a few seconds to start (up to 20s)."
       },
       "controls": {
         "play": "Play",

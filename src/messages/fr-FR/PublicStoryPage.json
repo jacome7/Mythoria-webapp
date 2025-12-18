@@ -46,7 +46,8 @@
         "unavailable": "Aucun appareil Cast disponible",
         "castingTo": "Lecture sur {device}",
         "deviceFallback": "enceinte",
-        "ready": "Écoutez ici ou choisissez un appareil Cast."
+        "ready": "Écoutez ici ou choisissez un appareil Cast.",
+        "delayHint": "Le cast peut démarrer après quelques secondes (jusqu’à 20 s)."
       },
       "controls": {
         "play": "Jouer",

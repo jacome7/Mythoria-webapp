@@ -46,7 +46,8 @@
         "unavailable": "Keine Cast-Geräte verfügbar",
         "castingTo": "Wiedergabe auf {device}",
         "deviceFallback": "Lautsprecher",
-        "ready": "Hier abspielen oder ein Cast-Gerät auswählen."
+        "ready": "Hier abspielen oder ein Cast-Gerät auswählen.",
+        "delayHint": "Das Casting kann einige Sekunden zum Starten brauchen (bis zu 20 s)."
       },
       "controls": {
         "play": "Abspielen",

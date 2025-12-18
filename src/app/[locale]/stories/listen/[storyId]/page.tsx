@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
@@ -139,6 +139,7 @@ export default function ListenStoryPage() {
   const tVoices = useTranslations('Voices');
   const tErrors = useTranslations('Errors');
   const tListenStory = useTranslations('ListenStory');
+  const tPublicStoryPage = useTranslations('PublicStoryPage');
   const tActions = useTranslations('Actions');
   const tCreditsDisplay = useTranslations('CreditsDisplay');
   const tDeliveryOptions = useTranslations('DeliveryOptions');
@@ -155,7 +156,7 @@ export default function ListenStoryPage() {
   const [audioGenerationProgress, setAudioGenerationProgress] = useState<string>('');
   const [selectedVoice, setSelectedVoice] = useState<string>(getDefaultVoice());
   const [includeBackgroundMusic, setIncludeBackgroundMusic] = useState(true);
-  const { toasts, removeToast, successWithAction, error: toastError } = useToast();
+  const { toasts, removeToast, successWithAction, error: toastError, info: toastInfo } = useToast();
 
   // Initialize audio player hook
   const audioChapters = useMemo(
@@ -179,6 +180,24 @@ export default function ListenStoryPage() {
     storyTitle: story?.title ?? '',
   });
   const { cast, ...audioControls } = audioPlayer;
+
+  const playAudioWithCastToast = useCallback(
+    async (chapterIndex: number) => {
+      if (cast?.isCasting) {
+        toastInfo(tPublicStoryPage('listen.cast.delayHint'), 5000);
+      }
+      await audioControls.playAudio(chapterIndex);
+    },
+    [audioControls, cast?.isCasting, tPublicStoryPage, toastInfo],
+  );
+
+  const castAwareControls = useMemo(
+    () => ({
+      ...audioControls,
+      playAudio: playAudioWithCastToast,
+    }),
+    [audioControls, playAudioWithCastToast],
+  );
 
   // Voice options for narration - based on configured TTS provider
   const voiceOptions = useMemo(() => {
@@ -518,7 +537,7 @@ export default function ListenStoryPage() {
                         {/* Audiobook Chapters */}
                         <AudioChapterList
                           chapters={audioChapters}
-                          {...audioControls}
+                          {...castAwareControls}
                           castControls={cast}
                         />
 

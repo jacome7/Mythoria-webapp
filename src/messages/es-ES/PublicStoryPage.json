@@ -46,7 +46,8 @@
         "unavailable": "No hay dispositivos Cast disponibles",
         "castingTo": "Reproduciendo en {device}",
         "deviceFallback": "altavoz",
-        "ready": "Reproduce aquí o elige un dispositivo Cast."
+        "ready": "Reproduce aquí o elige un dispositivo Cast.",
+        "delayHint": "La transmisión puede tardar unos segundos en iniciar (hasta 20s)."
       },
       "controls": {
         "play": "Reproducir",

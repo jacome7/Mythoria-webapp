@@ -17,16 +17,40 @@ function transformAudiobookUri(audiobookUri: unknown):
     return undefined;
   }
 
-  // Type assertion after validation
-  const audiobookData = audiobookUri as Record<string, unknown>;
+  if (Array.isArray(audiobookUri)) {
+    const normalized = audiobookUri
+      .map((chapter, idx) => {
+        if (!chapter || typeof chapter !== 'object') return null;
+        const audioUri = (chapter as { audioUri?: unknown }).audioUri;
+        if (typeof audioUri !== 'string') return null;
 
-  // Database can store in two formats:
-  // Format 1: {"chapter_1": "url", "chapter_2": "url", ...}
-  // Format 2: {"1": "url", "2": "url", "3": "url", ...}
-  // Frontend expects: [{chapterTitle: "Chapter 1", audioUri: "url", duration: 180}, ...]
+        const duration = (chapter as { duration?: unknown }).duration;
+        const chapterTitle = (chapter as { chapterTitle?: unknown }).chapterTitle;
+        const imageUri = (chapter as { imageUri?: unknown }).imageUri;
+
+        return {
+          chapterTitle: typeof chapterTitle === 'string' && chapterTitle.trim().length > 0
+            ? chapterTitle
+            : `Chapter ${idx + 1}`,
+          audioUri,
+          duration: typeof duration === 'number' && duration > 0 ? duration : 0,
+          imageUri: typeof imageUri === 'string' && imageUri.length > 0 ? imageUri : undefined,
+        };
+      })
+      .filter(Boolean) as Array<{
+      chapterTitle: string;
+      audioUri: string;
+      duration: number;
+      imageUri?: string;
+    }>;
+
+    return normalized.length > 0 ? normalized : undefined;
+  }
+
+  // Map format fallback: {"chapter_1": "url", "1": "url"}
+  const audiobookData = audiobookUri as Record<string, unknown>;
   const chapters = [];
 
-  // First, try to find chapter_ keys (Format 1)
   let chapterKeys = Object.keys(audiobookData)
     .filter((key) => key.startsWith('chapter_'))
     .sort((a, b) => {
@@ -35,32 +59,25 @@ function transformAudiobookUri(audiobookUri: unknown):
       return aNum - bNum;
     });
 
-  // If no chapter_ keys found, try numeric keys (Format 2)
   if (chapterKeys.length === 0) {
     chapterKeys = Object.keys(audiobookData)
-      .filter((key) => /^\d+$/.test(key)) // Only numeric keys
-      .sort((a, b) => parseInt(a) - parseInt(b)); // Sort numerically
+      .filter((key) => /^\d+$/.test(key))
+      .sort((a, b) => parseInt(a) - parseInt(b));
   }
 
   for (const chapterKey of chapterKeys) {
-    let chapterNumber: number;
-
-    if (chapterKey.startsWith('chapter_')) {
-      // Format 1: chapter_1, chapter_2, etc.
-      chapterNumber = parseInt(chapterKey.replace('chapter_', ''));
-    } else {
-      // Format 2: 1, 2, 3, etc.
-      chapterNumber = parseInt(chapterKey);
-    }
+    const chapterNumber = chapterKey.startsWith('chapter_')
+      ? parseInt(chapterKey.replace('chapter_', ''))
+      : parseInt(chapterKey);
 
     const audioUri = audiobookData[chapterKey];
 
     if (audioUri && typeof audioUri === 'string') {
       chapters.push({
         chapterTitle: `Chapter ${chapterNumber}`,
-        audioUri: audioUri,
-        duration: 180, // Default duration in seconds (3 minutes) - could be calculated from audio file in the future
-        imageUri: undefined, // Could be added in the future if chapter images are stored
+        audioUri,
+        duration: 0,
+        imageUri: undefined,
       });
     }
   }
