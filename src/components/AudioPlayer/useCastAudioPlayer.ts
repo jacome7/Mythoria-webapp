@@ -70,13 +70,40 @@ const resolveMediaClient = async (session: cast.framework.CastSession): Promise<
     await delay(100 + 50 * i);
   }
 
+  // Fallback: emulate queueLoad with loadMedia so casting still works even if queueLoad is unavailable
+  const fallbackClient: CastMediaClient = {
+    async queueLoad(request) {
+      const items = request.items || [];
+      const startIndex = request.startIndex ?? 0;
+      const item = items[startIndex];
+      if (!item || !item.media) {
+        throw new Error('No media items available to load');
+      }
+
+      const loadRequest = new chrome.cast.media.LoadRequest(item.media);
+      loadRequest.autoplay = item.autoplay ?? true;
+      loadRequest.currentTime = request.startTime ?? 0;
+
+      // Attempt to preserve queue metadata if supported
+      if (chrome.cast?.media?.QueueData) {
+        const queueData = new chrome.cast.media.QueueData();
+        queueData.items = items;
+        if (request.repeatMode) {
+          queueData.repeatMode = request.repeatMode;
+        }
+        (loadRequest as unknown as { queueData?: chrome.cast.media.QueueData }).queueData = queueData;
+      }
+
+      await session.loadMedia(loadRequest);
+    },
+  };
+
   const castState = cast.framework.CastContext.getInstance().getCastState?.();
-  console.warn('Cast media client unavailable after retries', {
+  console.warn('Cast media client unavailable after retries; using loadMedia fallback', {
     castState,
   });
 
-  // Return the session itself as it should support queueLoad
-  return session as unknown as CastMediaClient;
+  return fallbackClient;
 };
 
 export function useCastAudioPlayer({

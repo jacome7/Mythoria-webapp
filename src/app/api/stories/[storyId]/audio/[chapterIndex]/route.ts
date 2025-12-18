@@ -47,18 +47,28 @@ export async function GET(
     ) {
       return NextResponse.json({ error: 'No audiobook available for this story' }, { status: 404 });
     }
-    const audiobookData = story.audiobookUri as Record<string, unknown>;
 
-    // Get the chapter audio URI - handle both key formats
-    // Format 1: chapter_1, chapter_2, etc.
-    // Format 2: 1, 2, 3, etc.
-    let chapterKey = `chapter_${chapterIdx + 1}`;
-    let audioUri = audiobookData[chapterKey];
+    let audioUri: string | undefined;
 
-    // If not found with chapter_ format, try numeric format
-    if (!audioUri) {
-      chapterKey = String(chapterIdx + 1);
-      audioUri = audiobookData[chapterKey];
+    // Handle array format (new structured format)
+    if (Array.isArray(story.audiobookUri)) {
+      const chapter = story.audiobookUri[chapterIdx];
+      if (chapter && typeof chapter === 'object' && 'audioUri' in chapter) {
+        audioUri = (chapter as { audioUri?: unknown }).audioUri as string;
+      }
+    } else {
+      // Handle map format (legacy format)
+      const audiobookData = story.audiobookUri as Record<string, unknown>;
+
+      // Format 1: chapter_1, chapter_2, etc.
+      let chapterKey = `chapter_${chapterIdx + 1}`;
+      audioUri = audiobookData[chapterKey] as string | undefined;
+
+      // Format 2: 1, 2, 3, etc.
+      if (!audioUri) {
+        chapterKey = String(chapterIdx + 1);
+        audioUri = audiobookData[chapterKey] as string | undefined;
+      }
     }
 
     if (!audioUri || typeof audioUri !== 'string') {

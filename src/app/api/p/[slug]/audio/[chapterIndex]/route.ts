@@ -56,7 +56,14 @@ export async function GET(
       console.log('[Audio Proxy] Trying story-level audiobookUri fallback');
       const audiobookData = story.audiobookUri;
 
-      if (typeof audiobookData === 'object' && audiobookData !== null) {
+      if (Array.isArray(audiobookData)) {
+        console.log('[Audio Proxy] audiobookData is array, length:', audiobookData.length);
+        const chapter = audiobookData[chapterIdx];
+        if (chapter && typeof chapter === 'object' && 'audioUri' in chapter) {
+          audioUrl = (chapter as { audioUri?: unknown }).audioUri as string;
+          console.log('[Audio Proxy] Found audio in array format:', audioUrl);
+        }
+      } else if (typeof audiobookData === 'object' && audiobookData !== null) {
         console.log('[Audio Proxy] audiobookData is object, keys:', Object.keys(audiobookData));
         // Try chapter_ format first (Format 1)
         let chapterKey = `chapter_${chapterIdx + 1}`;
