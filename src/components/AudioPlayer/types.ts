@@ -50,4 +50,5 @@ export interface CastControlsState {
   stopCasting: () => Promise<void>;
 }
 
-export type CastAwareAudioPlayer = AudioPlayerState & AudioPlayerActions & { cast: CastControlsState };
+export type CastAwareAudioPlayer = AudioPlayerState &
+  AudioPlayerActions & { cast: CastControlsState };

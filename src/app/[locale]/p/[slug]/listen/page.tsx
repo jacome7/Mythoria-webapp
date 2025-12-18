@@ -198,11 +198,7 @@ export default function PublicListenPage() {
       <div className="container mx-auto px-4 py-6">
         <div className="max-w-4xl mx-auto">
           {hasAudiobook(data?.story?.audiobookUri) ? (
-            <AudioChapterList
-              chapters={audioChapters}
-              {...audioControls}
-              castControls={cast}
-            />
+            <AudioChapterList chapters={audioChapters} {...audioControls} castControls={cast} />
           ) : (
             <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
               <FiAlertCircle className="text-4xl text-gray-400 mx-auto mb-4" />

@@ -25,7 +25,10 @@ type PlaybackSnapshot = {
 
 type CastEventHandler = {
   type: cast.framework.RemotePlayerEventType;
-  handler: (event: { type: cast.framework.RemotePlayerEventType; target: cast.framework.RemotePlayer }) => void;
+  handler: (event: {
+    type: cast.framework.RemotePlayerEventType;
+    target: cast.framework.RemotePlayer;
+  }) => void;
 };
 
 type CastMediaClient = {
@@ -34,8 +37,12 @@ type CastMediaClient = {
 
 const getCastContextOptions = () => {
   const receiverApplicationId =
-    (typeof window !== 'undefined' && window.chrome?.cast?.media?.DEFAULT_MEDIA_RECEIVER_APP_ID) || 'CC1AD845';
-  const autoJoinPolicy = typeof window !== 'undefined' ? window.chrome?.cast?.AutoJoinPolicy?.TAB_AND_ORIGIN_SCOPED : undefined;
+    (typeof window !== 'undefined' && window.chrome?.cast?.media?.DEFAULT_MEDIA_RECEIVER_APP_ID) ||
+    'CC1AD845';
+  const autoJoinPolicy =
+    typeof window !== 'undefined'
+      ? window.chrome?.cast?.AutoJoinPolicy?.TAB_AND_ORIGIN_SCOPED
+      : undefined;
 
   return {
     receiverApplicationId,
@@ -56,7 +63,9 @@ const isCastCancel = (error: unknown) => {
   return false;
 };
 
-const resolveMediaClient = async (session: cast.framework.CastSession): Promise<CastMediaClient> => {
+const resolveMediaClient = async (
+  session: cast.framework.CastSession,
+): Promise<CastMediaClient> => {
   const tries = 20;
   const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -91,7 +100,8 @@ const resolveMediaClient = async (session: cast.framework.CastSession): Promise<
         if (request.repeatMode) {
           queueData.repeatMode = request.repeatMode;
         }
-        (loadRequest as unknown as { queueData?: chrome.cast.media.QueueData }).queueData = queueData;
+        (loadRequest as unknown as { queueData?: chrome.cast.media.QueueData }).queueData =
+          queueData;
       }
 
       await session.loadMedia(loadRequest);
@@ -129,7 +139,11 @@ export function useCastAudioPlayer({
   const remoteControllerRef = useRef<cast.framework.RemotePlayerController | null>(null);
   const remoteEventHandlersRef = useRef<CastEventHandler[]>([]);
   const manualStopRef = useRef(false);
-  const lastRemoteSnapshotRef = useRef<PlaybackSnapshot>({ chapterIndex: null, currentTime: 0, playbackRate: 1 });
+  const lastRemoteSnapshotRef = useRef<PlaybackSnapshot>({
+    chapterIndex: null,
+    currentTime: 0,
+    playbackRate: 1,
+  });
   const currentCastChapterRef = useRef<number | null>(null);
 
   const audioPlayer = useAudioPlayer({
@@ -145,7 +159,8 @@ export function useCastAudioPlayer({
 
   const buildQueueItems = useCallback((): chrome.cast.media.QueueItem[] => {
     const castMedia = typeof window !== 'undefined' ? window.chrome?.cast?.media : undefined;
-    const streamType = castMedia?.StreamType?.BUFFERED ?? ('BUFFERED' as chrome.cast.media.StreamType);
+    const streamType =
+      castMedia?.StreamType?.BUFFERED ?? ('BUFFERED' as chrome.cast.media.StreamType);
     const metadataType = castMedia?.MetadataType?.MUSIC_TRACK ?? 3;
 
     return chapters
@@ -216,8 +231,13 @@ export function useCastAudioPlayer({
       }
 
       const trackNumber = (mediaInfo.metadata as { trackNumber?: number } | undefined)?.trackNumber;
-      const derivedIndex = typeof trackNumber === 'number' ? trackNumber - 1 : currentCastChapterRef.current;
-      const duration = player.duration || mediaInfo.duration || (derivedIndex != null ? chapters[derivedIndex]?.duration : 0) || 0;
+      const derivedIndex =
+        typeof trackNumber === 'number' ? trackNumber - 1 : currentCastChapterRef.current;
+      const duration =
+        player.duration ||
+        mediaInfo.duration ||
+        (derivedIndex != null ? chapters[derivedIndex]?.duration : 0) ||
+        0;
       const progress = duration ? (player.currentTime / duration) * 100 : 0;
 
       if (derivedIndex != null) {
@@ -294,7 +314,10 @@ export function useCastAudioPlayer({
         setCastState(event.castState);
       };
 
-      context.addEventListener(cast.framework.CastContextEventType.CAST_STATE_CHANGED, castStateListener);
+      context.addEventListener(
+        cast.framework.CastContextEventType.CAST_STATE_CHANGED,
+        castStateListener,
+      );
 
       const existingSession = context.getCurrentSession();
       if (existingSession) {
@@ -308,7 +331,9 @@ export function useCastAudioPlayer({
         return;
       }
 
-      const win = window as Window & { __onGCastApiAvailable?: (available: boolean, errorInfo?: unknown) => void };
+      const win = window as Window & {
+        __onGCastApiAvailable?: (available: boolean, errorInfo?: unknown) => void;
+      };
       const previousCallback = win.__onGCastApiAvailable;
       win.__onGCastApiAvailable = (available, errorInfo) => {
         if (available) {
@@ -363,9 +388,15 @@ export function useCastAudioPlayer({
       }
     };
 
-    context.addEventListener(cast.framework.CastContextEventType.SESSION_STATE_CHANGED, onSessionStateChanged);
+    context.addEventListener(
+      cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
+      onSessionStateChanged,
+    );
     return () => {
-      context.removeEventListener(cast.framework.CastContextEventType.SESSION_STATE_CHANGED, onSessionStateChanged);
+      context.removeEventListener(
+        cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
+        onSessionStateChanged,
+      );
     };
   }, [attachRemotePlayer, teardownCasting]);
 
@@ -401,15 +432,13 @@ export function useCastAudioPlayer({
 
         const session =
           existingSession ||
-          (await context
-            .requestSession()
-            .catch((error) => {
-              if (isCastCancel(error)) {
-                // User dismissed the device picker; quietly abort.
-                return null;
-              }
-              throw error;
-            }));
+          (await context.requestSession().catch((error) => {
+            if (isCastCancel(error)) {
+              // User dismissed the device picker; quietly abort.
+              return null;
+            }
+            throw error;
+          }));
 
         if (!session) {
           return;
@@ -449,7 +478,15 @@ export function useCastAudioPlayer({
         }
       }
     },
-    [attachRemotePlayer, audioPlayer, buildQueueItems, getLocalSnapshot, onError, tErrors, teardownCasting],
+    [
+      attachRemotePlayer,
+      audioPlayer,
+      buildQueueItems,
+      getLocalSnapshot,
+      onError,
+      tErrors,
+      teardownCasting,
+    ],
   );
 
   const playOnCast = useCallback(
@@ -534,13 +571,19 @@ export function useCastAudioPlayer({
     const controller = remoteControllerRef.current;
     if (!player || !controller) return;
 
-    const targetTime = Math.max(0, Math.min(player.currentTime + seconds, player.duration || player.currentTime + seconds));
+    const targetTime = Math.max(
+      0,
+      Math.min(player.currentTime + seconds, player.duration || player.currentTime + seconds),
+    );
     player.currentTime = targetTime;
     controller.seek();
   }, []);
 
   const hasDevices = useMemo(
-    () => castReady && castState !== null && castState !== cast.framework.CastState.NO_DEVICES_AVAILABLE,
+    () =>
+      castReady &&
+      castState !== null &&
+      castState !== cast.framework.CastState.NO_DEVICES_AVAILABLE,
     [castReady, castState],
   );
 

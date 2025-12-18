@@ -162,7 +162,9 @@ export default function ListenStoryPage() {
   const audioChapters = useMemo(
     () =>
       story && hasAudiobook(story.audiobookUri)
-        ? getAudioChapters(story.audiobookUri, chapters, (number) => tListenStory('chapterTitle', { number }))
+        ? getAudioChapters(story.audiobookUri, chapters, (number) =>
+            tListenStory('chapterTitle', { number }),
+          )
         : [],
     [chapters, story, tListenStory],
   );

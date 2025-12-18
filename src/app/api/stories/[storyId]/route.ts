@@ -29,9 +29,10 @@ function transformAudiobookUri(audiobookUri: unknown):
         const imageUri = (chapter as { imageUri?: unknown }).imageUri;
 
         return {
-          chapterTitle: typeof chapterTitle === 'string' && chapterTitle.trim().length > 0
-            ? chapterTitle
-            : `Chapter ${idx + 1}`,
+          chapterTitle:
+            typeof chapterTitle === 'string' && chapterTitle.trim().length > 0
+              ? chapterTitle
+              : `Chapter ${idx + 1}`,
           audioUri,
           duration: typeof duration === 'number' && duration > 0 ? duration : 0,
           imageUri: typeof imageUri === 'string' && imageUri.length > 0 ? imageUri : undefined,

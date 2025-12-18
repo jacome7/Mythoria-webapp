@@ -72,6 +72,18 @@ declare global {
         startTime?: number;
       }
 
+      class LoadRequest {
+        constructor(mediaInfo: MediaInfo);
+        autoplay: boolean;
+        currentTime: number;
+        media: MediaInfo;
+      }
+
+      class QueueData {
+        items?: QueueItem[];
+        repeatMode?: RepeatMode;
+      }
+
       class Media {
         queueJumpToItem(itemId: number): void;
         queueNext(): void;
@@ -119,12 +131,18 @@ declare global {
         autoJoinPolicy?: chrome.cast.AutoJoinPolicy;
         resumeSavedSession?: boolean;
       }): void;
-      addEventListener(type: CastContextEventType.CAST_STATE_CHANGED, handler: (event: CastStateEventData) => void): void;
+      addEventListener(
+        type: CastContextEventType.CAST_STATE_CHANGED,
+        handler: (event: CastStateEventData) => void,
+      ): void;
       addEventListener(
         type: CastContextEventType.SESSION_STATE_CHANGED,
         handler: (event: SessionStateEventData) => void,
       ): void;
-      removeEventListener(type: CastContextEventType.CAST_STATE_CHANGED, handler: (event: CastStateEventData) => void): void;
+      removeEventListener(
+        type: CastContextEventType.CAST_STATE_CHANGED,
+        handler: (event: CastStateEventData) => void,
+      ): void;
       removeEventListener(
         type: CastContextEventType.SESSION_STATE_CHANGED,
         handler: (event: SessionStateEventData) => void,
@@ -136,7 +154,10 @@ declare global {
     }
 
     class CastSession {
-      queueLoad(request: chrome.cast.media.QueueLoadRequestData): Promise<chrome.cast.media.Media | null>;
+      queueLoad(
+        request: chrome.cast.media.QueueLoadRequestData,
+      ): Promise<chrome.cast.media.Media | null>;
+      loadMedia(request: chrome.cast.media.LoadRequest): Promise<chrome.cast.media.Media | null>;
       getMediaSession(): chrome.cast.media.Media | null;
       getCastDevice(): { friendlyName?: string } | null;
     }
