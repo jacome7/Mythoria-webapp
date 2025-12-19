@@ -43,6 +43,7 @@ describe('normalizeGraphicalStyle', () => {
     expect(normalizeGraphicalStyle('pixar style')).toBe(GraphicalStyle.PIXAR_STYLE);
     expect(normalizeGraphicalStyle('watercolour')).toBe(GraphicalStyle.WATERCOLOR);
     expect(normalizeGraphicalStyle('hand-drawn')).toBe(GraphicalStyle.HAND_DRAWN);
+    expect(normalizeGraphicalStyle('ligne claire')).toBe(GraphicalStyle.EURO_COMIC_BOOK);
   });
 
   it('defaults to cartoon when unknown', () => {

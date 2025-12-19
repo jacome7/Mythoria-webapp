@@ -416,6 +416,14 @@ export function normalizeGraphicalStyle(style: string | undefined): GraphicalSty
     superhero: GraphicalStyle.COMIC_BOOK,
     'graphic novel': GraphicalStyle.COMIC_BOOK,
 
+    // Euro Comic Book / Ligne Claire
+    'euro comic book': GraphicalStyle.EURO_COMIC_BOOK,
+    eurocomic: GraphicalStyle.EURO_COMIC_BOOK,
+    'european comic': GraphicalStyle.EURO_COMIC_BOOK,
+    europeancomic: GraphicalStyle.EURO_COMIC_BOOK,
+    'ligne claire': GraphicalStyle.EURO_COMIC_BOOK,
+    'humorous adventure': GraphicalStyle.EURO_COMIC_BOOK,
+
     // Anime
     anime: GraphicalStyle.ANIME,
     manga: GraphicalStyle.ANIME,
@@ -478,6 +486,9 @@ export function normalizeGraphicalStyle(style: string | undefined): GraphicalSty
   }
   if (trimmed.includes('disney')) {
     return GraphicalStyle.DISNEY_STYLE;
+  }
+  if (trimmed.includes('euro') || trimmed.includes('ligne claire') || trimmed.includes('franco')) {
+    return GraphicalStyle.EURO_COMIC_BOOK;
   }
 
   // Default fallback

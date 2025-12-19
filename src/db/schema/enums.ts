@@ -98,6 +98,7 @@ export const graphicalStyleEnum = pgEnum('graphical_style', [
   'minimalist',
   'vintage',
   'comic_book',
+  'euro_comic_book',
   'anime',
   'pixar_style',
   'disney_style',
