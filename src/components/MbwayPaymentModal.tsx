@@ -47,7 +47,7 @@ export default function MbwayPaymentModal({
               <InfoBlock label={t('fields.amount')} value={`€${amount.toFixed(2)}`} />
               <InfoBlock
                 label={t('fields.phone')}
-                value={<span className="font-mono tracking-wide">918 957 895</span>}
+                value={<span className="font-mono tracking-wide">913 411 828</span>}
               />
               <InfoBlock
                 label={t('fields.code')}

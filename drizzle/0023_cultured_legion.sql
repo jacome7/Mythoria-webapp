@@ -1,0 +1,1 @@
+ALTER TYPE "public"."graphical_style" ADD VALUE 'euro_comic_book' BEFORE 'anime';

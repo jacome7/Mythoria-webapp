@@ -91,6 +91,7 @@ const graphicalStyleMap: Record<string, GraphicalStyle> = {
   minimalist: GraphicalStyle.MINIMALIST,
   vintage: GraphicalStyle.VINTAGE,
   comic_book: GraphicalStyle.COMIC_BOOK,
+  euro_comic_book: GraphicalStyle.EURO_COMIC_BOOK,
   anime: GraphicalStyle.ANIME,
   pixar_style: GraphicalStyle.PIXAR_STYLE,
   disney_style: GraphicalStyle.DISNEY_STYLE,
@@ -114,6 +115,12 @@ const graphicalStyleMap: Record<string, GraphicalStyle> = {
   simple: GraphicalStyle.MINIMALIST,
   retro: GraphicalStyle.VINTAGE,
   classic: GraphicalStyle.VINTAGE,
+  'euro comic book': GraphicalStyle.EURO_COMIC_BOOK,
+  eurocomic: GraphicalStyle.EURO_COMIC_BOOK,
+  european_comic: GraphicalStyle.EURO_COMIC_BOOK,
+  europeancomic: GraphicalStyle.EURO_COMIC_BOOK,
+  'ligne claire': GraphicalStyle.EURO_COMIC_BOOK,
+  humorous_adventure: GraphicalStyle.EURO_COMIC_BOOK,
 };
 
 // Mapping from common AI outputs to CharacterAge enum

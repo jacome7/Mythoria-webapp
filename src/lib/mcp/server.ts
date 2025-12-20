@@ -7,6 +7,7 @@ import { creditPackagesService, creditService, faqService, paymentService, story
 import crypto from 'crypto';
 
 import { McpAuthError, type McpAuthContext, resolveMcpAuthContext, requireAuthor } from './auth';
+import { faqService } from '@/db/services';
 
 const MCP_SERVER_INFO = {
   name: 'mythoria-mcp',

@@ -11,6 +11,7 @@ export type GraphicalStyle =
   | 'minimalist'
   | 'vintage'
   | 'comic_book'
+  | 'euro_comic_book'
   | 'anime'
   | 'pixar_style'
   | 'disney_style'
@@ -30,6 +31,7 @@ const GRAPHICAL_STYLE_TO_LOGO: Record<GraphicalStyle, string> = {
   minimalist: 'minimalist.jpg',
   vintage: 'vintage.jpg',
   comic_book: 'comic_book.jpg',
+  euro_comic_book: 'euro_comic_book.jpg',
   anime: 'anime.jpg',
   pixar_style: 'pixar.jpg',
   disney_style: 'disney.jpg',
