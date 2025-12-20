@@ -1,4 +1,4 @@
-import { createClerkClient } from '@clerk/backend';
+import { createClerkClient, verifyToken } from '@clerk/backend';
 
 import { authorService } from '@/db/services';
 import type { authors } from '@/db/schema';
@@ -50,7 +50,7 @@ export async function resolveMcpAuthContext(request: Request): Promise<McpAuthCo
   }
 
   try {
-    const verified = await clerkClient.verifyToken(token);
+    const verified = await verifyToken(token, { secretKey: clerkSecretKey });
     const userId = verified.sub;
     if (!userId) {
       throw new McpAuthError('Token verified but subject is missing.', 403);

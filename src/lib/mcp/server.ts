@@ -1,13 +1,13 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
-import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js';
 import { z } from 'zod';
 
+import { DEFAULT_CURRENCY } from '@/config/currency';
 import { SUPPORTED_LOCALES } from '@/config/locales';
 import { creditPackagesService, creditService, faqService, paymentService, storyService } from '@/db/services';
 import crypto from 'crypto';
 
 import { McpAuthError, type McpAuthContext, resolveMcpAuthContext, requireAuthor } from './auth';
-import { faqService } from '@/db/services';
 
 const MCP_SERVER_INFO = {
   name: 'mythoria-mcp',
@@ -46,7 +46,7 @@ function toJsonContent(payload: unknown) {
   return {
     content: [
       {
-        type: 'text',
+        type: 'text' as const,
         text: JSON.stringify(payload, null, 2),
       },
     ],
@@ -58,6 +58,10 @@ function resolveLocale(locale?: string) {
   if (!locale) return fallbackLocale;
   return SUPPORTED_LOCALES.includes(locale) ? locale : fallbackLocale;
 }
+
+type FaqSectionWithEntries = Awaited<ReturnType<typeof faqService.getFaqData>>[number];
+type FaqEntryWithSection = Awaited<ReturnType<typeof faqService.searchFaqs>>[number];
+type FaqEntry = FaqSectionWithEntries['entries'][number];
 
 function registerFaqTools(server: McpServer, _authContext: McpAuthContext) {
   const baseFaqInput = z.object({
@@ -71,39 +75,54 @@ function registerFaqTools(server: McpServer, _authContext: McpAuthContext) {
       .describe('Optional FAQ section key to narrow results (e.g., pricing, onboarding).'),
   });
 
+  const faqListInput = baseFaqInput.extend({
+    q: z
+      .string()
+      .optional()
+      .describe('Optional free-text filter to narrow entries using keyword search.'),
+  });
+
+  const faqQueryInput = z
+    .object({
+      question: z
+        .string()
+        .min(1)
+        .describe('The user question or keywords to search within the FAQs.'),
+    })
+    .merge(baseFaqInput);
+
   server.registerTool(
     'faq.list',
     {
       description:
         'List FAQ sections and entries in a structured, chatbot-friendly JSON format. Use this to browse available questions before answering user prompts.',
-      inputSchema: baseFaqInput.extend({
-        q: z
-          .string()
-          .optional()
-          .describe('Optional free-text filter to narrow entries using keyword search.'),
-      }),
+      inputSchema: faqListInput,
     },
-    async ({ locale, section, q }) => {
+    async (input: z.infer<typeof faqListInput>) => {
+      const { locale, section, q } = input;
       const resolvedLocale = resolveLocale(locale);
       const faqData = await faqService.getFaqData(resolvedLocale, section, q);
 
       const payload = {
         locale: resolvedLocale,
         ...(section ? { section } : {}),
-        sections: faqData.map((faqSection) => ({
+        sections: faqData.map((faqSection: FaqSectionWithEntries) => ({
           id: faqSection.id,
           key: faqSection.sectionKey,
-          title: faqSection.title,
+          title:
+            (faqSection as { title?: string | null; defaultLabel?: string | null }).title ??
+            faqSection.defaultLabel ??
+            faqSection.sectionKey,
           summary: faqSection.description,
           overview: {
             totalEntries: faqSection.entries.length,
-            topQuestions: faqSection.entries.slice(0, 3).map((entry) => entry.title),
+            topQuestions: faqSection.entries.slice(0, 3).map((entry: FaqEntry) => entry.title),
           },
-          entries: faqSection.entries.map((entry) => ({
+          entries: faqSection.entries.map((entry: FaqEntry) => ({
             id: entry.id,
             question: entry.title,
             answer: entry.contentMdx,
-            keywords: entry.keywords,
+            keywords: entry.keywords ?? [],
             locale: entry.locale,
           })),
         })),
@@ -120,34 +139,43 @@ function registerFaqTools(server: McpServer, _authContext: McpAuthContext) {
     {
       description:
         'Answer a natural-language user question by returning the most relevant FAQ entries with section context.',
-      inputSchema: z
-        .object({
-          question: z
-            .string()
-            .min(1)
-            .describe('The user question or keywords to search within the FAQs.'),
-        })
-        .merge(baseFaqInput),
+      inputSchema: faqQueryInput,
     },
-    async ({ question, locale }) => {
+    async (input: z.infer<typeof faqQueryInput>) => {
+      const { question, locale } = input;
       const resolvedLocale = resolveLocale(locale);
       const trimmedQuestion = question.trim();
-      const results = await faqService.searchFaqs(resolvedLocale, trimmedQuestion);
+      const results = (await faqService.searchFaqs(
+        resolvedLocale,
+        trimmedQuestion,
+      )) as FaqEntryWithSection[];
 
-      const sectionsForContext = await faqService.getFaqData(resolvedLocale);
+      const sectionsForContext = (await faqService.getFaqData(
+        resolvedLocale,
+      )) as FaqSectionWithEntries[];
 
       const fallbackSections =
         results.length === 0
-          ? await faqService.getFaqData(resolvedLocale, undefined, trimmedQuestion)
+          ? ((await faqService.getFaqData(
+              resolvedLocale,
+              undefined,
+              trimmedQuestion,
+            )) as FaqSectionWithEntries[])
           : sectionsForContext;
 
       const fallbackMatches =
         results.length === 0
-          ? fallbackSections.flatMap((section) =>
-              section.entries.map((entry) => ({
+          ? fallbackSections.flatMap((section: FaqSectionWithEntries) =>
+              section.entries.map((entry: FaqEntry) => ({
                 ...entry,
-                section,
-                relevanceScore: entry.keywords?.some((keyword) =>
+                section: {
+                  ...section,
+                  title:
+                    (section as { title?: string | null; defaultLabel?: string | null }).title ??
+                    section.defaultLabel ??
+                    section.sectionKey,
+                },
+                relevanceScore: entry.keywords?.some((keyword: string) =>
                   trimmedQuestion.toLowerCase().includes(keyword.toLowerCase()),
                 )
                   ? 0.6
@@ -170,13 +198,16 @@ function registerFaqTools(server: McpServer, _authContext: McpAuthContext) {
         relevanceScore: match.relevanceScore ?? null,
       }));
 
-      const sectionOverviews = fallbackSections.map((section) => ({
+      const sectionOverviews = fallbackSections.map((section: FaqSectionWithEntries) => ({
         id: section.id,
         key: section.sectionKey,
-        title: section.title,
+        title:
+          (section as { title?: string | null; defaultLabel?: string | null }).title ??
+          section.defaultLabel ??
+          section.sectionKey,
         summary: section.description,
         totalEntries: section.entries.length,
-        topQuestions: section.entries.slice(0, 3).map((entry) => entry.title),
+        topQuestions: section.entries.slice(0, 3).map((entry: FaqEntry) => entry.title),
       }));
 
       const payload = {
@@ -223,7 +254,8 @@ function registerStoryTools(server: McpServer, authContext: McpAuthContext) {
         "List this author's stories with status, language, and metadata. Requires authentication.",
       inputSchema: listMineInput,
     },
-    async ({ includeTemporary } = {}) => {
+    async (input: z.infer<typeof listMineInput>) => {
+      const includeTemporary = input?.includeTemporary ?? false;
       const author = requireAuthor(authContext);
       const stories = await storyService.getStoriesByAuthor(author.authorId);
       const filteredStories = stories.filter((story) => includeTemporary || story.status !== 'temporary');
@@ -253,27 +285,30 @@ function registerStoryTools(server: McpServer, authContext: McpAuthContext) {
 }
 
 function registerCreditTools(server: McpServer, authContext: McpAuthContext) {
+  const creditsUsageInput = z
+    .object({
+      limit: z
+        .number()
+        .int()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Maximum number of recent ledger entries to return (default 50).'),
+    })
+    .optional();
+
   server.registerTool(
     'credits.usage',
     {
       description: 'Show the user\'s credit balance and recent transactions. Requires authentication.',
-      inputSchema: z
-        .object({
-          limit: z
-            .number()
-            .int()
-            .min(1)
-            .max(100)
-            .optional()
-            .describe('Maximum number of recent ledger entries to return (default 50).'),
-        })
-        .optional(),
+      inputSchema: creditsUsageInput,
     },
-    async ({ limit } = {}) => {
+    async (input: z.infer<typeof creditsUsageInput>) => {
+      const limit = input?.limit ?? 50;
       const author = requireAuthor(authContext);
       const [balance, history] = await Promise.all([
         creditService.getAuthorCreditBalance(author.authorId),
-        creditService.getCreditHistory(author.authorId, limit ?? 50),
+        creditService.getCreditHistory(author.authorId, limit),
       ]);
 
       const payload = {
@@ -323,20 +358,40 @@ function registerFulfillmentTools(server: McpServer, authContext: McpAuthContext
     .min(1)
     .describe('The target story ID belonging to the authenticated author.');
 
+  const downloadInputSchema = z.object({
+    storyId: storyIdSchema,
+    format: z
+      .enum(['pdf', 'epub'])
+      .default('pdf')
+      .describe('Export format to generate (pdf or epub). Defaults to pdf.'),
+  });
+
+  const printInputSchema = z.object({
+    storyId: storyIdSchema,
+    deliveryNotes: z
+      .string()
+      .optional()
+      .describe('Optional notes for printing/shipping preferences.'),
+  });
+
+  const narrateInputSchema = z.object({
+    storyId: storyIdSchema,
+    voiceId: z.string().optional().describe('Voice ID or style to narrate with. Optional.'),
+    language: z
+      .string()
+      .optional()
+      .describe('Desired narration language/locale. Defaults to the story language.'),
+  });
+
   server.registerTool(
     'stories.requestDownload',
     {
       description:
         'Queue a downloadable export (PDF/EPUB) for this story. Requires authentication and returns a jobId for polling.',
-      inputSchema: z.object({
-        storyId: storyIdSchema,
-        format: z
-          .enum(['pdf', 'epub'])
-          .default('pdf')
-          .describe('Export format to generate (pdf or epub). Defaults to pdf.'),
-      }),
+      inputSchema: downloadInputSchema,
     },
-    async ({ storyId, format }) => {
+    async (input: z.infer<typeof downloadInputSchema>) => {
+      const { storyId, format } = input;
       requireAuthor(authContext);
 
       const payload = createJobPayload('download', storyId, { format });
@@ -353,15 +408,10 @@ function registerFulfillmentTools(server: McpServer, authContext: McpAuthContext
     {
       description:
         'Queue a print-ready PDF generation and send to the print pipeline. Requires authentication.',
-      inputSchema: z.object({
-        storyId: storyIdSchema,
-        deliveryNotes: z
-          .string()
-          .optional()
-          .describe('Optional notes for printing/shipping preferences.'),
-      }),
+      inputSchema: printInputSchema,
     },
-    async ({ storyId, deliveryNotes }) => {
+    async (input: z.infer<typeof printInputSchema>) => {
+      const { storyId, deliveryNotes } = input;
       requireAuthor(authContext);
 
       const payload = createJobPayload('print', storyId, { deliveryNotes });
@@ -378,16 +428,10 @@ function registerFulfillmentTools(server: McpServer, authContext: McpAuthContext
     {
       description:
         'Queue an audio narration job for the story using the selected voice. Requires authentication.',
-      inputSchema: z.object({
-        storyId: storyIdSchema,
-        voiceId: z.string().optional().describe('Voice ID or style to narrate with. Optional.'),
-        language: z
-          .string()
-          .optional()
-          .describe('Desired narration language/locale. Defaults to the story language.'),
-      }),
+      inputSchema: narrateInputSchema,
     },
-    async ({ storyId, voiceId, language }) => {
+    async (input: z.infer<typeof narrateInputSchema>) => {
+      const { storyId, voiceId, language } = input;
       requireAuthor(authContext);
 
       const payload = createJobPayload('narrate', storyId, { voiceId, language });
@@ -401,26 +445,29 @@ function registerFulfillmentTools(server: McpServer, authContext: McpAuthContext
 }
 
 function registerTransactionTools(server: McpServer, authContext: McpAuthContext) {
+  const transactionListInput = z
+    .object({
+      limit: z
+        .number()
+        .int()
+        .min(1)
+        .max(50)
+        .optional()
+        .describe('Maximum number of transactions to return (default 20).'),
+    })
+    .optional();
+
   server.registerTool(
     'transactions.list',
     {
       description:
         'List the authenticated user’s payment transactions and credit bundle purchases. Requires authentication.',
-      inputSchema: z
-        .object({
-          limit: z
-            .number()
-            .int()
-            .min(1)
-            .max(50)
-            .optional()
-            .describe('Maximum number of transactions to return (default 20).'),
-        })
-        .optional(),
+      inputSchema: transactionListInput,
     },
-    async ({ limit } = {}) => {
+    async (input: z.infer<typeof transactionListInput>) => {
+      const limit = input?.limit ?? 20;
       const author = requireAuthor(authContext);
-      const transactions = await paymentService.getUserPaymentHistory(author.authorId, limit ?? 20);
+      const transactions = await paymentService.getUserPaymentHistory(author.authorId, limit);
 
       const payload = {
         authorId: author.authorId,
@@ -460,7 +507,7 @@ function registerTransactionTools(server: McpServer, authContext: McpAuthContext
           key: pkg.key,
           credits: pkg.credits,
           price: pkg.price,
-          currency: pkg.currency ?? 'EUR',
+          currency: DEFAULT_CURRENCY,
           bestValue: pkg.bestValue,
           popular: pkg.popular,
           icon: pkg.icon,

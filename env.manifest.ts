@@ -415,6 +415,13 @@ export const envManifest: EnvVarDescriptor[] = [
     source: 'substitution',
     note: 'TTS provider for audiobooks: openai or google-genai.',
   },
+  {
+    name: 'NEXT_PUBLIC_DEFAULT_CURRENCY',
+    required: false,
+    scopes: ['prod', 'build', 'public', 'dev'],
+    default: 'EUR',
+    note: 'Public-facing display currency for pricing and MCP tools.',
+  },
 
   // Non-public Clerk URLs used at runtime (not exposed publicly without prefix)
   {

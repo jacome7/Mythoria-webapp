@@ -2,6 +2,7 @@
 
 import { McpAuthError, type McpAuthContext } from './auth';
 import { createMcpServer } from './server';
+import { DEFAULT_CURRENCY } from '@/config/currency';
 import { creditPackagesService, creditService, paymentService, storyService } from '@/db/services';
 
 jest.mock('@/db/services', () => ({
@@ -128,7 +129,7 @@ describe('transactions.list tool', () => {
         revolutOrderId: 'rev-1',
         creditBundle: { credits: 10, price: '9.00' },
         amount: '9.00',
-        currency: 'EUR',
+        currency: DEFAULT_CURRENCY,
         status: 'completed',
         provider: 'revolut',
         createdAt: new Date('2024-04-01'),
@@ -161,7 +162,7 @@ describe('credits.purchaseOptions tool', () => {
         key: 'credits10',
         credits: 10,
         price: '9.00',
-        currency: 'EUR',
+        currency: DEFAULT_CURRENCY,
         bestValue: false,
         popular: true,
         icon: 'star',

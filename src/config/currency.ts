@@ -1,0 +1,1 @@
+export const DEFAULT_CURRENCY = process.env.NEXT_PUBLIC_DEFAULT_CURRENCY ?? 'EUR';
