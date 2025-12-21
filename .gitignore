@@ -32,6 +32,7 @@
 .env.*
 !.env.*.template
 !.env.*.example
+.env.example
 .env.local
 .env.production
 .env.production.*
