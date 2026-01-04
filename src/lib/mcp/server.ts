@@ -4,7 +4,13 @@ import { z } from 'zod';
 
 import { DEFAULT_CURRENCY } from '@/config/currency';
 import { SUPPORTED_LOCALES } from '@/config/locales';
-import { creditPackagesService, creditService, faqService, paymentService, storyService } from '@/db/services';
+import {
+  creditPackagesService,
+  creditService,
+  faqService,
+  paymentService,
+  storyService,
+} from '@/db/services';
 import crypto from 'crypto';
 
 import { McpAuthError, type McpAuthContext, resolveMcpAuthContext, requireAuthor } from './auth';
@@ -258,7 +264,9 @@ function registerStoryTools(server: McpServer, authContext: McpAuthContext) {
       const includeTemporary = input?.includeTemporary ?? false;
       const author = requireAuthor(authContext);
       const stories = await storyService.getStoriesByAuthor(author.authorId);
-      const filteredStories = stories.filter((story) => includeTemporary || story.status !== 'temporary');
+      const filteredStories = stories.filter(
+        (story) => includeTemporary || story.status !== 'temporary',
+      );
 
       const payload = {
         authorId: author.authorId,
@@ -276,7 +284,7 @@ function registerStoryTools(server: McpServer, authContext: McpAuthContext) {
           isFeatured: story.isFeatured,
         })),
         guidance:
-          'Use this list to answer questions about the user\'s creations. Filter by status if needed; temporary items are hidden unless explicitly requested.',
+          "Use this list to answer questions about the user's creations. Filter by status if needed; temporary items are hidden unless explicitly requested.",
       };
 
       return toJsonContent(payload);
@@ -300,7 +308,8 @@ function registerCreditTools(server: McpServer, authContext: McpAuthContext) {
   server.registerTool(
     'credits.usage',
     {
-      description: 'Show the user\'s credit balance and recent transactions. Requires authentication.',
+      description:
+        "Show the user's credit balance and recent transactions. Requires authentication.",
       inputSchema: creditsUsageInput,
     },
     async (input: z.infer<typeof creditsUsageInput>) => {

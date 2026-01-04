@@ -114,6 +114,11 @@ export const literaryPersonaEnum = pgEnum('literary_persona', [
   'friendly-educator',
   'institutional-chronicler',
   'pub-buddy-narrator',
+  'classic-novelist',
+  'noir-investigator',
+  'whimsical-poet',
+  'scifi-analyst',
+  'folklore-traditionalist',
 ]);
 
 export const aiActionTypeEnum = pgEnum('ai_action_type', [

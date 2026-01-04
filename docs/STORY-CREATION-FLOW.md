@@ -228,6 +228,10 @@ Characters are categorized into:
 | Graphical Style               | Yes      | Visual illustration style                   |
 | Image Generation Instructions | No       | Custom instructions for AI image generation |
 
+**Literary Personas**
+
+Step 4 includes a literary persona picker (modal) that lets authors choose a curated narrative voice (e.g., Classic Novelist, Storyteller, Sci-Fi Analyst). The default selection is Classic Novelist, and the list is ordered to surface the most balanced voice first.
+
 #### Content Details (Collapsible Section)
 
 | Field               | Required | Description                                              |

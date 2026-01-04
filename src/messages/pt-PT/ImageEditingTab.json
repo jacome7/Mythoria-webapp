@@ -14,7 +14,7 @@
       "versionsInfo": "{count} versão{plural} disponível{plural}",
       "currentlySelected": "Atualmente selecionada: {version}",
       "changeImageButton": "Alterar Imagem na História",
-      "changingImage": "Alterando Imagem...",
+      "changingImage": "A alterar Imagem...",
       "changeImageDescription": "Isto substituirá a imagem atual na sua história pela versão selecionada."
     },
     "imagePreview": {
@@ -26,14 +26,14 @@
       "charactersCount": "{current}/{max} caracteres"
     },
     "loadingState": {
-      "title": "Processando a sua edição de imagem...",
+      "title": "A processar a sua edição de imagem...",
       "description": "Isto pode demorar até 3 minutos dependendo da complexidade das alterações."
     },
     "buttons": {
       "generateNewVersion": "Gerar Nova Versão",
-      "editingImage": "Editando Imagem...",
+      "editingImage": "A editar Imagem...",
       "replaceImageInStory": "Substituir Imagem na História",
-      "replacingImage": "Substituindo Imagem..."
+      "replacingImage": "A substituir Imagem..."
     },
     "success": {
       "title": "Nova versão da imagem gerada com sucesso!",

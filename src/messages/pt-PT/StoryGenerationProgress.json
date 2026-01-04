@@ -1,12 +1,12 @@
 {
   "StoryGenerationProgress": {
     "completion": {
-      "title": "A Sua História Está Pronta!",
+      "title": "A sua História Está Pronta!",
       "description": "Parabéns! A sua história mágica foi criada e está pronta para ser lida.",
       "progress": "100% Completo!",
       "buttons": {
-        "readStory": "📖 Ler a Sua História Agora",
-        "myStories": "📚 As Minhas Histórias"
+        "readStory": "📖 Ler a sua História Agora",
+        "myStories": "📚 As minhas Histórias"
       },
       "celebration": {
         "title": "A sua história agora faz parte da coleção Mythoria!",
@@ -18,21 +18,21 @@
       "description": "A sua história estará pronta em até 14 minutos",
       "progressLabel": "Progresso",
       "estimatedTimeLabel": "Tempo estimado restante",
-      "creatingMagic": "Criando magia...",
+      "creatingMagic": "A criar magia...",
       "currentlyLabel": "Atualmente:",
       "tip": {
         "title": "Dica:",
-        "description": "Enquanto espera, pode visitar \"As Minhas Histórias\" para acompanhar o progresso em tempo real ou começar a criar outra história!"
+        "description": "Enquanto espera, pode visitar \"As minhas Histórias\" para acompanhar o progresso em tempo real ou começar a criar outra história!"
       }
     },
     "steps": {
-      "generate_outline": "Elaborando o esboço da sua história",
-      "write_chapters": "Escrevendo capítulos mágicos",
-      "generate_front_cover": "Desenhando a capa frontal",
-      "generate_back_cover": "Criando a contracapa",
-      "generate_images": "Pintando belas ilustrações",
-      "assemble": "Encadernando a sua história",
-      "generate_audiobook": "Gravando o seu audiolivro",
+      "generate_outline": "A elaborar o esboço da sua história",
+      "write_chapters": "A escrever capítulos mágicos",
+      "generate_front_cover": "A desenhar a capa frontal",
+      "generate_back_cover": "A criar a contracapa",
+      "generate_images": "A pintar belas ilustrações",
+      "assemble": "A encadernar a sua história",
+      "generate_audiobook": "A gravar o seu audiolivro",
       "done": "Toques finais"
     },
     "funnyMessages": {

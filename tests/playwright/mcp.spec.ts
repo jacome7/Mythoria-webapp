@@ -2,7 +2,11 @@ import { test, expect, type APIRequestContext } from '@playwright/test';
 
 const MCP_ENDPOINT = '/api/mcp';
 
-async function postTool(request: APIRequestContext, tool: string, params?: Record<string, unknown>) {
+async function postTool(
+  request: APIRequestContext,
+  tool: string,
+  params?: Record<string, unknown>,
+) {
   return request.post(MCP_ENDPOINT, {
     headers: {
       'content-type': 'application/json',

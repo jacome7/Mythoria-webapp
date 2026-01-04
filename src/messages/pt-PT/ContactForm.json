@@ -21,7 +21,7 @@
       "general": "Questões Gerais"
     },
     "errors": {
-      "fillRequired": "Por favor preencha todos os campos obrigatórios",
+      "fillRequired": "Por favor, preencha todos os campos obrigatórios",
       "createFailed": "Falha ao criar ticket de suporte. Tente novamente."
     },
     "success": {

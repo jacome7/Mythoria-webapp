@@ -2,7 +2,7 @@
   "PublicStoryPage": {
     "loading": {
       "title": "A Carregar História",
-      "subtitle": "Por favor aguarde enquanto carregamos a sua história..."
+      "subtitle": "Por favor aguarde enquanto carregamos a história..."
     },
     "errors": {
       "notFound": "História Não Encontrada",

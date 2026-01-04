@@ -8,7 +8,7 @@
     "cancelButton": "Cancelar",
     "loading": "A processar...",
     "errors": {
-      "enterRequest": "Por favor introduza o seu pedido de edição",
+      "enterRequest": "Por favor, introduza o seu pedido de edição",
       "unableToCheckCredits": "Não foi possível verificar os créditos. Tente novamente.",
       "failedToEdit": "Falha ao editar história. Tente novamente."
     },

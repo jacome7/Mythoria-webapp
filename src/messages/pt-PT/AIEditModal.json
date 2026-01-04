@@ -19,10 +19,10 @@
       "cancel": "Cancelar",
       "close": "Fechar",
       "applyChanges": "Aplicar Alterações",
-      "processing": "Processando..."
+      "processing": "A processar..."
     },
     "loadingState": {
-      "title": "Processando o seu pedido...",
+      "title": "A processar o seu pedido...",
       "description": "Isto pode demorar 5-60 segundos dependendo do âmbito das alterações."
     },
     "errors": {
@@ -36,7 +36,7 @@
     },
     "imageSave": {
       "title": "A guardar alterações na imagem",
-      "description": "Por favor aguarde enquanto guardamos as alterações de imagem na história..."
+      "description": "Por favor, aguarde enquanto guardamos as alterações de imagem na história..."
     }
   }
 }

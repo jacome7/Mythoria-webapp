@@ -6,16 +6,16 @@
     "storyNotAvailableYet": "Esta história ainda não está disponível.",
     "storyNotFoundGeneric": "História não encontrada.",
     "noPermission": "Não tem permissão para aceder a esta história.",
-    "failedToLoad": "Falha ao carregar a história. Por favor tente novamente.",
+    "failedToLoad": "Falha ao carregar a história. Por favor, tente novamente.",
     "oops": "Ups!",
     "noChaptersFound": "Nenhum Capítulo Encontrado",
     "noChaptersFoundDesc": "Esta história não tem capítulos!",
     "chapterNotFound": "Capítulo Não Encontrado",
     "chapterNotFoundDesc": "O capítulo solicitado não foi encontrado.",
-    "failedToStartAudiobook": "Falha ao iniciar geração do audiolivro",
-    "failedToPlayAudio": "Falha ao reproduzir áudio. Por favor tente novamente.",
-    "failedToLoadAudio": "Falha ao carregar áudio. Por favor verifique a sua ligação à internet e tente novamente.",
-    "audioPlaybackInteractionRequired": "A reprodução de áudio requer interação do utilizador. Por favor tente clicar novamente no botão de reprodução.",
+    "failedToStartAudiobook": "Falha ao iniciar a geração do audiolivro",
+    "failedToPlayAudio": "Falha ao reproduzir o áudio. Por favor, tente novamente.",
+    "failedToLoadAudio": "Falha ao carregar o áudio. Por favor, verifique a sua ligação à internet e tente novamente.",
+    "audioPlaybackInteractionRequired": "A reprodução de áudio requer interação do utilizador. Por favor, tente clicar novamente no botão de reprodução.",
     "audioFormatNotSupported": "Este formato de áudio não é suportado pelo seu navegador."
   }
 }

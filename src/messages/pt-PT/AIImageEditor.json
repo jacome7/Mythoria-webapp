@@ -13,20 +13,20 @@
     "generatedImageAlt": "Imagem Gerada",
     "modes": {
       "edit": "Editar imagem atual",
-      "upload": "Usar a tua foto"
+      "upload": "Usar a sua foto"
     },
     "labels": {
-      "addYourOwnPhoto": "Adiciona a Tua Foto",
-      "describeChanges": "Descreve as alterações"
+      "addYourOwnPhoto": "Adicione a sua Foto",
+      "describeChanges": "Descreva as alterações"
     },
     "helper": {
-      "dragDropOrClick": "Arrasta e larga ou clica para selecionar uma imagem",
+      "dragDropOrClick": "Arraste e largue ou clique para selecionar uma imagem",
       "selectImage": "Selecionar Imagem",
       "processing": "A processar...",
       "editUsesCredit": "Usa 1 crédito de imagem"
     },
     "radio": {
-      "legend": "Como devemos usar a tua foto?",
+      "legend": "Como devemos usar a sua foto?",
       "asIs": "Usar a foto como está, sem alterações (grátis)",
       "convert": "Converter e editar a foto para o estilo {style} (usa 1 crédito)",
       "defaultStyle": "selecionado"
@@ -38,7 +38,7 @@
       "applyPhoto": "Aplicar Foto"
     },
     "errors": {
-      "describeChanges": "Por favor descreva as alterações que quer fazer à imagem",
+      "describeChanges": "Por favor, descreva as alterações que quer fazer à imagem",
       "unableToCheckCredits": "Não foi possível verificar os créditos. Tente novamente.",
       "failedToGenerate": "Falha ao gerar nova imagem. Tente novamente.",
       "failedToReplace": "Falha ao substituir imagem. Tente novamente."

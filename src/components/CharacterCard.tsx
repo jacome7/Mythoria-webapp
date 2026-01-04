@@ -256,7 +256,11 @@ export default function CharacterCard({
 
     setSaving(true);
     try {
-      await onSave({ ...formData, photoDataUrl: pendingPhotoDataUrl, requestPhotoAnalysis });
+      await onSave({
+        ...formData,
+        photoDataUrl: pendingPhotoDataUrl ?? undefined,
+        requestPhotoAnalysis,
+      });
 
       // Track character creation or customization
       if (mode === 'create') {
@@ -422,7 +426,7 @@ export default function CharacterCard({
         {/* Header with photo and title */}
         <div className="flex items-center gap-4 mb-4">
           {/* Clickable photo/icon - opens upload modal in edit mode */}
-          {mode !== 'view' ? (
+          {mode === 'edit' || mode === 'create' ? (
             <button
               type="button"
               onClick={() => setShowPhotoUpload(true)}
@@ -486,8 +490,12 @@ export default function CharacterCard({
               />
             </div>
             <div className="space-y-1">
-              <p className="font-medium text-sm text-primary">{tCharacters('photoUpload.uploadSuccess')}</p>
-              <p className="text-xs text-base-content/70">{tCharacters('photoUpload.photoSaved')}</p>
+              <p className="font-medium text-sm text-primary">
+                {tCharacters('photoUpload.uploadSuccess')}
+              </p>
+              <p className="text-xs text-base-content/70">
+                {tCharacters('photoUpload.photoSaved')}
+              </p>
               <label className="flex items-start gap-2 mt-2">
                 <input
                   type="checkbox"
@@ -496,7 +504,9 @@ export default function CharacterCard({
                   onChange={(e) => setRequestPhotoAnalysis(e.target.checked)}
                 />
                 <div>
-                  <div className="font-medium text-sm">{tCharacters('photoUpload.extractDescription')}</div>
+                  <div className="font-medium text-sm">
+                    {tCharacters('photoUpload.extractDescription')}
+                  </div>
                   <p className="text-xs text-base-content/60">
                     {tCharacters('photoUpload.extractDescriptionHint')}
                   </p>
@@ -753,7 +763,7 @@ export default function CharacterCard({
       </div>
 
       {/* Photo Upload Modal */}
-      {mode !== 'view' && (
+      {(mode === 'edit' || mode === 'create') && (
         <CharacterPhotoUpload
           isOpen={showPhotoUpload}
           onClose={() => setShowPhotoUpload(false)}

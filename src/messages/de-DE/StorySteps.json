@@ -213,32 +213,93 @@
       },
       "literaryPersona": {
         "label": "Erzähl-Persona",
-        "helper": "Wähle den Erzähler-Typ, der den Stil vorgibt.",
+        "helper": "Standardmäßig nutzen wir den ausgewogenen klassischen Erzähler. Wechsel gern, wenn du eine andere Stimmung willst.",
         "placeholder": "Literarische Persona auswählen...",
+        "sampleLabel": "Stilbeispiel",
+        "metaLabels": {
+          "pov": "POV",
+          "tone": "Ton",
+          "rhythm": "Rhythmus",
+          "vocabulary": "Wortschatz"
+        },
+        "metaInfo": {
+          "title": "So liest du diese Badges",
+          "description": "POV, Ton, Rhythmus und Wortschatz beschreiben, wie der Erzähler spricht. Nutze sie, um die Stimme für deine Szene zu wählen.",
+          "trigger": "Was heißt das?",
+          "items": {
+            "pov": {
+              "label": "POV (Erzählperspektive)",
+              "description": "Wer die Geschichte erzählt. 1. = ich, 2. = du, 3. begrenzt = durch eine Figur, 3. allwissend = alle."
+            },
+            "tone": {
+              "label": "Ton",
+              "description": "Emotionale Intensität von ruhig (1) bis intensiv (5)."
+            },
+            "rhythm": {
+              "label": "Rhythmus",
+              "description": "Satztempo von langsam/fließend (1) bis schnell/knackig (5)."
+            },
+            "vocabulary": {
+              "label": "Wortschatz",
+              "description": "Wortwahl-Komplexität von einfachen Alltagsworten (1) bis zu reicherem, anspruchsvolleren Vokabular (5)."
+            }
+          }
+        },
         "options": {
           "storyteller": {
             "name": "Der Geschichtenerzähler",
-            "description": "Warme, einfühlsame Stimme wie ein Großelternteil, das Erinnerungen teilt; Gefühle und sanfte Moral im Fokus."
+            "description": "Warme, einfühlsame Stimme wie ein Großelternteil, das Erinnerungen teilt; Gefühle und sanfte Moral im Fokus.",
+            "sample": "An jenem Sonntagnachmittag fühlte sich das kleine Feld am Meer an wie eine sichere Tasche der Welt, zusammengenäht aus Seewind und Gelächter. Rodrigo legte den Ball vor John und hockte sich ein wenig hin, damit seine Stimme die Höhe seines Bruders traf. \"Zuerst, sei sanft mit ihm\", sagte er und tippte den Ball an, als wäre er ein kleines Tier, das sich erschrecken könnte. John versuchte es, und der Ball lief von seinem Fuß weg. Sein Gesicht spannte sich an, so wie Gesichter es tun, wenn der Stolz größer ist als der Fehler. Rodrigo lächelte sanft. \"Das ist normal\", sagte er ihm. \"Komm schon, noch einmal.\" Die Wellen hielten ihren stetigen Rhythmus hinter ihnen, und mit jedem neuen Versuch wurde Johns Berührung ruhiger. Als der Ball endlich nah blieb, schaute John strahlend auf, und Rodrigos Augen sagten den Rest: Geduld ist Liebe mit Zeit darin."
           },
           "adventurous-narrator": {
             "name": "Der Abenteuer-Narrator",
-            "description": "Macht Alltagsmomente episch mit verspielter Ansprache in der 2. Person und Fantasie-Tupfern."
+            "description": "Macht Alltagsmomente episch mit verspielter Ansprache in der 2. Person und Fantasie-Tupfern.",
+            "sample": "Sonntagnachmittag: QUEST-ZEIT. Du betrittst das winzige Fußballfeld nahe dem Ozean im Norden Portugals und wirst sofort vom Boss Seewind getroffen, Level: salzig. Rodrigo, der legendäre große Bruder und Coach, lässt den Ball vor Johns Füße fallen, als wäre es ein heiliges Artefakt. \"Mission John, Phase Eins: winzige Berührungen!\" sagt Rodrigo. John tippt den Ball an. Der Ball saust davon, als wollte er zum Strand fliehen. \"HEY! KOMM ZURÜCK!\" ruft John. Rodrigo lacht. \"Gut. Jetzt jag ihm nach. Helden jagen immer ihrem ersten Fehler nach.\" Du setzt zurück. John versucht es noch einmal, diesmal kleiner. \"Kopf hoch!\" ruft Rodrigo. John schaut hoch und, BUMM, plötzlich gehorcht der Ball. Die Wellen tosen im Hintergrund wie eine Stadionmenge. Levelaufstieg erreicht. Nächste Mission: der legendäre Pass des Schicksals."
           },
           "fun-reporter": {
             "name": "Der Spaß-Reporter",
-            "description": "Lockere, witzige Chronik der Gruppenaktionen mit hohem Tempo und Zitaten."
+            "description": "Lockere, witzige Chronik der Gruppenaktionen mit hohem Tempo und Zitaten.",
+            "sample": "16:42: Das Sonntagstraining beginnt auf einem kleinen Fußballfeld nahe dem Ozean (Nordportugal). Wetterbericht: Der Wind gibt alles.\n\nRodrigo (Trainer/Großer Bruder) legt den Ball mit der Ernsthaftigkeit eines Champions-League-Finales hin. John (Azubi/Kleiner Bruder) nickt, als würde er einen Vertrag unterschreiben.\n\nZitat des Moments:\n- Rodrigo: \"Winzige Berührungen. Kämpf nicht gegen den Ball.\"\n- John (nachdem der Ball entkommt): \"Er hört nicht zu!\"\n\n16:45: Erster Dribbling-Versuch. Ergebnis: Der Ball bricht aus und macht einen taktischen Rückzug in Richtung Meeresbrise. John sprintet mit maximaler Entschlossenheit und mittlerer Koordination hinterher.\n\n16:49: Coaching-Anpassung. Rodrigo demonstriert: Fuß entspannt, Kopf hoch. John versucht es erneut. Erfolgslevel: merklich verbessert.\n\n17:03: Bestätigter Meilenstein: John hält den Ball für drei ganze Sekunden nah bei sich, was in Geschwister-Trainings-Begriffen im Grunde ein Leben lang ist. Rodrigo lächelt. John feiert, als hätte er gerade gegen den Ozean selbst getroffen."
           },
           "friendly-educator": {
             "name": "Der Freundliche Erklärer",
-            "description": "Sanfte, klare Lehrer-Stimme mit einfachen Fragen und Beispielen."
+            "description": "Sanfte, klare Lehrer-Stimme mit einfachen Fragen und Beispielen.",
+            "sample": "Lass uns Fußball lernen mit Rodrigo und John an einem Sonntagnachmittag, nahe dem Ozean im Norden Portugals. Kannst du die Wellen hören? Dieses Geräusch ist wie ein Metronom. Es hilft uns, einen stetigen Rhythmus zu halten.\n\nRodrigo sagt: \"John, versuch eine sanfte Berührung.\" Was ist eine sanfte Berührung? Es bedeutet, du tippst den Ball vorsichtig an, damit er nah bei deinen Füßen bleibt, als würdest du einen Welpen an einer kurzen Leine führen.\n\nJetzt versuchst du es: Wenn du den Ball antippst, wohin gehen deine Augen? Runter zum Ball... oder hoch, um den Raum zu sehen? Rodrigo lehrt: \"Schau hoch, dann tipp.\"\n\nMinispiel: Kann John drei sanfte Berührungen hintereinander machen, ohne den Ball an den Wind zu verlieren? Eins... zwei... hoppla! Er ist weggerollt. Das ist okay. Fehler sind Teil des Lernens.\n\nRodrigo lächelt und sagt: \"Wir setzen zurück.\" John versucht es noch einmal. Eins... zwei... drei! Großartig! Das bedeutet, John kontrolliert den Ball, er jagt ihm nicht nach."
           },
           "institutional-chronicler": {
             "name": "Der Institutionelle Chronist",
-            "description": "Formaler, präziser Biografie-Ton, der Fakten geordnet hält."
+            "description": "Formaler, präziser Biografie-Ton, der Fakten geordnet hält.",
+            "sample": "An einem Sonntagnachmittag führte Rodrigo eine informelle Fußballtrainingseinheit für seinen jüngeren Bruder John auf einem kleinen Küstenfußballfeld im Norden Portugals durch. Die Aktivität bestand aus einführenden Ballkontrollübungen (kurze Dribblings mit reduzierter Kraft), visuellen Scan-Praktiken (Kopf-hoch-Orientierung vor dem Kontakt) und wiederholten Rücksetzzyklen nach Kontrollverlust. Die Sitzung fand unter anhaltendem maritimen Wind statt, mit hörbarer Meeresbrandung in der Nähe. Das Training endete mit einer beobachtbaren Verbesserung von Johns Fähigkeit, eine enge Ballkontrolle über aufeinanderfolgende Berührungen hinweg aufrechtzuerhalten, unterstützt durch konsistente Anweisungen und ruhiges Tempo von Rodrigo."
           },
           "pub-buddy-narrator": {
             "name": "Der Kneipen-Kumpel",
-            "description": "Super lockere, scherzhafte Erzählung wie ein Freund, der den Abend bei Drinks nacherzählt."
+            "description": "Super lockere, scherzhafte Erzählung wie ein Freund, der den Abend bei Drinks nacherzählt.",
+            "sample": "Alter, es war ein Sonntagnachmittag, auf diesem winzigen kleinen Feld am Ozean oben im Norden Portugals, und ich schwöre, der Wind spielte Verteidigung gegen John. Rodrigo steht da draußen ganz ernst, wie der Nationaltrainer, lässt den Ball ins Gras fallen und sagt: \"Also gut, kurze Berührungen. Leichter Fuß.\"\n\nJohn tritt an... tippt ihn an... und der Ball haut sofort ab. HAUT AB. Als hätte er ein One-Way-Ticket direkt zum Strand. Der Kleine schaut Rodrigo an wie: \"Ey, das Ding ist kaputt\", und Rodrigo nur so: \"Nee, Champion. Noch mal.\"\n\nAlso macht er es noch mal. Und noch mal. Und noch mal. Und irgendwann fängt John an, diese sauberen kleinen Berührungen hinzukriegen, Kopf hoch und alles, und ich denke mir: \"Okay, das ist es. Als nächstes unterschreibt er bei Porto.\" Rodrigo lacht nur, halb stolz, halb versucht er es nicht zu zeigen. Klassischer großer Bruder."
+          },
+          "classic-novelist": {
+            "name": "Der Klassische Romancier",
+            "description": "Ausgewogene, immersive Stimme, die zeigt statt nur zu erzählen, passt zu den meisten Geschichten.",
+            "sample": "Am Sonntagnachmittag fühlte sich das kleine Fußballfeld am Meer an wie eine eigene Welt, eingezäunt von salzigem Wind und dem fernen Rauschen der Wellen. Rodrigo legte den Ball vor Johns Füße und wartete, bis sich die Schultern seines Bruders lockerten. \"Halt die Augen oben\", sagte Rodrigo, nicht als Befehl, eher wie ein übergebenes Geheimnis. John nickte, dann versuchte er eine sanfte Berührung nach vorne. Der Ball rollte ein wenig zu weit. Er runzelte die Stirn. Rodrigo stürzte nicht dazwischen. Er ließ den Fehler eine Sekunde sitzen, dann trat er näher. \"Noch mal\", sagte er, und seine Stimme trug die Geduld von jemandem, der dieselbe Lektion auf die harte Tour gelernt hatte. John nahm diesmal eine kleinere Berührung, stetiger, und als Rodrigo lächelte, kam Johns Grinsen einen Herzschlag später an, als hätte es auf Erlaubnis gewartet."
+          },
+          "noir-investigator": {
+            "name": "Der Noir-Ermittler",
+            "description": "Gritty, misstrauisch und atmosphärisch, wie ein Hardboiled-Detektiv im Regen.",
+            "sample": "Sonntagnachmittag, Nordportugal. Die Art von Licht, die unschuldig aussieht, bis man bemerkt, was es verbirgt. Der Ozean war nah und atmete Salz in die Luft, als gehörte ihm der Ort. Rodrigo hatte John auf einem kleinen Feld am Wasser und brachte ihm Fußball bei, als wäre es ein sauberes Geschäft. Nichts ist das jemals. \"Sanfte Berührung\", sagte Rodrigo und tippte den Ball nach vorne. John versuchte es. Der Ball entkam ihm, rollte weg, als hätte er irgendwo Besseres zu tun. Johns Kiefer spannte sich an. So fängt es an, dachte ich. Frustration. Zweifel. Der langsame Glaube, dass du nicht dafür gemacht bist. Rodrigo verspottete ihn nicht. Hetzte ihn nicht. Ging einfach rüber und legte den Ball wieder hin, gleicher Fleck, gleiche Ruhe. \"Was hast du gesehen?\" fragte er. John blinzelte. \"Den Ball\", sagte er. Rodrigos Lächeln erreichte seine Augen nicht. \"Nicht genug\", antwortete er. Die Wellen sprachen im Hintergrund weiter. Wie Zeugen, die sich an alles erinnern."
+          },
+          "whimsical-poet": {
+            "name": "Der Verspielte Poet",
+            "description": "Lyrisch, romantisch und bildreich, macht aus einfachen Szenen zarte Momente.",
+            "sample": "An einem Sonntagnachmittag, wenn der Norden Portugals sein Ozeanlicht wie einen Segen trägt, betraten Rodrigo und der kleine John ein bescheidenes Feld, das zwischen Gras und Horizont genäht schien, und das Meer, ganz nah, atmete seine endlose Hymne aus Salz und Schaum aus, als wollte es den Takt halten. Rodrigo platzierte den Ball mit einer Zärtlichkeit, die gewöhnlich zerbrechlichen Dingen vorbehalten ist, und lud ihn mit der sanftesten Bewegung seines Fußes ein zu rollen, nicht als Objekt, sondern als Versprechen. \"Schau hoch\", sagte er zu John, und die Worte waren einfach, doch sie öffneten ein Fenster im Inneren der Konzentration des Jungen, sodass seine Augen vom Boden zur weiten, windhellen Welt aufstiegen. John versuchte es, stolperte in seiner Berührung, versuchte es dann wieder, und wieder, jeder Versuch eine kleine zurückkehrende Gezeit, jede Korrektur eine Muschel, die in die Handfläche gelegt wurde. Als der Ball endlich nah bei ihm blieb, gehorsam und lebendig, kam Johns Lächeln an wie die Sonne, die durch eine weiche Küstenwolke bricht, und Rodrigos stiller Stolz fühlte sich für einen Moment an wie der Ozean selbst: weit, geduldig und immer wiederkehrend."
+          },
+          "scifi-analyst": {
+            "name": "Der Sci-Fi-Analyst",
+            "description": "Präzise, futuristische Stimme, die das Leben wie ein Missionslog behandelt, mit trockenem Humor.",
+            "sample": "LOGBUCHEINTRAG // Lokaler Zyklus: Sonntagnachmittag\nOrt: Küstensektor, Nordportugal // Trainingsfeld (Mikro-Feld)\nZiel: Transfer von Fußball-Kontrollprotokollen von Einheit Rodrigo (Instruktor) an Einheit John (Junior-Operator).\n\nUmgebungsscan: anhaltende salzhaltige Aerosole; Windvektoren variabel; auditiver Hintergrund dominiert durch Ozeanwellen-Perkussion.\n\nProzedur initiiert: Rodrigo setzt Sphäre-1 (Standard-Fußball) ein. Demonstration: Kontakt mit geringer Kraft, Kurzstrecken-Dribbling-Sequenz.\nKOMMS-TRANSKRIPT:\nRodrigo: \"Kopf hoch. Erst scannen.\"\nJohn: \"So?\"\nRodrigo: \"Kleinerer Kontakt. Halt ihn nah.\"\n\nBeobachtung: John zeigt erhöhte Konzentration (Stirnspannung; reduziertes Blinzeln). Anfangsversuch resultiert in Sphäre-1-Trennungsereignis (Ball reist über optimalen Kontrollradius hinaus). Frustrationsreaktion erkannt; Rodrigo kontert mit ruhigem Wiederholungsprotokoll.\nErgebnis: Nach mehreren Iterationen erreicht John verbesserte Kontrollgenauigkeit und Flugbahnstabilität. Wahrscheinlichkeit fortgesetzten Kompetenzerwerbs (gegeben Instruktor-Geduld + Moral-Boost am Meer): 91%."
+          },
+          "folklore-traditionalist": {
+            "name": "Der Folklore-Hüter",
+            "description": "Zeitlose, fabelhafte Stimme, die in Symbolen, Omen und leisen Moralen spricht.",
+            "sample": "Und so begab es sich an einem Sonntagnachmittag, dass der Ältere Bruder Rodrigo den Kleinen, John, auf das kleine Feld nahe dem großen Ozean des Nordens brachte. Der Wind stand als Zeuge, und das Meer sprach in seiner endlosen Zunge. Rodrigo legte den Ball auf das Gras, und er sprach: \"Erstens: Sei standhaft. Zweitens: Schau voraus. Drittens: Fürchte den Fehler nicht.\" John gehorchte so gut er konnte, doch der Ball floh vor ihm, denn Können kommt nicht zu denen, die eilen. Johns Herz wurde schwer, und er wünschte aufzuhören. Aber Rodrigo schalt ihn nicht; er brachte den Ball zu seinen Füßen zurück, immer und immer wieder, wie die Gezeit zum Ufer zurückkehrt. Endlich lernte John, den Ball nah zu halten, und der Wind wurde sanfter, als wäre er zufrieden.\n\nSo lehrt die Geschichte: Stärke wird mit Geduld gelehrt, und Geduld wird durch Liebe gelernt."
           }
         }
       },

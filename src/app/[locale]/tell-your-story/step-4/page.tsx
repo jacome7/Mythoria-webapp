@@ -40,6 +40,7 @@ function Step4Page() {
   const params = useParams() as { locale?: string } | null;
   // useParams can be null during hydration; guard and provide a safe fallback
   const locale = params?.locale && typeof params.locale === 'string' ? params.locale : 'en-US';
+  const defaultPersona = LiteraryPersona.CLASSIC_NOVELIST;
   const editStoryId = searchParams?.get('edit');
   const tStoryStepsStep4 = useTranslations('StorySteps.step4');
   const [loading, setLoading] = useState(true);
@@ -53,7 +54,7 @@ function Step4Page() {
   );
   const [novelStyle, setNovelStyle] = useState<NovelStyle | ''>('');
   const [graphicalStyle, setGraphicalStyle] = useState<GraphicalStyle | ''>('');
-  const [literaryPersona, setLiteraryPersona] = useState<LiteraryPersona | ''>('');
+  const [literaryPersona, setLiteraryPersona] = useState<LiteraryPersona | ''>(defaultPersona);
   const [plotDescription, setPlotDescription] = useState('');
   const [additionalRequests, setAdditionalRequests] = useState('');
   const [imageGenerationInstructions, setImageGenerationInstructions] = useState('');
@@ -68,6 +69,7 @@ function Step4Page() {
   // Dropdown state
   const [showGraphicalStyleDropdown, setShowGraphicalStyleDropdown] = useState(false);
   const [showLiteraryPersonaDropdown, setShowLiteraryPersonaDropdown] = useState(false);
+  const [showPersonaMetaInfo, setShowPersonaMetaInfo] = useState(false);
 
   // Language options from translation
   const languageOptions = tStoryStepsStep4.raw('languageOptions') as Array<{
@@ -80,20 +82,75 @@ function Step4Page() {
         helper?: string;
         placeholder?: string;
         autoSelected?: string;
+        sampleLabel?: string;
+        metaLabels?: {
+          pov?: string;
+          tone?: string;
+          rhythm?: string;
+          vocabulary?: string;
+        };
+        metaInfo?: {
+          title?: string;
+          description?: string;
+          trigger?: string;
+          items?: Record<
+            'pov' | 'tone' | 'rhythm' | 'vocabulary',
+            {
+              label?: string;
+              description?: string;
+            }
+          >;
+        };
         options?: Record<
           LiteraryPersona,
           {
             name?: string;
             description?: string;
+            sample?: string;
           }
         >;
       }
     | undefined;
 
-  const literaryPersonaOptions = getAllLiteraryPersonas().map((value) => ({
+  const personaMetaLabels = {
+    pov: literaryPersonaMessages?.metaLabels?.pov || 'POV',
+    tone: literaryPersonaMessages?.metaLabels?.tone || 'Tone',
+    rhythm: literaryPersonaMessages?.metaLabels?.rhythm || 'Rhythm',
+    vocabulary: literaryPersonaMessages?.metaLabels?.vocabulary || 'Vocabulary',
+  };
+  const personaMetaInfo = literaryPersonaMessages?.metaInfo;
+  const personaMetaInfoItems = ['pov', 'tone', 'rhythm', 'vocabulary'] as const;
+  const defaultPersonaMetaInfoDescriptions: Record<(typeof personaMetaInfoItems)[number], string> = {
+    pov: 'Narrator perspective. 1st = I, 2nd = you, 3rd-limited = one character view, 3rd-omniscient = everyone.',
+    tone: 'Emotional energy. 1 is calm/neutral, 5 is high-intensity or dramatic.',
+    rhythm: 'Sentence pace. 1 is slow and flowing, 5 is fast and punchy.',
+    vocabulary: 'Word complexity. 1 is simple everyday words, 5 is richer, more advanced language.',
+  };
+  const personaSampleLabel = literaryPersonaMessages?.sampleLabel || 'Sample';
+
+  const preferredPersonaOrder: LiteraryPersona[] = [
+    LiteraryPersona.CLASSIC_NOVELIST,
+    LiteraryPersona.STORYTELLER,
+    LiteraryPersona.ADVENTUROUS_NARRATOR,
+    LiteraryPersona.WHIMSICAL_POET,
+    LiteraryPersona.INSTITUTIONAL_CHRONICLER,
+    LiteraryPersona.FUN_REPORTER,
+    LiteraryPersona.FRIENDLY_EDUCATOR,
+    LiteraryPersona.NOIR_INVESTIGATOR,
+    LiteraryPersona.SCIFI_ANALYST,
+    LiteraryPersona.PUB_BUDDY_NARRATOR,
+  ];
+
+  const orderedLiteraryPersonas = [
+    ...preferredPersonaOrder,
+    ...getAllLiteraryPersonas().filter((value) => !preferredPersonaOrder.includes(value)),
+  ];
+
+  const literaryPersonaOptions = orderedLiteraryPersonas.map((value) => ({
     value,
     name: literaryPersonaMessages?.options?.[value]?.name || value,
     description: literaryPersonaMessages?.options?.[value]?.description || '',
+    sample: literaryPersonaMessages?.options?.[value]?.sample || '',
     metadata: LiteraryPersonaMetadata[value],
   }));
 
@@ -208,7 +265,7 @@ function Step4Page() {
         setTargetAudience(story.targetAudience || '');
         setNovelStyle(story.novelStyle || '');
         setGraphicalStyle(story.graphicalStyle || '');
-        setLiteraryPersona((story.literaryPersona as LiteraryPersona | null) || '');
+        setLiteraryPersona((story.literaryPersona as LiteraryPersona | null) || defaultPersona);
         setPlotDescription(story.plotDescription || '');
         setAdditionalRequests(story.additionalRequests || '');
         setImageGenerationInstructions(story.imageGenerationInstructions || '');
@@ -232,7 +289,7 @@ function Step4Page() {
         setLoading(false);
       }
     },
-    [getChapterCountForAudience, locale, tStoryStepsStep4],
+    [getChapterCountForAudience, locale, tStoryStepsStep4, defaultPersona],
   );
 
   useEffect(() => {
@@ -284,7 +341,7 @@ function Step4Page() {
           targetAudience: targetAudience || null,
           novelStyle: novelStyle || null,
           graphicalStyle: graphicalStyle || null,
-          literaryPersona: literaryPersona || null,
+          literaryPersona: literaryPersona || defaultPersona,
           plotDescription: plotDescription.trim() || null,
           additionalRequests: additionalRequests.trim() || null,
           imageGenerationInstructions: imageGenerationInstructions.trim() || null,
@@ -305,7 +362,7 @@ function Step4Page() {
         target_audience: targetAudience || undefined,
         novel_style: novelStyle || undefined,
         graphical_style: graphicalStyle || undefined,
-        literary_persona: literaryPersona || undefined,
+        literary_persona: literaryPersona || defaultPersona,
         chapter_count: chapterCount,
         has_plot_description: !!plotDescription.trim(),
         has_additional_requests: !!additionalRequests.trim(),
@@ -753,7 +810,7 @@ function Step4Page() {
                 {/* Literary Persona Selector */}
                 {showLiteraryPersonaDropdown && (
                   <div className="modal modal-open">
-                    <div className="modal-box max-w-4xl h-3/4 max-h-screen">
+                    <div className="modal-box w-[calc(100%-0.75rem)] sm:max-w-4xl sm:w-auto h-3/4 max-h-screen px-4 sm:px-6">
                       <div className="flex justify-between items-center mb-4">
                         <h3 className="font-bold text-lg">
                           {literaryPersonaMessages?.label ||
@@ -776,10 +833,10 @@ function Step4Page() {
                         {literaryPersonaOptions.map((option) => (
                           <div
                             key={option.value}
-                            className={`card bg-base-100 shadow-sm hover:shadow-lg transition-shadow cursor-pointer border ${
+                            className={`card bg-base-100 shadow-sm hover:shadow-lg transition-shadow cursor-pointer ${
                               literaryPersona === option.value
-                                ? 'border-primary'
-                                : 'border-transparent'
+                                ? 'border-2 border-primary'
+                                : 'border border-transparent'
                             }`}
                             onClick={() => {
                               setLiteraryPersona(option.value);
@@ -795,20 +852,59 @@ function Step4Page() {
                             tabIndex={0}
                           >
                             <div className="card-body p-4 gap-3">
-                              <div className="flex items-start justify-between gap-3">
-                                <div>
+                              <div className="flex items-start gap-3">
+                                <div className="w-full">
                                   <h4 className="card-title text-base">{option.name}</h4>
                                   {option.description && (
                                     <p className="text-sm text-gray-600 mt-1">
                                       {option.description}
                                     </p>
                                   )}
-                                </div>
-                                {literaryPersona === option.value && (
-                                  <div className="badge badge-primary">
-                                    {tStoryStepsStep4('modal.selected')}
+                                  <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-gray-700">
+                                    <div className="flex flex-wrap gap-2 flex-1">
+                                      <span className="badge badge-outline">
+                                        {personaMetaLabels.pov}: {option.metadata.pov}
+                                      </span>
+                                      <span className="badge badge-outline">
+                                        {personaMetaLabels.tone}: {option.metadata.tone}/5
+                                      </span>
+                                      <span className="badge badge-outline">
+                                        {personaMetaLabels.rhythm}: {option.metadata.rhythm}/5
+                                      </span>
+                                      <span className="badge badge-outline">
+                                        {personaMetaLabels.vocabulary}: {option.metadata.vocabulary}/5
+                                      </span>
+                                    </div>
+                                    <button
+                                      type="button"
+                                      className="btn btn-ghost btn-xs btn-circle border border-base-300"
+                                      aria-label={
+                                        personaMetaInfo?.trigger || 'Learn what these attributes mean'
+                                      }
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setShowPersonaMetaInfo(true);
+                                      }}
+                                      onKeyDown={(e) => {
+                                        e.stopPropagation();
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                          e.preventDefault();
+                                          setShowPersonaMetaInfo(true);
+                                        }
+                                      }}
+                                    >
+                                      i
+                                    </button>
                                   </div>
-                                )}
+                                  {option.sample && (
+                                    <div className="bg-base-200 rounded-md p-3 text-sm mt-3 whitespace-pre-wrap leading-relaxed">
+                                      <div className="text-xs font-semibold uppercase text-gray-500 tracking-wide">
+                                        {personaSampleLabel}
+                                      </div>
+                                      <p className="mt-1">{option.sample}</p>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -831,10 +927,62 @@ function Step4Page() {
                   </div>
                 )}
 
+                {showPersonaMetaInfo && (
+                  <div className="modal modal-open">
+                    <div className="modal-box w-[calc(100%-0.75rem)] sm:max-w-2xl sm:w-auto px-4 sm:px-6">
+                      <div className="flex justify-between items-start gap-3">
+                        <div>
+                          <h3 className="font-bold text-lg">
+                            {personaMetaInfo?.title || 'Narrator signals explained'}
+                          </h3>
+                          <p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">
+                            {personaMetaInfo?.description ||
+                              'These quick badges show the narrator point of view, tone, rhythm, and vocabulary level so you can pick the voice that fits your story.'}
+                          </p>
+                        </div>
+                        <button
+                          className="btn btn-sm btn-circle btn-ghost"
+                          onClick={() => setShowPersonaMetaInfo(false)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Escape') setShowPersonaMetaInfo(false);
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      <div className="mt-4 space-y-3">
+                        {personaMetaInfoItems.map((key) => {
+                          const item = personaMetaInfo?.items?.[key];
+                          const label = item?.label || personaMetaLabels[key];
+                          const description =
+                            item?.description || defaultPersonaMetaInfoDescriptions[key];
+
+                          return (
+                            <div key={key} className="rounded-lg bg-base-200 p-3">
+                              <div className="font-semibold text-sm">{label}</div>
+                              <p className="text-sm text-gray-700 mt-1 whitespace-pre-wrap">
+                                {description}
+                              </p>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div className="modal-action">
+                        <button className="btn" onClick={() => setShowPersonaMetaInfo(false)}>
+                          {tStoryStepsStep4('modal.close')}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="modal-backdrop" onClick={() => setShowPersonaMetaInfo(false)}></div>
+                  </div>
+                )}
+
                 {/* Graphical Style Custom Dropdown Gallery */}
                 {showGraphicalStyleDropdown && (
                   <div className="modal modal-open">
-                    <div className="modal-box max-w-4xl h-3/4 max-h-screen">
+                    <div className="modal-box w-[calc(100%-0.75rem)] sm:max-w-4xl sm:w-auto h-3/4 max-h-screen px-4 sm:px-6">
                       <div className="flex justify-between items-center mb-4">
                         <h3 className="font-bold text-lg">
                           {tStoryStepsStep4('fields.graphicStyle')}

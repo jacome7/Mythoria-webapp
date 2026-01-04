@@ -7,32 +7,32 @@
       "subtitle": "Só mais um instante para confirmar créditos e arrancar o workflow."
     },
     "errors": {
-      "loadFailed": "Não conseguimos carregar o pedido de impressão. Fecha e tenta de novo, por favor.",
-      "insufficientCredits": "Precisas de mais {shortfall} créditos para pedir este PDF.",
-      "authRequired": "Inicia sessão novamente para continuar.",
-      "generic": "Algo correu mal. Volta a tentar dentro de instantes.",
-      "workflowQueueFailed": "Não conseguimos colocar os ficheiros na fila de impressão. Os teus créditos foram devolvidos.",
+      "loadFailed": "Não conseguimos carregar o pedido de impressão. Feche e tente de novo, por favor.",
+      "insufficientCredits": "Precisa de mais {shortfall} créditos para pedir este PDF.",
+      "authRequired": "Inicie sessão novamente para continuar.",
+      "generic": "Algo correu mal. Volte a tentar dentro de instantes.",
+      "workflowQueueFailed": "Não conseguimos colocar os ficheiros na fila de impressão. Os seus créditos foram devolvidos.",
       "invalidEmails": "Há emails com formato estranho: {emails}."
     },
     "costSection": {
       "required": "Créditos necessários",
       "credits": "créditos",
-      "youHave": "Tens",
-      "needMore": "Precisas de mais alguns créditos?",
-      "needMoreDescription": "Adiciona {shortfall} créditos para avançar com o download."
+      "youHave": "Tem",
+      "needMore": "Precisa de mais alguns créditos?",
+      "needMoreDescription": "Adicione {shortfall} créditos para avançar com o download."
     },
     "emailSection": {
       "label": "Adicionar emails em CC",
       "optional": "Opcional",
       "placeholder": "amigo@example.com, livraria@example.com",
-      "helper": "Enviamos sempre os ficheiros para {email}. Acrescenta mais endereços para os colocar em CC.",
-      "multiHelper": "Separa os emails por vírgulas, espaços ou quebras de linha.",
-      "yourAccount": "o email da tua conta",
-      "accountMissing": "Não encontrámos o email da tua conta. Atualiza o perfil e tenta outra vez."
+      "helper": "Enviamos sempre os ficheiros para {email}. Acrescente mais endereços para os colocar em CC.",
+      "multiHelper": "Separe os emails por vírgulas, espaços ou quebras de linha.",
+      "yourAccount": "o email da sua conta",
+      "accountMissing": "Não encontrámos o email da sua conta. Atualize o perfil e tente outra vez."
     },
     "finePrint": {
-      "deduction": "Os créditos são deduzidos no momento em que colocas o PDF na fila.",
-      "support": "Se o email não chegar em poucos minutos, vê a pasta de spam. Se não estiver lá, manda-nos uma mensagem para <email>support@mythoria.pt</email>"
+      "deduction": "Os créditos são deduzidos no momento em que coloca o PDF na fila.",
+      "support": "Se o email não chegar em poucos minutos, veja a pasta de spam. Se não estiver lá, mande-nos uma mensagem para <email>support@mythoria.pt</email>"
     },
     "actions": {
       "buyCredits": "Comprar créditos",
@@ -46,8 +46,8 @@
       "description": "O pedido foi colocado na fila e vamos enviar os PDFs em breve.",
       "recipientsHeading": "Vamos enviar os links para:",
       "noRecipients": "Não encontrámos destinatários para este pedido.",
-      "spamNotice": "Se não receberes o email, verifica a pasta de Spam. Caso contrário,",
-      "contactUs": "contacta-nos e ajudamos-te"
+      "spamNotice": "Se não receber o email, verifique a pasta de Spam. Caso contrário,",
+      "contactUs": "contacte-nos e ajudamo-lo"
     }
   }
 }

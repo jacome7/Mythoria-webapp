@@ -63,7 +63,7 @@ export default function MyCharactersTable() {
 
   const handleCreateCharacter = async (characterData: Character) => {
     try {
-      const { photoDataUrl: _photoDataUrl, requestPhotoAnalysis: _requestPhotoAnalysis, ...characterBody } = characterData;
+      const { photoDataUrl, requestPhotoAnalysis, ...characterBody } = characterData;
       const response = await fetch('/api/characters', {
         method: 'POST',
         headers: {
@@ -119,18 +119,24 @@ export default function MyCharactersTable() {
             throw new Error(analysisResult.error || 'Failed to analyze photo');
           }
 
-          enrichedCharacter = { ...enrichedCharacter, physicalDescription: analysisResult.description };
+          enrichedCharacter = {
+            ...enrichedCharacter,
+            physicalDescription: analysisResult.description,
+          };
 
-          const descriptionUpdate = await fetch(`/api/characters/${enrichedCharacter.characterId}`, {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
+          const descriptionUpdate = await fetch(
+            `/api/characters/${enrichedCharacter.characterId}`,
+            {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                ...enrichedCharacter,
+                physicalDescription: analysisResult.description,
+              }),
             },
-            body: JSON.stringify({
-              ...enrichedCharacter,
-              physicalDescription: analysisResult.description,
-            }),
-          });
+          );
 
           if (descriptionUpdate.ok) {
             const updated = await descriptionUpdate.json();

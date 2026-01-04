@@ -1,41 +1,41 @@
 {
   "StorySteps": {
     "common": {
-      "stepProgress": "Passo {currentStep} de {totalSteps}",
+      "stepProgress": "Capítulo {currentStep} de {totalSteps}",
       "saving": "A guardar..."
     },
     "step1": {
       "unauthenticated": {
-        "title": "Ops! Parece que estás a tentar entrar no lounge dos autores!",
-        "description": "Embora apreciemos o teu entusiasmo pela narração, tens de iniciar sessão primeiro. Não te preocupes, é mais fácil do que convencer um dragão a partilhar o seu tesouro! 🐉",
+        "title": "Ups! Parece que está a tentar entrar no lounge dos autores!",
+        "description": "Embora apreciemos o seu entusiasmo pela narração, tem de iniciar sessão primeiro. Não se preocupe, é mais fácil do que convencer um dragão a partilhar o seu tesouro! 🐉",
         "signIn": "🔐 Iniciar Sessão",
         "signUp": "✨ Criar Conta de Autor"
       },
       "heading": "Capítulo 1 - O Autor",
-      "intro": "Bem-vindo, contador de histórias! Antes de mergulharmos na tua aventura mágica, vamos configurar a informação do autor para a tua história. Podes usar o teu próprio nome ou criar um nome de autor personalizado para este conto.",
+      "intro": "Bem-vindo, contador de histórias! Antes de mergulharmos na sua aventura mágica, vamos configurar a informação do autor para a sua história. Pode usar o seu próprio nome ou criar um nome de autor personalizado para este conto.",
       "fields": {
         "authorName": "Nome do Autor(es) *",
         "authorNameHelp": "Quem deve ser creditado como autor desta história?",
         "authorNamePlaceholder": "ex: André e Matilde",
         "dedication": "Mensagem de Dedicatória",
-        "dedicationPlaceholder": "Escreve uma mensagem de dedicatória personalizada para a primeira página do teu livro...",
-        "dedicationHelp": "Esta mensagem aparecerá na primeira página da tua história",
+        "dedicationPlaceholder": "Escreva uma mensagem de dedicatória personalizada para a primeira página do seu livro...",
+        "dedicationHelp": "Esta mensagem aparecerá na primeira página da sua história",
         "optional": "Opcional"
       },
       "messages": {
-        "loadingProfile": "A carregar o teu perfil de autor...",
-        "required": "Por favor, fornece um nome de autor para a tua história",
-        "saveFailed": "Falha ao guardar informação do autor. Tenta novamente.",
+        "loadingProfile": "A carregar o seu perfil de autor...",
+        "required": "Por favor, forneça um nome de autor para a sua história",
+        "saveFailed": "Falha ao guardar informação do autor. Tente novamente.",
         "fetchFailed": "Falha ao obter dados do utilizador",
-        "loadFailed": "Falha ao carregar a informação do utilizador. Tenta novamente."
+        "loadFailed": "Falha ao carregar a informação do utilizador. Tente novamente."
       }
     },
     "step2": {
       "heading": "Capítulo 2 - A História",
-      "intro": "Podes criar a tua história desenhando-a, gravando-a ou simplesmente escrevendo-a.",
-      "tellYourStoryLabel": "Conta a tua história...",
-      "textPlaceholder": "Deixa a tua imaginação voar! Partilha uma memória, aventura, os teus sonhos ou qualquer história que seja especial.",
-      "textHelp": "Escreve tanto ou tão pouco quanto quiseres. Podes sempre editar isto mais tarde!",
+      "intro": "Pode criar a sua história desenhando-a, gravando-a ou simplesmente escrevendo-a.",
+      "tellYourStoryLabel": "Conte a sua história...",
+      "textPlaceholder": "Deixe a sua imaginação voar! Partilhe uma memória, aventura, os seus sonhos ou qualquer história que seja especial.",
+      "textHelp": "Escreva tanto ou tão pouco quanto quiser. Pode sempre editar isto mais tarde!",
       "tabWrite": "Escrever",
       "tabImage": "Imagem",
       "tabRecord": "Gravar",
@@ -43,10 +43,10 @@
       "uploadImage": "Carregar Imagem",
       "recordVoice": "Gravar voz",
       "uploadAudio": "Carregar Áudio",
-      "imageHelp": "Desenha a tua história, tira-lhe uma foto ou carrega uma imagem existente que a represente.",
-      "audioHelp": "Grava a tua história diretamente ou carrega um ficheiro de áudio. Perfeito para quem prefere contar as suas histórias!",
-      "recordingHelp": "Conta a tua história! Fala claramente para o microfone.",
-      "reassurance": "Se escreveste texto ou carregaste uma imagem acima, os nossos Umpa Lumpas irão trabalhar arduamente para identificar as personagens, cenários e temas. Caso contrário, os próximos passos vão guiar-te na criação da tua história passo a passo.",
+      "imageHelp": "Desenhe a sua história, tire-lhe uma foto ou carregue uma imagem existente que a represente.",
+      "audioHelp": "Grave a sua história diretamente ou carregue um ficheiro de áudio. Perfeito para quem prefere contar as suas histórias!",
+      "recordingHelp": "Conte a sua história! Fale claramente para o microfone.",
+      "reassurance": "Se escreveu texto ou carregou uma imagem acima, os nossos Umpa Lumpas irão trabalhar arduamente para identificar as personagens, cenários e temas. Caso contrário, os próximos passos vão guiá-lo na criação da sua história passo a passo.",
       "processing": "A processar com IA...",
       "next": "Seguinte",
       "buttons": {
@@ -55,25 +55,25 @@
       },
       "writingTips": [
         {
-          "text": "Onde se desenrola a tua história? Descreve o mundo - é um reino mágico, uma cidade acolhedora ou algum lugar além da imaginação?"
+          "text": "Onde se desenrola a sua história? Descreva o mundo - é um reino mágico, uma cidade acolhedora ou algum lugar além da imaginação?"
         },
         {
           "text": "Quem são as personagens principais? O que as torna especiais ou únicas? Quais são os seus sonhos e medos?"
         },
         {
-          "text": "Esboça o enredo básico da tua história."
+          "text": "Esboce o enredo básico da sua história."
         },
         {
-          "text": "Simplesmente escreve o que está no teu coração."
+          "text": "Simplesmente escreva o que está no seu coração."
         },
         {
-          "text": "Escreve sobre uma memória de infância ou um evento futuro!"
+          "text": "Escreva sobre uma memória de infância ou um evento futuro!"
         },
         {
-          "text": "O que querem as tuas personagens alcançar? Dá-lhes um objetivo claro para trabalharem."
+          "text": "O que querem as suas personagens alcançar? Dê-lhes um objetivo claro para trabalharem."
         },
         {
-          "text": "O que torna a tua história única? Adiciona elementos especiais que só existem no teu mundo!"
+          "text": "O que torna a sua história única? Adicione elementos especiais que só existem no seu mundo!"
         }
       ],
       "badgeLabels": {
@@ -81,23 +81,23 @@
         "image": "imagem",
         "images": "imagens"
       },
-      "imageGalleryTitle": "As Tuas Imagens ({count}/3)",
+      "imageGalleryTitle": "As suas Imagens ({count}/3)",
       "photoTips": {
         "title": "📸 Dicas de Fotografia",
         "tips": [
-          "Tira fotos de desenhos, cenas ou notas escritas",
-          "Podes adicionar até 3 imagens para contar a tua história",
-          "A nossa IA vai analisar as imagens para ajudar a criar a tua história",
-          "Combina fotos com texto ou áudio para uma história mais rica"
+          "Tire fotos de desenhos, cenas ou notas escritas",
+          "Pode adicionar até 3 imagens para contar a sua história",
+          "A nossa IA vai analisar as imagens para ajudar a criar a sua história",
+          "Combine fotos com texto ou áudio para uma história mais rica"
         ]
       },
       "recordingTips": {
         "title": "Dicas de Gravação",
         "tips": [
-          "Fala claramente e a um ritmo confortável",
-          "Descreve a tua história como se a contasses a um amigo",
-          "Inclui detalhes sobre personagens, cenários e eventos",
-          "Não te preocupes em ser perfeito - apenas conta a tua história!"
+          "Fale claramente e a um ritmo confortável",
+          "Descreva a sua história como se a contasse a um amigo",
+          "Inclua detalhes sobre personagens, cenários e eventos",
+          "Não se preocupe em ser perfeito - apenas conte a sua história!"
         ]
       },
       "writingTipsTitle": "Dicas de Escrita",
@@ -109,24 +109,24 @@
         "recording": "A gravar..."
       },
       "audioSupport": {
-        "notSupported": "O teu navegador não suporta o elemento de áudio."
+        "notSupported": "O seu navegador não suporta o elemento de áudio."
       },
       "alerts": {
         "uploadError": "Falha ao carregar ficheiro. Por favor, tente novamente.",
         "recordingError": "Falha ao iniciar gravação. Por favor, verifique as permissões do microfone.",
         "processingError": "Falha ao processar a sua história. Por favor, tente novamente.",
-        "cameraPermissionError": "Permissão de câmara negada. Por favor permita o acesso à câmara para tirar fotografias.",
-        "microphonePermissionError": "Permissão de microfone negada. Por favor permita o acesso ao microfone para gravar áudio.",
+        "cameraPermissionError": "Permissão de câmara negada. Por favor, permita o acesso à câmara para tirar fotografias.",
+        "microphonePermissionError": "Permissão de microfone negada. Por favor, permita o acesso ao microfone para gravar áudio.",
         "analyzeImageRequest": "Analise a imagem e descreva o que vê...",
-        "genAIError": "Pedido GenAI falhou. Por favor tente novamente.",
-        "cameraIssue": "Problema no acesso à câmara. Por favor verifique as permissões da câmara.",
-        "microphoneIssue": "Problema no acesso ao microfone. Por favor verifique as permissões do microfone.",
-        "failedToCreateStory": "Falha ao criar história: {errorMessage}. Por favor tente novamente."
+        "genAIError": "Pedido GenAI falhou. Por favor, tente novamente.",
+        "cameraIssue": "Problema no acesso à câmara. Por favor, verifique as permissões da câmara.",
+        "microphoneIssue": "Problema no acesso ao microfone. Por favor, verifique as permissões do microfone.",
+        "failedToCreateStory": "Falha ao criar história: {errorMessage}. Por favor, tente novamente."
       },
       "loadingModal": {
-        "title": "✨ A Criar a Tua História",
-        "message": "Os nossos Oompa Loompas estão a trabalhar arduamente para preparar a tua história! Isto pode demorar um momento...",
-        "pleaseWait": "Por favor aguarda enquanto fazemos a nossa magia! ✨"
+        "title": "✨ A Criar a sua História",
+        "message": "Os nossos Oompa Loompas estão a trabalhar arduamente para preparar a sua história! Isto pode demorar um momento...",
+        "pleaseWait": "Por favor, aguarde enquanto fazemos a nossa magia! ✨"
       },
       "errors": {
         "failedGetUser": "Falha ao obter informação do utilizador.",
@@ -134,8 +134,8 @@
         "unknown": "Ocorreu um erro desconhecido."
       },
       "characterSelection": {
-        "includeExistingTitle": "Incluir as tuas personagens",
-        "noneSelected": "Seleciona personagens para incluir na tua história",
+        "includeExistingTitle": "Incluir as suas personagens",
+        "noneSelected": "Selecione personagens para incluir na sua história",
         "selectedCount": "{count, plural, =1 {# personagem selecionada} other {# personagens selecionadas}}",
         "selectAll": "Selecionar todas ({count} personagens)",
         "loading": "A carregar personagens..."
@@ -143,102 +143,163 @@
     },
     "step3": {
       "heading": "Capítulo 3 - As Personagens",
-      "intro": "Quem são os heróis, amigos e criaturas mágicas da tua história? Cria personagens que darão vida à tua aventura!",
+      "intro": "Quem são os heróis, amigos e criaturas mágicas da sua história? Crie personagens que darão vida à sua aventura!",
       "addCharacter": "➕ Adicionar Personagem",
-      "chooseMethod": "Escolhe como adicionar uma personagem:",
+      "chooseMethod": "Escolha como adicionar uma personagem:",
       "createNew": "✨ Criar Nova Personagem",
       "useExisting": "📚 Usar Personagem Existente",
-      "orChooseExisting": "Ou escolhe das tuas personagens existentes:",
+      "orChooseExisting": "Ou escolha das suas personagens existentes:",
       "cancel": "Cancelar",
-      "loadingCharacters": "A carregar as tuas personagens...",
-      "readyTitle": "Preparado para conhecer as tuas personagens?",
-      "readyDescription": "Toda a grande história precisa de personagens incríveis! Clica em \"Adicionar Personagem\" para criar novos heróis ou adicionar personagens existentes da tua biblioteca a esta história.",
-      "greatWork": "Bom trabalho! Criaste {count, plural, =1 {# personagem} other {# personagens}}.",
-      "youCanAlways": "Podes sempre adicionar mais personagens mais tarde ou avançar para o próximo capítulo para desenvolver ainda mais a tua história.",
+      "loadingCharacters": "A carregar as suas personagens...",
+      "readyTitle": "Preparado para conhecer as suas personagens?",
+      "readyDescription": "Toda a grande história precisa de personagens incríveis! Clique em \"Adicionar Personagem\" para criar novos heróis ou adicionar personagens existentes da sua biblioteca a esta história.",
+      "greatWork": "Bom trabalho! Criou {count, plural, =1 {# personagem} other {# personagens}}.",
+      "youCanAlways": "Pode sempre adicionar mais personagens mais tarde ou avançar para o próximo capítulo para desenvolver ainda mais a sua história.",
       "continuing": "A continuar...",
       "progress": {
-        "stepLabel": "Passo {currentStep} de {totalSteps}"
+        "stepLabel": "Capítulo {currentStep} de {totalSteps}"
       },
       "badges": {
         "editingDraft": "A Editar Rascunho da História"
       },
       "navigation": {
-        "backToMyStories": "Voltar às Minhas Histórias"
+        "backToMyStories": "Voltar às minhas Histórias"
       },
       "alerts": {
-        "failedToLoadStoryCharacters": "Falha ao carregar personagens da história. Por favor tente novamente.",
-        "characterLoadError": "Erro ao carregar personagens. Por favor atualize a página.",
-        "failedToLoadStoryData": "Falha ao carregar dados da história. Por favor tente novamente.",
-        "failedToLoadStoryForEditing": "Falha ao carregar história para edição. Por favor tente novamente.",
-        "failedToAddCharacter": "Falha ao adicionar personagem à história. Por favor tente novamente.",
-        "failedToContinue": "Falha ao continuar. Por favor tente novamente."
+        "failedToLoadStoryCharacters": "Falha ao carregar personagens da história. Por favor, tente novamente.",
+        "characterLoadError": "Erro ao carregar personagens. Por favor, atualize a página.",
+        "failedToLoadStoryData": "Falha ao carregar dados da história. Por favor, tente novamente.",
+        "failedToLoadStoryForEditing": "Falha ao carregar história para edição. Por favor, tente novamente.",
+        "failedToAddCharacter": "Falha ao adicionar personagem à história. Por favor, tente novamente.",
+        "failedToContinue": "Falha ao continuar. Por favor, tente novamente."
       },
       "next": "Seguinte"
     },
     "step4": {
       "heading": "Capítulo 4 - O Enredo",
-      "intro": "Vamos agora definir os elementos centrais da tua história. Fala-nos do mundo que queres criar, para quem escreves e como imaginas a aparência da tua história.",
+      "intro": "Vamos agora definir os elementos centrais da sua história. Fale-nos do mundo que quer criar, para quem escreve e como imagina a aparência da sua história.",
       "fields": {
         "title": "Título do Livro *",
-        "titleHelp": "Escolhe um título cativante para a tua história",
+        "titleHelp": "Escolha um título cativante para a sua história",
         "place": "Cenário/Local",
-        "placeHelp": "Onde decorre a tua história? (real ou imaginário)",
+        "placeHelp": "Onde decorre a sua história? (real ou imaginário)",
         "audience": "Público-Alvo",
         "audienceHelp": "Para quem é escrita esta história?",
         "novelStyle": "Estilo do Romance",
-        "novelStyleHelp": "Que género/estilo deve ter a tua história?",
+        "novelStyleHelp": "Que género/estilo deve ter a sua história?",
         "graphicStyle": "Estilo Gráfico",
-        "graphicStyleHelp": "Escolhe o estilo artístico das ilustrações da tua história",
+        "graphicStyleHelp": "Escolha o estilo artístico das ilustrações da sua história",
         "literaryPersona": "Persona Narrativa",
-        "literaryPersonaHelp": "Escolhe a vibe de narrador que queres que a IA imite.",
+        "literaryPersonaHelp": "Escolha a vibe de narrador que quer que a IA imite.",
         "imageInstructions": "Instruções de Imagem Personalizadas",
-        "imageInstructionsHelp": "Fornece instruções específicas para personalizar as imagens geradas por IA. Descreve a aparência das personagens, preferências de estilo visual ou quaisquer elementos especiais que queiras incluir.",
+        "imageInstructionsHelp": "Forneça instruções específicas para personalizar as imagens geradas por IA. Descreva a aparência das personagens, preferências de estilo visual ou quaisquer elementos especiais que queira incluir.",
         "bookSize": "Tamanho do Livro",
-        "bookSizeHelp": "Número de capítulos/parágrafos na tua história",
+        "bookSizeHelp": "Número de capítulos/parágrafos na sua história",
         "storyLanguage": "Idioma da História",
-        "storyLanguageHelp": "O idioma do conteúdo da tua história. Foi detetado a partir da tua entrada ou podes alterá-lo aqui.",
+        "storyLanguageHelp": "O idioma do conteúdo da sua história. Foi detetado a partir da sua entrada ou pode alterá-lo aqui.",
         "outline": "Esboço da História",
-        "outlineHelp": "Descreve o enredo, as personagens e os acontecimentos principais da tua história",
+        "outlineHelp": "Descreva o enredo, as personagens e os acontecimentos principais da sua história",
         "additional": "Pedidos Adicionais",
-        "additionalHelp": "Algum pedido especial ou elementos específicos que queiras incluir"
+        "additionalHelp": "Algum pedido especial ou elementos específicos que queira incluir"
       },
       "placeholders": {
         "selectAudience": "Selecionar público-alvo...",
         "selectNovelStyle": "Selecionar estilo de romance...",
         "selectGraphicStyle": "Selecionar estilo gráfico...",
         "selectLiteraryPersona": "Selecionar persona literária...",
-        "imageInstructions": "Descreve como gostarias que as personagens aparentassem, elementos visuais específicos, cores ou detalhes artísticos para as imagens da tua história...",
+        "imageInstructions": "Descreva como gostaria que as personagens aparentassem, elementos visuais específicos, cores ou detalhes artísticos para as imagens da sua história...",
         "outlinePlaceholder": "Descreva todos os detalhes que gostaria na história...",
-        "storyLanguageHelp": "A tua história será escrita e gerada no idioma selecionado."
+        "storyLanguageHelp": "A sua história será escrita e gerada no idioma selecionado."
       },
       "literaryPersona": {
         "label": "Persona Narrativa",
-        "helper": "Escolhe o tipo de narrador para orientar o estilo.",
+        "helper": "Por padrão usamos o narrador clássico equilibrado. Troque se quiser outra vibe.",
         "placeholder": "Selecionar persona literária...",
+        "sampleLabel": "Exemplo de estilo",
+        "metaLabels": {
+          "pov": "POV",
+          "tone": "Tom",
+          "rhythm": "Ritmo",
+          "vocabulary": "Vocabulário"
+        },
+        "metaInfo": {
+          "title": "Como ler estes selos",
+          "description": "POV, Tom, Ritmo e Vocabulário descrevem como o narrador fala. Usa-os para escolher a voz que encaixa na tua cena.",
+          "trigger": "O que isto significa?",
+          "items": {
+            "pov": {
+              "label": "POV (Ponto de Vista)",
+              "description": "Quem conta a história. 1ª = eu, 2ª = tu, 3ª-limitada = olhos de uma personagem, 3ª-omnisciente = todos."
+            },
+            "tone": {
+              "label": "Tom",
+              "description": "Energia emocional do calmo (1) ao intenso (5)."
+            },
+            "rhythm": {
+              "label": "Ritmo",
+              "description": "Ritmo das frases do lento/fluido (1) ao rápido/curto (5)."
+            },
+            "vocabulary": {
+              "label": "Vocabulário",
+              "description": "Complexidade das palavras do simples do dia a dia (1) ao mais rico e elaborado (5)."
+            }
+          }
+        },
         "options": {
           "storyteller": {
             "name": "O Contador de Histórias",
-            "description": "Voz quente e empática, como um avô a partilhar memórias; foca-se em sentimentos e pequenas lições."
+            "description": "Voz quente e empática, como um avô a partilhar memórias; foca-se em sentimentos e pequenas lições.",
+            "sample": "Naquela tarde de domingo, o pequeno campo junto ao mar parecia um refúgio seguro, cosido pelo vento salgado e risos. O Rodrigo pôs a bola à frente do João e agachou-se, para que a sua voz encontrasse a altura do irmão. \"Primeiro, sê gentil\", disse ele, tocando na bola como se fosse um animalzinho assustado. O João tentou, mas a bola fugiu-lhe do pé. O seu rosto fechou-se, como acontece quando o orgulho é maior que o erro. O Rodrigo sorriu suavemente. \"É normal\", disse-lhe. \"Vá, outra vez.\" As ondas mantinham o seu ritmo constante lá atrás e, a cada nova tentativa, o toque do João ficava mais calmo. Quando a bola finalmente ficou perto, o João olhou para cima a brilhar, e os olhos do Rodrigo disseram o resto: a paciência é o amor com tempo lá dentro."
           },
           "adventurous-narrator": {
             "name": "O Narrador Aventureiro",
-            "description": "Transforma o quotidiano em épico com energia divertida em 2.ª pessoa e toques de fantasia."
+            "description": "Transforma o quotidiano em épico com energia divertida em 2.ª pessoa e toques de fantasia.",
+            "sample": "Tarde de domingo: HORA DA MISSÃO. Entras no pequeno campo de futebol perto do oceano, no norte de Portugal, e levas logo com o Boss Vento do Mar, nível: salgado. O Rodrigo, o lendário treinador e irmão mais velho, larga a bola aos pés do João como se fosse um artefacto sagrado. \"Missão João, Fase Um: toques pequeninos!\" diz o Rodrigo. O João toca na bola. A bola dispara como se tentasse fugir para a praia. \"EI! VOLTA AQUI!\" grita o João. O Rodrigo ri-se. \"Boa. Agora persegue-a. Os heróis perseguem sempre o seu primeiro erro.\" Reinicias. O João tenta de novo, mais suave desta vez. \"Cabeça levantada!\" avisa o Rodrigo. O João olha para cima e, BUM, de repente a bola obedece. As ondas rugem ao fundo como uma multidão no estádio. Nível superado. Próxima missão: o lendário Passe do Destino."
           },
           "fun-reporter": {
             "name": "O Repórter Divertido",
-            "description": "Crónica leve e espirituosa das peripécias do grupo, com ritmo rápido e citações."
+            "description": "Crónica leve e espirituosa das peripécias do grupo, com ritmo rápido e citações.",
+            "sample": "16:42: Começa o treino de domingo num pequeno campo perto do oceano (Norte de Portugal). Boletim meteorológico: o vento está a dar tudo.\n\nRodrigo (Treinador/Irmão Mais Velho) pousa a bola com a seriedade de uma final da Liga dos Campeões. João (Estagiário/Irmão Mais Novo) acena como se estivesse a assinar contrato.\n\nCitação do momento:\n- Rodrigo: \"Toques curtos. Não lutes contra a bola.\"\n- João (depois da bola fugir): \"Ela não me ouve!\"\n\n16:45: Primeira tentativa de drible. Resultado: a bola liberta-se e faz uma retirada tática em direção à brisa marítima. O João corre atrás dela com determinação máxima e coordenação média.\n\n16:49: Ajuste técnico. O Rodrigo demonstra: pé relaxado, cabeça levantada. O João tenta de novo. Nível de sucesso: visivelmente melhor.\n\n17:03: Marco confirmado: O João mantém a bola perto durante três segundos inteiros, o que é basicamente uma vida em termos de treino entre irmãos. O Rodrigo sorri. O João celebra como se tivesse acabado de marcar contra o próprio oceano."
           },
           "friendly-educator": {
             "name": "O Educador Amigável",
-            "description": "Voz gentil e clara que ensina com perguntas simples e exemplos concretos."
+            "description": "Voz gentil e clara que ensina com perguntas simples e exemplos concretos.",
+            "sample": "Vamos aprender futebol com o Rodrigo e o João numa tarde de domingo, perto do oceano no norte de Portugal. Consegues ouvir as ondas? Esse som é como um metrónomo. Ajuda-nos a manter um ritmo constante.\n\nO Rodrigo diz: \"João, tenta um toque suave.\" O que é um toque suave? Significa tocar na bola com gentileza para que ela fique perto dos teus pés, como se estivesses a passear um cachorrinho com trela curta.\n\nAgora tenta tu: quando tocas na bola, para onde vão os teus olhos? Para baixo, para a bola... ou para cima, para ver o espaço? O Rodrigo ensina: \"Olha para cima, depois toca.\"\n\nMini jogo: consegue o João dar três toques seguidos sem perder a bola para o vento? Um... dois... ups! Rolou para longe. Não faz mal. Os erros fazem parte da aprendizagem.\n\nO Rodrigo sorri e diz: \"Recomeçamos.\" O João tenta de novo. Um... dois... três! Boa! Isso significa que o João está a controlar a bola, e não a persegui-la."
           },
           "institutional-chronicler": {
             "name": "O Cronista Institucional",
-            "description": "Tom biográfico formal e preciso que mantém tudo factual e organizado."
+            "description": "Tom biográfico formal e preciso que mantém tudo factual e organizado.",
+            "sample": "Numa tarde de domingo, o Rodrigo conduziu uma sessão informal de treino de futebol para o seu irmão mais novo, o João, num pequeno campo costeiro no norte de Portugal. A atividade consistiu em exercícios introdutórios de controlo de bola (dribles curtos com força reduzida), práticas de varrimento visual (orientação da cabeça levantada antes do contacto) e ciclos repetidos de reinício após perda de controlo. A sessão decorreu sob vento marítimo persistente, com a rebentação do oceano audível na proximidade. O treino concluiu-se com uma melhoria observável na capacidade do João em manter o controlo próximo da bola ao longo de toques consecutivos, apoiado por instruções consistentes e um ritmo calmo por parte do Rodrigo."
           },
           "pub-buddy-narrator": {
             "name": "O Amigo do Bar",
-            "description": "Narrativa super informal e cheia de piadas, como um amigo a recordar a noite com bebidas."
+            "description": "Narrativa super informal e cheia de piadas, como um amigo a recordar a noite com bebidas.",
+            "sample": "Mano, era uma tarde de domingo, naquele campinho minúsculo ao pé do mar lá no norte, e juro que o vento estava a fazer defesa contra o João. O Rodrigo estava lá todo sério, tipo selecionador nacional, larga a bola na relva e diz: \"Vá, toques curtos. Pé leve.\"\n\nO João avança... dá um toque... e a bola dispara imediatamente. DISPARA. Como se tivesse bilhete só de ida direto para a praia. O miúdo olha para o Rodrigo tipo \"Ei, isto está estragado\", e o Rodrigo só diz \"Népia, campeão. Outra vez.\"\n\nEntão ele vai outra vez. E outra vez. E a certa altura o João começa a acertar naqueles toques limpinhos, cabeça levantada e tudo, e eu a pensar: \"Ok, é isto. Daqui a nada está a assinar pelo Porto.\" O Rodrigo só se ri, meio orgulhoso, meio a tentar disfarçar. Clássico irmão mais velho."
+          },
+          "classic-novelist": {
+            "name": "O Romancista Clássico",
+            "description": "Narrador equilibrado e imersivo que mostra em vez de apenas contar, encaixa na maioria das histórias.",
+            "sample": "Na tarde de domingo, o pequeno campo de futebol junto ao mar parecia um mundo próprio, cercado pelo vento salgado e pelo sussurro distante das ondas. O Rodrigo colocou a bola aos pés do João e esperou até que os ombros do irmão relaxassem. \"Mantém os olhos em cima\", disse o Rodrigo, não como uma ordem, mas mais como um segredo partilhado. O João assentiu, depois tentou um toque suave para a frente. A bola rolou um pouco longe demais. Ele franziu a testa. O Rodrigo não se precipitou. Deixou o erro assentar por um segundo, depois aproximou-se. \"Outra vez\", disse ele, e a sua voz carregava a paciência de quem tinha aprendido a mesma lição da maneira mais difícil. O João deu um toque mais pequeno desta vez, mais firme, e quando o Rodrigo sorriu, o sorriso do João chegou um batimento cardíaco depois, como se estivesse à espera de permissão."
+          },
+          "noir-investigator": {
+            "name": "O Investigador Noir",
+            "description": "Gritty e desconfiado, uma voz de detetive hardboiled a juntar pistas na sombra.",
+            "sample": "Tarde de domingo, norte de Portugal. Aquele tipo de luz que parece inocente até reparares no que esconde. O oceano estava perto, a respirar sal para o ar como se fosse dono daquilo tudo. O Rodrigo tinha o João num pequeno campo junto à água, a ensinar-lhe futebol como se fosse um negócio limpo. Nunca nada é. \"Toque suave\", disse o Rodrigo, tocando a bola para a frente. O João tentou. A bola escapou-lhe, rolando para longe como se tivesse sítio melhor para estar. O maxilar do João apertou. É assim que começa, pensei eu. Frustração. Dúvida. A crença lenta de que não foste feito para isto. O Rodrigo não gozou. Não o apressou. Apenas caminhou até lá e pousou a bola outra vez, mesmo sítio, mesma calma. \"O que é que viste?\", perguntou. O João piscou os olhos. \"A bola\", disse ele. O sorriso do Rodrigo não lhe chegou aos olhos. \"Não chega\", respondeu. As ondas continuavam a falar em fundo. Como testemunhas que se lembram de tudo."
+          },
+          "whimsical-poet": {
+            "name": "O Poeta Lírico",
+            "description": "Lírico, romântico e cheio de imagens, transforma cenas simples em momentos ternos.",
+            "sample": "Numa tarde de domingo, quando o norte de Portugal veste a sua luz oceânica como uma bênção, o Rodrigo e o pequeno João pisaram um campo modesto que parecia cosido entre a relva e o horizonte, e o mar, ali perto, exalava o seu hino infinito de sal e espuma como se marcasse o compasso. O Rodrigo colocou a bola com uma ternura geralmente reservada a coisas frágeis e, com o movimento mais gentil do pé, convidou-a a rolar, não como um objeto, mas como uma promessa. \"Olha para cima\", disse ao João, e as palavras eram simples, mas abriram uma janela dentro da concentração do rapaz, para que os seus olhos se erguessem do chão para o mundo vasto e brilhante de vento. O João tentou, tropeçou no toque, depois tentou de novo, e de novo, cada tentativa uma pequena maré a regressar, cada correção uma concha colocada na palma da mão. Quando finalmente a bola ficou perto dele, obediente e viva, o sorriso do João chegou como o sol a romper uma nuvem costeira suave, e o orgulho silencioso do Rodrigo pareceu, por um momento, como o próprio oceano: vasto, paciente e sempre a voltar."
+          },
+          "scifi-analyst": {
+            "name": "O Analista Sci-Fi",
+            "description": "Voz precisa e futurista que trata a vida como um registo de missão com humor seco.",
+            "sample": "ENTRADA DE REGISTO // Ciclo Local: Tarde de Domingo\nLocalização: Setor Costeiro, Norte de Portugal // Campo de Treino (Micro-Campo)\nObjetivo: Transferência de Protocolos de Controlo de Futebol da Unidade Rodrigo (Instrutor) para a Unidade João (Operador Júnior).\n\nVarrimento ambiental: aerossóis salinos sustentados; vetores de vento variáveis; fundo auditivo dominado por percussão de ondas oceânicas.\n\nProcedimento iniciado: Rodrigo implementa Esfera-1 (bola de futebol padrão). Demonstração: contacto de baixa força, sequência de drible de curto alcance.\nTRANSCRIÇÃO DE COMUNICAÇÕES:\nRodrigo: \"Cabeça levantada. Varrimento primeiro.\"\nJoão: \"Assim?\"\nRodrigo: \"Toque mais pequeno. Mantém-na perto.\"\n\nObservação: João exibe concentração elevada (tensão na testa; pestanejar reduzido). A tentativa inicial resulta em evento de separação da Esfera-1 (a bola viaja para além do raio de controlo ideal). Resposta de frustração detetada; Rodrigo contra-ataca com protocolo de repetição calma.\nResultado: Após múltiplas iterações, João atinge precisão de controlo e estabilidade de trajetória melhoradas. Probabilidade de aquisição contínua de competências (dada a paciência do Instrutor + reforço moral à beira-mar): 91%."
+          },
+          "folklore-traditionalist": {
+            "name": "O Guardião do Folclore",
+            "description": "Voz intemporal, de fábula, que fala com símbolos, presságios e lições suaves.",
+            "sample": "E assim aconteceu, numa tarde de domingo, que o Irmão Mais Velho Rodrigo levou o Pequeno, João, ao pequeno campo perto do grande oceano do norte. O vento ergueu-se como testemunha, e o mar falou na sua língua infinita. O Rodrigo colocou a bola na relva e disse: \"Primeiro: sê firme. Segundo: olha em frente. Terceiro: não temas o erro.\" O João obedeceu o melhor que pôde, mas a bola fugiu dele, pois a perícia não chega a quem tem pressa. O coração do João ficou pesado e ele quis parar. Mas o Rodrigo não o repreendeu; devolveu a bola aos seus pés, uma e outra vez, como a maré regressa à costa. Por fim, o João aprendeu a manter a bola perto, e o vento amainou, como se estivesse satisfeito.\n\nAssim ensina a lenda: a força ensina-se com paciência, e a paciência aprende-se através do amor."
           }
         }
       },
@@ -308,7 +369,7 @@
         "altText": "Amostra de {style}"
       },
       "progress": {
-        "stepLabel": "Passo {currentStep} de {totalSteps}"
+        "stepLabel": "Capítulo {currentStep} de {totalSteps}"
       },
       "errors": {
         "titleRequired": "O título é obrigatório antes de prosseguir para o próximo passo.",
@@ -318,45 +379,45 @@
         "noStoryFound": "Nenhuma história encontrada. Por favor, comece pelo passo 1.",
         "saveFailed": "Falha ao guardar detalhes da história",
         "saveFailedTryAgain": "Falha ao guardar detalhes da história. Por favor, tente novamente.",
-        "loadFailed": "Falha ao carregar informações da história. Por favor, tenta novamente."
+        "loadFailed": "Falha ao carregar informações da história. Por favor, tente novamente."
       },
       "saving": "A guardar...",
       "next": "Próximo"
     },
     "step5": {
       "heading": "Capítulo 5 - O Final",
-      "intro": "Escolhe como gostarias de receber a tua história. Podes selecionar vários formatos de entrega para desfrutares dela de diferentes maneiras.",
+      "intro": "Escolha como gostaria de receber a sua história. Pode selecionar vários formatos de entrega para desfrutar dela de diferentes maneiras.",
       "deliveryOptions": "Opções de Entrega",
       "creating": "A criar...",
       "insufficientCredits": "Créditos Insuficientes",
       "createStory": "Criar história",
       "buyMoreCredits": "Comprar Mais Créditos",
-      "buyMoreCreditsInfo": "A funcionalidade de compra de créditos chegará em breve! Fica atento às novidades.",
+      "buyMoreCreditsInfo": "A funcionalidade de compra de créditos chegará em breve! Fique atento às novidades.",
       "close": "Fechar",
       "loadingStoryData": "A carregar dados da história...",
-      "readyToGenerate": "Pronto para Gerar a Tua História!",
-      "aboutToStart": "Estamos prestes a começar a criar a tua história personalizada:",
+      "readyToGenerate": "Pronto para Gerar a sua História!",
+      "aboutToStart": "Estamos prestes a começar a criar a sua história personalizada:",
       "ebookGeneration": "📖 Geração de eBook",
       "cost": "Custo:",
-      "yourCredits": "Os Teus Créditos:",
+      "yourCredits": "Os seus Créditos:",
       "credits": "créditos",
       "insufficientCreditsTitle": "💳 Créditos Insuficientes",
-      "needMoreCredits": "Precisas de mais {count} créditos para gerar a tua história.",
+      "needMoreCredits": "Precisa de mais {count} créditos para gerar a sua história.",
       "getMoreCredits": "Obter Mais Créditos",
       "startingGeneration": "A Iniciar Geração da História...",
       "generateMyStory": "🚀 Gerar a Minha História",
-      "storyDataNotAvailable": "Dados da história não disponíveis. Tenta novamente.",
-      "stepProgress": "Passo {currentStep} de {totalSteps}",
+      "storyDataNotAvailable": "Dados da história não disponíveis. Tente novamente.",
+      "stepProgress": "Capítulo {currentStep} de {totalSteps}",
       "alerts": {
-        "failedToFetchStoryData": "Falha ao obter dados da história. Por favor tente novamente.",
-        "failedToFetchUserCredits": "Falha ao obter créditos do utilizador. Por favor tente novamente.",
-        "failedToFetchPricingData": "Falha ao obter dados de preços. Por favor tente novamente.",
-        "failedToDeductCredits": "Falha ao deduzir créditos. Por favor tente novamente.",
-        "dataFetchError": "Erro ao obter dados. Por favor verifique a sua ligação e tente novamente.",
-        "failedToLoadCreditInformation": "Falha ao carregar informação de créditos. Por favor tente novamente.",
-        "failedToLoadPricingInformation": "Falha ao carregar informação de preços. Por favor tente novamente.",
-        "insufficientCreditsError": "Tens créditos insuficientes. Compra mais créditos para continuares.",
-        "failedToCompleteStory": "Falha ao completar a história. Por favor tenta novamente."
+        "failedToFetchStoryData": "Falha ao obter dados da história. Por favor, tente novamente.",
+        "failedToFetchUserCredits": "Falha ao obter créditos do utilizador. Por favor, tente novamente.",
+        "failedToFetchPricingData": "Falha ao obter dados de preços. Por favor, tente novamente.",
+        "failedToDeductCredits": "Falha ao deduzir créditos. Por favor, tente novamente.",
+        "dataFetchError": "Erro ao obter dados. Por favor, verifique a sua ligação e tente novamente.",
+        "failedToLoadCreditInformation": "Falha ao carregar informação de créditos. Por favor, tente novamente.",
+        "failedToLoadPricingInformation": "Falha ao carregar informação de preços. Por favor, tente novamente.",
+        "insufficientCreditsError": "Tem créditos insuficientes. Compre mais créditos para continuar.",
+        "failedToCompleteStory": "Falha ao completar a história. Por favor, tente novamente."
       }
     }
   }

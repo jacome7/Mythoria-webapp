@@ -213,32 +213,93 @@
       },
       "literaryPersona": {
         "label": "Persona Narrativa",
-        "helper": "Elige el tipo de narrador para guiar el estilo.",
+        "helper": "Usamos por defecto nuestro narrador clásico equilibrado. Cambia si quieres otra vibra.",
         "placeholder": "Selecciona una persona literaria...",
+        "sampleLabel": "Estilo de muestra",
+        "metaLabels": {
+          "pov": "POV",
+          "tone": "Tono",
+          "rhythm": "Ritmo",
+          "vocabulary": "Vocabulario"
+        },
+        "metaInfo": {
+          "title": "Cómo leer estas insignias",
+          "description": "POV, Tono, Ritmo y Vocabulario describen cómo habla el narrador. Úsalos para elegir la voz que encaja con tu escena.",
+          "trigger": "¿Qué significan?",
+          "items": {
+            "pov": {
+              "label": "POV (Punto de vista)",
+              "description": "Quién narra la historia. 1ª = yo, 2ª = tú, 3ª-limitada = ojos de un personaje, 3ª-omnisciente = todos."
+            },
+            "tone": {
+              "label": "Tono",
+              "description": "Energía emocional de tranquilo (1) a intenso (5)."
+            },
+            "rhythm": {
+              "label": "Ritmo",
+              "description": "Velocidad de las frases de lento/fluido (1) a rápido/contundente (5)."
+            },
+            "vocabulary": {
+              "label": "Vocabulario",
+              "description": "Complejidad de palabras de simple y cotidiano (1) a más rico y avanzado (5)."
+            }
+          }
+        },
         "options": {
           "storyteller": {
             "name": "El Narrador de Historias",
-            "description": "Voz cálida y empática, como un abuelo contando recuerdos; prioriza emociones y moralejas suaves."
+            "description": "Voz cálida y empática, como un abuelo contando recuerdos; prioriza emociones y moralejas suaves.",
+            "sample": "Aquella tarde de domingo, el pequeño campo junto al mar parecía un refugio seguro, cosido por el viento salado y las risas. Rodrigo puso el balón frente a John y se agachó un poco para que su voz encontrara la altura de su hermano. \"Primero, sé suave\", dijo, tocando el balón como si fuera un animalito asustadizo. John lo intentó, pero el balón se le escapó del pie. Su cara se tensó, como pasa cuando el orgullo es más grande que el error. Rodrigo sonrió suavemente. \"Es normal\", le dijo. \"Venga, otra vez\". Las olas mantenían su ritmo constante detrás, y con cada nuevo intento, el toque de John se volvía más tranquilo. Cuando el balón finalmente se quedó cerca, John levantó la vista radiante, y los ojos de Rodrigo dijeron el resto: la paciencia es amor con tiempo dentro."
           },
           "adventurous-narrator": {
             "name": "El Narrador Aventurero",
-            "description": "Vuelve épicos los momentos cotidianos con energía juguetona en segunda persona y toques de fantasía."
+            "description": "Vuelve épicos los momentos cotidianos con energía juguetona en segunda persona y toques de fantasía.",
+            "sample": "Tarde de domingo: HORA DE LA MISIÓN. Entras en el pequeño campo de fútbol cerca del océano, en el norte de Portugal, y te golpea el Jefe Viento Marino, nivel: salado. Rodrigo, el legendario entrenador y hermano mayor, deja caer el balón a los pies de John como si fuera un artefacto sagrado. \"Misión John, Fase Uno: ¡toques pequeñitos!\", dice Rodrigo. John toca el balón. El balón sale disparado como si intentara escapar a la playa. \"¡EH! ¡VUELVE!\", grita John. Rodrigo se ríe. \"Bien. Ahora persíguelo. Los héroes siempre persiguen su primer error\". Reinicias. John lo intenta de nuevo, más suave esta vez. \"¡Cabeza arriba!\", avisa Rodrigo. John mira hacia arriba y, BOOM, de repente el balón obedece. Las olas rugen de fondo como una multitud en el estadio. Nivel superado. Próxima misión: el legendario Pase del Destino."
           },
           "fun-reporter": {
             "name": "El Reportero Divertido",
-            "description": "Crónica alegre y ocurrente de las andanzas del grupo, con ritmo ágil y muchas citas."
+            "description": "Crónica alegre y ocurrente de las andanzas del grupo, con ritmo ágil y muchas citas.",
+            "sample": "16:42: Comienza el entrenamiento de domingo en un pequeño campo cerca del océano (Norte de Portugal). Parte meteorológico: el viento está a tope.\n\nRodrigo (Entrenador/Hermano Mayor) coloca el balón con la seriedad de una final de Champions. John (Becario/Hermano Menor) asiente como si firmara un contrato.\n\nCita del momento:\n- Rodrigo: \"Toques cortos. No pelees con el balón\".\n- John (tras escaparse el balón): \"¡No me escucha!\"\n\n16:45: Primer intento de regate. Resultado: el balón se libera y hace una retirada táctica hacia la brisa marina. John corre tras él con determinación máxima y coordinación media.\n\n16:49: Ajuste técnico. Rodrigo demuestra: pie relajado, cabeza arriba. John lo intenta de nuevo. Nivel de éxito: visiblemente mejor.\n\n17:03: Hito confirmado: John mantiene el balón cerca durante tres segundos enteros, lo que es básicamente una vida en términos de entrenamiento entre hermanos. Rodrigo sonríe. John lo celebra como si acabara de marcar contra el propio océano."
           },
           "friendly-educator": {
             "name": "El Educador Cercano",
-            "description": "Voz suave y clara que enseña con preguntas sencillas y ejemplos."
+            "description": "Voz suave y clara que enseña con preguntas sencillas y ejemplos.",
+            "sample": "Vamos a aprender fútbol con Rodrigo y John en una tarde de domingo, cerca del océano en el norte de Portugal. ¿Oyes las olas? Ese sonido es como un metrónomo. Nos ayuda a mantener un ritmo constante.\n\nRodrigo dice: \"John, intenta un toque suave\". ¿Qué es un toque suave? Significa tocar el balón con gentileza para que se quede cerca de tus pies, como si pasearas a un perrito con correa corta.\n\nAhora inténtalo tú: cuando tocas el balón, ¿a dónde van tus ojos? ¿Abajo al balón... o arriba para ver el espacio? Rodrigo enseña: \"Mira arriba, luego toca\".\n\nMinijuego: ¿puede John dar tres toques seguidos sin perder el balón por el viento? Uno... dos... ¡uy! Se fue rodando. No pasa nada. Los errores son parte del aprendizaje.\n\nRodrigo sonríe y dice: \"Empezamos de nuevo\". John lo intenta otra vez. ¡Uno... dos... tres! ¡Genial! Eso significa que John está controlando el balón, no persiguiéndolo."
           },
           "institutional-chronicler": {
             "name": "El Cronista Institucional",
-            "description": "Tono biográfico formal y preciso que mantiene los datos claros y ordenados."
+            "description": "Tono biográfico formal y preciso que mantiene los datos claros y ordenados.",
+            "sample": "En una tarde de domingo, Rodrigo dirigió una sesión informal de entrenamiento de fútbol para su hermano menor, John, en un pequeño campo costero en el norte de Portugal. La actividad consistió en ejercicios introductorios de control de balón (regates cortos con fuerza reducida), prácticas de escaneo visual (orientación de la cabeza levantada antes del contacto) y ciclos repetidos de reinicio tras la pérdida de control. La sesión transcurrió bajo viento marítimo persistente, con el oleaje del océano audible en las proximidades. El entrenamiento concluyó con una mejora observable en la capacidad de John para mantener el control cercano del balón a lo largo de toques consecutivos, apoyado por instrucciones consistentes y un ritmo calmado por parte de Rodrigo."
           },
           "pub-buddy-narrator": {
             "name": "El Colega del Bar",
-            "description": "Relato ultra informal y bromista, como un amigo contando la noche entre copas."
+            "description": "Relato ultra informal y bromista, como un amigo contando la noche entre copas.",
+            "sample": "Tío, era una tarde de domingo, en ese campito minúsculo junto al mar en el norte, y te juro que el viento estaba jugando de defensa contra John. Rodrigo estaba allí todo serio, en plan seleccionador nacional, deja el balón en el césped y dice: \"Venga, toques cortos. Pie ligero\".\n\nJohn se acerca... le da un toque... y el balón sale disparado inmediatamente. DISPARADO. Como si tuviera billete solo de ida directo a la playa. El chaval mira a Rodrigo en plan \"Oye, esto está roto\", y Rodrigo simplemente dice \"Qué va, campeón. Otra vez\".\n\nAsí que va otra vez. Y otra vez. Y en algún momento John empieza a pillar esos toques limpitos, cabeza arriba y todo, y yo pensando: \"Vale, ya está. Lo siguiente es que fiche por el Oporto\". Rodrigo solo se ríe, medio orgulloso, medio intentando disimular. Clásico hermano mayor."
+          },
+          "classic-novelist": {
+            "name": "El Novelista Clásico",
+            "description": "Narrador equilibrado e inmersivo que muestra en lugar de contar, encaja en la mayoría de historias.",
+            "sample": "En la tarde de domingo, el pequeño campo de fútbol junto al mar parecía un mundo propio, cercado por el viento salado y el susurro distante de las olas. Rodrigo colocó el balón a los pies de John y esperó hasta que los hombros de su hermano se relajaron. \"Mantén la vista arriba\", dijo Rodrigo, no como una orden, sino más bien como un secreto compartido. John asintió, luego intentó un toque suave hacia adelante. El balón rodó un poco demasiado lejos. Frunció el ceño. Rodrigo no se precipitó. Dejó que el error se asentara un segundo, luego se acercó. \"Otra vez\", dijo, y su voz cargaba la paciencia de quien había aprendido la misma lección por las malas. John dio un toque más pequeño esta vez, más firme, y cuando Rodrigo sonrió, la sonrisa de John llegó un latido después, como si hubiera estado esperando permiso."
+          },
+          "noir-investigator": {
+            "name": "El Investigador Noir",
+            "description": "Gritty y desconfiado, voz de detective hardboiled que arma el caso en la sombra.",
+            "sample": "Tarde de domingo, norte de Portugal. Ese tipo de luz que parece inocente hasta que notas lo que esconde. El océano estaba cerca, respirando sal en el aire como si fuera el dueño del lugar. Rodrigo tenía a John en un pequeño campo junto al agua, enseñándole fútbol como si fuera un negocio limpio. Nunca nada lo es. \"Toque suave\", dijo Rodrigo, tocando el balón hacia adelante. John lo intentó. El balón se le escapó, rodando lejos como si tuviera un sitio mejor donde estar. La mandíbula de John se tensó. Así es como empieza, pensé. Frustración. Duda. La lenta creencia de que no estás hecho para esto. Rodrigo no se burló. No le metió prisa. Solo caminó hasta allí y puso el balón otra vez, mismo sitio, misma calma. \"¿Qué has visto?\", preguntó. John parpadeó. \"El balón\", dijo. La sonrisa de Rodrigo no le llegó a los ojos. \"No es suficiente\", respondió. Las olas seguían hablando de fondo. Como testigos que lo recuerdan todo."
+          },
+          "whimsical-poet": {
+            "name": "El Poeta Soñador",
+            "description": "Lírico, romántico y lleno de imágenes, convierte escenas simples en momentos tiernos.",
+            "sample": "En una tarde de domingo, cuando el norte de Portugal viste su luz oceánica como una bendición, Rodrigo y el pequeño John pisaron un campo modesto que parecía cosido entre la hierba y el horizonte, y el mar, allí cerca, exhalaba su himno infinito de sal y espuma como si marcara el compás. Rodrigo colocó el balón con una ternura generalmente reservada a las cosas frágiles y, con el movimiento más gentil del pie, lo invitó a rodar, no como un objeto, sino como una promesa. \"Mira arriba\", le dijo a John, y las palabras eran simples, pero abrieron una ventana dentro de la concentración del chico, para que sus ojos se alzaran del suelo hacia el mundo vasto y brillante de viento. John lo intentó, tropezó en su toque, luego lo intentó de nuevo, y de nuevo, cada intento una pequeña marea regresando, cada corrección una caracola puesta en la palma de la mano. Cuando por fin el balón se quedó cerca de él, obediente y vivo, la sonrisa de John llegó como el sol rompiendo una suave nube costera, y el orgullo silencioso de Rodrigo se sintió, por un momento, como el propio océano: vasto, paciente y siempre volviendo."
+          },
+          "scifi-analyst": {
+            "name": "El Analista Sci-Fi",
+            "description": "Voz precisa y futurista que trata la vida como un registro de misión con humor seco.",
+            "sample": "ENTRADA DE REGISTO // Ciclo Local: Tarde de Domingo\nUbicación: Sector Costero, Norte de Portugal // Campo de Entrenamiento (Micro-Campo)\nObjetivo: Transferencia de Protocolos de Control de Fútbol de la Unidad Rodrigo (Instructor) a la Unidad John (Operador Junior).\n\nEscaneo ambiental: aerosoles salinos sostenidos; vectores de viento variables; fondo auditivo dominado por percusión de olas oceánicas.\n\nProcedimiento iniciado: Rodrigo despliega Esfera-1 (balón de fútbol estándar). Demostración: contacto de baja fuerza, secuencia de regate de corto alcance.\nTRANSCRIPCIÓN DE COMUNICACIONES:\nRodrigo: \"Cabeza arriba. Escaneo primero\".\nJohn: \"¿Así?\"\nRodrigo: \"Toque más pequeño. Mantenlo cerca\".\n\nObservación: John exhibe concentración elevada (tensión en la frente; parpadeo reducido). El intento inicial resulta en evento de separación de Esfera-1 (el balón viaja más allá del radio de control óptimo). Respuesta de frustración detectada; Rodrigo contraataca con protocolo de repetición calmada.\nResultado: Tras múltiples iteraciones, John logra precisión de control y estabilidad de trayectoria mejoradas. Probabilidad de adquisición continua de habilidades (dada la paciencia del Instructor + refuerzo moral junto al mar): 91%."
+          },
+          "folklore-traditionalist": {
+            "name": "El Guardián del Folclore",
+            "description": "Voz intemporal, de fábula, que habla con símbolos, presagios y moralejas suaves.",
+            "sample": "Y así sucedió, en una tarde de domingo, que el Hermano Mayor Rodrigo llevó al Pequeño, John, al pequeño campo cerca del gran océano del norte. El viento se alzó como testigo, y el mar habló en su lengua infinita. Rodrigo colocó el balón en la hierba y dijo: \"Primero: sé firme. Segundo: mira adelante. Tercero: no temas al error\". John obedeció lo mejor que pudo, pero el balón huyó de él, pues la destreza no llega a quien tiene prisa. El corazón de John se volvió pesado y quiso parar. Pero Rodrigo no le riñó; devolvió el balón a sus pies, una y otra vez, como la marea regresa a la orilla. Por fin, John aprendió a mantener el balón cerca, y el viento amainó, como si estuviera complacido.\n\nAsí enseña la leyenda: la fuerza se enseña con paciencia, y la paciencia se aprende a través del amor."
           }
         }
       },

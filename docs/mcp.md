@@ -3,11 +3,13 @@
 The Mythoria MCP server is exposed at `/api/mcp` using the Web Standard Streamable HTTP transport (JSON responses enabled). It supports anonymous FAQ discovery plus Clerk-authenticated, user-scoped tools.
 
 ## Authentication
+
 - Set `CLERK_SECRET_KEY` in the environment (see `env.manifest.ts`). Authenticated tools refuse to run without it.
 - Clients send `Authorization: Bearer <clerk_jwt>`; use a Clerk session/OAuth token issued for the user.
 - Auth failures return JSON `401/403` with descriptive messages. Successful verification injects the resolved author into tool handlers.
 
 ## Configure with ChatGPT
+
 1. Open **Settings → Model Context Protocol (MCP)** in ChatGPT and **Add server**.
 2. Choose **HTTPS endpoint** and set `https://mythoria.pt/api/mcp`.
 3. (Optional) Add a default header `Authorization: Bearer <clerk_jwt>` for authenticated tools.
@@ -15,6 +17,7 @@ The Mythoria MCP server is exposed at `/api/mcp` using the Web Standard Streamab
 5. Guidance for prompts: start with `faq.query` for user questions; if the user is signed in, prefer authenticated tools when they ask about their stories, credits, or payments.
 
 ## Configure with Google Gemini (Apps/Workspace add-ons)
+
 - Use the MCP HTTPS endpoint `https://mythoria.pt/api/mcp` with JSON responses.
 - Provide `Authorization: Bearer <clerk_jwt>` in the request headers when calling authenticated tools.
 - Recommended tool call order in agent prompts: `faq.query` → `faq.list` fallback; then user-specific tools (`stories.listMine`, `credits.usage`, `transactions.list`) when the user context is known.
@@ -22,6 +25,7 @@ The Mythoria MCP server is exposed at `/api/mcp` using the Web Standard Streamab
 ## Available tools (descriptions & examples)
 
 ### Public tools
+
 - **health-check** — readiness probe.
   - Example: `{ "tool": "health-check" }` → `ok`.
 
@@ -37,6 +41,7 @@ The Mythoria MCP server is exposed at `/api/mcp` using the Web Standard Streamab
   - Output: `options[]` with `credits`, `price`, `currency`, `bestValue`, `popular`, plus guidance for recommendations.
 
 ### Authenticated tools (require `Authorization: Bearer <clerk_jwt>`)
+
 - **stories.listMine** — lists the user’s stories (temporary drafts hidden unless requested).
   - Input: `{ "includeTemporary": false }`
   - Output: `stories[]` with `status`, `language`, `audience`, `style`, `isPublic/isFeatured`.
@@ -62,6 +67,7 @@ The Mythoria MCP server is exposed at `/api/mcp` using the Web Standard Streamab
   - Output: `transactions[]` with `amount`, `currency`, `status`, `provider`, `creditBundle`, and guidance for reconciling credits.
 
 ## Example HTTP call
+
 ```bash
 curl -X POST https://mythoria.pt/api/mcp \
   -H "Content-Type: application/json" \
@@ -70,6 +76,7 @@ curl -X POST https://mythoria.pt/api/mcp \
 ```
 
 ## Tips for chatbot prompts
+
 - Default to `faq.query` for open questions; if `semanticFallbackUsed` is true, summarize `sectionOverviews` and ask a clarifying follow-up.
 - For user-specific requests, confirm sign-in and then call `stories.listMine`, `credits.usage`, or `transactions.list` with minimal parameters.
 - When a fulfillment job is queued, echo the `jobId`, mention `etaSeconds`, and offer to check back later.
