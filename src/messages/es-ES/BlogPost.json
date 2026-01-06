@@ -11,6 +11,17 @@
     "notAvailable": "Crónica no disponible",
     "notAvailableDescription": "Esta crónica no está disponible en tu idioma.",
     "error": "Error al cargar la crónica",
-    "errorDescription": "No se pudo cargar la crónica. Por favor, inténtalo de nuevo más tarde."
+    "errorDescription": "No se pudo cargar la crónica. Por favor, inténtalo de nuevo más tarde.",
+    "listenHeading": "Escucha esta crónica",
+    "listenSubheading": "Narrada en {localeName} con una voz de ElevenLabs adaptada a este idioma.",
+    "audioLoading": "Preparando la narración…",
+    "audioUnavailable": "El reproductor de audio no está disponible en este momento. Inténtalo de nuevo en unos instantes.",
+    "audioLocaleLabel": {
+      "en-US": "Inglés estadounidense (Nueva York)",
+      "pt-PT": "Portugués europeo (Lisboa)",
+      "es-ES": "Español europeo (Madrid)",
+      "fr-FR": "Francés europeo (París)",
+      "de-DE": "Alemán (Berlín)"
+    }
   }
 }

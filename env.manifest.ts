@@ -422,6 +422,49 @@ export const envManifest: EnvVarDescriptor[] = [
     default: 'EUR',
     note: 'Public-facing display currency for pricing and MCP tools.',
   },
+  {
+    name: 'NEXT_PUBLIC_ELEVENLABS_AUDIO_NATIVE_PUBLIC_USER_ID',
+    required: true,
+    scopes: ['prod', 'build', 'public', 'dev'],
+    default: 'f906812c8711940b4523501437811bf6dfa8c35f527ff87ec1ff0cc7046b6d82',
+    note: 'Public user id for ElevenLabs Audio Native widget; embed-safe.',
+  },
+  {
+    name: 'NEXT_PUBLIC_ELEVENLABS_AUDIO_NATIVE_PROJECT_ID_DEFAULT',
+    required: false,
+    scopes: ['prod', 'build', 'public', 'dev'],
+    note: 'Fallback Audio Native project id (choose a V2 stock voice).',
+  },
+  {
+    name: 'NEXT_PUBLIC_ELEVENLABS_AUDIO_NATIVE_PROJECT_ID_EN_US',
+    required: false,
+    scopes: ['prod', 'build', 'public', 'dev'],
+    note: 'Audio Native project id tuned for American English (NYC accent) with a V2 stock voice.',
+  },
+  {
+    name: 'NEXT_PUBLIC_ELEVENLABS_AUDIO_NATIVE_PROJECT_ID_PT_PT',
+    required: false,
+    scopes: ['prod', 'build', 'public', 'dev'],
+    note: 'Audio Native project id tuned for European Portuguese (Lisbon) with a V2 stock voice.',
+  },
+  {
+    name: 'NEXT_PUBLIC_ELEVENLABS_AUDIO_NATIVE_PROJECT_ID_ES_ES',
+    required: false,
+    scopes: ['prod', 'build', 'public', 'dev'],
+    note: 'Audio Native project id tuned for European Spanish (Madrid) with a V2 stock voice.',
+  },
+  {
+    name: 'NEXT_PUBLIC_ELEVENLABS_AUDIO_NATIVE_PROJECT_ID_FR_FR',
+    required: false,
+    scopes: ['prod', 'build', 'public', 'dev'],
+    note: 'Audio Native project id tuned for European French (Paris) with a V2 stock voice.',
+  },
+  {
+    name: 'NEXT_PUBLIC_ELEVENLABS_AUDIO_NATIVE_PROJECT_ID_DE_DE',
+    required: false,
+    scopes: ['prod', 'build', 'public', 'dev'],
+    note: 'Audio Native project id tuned for German (Berlin) with a V2 stock voice.',
+  },
 
   // Non-public Clerk URLs used at runtime (not exposed publicly without prefix)
   {

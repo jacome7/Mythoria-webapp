@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FiArrowLeft, FiCalendar, FiClock } from 'react-icons/fi';
+import { FiArrowLeft, FiCalendar, FiClock, FiHeadphones } from 'react-icons/fi';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
@@ -17,12 +17,29 @@ import ShareButton from '@/components/ShareButton';
 import BackToTopButton from '@/components/BackToTopButton';
 import InlineMarkdown from '@/lib/blog/InlineMarkdown';
 import { formatDate } from '@/utils/date';
+import { ElevenLabsAudioNative } from '@/components/ElevenLabsAudioNative';
 
 interface BlogPostPageProps {
   params: Promise<{
     locale: string;
     slug: string;
   }>;
+}
+
+const audioNativeConfig = {
+  publicUserId: process.env.NEXT_PUBLIC_ELEVENLABS_AUDIO_NATIVE_PUBLIC_USER_ID,
+  projectIds: {
+    'en-US': process.env.NEXT_PUBLIC_ELEVENLABS_AUDIO_NATIVE_PROJECT_ID_EN_US,
+    'pt-PT': process.env.NEXT_PUBLIC_ELEVENLABS_AUDIO_NATIVE_PROJECT_ID_PT_PT,
+    'es-ES': process.env.NEXT_PUBLIC_ELEVENLABS_AUDIO_NATIVE_PROJECT_ID_ES_ES,
+    'fr-FR': process.env.NEXT_PUBLIC_ELEVENLABS_AUDIO_NATIVE_PROJECT_ID_FR_FR,
+    'de-DE': process.env.NEXT_PUBLIC_ELEVENLABS_AUDIO_NATIVE_PROJECT_ID_DE_DE,
+    default: process.env.NEXT_PUBLIC_ELEVENLABS_AUDIO_NATIVE_PROJECT_ID_DEFAULT,
+  } satisfies Partial<Record<BlogLocale | 'default', string | undefined>>,
+};
+
+function getAudioNativeProjectId(locale: string) {
+  return audioNativeConfig.projectIds[locale as BlogLocale] ?? audioNativeConfig.projectIds.default;
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
@@ -114,6 +131,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     }
 
     const readingTime = calculateReadingTimeFromMdx(post.contentMdx);
+    const audioProjectId = getAudioNativeProjectId(locale);
+    const audioAvailable = Boolean(audioNativeConfig.publicUserId && audioProjectId);
+    const localeLabels = tBlogPost.raw('audioLocaleLabel') as Record<string, string>;
+    const localeLabel = localeLabels[locale] ?? locale;
 
     return (
       <div className="min-h-screen bg-base-100">
@@ -206,6 +227,38 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               text={post.summary}
               className="text-xl text-base-content/80 leading-relaxed mb-8 italic border-l-4 border-primary pl-6"
             />
+
+            {/* Audio Native Player */}
+            <section className="mb-10">
+              <div className="flex items-start gap-3 mb-3">
+                <div className="mt-1 rounded-full bg-primary/10 text-primary p-2">
+                  <FiHeadphones className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-semibold text-primary">
+                    {tBlogPost('listenHeading')}
+                  </h2>
+                  <p className="text-base-content/70">
+                    {tBlogPost('listenSubheading', { localeName: localeLabel })}
+                  </p>
+                </div>
+              </div>
+
+              {audioAvailable ? (
+                <ElevenLabsAudioNative
+                  publicUserId={audioNativeConfig.publicUserId}
+                  projectId={audioProjectId}
+                  size="small"
+                  textColorRgba="rgba(38, 38, 38, 1)"
+                  backgroundColorRgba="rgba(255, 255, 255, 0.92)"
+                  placeholder={tBlogPost('audioLoading')}
+                />
+              ) : (
+                <div className="alert alert-warning">
+                  <span>{tBlogPost('audioUnavailable')}</span>
+                </div>
+              )}
+            </section>
           </header>
 
           {/* Article Content */}

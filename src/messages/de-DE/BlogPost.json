@@ -11,6 +11,17 @@
     "notAvailable": "Chronik nicht verfügbar",
     "notAvailableDescription": "Diese Chronik ist in deiner Sprache nicht verfügbar.",
     "error": "Chronik konnte nicht geladen werden",
-    "errorDescription": "Wir konnten die Chronik nicht laden. Bitte versuche es später noch einmal."
+    "errorDescription": "Wir konnten die Chronik nicht laden. Bitte versuche es später noch einmal.",
+    "listenHeading": "Diese Chronik anhören",
+    "listenSubheading": "Vertont in {localeName} mit einer ElevenLabs-Stimme, die auf diese Sprache abgestimmt ist.",
+    "audioLoading": "Nacherzählung wird vorbereitet…",
+    "audioUnavailable": "Der Audio-Player ist derzeit nicht verfügbar. Bitte versuche es gleich noch einmal.",
+    "audioLocaleLabel": {
+      "en-US": "Amerikanisches Englisch (New York)",
+      "pt-PT": "Europäisches Portugiesisch (Lissabon)",
+      "es-ES": "Europäisches Spanisch (Madrid)",
+      "fr-FR": "Europäisches Französisch (Paris)",
+      "de-DE": "Deutsch (Berlin)"
+    }
   }
 }
