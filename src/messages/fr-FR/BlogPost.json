@@ -11,6 +11,17 @@
     "notAvailable": "Chronique non disponible",
     "notAvailableDescription": "Cette chronique n'est pas disponible dans votre langue.",
     "error": "Échec de chargement chronique",
-    "errorDescription": "Nous n'avons pas pu charger la chronique. Veuillez réessayer plus tard."
+    "errorDescription": "Nous n'avons pas pu charger la chronique. Veuillez réessayer plus tard.",
+    "listenHeading": "Écouter cette chronique",
+    "listenSubheading": "Narration en {localeName} avec une voix ElevenLabs adaptée à cette langue.",
+    "audioLoading": "Préparation de la narration…",
+    "audioUnavailable": "Le lecteur audio est indisponible pour le moment. Réessayez dans un instant.",
+    "audioLocaleLabel": {
+      "en-US": "Anglais américain (New York)",
+      "pt-PT": "Portugais européen (Lisbonne)",
+      "es-ES": "Espagnol européen (Madrid)",
+      "fr-FR": "Français européen (Paris)",
+      "de-DE": "Allemand (Berlin)"
+    }
   }
 }

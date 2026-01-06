@@ -11,6 +11,17 @@
     "notAvailable": "Chronicle Not Available",
     "notAvailableDescription": "This chronicle isn't available in your language.",
     "error": "Failed to load chronicle",
-    "errorDescription": "We couldn't load the chronicle. Please try again later."
+    "errorDescription": "We couldn't load the chronicle. Please try again later.",
+    "listenHeading": "Listen to this chronicle",
+    "listenSubheading": "Narrated in {localeName} with an ElevenLabs stock voice tuned for this language.",
+    "audioLoading": "Preparing narration…",
+    "audioUnavailable": "Audio player is unavailable right now. Please try again in a moment.",
+    "audioLocaleLabel": {
+      "en-US": "American English (New York)",
+      "pt-PT": "European Portuguese (Lisbon)",
+      "es-ES": "European Spanish (Madrid)",
+      "fr-FR": "European French (Paris)",
+      "de-DE": "German (Berlin)"
+    }
   }
 }
