@@ -1,5 +1,5 @@
-# Use the official Node.js 22 image as a base.
-FROM node:22.21-alpine AS builder
+# Use the official Node.js 25 Alpine image (latest stable)
+FROM node:25-alpine AS builder
 
 # Set the working directory in the container.
 WORKDIR /app
@@ -45,10 +45,18 @@ RUN npm install -g npm@latest && \
 COPY . .
 
 # Build the application with standalone output for better Cloud Run performance
-RUN npm run build
+# Ensure PWA service worker is generated and ends up under public/
+RUN npm run build \
+      && if [ -f public/sw.js ]; then echo "Found sw.js in public"; \
+          elif [ -f .next/static/sw.js ]; then echo "Copying sw.js from .next/static" && cp .next/static/sw.js public/sw.js; \
+          elif [ -f .next/sw.js ]; then echo "Copying sw.js from .next root" && cp .next/sw.js public/sw.js; \
+          elif [ -f .next/standalone/public/sw.js ]; then echo "Copying sw.js from standalone/public" && cp .next/standalone/public/sw.js public/sw.js; \
+          else echo "PWA service worker missing after build - writing minimal no-op sw.js" \
+                 && mkdir -p public \
+                 && echo "self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',()=>self.clients.claim());" > public/sw.js; fi
 
-# Production stage
-FROM node:22.21-alpine AS runner
+# Production stage - use same Node.js version as builder
+FROM node:25-alpine AS runner
 
 # Set the working directory in the container.
 WORKDIR /app

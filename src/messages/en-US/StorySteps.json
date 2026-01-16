@@ -213,32 +213,93 @@
       },
       "literaryPersona": {
         "label": "Narrator Persona",
-        "helper": "Choose the narrator vibe to guide the writing style.",
+        "helper": "We default to our balanced classic narrator. Pick another vibe if you want a different voice.",
         "placeholder": "Select a literary persona...",
+        "sampleLabel": "Sample style",
+        "metaLabels": {
+          "pov": "POV",
+          "tone": "Tone",
+          "rhythm": "Rhythm",
+          "vocabulary": "Vocab"
+        },
+        "metaInfo": {
+          "title": "How to read these badges",
+          "description": "POV, Tone, Rhythm, and Vocab describe how the narrator speaks. Use them to pick the voice that fits your scene.",
+          "trigger": "What do these mean?",
+          "items": {
+            "pov": {
+              "label": "POV (Point of View)",
+              "description": "Who is telling the story. 1st = I, 2nd = you, 3rd-limited = one character's eyes, 3rd-omniscient = everyone."
+            },
+            "tone": {
+              "label": "Tone",
+              "description": "Emotional energy from calm (1) to intense (5)."
+            },
+            "rhythm": {
+              "label": "Rhythm",
+              "description": "Sentence pacing from slow/flowing (1) to quick/punchy (5)."
+            },
+            "vocabulary": {
+              "label": "Vocabulary",
+              "description": "Word complexity from simple, everyday words (1) to richer, more advanced language (5)."
+            }
+          }
+        },
         "options": {
           "storyteller": {
             "name": "The Storyteller",
-            "description": "Warm, empathetic voice like a grandparent sharing memories; feelings-forward with gentle morals."
+            "description": "Warm, empathetic voice like a grandparent sharing memories; feelings-forward with gentle morals.",
+            "sample": "On a windy Sunday by the ocean in northern Portugal, Rodrigo set the ball down for John and spoke softly until his little brother breathed easier and tried again."
           },
           "adventurous-narrator": {
             "name": "The Adventurous Narrator",
-            "description": "Turns ordinary moments epic with playful second-person energy and fantasy flourishes."
+            "description": "Turns ordinary moments epic with playful second-person energy and fantasy flourishes.",
+            "sample": "You hop onto the tiny coastal pitch, Rodrigo hands you the ball like a quest item, and John dashes after it while the Atlantic wind cheers like a stadium crowd."
           },
           "fun-reporter": {
             "name": "The Fun Reporter",
-            "description": "Upbeat, witty chronicle of group antics with quick beats and quotes."
+            "description": "Upbeat, witty chronicle of group antics with quick beats and quotes.",
+            "sample": "16:42 - Small field by the ocean, north Portugal. Rodrigo (coach/brother) cues John: \"tiny touches.\" 16:45 - Ball escapes to the sea breeze. 16:50 - John reels it back. Quote: \"It's fighting the wind!\""
           },
           "friendly-educator": {
             "name": "The Friendly Educator",
-            "description": "Gentle, clear teacher voice that uses simple questions and examples."
+            "description": "Gentle, clear teacher voice that uses simple questions and examples.",
+            "sample": "Let's learn on that breezy Sunday field by the ocean: Rodrigo shows John a soft touch, asks him to look up, and turns each retry into a small win."
           },
           "institutional-chronicler": {
             "name": "The Institutional Chronicler",
-            "description": "Formal, precise biographical tone that keeps details factual and organized."
+            "description": "Formal, precise biographical tone that keeps details factual and organized.",
+            "sample": "On Sunday afternoon, Rodrigo conducted basic ball-control drills for his younger brother John on a small coastal field in northern Portugal; repetitions improved John's close control despite steady wind."
           },
           "pub-buddy-narrator": {
             "name": "The Pub Buddy Narrator",
-            "description": "Ultra-casual, jokey storytelling like a friend recounting the night over drinks."
+            "description": "Ultra-casual, jokey storytelling like a friend recounting the night over drinks.",
+            "sample": "Dude, Sunday by the sea, tiny pitch, wind going nuts. Rodrigo drops the ball, John taps it, the thing bolts for the ocean. We're yelling, laughing, and somehow the kid nails the next try."
+          },
+          "classic-novelist": {
+            "name": "The Classic Novelist",
+            "description": "Balanced, immersive voice that shows not tells, fitting most stories without extremes.",
+            "sample": "On a small football field by the ocean in northern Portugal, Rodrigo set the ball at John's feet and waited until his brother's shoulders loosened; the wind seemed to pause with them until the next gentle touch."
+          },
+          "noir-investigator": {
+            "name": "The Noir Investigator",
+            "description": "Gritty, suspicious, and atmospheric, like a hardboiled detective piecing clues together.",
+            "sample": "Sunday, north coast. Rodrigo runs drills on a wind-bitten field, teaching John to keep the ball close. Ocean murmurs, ball slips, kid frowns. Feels like there's a lesson hidden in the salt air."
+          },
+          "whimsical-poet": {
+            "name": "The Whimsical Poet",
+            "description": "Lyrical, romantic, and image-rich, turning simple scenes into tender moments.",
+            "sample": "The field, a ribbon between grass and sea, held Rodrigo and little John on a Sunday afternoon; each soft tap of the ball was a tide returning, each smile a small light on the north coast."
+          },
+          "scifi-analyst": {
+            "name": "The Sci-Fi Analyst",
+            "description": "Precise, futuristic voice that treats life like a mission log with a wink of dry humor.",
+            "sample": "LOG 04 // Coastal field, North Portugal // Instructor Rodrigo initiates Ball Control Protocols for junior unit John. Environment: high wind, ocean noise. Outcome: control radius improves after repeated iterations."
+          },
+          "folklore-traditionalist": {
+            "name": "The Folklore Traditionalist",
+            "description": "Timeless, fable-like voice that speaks in symbols, omens, and gentle morals.",
+            "sample": "And so, on a Sunday by the northern sea, Rodrigo the elder set the ball before John, the younger. The wind tested them, yet patience returned as the tide, until the child's touch grew sure."
           }
         }
       },

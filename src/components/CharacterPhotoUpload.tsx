@@ -17,10 +17,11 @@ interface CropArea {
 interface CharacterPhotoUploadProps {
   isOpen: boolean;
   onClose: () => void;
-  characterId: string;
+  characterId?: string;
   currentPhotoUrl?: string | null;
   onPhotoUpdated: (photoUrl: string | null) => void;
   onDescriptionExtracted?: (description: string) => void;
+  onPhotoPrepared?: (dataUrl: string, previewUrl: string) => void;
 }
 
 const TARGET_SIZE = 768; // Target output size for character photos
@@ -32,6 +33,7 @@ export default function CharacterPhotoUpload({
   currentPhotoUrl,
   onPhotoUpdated,
   onDescriptionExtracted,
+  onPhotoPrepared,
 }: CharacterPhotoUploadProps) {
   const t = useTranslations('Characters');
   const locale = useLocale();
@@ -169,6 +171,14 @@ export default function CharacterPhotoUpload({
       // Convert to JPEG data URL
       const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
 
+      // If we don't have a character yet, hand the prepared photo back to the caller
+      // so it can be uploaded after creation.
+      if (!characterId) {
+        onPhotoPrepared?.(dataUrl, selectedFilePreview);
+        handleClose();
+        return;
+      }
+
       // Upload to API
       const response = await fetch('/api/media/character-photo', {
         method: 'POST',
@@ -198,7 +208,7 @@ export default function CharacterPhotoUpload({
 
   // AI Description extraction
   const handleAnalyzePhoto = async () => {
-    if (!uploadedDataUrl) return;
+    if (!uploadedDataUrl || !characterId) return;
 
     setAnalyzing(true);
     setError(null);
@@ -456,7 +466,7 @@ export default function CharacterPhotoUpload({
             )}
 
             {/* Upload Success View - Ask about AI description extraction */}
-            {showUploadSuccess && uploadedPhotoUrl && !showDescriptionPreview && (
+            {showUploadSuccess && uploadedPhotoUrl && !showDescriptionPreview && characterId && (
               <div className="flex flex-col items-center gap-4">
                 {/* Success checkmark and uploaded photo */}
                 <div className="relative">

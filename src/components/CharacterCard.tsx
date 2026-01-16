@@ -120,6 +120,9 @@ export default function CharacterCard({
   const [traitSearchTerm, setTraitSearchTerm] = useState('');
   const [showTraitDropdown, setShowTraitDropdown] = useState(false);
   const [showPhotoUpload, setShowPhotoUpload] = useState(false);
+  const [pendingPhotoDataUrl, setPendingPhotoDataUrl] = useState<string | null>(null);
+  const [pendingPhotoPreviewUrl, setPendingPhotoPreviewUrl] = useState<string | null>(null);
+  const [requestPhotoAnalysis, setRequestPhotoAnalysis] = useState(false);
   const traitDropdownRef = useRef<HTMLDivElement>(null);
 
   // Map character type to icon filename
@@ -154,6 +157,15 @@ export default function CharacterCard({
   // Handle photo update from upload modal
   const handlePhotoUpdated = (photoUrl: string | null) => {
     setFormData((prev) => ({ ...prev, photoUrl: photoUrl || undefined }));
+    setPendingPhotoDataUrl(null);
+    setPendingPhotoPreviewUrl(null);
+    setRequestPhotoAnalysis(false);
+  };
+
+  const handlePhotoPrepared = (dataUrl: string, previewUrl: string) => {
+    setPendingPhotoDataUrl(dataUrl);
+    setPendingPhotoPreviewUrl(previewUrl);
+    setShowPhotoUpload(false);
   };
 
   // Get filtered traits based on search term
@@ -244,7 +256,11 @@ export default function CharacterCard({
 
     setSaving(true);
     try {
-      await onSave(formData);
+      await onSave({
+        ...formData,
+        photoDataUrl: pendingPhotoDataUrl ?? undefined,
+        requestPhotoAnalysis,
+      });
 
       // Track character creation or customization
       if (mode === 'create') {
@@ -260,6 +276,10 @@ export default function CharacterCard({
           character_role: formData.role,
         });
       }
+
+      setPendingPhotoDataUrl(null);
+      setPendingPhotoPreviewUrl(null);
+      setRequestPhotoAnalysis(false);
     } catch (error) {
       console.error('Error saving character:', error);
       alert(tCharacters('errors.saveFailed'));
@@ -406,21 +426,21 @@ export default function CharacterCard({
         {/* Header with photo and title */}
         <div className="flex items-center gap-4 mb-4">
           {/* Clickable photo/icon - opens upload modal in edit mode */}
-          {mode === 'edit' && formData.characterId ? (
+          {mode === 'edit' || mode === 'create' ? (
             <button
               type="button"
               onClick={() => setShowPhotoUpload(true)}
               className="relative group"
               title={
-                formData.photoUrl
+                pendingPhotoPreviewUrl || formData.photoUrl
                   ? tCharacters('photoUpload.changePhoto')
                   : tCharacters('photoUpload.selectPhoto')
               }
             >
               <div className="w-16 h-16 rounded-full overflow-hidden bg-base-200 border-2 border-dashed border-primary/50 group-hover:border-primary transition-colors">
-                {formData.photoUrl ? (
+                {pendingPhotoPreviewUrl || formData.photoUrl ? (
                   <Image
-                    src={formData.photoUrl}
+                    src={pendingPhotoPreviewUrl || formData.photoUrl || ''}
                     alt={formData.name || 'character'}
                     width={64}
                     height={64}
@@ -457,6 +477,44 @@ export default function CharacterCard({
               : `✏️ ${tCharacters('titles.edit')}`}
           </h3>
         </div>
+
+        {mode === 'create' && pendingPhotoPreviewUrl && (
+          <div className="p-3 mb-4 rounded-lg border border-primary/30 bg-primary/5 flex items-start gap-3">
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary/40">
+              <Image
+                src={pendingPhotoPreviewUrl}
+                alt={formData.name || 'character'}
+                width={48}
+                height={48}
+                className="object-cover w-full h-full"
+              />
+            </div>
+            <div className="space-y-1">
+              <p className="font-medium text-sm text-primary">
+                {tCharacters('photoUpload.uploadSuccess')}
+              </p>
+              <p className="text-xs text-base-content/70">
+                {tCharacters('photoUpload.photoSaved')}
+              </p>
+              <label className="flex items-start gap-2 mt-2">
+                <input
+                  type="checkbox"
+                  className="checkbox checkbox-primary mt-1"
+                  checked={requestPhotoAnalysis}
+                  onChange={(e) => setRequestPhotoAnalysis(e.target.checked)}
+                />
+                <div>
+                  <div className="font-medium text-sm">
+                    {tCharacters('photoUpload.extractDescription')}
+                  </div>
+                  <p className="text-xs text-base-content/60">
+                    {tCharacters('photoUpload.extractDescriptionHint')}
+                  </p>
+                </div>
+              </label>
+            </div>
+          </div>
+        )}
 
         <div className="form-control mb-4">
           <label className="label">
@@ -705,13 +763,14 @@ export default function CharacterCard({
       </div>
 
       {/* Photo Upload Modal */}
-      {formData.characterId && (
+      {(mode === 'edit' || mode === 'create') && (
         <CharacterPhotoUpload
           isOpen={showPhotoUpload}
           onClose={() => setShowPhotoUpload(false)}
           characterId={formData.characterId}
-          currentPhotoUrl={formData.photoUrl}
+          currentPhotoUrl={pendingPhotoPreviewUrl || formData.photoUrl}
           onPhotoUpdated={handlePhotoUpdated}
+          onPhotoPrepared={handlePhotoPrepared}
           onDescriptionExtracted={(description) => {
             setFormData((prev) => ({ ...prev, physicalDescription: description }));
           }}

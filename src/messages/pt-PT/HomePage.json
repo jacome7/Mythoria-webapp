@@ -5,7 +5,7 @@
       "writeYourOwn": "Escreva a sua própria",
       "subtitle": "Transforme qualquer pessoa no herói de um livro lindamente ilustrado — para crianças, adultos ou equipas inteiras.",
       "subtitleEmphasized": "qualquer pessoa",
-      "tellYourOwnStory": "Conta a tua própria história"
+      "tellYourOwnStory": "Conte a sua própria história"
     },
     "words": [
       "História",
@@ -65,7 +65,7 @@
       "steps": {
         "step1": {
           "title": "O Autor",
-          "description": "Faça login e diga à Mythoria quem você é. Será o orgulhoso autor e proprietário da sua história única."
+          "description": "Inicie sessão e diga à Mythoria quem é. Será o orgulhoso autor e proprietário da sua história única."
         },
         "step2": {
           "title": "A História",
@@ -99,7 +99,7 @@
       "conclusion": "Os nossos Umpa-lumpas da Fábrica de Histórias tratam de todo o resto, dando vida à sua história!"
     },
     "community": {
-      "title": "Junte-se à Nossa Crescente Comunidade de Contadores de Histórias!"
+      "title": "Junte-se à nossa crescente comunidade de contadores de histórias!"
     },
     "cta": {
       "title": "Pronto para começar a sua jornada de contar histórias?",
@@ -107,11 +107,11 @@
       "button": "Experimente Grátis"
     },
     "whyChooseMythoria": {
-      "title": "Por Que Escolher a Mythoria?",
+      "title": "Porquê escolher a Mythoria?",
       "subtitle": "Criar a sua própria história deve parecer magia, não trabalhos de casa. Eis o que torna a Mythoria diferente.",
       "features": {
         "youOwnTheStory": {
-          "title": "A História é Sua",
+          "title": "A História é sua",
           "description": "Mantenha todos os direitos sobre o seu livro gerado por IA. Imprima cópias ilimitadas, partilhe à vontade, exiba publicamente apenas se quiser.",
           "details": "A sua história, as suas regras—sem licenças ocultas, sem surpresas desagradáveis."
         },
@@ -128,20 +128,20 @@
         "multipleArtStyles": {
           "title": "Múltiplos Estilos de Arte",
           "description": "Escolha entre desenho animado, aguarela, arte digital, desenho à mão, minimalista, vintage, banda desenhada, anime e muito mais.",
-          "details": "Combine os visuais com o seu mood—sério, divertido ou algo sonhador."
+          "details": "Combine os visuais com o seu estado de espírito—sério, divertido ou algo sonhador."
         },
         "addYourOwnPhotos": {
-          "title": "Adicione as Suas Próprias Fotos",
+          "title": "Adicione as suas próprias Fotos",
           "description": "Insira fotos de família, fotografias de turma ou momentos especiais para personalizar o seu conto.",
           "details": "Transforme memórias reais em magia ilustrada."
         },
         "privateByDefault": {
-          "title": "Privado por Defeito",
+          "title": "Privado por defeito",
           "description": "Os rascunhos permanecem privados. Partilhe um link com os seus entes queridos quando estiver pronto, ou opte por exibir publicamente.",
           "details": "Sem holofotes indesejados—a sua história, o seu tempo."
         },
         "madeForEveryAudience": {
-          "title": "Feito para Todos os Públicos",
+          "title": "Feito para todos os públicos",
           "description": "Crie para bebés, crianças, adolescentes ou adultos. Ajuste o tom e o nível de leitura para se adequar perfeitamente ao seu leitor.",
           "details": "Uma plataforma, vozes infinitas."
         },
@@ -151,7 +151,7 @@
           "details": "Sem assinaturas, sem pressão—pague à medida que sonha."
         },
         "inspirationOnTap": {
-          "title": "Inspiração Sempre à Mão",
+          "title": "Inspiração sempre à mão",
           "description": "Navegue por exemplos destacados por idade, estilo de arte e idioma para acender a sua próxima criação.",
           "details": "Veja o que é possível e depois torne-o seu."
         }

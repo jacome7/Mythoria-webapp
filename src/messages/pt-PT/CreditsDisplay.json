@@ -24,13 +24,13 @@
     }
   },
   "Voucher": {
-    "haveCode": "Tens um código?",
-    "placeholder": "Insere o teu código",
+    "haveCode": "Tem um código?",
+    "placeholder": "Insira o seu código",
     "apply": "Aplicar",
-    "success": "Boa! Desbloqueaste {credits, plural, one {# crédito} other {# créditos}} com {code}.",
+    "success": "Boa! Desbloqueou {credits, plural, one {# crédito} other {# créditos}} com {code}.",
     "invalid": "Código inválido ou inativo.",
     "checking": "A verificar...",
     "sectionHeading": "Código promocional ou de amigo",
-    "sectionSubheading": "Um amigo partilhou ou veio de um parceiro? Introduz e ganha um impulso extra."
+    "sectionSubheading": "Um amigo partilhou ou veio de um parceiro? Introduza e ganhe um impulso extra."
   }
 }

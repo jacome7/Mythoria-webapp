@@ -9,6 +9,11 @@ export const proxy = clerkMiddleware(
   async (auth, req: NextRequest) => {
     const pathname = req.nextUrl.pathname;
 
+    // Allow service worker and manifest assets to bypass i18n/auth so they stay at the root scope
+    if (pathname === '/sw.js' || pathname.startsWith('/workbox-') || pathname === '/manifest.webmanifest') {
+      return NextResponse.next();
+    }
+
     // Allow the PWA offline fallback route to remain at root without locale prefix.
     // We skip the i18n middleware so it doesn't redirect /offline -> /en-US/offline (which 404s)
     // Also allow /i/ intent detection routes to bypass both i18n and auth

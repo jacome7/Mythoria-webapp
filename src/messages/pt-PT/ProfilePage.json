@@ -64,17 +64,17 @@
       "de-DE": "Alemão (Alemanha)"
     },
     "notifications": {
-      "title": "As tuas Notificações",
-      "intro": "Escolhe o nível de conversa. Nunca vamos encher a tua caixa de correio.",
+      "title": "As suas Notificações",
+      "intro": "Escolha o nível de conversa. Nunca vamos encher a sua caixa de correio.",
       "label": "Nível de notificações",
       "options": {
         "essential": {
           "label": "O Essencial",
-          "description": "Só a tua conta e atividade das tuas histórias. Silêncio de biblioteca à meia-noite."
+          "description": "Só a sua conta e atividade das suas histórias. Silêncio de biblioteca à meia-noite."
         },
         "inspiration": {
           "label": "Inspiração",
-          "description": "Dicas e ideias para os teus próximos livros. Uma brisa criativa suave — este é o padrão."
+          "description": "Dicas e ideias para os seus próximos livros. Uma brisa criativa suave — este é o padrão."
         },
         "news": {
           "label": "Novidades",

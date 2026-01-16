@@ -1,6 +1,6 @@
 {
   "hero": {
-    "title": "A Nossa História",
+    "title": "A nossa História",
     "intro": "A Mythoria nasceu de um sentimento muito simples: a paixão por histórias. Daquelas que nos contavam ao adormecer e daquelas que, já em adultos, nos fazem sonhar acordados. Acreditamos, do fundo do coração, que todos temos uma história especial dentro de nós, à espera de uma oportunidade para brilhar.",
     "tagline": "O nosso único objetivo é dar-lhe essa oportunidade."
   },
@@ -10,7 +10,7 @@
     "paragraph2": "Criámos a Mythoria para ser essa ponte. Uma ponte segura e mágica entre uma ideia sua — por mais pequena que seja, como um rabisco ou uma memória — e um livro ilustrado, real e palpável, que pode guardar para sempre. Queremos que criar um livro seja um ato de alegria, não um desafio."
   },
   "team": {
-    "title": "As Pessoas por Detrás do Sonho",
+    "title": "As pessoas por detrás do sonho",
     "subtitle": "Somos uma equipa pequena, mas com um coração enorme dedicado a este projeto:",
     "rodrigo": {
       "title": "Rodrigo Jácome - O jovem Sonhador",
@@ -25,19 +25,19 @@
       "altSmiling": "André Silva a sorrir"
     },
     "oumpaLoompas": {
-      "title": "Os Nossos Oumpa-Loompas",
+      "title": "Os nossos Oumpa-Loompas",
       "description": "Temos uma equipa de ajudantes incansáveis que trabalham nos bastidores: os nossos Oumpa-Loompas de IA. Eles tratam de todas as tarefas técnicas e complexas — desde ajudar a gerar as imagens até garantir que o site funciona perfeitamente. Eles são a nossa equipa de apoio, que nos liberta tempo para nos dedicarmos ao que mais importa: as nossas histórias e as pessoas que as criam, como você.",
       "ariaLabel": "Ver foto alternativa dos Oumpa-Loompas",
       "altSmiling": "Oumpa-Loompas a sorrir"
     }
   },
   "commitment": {
-    "title": "O Nosso Compromisso",
+    "title": "O nosso Compromisso",
     "paragraph1": "Falamos muito em tecnologia, digitalização e IA, mas sabe porquê? O nosso grande desafio é fazer com que a tecnologia seja tão perfeita que se torne invisível para si.",
     "paragraph2": "Queremos automatizar tudo o que é complicado para que a sua única preocupação seja imaginar. O nosso compromisso é que o processo de criar o seu livro seja simples, rápido e, acima de tudo, mágico."
   },
   "ourStory": {
-    "title": "A Nossa História",
+    "title": "A nossa História",
     "paragraph1": "Acreditamos tanto no poder de uma boa história que, como não poderia deixar de ser, decidimos transformar o nascimento da Mythoria na nossa própria aventura.",
     "paragraph2Start": "Escrevemos um pequeno livro que conta esta nossa jornada. Nele, misturamos as memórias e os factos reais — como um dos nossos primeiros momentos de grande alegria, quando recebemos o Prémio de Melhor Projeto Escolar no Boostcamp da",
     "paragraph2End": "— com todo o percurso e os desafios que sentimos até lançar a primeira versão do nosso sonho.",
@@ -46,13 +46,13 @@
     "inovaGaiaText": "InovaGaia"
   },
   "transparency": {
-    "title": "Uma Nota de Transparência",
+    "title": "Uma nota de transparência",
     "textStart": "Para que saiba que este nosso projeto é sério e construído para durar, a Mythoria nasceu no seio da nossa empresa familiar, a",
     "textEnd": ", registada em Portugal com o NIPC 515 716 979. Estamos sediados em Vila Nova de Gaia, Portugal, desde 31 de outubro de 2019 com um capital social de 10.000,00 €.",
     "companyName": "Aventuras Contemporâneas, Lda."
   },
   "partners": {
-    "title": "Os Nossos Parceiros e Apoios",
+    "title": "Os nossos Parceiros e Apoios",
     "googleForStartups": "Fazemos parte do Programa Google for Startups. Este apoio ajuda a Mythoria a acelerar a narrativa alimentada por IA com infraestrutura, formação e comunidade do Google Cloud.",
     "inovaGaia": "A InovaGaia tem sido fundamental na nossa jornada, proporcionando mentoria, recursos e uma comunidade empreendedora vibrante que nos ajudou a transformar a nossa visão em realidade.",
     "elevenLabs": "Estamos incrivelmente orgulhosos por termos recebido o exclusivo ElevenLabs Startup Grant. Esta bolsa de prestígio dá-nos acesso a tecnologia de ponta de IA de voz, permitindo-nos dar vida às suas histórias com as vozes mais realistas e expressivas disponíveis. A ElevenLabs é líder mundial na geração de voz por IA, e o seu apoio capacita-nos para criar experiências de narração de histórias verdadeiramente imersivas.",

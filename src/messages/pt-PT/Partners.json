@@ -21,7 +21,7 @@
     },
     "hero": {
       "title": "Faça Crescer o Seu Negócio com a Mythoria.",
-      "subtitle": "Apresentamos-lhe milhares de famílias criativas. Ganha novos clientes leais.",
+      "subtitle": "Apresentamos-lhe milhares de famílias criativas. Ganhe novos clientes leais.",
       "tagline": "É o próximo capítulo perfeito para o seu negócio.",
       "cta": "Candidate-se Agora"
     },
@@ -44,7 +44,7 @@
     "howItWorks": {
       "title": "Começar é Fácil",
       "step1": {
-        "title": "Conte-nos a Sua História",
+        "title": "Conte-nos a sua História",
         "description": "Preencha o formulário simples abaixo para apresentar o seu negócio e o que faz."
       },
       "step2": {
@@ -80,7 +80,7 @@
       "subtitle": "Vamos começar a conversa. Preencha o formulário e a nossa equipa de parcerias entrará em contacto.",
       "fields": {
         "name": {
-          "label": "O Seu Nome",
+          "label": "O seu Nome",
           "placeholder": "João Silva"
         },
         "companyName": {
@@ -88,7 +88,7 @@
           "placeholder": "A Sua Empresa Lda."
         },
         "email": {
-          "label": "O Seu Email",
+          "label": "O seu Email",
           "placeholder": "joao@empresa.com"
         },
         "phone": {

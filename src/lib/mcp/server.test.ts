@@ -36,7 +36,8 @@ const mockAuthor = {
 
 function getToolHandler(name: string, context: McpAuthContext) {
   const server = createMcpServer(context);
-  const tools = (server as unknown as { _registeredTools: Record<string, { handler: Function }> })._registeredTools;
+  const tools = (server as unknown as { _registeredTools: Record<string, { handler: Function }> })
+    ._registeredTools;
   return tools[name].handler;
 }
 
@@ -110,7 +111,11 @@ describe('credits.usage tool', () => {
     expect(mockedCreditService.getAuthorCreditBalance).toHaveBeenCalledWith('author-1');
     expect(mockedCreditService.getCreditHistory).toHaveBeenCalledWith('author-1', 25);
     expect(payload.balance).toBe(42);
-    expect(payload.entries[0]).toMatchObject({ id: 'ledger-1', amount: 10, type: 'creditPurchase' });
+    expect(payload.entries[0]).toMatchObject({
+      id: 'ledger-1',
+      amount: 10,
+      type: 'creditPurchase',
+    });
   });
 
   it('throws auth error when token is missing', async () => {
@@ -153,7 +158,9 @@ describe('transactions.list tool', () => {
 });
 
 describe('credits.purchaseOptions tool', () => {
-  const mockedCreditPackagesService = creditPackagesService as jest.Mocked<typeof creditPackagesService>;
+  const mockedCreditPackagesService = creditPackagesService as jest.Mocked<
+    typeof creditPackagesService
+  >;
 
   it('lists active credit packages without auth', async () => {
     mockedCreditPackagesService.getActiveCreditPackages.mockResolvedValue([
@@ -181,7 +188,10 @@ describe('credits.purchaseOptions tool', () => {
 
 describe('fulfillment tools', () => {
   it('queues download job with jobId', async () => {
-    const handler = getToolHandler('stories.requestDownload', { userId: 'user-1', author: mockAuthor });
+    const handler = getToolHandler('stories.requestDownload', {
+      userId: 'user-1',
+      author: mockAuthor,
+    });
     const result = await handler({ storyId: 'story-123', format: 'pdf' });
     const payload = JSON.parse(result.content[0].text);
 

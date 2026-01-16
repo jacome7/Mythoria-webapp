@@ -34,9 +34,7 @@ function parseBearerToken(request: Request) {
 }
 
 const clerkSecretKey = process.env.CLERK_SECRET_KEY;
-const clerkClient = clerkSecretKey
-  ? createClerkClient({ secretKey: clerkSecretKey })
-  : null;
+const clerkClient = clerkSecretKey ? createClerkClient({ secretKey: clerkSecretKey }) : null;
 
 export async function resolveMcpAuthContext(request: Request): Promise<McpAuthContext> {
   const token = parseBearerToken(request);

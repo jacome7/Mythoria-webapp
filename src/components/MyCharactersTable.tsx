@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { FiPlus } from 'react-icons/fi';
 import CharacterCard from './CharacterCard';
 import { Character } from '../lib/story-session';
@@ -13,6 +13,7 @@ interface CharacterWithDate extends Character {
 
 export default function MyCharactersTable() {
   const tMyCharactersPage = useTranslations('MyCharactersPage');
+  const locale = useLocale();
   const [characters, setCharacters] = useState<CharacterWithDate[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -62,12 +63,13 @@ export default function MyCharactersTable() {
 
   const handleCreateCharacter = async (characterData: Character) => {
     try {
+      const { photoDataUrl, requestPhotoAnalysis, ...characterBody } = characterData;
       const response = await fetch('/api/characters', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(characterData),
+        body: JSON.stringify(characterBody),
       });
 
       if (!response.ok) {
@@ -76,7 +78,74 @@ export default function MyCharactersTable() {
       }
 
       const { character } = await response.json();
-      setCharacters((prev) => [...prev, character]);
+
+      let enrichedCharacter = character;
+
+      if (character.characterId && photoDataUrl) {
+        const uploadResponse = await fetch('/api/media/character-photo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ characterId: character.characterId, dataUrl: photoDataUrl }),
+        });
+
+        const uploadResult = await uploadResponse.json();
+
+        if (!uploadResponse.ok || !uploadResult.success) {
+          throw new Error(uploadResult.error || 'Failed to upload photo');
+        }
+
+        enrichedCharacter = uploadResult.character || {
+          ...character,
+          photoUrl: uploadResult.photoUrl,
+          photoGcsUri: uploadResult.photoGcsUri,
+        };
+
+        if (requestPhotoAnalysis) {
+          const analysisResponse = await fetch('/api/media/analyze-character-photo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              characterId: enrichedCharacter.characterId,
+              dataUrl: photoDataUrl,
+              locale,
+            }),
+          });
+
+          const analysisResult = await analysisResponse.json();
+
+          if (!analysisResponse.ok || !analysisResult.success) {
+            throw new Error(analysisResult.error || 'Failed to analyze photo');
+          }
+
+          enrichedCharacter = {
+            ...enrichedCharacter,
+            physicalDescription: analysisResult.description,
+          };
+
+          const descriptionUpdate = await fetch(
+            `/api/characters/${enrichedCharacter.characterId}`,
+            {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                ...enrichedCharacter,
+                physicalDescription: analysisResult.description,
+              }),
+            },
+          );
+
+          if (descriptionUpdate.ok) {
+            const updated = await descriptionUpdate.json();
+            enrichedCharacter = updated.character;
+          }
+        }
+      }
+
+      setCharacters((prev) => [...prev, enrichedCharacter]);
       setShowCreateForm(false);
     } catch (error) {
       console.error('Error creating character:', error);
@@ -88,12 +157,13 @@ export default function MyCharactersTable() {
     if (!characterData.characterId) return;
 
     try {
+      const { photoDataUrl, requestPhotoAnalysis, ...characterBody } = characterData;
       const response = await fetch(`/api/characters/${characterData.characterId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(characterData),
+        body: JSON.stringify(characterBody),
       });
 
       if (!response.ok) {

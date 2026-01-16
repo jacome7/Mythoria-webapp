@@ -22,13 +22,13 @@
     },
     "form": {
       "title": "O Formulário Mágico",
-      "name": "O Seu Nome:",
+      "name": "O seu Nome:",
       "namePlaceholder": "Ou Alcunha de Feiticeiro",
-      "email": "O Seu Email:",
+      "email": "O seu Email:",
       "emailPlaceholder": "Para as nossas pombas mensageiras",
-      "category": "Selecione a Sua Missão:",
+      "category": "Selecione a sua Missão:",
       "selectCategory": "Escolha uma categoria...",
-      "message": "A Sua Mensagem Mágica:",
+      "message": "A sua Mensagem Mágica:",
       "messagePlaceholder": "Partilhe os seus pensamentos, ideias ou feedback mágico...",
       "submit": "Lançar Feitiço"
     },

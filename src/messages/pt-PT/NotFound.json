@@ -1,6 +1,6 @@
 {
   "NotFound": {
-    "mainHeading": "Ups! Esta Página Perdeu-se no Livro de Histórias",
+    "mainHeading": "Ups! Esta página perdeu-se no livro de histórias",
     "description": "Parece que a página que procura se perdeu num capítulo por escrever! Talvez esteja escondida num conto de fadas, ou talvez tenha sido apanhada numa aventura própria.",
     "suggestions": {
       "title": "Enquanto procuramos a sua página perdida, pode:",
@@ -9,7 +9,7 @@
     "actions": {
       "goHome": "Voltar à Página Inicial",
       "createStory": "Criar Nova História",
-      "myStories": "As Minhas Histórias"
+      "myStories": "As minhas Histórias"
     },
     "quote": "\"Nem todos os que vagueiam estão perdidos... mas esta página definitivamente está!\" - Um Hobbit confuso"
   }
