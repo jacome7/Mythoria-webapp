@@ -31,6 +31,21 @@
       "serviceUnavailable": "El sistema de valoraciones se está configurando. Vuelve en unos minutos.",
       "submitFailed": "Error al enviar la valoración",
       "generic": "Se ha producido un error"
+      },
+      "feedbackToAuthor": {
+        "title": "Enviar feedback al autor",
+        "subtitle": "Comparte una nota breve para ayudar al autor a mejorar la historia.",
+        "subjectLabel": "Asunto",
+        "subjectPlaceholder": "Un resumen rápido de tu feedback",
+        "messageLabel": "Mensaje",
+        "messagePlaceholder": "Escribe tu feedback para el autor...",
+        "submit": "Enviar feedback",
+        "submitting": "Enviando...",
+        "successMessage": "Tu feedback ha sido enviado al autor.",
+        "signInButton": "Inicia sesión para enviar feedback",
+        "errors": {
+          "submitFailed": "No se pudo enviar el feedback"
+        }
     }
   }
 }

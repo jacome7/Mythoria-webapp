@@ -31,6 +31,21 @@
       "serviceUnavailable": "Le système de notation est en cours de configuration. Veuillez réessayer dans quelques minutes.",
       "submitFailed": "Échec de l'envoi de la note",
       "generic": "Une erreur s'est produite"
+      },
+      "feedbackToAuthor": {
+        "title": "Envoyer un retour à l'auteur",
+        "subtitle": "Partagez une note courte pour aider l'auteur à améliorer son histoire.",
+        "subjectLabel": "Objet",
+        "subjectPlaceholder": "Un court résumé de votre retour",
+        "messageLabel": "Message",
+        "messagePlaceholder": "Écrivez votre retour pour l'auteur...",
+        "submit": "Envoyer le retour",
+        "submitting": "Envoi...",
+        "successMessage": "Votre retour a été envoyé à l'auteur.",
+        "signInButton": "Connectez-vous pour envoyer un retour",
+        "errors": {
+          "submitFailed": "Impossible d'envoyer le retour"
+        }
     }
   }
 }

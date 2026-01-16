@@ -31,6 +31,21 @@
       "serviceUnavailable": "Das Bewertungssystem wird gerade eingerichtet. Bitte versuche es in ein paar Minuten erneut.",
       "submitFailed": "Bewertung konnte nicht gesendet werden",
       "generic": "Es ist ein Fehler aufgetreten"
-    }
+    },
+      "feedbackToAuthor": {
+        "title": "Feedback an den Autor senden",
+        "subtitle": "Teile eine kurze Nachricht, um dem Autor bei der Verbesserung der Geschichte zu helfen.",
+        "subjectLabel": "Betreff",
+        "subjectPlaceholder": "Eine kurze Zusammenfassung deines Feedbacks",
+        "messageLabel": "Nachricht",
+        "messagePlaceholder": "Schreibe dein Feedback an den Autor...",
+        "submit": "Feedback senden",
+        "submitting": "Wird gesendet...",
+        "successMessage": "Dein Feedback wurde an den Autor gesendet.",
+        "signInButton": "Anmelden, um Feedback zu senden",
+        "errors": {
+          "submitFailed": "Feedback konnte nicht gesendet werden"
+        }
+      }
   }
 }
