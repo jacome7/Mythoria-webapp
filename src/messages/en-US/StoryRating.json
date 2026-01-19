@@ -31,6 +31,21 @@
       "serviceUnavailable": "The rating system is currently being set up. Please try again in a few minutes.",
       "submitFailed": "Failed to submit rating",
       "generic": "An error occurred"
+    },
+    "feedbackToAuthor": {
+      "title": "Send feedback to the author",
+      "subtitle": "Share a short note to help the author improve their story.",
+      "subjectLabel": "Subject",
+      "subjectPlaceholder": "A quick headline for your feedback",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Write your feedback for the author...",
+      "submit": "Send feedback",
+      "submitting": "Sending...",
+      "successMessage": "Your feedback has been sent to the author.",
+      "signInButton": "Sign in to send feedback",
+      "errors": {
+        "submitFailed": "Failed to send feedback"
+      }
     }
   }
 }

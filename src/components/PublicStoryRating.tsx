@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
-import { FiStar } from 'react-icons/fi';
+import { useLocale, useTranslations } from 'next-intl';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
+import { FiMessageSquare, FiStar } from 'react-icons/fi';
 import { formatDate } from '@/utils/date';
 
 interface PublicStoryRatingProps {
@@ -32,6 +34,11 @@ interface RatingData {
 
 export default function PublicStoryRating({ storyId, onRatingSubmitted }: PublicStoryRatingProps) {
   const tCommonStoryRating = useTranslations('StoryRating');
+  const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { isSignedIn, isLoaded } = useUser();
   const [userRating, setUserRating] = useState<number>(0);
   const [hoveredRating, setHoveredRating] = useState<number>(0);
   const [feedback, setFeedback] = useState<string>('');
@@ -42,6 +49,16 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
   const [error, setError] = useState<string | null>(null);
   const [ratingData, setRatingData] = useState<RatingData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [authorSubject, setAuthorSubject] = useState<string>('');
+  const [authorMessage, setAuthorMessage] = useState<string>('');
+  const [authorSending, setAuthorSending] = useState<boolean>(false);
+  const [authorSent, setAuthorSent] = useState<boolean>(false);
+  const [authorError, setAuthorError] = useState<string | null>(null);
+
+  const searchQuery = searchParams?.toString();
+  const redirectPath = `${pathname}${searchQuery ? `?${searchQuery}` : ''}`;
+  const canSubmitAuthorFeedback =
+    authorSubject.trim().length >= 3 && authorMessage.trim().length >= 10;
 
   // Fetch rating data on component mount
   useEffect(() => {
@@ -151,6 +168,42 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
   const handleFeedbackSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSubmitRating(userRating, feedback);
+  };
+
+  const handleAuthorFeedbackSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isSignedIn) {
+      router.push(`/${locale}/sign-in?redirect=${encodeURIComponent(redirectPath)}`);
+      return;
+    }
+
+    setAuthorSending(true);
+    setAuthorError(null);
+
+    try {
+      const response = await fetch(`/api/stories/${storyId}/feedback`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject: authorSubject, message: authorMessage }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(
+          data?.error || tCommonStoryRating('feedbackToAuthor.errors.submitFailed'),
+        );
+      }
+
+      setAuthorSent(true);
+      setAuthorSubject('');
+      setAuthorMessage('');
+    } catch (err) {
+      setAuthorError(
+        err instanceof Error ? err.message : tCommonStoryRating('errors.generic'),
+      );
+    } finally {
+      setAuthorSending(false);
+    }
   };
   const renderUnifiedStars = () => {
     return [1, 2, 3, 4, 5].map((star) => {
@@ -363,6 +416,94 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
               <span>{tCommonStoryRating('submittingMessage')}</span>
             </div>
           )}
+
+          <div className="divider my-6"></div>
+
+          <div className="rounded-lg bg-base-200/60 p-4 text-left">
+            <div className="flex items-center gap-2 mb-2">
+              <FiMessageSquare className="text-primary text-lg" />
+              <h4 className="font-semibold">{tCommonStoryRating('feedbackToAuthor.title')}</h4>
+            </div>
+            <p className="text-sm text-base-content/70">
+              {tCommonStoryRating('feedbackToAuthor.subtitle')}
+            </p>
+
+            {!isLoaded ? (
+              <div className="flex justify-center mt-4">
+                <span className="loading loading-spinner loading-sm"></span>
+              </div>
+            ) : !isSignedIn ? (
+              <button
+                type="button"
+                className="btn btn-outline btn-primary mt-4"
+                onClick={() =>
+                  router.push(`/${locale}/sign-in?redirect=${encodeURIComponent(redirectPath)}`)
+                }
+              >
+                {tCommonStoryRating('feedbackToAuthor.signInButton')}
+              </button>
+            ) : (
+              <form onSubmit={handleAuthorFeedbackSubmit} className="mt-4 space-y-4">
+                <div>
+                  <label htmlFor="authorSubject" className="label">
+                    <span className="label-text">
+                      {tCommonStoryRating('feedbackToAuthor.subjectLabel')}
+                    </span>
+                  </label>
+                  <input
+                    id="authorSubject"
+                    type="text"
+                    className="input input-bordered w-full"
+                    placeholder={tCommonStoryRating('feedbackToAuthor.subjectPlaceholder')}
+                    value={authorSubject}
+                    onChange={(e) => setAuthorSubject(e.target.value)}
+                    maxLength={80}
+                    disabled={authorSending}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="authorMessage" className="label">
+                    <span className="label-text">
+                      {tCommonStoryRating('feedbackToAuthor.messageLabel')}
+                    </span>
+                  </label>
+                  <textarea
+                    id="authorMessage"
+                    className="textarea textarea-bordered w-full h-28 resize-none"
+                    placeholder={tCommonStoryRating('feedbackToAuthor.messagePlaceholder')}
+                    value={authorMessage}
+                    onChange={(e) => setAuthorMessage(e.target.value)}
+                    maxLength={800}
+                    disabled={authorSending}
+                  />
+                </div>
+
+                {authorSent && (
+                  <div className="alert alert-success">
+                    <span>{tCommonStoryRating('feedbackToAuthor.successMessage')}</span>
+                  </div>
+                )}
+
+                {authorError && (
+                  <div className="alert alert-error">
+                    <span>{authorError}</span>
+                  </div>
+                )}
+
+                <div className="flex justify-end">
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={authorSending || !canSubmitAuthorFeedback}
+                  >
+                    {authorSending
+                      ? tCommonStoryRating('feedbackToAuthor.submitting')
+                      : tCommonStoryRating('feedbackToAuthor.submit')}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
         </div>
       </div>
     </div>

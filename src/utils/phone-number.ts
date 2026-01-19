@@ -59,11 +59,13 @@ export function formatPhoneNumberForClerk(
 
     // Validate the parsed number
     if (!parsedNumber || !parsedNumber.isValid()) {
-      console.warn('[formatPhoneNumberForClerk] Invalid phone number:', {
-        phoneNumber,
-        locale,
-        defaultCountry,
-      });
+      if (process.env.NODE_ENV !== 'test') {
+        console.warn('[formatPhoneNumberForClerk] Invalid phone number:', {
+          phoneNumber,
+          locale,
+          defaultCountry,
+        });
+      }
       return null;
     }
 
@@ -72,11 +74,13 @@ export function formatPhoneNumberForClerk(
 
     return formattedNumber;
   } catch (error) {
-    console.error('[formatPhoneNumberForClerk] Error formatting phone number:', {
-      phoneNumber,
-      locale,
-      error,
-    });
+    if (process.env.NODE_ENV !== 'test') {
+      console.error('[formatPhoneNumberForClerk] Error formatting phone number:', {
+        phoneNumber,
+        locale,
+        error,
+      });
+    }
     return null;
   }
 }
