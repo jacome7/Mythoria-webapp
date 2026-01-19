@@ -169,6 +169,13 @@
       "when": 1766167061342,
       "tag": "0023_cultured_legion",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1768594468006,
+      "tag": "0024_handy_husk",
+      "breakpoints": true
     }
   ]
 }

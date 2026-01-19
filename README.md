@@ -13,6 +13,7 @@
 - **Story Library** – Authenticated dashboard with filtering, quick previews, and export to PDF/audio for each generated narrative.
 - **Commerce & Credits** – Revolut Checkout integration for purchasing credits, VAT-aware receipts, and usage analytics surfaced per locale.
 - **Inspiration Hub** – Public marketing surfaces (`/[locale]/get-inspired`, blog) that showcase featured tales, seasonal campaigns, and capture email signups.
+- **Partner Directory** – Public printers list at `/[locale]/partners/printers` with location filters and infinite scroll.
 
 ## Generative narrative pipeline
 

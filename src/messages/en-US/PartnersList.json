@@ -1,0 +1,106 @@
+{
+  "PartnersList": {
+    "metadata": {
+      "title": "Printing Partners",
+      "description": "Find a Mythoria printing partner near you to bring stories to life.",
+      "keywords": [
+        "Mythoria printing partners",
+        "local print shops",
+        "storybook printing",
+        "custom book printing",
+        "story keepsakes",
+        "print-on-demand partners"
+      ],
+      "ogTitle": "Mythoria Printing Partners",
+      "ogDescription": "Browse Mythoria-approved print shops and choose a partner to print your stories.",
+      "ogImageAlt": "Mythoria Printing Partners",
+      "twitterTitle": "Mythoria Printing Partners",
+      "twitterDescription": "Find a trusted print shop to turn your story into a keepsake."
+    },
+    "hero": {
+      "title": "Find a Printing Partner",
+      "subtitle": "Choose a trusted shop to print your Mythoria stories.",
+      "tagline": "Local print magic, Mythoria quality."
+    },
+    "filters": {
+      "title": "Filter by location",
+      "countryLabel": "Country",
+      "countryPlaceholder": "All countries",
+      "cityLabel": "City / Region",
+      "cityPlaceholder": "All cities",
+      "clear": "Clear filters"
+    },
+    "list": {
+      "title": "Printing partners",
+      "empty": "No partners found for those filters.",
+      "loadMore": "Load more",
+      "loading": "Loading partners...",
+      "error": "We couldn't load partners. Please try again.",
+      "locationFallback": "Location available on request"
+    },
+    "modal": {
+      "email": "Email",
+      "phone": "Mobile",
+      "address": "Address",
+      "close": "Close"
+    },
+    "countries": {
+      "PT": "Portugal",
+      "ES": "Spain",
+      "FR": "France",
+      "DE": "Germany",
+      "IT": "Italy",
+      "NL": "Netherlands",
+      "BE": "Belgium",
+      "GB": "United Kingdom"
+    },
+    "cities": {
+      "PT": {
+        "lisbon": "Lisbon",
+        "porto": "Porto",
+        "braga": "Braga",
+        "coimbra": "Coimbra",
+        "faro": "Faro"
+      },
+      "ES": {
+        "madrid": "Madrid",
+        "barcelona": "Barcelona",
+        "valencia": "Valencia",
+        "seville": "Seville"
+      },
+      "FR": {
+        "paris": "Paris",
+        "lyon": "Lyon",
+        "marseille": "Marseille",
+        "bordeaux": "Bordeaux"
+      },
+      "DE": {
+        "berlin": "Berlin",
+        "munich": "Munich",
+        "hamburg": "Hamburg",
+        "frankfurt": "Frankfurt"
+      },
+      "IT": {
+        "rome": "Rome",
+        "milan": "Milan",
+        "florence": "Florence",
+        "naples": "Naples"
+      },
+      "NL": {
+        "amsterdam": "Amsterdam",
+        "rotterdam": "Rotterdam",
+        "utrecht": "Utrecht"
+      },
+      "BE": {
+        "brussels": "Brussels",
+        "antwerp": "Antwerp",
+        "ghent": "Ghent"
+      },
+      "GB": {
+        "london": "London",
+        "manchester": "Manchester",
+        "edinburgh": "Edinburgh"
+      }
+    }
+  }
+}

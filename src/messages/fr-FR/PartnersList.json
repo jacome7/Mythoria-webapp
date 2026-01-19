@@ -1,0 +1,106 @@
+{
+  "PartnersList": {
+    "metadata": {
+      "title": "Partenaires d'impression",
+      "description": "Trouvez un partenaire d'impression Mythoria près de chez vous pour donner vie aux histoires.",
+      "keywords": [
+        "partenaires d'impression Mythoria",
+        "imprimeries locales",
+        "impression de livres personnalisés",
+        "livres souvenirs",
+        "partenaires print-on-demand",
+        "impression d'histoires"
+      ],
+      "ogTitle": "Partenaires d'impression Mythoria",
+      "ogDescription": "Découvrez les imprimeries approuvées par Mythoria et choisissez où imprimer vos histoires.",
+      "ogImageAlt": "Partenaires d'impression Mythoria",
+      "twitterTitle": "Partenaires d'impression Mythoria",
+      "twitterDescription": "Trouvez une imprimerie de confiance pour transformer votre histoire en livre réel."
+    },
+    "hero": {
+      "title": "Trouvez un partenaire d'impression",
+      "subtitle": "Choisissez une imprimerie de confiance pour imprimer vos histoires Mythoria.",
+      "tagline": "Magie locale de l'impression, qualité Mythoria."
+    },
+    "filters": {
+      "title": "Filtrer par localisation",
+      "countryLabel": "Pays",
+      "countryPlaceholder": "Tous les pays",
+      "cityLabel": "Ville / Région",
+      "cityPlaceholder": "Toutes les villes",
+      "clear": "Effacer les filtres"
+    },
+    "list": {
+      "title": "Partenaires d'impression",
+      "empty": "Aucun partenaire trouvé avec ces filtres.",
+      "loadMore": "Charger plus",
+      "loading": "Chargement des partenaires...",
+      "error": "Impossible de charger les partenaires. Veuillez réessayer.",
+      "locationFallback": "Localisation disponible sur demande"
+    },
+    "modal": {
+      "email": "Email",
+      "phone": "Mobile",
+      "address": "Adresse",
+      "close": "Fermer"
+    },
+    "countries": {
+      "PT": "Portugal",
+      "ES": "Espagne",
+      "FR": "France",
+      "DE": "Allemagne",
+      "IT": "Italie",
+      "NL": "Pays-Bas",
+      "BE": "Belgique",
+      "GB": "Royaume-Uni"
+    },
+    "cities": {
+      "PT": {
+        "lisbon": "Lisbonne",
+        "porto": "Porto",
+        "braga": "Braga",
+        "coimbra": "Coimbra",
+        "faro": "Faro"
+      },
+      "ES": {
+        "madrid": "Madrid",
+        "barcelona": "Barcelone",
+        "valencia": "Valence",
+        "seville": "Séville"
+      },
+      "FR": {
+        "paris": "Paris",
+        "lyon": "Lyon",
+        "marseille": "Marseille",
+        "bordeaux": "Bordeaux"
+      },
+      "DE": {
+        "berlin": "Berlin",
+        "munich": "Munich",
+        "hamburg": "Hambourg",
+        "frankfurt": "Francfort"
+      },
+      "IT": {
+        "rome": "Rome",
+        "milan": "Milan",
+        "florence": "Florence",
+        "naples": "Naples"
+      },
+      "NL": {
+        "amsterdam": "Amsterdam",
+        "rotterdam": "Rotterdam",
+        "utrecht": "Utrecht"
+      },
+      "BE": {
+        "brussels": "Bruxelles",
+        "antwerp": "Anvers",
+        "ghent": "Gand"
+      },
+      "GB": {
+        "london": "Londres",
+        "manchester": "Manchester",
+        "edinburgh": "Édimbourg"
+      }
+    }
+  }
+}

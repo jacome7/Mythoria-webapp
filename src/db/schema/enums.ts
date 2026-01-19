@@ -227,3 +227,19 @@ export const notificationPreferenceEnum = pgEnum('notification_preference', [
   'inspiration', // Tips & ideas (default)
   'news', // Product news & special promos
 ]);
+
+// Partner directory enums
+export const partnerTypeEnum = pgEnum('partner_type', [
+  'printer',
+  'attraction',
+  'retail',
+  'other',
+]);
+
+export const partnerServiceScopeEnum = pgEnum('partner_service_scope', [
+  'local',
+  'national',
+  'international',
+]);
+
+export const partnerStatusEnum = pgEnum('partner_status', ['active', 'draft', 'hidden']);

@@ -21,6 +21,7 @@ export * from './ai-edits';
 export * from './promotion-codes';
 export * from './leads';
 export * from './faq';
+export * from './partners';
 
 // Relations
 export * from './relations';
