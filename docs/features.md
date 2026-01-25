@@ -13,7 +13,7 @@ Mythoria knits together guided creation tools, AI-assisted editing, audience-rea
 - **Reader's Nook** – Responsive reading experience with typography controls, scoped styling, table of contents, and rating prompts. [Learn more](features/reader-nook.md)
 - **Audiobook Forge** – Voice selection, credit validation, generation tracking, and a chapter-aware audio player for published stories. [Learn more](features/audiobook-forge.md)
 - **Print Keepsake Shop** – Three-step wizard for story preview, address management, credit-priced print options, and MB Way support. [Learn more](features/print-keepsake-shop.md)
-- **Credit Economy & Checkout** – Transparent pricing, credit bundles, cart management, promo codes, and Revolut or MB Way checkout. [Learn more](features/credit-economy.md)
+- **Credits & Payments** – Transparent pricing, credit bundles, cart management, promo codes, and Revolut or MB Way checkout. [Learn more](features/credits-payments.md)
 - **Promo Codes** – Voucher redemption pipeline with validation limits, ledger integration, and future-ready referral hooks. [Learn more](features/promo-codes.md)
 - **Inspiration Gallery** – Filterable showcase of featured public stories with ratings and quick access to read more. [Learn more](features/inspiration-gallery.md)
 - **Public Showcase & Ratings** – Public story pages, share tokens with access gating, and feedback collection for every tale. [Learn more](features/public-showcase.md)
