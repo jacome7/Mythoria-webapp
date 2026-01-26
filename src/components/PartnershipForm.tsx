@@ -142,7 +142,7 @@ const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
 
       const result = await response.json();
 
-      if (result.success) {
+      if (response.ok && result.success) {
         setResponseMessage(t('successMessage'));
         setIsSuccess(true);
         setShowModal(true);
@@ -164,7 +164,7 @@ const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
           window.location.href = '/';
         }, 5000);
       } else {
-        setResponseMessage(result.error || t('errorMessage'));
+        setResponseMessage(t('errorMessage'));
         setIsSuccess(false);
         setShowModal(true);
       }

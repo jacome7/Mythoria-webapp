@@ -157,6 +157,11 @@ const PartnersPrintersPageContent = () => {
     return parts.join(', ');
   };
 
+  const buildMapsUrl = (address: string) => {
+    const query = encodeURIComponent(address);
+    return `https://www.google.com/maps/search/?api=1&query=${query}`;
+  };
+
   return (
     <div className="space-y-12">
       <section className="text-center space-y-4">
@@ -169,12 +174,10 @@ const PartnersPrintersPageContent = () => {
         <div className="card-body">
           <h2 className="text-2xl font-bold text-primary mb-4">{t('filters.title')}</h2>
           <div className="grid gap-4 md:grid-cols-3">
-            <label className="form-control">
-              <div className="label">
-                <span className="label-text font-semibold">{t('filters.countryLabel')}</span>
-              </div>
+            <label className="form-control flex flex-col items-start gap-2">
+              <span className="label-text font-semibold">{t('filters.countryLabel')}</span>
               <select
-                className="select select-bordered"
+                className="select select-bordered w-full"
                 value={countryCode}
                 onChange={(event) => handleCountryChange(event.target.value)}
               >
@@ -187,12 +190,10 @@ const PartnersPrintersPageContent = () => {
               </select>
             </label>
 
-            <label className="form-control">
-              <div className="label">
-                <span className="label-text font-semibold">{t('filters.cityLabel')}</span>
-              </div>
+            <label className="form-control flex flex-col items-start gap-2">
+              <span className="label-text font-semibold">{t('filters.cityLabel')}</span>
               <select
-                className="select select-bordered"
+                className="select select-bordered w-full"
                 value={city}
                 onChange={(event) => setCity(event.target.value)}
                 disabled={!countryCode}
@@ -235,12 +236,12 @@ const PartnersPrintersPageContent = () => {
             >
               <div className="card-body">
                 <div className="flex items-center gap-4">
-                  <div className="relative h-16 w-16 rounded-lg bg-base-200 overflow-hidden">
+                  <div className="relative h-16 w-16 min-h-16 min-w-16 aspect-square shrink-0 rounded-lg bg-base-200 overflow-hidden">
                     <Image
                       src={partner.logoUrl || PLACEHOLDER_LOGO}
                       alt={partner.name}
                       fill
-                      className="object-contain"
+                      className={partner.logoUrl ? 'object-contain' : 'object-cover'}
                       sizes="64px"
                       unoptimized
                     />
@@ -309,7 +310,12 @@ const PartnersPrintersPageContent = () => {
                   <FaEnvelope className="text-primary" />
                   <div>
                     <div className="text-sm font-semibold">{t('modal.email')}</div>
-                    <div className="text-base-content/70">{selectedPartner.email}</div>
+                    <a
+                      className="text-base-content/70 link link-hover"
+                      href={`mailto:${selectedPartner.email}`}
+                    >
+                      {selectedPartner.email}
+                    </a>
                   </div>
                 </div>
               )}
@@ -318,7 +324,12 @@ const PartnersPrintersPageContent = () => {
                   <FaPhoneAlt className="text-primary" />
                   <div>
                     <div className="text-sm font-semibold">{t('modal.phone')}</div>
-                    <div className="text-base-content/70">{selectedPartner.mobilePhone}</div>
+                    <a
+                      className="text-base-content/70 link link-hover"
+                      href={`tel:${selectedPartner.mobilePhone}`}
+                    >
+                      {selectedPartner.mobilePhone}
+                    </a>
                   </div>
                 </div>
               )}
@@ -327,7 +338,14 @@ const PartnersPrintersPageContent = () => {
                   <FaMapMarkerAlt className="text-primary" />
                   <div>
                     <div className="text-sm font-semibold">{t('modal.address')}</div>
-                    <div className="text-base-content/70">{address}</div>
+                    <a
+                      className="text-base-content/70 link link-hover"
+                      href={buildMapsUrl(address)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {address}
+                    </a>
                   </div>
                 </div>
               )}

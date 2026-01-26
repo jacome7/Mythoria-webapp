@@ -55,6 +55,21 @@ export async function POST(request: NextRequest) {
       other: 'Other',
     };
 
+    const partnershipTypeLabel = partnershipTypeMapping[partnershipType];
+    const subject = `Partnership application: ${companyName}`;
+    const description = [
+      `Contact name: ${name}`,
+      `Company: ${companyName}`,
+      `Email: ${email}`,
+      phone ? `Phone: ${phone}` : null,
+      website ? `Website: ${website}` : null,
+      `Primary location: ${primaryLocation}`,
+      `Partnership type: ${partnershipTypeLabel}`,
+      businessDescription ? `Business description: ${businessDescription}` : null,
+    ]
+      .filter(Boolean)
+      .join('\n');
+
     // Create ticket in admin system with API key authentication
     const ticketResponse = await fetch(`${config.admin.apiUrl}/api/tickets`, {
       method: 'POST',
@@ -64,14 +79,26 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         category: 'partnership_application',
+        subject,
+        description,
         email: email,
         name: name,
         companyName: companyName,
         phone: phone || null,
         website: website || null,
         primaryLocation: primaryLocation,
-        partnershipType: partnershipTypeMapping[partnershipType],
+        partnershipType: partnershipTypeLabel,
         businessDescription: businessDescription || null,
+        metadata: {
+          name,
+          email,
+          companyName,
+          phone: phone || null,
+          website: website || null,
+          primaryLocation,
+          partnershipType: partnershipTypeLabel,
+          businessDescription: businessDescription || null,
+        },
       }),
     });
 
