@@ -19,7 +19,7 @@ Mythoria knits together guided creation tools, AI-assisted editing, audience-rea
 - **Public Showcase & Ratings** – Public story pages, share tokens with access gating, and feedback collection for every tale. [Learn more](features/public-showcase.md)
 - **Profile & Preferences Hub** – Autosaving profile fields, locale sync, credit history, and notification settings. [Learn more](features/profile-preferences.md)
 - **Support Lifeline** – Categorised contact form with auto-filled user details, analytics tracking, and friendly confirmation flows. [Learn more](features/support-lifeline.md)
-- **Mythoria Home Experience** – Animated hero, sample story carousel, how-it-works timeline, quote of the day, and live story counter. [Learn more](features/mythoria-home.md)
+- **Mythoria Home Experience** – Animated hero, sample story carousel, how-it-works timeline, quote of the day, and live story counter. [Learn more](features/homepage.md)
 - **Mythoria Blog & Editorial** – Localised blog listing, MDX-powered articles, reading time indicators, and SEO-friendly navigation. [Learn more](features/blog.md)
 
 ## Last Updated
