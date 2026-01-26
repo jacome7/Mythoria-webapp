@@ -73,6 +73,37 @@ All entry points open the same **Share Modal** dialog with consistent options.
 - **Public stories**: Uncheck "Make story public" and regenerate to remove public access
 - **Private links**: Use the DELETE endpoint `/api/stories/{storyId}/share?linkId={token}` or `?revokeAll=true`
 
+### Rating and Feedback on Public Stories
+
+Public story pages include a rating widget and a feedback form that lets readers share private notes with the author.
+
+#### Rating a Story
+
+**Where it appears**: On public story pages and public chapter pages (`/[locale]/p/[slug]` and `/[locale]/p/[slug]/chapter/[chapterNumber]`).
+
+**How it works**:
+1. Readers select a star rating from 1 to 5.
+2. Ratings of **4–5 stars** submit immediately.
+3. Ratings of **1–3 stars** open a short feedback form where readers can optionally explain what needs improvement.
+4. Readers can choose to let the author see their name (if signed in).
+
+**Anonymous vs. named feedback**:
+- If the reader is **not signed in**, the rating is stored anonymously.
+- If signed in, the reader can opt to include their name alongside feedback.
+
+#### Sending a Comment to the Author
+
+Readers can send a private message to the author from the same rating card.
+
+**Requirements**:
+- Must be signed in.
+- Subject must be 3–80 characters.
+- Message must be 10–800 characters.
+
+**What happens**:
+- The message is sent to the Story Generation Workflow service and delivered to the author.
+- The message is **not** publicly visible and does not appear on the public story page.
+
 ---
 
 ## Developer Guide
@@ -88,6 +119,12 @@ Story sharing consists of four primary components:
 5. **Frontend Routes**: 
    - `/[locale]/p/[slug]` for public stories
    - `/[locale]/s/[token]` for private access
+
+Public story pages also include **ratings and author feedback** as a related public-sharing surface:
+
+6. **Rating UI**: `PublicStoryRating.tsx`
+7. **Ratings API**: `/api/stories/{storyId}/ratings` (GET/POST)
+8. **Author Feedback API**: `/api/stories/{storyId}/feedback` (POST)
 
 ### Data Model
 
@@ -125,6 +162,20 @@ Story sharing consists of four primary components:
   createdAt: timestamp
 }
 // Composite PK: (storyId, userId)
+```
+
+**story_ratings table**:
+```typescript
+{
+  ratingId: uuid (PK),                 // Rating identifier
+  storyId: uuid (FK → stories),        // Story reference
+  userId: uuid (FK → authors) | null,  // Optional for anonymous ratings
+  rating: enum('1'|'2'|'3'|'4'|'5'),   // Star rating
+  feedback: text | null,               // Optional comment
+  isAnonymous: boolean,                // Whether name is hidden
+  includeNameInFeedback: boolean,      // Explicit opt-in for name display
+  createdAt: timestamp
+}
 ```
 
 #### Indexes
@@ -168,6 +219,36 @@ interface ShareModalProps {
 5. Resets form state on modal close
 
 **Translations**: `ShareModal.json` (26 keys across 5 locales)
+
+#### PublicStoryRating (`src/components/PublicStoryRating.tsx`)
+
+**Purpose**: Collect star ratings and optional feedback for public stories, plus private comments to authors.
+
+**Props interface**:
+```typescript
+interface PublicStoryRatingProps {
+  storyId: string;
+  onRatingSubmitted?: (rating: number) => void;
+}
+```
+
+**State highlights**:
+- `ratingData`: Average rating, distribution, and current user’s rating
+- `showFeedbackForm`: Opens for ratings 1–3
+- `includeNameInFeedback`: Opt-in for showing the author’s name
+- `authorSubject` / `authorMessage`: Inputs for feedback to author
+
+**Key behaviors**:
+1. Fetches rating stats and the current user’s rating from `/api/stories/{storyId}/ratings`.
+2. Submits ratings to `/api/stories/{storyId}/ratings` (supports anonymous submissions).
+3. Opens a feedback form for low ratings (1–3 stars).
+4. Sends a private message to the author via `/api/stories/{storyId}/feedback` (sign-in required).
+5. Refreshes rating statistics after submission.
+
+**Where it renders**:
+- Public story page and public chapter pages (`/[locale]/p/[slug]` and `/[locale]/p/[slug]/chapter/[chapterNumber]`).
+
+**Translations**: `StoryRating.json` (localized across 5 locales).
 
 ### API Endpoints
 
@@ -370,6 +451,90 @@ interface ShareModalProps {
 }
 ```
 
+#### POST `/api/stories/{storyId}/ratings`
+
+**Purpose**: Create or update a rating for a story.
+
+**Authentication**: Optional.
+
+**Request body**:
+```typescript
+{
+  rating: '1' | '2' | '3' | '4' | '5',
+  feedback?: string | null,
+  includeNameInFeedback?: boolean
+}
+```
+
+**Behavior**:
+- If the user is authenticated and already rated, the existing rating is updated.
+- If unauthenticated, the rating is stored anonymously.
+- `isAnonymous` is set when the user is not signed in or doesn’t opt-in to include their name.
+
+**Responses**:
+- `200`: Rating created or updated.
+- `400`: Missing story ID or invalid rating.
+- `404`: Story not found.
+- `503`: Rating table not yet available (migration not applied).
+
+#### GET `/api/stories/{storyId}/ratings`
+
+**Purpose**: Fetch rating statistics and the current user’s rating.
+
+**Authentication**: Optional.
+
+**Response**:
+```typescript
+{
+  totalRatings: number,
+  averageRating: number,
+  ratingDistribution: { 5: number; 4: number; 3: number; 2: number; 1: number },
+  ratings: Array<{
+    ratingId: string,
+    rating: string,
+    feedback: string | null,
+    isAnonymous: boolean,
+    includeNameInFeedback: boolean,
+    authorName: string | null,
+    createdAt: string
+  }>,
+  userRating: {
+    ratingId: string,
+    rating: string,
+    feedback: string | null,
+    createdAt: string
+  } | null
+}
+```
+
+**Privacy**:
+- Author names are included only when `includeNameInFeedback` is true and `isAnonymous` is false.
+
+#### POST `/api/stories/{storyId}/feedback`
+
+**Purpose**: Send a private comment to the story author.
+
+**Authentication**: Required (`getCurrentAuthor()` must succeed).
+
+**Request body**:
+```typescript
+{
+  subject: string, // 3–80 characters
+  message: string  // 10–800 characters
+}
+```
+
+**Authorization rules**:
+- The story must be public **or** the requester must be the owner.
+
+**Delivery**:
+- Forwards the feedback to Story Generation Workflow via `/api/story-feedback`.
+
+**Error cases**:
+- `401`: Not authenticated.
+- `403`: Story is private and user is not the owner.
+- `404`: Story not found.
+
 ### Frontend Routes
 
 #### `/[locale]/p/[slug]` - Public Story Page
@@ -490,6 +655,20 @@ interface ShareModalProps {
 - "Story not found" used for both nonexistent stories and unauthorized access
 - 410 Gone for expired links (standard HTTP semantics)
 
+#### Ratings & Feedback Security
+
+**Anonymous ratings**:
+- Ratings can be submitted without authentication.
+- When unauthenticated, the rating is stored without a user ID and is always anonymous.
+
+**Named feedback**:
+- Names are shown only when the user is authenticated **and** explicitly opts in to share their name.
+- The API never exposes names for anonymous ratings.
+
+**Author feedback access**:
+- Sending feedback requires authentication.
+- The story must be public or belong to the authenticated author.
+
 #### Rate Limiting & Abuse Prevention
 
 **Current implementation**: None (TODO item)
@@ -549,6 +728,9 @@ interface ShareModalProps {
 - Revocation logic
 - Slug uniqueness collision handling
 - Authorization rules (owner, editor, viewer)
+- Rating validation and update logic (1–5 bounds, existing rating updates)
+- Anonymous vs. named feedback handling
+- Author feedback subject/message validation
 
 **Integration tests** should verify:
 - Complete share-to-access flow for private links
@@ -556,6 +738,8 @@ interface ShareModalProps {
 - Unauthenticated preview display
 - Post-authentication redirection
 - Collaborator role assignment
+- Ratings GET returns aggregates and user-specific rating
+- Feedback-to-author call enforces authentication and story visibility
 
 **E2E tests** should validate:
 - Share modal UI interactions
@@ -563,6 +747,8 @@ interface ShareModalProps {
 - Copy-to-clipboard functionality
 - Sign-in redirect flow from shared links
 - Expired link error states
+- Public story rating submission flows (1–3 with feedback, 4–5 direct)
+- Author feedback sign-in gating and success confirmation
 
 ### Common Issues & Debugging
 
@@ -579,6 +765,15 @@ interface ShareModalProps {
 **Issue**: Public slug returns 403
 - **Check**: `stories.isPublic = true` in database
 - **Check**: Slug matches exactly (case-sensitive)
+
+**Issue**: Rating submit returns 503
+- **Check**: Migration for `story_ratings` table applied
+- **Check**: Database connectivity for ratings service
+
+**Issue**: Author feedback fails to send
+- **Check**: User is authenticated and has an author record
+- **Check**: Story is public or owned by the sender
+- **Check**: SGW `/api/story-feedback` response status
 
 **Issue**: Duplicate slugs created
 - **Check**: `ensureUniqueSlug()` called before inserting
@@ -607,11 +802,13 @@ All user-facing strings must exist in 5 locales:
 **Files**:
 - `src/messages/en-US/ShareModal.json` (26 keys)
 - `src/messages/en-US/SharedStoryPage.json` (8 keys)
+- `src/messages/en-US/StoryRating.json` (42 keys)
 - Plus equivalents in `pt-PT`, `es-ES`, `fr-FR`, `de-DE`
 
 **Key namespaces**:
 - `ShareModal.*`: Share modal UI strings
 - `SharedStoryPage.*`: Private share access page strings
+- `StoryRating.*`: Public story ratings and feedback UI
 - `StoryReader.*`: Reader UI shared with sharing features
 - `Auth.*`: Authentication prompts in share flows
 - `Actions.*`: Generic action buttons (Try Again, Go Home)
@@ -630,11 +827,14 @@ All user-facing strings must exist in 5 locales:
 
 **UI Components**:
 - `src/components/ShareModal.tsx` - Primary sharing interface (534 lines)
+- `src/components/PublicStoryRating.tsx` - Ratings + author feedback widget (512 lines)
 - `src/app/[locale]/s/[token]/SharedStoryPageClient.tsx` - Private share preview (215 lines)
 - `src/app/[locale]/p/[slug]/PublicStoryPageClient.tsx` - Public story reader
 
 **API Routes**:
 - `src/app/api/stories/[storyId]/share/route.ts` - Share management (369 lines)
+- `src/app/api/stories/[storyId]/ratings/route.ts` - Ratings read/write (223 lines)
+- `src/app/api/stories/[storyId]/feedback/route.ts` - Author feedback relay (90 lines)
 - `src/app/api/share/[token]/route.ts` - Token validation & access grant (191 lines)
 - `src/app/api/p/[slug]/route.ts` - Public story data (78 lines)
 
@@ -645,6 +845,7 @@ All user-facing strings must exist in 5 locales:
 
 **Database Schema**:
 - `src/db/schema/stories.ts` - Tables: `stories`, `share_links`, `story_collaborators` (203 lines)
+- `src/db/schema/ratings.ts` - Table: `story_ratings` (30 lines)
 - `src/db/schema/enums.ts` - Enums: `accessLevelEnum`, `collaboratorRoleEnum`
 
 **Utilities**:
@@ -655,6 +856,7 @@ All user-facing strings must exist in 5 locales:
 **Translations**:
 - `src/messages/en-US/ShareModal.json`
 - `src/messages/en-US/SharedStoryPage.json`
+- `src/messages/en-US/StoryRating.json`
 - (Plus 4 other locales)
 
 ---
