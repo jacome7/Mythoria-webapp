@@ -19,6 +19,7 @@ Mythoria knits together guided creation tools, AI-assisted editing, audience-rea
 - **Story Sharing and Ratings** – Public and private story sharing with time-limited access tokens, social media integration, and collaborative editing permissions. [Learn more](features/story-sharing.md)
 - **Profile & Preferences Hub** – Autosaving profile fields, locale sync, credit history, and notification settings. [Learn more](features/profile-preferences.md)
 - **Support Lifeline** – Categorised contact form with auto-filled user details, analytics tracking, and friendly confirmation flows. [Learn more](features/support-lifeline.md)
+- **Partners & Printing Directory** – Partner application funnel plus a public printing partner directory with filters, pagination, and detail modals. [Learn more](features/partners.md)
 - **Mythoria Home Experience** – Animated hero, sample story carousel, how-it-works timeline, quote of the day, and live story counter. [Learn more](features/homepage.md)
 - **Mythoria Blog & Editorial** – Localised blog listing, MDX-powered articles, reading time indicators, and SEO-friendly navigation. [Learn more](features/blog.md)
 
