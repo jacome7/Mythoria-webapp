@@ -8,7 +8,7 @@ Mythoria knits together guided creation tools, AI-assisted editing, audience-rea
 
 - **Story Creation Forge** – Five guided steps capture author details, creative briefs, characters, styles, and launch generation with credit awareness. [Learn more](features/story-creation-forge.md)
 - **Character Atelier** – Build, edit, and reuse richly described characters with trait pickers and story linking. [Learn more](features/character-atelier.md)
-- **AI Story Studio** – Lexical-powered chapter editing, AI text and image revisions, translation jobs, and version history controls. [Learn more](features/ai-story-studio.md)
+- **Edit Story** – Chapter editing, AI text and image revisions, translation jobs, and audiobook narration controls. [Learn more](features/edit-story.md)
 - **Story Library Console** – Sortable library with quick actions for reading, editing, sharing, duplicating, printing, and monitoring credit balances. [Learn more](features/story-library-console.md)
 - **Reader's Nook** – Responsive reading experience with typography controls, scoped styling, table of contents, and rating prompts. [Learn more](features/reader-nook.md)
 - **Audiobook Forge** – Voice selection, credit validation, generation tracking, and a chapter-aware audio player for published stories. [Learn more](features/audiobook.md)
