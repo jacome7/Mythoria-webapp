@@ -10,7 +10,7 @@ Mythoria knits together guided creation tools, AI-assisted editing, audience-rea
 - **Story Characters** – Build, edit, and reuse richly described characters with trait pickers and story linking. [Learn more](features/story-characters.md)
 - **Edit Story** – Chapter editing, AI text and image revisions, translation jobs, and audiobook narration controls. [Learn more](features/edit-story.md)
 - **Story Library Console** – Sortable library with quick actions for reading, editing, sharing, duplicating, printing, and monitoring credit balances. [Learn more](features/story-library-console.md)
-- **Reader's Nook** – Responsive reading experience with typography controls, scoped styling, table of contents, and rating prompts. [Learn more](features/reader-nook.md)
+- **Story Reader** – Responsive reading experience with typography controls, scoped styling, table of contents, and rating prompts. [Learn more](features/story-reader.md)
 - **Audiobook Forge** – Voice selection, credit validation, generation tracking, and a chapter-aware audio player for published stories. [Learn more](features/audiobook.md)
 - **Printing & Self-Print** – Order printed books or queue downloadable print-ready PDFs, with credit-based pricing and fulfillment tracking. [Learn more](features/printing.md)
 - **Credits & Payments** – Transparent pricing, credit bundles, cart management, promo codes, and Revolut or MB Way checkout. [Learn more](features/credits-payments.md)
