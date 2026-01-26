@@ -1,27 +1,33 @@
-# Mythoria Web App - Features
+# Mythoria Web App - Feature Guide
 
 ## Overview
 
-Mythoria knits together guided creation tools, AI-assisted editing, audience-ready publishing, and a flexible credit economy so storytellers can craft, share, and scale their tales without friction.
+Mythoria is a guided storytelling platform that covers the full lifecycle of story creation: author setup, AI-assisted generation, collaborative editing, publishing, and distribution through reading, audio, and print experiences. The platform is powered by a credit-based economy and localized UI to serve creators globally.
+
+## How to Use This Guide
+
+Each feature listed below has a dedicated document in `docs/features`. Use the table to find the area you care about and follow the link for workflow-level details, UI behavior, and business rules.
 
 ## Feature Directory
 
-- **Story Creation Forge** – Five guided steps capture author details, creative briefs, characters, styles, and launch generation with credit awareness. [Learn more](features/story-creation.md)
-- **Story Characters** – Build, edit, and reuse richly described characters with trait pickers and story linking. [Learn more](features/story-characters.md)
-- **Edit Story** – Chapter editing, AI text and image revisions, translation jobs, and audiobook narration controls. [Learn more](features/edit-story.md)
-- **Story Library Console** – Sortable library with quick actions for reading, editing, sharing, duplicating, printing, and monitoring credit balances. [Learn more](features/story-library-console.md)
-- **Story Reader** – Responsive reading experience with typography controls, scoped styling, table of contents, and rating prompts. [Learn more](features/story-reader.md)
-- **Audiobook Forge** – Voice selection, credit validation, generation tracking, and a chapter-aware audio player for published stories. [Learn more](features/audiobook.md)
-- **Printing & Self-Print** – Order printed books or queue downloadable print-ready PDFs, with credit-based pricing and fulfillment tracking. [Learn more](features/printing.md)
-- **Credits & Payments** – Transparent pricing, credit bundles, cart management, promo codes, and Revolut or MB Way checkout. [Learn more](features/credits-payments.md)
-- **Promo Codes** – Voucher redemption pipeline with validation limits, ledger integration, and future-ready referral hooks. [Learn more](features/promo-codes.md)
-- **Get Inspired (Inspiration Gallery)** – Filterable showcase of featured public stories with ratings and quick access to read more. [Learn more](features/get-inspired.md)
-- **Story Sharing and Ratings** – Public and private story sharing with time-limited access tokens, social media integration, and collaborative editing permissions. [Learn more](features/story-sharing.md)
-- **Profile & Preferences Hub** – Autosaving profile fields, locale sync, credit history, and notification settings. [Learn more](features/profile-preferences.md)
-- **Support Lifeline** – Categorised contact form with auto-filled user details, analytics tracking, and friendly confirmation flows. [Learn more](features/support-lifeline.md)
-- **Partners & Printing Directory** – Partner application funnel plus a public printing partner directory with filters, pagination, and detail modals. [Learn more](features/partners.md)
-- **Mythoria Home Experience** – Animated hero, sample story carousel, how-it-works timeline, quote of the day, and live story counter. [Learn more](features/homepage.md)
-- **Mythoria Blog & Editorial** – Localised blog listing, MDX-powered articles, reading time indicators, and SEO-friendly navigation. [Learn more](features/blog.md)
+| Feature | What it covers | Detail document |
+| --- | --- | --- |
+| Story Creation Forge | Guided five-step flow for author info, creative brief, character setup, style choices, and generation kickoff with credit checks. | [features/story-creation.md](features/story-creation.md) |
+| Story Characters | Character creation, editing, reuse, trait selection, and linking characters to stories. | [features/story-characters.md](features/story-characters.md) |
+| Edit Story | Chapter editing, AI-assisted text and image revision, translations, and audiobook narration controls. | [features/edit-story.md](features/edit-story.md) |
+| Story Library Console | Library filtering, quick actions (read/edit/share/duplicate/print), and credit-aware status visibility. | [features/story-library-console.md](features/story-library-console.md) |
+| Story Reader | Responsive reader with typography controls, table of contents, scoped styling, and ratings prompt. | [features/story-reader.md](features/story-reader.md) |
+| Audiobook Forge | Voice selection, credit validation, generation tracking, and chapter-aware audio playback. | [features/audiobook.md](features/audiobook.md) |
+| Printing & Self-Print | Printed book ordering, downloadable print-ready PDFs, pricing, and fulfillment tracking. | [features/printing.md](features/printing.md) |
+| Credits & Payments | Credit bundles, pricing transparency, cart management, promo code integration, and checkout flows. | [features/credits-payments.md](features/credits-payments.md) |
+| Promo Codes | Voucher redemption validation, ledger integration, and referral-ready plumbing. | [features/promo-codes.md](features/promo-codes.md) |
+| Get Inspired (Inspiration Gallery) | Filterable gallery of featured public stories with ratings and read access. | [features/get-inspired.md](features/get-inspired.md) |
+| Story Sharing and Ratings | Public/private sharing, access tokens, social sharing, and collaborative permissions. | [features/story-sharing.md](features/story-sharing.md) |
+| Profile & Preferences Hub | Profile updates, locale sync, credit history visibility, and notification settings. | [features/profile-preferences.md](features/profile-preferences.md) |
+| Support Lifeline | Categorized support requests with autofilled user details and confirmation messaging. | [features/support-lifeline.md](features/support-lifeline.md) |
+| Partners & Printing Directory | Partner application workflow and public printing partner directory with filtering and detail views. | [features/partners.md](features/partners.md) |
+| Mythoria Home Experience | Marketing homepage sections including hero, carousel, timeline, quotes, and live counters. | [features/homepage.md](features/homepage.md) |
+| Mythoria Blog & Editorial | Localized blog listing, MDX articles, reading time, and SEO navigation. | [features/blog.md](features/blog.md) |
 
 ## Last Updated
 
