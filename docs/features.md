@@ -15,7 +15,7 @@ Mythoria knits together guided creation tools, AI-assisted editing, audience-rea
 - **Print Keepsake Shop** – Three-step wizard for story preview, address management, credit-priced print options, and MB Way support. [Learn more](features/print-keepsake-shop.md)
 - **Credits & Payments** – Transparent pricing, credit bundles, cart management, promo codes, and Revolut or MB Way checkout. [Learn more](features/credits-payments.md)
 - **Promo Codes** – Voucher redemption pipeline with validation limits, ledger integration, and future-ready referral hooks. [Learn more](features/promo-codes.md)
-- **Inspiration Gallery** – Filterable showcase of featured public stories with ratings and quick access to read more. [Learn more](features/inspiration-gallery.md)
+- **Get Inspired (Inspiration Gallery)** – Filterable showcase of featured public stories with ratings and quick access to read more. [Learn more](features/get-inspired.md)
 - **Public Showcase & Ratings** – Public story pages, share tokens with access gating, and feedback collection for every tale. [Learn more](features/public-showcase.md)
 - **Profile & Preferences Hub** – Autosaving profile fields, locale sync, credit history, and notification settings. [Learn more](features/profile-preferences.md)
 - **Support Lifeline** – Categorised contact form with auto-filled user details, analytics tracking, and friendly confirmation flows. [Learn more](features/support-lifeline.md)
