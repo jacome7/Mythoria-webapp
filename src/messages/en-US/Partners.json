@@ -55,6 +55,21 @@
           "label": "Website",
           "placeholder": "https://yourcompany.com"
         },
+        "logo": {
+          "label": "Company Logo (optional)",
+          "sizeHint": "Up to {size} MB. Max {max}px on either side.",
+          "squareHint": "For best results, upload a square logo.",
+          "uploading": "Uploading logo...",
+          "preview": "Logo preview",
+          "previewAlt": "Company logo preview",
+          "errors": {
+            "invalidType": "Please upload a PNG, JPG, or SVG logo.",
+            "tooLarge": "Logo is larger than 4 MB.",
+            "tooLargeDimensions": "Logo exceeds the 2048px maximum dimension.",
+            "invalidImage": "We couldn't read this image. Try a different file.",
+            "uploadFailed": "Logo upload failed. Please try again."
+          }
+        },
         "primaryLocation": {
           "label": "Primary Location",
           "placeholder": "Select a country"

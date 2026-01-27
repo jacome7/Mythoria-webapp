@@ -224,6 +224,14 @@ export const envManifest: EnvVarDescriptor[] = [
     default: 'mythoria-generated-stories',
     source: 'substitution',
   },
+  {
+    name: 'PUBLIC_STORAGE_BUCKET_NAME',
+    required: false,
+    scopes: ['prod', 'runtime', 'dev'],
+    default: 'mythoria-public',
+    source: 'substitution',
+    note: 'Public bucket for partner logos and other public assets.',
+  },
 
   // Authentication (Clerk / NextAuth)
   {

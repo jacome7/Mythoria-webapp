@@ -55,6 +55,21 @@
           "label": "Website",
           "placeholder": "https://suaempresa.com"
         },
+        "logo": {
+          "label": "Logótipo da Empresa (opcional)",
+          "sizeHint": "Até {size} MB. Máximo de {max}px em cada lado.",
+          "squareHint": "Para melhores resultados, envie um logótipo quadrado.",
+          "uploading": "A carregar o logótipo...",
+          "preview": "Pré-visualização do logótipo",
+          "previewAlt": "Pré-visualização do logótipo da empresa",
+          "errors": {
+            "invalidType": "Envie um logótipo em PNG, JPG ou SVG.",
+            "tooLarge": "O logótipo tem mais de 4 MB.",
+            "tooLargeDimensions": "O logótipo ultrapassa o máximo de 2048px.",
+            "invalidImage": "Não foi possível ler esta imagem. Tente outro ficheiro.",
+            "uploadFailed": "Falha ao carregar o logótipo. Tente novamente."
+          }
+        },
         "primaryLocation": {
           "label": "Localização Principal",
           "placeholder": "Selecione um país"

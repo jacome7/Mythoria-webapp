@@ -55,6 +55,21 @@
           "label": "Site Web",
           "placeholder": "https://votreentreprise.com"
         },
+        "logo": {
+          "label": "Logo de l'entreprise (facultatif)",
+          "sizeHint": "Jusqu'à {size} Mo. Maximum {max}px sur un côté.",
+          "squareHint": "Pour de meilleurs résultats, envoyez un logo carré.",
+          "uploading": "Téléchargement du logo...",
+          "preview": "Aperçu du logo",
+          "previewAlt": "Aperçu du logo de l'entreprise",
+          "errors": {
+            "invalidType": "Veuillez envoyer un logo en PNG, JPG ou SVG.",
+            "tooLarge": "Le logo dépasse 4 Mo.",
+            "tooLargeDimensions": "Le logo dépasse la limite de 2048px.",
+            "invalidImage": "Impossible de lire cette image. Essayez un autre fichier.",
+            "uploadFailed": "Le téléchargement du logo a échoué. Veuillez réessayer."
+          }
+        },
         "primaryLocation": {
           "label": "Localisation Principale",
           "placeholder": "Sélectionnez un pays"

@@ -55,6 +55,21 @@
           "label": "Web",
           "placeholder": "https://tuempresa.com"
         },
+        "logo": {
+          "label": "Logo de la Empresa (opcional)",
+          "sizeHint": "Hasta {size} MB. Máximo {max}px por lado.",
+          "squareHint": "Para mejores resultados, sube un logo cuadrado.",
+          "uploading": "Subiendo el logo...",
+          "preview": "Vista previa del logo",
+          "previewAlt": "Vista previa del logo de la empresa",
+          "errors": {
+            "invalidType": "Sube un logo en PNG, JPG o SVG.",
+            "tooLarge": "El logo supera los 4 MB.",
+            "tooLargeDimensions": "El logo supera el máximo de 2048px.",
+            "invalidImage": "No pudimos leer esta imagen. Prueba con otro archivo.",
+            "uploadFailed": "No se pudo subir el logo. Inténtalo de nuevo."
+          }
+        },
         "primaryLocation": {
           "label": "Ubicación Principal",
           "placeholder": "Selecciona un país"

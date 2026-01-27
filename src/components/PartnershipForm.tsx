@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useUser } from '@clerk/nextjs';
+import NextImage from 'next/image';
 import { useTranslations } from 'next-intl';
 import { FaHandshake, FaPaperPlane } from 'react-icons/fa';
 import { trackPartnership } from '../lib/analytics';
@@ -13,6 +14,10 @@ interface PartnershipFormProps {
 const COUNTRY_CODES = ['PT', 'ES', 'FR', 'US', 'GB', 'DE', 'IT', 'BR'];
 
 const PARTNERSHIP_TYPE_CODES = ['printing_service', 'attraction_venue', 'retail_brand', 'other'];
+
+const MAX_LOGO_BYTES = 4 * 1024 * 1024;
+const MAX_LOGO_DIMENSION = 2048;
+const ALLOWED_LOGO_TYPES = ['image/png', 'image/jpeg', 'image/svg+xml'];
 
 const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
   const { user, isSignedIn } = useUser();
@@ -27,10 +32,22 @@ const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
     partnershipType: '',
     businessDescription: '',
   });
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
+  const [logoError, setLogoError] = useState<string | null>(null);
+  const [logoUploading, setLogoUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [responseMessage, setResponseMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
+  const logoHints = useMemo(
+    () => ({
+      sizeText: t('fields.logo.sizeHint', { size: 4, max: 2048 }),
+      squareText: t('fields.logo.squareHint'),
+    }),
+    [t],
+  );
 
   // Auto-fill email and name if user is logged in
   useEffect(() => {
@@ -93,6 +110,96 @@ const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
     }));
   };
 
+  const resetLogo = () => {
+    if (logoPreviewUrl) {
+      URL.revokeObjectURL(logoPreviewUrl);
+    }
+    setLogoFile(null);
+    setLogoPreviewUrl(null);
+    setLogoError(null);
+  };
+
+  const validateLogoDimensions = async (file: File, previewUrl: string) => {
+    const image = new window.Image();
+
+    await new Promise<void>((resolve, reject) => {
+      image.onload = () => resolve();
+      image.onerror = () => reject(new Error('load_failed'));
+      image.src = previewUrl;
+    });
+
+    const width = image.naturalWidth;
+    const height = image.naturalHeight;
+
+    if (!width || !height) {
+      throw new Error('missing_dimensions');
+    }
+
+    if (Math.max(width, height) > MAX_LOGO_DIMENSION) {
+      throw new Error('too_large_dimensions');
+    }
+  };
+
+  const handleLogoChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null;
+    setLogoError(null);
+
+    if (!file) {
+      resetLogo();
+      return;
+    }
+
+    if (!ALLOWED_LOGO_TYPES.includes(file.type)) {
+      resetLogo();
+      setLogoError(t('fields.logo.errors.invalidType'));
+      return;
+    }
+
+    if (file.size > MAX_LOGO_BYTES) {
+      resetLogo();
+      setLogoError(t('fields.logo.errors.tooLarge'));
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(file);
+
+    try {
+      await validateLogoDimensions(file, previewUrl);
+      if (logoPreviewUrl) {
+        URL.revokeObjectURL(logoPreviewUrl);
+      }
+      setLogoFile(file);
+      setLogoPreviewUrl(previewUrl);
+      setLogoError(null);
+    } catch (error) {
+      URL.revokeObjectURL(previewUrl);
+      resetLogo();
+      if (error instanceof Error && error.message === 'too_large_dimensions') {
+        setLogoError(t('fields.logo.errors.tooLargeDimensions'));
+      } else {
+        setLogoError(t('fields.logo.errors.invalidImage'));
+      }
+    }
+  };
+
+  const uploadLogo = async (file: File) => {
+    const payload = new FormData();
+    payload.append('file', file);
+
+    const response = await fetch('/api/partners/logo-upload', {
+      method: 'POST',
+      body: payload,
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result?.success) {
+      throw new Error('logo_upload_failed');
+    }
+
+    return result.publicUrl as string;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -109,10 +216,24 @@ const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
       return;
     }
 
+    if (logoError) {
+      setResponseMessage(logoError);
+      setIsSuccess(false);
+      setShowModal(true);
+      return;
+    }
+
     setIsLoading(true);
     setResponseMessage('');
 
     try {
+      let logoUrl: string | undefined;
+
+      if (logoFile) {
+        setLogoUploading(true);
+        logoUrl = await uploadLogo(logoFile);
+      }
+
       // Track partnership application submission
       trackPartnership.submitted({
         company_name: formData.companyName,
@@ -121,6 +242,7 @@ const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
         has_phone: !!formData.phone.trim(),
         has_website: !!formData.website.trim(),
         has_description: !!formData.businessDescription.trim(),
+        has_logo: !!logoUrl,
       });
 
       const response = await fetch('/api/partners', {
@@ -137,6 +259,7 @@ const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
           primaryLocation: formData.primaryLocation,
           partnershipType: formData.partnershipType,
           businessDescription: formData.businessDescription.trim() || undefined,
+          logoUrl: logoUrl || undefined,
         }),
       });
 
@@ -158,6 +281,7 @@ const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
           partnershipType: '',
           businessDescription: '',
         });
+        resetLogo();
 
         // Redirect to homepage after 5 seconds
         setTimeout(() => {
@@ -170,10 +294,15 @@ const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
       }
     } catch (error) {
       console.error('Partnership form error:', error);
-      setResponseMessage(t('errorMessage'));
+      const errorMessage =
+        error instanceof Error && error.message === 'logo_upload_failed'
+          ? t('fields.logo.errors.uploadFailed')
+          : t('errorMessage');
+      setResponseMessage(errorMessage);
       setIsSuccess(false);
       setShowModal(true);
     } finally {
+      setLogoUploading(false);
       setIsLoading(false);
     }
   };
@@ -283,6 +412,45 @@ const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
             />
           </div>
 
+          {/* Company Logo (Optional) */}
+          <div className="form-control">
+            <label className="label py-1" htmlFor="companyLogo">
+              <span className="label-text font-medium text-sm">
+                {t('fields.logo.label')}
+              </span>
+            </label>
+            <input
+              id="companyLogo"
+              name="companyLogo"
+              type="file"
+              accept={ALLOWED_LOGO_TYPES.join(',')}
+              onChange={handleLogoChange}
+              className="file-input file-input-bordered file-input-primary w-full h-12"
+              disabled={isLoading}
+            />
+            <div className="mt-2 space-y-1 text-xs text-base-content/60">
+              <p>{logoHints.sizeText}</p>
+              <p>{logoHints.squareText}</p>
+            </div>
+            {logoUploading && (
+              <p className="mt-2 text-xs text-primary">{t('fields.logo.uploading')}</p>
+            )}
+            {logoError && <p className="mt-2 text-xs text-error">{logoError}</p>}
+            {logoPreviewUrl && (
+              <div className="mt-3 rounded-lg border border-base-300 bg-base-100 p-3">
+                <p className="text-xs text-base-content/70 mb-2">{t('fields.logo.preview')}</p>
+                <NextImage
+                  src={logoPreviewUrl}
+                  alt={t('fields.logo.previewAlt')}
+                  width={96}
+                  height={96}
+                  unoptimized
+                  className="h-24 w-24 rounded-md border border-base-200 object-contain"
+                />
+              </div>
+            )}
+          </div>
+
           {/* Primary Location */}
           <div className="form-control">
             <label className="label py-1" htmlFor="primaryLocation">
@@ -353,7 +521,7 @@ const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
 
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || logoUploading}
             className="btn btn-primary btn-block h-12 mt-6 text-lg"
           >
             {isLoading ? (
