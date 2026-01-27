@@ -331,35 +331,32 @@ const PartnersDirectorySection = () => {
                 className="card bg-base-100 shadow-lg text-left transition hover:shadow-xl"
               >
                 <div className="card-body">
-                  <div className="flex items-center gap-4">
-                    <div className="relative h-16 w-16 min-h-16 min-w-16 aspect-square shrink-0 rounded-lg bg-base-200 overflow-hidden">
+                  <div className="flex items-start gap-4">
+                    <div className="relative h-20 w-28 min-h-20 min-w-28 shrink-0 rounded-lg bg-base-200 overflow-hidden">
                       <Image
                         src={partner.logoUrl || PLACEHOLDER_LOGO}
                         alt={partner.name}
                         fill
-                        className={partner.logoUrl ? 'object-contain' : 'object-cover'}
-                        sizes="64px"
+                        className={partner.logoUrl ? 'object-contain object-center' : 'object-cover object-center'}
+                        sizes="112px"
                         unoptimized
                       />
                     </div>
-                    <div className="space-y-2">
+                    <div className="min-w-0 flex-1 space-y-2">
                       <div className="flex flex-wrap items-center gap-2">
                         <h3 className="text-lg font-bold text-primary">{partner.name}</h3>
-                        {typeMeta && (
-                          <span className="badge badge-lg border-primary/30 bg-primary/10 text-primary shadow-sm">
-                            {TypeIcon && <TypeIcon className="text-lg" />}
-                          </span>
-                        )}
                       </div>
-                      {partner.shortDescription && (
-                        <p className="text-sm text-base-content/70">{partner.shortDescription}</p>
-                      )}
+                      <div className="text-sm text-base-content/70 flex items-center gap-2">
+                        <FaMapMarkerAlt className="text-primary" />
+                        <span>
+                          {partner.city || partner.countryCode || t('list.locationFallback')}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  <div className="mt-4 text-sm text-base-content/70 flex items-center gap-2">
-                    <FaMapMarkerAlt className="text-primary" />
-                    <span>{partner.city || partner.countryCode || t('list.locationFallback')}</span>
-                  </div>
+                  {partner.shortDescription && (
+                    <p className="text-sm text-base-content/70">{partner.shortDescription}</p>
+                  )}
                   <div className="card-actions mt-4 flex flex-wrap gap-2">
                     {actionItems.map((action) =>
                       action.href ? (
@@ -424,28 +421,36 @@ const PartnersDirectorySection = () => {
             <div className="modal modal-open">
               <div className="modal-box max-w-2xl max-h-[85vh] overflow-y-auto">
                 <div className="flex items-start gap-4">
-                  <div className="relative h-20 w-20 rounded-lg bg-base-200 overflow-hidden">
+                  <div className="relative h-20 w-28 min-h-20 min-w-28 shrink-0 rounded-lg bg-base-200 overflow-hidden">
                     <Image
                       src={selectedPartner.logoUrl || PLACEHOLDER_LOGO}
                       alt={selectedPartner.name}
                       fill
-                      className="object-contain"
-                      sizes="80px"
+                      className="object-contain object-center"
+                      sizes="112px"
                       unoptimized
                     />
                   </div>
-                  <div className="space-y-2">
+                  <div className="min-w-0 flex-1 space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="text-2xl font-bold text-primary">{selectedPartner.name}</h3>
-                      {typeMeta && (
-                        <span className="badge badge-outline text-xs">{t(typeMeta.badgeKey)}</span>
-                      )}
                     </div>
-                    {selectedPartner.shortDescription && (
-                      <p className="text-base-content/70">{selectedPartner.shortDescription}</p>
+                    {selectedPartner.websiteUrl && (
+                      <a
+                        className="text-sm text-base-content/70 link link-hover block max-w-full truncate"
+                        href={selectedPartner.websiteUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        title={selectedPartner.websiteUrl}
+                      >
+                        {selectedPartner.websiteUrl}
+                      </a>
                     )}
                   </div>
                 </div>
+                {selectedPartner.shortDescription && (
+                  <p className="text-base-content/70 mt-2">{selectedPartner.shortDescription}</p>
+                )}
 
                 <div className="mt-6 space-y-4">
                   {selectedPartner.email && (
@@ -495,26 +500,6 @@ const PartnersDirectorySection = () => {
                 </div>
 
                 <div className="modal-action flex flex-wrap gap-2">
-                  {selectedPartner.websiteUrl && (
-                    <a
-                      className="btn btn-primary"
-                      href={selectedPartner.websiteUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {t('actions.visitWebsite')}
-                    </a>
-                  )}
-                  {address && (
-                    <a
-                      className="btn btn-outline"
-                      href={buildMapsUrl(address)}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {t('actions.getDirections')}
-                    </a>
-                  )}
                   <button className="btn" onClick={() => setSelectedPartner(null)}>
                     {t('modal.close')}
                   </button>
