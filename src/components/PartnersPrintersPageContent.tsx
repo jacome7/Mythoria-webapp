@@ -88,6 +88,8 @@ const PartnersDirectorySection = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const isLoadingRef = useRef(false);
+  const hasMoreRef = useRef(true);
 
   const availableCities = useMemo(() => {
     const country = COUNTRY_OPTIONS.find((option) => option.code === countryCode);
@@ -98,35 +100,44 @@ const PartnersDirectorySection = () => {
     setPartners([]);
     setOffset(0);
     setHasMore(true);
+    hasMoreRef.current = true;
     setError(null);
   }, []);
 
   useEffect(() => {
     resetAndLoad();
-  }, [countryCode, city, partnerType, resetAndLoad]);
+  }, [countryCode, city, locale, partnerType, resetAndLoad]);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
   const loadPartners = useCallback(
-    async (currentOffset: number) => {
-      if (isLoading || !hasMore) return;
+    async (currentOffset: number, options?: { force?: boolean }) => {
+      if (isLoadingRef.current || (!hasMoreRef.current && !options?.force)) return;
 
+      const params = new URLSearchParams({
+        limit: PAGE_SIZE.toString(),
+        offset: currentOffset.toString(),
+        locale,
+        type: partnerType,
+      });
+
+      if (countryCode) params.set('countryCode', countryCode);
+      if (city) params.set('city', city);
+
+      const applyResponse = (data: PartnerResponse) => {
+        setPartners((prev) => (currentOffset === 0 ? data.items : [...prev, ...data.items]));
+        setHasMore(data.hasMore);
+        hasMoreRef.current = data.hasMore;
+        setOffset(data.nextOffset ?? currentOffset);
+      };
+
+      isLoadingRef.current = true;
       setIsLoading(true);
       setError(null);
 
       try {
-        const params = new URLSearchParams({
-          limit: PAGE_SIZE.toString(),
-          offset: currentOffset.toString(),
-          locale,
-          type: partnerType,
-        });
-
-        if (countryCode) params.set('countryCode', countryCode);
-        if (city) params.set('city', city);
-
         const response = await fetch(`/api/partners/directory?${params.toString()}`);
         const data: PartnerResponse = await response.json();
 
@@ -134,22 +145,21 @@ const PartnersDirectorySection = () => {
           throw new Error('Failed to load partners');
         }
 
-        setPartners((prev) => (currentOffset === 0 ? data.items : [...prev, ...data.items]));
-        setHasMore(data.hasMore);
-        setOffset(data.nextOffset ?? currentOffset);
+        applyResponse(data);
       } catch (fetchError) {
         console.error(fetchError);
         setError(t('list.error'));
       } finally {
+        isLoadingRef.current = false;
         setIsLoading(false);
       }
     },
-    [city, countryCode, hasMore, isLoading, locale, partnerType, t],
+    [city, countryCode, locale, partnerType, t],
   );
 
   useEffect(() => {
-    loadPartners(0);
-  }, [loadPartners]);
+    loadPartners(0, { force: true });
+  }, [city, countryCode, locale, partnerType, loadPartners]);
 
   useEffect(() => {
     if (!sentinelRef.current || !hasMore) return;
@@ -336,9 +346,8 @@ const PartnersDirectorySection = () => {
                       <div className="flex flex-wrap items-center gap-2">
                         <h3 className="text-lg font-bold text-primary">{partner.name}</h3>
                         {typeMeta && (
-                          <span className="badge badge-outline text-xs flex items-center gap-1">
-                            {TypeIcon && <TypeIcon />}
-                            {t(typeMeta.badgeKey)}
+                          <span className="badge badge-lg border-primary/30 bg-primary/10 text-primary shadow-sm">
+                            {TypeIcon && <TypeIcon className="text-lg" />}
                           </span>
                         )}
                       </div>
