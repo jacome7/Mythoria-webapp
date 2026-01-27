@@ -31,4 +31,4 @@ Each feature listed below has a dedicated document in `docs/features`. Use the t
 
 ## Last Updated
 
-September 2025
+26-January-2026

@@ -109,11 +109,11 @@ npm run dev           # Start Turbopack dev server (http://localhost:3000)
 
 ### User-Facing Text Voice
 
-Mythoria's voice represents a young man in his early 20s:
-
+Mythoria's voice is:
 - Direct and clear, but also playful and warm
 - Use emojis very sparingly and only for emphasis
-- Storytelling-steeped: appropriate references to books/films, poetic touches or rhymes when fitting
+- When needed it can be Storytelling-steeped: appropriate references to books/films, poetic touches or rhymes when fitting
+- When writting in European Portuguese, treat the customer as "você" instead of "tu". Example: "Como você está?" instead of "Como tu estás?" or "Escolha uma opção" instead of "Escolhe uma opção". 
 
 ### Supported Locales
 

@@ -1,29 +1,16 @@
 {
   "PartnersList": {
-    "metadata": {
-      "title": "Parceiros de Impressão",
-      "description": "Encontre um parceiro de impressão Mythoria perto de si para dar vida às histórias.",
-      "keywords": [
-        "parceiros de impressão Mythoria",
-        "gráficas locais",
-        "impressão de livros personalizados",
-        "livros recordação",
-        "parceiros print-on-demand",
-        "impressão de histórias"
-      ],
-      "ogTitle": "Parceiros de Impressão Mythoria",
-      "ogDescription": "Explore gráficas aprovadas pela Mythoria e escolha onde imprimir as suas histórias.",
-      "ogImageAlt": "Parceiros de Impressão Mythoria",
-      "twitterTitle": "Parceiros de Impressão Mythoria",
-      "twitterDescription": "Encontre uma gráfica de confiança para transformar a sua história num livro real."
-    },
-    "hero": {
-      "title": "Encontre um Parceiro de Impressão",
-      "subtitle": "Escolha uma gráfica de confiança para imprimir as suas histórias Mythoria.",
-      "tagline": "Magia local de impressão, qualidade Mythoria."
+    "section": {
+      "title": "Serviços Locais e Vantagens",
+      "subtitle": "Escolha um tipo de parceiro e uma localização para descobrir o que há por perto."
     },
     "filters": {
-      "title": "Filtrar por localização",
+      "title": "Filtrar a pesquisa",
+      "types": {
+        "printers": "Gráficas",
+        "attractions": "Atrações",
+        "retail": "Retalho"
+      },
       "countryLabel": "País",
       "countryPlaceholder": "Todos os países",
       "cityLabel": "Cidade / Região",
@@ -31,12 +18,22 @@
       "clear": "Limpar filtros"
     },
     "list": {
-      "title": "Parceiros de impressão",
-      "empty": "Não encontramos parceiros com esses filtros.",
+      "helper": "Use os filtros para encontrar \"Serviços de Impressão\" ou \"Atrações\" na sua cidade.",
+      "empty": "Não encontrámos parceiros para esses filtros.",
       "loadMore": "Carregar mais",
       "loading": "A carregar parceiros...",
-      "error": "Não foi possível carregar os parceiros. Tente novamente.",
+      "error": "Não foi possível carregar os parceiros. Tenta novamente.",
       "locationFallback": "Localização disponível mediante pedido"
+    },
+    "types": {
+      "printer": "Serviço de Impressão",
+      "attraction": "Atração / Espaço",
+      "retail": "Retalho / Marca"
+    },
+    "actions": {
+      "getDirections": "Obter Direções",
+      "visitWebsite": "Visitar Website",
+      "viewDetails": "Ver Detalhes"
     },
     "modal": {
       "email": "Email",
@@ -89,7 +86,7 @@
       "NL": {
         "amsterdam": "Amesterdão",
         "rotterdam": "Roterdão",
-        "utrecht": "Utreque"
+        "utrecht": "Utrecht"
       },
       "BE": {
         "brussels": "Bruxelas",

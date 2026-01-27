@@ -1,29 +1,16 @@
 {
   "PartnersList": {
-    "metadata": {
-      "title": "Printing Partners",
-      "description": "Find a Mythoria printing partner near you to bring stories to life.",
-      "keywords": [
-        "Mythoria printing partners",
-        "local print shops",
-        "storybook printing",
-        "custom book printing",
-        "story keepsakes",
-        "print-on-demand partners"
-      ],
-      "ogTitle": "Mythoria Printing Partners",
-      "ogDescription": "Browse Mythoria-approved print shops and choose a partner to print your stories.",
-      "ogImageAlt": "Mythoria Printing Partners",
-      "twitterTitle": "Mythoria Printing Partners",
-      "twitterDescription": "Find a trusted print shop to turn your story into a keepsake."
-    },
-    "hero": {
-      "title": "Find a Printing Partner",
-      "subtitle": "Choose a trusted shop to print your Mythoria stories.",
-      "tagline": "Local print magic, Mythoria quality."
+    "section": {
+      "title": "Local Services & Perks",
+      "subtitle": "Choose a partner type and location to explore what's nearby."
     },
     "filters": {
-      "title": "Filter by location",
+      "title": "Filter your search",
+      "types": {
+        "printers": "Printers",
+        "attractions": "Attractions",
+        "retail": "Retail"
+      },
       "countryLabel": "Country",
       "countryPlaceholder": "All countries",
       "cityLabel": "City / Region",
@@ -31,12 +18,22 @@
       "clear": "Clear filters"
     },
     "list": {
-      "title": "Printing partners",
+      "helper": "Use the filters to find \"Printing Services\" or \"Attractions\" in your city.",
       "empty": "No partners found for those filters.",
       "loadMore": "Load more",
       "loading": "Loading partners...",
       "error": "We couldn't load partners. Please try again.",
       "locationFallback": "Location available on request"
+    },
+    "types": {
+      "printer": "Printing Service",
+      "attraction": "Attraction / Venue",
+      "retail": "Retail / Brand"
+    },
+    "actions": {
+      "getDirections": "Get Directions",
+      "visitWebsite": "Visit Website",
+      "viewDetails": "View Details"
     },
     "modal": {
       "email": "Email",

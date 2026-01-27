@@ -1,94 +1,50 @@
 {
   "Partners": {
     "metadata": {
-      "title": "Seja Parceiro da Mythoria",
-      "description": "Junte-se à Mythoria como parceiro de impressão, local de atração ou marca retalhista. Faça crescer o seu negócio conectando-se a milhares de famílias criativas. Candidate-se agora para se tornar um parceiro de confiança.",
+      "title": "Os Nossos Parceiros | Mythoria",
+      "description": "Encontra parceiros Mythoria para impressão, atrações e benefícios de retalho perto de ti. Queres colaborar? Candidata-te à Aliança Mythoria.",
       "keywords": [
-        "oportunidades de parceria",
-        "parceria de serviços de impressão",
-        "parceria de local de atração",
-        "colaboração de marca retalhista",
-        "parceria empresarial",
-        "impressão sob demanda",
-        "parceria de entretenimento familiar",
-        "parceria de souvenirs de local"
+        "parceiros Mythoria",
+        "serviços de impressão",
+        "atrações para famílias",
+        "benefícios de retalho",
+        "parceiros locais",
+        "impressão de livros",
+        "experiências em família",
+        "candidatura a parceria"
       ],
-      "ogTitle": "Seja Parceiro da Mythoria - Faça Crescer o Seu Negócio",
-      "ogDescription": "Conecte-se a milhares de famílias criativas. Torne-se um parceiro de impressão, local de atração ou marca retalhista da Mythoria. Candidate-se agora.",
-      "ogImageAlt": "Programa de Parceria Mythoria",
-      "twitterTitle": "Seja Parceiro da Mythoria - Faça Crescer o Seu Negócio",
-      "twitterDescription": "Junte-se ao nosso programa de parceria e conecte-se a milhares de famílias criativas que procuram experiências únicas de storytelling."
+      "ogTitle": "Os Nossos Parceiros - Diretório Mythoria",
+      "ogDescription": "Encontra serviços de impressão, atrações e parceiros de retalho que dão vida às histórias Mythoria. Empresas podem candidatar-se.",
+      "ogImageAlt": "Diretório de Parceiros Mythoria",
+      "twitterTitle": "Os Nossos Parceiros - Diretório Mythoria",
+      "twitterDescription": "Encontra serviços de impressão, atrações e parceiros de retalho. Empresas podem candidatar-se à Aliança Mythoria."
     },
     "hero": {
-      "title": "Faça Crescer o Seu Negócio com a Mythoria.",
-      "subtitle": "Apresentamos-lhe milhares de famílias criativas. Ganhe novos clientes leais.",
-      "tagline": "É o próximo capítulo perfeito para o seu negócio.",
-      "cta": "Candidate-se Agora"
+      "title": "Os Nossos Parceiros",
+      "subtitle": "Do seu ecrã para as suas mãos.",
+      "body": "A história não termina quando você clica em \"Guardar\". Juntámo-nos a especialistas locais para o ajudar a imprimir os seus livros, descobrir novas aventuras e desbloquear recompensas exclusivas. Encontre o local mais próximo para dar vida à sua criação Mythoria.",
+      "ctaPrimary": "Encontrar um Local",
+      "ctaSecondary": "Seja Nosso Parceiro"
     },
-    "partnershipTypes": {
-      "title": "Uma Parceria à Medida do Seu Negócio.",
-      "subtitle": "Seja uma gráfica local ou uma atração nacional, temos uma forma de crescer juntos.",
-      "printing": {
-        "title": "Para Serviços de Impressão",
-        "description": "Torne-se a gráfica local de confiança das famílias Mythoria. Enviamos-lhe um fluxo constante de encomendas de impressão sob demanda, completas com ficheiros prontos para impressão. Você apenas cuida da magia de transformar as nossas histórias digitais em tesouros do mundo real."
-      },
-      "attractions": {
-        "title": "Para Atrações e Locais",
-        "description": "Transforme o seu parque, jardim zoológico ou aquário no cenário de uma aventura única. Ofereça uma lembrança perfeita que impulsiona a venda de bilhetes e dá às famílias uma forma mágica de recordar a sua visita, muito depois de terem ido para casa."
-      },
-      "retailers": {
-        "title": "Para Retalhistas e Marcas",
-        "description": "Ofereça aos seus clientes uma experiência única de marca partilhada. Vamos criar uma versão personalizada da Mythoria, ou tornar as suas lojas o local exclusivo e de confiança para as famílias recolherem os seus livros únicos."
-      }
-    },
-    "howItWorks": {
-      "title": "Começar é Fácil",
-      "step1": {
-        "title": "Conte-nos a sua História",
-        "description": "Preencha o formulário simples abaixo para apresentar o seu negócio e o que faz."
-      },
-      "step2": {
-        "title": "Vamos Traçar a Nossa Missão",
-        "description": "A nossa equipa irá rever a sua candidatura e contactá-lo para conversar sobre a combinação perfeita."
-      },
-      "step3": {
-        "title": "Comece a Aventura",
-        "description": "Uma vez aprovado, faremos a sua integração e começaremos a enviar novos clientes na sua direção."
-      }
-    },
-    "benefits": {
-      "title": "Porquê Ser Parceiro da Mythoria?",
-      "accessFamilies": {
-        "title": "Acesso a Milhares de Famílias",
-        "description": "Conecte-se à nossa comunidade crescente de famílias criativas e envolvidas que procuram experiências únicas."
-      },
-      "seamlessIntegration": {
-        "title": "Integração Perfeita",
-        "description": "Tratamos da tecnologia, marketing e aquisição de clientes. Você foca-se no que faz de melhor."
-      },
-      "recurringRevenue": {
-        "title": "Receita Recorrente",
-        "description": "Construa um fluxo constante de negócio através do nosso modelo de subscrição e base de clientes leais."
-      },
-      "brandAssociation": {
-        "title": "Associação de Marca",
-        "description": "Alinhe o seu negócio com uma marca confiável e inovadora que as famílias adoram."
-      }
+    "b2b": {
+      "title": "Junta-te à Aliança Mythoria",
+      "body": "Estamos a crescer rápido e precisamos de parceiros no terreno. Se você tem um negócio que serve famílias, vamos colaborar. Você ganha tráfego, nós ganhamos utilizadores felizes. É um clássico enredo win-win.",
+      "cta": "Candidatar-me à Parceria"
     },
     "form": {
       "title": "Pronto para Entrar na História?",
       "subtitle": "Vamos começar a conversa. Preencha o formulário e a nossa equipa de parcerias entrará em contacto.",
       "fields": {
         "name": {
-          "label": "O seu Nome",
+          "label": "O Seu Nome",
           "placeholder": "João Silva"
         },
         "companyName": {
           "label": "Nome da Empresa",
-          "placeholder": "A Sua Empresa Lda."
+          "placeholder": "Sua Empresa Lda."
         },
         "email": {
-          "label": "O seu Email",
+          "label": "O Seu Email",
           "placeholder": "joao@empresa.com"
         },
         "phone": {
@@ -109,7 +65,7 @@
         },
         "businessDescription": {
           "label": "Conte-nos um pouco sobre o seu negócio",
-          "placeholder": "Conte-nos sobre o seu negócio e o que o torna perfeito para ser parceiro da Mythoria..."
+          "placeholder": "Fale sobre o seu negócio e o que o torna uma ótima opção para parcerias com a Mythoria..."
         }
       },
       "countries": {
@@ -124,17 +80,17 @@
       },
       "partnershipTypes": {
         "printing_service": "Serviço de Impressão",
-        "attraction_venue": "Atração / Local",
+        "attraction_venue": "Atração / Espaço",
         "retail_brand": "Retalho / Marca",
         "other": "Outro"
       },
       "submit": "Enviar Candidatura",
       "validationError": "Por favor, preencha todos os campos obrigatórios.",
       "successTitle": "Candidatura Recebida!",
-      "errorTitle": "Ups!",
-      "successMessage": "Obrigado pelo seu interesse! Recebemos a sua candidatura e a nossa equipa de parcerias irá revê-la em breve. Entraremos em contacto dentro de 2-3 dias úteis.",
-      "redirectMessage": "A redirecionar para a página inicial dentro de momentos...",
-      "errorMessage": "Falha ao enviar a candidatura de parceria. Por favor, tente novamente.",
+      "errorTitle": "Ops!",
+      "successMessage": "Obrigado pelo seu interesse! Recebemos a sua candidatura e a nossa equipa de parcerias irá analisá-la em breve. Entraremos em contacto dentro de 2-3 dias úteis.",
+      "redirectMessage": "A redirecionar para a página inicial...",
+      "errorMessage": "Falha ao enviar a candidatura. Por favor, tente novamente.",
       "tryAgain": "Tentar Novamente",
       "goToHomepage": "Ir para a Página Inicial"
     }

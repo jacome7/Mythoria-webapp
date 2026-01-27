@@ -1,141 +1,97 @@
 {
   "Partners": {
     "metadata": {
-      "title": "Werde Partner von Mythoria",
-      "description": "Schließe dich Mythoria als Druckpartner, Attraktion oder Einzelhandelsmarke an. Lass dein Geschäft wachsen, indem du dich mit Tausenden kreativen Familien verbindest. Bewirb dich jetzt, um ein vertrauenswürdiger Partner zu werden.",
+      "title": "Unsere Partner | Mythoria",
+      "description": "Finde Mythoria-Partner für Druck, Attraktionen und Retail-Vorteile in deiner Nähe. Du willst kooperieren? Bewirb dich für die Mythoria-Allianz.",
       "keywords": [
-        "Partnerschaftsmöglichkeiten",
-        "Druckdienstleistungspartnerschaft",
-        "Attraktionspartnerschaft",
-        "Einzelhandelsmarkenzusammenarbeit",
-        "Geschäftspartnerschaft",
-        "Druck auf Abruf",
-        "Familienunterhaltungspartnerschaft",
-        "Souvenirpartnerschaft"
+        "Mythoria Partner",
+        "Druckservices",
+        "Familienattraktionen",
+        "Retail-Vorteile",
+        "lokale Partner",
+        "Buchdruck",
+        "Familienerlebnisse",
+        "Partnerschaft bewerben"
       ],
-      "ogTitle": "Werde Partner von Mythoria - Lass Dein Geschäft Wachsen",
-      "ogDescription": "Verbinde dich mit Tausenden kreativen Familien. Werde Druckpartner, Attraktion oder Einzelhandelsmarkenpartner von Mythoria. Bewirb dich jetzt.",
-      "ogImageAlt": "Mythoria Partnerschaftsprogramm",
-      "twitterTitle": "Werde Partner von Mythoria - Lass Dein Geschäft Wachsen",
-      "twitterDescription": "Tritt unserem Partnerschaftsprogramm bei und verbinde dich mit Tausenden kreativen Familien, die einzigartige Storytelling-Erlebnisse suchen."
+      "ogTitle": "Unsere Partner - Mythoria Verzeichnis",
+      "ogDescription": "Finde Druckservices, Attraktionen und Retail-Partner, die Mythoria-Geschichten zum Leben erwecken. Unternehmen können sich bewerben.",
+      "ogImageAlt": "Mythoria Partnerverzeichnis",
+      "twitterTitle": "Unsere Partner - Mythoria Verzeichnis",
+      "twitterDescription": "Finde Druckservices, Attraktionen und Retail-Partner. Unternehmen können sich für die Mythoria-Allianz bewerben."
     },
     "hero": {
-      "title": "Lass Dein Geschäft mit Mythoria Wachsen.",
-      "subtitle": "Wir stellen dir Tausende kreative Familien vor. Du gewinnst neue, treue Kunden.",
-      "tagline": "Es ist das perfekte nächste Kapitel für dein Geschäft.",
-      "cta": "Jetzt Bewerben"
+      "title": "Unsere Partner",
+      "subtitle": "Vom Bildschirm in deine Hände.",
+      "body": "Die Geschichte endet nicht, wenn du auf „Speichern“ klickst. Wir haben uns mit lokalen Expert:innen zusammengeschlossen, damit du deine Bücher drucken, neue Abenteuer entdecken und exklusive Rewards freischalten kannst. Finde den nächsten Ort, um deine Mythoria-Kreation zum Leben zu bringen.",
+      "ctaPrimary": "Standort finden",
+      "ctaSecondary": "Partner werden"
     },
-    "partnershipTypes": {
-      "title": "Eine Partnerschaft, die zu Deinem Geschäft Passt.",
-      "subtitle": "Ob du eine lokale Druckerei oder eine nationale Attraktion bist, wir haben einen Weg, gemeinsam zu wachsen.",
-      "printing": {
-        "title": "Für Druckdienstleistungen",
-        "description": "Werde die vertrauenswürdige lokale Druckerei für Mythoria-Familien. Wir senden dir einen stetigen Strom von Druckaufträgen auf Abruf, komplett mit druckfertigen Dateien. Du kümmerst dich einfach um die Magie, unsere digitalen Geschichten in reale Schätze zu verwandeln."
-      },
-      "attractions": {
-        "title": "Für Attraktionen und Veranstaltungsorte",
-        "description": "Verwandle deinen Park, Zoo oder dein Aquarium in den Schauplatz eines einzigartigen Abenteuers. Biete ein perfektes Souvenir an, das den Ticketverkauf ankurbelt und Familien eine magische Möglichkeit gibt, sich an ihren Besuch zu erinnern, lange nachdem sie nach Hause gegangen sind."
-      },
-      "retailers": {
-        "title": "Für Einzelhändler und Marken",
-        "description": "Biete deinen Kunden ein einzigartiges Co-Branding-Erlebnis. Lass uns gemeinsam eine individuelle Version von Mythoria erstellen oder mache deine Geschäfte zum exklusiven, vertrauenswürdigen Ort, an dem Familien ihre einzigartigen Bücher abholen können."
-      }
-    },
-    "howItWorks": {
-      "title": "Der Einstieg ist Einfach",
-      "step1": {
-        "title": "Erzähle uns Deine Geschichte",
-        "description": "Fülle das einfache Formular unten aus, um dein Geschäft und das, was du tust, vorzustellen."
-      },
-      "step2": {
-        "title": "Wir Planen Unsere Quest",
-        "description": "Unser Team wird deine Bewerbung prüfen und dich kontaktieren, um über die perfekte Passung zu sprechen."
-      },
-      "step3": {
-        "title": "Starte das Abenteuer",
-        "description": "Nach der Genehmigung werden wir dich einbinden und beginnen, neue Kunden zu dir zu schicken."
-      }
-    },
-    "benefits": {
-      "title": "Warum Partner von Mythoria Werden?",
-      "accessFamilies": {
-        "title": "Zugang zu Tausenden von Familien",
-        "description": "Verbinde dich mit unserer wachsenden Gemeinschaft kreativer, engagierter Familien, die nach einzigartigen Erlebnissen suchen."
-      },
-      "seamlessIntegration": {
-        "title": "Nahtlose Integration",
-        "description": "Wir kümmern uns um die Technik, das Marketing und die Kundenakquise. Du konzentrierst dich auf das, was du am besten kannst."
-      },
-      "recurringRevenue": {
-        "title": "Wiederkehrende Einnahmen",
-        "description": "Baue einen stetigen Geschäftsstrom durch unser Abonnementmodell und unseren treuen Kundenstamm auf."
-      },
-      "brandAssociation": {
-        "title": "Markenassoziation",
-        "description": "Bringe dein Geschäft mit einer vertrauenswürdigen, innovativen Marke in Verbindung, die Familien lieben."
-      }
+    "b2b": {
+      "title": "Werde Teil der Mythoria-Allianz",
+      "body": "Wir wachsen schnell und brauchen Partner vor Ort. Wenn dein Unternehmen Familien unterstützt, lass uns zusammenarbeiten. Du bekommst Traffic, wir glückliche Nutzer. Ein klassischer Win-win-Plot.",
+      "cta": "Für Partnerschaft bewerben"
     },
     "form": {
-      "title": "Bereit, Teil der Geschichte zu Werden?",
-      "subtitle": "Lass uns ins Gespräch kommen. Fülle das Formular aus und unser Partnerschaftsteam wird sich melden.",
+      "title": "Bereit, Teil der Geschichte zu werden?",
+      "subtitle": "Lassen Sie uns sprechen. Füllen Sie das Formular aus und unser Partnerschaftsteam meldet sich bei Ihnen.",
       "fields": {
         "name": {
-          "label": "Dein Name",
+          "label": "Ihr Name",
           "placeholder": "Max Mustermann"
         },
         "companyName": {
           "label": "Firmenname",
-          "placeholder": "Deine Firma GmbH"
+          "placeholder": "Ihr Unternehmen GmbH"
         },
         "email": {
-          "label": "Deine E-Mail",
-          "placeholder": "max@firma.com"
+          "label": "Ihre E-Mail",
+          "placeholder": "max@unternehmen.com"
         },
         "phone": {
-          "label": "Mobiltelefon",
-          "placeholder": "+49 170 123 4567"
+          "label": "Mobilnummer",
+          "placeholder": "+49 170 1234567"
         },
         "website": {
           "label": "Website",
-          "placeholder": "https://deinefirma.com"
+          "placeholder": "https://ihrunternehmen.de"
         },
         "primaryLocation": {
           "label": "Hauptstandort",
-          "placeholder": "Wähle ein Land"
+          "placeholder": "Land auswählen"
         },
         "partnershipType": {
-          "label": "Welche Art von Partnerschaft interessiert dich?",
-          "placeholder": "Wähle eine Option"
+          "label": "Welche Art von Partnerschaft interessiert Sie?",
+          "placeholder": "Option auswählen"
         },
         "businessDescription": {
-          "label": "Erzähle uns ein bisschen über dein Geschäft",
-          "placeholder": "Erzähle uns über dein Geschäft und was dich zu einem idealen Partner für Mythoria macht..."
+          "label": "Erzählen Sie uns etwas über Ihr Unternehmen",
+          "placeholder": "Beschreiben Sie Ihr Unternehmen und warum es gut zu Mythoria passt..."
         }
       },
       "countries": {
         "PT": "Portugal",
         "ES": "Spanien",
         "FR": "Frankreich",
-        "US": "Vereinigte Staaten",
+        "US": "USA",
         "GB": "Vereinigtes Königreich",
         "DE": "Deutschland",
         "IT": "Italien",
         "BR": "Brasilien"
       },
       "partnershipTypes": {
-        "printing_service": "Druckdienstleistung",
-        "attraction_venue": "Attraktion / Veranstaltungsort",
-        "retail_brand": "Einzelhandel / Marke",
-        "other": "Andere"
+        "printing_service": "Druckservice",
+        "attraction_venue": "Attraktion / Ort",
+        "retail_brand": "Retail / Marke",
+        "other": "Sonstiges"
       },
-      "submit": "Bewerbung Senden",
-      "validationError": "Bitte fülle alle erforderlichen Felder aus.",
-      "successTitle": "Bewerbung Erhalten!",
-      "errorTitle": "Hoppla!",
-      "successMessage": "Vielen Dank für dein Interesse! Wir haben deine Bewerbung erhalten und unser Partnerschaftsteam wird sie in Kürze prüfen. Wir melden uns innerhalb von 2-3 Werktagen.",
-      "redirectMessage": "Weiterleitung zur Startseite in einem Moment...",
-      "errorMessage": "Fehler beim Senden der Partnerschaftsbewerbung. Bitte versuche es erneut.",
-      "tryAgain": "Erneut Versuchen",
+      "submit": "Bewerbung senden",
+      "validationError": "Bitte füllen Sie alle Pflichtfelder aus.",
+      "successTitle": "Bewerbung erhalten!",
+      "errorTitle": "Ups!",
+      "successMessage": "Vielen Dank für Ihr Interesse! Wir haben Ihre Bewerbung erhalten und unser Partnerschaftsteam wird sie bald prüfen. Wir melden uns in 2-3 Werktagen.",
+      "redirectMessage": "Weiterleitung zur Startseite...",
+      "errorMessage": "Bewerbung konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+      "tryAgain": "Erneut versuchen",
       "goToHomepage": "Zur Startseite"
     }
   }

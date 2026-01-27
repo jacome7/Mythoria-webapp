@@ -1,29 +1,16 @@
 {
   "PartnersList": {
-    "metadata": {
-      "title": "Socios de Impresión",
-      "description": "Encuentra un socio de impresión Mythoria cerca de ti para dar vida a las historias.",
-      "keywords": [
-        "socios de impresión Mythoria",
-        "imprentas locales",
-        "impresión de libros personalizados",
-        "libros recuerdo",
-        "socios print-on-demand",
-        "impresión de historias"
-      ],
-      "ogTitle": "Socios de Impresión Mythoria",
-      "ogDescription": "Explora imprentas aprobadas por Mythoria y elige dónde imprimir tus historias.",
-      "ogImageAlt": "Socios de Impresión Mythoria",
-      "twitterTitle": "Socios de Impresión Mythoria",
-      "twitterDescription": "Encuentra una imprenta de confianza para convertir tu historia en un libro real."
-    },
-    "hero": {
-      "title": "Encuentra un Socio de Impresión",
-      "subtitle": "Elige una imprenta de confianza para imprimir tus historias Mythoria.",
-      "tagline": "Magia local de impresión, calidad Mythoria."
+    "section": {
+      "title": "Servicios locales y ventajas",
+      "subtitle": "Elige un tipo de socio y una ubicación para descubrir lo que hay cerca."
     },
     "filters": {
-      "title": "Filtrar por ubicación",
+      "title": "Filtrar la búsqueda",
+      "types": {
+        "printers": "Impresión",
+        "attractions": "Atracciones",
+        "retail": "Retail"
+      },
       "countryLabel": "País",
       "countryPlaceholder": "Todos los países",
       "cityLabel": "Ciudad / Región",
@@ -31,12 +18,22 @@
       "clear": "Limpiar filtros"
     },
     "list": {
-      "title": "Socios de impresión",
-      "empty": "No encontramos socios con esos filtros.",
+      "helper": "Usa los filtros para encontrar \"Servicios de impresión\" o \"Atracciones\" en tu ciudad.",
+      "empty": "No se encontraron socios con esos filtros.",
       "loadMore": "Cargar más",
       "loading": "Cargando socios...",
-      "error": "No se pudieron cargar los socios. Inténtalo de nuevo.",
-      "locationFallback": "Ubicación disponible bajo solicitud"
+      "error": "No pudimos cargar los socios. Por favor, inténtalo de nuevo.",
+      "locationFallback": "Ubicación disponible bajo petición"
+    },
+    "types": {
+      "printer": "Servicio de impresión",
+      "attraction": "Atracción / Espacio",
+      "retail": "Retail / Marca"
+    },
+    "actions": {
+      "getDirections": "Cómo llegar",
+      "visitWebsite": "Visitar web",
+      "viewDetails": "Ver detalles"
     },
     "modal": {
       "email": "Email",
@@ -98,7 +95,7 @@
       },
       "GB": {
         "london": "Londres",
-        "manchester": "Mánchester",
+        "manchester": "Manchester",
         "edinburgh": "Edimburgo"
       }
     }

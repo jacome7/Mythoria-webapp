@@ -1,9 +1,17 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
-import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope, FaSpinner } from 'react-icons/fa';
+import {
+  FaMapMarkerAlt,
+  FaPhoneAlt,
+  FaEnvelope,
+  FaSpinner,
+  FaPrint,
+  FaStore,
+} from 'react-icons/fa';
 
 const PAGE_SIZE = 10;
 const PLACEHOLDER_LOGO = '/partners/partner-placeholder.svg';
@@ -47,19 +55,34 @@ const COUNTRY_OPTIONS: CountryOption[] = [
   { code: 'GB', cityKeys: ['london', 'manchester', 'edinburgh'] },
 ];
 
-const PartnersPrintersPageContent = () => {
+const PARTNER_TYPES = [
+  { value: 'printer', labelKey: 'filters.types.printers', badgeKey: 'types.printer', icon: FaPrint },
+  {
+    value: 'attraction',
+    labelKey: 'filters.types.attractions',
+    badgeKey: 'types.attraction',
+    icon: FaMapMarkerAlt,
+  },
+  { value: 'retail', labelKey: 'filters.types.retail', badgeKey: 'types.retail', icon: FaStore },
+] as const;
+
+type PartnerType = (typeof PARTNER_TYPES)[number]['value'];
+
+const PartnersDirectorySection = () => {
   const t = useTranslations('PartnersList');
   const locale = useLocale();
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   const [partners, setPartners] = useState<PartnerListItem[]>([]);
   const [selectedPartner, setSelectedPartner] = useState<PartnerListItem | null>(null);
+  const [partnerType, setPartnerType] = useState<PartnerType>('printer');
   const [countryCode, setCountryCode] = useState<string>('');
   const [city, setCity] = useState<string>('');
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   const availableCities = useMemo(() => {
     const country = COUNTRY_OPTIONS.find((option) => option.code === countryCode);
@@ -75,7 +98,11 @@ const PartnersPrintersPageContent = () => {
 
   useEffect(() => {
     resetAndLoad();
-  }, [countryCode, city, resetAndLoad]);
+  }, [countryCode, city, partnerType, resetAndLoad]);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const loadPartners = useCallback(
     async (currentOffset: number) => {
@@ -89,12 +116,13 @@ const PartnersPrintersPageContent = () => {
           limit: PAGE_SIZE.toString(),
           offset: currentOffset.toString(),
           locale,
+          type: partnerType,
         });
 
         if (countryCode) params.set('countryCode', countryCode);
         if (city) params.set('city', city);
 
-        const response = await fetch(`/api/partners/printers?${params.toString()}`);
+        const response = await fetch(`/api/partners/directory?${params.toString()}`);
         const data: PartnerResponse = await response.json();
 
         if (!response.ok || !data.success) {
@@ -111,7 +139,7 @@ const PartnersPrintersPageContent = () => {
         setIsLoading(false);
       }
     },
-    [city, countryCode, hasMore, isLoading, locale, t],
+    [city, countryCode, hasMore, isLoading, locale, partnerType, t],
   );
 
   useEffect(() => {
@@ -162,17 +190,35 @@ const PartnersPrintersPageContent = () => {
     return `https://www.google.com/maps/search/?api=1&query=${query}`;
   };
 
+  const getTypeMeta = (type: PartnerListItem['type']) =>
+    PARTNER_TYPES.find((option) => option.value === type);
+
   return (
-    <div className="space-y-12">
-      <section className="text-center space-y-4">
-        <h1 className="text-4xl md:text-5xl font-bold text-primary">{t('hero.title')}</h1>
-        <p className="text-lg md:text-xl text-base-content/80">{t('hero.subtitle')}</p>
-        <p className="text-lg font-semibold text-primary">{t('hero.tagline')}</p>
-      </section>
+    <section className="space-y-10">
+      <div className="space-y-4 text-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-primary">{t('section.title')}</h2>
+        <p className="text-base-content/70 max-w-3xl mx-auto">{t('section.subtitle')}</p>
+      </div>
+
+      <div className="flex flex-wrap justify-center gap-2">
+        {PARTNER_TYPES.map((type) => {
+          const Icon = type.icon;
+          return (
+            <button
+              key={type.value}
+              className={`tab tab-bordered ${partnerType === type.value ? 'tab-active' : ''}`}
+              onClick={() => setPartnerType(type.value)}
+            >
+              <Icon className="mr-2" />
+              {t(type.labelKey)}
+            </button>
+          );
+        })}
+      </div>
 
       <section className="card bg-base-200 shadow-lg">
         <div className="card-body">
-          <h2 className="text-2xl font-bold text-primary mb-4">{t('filters.title')}</h2>
+          <h3 className="text-2xl font-bold text-primary mb-4">{t('filters.title')}</h3>
           <div className="grid gap-4 md:grid-cols-3">
             <label className="form-control flex flex-col items-start gap-2">
               <span className="label-text font-semibold">{t('filters.countryLabel')}</span>
@@ -213,14 +259,11 @@ const PartnersPrintersPageContent = () => {
               </button>
             </div>
           </div>
+          <div className="mt-4 text-sm text-base-content/60">{t('list.helper')}</div>
         </div>
       </section>
 
       <section className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">{t('list.title')}</h2>
-        </div>
-
         {partners.length === 0 && !isLoading && !error && (
           <div className="alert alert-info">{t('list.empty')}</div>
         )}
@@ -228,38 +271,118 @@ const PartnersPrintersPageContent = () => {
         {error && <div className="alert alert-error">{error}</div>}
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {partners.map((partner) => (
-            <button
-              key={partner.id}
-              className="card bg-base-100 shadow-lg text-left transition hover:shadow-xl"
-              onClick={() => setSelectedPartner(partner)}
-            >
-              <div className="card-body">
-                <div className="flex items-center gap-4">
-                  <div className="relative h-16 w-16 min-h-16 min-w-16 aspect-square shrink-0 rounded-lg bg-base-200 overflow-hidden">
-                    <Image
-                      src={partner.logoUrl || PLACEHOLDER_LOGO}
-                      alt={partner.name}
-                      fill
-                      className={partner.logoUrl ? 'object-contain' : 'object-cover'}
-                      sizes="64px"
-                      unoptimized
-                    />
+          {partners.map((partner) => {
+            const address = formatAddress(partner);
+            const typeMeta = getTypeMeta(partner.type);
+            const TypeIcon = typeMeta?.icon;
+            const actionItems = [] as Array<{
+              label: string;
+              href?: string;
+              onClick?: () => void;
+              variant: 'primary' | 'outline';
+            }>;
+
+            if (address) {
+              actionItems.push({
+                label: t('actions.getDirections'),
+                href: buildMapsUrl(address),
+                variant: 'primary',
+              });
+            }
+
+            if (partner.websiteUrl) {
+              actionItems.push({
+                label: t('actions.visitWebsite'),
+                href: partner.websiteUrl,
+                variant: actionItems.length === 0 ? 'primary' : 'outline',
+              });
+            }
+
+            if (actionItems.length === 0) {
+              actionItems.push({
+                label: t('actions.viewDetails'),
+                onClick: () => setSelectedPartner(partner),
+                variant: 'primary',
+              });
+            }
+
+            const hasViewDetailsAction = actionItems.some(
+              (action) => action.label === t('actions.viewDetails'),
+            );
+
+            return (
+              <div
+                key={partner.id}
+                className="card bg-base-100 shadow-lg text-left transition hover:shadow-xl"
+              >
+                <div className="card-body">
+                  <div className="flex items-center gap-4">
+                    <div className="relative h-16 w-16 min-h-16 min-w-16 aspect-square shrink-0 rounded-lg bg-base-200 overflow-hidden">
+                      <Image
+                        src={partner.logoUrl || PLACEHOLDER_LOGO}
+                        alt={partner.name}
+                        fill
+                        className={partner.logoUrl ? 'object-contain' : 'object-cover'}
+                        sizes="64px"
+                        unoptimized
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="text-lg font-bold text-primary">{partner.name}</h3>
+                        {typeMeta && (
+                          <span className="badge badge-outline text-xs flex items-center gap-1">
+                            {TypeIcon && <TypeIcon />}
+                            {t(typeMeta.badgeKey)}
+                          </span>
+                        )}
+                      </div>
+                      {partner.shortDescription && (
+                        <p className="text-sm text-base-content/70">
+                          {partner.shortDescription}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-primary">{partner.name}</h3>
-                    {partner.shortDescription && (
-                      <p className="text-sm text-base-content/70">{partner.shortDescription}</p>
+                  <div className="mt-4 text-sm text-base-content/70 flex items-center gap-2">
+                    <FaMapMarkerAlt className="text-primary" />
+                    <span>{partner.city || partner.countryCode || t('list.locationFallback')}</span>
+                  </div>
+                  <div className="card-actions mt-4 flex flex-wrap gap-2">
+                    {actionItems.map((action) =>
+                      action.href ? (
+                        <a
+                          key={action.label}
+                          className={`btn btn-sm ${action.variant === 'primary' ? 'btn-primary' : 'btn-outline'}`}
+                          href={action.href}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {action.label}
+                        </a>
+                      ) : (
+                        <button
+                          key={action.label}
+                          className={`btn btn-sm ${action.variant === 'primary' ? 'btn-primary' : 'btn-outline'}`}
+                          onClick={action.onClick}
+                        >
+                          {action.label}
+                        </button>
+                      ),
+                    )}
+                    {!hasViewDetailsAction && (
+                      <button
+                        className="btn btn-sm btn-ghost"
+                        onClick={() => setSelectedPartner(partner)}
+                      >
+                        {t('actions.viewDetails')}
+                      </button>
                     )}
                   </div>
                 </div>
-                <div className="mt-4 text-sm text-base-content/70 flex items-center gap-2">
-                  <FaMapMarkerAlt className="text-primary" />
-                  <span>{partner.city || partner.countryCode || t('list.locationFallback')}</span>
-                </div>
               </div>
-            </button>
-          ))}
+            );
+          })}
         </div>
 
         {isLoading && (
@@ -280,91 +403,122 @@ const PartnersPrintersPageContent = () => {
         <div ref={sentinelRef} />
       </section>
 
-      {selectedPartner && (() => {
+      {selectedPartner && isMounted && (() => {
         const address = formatAddress(selectedPartner);
-        return (
-        <dialog className="modal modal-open">
-          <div className="modal-box max-w-2xl">
-            <div className="flex items-start gap-4">
-              <div className="relative h-20 w-20 rounded-lg bg-base-200 overflow-hidden">
-                <Image
-                  src={selectedPartner.logoUrl || PLACEHOLDER_LOGO}
-                  alt={selectedPartner.name}
-                  fill
-                  className="object-contain"
-                  sizes="80px"
-                  unoptimized
-                />
+        const typeMeta = getTypeMeta(selectedPartner.type);
+        return createPortal(
+          <div className="modal modal-open">
+            <div className="modal-box max-w-2xl max-h-[85vh] overflow-y-auto">
+              <div className="flex items-start gap-4">
+                <div className="relative h-20 w-20 rounded-lg bg-base-200 overflow-hidden">
+                  <Image
+                    src={selectedPartner.logoUrl || PLACEHOLDER_LOGO}
+                    alt={selectedPartner.name}
+                    fill
+                    className="object-contain"
+                    sizes="80px"
+                    unoptimized
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="text-2xl font-bold text-primary">{selectedPartner.name}</h3>
+                    {typeMeta && (
+                      <span className="badge badge-outline text-xs">{t(typeMeta.badgeKey)}</span>
+                    )}
+                  </div>
+                  {selectedPartner.shortDescription && (
+                    <p className="text-base-content/70">{selectedPartner.shortDescription}</p>
+                  )}
+                </div>
               </div>
-              <div>
-                <h3 className="text-2xl font-bold text-primary">{selectedPartner.name}</h3>
-                {selectedPartner.shortDescription && (
-                  <p className="text-base-content/70">{selectedPartner.shortDescription}</p>
+
+              <div className="mt-6 space-y-4">
+                {selectedPartner.email && (
+                  <div className="flex items-center gap-2">
+                    <FaEnvelope className="text-primary" />
+                    <div>
+                      <div className="text-sm font-semibold">{t('modal.email')}</div>
+                      <a
+                        className="text-base-content/70 link link-hover"
+                        href={`mailto:${selectedPartner.email}`}
+                      >
+                        {selectedPartner.email}
+                      </a>
+                    </div>
+                  </div>
+                )}
+                {selectedPartner.mobilePhone && (
+                  <div className="flex items-center gap-2">
+                    <FaPhoneAlt className="text-primary" />
+                    <div>
+                      <div className="text-sm font-semibold">{t('modal.phone')}</div>
+                      <a
+                        className="text-base-content/70 link link-hover"
+                        href={`tel:${selectedPartner.mobilePhone}`}
+                      >
+                        {selectedPartner.mobilePhone}
+                      </a>
+                    </div>
+                  </div>
+                )}
+                {address && (
+                  <div className="flex items-center gap-2">
+                    <FaMapMarkerAlt className="text-primary" />
+                    <div>
+                      <div className="text-sm font-semibold">{t('modal.address')}</div>
+                      <a
+                        className="text-base-content/70 link link-hover"
+                        href={buildMapsUrl(address)}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {address}
+                      </a>
+                    </div>
+                  </div>
                 )}
               </div>
-            </div>
 
-            <div className="mt-6 space-y-4">
-              {selectedPartner.email && (
-                <div className="flex items-center gap-2">
-                  <FaEnvelope className="text-primary" />
-                  <div>
-                    <div className="text-sm font-semibold">{t('modal.email')}</div>
-                    <a
-                      className="text-base-content/70 link link-hover"
-                      href={`mailto:${selectedPartner.email}`}
-                    >
-                      {selectedPartner.email}
-                    </a>
-                  </div>
-                </div>
-              )}
-              {selectedPartner.mobilePhone && (
-                <div className="flex items-center gap-2">
-                  <FaPhoneAlt className="text-primary" />
-                  <div>
-                    <div className="text-sm font-semibold">{t('modal.phone')}</div>
-                    <a
-                      className="text-base-content/70 link link-hover"
-                      href={`tel:${selectedPartner.mobilePhone}`}
-                    >
-                      {selectedPartner.mobilePhone}
-                    </a>
-                  </div>
-                </div>
-              )}
-              {address && (
-                <div className="flex items-center gap-2">
-                  <FaMapMarkerAlt className="text-primary" />
-                  <div>
-                    <div className="text-sm font-semibold">{t('modal.address')}</div>
-                    <a
-                      className="text-base-content/70 link link-hover"
-                      href={buildMapsUrl(address)}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {address}
-                    </a>
-                  </div>
-                </div>
-              )}
+              <div className="modal-action flex flex-wrap gap-2">
+                {selectedPartner.websiteUrl && (
+                  <a
+                    className="btn btn-primary"
+                    href={selectedPartner.websiteUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {t('actions.visitWebsite')}
+                  </a>
+                )}
+                {address && (
+                  <a
+                    className="btn btn-outline"
+                    href={buildMapsUrl(address)}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {t('actions.getDirections')}
+                  </a>
+                )}
+                <button className="btn" onClick={() => setSelectedPartner(null)}>
+                  {t('modal.close')}
+                </button>
+              </div>
             </div>
-
-            <div className="modal-action">
-              <button className="btn" onClick={() => setSelectedPartner(null)}>
-                {t('modal.close')}
-              </button>
-            </div>
-          </div>
-          <button className="modal-backdrop" onClick={() => setSelectedPartner(null)}>
-            {t('modal.close')}
-          </button>
-        </dialog>
+            <button
+              className="modal-backdrop"
+              onClick={() => setSelectedPartner(null)}
+              aria-label={t('modal.close')}
+            >
+              {t('modal.close')}
+            </button>
+          </div>,
+          document.body,
         );
       })()}
-    </div>
+    </section>
   );
 };
 
-export default PartnersPrintersPageContent;
+export default PartnersDirectorySection;
