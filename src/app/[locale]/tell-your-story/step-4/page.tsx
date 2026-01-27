@@ -120,12 +120,14 @@ function Step4Page() {
   };
   const personaMetaInfo = literaryPersonaMessages?.metaInfo;
   const personaMetaInfoItems = ['pov', 'tone', 'rhythm', 'vocabulary'] as const;
-  const defaultPersonaMetaInfoDescriptions: Record<(typeof personaMetaInfoItems)[number], string> = {
-    pov: 'Narrator perspective. 1st = I, 2nd = you, 3rd-limited = one character view, 3rd-omniscient = everyone.',
-    tone: 'Emotional energy. 1 is calm/neutral, 5 is high-intensity or dramatic.',
-    rhythm: 'Sentence pace. 1 is slow and flowing, 5 is fast and punchy.',
-    vocabulary: 'Word complexity. 1 is simple everyday words, 5 is richer, more advanced language.',
-  };
+  const defaultPersonaMetaInfoDescriptions: Record<(typeof personaMetaInfoItems)[number], string> =
+    {
+      pov: 'Narrator perspective. 1st = I, 2nd = you, 3rd-limited = one character view, 3rd-omniscient = everyone.',
+      tone: 'Emotional energy. 1 is calm/neutral, 5 is high-intensity or dramatic.',
+      rhythm: 'Sentence pace. 1 is slow and flowing, 5 is fast and punchy.',
+      vocabulary:
+        'Word complexity. 1 is simple everyday words, 5 is richer, more advanced language.',
+    };
   const personaSampleLabel = literaryPersonaMessages?.sampleLabel || 'Sample';
 
   const preferredPersonaOrder: LiteraryPersona[] = [
@@ -872,14 +874,16 @@ function Step4Page() {
                                         {personaMetaLabels.rhythm}: {option.metadata.rhythm}/5
                                       </span>
                                       <span className="badge badge-outline">
-                                        {personaMetaLabels.vocabulary}: {option.metadata.vocabulary}/5
+                                        {personaMetaLabels.vocabulary}: {option.metadata.vocabulary}
+                                        /5
                                       </span>
                                     </div>
                                     <button
                                       type="button"
                                       className="btn btn-ghost btn-xs btn-circle border border-base-300"
                                       aria-label={
-                                        personaMetaInfo?.trigger || 'Learn what these attributes mean'
+                                        personaMetaInfo?.trigger ||
+                                        'Learn what these attributes mean'
                                       }
                                       onClick={(e) => {
                                         e.stopPropagation();
@@ -975,7 +979,10 @@ function Step4Page() {
                         </button>
                       </div>
                     </div>
-                    <div className="modal-backdrop" onClick={() => setShowPersonaMetaInfo(false)}></div>
+                    <div
+                      className="modal-backdrop"
+                      onClick={() => setShowPersonaMetaInfo(false)}
+                    ></div>
                   </div>
                 )}
 

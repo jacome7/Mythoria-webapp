@@ -32,20 +32,20 @@
       "submitFailed": "Falha ao enviar avaliação",
       "generic": "Ocorreu um erro"
     },
-      "feedbackToAuthor": {
-        "title": "Enviar feedback ao autor",
-        "subtitle": "Partilha uma nota curta para ajudar o autor a melhorar a história.",
-        "subjectLabel": "Assunto",
-        "subjectPlaceholder": "Um resumo rápido do teu feedback",
-        "messageLabel": "Mensagem",
-        "messagePlaceholder": "Escreve o teu feedback para o autor...",
-        "submit": "Enviar feedback",
-        "submitting": "A enviar...",
-        "successMessage": "O teu feedback foi enviado ao autor.",
-        "signInButton": "Inicia sessão para enviar feedback",
-        "errors": {
-          "submitFailed": "Falha ao enviar feedback"
-        }
+    "feedbackToAuthor": {
+      "title": "Enviar feedback ao autor",
+      "subtitle": "Partilha uma nota curta para ajudar o autor a melhorar a história.",
+      "subjectLabel": "Assunto",
+      "subjectPlaceholder": "Um resumo rápido do teu feedback",
+      "messageLabel": "Mensagem",
+      "messagePlaceholder": "Escreve o teu feedback para o autor...",
+      "submit": "Enviar feedback",
+      "submitting": "A enviar...",
+      "successMessage": "O teu feedback foi enviado ao autor.",
+      "signInButton": "Inicia sessão para enviar feedback",
+      "errors": {
+        "submitFailed": "Falha ao enviar feedback"
       }
+    }
   }
 }

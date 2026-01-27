@@ -1,103 +1,103 @@
 {
-	"PartnersList": {
-		"section": {
-			"title": "Services locaux et avantages",
-			"subtitle": "Choisissez un type de partenaire et une localisation pour découvrir ce qui est proche."
-		},
-		"filters": {
-			"title": "Filtrer la recherche",
-			"types": {
-				"printers": "Imprimeurs",
-				"attractions": "Attractions",
-				"retail": "Commerces"
-			},
-			"countryLabel": "Pays",
-			"countryPlaceholder": "Tous les pays",
-			"cityLabel": "Ville / Région",
-			"cityPlaceholder": "Toutes les villes",
-			"clear": "Réinitialiser"
-		},
-		"list": {
-			"helper": "Utilisez les filtres pour trouver des « Services d'impression » ou des « Attractions » dans votre ville.",
-			"empty": "Aucun partenaire trouvé pour ces filtres.",
-			"loadMore": "Charger plus",
-			"loading": "Chargement des partenaires...",
-			"error": "Impossible de charger les partenaires. Veuillez réessayer.",
-			"locationFallback": "Localisation disponible sur demande"
-		},
-		"types": {
-			"printer": "Service d'impression",
-			"attraction": "Attraction / Lieu",
-			"retail": "Commerce / Marque"
-		},
-		"actions": {
-			"getDirections": "Itinéraire",
-			"visitWebsite": "Visiter le site",
-			"viewDetails": "Voir les détails"
-		},
-		"modal": {
-			"email": "Email",
-			"phone": "Téléphone",
-			"address": "Adresse",
-			"close": "Fermer"
-		},
-		"countries": {
-			"PT": "Portugal",
-			"ES": "Espagne",
-			"FR": "France",
-			"DE": "Allemagne",
-			"IT": "Italie",
-			"NL": "Pays-Bas",
-			"BE": "Belgique",
-			"GB": "Royaume-Uni"
-		},
-		"cities": {
-			"PT": {
-				"lisbon": "Lisbonne",
-				"porto": "Porto",
-				"braga": "Braga",
-				"coimbra": "Coimbra",
-				"faro": "Faro"
-			},
-			"ES": {
-				"madrid": "Madrid",
-				"barcelona": "Barcelone",
-				"valencia": "Valence",
-				"seville": "Séville"
-			},
-			"FR": {
-				"paris": "Paris",
-				"lyon": "Lyon",
-				"marseille": "Marseille",
-				"bordeaux": "Bordeaux"
-			},
-			"DE": {
-				"berlin": "Berlin",
-				"munich": "Munich",
-				"hamburg": "Hambourg",
-				"frankfurt": "Francfort"
-			},
-			"IT": {
-				"rome": "Rome",
-				"milan": "Milan",
-				"florence": "Florence",
-				"naples": "Naples"
-			},
-			"NL": {
-				"amsterdam": "Amsterdam",
-				"rotterdam": "Rotterdam",
-				"utrecht": "Utrecht"
-			},
-			"BE": {
-				"brussels": "Bruxelles",
-				"antwerp": "Anvers",
-				"ghent": "Gand"
-			},
-			"GB": {
-				"london": "Londres",
-				"manchester": "Manchester",
-				"edinburgh": "Édimbourg"
-			}
-		}
-	}
+  "PartnersList": {
+    "section": {
+      "title": "Services locaux et avantages",
+      "subtitle": "Choisissez un type de partenaire et une localisation pour découvrir ce qui est proche."
+    },
+    "filters": {
+      "title": "Filtrer la recherche",
+      "types": {
+        "printers": "Imprimeurs",
+        "attractions": "Attractions",
+        "retail": "Commerces"
+      },
+      "countryLabel": "Pays",
+      "countryPlaceholder": "Tous les pays",
+      "cityLabel": "Ville / Région",
+      "cityPlaceholder": "Toutes les villes",
+      "clear": "Réinitialiser"
+    },
+    "list": {
+      "helper": "Utilisez les filtres pour trouver des « Services d'impression » ou des « Attractions » dans votre ville.",
+      "empty": "Aucun partenaire trouvé pour ces filtres.",
+      "loadMore": "Charger plus",
+      "loading": "Chargement des partenaires...",
+      "error": "Impossible de charger les partenaires. Veuillez réessayer.",
+      "locationFallback": "Localisation disponible sur demande"
+    },
+    "types": {
+      "printer": "Service d'impression",
+      "attraction": "Attraction / Lieu",
+      "retail": "Commerce / Marque"
+    },
+    "actions": {
+      "getDirections": "Itinéraire",
+      "visitWebsite": "Visiter le site",
+      "viewDetails": "Voir les détails"
+    },
+    "modal": {
+      "email": "Email",
+      "phone": "Téléphone",
+      "address": "Adresse",
+      "close": "Fermer"
+    },
+    "countries": {
+      "PT": "Portugal",
+      "ES": "Espagne",
+      "FR": "France",
+      "DE": "Allemagne",
+      "IT": "Italie",
+      "NL": "Pays-Bas",
+      "BE": "Belgique",
+      "GB": "Royaume-Uni"
+    },
+    "cities": {
+      "PT": {
+        "lisbon": "Lisbonne",
+        "porto": "Porto",
+        "braga": "Braga",
+        "coimbra": "Coimbra",
+        "faro": "Faro"
+      },
+      "ES": {
+        "madrid": "Madrid",
+        "barcelona": "Barcelone",
+        "valencia": "Valence",
+        "seville": "Séville"
+      },
+      "FR": {
+        "paris": "Paris",
+        "lyon": "Lyon",
+        "marseille": "Marseille",
+        "bordeaux": "Bordeaux"
+      },
+      "DE": {
+        "berlin": "Berlin",
+        "munich": "Munich",
+        "hamburg": "Hambourg",
+        "frankfurt": "Francfort"
+      },
+      "IT": {
+        "rome": "Rome",
+        "milan": "Milan",
+        "florence": "Florence",
+        "naples": "Naples"
+      },
+      "NL": {
+        "amsterdam": "Amsterdam",
+        "rotterdam": "Rotterdam",
+        "utrecht": "Utrecht"
+      },
+      "BE": {
+        "brussels": "Bruxelles",
+        "antwerp": "Anvers",
+        "ghent": "Gand"
+      },
+      "GB": {
+        "london": "Londres",
+        "manchester": "Manchester",
+        "edinburgh": "Édimbourg"
+      }
+    }
+  }
 }

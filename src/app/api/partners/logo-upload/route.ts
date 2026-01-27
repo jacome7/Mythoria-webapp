@@ -39,7 +39,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (file.size > MAX_LOGO_BYTES) {
-      return NextResponse.json({ success: false, error: 'File exceeds 4MB limit' }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: 'File exceeds 4MB limit' },
+        { status: 400 },
+      );
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
@@ -48,7 +51,10 @@ export async function POST(request: NextRequest) {
     const height = dimensions.height ?? 0;
 
     if (!width || !height) {
-      return NextResponse.json({ success: false, error: 'Unable to read image dimensions' }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: 'Unable to read image dimensions' },
+        { status: 400 },
+      );
     }
 
     if (Math.max(width, height) > MAX_LOGO_DIMENSION) {

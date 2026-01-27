@@ -65,31 +65,31 @@ Promo code data is stored in PostgreSQL via Drizzle ORM. The schema lives in `sr
 
 ### Table: `promotion_codes`
 
-| Column | Type | Notes |
-| --- | --- | --- |
-| `promotion_code_id` | `uuid` (PK) | Primary key.
-| `code` | `varchar(64)` | Unique; stored uppercase.
-| `type` | `varchar(20)` | Defaults to `partner`; reserved for future types (e.g., `referral`, `book_qr`).
-| `credit_amount` | `integer` | Credits granted per redemption.
-| `max_global_redemptions` | `integer` (nullable) | Total global cap; null = unlimited.
-| `max_redemptions_per_user` | `integer` | Default `1` per user.
-| `valid_from` | `timestamp` (tz) | Optional start time.
-| `valid_until` | `timestamp` (tz) | Optional end time.
-| `referrer_author_id` | `uuid` (nullable) | Reserved for referral workflows; currently unused.
-| `metadata` | `jsonb` (nullable) | Optional extra data from admin portal.
-| `created_at` / `updated_at` | `timestamp` (tz) | Audit timestamps.
-| `active` | `boolean` | Default `true`; used for soft deactivation.
+| Column                      | Type                 | Notes                                                                           |
+| --------------------------- | -------------------- | ------------------------------------------------------------------------------- |
+| `promotion_code_id`         | `uuid` (PK)          | Primary key.                                                                    |
+| `code`                      | `varchar(64)`        | Unique; stored uppercase.                                                       |
+| `type`                      | `varchar(20)`        | Defaults to `partner`; reserved for future types (e.g., `referral`, `book_qr`). |
+| `credit_amount`             | `integer`            | Credits granted per redemption.                                                 |
+| `max_global_redemptions`    | `integer` (nullable) | Total global cap; null = unlimited.                                             |
+| `max_redemptions_per_user`  | `integer`            | Default `1` per user.                                                           |
+| `valid_from`                | `timestamp` (tz)     | Optional start time.                                                            |
+| `valid_until`               | `timestamp` (tz)     | Optional end time.                                                              |
+| `referrer_author_id`        | `uuid` (nullable)    | Reserved for referral workflows; currently unused.                              |
+| `metadata`                  | `jsonb` (nullable)   | Optional extra data from admin portal.                                          |
+| `created_at` / `updated_at` | `timestamp` (tz)     | Audit timestamps.                                                               |
+| `active`                    | `boolean`            | Default `true`; used for soft deactivation.                                     |
 
 ### Table: `promotion_code_redemptions`
 
-| Column | Type | Notes |
-| --- | --- | --- |
-| `promotion_code_redemption_id` | `uuid` (PK) | Primary key.
-| `promotion_code_id` | `uuid` (FK) | References `promotion_codes` (cascade on delete).
-| `author_id` | `uuid` (FK) | Redeeming user (cascade on delete).
-| `redeemed_at` | `timestamp` (tz) | Default now.
-| `credits_granted` | `integer` | Credits applied for this redemption.
-| `credit_ledger_entry_id` | `uuid` (nullable) | Optional link to `credit_ledger` entry.
+| Column                         | Type              | Notes                                             |
+| ------------------------------ | ----------------- | ------------------------------------------------- |
+| `promotion_code_redemption_id` | `uuid` (PK)       | Primary key.                                      |
+| `promotion_code_id`            | `uuid` (FK)       | References `promotion_codes` (cascade on delete). |
+| `author_id`                    | `uuid` (FK)       | Redeeming user (cascade on delete).               |
+| `redeemed_at`                  | `timestamp` (tz)  | Default now.                                      |
+| `credits_granted`              | `integer`         | Credits applied for this redemption.              |
+| `credit_ledger_entry_id`       | `uuid` (nullable) | Optional link to `credit_ledger` entry.           |
 
 **Indexes**
 

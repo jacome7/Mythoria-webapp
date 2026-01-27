@@ -1,103 +1,103 @@
 {
-	"PartnersList": {
-		"section": {
-			"title": "Lokale Services & Vorteile",
-			"subtitle": "Wähle einen Partnertyp und einen Standort, um zu sehen, was in deiner Nähe ist."
-		},
-		"filters": {
-			"title": "Suche filtern",
-			"types": {
-				"printers": "Druckereien",
-				"attractions": "Attraktionen",
-				"retail": "Einzelhandel"
-			},
-			"countryLabel": "Land",
-			"countryPlaceholder": "Alle Länder",
-			"cityLabel": "Stadt / Region",
-			"cityPlaceholder": "Alle Städte",
-			"clear": "Filter löschen"
-		},
-		"list": {
-			"helper": "Nutze die Filter, um „Druckservices“ oder „Attraktionen“ in deiner Stadt zu finden.",
-			"empty": "Keine Partner für diese Filter gefunden.",
-			"loadMore": "Mehr laden",
-			"loading": "Partner werden geladen...",
-			"error": "Partner konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
-			"locationFallback": "Standort auf Anfrage verfügbar"
-		},
-		"types": {
-			"printer": "Druckservice",
-			"attraction": "Attraktion / Location",
-			"retail": "Einzelhandel / Marke"
-		},
-		"actions": {
-			"getDirections": "Route planen",
-			"visitWebsite": "Website besuchen",
-			"viewDetails": "Details ansehen"
-		},
-		"modal": {
-			"email": "E-Mail",
-			"phone": "Mobil",
-			"address": "Adresse",
-			"close": "Schließen"
-		},
-		"countries": {
-			"PT": "Portugal",
-			"ES": "Spanien",
-			"FR": "Frankreich",
-			"DE": "Deutschland",
-			"IT": "Italien",
-			"NL": "Niederlande",
-			"BE": "Belgien",
-			"GB": "Vereinigtes Königreich"
-		},
-		"cities": {
-			"PT": {
-				"lisbon": "Lissabon",
-				"porto": "Porto",
-				"braga": "Braga",
-				"coimbra": "Coimbra",
-				"faro": "Faro"
-			},
-			"ES": {
-				"madrid": "Madrid",
-				"barcelona": "Barcelona",
-				"valencia": "Valencia",
-				"seville": "Sevilla"
-			},
-			"FR": {
-				"paris": "Paris",
-				"lyon": "Lyon",
-				"marseille": "Marseille",
-				"bordeaux": "Bordeaux"
-			},
-			"DE": {
-				"berlin": "Berlin",
-				"munich": "München",
-				"hamburg": "Hamburg",
-				"frankfurt": "Frankfurt"
-			},
-			"IT": {
-				"rome": "Rom",
-				"milan": "Mailand",
-				"florence": "Florenz",
-				"naples": "Neapel"
-			},
-			"NL": {
-				"amsterdam": "Amsterdam",
-				"rotterdam": "Rotterdam",
-				"utrecht": "Utrecht"
-			},
-			"BE": {
-				"brussels": "Brüssel",
-				"antwerp": "Antwerpen",
-				"ghent": "Gent"
-			},
-			"GB": {
-				"london": "London",
-				"manchester": "Manchester",
-				"edinburgh": "Edinburgh"
-			}
-		}
-	}
+  "PartnersList": {
+    "section": {
+      "title": "Lokale Services & Vorteile",
+      "subtitle": "Wähle einen Partnertyp und einen Standort, um zu sehen, was in deiner Nähe ist."
+    },
+    "filters": {
+      "title": "Suche filtern",
+      "types": {
+        "printers": "Druckereien",
+        "attractions": "Attraktionen",
+        "retail": "Einzelhandel"
+      },
+      "countryLabel": "Land",
+      "countryPlaceholder": "Alle Länder",
+      "cityLabel": "Stadt / Region",
+      "cityPlaceholder": "Alle Städte",
+      "clear": "Filter löschen"
+    },
+    "list": {
+      "helper": "Nutze die Filter, um „Druckservices“ oder „Attraktionen“ in deiner Stadt zu finden.",
+      "empty": "Keine Partner für diese Filter gefunden.",
+      "loadMore": "Mehr laden",
+      "loading": "Partner werden geladen...",
+      "error": "Partner konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+      "locationFallback": "Standort auf Anfrage verfügbar"
+    },
+    "types": {
+      "printer": "Druckservice",
+      "attraction": "Attraktion / Location",
+      "retail": "Einzelhandel / Marke"
+    },
+    "actions": {
+      "getDirections": "Route planen",
+      "visitWebsite": "Website besuchen",
+      "viewDetails": "Details ansehen"
+    },
+    "modal": {
+      "email": "E-Mail",
+      "phone": "Mobil",
+      "address": "Adresse",
+      "close": "Schließen"
+    },
+    "countries": {
+      "PT": "Portugal",
+      "ES": "Spanien",
+      "FR": "Frankreich",
+      "DE": "Deutschland",
+      "IT": "Italien",
+      "NL": "Niederlande",
+      "BE": "Belgien",
+      "GB": "Vereinigtes Königreich"
+    },
+    "cities": {
+      "PT": {
+        "lisbon": "Lissabon",
+        "porto": "Porto",
+        "braga": "Braga",
+        "coimbra": "Coimbra",
+        "faro": "Faro"
+      },
+      "ES": {
+        "madrid": "Madrid",
+        "barcelona": "Barcelona",
+        "valencia": "Valencia",
+        "seville": "Sevilla"
+      },
+      "FR": {
+        "paris": "Paris",
+        "lyon": "Lyon",
+        "marseille": "Marseille",
+        "bordeaux": "Bordeaux"
+      },
+      "DE": {
+        "berlin": "Berlin",
+        "munich": "München",
+        "hamburg": "Hamburg",
+        "frankfurt": "Frankfurt"
+      },
+      "IT": {
+        "rome": "Rom",
+        "milan": "Mailand",
+        "florence": "Florenz",
+        "naples": "Neapel"
+      },
+      "NL": {
+        "amsterdam": "Amsterdam",
+        "rotterdam": "Rotterdam",
+        "utrecht": "Utrecht"
+      },
+      "BE": {
+        "brussels": "Brüssel",
+        "antwerp": "Antwerpen",
+        "ghent": "Gent"
+      },
+      "GB": {
+        "london": "London",
+        "manchester": "Manchester",
+        "edinburgh": "Edinburgh"
+      }
+    }
+  }
 }

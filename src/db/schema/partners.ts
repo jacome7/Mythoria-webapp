@@ -32,7 +32,9 @@ export const partners = pgTable(
     city: text('city'),
     postalCode: text('postal_code'),
     countryCode: varchar('country_code', { length: 2 }),
-    shortDescription: jsonb('short_description').notNull().default(sql`'{}'::jsonb`),
+    shortDescription: jsonb('short_description')
+      .notNull()
+      .default(sql`'{}'::jsonb`),
     serviceScope: partnerServiceScopeEnum('service_scope'),
     status: partnerStatusEnum('status').notNull().default('active'),
     displayOrder: integer('display_order'),

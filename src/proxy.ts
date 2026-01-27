@@ -10,7 +10,11 @@ export const proxy = clerkMiddleware(
     const pathname = req.nextUrl.pathname;
 
     // Allow service worker and manifest assets to bypass i18n/auth so they stay at the root scope
-    if (pathname === '/sw.js' || pathname.startsWith('/workbox-') || pathname === '/manifest.webmanifest') {
+    if (
+      pathname === '/sw.js' ||
+      pathname.startsWith('/workbox-') ||
+      pathname === '/manifest.webmanifest'
+    ) {
       return NextResponse.next();
     }
 

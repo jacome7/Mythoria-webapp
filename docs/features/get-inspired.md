@@ -9,10 +9,12 @@ The **Get Inspired** page is a public-facing gallery of featured Mythoria storie
 ## End-User Experience
 
 ### Where to find it
+
 - The navigation header links to **Get Inspired**.
 - The page lives at `/{locale}/get-inspired` and is accessible without signing in.
 
 ### What the user sees
+
 1. **Gallery header** with a title and subtitle.
 2. **Filter panel** with three dropdowns:
    - **Target Audience** (age band)
@@ -23,13 +25,16 @@ The **Get Inspired** page is a public-facing gallery of featured Mythoria storie
 5. **Empty state** messaging if no stories are available or no results match filters.
 
 ### How filtering works (user perspective)
+
 - Users can select multiple values in each filter category.
 - Selected filters show as badges with quick “✕” remove buttons.
 - A “Clear Filters” action resets all selections.
 - When filters are active, the page shows a count like “X of Y stories shown.”
 
 ### Story cards
+
 Each story tile shows:
+
 - Cover image (or a fallback image)
 - Story title
 - Author display name
@@ -38,6 +43,7 @@ Each story tile shows:
 - **View Story** button that opens the public reader at `/{locale}/p/{slug}`
 
 ### Empty states
+
 - **No featured stories**: encourages visitors to create a story.
 - **Filters return zero results**: suggests clearing or adjusting filters.
 
@@ -46,11 +52,13 @@ Each story tile shows:
 ## Developer Implementation
 
 ### Entry point and routing
+
 - **UI page**: `src/app/[locale]/get-inspired/page.tsx` is a client component so it can fetch data and handle interactive filters on the client.
 - **Public reader destination**: each card links to `/{locale}/p/{slug}`.
 - **Navigation**: the header links to `/get-inspired` and locale routing prepends the active locale.
 
 ### Data flow
+
 ```mermaid
 flowchart LR
   UI[Get Inspired page] -->|fetch| API[/api/stories/featured]
@@ -64,6 +72,7 @@ flowchart LR
 4. Cards render from `filteredStories`.
 
 ### API contract
+
 - **Route**: `src/app/api/stories/featured/route.ts`
 - **Method**: `GET`
 - **Optional query params**:
@@ -94,6 +103,7 @@ flowchart LR
 > **Note:** the UI currently calls the API without query parameters and filters client-side. If server-side filtering is desired for scale, update the client fetch to pass query params and remove or simplify the client filtering logic.
 
 ### Database and data selection
+
 - **Story eligibility** (service query): only stories with `isPublic = true` and `isFeatured = true` are returned.
 - **Core story fields** come from `stories` (title, slug, feature image, target audience, graphical style, language).
 - **Author display name** is joined from `authors`.
@@ -103,6 +113,7 @@ flowchart LR
 - **Images** are normalized with `toAbsoluteImageUrl` so the UI can safely render the `featureImageUri`.
 
 ### UI behavior details
+
 - The page defines **fixed option lists** for filters (`targetAudienceOptions`, `graphicalStyleOptions`, `storyLanguageOptions`). These options must stay aligned with:
   - database enums in `src/db/schema/enums.ts`
   - translation keys in `src/messages/*/GetInspiredPage.json`
@@ -110,12 +121,14 @@ flowchart LR
 - `next/image` handles cover images and falls back to a Mythoria logo if the image fails to load.
 
 ### Localization and copy
+
 - All UI text and filter labels come from `GetInspiredPage` translations:
   - Source of truth: `src/messages/en-US/GetInspiredPage.json`
   - Other locales: `src/messages/*/GetInspiredPage.json`
 - The messages are loaded in `src/i18n/request.ts` and accessed via `useTranslations('GetInspiredPage')`.
 
 ### SEO and discovery
+
 - Featured stories are added to the sitemap with locale-aware URLs, using `storyService.getFeaturedPublicStories()`.
 
 ---

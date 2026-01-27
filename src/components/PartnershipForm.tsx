@@ -415,9 +415,7 @@ const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
           {/* Company Logo (Optional) */}
           <div className="form-control">
             <label className="label py-1" htmlFor="companyLogo">
-              <span className="label-text font-medium text-sm">
-                {t('fields.logo.label')}
-              </span>
+              <span className="label-text font-medium text-sm">{t('fields.logo.label')}</span>
             </label>
             <input
               id="companyLogo"

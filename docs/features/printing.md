@@ -14,18 +14,22 @@ Both flows use Mythoria credits, require a **published** story, and are availabl
 ### Print & ship (keepsake order)
 
 **Entry point**
+
 - Open a published story and choose the print action. This navigates to `/stories/print/[storyId]` in the current locale.
 - If you are signed out, you are asked to sign in or create an account first.
 
 **Step 1 — Story preview**
+
 - You see the story synopsis and front cover (if available).
 - Continue to shipping details.
 
 **Step 2 — Shipping address**
+
 - Choose a delivery address from your saved addresses or create one inline.
 - The newest address is auto-selected. You can edit or delete existing addresses.
 
 **Step 3 — Print options & credits**
+
 - Print pricing data loads from the active pricing services list.
 - The default option is **Printed Soft Cover** (softcover paperback).
 - You can adjust the number of copies (1–10). Costs update in real time.
@@ -37,6 +41,7 @@ Both flows use Mythoria credits, require a **published** story, and are availabl
 - If your credits are insufficient, a warning appears with a link to buy more credits.
 
 **Order confirmation**
+
 - You confirm the order in a modal before submission.
 - On success, you are returned to **My Stories** while printing continues in the background.
 - You receive an email confirmation with your order details.
@@ -44,13 +49,16 @@ Both flows use Mythoria credits, require a **published** story, and are availabl
 ### Self-print (PDF download)
 
 **Entry point**
+
 - The **SelfPrintModal** can be opened from multiple story pages (public or private views), including the story library, read view, and listen view.
 
 **Required inputs**
+
 - Your account email is required (the PDFs are always sent there).
 - You can add additional CC recipients by entering multiple emails.
 
 **What happens when you submit**
+
 - Credits are checked and then deducted immediately.
 - The printable PDFs are generated asynchronously.
 - You receive an email with the download links when the files are ready.
@@ -61,6 +69,7 @@ Both flows use Mythoria credits, require a **published** story, and are availabl
 ### Front-end routes & components
 
 **Print & ship UI**
+
 - Page: `src/app/[locale]/stories/print/[storyId]/page.tsx`
 - Wizard orchestrator: `src/components/print-order/PrintOrderContent.tsx`
 - Step components:
@@ -70,6 +79,7 @@ Both flows use Mythoria credits, require a **published** story, and are availabl
 - Translations: `PrintOrder` namespace in `src/messages/*/PrintOrder.json`.
 
 **Self-print UI**
+
 - Modal: `src/components/self-print/SelfPrintModal.tsx`
 - The modal fetches pricing, credits, and account email before enabling submission.
 - Translations: `SelfPrintModal` namespace in `src/messages/*/SelfPrintModal.json`.
@@ -88,12 +98,15 @@ Both flows use Mythoria credits, require a **published** story, and are availabl
 8. Triggers print PDF generation asynchronously through Pub/Sub.
 
 **`GET /api/print-requests`** – List print requests
+
 - Optional filters: `storyId`, `status`.
 
 **`GET /api/pricing/services`** – Load pricing used in the print order wizard
+
 - Includes `printedSoftCover`, `extraBookCopy`, `extraChapterCost`, and `shippingCost` when active.
 
 **`GET /api/pricing/self-print`** – Load pricing for self-print
+
 - Returns the `selfPrinting` credit cost.
 
 **`POST /api/stories/[storyId]/self-print`** – Queue self-print PDFs
@@ -173,23 +186,23 @@ gswin64c.exe -dNOPAUSE -dBATCH -dSAFER -dQUIET `
 
 ### Configuration checklist
 
-| Item | Notes |
-| --- | --- |
-| Ghostscript | Install locally or bundle in Docker; point `GHOSTSCRIPT_BINARY` to `gs` (Linux) or `gswin64c.exe` (Windows). |
-| Temp directory | `TEMP_DIR` defaults to system temp; override for writable mounts. |
-| ICC profiles | `npm run setup-icc-profiles` downloads profiles referenced by `src/config/icc-profiles.json`. |
-| Paper config | `src/config/paper-caliper.json` defines trim, bleed, safe zones, and caliper for spine width. |
-| Pub/Sub | Print jobs can be triggered from orders via the `mythoria-print-requests` topic. |
+| Item           | Notes                                                                                                        |
+| -------------- | ------------------------------------------------------------------------------------------------------------ |
+| Ghostscript    | Install locally or bundle in Docker; point `GHOSTSCRIPT_BINARY` to `gs` (Linux) or `gswin64c.exe` (Windows). |
+| Temp directory | `TEMP_DIR` defaults to system temp; override for writable mounts.                                            |
+| ICC profiles   | `npm run setup-icc-profiles` downloads profiles referenced by `src/config/icc-profiles.json`.                |
+| Paper config   | `src/config/paper-caliper.json` defines trim, bleed, safe zones, and caliper for spine width.                |
+| Pub/Sub        | Print jobs can be triggered from orders via the `mythoria-print-requests` topic.                             |
 
 ### Testing & validation (SGW)
 
-| Intent | Command |
-| --- | --- |
-| Verify Ghostscript | `pwsh -NoProfile -Command "npm run test:ghostscript"` |
-| Render sample PDFs & convert | `pwsh -NoProfile -Command "npm run test:cmyk"` |
-| Page layout + image detection | `npm test -- pdf-page-processor` |
-| ICC + Ghostscript health | `pwsh -NoProfile -Command "npm run cmyk:status"` |
-| Exercise API | `POST /internal/print/generate` with `generateCMYK: true` while running `npm run dev`. |
+| Intent                        | Command                                                                                |
+| ----------------------------- | -------------------------------------------------------------------------------------- |
+| Verify Ghostscript            | `pwsh -NoProfile -Command "npm run test:ghostscript"`                                  |
+| Render sample PDFs & convert  | `pwsh -NoProfile -Command "npm run test:cmyk"`                                         |
+| Page layout + image detection | `npm test -- pdf-page-processor`                                                       |
+| ICC + Ghostscript health      | `pwsh -NoProfile -Command "npm run cmyk:status"`                                       |
+| Exercise API                  | `POST /internal/print/generate` with `generateCMYK: true` while running `npm run dev`. |
 
 ### Deployment tips (SGW)
 
@@ -199,12 +212,12 @@ gswin64c.exe -dNOPAUSE -dBATCH -dSAFER -dQUIET `
 
 ### Troubleshooting (SGW)
 
-| Symptom | Likely cause | Fix |
-| --- | --- | --- |
-| `Command failed: gswin64c.exe ...` | Ghostscript missing or ICC placeholder | Install Ghostscript, update `GHOSTSCRIPT_BINARY`, rerun `npm run setup-icc-profiles`. |
-| `Using built-in CMYK conversion` log | ICC not bundled | Ensure Docker build copies `icc-profiles/` and `icc-profiles.json` points to valid files. |
-| Temp-file permission errors | `TEMP_DIR` unwritable | Set `TEMP_DIR=/tmp/mythoria-print` and ensure write access. |
-| Cover alignment issues | Caliper/trim mismatch | Update `paper-caliper.json` and redeploy; confirm bleed = 3mm and safe zone = 10mm. |
+| Symptom                              | Likely cause                           | Fix                                                                                       |
+| ------------------------------------ | -------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `Command failed: gswin64c.exe ...`   | Ghostscript missing or ICC placeholder | Install Ghostscript, update `GHOSTSCRIPT_BINARY`, rerun `npm run setup-icc-profiles`.     |
+| `Using built-in CMYK conversion` log | ICC not bundled                        | Ensure Docker build copies `icc-profiles/` and `icc-profiles.json` points to valid files. |
+| Temp-file permission errors          | `TEMP_DIR` unwritable                  | Set `TEMP_DIR=/tmp/mythoria-print` and ensure write access.                               |
+| Cover alignment issues               | Caliper/trim mismatch                  | Update `paper-caliper.json` and redeploy; confirm bleed = 3mm and safe zone = 10mm.       |
 
 ### Output artifacts
 

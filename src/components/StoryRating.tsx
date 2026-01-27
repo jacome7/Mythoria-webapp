@@ -196,18 +196,14 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
 
       if (!response.ok) {
         const data = await response.json().catch(() => null);
-        throw new Error(
-          data?.error || tCommonStoryRating('feedbackToAuthor.errors.submitFailed'),
-        );
+        throw new Error(data?.error || tCommonStoryRating('feedbackToAuthor.errors.submitFailed'));
       }
 
       setAuthorSent(true);
       setAuthorSubject('');
       setAuthorMessage('');
     } catch (err) {
-      setAuthorError(
-        err instanceof Error ? err.message : tCommonStoryRating('errors.generic'),
-      );
+      setAuthorError(err instanceof Error ? err.message : tCommonStoryRating('errors.generic'));
     } finally {
       setAuthorSending(false);
     }

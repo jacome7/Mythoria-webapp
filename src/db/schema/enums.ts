@@ -229,12 +229,7 @@ export const notificationPreferenceEnum = pgEnum('notification_preference', [
 ]);
 
 // Partner directory enums
-export const partnerTypeEnum = pgEnum('partner_type', [
-  'printer',
-  'attraction',
-  'retail',
-  'other',
-]);
+export const partnerTypeEnum = pgEnum('partner_type', ['printer', 'attraction', 'retail', 'other']);
 
 export const partnerServiceScopeEnum = pgEnum('partner_service_scope', [
   'local',

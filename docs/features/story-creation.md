@@ -146,14 +146,14 @@ A draft can be revisited by appending `?edit={storyId}` to steps 3–5. When in 
 
 ### Session & Draft State
 
-| Data | Storage | Key | Used in |
-| --- | --- | --- | --- |
-| Current story ID | `localStorage` | `currentStoryId` | Steps 2–5 (via session guard) |
-| Step 1 data | `localStorage` | `step1Data` | Steps 1 & 5 |
-| Step 2 inputs | `sessionStorage` | `step2Data` | Step 2 only |
-| Step 3 data | `localStorage` | `step3Data` | Step 3 (local cache) |
-| GenAI results | `localStorage` | `genaiResults` | Step 2 → Step 3/4 prefill |
-| Edit mode flag | `localStorage` | `isEditMode` | Steps 3–5 |
+| Data             | Storage          | Key              | Used in                       |
+| ---------------- | ---------------- | ---------------- | ----------------------------- |
+| Current story ID | `localStorage`   | `currentStoryId` | Steps 2–5 (via session guard) |
+| Step 1 data      | `localStorage`   | `step1Data`      | Steps 1 & 5                   |
+| Step 2 inputs    | `sessionStorage` | `step2Data`      | Step 2 only                   |
+| Step 3 data      | `localStorage`   | `step3Data`      | Step 3 (local cache)          |
+| GenAI results    | `localStorage`   | `genaiResults`   | Step 2 → Step 3/4 prefill     |
+| Edit mode flag   | `localStorage`   | `isEditMode`     | Steps 3–5                     |
 
 Guarding logic:
 
@@ -163,37 +163,37 @@ Guarding logic:
 
 #### Story Creation & Update
 
-| Endpoint | Method | Purpose |
-| --- | --- | --- |
-| `/api/stories` | POST | Create a new story (defaults to `temporary`). |
-| `/api/my-stories/{storyId}` | GET | Fetch story details for steps 4–5 and generation polling. |
-| `/api/my-stories/{storyId}` | PUT | Persist story metadata from step 4. |
-| `/api/stories/complete` | POST | Mark as `writing` and publish a workflow request. |
+| Endpoint                    | Method | Purpose                                                   |
+| --------------------------- | ------ | --------------------------------------------------------- |
+| `/api/stories`              | POST   | Create a new story (defaults to `temporary`).             |
+| `/api/my-stories/{storyId}` | GET    | Fetch story details for steps 4–5 and generation polling. |
+| `/api/my-stories/{storyId}` | PUT    | Persist story metadata from step 4.                       |
+| `/api/stories/complete`     | POST   | Mark as `writing` and publish a workflow request.         |
 
 #### AI Structuring & Media
 
-| Endpoint | Method | Purpose |
-| --- | --- | --- |
-| `/api/media/signed-upload` | POST | Proxy media uploads to SGW for image/audio inputs. |
-| `/api/stories/genai-structure` | POST | Forward text/image/audio input to SGW’s `ai/text/structure` endpoint. |
+| Endpoint                       | Method | Purpose                                                               |
+| ------------------------------ | ------ | --------------------------------------------------------------------- |
+| `/api/media/signed-upload`     | POST   | Proxy media uploads to SGW for image/audio inputs.                    |
+| `/api/stories/genai-structure` | POST   | Forward text/image/audio input to SGW’s `ai/text/structure` endpoint. |
 
 #### Characters
 
-| Endpoint | Method | Purpose |
-| --- | --- | --- |
-| `/api/characters` | GET/POST | List or create user characters. |
-| `/api/characters/{id}` | PATCH | Update a character. |
-| `/api/stories/{storyId}/characters` | GET/POST | List or link characters to a story. |
-| `/api/stories/{storyId}/characters/{characterId}` | DELETE | Remove character from a story. |
-| `/api/stories/{storyId}/available-characters` | GET | List characters not yet linked to the story. |
+| Endpoint                                          | Method   | Purpose                                      |
+| ------------------------------------------------- | -------- | -------------------------------------------- |
+| `/api/characters`                                 | GET/POST | List or create user characters.              |
+| `/api/characters/{id}`                            | PATCH    | Update a character.                          |
+| `/api/stories/{storyId}/characters`               | GET/POST | List or link characters to a story.          |
+| `/api/stories/{storyId}/characters/{characterId}` | DELETE   | Remove character from a story.               |
+| `/api/stories/{storyId}/available-characters`     | GET      | List characters not yet linked to the story. |
 
 #### Credits & Pricing
 
-| Endpoint | Method | Purpose |
-| --- | --- | --- |
-| `/api/pricing/services` | GET | Fetch service pricing (eBook generation). |
-| `/api/my-credits` | GET | Fetch current credit balance. |
-| `/api/stories/{storyId}/deduct-credits` | POST | Deduct credits before generation. |
+| Endpoint                                | Method | Purpose                                   |
+| --------------------------------------- | ------ | ----------------------------------------- |
+| `/api/pricing/services`                 | GET    | Fetch service pricing (eBook generation). |
+| `/api/my-credits`                       | GET    | Fetch current credit balance.             |
+| `/api/stories/{storyId}/deduct-credits` | POST   | Deduct credits before generation.         |
 
 ### AI Structuring & Generation Workflow
 

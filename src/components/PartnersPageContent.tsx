@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useRef } from 'react';
@@ -57,10 +56,7 @@ const PartnersPageContent = () => {
       </ScrollFadeIn>
 
       <ScrollFadeIn delay={100}>
-        <section
-          ref={b2bRef}
-          className="rounded-box bg-primary text-primary-content p-8 md:p-12"
-        >
+        <section ref={b2bRef} className="rounded-box bg-primary text-primary-content p-8 md:p-12">
           <div className="max-w-4xl mx-auto space-y-4 text-center">
             <h2 className="text-3xl md:text-4xl font-bold">{t('b2b.title')}</h2>
             <p className="text-lg text-primary-content/80">{t('b2b.body')}</p>
