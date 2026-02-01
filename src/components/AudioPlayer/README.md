@@ -17,7 +17,6 @@ const audioPlayer = useAudioPlayer({
   trackingData: {
     // Optional analytics tracking
     story_id: 'story-id',
-    story_title: 'Story Title',
     total_chapters: 5,
   },
 });
@@ -164,7 +163,7 @@ const audioPlayer = useAudioPlayer({
   onError: (errorMessage) => setError(errorMessage),
   trackingData: {
     story_id: storyId,
-    story_title: story?.title,
+    total_chapters: chapters.length,
   }
 });
 

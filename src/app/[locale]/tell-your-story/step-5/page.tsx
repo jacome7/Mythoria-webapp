@@ -184,6 +184,7 @@ function Step5Page() {
         audiobook_requested: false,
         has_delivery_address: false,
         has_dedication: hasDedication,
+        credits_spent: ebookPricing.cost,
       });
 
       // Show the progress component instead of navigating to next step

@@ -10,43 +10,16 @@ declare global {
   }
 }
 
-// Define event types for better type safety
+// Define core event types for better type safety
 export type AnalyticsEvent =
-  // Authentication & Onboarding
   | 'sign_up'
   | 'login'
   | 'logout'
-  | 'lead_capture'
-
-  // Commerce & Credits
-  | 'credit_purchase'
-  | 'purchase'
-
-  // Story Creation Flow
   | 'story_creation_started'
-  | 'story_step1_completed'
-  | 'story_step2_completed'
-  | 'story_step3_completed'
-  | 'story_step4_completed'
-  | 'story_step5_completed'
-  | 'character_added'
-  | 'character_customized'
+  | 'story_creation_step_completed'
   | 'story_generation_requested'
-
-  // Story Management
-  | 'story_viewed'
-  | 'story_edited'
-  | 'story_shared'
-  | 'story_deleted'
-  | 'story_listen'
-  | 'story_downloaded'
-
-  // Contact
-  | 'contact_request'
-
-  // Partnership
-  | 'partnership_application_started'
-  | 'partnership_application_submitted';
+  | 'paid_action'
+  | 'purchase';
 
 // Event parameters interface
 export interface AnalyticsEventParams {
@@ -62,36 +35,16 @@ export interface AnalyticsEventParams {
 // Specific parameter interfaces for type safety
 export interface StoryEventParams extends AnalyticsEventParams {
   story_id?: string;
-  story_title?: string;
   story_genre?: string;
-  chapter_number?: number;
   total_chapters?: number;
-}
-
-export interface CharacterEventParams extends AnalyticsEventParams {
-  character_name?: string;
-  character_type?: string;
-  story_id?: string;
+  step?: number;
+  credits_spent?: number;
 }
 
 export interface AuthEventParams extends AnalyticsEventParams {
   user_id?: string;
   sign_up_method?: string;
   login_method?: string;
-}
-
-export interface ContactEventParams extends AnalyticsEventParams {
-  form_type?: string;
-  inquiry_type?: string;
-}
-
-export interface PartnershipEventParams extends AnalyticsEventParams {
-  company_name?: string;
-  partnership_type?: string;
-  primary_location?: string;
-  has_phone?: boolean;
-  has_website?: boolean;
-  has_description?: boolean;
 }
 
 export interface CreditPurchaseEventParams extends AnalyticsEventParams {
@@ -112,12 +65,20 @@ export interface CreditPurchaseEventParams extends AnalyticsEventParams {
   transaction_id?: string;
 }
 
+export type PaidActionType = 'ebook' | 'audiobook' | 'print' | 'self_print' | 'ai_edit';
+
+export interface PaidActionEventParams extends AnalyticsEventParams {
+  action_type: PaidActionType;
+  credits_spent?: number;
+  story_id?: string;
+}
+
 /**
  * Track a custom event in Google Analytics
  * @param eventName - The name of the event to track
  * @param parameters - Optional parameters to include with the event
  */
-export function trackEvent(eventName: string, parameters?: Record<string, unknown>): void {
+export function trackEvent(eventName: AnalyticsEvent, parameters?: Record<string, unknown>): void {
   if (typeof window === 'undefined') {
     return;
   }
@@ -172,8 +133,6 @@ export const trackCommerce = {
    * @param params.transaction_id - Unique transaction identifier
    */
   creditPurchase: (params: CreditPurchaseEventParams = {}) => {
-    trackEvent('credit_purchase', params);
-
     // Track standard GA4 purchase event for revenue tracking
     trackEvent('purchase', {
       transaction_id: params.transaction_id,
@@ -204,23 +163,20 @@ export const trackCommerce = {
 export const trackStoryCreation = {
   started: (params: StoryEventParams = {}) => trackEvent('story_creation_started', params),
 
-  step1Completed: (params: StoryEventParams = {}) => trackEvent('story_step1_completed', params),
-
-  step2Completed: (params: StoryEventParams = {}) => trackEvent('story_step2_completed', params),
-
-  step3Completed: (params: StoryEventParams = {}) => trackEvent('story_step3_completed', params),
-
-  step4Completed: (params: StoryEventParams = {}) => trackEvent('story_step4_completed', params),
-
-  step5Completed: (params: StoryEventParams = {}) => trackEvent('story_step5_completed', params),
-
-  characterAdded: (params: CharacterEventParams = {}) => trackEvent('character_added', params),
-
-  characterCustomized: (params: CharacterEventParams = {}) =>
-    trackEvent('character_customized', params),
+  stepCompleted: (params: StoryEventParams = {}) => {
+    trackEvent('story_creation_step_completed', {
+      ...params,
+      step: params.step,
+    });
+  },
 
   generationRequested: (params: StoryEventParams = {}) => {
     trackEvent('story_generation_requested', params);
+    trackPaidAction({
+      action_type: 'ebook',
+      story_id: params.story_id,
+      credits_spent: params.credits_spent as number | undefined,
+    });
     // Track Google Ads conversion for story creation
     trackMythoriaConversionsEnhanced.storyCreated(
       params.story_id as string,
@@ -229,39 +185,12 @@ export const trackStoryCreation = {
   },
 };
 
-/**
- * Track story management events
- */
-export const trackStoryManagement = {
-  viewed: (params: StoryEventParams = {}) => trackEvent('story_viewed', params),
-
-  edited: (params: StoryEventParams = {}) => trackEvent('story_edited', params),
-
-  shared: (params: StoryEventParams = {}) => trackEvent('story_shared', params),
-
-  deleted: (params: StoryEventParams = {}) => trackEvent('story_deleted', params),
-
-  listen: (params: StoryEventParams = {}) => trackEvent('story_listen', params),
-
-  downloaded: (params: StoryEventParams = {}) => trackEvent('story_downloaded', params),
-};
-
-/**
- * Track contact events
- */
-export const trackContact = {
-  request: (params: ContactEventParams = {}) => trackEvent('contact_request', params),
-};
-
-/**
- * Track partnership application events
- */
-export const trackPartnership = {
-  started: (params: PartnershipEventParams = {}) =>
-    trackEvent('partnership_application_started', params),
-
-  submitted: (params: PartnershipEventParams = {}) =>
-    trackEvent('partnership_application_submitted', params),
+export const trackPaidAction = (params: PaidActionEventParams): void => {
+  trackEvent('paid_action', {
+    action_type: params.action_type,
+    credits_spent: params.credits_spent,
+    story_id: params.story_id,
+  });
 };
 
 /**

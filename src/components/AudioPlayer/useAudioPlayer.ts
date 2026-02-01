@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslations } from 'next-intl';
-import { trackStoryManagement } from '@/lib/analytics';
 import { AudioPlayerState, AudioPlayerActions, AudioPlayerHookProps } from './types';
 
 export function useAudioPlayer({
@@ -145,16 +144,6 @@ export function useAudioPlayer({
             }
             return;
           }
-
-          // Track story listening if tracking data is provided
-          if (trackingData?.story_id) {
-            trackStoryManagement.listen({
-              story_id: trackingData.story_id,
-              story_title: trackingData.story_title,
-              chapter_number: chapterIndex + 1,
-              total_chapters: trackingData.total_chapters || 0,
-            });
-          }
         } else {
           // Use existing audio element
           const audio = audioElementsRef.current[chapterIndex];
@@ -190,16 +179,6 @@ export function useAudioPlayer({
             }
             return;
           }
-
-          // Track story listening if tracking data is provided
-          if (trackingData?.story_id) {
-            trackStoryManagement.listen({
-              story_id: trackingData.story_id,
-              story_title: trackingData.story_title,
-              chapter_number: chapterIndex + 1,
-              total_chapters: trackingData.total_chapters || 0,
-            });
-          }
         }
       } catch (error) {
         console.error('Error playing audio:', error);
@@ -225,7 +204,7 @@ export function useAudioPlayer({
         }
       }
     },
-    [currentlyPlaying, audioEndpoint, tErrors, onError, trackingData],
+    [currentlyPlaying, audioEndpoint, tErrors, onError],
   );
 
   // Keep ref of latest playAudio for ended event handlers

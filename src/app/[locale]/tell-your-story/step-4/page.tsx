@@ -356,7 +356,7 @@ function Step4Page() {
       }
 
       // Track step 4 completion
-      trackStoryCreation.step4Completed({
+      trackStoryCreation.stepCompleted({
         step: 4,
         story_id: currentStoryId,
         title_provided: !!title.trim(),

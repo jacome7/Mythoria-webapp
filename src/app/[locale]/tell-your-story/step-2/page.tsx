@@ -171,7 +171,7 @@ export default function Step2Page() {
       }
 
       // Track step 2 completion
-      trackStoryCreation.step2Completed({
+      trackStoryCreation.stepCompleted({
         step: 2,
         story_id: story.storyId,
         content_type: uploadedImages.length > 0 ? 'image' : uploadedAudio ? 'audio' : 'text',

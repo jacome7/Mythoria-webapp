@@ -227,7 +227,7 @@ Guarding logic:
 Story creation events are tracked through `trackStoryCreation` in `src/lib/analytics.ts`:
 
 - `story_creation_started`
-- `story_step{1-4}_completed`
+- `story_creation_step_completed` (with `step`)
 - `story_generation_requested`
 
 ### Localization

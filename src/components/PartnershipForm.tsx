@@ -5,7 +5,6 @@ import { useUser } from '@clerk/nextjs';
 import NextImage from 'next/image';
 import { useTranslations } from 'next-intl';
 import { FaHandshake, FaPaperPlane } from 'react-icons/fa';
-import { trackPartnership } from '../lib/analytics';
 
 interface PartnershipFormProps {
   className?: string;
@@ -76,29 +75,6 @@ const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
       }
     }
   }, [isSignedIn, user]);
-
-  // Track when user starts filling the form
-  useEffect(() => {
-    let hasTracked = false;
-    const trackStart = () => {
-      if (!hasTracked && (formData.name || formData.companyName || formData.email)) {
-        trackPartnership.started({
-          partnership_type: formData.partnershipType || 'not_selected',
-          primary_location: formData.primaryLocation || 'not_selected',
-        });
-        hasTracked = true;
-      }
-    };
-
-    const timer = setTimeout(trackStart, 2000);
-    return () => clearTimeout(timer);
-  }, [
-    formData.name,
-    formData.companyName,
-    formData.email,
-    formData.partnershipType,
-    formData.primaryLocation,
-  ]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -233,17 +209,6 @@ const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
         setLogoUploading(true);
         logoUrl = await uploadLogo(logoFile);
       }
-
-      // Track partnership application submission
-      trackPartnership.submitted({
-        company_name: formData.companyName,
-        partnership_type: formData.partnershipType,
-        primary_location: formData.primaryLocation,
-        has_phone: !!formData.phone.trim(),
-        has_website: !!formData.website.trim(),
-        has_description: !!formData.businessDescription.trim(),
-        has_logo: !!logoUrl,
-      });
 
       const response = await fetch('/api/partners', {
         method: 'POST',

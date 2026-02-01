@@ -5,7 +5,6 @@ import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { FaTicketAlt } from 'react-icons/fa';
-import { trackContact } from '../lib/analytics';
 
 interface ContactFormProps {
   className?: string;
@@ -88,15 +87,6 @@ function ContactFormContent({ className = '' }: ContactFormProps) {
     setResponseMessage('');
 
     try {
-      // Track contact request
-      trackContact.request({
-        form_type: 'contact_us_ticket',
-        inquiry_type: formData.category || 'general',
-        has_name: !!formData.name.trim(),
-        has_email: !!formData.email.trim(),
-        has_message: !!formData.message.trim(),
-      });
-
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {

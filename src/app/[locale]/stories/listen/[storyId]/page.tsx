@@ -175,7 +175,6 @@ export default function ListenStoryPage() {
     totalChapters: chapters.length,
     trackingData: {
       story_id: storyId,
-      story_title: story?.title,
       total_chapters: chapters.length,
     },
     chapters: audioChapters,
