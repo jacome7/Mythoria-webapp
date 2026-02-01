@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { FiCamera } from 'react-icons/fi';
-import { trackStoryCreation } from '../lib/analytics';
 import { Character } from '../lib/story-session';
 import {
   getCharacterRoleOptions,
@@ -261,21 +260,6 @@ export default function CharacterCard({
         photoDataUrl: pendingPhotoDataUrl ?? undefined,
         requestPhotoAnalysis,
       });
-
-      // Track character creation or customization
-      if (mode === 'create') {
-        trackStoryCreation.characterAdded({
-          character_name: formData.name,
-          character_type: formData.type,
-          character_role: formData.role,
-        });
-      } else if (mode === 'edit') {
-        trackStoryCreation.characterCustomized({
-          character_name: formData.name,
-          character_type: formData.type,
-          character_role: formData.role,
-        });
-      }
 
       setPendingPhotoDataUrl(null);
       setPendingPhotoPreviewUrl(null);

@@ -14,7 +14,6 @@ import {
   FiInfo,
 } from 'react-icons/fi';
 import { FaWhatsapp, FaFacebook } from 'react-icons/fa';
-import { trackStoryManagement } from '../lib/analytics';
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -100,15 +99,6 @@ export default function ShareModal({
       if (data.success) {
         setShareData(data);
         onShareSuccess?.(data);
-
-        // Track story sharing
-        trackStoryManagement.shared({
-          story_id: storyId,
-          story_title: storyTitle,
-          share_type: makePublic ? 'public' : 'private',
-          allow_edit: allowEdit,
-          expires_in_days: 30,
-        });
       } else {
         console.error('Error creating share link:', data.error);
         alert(tCommonShareModal('errors.createLinkFailed'));

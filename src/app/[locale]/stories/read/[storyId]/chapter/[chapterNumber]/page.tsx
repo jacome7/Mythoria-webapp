@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { FiVolume2, FiEdit3, FiShare2, FiArrowLeft, FiPrinter, FiDownload } from 'react-icons/fi';
-import { trackStoryManagement } from '../../../../../../../lib/analytics';
 import StoryReader from '../../../../../../../components/StoryReader';
 import StoryRating from '../../../../../../../components/StoryRating';
 import ShareModal from '../../../../../../../components/ShareModal';
@@ -61,16 +60,6 @@ export default function ReadChapterPage() {
           setStory(data.story);
           setChapters(data.chapters);
           setCurrentChapter(data.currentChapter);
-
-          // Track story viewing
-          trackStoryManagement.viewed({
-            story_id: storyId,
-            story_title: data.story.title,
-            story_status: 'published',
-            target_audience: data.story.targetAudience,
-            graphical_style: data.story.graphicalStyle,
-            chapter_number: chapterNumber,
-          });
         } else if (response.status === 404) {
           setError(tErrors('storyNotFoundGeneric'));
         } else if (response.status === 403) {

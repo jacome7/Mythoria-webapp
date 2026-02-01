@@ -35,7 +35,6 @@ export interface AudioPlayerHookProps {
   totalChapters?: number;
   trackingData?: {
     story_id?: string;
-    story_title?: string;
     total_chapters?: number;
   };
 }

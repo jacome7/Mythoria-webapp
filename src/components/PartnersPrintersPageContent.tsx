@@ -337,7 +337,11 @@ const PartnersDirectorySection = () => {
                         src={partner.logoUrl || PLACEHOLDER_LOGO}
                         alt={partner.name}
                         fill
-                        className={partner.logoUrl ? 'object-contain object-center' : 'object-cover object-center'}
+                        className={
+                          partner.logoUrl
+                            ? 'object-contain object-center'
+                            : 'object-cover object-center'
+                        }
                         sizes="112px"
                         unoptimized
                       />

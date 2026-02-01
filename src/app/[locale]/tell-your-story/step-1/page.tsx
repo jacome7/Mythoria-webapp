@@ -121,7 +121,7 @@ export default function Step1Page() {
       }
 
       // Track step 1 completion
-      trackStoryCreation.step1Completed({
+      trackStoryCreation.stepCompleted({
         step: 1,
         profile_updated: hasChanges,
         custom_author_provided: !!customAuthor,

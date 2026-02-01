@@ -13,8 +13,7 @@ import {
   FiShield,
 } from 'react-icons/fi';
 import { fetchSelfPrintPricing } from '@/lib/pricing/fetch-self-print-pricing';
-import { trackStoryManagement } from '@/lib/analytics';
-import { SELF_PRINTING_SERVICE_CODE } from '@/constants/pricing';
+import { trackPaidAction } from '@/lib/analytics';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -215,14 +214,10 @@ export function SelfPrintModal({
       setResult(data);
       setCurrentCredits(data.balance.current);
       onSuccess?.(data);
-      trackStoryManagement.downloaded({
+      trackPaidAction({
+        action_type: 'self_print',
         story_id: data.storyId,
-        story_title: storyTitle,
-        workflow_id: data.workflowId,
-        execution_id: data.executionId,
         credits_spent: data.creditsDeducted,
-        service_code: SELF_PRINTING_SERVICE_CODE,
-        event_source: 'self_print_modal',
       });
     } catch (error) {
       console.error('Failed to queue self-print workflow', error);

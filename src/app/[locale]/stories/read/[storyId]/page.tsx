@@ -15,7 +15,6 @@ import {
   FiCopy,
   FiDownload,
 } from 'react-icons/fi';
-import { trackStoryManagement } from '../../../../../lib/analytics';
 import StoryReader from '../../../../../components/StoryReader';
 import StoryRating from '../../../../../components/StoryRating';
 import ShareModal from '../../../../../components/ShareModal';
@@ -73,15 +72,6 @@ export default function ReadStoryPage() {
           const data = await response.json();
           setStory(data.story);
           setChapters(data.chapters);
-
-          // Track story viewing
-          trackStoryManagement.viewed({
-            story_id: storyId,
-            story_title: data.story.title,
-            story_status: 'published',
-            target_audience: data.story.targetAudience,
-            graphical_style: data.story.graphicalStyle,
-          });
         } else if (response.status === 404) {
           setLoadError(tErrors('storyNotFoundGeneric'));
         } else if (response.status === 403) {

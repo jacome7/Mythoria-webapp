@@ -328,7 +328,7 @@ function Step3Page() {
       // Save step 3 data to localStorage
       setStep3Data({ characters });
       // Track step 3 completion
-      trackStoryCreation.step3Completed({
+      trackStoryCreation.stepCompleted({
         step: 3,
         story_id: currentStoryId || undefined,
         character_count: characters.length,

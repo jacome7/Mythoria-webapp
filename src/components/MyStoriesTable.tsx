@@ -12,7 +12,6 @@ import { SelfPrintModal } from './self-print/SelfPrintModal';
 import { useStoriesTable } from '@/hooks/useStoriesTable';
 import { Story, SortField } from '@/types/story';
 import { useToast } from '@/hooks/useToast';
-import { trackStoryManagement } from '@/lib/analytics';
 
 export default function MyStoriesTable() {
   const tMyStoriesPage = useTranslations('MyStoriesPage');
@@ -59,11 +58,6 @@ export default function MyStoriesTable() {
         method: 'DELETE',
       });
       if (response.ok) {
-        trackStoryManagement.deleted({
-          story_id: storyToDelete.storyId,
-          story_title: storyToDelete.title,
-          story_status: storyToDelete.status,
-        });
         setStories((prev) => prev.filter((s) => s.storyId !== storyToDelete.storyId));
         setDeleteModalOpen(false);
         setStoryToDelete(null);
