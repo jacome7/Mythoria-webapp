@@ -53,11 +53,24 @@
     },
     "cities": {
       "PT": {
-        "lisbon": "Lisbon",
-        "porto": "Porto",
+        "aveiro": "Aveiro",
+        "beja": "Beja",
         "braga": "Braga",
+        "braganca": "Bragança",
+        "castelo-branco": "Castelo Branco",
         "coimbra": "Coimbra",
-        "faro": "Faro"
+        "evora": "Évora",
+        "faro": "Faro",
+        "guarda": "Guarda",
+        "leiria": "Leiria",
+        "lisbon": "Lisbon",
+        "portalegre": "Portalegre",
+        "porto": "Porto",
+        "santarem": "Santarém",
+        "setubal": "Setúbal",
+        "viana-do-castelo": "Viana do Castelo",
+        "vila-real": "Vila Real",
+        "viseu": "Viseu"
       },
       "ES": {
         "madrid": "Madrid",

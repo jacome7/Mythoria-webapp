@@ -45,7 +45,29 @@ type CountryOption = {
 };
 
 const COUNTRY_OPTIONS: CountryOption[] = [
-  { code: 'PT', cityKeys: ['lisbon', 'porto', 'braga', 'coimbra', 'faro'] },
+  {
+    code: 'PT',
+    cityKeys: [
+      'aveiro',
+      'beja',
+      'braga',
+      'braganca',
+      'castelo-branco',
+      'coimbra',
+      'evora',
+      'faro',
+      'guarda',
+      'leiria',
+      'lisbon',
+      'portalegre',
+      'porto',
+      'santarem',
+      'setubal',
+      'viana-do-castelo',
+      'vila-real',
+      'viseu',
+    ],
+  },
   { code: 'ES', cityKeys: ['madrid', 'barcelona', 'valencia', 'seville'] },
   { code: 'FR', cityKeys: ['paris', 'lyon', 'marseille', 'bordeaux'] },
   { code: 'DE', cityKeys: ['berlin', 'munich', 'hamburg', 'frankfurt'] },
