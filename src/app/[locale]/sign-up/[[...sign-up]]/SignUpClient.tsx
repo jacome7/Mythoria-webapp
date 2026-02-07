@@ -85,7 +85,7 @@ export default function SignUpClient({ locale, translations, leadSession }: Sign
             {/* Mobile logo */}
             <div className="lg:hidden flex justify-center mb-6">
               <Image
-                src="/Mythoria-logo-white-transparent-256x168.png"
+                src="/Mythoria-logo-white-512x336.jpg"
                 alt="Mythoria Logo"
                 width={128}
                 height={84}
