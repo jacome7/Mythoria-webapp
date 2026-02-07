@@ -16,6 +16,7 @@
     "failedToPlayAudio": "Failed to play audio. Please try again.",
     "failedToLoadAudio": "Failed to load audio. Please check your internet connection and try again.",
     "audioPlaybackInteractionRequired": "Audio playback requires user interaction. Please try clicking the play button again.",
-    "audioFormatNotSupported": "This audio format is not supported by your browser."
+    "audioFormatNotSupported": "This audio format is not supported by your browser.",
+    "failedToDownloadAudio": "Failed to download audio. Please try again."
   }
 }

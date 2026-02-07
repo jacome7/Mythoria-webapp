@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslations } from 'next-intl';
+import { trackEvent } from '@/lib/analytics';
 import { AudioPlayerState, AudioPlayerActions, AudioPlayerHookProps } from './types';
 
 export function useAudioPlayer({
@@ -30,6 +31,53 @@ export function useAudioPlayer({
   useEffect(() => {
     totalChaptersRef.current = totalChapters ?? trackingData?.total_chapters ?? 0;
   }, [totalChapters, trackingData]);
+
+  const downloadAudio = useCallback(
+    async (chapterIndex: number, fileName: string) => {
+      const audioUrl = `${audioEndpoint}/${chapterIndex}`;
+
+      try {
+        trackEvent('paid_action', {
+          action_type: 'audiobook',
+          story_id: trackingData?.story_id,
+          chapter_index: chapterIndex,
+          interaction_type: 'download_audio',
+        });
+
+        const response = await fetch(audioUrl);
+        if (!response.ok) {
+          throw new Error('Failed to fetch audio file');
+        }
+
+        const audioBlob = await response.blob();
+        const objectUrl = window.URL.createObjectURL(audioBlob);
+
+        const downloadLink = document.createElement('a');
+        downloadLink.href = objectUrl;
+        downloadLink.download = fileName;
+        downloadLink.rel = 'noopener';
+        downloadLink.style.display = 'none';
+
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        downloadLink.remove();
+
+        window.setTimeout(() => {
+          window.URL.revokeObjectURL(objectUrl);
+        }, 1000);
+      } catch (error) {
+        console.error('Error downloading audio:', error);
+        const errorMessage = tErrors('failedToDownloadAudio');
+
+        if (onError) {
+          onError(errorMessage);
+        } else {
+          alert(errorMessage);
+        }
+      }
+    },
+    [audioEndpoint, onError, tErrors, trackingData?.story_id],
+  );
 
   const setPlaybackSpeed = useCallback(
     (speed: number) => {
@@ -259,6 +307,7 @@ export function useAudioPlayer({
     playAudio,
     pauseAudio,
     stopAudio,
+    downloadAudio,
     setPlaybackSpeed,
     seekAudio,
     skipForward,

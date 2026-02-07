@@ -52,7 +52,8 @@
       "controls": {
         "play": "Reproduzir",
         "pause": "Pausar",
-        "stop": "Parar"
+        "stop": "Parar",
+        "download": "Descarregar"
       }
     },
     "storyComplete": {

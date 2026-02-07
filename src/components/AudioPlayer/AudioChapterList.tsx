@@ -10,6 +10,7 @@ import {
   FiLoader,
   FiRewind,
   FiFastForward,
+  FiDownload,
 } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
 import { CastButton } from './CastButton';
@@ -28,6 +29,20 @@ const defaultFormatDuration = (seconds: number): string => {
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
 
+const sanitizeFileNamePart = (value: string): string =>
+  value
+    .normalize('NFKD')
+    .replace(/[^\w\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .toLowerCase();
+
+const createAudioFileName = (chapterTitle: string, chapterNumber: number): string => {
+  const baseName = sanitizeFileNamePart(chapterTitle) || `chapter-${chapterNumber}`;
+  return `mythoria-${baseName}.mp3`;
+};
+
 export function AudioChapterList({
   chapters,
   currentlyPlaying,
@@ -38,6 +53,7 @@ export function AudioChapterList({
   playAudio,
   pauseAudio,
   stopAudio,
+  downloadAudio,
   setPlaybackSpeed,
   seekAudio,
   skipForward,
@@ -113,6 +129,22 @@ export function AudioChapterList({
                         })}
                       </p>
                     )}
+                  </div>
+
+                  <div className="mt-2">
+                    <button
+                      onClick={() =>
+                        void downloadAudio(
+                          index,
+                          createAudioFileName(chapter.chapterTitle, index + 1),
+                        )
+                      }
+                      className="btn btn-ghost btn-xs"
+                      title={tPublicStoryPage('listen.controls.download')}
+                    >
+                      <FiDownload className="w-3 h-3" />
+                      <span>{tPublicStoryPage('listen.controls.download')}</span>
+                    </button>
                   </div>
 
                   {/* Simple Play Button (only if NOT expanded) */}
