@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
 import { Metadata } from 'next';
+import type { ReactNode } from 'react';
 
 type UnsubscribeStatus = 'success' | 'already-unsubscribed' | 'not-found' | 'invalid' | 'error';
 
@@ -16,7 +17,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     title: `${t('success.title')} - Mythoria`,
-    description: t('success.message'),
+    description: t.markup('success.message', {
+      email: '',
+      strong: (chunks) => chunks,
+    }),
     robots: 'noindex,nofollow',
   };
 }
@@ -31,7 +35,7 @@ export default async function UnsubscribePage({ params, searchParams }: PageProp
 
   // Determine which content to show based on status
   let title: string;
-  let message: string;
+  let message: ReactNode;
   let isSuccess: boolean;
   let showFarewell = false;
 
@@ -48,7 +52,10 @@ export default async function UnsubscribePage({ params, searchParams }: PageProp
       break;
     case 'already-unsubscribed':
       title = t('alreadyUnsubscribed.title');
-      message = t('alreadyUnsubscribed.message', { email });
+      message = t.rich('alreadyUnsubscribed.message', {
+        email,
+        strong: (chunks) => <strong>{chunks}</strong>,
+      });
       isSuccess = true;
       break;
     case 'error':
@@ -59,7 +66,10 @@ export default async function UnsubscribePage({ params, searchParams }: PageProp
     case 'success':
     default:
       title = t('success.title');
-      message = t('success.message', { email });
+      message = t.rich('success.message', {
+        email,
+        strong: (chunks) => <strong>{chunks}</strong>,
+      });
       isSuccess = true;
       showFarewell = true;
       break;
@@ -83,10 +93,7 @@ export default async function UnsubscribePage({ params, searchParams }: PageProp
         <h1 className="text-3xl font-bold text-base-content">{title}</h1>
 
         {/* Message */}
-        <div
-          className="text-base-content/70 text-lg"
-          dangerouslySetInnerHTML={{ __html: message }}
-        />
+        <div className="text-base-content/70 text-lg">{message}</div>
 
         {/* Farewell message for successful unsubscribe */}
         {showFarewell && (

@@ -131,22 +131,6 @@ export function AudioChapterList({
                     )}
                   </div>
 
-                  <div className="mt-2">
-                    <button
-                      onClick={() =>
-                        void downloadAudio(
-                          index,
-                          createAudioFileName(chapter.chapterTitle, index + 1),
-                        )
-                      }
-                      className="btn btn-ghost btn-xs"
-                      title={tPublicStoryPage('listen.controls.download')}
-                    >
-                      <FiDownload className="w-3 h-3" />
-                      <span>{tPublicStoryPage('listen.controls.download')}</span>
-                    </button>
-                  </div>
-
                   {/* Simple Play Button (only if NOT expanded) */}
                   {!(
                     currentlyPlaying === index ||
@@ -158,13 +142,27 @@ export function AudioChapterList({
                           <FiLoader className="animate-spin text-gray-400" />
                         </div>
                       ) : (
-                        <button
-                          onClick={() => playAudio(index)}
-                          className="btn btn-circle btn-primary btn-sm"
-                          title={tPublicStoryPage('listen.controls.play')}
-                        >
-                          <FiPlay className="w-4 h-4 ml-0.5" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => playAudio(index)}
+                            className="btn btn-circle btn-primary btn-sm"
+                            title={tPublicStoryPage('listen.controls.play')}
+                          >
+                            <FiPlay className="w-4 h-4 ml-0.5" />
+                          </button>
+                          <button
+                            onClick={() =>
+                              void downloadAudio(
+                                index,
+                                createAudioFileName(chapter.chapterTitle, index + 1),
+                              )
+                            }
+                            className="btn btn-circle btn-sm border border-primary bg-white text-primary hover:bg-primary hover:text-white"
+                            title={tPublicStoryPage('listen.controls.download')}
+                          >
+                            <FiDownload className="w-4 h-4" />
+                          </button>
+                        </div>
                       )}
                     </div>
                   )}
@@ -195,7 +193,7 @@ export function AudioChapterList({
 
                     <div className="flex items-center justify-between gap-4">
                       {/* Play/Pause Button (Left) */}
-                      <div>
+                      <div className="flex items-center gap-2">
                         {audioLoading[index] ? (
                           <div className="w-10 h-10 flex items-center justify-center">
                             <FiLoader className="animate-spin text-gray-400" />
@@ -215,6 +213,20 @@ export function AudioChapterList({
                             title={tPublicStoryPage('listen.controls.play')}
                           >
                             <FiPlay className="w-5 h-5 ml-0.5" />
+                          </button>
+                        )}
+                        {!audioLoading[index] && (
+                          <button
+                            onClick={() =>
+                              void downloadAudio(
+                                index,
+                                createAudioFileName(chapter.chapterTitle, index + 1),
+                              )
+                            }
+                            className="btn btn-circle border border-primary bg-white text-primary hover:bg-primary hover:text-white"
+                            title={tPublicStoryPage('listen.controls.download')}
+                          >
+                            <FiDownload className="w-5 h-5" />
                           </button>
                         )}
                       </div>
