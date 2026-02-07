@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE. Run: npm run i18n:keys
-// Total keys: 2357
+// Total keys: 2359
 export type TranslationKey =
   | 'AIEditModal.buttons.applyChanges'
   | 'AIEditModal.buttons.cancel'
@@ -704,6 +704,7 @@ export type TranslationKey =
   | 'Errors.authRequired'
   | 'Errors.chapterNotFound'
   | 'Errors.chapterNotFoundDesc'
+  | 'Errors.failedToDownloadAudio'
   | 'Errors.failedToLoad'
   | 'Errors.failedToLoadAudio'
   | 'Errors.failedToPlayAudio'
@@ -1586,6 +1587,7 @@ export type TranslationKey =
   | 'PublicStoryPage.listen.cast.unavailable'
   | 'PublicStoryPage.listen.chapterFallback'
   | 'PublicStoryPage.listen.chapterImageAlt'
+  | 'PublicStoryPage.listen.controls.download'
   | 'PublicStoryPage.listen.controls.pause'
   | 'PublicStoryPage.listen.controls.play'
   | 'PublicStoryPage.listen.controls.stop'

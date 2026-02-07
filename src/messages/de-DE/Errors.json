@@ -16,6 +16,7 @@
     "failedToPlayAudio": "Audio konnte nicht wiedergegeben werden. Bitte versuche es erneut.",
     "failedToLoadAudio": "Audio konnte nicht geladen werden. Bitte überprüfe deine Internetverbindung und versuche es erneut.",
     "audioPlaybackInteractionRequired": "Für die Audiowiedergabe ist eine Interaktion erforderlich. Bitte drücke den Play-Button noch einmal.",
-    "audioFormatNotSupported": "Dieses Audioformat wird von deinem Browser nicht unterstützt."
+    "audioFormatNotSupported": "Dieses Audioformat wird von deinem Browser nicht unterstützt.",
+    "failedToDownloadAudio": "Audio konnte nicht heruntergeladen werden. Bitte versuche es erneut."
   }
 }
