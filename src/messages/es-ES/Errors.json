@@ -16,6 +16,7 @@
     "failedToPlayAudio": "Error al reproducir audio. Inténtalo de nuevo.",
     "failedToLoadAudio": "Error al cargar audio. Comprueba tu conexión e inténtalo de nuevo.",
     "audioPlaybackInteractionRequired": "Se requiere interacción del usuario para reproducir audio. Pulsa de nuevo el botón de reproducción.",
-    "audioFormatNotSupported": "Este formato de audio no es compatible con tu navegador."
+    "audioFormatNotSupported": "Este formato de audio no es compatible con tu navegador.",
+    "failedToDownloadAudio": "Error al descargar el audio. Inténtalo de nuevo."
   }
 }

@@ -19,6 +19,7 @@ export interface AudioPlayerActions {
   playAudio: (chapterIndex: number) => Promise<void>;
   pauseAudio: (chapterIndex: number) => void;
   stopAudio: (chapterIndex: number) => void;
+  downloadAudio: (chapterIndex: number, fileName: string) => Promise<void>;
   setPlaybackSpeed: (speed: number) => void;
   seekAudio: (chapterIndex: number, time: number) => void;
   skipForward: (chapterIndex: number, seconds: number) => void;

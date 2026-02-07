@@ -625,6 +625,13 @@ export function useCastAudioPlayer({
     [audioPlayer, isCasting, stopCast],
   );
 
+  const downloadAudio = useCallback(
+    async (chapterIndex: number, fileName: string) => {
+      await audioPlayer.downloadAudio(chapterIndex, fileName);
+    },
+    [audioPlayer],
+  );
+
   const seekAudio = useCallback(
     (chapterIndex: number, time: number) => {
       if (isCasting) {
@@ -689,6 +696,7 @@ export function useCastAudioPlayer({
     playAudio,
     pauseAudio,
     stopAudio,
+    downloadAudio,
     setPlaybackSpeed,
     seekAudio,
     skipForward,

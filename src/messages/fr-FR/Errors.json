@@ -16,6 +16,7 @@
     "failedToPlayAudio": "Échec de la lecture de l'audio. Veuillez réessayer.",
     "failedToLoadAudio": "Échec du chargement de l'audio. Veuillez vérifier votre connexion Internet et réessayer.",
     "audioPlaybackInteractionRequired": "La lecture audio nécessite une interaction utilisateur. Veuillez essayer de cliquer à nouveau sur le bouton de lecture.",
-    "audioFormatNotSupported": "Ce format audio n'est pas pris en charge par votre navigateur."
+    "audioFormatNotSupported": "Ce format audio n'est pas pris en charge par votre navigateur.",
+    "failedToDownloadAudio": "Échec du téléchargement de l'audio. Veuillez réessayer."
   }
 }
