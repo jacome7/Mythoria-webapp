@@ -19,8 +19,11 @@ export async function GET(
   // Validate UUID format
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!uuidRegex.test(leadId)) {
-    console.warn('[ClickTracking] Invalid UUID format:', leadId);
-    return new NextResponse('Invalid lead ID', { status: 400 });
+    // Non-UUID leadId (e.g. 'sample' from test sends) — redirect gracefully
+    const defaultLocale = routing.defaultLocale;
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://mythoria.pt';
+    const target = linkId === 'homepage' ? `/${defaultLocale}` : `/${defaultLocale}/${linkId}`;
+    return NextResponse.redirect(new URL(target, baseUrl), { status: 302 });
   }
 
   // Validate linkId (basic sanitization - must not contain '..' or special chars)

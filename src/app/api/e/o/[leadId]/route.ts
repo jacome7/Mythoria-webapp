@@ -15,17 +15,15 @@ export async function GET(
 ) {
   const { leadId } = await params;
 
-  // Validate UUID format (basic check)
+  // Only track opens for valid UUIDs (skip sample sends and invalid IDs)
+  // but always serve the logo image regardless
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(leadId)) {
-    console.warn('[OpenTracking] Invalid UUID format:', leadId);
-    return new NextResponse('Invalid lead ID', { status: 400 });
+  if (uuidRegex.test(leadId)) {
+    // Record the open event (async, don't wait)
+    leadService.recordOpen(leadId).catch((error) => {
+      console.error('[OpenTracking] Failed to record open:', error);
+    });
   }
-
-  // Record the open event (async, don't wait)
-  leadService.recordOpen(leadId).catch((error) => {
-    console.error('[OpenTracking] Failed to record open:', error);
-  });
 
   try {
     // Serve the Mythoria logo from public directory
