@@ -42,6 +42,55 @@ $baseArgs = @(
 
 $commandSucceeded = $true
 $primaryErrorMessage = $null
+$errorsFile = $null
+
+function Get-ErrorLogPath {
+    param([string]$BaseLogPath)
+
+    if ([string]::IsNullOrWhiteSpace($BaseLogPath)) {
+        return $null
+    }
+
+    $directory = Split-Path -Path $BaseLogPath -Parent
+    $fileBase = [System.IO.Path]::GetFileNameWithoutExtension($BaseLogPath)
+    $extension = [System.IO.Path]::GetExtension($BaseLogPath)
+
+    return (Join-Path $directory ($fileBase + "_errors" + $extension))
+}
+
+function Write-ErrorLogs {
+    param(
+        [string]$BaseLogPath,
+        [string]$ErrorLogPath
+    )
+
+    if (-not (Test-Path -Path $BaseLogPath)) {
+        return
+    }
+
+    $errorSeverities = @("ERROR", "CRITICAL", "ALERT", "EMERGENCY")
+    $errorPattern = "\\b(" + ($errorSeverities -join "|") + ")\\b"
+    $rawContent = Get-Content -Path $BaseLogPath -Raw
+    $errors = @()
+
+    if (-not [string]::IsNullOrWhiteSpace($rawContent)) {
+        try {
+            $parsed = $rawContent | ConvertFrom-Json -ErrorAction Stop
+            $entries = @($parsed)
+
+            $errors = $entries | Where-Object {
+                $severity = $_.severity
+                $severity -and ($errorSeverities -contains $severity.ToString().ToUpperInvariant())
+            }
+        }
+        catch {
+            $errors = (Get-Content -Path $BaseLogPath) | Where-Object { $_ -match $errorPattern }
+        }
+    }
+
+    $errors | ConvertTo-Json -Depth 100 | Set-Content -Path $ErrorLogPath
+    Write-Host "Saved error logs to: $ErrorLogPath"
+}
 
 try {
     if ($Follow) {
@@ -59,6 +108,10 @@ try {
         }
         else {
             Write-Host "Saved logs to: $OutFile"
+            $errorsFile = Get-ErrorLogPath -BaseLogPath $OutFile
+            if ($errorsFile) {
+                Write-ErrorLogs -BaseLogPath $OutFile -ErrorLogPath $errorsFile
+            }
         }
     }
 }
@@ -93,6 +146,10 @@ if (-not $commandSucceeded) {
             )
             gcloud @fallbackArgs 2>&1 | Tee-Object -FilePath $OutFile | Out-Null
             Write-Host "Saved logs to: $OutFile (Cloud Logging fallback)"
+            $errorsFile = Get-ErrorLogPath -BaseLogPath $OutFile
+            if ($errorsFile) {
+                Write-ErrorLogs -BaseLogPath $OutFile -ErrorLogPath $errorsFile
+            }
         }
         if ($LASTEXITCODE -ne 0) {
             throw "Cloud Logging fallback command failed."
