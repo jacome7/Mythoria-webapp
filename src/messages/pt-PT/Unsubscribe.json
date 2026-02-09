@@ -20,5 +20,17 @@
     "title": "Erro",
     "message": "Ocorreu um erro ao processar o seu pedido de cancelamento de subscrição. Por favor, tente novamente mais tarde ou contacte o suporte."
   },
-  "returnHome": "Voltar à Mythoria"
+  "returnHome": "Voltar à Mythoria",
+  "user": {
+    "success": {
+      "title": "Preferências Atualizadas",
+      "message": "As suas preferências de email para <strong>{email}</strong> foram alteradas para Essenciais. Receberá apenas atualizações importantes da conta e das suas histórias."
+    },
+    "alreadyEssential": {
+      "title": "Já em Essenciais",
+      "message": "As suas preferências de email para <strong>{email}</strong> já estão definidas como Essenciais. Apenas recebe atualizações importantes da conta e das suas histórias."
+    },
+    "profileHint": "Pode ajustar as suas preferências de notificação a qualquer momento na sua página de perfil.",
+    "goToProfile": "Ir para o Perfil"
+  }
 }

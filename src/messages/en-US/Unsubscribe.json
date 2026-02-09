@@ -20,5 +20,17 @@
     "title": "Error",
     "message": "An error occurred while processing your unsubscribe request. Please try again later or contact support."
   },
-  "returnHome": "Return to Mythoria"
+  "returnHome": "Return to Mythoria",
+  "user": {
+    "success": {
+      "title": "Preferences Updated",
+      "message": "Your email preferences for <strong>{email}</strong> have been set to Essentials only. You will now only receive critical account and story updates."
+    },
+    "alreadyEssential": {
+      "title": "Already on Essentials",
+      "message": "Your email preferences for <strong>{email}</strong> are already set to Essentials. You only receive critical account and story updates."
+    },
+    "profileHint": "You can adjust your notification preferences anytime from your profile page.",
+    "goToProfile": "Go to Profile"
+  }
 }
