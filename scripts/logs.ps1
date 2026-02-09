@@ -2,7 +2,7 @@ Param(
     [string]$ProjectId = "oceanic-beach-460916-n5",
     [string]$Region = "europe-west9",
     [string]$ServiceName = "mythoria-webapp",
-    [int]$Limit = 100,
+    [int]$Limit = 200,
     [switch]$Follow,
     [string]$OutFile
 )
@@ -50,12 +50,14 @@ try {
         if ($LASTEXITCODE -ne 0) {
             $commandSucceeded = $false
         }
-    } else {
+    }
+    else {
         $readArgs = $baseArgs + @("--limit", $Limit, "--format", "json")
         gcloud @readArgs 2>&1 | Tee-Object -FilePath $OutFile | Out-Null
         if ($LASTEXITCODE -ne 0) {
             $commandSucceeded = $false
-        } else {
+        }
+        else {
             Write-Host "Saved logs to: $OutFile"
         }
     }
@@ -68,7 +70,8 @@ catch {
 if (-not $commandSucceeded) {
     if ($primaryErrorMessage) {
         Write-Warning "Cloud Run logs command failed: $primaryErrorMessage"
-    } else {
+    }
+    else {
         Write-Warning "Cloud Run logs command failed with exit code $LASTEXITCODE"
     }
 
@@ -80,7 +83,8 @@ if (-not $commandSucceeded) {
                 "--format", "json"
             )
             gcloud @fallbackArgs
-        } else {
+        }
+        else {
             $fallbackArgs = @(
                 "logging", "read", $logFilter,
                 "--project", $ProjectId,
