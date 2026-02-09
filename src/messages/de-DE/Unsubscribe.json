@@ -20,5 +20,17 @@
     "title": "Fehler",
     "message": "Bei der Verarbeitung deiner Abmeldeanfrage ist ein Fehler aufgetreten. Bitte versuche es später erneut oder kontaktiere den Support."
   },
-  "returnHome": "Zurück zu Mythoria"
+  "returnHome": "Zurück zu Mythoria",
+  "user": {
+    "success": {
+      "title": "Einstellungen Aktualisiert",
+      "message": "Deine E-Mail-Einstellungen für <strong>{email}</strong> wurden auf Wesentliches umgestellt. Du erhältst nur noch wichtige Konto- und Geschichten-Updates."
+    },
+    "alreadyEssential": {
+      "title": "Bereits auf Wesentliches",
+      "message": "Deine E-Mail-Einstellungen für <strong>{email}</strong> stehen bereits auf Wesentliches. Du erhältst nur wichtige Konto- und Geschichten-Updates."
+    },
+    "profileHint": "Du kannst deine Benachrichtigungseinstellungen jederzeit auf deiner Profilseite anpassen.",
+    "goToProfile": "Zum Profil"
+  }
 }

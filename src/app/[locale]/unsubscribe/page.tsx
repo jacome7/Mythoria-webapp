@@ -5,10 +5,11 @@ import { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
 type UnsubscribeStatus = 'success' | 'already-unsubscribed' | 'not-found' | 'invalid' | 'error';
+type UnsubscribeType = 'lead' | 'user';
 
 interface PageProps {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ status?: UnsubscribeStatus; email?: string }>;
+  searchParams: Promise<{ status?: UnsubscribeStatus; email?: string; type?: UnsubscribeType }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -27,13 +28,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function UnsubscribePage({ params, searchParams }: PageProps) {
   const { locale } = await params;
-  const { status = 'success', email = '' } = await searchParams;
+  const { status = 'success', email = '', type = 'lead' } = await searchParams;
 
   setRequestLocale(locale);
 
   const t = await getTranslations('Unsubscribe');
 
-  // Determine which content to show based on status
+  const isUser = type === 'user';
+
+  // Determine which content to show based on status and type
   let title: string;
   let message: ReactNode;
   let isSuccess: boolean;
@@ -51,11 +54,19 @@ export default async function UnsubscribePage({ params, searchParams }: PageProp
       isSuccess = false;
       break;
     case 'already-unsubscribed':
-      title = t('alreadyUnsubscribed.title');
-      message = t.rich('alreadyUnsubscribed.message', {
-        email,
-        strong: (chunks) => <strong>{chunks}</strong>,
-      });
+      if (isUser) {
+        title = t('user.alreadyEssential.title');
+        message = t.rich('user.alreadyEssential.message', {
+          email,
+          strong: (chunks) => <strong>{chunks}</strong>,
+        });
+      } else {
+        title = t('alreadyUnsubscribed.title');
+        message = t.rich('alreadyUnsubscribed.message', {
+          email,
+          strong: (chunks) => <strong>{chunks}</strong>,
+        });
+      }
       isSuccess = true;
       break;
     case 'error':
@@ -65,13 +76,22 @@ export default async function UnsubscribePage({ params, searchParams }: PageProp
       break;
     case 'success':
     default:
-      title = t('success.title');
-      message = t.rich('success.message', {
-        email,
-        strong: (chunks) => <strong>{chunks}</strong>,
-      });
+      if (isUser) {
+        title = t('user.success.title');
+        message = t.rich('user.success.message', {
+          email,
+          strong: (chunks) => <strong>{chunks}</strong>,
+        });
+        showFarewell = true;
+      } else {
+        title = t('success.title');
+        message = t.rich('success.message', {
+          email,
+          strong: (chunks) => <strong>{chunks}</strong>,
+        });
+        showFarewell = true;
+      }
       isSuccess = true;
-      showFarewell = true;
       break;
   }
 
@@ -96,15 +116,25 @@ export default async function UnsubscribePage({ params, searchParams }: PageProp
         <div className="text-base-content/70 text-lg">{message}</div>
 
         {/* Farewell message for successful unsubscribe */}
-        {showFarewell && (
+        {showFarewell && !isUser && (
           <p className="text-base-content/60 italic text-sm mt-4">{t('success.farewell')}</p>
         )}
 
+        {/* User-specific: hint about profile preferences */}
+        {isUser && isSuccess && (
+          <p className="text-base-content/60 italic text-sm mt-4">{t('user.profileHint')}</p>
+        )}
+
         {/* Call to Action */}
-        <div className="mt-8">
+        <div className="mt-8 flex flex-col gap-3 items-center">
           <Link href={`/${locale}`} className="btn btn-primary btn-lg">
             {t('returnHome')}
           </Link>
+          {isUser && isSuccess && (
+            <Link href={`/${locale}/profile`} className="btn btn-outline btn-sm">
+              {t('user.goToProfile')}
+            </Link>
+          )}
         </div>
       </div>
     </div>

@@ -20,5 +20,17 @@
     "title": "Erreur",
     "message": "Une erreur s'est produite lors du traitement de votre demande de désabonnement. Veuillez réessayer plus tard ou contacter le support."
   },
-  "returnHome": "Retourner à Mythoria"
+  "returnHome": "Retourner à Mythoria",
+  "user": {
+    "success": {
+      "title": "Préférences Mises à Jour",
+      "message": "Vos préférences d'email pour <strong>{email}</strong> ont été réglées sur Essentiels uniquement. Vous ne recevrez que les mises à jour importantes de votre compte et de vos histoires."
+    },
+    "alreadyEssential": {
+      "title": "Déjà sur Essentiels",
+      "message": "Vos préférences d'email pour <strong>{email}</strong> sont déjà réglées sur Essentiels. Vous ne recevez que les mises à jour importantes de votre compte et de vos histoires."
+    },
+    "profileHint": "Vous pouvez ajuster vos préférences de notification à tout moment depuis votre page de profil.",
+    "goToProfile": "Aller au Profil"
+  }
 }
