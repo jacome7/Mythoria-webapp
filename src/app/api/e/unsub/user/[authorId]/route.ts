@@ -95,9 +95,7 @@ export async function GET(
     );
   } catch (error) {
     console.error('[Unsubscribe] Error processing user unsubscribe:', error);
-    return NextResponse.redirect(
-      new URL(`/${locale}/unsubscribe?status=error&type=user`, base),
-    );
+    return NextResponse.redirect(new URL(`/${locale}/unsubscribe?status=error&type=user`, base));
   }
 }
 
