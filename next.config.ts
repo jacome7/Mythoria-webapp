@@ -25,6 +25,15 @@ const withPWA = withPWAInit({
 const nextConfig: NextConfig = {
   // Enable standalone output for better Docker performance
   output: 'standalone',
+  async redirects() {
+    return [
+      {
+        source: '/apple-touch-icon-precomposed.png',
+        destination: '/apple-touch-icon.png',
+        permanent: true,
+      },
+    ];
+  },
   // Image configuration to allow external images
   images: {
     remotePatterns: [
