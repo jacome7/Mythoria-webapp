@@ -13,8 +13,11 @@ import {
   FaChild,
   FaBookOpen,
   FaTicketAlt,
+  FaPhone,
+  FaGlobe,
 } from 'react-icons/fa';
 import PromotionCodeRedeemer from '@/components/PromotionCodeRedeemer';
+import { SUPPORTED_LOCALES } from '@/config/locales';
 
 // Value lists; labels resolved via i18n (see messages OnboardingProfile.options)
 const GENDER_OPTIONS = ['female', 'male', 'prefer_not_to_say'] as const;
@@ -55,21 +58,28 @@ interface ProfileData {
   displayName: string;
   gender: string | null;
   literaryAge: string | null;
+  mobilePhone: string | null;
+  preferredLocale: string | null;
   primaryGoals: string[]; // multi-select
   primaryGoalOther: string | null;
   audiences: string[]; // multi-select
   interests: string[];
 }
 
-function mapAuthorToProfile(author: {
-  displayName?: string | null;
-  gender?: string | null;
-  literaryAge?: string | null;
-  primaryGoals?: string[] | null;
-  primaryGoalOther?: string | null;
-  audiences?: string[] | null;
-  interests?: string[] | null;
-}): ProfileData {
+function mapAuthorToProfile(
+  author: {
+    displayName?: string | null;
+    gender?: string | null;
+    literaryAge?: string | null;
+    mobilePhone?: string | null;
+    preferredLocale?: string | null;
+    primaryGoals?: string[] | null;
+    primaryGoalOther?: string | null;
+    audiences?: string[] | null;
+    interests?: string[] | null;
+  },
+  defaultLocale?: string,
+): ProfileData {
   const primaryGoals = Array.isArray(author.primaryGoals) ? [...author.primaryGoals] : [];
   const audiences = Array.isArray(author.audiences) ? [...author.audiences] : [];
   const interests = Array.isArray(author.interests) ? [...author.interests] : [];
@@ -77,6 +87,8 @@ function mapAuthorToProfile(author: {
     displayName: (author.displayName ?? '').toString(),
     gender: author.gender ?? null,
     literaryAge: author.literaryAge ?? null,
+    mobilePhone: author.mobilePhone ?? null,
+    preferredLocale: author.preferredLocale ?? defaultLocale ?? null,
     primaryGoals,
     primaryGoalOther: author.primaryGoalOther ?? null,
     audiences,
@@ -124,7 +136,7 @@ export default function OnboardingProfilePage() {
         const res = await fetch('/api/profile');
         if (res.ok) {
           const data = await res.json();
-          const p = mapAuthorToProfile(data.author);
+          const p = mapAuthorToProfile(data.author, locale);
           setProfile(p);
           lastSavedDisplayNameRef.current = p.displayName.trim();
           // Pre-fill visibility if data exists
@@ -156,7 +168,7 @@ export default function OnboardingProfilePage() {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [locale]);
 
   const patchProfile = useCallback(
     async (patch: Partial<ProfileData>) => {
@@ -194,6 +206,15 @@ export default function OnboardingProfilePage() {
               storageKeyRef.current = `welcome_email_sent_${dedupeId}`;
             }
           }
+          // Sync auth locale if preferredLocale was changed
+          if (preparedPatch.preferredLocale) {
+            await fetch('/api/auth/update-locale', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ preferredLocale: preparedPatch.preferredLocale }),
+            });
+          }
+
           setSaveMessage('saved'); // marker; actual text comes from i18n key
           setTimeout(() => setSaveMessage(null), 2000);
 
@@ -303,6 +324,56 @@ export default function OnboardingProfilePage() {
                     }}
                     required
                   />
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Info & Preferences */}
+            <div className="card bg-base-100 shadow-xl">
+              <div className="card-body">
+                <h2 className="card-title text-primary text-2xl">{t('contact.section')}</h2>
+                <p>{t('contact.description')}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                  {/* Mobile Phone */}
+                  <div className="form-control w-full">
+                    <label className="label">
+                      <span className="label-text flex flex-wrap items-center gap-2 whitespace-normal break-words">
+                        <FaPhone className="mt-0.5" /> {t('contact.mobile')}
+                      </span>
+                    </label>
+                    <input
+                      type="tel"
+                      className="input input-bordered w-full"
+                      placeholder={t('contact.mobilePlaceholder')}
+                      value={profile.mobilePhone || ''}
+                      onChange={(e) =>
+                        setProfile((p) => (p ? { ...p, mobilePhone: e.target.value } : p))
+                      }
+                      onBlur={() => patchProfile({ mobilePhone: profile.mobilePhone || '' })}
+                    />
+                  </div>
+                  {/* Preferred Language */}
+                  <div className="form-control w-full">
+                    <label className="label">
+                      <span className="label-text flex flex-wrap items-center gap-2 whitespace-normal break-words">
+                        <FaGlobe className="mt-0.5" /> {t('contact.language')}
+                      </span>
+                    </label>
+                    <select
+                      className="select select-bordered w-full"
+                      value={profile.preferredLocale || locale}
+                      onChange={(e) => {
+                        setProfile((p) => (p ? { ...p, preferredLocale: e.target.value } : p));
+                        patchProfile({ preferredLocale: e.target.value });
+                      }}
+                    >
+                      {SUPPORTED_LOCALES.map((loc) => (
+                        <option key={loc} value={loc}>
+                          {t(`languages.${loc}`)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>

@@ -89,6 +89,20 @@
         "educational": "Éducatif"
       }
     },
+    "contact": {
+      "section": "Coordonnées et Préférences",
+      "description": "Aidez-nous à vous joindre et à personnaliser davantage votre expérience.",
+      "mobile": "Téléphone portable",
+      "mobilePlaceholder": "ex: +33612345678",
+      "language": "Langue préférée"
+    },
+    "languages": {
+      "en-US": "Anglais (États-Unis)",
+      "pt-PT": "Portugais (Portugal)",
+      "es-ES": "Espagnol (Espagne)",
+      "fr-FR": "Français (France)",
+      "de-DE": "Allemand (Allemagne)"
+    },
     "saved": "Enregistré ✓",
     "saving": "Enregistrement...",
     "errors": {

@@ -78,6 +78,20 @@
         "educational": "Lehrreiche Geschichten"
       }
     },
+    "contact": {
+      "section": "Kontaktinformationen und Einstellungen",
+      "description": "Hilf uns, dich zu erreichen und dein Erlebnis noch persönlicher zu gestalten.",
+      "mobile": "Mobilnummer",
+      "mobilePlaceholder": "z. B. +491234567890",
+      "language": "Bevorzugte Sprache"
+    },
+    "languages": {
+      "en-US": "Englisch (USA)",
+      "pt-PT": "Portugiesisch (Portugal)",
+      "es-ES": "Spanisch (Spanien)",
+      "fr-FR": "Französisch (Frankreich)",
+      "de-DE": "Deutsch (Deutschland)"
+    },
     "saved": "Gespeichert ✓",
     "saving": "Speichern...",
     "errors": {

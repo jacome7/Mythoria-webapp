@@ -23,15 +23,19 @@ It supports:
 ## Communication examples
 
 1. User: "Read chapter 1 of The Moon Garden."
+
 - Assistant: returns chapter 1 with option for next chapter.
 
 2. User: "Continue."
+
 - Assistant: fetches next chapter and resumes.
 
 3. User: "Jump to chapter 5."
+
 - Assistant: fetches chapter 5 and confirms position.
 
 4. User: "Show only a short summary of this chapter."
+
 - Assistant: summarizes chapter content instead of full render.
 
 ## Dependencies
@@ -47,23 +51,28 @@ It supports:
 ## Development plan
 
 1. Add MCP reading tools:
+
 - `stories.readOverview`
 - `stories.readChapter`
 - `stories.readNextChapter`
 
 2. Add chapter navigation state:
+
 - store current chapter in model-visible context via `ui/update-model-context`.
 
 3. Add output modes:
+
 - full chapter text mode
 - summary mode
 - quote/excerpt mode (bounded length)
 
 4. Add access handling:
+
 - private stories require auth
 - public stories route through slug tools
 
 5. Acceptance criteria:
+
 - User can complete a full chapter navigation session without leaving chat.
 - Chapter index errors are handled gracefully.
 - Public/private access boundaries are respected.

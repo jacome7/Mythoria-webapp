@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE. Run: npm run i18n:keys
-// Total keys: 2359
+// Total keys: 2375
 export type TranslationKey =
   | 'AIEditModal.buttons.applyChanges'
   | 'AIEditModal.buttons.cancel'
@@ -1057,6 +1057,11 @@ export type TranslationKey =
   | 'Offline.tipsTitle'
   | 'Offline.title'
   | 'OnboardingProfile.audience.label'
+  | 'OnboardingProfile.contact.description'
+  | 'OnboardingProfile.contact.language'
+  | 'OnboardingProfile.contact.mobile'
+  | 'OnboardingProfile.contact.mobilePlaceholder'
+  | 'OnboardingProfile.contact.section'
   | 'OnboardingProfile.errors.displayNameRequired'
   | 'OnboardingProfile.errors.displayNameTooLong'
   | 'OnboardingProfile.errors.loadFailed'
@@ -1074,6 +1079,11 @@ export type TranslationKey =
   | 'OnboardingProfile.inspiration.section'
   | 'OnboardingProfile.interests.label'
   | 'OnboardingProfile.intro'
+  | 'OnboardingProfile.languages.de-DE'
+  | 'OnboardingProfile.languages.en-US'
+  | 'OnboardingProfile.languages.es-ES'
+  | 'OnboardingProfile.languages.fr-FR'
+  | 'OnboardingProfile.languages.pt-PT'
   | 'OnboardingProfile.literaryAge.label'
   | 'OnboardingProfile.options.ageOptions.emerging_adult'
   | 'OnboardingProfile.options.ageOptions.experienced_adult'
@@ -2359,4 +2369,10 @@ export type TranslationKey =
   | 'transparency.textEnd'
   | 'transparency.textStart'
   | 'transparency.title'
+  | 'user.alreadyEssential.message'
+  | 'user.alreadyEssential.title'
+  | 'user.goToProfile'
+  | 'user.profileHint'
+  | 'user.success.message'
+  | 'user.success.title'
   | 'writeNewStory';

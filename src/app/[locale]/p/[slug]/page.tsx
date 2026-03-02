@@ -36,9 +36,9 @@ const getPublicStoryMetadata = async (slug: string) => {
 export async function generateMetadata({
   params,
 }: {
-  params: { locale: string; slug: string };
+  params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const { locale, slug } = params;
+  const { locale, slug } = await params;
   const story = await getPublicStoryMetadata(slug);
 
   if (!story) {

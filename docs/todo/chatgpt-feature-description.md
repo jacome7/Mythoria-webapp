@@ -16,6 +16,7 @@ Build and publish a fully functional ChatGPT App for Mythoria that:
 ## 2. Research Inputs
 
 ### OpenAI and ecosystem references
+
 - Apps SDK quickstart: https://developers.openai.com/apps-sdk/quickstart/
 - Build your MCP server: https://developers.openai.com/apps-sdk/build/mcp-server/
 - Build your ChatGPT UI: https://developers.openai.com/apps-sdk/build/chatgpt-ui/
@@ -73,10 +74,12 @@ Current gaps vs objective:
 P0 objectives mapped to implementation priorities:
 
 1. Discovery first:
+
 - Feature 01 (Discovery and App Positioning)
 - Feature 12 (Testing, analytics, and submission readiness)
 
 2. Usage instead of web app:
+
 - Feature 03 (Story Creation Assistant)
 - Feature 04 (Story Library and Selection)
 - Feature 05 (Story Reading Experience)
@@ -126,38 +129,46 @@ P0 objectives mapped to implementation priorities:
 ### Policy and distribution risks
 
 1. Digital credits commerce risk:
+
 - ChatGPT app submission policy currently disallows selling digital goods/services (including credits) inside apps.
 - Mitigation: keep credits features informational and eligibility-focused in ChatGPT app; avoid in-app digital purchase flows.
 
 2. Discoverability risk:
+
 - App suggestions depend on metadata quality and utility signals, not only technical integration.
 - Mitigation: metadata optimization loop, prompt set evaluation, and high quality tool descriptions.
 
 3. Privacy/data minimization risk:
+
 - Over-broad tool inputs/outputs can cause rejection.
 - Mitigation: strict schema minimization, no raw chat log pull, no unnecessary identifiers in outputs.
 
 ### Technical risks
 
 1. OAuth migration complexity:
+
 - Current auth pattern uses raw Clerk JWT expectation; publishable app flow needs standards-compliant OAuth discovery and token verification.
 - Mitigation: implement MCP OAuth resource metadata and staged rollout with mixed auth.
 
 2. Async fulfillment mismatch:
+
 - Existing tools return synthetic job IDs without real status tracking.
 - Mitigation: add persistent job tracking tool and status model.
 
 3. UI portability risk:
+
 - If implementation over-relies on ChatGPT-specific APIs, portability is reduced.
 - Mitigation: build around MCP Apps bridge (`ui/*`) first, use `window.openai` only where needed.
 
 ### Product risks
 
 1. Conversation-to-form friction:
+
 - Story creation is a 5-step web wizard; direct chat flow may become too verbose.
 - Mitigation: use guided short-turn collection and optional structured UI in fullscreen for dense inputs.
 
 2. Content safety and quality:
+
 - Story outputs and coaching responses can vary in quality.
 - Mitigation: explicit prompt standards, output checks, user confirmation for key edits, and feedback loops.
 

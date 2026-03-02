@@ -28,12 +28,15 @@ Mixed-auth path:
 ## Communication examples
 
 1. User: "List my stories."
+
 - Expected behavior: "Connect your Mythoria account" prompt appears when not linked.
 
 2. User: "How do credits work on Mythoria?"
+
 - Expected behavior: Public FAQ tools answer without login.
 
 3. User: "Generate audiobook for my story <id>."
+
 - Expected behavior: Requires linked account and explicit confirmation for write action.
 
 ## Dependencies
@@ -46,22 +49,27 @@ Mixed-auth path:
 ## Development plan
 
 1. Implement OAuth resource metadata endpoint:
+
 - Publish `/.well-known/oauth-protected-resource`.
 - Include resource URL, auth servers, and scopes.
 
 2. Integrate authorization server metadata:
+
 - Ensure PKCE `S256` support and dynamic client registration compatibility.
 - Allow ChatGPT redirect URI and app-review redirect URI.
 
 3. Add tool-level auth schemas:
+
 - Declare `securitySchemes` for each tool.
 - Keep mixed mode: `noauth` plus `oauth2` where appropriate.
 
 4. Runtime auth behavior:
+
 - Return `_meta["mcp/www_authenticate"]` for auth-required failures.
 - Standardize 401/403 error payloads.
 
 5. Acceptance criteria:
+
 - Link flow succeeds for first-time users.
 - Authenticated tools fail safely when tokens are invalid/expired.
 - Public tools remain usable without linking.

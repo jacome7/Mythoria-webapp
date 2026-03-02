@@ -78,6 +78,20 @@
         "educational": "Educativo"
       }
     },
+    "contact": {
+      "section": "Informações de Contacto e Preferências",
+      "description": "Ajude-nos a contactá-lo e a personalizar ainda mais a sua experiência.",
+      "mobile": "Telemóvel",
+      "mobilePlaceholder": "ex: +351912345678",
+      "language": "Idioma preferido"
+    },
+    "languages": {
+      "en-US": "Inglês (EUA)",
+      "pt-PT": "Português (Portugal)",
+      "es-ES": "Espanhol (Espanha)",
+      "fr-FR": "Francês (França)",
+      "de-DE": "Alemão (Alemanha)"
+    },
     "saved": "Guardado ✓",
     "saving": "A guardar...",
     "errors": {
