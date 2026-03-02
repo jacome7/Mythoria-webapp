@@ -13,7 +13,15 @@ export async function POST(request: NextRequest) {
     if (!currentAuthor) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     } // Parse the request body
-    const { userDescription, imageData, audioData, storyId, characterIds } = await request.json();
+    const {
+      userDescription,
+      imageData,
+      audioData,
+      imageObjectPath,
+      audioObjectPath,
+      storyId,
+      characterIds,
+    } = await request.json();
 
     if (!userDescription?.trim() && !imageData && !audioData) {
       return NextResponse.json(
@@ -42,14 +50,16 @@ export async function POST(request: NextRequest) {
       endpoint,
       storyId,
       hasText: !!userDescription,
-      hasImage: !!imageData,
-      hasAudio: !!audioData,
+      hasImage: !!(imageObjectPath || imageData),
+      hasAudio: !!(audioObjectPath || audioData),
       characterIdsCount: characterIds?.length || 0,
     });
 
     const payload: Record<string, unknown> = {
       storyId,
       userDescription,
+      imageObjectPath,
+      audioObjectPath,
       imageData,
       audioData,
       characterIds,
