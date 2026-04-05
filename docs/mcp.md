@@ -8,6 +8,12 @@ The Mythoria MCP server is exposed at `/api/mcp` using the Web Standard Streamab
 - Clients send `Authorization: Bearer <clerk_jwt>`; use a Clerk session/OAuth token issued for the user.
 - Auth failures return JSON `401/403` with descriptive messages. Successful verification injects the resolved author into tool handlers.
 
+## Configure with OpenClaw (remote MCP)
+
+- Use transport **streamable-http** (not SSE). In `openclaw.json`, set `"transport": "streamable-http"` for this URL.
+- Send `Authorization: Bearer <clerk_jwt>` on requests when agents need authenticated tools; anonymous tools work with an empty or omitted user context depending on client behavior.
+- If OpenClaw logs SSE or EventSource errors against `https://mythoria.pt/api/mcp`, the transport is misconfigured.
+
 ## Configure with ChatGPT
 
 1. Open **Settings → Model Context Protocol (MCP)** in ChatGPT and **Add server**.
