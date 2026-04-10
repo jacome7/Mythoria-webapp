@@ -1,10 +1,25 @@
-const requiredEnvVars = ['DATABASE_URL', 'NEXTAUTH_SECRET'] as const;
+const requiredEnvVars = ['DATABASE_URL'] as const;
 
-function getMissingRequiredEnvVars() {
-  return requiredEnvVars.filter((envVar) => {
+function hasConfiguredAuthSecret() {
+  const authSecret = process.env.AUTH_SECRET;
+  const nextAuthSecret = process.env.NEXTAUTH_SECRET;
+
+  return [authSecret, nextAuthSecret].some(
+    (value) => typeof value === 'string' && value.trim().length > 0,
+  );
+}
+
+function getMissingRequiredEnvVars(): string[] {
+  const missingEnvVars = requiredEnvVars.filter((envVar) => {
     const value = process.env[envVar];
     return typeof value !== 'string' || value.trim().length === 0;
-  });
+  }) as string[];
+
+  if (!hasConfiguredAuthSecret()) {
+    missingEnvVars.push('AUTH_SECRET|NEXTAUTH_SECRET');
+  }
+
+  return missingEnvVars;
 }
 
 export async function GET(request: Request) {
