@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { FaFacebook, FaInstagram, FaLinkedin, FaYoutube } from 'react-icons/fa';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const tCommonFooter = useTranslations('Footer');
+  const locale = useLocale();
   return (
     <footer className="bg-base-200 text-base-content p-6">
       <div className="container mx-auto">
@@ -22,6 +23,8 @@ const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="link link-hover"
+                  aria-label="Mythoria on Facebook"
+                  title="Mythoria on Facebook"
                 >
                   <FaFacebook size={24} />
                 </a>
@@ -30,6 +33,8 @@ const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="link link-hover"
+                  aria-label="Mythoria on Instagram"
+                  title="Mythoria on Instagram"
                 >
                   <FaInstagram size={24} />
                 </a>
@@ -38,6 +43,8 @@ const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="link link-hover"
+                  aria-label="Mythoria on LinkedIn"
+                  title="Mythoria on LinkedIn"
                 >
                   <FaLinkedin size={24} />
                 </a>
@@ -46,6 +53,8 @@ const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="link link-hover"
+                  aria-label="Mythoria on YouTube"
+                  title="Mythoria on YouTube"
                 >
                   <FaYoutube size={24} />
                 </a>
@@ -59,15 +68,24 @@ const Footer = () => {
             {/* Links */}
             <div className="flex flex-col items-center gap-2">
               <div className="flex items-center gap-2 text-sm">
-                <Link href="/pricing" className="link link-hover underline text-primary">
+                <Link
+                  href={`/${locale}/pricing`}
+                  className="link link-hover underline text-primary"
+                >
                   {tCommonFooter('pricingServices')}
                 </Link>
                 <span>|</span>
-                <Link href="/aboutUs" className="link link-hover underline text-primary">
+                <Link
+                  href={`/${locale}/aboutUs`}
+                  className="link link-hover underline text-primary"
+                >
                   {tCommonFooter('aboutUs')}
                 </Link>
                 <span>|</span>
-                <Link href="/contactUs" className="link link-hover underline text-primary">
+                <Link
+                  href={`/${locale}/contactUs`}
+                  className="link link-hover underline text-primary"
+                >
                   {tCommonFooter('contactUs')}
                 </Link>
               </div>
@@ -79,11 +97,11 @@ const Footer = () => {
         <div className="border-t border-base-300 pt-4 text-center text-xs">
           <p className="text-xs">
             &copy; {currentYear} {tCommonFooter('copyright')} |{' '}
-            <Link href="/privacy-policy" className="link link-hover">
+            <Link href={`/${locale}/privacy-policy`} className="link link-hover">
               {tCommonFooter('privacyPolicy')}
             </Link>{' '}
             |{' '}
-            <Link href="/termsAndConditions" className="link link-hover">
+            <Link href={`/${locale}/termsAndConditions`} className="link link-hover">
               {tCommonFooter('termsConditions')}
             </Link>
           </p>

@@ -22,7 +22,6 @@ Disallow: /*/my-stories/
 Disallow: /*/buy-credits/
 
 # Allow important public pages
-Allow: /*/stories/
 Allow: /*/tell-your-story/
 Allow: /*/aboutUs/
 Allow: /*/contactUs/

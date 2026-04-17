@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo } from 'react';
 import FaqSearch from './FaqSearch';
 import FaqAccordion from './FaqAccordion';
 import { useLocale, useTranslations } from 'next-intl';
-import type { MDXRemoteSerializeResult } from 'next-mdx-remote';
 
 interface FaqEntry {
   id: string;
@@ -12,7 +11,7 @@ interface FaqEntry {
   contentMdx: string;
   questionSortOrder: number;
   sectionId: string;
-  mdxSource: MDXRemoteSerializeResult;
+  contentHtml: string;
 }
 
 interface FaqSection {

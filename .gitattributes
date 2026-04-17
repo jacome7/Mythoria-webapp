@@ -1,0 +1,23 @@
+# Line endings: last matching pattern wins (see gitattributes(5)). Keep `*` first, then
+# override with `binary` for extensions that must never be CRLF/LF normalized.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.wasm binary
+*.mp3 binary
+*.mp4 binary
+*.webm binary
+*.sqlite binary
+*.sqlite3 binary

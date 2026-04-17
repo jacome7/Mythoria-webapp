@@ -1,5 +1,7 @@
 # Feature 09 - Credits and Eligibility Guardrails
 
+Status: Implemented (core MCP scope, 2026-02-11)
+
 ## Description
 
 This feature provides safe credit visibility and eligibility checks for story actions in ChatGPT.
@@ -42,34 +44,44 @@ It should help users answer:
 
 ## Dependencies
 
-- Existing `credits.usage` and `transactions.list` tools.
+- Existing `mythoria.account.credit_usage` and `mythoria.account.payment_history` tools.
 - Existing `/api/my-credits` and `/api/payments/history` data.
 - Pricing lookup support from existing pricing services.
 - App submission policy compliance checks.
 
-## Development plan
+## Implemented tools
 
-1. Keep and improve read-only tools:
+1. Existing:
 
-- normalize response shape for clear eligibility checks.
-- include action-specific required credits utility.
+- `mythoria.account.credit_usage`
+- `mythoria.account.payment_history`
 
-2. Restrict commerce behavior for publishable app profile:
+2. New eligibility helper:
 
-- disable direct credit purchase recommendations in tool copy.
-- remove or gate `credits.purchaseOptions` in public listing profile if required by policy review.
+- `mythoria.credits.check_eligibility` (read-only, OAuth scope `mythoria.credits.read`)
 
-3. Add eligibility helper tool:
+## Implemented behavior
 
-- `credits.checkEligibility` for common actions (ebook, audiobook, print).
+1. Eligibility checks:
 
-4. Add policy-aware assistant messaging:
+- Supports `action`:
+  - `ebook`
+  - `audiobook`
+  - `print`
+  - `story_generation` (combined feature mix)
+- Returns:
+  - `eligible`
+  - `requiredCredits`
+  - `availableCredits`
+  - `shortfall`
+  - pricing breakdown and recommended next tools
 
-- avoid hidden upsells.
-- keep responses factual and user-intent aligned.
+2. Policy-aware guidance:
 
-5. Acceptance criteria:
+- Tool responses explicitly mark in-chat digital credit purchase as disallowed.
+- For shortfall scenarios, guidance routes users to Mythoria web billing/account flows.
 
-- Users can understand balance and action eligibility in one turn.
-- No in-app digital credit sales implementation in published app profile.
-- Tool descriptions remain policy-compliant.
+## Notes
+
+- `story_generation` eligibility uses existing pricing aggregation logic for selected features.
+- This feature remains informational/eligibility-only and does not execute in-chat credit purchases.

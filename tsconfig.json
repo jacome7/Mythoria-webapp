@@ -2,6 +2,8 @@
   "compilerOptions": {
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "ignoreDeprecations": "6.0",
+    "rootDir": ".",
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,

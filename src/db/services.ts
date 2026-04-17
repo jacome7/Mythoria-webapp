@@ -2,6 +2,8 @@ import { db } from './index';
 import {
   authors,
   stories,
+  shareLinks,
+  storyCollaborators,
   characters,
   storyCharacters,
   creditLedger,
@@ -9,15 +11,17 @@ import {
   storyRatings,
   aiEdits,
   chapters,
+  printRequests,
   promotionCodes,
   promotionCodeRedemptions,
 } from './schema';
-import { eq, and, count, desc, sql, asc, max } from 'drizzle-orm';
+import { eq, and, or, count, desc, sql, asc, max } from 'drizzle-orm';
 import { ClerkUserForSync } from '@/types/clerk';
 import { pricingService } from './services/pricing';
 import { CharacterRole, CharacterAge, isValidCharacterAge } from '../types/character-enums';
 import { toAbsoluteImageUrl, toRelativeImagePath } from '../utils/image-url';
 import { normalizeLocale, detectUserLocaleFromEmail } from '@/utils/locale-utils';
+import { generateSlug, ensureUniqueSlug } from '@/lib/slug';
 
 // Export payment service
 export { paymentService } from './services/payment';
@@ -267,6 +271,35 @@ export const storyService = {
     };
   },
 
+  async getStoryBySlug(slug: string) {
+    const [story] = await db.select().from(stories).where(eq(stories.slug, slug));
+    if (!story) return story;
+
+    return {
+      ...story,
+      featureImageUri: toAbsoluteImageUrl(story.featureImageUri),
+    };
+  },
+
+  async getPublicStorySeoData(slug: string) {
+    const [story] = await db
+      .select({
+        title: stories.title,
+        synopsis: stories.synopsis,
+        plotDescription: stories.plotDescription,
+        coverUri: stories.coverUri,
+        storyLanguage: stories.storyLanguage,
+        slug: stories.slug,
+        authorName: authors.displayName,
+      })
+      .from(stories)
+      .leftJoin(authors, eq(authors.authorId, stories.authorId))
+      .where(and(eq(stories.slug, slug), eq(stories.isPublic, true)))
+      .limit(1);
+
+    return story ?? null;
+  },
+
   async getStoriesByAuthor(authorId: string) {
     const storyResults = await db.select().from(stories).where(eq(stories.authorId, authorId));
 
@@ -394,8 +427,223 @@ export const storyService = {
     };
   },
 
+  async getShareState(
+    storyId: string,
+    actorAuthorId: string,
+    options?: {
+      includeRevoked?: boolean;
+      includeExpired?: boolean;
+    },
+  ) {
+    const [story] = await db
+      .select({
+        storyId: stories.storyId,
+        authorId: stories.authorId,
+        title: stories.title,
+        slug: stories.slug,
+        isPublic: stories.isPublic,
+        updatedAt: stories.updatedAt,
+      })
+      .from(stories)
+      .leftJoin(storyCollaborators, eq(storyCollaborators.storyId, stories.storyId))
+      .where(
+        and(
+          eq(stories.storyId, storyId),
+          or(
+            eq(stories.authorId, actorAuthorId),
+            and(
+              eq(storyCollaborators.userId, actorAuthorId),
+              eq(storyCollaborators.role, 'editor'),
+            ),
+          ),
+        ),
+      )
+      .limit(1);
+
+    if (!story) {
+      return null;
+    }
+
+    const rawLinks = await db
+      .select({
+        id: shareLinks.id,
+        storyId: shareLinks.storyId,
+        accessLevel: shareLinks.accessLevel,
+        expiresAt: shareLinks.expiresAt,
+        revoked: shareLinks.revoked,
+        createdAt: shareLinks.createdAt,
+        updatedAt: shareLinks.updatedAt,
+      })
+      .from(shareLinks)
+      .where(eq(shareLinks.storyId, storyId))
+      .orderBy(desc(shareLinks.createdAt));
+
+    const now = Date.now();
+    const includeRevoked = options?.includeRevoked ?? false;
+    const includeExpired = options?.includeExpired ?? false;
+
+    const links = rawLinks.filter((link) => {
+      const notRevoked = includeRevoked || !link.revoked;
+      const notExpired = includeExpired || new Date(link.expiresAt).getTime() > now;
+      return notRevoked && notExpired;
+    });
+
+    return {
+      story,
+      links,
+    };
+  },
+
+  async createShareLink(
+    storyId: string,
+    actorAuthorId: string,
+    options: {
+      accessLevel: 'view' | 'edit';
+      expiresInDays: number;
+    },
+  ) {
+    const access = await this.getShareState(storyId, actorAuthorId, {
+      includeRevoked: true,
+      includeExpired: true,
+    });
+    if (!access) {
+      return null;
+    }
+
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + options.expiresInDays);
+
+    const [link] = await db
+      .insert(shareLinks)
+      .values({
+        storyId,
+        accessLevel: options.accessLevel,
+        expiresAt,
+        revoked: false,
+      })
+      .returning({
+        id: shareLinks.id,
+        storyId: shareLinks.storyId,
+        accessLevel: shareLinks.accessLevel,
+        expiresAt: shareLinks.expiresAt,
+        revoked: shareLinks.revoked,
+        createdAt: shareLinks.createdAt,
+        updatedAt: shareLinks.updatedAt,
+      });
+
+    return link;
+  },
+
+  async setPublicVisibility(storyId: string, actorAuthorId: string, isPublic: boolean) {
+    const access = await this.getShareState(storyId, actorAuthorId, {
+      includeRevoked: true,
+      includeExpired: true,
+    });
+    if (!access) {
+      return null;
+    }
+
+    let slug = access.story.slug;
+    if (isPublic && !slug) {
+      const baseSlug = generateSlug(access.story.title);
+      slug = await ensureUniqueSlug(baseSlug, async (testSlug) => {
+        const existing = await db.select().from(stories).where(eq(stories.slug, testSlug)).limit(1);
+        return existing.length > 0;
+      });
+    }
+
+    const [story] = await db
+      .update(stories)
+      .set({
+        isPublic,
+        ...(isPublic ? { slug } : {}),
+        updatedAt: new Date(),
+      })
+      .where(eq(stories.storyId, storyId))
+      .returning({
+        storyId: stories.storyId,
+        title: stories.title,
+        slug: stories.slug,
+        isPublic: stories.isPublic,
+        updatedAt: stories.updatedAt,
+      });
+
+    return story ?? null;
+  },
+
+  async revokeShareLinks(
+    storyId: string,
+    actorAuthorId: string,
+    options: {
+      linkId?: string;
+      revokeAll?: boolean;
+      disablePublic?: boolean;
+    },
+  ) {
+    const access = await this.getShareState(storyId, actorAuthorId, {
+      includeRevoked: true,
+      includeExpired: true,
+    });
+    if (!access) {
+      return null;
+    }
+
+    let revokedCount = 0;
+    if (options.revokeAll) {
+      const revoked = await db
+        .update(shareLinks)
+        .set({
+          revoked: true,
+          updatedAt: new Date(),
+        })
+        .where(eq(shareLinks.storyId, storyId))
+        .returning({ id: shareLinks.id });
+      revokedCount = revoked.length;
+    } else if (options.linkId) {
+      const revoked = await db
+        .update(shareLinks)
+        .set({
+          revoked: true,
+          updatedAt: new Date(),
+        })
+        .where(and(eq(shareLinks.id, options.linkId), eq(shareLinks.storyId, storyId)))
+        .returning({ id: shareLinks.id });
+      revokedCount = revoked.length;
+    }
+
+    let visibilityUpdated = false;
+    if (options.disablePublic && access.story.isPublic) {
+      await db
+        .update(stories)
+        .set({
+          isPublic: false,
+          updatedAt: new Date(),
+        })
+        .where(eq(stories.storyId, storyId));
+      visibilityUpdated = true;
+    }
+
+    return {
+      revokedCount,
+      visibilityUpdated,
+    };
+  },
+
   async deleteStory(storyId: string) {
     await db.delete(stories).where(eq(stories.storyId, storyId));
+  },
+};
+
+export const printRequestService = {
+  async getLatestByStoryAndAuthor(storyId: string, authorId: string) {
+    const [request] = await db
+      .select()
+      .from(printRequests)
+      .where(and(eq(printRequests.storyId, storyId), eq(printRequests.authorId, authorId)))
+      .orderBy(desc(printRequests.requestedAt))
+      .limit(1);
+
+    return request ?? null;
   },
 };
 

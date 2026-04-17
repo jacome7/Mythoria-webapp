@@ -35,37 +35,64 @@ gcloud services enable artifactregistry.googleapis.com
 
 ### Production Environment Variables
 
-```yaml
-# Database Configuration
-DATABASE_URL: 'postgresql://username:password@host:port/database'
-DB_HOST: '10.94.208.3' # Cloud SQL private IP
-DB_PORT: '5432'
-DB_NAME: 'mythoria_production'
-DB_USER: 'mythoria_user'
+The canonical source of truth is [`env.manifest.ts`](/C:/Mythoria/mythoria-webapp/env.manifest.ts). Production deployment must keep Cloud Build substitutions, Cloud Run runtime env vars, Docker build args, and Secret Manager bindings aligned with that manifest.
 
-# Authentication (Clerk)
+```yaml
+# Public/build configuration
+NEXT_PUBLIC_BASE_URL: 'https://mythoria.pt'
+NEXT_PUBLIC_SUPPORTED_LOCALES: 'en-US,pt-PT,es-ES,fr-FR,de-DE'
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: 'pk_live_...'
+NEXT_PUBLIC_GA_MEASUREMENT_ID: 'G-XXXXXXXXXX'
+NEXT_PUBLIC_GOOGLE_ADS_ID: 'AW-...'
+NEXT_PUBLIC_GOOGLE_TAG_ID: 'GT-...'
+NEXT_PUBLIC_REVOLUT_API_PUBLIC_KEY: 'pk_live_...'
+NEXT_PUBLIC_TTS_PROVIDER: 'openai'
+NEXT_PUBLIC_DEFAULT_CURRENCY: 'EUR'
+NEXT_PUBLIC_APP_DOMAIN: 'mythoria.pt'
+
+# Runtime web / auth
 CLERK_SECRET_KEY: 'sk_live_...'
 CLERK_WEBHOOK_SECRET: 'whsec_...'
+CLERK_OAUTH_CLIENT_ID: '...'
+CLERK_OAUTH_CLIENT_SECRET: '...'
+CLERK_SIGN_IN_URL: '/sign-in'
+CLERK_SIGN_IN_FALLBACK_REDIRECT_URL: '/my-stories'
+CLERK_SIGN_UP_URL: '/sign-up'
+CLERK_SIGN_UP_FALLBACK_REDIRECT_URL: '/profile/onboarding'
+CLERK_SIGN_UP_FORCE_REDIRECT_URL: '/profile/onboarding'
+MCP_AUTHORIZATION_SERVER_URL: 'https://clerk.mythoria.pt'
+MCP_RESOURCE_URL: 'https://mythoria.pt/api/mcp'
+MCP_WIDGET_DOMAIN: 'https://mythoria.pt'
+MCP_AUTH_ALLOW_SESSION_TOKEN: 'false'
+NEXTAUTH_URL: 'https://mythoria.pt'
 
-# External Services
-NEXT_PUBLIC_SGW_API_URL: 'https://story-generation-workflow-803421888801.europe-west9.run.app'
-NOTIFICATION_ENGINE_URL: 'https://notification-engine-803421888801.europe-west9.run.app'
-
-# Google Cloud
+# Data / storage / messaging
+DB_HOST: '10.x.x.x'
+DB_PORT: '5432'
+DB_NAME: 'mythoria_db'
+DB_USER: '...'
+DB_PASSWORD: '...'
 GOOGLE_CLOUD_PROJECT_ID: 'oceanic-beach-460916-n5'
-GOOGLE_APPLICATION_CREDENTIALS: '/app/service-account-key.json'
+GOOGLE_CLOUD_LOCATION: 'europe-west9'
+MODEL_ID: 'gemini-2.5-pro'
+PUBSUB_TOPIC: 'mythoria-story-requests'
+PUBSUB_AUDIOBOOK_TOPIC: 'mythoria-audiobook-requests'
+STORAGE_BUCKET_NAME: 'mythoria-generated-stories'
+PUBLIC_STORAGE_BUCKET_NAME: 'mythoria-public'
 
-# Analytics & Monitoring
-NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: 'G-XXXXXXXXXX'
-SENTRY_DSN: 'https://...'
-
-# Feature Flags
-NEXT_PUBLIC_FEATURE_FLAGS: '{"ai_generation": true, "audiobooks": true}'
-
-# Security
-NEXTAUTH_SECRET: 'your-secret-key'
-NEXTAUTH_URL: 'https://app.mythoria.com'
+# External services
+STORY_GENERATION_WORKFLOW_URL: 'https://story-generation-workflow-...run.app'
+STORY_GENERATION_WORKFLOW_API_KEY: '...'
+SGW_WEBHOOK_SECRET: '...'
+ADMIN_API_URL: 'https://mythoria-admin-...run.app'
+ADMIN_API_KEY: '...'
+NOTIFICATION_ENGINE_URL: 'https://notification-engine-...run.app'
+NOTIFICATION_ENGINE_API_KEY: '...'
+REVOLUT_API_URL: 'https://merchant.revolut.com'
+REVOLUT_API_SECRET_KEY: '...'
+REVOLUT_WEBHOOK_SECRET: '...'
+GOOGLE_ANALYTICS_API_SECRET: '...'
+LEAD_BOUNCE_API_SECRET: '...'
 ```
 
 ## Google Secret Manager Configuration
@@ -130,7 +157,7 @@ gcloud run deploy mythoria-webapp \
   --platform managed \
   --allow-unauthenticated \
   --service-account mythoria-webapp-sa@oceanic-beach-460916-n5.iam.gserviceaccount.com \
-  --set-env-vars NODE_ENV=production \
+  --set-env-vars '^|^NODE_ENV=production|NEXT_PUBLIC_SUPPORTED_LOCALES=en-US,pt-PT,es-ES,fr-FR,de-DE' \
   --set-secrets DATABASE_URL=mythoria-webapp-database-url:latest \
   --set-secrets CLERK_SECRET_KEY=mythoria-webapp-clerk-secret:latest \
   --memory 4Gi \

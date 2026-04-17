@@ -76,11 +76,6 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
   const [showCreateAddress, setShowCreateAddress] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
 
-  useEffect(() => {
-    loadStoryData();
-    loadAddresses();
-  }, [storyId]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const loadStoryData = async () => {
     try {
       const response = await fetch(`/api/stories/${storyId}`);
@@ -101,6 +96,7 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
       setError(tPrintOrder('errors.loadingFailed'));
     }
   };
+
   const loadAddresses = async () => {
     try {
       const response = await fetch('/api/addresses');
@@ -122,6 +118,11 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadStoryData();
+    loadAddresses();
+  }, [storyId]); // eslint-disable-line react-hooks/exhaustive-deps
   const handlePlaceOrder = async ({ numberOfCopies, totalCost }: PaymentOrderDetails) => {
     if (!story || !selectedAddress || !selectedPrintingOption) {
       setError(tPrintOrder('errors.missingRequiredFields'));

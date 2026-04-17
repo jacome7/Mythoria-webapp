@@ -14,8 +14,8 @@ Mythoria uses a credit-based economy for paid services such as e-books, printed 
 ### Buying Credits
 
 - The Buy Credits page opens a cart experience where users can add or remove bundles, view subtotals, VAT, and the total.
-- Promotion codes can be applied to add bonus credits or adjust pricing.
-- Users enter billing details (company name, VAT number, invoice preference) before checkout.
+- Promotion codes can be applied to add bonus credits to the user's balance; they do not currently change cart pricing.
+- Users can enter optional billing details in the checkout UI, but the current flow keeps them client-side and does not persist them through a dedicated billing API.
 - A payment method is selected (Revolut Pay or MB Way), and the order is placed without leaving the flow.
 
 ### Credit Usage
@@ -33,26 +33,26 @@ Mythoria uses a credit-based economy for paid services such as e-books, printed 
 ### Checkout Flow
 
 - `src/app/[locale]/buy-credits/page.tsx` manages the buy flow shell and handles querystring callbacks after payment redirects.
-- `src/components/CartView.tsx` and `useCart` maintain cart state, subtotal, VAT, and total calculations.
+- `src/components/CartView.tsx` and `useCart` maintain cart state, subtotal, VAT, and total calculations. The current checkout math shows VAT using a 6% split in the page logic.
 - `src/components/PromotionCodeRedeemer.tsx` posts to `/api/codes/redeem` to validate promo codes and apply bonuses.
-- `src/components/BillingInformation.tsx` persists billing details through `/api/billing`.
+- `src/components/BillingInformation.tsx` collects optional billing details locally in the checkout UI. There is no dedicated `/api/billing` route in the current implementation.
 - `src/components/PaymentSelector.tsx` allows users to choose Revolut Pay or MB Way.
 - Revolut Pay is handled by `src/components/RevolutPayment.tsx`, which initializes `@revolut/checkout` via `/api/revolut-config` and handles the widget callbacks.
-- MB Way checkout displays a modal-based flow via `MbwayPaymentModal` and finalizes the cart once instructions are acknowledged.
+- MB Way checkout calls `/api/payments/mbway`, creates an admin ticket workflow, then displays a modal with payment instructions.
 
 ### Credit Ledger & Enforcement
 
 - Credit balances are fetched from `/api/my-credits` and displayed through `src/components/CreditsDisplay.tsx`.
-- Billable events (e.g., audiobook generation) verify pricing via `pricingService`, check balances with `creditService.getAuthorCreditBalance`, and deduct credits with `creditService.deductCredits`.
-- Order creation happens through `/api/orders`, which stores the payment token and dispatches provider-specific payment flows.
+- Billable events (e.g., audiobook generation, self-print, print requests, and AI edits) verify pricing or route-level cost logic, check balances with `creditService.getAuthorCreditBalance`, and deduct credits with `creditService.deductCredits`.
+- Revolut order creation happens through `/api/payments/order`, which stores the pending order and returns the provider token. Credits are granted after successful webhook completion.
 
 ### Relevant API Endpoints
 
-- `GET /api/pricing` and `GET /api/pricing/*` – pricing and package listings.
-- `POST /api/orders` – create an order and receive a payment token.
-- `POST /api/codes/redeem` – validate promo codes.
-- `POST /api/billing` – persist billing details.
-- `GET /api/my-credits` – credit balance and history.
+- `GET /api/pricing` and `GET /api/pricing/*` - pricing and package listings.
+- `POST /api/payments/order` - create a Revolut order and receive a payment token.
+- `POST /api/payments/mbway` - create an MB Way payment request and admin ticket workflow.
+- `POST /api/codes/redeem` - validate promo codes.
+- `GET /api/my-credits` - credit balance and history.
 
 ```mermaid
 flowchart TD
@@ -60,7 +60,9 @@ flowchart TD
     PricingPackages[/api/pricing/credit-packages] --> PricingPage
     PricingPage --> BuyCredits
     BuyCredits --> CartView
-    CartView --> OrdersAPI[/api/orders]
-    OrdersAPI --> RevolutWidget & MbwayModal
+    CartView --> RevolutAPI[/api/payments/order]
+    CartView --> MbwayAPI[/api/payments/mbway]
+    RevolutAPI --> RevolutWidget
+    MbwayAPI --> MbwayModal
     PromoCodes[PromotionCodeRedeemer] -->|POST| CodesAPI[/api/codes/redeem]
 ```

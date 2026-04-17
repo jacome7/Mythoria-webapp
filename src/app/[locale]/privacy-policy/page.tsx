@@ -1,10 +1,27 @@
-'use client';
-
-import { useTranslations } from 'next-intl';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
+import { buildStaticPageMetadata } from '@/lib/static-page-metadata';
 
-export default function PrivacyPolicyPage() {
-  const tPrivacyPolicy = useTranslations('PrivacyPolicy');
+interface PrivacyPolicyPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export async function generateMetadata({ params }: PrivacyPolicyPageProps) {
+  const { locale } = await params;
+  const tPrivacyPolicy = await getTranslations({ locale, namespace: 'PrivacyPolicy' });
+
+  return buildStaticPageMetadata({
+    locale,
+    path: '/privacy-policy',
+    title: `${tPrivacyPolicy('title')} | Mythoria`,
+    description: tPrivacyPolicy('atAGlance.summary1'),
+  });
+}
+
+export default async function PrivacyPolicyPage({ params }: PrivacyPolicyPageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const tPrivacyPolicy = await getTranslations({ locale, namespace: 'PrivacyPolicy' });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-base-100 to-base-200">
@@ -268,8 +285,9 @@ export default function PrivacyPolicyPage() {
                 <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
                   <p className="text-blue-700 mb-2">{tPrivacyPolicy('section10.deleteAccount')}</p>
                   <Link
-                    href="/privacy-policy/delete-account"
+                    href={`/${locale}/privacy-policy/delete-account`}
                     className="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors duration-200"
+                    aria-label={`${tPrivacyPolicy('section10.deleteAccountButton')} - Mythoria`}
                   >
                     {tPrivacyPolicy('section10.deleteAccountButton')}
                   </Link>

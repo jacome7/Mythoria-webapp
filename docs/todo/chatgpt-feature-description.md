@@ -1,8 +1,8 @@
 # Mythoria ChatGPT App - Feature Description
 
-Date: 2026-02-10
+Date: 2026-02-11
 Owner: Mythoria Web App Team
-Status: Draft for implementation kickoff
+Status: Active implementation (Phase 4 core sharing + eligibility complete)
 
 ## 1. Objective
 
@@ -51,23 +51,95 @@ Build and publish a fully functional ChatGPT App for Mythoria that:
 
 Current MCP tools already implemented:
 
-- Public: `health-check`, `faq.list`, `faq.query`, `credits.purchaseOptions`
-- Authenticated: `stories.listMine`, `credits.usage`, `transactions.list`, `stories.requestDownload`, `stories.requestPrint`, `stories.requestNarrate`
+- Public discovery/help/catalog:
+  - `mythoria.discovery.ping`
+  - `mythoria.discovery.capabilities`
+  - `mythoria.discovery.featured_stories`
+  - `mythoria.discovery.sample_story_preview`
+  - `mythoria.help.browse`
+  - `mythoria.help.search`
+  - `mythoria.coach.story_guidance`
+  - `mythoria.catalog.credit_packages`
+  - `mythoria.story.voice_catalog`
+- Authenticated account/fulfillment:
+  - `mythoria.account.story_list`
+  - `mythoria.account.story_select`
+  - `mythoria.story.read_overview`
+  - `mythoria.story.read_chapter`
+  - `mythoria.story.read_next_chapter`
+  - `mythoria.story.audio_status`
+  - `mythoria.story.audio_chapter`
+  - `mythoria.story.share_state`
+  - `mythoria.story.share_create_link`
+  - `mythoria.story.share_revoke_link`
+  - `mythoria.account.credit_usage`
+  - `mythoria.credits.check_eligibility`
+  - `mythoria.account.payment_history`
+  - `mythoria.story.create_draft`
+  - `mythoria.story.update_draft`
+  - `mythoria.story.add_characters`
+  - `mythoria.story.start_generation`
+  - `mythoria.story.export_request`
+  - `mythoria.story.print_request`
+  - `mythoria.story.narration_request`
+  - `mythoria.jobs.status`
 
 Current strengths:
 
-- Solid FAQ and account-related read operations.
+- Discovery-first public toolset now includes noauth sample previews.
 - Clerk-backed user resolution already working for authenticated tools.
+- Feature 02 core backend now implemented:
+  - OAuth protected resource metadata endpoint.
+  - Per-tool `securitySchemes` in `tools/list`.
+  - Runtime `_meta["mcp/www_authenticate"]` challenges for protected tools.
 - Existing web APIs for story creation, reading, audiobook generation, and sharing can be reused.
+- Feature 03 core backend now implemented:
+  - Story draft creation/update tools with required-field readiness state.
+  - Character linking/creation tool for draft enrichment.
+  - Generation start tool with credit preview, explicit confirmation, and queue trigger.
+- Feature 04 core backend now implemented:
+  - Story library tool supports server-side filters and cursor pagination.
+  - Story selection resolver handles exact, ambiguous, and not-found flows.
+  - Story list/select payloads include recommended next actions for read/listen/edit/share/export/print.
+- Feature 05 core backend now implemented:
+  - Reading overview/chapter/navigation tools are available.
+  - Tools support output modes (`full`, `summary`, `excerpt`) and chapter navigation pointers.
+  - Public reading works anonymously while private reading requires OAuth challenge.
+- Feature 06 core backend now implemented:
+  - Listening status and chapter stream retrieval tools are available.
+  - Voice catalog tool exposes provider-specific narration voices.
+  - Narration request now performs real credit checks and queues real audiobook workflow.
+- Feature 07 core backend now implemented:
+  - Story coaching tool with intent routing (`product_info`, `story_creation_request`, `creative_coaching`).
+  - Localized coaching templates and structured coaching payloads are available.
+  - Product/account intents route to FAQ tools; creation intents route to draft tools.
+- Feature 10 core backend now implemented:
+  - Unified job status tool (`mythoria.jobs.status`) is available.
+  - Generation/export/print/narration tools now emit trackable Mythoria job IDs.
+  - Normalized status contract (`state`, `progress`, `etaSeconds`, `nextAction`) is available across job types.
+- Feature 11 core UI surfaces now implemented:
+  - MCP app widget resources are registered for creation, library, and reader/listener flows.
+  - Bound tools now expose `_meta.ui.resourceUri` plus compatibility metadata in `tools/list`.
+  - Structured tool results include widget binding metadata while preserving chat-only fallback.
+- Feature 08 core backend now implemented:
+  - Story sharing state, creation, and revocation tools are available.
+  - Public share activation requires explicit confirmation.
+  - Revocation operations require explicit confirmation and destructive annotations.
+- Feature 09 core backend now implemented:
+  - New eligibility helper tool (`mythoria.credits.check_eligibility`) is available.
+  - Action-level eligibility supports ebook, audiobook, print, and combined story-generation checks.
+  - Policy-aware guidance avoids in-chat digital purchase execution.
+- Submission metadata hardening now implemented:
+  - Write/destructive tools include `openWorldHint` and `destructiveHint` coverage where applicable.
 
 Current gaps vs objective:
 
-- No MCP tools yet for end-to-end story creation.
-- No direct read/listen tools with chapter content/audio links for ChatGPT use.
-- Fulfillment actions return queued job stubs but no real job tracking tool.
-- No Apps SDK UI resource registration for rich ChatGPT widgets.
-- No OAuth 2.1 MCP auth flow yet (required for broad publishable authenticated app flow).
-- Tool metadata/annotations need optimization for model discovery and safe tool selection.
+- Export and print actions now expose status lookup paths, but fulfillment remains partially synthetic in MCP and should be tightened with dedicated backend workflow/status sources.
+- Story creation multimodal structuring bridge (`/api/stories/genai-structure`) is not yet exposed as MCP creation tooling.
+- Story library filtering/pagination currently happens in MCP after full author-story fetch; DB-level pagination optimization may be needed for very large libraries.
+- Remaining Feature 02 tasks are mostly operational:
+  - Final Clerk OAuth tenant/redirect validation in ChatGPT.
+  - Manual production linking tests and rollout hardening.
 
 ## 4. Priority Alignment to Requested Objectives
 
@@ -111,18 +183,28 @@ P0 objectives mapped to implementation priorities:
 
 ### Phase 2 - Core storytelling loop in chat
 
-- Implement Feature 03, 04, 05, 06.
-- Ensure authenticated users can create, list, read, and listen.
+Status: Completed (2026-02-11, core backend scope)
+
+- Implemented Feature 03, 04, 05, 06 core MCP flows.
+- Authenticated users can create, list, read, and listen in chat.
+- Remaining follow-ups for this phase are advanced UX polish and submission hardening.
 
 ### Phase 3 - Mythoria assistant quality layer
 
-- Implement Feature 07 and Feature 10.
-- Improve coaching quality, follow-ups, and long-running status handling.
+Status: Completed (2026-02-11, core backend scope)
+
+- Implemented Feature 07 and Feature 10 core MCP flows.
+- Added coaching intent-routing and normalized async job tracking in chat.
+- Implemented Feature 11 core widget surfaces for creation/library/reader-listener interactions.
+- Remaining follow-ups for this phase are quality tuning and submission readiness in Feature 12.
 
 ### Phase 4 - Expansion and growth
 
-- Implement Feature 08 and selective parts of Feature 09.
-- Refine advanced sharing and monetization-safe patterns.
+Status: In progress (2026-02-11)
+
+- Feature 08 core sharing flows implemented in MCP.
+- Feature 09 core eligibility helper implemented in MCP.
+- Remaining work is advanced quality tuning, usage analytics, and submission packaging polish.
 
 ## 7. Risk Assessment
 
@@ -150,10 +232,10 @@ P0 objectives mapped to implementation priorities:
 - Current auth pattern uses raw Clerk JWT expectation; publishable app flow needs standards-compliant OAuth discovery and token verification.
 - Mitigation: implement MCP OAuth resource metadata and staged rollout with mixed auth.
 
-2. Async fulfillment mismatch:
+2. Async fulfillment precision:
 
-- Existing tools return synthetic job IDs without real status tracking.
-- Mitigation: add persistent job tracking tool and status model.
+- Job tracking is now implemented, but some job states (especially export/print) still rely on indirect signals.
+- Mitigation: add richer backend status sources and optional persistent run registry.
 
 3. UI portability risk:
 

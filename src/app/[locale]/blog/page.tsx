@@ -6,6 +6,7 @@ import { blogService, BlogLocale, BLOG_SUPPORTED_LOCALES } from '@/db/services/b
 import { routing } from '@/i18n/routing';
 import { generateHreflangLinks } from '@/lib/hreflang';
 import BlogListContent from '@/components/BlogListContent';
+import { buildLocalizedUrl } from '@/lib/seo';
 
 interface BlogListPageProps {
   params: Promise<{
@@ -26,7 +27,6 @@ export async function generateMetadata({
     locale,
     namespace: 'Blog.metadata',
   });
-  const baseUrl = 'https://mythoria.pt';
   const hreflangLinks = generateHreflangLinks(locale, `/${locale}/blog`);
 
   return {
@@ -34,14 +34,14 @@ export async function generateMetadata({
     description: tBlogMetadata('listDescription'),
     robots: 'index,follow,max-snippet:-1,max-image-preview:large',
     alternates: {
-      canonical: `${baseUrl}/${locale}/blog/`,
+      canonical: buildLocalizedUrl(locale, '/blog'),
       languages: hreflangLinks,
     },
     openGraph: {
       title: tBlogMetadata('listTitle'),
       description: tBlogMetadata('listDescription'),
       type: 'website',
-      url: `${baseUrl}/${locale}/blog/`,
+      url: buildLocalizedUrl(locale, '/blog'),
     },
     twitter: {
       card: 'summary_large_image',

@@ -1,83 +1,168 @@
 # Feature 06 - Story Listening and Audiobook
 
+Status: Implemented (core MCP backend complete)
+
 ## Description
 
-This feature enables listening flows in ChatGPT:
+This feature enables in-chat listening and audiobook generation flows for Mythoria stories.
 
-- Listen when audiobook already exists.
-- Start audiobook generation when missing.
-- Check narration progress and return playable chapter links.
+Primary goals:
 
-It mirrors existing Mythoria audiobook behavior but adapts it to chat-first interaction.
+- Check audiobook readiness and listening status.
+- Retrieve chapter-level audio stream URLs.
+- Trigger real audiobook generation with credit checks and explicit confirmation.
+- Expose available narrator voices from the active TTS provider.
 
 ## Workflow
 
 1. User asks to listen to a story.
-2. App checks whether audio exists for story chapters.
-3. If audio exists:
-
-- return playable chapter options and start point.
-
-4. If audio missing:
-
-- ask for voice and music preference.
-- validate credits and trigger generation.
-- provide progress updates via job/status tool.
-
-5. User requests chapter-specific playback links.
+2. Assistant calls `mythoria.story.audio_status`.
+3. If audio exists, assistant calls `mythoria.story.audio_chapter`.
+4. If audio is missing, assistant calls `mythoria.story.voice_catalog`.
+5. Assistant calls `mythoria.story.narration_request` (preview mode, then confirmed mode).
+6. Assistant follows up with `mythoria.story.audio_status` until audio becomes available.
 
 ## Communication examples
 
-1. User: "Play The Moon Garden."
+1. User: "Play Moon Garden."
 
-- Assistant: "Audio exists. Start from chapter 1 or choose a chapter?"
+- Assistant: checks `audio_status`, then returns chapter stream via `audio_chapter`.
 
-2. User: "Generate audiobook with a warm voice and no background music."
+2. User: "Generate audiobook with coral voice."
 
-- Assistant: validates credits, queues generation, returns tracking ID.
+- Assistant: checks credits and asks for confirmation.
+- Assistant: calls `narration_request` with `confirmStart=true` after user confirms.
 
-3. User: "Is the audiobook ready yet?"
+3. User: "Is it ready now?"
 
-- Assistant: checks status and reports percent/state.
+- Assistant: calls `audio_status` and reports generation status and available chapters.
 
-4. User: "Give me chapter 3 audio link."
+4. User: "Give me chapter 3 audio."
 
-- Assistant: returns authenticated or public proxy URL depending on access.
+- Assistant: calls `audio_chapter` with `chapterNumber=3`.
 
 ## Dependencies
 
-- Existing endpoints:
-- `POST /api/stories/{storyId}/generate-audiobook`
-- `GET /api/stories/{storyId}` for audiobook state
-- `GET /api/stories/{storyId}/audio/{chapterIndex}`
-- `GET /api/p/{slug}/audio/{chapterIndex}`
-- Existing narration pricing/credits services.
-- Feature 10 job tracking.
-- Feature 09 eligibility and credits communication.
+- Existing services:
+- `storyService.getStoryById`
+- `storyService.getStoryBySlug`
+- `chapterService.getStoryChapters`
+- `pricingService.getPricingByServiceCode`
+- `creditService.getAuthorCreditBalance`
+- `creditService.deductCredits`
+- `creditService.addCredits` (refund path)
+- Existing workflow publisher:
+- `publishAudiobookRequest` from `src/lib/pubsub.ts`
+- Feature 02 OAuth challenge behavior for private story access.
+- Existing audio proxy routes:
+- `/api/stories/{storyId}/audio/{chapterIndex}`
+- `/api/p/{slug}/audio/{chapterIndex}`
 
-## Development plan
+## Implemented
 
-1. Extend MCP audio tools:
+### Tools
 
-- `stories.audioStatus`
-- `stories.startNarration`
-- `stories.getAudioChapter`
+Implemented in `src/lib/mcp/server.ts`:
 
-2. Replace synthetic narration queue responses:
+- `mythoria.story.voice_catalog`
+- `mythoria.story.audio_status`
+- `mythoria.story.audio_chapter`
+- `mythoria.story.narration_request` (upgraded to real workflow + credit handling)
 
-- route to real audiobook generation endpoint.
-- persist returned run/job references.
+### Access model
 
-3. Add voice catalog tool:
+- `voice_catalog` is public (`noauth`).
+- `audio_status` and `audio_chapter` support mixed access:
+- noauth for public stories via `slug`
+- OAuth challenge for private stories (`mythoria.account.read`)
+- `narration_request` remains authenticated (`mythoria.story.narrate`) and owner-scoped.
 
-- expose supported voices and localized descriptions.
+### Listening behavior
 
-4. Add status polling pattern:
+- `audio_status` returns:
+- audiobook generation status (`not_started`, `generating`, `completed`, `failed`)
+- available audio chapter numbers
+- chapter-level stream metadata when requested
+- listen/read URLs for owner/public contexts
+- `audio_chapter` returns:
+- chapter stream URL for private playback
+- public stream URL when story is public
+- clear `audio_not_available` guidance when chapter audio is missing
+- `voice_catalog` returns:
+- configured TTS provider
+- default voice
+- available voice IDs with localization key references
 
-- use dedicated status tool instead of repeated full story fetch.
+### Narration generation behavior
 
-5. Acceptance criteria:
+- `narration_request` now:
+- validates published status + story ownership
+- validates voice against configured provider
+- supports dry-run/preview and explicit confirmation (`confirmStart`)
+- checks and deducts `audioBookGeneration` credits
+- queues real Pub/Sub audiobook workflow with `runId`
+- refunds credits and resets status if queue publish fails
 
-- Existing-audio path works in one turn.
-- Missing-audio path reaches queued state with transparent credit communication.
-- Chapter audio retrieval is reliable and access-controlled.
+### Validation
+
+- Updated unit tests in `src/lib/mcp/server.test.ts`:
+- audio status success
+- public slug chapter playback lookup
+- private audio auth challenge
+- narration preview and confirmed queue behavior
+- voice catalog noauth behavior
+- Updated tool metadata assertions for new listening tools.
+- Updated Playwright MCP metadata checks in `tests/playwright/mcp.spec.ts`.
+
+## Still missing / follow-up
+
+1. Embedded listening widget:
+
+- Core listening widget surface is now implemented in Feature 11.
+- Advanced playback controls and richer visual polish remain a follow-up.
+
+## Screenshot recommendations
+
+1. Voice catalog:
+
+- `mythoria.story.voice_catalog` returning provider/default voice/options.
+
+2. Audio status available:
+
+- `mythoria.story.audio_status` with chapter entries and stream URLs.
+
+3. Audio chapter retrieval:
+
+- `mythoria.story.audio_chapter` success response.
+
+4. Narration preview:
+
+- `mythoria.story.narration_request` with `status=confirmation_required`.
+
+5. Narration queued:
+
+- `mythoria.story.narration_request` with `status=queued` and `runId`.
+
+## Copy templates
+
+### Audio available template
+
+- "Audio is available for chapters {chapters}. Tell me which chapter you want to play."
+
+### Audio missing template
+
+- "This story has no audiobook yet. I can generate it now and it will use {credits} credits."
+
+### Confirmation template
+
+- "Generating the audiobook will spend {credits} credits. Should I start now?"
+
+### Queued template
+
+- "Audiobook generation is queued (runId: {runId}). I can check status in a follow-up turn."
+
+## Acceptance targets
+
+1. Authenticated users can complete listen flow from status check to chapter stream retrieval.
+2. Narration start uses real credits and real queue publish, not synthetic placeholders.
+3. Public slug listening lookups work without auth for public stories.

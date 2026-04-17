@@ -2,6 +2,7 @@ import { clerkMiddleware } from '@clerk/nextjs/server';
 import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 import { routing } from './i18n/routing';
+import { getCanonicalRedirectPath } from '@/lib/seo';
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -17,6 +18,13 @@ export const proxy = clerkMiddleware(
       pathname.startsWith('/.well-known/')
     ) {
       return NextResponse.next();
+    }
+
+    const canonicalPath = getCanonicalRedirectPath(pathname);
+    if (canonicalPath) {
+      const redirectUrl = req.nextUrl.clone();
+      redirectUrl.pathname = canonicalPath;
+      return NextResponse.redirect(redirectUrl, 308);
     }
 
     // Allow the PWA offline fallback route to remain at root without locale prefix.

@@ -143,6 +143,27 @@ export const blogService = {
     return row || null;
   },
 
+  async getPublishedByAnySlug(slug: string) {
+    const [row] = await db
+      .select({
+        id: blogPosts.id,
+        slugBase: blogPosts.slugBase,
+        status: blogPosts.status,
+        publishedAt: blogPosts.publishedAt,
+        heroImageUrl: blogPosts.heroImageUrl,
+        translationId: blogPostTranslations.id,
+        slug: blogPostTranslations.slug,
+        title: blogPostTranslations.title,
+        summary: blogPostTranslations.summary,
+        contentMdx: blogPostTranslations.contentMdx,
+        locale: blogPostTranslations.locale,
+      })
+      .from(blogPosts)
+      .innerJoin(blogPostTranslations, eq(blogPostTranslations.postId, blogPosts.id))
+      .where(and(eq(blogPosts.status, 'published'), eq(blogPostTranslations.slug, slug)));
+    return row || null;
+  },
+
   async getAdjacent(locale: BlogLocale, publishedAt: Date) {
     const [prev] = await db
       .select({

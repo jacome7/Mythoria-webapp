@@ -21,10 +21,6 @@ export default function MyCharactersTable() {
   const [editingCharacter, setEditingCharacter] = useState<CharacterWithDate | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
 
-  useEffect(() => {
-    fetchCharacters();
-  }, []);
-
   const fetchCharacters = async () => {
     try {
       const response = await fetch('/api/characters');
@@ -38,6 +34,10 @@ export default function MyCharactersTable() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchCharacters();
+  }, []);
   const handleDeleteClick = async (character: CharacterWithDate) => {
     setCharacterToDelete(character);
     setDeleteModalOpen(true);

@@ -1,107 +1,152 @@
 # Feature 01 - Discovery and App Positioning
 
+Status date: 2026-02-10
+
 ## Description
 
-This feature makes Mythoria discoverable and preferred by ChatGPT when users ask for story writing help.
+This feature makes Mythoria discoverable when users ask ChatGPT for story-writing help, and provides low-friction first value through noauth discovery tools.
 
-It defines:
+## Implemented
 
-- App-level positioning (name, description, category, screenshots).
-- Tool naming, descriptions, annotations, and parameter clarity.
-- Prompt-intent coverage for direct and indirect story intents.
-- Ongoing optimization loop for selection precision and recall.
+### 1. New MCP taxonomy (breaking rename, no backward compatibility)
 
-In scope:
+Implemented in `src/lib/mcp/server.ts`:
 
-- Metadata quality for app and tools.
-- Prompt dataset and evaluation process.
-- Discovery analytics and iteration process.
+- `mythoria.discovery.ping`
+- `mythoria.discovery.capabilities`
+- `mythoria.discovery.featured_stories`
+- `mythoria.discovery.sample_story_preview`
+- `mythoria.help.browse`
+- `mythoria.help.search`
+- `mythoria.catalog.credit_packages`
+- `mythoria.account.story_list`
+- `mythoria.account.credit_usage`
+- `mythoria.account.payment_history`
+- `mythoria.story.export_request`
+- `mythoria.story.print_request`
+- `mythoria.story.narration_request`
 
-Out of scope:
+### 2. Discovery-oriented public tools
 
-- Business marketing campaigns outside ChatGPT.
-- Non-conversational acquisition channels.
+Implemented in `src/lib/mcp/server.ts`:
 
-## Workflow
+- `mythoria.discovery.capabilities`: positioning + workflows + prompt suggestions.
+- `mythoria.discovery.featured_stories`: curated public stories for quality preview.
+- `mythoria.discovery.sample_story_preview`: noauth curated sample preview with excerpt, image, and links.
 
-1. Define core user intents:
+### 3. Localized discovery responses (day-one baseline)
 
-- "write me a bedtime story"
-- "create a custom story for my child"
-- "turn my idea into a story"
+Implemented locale-aware copy in `src/lib/mcp/server.ts` using supported locales:
 
-2. Build a golden prompt set:
+- `en-US`, `pt-PT`, `es-ES`, `fr-FR`, `de-DE`.
 
-- Direct prompts (mention Mythoria or story writing explicitly).
-- Indirect prompts (goal-first, no app name).
-- Negative prompts (should not trigger Mythoria).
+### 4. App-log telemetry (no DB changes)
 
-3. Draft and publish metadata:
+Implemented structured log events in `src/lib/mcp/server.ts`:
 
-- App name and short description.
-- Tool names with action-first semantics.
-- Descriptions starting with "Use this when..." and disallowed cases.
+- Event types: `start`, `success`, `error`
+- Fields: `toolName`, `authState`, `locale`, `latencyMs`, `error`
+- Prefix: `[mcp-tool]`
 
-4. Evaluate in developer mode:
+### 5. Validation updates
 
-- Run prompt set.
-- Record tool selected, arguments quality, and failures.
+Implemented tests:
 
-5. Iterate metadata weekly:
+- `src/lib/mcp/server.test.ts` updated for new taxonomy.
+- Added discovery/sample preview coverage.
+- `tests/playwright/mcp.spec.ts` updated for renamed tools.
 
-- Adjust one metadata variable at a time.
-- Re-run prompt set.
-- Promote only when precision improves and regressions are absent.
+### 6. MCP docs update
+
+Updated:
+
+- `docs/mcp.md` with new taxonomy and noauth sample preview flow.
+
+## Missing / Deferred
+
+### 1. Automated discovery benchmark harness
+
+Manual evaluation only for now. See `docs/todo/chatgpt-discovery-manual-eval.md`.
+
+### 2. ChatGPT listing assets upload
+
+Screenshot capture and listing copy are specified below, but final upload/submission is still pending.
+
+## Workflow (current)
+
+1. User asks for a story-writing task.
+2. ChatGPT can call:
+
+- `mythoria.discovery.capabilities`
+- `mythoria.discovery.sample_story_preview`
+- `mythoria.discovery.featured_stories`
+
+3. If user wants account-specific operations, assistant transitions to authenticated tools.
 
 ## Communication examples
 
 1. User: "Write me a fantasy story about two sisters and a dragon."
 
-- Expected behavior: ChatGPT selects Mythoria app tools and proposes guided creation.
+- Suggested first call: `mythoria.discovery.sample_story_preview`
+- Follow-up: offer Mythoria creation flow.
 
-2. User: "I need a bedtime story for a 6-year-old about sharing."
+2. User: "I need a bedtime story for a 6-year-old."
 
-- Expected behavior: Mythoria is selected for child-focused story generation flow.
+- Suggested first call: `mythoria.discovery.capabilities`
+- Then continue with creation flow prompts.
 
 3. User: "What is the weather in Lisbon?"
 
-- Expected behavior: Mythoria is not selected.
-
-4. User: "Help me improve a story draft and make it more magical."
-
-- Expected behavior: Mythoria coaching/edit tools are selected when available.
+- Expected behavior: Mythoria app should not be selected.
 
 ## Dependencies
 
-- OpenAI Apps SDK metadata best practices.
-- Existing Mythoria MCP tool set (`src/lib/mcp/server.ts`) as baseline.
-- Feature 12 telemetry for selection accuracy.
-- Product copy and localization for app listing assets.
+- Existing featured/public story data (`storyService.getFeaturedPublicStories`).
+- Public story APIs (`/api/p/[slug]` and chapter/audio endpoints).
+- Supported locales config (`src/config/locales.ts`).
 
-## Development plan
+## Screenshot recommendations
 
-1. Tool taxonomy redesign:
+1. Discovery trigger:
 
-- Keep clear domain prefixing and action names.
-- Add accurate annotations (`readOnlyHint`, `openWorldHint`, `destructiveHint`).
+- Chat with a direct story intent and Mythoria app recommendation visible.
 
-2. Metadata rewrite:
+2. Sample preview:
 
-- Rewrite each description using "Use this when..." guidance.
-- Add explicit non-use cases where tool confusion is likely.
+- Response from `mythoria.discovery.sample_story_preview` showing image, excerpt, and read link.
 
-3. Golden prompt test harness:
+3. Featured browsing:
 
-- Store prompt set in repository (`docs/todo/chatgpt-discovery-prompts.md` in future implementation).
-- Automate weekly replay and comparison.
+- Response from `mythoria.discovery.featured_stories` with 3-6 story cards/entries.
 
-4. Submission asset preparation:
+4. Guidance/FAQ:
 
-- Build accurate screenshots and concise value proposition.
-- Align naming and visuals with real behavior.
+- `mythoria.help.search` answering "How can I write better stories for kids?".
 
-5. Acceptance criteria:
+5. Negative intent check (internal QA):
 
-- > = 90% precision on negative prompts.
-- > = 75% recall on direct story-writing prompts for initial launch.
-- No manipulative/disallowed metadata language.
+- Non-story prompt where Mythoria is not selected.
+
+## Copy templates
+
+### App short description template
+
+- "Create personalized stories with images and audio in minutes."
+
+### Discovery handoff template
+
+- "I can use Mythoria to create a custom story with illustrations and optional audio. Want a quick sample first?"
+
+### Sample preview template
+
+- "Here is a curated Mythoria sample. If you like this style, I can start one tailored to your prompt."
+
+### Clarification template
+
+- "Should this story be for bedtime, learning, or pure adventure?"
+
+## Acceptance targets
+
+1. Discovery precision on negative prompts: >= 90%
+2. Recall on direct story prompts: >= 75%
+3. Noauth sample preview available with low-latency curated mode.

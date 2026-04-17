@@ -1,80 +1,48 @@
 # Feature 08 - Story Sharing and Collaboration
 
+Status: Implemented (core MCP scope, 2026-02-11)
+
 ## Description
 
-This feature brings sharing flows to ChatGPT for published stories.
+Story sharing flows are now available in MCP, including public visibility status, private link creation, and revocation.
 
-It enables:
+Implemented MCP tools:
 
-- Public link generation.
-- Private view/edit share links.
-- Link revocation and status checks.
+- `mythoria.story.share_state` (read-only, OAuth scope `mythoria.account.read`)
+- `mythoria.story.share_create_link` (write, OAuth scope `mythoria.story.write`)
+- `mythoria.story.share_revoke_link` (destructive/write, OAuth scope `mythoria.story.write`)
 
-Because sharing affects external visibility, this is a write-sensitive feature with clear confirmation requirements.
+## Implemented behavior
 
-## Workflow
+1. Share state:
 
-1. User requests to share a story.
-2. Assistant verifies story selection and current visibility.
-3. User chooses share mode:
+- Returns story visibility (`isPublic`, `slug`, public URL when available).
+- Returns active private links, with optional inclusion of revoked/expired links.
 
-- public
-- private view
-- private edit
+2. Share link creation:
 
-4. Assistant confirms side effects.
-5. App creates or updates share link.
-6. Assistant returns link and explains validity/revocation options.
+- Supports `mode`:
+  - `public`
+  - `private_view`
+  - `private_edit`
+- Defaults to private view sharing.
+- Supports `expiresInDays` for private links (1-365, default 30).
+- Requires explicit `confirmPublicExposure=true` before enabling public visibility.
 
-## Communication examples
+3. Share revocation:
 
-1. User: "Share my story publicly."
+- Supports single-link revocation (`linkId`) or bulk revocation (`revokeAll=true`).
+- Supports disabling public visibility (`disablePublic=true`).
+- Requires explicit `confirmRevoke=true` before destructive operations.
 
-- Assistant: confirms and returns `/p/{slug}` URL.
+## Safety and metadata
 
-2. User: "Create a private edit link for 7 days."
+- Write tools are annotated with `readOnlyHint: false`.
+- Revocation tool is annotated with `destructiveHint: true`.
+- Sharing write tools include `openWorldHint: true`.
+- Tool metadata includes MCP app widget binding (`ui://mythoria/story-library-v1.html`).
 
-- Assistant: creates tokenized link and returns access details.
+## Notes
 
-3. User: "Revoke all share links for this story."
-
-- Assistant: confirms destructive action, then revokes.
-
-4. User: "Is this story currently public?"
-
-- Assistant: returns visibility state and active links summary.
-
-## Dependencies
-
-- Existing share APIs under `/api/stories/{storyId}/share`.
-- Existing private token gateway `/api/share/{token}`.
-- Story ownership/collaborator authorization rules.
-- Tool annotations for write/destructive actions.
-- Feature 02 authenticated account linking.
-
-## Development plan
-
-1. Add MCP sharing tools:
-
-- `stories.getShareState` (read-only)
-- `stories.createShareLink` (write)
-- `stories.revokeShareLink` (destructive/write)
-
-2. Add explicit confirmation UX patterns:
-
-- clear explanation before public exposure or revocation.
-
-3. Add safe defaults:
-
-- default private view-only with explicit override for public/edit modes.
-
-4. Add policy checks:
-
-- limit excessive link creation.
-- enforce max expiration bounds.
-
-5. Acceptance criteria:
-
-- Sharing flows match web app behavior.
-- All write/destructive actions require clear user intent.
-- Revocation effects are immediate and verifiable.
+- Tool implementation reuses existing story/share data model behavior.
+- Public URLs are generated as `/{locale}/p/{slug}` and private links as `/s/{token}` or `/s/{token}/edit`.

@@ -131,7 +131,7 @@ export default function JobProgressModal({
   useEffect(() => {
     if (isOpen && jobId) {
       completedRef.current = false;
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- Necessary to reset state when modal opens with new job
+
       setJobStatus(null);
     }
   }, [isOpen, jobId]);
@@ -139,7 +139,6 @@ export default function JobProgressModal({
   // Start polling when job ID is available
   useEffect(() => {
     if (isOpen && jobId && !polling && !completedRef.current) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- Starting async polling operation is a legitimate effect
       startPolling();
     } else if (!isOpen || !jobId) {
       stopPolling();

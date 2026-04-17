@@ -13,7 +13,7 @@ export async function generateMetadata({
   return {
     title: t('metaTitle'),
     description: t('metaDescription'),
-    alternates: { canonical: `https://mythoria.pt/${locale}/faqs/` },
+    alternates: { canonical: `https://mythoria.pt/${locale}/faqs` },
     openGraph: {
       title: t('metaTitle'),
       description: t('metaDescription'),

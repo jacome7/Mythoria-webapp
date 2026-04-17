@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FaBookReader } from 'react-icons/fa';
 
@@ -10,7 +10,7 @@ const StoryCounter = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchStoryCount = async () => {
+  const fetchStoryCount = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null); // Reset error state at the beginning of a fetch attempt
@@ -58,14 +58,14 @@ const StoryCounter = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchStoryCount(); // Fetch immediately on mount
     const intervalId = setInterval(fetchStoryCount, 150000); // Refresh every 150 seconds
 
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
-  }, []);
+  }, [fetchStoryCount]);
 
   return (
     <div className="stats shadow bg-primary text-primary-content">

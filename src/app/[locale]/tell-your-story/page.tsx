@@ -6,23 +6,27 @@ import ClientAuthWrapper from '../../../components/ClientAuthWrapper';
 import { useLocale, useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 
-export default function TellYourStoryPage() {
+function SignedInContent() {
   const locale = useLocale();
   const router = useRouter();
-  const tTellYourStoryPage = useTranslations('TellYourStoryPage');
   const tLoading = useTranslations('Loading');
+
+  useEffect(() => {
+    router.push(`/${locale}/tell-your-story/step-1`);
+  }, [locale, router]);
+
+  return (
+    <div className="text-center py-12">
+      <span className="loading loading-spinner loading-lg"></span>
+      <p className="text-lg text-gray-600 mt-4">{tLoading('redirecting')}</p>
+    </div>
+  );
+}
+
+export default function TellYourStoryPage() {
+  const locale = useLocale();
+  const tTellYourStoryPage = useTranslations('TellYourStoryPage');
   const tAuth = useTranslations('Auth');
-  const SignedInContent = () => {
-    useEffect(() => {
-      router.push(`/${locale}/tell-your-story/step-1`);
-    }, []);
-    return (
-      <div className="text-center py-12">
-        <span className="loading loading-spinner loading-lg"></span>
-        <p className="text-lg text-gray-600 mt-4">{tLoading('redirecting')}</p>
-      </div>
-    );
-  };
 
   return (
     <div className="container mx-auto px-4 py-8">

@@ -82,7 +82,7 @@ export default function QuoteOfTheDay() {
 
   useEffect(() => {
     // Trigger animation after mount
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- Animation trigger after initial mount
+
     setIsVisible(true);
   }, []);
 

@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { TypeAnimation } from 'react-type-animation';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { SignedOut } from '@clerk/nextjs';
 import StoryCounter from '@/components/StoryCounter';
@@ -15,6 +15,7 @@ import { useIntentContext } from '@/hooks/useIntentContext';
 
 export default function Home() {
   const tHomePage = useTranslations('HomePage');
+  const locale = useLocale();
   const intentContext = useIntentContext();
 
   // Note: Carousel removed in favor of a vertical mobile layout
@@ -85,7 +86,7 @@ export default function Home() {
                     </span>
                   ))}
               </p>
-              <Link href="/tell-your-story" className="btn btn-primary btn-lg">
+              <Link href={`/${locale}/tell-your-story`} className="btn btn-primary btn-lg">
                 {tHomePage('hero.tellYourOwnStory')}
               </Link>
             </div>
@@ -103,7 +104,7 @@ export default function Home() {
             <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               <ScrollFadeIn delay={100} threshold={0.1} rootMargin="0px 0px -20px 0px">
                 <Link
-                  href="/p/mateus-e-o-leo"
+                  href="/pt-PT/p/mateus-e-o-leo"
                   className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer"
                 >
                   <figure className="px-10 pt-10">
@@ -124,7 +125,7 @@ export default function Home() {
 
               <ScrollFadeIn delay={200} threshold={0.1} rootMargin="0px 0px -20px 0px">
                 <Link
-                  href="/p/juventude-de-gaia-no-mundial-de-clubes"
+                  href="/pt-PT/p/juventude-de-gaia-no-mundial-de-clubes"
                   className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer"
                 >
                   <figure className="px-10 pt-10">
@@ -145,7 +146,7 @@ export default function Home() {
 
               <ScrollFadeIn delay={300} threshold={0.1} rootMargin="0px 0px -20px 0px">
                 <Link
-                  href="/p/how-i-met-your-mother"
+                  href="/en-US/p/how-i-met-your-mother"
                   className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer"
                 >
                   <figure className="px-10 pt-10">
@@ -189,7 +190,7 @@ export default function Home() {
             <div className="md:hidden space-y-6">
               <ScrollFadeIn delay={100} threshold={0.1} rootMargin="0px 0px -20px 0px">
                 <Link
-                  href="/p/mateus-e-o-leo"
+                  href="/pt-PT/p/mateus-e-o-leo"
                   className="card bg-base-100 shadow-xl w-full mx-2 hover:shadow-2xl transition-shadow cursor-pointer"
                 >
                   <figure className="p-4">
@@ -210,7 +211,7 @@ export default function Home() {
 
               <ScrollFadeIn delay={200} threshold={0.1} rootMargin="0px 0px -20px 0px">
                 <Link
-                  href="/p/juventude-de-gaia-no-mundial-de-clubes"
+                  href="/pt-PT/p/juventude-de-gaia-no-mundial-de-clubes"
                   className="card bg-base-100 shadow-xl w-full mx-2 hover:shadow-2xl transition-shadow cursor-pointer"
                 >
                   <figure className="p-4">
@@ -231,7 +232,7 @@ export default function Home() {
 
               <ScrollFadeIn delay={300} threshold={0.1} rootMargin="0px 0px -20px 0px">
                 <Link
-                  href="/p/how-i-met-your-mother"
+                  href="/en-US/p/how-i-met-your-mother"
                   className="card bg-base-100 shadow-xl w-full mx-2 hover:shadow-2xl transition-shadow cursor-pointer"
                 >
                   <figure className="p-4">
@@ -297,7 +298,7 @@ export default function Home() {
                 <ScrollFadeIn delay={300} threshold={0.1} rootMargin="0px 0px -20px 0px">
                   <p className="text-lg leading-relaxed">
                     <Link
-                      href="/aboutUs"
+                      href={`/${locale}/aboutUs`}
                       className="link link-primary font-semibold hover:underline"
                     >
                       {tHomePage('whatDrivesUs.linkText')}
@@ -507,7 +508,7 @@ export default function Home() {
               <div className="bg-gray-100 rounded-lg shadow-lg p-8 text-center">
                 <h3 className="font-bold text-xl mb-4">{tHomePage('cta.title')}</h3>
                 <div className="text-base mb-6">{tHomePage('cta.subtitle')}</div>
-                <Link href="/sign-up" className="btn btn-outline btn-primary btn-lg">
+                <Link href={`/${locale}/sign-up`} className="btn btn-outline btn-primary btn-lg">
                   {tHomePage('cta.button')}
                 </Link>
               </div>

@@ -33,6 +33,8 @@ interface SourceMaps {
   cloudBuildSetEnv: Record<string, string | undefined>;
   cloudBuildSecrets: Set<string>;
   buildArgs: Set<string>; // build-arg names
+  dockerArgs: Set<string>;
+  dockerEnvs: Set<string>;
 }
 
 const root = path.resolve(__dirname, '..');
@@ -59,6 +61,26 @@ function parseCloudBuild(): Partial<SourceMaps> {
   const secretsSet = new Set<string>();
   const buildArgs = new Set<string>();
 
+  function splitKeyValueArg(raw: string): string[] {
+    if (!raw) return [];
+    if (raw.startsWith('^') && raw.length >= 3) {
+      const nextCaretIndex = raw.indexOf('^', 2);
+      if (nextCaretIndex > 1) {
+        const delimiter = raw.slice(1, nextCaretIndex);
+        const payload = raw.slice(nextCaretIndex + 1);
+        return payload
+          .split(delimiter)
+          .map((entry) => entry.trim())
+          .filter(Boolean);
+      }
+    }
+
+    return raw
+      .split(',')
+      .map((entry) => entry.trim())
+      .filter(Boolean);
+  }
+
   // Extract --set-env-vars value(s)
   const deployStep = (doc?.steps || []).find(
     (s) => Array.isArray(s.args) && s.args.includes('deploy'),
@@ -67,15 +89,15 @@ function parseCloudBuild(): Partial<SourceMaps> {
     const args: string[] = (deployStep.args as string[] | undefined) || [];
     for (let i = 0; i < args.length; i++) {
       if (args[i] === '--set-env-vars' && args[i + 1]) {
-        const csv = args[i + 1];
-        csv.split(',').forEach((pair) => {
+        const entries = splitKeyValueArg(args[i + 1]);
+        entries.forEach((pair) => {
           const [k, v] = pair.split('=');
           if (k && v !== undefined) setEnvVars[k.trim()] = v.trim();
         });
       }
       if (args[i] === '--set-secrets' && args[i + 1]) {
-        const csv = args[i + 1];
-        csv.split(',').forEach((pair) => {
+        const entries = splitKeyValueArg(args[i + 1]);
+        entries.forEach((pair) => {
           const [k] = pair.split('=');
           if (k) secretsSet.add(k.trim());
         });
@@ -114,6 +136,32 @@ function parseCloudBuild(): Partial<SourceMaps> {
     cloudBuildSecrets: secretsSet,
     buildArgs,
   };
+}
+
+function parseDockerfile() {
+  const file = path.join(root, 'Dockerfile');
+  const args = new Set<string>();
+  const envs = new Set<string>();
+
+  if (!fs.existsSync(file)) {
+    return { args, envs };
+  }
+
+  const content = fs.readFileSync(file, 'utf8');
+  for (const line of content.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    const argMatch = trimmed.match(/^ARG\s+([A-Z0-9_]+)/);
+    if (argMatch?.[1]) {
+      args.add(argMatch[1]);
+    }
+
+    const envMatch = trimmed.match(/^ENV\s+([A-Z0-9_]+)=/);
+    if (envMatch?.[1]) {
+      envs.add(envMatch[1]);
+    }
+  }
+
+  return { args, envs };
 }
 
 interface Violation {
@@ -179,6 +227,23 @@ function analyze(sources: SourceMaps) {
           violations.push({ type: 'Missing', key, detail: `Missing in scope ${scope}` });
         }
       }
+
+      if (desc.scopes.includes('build')) {
+        if (!sources.dockerArgs.has(key)) {
+          violations.push({
+            type: 'ScopeMismatch',
+            key,
+            detail: 'Required for build scope but missing Dockerfile ARG',
+          });
+        }
+        if (!sources.dockerEnvs.has(key)) {
+          violations.push({
+            type: 'ScopeMismatch',
+            key,
+            detail: 'Required for build scope but missing Dockerfile ENV',
+          });
+        }
+      }
     }
 
     // Empty dev value check if required in dev
@@ -197,6 +262,7 @@ function main() {
   const dev = readEnvFile('.env.local');
   const prodFile = readEnvFile('.env.production');
   const cloud = parseCloudBuild();
+  const docker = parseDockerfile();
   const sources: SourceMaps = {
     dev,
     prodFile,
@@ -204,6 +270,8 @@ function main() {
     cloudBuildSetEnv: cloud.cloudBuildSetEnv || {},
     cloudBuildSecrets: cloud.cloudBuildSecrets || new Set(),
     buildArgs: cloud.buildArgs || new Set(),
+    dockerArgs: docker.args,
+    dockerEnvs: docker.envs,
   };
 
   const violations = analyze(sources);

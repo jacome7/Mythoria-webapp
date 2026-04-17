@@ -4,6 +4,7 @@ import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { SUPPORTED_LOCALES } from '@/config/locales';
 import { useTransition } from 'react';
+import { getAlternateLocalePath, swapLocaleInPath } from '@/lib/language-switcher';
 
 const LanguageSwitcher = () => {
   const locale = useLocale();
@@ -15,17 +16,17 @@ const LanguageSwitcher = () => {
     // Store the language preference in localStorage
     localStorage.setItem('mythoria-locale', newLocale);
 
-    // Remove the current locale from the pathname
     const safePathname =
       pathname || (typeof window !== 'undefined' ? window.location.pathname : '');
-    const segments = safePathname.split('/');
-    if (SUPPORTED_LOCALES.includes(segments[1])) {
-      segments[1] = newLocale;
-    } else {
-      segments.unshift('', newLocale);
-    }
-
-    const newPath = segments.join('/');
+    const alternateHref =
+      typeof document !== 'undefined'
+        ? document.head
+            .querySelector(`link[rel="alternate"][hreflang="${newLocale}"]`)
+            ?.getAttribute('href')
+        : null;
+    const newPath =
+      getAlternateLocalePath(alternateHref) ||
+      swapLocaleInPath(safePathname, newLocale, SUPPORTED_LOCALES);
 
     // Use Next.js router for navigation with full page reload for locale change
     startTransition(() => {

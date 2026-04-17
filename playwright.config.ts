@@ -4,10 +4,12 @@ import fs from 'fs';
 // Central location for the authenticated storage state produced by the auth setup project.
 // This file is added to .gitignore so it never leaves the developer machine/CI runtime.
 const authFile = 'tests/playwright/.auth/user.json';
+const skipAuthSetup = process.env.SKIP_AUTH_SETUP === '1';
 
 // Decide if we need to run the setup project this invocation.
 // Conditions: missing file OR REFRESH_AUTH=1 OR file older than AUTH_MAX_AGE_HOURS (default 12)
 function needsAuthSetup(): boolean {
+  if (skipAuthSetup) return false;
   if (process.env.REFRESH_AUTH === '1') return true;
   if (!fs.existsSync(authFile)) return true;
   try {
@@ -21,6 +23,8 @@ function needsAuthSetup(): boolean {
 }
 
 const includeSetup = needsAuthSetup();
+const hasAuthFile = fs.existsSync(authFile);
+const storageStatePath = skipAuthSetup && !hasAuthFile ? undefined : authFile;
 if (!includeSetup) {
   console.log(
     'Playwright auth setup project skipped (existing auth state considered fresh). Set REFRESH_AUTH=1 to force.',
@@ -39,7 +43,10 @@ const projects = [
     : []),
   {
     name: 'chromium',
-    use: { ...devices['Desktop Chrome'], storageState: authFile },
+    use: {
+      ...devices['Desktop Chrome'],
+      ...(storageStatePath ? { storageState: storageStatePath } : {}),
+    },
     ...(includeSetup ? { dependencies: ['setup'] } : {}),
   },
 ];

@@ -48,17 +48,20 @@ export default function TranslateFullStoryModal({
 
   // load languages from messages
   useEffect(() => {
-    if (!isOpen) return;
-    try {
-      const opts = tStep4.raw('languageOptions') as Array<{ value: string; label: string }>;
-      setLanguages(opts);
-      // default selection: first different from current
-      const firstAlt = opts.find((o) => o.value !== currentLanguage);
-      setTargetLocale(firstAlt?.value || '');
-    } catch {
-      // fallback empty
-      setLanguages([]);
-    }
+    const init = () => {
+      if (!isOpen) return;
+      try {
+        const opts = tStep4.raw('languageOptions') as Array<{ value: string; label: string }>;
+        setLanguages(opts);
+        // default selection: first different from current
+        const firstAlt = opts.find((o) => o.value !== currentLanguage);
+        setTargetLocale(firstAlt?.value || '');
+      } catch {
+        // fallback empty
+        setLanguages([]);
+      }
+    };
+    init();
   }, [isOpen, tStep4, currentLanguage]);
 
   // fetch credit info when open

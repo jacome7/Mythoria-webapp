@@ -10,6 +10,7 @@ This directory contains comprehensive documentation for the Mythoria WebApp fron
 - **[deployment.md](./deployment.md)** - Production deployment guide for Google Cloud Platform
 - **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Local development setup and contribution guide
 - **[google-cast-integration.md](./google-cast-integration.md)** - Google Cast sender integration plan for the audiobook player
+- **[chatgpt-app-installation_guid.md](./chatgpt-app-installation_guid.md)** - ChatGPT production configuration, MCP validation, and submission runbook
 
 ## Archive
 

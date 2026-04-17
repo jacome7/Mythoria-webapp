@@ -1,77 +1,162 @@
 # Feature 10 - Job Tracking and Notifications
 
+Status: Implemented (core MCP backend complete)
+
 ## Description
 
-This feature provides reliable tracking for long-running actions in ChatGPT.
+This feature provides a unified status lookup for long-running Mythoria actions in ChatGPT.
 
-Target actions:
+Covered actions:
 
 - Story generation
 - Audiobook generation
-- Download/export preparation
-- Print preparation
-
-Current MCP implementation returns queued jobs but lacks durable status retrieval. This feature closes that gap.
+- Story export preparation
+- Print request progress
 
 ## Workflow
 
-1. User triggers long-running action.
-2. Tool returns `jobId`, type, createdAt, estimated timing.
-3. User asks "status?" or assistant proactively checks based on follow-up.
-4. Status tool returns structured state:
+1. User triggers a long-running action (Feature 03/06/export/print).
+2. Tool returns a deterministic Mythoria `jobId`.
+3. Assistant calls `mythoria.jobs.status`.
+4. Tool returns normalized status contract:
 
-- queued
-- running
-- completed
-- failed
+- `state` (`queued`, `running`, `completed`, `failed`)
+- `progress`
+- `etaSeconds`
+- `lastUpdatedAt`
+- `nextAction`
 
-5. On completion, assistant offers next action (open/read/listen/download).
+5. Assistant continues with read/listen/export/print follow-ups based on status.
 
 ## Communication examples
 
-1. User: "Start audiobook generation for story X."
+1. User: "Start audiobook generation for this story."
 
-- Assistant: returns job ID and expected timing.
+- Assistant: queues narration and returns a `jobId`.
 
-2. User: "Check job 123 status."
+2. User: "Check that job now."
 
-- Assistant: returns current stage and percent.
+- Assistant: calls `mythoria.jobs.status`, reports normalized state/progress.
 
-3. User: "Tell me when ready."
+3. User: "What should I do next?"
 
-- Assistant: records preference and checks in next turn when asked; if proactive notifications are unsupported, it explains expected follow-up pattern.
+- Assistant: reads `nextAction` and `recommendedNextTools` from status payload.
 
-4. User: "Job failed, what now?"
+4. User: "It failed, retry."
 
-- Assistant: shows failure reason and recommended retry/fix action.
+- Assistant: uses failure info and calls recommended retry tool.
 
 ## Dependencies
 
-- Existing async endpoints and workflow status fields in stories.
-- Existing jobs infrastructure under `/api/jobs/*` (where applicable).
-- Existing story and audiobook status fields.
-- Feature 03 and 06 action initiators.
+- Story status fields in `stories`:
+- `storyGenerationStatus`
+- `storyGenerationCompletedPercentage`
+- `audiobookStatus`
+- `hasAudio`
+- `interiorPdfUri`
+- `coverPdfUri`
+- Print request records via `print_requests` query path.
+- Feature 03 and Feature 06 action initiators.
 
-## Development plan
+## Implemented
 
-1. Implement unified MCP status tool:
+### Unified status tool
 
-- `jobs.getStatus` for all supported job types.
+Implemented in `src/lib/mcp/server.ts`:
 
-2. Persist real job references:
+- `mythoria.jobs.status`
 
-- map story run IDs and audiobook run IDs into a queryable status model.
+### Job identity contract
 
-3. Add status normalization contract:
+- Added deterministic encoded job identifiers (`mythoria-job:*`) with:
+- `type`
+- `storyId`
+- optional `runId`
+- `requestedAt`
+- Action tools now return trackable jobs:
+- `mythoria.story.start_generation`
+- `mythoria.story.narration_request`
+- `mythoria.story.export_request`
+- `mythoria.story.print_request`
 
-- common fields: `jobId`, `type`, `state`, `progress`, `etaSeconds`, `lastUpdatedAt`, `nextAction`.
+### Status normalization
 
-4. Add error semantics:
+- `mythoria.jobs.status` returns common fields:
+- `jobId`, `type`, `storyId`, `runId`
+- `state`, `progress`, `etaSeconds`
+- `lastUpdatedAt`, `failureCode`, `nextAction`
+- Includes `recommendedNextTools` for immediate follow-up.
 
-- explicit machine-readable failure codes and human-readable summaries.
+### Data sources per job type
 
-5. Acceptance criteria:
+- Story generation: story generation status/progress fields.
+- Audiobook generation: audiobook status/has-audio fields.
+- Export: story publication + PDF readiness fields.
+- Print: latest print request status via `printRequestService`.
 
-- Every queued write action has a status lookup path.
-- Status responses are consistent across job types.
-- Users can complete follow-up actions without manual web checks.
+### Auth and metadata
+
+- `mythoria.jobs.status` requires OAuth scope `mythoria.account.read`.
+- Tool metadata in `tools/list` includes security schemes.
+
+### Validation
+
+- Added unit tests in `src/lib/mcp/server.test.ts`:
+- story-generation normalized running status
+- print request normalized status
+- auth challenge behavior
+- Updated Playwright MCP metadata check in `tests/playwright/mcp.spec.ts`.
+
+## Still missing / follow-up
+
+1. Durable run registry:
+
+- Job IDs are deterministic and queryable, but there is no dedicated persistent cross-run table yet.
+
+2. Export fulfillment integration depth:
+
+- Export status currently derives from story PDF fields.
+- A dedicated export workflow/status backend would improve precision.
+
+3. Push notifications:
+
+- Tool supports poll-based follow-up.
+- Proactive push notifications are still out of scope.
+
+## Screenshot recommendations
+
+1. Story generation running:
+
+- `mythoria.jobs.status` with `type=story_generation`, `state=running`.
+
+2. Audiobook completed:
+
+- `mythoria.jobs.status` with `type=audiobook_generation`, `state=completed`.
+
+3. Print in progress:
+
+- `mythoria.jobs.status` with `type=print`, `state=running`.
+
+4. Failure handling:
+
+- `mythoria.jobs.status` with `state=failed`, `failureCode`, and retry tool recommendation.
+
+## Copy templates
+
+### Status template
+
+- "Job `{jobId}` is `{state}` at `{progress}%`. Next: {nextAction}"
+
+### Retry template
+
+- "This job failed (`{failureCode}`). I can retry now with `{tool}`."
+
+### Completion template
+
+- "This job is complete. I can continue with `{nextTool}` now."
+
+## Acceptance targets
+
+1. Every async story action returns a status-checkable `jobId`.
+2. Status responses are normalized across supported job types.
+3. Follow-up actions are suggested without requiring manual route checks.

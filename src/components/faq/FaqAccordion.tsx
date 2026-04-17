@@ -2,16 +2,13 @@
 
 import { useState } from 'react';
 import { FaChevronDown } from 'react-icons/fa';
-import { MDXRemote } from 'next-mdx-remote';
-import type { MDXRemoteSerializeResult } from 'next-mdx-remote';
-import { mdxComponents } from '@/lib/blog/mdx-components';
 
 interface FaqEntry {
   id: string;
   title: string;
   contentMdx: string;
   questionSortOrder: number;
-  mdxSource: MDXRemoteSerializeResult;
+  contentHtml: string;
 }
 
 interface FaqAccordionProps {
@@ -63,9 +60,10 @@ export default function FaqAccordion({ entries, sectionTitle }: FaqAccordionProp
             >
               <div className="overflow-hidden bg-base-100">
                 <div id={`faq-panel-${entry.id}`} className="px-5 py-5 border-t border-base-300">
-                  <div className="prose prose-sm max-w-none text-base-content/80">
-                    <MDXRemote {...entry.mdxSource} components={mdxComponents} />
-                  </div>
+                  <div
+                    className="prose prose-sm max-w-none text-base-content/80"
+                    dangerouslySetInnerHTML={{ __html: entry.contentHtml }}
+                  />
                 </div>
               </div>
             </div>

@@ -76,10 +76,15 @@ $DbPassword = if ($DbPassword) { $DbPassword } else { $env:DB_PASSWORD }
 $ClerkPublishableKey = $env:NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 $ClerkSecretKey = $env:CLERK_SECRET_KEY
 $ClerkWebhookSecret = $env:CLERK_WEBHOOK_SECRET
+$ClerkOAuthClientSecret = $env:CLERK_OAUTH_CLIENT_SECRET
+$NextAuthSecret = $env:NEXTAUTH_SECRET
 $GaTrackingId = $env:NEXT_PUBLIC_GA_MEASUREMENT_ID
+$GoogleAnalyticsApiSecret = $env:GOOGLE_ANALYTICS_API_SECRET
 $StoryGenApiKey = $env:STORY_GENERATION_WORKFLOW_API_KEY
+$SgwWebhookSecret = $env:SGW_WEBHOOK_SECRET
 $AdminApiKey = $env:ADMIN_API_KEY
 $NotificationApiKey = $env:NOTIFICATION_ENGINE_API_KEY
+$LeadBounceApiSecret = $env:LEAD_BOUNCE_API_SECRET
 
 Write-Host "Setting up Google Cloud Secret Manager secrets for project: $ProjectId" -ForegroundColor Green
 
@@ -112,12 +117,28 @@ if (-not $ClerkWebhookSecret) {
     Write-Err "CLERK_WEBHOOK_SECRET not found in .env.production file."
     exit 1
 }
+if (-not $ClerkOAuthClientSecret) {
+    Write-Err "CLERK_OAUTH_CLIENT_SECRET not found in .env.production file."
+    exit 1
+}
+if (-not $NextAuthSecret) {
+    Write-Err "NEXTAUTH_SECRET not found in .env.production file."
+    exit 1
+}
 if (-not $GaTrackingId) {
     Write-Err "NEXT_PUBLIC_GA_MEASUREMENT_ID not found in .env.production file."
     exit 1
 }
+if (-not $GoogleAnalyticsApiSecret) {
+    Write-Err "GOOGLE_ANALYTICS_API_SECRET not found in .env.production file."
+    exit 1
+}
 if (-not $StoryGenApiKey) {
     Write-Err "STORY_GENERATION_WORKFLOW_API_KEY not found in .env.production file."
+    exit 1
+}
+if (-not $SgwWebhookSecret) {
+    Write-Err "SGW_WEBHOOK_SECRET not found in .env.production file."
     exit 1
 }
 if (-not $AdminApiKey) {
@@ -126,6 +147,10 @@ if (-not $AdminApiKey) {
 }
 if (-not $NotificationApiKey) {
     Write-Err "NOTIFICATION_ENGINE_API_KEY not found in .env.production file."
+    exit 1
+}
+if (-not $LeadBounceApiSecret) {
+    Write-Err "LEAD_BOUNCE_API_SECRET not found in .env.production file."
     exit 1
 }
 
@@ -137,10 +162,15 @@ Write-Host "  OK DB_PASSWORD: $($('*' * $DbPassword.Length))" -ForegroundColor G
 Write-Host "  OK CLERK_PUBLISHABLE_KEY: $($ClerkPublishableKey.Substring(0, 20))..." -ForegroundColor Green
 Write-Host "  OK CLERK_SECRET_KEY: $($('*' * $ClerkSecretKey.Length))" -ForegroundColor Green
 Write-Host "  OK CLERK_WEBHOOK_SECRET: $($('*' * $ClerkWebhookSecret.Length))" -ForegroundColor Green
+Write-Host "  OK CLERK_OAUTH_CLIENT_SECRET: $($('*' * $ClerkOAuthClientSecret.Length))" -ForegroundColor Green
+Write-Host "  OK NEXTAUTH_SECRET: $($('*' * $NextAuthSecret.Length))" -ForegroundColor Green
 Write-Host "  OK GA_MEASUREMENT_ID: $GaTrackingId" -ForegroundColor Green
+Write-Host "  OK GOOGLE_ANALYTICS_API_SECRET: $($('*' * $GoogleAnalyticsApiSecret.Length))" -ForegroundColor Green
 Write-Host "  OK STORY_GENERATION_API_KEY: $($('*' * $StoryGenApiKey.Length))" -ForegroundColor Green
+Write-Host "  OK SGW_WEBHOOK_SECRET: $($('*' * $SgwWebhookSecret.Length))" -ForegroundColor Green
 Write-Host "  OK ADMIN_API_KEY: $($('*' * $AdminApiKey.Length))" -ForegroundColor Green
 Write-Host "  OK NOTIFICATION_API_KEY: $($('*' * $NotificationApiKey.Length))" -ForegroundColor Green
+Write-Host "  OK LEAD_BOUNCE_API_SECRET: $($('*' * $LeadBounceApiSecret.Length))" -ForegroundColor Green
 
 # Set the Google Cloud project
 Write-Host "Setting Google Cloud project..." -ForegroundColor Blue
@@ -169,17 +199,32 @@ $ClerkSecretKey.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gcloud se
 Write-Host "Creating Clerk webhook secret..." -ForegroundColor Blue
 $ClerkWebhookSecret.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gcloud secrets create mythoria-clerk-webhook-secret --data-file=temp_secret.txt --replication-policy='automatic'; Remove-Item temp_secret.txt
 
+Write-Host "Creating Clerk OAuth client secret..." -ForegroundColor Blue
+$ClerkOAuthClientSecret.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gcloud secrets create CLERK_OAUTH_CLIENT_SECRET --data-file=temp_secret.txt --replication-policy='automatic'; Remove-Item temp_secret.txt
+
+Write-Host "Creating NextAuth secret..." -ForegroundColor Blue
+$NextAuthSecret.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gcloud secrets create mythoria-auth-secret --data-file=temp_secret.txt --replication-policy='automatic'; Remove-Item temp_secret.txt
+
 Write-Host "Creating Google Analytics measurement ID secret..." -ForegroundColor Blue
 $GaTrackingId.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gcloud secrets create mythoria-ga-measurement-id --data-file=temp_secret.txt --replication-policy='automatic'; Remove-Item temp_secret.txt
 
+Write-Host "Creating Google Analytics API secret..." -ForegroundColor Blue
+$GoogleAnalyticsApiSecret.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gcloud secrets create GOOGLE_ANALYTICS_API_SECRET --data-file=temp_secret.txt --replication-policy='automatic'; Remove-Item temp_secret.txt
+
 Write-Host "Creating Story Generation API key secret..." -ForegroundColor Blue
 $StoryGenApiKey.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gcloud secrets create STORY_GENERATION_WORKFLOW_API_KEY --data-file=temp_secret.txt --replication-policy='automatic'; Remove-Item temp_secret.txt
+
+Write-Host "Creating SGW webhook secret..." -ForegroundColor Blue
+$SgwWebhookSecret.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gcloud secrets create SGW_WEBHOOK_SECRET --data-file=temp_secret.txt --replication-policy='automatic'; Remove-Item temp_secret.txt
 
 Write-Host "Creating Admin API key secret..." -ForegroundColor Blue
 $AdminApiKey.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gcloud secrets create ADMIN_API_KEY --data-file=temp_secret.txt --replication-policy='automatic'; Remove-Item temp_secret.txt
 
 Write-Host "Creating Notification Engine API key secret..." -ForegroundColor Blue
 $NotificationApiKey.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gcloud secrets create NOTIFICATION_ENGINE_API_KEY --data-file=temp_secret.txt --replication-policy='automatic'; Remove-Item temp_secret.txt
+
+Write-Host "Creating Lead Bounce API secret..." -ForegroundColor Blue
+$LeadBounceApiSecret.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gcloud secrets create LEAD_BOUNCE_API_SECRET --data-file=temp_secret.txt --replication-policy='automatic'; Remove-Item temp_secret.txt
 
 # Grant permissions to Cloud Build service account
 Write-Host "Granting permissions to Cloud Build service account..." -ForegroundColor Blue
@@ -192,7 +237,12 @@ gcloud secrets add-iam-policy-binding mythoria-db-password --member="serviceAcco
 gcloud secrets add-iam-policy-binding mythoria-clerk-publishable-key --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding mythoria-clerk-secret-key --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding mythoria-clerk-webhook-secret --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
+gcloud secrets add-iam-policy-binding CLERK_OAUTH_CLIENT_SECRET --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
+gcloud secrets add-iam-policy-binding mythoria-auth-secret --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding mythoria-ga-measurement-id --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
+gcloud secrets add-iam-policy-binding GOOGLE_ANALYTICS_API_SECRET --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
+gcloud secrets add-iam-policy-binding SGW_WEBHOOK_SECRET --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
+gcloud secrets add-iam-policy-binding LEAD_BOUNCE_API_SECRET --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
 
 # Grant permissions to Cloud Run service account (Compute Engine default)
 Write-Host "Granting permissions to Cloud Run service account..." -ForegroundColor Blue
@@ -204,7 +254,12 @@ gcloud secrets add-iam-policy-binding mythoria-db-password --member="serviceAcco
 gcloud secrets add-iam-policy-binding mythoria-clerk-publishable-key --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding mythoria-clerk-secret-key --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding mythoria-clerk-webhook-secret --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
+gcloud secrets add-iam-policy-binding CLERK_OAUTH_CLIENT_SECRET --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
+gcloud secrets add-iam-policy-binding mythoria-auth-secret --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding mythoria-ga-measurement-id --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
+gcloud secrets add-iam-policy-binding GOOGLE_ANALYTICS_API_SECRET --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
+gcloud secrets add-iam-policy-binding SGW_WEBHOOK_SECRET --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
+gcloud secrets add-iam-policy-binding LEAD_BOUNCE_API_SECRET --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
 
 
 Write-Host "✅ Secrets setup completed successfully!" -ForegroundColor Green
@@ -216,7 +271,12 @@ Write-Host "  - mythoria-db-password" -ForegroundColor White
 Write-Host "  - mythoria-clerk-publishable-key" -ForegroundColor White
 Write-Host "  - mythoria-clerk-secret-key" -ForegroundColor White
 Write-Host "  - mythoria-clerk-webhook-secret" -ForegroundColor White
+Write-Host "  - CLERK_OAUTH_CLIENT_SECRET" -ForegroundColor White
+Write-Host "  - mythoria-auth-secret" -ForegroundColor White
 Write-Host "  - mythoria-ga-measurement-id" -ForegroundColor White
+Write-Host "  - GOOGLE_ANALYTICS_API_SECRET" -ForegroundColor White
+Write-Host "  - SGW_WEBHOOK_SECRET" -ForegroundColor White
+Write-Host "  - LEAD_BOUNCE_API_SECRET" -ForegroundColor White
 
 Write-Host ""
 Write-Host "To verify secrets were created, run:" -ForegroundColor Cyan

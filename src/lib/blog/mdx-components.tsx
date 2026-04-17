@@ -140,11 +140,27 @@ export const mdxComponents: MDXComponents = {
   ),
 
   // Paragraphs and text
-  p: ({ children, ...props }) => (
-    <p className="mb-4 leading-relaxed text-base-content" {...props}>
-      {children}
-    </p>
-  ),
+  // remark-rehype wraps images and custom JSX components in <p> nodes. When that
+  // happens, rendering an actual <p> element would produce invalid HTML (e.g.
+  // <p><div>…</div></p>). We detect block-level children and fall back to a <div>
+  // with identical prose styling so the DOM stays valid.
+  p: ({ children, ...props }) => {
+    const hasBlockChild = React.Children.toArray(children).some(
+      (child) => React.isValidElement(child) && typeof child.type !== 'string',
+    );
+    return hasBlockChild ? (
+      <div
+        className="mb-4 leading-relaxed text-base-content"
+        {...(props as React.HTMLAttributes<HTMLDivElement>)}
+      >
+        {children}
+      </div>
+    ) : (
+      <p className="mb-4 leading-relaxed text-base-content" {...props}>
+        {children}
+      </p>
+    );
+  },
 
   // Lists
   ul: ({ children, ...props }) => (

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Story, SortField, SortDirection } from '@/types/story';
 
 export function useStoriesTable(pageSize = Infinity) {
@@ -10,7 +10,7 @@ export function useStoriesTable(pageSize = Infinity) {
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [currentPage, setCurrentPage] = useState(1);
 
-  const fetchStories = async () => {
+  const fetchStories = useCallback(async () => {
     try {
       const response = await fetch('/api/my-stories');
       if (response.ok) {
@@ -22,11 +22,11 @@ export function useStoriesTable(pageSize = Infinity) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchStories();
-  }, []);
+  }, [fetchStories]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {

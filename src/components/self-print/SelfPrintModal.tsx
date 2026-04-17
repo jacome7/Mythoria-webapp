@@ -104,9 +104,9 @@ export function SelfPrintModal({
 
   useEffect(() => {
     if (isOpen && storyId) {
-      setLoadState('loading');
-      setLoadError(null);
       const load = async () => {
+        setLoadState('loading');
+        setLoadError(null);
         try {
           const [pricing, creditsResp, authorResp] = await Promise.all([
             fetchSelfPrintPricing(),

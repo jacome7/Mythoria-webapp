@@ -1,5 +1,7 @@
 # Feature 02 - Account Linking and Authentication
 
+Status: In progress (core backend implemented)
+
 ## Description
 
 This feature provides a publishable authentication experience for Mythoria inside ChatGPT.
@@ -73,3 +75,52 @@ Mixed-auth path:
 - Link flow succeeds for first-time users.
 - Authenticated tools fail safely when tokens are invalid/expired.
 - Public tools remain usable without linking.
+
+## Implementation status
+
+### Implemented
+
+1. OAuth protected resource metadata endpoint:
+
+- Added `/.well-known/oauth-protected-resource`.
+- Returns `resource`, `authorization_servers`, `scopes_supported`.
+
+2. Runtime auth challenge behavior:
+
+- Protected tools now return MCP error results with `_meta["mcp/www_authenticate"]`.
+- Challenges include `resource_metadata`, `error`, `error_description`, and missing `scope` when applicable.
+
+3. OAuth-aware auth context:
+
+- MCP auth now validates Clerk access via `authenticateRequest`.
+- OAuth token type is enforced by default (`oauth_token`).
+- Optional dev fallback: `MCP_AUTH_ALLOW_SESSION_TOKEN=true`.
+
+4. Tool auth taxonomy:
+
+- Per-tool auth policy and scopes are defined.
+- `tools/list` now includes `securitySchemes` and mirrored `_meta.securitySchemes`.
+
+5. Middleware compatibility:
+
+- `/.well-known/*` now bypasses locale/auth middleware rewrites.
+
+6. Tests:
+
+- Unit tests updated for auth challenge behavior.
+- Added test coverage for `tools/list` `securitySchemes`.
+- Added e2e metadata endpoint smoke test.
+
+### Still missing / follow-up
+
+1. Clerk tenant hardening checklist:
+
+- Confirm OAuth app is fully configured for dynamic client registration + PKCE (`S256`) in production tenant.
+- Verify both ChatGPT redirect URIs are allowlisted:
+  - `https://chatgpt.com/connector_platform_oauth_redirect`
+  - `https://platform.openai.com/apps-manage/oauth`
+
+2. End-to-end ChatGPT linking validation:
+
+- Run manual linking test in ChatGPT Apps settings against production-like environment.
+- Confirm first-call linking prompt and token refresh/revoke edge cases.

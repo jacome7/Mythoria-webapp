@@ -204,6 +204,14 @@ export const envManifest: EnvVarDescriptor[] = [
     source: 'substitution',
   },
   {
+    name: 'MODEL_ID',
+    required: true,
+    scopes: ['prod', 'runtime', 'dev'],
+    default: 'gemini-2.5-pro',
+    source: 'substitution',
+    note: 'Primary model identifier used by server-side generation workflows.',
+  },
+  {
     name: 'PUBSUB_TOPIC',
     required: true,
     scopes: ['prod', 'runtime', 'dev'],
@@ -247,6 +255,21 @@ export const envManifest: EnvVarDescriptor[] = [
     scopes: ['prod', 'runtime'],
     secret: true,
     source: 'secret-manager',
+  },
+  {
+    name: 'CLERK_OAUTH_CLIENT_ID',
+    required: true,
+    scopes: ['prod', 'runtime', 'dev'],
+    source: 'substitution',
+    note: 'Client ID for Clerk OAuth application used by ChatGPT App OAuth setup.',
+  },
+  {
+    name: 'CLERK_OAUTH_CLIENT_SECRET',
+    required: true,
+    scopes: ['prod', 'runtime', 'dev'],
+    secret: true,
+    source: 'secret-manager',
+    note: 'Client secret for Clerk OAuth application used by ChatGPT App OAuth setup.',
   },
   {
     name: 'NEXTAUTH_SECRET',
@@ -464,6 +487,31 @@ export const envManifest: EnvVarDescriptor[] = [
     scopes: ['prod', 'runtime'],
     source: 'substitution',
   },
+  {
+    name: 'MCP_AUTHORIZATION_SERVER_URL',
+    required: false,
+    scopes: ['prod', 'runtime', 'dev'],
+    note: 'Optional override for MCP OAuth authorization server base URL (issuer).',
+  },
+  {
+    name: 'MCP_RESOURCE_URL',
+    required: false,
+    scopes: ['prod', 'runtime', 'dev'],
+    note: 'Optional override for MCP OAuth protected resource identifier (defaults to <base-url>/api/mcp).',
+  },
+  {
+    name: 'MCP_WIDGET_DOMAIN',
+    required: false,
+    scopes: ['prod', 'runtime', 'dev'],
+    note: 'Optional override for MCP widget metadata domain (defaults to NEXT_PUBLIC_BASE_URL origin).',
+  },
+  {
+    name: 'MCP_AUTH_ALLOW_SESSION_TOKEN',
+    required: false,
+    scopes: ['dev', 'runtime'],
+    default: 'false',
+    note: 'Dev-only fallback to accept Clerk session_token for MCP while OAuth is being configured.',
+  },
 
   // Potential AI provider keys (not currently referenced in code but reserved)
   {
@@ -512,6 +560,30 @@ export const envManifest: EnvVarDescriptor[] = [
     required: false,
     scopes: ['dev'],
     note: 'Optional email for Playwright E2E authentication tests.',
+  },
+  {
+    name: 'MCP_E2E_REDIRECT_URI',
+    required: false,
+    scopes: ['dev'],
+    note: 'Optional local OAuth callback URI for scripts/get-mcp-oauth-token.ts (must exist in Clerk OAuth app redirect allowlist).',
+  },
+  {
+    name: 'MCP_E2E_SCOPE',
+    required: false,
+    scopes: ['dev'],
+    note: 'Optional scope override for OAuth token retrieval in local MCP E2E scripts.',
+  },
+  {
+    name: 'MCP_E2E_RESOURCE',
+    required: false,
+    scopes: ['dev'],
+    note: 'Optional OAuth resource parameter override used by scripts/get-mcp-oauth-token.ts.',
+  },
+  {
+    name: 'MCP_E2E_AUTH_TIMEOUT_MS',
+    required: false,
+    scopes: ['dev'],
+    note: 'Optional timeout override (milliseconds) for local OAuth callback wait.',
   },
 ];
 

@@ -34,6 +34,9 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // Canonical URL normalization is handled in middleware so locale casing and
+  // trailing slashes collapse into a single redirect.
+  skipTrailingSlashRedirect: true,
   // Image configuration to allow external images
   images: {
     remotePatterns: [

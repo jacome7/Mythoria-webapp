@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
-import { storyService } from '@/db/services';
-import { blogService, BlogLocale } from '@/db/services/blog';
+import { storyService, blogService } from '@/db/services';
+import { BlogLocale } from '@/db/services/blog';
 import { routing } from '@/i18n/routing';
+import { BASE_URL, buildAbsoluteUrl, buildLocalizedUrl, shouldIncludeXDefault } from '@/lib/seo';
+import { normalizeLocale } from '@/utils/locale-utils';
 
 // Force this route to be dynamic so it can query the database at request time
 // (Next.js App Router hint). This avoids static optimization dropping blog posts.
@@ -9,7 +11,6 @@ export const dynamic = 'force-dynamic';
 // Revalidate (ISR) window – adjust if sitemap churn is higher. 900s = 15m.
 export const revalidate = 900;
 
-const baseUrl = 'https://mythoria.pt';
 const locales = routing.locales as readonly string[];
 
 // Static pages that should be included in the sitemap
@@ -38,7 +39,7 @@ export async function GET() {
   } catch (error) {
     console.error('Error generating sitemap:', error);
     // Provide a minimal valid XML instead of redirect loop.
-    const fallback = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${baseUrl}</loc>\n    <lastmod>${new Date().toISOString()}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>\n</urlset>`;
+    const fallback = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${BASE_URL}</loc>\n    <lastmod>${new Date().toISOString()}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>\n</urlset>`;
     return new NextResponse(fallback, {
       status: 200,
       headers: { 'Content-Type': 'application/xml' },
@@ -46,33 +47,27 @@ export async function GET() {
   }
 }
 
-async function generateSitemap(): Promise<string> {
+export async function generateSitemap(): Promise<string> {
   const urls: string[] = [];
   const currentDate = new Date().toISOString();
 
   // Add the default root page (redirects to default locale)
-  urls.push(createUrlEntry(baseUrl, currentDate, 'weekly', '1.0'));
+  urls.push(createUrlEntry(BASE_URL, currentDate, 'weekly', '1.0'));
 
   // Add static pages for each locale with hreflang support
   staticPages.forEach((page) => {
     const pageUrls = locales.map((locale) => ({
-      url: page === '' ? `${baseUrl}/${locale}/` : `${baseUrl}/${locale}/${page}/`,
+      url: buildLocalizedUrl(locale, page === '' ? '' : `/${page}`),
       locale: locale,
     }));
 
     pageUrls.forEach(({ url }) => {
       // Higher priority for main pages and storytelling features
       const priority =
-        page === '' || page === 'tell-your-story'
-          ? '0.9'
-          : page === 'stories'
-            ? '0.9'
-            : page === 'get-inspired'
-              ? '0.8'
-              : '0.7';
+        page === '' || page === 'tell-your-story' ? '0.9' : page === 'get-inspired' ? '0.8' : '0.7';
 
       const changefreq =
-        page === 'stories' || page === 'get-inspired'
+        page === 'get-inspired'
           ? 'daily'
           : page === 'tell-your-story' || page === ''
             ? 'weekly'
@@ -85,20 +80,9 @@ async function generateSitemap(): Promise<string> {
     });
   });
 
-  // Add stories index pages with hreflang support
-  const storiesIndexUrls = locales.map((locale) => ({
-    url: `${baseUrl}/${locale}/stories/`,
-    locale: locale,
-  }));
-
-  storiesIndexUrls.forEach(({ url }) => {
-    const urlEntry = createUrlEntryWithHreflang(url, currentDate, 'daily', '0.9', storiesIndexUrls);
-    urls.push(urlEntry);
-  });
-
   // Add blog index pages with hreflang support
   const blogIndexUrls = locales.map((locale) => ({
-    url: `${baseUrl}/${locale}/blog/`,
+    url: buildLocalizedUrl(locale, '/blog'),
     locale: locale,
   }));
 
@@ -109,8 +93,7 @@ async function generateSitemap(): Promise<string> {
 
   // Add featured stories to sitemap with multilingual support
   // Skip database operations during build time
-  const isBuildTime =
-    process.env.NEXT_PHASE === 'phase-production-build' || process.env.NODE_ENV === 'test';
+  const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build';
 
   if (!isBuildTime) {
     try {
@@ -118,23 +101,15 @@ async function generateSitemap(): Promise<string> {
 
       featuredStories.forEach((story) => {
         if (story.slug) {
-          // Create entry for each featured story with hreflang support
-          const storyUrls = locales.map((locale) => ({
-            url: `${baseUrl}/${locale}/p/${story.slug}/`,
-            locale: locale,
-          }));
-
-          storyUrls.forEach(({ url }) => {
-            // Create the main URL entry
-            const urlEntry = createUrlEntryWithHreflang(
-              url,
+          const storyLocale = normalizeLocale(story.storyLanguage);
+          urls.push(
+            createUrlEntry(
+              buildLocalizedUrl(storyLocale, `/p/${story.slug}`),
               story.createdAt.toISOString(),
               'weekly',
               '0.8',
-              storyUrls,
-            );
-            urls.push(urlEntry);
-          });
+            ),
+          );
         }
       });
     } catch (error) {
@@ -159,21 +134,21 @@ async function generateSitemap(): Promise<string> {
     for (const slugBase of slugBases) {
       const translations = await blogService.getPublishedTranslationsBySlugBase(slugBase);
       if (!translations.length) continue;
+
       const alternateUrls = translations.map((t) => ({
-        url: `${baseUrl}/${t.locale}/blog/${t.slug}/`,
+        url: buildLocalizedUrl(t.locale, `/blog/${t.slug}`),
         locale: t.locale,
       }));
-      // Choose the most recently published translation as primary (better lastmod surfacing)
-      const sortedByDate = [...translations].sort(
-        (a, b) => (b.publishedAt?.getTime?.() || 0) - (a.publishedAt?.getTime?.() || 0),
-      );
-      const newest = sortedByDate[0];
-      const primary = alternateUrls.find((a) => a.locale === newest.locale) || alternateUrls[0];
-      const lastmod =
-        newest.publishedAt instanceof Date
-          ? newest.publishedAt.toISOString()
-          : new Date().toISOString();
-      urls.push(createUrlEntryWithHreflang(primary.url, lastmod, 'weekly', '0.7', alternateUrls));
+
+      alternateUrls.forEach(({ url, locale }) => {
+        const translation = translations.find((entry) => entry.locale === locale);
+        const lastmod =
+          translation?.publishedAt instanceof Date
+            ? translation.publishedAt.toISOString()
+            : new Date().toISOString();
+
+        urls.push(createUrlEntryWithHreflang(url, lastmod, 'weekly', '0.7', alternateUrls));
+      });
     }
   } catch (error) {
     console.error('Error fetching blog posts for sitemap:', error);
@@ -215,8 +190,9 @@ function createUrlEntryWithHreflang(
     })
     .join('\n');
 
-  // Add x-default pointing to the main site (you could also point to a language selector)
-  const xDefaultLink = `    <xhtml:link rel="alternate" hreflang="x-default" href="${baseUrl}/"/>`;
+  const xDefaultLink = shouldIncludeXDefault(url)
+    ? `\n    <xhtml:link rel="alternate" hreflang="x-default" href="${buildAbsoluteUrl('/')}"/>`
+    : '';
 
   return `  <url>
     <loc>${url}</loc>

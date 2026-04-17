@@ -1,97 +1,127 @@
 # Feature 03 - Story Creation Assistant
 
+Status: In progress (core MCP backend implemented)
+
 ## Description
 
-This feature enables end-to-end story creation directly in ChatGPT using Mythoria capabilities.
+This feature enables end-to-end story creation directly in ChatGPT using Mythoria creation capabilities.
 
-It translates the existing 5-step web wizard into a conversational flow that can optionally open a rich UI component for structured inputs.
-
-Creation must support:
-
-- Story seed collection (idea, audience, style, language).
-- Optional characters and setting details.
-- Story generation kickoff and progress communication.
+It maps the web 5-step creation flow into conversational MCP tools with explicit readiness checks and confirmation before generation spend.
 
 ## Workflow
 
 1. User asks to create a story.
-2. Mythoria creation tool starts a draft story session.
-3. Assistant collects required fields in minimal turns:
+2. Assistant calls `mythoria.story.create_draft`.
+3. Assistant collects missing required fields:
 
-- title or provisional title
+- title
 - target audience
 - novel style
 - graphical style
 
-4. Optional enrichment:
+4. Assistant optionally enriches the draft with:
 
-- characters
-- setting
-- outline
-- extra instructions
+- setting and outline
+- additional instructions
+- characters (existing or new)
 
-5. Assistant asks for confirmation.
-6. Mythoria triggers generation workflow.
-7. Assistant reports status and completion with read/listen next actions.
+5. Assistant validates readiness and credit estimate with `mythoria.story.start_generation` (`dryRun` or without `confirmStart`).
+6. Assistant asks for explicit confirmation.
+7. Assistant calls `mythoria.story.start_generation` with `confirmStart=true` to deduct credits and queue generation.
 
 ## Communication examples
 
 1. User: "Create a story about a shy fox learning courage."
 
-- Assistant: asks audience/style clarifiers, then starts generation.
+- Assistant: creates draft, asks missing audience/style fields.
 
 2. User: "Write in Portuguese for ages 7-10, watercolor style."
 
-- Assistant: updates draft parameters and confirms final brief.
+- Assistant: updates draft, confirms it is ready.
 
 3. User: "Use these two characters: Mia and Joao, siblings."
 
-- Assistant: adds characters before generation.
+- Assistant: adds characters to the draft before generation.
 
 4. User: "Start now."
 
-- Assistant: calls complete/generate action and returns run/job status.
+- Assistant: runs confirmed generation call and returns queued status + run id.
 
 ## Dependencies
 
-- Existing story endpoints:
-- `POST /api/stories`
-- `POST /api/stories/genai-structure`
-- `PUT /api/my-stories/{storyId}`
-- `POST /api/stories/complete`
-- Character endpoints under `/api/characters` and `/api/stories/{storyId}/characters`
-- Credits validation and deduction endpoints.
-- Feature 02 authenticated access.
-- Feature 10 job/progress tracking.
+- Existing story data services in `src/db/services.ts`:
+- `storyService.createStory`
+- `storyService.updateStory`
+- `storyService.getStoryById`
+- `characterService.*`
+- `storyCharacterService.*`
+- Existing pricing and credit services:
+- `pricingService.calculateCreditsForFeatures`
+- `creditService.getAuthorCreditBalance`
+- `creditService.deductCredits`
+- Existing workflow publisher:
+- `publishStoryRequest` from `src/lib/pubsub.ts`
+- Feature 02 OAuth-based authentication and scope enforcement.
+- Feature 10 for future unified job tracking.
 
-## Development plan
+## Implemented
 
-1. Add MCP creation tools:
+### Tools
 
-- `stories.createDraft`
-- `stories.updateDraft`
-- `stories.addCharacters`
-- `stories.startGeneration`
+Implemented in `src/lib/mcp/server.ts`:
 
-2. Add schema constraints:
+- `mythoria.story.create_draft`
+- `mythoria.story.update_draft`
+- `mythoria.story.add_characters`
+- `mythoria.story.start_generation`
 
-- enums for audience/style/language
-- explicit required fields
-- data minimization and safe defaults
+### Auth and scopes
 
-3. Add structured responses:
+- Added `mythoria.story.write` scope in `src/lib/mcp/auth.ts`.
+- All Feature 03 tools require OAuth with `mythoria.story.write`.
+- `tools/list` exposes `securitySchemes` for these tools.
 
-- return concise `structuredContent` for model
-- keep large generation state in `_meta` for widget
+### Guardrails and structured responses
 
-4. Add conversational guardrails:
+- Draft state now includes:
+- `readyToGenerate`
+- `missingRequiredFields`
+- localized missing-field labels
+- prompt hints per missing field
+- Start-generation tool supports:
+- readiness/credit preview mode (`dryRun` or missing `confirmStart`)
+- explicit confirmation flow (`confirmStart=true`) before deductions
+- queued response with `runId` when started
+- Tool responses return concise text + `structuredContent` + `_meta` state snapshots.
 
-- ask only missing fields
-- avoid repeating confirmed values
-- provide concise summaries before final submission
+### Character flow
 
-5. Acceptance criteria:
+- Supports linking existing user characters.
+- Supports creating new characters and linking them in one call.
+- Handles duplicate character-link attempts gracefully.
 
-- User can create and start a story with <= 6 assistant turns in common path.
-- Generation request is reliably queued and status is trackable.
-- Invalid inputs receive actionable correction prompts.
+### Validation
+
+- Added/updated MCP unit tests in `src/lib/mcp/server.test.ts`:
+- draft creation
+- draft update readiness
+- character add flow
+- confirmed generation queue flow
+- securitySchemes scope exposure for story-write tools
+
+## Still missing / follow-up
+
+1. GenAI structuring bridge in MCP creation flow:
+
+- Current tools focus on explicit draft fields + character enrichment.
+- Step-2-like multimodal structuring (`/api/stories/genai-structure`) is not yet wrapped as MCP creation tools.
+
+2. Unified status tracking adoption:
+
+- Generation responses now include a trackable Mythoria `jobId`.
+- Follow-up status should use `mythoria.jobs.status` (Feature 10).
+
+3. ChatGPT embedded UI for creation forms:
+
+- Core creation widget resources are now implemented in Feature 11.
+- Advanced form UX (richer controls and deeper validation hints) remains a follow-up.

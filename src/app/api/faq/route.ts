@@ -1,15 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { faqService } from '@/db/services';
-import { serialize } from 'next-mdx-remote/serialize';
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
+import remarkRehype from 'remark-rehype';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import rehypeStringify from 'rehype-stringify';
 
 // Mark this route as dynamic since it uses searchParams
 export const dynamic = 'force-dynamic';
 
 // Cache for 5 minutes (300 seconds)
 export const revalidate = 300;
+
+/** Compile a markdown/MDX string to a sanitised HTML string. */
+async function compileMarkdownToHtml(markdown: string): Promise<string> {
+  const file = await unified()
+    .use(remarkParse)
+    .use(remarkGfm)
+    .use(remarkRehype)
+    .use(rehypeSlug)
+    .use(rehypeAutolinkHeadings, {
+      behavior: 'wrap',
+      properties: {
+        className: ['no-underline', 'hover:no-underline', 'focus:no-underline'],
+      },
+    })
+    .use(rehypeStringify)
+    .process(markdown);
+
+  return String(file);
+}
 
 async function compileFaqSections(sections: any[]) {
   return Promise.all(
@@ -18,35 +40,11 @@ async function compileFaqSections(sections: any[]) {
       entries: await Promise.all(
         section.entries.map(async (entry: any) => {
           try {
-            const mdxSource = await serialize(entry.contentMdx, {
-              mdxOptions: {
-                remarkPlugins: [remarkGfm],
-                rehypePlugins: [
-                  rehypeSlug,
-                  [
-                    rehypeAutolinkHeadings,
-                    {
-                      behavior: 'wrap',
-                      properties: {
-                        className: ['no-underline', 'hover:no-underline', 'focus:no-underline'],
-                      },
-                    },
-                  ],
-                ],
-              },
-            });
-
-            return {
-              ...entry,
-              mdxSource,
-            };
+            const contentHtml = await compileMarkdownToHtml(entry.contentMdx);
+            return { ...entry, contentHtml };
           } catch (error) {
             console.error('Failed to compile FAQ entry MDX', { entryId: entry.id }, error);
-            const fallbackSource = await serialize('Content temporarily unavailable.');
-            return {
-              ...entry,
-              mdxSource: fallbackSource,
-            };
+            return { ...entry, contentHtml: '<p>Content temporarily unavailable.</p>' };
           }
         }),
       ),

@@ -17,7 +17,6 @@ const Header = () => {
 
   // This effect is necessary to prevent hydration mismatches with Clerk's auth state
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- Required for hydration safety with Clerk auth
     setIsClient(true);
   }, []);
 
@@ -49,7 +48,7 @@ const Header = () => {
             >
               <li>
                 <Link
-                  href="/"
+                  href={`/${locale}`}
                   className="text-base py-3"
                   onClick={() => (document.activeElement as HTMLElement)?.blur()}
                 >
@@ -58,7 +57,7 @@ const Header = () => {
               </li>
               <li>
                 <Link
-                  href="/get-inspired"
+                  href={`/${locale}/get-inspired`}
                   className="text-base py-3"
                   onClick={() => (document.activeElement as HTMLElement)?.blur()}
                 >
@@ -67,7 +66,7 @@ const Header = () => {
               </li>
               <li>
                 <Link
-                  href="/tell-your-story/step-1"
+                  href={`/${locale}/tell-your-story/step-1`}
                   className="text-base py-3"
                   onClick={() => (document.activeElement as HTMLElement)?.blur()}
                 >
@@ -76,7 +75,7 @@ const Header = () => {
               </li>
               <li>
                 <Link
-                  href="/blog"
+                  href={`/${locale}/blog`}
                   className="text-base py-3"
                   onClick={() => (document.activeElement as HTMLElement)?.blur()}
                 >
@@ -85,7 +84,7 @@ const Header = () => {
               </li>
               <li>
                 <Link
-                  href="/pricing"
+                  href={`/${locale}/pricing`}
                   className="text-base py-3"
                   onClick={() => (document.activeElement as HTMLElement)?.blur()}
                 >
@@ -95,7 +94,12 @@ const Header = () => {
             </ul>
           </div>
           <div className="flex items-center">
-            <Link href="/" className="btn btn-ghost normal-case text-xl px-1 py-0.5">
+            <Link
+              href={`/${locale}`}
+              className="btn btn-ghost normal-case text-xl px-1 py-0.5"
+              aria-label={tCommonHeader('navigation.homepage')}
+              title={tCommonHeader('navigation.homepage')}
+            >
               <Image
                 src="/images/logo/just_lettering.png"
                 alt={tCommonHeader('logoAlt')}
@@ -108,18 +112,20 @@ const Header = () => {
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">
             <li>
-              <Link href="/">{tCommonHeader('navigation.homepage')}</Link>
+              <Link href={`/${locale}`}>{tCommonHeader('navigation.homepage')}</Link>
             </li>
             <li>
-              <Link href="/get-inspired">{tCommonHeader('navigation.getInspired')}</Link>
+              <Link href={`/${locale}/get-inspired`}>
+                {tCommonHeader('navigation.getInspired')}
+              </Link>
             </li>
             <li>
-              <Link href="/tell-your-story/step-1">
+              <Link href={`/${locale}/tell-your-story/step-1`}>
                 {tCommonHeader('navigation.tellYourStory')}
               </Link>
             </li>
             <li>
-              <Link href="/pricing">{tCommonHeader('navigation.pricing')}</Link>
+              <Link href={`/${locale}/pricing`}>{tCommonHeader('navigation.pricing')}</Link>
             </li>
           </ul>
         </div>
@@ -160,7 +166,7 @@ const Header = () => {
           >
             <li>
               <Link
-                href="/"
+                href={`/${locale}`}
                 className="text-base py-3"
                 onClick={() => (document.activeElement as HTMLElement)?.blur()}
               >
@@ -169,7 +175,7 @@ const Header = () => {
             </li>
             <li>
               <Link
-                href="/get-inspired"
+                href={`/${locale}/get-inspired`}
                 className="text-base py-3"
                 onClick={() => (document.activeElement as HTMLElement)?.blur()}
               >
@@ -178,7 +184,7 @@ const Header = () => {
             </li>
             <li>
               <Link
-                href="/tell-your-story/step-1"
+                href={`/${locale}/tell-your-story/step-1`}
                 className="text-base py-3"
                 onClick={() => (document.activeElement as HTMLElement)?.blur()}
               >
@@ -187,7 +193,7 @@ const Header = () => {
             </li>
             <li>
               <Link
-                href="/blog"
+                href={`/${locale}/blog`}
                 className="text-base py-3"
                 onClick={() => (document.activeElement as HTMLElement)?.blur()}
               >
@@ -196,7 +202,7 @@ const Header = () => {
             </li>
             <li>
               <Link
-                href="/pricing"
+                href={`/${locale}/pricing`}
                 className="text-base py-3"
                 onClick={() => (document.activeElement as HTMLElement)?.blur()}
               >
@@ -205,7 +211,7 @@ const Header = () => {
             </li>
             <li>
               <Link
-                href="/partners"
+                href={`/${locale}/partners`}
                 className="text-base py-3"
                 onClick={() => (document.activeElement as HTMLElement)?.blur()}
               >
@@ -215,7 +221,12 @@ const Header = () => {
           </ul>
         </div>
         <div className="flex items-center">
-          <Link href="/" className="btn btn-ghost normal-case text-xl px-0 py-0.5">
+          <Link
+            href={`/${locale}`}
+            className="btn btn-ghost normal-case text-xl px-0 py-0.5"
+            aria-label={tCommonHeader('navigation.homepage')}
+            title={tCommonHeader('navigation.homepage')}
+          >
             <Image
               src="/images/logo/just_lettering.png"
               alt={tCommonHeader('logoAlt')}
@@ -228,22 +239,24 @@ const Header = () => {
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
           <li>
-            <Link href="/">{tCommonHeader('navigation.homepage')}</Link>
+            <Link href={`/${locale}`}>{tCommonHeader('navigation.homepage')}</Link>
           </li>
           <li>
-            <Link href="/get-inspired">{tCommonHeader('navigation.getInspired')}</Link>
+            <Link href={`/${locale}/get-inspired`}>{tCommonHeader('navigation.getInspired')}</Link>
           </li>
           <li>
-            <Link href="/tell-your-story/step-1">{tCommonHeader('navigation.tellYourStory')}</Link>
+            <Link href={`/${locale}/tell-your-story/step-1`}>
+              {tCommonHeader('navigation.tellYourStory')}
+            </Link>
           </li>
           <li>
-            <Link href="/blog">{tCommonHeader('navigation.blog')}</Link>
+            <Link href={`/${locale}/blog`}>{tCommonHeader('navigation.blog')}</Link>
           </li>
           <li>
-            <Link href="/pricing">{tCommonHeader('navigation.pricing')}</Link>
+            <Link href={`/${locale}/pricing`}>{tCommonHeader('navigation.pricing')}</Link>
           </li>
           <li>
-            <Link href="/partners">{tCommonHeader('navigation.partners')}</Link>
+            <Link href={`/${locale}/partners`}>{tCommonHeader('navigation.partners')}</Link>
           </li>
         </ul>
       </div>

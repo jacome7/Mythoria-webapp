@@ -49,15 +49,6 @@ function Step5Page() {
   const [userCredits, setUserCredits] = useState<number>(0);
   const [ebookPricing, setEbookPricing] = useState<EbookPricing | null>(null);
 
-  useEffect(() => {
-    if (!currentStoryId) return;
-
-    Promise.all([loadStoryData(currentStoryId), fetchUserCredits(), fetchEbookPricing()]).finally(
-      () => {
-        setLoading(false);
-      },
-    );
-  }, [currentStoryId]); // eslint-disable-line react-hooks/exhaustive-deps
   const loadStoryData = async (storyId: string) => {
     try {
       const data = await fetchStoryData(storyId);
@@ -67,6 +58,7 @@ function Step5Page() {
       setError(tStoryStepsStep5('alerts.failedToFetchStoryData'));
     }
   };
+
   const fetchUserCredits = async () => {
     try {
       const response = await fetch('/api/my-credits');
@@ -99,6 +91,16 @@ function Step5Page() {
       setError(tStoryStepsStep5('alerts.failedToFetchPricingData'));
     }
   };
+
+  useEffect(() => {
+    if (!currentStoryId) return;
+
+    Promise.all([loadStoryData(currentStoryId), fetchUserCredits(), fetchEbookPricing()]).finally(
+      () => {
+        setLoading(false);
+      },
+    );
+  }, [currentStoryId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const hasInsufficientCredits = () => {
     // If pricing isn't loaded yet, assume insufficient credits to prevent premature actions

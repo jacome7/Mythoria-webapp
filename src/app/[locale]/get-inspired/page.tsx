@@ -4,6 +4,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { normalizeLocale } from '@/utils/locale-utils';
 
 // StarRating component
 const StarRating = ({ rating, count }: { rating: number | null; count: number | null }) => {
@@ -193,6 +194,8 @@ export default function GetInspiredPage() {
   };
 
   const hasActiveFilters = Object.values(filters).some((filterArray) => filterArray.length > 0);
+  const getStoryHref = (story: FeaturedStory) =>
+    `/${normalizeLocale(story.storyLanguage)}/p/${story.slug}`;
 
   return (
     <div className="min-h-screen bg-base-100">
@@ -414,7 +417,7 @@ export default function GetInspiredPage() {
                 className="card bg-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
               >
                 <figure className="px-4 pt-4">
-                  <Link href={`/${locale}/p/${story.slug}`} className="block w-full">
+                  <Link href={getStoryHref(story)} className="block w-full">
                     <div className="relative w-full h-80 rounded-xl overflow-hidden cursor-pointer">
                       <Image
                         src={story.featureImageUri || '/Mythoria-logo-white-512x336.jpg'}
@@ -469,7 +472,7 @@ export default function GetInspiredPage() {
                   </div>
 
                   <div className="card-actions justify-center">
-                    <Link href={`/${locale}/p/${story.slug}`} className="btn btn-primary btn-sm">
+                    <Link href={getStoryHref(story)} className="btn btn-primary btn-sm">
                       {tGetInspiredPage('gallery.viewStory')}
                     </Link>
                   </div>

@@ -1,5 +1,6 @@
 // Wrapped provider with instrumentation for missing translation detection
 import ClientProvider from '@/i18n/ClientProvider';
+import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { routing } from '../../i18n/routing';
 import { setRequestLocale } from 'next-intl/server';
@@ -9,11 +10,11 @@ import StructuredData from '@/components/StructuredData';
 import LanguageAttribute from '@/components/LanguageAttribute';
 import LocaleSync from '@/components/LocaleSync';
 import CookieConsentBanner from '@/components/CookieConsentBanner';
-import { generateServerHreflangLinks } from '@/lib/hreflang';
 import { readdir, readFile } from 'fs/promises';
 import path from 'path';
 import { Metadata, Viewport } from 'next';
 import { getManifestUrl } from '@/lib/manifest';
+import { buildAbsoluteUrl, getStaticLocalizedHreflangLinks, normalizePathname } from '@/lib/seo';
 
 interface MetadataMessages {
   title?: string;
@@ -273,12 +274,10 @@ export async function generateMetadata({
     console.error(`Failed to load metadata for locale ${locale}:`, error);
   }
 
-  // Base URL for the application
-  const baseUrl = 'https://mythoria.pt';
-  const currentUrl = `${baseUrl}/${locale}/`;
-
-  // Generate hreflang links dynamically for the current page
-  const hreflangLinks = await generateServerHreflangLinks(locale);
+  const headersList = await headers();
+  const currentPathname = normalizePathname(headersList.get('x-pathname') || `/${locale}`);
+  const currentUrl = buildAbsoluteUrl(currentPathname);
+  const hreflangLinks = getStaticLocalizedHreflangLinks(currentPathname);
 
   return {
     title: metadata.title,
@@ -292,7 +291,7 @@ export async function generateMetadata({
     },
     alternates: {
       canonical: currentUrl,
-      languages: hreflangLinks,
+      ...(hreflangLinks ? { languages: hreflangLinks } : {}),
     },
     openGraph: {
       type: 'website',

@@ -98,11 +98,13 @@ export const faqService = {
       return [];
     }
 
+    const rankExpression = sql<number>`ts_rank(to_tsvector('english', ${faqEntries.title} || ' ' || ${faqEntries.contentMdx}), plainto_tsquery('english', ${searchQuery}))`;
+
     const results = await db
       .select({
         entry: faqEntries,
         section: faqSections,
-        rank: sql<number>`ts_rank(to_tsvector('english', ${faqEntries.title} || ' ' || ${faqEntries.contentMdx}), plainto_tsquery('english', ${searchQuery}))`,
+        rank: rankExpression.as('rank'),
       })
       .from(faqEntries)
       .innerJoin(faqSections, eq(faqEntries.sectionId, faqSections.id))
@@ -114,7 +116,7 @@ export const faqService = {
           sql`(to_tsvector('english', ${faqEntries.title} || ' ' || ${faqEntries.contentMdx}) @@ plainto_tsquery('english', ${searchQuery}))`,
         ),
       )
-      .orderBy(sql`rank DESC`)
+      .orderBy(sql`${rankExpression} DESC`)
       .limit(50);
 
     return results.map((r) => ({

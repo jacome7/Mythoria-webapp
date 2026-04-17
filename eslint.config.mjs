@@ -12,6 +12,7 @@ const eslintConfig = [
       '.next/**',
       'public/**',
       'logs/**',
+      'package/dist/**',
       'drizzle/**/*.sql',
       // Auto-generated TypeScript helper / metadata files
       'next-env.d.ts',
@@ -23,6 +24,18 @@ const eslintConfig = [
     ],
   },
   ...nextPlugin,
+  {
+    // Override rules from the React Compiler ESLint plugin that are bundled with
+    // eslint-config-next 16.2+. These rules enforce React Compiler semantics which
+    // this project does not use yet. Disable them to avoid false positives on
+    // well-established React patterns (useEffect + async fetch, ref mutation
+    // outside the render tree, manual memoization).
+    rules: {
+      'react-hooks/set-state-in-effect': 'off',
+      'react-hooks/refs': 'off',
+      'react-hooks/preserve-manual-memoization': 'off',
+    },
+  },
 ];
 
 export default eslintConfig;
