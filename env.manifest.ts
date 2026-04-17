@@ -204,14 +204,6 @@ export const envManifest: EnvVarDescriptor[] = [
     source: 'substitution',
   },
   {
-    name: 'MODEL_ID',
-    required: true,
-    scopes: ['prod', 'runtime', 'dev'],
-    default: 'gemini-2.5-pro',
-    source: 'substitution',
-    note: 'Primary model identifier used by server-side generation workflows.',
-  },
-  {
     name: 'PUBSUB_TOPIC',
     required: true,
     scopes: ['prod', 'runtime', 'dev'],
@@ -416,13 +408,6 @@ export const envManifest: EnvVarDescriptor[] = [
     scopes: ['dev', 'build', 'public'],
     default: 'false',
     note: 'Enable GA debug in dev builds.',
-  },
-  {
-    name: 'NEXT_PUBLIC_REVOLUT_API_PUBLIC_KEY',
-    required: true,
-    scopes: ['prod', 'build', 'public'],
-    source: 'secret-manager',
-    note: 'Mirrors REVOLUT_API_PUBLIC_KEY for client usage.',
   },
   {
     name: 'NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL',
