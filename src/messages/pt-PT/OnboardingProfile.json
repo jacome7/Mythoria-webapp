@@ -81,9 +81,12 @@
     "contact": {
       "section": "Informações de Contacto e Preferências",
       "description": "Ajude-nos a contactá-lo e a personalizar ainda mais a sua experiência.",
+      "email": "Endereço de email",
       "mobile": "Telemóvel",
       "mobilePlaceholder": "ex: +351912345678",
-      "language": "Idioma preferido"
+      "language": "Idioma preferido",
+      "country": "País de origem",
+      "countryPlaceholder": "Selecione o seu país"
     },
     "languages": {
       "en-US": "Inglês (EUA)",

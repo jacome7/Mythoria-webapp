@@ -13,16 +13,19 @@ import {
   FaEnvelope,
   FaPhone,
   FaGlobe,
+  FaFlag,
   FaBook,
   FaCreditCard,
   FaPlusCircle,
 } from 'react-icons/fa';
+import { getCountryOptions } from '@/utils/countries';
 
 interface ProfileDetails {
   displayName: string;
   gender: string | null;
   literaryAge: string | null;
   preferredLocale: string | null;
+  countryOfOrigin: string | null;
   email: string;
   mobilePhone: string | null;
   fiscalNumber: string | null;
@@ -32,6 +35,7 @@ interface ProfileDetails {
 export default function AccountProfilePage() {
   const locale = useLocale();
   const t = useTranslations('ProfilePage');
+  const tAddresses = useTranslations('Addresses');
   const { isLoaded, isSignedIn, user } = useUser();
   const [loading, setLoading] = useState(true);
   // Track if any save is in-flight (aggregated)
@@ -47,6 +51,7 @@ export default function AccountProfilePage() {
     gender: 'idle',
     literaryAge: 'idle',
     preferredLocale: 'idle',
+    countryOfOrigin: 'idle',
     email: 'idle',
     mobilePhone: 'idle',
     fiscalNumber: 'idle',
@@ -75,6 +80,7 @@ export default function AccountProfilePage() {
           gender: pr.author.gender,
           literaryAge: pr.author.literaryAge,
           preferredLocale: pr.author.preferredLocale || locale,
+          countryOfOrigin: pr.author.countryOfOrigin || null,
           email: emailAddr,
           mobilePhone: pr.author.mobilePhone || '',
           fiscalNumber: pr.author.fiscalNumber || '',
@@ -86,6 +92,7 @@ export default function AccountProfilePage() {
           gender: null,
           literaryAge: null,
           preferredLocale: locale,
+          countryOfOrigin: null,
           email: emailAddr,
           mobilePhone: '',
           fiscalNumber: '',
@@ -124,6 +131,7 @@ export default function AccountProfilePage() {
           gender: updated.gender,
           literaryAge: updated.literaryAge,
           preferredLocale: updated.preferredLocale,
+          countryOfOrigin: updated.countryOfOrigin,
           mobilePhone: updated.mobilePhone,
           fiscalNumber: updated.fiscalNumber,
           notificationPreference: updated.notificationPreference,
@@ -414,6 +422,36 @@ export default function AccountProfilePage() {
                       {SUPPORTED_LOCALES.map((loc) => (
                         <option key={loc} value={loc}>
                           {t(`languages.${loc}`)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-control lg:space-y-2">
+                    <label className="label block mb-1">
+                      <span className="label-text font-semibold flex items-center">
+                        <FaFlag className="mr-2" />
+                        {t('contact.country')}
+                        {fieldStatus.countryOfOrigin === 'saving' && (
+                          <span className="loading loading-spinner loading-xs ml-2" />
+                        )}
+                        {fieldStatus.countryOfOrigin === 'saved' && (
+                          <span className="ml-2 text-success">✓</span>
+                        )}
+                      </span>
+                    </label>
+                    <select
+                      className="select select-bordered"
+                      value={profile.countryOfOrigin || ''}
+                      onChange={(e) =>
+                        handleFieldChange('countryOfOrigin', e.target.value || null, {
+                          immediate: true,
+                        })
+                      }
+                    >
+                      <option value="">{t('contact.countryPlaceholder')}</option>
+                      {getCountryOptions(tAddresses).map(({ value, label }) => (
+                        <option key={value} value={value}>
+                          {label}
                         </option>
                       ))}
                     </select>

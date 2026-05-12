@@ -1,16 +1,10 @@
 import { parsePhoneNumber, CountryCode } from 'libphonenumber-js';
+import { LOCALE_TO_COUNTRY as LOCALE_TO_COUNTRY_MAP } from './countries';
 
-/**
- * Map of supported locales to their corresponding country codes
- * Used to determine default country code when parsing phone numbers
- */
-const LOCALE_TO_COUNTRY: Record<string, CountryCode> = {
-  'en-US': 'US',
-  'pt-PT': 'PT',
-  'es-ES': 'ES',
-  'fr-FR': 'FR',
-  'de-DE': 'DE',
-};
+const LOCALE_TO_COUNTRY: Record<string, CountryCode> = LOCALE_TO_COUNTRY_MAP as Record<
+  string,
+  CountryCode
+>;
 
 /**
  * Format a phone number for Clerk's SignUp component

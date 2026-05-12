@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
+import { useUser } from '@clerk/nextjs';
 import {
   FaVenusMars,
   FaBirthdayCake,
@@ -15,9 +16,12 @@ import {
   FaTicketAlt,
   FaPhone,
   FaGlobe,
+  FaEnvelope,
+  FaFlag,
 } from 'react-icons/fa';
 import PromotionCodeRedeemer from '@/components/PromotionCodeRedeemer';
 import { SUPPORTED_LOCALES } from '@/config/locales';
+import { getCountryOptions, localeToCountry } from '@/utils/countries';
 
 // Value lists; labels resolved via i18n (see messages OnboardingProfile.options)
 const GENDER_OPTIONS = ['female', 'male', 'prefer_not_to_say'] as const;
@@ -60,6 +64,7 @@ interface ProfileData {
   literaryAge: string | null;
   mobilePhone: string | null;
   preferredLocale: string | null;
+  countryOfOrigin: string | null;
   primaryGoals: string[]; // multi-select
   primaryGoalOther: string | null;
   audiences: string[]; // multi-select
@@ -73,6 +78,7 @@ function mapAuthorToProfile(
     literaryAge?: string | null;
     mobilePhone?: string | null;
     preferredLocale?: string | null;
+    countryOfOrigin?: string | null;
     primaryGoals?: string[] | null;
     primaryGoalOther?: string | null;
     audiences?: string[] | null;
@@ -89,6 +95,7 @@ function mapAuthorToProfile(
     literaryAge: author.literaryAge ?? null,
     mobilePhone: author.mobilePhone ?? null,
     preferredLocale: author.preferredLocale ?? defaultLocale ?? null,
+    countryOfOrigin: author.countryOfOrigin ?? null,
     primaryGoals,
     primaryGoalOther: author.primaryGoalOther ?? null,
     audiences,
@@ -112,8 +119,10 @@ const FadeInSection = ({
 
 export default function OnboardingProfilePage() {
   const t = useTranslations('OnboardingProfile');
+  const tAddresses = useTranslations('Addresses');
   const tVoucher = useTranslations('Voucher');
   const locale = useLocale();
+  const { user } = useUser();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -334,6 +343,20 @@ export default function OnboardingProfilePage() {
                 <h2 className="card-title text-primary text-2xl">{t('contact.section')}</h2>
                 <p>{t('contact.description')}</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                  {/* Email (readonly) */}
+                  <div className="form-control w-full">
+                    <label className="label">
+                      <span className="label-text flex flex-wrap items-center gap-2 whitespace-normal break-words">
+                        <FaEnvelope className="mt-0.5" /> {t('contact.email')}
+                      </span>
+                    </label>
+                    <input
+                      type="email"
+                      className="input input-bordered w-full"
+                      value={user?.primaryEmailAddress?.emailAddress ?? ''}
+                      disabled
+                    />
+                  </div>
                   {/* Mobile Phone */}
                   <div className="form-control w-full">
                     <label className="label">
@@ -370,6 +393,35 @@ export default function OnboardingProfilePage() {
                       {SUPPORTED_LOCALES.map((loc) => (
                         <option key={loc} value={loc}>
                           {t(`languages.${loc}`)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  {/* Country of Origin */}
+                  <div className="form-control w-full">
+                    <label className="label">
+                      <span className="label-text flex flex-wrap items-center gap-2 whitespace-normal break-words">
+                        <FaFlag className="mt-0.5" /> {t('contact.country')}
+                      </span>
+                    </label>
+                    <select
+                      className="select select-bordered w-full"
+                      value={
+                        profile.countryOfOrigin ||
+                        localeToCountry(profile.preferredLocale || locale) ||
+                        ''
+                      }
+                      onChange={(e) => {
+                        setProfile((p) => (p ? { ...p, countryOfOrigin: e.target.value } : p));
+                        patchProfile({ countryOfOrigin: e.target.value });
+                      }}
+                    >
+                      <option value="" disabled>
+                        {t('contact.countryPlaceholder')}
+                      </option>
+                      {getCountryOptions(tAddresses).map(({ value, label }) => (
+                        <option key={value} value={value}>
+                          {label}
                         </option>
                       ))}
                     </select>

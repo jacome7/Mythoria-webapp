@@ -92,9 +92,12 @@
     "contact": {
       "section": "Coordonnées et Préférences",
       "description": "Aidez-nous à vous joindre et à personnaliser davantage votre expérience.",
+      "email": "Adresse e-mail",
       "mobile": "Téléphone portable",
       "mobilePlaceholder": "ex: +33612345678",
-      "language": "Langue préférée"
+      "language": "Langue préférée",
+      "country": "Pays d'origine",
+      "countryPlaceholder": "Sélectionnez votre pays"
     },
     "languages": {
       "en-US": "Anglais (États-Unis)",

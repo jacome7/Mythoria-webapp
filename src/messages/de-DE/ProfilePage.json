@@ -18,7 +18,9 @@
       "email": "E-Mail-Adresse",
       "mobile": "Mobilnummer",
       "mobilePlaceholder": "z. B. +491234567890",
-      "language": "Bevorzugte Sprache"
+      "language": "Bevorzugte Sprache",
+      "country": "Herkunftsland",
+      "countryPlaceholder": "Land auswählen"
     },
     "billing": {
       "title": "Dein Abrechnungskonto",

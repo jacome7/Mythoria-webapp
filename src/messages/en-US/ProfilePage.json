@@ -18,7 +18,9 @@
       "email": "Email Address",
       "mobile": "Mobile Phone",
       "mobilePlaceholder": "e.g., +1234567890",
-      "language": "Preferred Language"
+      "language": "Preferred Language",
+      "country": "Country of Origin",
+      "countryPlaceholder": "Select your country"
     },
     "billing": {
       "title": "Your billing account",

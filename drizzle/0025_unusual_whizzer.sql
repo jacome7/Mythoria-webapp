@@ -1,0 +1,1 @@
+ALTER TABLE "authors" ADD COLUMN "country_of_origin" varchar(2);

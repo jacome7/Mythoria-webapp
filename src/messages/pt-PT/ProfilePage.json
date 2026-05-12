@@ -18,7 +18,9 @@
       "email": "Endereço de email",
       "mobile": "Telemóvel",
       "mobilePlaceholder": "ex: +351912345678",
-      "language": "Idioma preferido"
+      "language": "Idioma preferido",
+      "country": "País de origem",
+      "countryPlaceholder": "Selecione o seu país"
     },
     "billing": {
       "title": "A sua conta de faturação",

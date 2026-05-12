@@ -4,6 +4,7 @@ import { db } from '@/db';
 import { authors, type Author } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { clerkClient } from '@clerk/nextjs/server';
+import { SUPPORTED_COUNTRIES } from '@/utils/countries';
 
 // Controlled vocabulary for interests
 const ALLOWED_INTERESTS = [
@@ -28,6 +29,7 @@ type ProfilePatchPayload = Partial<{
   mobilePhone: string | null;
   preferredLocale: string | null;
   notificationPreference: Author['notificationPreference'];
+  countryOfOrigin: string | null;
 }>;
 
 function sanitizeInterests(interests: unknown): string[] | undefined {
@@ -53,6 +55,7 @@ export async function GET() {
       fiscalNumber: author.fiscalNumber,
       mobilePhone: author.mobilePhone,
       preferredLocale: author.preferredLocale,
+      countryOfOrigin: author.countryOfOrigin,
       primaryGoals: author.primaryGoals || [],
       primaryGoalOther: author.primaryGoalOther,
       audiences: author.audiences || [],
@@ -88,6 +91,7 @@ export async function PATCH(req: NextRequest) {
         | 'mobilePhone'
         | 'preferredLocale'
         | 'notificationPreference'
+        | 'countryOfOrigin'
       >
     > = {};
 
@@ -183,6 +187,14 @@ export async function PATCH(req: NextRequest) {
     if (body.notificationPreference !== undefined) {
       // Value constrained by enum at DB, just basic presence validation
       updates.notificationPreference = body.notificationPreference;
+    }
+
+    if (body.countryOfOrigin !== undefined) {
+      const co = body.countryOfOrigin;
+      if (co !== null && !SUPPORTED_COUNTRIES.includes(co as (typeof SUPPORTED_COUNTRIES)[number])) {
+        return NextResponse.json({ error: 'Invalid countryOfOrigin' }, { status: 400 });
+      }
+      updates.countryOfOrigin = co;
     }
 
     if (Object.keys(updates).length === 0) {
@@ -327,6 +339,7 @@ export async function PATCH(req: NextRequest) {
         fiscalNumber: updated.fiscalNumber,
         mobilePhone: updated.mobilePhone,
         preferredLocale: updated.preferredLocale,
+        countryOfOrigin: updated.countryOfOrigin,
         primaryGoals: updated.primaryGoals || [],
         primaryGoalOther: updated.primaryGoalOther,
         audiences: updated.audiences || [],

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FiEdit, FiTrash2, FiCheck, FiX, FiMapPin } from 'react-icons/fi';
+import { getCountryOptions } from '@/utils/countries';
 
 export interface Address {
   addressId: string;
@@ -29,28 +30,6 @@ interface AddressCardProps {
   defaultAddressType?: 'billing' | 'delivery';
 }
 
-const getCountries = (
-  tAddresses: (key: string) => string,
-): Array<{ value: string; label: string }> => {
-  const countries = [
-    { value: 'US', label: tAddresses('countries.us') },
-    { value: 'GB', label: tAddresses('countries.gb') },
-    { value: 'DE', label: tAddresses('countries.de') },
-    { value: 'FR', label: tAddresses('countries.fr') },
-    { value: 'ES', label: tAddresses('countries.es') },
-    { value: 'IT', label: tAddresses('countries.it') },
-    { value: 'PT', label: tAddresses('countries.pt') },
-    { value: 'NL', label: tAddresses('countries.nl') },
-    { value: 'BE', label: tAddresses('countries.be') },
-    { value: 'CA', label: tAddresses('countries.ca') },
-    { value: 'AU', label: tAddresses('countries.au') },
-    { value: 'JP', label: tAddresses('countries.jp') },
-    { value: 'BR', label: tAddresses('countries.br') },
-  ];
-
-  // Sort countries alphabetically by label
-  return countries.sort((a, b) => a.label.localeCompare(b.label));
-};
 
 export default function AddressCard({
   address,
@@ -65,7 +44,7 @@ export default function AddressCard({
   defaultAddressType = 'delivery',
 }: AddressCardProps) {
   const tAddresses = useTranslations('Addresses');
-  const countries = getCountries(tAddresses);
+  const countries = getCountryOptions(tAddresses);
   const [formData, setFormData] = useState<Address>({
     addressId: address?.addressId || '',
     type: address?.type || defaultAddressType,

@@ -81,9 +81,12 @@
     "contact": {
       "section": "Contact Info & Preferences",
       "description": "Help us reach you and personalize your experience even further.",
+      "email": "Email Address",
       "mobile": "Mobile Phone",
       "mobilePlaceholder": "e.g., +1234567890",
-      "language": "Preferred Language"
+      "language": "Preferred Language",
+      "country": "Country of Origin",
+      "countryPlaceholder": "Select your country"
     },
     "languages": {
       "en-US": "English (US)",
