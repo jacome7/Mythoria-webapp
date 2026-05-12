@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { FiEdit, FiTrash2, FiCheck, FiX, FiMapPin } from 'react-icons/fi';
 import { getCountryOptions } from '@/utils/countries';
 
@@ -30,7 +30,6 @@ interface AddressCardProps {
   defaultAddressType?: 'billing' | 'delivery';
 }
 
-
 export default function AddressCard({
   address,
   mode,
@@ -44,7 +43,8 @@ export default function AddressCard({
   defaultAddressType = 'delivery',
 }: AddressCardProps) {
   const tAddresses = useTranslations('Addresses');
-  const countries = getCountryOptions(tAddresses);
+  const locale = useLocale();
+  const countries = getCountryOptions(locale);
   const [formData, setFormData] = useState<Address>({
     addressId: address?.addressId || '',
     type: address?.type || defaultAddressType,

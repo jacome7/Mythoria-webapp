@@ -119,7 +119,6 @@ const FadeInSection = ({
 
 export default function OnboardingProfilePage() {
   const t = useTranslations('OnboardingProfile');
-  const tAddresses = useTranslations('Addresses');
   const tVoucher = useTranslations('Voucher');
   const locale = useLocale();
   const { user } = useUser();
@@ -419,7 +418,7 @@ export default function OnboardingProfilePage() {
                       <option value="" disabled>
                         {t('contact.countryPlaceholder')}
                       </option>
-                      {getCountryOptions(tAddresses).map(({ value, label }) => (
+                      {getCountryOptions(locale).map(({ value, label }) => (
                         <option key={value} value={value}>
                           {label}
                         </option>

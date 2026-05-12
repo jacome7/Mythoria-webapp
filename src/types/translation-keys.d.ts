@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE. Run: npm run i18n:keys
-// Total keys: 2375
+// Total keys: 2380
 export type TranslationKey =
   | 'AIEditModal.buttons.applyChanges'
   | 'AIEditModal.buttons.cancel'
@@ -1057,7 +1057,10 @@ export type TranslationKey =
   | 'Offline.tipsTitle'
   | 'Offline.title'
   | 'OnboardingProfile.audience.label'
+  | 'OnboardingProfile.contact.country'
+  | 'OnboardingProfile.contact.countryPlaceholder'
   | 'OnboardingProfile.contact.description'
+  | 'OnboardingProfile.contact.email'
   | 'OnboardingProfile.contact.language'
   | 'OnboardingProfile.contact.mobile'
   | 'OnboardingProfile.contact.mobilePlaceholder'
@@ -1520,6 +1523,8 @@ export type TranslationKey =
   | 'ProfilePage.billing.title'
   | 'ProfilePage.billing.vatNumber'
   | 'ProfilePage.billing.vatPlaceholder'
+  | 'ProfilePage.contact.country'
+  | 'ProfilePage.contact.countryPlaceholder'
   | 'ProfilePage.contact.description'
   | 'ProfilePage.contact.email'
   | 'ProfilePage.contact.language'

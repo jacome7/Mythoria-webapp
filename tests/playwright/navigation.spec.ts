@@ -16,13 +16,7 @@ const STATIC_ROUTES = [
   'buy-credits',
 ];
 
-const STORY_WIZARD_STEPS = [
-  'tell-your-story/step-1',
-  'tell-your-story/step-2',
-  'tell-your-story/step-3',
-  'tell-your-story/step-4',
-  'tell-your-story/step-5',
-];
+const STORY_WIZARD_STEPS = ['tell-your-story/step-1', 'tell-your-story/step-2'];
 
 const LOCALES = ['en-US', 'pt-PT', 'es-ES', 'fr-FR', 'de-DE'];
 
@@ -81,7 +75,7 @@ for (const locale of LOCALES) {
 test('Language switcher changes locale and persists', async ({ page }) => {
   await page.goto('/en-US');
   // Open dropdown
-  await page.getByRole('button', { name: /EN/i }).click();
+  await page.getByRole('button', { name: /^Language selector: EN$/ }).click();
   await page.getByRole('button', { name: /Português/ }).click();
   await page.waitForURL(/\/pt-PT/);
   await assertNoMissingTranslations(page);

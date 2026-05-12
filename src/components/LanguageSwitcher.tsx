@@ -54,7 +54,12 @@ const LanguageSwitcher = () => {
 
   return (
     <div className="dropdown dropdown-end">
-      <label tabIndex={0} className="btn btn-ghost btn-sm">
+      <button
+        type="button"
+        tabIndex={0}
+        className="btn btn-ghost btn-sm"
+        aria-label={`Language selector: ${getLanguageLabel(locale)}`}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-4 w-4"
@@ -71,7 +76,7 @@ const LanguageSwitcher = () => {
         </svg>
         {/* Always show the current locale label, including on mobile */}
         <span className="ml-1">{getLanguageLabel(locale)}</span>
-      </label>
+      </button>
       <ul
         tabIndex={0}
         className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-32"

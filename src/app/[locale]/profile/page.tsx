@@ -35,7 +35,6 @@ interface ProfileDetails {
 export default function AccountProfilePage() {
   const locale = useLocale();
   const t = useTranslations('ProfilePage');
-  const tAddresses = useTranslations('Addresses');
   const { isLoaded, isSignedIn, user } = useUser();
   const [loading, setLoading] = useState(true);
   // Track if any save is in-flight (aggregated)
@@ -449,7 +448,7 @@ export default function AccountProfilePage() {
                       }
                     >
                       <option value="">{t('contact.countryPlaceholder')}</option>
-                      {getCountryOptions(tAddresses).map(({ value, label }) => (
+                      {getCountryOptions(locale).map(({ value, label }) => (
                         <option key={value} value={value}>
                           {label}
                         </option>

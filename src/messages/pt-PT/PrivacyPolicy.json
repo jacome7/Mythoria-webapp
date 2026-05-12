@@ -11,8 +11,8 @@
       "title": "1. Quem somos",
       "controller": {
         "title": "Responsável pelo tratamento",
-        "company": "Aventuras Contemporâneas, Lda.",
-        "address": "Rua Cais do Lugan, nº 224, 2.º Direito, 4400-492 Vila Nova de Gaia, Portugal",
+        "company": "TROVAS E RAPSÓDIAS - UNIPESSOAL LDA (NIF PT519181140)",
+        "address": "Cais do Lugan, nº 224, 2º Dto, 4400-492 Vila Nova de Gaia, Porto, Portugal",
         "email": "E-mail (geral): geral@mythoria.pt",
         "privacy": "Questões de privacidade / exercício de direitos: privacy@mythoria.pt",
         "dpo": "Encarregado da Proteção de Dados: dpo@mythoria.pt (Art.º 37 RGPD)"
@@ -223,6 +223,6 @@
     "links": {
       "deleteAccount": "Delete Account / Eliminar Conta"
     },
-    "lastUpdated": "Última atualização: 27 de novembro de 2025"
+    "lastUpdated": "Última atualização: 12 de maio de 2026"
   }
 }

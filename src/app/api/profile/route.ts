@@ -191,7 +191,10 @@ export async function PATCH(req: NextRequest) {
 
     if (body.countryOfOrigin !== undefined) {
       const co = body.countryOfOrigin;
-      if (co !== null && !SUPPORTED_COUNTRIES.includes(co as (typeof SUPPORTED_COUNTRIES)[number])) {
+      if (
+        co !== null &&
+        !SUPPORTED_COUNTRIES.includes(co as (typeof SUPPORTED_COUNTRIES)[number])
+      ) {
         return NextResponse.json({ error: 'Invalid countryOfOrigin' }, { status: 400 });
       }
       updates.countryOfOrigin = co;
