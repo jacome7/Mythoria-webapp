@@ -382,7 +382,8 @@
         "loadFailed": "Échec du chargement des informations de l’histoire. Veuillez réessayer."
       },
       "saving": "Enregistrement...",
-      "next": "Suivant"
+      "next": "Vérifier et générer",
+      "generationReviewHint": "À l’étape suivante, vous pourrez vérifier les crédits et lancer la génération. Rien ne sera encore généré."
     },
     "step5": {
       "heading": "Chapitre 5 - Le final",

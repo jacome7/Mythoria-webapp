@@ -382,7 +382,8 @@
         "loadFailed": "Geschichtsinformationen konnten nicht geladen werden. Bitte versuch es erneut."
       },
       "saving": "Wird gespeichert...",
-      "next": "Weiter"
+      "next": "Prüfen und generieren",
+      "generationReviewHint": "Im nächsten Schritt kannst du Credits prüfen und die Generierung starten. Es wird noch nichts generiert."
     },
     "step5": {
       "heading": "Kapitel 5 – Das Finale",

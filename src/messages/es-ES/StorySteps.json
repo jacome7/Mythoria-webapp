@@ -382,7 +382,8 @@
         "loadFailed": "No se pudo cargar la información de la historia. Inténtalo de nuevo."
       },
       "saving": "Guardando...",
-      "next": "Siguiente"
+      "next": "Revisar y generar",
+      "generationReviewHint": "En el siguiente paso podrás revisar los créditos e iniciar la generación. Todavía no se generará nada."
     },
     "step5": {
       "heading": "Capítulo 5 - El final",

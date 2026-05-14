@@ -355,7 +355,7 @@ function Step4Page() {
         throw new Error(tStoryStepsStep4('errors.saveFailed'));
       }
 
-      // Track step 4 completion
+      // Track step 4 completion and the step-5 handoff for funnel observability.
       trackStoryCreation.stepCompleted({
         step: 4,
         story_id: currentStoryId,
@@ -369,6 +369,8 @@ function Step4Page() {
         has_plot_description: !!plotDescription.trim(),
         has_additional_requests: !!additionalRequests.trim(),
         has_image_generation_instructions: !!imageGenerationInstructions.trim(),
+        next_step: 5,
+        cta_label: tStoryStepsStep4('next'),
       }); // Navigate to next step after successful save
       if (editStoryId) {
         // In edit mode, pass the edit parameter to the next step
@@ -1092,6 +1094,9 @@ function Step4Page() {
                   }
                   nextLabel={saving ? tStoryStepsStep4('saving') : tStoryStepsStep4('next')}
                 />
+                <p className="mt-3 text-right text-sm text-gray-600">
+                  {tStoryStepsStep4('generationReviewHint')}
+                </p>
               </div>
             </div>
           </div>

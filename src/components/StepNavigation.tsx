@@ -30,7 +30,11 @@ const StepNavigation = ({
   const router = useRouter();
   const tCommonStepNavigation = useTranslations('StepNavigation');
 
-  const resolvedNextLabel = nextLabel ?? tCommonStepNavigation('next');
+  const resolvedNextLabel =
+    nextLabel ??
+    (currentStep === totalSteps - 1
+      ? tCommonStepNavigation('finish')
+      : tCommonStepNavigation('next'));
   const resolvedPrevLabel = prevLabel ?? tCommonStepNavigation('prev');
   const handleNext = async () => {
     if (onNext) {
@@ -91,8 +95,7 @@ const StepNavigation = ({
             disabled={nextDisabled}
             className={`btn btn-primary btn-md md:btn-lg ${nextDisabled ? 'btn-disabled' : ''}`} // Responsive button size
           >
-            {currentStep === totalSteps - 1 ? tCommonStepNavigation('finish') : resolvedNextLabel}{' '}
-            {/* Shortened "Finish Story" */}
+            {resolvedNextLabel}{' '}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5 ml-1 md:ml-2"
@@ -111,8 +114,7 @@ const StepNavigation = ({
             className={`btn btn-primary btn-md md:btn-lg ${nextDisabled ? 'btn-disabled' : ''}`} // Responsive button size
             onClick={handleNext}
           >
-            {currentStep === totalSteps - 1 ? tCommonStepNavigation('finish') : resolvedNextLabel}{' '}
-            {/* Shortened "Finish Story" */}
+            {resolvedNextLabel}{' '}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5 ml-1 md:ml-2"
@@ -131,8 +133,7 @@ const StepNavigation = ({
             disabled={nextDisabled}
             className={`btn btn-primary btn-md md:btn-lg ${nextDisabled ? 'btn-disabled' : ''}`} // Responsive button size
           >
-            {currentStep === totalSteps - 1 ? tCommonStepNavigation('finish') : resolvedNextLabel}{' '}
-            {/* Shortened "Finish Story" */}
+            {resolvedNextLabel}{' '}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5 ml-1 md:ml-2"

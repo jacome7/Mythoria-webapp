@@ -17,6 +17,8 @@ export type AnalyticsEvent =
   | 'logout'
   | 'story_creation_started'
   | 'story_creation_step_completed'
+  | 'story_creation_step_viewed'
+  | 'story_creation_generate_clicked'
   | 'story_generation_requested'
   | 'paid_action'
   | 'purchase';
@@ -168,6 +170,17 @@ export const trackStoryCreation = {
       ...params,
       step: params.step,
     });
+  },
+
+  stepViewed: (params: StoryEventParams = {}) => {
+    trackEvent('story_creation_step_viewed', {
+      ...params,
+      step: params.step,
+    });
+  },
+
+  generateClicked: (params: StoryEventParams = {}) => {
+    trackEvent('story_creation_generate_clicked', params);
   },
 
   generationRequested: (params: StoryEventParams = {}) => {
