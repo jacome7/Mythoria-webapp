@@ -370,7 +370,7 @@ function Step4Page() {
         has_additional_requests: !!additionalRequests.trim(),
         has_image_generation_instructions: !!imageGenerationInstructions.trim(),
         next_step: 5,
-        cta_label: tStoryStepsStep4('next'),
+        cta_key: 'next',
       }); // Navigate to next step after successful save
       if (editStoryId) {
         // In edit mode, pass the edit parameter to the next step
