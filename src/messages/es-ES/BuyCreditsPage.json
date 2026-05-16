@@ -26,18 +26,13 @@
     },
     "payment": {
       "title": "Método de pago",
-      "revolutPay": "Pagar con Tarjeta (Visa, Mastercard)",
-      "revolutDescription": "Pago rápido y seguro con Revolut Pay. No se requiere cuenta.",
-      "revolutError": "Error de pago",
-      "revolutErrorHelp": "Si sigues teniendo problemas, prueba con otro método de pago o ponte en contacto con soporte.",
-      "mbway": "MB Way",
-      "mbwayDescription": "Paga usando tu aplicación portuguesa MB Way.",
-      "comingSoon": "Próximamente",
-      "completePayment": "Finaliza tu pago",
+      "stripeCheckout": "Pagar con Stripe (tarjeta, MB WAY, wallets)",
+      "stripeDescription": "Checkout seguro con MB WAY automático, tarjetas, wallets y facturas.",
       "creatingOrder": "Creando tu pedido...",
-      "orderCreated": "Pedido creado correctamente",
+      "stripeRedirecting": "Redirigiendo a Stripe Checkout...",
+      "stripeFinalizing": "Finalizando tu pago con Stripe...",
+      "stripePending": "Pago recibido. Estamos esperando la confirmación de Stripe antes de añadir los créditos.",
       "success": "¡Pago realizado! En nada te llevamos a tus historias...",
-      "mbwaySuccess": "¡Petición de pago por MB Way enviada! Revisa tu correo para las instrucciones de pago. Enseguida te llevamos a tus historias...",
       "processing": "Procesando el pago..."
     },
     "actions": {

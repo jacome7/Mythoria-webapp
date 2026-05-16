@@ -113,14 +113,5 @@
     "errors": {
       "loadingFailed": "Failed to load pricing information"
     }
-  },
-  "RevolutPayment": {
-    "loading": "Loading payment options...",
-    "securityNote": "Your payment is secured by Revolut's encryption",
-    "encryptionNote": "256-bit SSL encryption",
-    "errors": {
-      "sdkLoadFailed": "Failed to load payment service. Please refresh the page.",
-      "initializationFailed": "Failed to initialize payment. Please try again."
-    }
   }
 }

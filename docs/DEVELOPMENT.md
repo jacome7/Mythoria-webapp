@@ -68,6 +68,10 @@ GOOGLE_APPLICATION_CREDENTIALS="./service-account-dev.json"
 
 # Optional Development Variables
 NEXT_PUBLIC_GA_MEASUREMENT_ID="G-XXXXXXXXXX"
+STRIPE_SECRET_KEY="sk_test_..."
+STRIPE_WEBHOOK_SECRET="whsec_..." # from `stripe listen --forward-to localhost:3000/api/payments/stripe/webhook`
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..." # optional for Hosted Checkout v1
+STRIPE_CREDIT_TAX_CODE="" # optional; use the Stripe Tax dashboard default when unset
 NODE_ENV="development"
 NEXT_PUBLIC_FEATURE_FLAGS='{"ai_generation": true, "debug_mode": true}'
 ```

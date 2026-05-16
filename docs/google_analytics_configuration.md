@@ -123,7 +123,7 @@ Below are suggested funnels based on current UI flows and tracking. Each funnel 
 ## 8) Recommended improvements for tracking quality
 
 1. **Implement “paid action” events** for audiobook generation, print orders, self‑print requests, AI edits, and story translation.
-2. **Add `transaction_id` consistently** for all credit purchase events (including MB Way and redirect callbacks).
+2. **Add `transaction_id` consistently** for all credit purchase events, including Stripe Checkout redirect callbacks.
 3. **Persist client_id in orders** so server-side GA4 events can be linked to client sessions.
 4. **Create a tracking spec** that maps each Mythoria paid feature to GA4 event names and parameters.
 5. **Expose a debug mode toggle** (align GA debug env var) and document how to validate events in GA DebugView.

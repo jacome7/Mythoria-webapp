@@ -21,6 +21,30 @@ function Write-Success  { param([string]$Msg) Write-Host "[SUCCESS] $Msg" -Foreg
 function Write-Warn     { param([string]$Msg) Write-Host "[WARN] $Msg" -ForegroundColor Yellow }
 function Write-Err      { param([string]$Msg) Write-Host "[ERROR] $Msg" -ForegroundColor Red   }
 
+function Set-GcpSecretValue {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$Name,
+
+        [Parameter(Mandatory=$true)]
+        [string]$Value
+    )
+
+    $Value.Trim() | Set-Content -Path temp_secret.txt -NoNewline
+
+    try {
+        gcloud secrets describe $Name *> $null
+        if ($LASTEXITCODE -eq 0) {
+            gcloud secrets versions add $Name --data-file=temp_secret.txt
+        } else {
+            gcloud secrets create $Name --data-file=temp_secret.txt --replication-policy='automatic'
+        }
+    }
+    finally {
+        Remove-Item temp_secret.txt -ErrorAction SilentlyContinue
+    }
+}
+
 function Import-EnvironmentVariables {
     Write-Info "Loading environment variables from .env.production..."
     
@@ -80,6 +104,9 @@ $ClerkOAuthClientSecret = $env:CLERK_OAUTH_CLIENT_SECRET
 $NextAuthSecret = $env:NEXTAUTH_SECRET
 $GaTrackingId = $env:NEXT_PUBLIC_GA_MEASUREMENT_ID
 $GoogleAnalyticsApiSecret = $env:GOOGLE_ANALYTICS_API_SECRET
+$StripePublishableKey = $env:NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+$StripeSecretKey = $env:STRIPE_SECRET_KEY
+$StripeWebhookSecret = $env:STRIPE_WEBHOOK_SECRET
 $StoryGenApiKey = $env:STORY_GENERATION_WORKFLOW_API_KEY
 $SgwWebhookSecret = $env:SGW_WEBHOOK_SECRET
 $AdminApiKey = $env:ADMIN_API_KEY
@@ -133,6 +160,18 @@ if (-not $GoogleAnalyticsApiSecret) {
     Write-Err "GOOGLE_ANALYTICS_API_SECRET not found in .env.production file."
     exit 1
 }
+if (-not $StripePublishableKey) {
+    Write-Err "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY not found in .env.production file."
+    exit 1
+}
+if (-not $StripeSecretKey) {
+    Write-Err "STRIPE_SECRET_KEY not found in .env.production file."
+    exit 1
+}
+if (-not $StripeWebhookSecret) {
+    Write-Err "STRIPE_WEBHOOK_SECRET not found in .env.production file."
+    exit 1
+}
 if (-not $StoryGenApiKey) {
     Write-Err "STORY_GENERATION_WORKFLOW_API_KEY not found in .env.production file."
     exit 1
@@ -166,6 +205,9 @@ Write-Host "  OK CLERK_OAUTH_CLIENT_SECRET: $($('*' * $ClerkOAuthClientSecret.Le
 Write-Host "  OK NEXTAUTH_SECRET: $($('*' * $NextAuthSecret.Length))" -ForegroundColor Green
 Write-Host "  OK GA_MEASUREMENT_ID: $GaTrackingId" -ForegroundColor Green
 Write-Host "  OK GOOGLE_ANALYTICS_API_SECRET: $($('*' * $GoogleAnalyticsApiSecret.Length))" -ForegroundColor Green
+Write-Host "  OK NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: $($StripePublishableKey.Substring(0, [Math]::Min(20, $StripePublishableKey.Length)))..." -ForegroundColor Green
+Write-Host "  OK STRIPE_SECRET_KEY: $($('*' * $StripeSecretKey.Length))" -ForegroundColor Green
+Write-Host "  OK STRIPE_WEBHOOK_SECRET: $($('*' * $StripeWebhookSecret.Length))" -ForegroundColor Green
 Write-Host "  OK STORY_GENERATION_API_KEY: $($('*' * $StoryGenApiKey.Length))" -ForegroundColor Green
 Write-Host "  OK SGW_WEBHOOK_SECRET: $($('*' * $SgwWebhookSecret.Length))" -ForegroundColor Green
 Write-Host "  OK ADMIN_API_KEY: $($('*' * $AdminApiKey.Length))" -ForegroundColor Green
@@ -211,6 +253,15 @@ $GaTrackingId.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gcloud secr
 Write-Host "Creating Google Analytics API secret..." -ForegroundColor Blue
 $GoogleAnalyticsApiSecret.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gcloud secrets create GOOGLE_ANALYTICS_API_SECRET --data-file=temp_secret.txt --replication-policy='automatic'; Remove-Item temp_secret.txt
 
+Write-Host "Creating or updating Stripe publishable key secret..." -ForegroundColor Blue
+Set-GcpSecretValue -Name NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY -Value $StripePublishableKey
+
+Write-Host "Creating or updating Stripe secret key secret..." -ForegroundColor Blue
+Set-GcpSecretValue -Name STRIPE_SECRET_KEY -Value $StripeSecretKey
+
+Write-Host "Creating or updating Stripe webhook secret..." -ForegroundColor Blue
+Set-GcpSecretValue -Name STRIPE_WEBHOOK_SECRET -Value $StripeWebhookSecret
+
 Write-Host "Creating Story Generation API key secret..." -ForegroundColor Blue
 $StoryGenApiKey.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gcloud secrets create STORY_GENERATION_WORKFLOW_API_KEY --data-file=temp_secret.txt --replication-policy='automatic'; Remove-Item temp_secret.txt
 
@@ -241,6 +292,9 @@ gcloud secrets add-iam-policy-binding CLERK_OAUTH_CLIENT_SECRET --member="servic
 gcloud secrets add-iam-policy-binding mythoria-auth-secret --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding mythoria-ga-measurement-id --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding GOOGLE_ANALYTICS_API_SECRET --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
+gcloud secrets add-iam-policy-binding NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
+gcloud secrets add-iam-policy-binding STRIPE_SECRET_KEY --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
+gcloud secrets add-iam-policy-binding STRIPE_WEBHOOK_SECRET --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding SGW_WEBHOOK_SECRET --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding LEAD_BOUNCE_API_SECRET --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
 
@@ -258,6 +312,9 @@ gcloud secrets add-iam-policy-binding CLERK_OAUTH_CLIENT_SECRET --member="servic
 gcloud secrets add-iam-policy-binding mythoria-auth-secret --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding mythoria-ga-measurement-id --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding GOOGLE_ANALYTICS_API_SECRET --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
+gcloud secrets add-iam-policy-binding NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
+gcloud secrets add-iam-policy-binding STRIPE_SECRET_KEY --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
+gcloud secrets add-iam-policy-binding STRIPE_WEBHOOK_SECRET --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding SGW_WEBHOOK_SECRET --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding LEAD_BOUNCE_API_SECRET --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
 
@@ -275,6 +332,9 @@ Write-Host "  - CLERK_OAUTH_CLIENT_SECRET" -ForegroundColor White
 Write-Host "  - mythoria-auth-secret" -ForegroundColor White
 Write-Host "  - mythoria-ga-measurement-id" -ForegroundColor White
 Write-Host "  - GOOGLE_ANALYTICS_API_SECRET" -ForegroundColor White
+Write-Host "  - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY" -ForegroundColor White
+Write-Host "  - STRIPE_SECRET_KEY" -ForegroundColor White
+Write-Host "  - STRIPE_WEBHOOK_SECRET" -ForegroundColor White
 Write-Host "  - SGW_WEBHOOK_SECRET" -ForegroundColor White
 Write-Host "  - LEAD_BOUNCE_API_SECRET" -ForegroundColor White
 

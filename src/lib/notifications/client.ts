@@ -125,7 +125,7 @@ class NotificationClient {
     credits: number;
     preferredLocale?: string | null;
     authorId?: string;
-    source?: string; // e.g. 'voucher', 'mbway', 'revolut'
+    source?: string; // e.g. 'voucher', 'stripe'
     entityId?: string;
   }): Promise<NotificationResponse> {
     const language = this.mapLocale(params.preferredLocale);
