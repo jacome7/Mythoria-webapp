@@ -1,6 +1,6 @@
 'use client';
 
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
+import { Show, RedirectToSignIn } from '@clerk/nextjs';
 import { useState, useEffect, Suspense, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
@@ -238,11 +238,11 @@ function Step5Page() {
 
   return (
     <>
-      <SignedOut>
+      <Show when="signed-out">
         <RedirectToSignIn />
-      </SignedOut>
+      </Show>
 
-      <SignedIn>
+      <Show when="signed-in">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             {/* Show progress component if story generation has started */}
@@ -364,7 +364,7 @@ function Step5Page() {
             )}
           </div>
         </div>
-      </SignedIn>
+      </Show>
     </>
   );
 }

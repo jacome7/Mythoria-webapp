@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { SignedIn, SignedOut } from '@clerk/nextjs';
+import { Show } from '@clerk/nextjs';
 import Link from 'next/link';
 import { FiPlus } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
@@ -56,7 +56,7 @@ export default function MyStoriesPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <SignedOut>
+      <Show when="signed-out">
         <div className="text-center space-y-6">
           <h1 className="text-4xl font-bold">{tMyStoriesPage('signedOut.welcome')}</h1>
           <p className="text-lg text-gray-600">{tMyStoriesPage('signedOut.needSignIn')}</p>
@@ -69,8 +69,8 @@ export default function MyStoriesPage() {
             </Link>
           </div>
         </div>
-      </SignedOut>
-      <SignedIn>
+      </Show>
+      <Show when="signed-in">
         {/* Header Section */}
         <div className="space-y-6">
           <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4">
@@ -109,7 +109,7 @@ export default function MyStoriesPage() {
             </div>
           </div>
         </div>
-      </SignedIn>
+      </Show>
     </div>
   );
 }

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { SignedIn, SignedOut } from '@clerk/nextjs';
+import { Show } from '@clerk/nextjs';
 
 import { FaShoppingCart, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 import CartView from '@/components/CartView';
@@ -295,7 +295,7 @@ function BuyCreditsContent() {
           </div>
         ) : (
           <>
-            <SignedOut>
+            <Show when="signed-out">
               <div className="text-center space-y-6">
                 <h1 className="text-4xl font-bold">{tBuyCreditsPage('header.title')}</h1>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -310,9 +310,9 @@ function BuyCreditsContent() {
                   </Link>
                 </div>
               </div>
-            </SignedOut>
+            </Show>
 
-            <SignedIn>
+            <Show when="signed-in">
               <ScrollFadeIn>
                 <header className="text-center mb-16">
                   <h1 className="text-5xl font-bold text-primary">
@@ -486,7 +486,7 @@ function BuyCreditsContent() {
                   </div>
                 </div>
               </ScrollFadeIn>
-            </SignedIn>
+            </Show>
           </>
         )}
       </div>

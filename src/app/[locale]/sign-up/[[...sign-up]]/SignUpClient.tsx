@@ -98,8 +98,8 @@ export default function SignUpClient({ locale, translations, leadSession }: Sign
             </div>
             <SignUp
               routing="hash"
-              afterSignInUrl={safeRedirect}
-              afterSignUpUrl={safeRedirect}
+              signInForceRedirectUrl={safeRedirect}
+              forceRedirectUrl={safeRedirect}
               fallbackRedirectUrl={defaultRedirect}
               initialValues={initialValues}
               appearance={{

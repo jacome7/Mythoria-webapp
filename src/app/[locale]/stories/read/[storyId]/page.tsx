@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { SignedIn, SignedOut } from '@clerk/nextjs';
+import { Show } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
@@ -183,7 +183,7 @@ export default function ReadStoryPage() {
 
   return (
     <div className="min-h-screen bg-base-100">
-      <SignedOut>
+      <Show when="signed-out">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center space-y-6">
             <h1 className="text-4xl font-bold">{tAuth('accessRestricted')}</h1>
@@ -198,9 +198,9 @@ export default function ReadStoryPage() {
             </div>
           </div>
         </div>
-      </SignedOut>
+      </Show>
 
-      <SignedIn>
+      <Show when="signed-in">
         {/* Action Bar */}
         <div className="bg-base-200 border-b border-base-300 p-4 print:hidden">
           <div className="max-w-6xl mx-auto flex items-center justify-between">
@@ -275,12 +275,12 @@ export default function ReadStoryPage() {
           storyTitle={story?.title}
           onClose={() => setShowSelfPrintModal(false)}
         />
-      </SignedIn>
+      </Show>
 
       {/* Toasts */}
       <ToastContainer toasts={toasts} onRemove={removeToast} />
 
-      <SignedOut>
+      <Show when="signed-out">
         <div className="min-h-screen bg-base-100 flex items-center justify-center">
           <div className="text-center">
             <div className="text-6xl mb-4">🔒</div>
@@ -291,7 +291,7 @@ export default function ReadStoryPage() {
             </button>
           </div>
         </div>
-      </SignedOut>
+      </Show>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { SignedIn, SignedOut } from '@clerk/nextjs';
+import { Show } from '@clerk/nextjs';
 import { useParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { FiLoader, FiAlertCircle, FiEdit3, FiPrinter, FiDownload } from 'react-icons/fi';
@@ -190,7 +190,7 @@ export default function PublicChapterPage() {
                 {tPublicStoryPage('actions.orderPrintedBook')}
               </a>
 
-              <SignedIn>
+              <Show when="signed-in">
                 <button
                   className="btn btn-outline flex items-center gap-2"
                   onClick={openSelfPrintModal}
@@ -198,8 +198,8 @@ export default function PublicChapterPage() {
                   <FiDownload className="w-4 h-4" />
                   {tPublicStoryPage('actions.downloadPdf')}
                 </button>
-              </SignedIn>
-              <SignedOut>
+              </Show>
+              <Show when="signed-out">
                 <a
                   href={`/${locale}/sign-in?redirectUrl=${encodeURIComponent(`/${locale}/p/${slug}/chapter/${chapterNumber}`)}`}
                   className="btn btn-outline flex items-center gap-2"
@@ -207,7 +207,7 @@ export default function PublicChapterPage() {
                   <FiDownload className="w-4 h-4" />
                   {tPublicStoryPage('actions.downloadPdf')}
                 </a>
-              </SignedOut>
+              </Show>
             </div>
           </div>
         </div>
@@ -218,14 +218,14 @@ export default function PublicChapterPage() {
         <PublicStoryRating storyId={story.storyId} />
       </div>
 
-      <SignedIn>
+      <Show when="signed-in">
         <SelfPrintModal
           isOpen={showSelfPrintModal}
           storyId={story.storyId}
           storyTitle={story.title}
           onClose={() => setShowSelfPrintModal(false)}
         />
-      </SignedIn>
+      </Show>
     </div>
   );
 }

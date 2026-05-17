@@ -1,6 +1,6 @@
 'use client';
 
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
+import { Show, RedirectToSignIn } from '@clerk/nextjs';
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -352,11 +352,11 @@ function Step3Page() {
 
   return (
     <>
-      <SignedOut>
+      <Show when="signed-out">
         <RedirectToSignIn />
-      </SignedOut>
+      </Show>
 
-      <SignedIn>
+      <Show when="signed-in">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             <ProgressIndicator currentStep={3} totalSteps={5} />
@@ -541,7 +541,7 @@ function Step3Page() {
             </div>
           </div>
         </div>
-      </SignedIn>
+      </Show>
     </>
   );
 }

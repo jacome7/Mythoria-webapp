@@ -83,8 +83,8 @@ export default function SignInClient({ locale }: SignInClientProps) {
             </div>
             <SignIn
               routing="hash"
-              afterSignInUrl={safeRedirect}
-              afterSignUpUrl={safeRedirect}
+              forceRedirectUrl={safeRedirect}
+              signUpForceRedirectUrl={safeRedirect}
               fallbackRedirectUrl={`/${locale}/my-stories`}
               appearance={{
                 elements: {

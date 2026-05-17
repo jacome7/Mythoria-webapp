@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { SignedIn, SignedOut } from '@clerk/nextjs';
+import { Show } from '@clerk/nextjs';
 import dynamic from 'next/dynamic';
 
 // Lazy load the main content component
@@ -17,11 +17,11 @@ export default function PrintOrderPage() {
 
   return (
     <div className="min-h-screen bg-base-100 p-4">
-      <SignedIn>
+      <Show when="signed-in">
         <PrintOrderContent storyId={storyId} />
-      </SignedIn>
+      </Show>
 
-      <SignedOut>
+      <Show when="signed-out">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center space-y-6">
             <h1 className="text-4xl font-bold">{tAuth('accessRestricted')}</h1>
@@ -36,7 +36,7 @@ export default function PrintOrderPage() {
             </div>
           </div>
         </div>
-      </SignedOut>
+      </Show>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { SignedIn, SignedOut } from '@clerk/nextjs';
+import { Show } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 
 interface ClientAuthWrapperProps {
@@ -29,8 +29,8 @@ export default function ClientAuthWrapper({ children, signedOutFallback }: Clien
 
   return (
     <>
-      <SignedOut>{signedOutFallback}</SignedOut>
-      <SignedIn>{children}</SignedIn>
+      <Show when="signed-out">{signedOutFallback}</Show>
+      <Show when="signed-in">{children}</Show>
     </>
   );
 }

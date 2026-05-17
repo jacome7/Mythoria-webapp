@@ -1,6 +1,6 @@
 'use client';
 
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
+import { Show, RedirectToSignIn } from '@clerk/nextjs';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -195,11 +195,11 @@ export default function Step2Page() {
 
   return (
     <>
-      <SignedOut>
+      <Show when="signed-out">
         <RedirectToSignIn />
-      </SignedOut>
+      </Show>
 
-      <SignedIn>
+      <Show when="signed-in">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             <ProgressIndicator currentStep={2} totalSteps={6} />
@@ -451,7 +451,7 @@ export default function Step2Page() {
             </div>
           </div>
         )}
-      </SignedIn>
+      </Show>
     </>
   );
 }

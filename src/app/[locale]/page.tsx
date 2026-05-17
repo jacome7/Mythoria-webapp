@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { TypeAnimation } from 'react-type-animation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useMemo } from 'react';
-import { SignedOut } from '@clerk/nextjs';
+import { Show } from '@clerk/nextjs';
 import StoryCounter from '@/components/StoryCounter';
 import QuoteOfTheDay from '@/components/QuoteOfTheDay';
 import InfiniteGallery from '@/components/InfiniteGallery';
@@ -502,7 +502,7 @@ export default function Home() {
         </ScrollFadeIn>
 
         {/* Call to Action Section - Only show if user is not signed in */}
-        <SignedOut>
+        <Show when="signed-out">
           <ScrollFadeIn threshold={0.1} rootMargin="0px 0px -20px 0px">
             <section className="my-16">
               <div className="bg-gray-100 rounded-lg shadow-lg p-8 text-center">
@@ -514,7 +514,7 @@ export default function Home() {
               </div>
             </section>
           </ScrollFadeIn>
-        </SignedOut>
+        </Show>
 
         {/* ProductHunt Badge Section */}
         <ScrollFadeIn threshold={0.1} rootMargin="0px 0px -20px 0px">

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { SignedIn, SignedOut } from '@clerk/nextjs';
+import { Show } from '@clerk/nextjs';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import {
@@ -236,7 +236,7 @@ export default function PublicStoryPageClient() {
                     </span>
                     <span className="min-[480px]:hidden">{tPublicStoryPage('actions.print')}</span>
                   </a>
-                  <SignedIn>
+                  <Show when="signed-in">
                     <button
                       className="btn btn-outline btn-sm flex items-center gap-2 text-xs sm:text-sm"
                       onClick={openSelfPrintModal}
@@ -244,8 +244,8 @@ export default function PublicStoryPageClient() {
                       <FiDownload className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span>{tPublicStoryPage('actions.downloadPdf')}</span>
                     </button>
-                  </SignedIn>
-                  <SignedOut>
+                  </Show>
+                  <Show when="signed-out">
                     <a
                       href={`/${locale}/sign-in?redirectUrl=${encodeURIComponent(`/${locale}/p/${slug}`)}`}
                       className="btn btn-outline btn-sm flex items-center gap-2 text-xs sm:text-sm"
@@ -253,7 +253,7 @@ export default function PublicStoryPageClient() {
                       <FiDownload className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span>{tPublicStoryPage('actions.downloadPdf')}</span>
                     </a>
-                  </SignedOut>
+                  </Show>
                   {story.hasAudio && (
                     <a
                       href={`/${locale}/p/${slug}/listen`}
@@ -388,7 +388,7 @@ export default function PublicStoryPageClient() {
                   {tPublicStoryPage('actions.orderPrintedBook')}
                 </a>
 
-                <SignedIn>
+                <Show when="signed-in">
                   <button
                     className="btn btn-outline flex items-center gap-2"
                     onClick={openSelfPrintModal}
@@ -396,8 +396,8 @@ export default function PublicStoryPageClient() {
                     <FiDownload className="w-4 h-4" />
                     {tPublicStoryPage('actions.downloadPdf')}
                   </button>
-                </SignedIn>
-                <SignedOut>
+                </Show>
+                <Show when="signed-out">
                   <a
                     href={`/${locale}/sign-in?redirectUrl=${encodeURIComponent(`/${locale}/p/${slug}`)}`}
                     className="btn btn-outline flex items-center gap-2"
@@ -405,7 +405,7 @@ export default function PublicStoryPageClient() {
                     <FiDownload className="w-4 h-4" />
                     {tPublicStoryPage('actions.downloadPdf')}
                   </a>
-                </SignedOut>
+                </Show>
               </div>
             </div>
           </div>
@@ -423,14 +423,14 @@ export default function PublicStoryPageClient() {
           </div>
         </div>
 
-        <SignedIn>
+        <Show when="signed-in">
           <SelfPrintModal
             isOpen={showSelfPrintModal}
             storyId={story.storyId}
             storyTitle={story.title}
             onClose={() => setShowSelfPrintModal(false)}
           />
-        </SignedIn>
+        </Show>
       </div>
 
       {/* Custom CSS for responsive design */}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { SignedIn, SignedOut } from '@clerk/nextjs';
+import { Show } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
@@ -150,7 +150,7 @@ export default function ReadChapterPage() {
 
   return (
     <div className="min-h-screen bg-base-100">
-      <SignedIn>
+      <Show when="signed-in">
         {/* Action Bar */}
         <div className="bg-base-200 border-b border-base-300 p-4 print:hidden">
           <div className="max-w-6xl mx-auto flex items-center justify-between">
@@ -215,9 +215,9 @@ export default function ReadChapterPage() {
           storyTitle={story?.title}
           onClose={() => setShowSelfPrintModal(false)}
         />
-      </SignedIn>
+      </Show>
 
-      <SignedOut>
+      <Show when="signed-out">
         <div className="min-h-screen bg-base-100 flex items-center justify-center">
           <div className="text-center">
             <div className="text-6xl mb-4">🔒</div>
@@ -228,7 +228,7 @@ export default function ReadChapterPage() {
             </button>
           </div>
         </div>
-      </SignedOut>
+      </Show>
     </div>
   );
 }

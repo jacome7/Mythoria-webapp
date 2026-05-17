@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { SignedIn, SignedOut } from '@clerk/nextjs';
+import { Show } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
@@ -426,7 +426,7 @@ export default function ListenStoryPage() {
 
   return (
     <div className="min-h-screen bg-base-100">
-      <SignedOut>
+      <Show when="signed-out">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center space-y-6">
             <h1 className="text-4xl font-bold">{tListenStory('accessRestricted')}</h1>
@@ -441,9 +441,9 @@ export default function ListenStoryPage() {
             </div>
           </div>
         </div>
-      </SignedOut>
+      </Show>
 
-      <SignedIn>
+      <Show when="signed-in">
         {error ? (
           <div className="container mx-auto px-4 py-8">
             <div className="text-center space-y-6">
@@ -805,7 +805,7 @@ export default function ListenStoryPage() {
             </div>
           </div>
         ) : null}
-      </SignedIn>
+      </Show>
 
       {/* Share Modal */}
       {story && (
