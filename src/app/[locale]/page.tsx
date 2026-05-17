@@ -56,10 +56,10 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-base-100 text-base-content">
       <div className="container mx-auto px-4 py-4">
-        <header className="hero min-h-[40vh] bg-base-200 rounded-box my-4">
-          <div className="hero-content flex-col lg:flex-row w-full">
+        <header className="hero mb-3 mt-1 min-h-[34vh] rounded-box bg-base-200 sm:mb-4 sm:mt-2 sm:min-h-[40vh]">
+          <div className="hero-content w-full flex-col gap-4 py-6 sm:py-8 lg:flex-row">
             <div className="lg:w-1/2 text-center lg:text-left">
-              <h1 className="text-4xl md:text-5xl font-bold">
+              <h1 className="text-3xl font-bold sm:text-4xl md:text-5xl">
                 ✨ {tHomePage('hero.writeYourOwn')}
                 <br />
                 <TypeAnimation

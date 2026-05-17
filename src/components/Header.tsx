@@ -9,6 +9,16 @@ import LanguageSwitcher from './LanguageSwitcher';
 import { useLocale } from 'next-intl';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 
+const headerClassName =
+  'navbar min-h-14 border-b border-base-content/10 bg-base-100/60 px-2 py-0 shadow-sm backdrop-blur-xl sm:px-4';
+const mobileMenuButtonClassName = 'btn btn-ghost btn-sm h-10 min-h-10 w-10 p-0 lg:hidden';
+const dropdownMenuClassName =
+  'menu menu-sm dropdown-content z-50 mt-2 w-52 rounded-box border border-base-content/10 bg-base-100/90 p-1 shadow-xl backdrop-blur-xl';
+const mobileMenuLinkClassName = 'py-2.5 text-base';
+const desktopMenuLinkClassName = 'py-2 text-sm xl:text-base';
+const logoLinkClassName = 'btn btn-ghost h-10 min-h-10 normal-case px-0 py-0 text-xl';
+const logoImageClassName = 'h-auto w-[128px] sm:w-[140px]';
+
 const Header = () => {
   const tCommonHeader = useTranslations('Header');
   const { isLoaded, isSignedIn } = useUser();
@@ -23,10 +33,10 @@ const Header = () => {
   // Prevent hydration mismatch by not rendering auth-dependent content until client-side
   if (!isClient || !isLoaded) {
     return (
-      <header className="navbar bg-base-100 shadow-md">
+      <header className={headerClassName}>
         <div className="navbar-start">
           <div className="dropdown">
-            <label tabIndex={0} className="btn btn-ghost lg:hidden">
+            <label tabIndex={0} className={mobileMenuButtonClassName}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-5 w-5"
@@ -44,12 +54,12 @@ const Header = () => {
             </label>
             <ul
               tabIndex={0}
-              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+              className={dropdownMenuClassName}
             >
               <li>
                 <Link
                   href={`/${locale}`}
-                  className="text-base py-3"
+                  className={mobileMenuLinkClassName}
                   onClick={() => (document.activeElement as HTMLElement)?.blur()}
                 >
                   {tCommonHeader('navigation.homepage')}
@@ -58,7 +68,7 @@ const Header = () => {
               <li>
                 <Link
                   href={`/${locale}/get-inspired`}
-                  className="text-base py-3"
+                  className={mobileMenuLinkClassName}
                   onClick={() => (document.activeElement as HTMLElement)?.blur()}
                 >
                   {tCommonHeader('navigation.getInspired')}
@@ -67,7 +77,7 @@ const Header = () => {
               <li>
                 <Link
                   href={`/${locale}/tell-your-story/step-1`}
-                  className="text-base py-3"
+                  className={mobileMenuLinkClassName}
                   onClick={() => (document.activeElement as HTMLElement)?.blur()}
                 >
                   {tCommonHeader('navigation.tellYourStory')}
@@ -76,7 +86,7 @@ const Header = () => {
               <li>
                 <Link
                   href={`/${locale}/blog`}
-                  className="text-base py-3"
+                  className={mobileMenuLinkClassName}
                   onClick={() => (document.activeElement as HTMLElement)?.blur()}
                 >
                   {tCommonHeader('navigation.blog')}
@@ -85,7 +95,7 @@ const Header = () => {
               <li>
                 <Link
                   href={`/${locale}/pricing`}
-                  className="text-base py-3"
+                  className={mobileMenuLinkClassName}
                   onClick={() => (document.activeElement as HTMLElement)?.blur()}
                 >
                   {tCommonHeader('navigation.pricing')}
@@ -96,7 +106,7 @@ const Header = () => {
           <div className="flex items-center">
             <Link
               href={`/${locale}`}
-              className="btn btn-ghost normal-case text-xl px-1 py-0.5"
+              className={logoLinkClassName}
               aria-label={tCommonHeader('navigation.homepage')}
               title={tCommonHeader('navigation.homepage')}
             >
@@ -105,6 +115,7 @@ const Header = () => {
                 alt={tCommonHeader('logoAlt')}
                 width={150}
                 height={49}
+                className={logoImageClassName}
               />
             </Link>
           </div>
@@ -112,25 +123,32 @@ const Header = () => {
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">
             <li>
-              <Link href={`/${locale}`}>{tCommonHeader('navigation.homepage')}</Link>
+              <Link href={`/${locale}`} className={desktopMenuLinkClassName}>
+                {tCommonHeader('navigation.homepage')}
+              </Link>
             </li>
             <li>
-              <Link href={`/${locale}/get-inspired`}>
+              <Link href={`/${locale}/get-inspired`} className={desktopMenuLinkClassName}>
                 {tCommonHeader('navigation.getInspired')}
               </Link>
             </li>
             <li>
-              <Link href={`/${locale}/tell-your-story/step-1`}>
+              <Link
+                href={`/${locale}/tell-your-story/step-1`}
+                className={desktopMenuLinkClassName}
+              >
                 {tCommonHeader('navigation.tellYourStory')}
               </Link>
             </li>
             <li>
-              <Link href={`/${locale}/pricing`}>{tCommonHeader('navigation.pricing')}</Link>
+              <Link href={`/${locale}/pricing`} className={desktopMenuLinkClassName}>
+                {tCommonHeader('navigation.pricing')}
+              </Link>
             </li>
           </ul>
         </div>
         <div className="navbar-end">
-          <div className="mr-4">
+          <div className="mr-2 sm:mr-4">
             <LanguageSwitcher />
           </div>
           <div className="flex gap-2">
@@ -141,10 +159,10 @@ const Header = () => {
     );
   }
   return (
-    <header className="navbar bg-base-100 shadow-md">
+    <header className={headerClassName}>
       <div className="navbar-start">
         <div className="dropdown">
-          <label tabIndex={0} className="btn btn-ghost lg:hidden">
+          <label tabIndex={0} className={mobileMenuButtonClassName}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5"
@@ -162,12 +180,12 @@ const Header = () => {
           </label>
           <ul
             tabIndex={0}
-            className="menu menu-sm dropdown-content mt-3 z-[1] p-1 shadow bg-base-100 rounded-box w-52"
+            className={dropdownMenuClassName}
           >
             <li>
               <Link
                 href={`/${locale}`}
-                className="text-base py-3"
+                className={mobileMenuLinkClassName}
                 onClick={() => (document.activeElement as HTMLElement)?.blur()}
               >
                 {tCommonHeader('navigation.homepage')}
@@ -176,7 +194,7 @@ const Header = () => {
             <li>
               <Link
                 href={`/${locale}/get-inspired`}
-                className="text-base py-3"
+                className={mobileMenuLinkClassName}
                 onClick={() => (document.activeElement as HTMLElement)?.blur()}
               >
                 {tCommonHeader('navigation.getInspired')}
@@ -185,7 +203,7 @@ const Header = () => {
             <li>
               <Link
                 href={`/${locale}/tell-your-story/step-1`}
-                className="text-base py-3"
+                className={mobileMenuLinkClassName}
                 onClick={() => (document.activeElement as HTMLElement)?.blur()}
               >
                 {tCommonHeader('navigation.tellYourStory')}
@@ -194,7 +212,7 @@ const Header = () => {
             <li>
               <Link
                 href={`/${locale}/blog`}
-                className="text-base py-3"
+                className={mobileMenuLinkClassName}
                 onClick={() => (document.activeElement as HTMLElement)?.blur()}
               >
                 {tCommonHeader('navigation.blog')}
@@ -203,7 +221,7 @@ const Header = () => {
             <li>
               <Link
                 href={`/${locale}/pricing`}
-                className="text-base py-3"
+                className={mobileMenuLinkClassName}
                 onClick={() => (document.activeElement as HTMLElement)?.blur()}
               >
                 {tCommonHeader('navigation.pricing')}
@@ -212,7 +230,7 @@ const Header = () => {
             <li>
               <Link
                 href={`/${locale}/partners`}
-                className="text-base py-3"
+                className={mobileMenuLinkClassName}
                 onClick={() => (document.activeElement as HTMLElement)?.blur()}
               >
                 {tCommonHeader('navigation.partners')}
@@ -223,7 +241,7 @@ const Header = () => {
         <div className="flex items-center">
           <Link
             href={`/${locale}`}
-            className="btn btn-ghost normal-case text-xl px-0 py-0.5"
+            className={logoLinkClassName}
             aria-label={tCommonHeader('navigation.homepage')}
             title={tCommonHeader('navigation.homepage')}
           >
@@ -232,6 +250,7 @@ const Header = () => {
               alt={tCommonHeader('logoAlt')}
               width={140}
               height={45}
+              className={logoImageClassName}
             />
           </Link>
         </div>
@@ -239,35 +258,48 @@ const Header = () => {
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
           <li>
-            <Link href={`/${locale}`}>{tCommonHeader('navigation.homepage')}</Link>
+            <Link href={`/${locale}`} className={desktopMenuLinkClassName}>
+              {tCommonHeader('navigation.homepage')}
+            </Link>
           </li>
           <li>
-            <Link href={`/${locale}/get-inspired`}>{tCommonHeader('navigation.getInspired')}</Link>
+            <Link href={`/${locale}/get-inspired`} className={desktopMenuLinkClassName}>
+              {tCommonHeader('navigation.getInspired')}
+            </Link>
           </li>
           <li>
-            <Link href={`/${locale}/tell-your-story/step-1`}>
+            <Link
+              href={`/${locale}/tell-your-story/step-1`}
+              className={desktopMenuLinkClassName}
+            >
               {tCommonHeader('navigation.tellYourStory')}
             </Link>
           </li>
           <li>
-            <Link href={`/${locale}/blog`}>{tCommonHeader('navigation.blog')}</Link>
+            <Link href={`/${locale}/blog`} className={desktopMenuLinkClassName}>
+              {tCommonHeader('navigation.blog')}
+            </Link>
           </li>
           <li>
-            <Link href={`/${locale}/pricing`}>{tCommonHeader('navigation.pricing')}</Link>
+            <Link href={`/${locale}/pricing`} className={desktopMenuLinkClassName}>
+              {tCommonHeader('navigation.pricing')}
+            </Link>
           </li>
           <li>
-            <Link href={`/${locale}/partners`}>{tCommonHeader('navigation.partners')}</Link>
+            <Link href={`/${locale}/partners`} className={desktopMenuLinkClassName}>
+              {tCommonHeader('navigation.partners')}
+            </Link>
           </li>
         </ul>
       </div>
 
       <div className="navbar-end">
-        <div className="mr-4">
+        <div className="mr-2 sm:mr-4">
           <LanguageSwitcher />
         </div>
         {!isSignedIn ? (
           <div className="flex gap-2">
-            <Link href={`/${locale}/sign-in`} className="btn btn-primary">
+            <Link href={`/${locale}/sign-in`} className="btn btn-primary btn-sm sm:btn-md">
               {tCommonHeader('auth.signIn')}
             </Link>
           </div>
