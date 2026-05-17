@@ -1,7 +1,7 @@
 'use client';
 
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import StepNavigation from '@/components/StepNavigation';
@@ -48,6 +48,7 @@ function Step5Page() {
   const [storyData, setStoryData] = useState<StoryData | null>(null);
   const [userCredits, setUserCredits] = useState<number>(0);
   const [ebookPricing, setEbookPricing] = useState<EbookPricing | null>(null);
+  const hasTrackedStepView = useRef(false);
 
   const loadStoryData = async (storyId: string) => {
     try {
@@ -102,6 +103,20 @@ function Step5Page() {
     );
   }, [currentStoryId]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    if (loading || !currentStoryId || !storyData || hasTrackedStepView.current) return;
+
+    hasTrackedStepView.current = true;
+    trackStoryCreation.stepViewed({
+      step: 5,
+      story_id: currentStoryId,
+      has_pricing: !!ebookPricing,
+      ebook_cost: ebookPricing?.cost,
+      user_credits: userCredits,
+      can_generate: !!ebookPricing && userCredits >= ebookPricing.cost,
+    });
+  }, [currentStoryId, ebookPricing, loading, storyData, userCredits]);
+
   const hasInsufficientCredits = () => {
     // If pricing isn't loaded yet, assume insufficient credits to prevent premature actions
     if (!ebookPricing) return true;
@@ -109,6 +124,16 @@ function Step5Page() {
   };
 
   const handleCompleteStory = async () => {
+    trackStoryCreation.generateClicked({
+      step: 5,
+      story_id: currentStoryId || undefined,
+      has_story_data: !!storyData,
+      has_pricing: !!ebookPricing,
+      ebook_cost: ebookPricing?.cost,
+      user_credits: userCredits,
+      can_generate: !!ebookPricing && userCredits >= ebookPricing.cost,
+    });
+
     if (!currentStoryId || !storyData || !ebookPricing) {
       setError(tStoryStepsStep5('storyDataNotAvailable'));
       return;

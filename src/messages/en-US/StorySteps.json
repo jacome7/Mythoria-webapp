@@ -382,7 +382,8 @@
         "loadFailed": "Failed to load story information. Please try again."
       },
       "saving": "Saving...",
-      "next": "Next"
+      "next": "Review and generate",
+      "generationReviewHint": "On the next step you can review credits and start generation. Nothing will be generated yet."
     },
     "step5": {
       "heading": "Chapter 5 - The Finale",

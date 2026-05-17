@@ -382,7 +382,8 @@
         "loadFailed": "Falha ao carregar informações da história. Por favor, tente novamente."
       },
       "saving": "A guardar...",
-      "next": "Próximo"
+      "next": "Rever e gerar",
+      "generationReviewHint": "No próximo passo poderá rever os créditos e iniciar a geração. Nada será gerado ainda."
     },
     "step5": {
       "heading": "Capítulo 5 - O Final",
