@@ -52,10 +52,7 @@ const Header = () => {
                 />
               </svg>
             </label>
-            <ul
-              tabIndex={0}
-              className={dropdownMenuClassName}
-            >
+            <ul tabIndex={0} className={dropdownMenuClassName}>
               <li>
                 <Link
                   href={`/${locale}`}
@@ -133,10 +130,7 @@ const Header = () => {
               </Link>
             </li>
             <li>
-              <Link
-                href={`/${locale}/tell-your-story/step-1`}
-                className={desktopMenuLinkClassName}
-              >
+              <Link href={`/${locale}/tell-your-story/step-1`} className={desktopMenuLinkClassName}>
                 {tCommonHeader('navigation.tellYourStory')}
               </Link>
             </li>
@@ -178,10 +172,7 @@ const Header = () => {
               />
             </svg>
           </label>
-          <ul
-            tabIndex={0}
-            className={dropdownMenuClassName}
-          >
+          <ul tabIndex={0} className={dropdownMenuClassName}>
             <li>
               <Link
                 href={`/${locale}`}
@@ -268,10 +259,7 @@ const Header = () => {
             </Link>
           </li>
           <li>
-            <Link
-              href={`/${locale}/tell-your-story/step-1`}
-              className={desktopMenuLinkClassName}
-            >
+            <Link href={`/${locale}/tell-your-story/step-1`} className={desktopMenuLinkClassName}>
               {tCommonHeader('navigation.tellYourStory')}
             </Link>
           </li>
