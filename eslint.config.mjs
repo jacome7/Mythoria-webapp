@@ -10,6 +10,8 @@ const eslintConfig = [
     // Ignore generated and external artifacts to reduce noise and speed up linting.
     ignores: [
       '.next/**',
+      '.agents/**',
+      '.claude/**',
       'public/**',
       'logs/**',
       'package/dist/**',

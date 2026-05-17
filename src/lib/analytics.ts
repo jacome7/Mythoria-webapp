@@ -52,7 +52,7 @@ export interface CreditPurchaseEventParams extends AnalyticsEventParams {
   purchase_amount?: number;
   /** Number of credits purchased */
   credits_purchased?: number;
-  /** Payment method used (revolut, mbway, etc.) */
+  /** Payment method used (stripe, card, mb_way, etc.) */
   payment_method?: string;
   /** Items purchased (for GA4 ecommerce) */
   items?: Array<{

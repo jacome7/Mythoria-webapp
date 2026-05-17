@@ -1,0 +1,124 @@
+steps:
+  # Get secrets from Secret Manager for build args
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:latest'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # Retrieve secrets and set as environment variables for subsequent steps
+        echo "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$(gcloud secrets versions access latest --secret=mythoria-clerk-publishable-key)" >> /workspace/build-env
+        echo "NEXT_PUBLIC_GA_MEASUREMENT_ID=$(gcloud secrets versions access latest --secret=mythoria-ga-measurement-id)" >> /workspace/build-env
+        echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$(gcloud secrets versions access latest --secret=NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)" >> /workspace/build-env
+
+  # Build the container image with secrets from Secret Manager
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # Load build environment variables
+        source /workspace/build-env
+
+        # Build with secrets as build args
+        docker build \
+          -t gcr.io/$PROJECT_ID/$_SERVICE_NAME \
+          --build-arg NEXT_PUBLIC_BASE_URL="${_NEXT_PUBLIC_BASE_URL}" \
+          --build-arg NEXT_PUBLIC_SUPPORTED_LOCALES="${_NEXT_PUBLIC_SUPPORTED_LOCALES}" \
+          --build-arg NEXT_PUBLIC_GA_MEASUREMENT_ID="$$NEXT_PUBLIC_GA_MEASUREMENT_ID" \
+          --build-arg NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="$$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY" \
+          --build-arg NEXT_PUBLIC_GOOGLE_ADS_ID="${_NEXT_PUBLIC_GOOGLE_ADS_ID}" \
+          --build-arg NEXT_PUBLIC_GOOGLE_TAG_ID="${_NEXT_PUBLIC_GOOGLE_TAG_ID}" \
+          --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="$$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY" \
+          --build-arg NEXT_PUBLIC_CLERK_SIGN_IN_URL="${_CLERK_SIGN_IN_URL}" \
+          --build-arg NEXT_PUBLIC_CLERK_SIGN_UP_URL="${_CLERK_SIGN_UP_URL}" \
+          --build-arg NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL="${_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL}" \
+          --build-arg NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL="${_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL}" \
+          --build-arg NEXT_PUBLIC_CLERK_SIGN_UP_FORCE_REDIRECT_URL="${_CLERK_SIGN_UP_FORCE_REDIRECT_URL}" \
+          --build-arg NEXT_PUBLIC_CLERK_IS_DEVELOPMENT="${_NEXT_PUBLIC_CLERK_IS_DEVELOPMENT}" \
+          --build-arg NEXT_PUBLIC_TTS_PROVIDER="${_NEXT_PUBLIC_TTS_PROVIDER}" \
+          --build-arg NEXT_PUBLIC_DEFAULT_CURRENCY="${_NEXT_PUBLIC_DEFAULT_CURRENCY}" \
+          --build-arg NEXT_PUBLIC_APP_DOMAIN="${_NEXT_PUBLIC_APP_DOMAIN}" \
+          .
+
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME'
+
+  # Deploy container image to Cloud Run with secrets from Secret Manager
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:latest'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - '$_SERVICE_NAME'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME'
+      - '--region'
+      - '$_REGION'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--port'
+      - '3000'
+      - '--memory'
+      - '1Gi'
+      - '--cpu'
+      - '1'
+      - '--max-instances'
+      - '10'
+      - '--min-instances'
+      - '0'
+      - '--vpc-egress'
+      - 'all-traffic'
+      - '--set-env-vars'
+      - '^|^NODE_ENV=production|NEXT_PUBLIC_BASE_URL=${_NEXT_PUBLIC_BASE_URL}|NEXT_PUBLIC_SUPPORTED_LOCALES=${_NEXT_PUBLIC_SUPPORTED_LOCALES}|NEXT_PUBLIC_TTS_PROVIDER=${_NEXT_PUBLIC_TTS_PROVIDER}|NEXT_PUBLIC_DEFAULT_CURRENCY=${_NEXT_PUBLIC_DEFAULT_CURRENCY}|NEXT_PUBLIC_APP_DOMAIN=${_NEXT_PUBLIC_APP_DOMAIN}|STRIPE_API_VERSION=${_STRIPE_API_VERSION}|STRIPE_CREDIT_TAX_CODE=${_STRIPE_CREDIT_TAX_CODE}|DB_PORT=${_DB_PORT}|DB_NAME=${_DB_NAME}|CLERK_SIGN_IN_URL=${_CLERK_SIGN_IN_URL}|CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=${_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL}|CLERK_SIGN_UP_URL=${_CLERK_SIGN_UP_URL}|CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=${_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL}|CLERK_SIGN_UP_FORCE_REDIRECT_URL=${_CLERK_SIGN_UP_FORCE_REDIRECT_URL}|CLERK_OAUTH_CLIENT_ID=${_CLERK_OAUTH_CLIENT_ID}|MCP_AUTHORIZATION_SERVER_URL=${_MCP_AUTHORIZATION_SERVER_URL}|MCP_RESOURCE_URL=${_MCP_RESOURCE_URL}|MCP_WIDGET_DOMAIN=${_MCP_WIDGET_DOMAIN}|MCP_AUTH_ALLOW_SESSION_TOKEN=${_MCP_AUTH_ALLOW_SESSION_TOKEN}|NEXTAUTH_URL=${_NEXTAUTH_URL}|GOOGLE_CLOUD_PROJECT_ID=${_GOOGLE_CLOUD_PROJECT_ID}|GOOGLE_CLOUD_LOCATION=${_GOOGLE_CLOUD_LOCATION}|PUBSUB_TOPIC=${_PUBSUB_TOPIC}|PUBSUB_AUDIOBOOK_TOPIC=${_PUBSUB_AUDIOBOOK_TOPIC}|STORAGE_BUCKET_NAME=${_STORAGE_BUCKET_NAME}|PUBLIC_STORAGE_BUCKET_NAME=${_PUBLIC_STORAGE_BUCKET_NAME}|STORY_GENERATION_WORKFLOW_URL=${_STORY_GENERATION_WORKFLOW_URL}|ADMIN_API_URL=${_ADMIN_API_URL}|NOTIFICATION_ENGINE_URL=${_NOTIFICATION_ENGINE_URL}'
+      - '--set-secrets'
+      - 'DB_HOST=mythoria-db-host:latest,DB_USER=mythoria-db-user:latest,DB_PASSWORD=mythoria-db-password:latest,NEXTAUTH_SECRET=mythoria-auth-secret:latest,CLERK_SECRET_KEY=mythoria-clerk-secret-key:latest,CLERK_WEBHOOK_SECRET=mythoria-clerk-webhook-secret:latest,CLERK_OAUTH_CLIENT_SECRET=CLERK_OAUTH_CLIENT_SECRET:latest,NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=mythoria-clerk-publishable-key:latest,NEXT_PUBLIC_GA_MEASUREMENT_ID=mythoria-ga-measurement-id:latest,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:latest,STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest,STRIPE_WEBHOOK_SECRET=STRIPE_WEBHOOK_SECRET:latest,ADMIN_API_KEY=ADMIN_API_KEY:latest,NOTIFICATION_ENGINE_API_KEY=NOTIFICATION_ENGINE_API_KEY:latest,STORY_GENERATION_WORKFLOW_API_KEY=STORY_GENERATION_WORKFLOW_API_KEY:latest,SGW_WEBHOOK_SECRET=SGW_WEBHOOK_SECRET:latest,GOOGLE_ANALYTICS_API_SECRET=GOOGLE_ANALYTICS_API_SECRET:latest,LEAD_BOUNCE_API_SECRET=LEAD_BOUNCE_API_SECRET:latest'
+
+images:
+  - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME' # Use substitution
+
+# Remove sensitive data from substitutions - all secrets now in Secret Manager
+substitutions:
+  _SERVICE_NAME: 'mythoria-webapp'
+  _REGION: 'europe-west9'
+  _DB_PORT: '5432'
+  _DB_NAME: 'mythoria_db'
+  _GOOGLE_CLOUD_PROJECT_ID: 'oceanic-beach-460916-n5'
+  _GOOGLE_CLOUD_LOCATION: 'europe-west9'
+  _PUBSUB_TOPIC: 'mythoria-story-requests'
+  _PUBSUB_AUDIOBOOK_TOPIC: 'mythoria-audiobook-requests'
+  _STORAGE_BUCKET_NAME: 'mythoria-generated-stories'
+  _PUBLIC_STORAGE_BUCKET_NAME: 'mythoria-public'
+  _NEXT_PUBLIC_BASE_URL: 'https://mythoria.pt'
+  _NEXT_PUBLIC_SUPPORTED_LOCALES: 'en-US,pt-PT,es-ES,fr-FR,de-DE'
+  _NEXT_PUBLIC_GOOGLE_ADS_ID: 'AW-17204783135'
+  _NEXT_PUBLIC_GOOGLE_TAG_ID: 'GT-PBCDVJTJ'
+  _STRIPE_API_VERSION: ''
+  _STRIPE_CREDIT_TAX_CODE: ''
+  _NEXT_PUBLIC_TTS_PROVIDER: 'openai'
+  _NEXT_PUBLIC_DEFAULT_CURRENCY: 'EUR'
+  _NEXT_PUBLIC_APP_DOMAIN: 'mythoria.pt'
+  _CLERK_SIGN_IN_URL: '/sign-in'
+  _CLERK_SIGN_UP_URL: '/sign-up'
+  _CLERK_SIGN_IN_FALLBACK_REDIRECT_URL: '/my-stories'
+  _CLERK_SIGN_UP_FALLBACK_REDIRECT_URL: '/profile/onboarding'
+  _CLERK_SIGN_UP_FORCE_REDIRECT_URL: '/profile/onboarding'
+  _CLERK_OAUTH_CLIENT_ID: 'wAXAp55pdIzwfrgp'
+  _NEXT_PUBLIC_CLERK_IS_DEVELOPMENT: 'false'
+  _MCP_AUTHORIZATION_SERVER_URL: 'https://clerk.mythoria.pt'
+  _MCP_RESOURCE_URL: 'https://mythoria.pt/api/mcp'
+  _MCP_WIDGET_DOMAIN: 'https://mythoria.pt'
+  _MCP_AUTH_ALLOW_SESSION_TOKEN: 'false'
+  _NEXTAUTH_URL: 'https://mythoria.pt'
+  _STORY_GENERATION_WORKFLOW_URL: 'https://story-generation-workflow-803421888801.europe-west9.run.app'
+  _ADMIN_API_URL: 'https://mythoria-admin-803421888801.europe-west9.run.app'
+  _NOTIFICATION_ENGINE_URL: 'https://notification-engine-803421888801.europe-west9.run.app'
+
+options:
+  # Use higher machine type for faster builds
+  machineType: 'E2_HIGHCPU_8'
+  # Enable disk size optimization
+  diskSizeGb: '100'

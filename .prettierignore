@@ -1,5 +1,7 @@
 # Build artifacts
 .next/
+.agents/
+.claude/
 out/
 dist/
 coverage/

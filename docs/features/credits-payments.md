@@ -2,28 +2,28 @@
 
 ## Overview
 
-Mythoria uses a credit-based economy for paid services such as e-books, printed books, and audiobook generation. Credits are purchased in bundles and spent when users trigger billable actions. This document outlines the user-facing experience, the pricing and checkout flow, and the supporting APIs and components.
+Mythoria uses a credit-based economy for paid services such as e-books, printed books, audiobook generation, and AI-assisted editing. Credits are purchased in bundles and spent when users trigger billable actions.
 
 ## End-User Experience
 
 ### Pricing & Credit Bundles
 
-- Users visit the Pricing page to compare service costs (e-book generation, printing, audiobook narration) and credit bundles.
+- Users visit the Pricing page to compare service costs and credit bundles.
 - Each bundle highlights the best value, while FAQ sections clarify common questions.
 
 ### Buying Credits
 
-- The Buy Credits page opens a cart experience where users can add or remove bundles, view subtotals, VAT, and the total.
-- Promotion codes can be applied to add bonus credits to the user's balance; they do not currently change cart pricing.
-- Users can enter optional billing details in the checkout UI, but the current flow keeps them client-side and does not persist them through a dedicated billing API.
-- A payment method is selected (Revolut Pay or MB Way), and the order is placed without leaving the flow.
+- The Buy Credits page opens a cart experience where users can add or remove bundles, view subtotal/VAT/total, and redeem promo codes.
+- Promotion codes can add bonus credits to the user's balance; they do not currently change cart pricing.
+- Stripe Hosted Checkout is the only customer-facing checkout path for cards, wallets, MB WAY, billing details, tax ID collection, automatic tax, and invoices.
+- Public credit prices remain EUR tax-inclusive. Stripe Tax and the final Stripe invoice are the tax source of truth.
 
 ### Credit Usage
 
-- When a paid action is triggered (e.g., audiobook generation), the system checks the credit balance and blocks the action if credits are insufficient.
+- When a paid action is triggered, the system checks the credit balance and blocks the action if credits are insufficient.
 - Successful actions immediately deduct credits and update the visible balance.
 
-## Implementation Details (Developer View)
+## Implementation Details
 
 ### Pricing & Marketing Surfaces
 
@@ -32,25 +32,29 @@ Mythoria uses a credit-based economy for paid services such as e-books, printed 
 
 ### Checkout Flow
 
-- `src/app/[locale]/buy-credits/page.tsx` manages the buy flow shell and handles querystring callbacks after payment redirects.
-- `src/components/CartView.tsx` and `useCart` maintain cart state, subtotal, VAT, and total calculations. The current checkout math shows VAT using a 6% split in the page logic.
+- `src/app/[locale]/buy-credits/page.tsx` manages the buy flow shell and handles querystring callbacks after Stripe redirects.
+- `src/components/CartView.tsx` and `useCart` maintain cart state, subtotal, VAT, and total calculations.
 - `src/components/PromotionCodeRedeemer.tsx` posts to `/api/codes/redeem` to validate promo codes and apply bonuses.
-- `src/components/BillingInformation.tsx` collects optional billing details locally in the checkout UI. There is no dedicated `/api/billing` route in the current implementation.
-- `src/components/PaymentSelector.tsx` allows users to choose Revolut Pay or MB Way.
-- Revolut Pay is handled by `src/components/RevolutPayment.tsx`, which initializes `@revolut/checkout` via `/api/revolut-config` and handles the widget callbacks.
-- MB Way checkout calls `/api/payments/mbway`, creates an admin ticket workflow, then displays a modal with payment instructions.
+- `src/components/PaymentSelector.tsx` presents the single Stripe Checkout path with card, wallet, and MB WAY affordances.
+- `POST /api/payments/stripe/checkout` validates credit packages server-side, creates a pending `payment_orders` row, creates or reuses a Stripe Customer, and returns a hosted Checkout URL.
+- Stripe Checkout Sessions use automatic billing address collection, phone collection, tax ID collection, `automatic_tax`, invoice creation, and tax-inclusive EUR line items. Stripe only asks for address fields when needed for tax, invoice, payment method, or risk checks.
+- Stripe Checkout receives a locale mapped from the current Mythoria route locale, such as `fr-FR` to Stripe `fr`.
+- `POST /api/payments/stripe/webhook` verifies Stripe signatures and fulfills completed Checkout Sessions. Credits are granted only from verified Stripe webhooks.
+- `GET /api/payments/stripe/session` lets the Buy Credits page poll the local order after returning from Stripe while webhook fulfillment finalizes credits.
 
 ### Credit Ledger & Enforcement
 
 - Credit balances are fetched from `/api/my-credits` and displayed through `src/components/CreditsDisplay.tsx`.
-- Billable events (e.g., audiobook generation, self-print, print requests, and AI edits) verify pricing or route-level cost logic, check balances with `creditService.getAuthorCreditBalance`, and deduct credits with `creditService.deductCredits`.
-- Revolut order creation happens through `/api/payments/order`, which stores the pending order and returns the provider token. Credits are granted after successful webhook completion.
+- Billable events verify pricing or route-level cost logic, check balances with `creditService.getAuthorCreditBalance`, and deduct credits with `creditService.deductCredits`.
+- Stripe order creation stores pending `payment_orders`. Credit fulfillment is idempotent and only transitions an order to completed once.
+- Stripe order metadata stores invoice IDs, hosted invoice URLs, invoice PDF URLs, payment intent IDs, payment method type, and customer details when Stripe provides them.
 
 ### Relevant API Endpoints
 
 - `GET /api/pricing` and `GET /api/pricing/*` - pricing and package listings.
-- `POST /api/payments/order` - create a Revolut order and receive a payment token.
-- `POST /api/payments/mbway` - create an MB Way payment request and admin ticket workflow.
+- `POST /api/payments/stripe/checkout` - create a Stripe Hosted Checkout Session for selected credit packages.
+- `POST /api/payments/stripe/webhook` - verify Stripe signatures and fulfill completed Checkout Sessions.
+- `GET /api/payments/stripe/session` - return the authenticated user's local order status after Stripe redirects back.
 - `POST /api/codes/redeem` - validate promo codes.
 - `GET /api/my-credits` - credit balance and history.
 
@@ -60,9 +64,9 @@ flowchart TD
     PricingPackages[/api/pricing/credit-packages] --> PricingPage
     PricingPage --> BuyCredits
     BuyCredits --> CartView
-    CartView --> RevolutAPI[/api/payments/order]
-    CartView --> MbwayAPI[/api/payments/mbway]
-    RevolutAPI --> RevolutWidget
-    MbwayAPI --> MbwayModal
+    CartView --> StripeCheckout[/api/payments/stripe/checkout]
+    StripeCheckout --> StripeHosted[Stripe Hosted Checkout]
+    StripeHosted --> StripeWebhook[/api/payments/stripe/webhook]
+    StripeWebhook --> Credits[Credit fulfillment]
     PromoCodes[PromotionCodeRedeemer] -->|POST| CodesAPI[/api/codes/redeem]
 ```

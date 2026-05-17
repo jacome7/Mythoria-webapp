@@ -1,15 +1,22 @@
+import Stripe from 'stripe';
+import { and, desc, eq, ne } from 'drizzle-orm';
+
 import { db } from '../index';
 import {
-  paymentOrders,
+  authors,
   paymentEvents,
   paymentMethods,
-  authors,
+  paymentOrders,
   type PaymentOrder,
 } from '../schema';
-import { eq, and, desc } from 'drizzle-orm';
-import { creditPackagesService } from './credit-packages';
-import { notificationClient } from '../../lib/notifications/client';
 import { ga4Service } from '../../lib/analytics/ga4';
+import { notificationClient } from '../../lib/notifications/client';
+import { creditPackagesService } from './credit-packages';
+
+type StripeClientConfig = NonNullable<ConstructorParameters<typeof Stripe>[1]>;
+type PaymentSource = 'stripe';
+type StripeLineItem = NonNullable<Stripe.Checkout.SessionCreateParams['line_items']>[number];
+type StripeCheckoutLocale = NonNullable<Stripe.Checkout.SessionCreateParams['locale']>;
 
 export interface CreditPackage {
   id: number;
@@ -30,70 +37,216 @@ export interface CreateOrderRequest {
   idempotencyKey?: string;
 }
 
-export interface RevolutOrderResponse {
-  id: string;
-  token: string;
-  state: string;
-  amount: number; // ✅ Updated: amount is a direct number, not an object
-  currency: string; // ✅ Updated: currency is at the top level
+export interface CreateStripeCheckoutRequest extends CreateOrderRequest {
+  email: string;
+  displayName: string;
+  phone?: string | null;
+  locale?: string;
+  successUrl: string;
+  cancelUrl: string;
+  clientId?: string;
+  sessionId?: string;
 }
 
-export interface WebhookPayload {
-  event: string;
-  order_id: string;
-  timestamp?: string;
-  state?: string;
-  amount?: {
-    value: number;
-    currency: string;
+export interface CalculatedOrderTotals {
+  totalCredits: number;
+  totalAmount: number;
+  itemsBreakdown: Array<{
+    packageId: number;
+    quantity: number;
+    credits: number;
+    unitPrice: number;
+    totalPrice: number;
+  }>;
+}
+
+interface StripeCheckoutMetadata {
+  stripe?: {
+    checkoutSessionId?: string;
+    checkoutUrl?: string | null;
+    customerId?: string | null;
+    paymentIntentId?: string | null;
+    invoiceId?: string | null;
+    invoiceHostedUrl?: string | null;
+    invoicePdf?: string | null;
+    paymentMethodType?: string | null;
+    paymentStatus?: string | null;
+    customerDetails?: unknown;
   };
-  payment_method?: {
-    type: string;
-    brand?: string;
-    last4?: string;
-    exp_month?: string;
-    exp_year?: string;
+  orderTotals?: CalculatedOrderTotals;
+  creditPackages?: CreateOrderRequest['creditPackages'];
+  analytics?: {
+    client_id?: string;
+    session_id?: string;
   };
+  [key: string]: unknown;
+}
+
+let stripeClient: Stripe | null = null;
+
+function getStripeClient(): Stripe {
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+  if (!secretKey) {
+    throw new Error('STRIPE_SECRET_KEY environment variable is not set');
+  }
+
+  if (!stripeClient) {
+    const config: StripeClientConfig = {};
+    if (process.env.STRIPE_API_VERSION) {
+      config.apiVersion = process.env.STRIPE_API_VERSION as StripeClientConfig['apiVersion'];
+    }
+    stripeClient = new Stripe(secretKey, config);
+  }
+
+  return stripeClient;
+}
+
+function getStripeId(value: string | { id: string } | null | undefined): string | null {
+  if (!value) return null;
+  return typeof value === 'string' ? value : value.id;
+}
+
+function getStripeCreditTaxCode(): string | undefined {
+  const taxCode = process.env.STRIPE_CREDIT_TAX_CODE?.trim();
+  return taxCode || undefined;
+}
+
+export function mapToStripeCheckoutLocale(locale?: string): StripeCheckoutLocale {
+  switch (locale?.toLowerCase()) {
+    case 'en':
+    case 'en-us':
+      return 'en';
+    case 'pt':
+    case 'pt-pt':
+      return 'pt';
+    case 'es':
+    case 'es-es':
+      return 'es';
+    case 'fr':
+    case 'fr-fr':
+      return 'fr';
+    case 'de':
+    case 'de-de':
+      return 'de';
+    default:
+      return 'auto';
+  }
+}
+
+function mergeMetadata(
+  current: PaymentOrder['metadata'],
+  updates: StripeCheckoutMetadata,
+): StripeCheckoutMetadata {
+  const base =
+    current && typeof current === 'object' && !Array.isArray(current)
+      ? (current as StripeCheckoutMetadata)
+      : {};
+
+  return {
+    ...base,
+    ...updates,
+    stripe: {
+      ...(base.stripe || {}),
+      ...(updates.stripe || {}),
+    },
+    analytics: {
+      ...(base.analytics || {}),
+      ...(updates.analytics || {}),
+    },
+  };
+}
+
+export function buildStripeCheckoutLineItems(
+  itemsBreakdown: CalculatedOrderTotals['itemsBreakdown'],
+): StripeLineItem[] {
+  const taxCode = getStripeCreditTaxCode();
+
+  return itemsBreakdown.map((item) => {
+    const productData: {
+      name: string;
+      metadata: Record<string, string>;
+      tax_code?: string;
+    } = {
+      name: `${item.credits} Mythoria Credits`,
+      metadata: {
+        mythoriaPackageId: String(item.packageId),
+      },
+    };
+
+    if (taxCode) {
+      productData.tax_code = taxCode;
+    }
+
+    return {
+      quantity: item.quantity,
+      price_data: {
+        currency: 'eur',
+        unit_amount: Math.round(item.unitPrice * 100),
+        tax_behavior: 'inclusive',
+        product_data: productData,
+      },
+    };
+  });
+}
+
+async function retrieveExpandedCheckoutSession(
+  sessionId: string,
+): Promise<Stripe.Checkout.Session> {
+  return getStripeClient().checkout.sessions.retrieve(sessionId, {
+    expand: ['payment_intent.payment_method', 'invoice'],
+  });
+}
+
+function getExpandedInvoice(session: Stripe.Checkout.Session): Stripe.Invoice | null {
+  return session.invoice && typeof session.invoice !== 'string' ? session.invoice : null;
+}
+
+function getExpandedPaymentIntent(session: Stripe.Checkout.Session): Stripe.PaymentIntent | null {
+  return session.payment_intent && typeof session.payment_intent !== 'string'
+    ? session.payment_intent
+    : null;
+}
+
+function getExpandedPaymentMethod(
+  paymentIntent: Stripe.PaymentIntent | null,
+): Stripe.PaymentMethod | null {
+  if (!paymentIntent?.payment_method || typeof paymentIntent.payment_method === 'string') {
+    return null;
+  }
+
+  if ('deleted' in paymentIntent.payment_method) {
+    return null;
+  }
+
+  return paymentIntent.payment_method;
 }
 
 export const paymentService = {
-  // Get credit packages from database with frontend-compatible IDs
   async getCreditPackages(): Promise<CreditPackage[]> {
     const dbPackages = await creditPackagesService.getActiveCreditPackages();
 
-    // Transform the data to match the frontend expectations (same as in API)
     return dbPackages.map((pkg, index) => ({
-      id: index + 1, // Use incremental ID for frontend compatibility
+      id: index + 1,
       credits: pkg.credits,
       price: parseFloat(pkg.price),
       popular: pkg.popular,
       bestValue: pkg.bestValue,
       key: pkg.key,
-      dbId: pkg.id, // Keep the database ID for reference
+      dbId: pkg.id,
     }));
   },
 
-  // Get credit package by frontend ID
   async getCreditPackage(id: number): Promise<CreditPackage | undefined> {
     const packages = await this.getCreditPackages();
     return packages.find((pkg) => pkg.id === id);
   },
 
-  // Calculate total for order
-  async calculateOrderTotal(packages: Array<{ packageId: number; quantity: number }>): Promise<{
-    totalCredits: number;
-    totalAmount: number;
-    itemsBreakdown: Array<{
-      packageId: number;
-      quantity: number;
-      credits: number;
-      unitPrice: number;
-      totalPrice: number;
-    }>;
-  }> {
+  async calculateOrderTotal(
+    packages: Array<{ packageId: number; quantity: number }>,
+  ): Promise<CalculatedOrderTotals> {
     let totalCredits = 0;
     let totalAmount = 0;
-    const itemsBreakdown = [];
+    const itemsBreakdown: CalculatedOrderTotals['itemsBreakdown'] = [];
 
     for (const item of packages) {
       const pkg = await this.getCreditPackage(item.packageId);
@@ -123,232 +276,732 @@ export const paymentService = {
     };
   },
 
-  // Create Revolut order
-  async createRevolutOrder(
-    orderData: CreateOrderRequest,
-  ): Promise<{ order: PaymentOrder; revolutOrder: RevolutOrderResponse }> {
-    // Calculate order totals
-    const orderTotals = await this.calculateOrderTotal(orderData.creditPackages);
-
-    // Determine API base URL based on environment
-    const apiBaseUrl =
-      process.env.REVOLUT_API_URL ||
-      (process.env.NODE_ENV === 'production'
-        ? 'https://merchant.revolut.com'
-        : 'https://sandbox-merchant.revolut.com');
-
-    // Create order in Revolut
-    const revolutOrderPayload = {
-      amount: Math.round(orderTotals.totalAmount * 100), // Convert to cents
-      currency: 'EUR',
-      description: `Mythoria Credits Purchase - ${orderTotals.totalCredits} credits`,
-      merchant_order_ext_ref: `mythoria-${Date.now()}`,
-      ...(orderData.idempotencyKey && { idempotency_key: orderData.idempotencyKey }),
-    };
-
-    const revolutResponse = await fetch(`${apiBaseUrl}/api/orders`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.REVOLUT_API_SECRET_KEY}`,
-        'Content-Type': 'application/json',
-        'Revolut-Api-Version': '2024-09-01',
-        ...(orderData.idempotencyKey && { 'Idempotency-Key': orderData.idempotencyKey }),
-      },
-      body: JSON.stringify(revolutOrderPayload),
+  async findOrCreateStripeCustomer(
+    stripe: Stripe,
+    customerData: {
+      authorId: string;
+      email: string;
+      displayName: string;
+      phone?: string | null;
+    },
+  ): Promise<string> {
+    const existingCustomers = await stripe.customers.list({
+      email: customerData.email,
+      limit: 10,
     });
 
-    if (!revolutResponse.ok) {
-      const errorText = await revolutResponse.text();
-      console.error('PaymentService: Revolut API error:', {
-        status: revolutResponse.status,
-        statusText: revolutResponse.statusText,
-        errorText,
-        requestPayload: revolutOrderPayload,
-      });
-      throw new Error(`Revolut API error: ${revolutResponse.status} - ${errorText}`);
+    const exactCustomer = existingCustomers.data.find(
+      (customer) => customer.metadata?.mythoriaAuthorId === customerData.authorId,
+    );
+
+    if (exactCustomer) {
+      return exactCustomer.id;
     }
 
-    const revolutOrder: RevolutOrderResponse = await revolutResponse.json();
-
-    // Verify the order amount matches what we requested
-    const returnedAmount = revolutOrder.amount;
-    const requestedAmount = Math.round(orderTotals.totalAmount * 100);
-
-    if (returnedAmount !== requestedAmount) {
-      console.warn('PaymentService: Amount mismatch detected:', {
-        requestedAmount: requestedAmount,
-        returnedAmount: returnedAmount,
-        requestedCurrency: 'EUR',
-        returnedCurrency: revolutOrder.currency,
+    const [sameEmailCustomer] = existingCustomers.data;
+    if (sameEmailCustomer && !sameEmailCustomer.deleted) {
+      await stripe.customers.update(sameEmailCustomer.id, {
+        name: customerData.displayName,
+        phone: customerData.phone || undefined,
+        metadata: {
+          ...sameEmailCustomer.metadata,
+          mythoriaAuthorId: customerData.authorId,
+        },
       });
+      return sameEmailCustomer.id;
     }
 
-    // Save order to database
+    const customer = await stripe.customers.create({
+      email: customerData.email,
+      name: customerData.displayName,
+      phone: customerData.phone || undefined,
+      metadata: {
+        mythoriaAuthorId: customerData.authorId,
+      },
+    });
+
+    return customer.id;
+  },
+
+  async createStripeCheckoutSession(
+    checkoutData: CreateStripeCheckoutRequest,
+  ): Promise<{ order: PaymentOrder; checkoutSession: Stripe.Checkout.Session }> {
+    const stripe = getStripeClient();
+    const orderTotals = await this.calculateOrderTotal(checkoutData.creditPackages);
+    const amountInCents = Math.round(orderTotals.totalAmount * 100);
+    const customerId = await this.findOrCreateStripeCustomer(stripe, {
+      authorId: checkoutData.userId,
+      email: checkoutData.email,
+      displayName: checkoutData.displayName,
+      phone: checkoutData.phone,
+    });
+
     const [order] = await db
       .insert(paymentOrders)
       .values({
-        authorId: orderData.userId,
-        amount: Math.round(orderTotals.totalAmount * 100), // Convert to cents
+        authorId: checkoutData.userId,
+        amount: amountInCents,
         currency: 'EUR',
         status: 'pending',
-        provider: 'revolut',
-        providerOrderId: revolutOrder.id,
-        providerPublicId: revolutOrder.token,
+        provider: 'stripe',
         creditBundle: {
           credits: orderTotals.totalCredits,
           price: orderTotals.totalAmount,
         },
+        metadata: {
+          orderTotals,
+          creditPackages: checkoutData.creditPackages,
+          analytics: {
+            client_id: checkoutData.clientId,
+            session_id: checkoutData.sessionId,
+          },
+          stripe: {
+            customerId,
+          },
+        },
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
       })
       .returning();
 
-    // Create order created event
     await db.insert(paymentEvents).values({
       orderId: order.orderId,
       eventType: 'order_created',
       data: {
-        revolutOrder,
+        provider: 'stripe',
         orderTotals,
-        creditPackages: orderData.creditPackages,
+        creditPackages: checkoutData.creditPackages,
       },
     });
 
-    return { order, revolutOrder };
+    try {
+      const checkoutSession = await stripe.checkout.sessions.create(
+        {
+          mode: 'payment',
+          customer: customerId,
+          client_reference_id: order.orderId,
+          billing_address_collection: 'auto',
+          customer_update: {
+            address: 'auto',
+            name: 'auto',
+          },
+          phone_number_collection: {
+            enabled: true,
+          },
+          tax_id_collection: {
+            enabled: true,
+          },
+          automatic_tax: {
+            enabled: true,
+          },
+          invoice_creation: {
+            enabled: true,
+            invoice_data: {
+              description: `Mythoria Credits Purchase - ${orderTotals.totalCredits} credits`,
+              metadata: {
+                mythoriaOrderId: order.orderId,
+                mythoriaAuthorId: checkoutData.userId,
+              },
+            },
+          },
+          line_items: buildStripeCheckoutLineItems(orderTotals.itemsBreakdown),
+          locale: mapToStripeCheckoutLocale(checkoutData.locale),
+          success_url: checkoutData.successUrl,
+          cancel_url: checkoutData.cancelUrl,
+          metadata: {
+            mythoriaOrderId: order.orderId,
+            mythoriaAuthorId: checkoutData.userId,
+            credits: String(orderTotals.totalCredits),
+          },
+          payment_intent_data: {
+            metadata: {
+              mythoriaOrderId: order.orderId,
+              mythoriaAuthorId: checkoutData.userId,
+              credits: String(orderTotals.totalCredits),
+            },
+          },
+        },
+        {
+          idempotencyKey: checkoutData.idempotencyKey || `mythoria-checkout-${order.orderId}`,
+        },
+      );
+
+      const metadata = mergeMetadata(order.metadata, {
+        stripe: {
+          checkoutSessionId: checkoutSession.id,
+          checkoutUrl: checkoutSession.url,
+          customerId,
+          paymentStatus: checkoutSession.payment_status,
+        },
+      });
+
+      const [updatedOrder] = await db
+        .update(paymentOrders)
+        .set({
+          providerOrderId: checkoutSession.id,
+          providerPublicId: checkoutSession.id,
+          metadata,
+          updatedAt: new Date(),
+          expiresAt: checkoutSession.expires_at
+            ? new Date(checkoutSession.expires_at * 1000)
+            : order.expiresAt,
+        })
+        .where(eq(paymentOrders.orderId, order.orderId))
+        .returning();
+
+      await db.insert(paymentEvents).values({
+        orderId: order.orderId,
+        eventType: 'payment_initiated',
+        data: {
+          provider: 'stripe',
+          checkoutSessionId: checkoutSession.id,
+          paymentStatus: checkoutSession.payment_status,
+        },
+      });
+
+      return { order: updatedOrder, checkoutSession };
+    } catch (error) {
+      await this.updateOrderStatus(order.orderId, 'failed');
+      await db.insert(paymentEvents).values({
+        orderId: order.orderId,
+        eventType: 'payment_failed',
+        data: {
+          provider: 'stripe',
+          error: error instanceof Error ? error.message : 'Unknown Stripe checkout error',
+        },
+      });
+      throw error;
+    }
   },
 
-  // Get order by Revolut order ID
-  async getOrderByRevolutId(revolutOrderId: string) {
+  async getOrderByStripeSessionId(sessionId: string) {
     const [order] = await db
       .select()
       .from(paymentOrders)
-      .where(eq(paymentOrders.providerOrderId, revolutOrderId));
+      .where(
+        and(eq(paymentOrders.provider, 'stripe'), eq(paymentOrders.providerOrderId, sessionId)),
+      );
 
     return order;
   },
 
-  // Get order by token
-  async getOrderByToken(token: string) {
+  async getOrderByStripePaymentIntentId(paymentIntentId: string) {
     const [order] = await db
       .select()
       .from(paymentOrders)
-      .where(eq(paymentOrders.providerPublicId, token));
+      .where(
+        and(
+          eq(paymentOrders.provider, 'stripe'),
+          eq(paymentOrders.providerPublicId, paymentIntentId),
+        ),
+      );
 
     return order;
   },
 
-  // Update order status
-  async updateOrderStatus(
-    orderId: string,
-    status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled',
-  ) {
-    const updateData: Partial<PaymentOrder> = {
-      status: status as 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled',
-      updatedAt: new Date(),
-    };
+  async getOrderForAuthorByStripeSessionId(authorId: string, sessionId: string) {
+    const [order] = await db
+      .select()
+      .from(paymentOrders)
+      .where(
+        and(
+          eq(paymentOrders.provider, 'stripe'),
+          eq(paymentOrders.authorId, authorId),
+          eq(paymentOrders.providerOrderId, sessionId),
+        ),
+      );
 
+    return order;
+  },
+
+  async updateOrderStatus(orderId: string, status: PaymentOrder['status']) {
     const [updatedOrder] = await db
       .update(paymentOrders)
-      .set(updateData)
+      .set({
+        status,
+        updatedAt: new Date(),
+      })
       .where(eq(paymentOrders.orderId, orderId))
       .returning();
 
     return updatedOrder;
   },
 
-  // Process webhook
-  async processWebhook(payload: WebhookPayload): Promise<{ success: boolean; message: string }> {
+  async constructStripeWebhookEvent(
+    payload: string | Buffer,
+    signature: string,
+  ): Promise<Stripe.Event> {
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      throw new Error('STRIPE_WEBHOOK_SECRET environment variable is not set');
+    }
+
+    return getStripeClient().webhooks.constructEventAsync(payload, signature, webhookSecret);
+  },
+
+  async processStripeWebhook(event: Stripe.Event): Promise<{ success: boolean; message: string }> {
     try {
-      // Find order by Revolut order ID
-      const order = await this.getOrderByRevolutId(payload.order_id);
+      switch (event.type) {
+        case 'checkout.session.completed':
+          await this.handleStripeCheckoutCompleted(
+            event.data.object as Stripe.Checkout.Session,
+            event.id,
+          );
+          return { success: true, message: 'Stripe checkout session completed' };
 
-      if (!order) {
-        return { success: false, message: `Order not found: ${payload.order_id}` };
-      }
+        case 'checkout.session.async_payment_succeeded':
+          await this.handleStripeCheckoutCompleted(
+            event.data.object as Stripe.Checkout.Session,
+            event.id,
+          );
+          return { success: true, message: 'Stripe async checkout payment completed' };
 
-      // Create event record (idempotent - will help prevent duplicate processing)
-      await db.insert(paymentEvents).values({
-        orderId: order.orderId,
-        eventType: 'webhook_received',
-        data: payload,
-        createdAt: new Date(),
-      });
+        case 'checkout.session.async_payment_failed':
+          await this.handleStripeCheckoutFailed(
+            event.data.object as Stripe.Checkout.Session,
+            'checkout.session.async_payment_failed',
+            event.id,
+          );
+          return { success: true, message: 'Stripe async checkout payment failed' };
 
-      // Process the event based on type
-      switch (payload.event) {
-        case 'ORDER_COMPLETED':
-          // This is the main event we care about - payment successful
-          await this.handleOrderCompleted(order, payload);
-          return { success: true, message: `Order ${order.orderId} completed successfully` };
+        case 'checkout.session.expired':
+          await this.handleStripeCheckoutExpired(
+            event.data.object as Stripe.Checkout.Session,
+            event.id,
+          );
+          return { success: true, message: 'Stripe checkout session expired' };
 
-        case 'order.cancelled':
-          await this.updateOrderStatus(order.orderId, 'cancelled');
-          return { success: true, message: `Order ${order.orderId} cancelled` };
+        case 'payment_intent.succeeded':
+          await this.handleStripePaymentIntentSucceeded(
+            event.data.object as Stripe.PaymentIntent,
+            event.id,
+          );
+          return { success: true, message: 'Stripe payment intent succeeded' };
 
-        case 'order.failed':
-        case 'ORDER_PAYMENT_FAILED':
-          await this.updateOrderStatus(order.orderId, 'failed');
-          return { success: true, message: `Order ${order.orderId} failed` };
+        case 'payment_intent.payment_failed':
+          await this.handleStripePaymentIntentFailed(
+            event.data.object as Stripe.PaymentIntent,
+            event.id,
+          );
+          return { success: true, message: 'Stripe payment intent failed' };
 
-        case 'dispute.opened':
-          // Handle dispute - could send notification to admin
-          console.log(`Dispute opened for order ${order.orderId}`);
-          return { success: true, message: `Dispute opened for order ${order.orderId}` };
+        case 'charge.refunded':
+          await this.recordStripeChargeEvent(
+            event.data.object as Stripe.Charge,
+            'refund_completed',
+            event.id,
+          );
+          return { success: true, message: 'Stripe charge refund recorded' };
+
+        case 'charge.dispute.created':
+          await this.recordStripeDisputeEvent(event.data.object as Stripe.Dispute, event.id);
+          return { success: true, message: 'Stripe charge dispute recorded' };
 
         default:
-          console.log(`Unhandled webhook event: ${payload.event}`);
-          return { success: true, message: `Unhandled event: ${payload.event}` };
+          console.log(`Unhandled Stripe webhook event: ${event.type}`);
+          return { success: true, message: `Unhandled event: ${event.type}` };
       }
     } catch (error) {
-      console.error('Webhook processing error:', error);
+      console.error('Stripe webhook processing error:', error);
       return { success: false, message: error instanceof Error ? error.message : 'Unknown error' };
     }
   },
 
-  // Handle completed order
-  async handleOrderCompleted(order: PaymentOrder, payload: WebhookPayload) {
-    // Check if order is already completed to prevent duplicate processing
+  async handleStripeCheckoutCompleted(
+    sessionEvent: Stripe.Checkout.Session,
+    stripeEventId?: string,
+  ) {
+    const session = await retrieveExpandedCheckoutSession(sessionEvent.id);
+    const order = await this.getOrderByStripeSessionId(session.id);
+    if (!order) {
+      throw new Error(`Stripe order not found: ${session.id}`);
+    }
+
+    await db.insert(paymentEvents).values({
+      orderId: order.orderId,
+      eventType: 'webhook_received',
+      data: {
+        provider: 'stripe',
+        stripeEventId,
+        type: 'checkout.session.completed',
+        session,
+      },
+      createdAt: new Date(),
+    });
+
+    if (session.amount_total !== order.amount) {
+      throw new Error(
+        `Stripe amount mismatch for order ${order.orderId}: expected ${order.amount}, got ${session.amount_total}`,
+      );
+    }
+
+    const paymentIntentId = getStripeId(session.payment_intent);
+    const invoiceId = getStripeId(session.invoice);
+
+    if (session.payment_status !== 'paid') {
+      const metadata = mergeMetadata(order.metadata, {
+        stripe: {
+          checkoutSessionId: session.id,
+          customerId: getStripeId(session.customer),
+          paymentIntentId,
+          invoiceId,
+          paymentStatus: session.payment_status,
+          customerDetails: session.customer_details,
+        },
+      });
+
+      await db
+        .update(paymentOrders)
+        .set({
+          status: 'processing',
+          providerPublicId: paymentIntentId || order.providerPublicId,
+          metadata,
+          updatedAt: new Date(),
+        })
+        .where(eq(paymentOrders.orderId, order.orderId));
+
+      return;
+    }
+
+    const expandedInvoice = getExpandedInvoice(session);
+    let invoiceHostedUrl = expandedInvoice?.hosted_invoice_url || null;
+    let invoicePdf = expandedInvoice?.invoice_pdf || null;
+
+    if (invoiceId && !expandedInvoice) {
+      try {
+        const invoice = await getStripeClient().invoices.retrieve(invoiceId);
+        invoiceHostedUrl = invoice.hosted_invoice_url || null;
+        invoicePdf = invoice.invoice_pdf || null;
+      } catch (error) {
+        console.error('Failed to retrieve Stripe invoice:', error);
+      }
+    }
+
+    const paymentIntent = getExpandedPaymentIntent(session);
+    const paymentMethod = getExpandedPaymentMethod(paymentIntent);
+    const paymentMethodType =
+      paymentMethod?.type || paymentIntent?.payment_method_types?.[0] || null;
+    const paymentMethodData =
+      paymentMethod?.type === 'card' && paymentMethod.card
+        ? {
+            type: 'card',
+            providerRef: paymentMethod.id,
+            brand: paymentMethod.card.brand,
+            last4: paymentMethod.card.last4,
+            exp_month: String(paymentMethod.card.exp_month),
+            exp_year: String(paymentMethod.card.exp_year),
+            billing_details: paymentMethod.billing_details,
+          }
+        : undefined;
+
+    const metadata = mergeMetadata(order.metadata, {
+      stripe: {
+        checkoutSessionId: session.id,
+        customerId: getStripeId(session.customer),
+        paymentIntentId,
+        invoiceId,
+        invoiceHostedUrl,
+        invoicePdf,
+        paymentMethodType,
+        paymentStatus: session.payment_status,
+        customerDetails: session.customer_details,
+      },
+    });
+
+    const [updatedOrder] = await db
+      .update(paymentOrders)
+      .set({
+        providerPublicId: paymentIntentId || order.providerPublicId,
+        metadata,
+        updatedAt: new Date(),
+      })
+      .where(eq(paymentOrders.orderId, order.orderId))
+      .returning();
+
+    await this.completeOrder(updatedOrder || order, {
+      source: 'stripe',
+      paymentMethodData,
+    });
+  },
+
+  async handleStripeCheckoutFailed(
+    session: Stripe.Checkout.Session,
+    eventType: string,
+    stripeEventId?: string,
+  ) {
+    const order = await this.getOrderByStripeSessionId(session.id);
+    if (!order || order.status === 'completed') return;
+
+    const metadata = mergeMetadata(order.metadata, {
+      stripe: {
+        checkoutSessionId: session.id,
+        customerId: getStripeId(session.customer),
+        paymentIntentId: getStripeId(session.payment_intent),
+        invoiceId: getStripeId(session.invoice),
+        paymentStatus: session.payment_status,
+        customerDetails: session.customer_details,
+      },
+    });
+
+    await db
+      .update(paymentOrders)
+      .set({
+        status: 'failed',
+        metadata,
+        updatedAt: new Date(),
+      })
+      .where(eq(paymentOrders.orderId, order.orderId));
+
+    await db.insert(paymentEvents).values({
+      orderId: order.orderId,
+      eventType: 'payment_failed',
+      data: {
+        provider: 'stripe',
+        stripeEventId,
+        type: eventType,
+        session,
+      },
+    });
+  },
+
+  async handleStripeCheckoutExpired(session: Stripe.Checkout.Session, stripeEventId?: string) {
+    const order = await this.getOrderByStripeSessionId(session.id);
+    if (!order || order.status === 'completed') return;
+
+    const metadata = mergeMetadata(order.metadata, {
+      stripe: {
+        checkoutSessionId: session.id,
+        paymentStatus: session.payment_status,
+      },
+    });
+
+    await db
+      .update(paymentOrders)
+      .set({
+        status: 'expired',
+        metadata,
+        updatedAt: new Date(),
+      })
+      .where(eq(paymentOrders.orderId, order.orderId));
+
+    await db.insert(paymentEvents).values({
+      orderId: order.orderId,
+      eventType: 'payment_cancelled',
+      data: {
+        provider: 'stripe',
+        stripeEventId,
+        type: 'checkout.session.expired',
+        session,
+      },
+    });
+  },
+
+  async handleStripePaymentIntentSucceeded(
+    paymentIntent: Stripe.PaymentIntent,
+    stripeEventId?: string,
+  ) {
+    const orderId = paymentIntent.metadata?.mythoriaOrderId;
+    let order: PaymentOrder | undefined;
+
+    if (orderId) {
+      [order] = await db.select().from(paymentOrders).where(eq(paymentOrders.orderId, orderId));
+    } else {
+      order = await this.getOrderByStripePaymentIntentId(paymentIntent.id);
+    }
+
+    if (!order || order.status === 'completed') return;
+
+    if (order.providerOrderId) {
+      const session = await retrieveExpandedCheckoutSession(order.providerOrderId);
+      await this.handleStripeCheckoutCompleted(session, stripeEventId);
+      return;
+    }
+
+    const metadata = mergeMetadata(order.metadata, {
+      stripe: {
+        paymentIntentId: paymentIntent.id,
+        paymentStatus: paymentIntent.status,
+        paymentMethodType: paymentIntent.payment_method_types?.[0] || null,
+      },
+    });
+
+    const [updatedOrder] = await db
+      .update(paymentOrders)
+      .set({
+        providerPublicId: paymentIntent.id,
+        metadata,
+        updatedAt: new Date(),
+      })
+      .where(eq(paymentOrders.orderId, order.orderId))
+      .returning();
+
+    await this.completeOrder(updatedOrder || order, {
+      source: 'stripe',
+    });
+  },
+
+  async handleStripePaymentIntentFailed(
+    paymentIntent: Stripe.PaymentIntent,
+    stripeEventId?: string,
+  ) {
+    const orderId = paymentIntent.metadata?.mythoriaOrderId;
+    let order: PaymentOrder | undefined;
+
+    if (orderId) {
+      [order] = await db.select().from(paymentOrders).where(eq(paymentOrders.orderId, orderId));
+    } else {
+      order = await this.getOrderByStripePaymentIntentId(paymentIntent.id);
+    }
+
+    if (!order || order.status === 'completed') return;
+
+    const metadata = mergeMetadata(order.metadata, {
+      stripe: {
+        paymentIntentId: paymentIntent.id,
+        paymentStatus: paymentIntent.status,
+        paymentMethodType: paymentIntent.payment_method_types?.[0] || null,
+      },
+    });
+
+    await db
+      .update(paymentOrders)
+      .set({
+        status: 'failed',
+        providerPublicId: paymentIntent.id,
+        metadata,
+        updatedAt: new Date(),
+      })
+      .where(eq(paymentOrders.orderId, order.orderId));
+
+    await db.insert(paymentEvents).values({
+      orderId: order.orderId,
+      eventType: 'payment_failed',
+      data: {
+        provider: 'stripe',
+        stripeEventId,
+        type: 'payment_intent.payment_failed',
+        paymentIntent,
+      },
+    });
+  },
+
+  async recordStripeChargeEvent(
+    charge: Stripe.Charge,
+    eventType: 'refund_completed' | 'refund_initiated',
+    stripeEventId?: string,
+  ) {
+    const paymentIntentId = getStripeId(charge.payment_intent);
+    if (!paymentIntentId) return;
+
+    const order = await this.getOrderByStripePaymentIntentId(paymentIntentId);
+    if (!order) return;
+
+    await db.insert(paymentEvents).values({
+      orderId: order.orderId,
+      eventType,
+      data: {
+        provider: 'stripe',
+        stripeEventId,
+        charge,
+      },
+    });
+  },
+
+  async recordStripeDisputeEvent(dispute: Stripe.Dispute, stripeEventId?: string) {
+    const paymentIntentId = getStripeId(dispute.payment_intent);
+    if (!paymentIntentId) return;
+
+    const order = await this.getOrderByStripePaymentIntentId(paymentIntentId);
+    if (!order) return;
+
+    await db.insert(paymentEvents).values({
+      orderId: order.orderId,
+      eventType: 'refund_initiated',
+      data: {
+        provider: 'stripe',
+        stripeEventId,
+        dispute,
+      },
+    });
+  },
+
+  async completeOrder(
+    order: PaymentOrder,
+    options: {
+      source: PaymentSource;
+      paymentMethodData?: Record<string, unknown>;
+    },
+  ) {
     if (order.status === 'completed') {
       console.log(`Order ${order.orderId} already completed, skipping duplicate processing`);
       return;
     }
 
-    // Use database transaction to ensure atomicity
+    let completedOrder: PaymentOrder | undefined;
+
     await db.transaction(async (tx) => {
-      // Update order status
-      await tx
+      const [updatedOrder] = await tx
         .update(paymentOrders)
         .set({
           status: 'completed',
           updatedAt: new Date(),
         })
-        .where(eq(paymentOrders.orderId, order.orderId));
+        .where(and(eq(paymentOrders.orderId, order.orderId), ne(paymentOrders.status, 'completed')))
+        .returning();
 
-      // Add credits to user's balance
-      const creditBundle = order.creditBundle as { credits: number; price: number };
+      if (!updatedOrder) {
+        return;
+      }
+
+      completedOrder = updatedOrder;
+
+      const creditBundle = updatedOrder.creditBundle as { credits: number; price: number };
       const { creditService } = await import('../services');
 
-      // Add credits using the credit service
       await creditService.addCredits(
-        order.authorId,
+        updatedOrder.authorId,
         creditBundle.credits,
         'creditPurchase',
-        order.orderId,
+        updatedOrder.orderId,
       );
 
+      await tx.insert(paymentEvents).values([
+        {
+          orderId: updatedOrder.orderId,
+          eventType: 'payment_completed',
+          data: {
+            provider: options.source,
+          },
+        },
+        {
+          orderId: updatedOrder.orderId,
+          eventType: 'credits_added',
+          data: {
+            credits: creditBundle.credits,
+            provider: options.source,
+          },
+        },
+      ]);
+
       console.log(
-        `Order ${order.orderId} completed - ${creditBundle.credits} credits added to user ${order.authorId}`,
+        `Order ${updatedOrder.orderId} completed - ${creditBundle.credits} credits added to user ${updatedOrder.authorId}`,
       );
     });
 
-    // Send GA4 Purchase Event
+    if (!completedOrder) {
+      console.log(`Order ${order.orderId} was completed by another webhook worker`);
+      return;
+    }
+
     try {
-      const creditBundle = order.creditBundle as { credits: number; price: number };
-      // We don't have the client_id here easily unless we stored it in the order metadata
-      // But we have the user_id (authorId) which is good for cross-device tracking if User-ID is enabled
+      const creditBundle = completedOrder.creditBundle as { credits: number; price: number };
+      const metadata = completedOrder.metadata as StripeCheckoutMetadata | null;
       await ga4Service.sendPurchaseEvent({
-        user_id: order.authorId,
-        transaction_id: order.orderId,
+        client_id: metadata?.analytics?.client_id,
+        session_id: metadata?.analytics?.session_id,
+        user_id: completedOrder.authorId,
+        transaction_id: completedOrder.orderId,
         value: creditBundle.price,
-        currency: order.currency || 'EUR',
+        currency: completedOrder.currency || 'EUR',
         items: [
           {
             item_id: `credits-${creditBundle.credits}`,
@@ -362,88 +1015,89 @@ export const paymentService = {
       console.error('Failed to send GA4 purchase event:', error);
     }
 
-    // Send notification to user
     try {
-      // Fetch author details
-      const [author] = await db.select().from(authors).where(eq(authors.authorId, order.authorId));
+      const [author] = await db
+        .select()
+        .from(authors)
+        .where(eq(authors.authorId, completedOrder.authorId));
 
       if (author) {
-        const creditBundle = order.creditBundle as { credits: number; price: number };
+        const creditBundle = completedOrder.creditBundle as { credits: number; price: number };
         await notificationClient.sendCreditsAddedNotification({
           email: author.email,
           name: author.displayName,
           credits: creditBundle.credits,
           preferredLocale: author.preferredLocale,
           authorId: author.authorId,
-          source: 'revolut',
-          entityId: order.orderId,
+          source: options.source,
+          entityId: completedOrder.orderId,
         });
       }
     } catch (error) {
       console.error('Failed to send credits added notification:', error);
-      // Don't fail the webhook if notification fails
     }
 
-    // Save payment method if it's a new card (outside transaction - not critical)
-    if (payload.payment_method && payload.payment_method.type === 'card') {
+    if (options.paymentMethodData?.type === 'card') {
       try {
-        await this.savePaymentMethod(order.authorId, payload.payment_method);
+        await this.savePaymentMethod(completedOrder.authorId, options.paymentMethodData);
       } catch (error) {
         console.error('Error saving payment method:', error);
-        // Don't fail the whole process if payment method saving fails
       }
     }
   },
 
-  // Save payment method for future use
-  async savePaymentMethod(userId: string, paymentMethodData: Record<string, unknown>) {
-    try {
-      // Check if this payment method already exists
-      const existingMethods = await db
-        .select()
-        .from(paymentMethods)
-        .where(
-          and(
-            eq(paymentMethods.authorId, userId),
-            eq(paymentMethods.provider, 'revolut'),
-            eq(paymentMethods.last4, (paymentMethodData.last4 as string) || ''),
-          ),
-        );
+  async savePaymentMethod(
+    userId: string,
+    paymentMethodData: Record<string, unknown>,
+    provider: PaymentSource = 'stripe',
+  ) {
+    const last4 = (paymentMethodData.last4 as string) || '';
+    const providerRef =
+      (paymentMethodData.providerRef as string | undefined) || `${provider}-${last4}`;
 
-      if (existingMethods.length === 0) {
-        // Save new payment method
-        await db.insert(paymentMethods).values({
-          authorId: userId,
-          provider: 'revolut',
-          providerRef: 'revolut-saved-method', // Revolut doesn't provide a specific ID for saved methods
-          brand: (paymentMethodData.brand as string) || null,
-          last4: (paymentMethodData.last4 as string) || null,
-          expMonth: paymentMethodData.exp_month
-            ? parseInt(paymentMethodData.exp_month as string)
-            : null,
-          expYear: paymentMethodData.exp_year
-            ? parseInt(paymentMethodData.exp_year as string)
-            : null,
-          isDefault: false, // User can set default later
-        });
-      }
-    } catch (error) {
-      console.error('Error saving payment method:', error);
-      // Don't throw error - payment was successful, this is just nice-to-have
+    const existingMethods = await db
+      .select()
+      .from(paymentMethods)
+      .where(
+        and(
+          eq(paymentMethods.authorId, userId),
+          eq(paymentMethods.provider, provider),
+          eq(paymentMethods.providerRef, providerRef),
+        ),
+      );
+
+    if (existingMethods.length > 0) {
+      return;
     }
+
+    await db.insert(paymentMethods).values({
+      authorId: userId,
+      provider,
+      providerRef,
+      brand: (paymentMethodData.brand as string) || null,
+      last4: last4 || null,
+      expMonth: paymentMethodData.exp_month
+        ? parseInt(paymentMethodData.exp_month as string)
+        : null,
+      expYear: paymentMethodData.exp_year ? parseInt(paymentMethodData.exp_year as string) : null,
+      billingDetails:
+        (paymentMethodData.billing_details as Record<string, unknown> | undefined) || null,
+      isDefault: false,
+    });
   },
 
-  // Get user's payment history
   async getUserPaymentHistory(userId: string, limit: number = 20) {
-    return await db
+    const orders = await db
       .select({
         id: paymentOrders.orderId,
-        revolutOrderId: paymentOrders.providerOrderId,
+        providerOrderId: paymentOrders.providerOrderId,
+        providerPublicId: paymentOrders.providerPublicId,
         creditBundle: paymentOrders.creditBundle,
         amount: paymentOrders.amount,
         currency: paymentOrders.currency,
         status: paymentOrders.status,
         provider: paymentOrders.provider,
+        metadata: paymentOrders.metadata,
         createdAt: paymentOrders.createdAt,
         updatedAt: paymentOrders.updatedAt,
       })
@@ -451,79 +1105,19 @@ export const paymentService = {
       .where(eq(paymentOrders.authorId, userId))
       .orderBy(desc(paymentOrders.createdAt))
       .limit(limit);
-  },
 
-  // Verify webhook signature (Revolut sends this in the header)
-  async verifyWebhookSignature(
-    payload: string,
-    signature: string,
-    timestamp: string,
-  ): Promise<boolean> {
-    // Check if signature and timestamp exist
-    if (!payload || !signature || !timestamp) {
-      console.error('Missing required parameters for signature verification');
-      return false;
-    }
+    return orders.map((order) => {
+      const metadata = order.metadata as StripeCheckoutMetadata | null;
+      const stripe = metadata?.stripe;
 
-    // Check timestamp to prevent replay attacks (5 minute window)
-    const now = Math.floor(Date.now() / 1000); // Current time in seconds
-
-    // Revolut sends timestamp in milliseconds, convert to seconds
-    const requestTime = Math.floor(parseInt(timestamp) / 1000);
-    const timeWindow = 5 * 60; // 5 minutes in seconds
-    const timeDiff = Math.abs(now - requestTime);
-
-    if (timeDiff > timeWindow) {
-      return false;
-    }
-
-    // Get webhook secret from environment
-    const webhookSecret = process.env.REVOLUT_WEBHOOK_SECRET;
-
-    if (!webhookSecret) {
-      console.error('REVOLUT_WEBHOOK_SECRET not found in environment variables');
-      return false;
-    }
-
-    try {
-      const crypto = await import('crypto');
-
-      // According to Revolut docs, the payload to sign is: v1.<timestamp>.<rawPayload>
-      const payloadToSign = `v1.${timestamp}.${payload}`;
-
-      // Compute HMAC-SHA256, hex-encoded
-      const digest = crypto
-        .createHmac('sha256', webhookSecret)
-        .update(payloadToSign, 'utf8')
-        .digest('hex');
-
-      // The expected signature format is: v1=<hex_digest>
-      const expectedSignature = `v1=${digest}`;
-
-      // Support signature rotation by checking every comma-separated value
-      const signatureValues = signature.split(',').map((sig) => sig.trim());
-
-      // Constant-time comparison against any signature in the header
-      for (const sig of signatureValues) {
-        try {
-          const isMatch = crypto.timingSafeEqual(
-            Buffer.from(sig, 'utf8'),
-            Buffer.from(expectedSignature, 'utf8'),
-          );
-
-          if (isMatch) {
-            return true;
-          }
-        } catch {
-          // Continue checking other signatures
-        }
-      }
-
-      console.error('Webhook signature verification failed');
-      return false;
-    } catch (error) {
-      console.error('Error verifying webhook signature:', error);
-      return false;
-    }
+      return {
+        ...order,
+        revolutOrderId: order.provider === 'revolut' ? order.providerOrderId : null,
+        stripeInvoiceId: stripe?.invoiceId || null,
+        stripeInvoiceHostedUrl: stripe?.invoiceHostedUrl || null,
+        stripeInvoicePdf: stripe?.invoicePdf || null,
+        paymentMethodType: stripe?.paymentMethodType || null,
+      };
+    });
   },
 };

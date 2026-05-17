@@ -113,14 +113,5 @@
     "errors": {
       "loadingFailed": "Preisinformationen konnten nicht geladen werden"
     }
-  },
-  "RevolutPayment": {
-    "loading": "Zahlungsoptionen werden geladen...",
-    "securityNote": "Deine Zahlung ist durch die Verschlüsselung von Revolut geschützt",
-    "encryptionNote": "256-Bit-SSL-Verschlüsselung",
-    "errors": {
-      "sdkLoadFailed": "Zahlungsdienst konnte nicht geladen werden. Bitte lade die Seite neu.",
-      "initializationFailed": "Zahlung konnte nicht initialisiert werden. Bitte versuch es noch einmal."
-    }
   }
 }

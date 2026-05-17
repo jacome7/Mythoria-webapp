@@ -48,6 +48,7 @@ NEXT_PUBLIC_GOOGLE_TAG_ID: 'GT-...'
 NEXT_PUBLIC_TTS_PROVIDER: 'openai'
 NEXT_PUBLIC_DEFAULT_CURRENCY: 'EUR'
 NEXT_PUBLIC_APP_DOMAIN: 'mythoria.pt'
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: 'pk_live_...' # Stored as Secret Manager secret NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 
 # Runtime web / auth
 CLERK_SECRET_KEY: 'sk_live_...'
@@ -86,14 +87,25 @@ ADMIN_API_URL: 'https://mythoria-admin-...run.app'
 ADMIN_API_KEY: '...'
 NOTIFICATION_ENGINE_URL: 'https://notification-engine-...run.app'
 NOTIFICATION_ENGINE_API_KEY: '...'
-REVOLUT_API_URL: 'https://merchant.revolut.com'
-REVOLUT_API_SECRET_KEY: '...'
-REVOLUT_WEBHOOK_SECRET: '...'
+STRIPE_SECRET_KEY: 'sk_live_...'
+STRIPE_WEBHOOK_SECRET: 'whsec_...'
+STRIPE_API_VERSION: '' # Optional; leave empty to use the installed Stripe SDK default
+STRIPE_CREDIT_TAX_CODE: '' # Optional; Stripe Tax product tax code for credit line items
 GOOGLE_ANALYTICS_API_SECRET: '...'
 LEAD_BOUNCE_API_SECRET: '...'
 ```
 
 ## Google Secret Manager Configuration
+
+The active Cloud Build pipeline reads these Stripe secrets from Secret Manager:
+
+```bash
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+STRIPE_SECRET_KEY
+STRIPE_WEBHOOK_SECRET
+```
+
+`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` is browser-exposed by design, but it is still stored in Secret Manager so Cloud Build and Cloud Run use the same deployment mechanism as the other Stripe values.
 
 ### Storing Secrets
 
@@ -106,6 +118,45 @@ gcloud secrets create mythoria-webapp-clerk-secret --data-file=clerk-secret.txt
 
 # Service account key
 gcloud secrets create mythoria-webapp-service-account --data-file=service-account.json
+```
+
+### Stripe Production Webhook
+
+Create one live Stripe webhook endpoint for the production app:
+
+- Endpoint URL: `https://mythoria.pt/api/payments/stripe/webhook`
+- Events:
+  - `checkout.session.completed`
+  - `checkout.session.async_payment_succeeded`
+  - `checkout.session.async_payment_failed`
+  - `checkout.session.expired`
+  - `payment_intent.succeeded`
+  - `payment_intent.payment_failed`
+  - `charge.refunded`
+  - `charge.dispute.created`
+
+After creating the endpoint in Stripe Dashboard Workbench, reveal its signing secret and store the `whsec_...` value:
+
+```powershell
+'whsec_...' | Set-Content -Path temp_secret.txt -NoNewline
+gcloud secrets create STRIPE_WEBHOOK_SECRET --data-file=temp_secret.txt --replication-policy='automatic'
+Remove-Item temp_secret.txt
+```
+
+If the secret already exists, add a new version instead:
+
+```powershell
+'whsec_...' | Set-Content -Path temp_secret.txt -NoNewline
+gcloud secrets versions add STRIPE_WEBHOOK_SECRET --data-file=temp_secret.txt
+Remove-Item temp_secret.txt
+```
+
+Grant both Cloud Build and the Cloud Run runtime service account access:
+
+```powershell
+$projectNumber = '803421888801'
+gcloud secrets add-iam-policy-binding STRIPE_WEBHOOK_SECRET --member="serviceAccount:$projectNumber@cloudbuild.gserviceaccount.com" --role="roles/secretmanager.secretAccessor"
+gcloud secrets add-iam-policy-binding STRIPE_WEBHOOK_SECRET --member="serviceAccount:$projectNumber-compute@developer.gserviceaccount.com" --role="roles/secretmanager.secretAccessor"
 ```
 
 ## Container Configuration

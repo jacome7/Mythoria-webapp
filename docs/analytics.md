@@ -29,7 +29,7 @@ Mythoria monetizes through **credit bundles** that unlock paid operations and do
 ### How credits are bought
 
 1. **Pricing page** surfaces credit bundles and service pricing, linking into the buy flow.
-2. **Buy Credits page** lets users add bundles to a cart, provide billing information, redeem promo codes, and pay via **Revolut Pay** or **MB Way**.
+2. **Buy Credits page** lets users add bundles to a cart, redeem promo codes, and pay through **Stripe Checkout** for cards, wallets, MB WAY, invoices, and tax handling.
 3. **Orders + payment** are created server-side; successful orders add credits to the ledger and trigger analytics events.
 
 ## Google Analytics integration (current state)

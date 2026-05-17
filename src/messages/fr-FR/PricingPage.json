@@ -113,14 +113,5 @@
     "errors": {
       "loadingFailed": "Impossible de charger les informations sur les prix"
     }
-  },
-  "RevolutPayment": {
-    "loading": "Chargement des options de paiement ...",
-    "securityNote": "Votre paiement est garanti par le cryptage de Revolut",
-    "encryptionNote": "Cryptage SSL 256 bits",
-    "errors": {
-      "sdkLoadFailed": "Échec du service de paiement. Veuillez actualiser la page.",
-      "initializationFailed": "Échec de l'initialisation du paiement. Veuillez réessayer."
-    }
   }
 }

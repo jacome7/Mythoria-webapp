@@ -11,7 +11,7 @@
 - **Story Builder** – Guided creation flow where users describe protagonists, settings, and tones; server actions orchestrate calls to the Story Generation Workflows (SGW) service and stream progress updates.
 - **Illustration & Media Studio** – Upload, crop, and AI-enhance imagery via Google Cloud Storage backed pipelines, plus optional audio narration playback.
 - **Story Library** – Authenticated dashboard with filtering, quick previews, and export to PDF/audio for each generated narrative.
-- **Commerce & Credits** – Revolut Checkout integration for purchasing credits, VAT-aware receipts, and usage analytics surfaced per locale.
+- **Commerce & Credits** – Stripe Checkout integration for purchasing credits with cards, wallets, MB WAY, automatic tax, invoices, and usage analytics surfaced per locale.
 - **Inspiration Hub** – Public marketing surfaces (`/[locale]/get-inspired`, blog) that showcase featured tales, seasonal campaigns, and capture email signups.
 - **Partner Directory** – Public printers list at `/[locale]/partners/printers` with location filters and infinite scroll.
 
