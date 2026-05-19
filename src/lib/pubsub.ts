@@ -4,9 +4,15 @@ const pubsub = new PubSub({
   projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
 });
 
-// picks creds from metadata
 const storyTopic = process.env.PUBSUB_TOPIC || 'mythoria-story-requests';
 const audiobookTopic = process.env.PUBSUB_AUDIOBOOK_TOPIC || 'mythoria-audiobook-requests';
+
+type PubSubError = Error & {
+  code?: unknown;
+  details?: unknown;
+  metadata?: unknown;
+  cause?: unknown;
+};
 
 export async function publishStoryRequest(message: unknown) {
   return publishMessage(storyTopic, message, 'story generation');
@@ -21,17 +27,39 @@ async function publishMessage(topic: string, message: unknown, type: string) {
     throw new Error(`PUBSUB topic for ${type} is not set`);
   }
 
-  // Debug logging to identify the exact configuration being used
-  console.log('🔍 DEBUG: Environment variables:');
-  console.log('  - Topic:', topic);
-  console.log('  - PubSub client project ID:', pubsub.projectId);
+  console.log('PUBSUB: Publishing message', {
+    type,
+    topic,
+    projectId: pubsub.projectId,
+  });
 
-  console.log(`📢 PUBSUB: Publishing ${type} message to topic:`, topic);
-  console.log('📢 PUBSUB: Message payload:', JSON.stringify(message, null, 2));
+  try {
+    const dataBuffer = Buffer.from(JSON.stringify(message));
+    const messageId = await pubsub.topic(topic).publishMessage({ data: dataBuffer });
 
-  const dataBuffer = Buffer.from(JSON.stringify(message));
-  const messageId = await pubsub.topic(topic).publishMessage({ data: dataBuffer });
+    console.log('PUBSUB: Message published successfully', {
+      type,
+      topic,
+      messageId,
+    });
 
-  console.log(`✅ PUBSUB: ${type} message published successfully with ID:`, messageId);
-  return messageId;
+    return messageId;
+  } catch (error) {
+    const pubsubError = error as PubSubError;
+
+    console.error('PUBSUB: Failed to publish message', {
+      type,
+      topic,
+      projectId: pubsub.projectId,
+      name: pubsubError.name,
+      message: pubsubError.message,
+      code: pubsubError.code,
+      details: pubsubError.details,
+      metadata: pubsubError.metadata,
+      cause: pubsubError.cause,
+      stack: pubsubError.stack,
+    });
+
+    throw error;
+  }
 }
