@@ -13,7 +13,10 @@ type CliOptions = {
   end: Date;
   toleranceMinutes: number;
   failOnAnomaly: boolean;
+  allowTestStripeKey: boolean;
 };
+
+type StripeMode = 'live' | 'test' | 'unknown';
 
 type StripeChargeRecord = {
   id: string;
@@ -38,6 +41,12 @@ type AdminOrderRecord = {
   createdAt: string;
   updatedAt: string;
   metadata: unknown;
+};
+
+type AdminOrderModeSummary = {
+  live: { count: number; amount: number };
+  test: { count: number; amount: number };
+  unknown: { count: number; amount: number };
 };
 
 type MatchRecord = {
@@ -96,6 +105,7 @@ function parseArgs(): CliOptions {
   let hours = DEFAULT_LOOKBACK_HOURS;
   let toleranceMinutes = DEFAULT_TOLERANCE_MINUTES;
   let failOnAnomaly = false;
+  let allowTestStripeKey = false;
 
   for (let i = 0; i < args.length; i += 1) {
     const arg = args[i];
@@ -115,12 +125,14 @@ function parseArgs(): CliOptions {
       i += 1;
     } else if (arg === '--fail-on-anomaly') {
       failOnAnomaly = true;
+    } else if (arg === '--allow-test-stripe-key') {
+      allowTestStripeKey = true;
     } else if (arg === '--help') {
       process.stdout.write(
         [
-          'Usage: npm run revenue:sentinel -- [--hours 24] [--start ISO] [--end ISO] [--tolerance-minutes 15] [--fail-on-anomaly]',
+          'Usage: npm run revenue:sentinel -- [--hours 24] [--start ISO] [--end ISO] [--tolerance-minutes 15] [--fail-on-anomaly] [--allow-test-stripe-key]',
           '',
-          'Reads Stripe charges and local payment_orders, then prints stable JSON.',
+          'Reads Stripe charges and local payment_orders for the same Stripe mode, then prints stable JSON.',
         ].join('\n'),
       );
       process.exit(0);
@@ -141,7 +153,7 @@ function parseArgs(): CliOptions {
     throw new Error('--start must be before --end');
   }
 
-  return { start, end, toleranceMinutes, failOnAnomaly };
+  return { start, end, toleranceMinutes, failOnAnomaly, allowTestStripeKey };
 }
 
 function requireEnv(name: string): string {
@@ -186,6 +198,13 @@ async function getStripeClient(): Promise<Stripe> {
   });
 }
 
+function getStripeKeyMode(): StripeMode {
+  const key = requireEnv('STRIPE_SECRET_KEY');
+  if (key.startsWith('sk_live_')) return 'live';
+  if (key.startsWith('sk_test_')) return 'test';
+  return 'unknown';
+}
+
 async function fetchStripeCharges(options: CliOptions): Promise<StripeChargeRecord[]> {
   const stripe = await getStripeClient();
   const charges: StripeChargeRecord[] = [];
@@ -219,7 +238,10 @@ async function fetchStripeCharges(options: CliOptions): Promise<StripeChargeReco
   return charges.sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id));
 }
 
-async function fetchAdminOrders(options: CliOptions): Promise<AdminOrderRecord[]> {
+async function fetchAdminOrders(
+  options: CliOptions,
+  stripeMode: StripeMode,
+): Promise<AdminOrderRecord[]> {
   const toleranceMs = options.toleranceMinutes * 60 * 1000;
   const queryStart = new Date(options.start.getTime() - toleranceMs);
   const queryEnd = new Date(options.end.getTime() + toleranceMs);
@@ -245,9 +267,14 @@ async function fetchAdminOrders(options: CliOptions): Promise<AdminOrderRecord[]
           and status = 'completed'
           and updated_at >= $1
           and updated_at <= $2
+          and (
+            $3 = 'unknown'
+            or ($3 = 'live' and provider_order_id like 'cs_live_%')
+            or ($3 = 'test' and provider_order_id like 'cs_test_%')
+          )
         order by updated_at asc, order_id asc
       `,
-      [queryStart.toISOString(), queryEnd.toISOString()],
+      [queryStart.toISOString(), queryEnd.toISOString(), stripeMode],
     );
 
     return result.rows.map((row) => ({
@@ -262,6 +289,54 @@ async function fetchAdminOrders(options: CliOptions): Promise<AdminOrderRecord[]
       updatedAt: new Date(row.updated_at).toISOString(),
       metadata: row.metadata,
     }));
+  } finally {
+    await client.end();
+  }
+}
+
+async function fetchAdminOrderModeSummary(options: CliOptions): Promise<AdminOrderModeSummary> {
+  const toleranceMs = options.toleranceMinutes * 60 * 1000;
+  const queryStart = new Date(options.start.getTime() - toleranceMs);
+  const queryEnd = new Date(options.end.getTime() + toleranceMs);
+  const client = await getDbClient();
+
+  await client.connect();
+  try {
+    const result = await client.query(
+      `
+        select
+          case
+            when provider_order_id like 'cs_live_%' then 'live'
+            when provider_order_id like 'cs_test_%' then 'test'
+            else 'unknown'
+          end as stripe_mode,
+          count(*)::int as count,
+          coalesce(sum(amount), 0)::int as amount
+        from payment_orders
+        where provider = 'stripe'
+          and status = 'completed'
+          and updated_at >= $1
+          and updated_at <= $2
+        group by stripe_mode
+      `,
+      [queryStart.toISOString(), queryEnd.toISOString()],
+    );
+
+    const summary: AdminOrderModeSummary = {
+      live: { count: 0, amount: 0 },
+      test: { count: 0, amount: 0 },
+      unknown: { count: 0, amount: 0 },
+    };
+
+    for (const row of result.rows) {
+      const mode = row.stripe_mode as StripeMode;
+      summary[mode] = {
+        count: Number(row.count),
+        amount: Number(row.amount),
+      };
+    }
+
+    return summary;
   } finally {
     await client.end();
   }
@@ -314,11 +389,12 @@ function reconcile(
 
     if (!selected) continue;
 
-    const allMatchedIds = new Set([
-      ...paymentIntentMatches.map((order) => order.orderId),
-      ...metadataMatches.map((order) => order.orderId),
-      ...timeMatches.map((order) => order.orderId),
-    ]);
+    const exactMatches = paymentIntentMatches.length > 0 ? paymentIntentMatches : metadataMatches;
+    const allMatchedIds = new Set(
+      exactMatches.length > 0
+        ? exactMatches.map((order) => order.orderId)
+        : timeMatches.map((order) => order.orderId),
+    );
     if (allMatchedIds.size > 1) {
       duplicateAdminMatches.push({
         stripeChargeId: charge.id,
@@ -356,9 +432,21 @@ function reconcile(
 async function main() {
   loadLocalEnv();
   const options = parseArgs();
-  const [stripeCharges, adminOrders] = await Promise.all([
+  const stripeMode = getStripeKeyMode();
+  if (
+    process.env.NODE_ENV === 'production' &&
+    stripeMode === 'test' &&
+    !options.allowTestStripeKey
+  ) {
+    throw new Error(
+      'Refusing production revenue reconciliation with a Stripe test key. Use a live key or pass --allow-test-stripe-key for explicit test-mode investigation.',
+    );
+  }
+
+  const [stripeCharges, adminOrders, adminOrderModeSummary] = await Promise.all([
     fetchStripeCharges(options),
-    fetchAdminOrders(options),
+    fetchAdminOrders(options, stripeMode),
+    fetchAdminOrderModeSummary(options),
   ]);
   const reconciliation = reconcile(stripeCharges, adminOrders, options.toleranceMinutes);
   const anomalyCount =
@@ -374,8 +462,10 @@ async function main() {
       toleranceMinutes: options.toleranceMinutes,
     },
     sources: {
+      stripeMode,
       stripeCharges: stripeCharges.length,
       adminOrders: adminOrders.length,
+      adminOrderModeSummary,
     },
     summary: {
       matched: reconciliation.matched.length,
