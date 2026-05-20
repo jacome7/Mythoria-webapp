@@ -25,6 +25,15 @@ const withPWA = withPWAInit({
 const nextConfig: NextConfig = {
   // Enable standalone output for better Docker performance
   output: 'standalone',
+  // Google Cloud clients rely on native Node.js/gRPC runtime behavior. Keeping
+  // them external prevents Next's server bundler from inlining grpc/protobuf internals.
+  serverExternalPackages: [
+    '@google-cloud/pubsub',
+    '@google-cloud/storage',
+    'google-gax',
+    '@grpc/grpc-js',
+    '@grpc/proto-loader',
+  ],
   async redirects() {
     return [
       {
