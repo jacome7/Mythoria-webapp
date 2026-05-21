@@ -57,9 +57,9 @@ export default function Home() {
     <div className="min-h-screen bg-base-100 text-base-content">
       <div className="container mx-auto px-4 py-4">
         <header className="hero mb-3 mt-1 min-h-[34vh] rounded-box bg-base-200 sm:mb-4 sm:mt-2 sm:min-h-[40vh]">
-          <div className="hero-content w-full flex-col gap-4 py-6 sm:py-8 lg:flex-row">
-            <div className="lg:w-1/2 text-center lg:text-left">
-              <h1 className="text-3xl font-bold sm:text-4xl md:text-5xl">
+          <div className="hero-content w-full flex-col gap-4 px-2 py-6 sm:px-4 sm:py-8 lg:flex-row lg:px-6">
+            <div className="w-full text-center lg:w-[54%] lg:text-left">
+              <h1 className="mx-auto max-w-[36rem] text-2xl font-bold sm:max-w-[42rem] sm:text-3xl md:text-4xl lg:mx-0 lg:max-w-none">
                 ✨ {tHomePage('hero.writeYourOwn')}
                 <br />
                 <TypeAnimation
@@ -70,7 +70,7 @@ export default function Home() {
                   repeat={Infinity}
                 />
               </h1>
-              <p className="py-3 text-lg">
+              <p className="mx-auto max-w-[38rem] py-3 text-base md:text-[1.0625rem] lg:mx-0 lg:max-w-none">
                 {tHomePage('hero.subtitle')
                   .split(tHomePage('hero.subtitleEmphasized'))
                   .map((part, index, array) => (
@@ -91,7 +91,7 @@ export default function Home() {
               </Link>
             </div>
             {/* Right Side: Gallery */}
-            <div className="lg:w-1/2 flex justify-center lg:justify-end mt-4 lg:mt-0">
+            <div className="lg:w-[46%] flex justify-center lg:justify-end mt-4 lg:mt-0">
               <InfiniteGallery intentContext={intentContext ?? undefined} />
             </div>
           </div>
@@ -515,27 +515,6 @@ export default function Home() {
             </section>
           </ScrollFadeIn>
         </Show>
-
-        {/* ProductHunt Badge Section */}
-        <ScrollFadeIn threshold={0.1} rootMargin="0px 0px -20px 0px">
-          <section className="my-16 flex justify-center">
-            <a
-              href="https://www.producthunt.com/products/mythoria?utm_source=badge-follow&utm_medium=badge&utm_source=badge-mythoria"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://api.producthunt.com/widgets/embed-image/v1/follow.svg?product_id=1103104&theme=neutral"
-                alt="Mythoria - Turn real memories into illustrated books with AI | Product Hunt"
-                style={{ width: '250px', height: '54px' }}
-                width={250}
-                height={54}
-              />
-            </a>
-          </section>
-        </ScrollFadeIn>
 
         {/* Quote of the Day Section */}
         <ScrollFadeIn threshold={0.1} rootMargin="0px 0px -20px 0px">

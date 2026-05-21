@@ -474,7 +474,7 @@ export const envManifest: EnvVarDescriptor[] = [
     name: 'NEXT_PUBLIC_TTS_PROVIDER',
     required: false,
     scopes: ['prod', 'build', 'public', 'dev'],
-    default: 'openai',
+    default: 'google-genai',
     source: 'substitution',
     note: 'TTS provider for audiobooks: openai or google-genai.',
   },

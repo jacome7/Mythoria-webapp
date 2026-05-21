@@ -6,6 +6,7 @@
 export const STORY_RECIPIENTS = [
   'partner',
   'spouse',
+  'couple',
   'child',
   'teen',
   'adult',

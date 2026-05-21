@@ -10,13 +10,13 @@ import { useLocale } from 'next-intl';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 
 const headerClassName =
-  'navbar min-h-14 border-b border-base-content/10 bg-base-100/60 px-2 py-0 shadow-sm backdrop-blur-xl sm:px-4';
-const mobileMenuButtonClassName = 'btn btn-ghost btn-sm h-10 min-h-10 w-10 p-0 lg:hidden';
+  'navbar h-12 !min-h-12 border-b border-base-content/10 bg-base-100/60 px-2 py-0 shadow-sm backdrop-blur-xl sm:px-4';
+const mobileMenuButtonClassName = 'btn btn-ghost btn-sm h-9 min-h-9 w-9 p-0 lg:hidden';
 const dropdownMenuClassName =
   'menu menu-sm dropdown-content z-50 mt-2 w-52 rounded-box border border-base-content/10 bg-base-100/90 p-1 shadow-xl backdrop-blur-xl';
 const mobileMenuLinkClassName = 'py-2.5 text-base';
-const desktopMenuLinkClassName = 'py-2 text-sm xl:text-base';
-const logoLinkClassName = 'btn btn-ghost h-10 min-h-10 normal-case px-0 py-0 text-xl';
+const desktopMenuLinkClassName = 'py-2 text-xs xl:text-sm';
+const logoLinkClassName = 'btn btn-ghost h-9 min-h-9 normal-case px-0 py-0 text-xl';
 const logoImageClassName = 'h-auto w-[128px] sm:w-[140px]';
 
 const Header = () => {
@@ -287,7 +287,7 @@ const Header = () => {
         </div>
         {!isSignedIn ? (
           <div className="flex gap-2">
-            <Link href={`/${locale}/sign-in`} className="btn btn-primary btn-sm sm:btn-md">
+            <Link href={`/${locale}/sign-in`} className="btn btn-primary btn-sm h-9 min-h-9">
               {tCommonHeader('auth.signIn')}
             </Link>
           </div>

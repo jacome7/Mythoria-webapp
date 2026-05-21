@@ -10,10 +10,12 @@ test-results/
 
 # Dependencies
 node_modules/
+scripts/sampleBookGenerator/.venv/
 
 # Generated or external assets
 public/
 logs/
+scripts/sampleBookGenerator/generated/
 drizzle/**/*.sql
 drizzle/meta/
 false/

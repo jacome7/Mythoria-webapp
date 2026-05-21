@@ -30,6 +30,7 @@ describe('Intent Detection Flow', () => {
   describe('Recipient validation and normalization', () => {
     it('should validate correct recipients', () => {
       expect(isValidRecipient('partner')).toBe(true);
+      expect(isValidRecipient('couple')).toBe(true);
       expect(isValidRecipient('child')).toBe(true);
       expect(isValidRecipient('family')).toBe(true);
     });

@@ -8,7 +8,7 @@ This document is the single source of truth for agents working on the Mythoria w
 
 - **Framework**: Next.js 15 (App Router, standalone output)
 - **Language**: TypeScript 5 with strict compiler settings
-- **Runtime**: Node.js 22+ (enforced through `package.json` engines and Dockerfile)
+- **Runtime**: Node.js 24.15.0 LTS (enforced through `package.json` engines, `.nvmrc`, `.node-version`, and Dockerfile)
 - **UI**: React 19, Tailwind CSS + DaisyUI, Next PWA integration
 - **Internationalization**: `next-intl` with locale-specific route segments and JSON message bundles
 - **Data Layer**: PostgreSQL via Drizzle ORM (schema in `src/db/schema`, SQL artifacts under `drizzle/`)
@@ -38,7 +38,7 @@ Following Next.js recommendations for CSS management:
 
 ## Local Environment Setup
 
-1. Use Node.js 22 or newer (`nvm use 22` if needed) and install dependencies with `npm install`.
+1. Use Node.js 24.15.0 LTS (`nvm use` reads `.nvmrc`) and install dependencies with `npm install`.
 2. Copy environment variables into `.env.local` (see **Environment Variables** below) and keep them aligned with `env.manifest.ts`.
 3. Validate the configuration by running `npm run check:env`; resolve all reported mismatches.
 4. Start the development server with `npm run dev` (Turbopack enabled). The app runs at `http://localhost:3000` by default.
@@ -95,6 +95,7 @@ Only run the localization, env, or database commands when you touch the correspo
 
 - Production builds use `npm run build` (standalone output) followed by `npm run start` for local verification.
 - Google Cloud Run deployment is handled via `npm run deploy:production` (Cloud Build). Update Docker build args and environment substitutions alongside manifest changes.
+- During dependency or Next.js version upgrades, verify server-only packages that use gRPC (for example `@google-cloud/pubsub`, `google-gax`, `@grpc/grpc-js`) stay externalized via `serverExternalPackages` in `next.config.ts`. If not, workflow-triggering Pub/Sub publishes can fail at runtime with 500 errors such as `Failed to start ... workflow`.
 
 ## PR & Commit Guidelines
 

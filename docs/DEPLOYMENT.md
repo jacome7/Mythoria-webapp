@@ -10,7 +10,7 @@ This guide covers deploying the Mythoria Web App to Google Cloud Platform using 
 
 - **Google Cloud SDK**: Latest version with authentication
 - **Docker**: For local container building and testing
-- **Node.js**: Version 18+ for local development
+- **Node.js**: Version 24.15.0 LTS for local development and production containers
 - **Git**: Version control access to the repository
 
 ### Google Cloud Setup
@@ -165,19 +165,19 @@ gcloud secrets add-iam-policy-binding STRIPE_WEBHOOK_SECRET --member="serviceAcc
 
 ```dockerfile
 # Multi-stage build for optimization
-FROM node:18-alpine AS base
+FROM node:24.15.0-alpine AS base
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production
 
-FROM node:18-alpine AS builder
+FROM node:24.15.0-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM node:18-alpine AS runner
+FROM node:24.15.0-alpine AS runner
 WORKDIR /app
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -224,17 +224,17 @@ gcloud run deploy mythoria-webapp \
 # cloudbuild.yaml
 steps:
   # Build dependencies
-  - name: 'node:18'
+  - name: 'node:24.15.0'
     entrypoint: npm
     args: ['ci']
 
   # Run tests
-  - name: 'node:18'
+  - name: 'node:24.15.0'
     entrypoint: npm
     args: ['run', 'test']
 
   # Build Next.js application
-  - name: 'node:18'
+  - name: 'node:24.15.0'
     entrypoint: npm
     args: ['run', 'build']
 
