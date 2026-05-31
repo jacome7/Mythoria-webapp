@@ -187,3 +187,4 @@ secrets/
 # Playwright auth storage state (Clerk) - do not commit authenticated session data
 tests/playwright/.auth/
 playwright/.auth/
+_mockups/
