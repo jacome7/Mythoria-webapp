@@ -56,3 +56,225 @@ body {
 .animate-fade-in {
   animation: fade-in 0.5s ease-out;
 }
+
+/* ==========================================================================
+   Paper-cut storytelling hero
+   A reusable, data-driven diorama system. See docs/papercut-design-system.md.
+   - Layers are transparent PNGs, each on its own element, positioned by % via
+     CSS-variable cascade (no JS breakpoint hook → SSR-stable, no flicker).
+   - Shadows use filter: drop-shadow() so they follow the PNG alpha contour.
+   - Idle animations run on the inner image and are disabled under
+     prefers-reduced-motion.
+   ========================================================================== */
+
+/* Hero-scoped design tokens — never edits the global autumn theme. */
+.papercut-hero {
+  --pc-cream: #f4ead6;
+  --pc-cream-deep: #efe1c6;
+  --pc-navy: var(--color-primary); /* autumn primary — headline / CTA */
+  --pc-gold: var(--color-accent); /* autumn accent — sparkle / icons */
+  position: relative;
+  width: 100%;
+  background: radial-gradient(
+    125% 90% at 50% 0%,
+    #faf3e4 0%,
+    var(--pc-cream) 55%,
+    var(--pc-cream-deep) 100%
+  );
+}
+
+/* Whimsical display serif, scoped — only applied where this class is used. */
+.font-display {
+  font-family: var(--font-display), Georgia, 'Times New Roman', serif;
+}
+
+/* The fixed-aspect scene "stage". Aspect ratio is responsive via cascade. */
+.pc-stage {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  aspect-ratio: var(--pc-aspect-base, 4 / 5);
+}
+@media (min-width: 768px) {
+  .pc-stage {
+    aspect-ratio: var(--pc-aspect-md, var(--pc-aspect-base, 4 / 3));
+  }
+}
+@media (min-width: 1024px) {
+  .pc-stage {
+    aspect-ratio: var(--pc-aspect-lg, var(--pc-aspect-md, var(--pc-aspect-base, 16 / 7)));
+  }
+}
+
+/* One positioned layer. Inline style sets --pc-x/-y/-w (+ optional md/lg). */
+.pc-layer {
+  position: absolute;
+  --x: var(--pc-x);
+  --y: var(--pc-y);
+  --w: var(--pc-w);
+  width: var(--w);
+}
+@media (min-width: 768px) {
+  .pc-layer {
+    --x: var(--pc-md-x, var(--pc-x));
+    --y: var(--pc-md-y, var(--pc-y));
+    --w: var(--pc-md-w, var(--pc-w));
+  }
+}
+@media (min-width: 1024px) {
+  .pc-layer {
+    --x: var(--pc-lg-x, var(--pc-md-x, var(--pc-x)));
+    --y: var(--pc-lg-y, var(--pc-md-y, var(--pc-y)));
+    --w: var(--pc-lg-w, var(--pc-md-w, var(--pc-w)));
+  }
+}
+.pc-anchor-top {
+  top: var(--y);
+  left: var(--x);
+}
+.pc-anchor-bottom {
+  bottom: var(--y);
+  left: var(--x);
+}
+/* Horizontal centering for the anchor point (e.g. the centered girl photo). */
+.pc-center {
+  transform: translateX(-50%);
+}
+
+.pc-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Paper-cut depth: drop-shadow follows the alpha, unlike box-shadow. */
+.pc-shadow-none .pc-img {
+  filter: none;
+}
+.pc-shadow-sky .pc-img {
+  filter: drop-shadow(0 2px 3px rgba(60, 40, 20, 0.12));
+}
+.pc-shadow-mid .pc-img {
+  filter: drop-shadow(0 5px 6px rgba(60, 40, 20, 0.18));
+}
+.pc-shadow-front .pc-img {
+  filter: drop-shadow(0 10px 9px rgba(40, 28, 12, 0.24));
+}
+
+/* Optional decluttering on small screens. */
+.pc-hide-sm {
+  display: none;
+}
+@media (min-width: 640px) {
+  .pc-hide-sm {
+    display: block;
+  }
+}
+.pc-hide-md {
+  display: none;
+}
+@media (min-width: 768px) {
+  .pc-hide-md {
+    display: block;
+  }
+}
+
+/* Subtle idle animations (run on the inner image so they never clobber
+   the wrapper's centering transform). Timing per-instance via custom props. */
+@keyframes pc-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+@keyframes pc-balloon {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(-1.5deg);
+  }
+  50% {
+    transform: translate(6px, -10px) rotate(1.5deg);
+  }
+}
+@keyframes pc-drift {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+}
+@keyframes pc-sway {
+  0%,
+  100% {
+    transform: rotate(-1.2deg);
+  }
+  50% {
+    transform: rotate(1.2deg);
+  }
+}
+@keyframes pc-twinkle {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+@keyframes pc-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.025);
+  }
+}
+.pc-anim-bob .pc-img {
+  animation: pc-bob var(--pc-dur, 6000ms) ease-in-out var(--pc-delay, 0ms) infinite;
+}
+.pc-anim-balloon .pc-img {
+  animation: pc-balloon var(--pc-dur, 9000ms) ease-in-out var(--pc-delay, 0ms) infinite;
+}
+.pc-anim-drift .pc-img {
+  animation: pc-drift var(--pc-dur, 11000ms) ease-in-out var(--pc-delay, 0ms) infinite;
+}
+.pc-anim-sway .pc-img {
+  transform-origin: bottom center;
+  animation: pc-sway var(--pc-dur, 7000ms) ease-in-out var(--pc-delay, 0ms) infinite;
+}
+.pc-anim-twinkle .pc-img {
+  animation: pc-twinkle var(--pc-dur, 5000ms) ease-in-out var(--pc-delay, 0ms) infinite;
+}
+.pc-anim-breathe .pc-img {
+  transform-origin: bottom center;
+  animation: pc-breathe var(--pc-dur, 6500ms) ease-in-out var(--pc-delay, 0ms) infinite;
+}
+
+/* Promote only the continuously-animated images to their own GPU layer (used
+   sparingly — these layers are always in view while the hero is on screen).
+   Framer Motion manages will-change for the enter/parallax wrappers itself. */
+.pc-anim-bob .pc-img,
+.pc-anim-balloon .pc-img,
+.pc-anim-drift .pc-img,
+.pc-anim-sway .pc-img,
+.pc-anim-breathe .pc-img {
+  will-change: transform;
+}
+.pc-anim-twinkle .pc-img {
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pc-img {
+    animation: none !important;
+    will-change: auto !important;
+  }
+}

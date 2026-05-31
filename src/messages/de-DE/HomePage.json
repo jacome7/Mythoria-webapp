@@ -5,7 +5,25 @@
       "writeYourOwn": "Schreib deine eigene",
       "subtitle": "Mach aus jedem Menschen den Star eines wunderschön illustrierten Buchs – für Kinder, Erwachsene oder ganze Teams.",
       "subtitleEmphasized": "wirklich jede:n",
-      "tellYourOwnStory": "Schreib deine eigene Geschichte"
+      "tellYourOwnStory": "Schreib deine eigene Geschichte",
+      "headline": "Jede Geschichte beginnt mit dir",
+      "alt": {
+        "girl": "Ein lächelndes Mädchen hält ihr personalisiertes Mythoria-Buch"
+      },
+      "features": {
+        "personalized": {
+          "title": "Personalisierte Geschichten",
+          "desc": "Mache jede beliebige Person zur Hauptfigur."
+        },
+        "meaningful": {
+          "title": "Bedeutungsvoll & Einzigartig",
+          "desc": "Eine Geschichte, die man für immer schätzt."
+        },
+        "occasion": {
+          "title": "Für Jeden Anlass",
+          "desc": "Kinder, Erwachsene oder Teams — jede Geschichte zählt."
+        }
+      }
     },
     "words": [
       "Geschichte",

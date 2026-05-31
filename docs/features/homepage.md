@@ -10,13 +10,11 @@ The Homepage is the first-touch experience for Mythoria. It showcases what the p
 
 ### What visitors see and can do
 
-- **Hero + animated headline**
-  - A headline that animates through story-themed words.
-  - A clear “Write your own story” call-to-action that leads to the story creation flow.
-- **Sample story highlights**
-  - A carousel-style gallery with sample books.
-  - Users can open a sample to see tags, style, and synopsis in a modal.
-  - Cards are optimized for desktop and mobile layouts.
+- **Paper-cut storytelling hero**
+  - A layered paper-cut “theatre” diorama (sky decorations, scenery, a real photo of a reader holding a finished book, and foliage), each element on its own animated element.
+  - A storybook headline (“Every story starts with you”) and a clear “Write your own story” call-to-action that leads to the story creation flow.
+  - A 3-up feature card (Personalized · Meaningful · For Every Occasion) anchors the bottom of the scene.
+  - The scene is a **composition** chosen by the visitor's intent (see below). The full look — palette, typography, layering, animation — is documented in the [Paper-Cut Design System](../papercut-design-system.md).
 - **Audience-focused sections**
   - Four audience cards (Kids, Groups & Yearbooks, Adults, Companies) that link to public sample stories.
 - **“What drives us” mission block**
@@ -41,7 +39,7 @@ Visitors can arrive through **intent URLs** such as:
 - `/i/romance`
 - `/i/kids_bedtime/child`
 
-These links record the intent and (optionally) the recipient in a cookie, then redirect the visitor to the localized homepage. The sample gallery uses this context to prioritize the most relevant sample books first.
+These links record the intent and (optionally) the recipient in a cookie, then redirect the visitor to the localized homepage. The hero uses this context to choose the paper-cut **composition** to display (via `src/components/papercut/registry.ts`). Today every visitor sees the `kids_fantasy` composition; additional intent-specific compositions are added over time.
 
 ---
 
@@ -83,17 +81,16 @@ Locales are derived from the `Accept-Language` header and must match `SUPPORTED_
 
 Key UI sections and their sources:
 
-- **Hero + CTA**
-  - Uses `react-type-animation` to rotate the `HomePage.words` list.
-  - If the translations are missing, `fallbackWords` are used as a safety fallback.
+- **Paper-cut hero + CTA**
+  - Rendered by `src/components/papercut/PaperCutHero.tsx` (mounted full-bleed in `page.tsx`, before the page container).
+  - A data-driven composition system: `PaperCutHero` resolves a composition from the intent cookie (`resolveComposition`), then renders sky + scene layers (`PaperCutLayer` inside a `PaperCutStage`) and a `FeatureCard`.
+  - Copy comes from `HomePage.hero.*` (`headline`, `subtitle`, `subtitleEmphasized`, `tellYourOwnStory`, `features.*`, `alt.girl`). The legacy `hero.writeYourOwn` / `words` keys are no longer used on the homepage.
+  - To author a new composition, see the [Paper-Cut Design System](../papercut-design-system.md).
 - **Sample audience cards (Kids, Groups, Adults, Companies)**
   - Hardcoded sample story links pointing to public story slugs.
   - Each card uses localized title/description + image alt text.
 - **Infinite Gallery (sample carousel)**
-  - `InfiniteGallery` loads `public/SampleBooks/SampleBooks.json` and displays the cover artwork.
-  - Sample metadata includes `id`, `title`, `synopses`, `locale`, `intent`, `recipients`, `tags`, and `style`.
-  - Missing images gracefully fall back to a text placeholder.
-  - Clicking a sample opens a modal with tags, style, and synopsis.
+  - `InfiniteGallery` still exists in the repo but is **no longer mounted on the homepage** (it was the previous hero's right-side carousel). It can be reused elsewhere.
 - **What Drives Us**
   - Copy and emphasized text are controlled by `HomePage.whatDrivesUs.*`.
 - **Why Choose Mythoria**
@@ -146,7 +143,8 @@ The **intent system** supports marketing and onboarding links that pre-contextua
 ## Files to Know (Quick Map)
 
 - **Homepage UI:** `src/app/[locale]/page.tsx`
-- **Sample gallery:** `src/components/InfiniteGallery.tsx`
+- **Paper-cut hero:** `src/components/papercut/` (renderer, compositions, registry) — see the [Paper-Cut Design System](../papercut-design-system.md)
+- **Sample gallery (unused on homepage):** `src/components/InfiniteGallery.tsx`
 - **Intent routes:** `src/app/i/[intent]/route.ts` and `src/app/i/[intent]/[recipient]/route.ts`
 - **Intent helpers:** `src/constants/intents.ts`, `src/constants/recipients.ts`, `src/types/intent-context.ts`, `src/hooks/useIntentContext.ts`
 - **Translations:** `src/messages/<locale>/HomePage.json`, `src/messages/<locale>/StoryCounter.json`
@@ -158,6 +156,7 @@ The **intent system** supports marketing and onboarding links that pre-contextua
 ## Tips for Extending or Debugging
 
 - **Adding new homepage copy:** update `HomePage.json` in `en-US` first, then run i18n parity checks and add translations.
+- **Adding a new hero composition (per intent):** follow the recipe in the [Paper-Cut Design System](../papercut-design-system.md) — add art under `public/homepage/<id>/`, a config in `src/components/papercut/compositions/`, and one line in `registry.ts`.
 - **Adding intents or recipients:** update the constants and ensure any marketing URLs use the canonical format.
 - **Changing gallery ordering:** adjust the `sortBooksByContext` function in `InfiniteGallery`.
 - **New locales:** add to `SUPPORTED_LOCALES`, add message files, and ensure `generateStaticParams()` covers the locale.

@@ -5,7 +5,25 @@
       "writeYourOwn": "Write your own",
       "subtitle": "Turn anyone into the hero of a beautifully illustrated book — for children, grown-ups or entire teams.",
       "subtitleEmphasized": "anyone",
-      "tellYourOwnStory": "Write your own story"
+      "tellYourOwnStory": "Write your own story",
+      "headline": "Every story starts with you",
+      "alt": {
+        "girl": "A smiling girl holding her personalized Mythoria storybook"
+      },
+      "features": {
+        "personalized": {
+          "title": "Personalized Stories",
+          "desc": "Make the main character anyone you choose."
+        },
+        "meaningful": {
+          "title": "Meaningful & Unique",
+          "desc": "A story they'll treasure forever."
+        },
+        "occasion": {
+          "title": "For Every Occasion",
+          "desc": "Kids, adults or teams — every story matters."
+        }
+      }
     },
     "words": [
       "Story",

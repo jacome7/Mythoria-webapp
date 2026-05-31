@@ -5,7 +5,25 @@
       "writeYourOwn": "Escreva a sua própria",
       "subtitle": "Transforme qualquer pessoa no herói de um livro lindamente ilustrado — para crianças, adultos ou equipas inteiras.",
       "subtitleEmphasized": "qualquer pessoa",
-      "tellYourOwnStory": "Conte a sua própria história"
+      "tellYourOwnStory": "Conte a sua própria história",
+      "headline": "Cada história começa contigo",
+      "alt": {
+        "girl": "Uma menina sorridente a segurar o seu livro Mythoria personalizado"
+      },
+      "features": {
+        "personalized": {
+          "title": "Histórias Personalizadas",
+          "desc": "Faça de qualquer pessoa a personagem principal."
+        },
+        "meaningful": {
+          "title": "Significativas e Únicas",
+          "desc": "Uma história que guardarão para sempre."
+        },
+        "occasion": {
+          "title": "Para Todas as Ocasiões",
+          "desc": "Crianças, adultos ou equipas — cada história importa."
+        }
+      }
     },
     "words": [
       "História",

@@ -1,102 +1,23 @@
-'use client'; // Required for TypeAnimation
+'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { TypeAnimation } from 'react-type-animation';
 import { useLocale, useTranslations } from 'next-intl';
-import { useMemo } from 'react';
 import { Show } from '@clerk/nextjs';
 import StoryCounter from '@/components/StoryCounter';
 import QuoteOfTheDay from '@/components/QuoteOfTheDay';
-import InfiniteGallery from '@/components/InfiniteGallery';
 import WhyChooseMythoria from '@/components/WhyChooseMythoria';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
-import { useIntentContext } from '@/hooks/useIntentContext';
+import PaperCutHero from '@/components/papercut/PaperCutHero';
 
 export default function Home() {
   const tHomePage = useTranslations('HomePage');
   const locale = useLocale();
-  const intentContext = useIntentContext();
-
-  // Note: Carousel removed in favor of a vertical mobile layout
-
-  // Get the words array from translations with proper error handling
-  const wordsRaw = tHomePage.raw('words');
-
-  // Memoize the words array to prevent dependency changes
-  const words = useMemo(() => {
-    return Array.isArray(wordsRaw) ? wordsRaw : [];
-  }, [wordsRaw]);
-
-  // Create sequence for TypeAnimation - memoized to prevent hydration issues
-  const sequence = useMemo(() => {
-    const seq: (string | number)[] = [];
-    // Add safety check
-    if (Array.isArray(words) && words.length > 0) {
-      words.forEach((word) => {
-        seq.push(word, 1500);
-      });
-    } else {
-      // Fallback words if translation is missing
-      const fallbackWords = tHomePage.raw('fallbackWords') || [
-        'Adventure',
-        'Love Story',
-        'Mystery',
-        'Fairy Tale',
-      ];
-      fallbackWords.forEach((word: string) => {
-        seq.push(word, 1500);
-      });
-    }
-    return seq;
-  }, [words, tHomePage]);
-
-  // Carousel logic removed
 
   return (
     <div className="min-h-screen bg-base-100 text-base-content">
+      <PaperCutHero />
       <div className="container mx-auto px-4 py-4">
-        <header className="hero mb-3 mt-1 min-h-[34vh] rounded-box bg-base-200 sm:mb-4 sm:mt-2 sm:min-h-[40vh]">
-          <div className="hero-content w-full flex-col gap-4 px-2 py-6 sm:px-4 sm:py-8 lg:flex-row lg:px-6">
-            <div className="w-full text-center lg:w-[54%] lg:text-left">
-              <h1 className="mx-auto max-w-[36rem] text-2xl font-bold sm:max-w-[42rem] sm:text-3xl md:text-4xl lg:mx-0 lg:max-w-none">
-                ✨ {tHomePage('hero.writeYourOwn')}
-                <br />
-                <TypeAnimation
-                  sequence={sequence}
-                  wrapper="span"
-                  speed={5}
-                  className="text-primary"
-                  repeat={Infinity}
-                />
-              </h1>
-              <p className="mx-auto max-w-[38rem] py-3 text-base md:text-[1.0625rem] lg:mx-0 lg:max-w-none">
-                {tHomePage('hero.subtitle')
-                  .split(tHomePage('hero.subtitleEmphasized'))
-                  .map((part, index, array) => (
-                    <span key={index}>
-                      {index === array.length - 1 ? (
-                        part
-                      ) : (
-                        <>
-                          {part}
-                          <em>{tHomePage('hero.subtitleEmphasized')}</em>
-                        </>
-                      )}
-                    </span>
-                  ))}
-              </p>
-              <Link href={`/${locale}/tell-your-story`} className="btn btn-primary btn-lg">
-                {tHomePage('hero.tellYourOwnStory')}
-              </Link>
-            </div>
-            {/* Right Side: Gallery */}
-            <div className="lg:w-[46%] flex justify-center lg:justify-end mt-4 lg:mt-0">
-              <InfiniteGallery intentContext={intentContext ?? undefined} />
-            </div>
-          </div>
-        </header>
-
         {/* Audience Sections */}
         <ScrollFadeIn threshold={0.1} rootMargin="0px 0px -20px 0px">
           <section className="my-16">

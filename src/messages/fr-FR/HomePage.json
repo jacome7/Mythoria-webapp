@@ -5,7 +5,25 @@
       "writeYourOwn": "Écrivez le vôtre",
       "subtitle": "Transformez n'importe qui en héros d'un livre magnifiquement illustré - pour les enfants, les adultes ou les équipes entières.",
       "subtitleEmphasized": "n'importe qui",
-      "tellYourOwnStory": "Écrivez votre propre histoire"
+      "tellYourOwnStory": "Écrivez votre propre histoire",
+      "headline": "Chaque histoire commence avec vous",
+      "alt": {
+        "girl": "Une fillette souriante tenant son livre Mythoria personnalisé"
+      },
+      "features": {
+        "personalized": {
+          "title": "Histoires Personnalisées",
+          "desc": "Faites de n'importe qui le héros principal."
+        },
+        "meaningful": {
+          "title": "Uniques et Précieuses",
+          "desc": "Une histoire qu'ils chériront toujours."
+        },
+        "occasion": {
+          "title": "Pour Chaque Occasion",
+          "desc": "Enfants, adultes ou équipes — chaque histoire compte."
+        }
+      }
     },
     "words": [
       "Histoire",

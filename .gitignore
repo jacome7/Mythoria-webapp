@@ -119,6 +119,7 @@ next-env.d.ts
 # Temporary files
 *.tmp
 *.temp
+_mockups/
 
 # Database
 *.db
