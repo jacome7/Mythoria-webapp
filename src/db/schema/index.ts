@@ -10,6 +10,7 @@ export * from './authors';
 export * from './stories';
 export * from './blog';
 export * from './characters';
+export * from './writing-personas';
 export * from './payments';
 export * from './shipping';
 export * from './credits';

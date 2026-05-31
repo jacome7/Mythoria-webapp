@@ -36,20 +36,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Access denied' }, { status: 403 });
     }
 
-    // Delete old photo if it exists at a different path
-    if (character.photoGcsUri) {
-      try {
-        await sgwFetch('/ai/media/character-photo', {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ gcsPath: character.photoGcsUri }),
-        });
-      } catch (err) {
-        console.warn('Failed to delete old character photo:', err);
-        // Continue anyway - not critical
-      }
-    }
-
     // Upload the new photo via SGW
     const resp = await sgwFetch('/ai/media/character-photo', {
       method: 'POST',
@@ -71,16 +57,31 @@ export async function POST(request: NextRequest) {
     }
 
     // Update the character record with the new photo URL and GCS URI
+    const previousPhotoGcsUri = character.photoGcsUri;
     const updatedCharacter = await characterService.updateCharacterPhoto(
       characterId,
       data.publicUrl,
       data.gcsPath,
     );
 
+    // Delete the previous object only after the DB points at the new immutable version.
+    if (previousPhotoGcsUri && previousPhotoGcsUri !== data.gcsPath) {
+      try {
+        await sgwFetch('/ai/media/character-photo', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ gcsPath: previousPhotoGcsUri }),
+        });
+      } catch (err) {
+        console.warn('Failed to delete old character photo:', err);
+        // Continue anyway - the character now points at the new photo.
+      }
+    }
+
     return NextResponse.json({
       success: true,
-      photoUrl: data.publicUrl,
-      photoGcsUri: data.gcsPath,
+      photoUrl: updatedCharacter?.photoUrl || data.publicUrl,
+      photoGcsUri: updatedCharacter?.photoGcsUri || data.gcsPath,
       character: updatedCharacter,
     });
   } catch (error) {

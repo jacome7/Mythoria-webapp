@@ -31,6 +31,14 @@ interface StoryInfoEditorProps {
   onTranslateClick?: () => void;
 }
 
+const getStoryFormData = (story: Story) => ({
+  title: story.title || '',
+  synopsis: story.synopsis || '',
+  dedicationMessage: story.dedicationMessage || '',
+  customAuthor: story.customAuthor || '',
+  targetAudience: story.targetAudience || '',
+});
+
 export default function StoryInfoEditor({
   story,
   onSave,
@@ -41,13 +49,11 @@ export default function StoryInfoEditor({
 }: StoryInfoEditorProps) {
   const tStoryInfoEditor = useTranslations('StoryInfoEditor');
 
-  const [formData, setFormData] = useState({
-    title: story.title || '',
-    synopsis: story.synopsis || '',
-    dedicationMessage: story.dedicationMessage || '',
-    customAuthor: story.customAuthor || '',
-    targetAudience: story.targetAudience || '',
-  });
+  const [formData, setFormData] = useState(() => getStoryFormData(story));
+
+  useEffect(() => {
+    setFormData(getStoryFormData(story));
+  }, [story]);
 
   // Compute if there are unsaved changes (derived state)
   const hasUnsavedChanges =
@@ -69,14 +75,6 @@ export default function StoryInfoEditor({
 
     try {
       await onSave(formData);
-      // Reset form data to match saved story (this will make hasUnsavedChanges false)
-      setFormData({
-        title: story.title || '',
-        synopsis: story.synopsis || '',
-        dedicationMessage: story.dedicationMessage || '',
-        customAuthor: story.customAuthor || '',
-        targetAudience: story.targetAudience || '',
-      });
     } catch (error) {
       console.error(tStoryInfoEditor('logging.errorSavingStoryInfo'), error);
     }

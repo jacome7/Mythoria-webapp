@@ -1,0 +1,156 @@
+{
+  "WritingPersonas": {
+    "eyebrow": "Schreibstimmen",
+    "title": "Meine Personas",
+    "intro": "Speichere bis zu drei Erzählstimmen, die du beim Erstellen einer Geschichte wiederverwenden kannst. Die meisten Autorinnen und Autoren brauchen nur eine eigene Stimme, aber dieses Regal ist da, wenn eine Stimme bleiben soll.",
+    "signedOut": {
+      "title": "Melde dich an, um deine Personas zu verwalten",
+      "description": "Deine Schreib-Personas gehören zu deinem Autorenkonto.",
+      "action": "Anmelden"
+    },
+    "guide": {
+      "title": "Was verändert eine Schreib-Persona?",
+      "description": "Eine Persona ist die Maske des Erzählers: Sie verändert, wer spricht, wie schnell die Sätze laufen, welche Wörter natürlich wirken, wie viel Dialog erscheint und welche Details die Geschichte zuerst bemerkt.",
+      "link": "Mythoria-Leitfaden zu literarischen Personas lesen"
+    },
+    "create": {
+      "title": "Wiederverwendbare Persona erstellen",
+      "description": "Gib dieser Stimme einen Namen, damit du sie im Geschichtenfluss wieder auswählen kannst."
+    },
+    "edit": {
+      "title": "Persona bearbeiten",
+      "description": "Stimme diese gespeicherte Stimme ab. Künftige Geschichten nutzen die aktualisierten Einstellungen, wenn du sie auswählst."
+    },
+    "list": {
+      "title": "Gespeicherte Personas",
+      "count": "{count}/{max} gespeichert",
+      "summary": "POV {pov} · Ton {tone}/5 · Rhythmus {rhythm}/5 · Wortschatz {vocabulary}/5"
+    },
+    "empty": {
+      "title": "Noch keine Personas gespeichert",
+      "description": "Erstelle hier eine, oder baue in Schritt 4 direkt eine eigene Stimme nur für dieses Buch."
+    },
+    "actions": {
+      "create": "Persona erstellen",
+      "save": "Persona speichern",
+      "cancel": "Abbrechen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen"
+    },
+    "success": {
+      "saved": "Persona gespeichert.",
+      "deleted": "Persona gelöscht."
+    },
+    "errors": {
+      "loadFailed": "Deine Schreib-Personas konnten nicht geladen werden. Bitte versuche es erneut.",
+      "saveFailed": "Diese Schreib-Persona konnte nicht gespeichert werden. Bitte versuche es erneut.",
+      "deleteFailed": "Diese Schreib-Persona konnte nicht gelöscht werden. Bitte versuche es erneut."
+    },
+    "form": {
+      "name": {
+        "label": "Persona-Name",
+        "placeholder": "z. B. gemütlicher Gute-Nacht-Erzähler",
+        "help": "Nur du siehst diesen Namen. Nimm etwas, das du später wiedererkennst."
+      },
+      "pov": {
+        "label": "Erzählperspektive",
+        "help": "Wähle, wer die Geschichte erzählt. Das verändert, wie nah sich Lesende an Handlung und Figuren fühlen.",
+        "options": {
+          "1st": "Erste Person (ich / wir)",
+          "2nd": "Zweite Person (du)",
+          "3rd-limited": "Dritte Person begrenzt",
+          "3rd-omniscient": "Dritte Person allwissend",
+          "objective": "Objektiver Beobachter"
+        }
+      },
+      "traits": {
+        "tone": {
+          "label": "Ton",
+          "low": "Ernst",
+          "high": "Humorvoll",
+          "help": "Setzt die emotionale Farbe des Erzählers, von ruhig und aufrichtig bis verspielt und witzig."
+        },
+        "formality": {
+          "label": "Formalität",
+          "low": "Umgangssprachlich",
+          "high": "Akademisch",
+          "help": "Steuert, ob die Stimme nah, poliert oder wie eine formellere Chronik wirkt."
+        },
+        "rhythm": {
+          "label": "Rhythmus",
+          "low": "Langsam",
+          "high": "Schnell",
+          "help": "Formt Satztempo und Erzählenergie, von nachdenklichen Absätzen bis zu schnellen Momenten."
+        },
+        "vocabulary": {
+          "label": "Wortschatz",
+          "low": "Einfach",
+          "high": "Gelehrt",
+          "help": "Passt die Wortkomplexität an, damit die Geschichte schlicht, reich, poetisch oder anspruchsvoller klingt."
+        },
+        "fictionality": {
+          "label": "Fiktionalität",
+          "low": "Faktisch",
+          "high": "Poetische Freiheit",
+          "help": "Sagt der Engine, wie stark sie geerdet bleiben oder Ereignisse frei erhöhen darf."
+        },
+        "dialogueDensity": {
+          "label": "Dialogdichte",
+          "low": "Sparsam",
+          "high": "Gesprächig",
+          "help": "Verändert, wie oft Figuren sprechen. Mehr Dialog kann die Geschichte wärmer und schneller machen."
+        },
+        "sensoriality": {
+          "label": "Sinnlichkeit",
+          "low": "Sparsam",
+          "high": "Reich",
+          "help": "Steuert, wie sehr die Prosa Bilder, Geräusche, Texturen, Gerüche und Atmosphäre bemerkt."
+        },
+        "subtextIrony": {
+          "label": "Subtext & Ironie",
+          "low": "Direkt",
+          "high": "Vielschichtig",
+          "help": "Fügt versteckte Bedeutung, Witz oder Kontrast zwischen Gesagtem und Angedeutetem hinzu."
+        }
+      },
+      "techniques": {
+        "label": "Techniken",
+        "help": "Optionale Erzählwerkzeuge. Leer lassen, wenn du eine klare, einfache Stimme möchtest.",
+        "free-indirect-discourse": "Freie indirekte Rede",
+        "unreliable-narrator": "Unzuverlässiger Erzähler",
+        "4th-wall-break": "Durchbrechen der vierten Wand",
+        "show-dont-tell": "Zeigen statt erklären",
+        "scene-anchoring": "Szenenverankerung",
+        "lyrical-refrains": "Lyrische Refrains",
+        "oral-cadence": "Mündlicher Klang"
+      },
+      "techniqueHelp": {
+        "free-indirect-discourse": "Verschmilzt Erzählung mit den Gedanken einer Figur.",
+        "unreliable-narrator": "Erlaubt einen parteiischen, irrenden oder spielerischen Erzähler.",
+        "4th-wall-break": "Erlaubt kurze direkte Augenzwinkern an die Lesenden.",
+        "show-dont-tell": "Lässt Emotion durch Handlung und Detail entstehen.",
+        "scene-anchoring": "Hält jede Szene in Ort und Bewegung geerdet.",
+        "lyrical-refrains": "Wiederholt poetische Formulierungen für Rhythmus und Erinnerung.",
+        "oral-cadence": "Lässt die Prosa wie laut erzähltes Geschichtenerzählen wirken."
+      },
+      "specialRequirements": {
+        "label": "Besondere Anforderungen",
+        "placeholder": "z. B. Kapitel sanft halten, Sarkasmus vermeiden und wie ein warmer älterer Cousin klingen.",
+        "help": "Füge kurze Schreibtipps für diese Stimme hinzu. Keine privaten Informationen eintragen, die nicht in der Geschichte genutzt werden sollen."
+      }
+    },
+    "story": {
+      "createOneBook": "Eigene Stimme für dieses Buch erstellen",
+      "oneBookName": "Eigene Stimme für dieses Buch",
+      "savedLabel": "Deine gespeicherten Personas",
+      "builtInLabel": "Mythoria-Personas",
+      "customDescription": "Stimme den Erzähler nur für diese Geschichte ab. Kein Name nötig, kein Regalplatz verbraucht.",
+      "modalTitle": "Eigene Stimme für dieses Buch",
+      "modalDescription": "Diese Einstellungen leiten die Schreib-Engine für diesen Entwurf. Sie formen die Maske des Erzählers, nicht die Fakten der Geschichte.",
+      "useVoice": "Diese Stimme verwenden",
+      "savedBadge": "Gespeichert",
+      "customBadge": "Eigene",
+      "manageLink": "Gespeicherte Personas verwalten"
+    }
+  }
+}
