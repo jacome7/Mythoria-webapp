@@ -10,11 +10,13 @@ test-results/
 
 # Dependencies
 node_modules/
+scripts/graphicTemplateGenerator/.venv/
 scripts/sampleBookGenerator/.venv/
 
 # Generated or external assets
 public/
 logs/
+scripts/graphicTemplateGenerator/generated/
 scripts/sampleBookGenerator/generated/
 drizzle/**/*.sql
 drizzle/meta/

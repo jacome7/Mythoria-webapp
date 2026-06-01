@@ -86,6 +86,9 @@ coverage/
 
 # Dependency directories
 node_modules/
+scripts/graphicTemplateGenerator/.venv/
+scripts/graphicTemplateGenerator/generated/
+scripts/graphicTemplateGenerator/__pycache__/
 jspm_packages/
 
 # Optional npm cache directory

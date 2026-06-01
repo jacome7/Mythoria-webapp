@@ -29,6 +29,16 @@ import {
 import type { StoryData } from '@/types/story';
 import type { SavedWritingPersona, WritingPersonaSettings } from '@/types/writing-persona';
 
+const DEFAULT_GRAPHIC_TEMPLATE_AUDIENCE = TargetAudience.CHILDREN_3_6;
+
+const getGraphicTemplateImageSrc = (
+  audience: TargetAudience | '',
+  style: GraphicalStyle,
+): string => {
+  const audienceSegment = audience || DEFAULT_GRAPHIC_TEMPLATE_AUDIENCE;
+  return `/images/GraphicTemplates/${audienceSegment}/${style}.jpg`;
+};
+
 export default function Step4PageWrapper() {
   return (
     <Suspense>
@@ -1235,7 +1245,7 @@ function Step4Page() {
                             >
                               <figure className="px-4 pt-4">
                                 <Image
-                                  src={`/images/GraphicTemplates/YoungAdults/${style}.jpg`}
+                                  src={getGraphicTemplateImageSrc(targetAudience, style)}
                                   alt={tStoryStepsStep4('modal.altText', {
                                     style: GraphicalStyleLabels[style],
                                   })}
