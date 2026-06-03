@@ -82,6 +82,23 @@
         "images": "images"
       },
       "imageGalleryTitle": "Your Images ({count}/3)",
+      "imageAnalysis": {
+        "statusUploading": "Uploading…",
+        "statusAnalyzing": "Analyzing…",
+        "statusReady": "Ready",
+        "statusFailed": "Analysis failed",
+        "retry": "Retry",
+        "viewDetails": "View details",
+        "attemptsExhausted": "Couldn't analyze this image",
+        "detailsTitle": "Image analysis",
+        "typeLabel": "Type",
+        "descriptionLabel": "Description",
+        "textLabel": "Detected text",
+        "charactersLabel": "Detected characters",
+        "noText": "No text detected.",
+        "noCharacters": "No people or animals detected.",
+        "waitingHint": "Please wait until all images finish analyzing before continuing."
+      },
       "photoTips": {
         "title": "📸 Photo Tips",
         "tips": [

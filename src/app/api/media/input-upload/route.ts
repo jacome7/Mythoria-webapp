@@ -3,10 +3,12 @@ import { getCurrentAuthor } from '@/lib/auth';
 import { sgwFetch } from '@/lib/sgw-client';
 
 /**
- * POST /api/media/signed-upload
- * Author-scoped media upload proxy (back-compat shim — prefer
- * /api/media/input-upload). Proxies to SGW POST /ai/media/upload, injecting the
- * authenticated author id. Body: { kind: 'image'|'audio', contentType, dataUrl }.
+ * POST /api/media/input-upload
+ * Upload a story input image/audio immediately to GCS under the author's inputs
+ * folder. Proxies to SGW POST /ai/media/upload, injecting the authenticated
+ * author id. Images are normalised to JPEG (<=2048px, q95) server-side.
+ * Body: { kind: 'image'|'audio', contentType: string, dataUrl: string }
+ * Returns: { success, objectPath, publicUrl }
  */
 export async function POST(request: NextRequest) {
   try {
@@ -14,10 +16,10 @@ export async function POST(request: NextRequest) {
     if (!author) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await request.json();
-    const { contentType, kind, dataUrl } = body || {};
-    if (!contentType || !kind || !dataUrl) {
+    const { kind, contentType, dataUrl } = body || {};
+    if (!kind || !contentType || !dataUrl) {
       return NextResponse.json(
-        { error: 'contentType, kind and dataUrl are required' },
+        { error: 'kind, contentType and dataUrl are required' },
         { status: 400 },
       );
     }
