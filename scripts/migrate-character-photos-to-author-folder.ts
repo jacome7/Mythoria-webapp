@@ -155,14 +155,24 @@ function parseLegacyPath(value: string | null, bucketName: string): LegacyPath |
   const objectPath = objectPathFromReference(value, bucketName);
   if (!objectPath || objectPath.includes('..')) return null;
 
-  const match = /^characters\/([^/]+)\/([^/]+)\/([^/]+\.jpe?g)$/i.exec(objectPath);
-  if (!match) return null;
+  const versionedMatch = /^characters\/([^/]+)\/([^/]+)\/([^/]+\.jpe?g)$/i.exec(objectPath);
+  if (versionedMatch) {
+    return {
+      sourcePath: objectPath,
+      authorId: versionedMatch[1],
+      characterId: versionedMatch[2],
+      filename: versionedMatch[3],
+    };
+  }
+
+  const flatMatch = /^characters\/([^/]+)\/([^/]+\.jpe?g)$/i.exec(objectPath);
+  if (!flatMatch) return null;
 
   return {
     sourcePath: objectPath,
-    authorId: match[1],
-    characterId: match[2],
-    filename: match[3],
+    authorId: flatMatch[1],
+    characterId: flatMatch[2].replace(/\.jpe?g$/i, ''),
+    filename: flatMatch[2],
   };
 }
 
