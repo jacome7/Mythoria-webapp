@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     const previousPhotoGcsUri = character.photoGcsUri;
     const updatedCharacter = await characterService.updateCharacterPhoto(
       characterId,
-      data.publicUrl,
+      data.gcsPath,
       data.gcsPath,
     );
 

@@ -110,7 +110,7 @@ When the user presses the (i) ison, open a modal with the following text:
 
 After the user upload a photo, we must provide a cropping UI, so the user can crop and resize the image to a square format. To do that use the already installed `react-easy-crop` plugin.
 
-When the user presses the "crop" button, on the backend, resize the photo to 768x768 resolution and save it to the google cloud storage bucket defined on the env variable `STORAGE_BUCKET_NAME` under the folder `mythoria-generated-stories/{stroyId}/characters`. The file name must the the UUID of the character.
+When the user presses the "crop" button, on the backend, resize the photo to 768x768 resolution and save it to the google cloud storage bucket defined on the env variable `STORAGE_BUCKET_NAME` under `{authorId}/characters/{characterId}/{version}.jpg`.
 
 When the user presses the Character Icon (even if it is an photo), open a modal for the user
 

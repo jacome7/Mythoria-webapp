@@ -34,7 +34,7 @@ describe('POST /api/media/character-photo', () => {
   const authorId = 'author-1';
   const characterId = 'character-1';
   const oldGcsPath = 'characters/author-1/character-1/old.jpg';
-  const newGcsPath = 'characters/author-1/character-1/new.jpg';
+  const newGcsPath = 'author-1/characters/character-1/new.jpg';
   const newPublicUrl = `https://storage.googleapis.com/mythoria-generated-stories/${newGcsPath}`;
 
   beforeEach(() => {
@@ -85,7 +85,7 @@ describe('POST /api/media/character-photo', () => {
 
     expect(response.status).toBe(200);
     expect(calls).toEqual(['upload', 'db', 'delete']);
-    expect(updateCharacterPhotoMock).toHaveBeenCalledWith(characterId, newPublicUrl, newGcsPath);
+    expect(updateCharacterPhotoMock).toHaveBeenCalledWith(characterId, newGcsPath, newGcsPath);
     expect(sgwFetchMock).toHaveBeenNthCalledWith(
       2,
       '/ai/media/character-photo',
@@ -149,7 +149,7 @@ describe('POST /api/media/character-photo', () => {
     } as unknown as NextRequest)) as { status: number; json: () => Promise<unknown> };
 
     expect(response.status).toBe(200);
-    expect(updateCharacterPhotoMock).toHaveBeenCalledWith(characterId, newPublicUrl, newGcsPath);
+    expect(updateCharacterPhotoMock).toHaveBeenCalledWith(characterId, newGcsPath, newGcsPath);
     expect(sgwFetchMock).toHaveBeenCalledTimes(2);
     await expect(response.json()).resolves.toMatchObject({
       success: true,

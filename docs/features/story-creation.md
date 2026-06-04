@@ -151,14 +151,14 @@ A draft can be revisited by appending `?edit={storyId}` to steps 3–5. When in 
 
 ### Session & Draft State
 
-| Data             | Storage          | Key              | Used in                       |
-| ---------------- | ---------------- | ---------------- | ----------------------------- |
-| Current story ID | `localStorage`   | `currentStoryId` | Steps 2–5 (via session guard) |
-| Step 1 data      | `localStorage`   | `step1Data`      | Steps 1 & 5                   |
-| Step 2 inputs (text + image/audio descriptors: `objectPath`, `status`, `metadata`) | `sessionStorage` | `step2Data` | Step 2 only |
-| Step 3 data      | `localStorage`   | `step3Data`      | Step 3 (local cache)          |
-| GenAI results    | `localStorage`   | `genaiResults`   | Step 2 → Step 3/4 prefill     |
-| Edit mode flag   | `localStorage`   | `isEditMode`     | Steps 3–5                     |
+| Data                                                                               | Storage          | Key              | Used in                       |
+| ---------------------------------------------------------------------------------- | ---------------- | ---------------- | ----------------------------- |
+| Current story ID                                                                   | `localStorage`   | `currentStoryId` | Steps 2–5 (via session guard) |
+| Step 1 data                                                                        | `localStorage`   | `step1Data`      | Steps 1 & 5                   |
+| Step 2 inputs (text + image/audio descriptors: `objectPath`, `status`, `metadata`) | `sessionStorage` | `step2Data`      | Step 2 only                   |
+| Step 3 data                                                                        | `localStorage`   | `step3Data`      | Step 3 (local cache)          |
+| GenAI results                                                                      | `localStorage`   | `genaiResults`   | Step 2 → Step 3/4 prefill     |
+| Edit mode flag                                                                     | `localStorage`   | `isEditMode`     | Steps 3–5                     |
 
 Guarding logic:
 
@@ -177,13 +177,13 @@ Guarding logic:
 
 #### AI Structuring & Media
 
-| Endpoint                       | Method | Purpose                                                               |
-| ------------------------------ | ------ | --------------------------------------------------------------------- |
-| `/api/media/input-upload`      | POST   | Upload an input image/audio to GCS under `{authorId}/inputs` (proxies SGW `/ai/media/upload`). Images normalised to JPEG ≤2048px, q95. |
+| Endpoint                       | Method | Purpose                                                                                                                                         |
+| ------------------------------ | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/api/media/input-upload`      | POST   | Upload an input image/audio to GCS under `{authorId}/inputs` (proxies SGW `/ai/media/upload`). Images normalised to JPEG ≤2048px, q95.          |
 | `/api/media/analyze-image`     | POST   | Analyse an uploaded image (type / description / OCR / detected characters); persists a sibling `.json` (proxies SGW `/ai/media/analyze-image`). |
-| `/api/media/signed-upload`     | POST   | Back-compat author-scoped upload shim (prefer `input-upload`).        |
-| `/api/stories/genai-structure` | POST   | Start **async** structuring; proxies SGW `POST /api/jobs/story-structure` and returns `{ jobId, estimatedDuration }`. |
-| `/api/jobs/:jobId`             | GET    | Poll an async SGW job (structuring, text/image edits) for status + result. |
+| `/api/media/signed-upload`     | POST   | Back-compat author-scoped upload shim (prefer `input-upload`).                                                                                  |
+| `/api/stories/genai-structure` | POST   | Start **async** structuring; proxies SGW `POST /api/jobs/story-structure` and returns `{ jobId, estimatedDuration }`.                           |
+| `/api/jobs/:jobId`             | GET    | Poll an async SGW job (structuring, text/image edits) for status + result.                                                                      |
 
 #### Characters
 
@@ -228,21 +228,23 @@ Guarding logic:
   - Generation tracking fields (`storyGenerationStatus`, `storyGenerationCompletedPercentage`)
   - `coverReferenceUris` (`jsonb`) — GCS URIs of user input photos flagged relevant for cover generation
   - Status (`temporary`, `draft`, `writing`, `published`)
-- **Characters** and the **story_characters** junction table live in `src/db/schema/characters.ts`. Character `photoUrl` / `photoGcsUri` are reused to store the **cropped photo** extracted from an input image during structuring.
+- **Characters** and the **story_characters** junction table live in `src/db/schema/characters.ts`. Character `photoUrl` / `photoGcsUri` store the current bucket-relative character photo path, including **cropped photos** extracted from input images during structuring.
 
 ### GCS Layout
 
-| Path                                                  | Contents                                                       |
-| ----------------------------------------------------- | -------------------------------------------------------------- |
-| `{authorId}/inputs/{uuid}.jpg` (+ `.json`, audio)     | **Staging** only — Step 2 uploads land here before a story exists |
-| `{storyId}/inputs/{uuid}.jpg`                         | Normalised input photo (JPEG ≤2048px, q95), relocated on structure |
-| `{storyId}/inputs/{uuid}.json`                        | Extracted image metadata (sibling of the photo)                |
-| `{storyId}/inputs/{uuid}.{ext}`                       | Uploaded input audio                                           |
-| `{storyId}/inputs/description.txt`                    | The user's free-text input                                     |
-| `{storyId}/inputs/manifest.json`                      | Replay manifest: text, image paths + metadata, audio, locale, characterIds |
-| `characters/{authorId}/{characterId}/{version}.jpg`   | Character photo (incl. crops from input photos)                |
-| `{storyId}/images/...`                                | Generated cover/chapter images                                 |
-| `{storyId}/prompts/...`                               | **Debug only** — rendered generation prompts (outline, chapters, images) + variable sidecars. Written by SGW only when `DEBUG_PERSIST_PROMPTS=true`; off in production. |
+| Path                                                | Contents                                                                                                                                                                |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `{authorId}/inputs/{uuid}.jpg` (+ `.json`, audio)   | **Staging** only — Step 2 uploads land here before a story exists                                                                                                       |
+| `{storyId}/inputs/{uuid}.jpg`                       | Normalised input photo (JPEG ≤2048px, q95), relocated on structure                                                                                                      |
+| `{storyId}/inputs/{uuid}.json`                      | Extracted image metadata (sibling of the photo)                                                                                                                         |
+| `{storyId}/inputs/{uuid}.{ext}`                     | Uploaded input audio                                                                                                                                                    |
+| `{storyId}/inputs/description.txt`                  | The user's free-text input                                                                                                                                              |
+| `{storyId}/inputs/manifest.json`                    | Replay manifest: text, image paths + metadata, audio, locale, characterIds                                                                                              |
+| `{authorId}/characters/{characterId}/{version}.jpg` | Character photo (manual uploads and crops from input photos)                                                                                                            |
+| `{storyId}/images/...`                              | Generated cover/chapter images                                                                                                                                          |
+| `{storyId}/prompts/...`                             | **Debug only** — rendered generation prompts (outline, chapters, images) + variable sidecars. Written by SGW only when `DEBUG_PERSIST_PROMPTS=true`; off in production. |
+
+> **Character photo migration:** legacy objects under `characters/{authorId}/{characterId}/{version}.jpg` are migrated with `npm run character-photos:migrate` from `mythoria-webapp`. Dry-run is the default; `-- --execute` copies to `{authorId}/characters/{characterId}/{version}.jpg`, updates `characters.photo_url` / `characters.photo_gcs_uri`, verifies the destination, then deletes the legacy object. Remove any temporary scratch scripts created during migration work; keep only the committed migration utility.
 
 > **Input lifecycle (staging → story-scoped):** photos/audio are uploaded in Step 2 **before** a story row exists, so they first land under `{authorId}/inputs/` as a staging area. When the user clicks Next and the async structure job runs, it **relocates** (moves) the image + its `.json` metadata + audio into the new `{storyId}/inputs/` folder, then writes `description.txt` and a `manifest.json`. The result is a self-contained per-story input snapshot that a future "re-generate outline" feature can replay. `stories.coverReferenceUris` and character crop sources reference the story-scoped paths.
 >
