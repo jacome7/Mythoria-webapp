@@ -13,7 +13,6 @@
     "format:fix": "prettier --write .",
     "postinstall": "patch-package",
     "logs": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/logs.ps1",
-    "character-photos:migrate": "tsx scripts/migrate-character-photos-to-author-folder.ts",
     "revenue:sentinel": "tsx scripts/reconcile-stripe-admin-orders.ts",
     "i18n:prune:pt-PT:common": "tsx scripts/prune-unused-keys.ts pt-PT common.json",
     "db:generate": "drizzle-kit generate",

@@ -31,7 +31,6 @@ Story Characters is the authoring surface for creating, editing, and reusing cha
 - **Tell Your Story Step 3** (`src/app/[locale]/tell-your-story/step-3/page.tsx`) fetches story-linked characters and available characters, then associates selected characters to the story via `/api/stories/{id}/characters`.
 - **Character CRUD** is handled through `/api/characters` and `/api/characters/{id}`. The library view (`MyCharactersTable`) orchestrates create/edit/delete flows and keeps local state in sync.
 - **Photo upload and analysis** are driven by `/api/media/character-photo` and `/api/media/analyze-character-photo`, with optional PATCH updates back to the character record. Character photos are stored in GCS as versioned objects under `{authorId}/characters/{characterId}/{version}.jpg`, and the database stores the bucket-relative path in `photoUrl` / `photoGcsUri`.
-- **Legacy migration** is handled by `npm run character-photos:migrate` from `mythoria-webapp`. It dry-runs by default; `-- --execute` copies legacy `characters/{authorId}/...` objects into the author-scoped folder, updates DB references, verifies the copy, and deletes the old object.
 
 ### Data Flow (High Level)
 
