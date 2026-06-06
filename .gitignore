@@ -50,6 +50,7 @@ config.json
 secrets.json
 
 # IDE
+.codex/
 .idea/
 *.swp
 *.swo
