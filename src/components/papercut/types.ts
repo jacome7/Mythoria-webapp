@@ -17,7 +17,15 @@ export type Anchor = 'top' | 'bottom';
 export type ShadowTier = 'none' | 'sky' | 'mid' | 'front';
 
 /** Idle animation applied to a layer's image (disabled under reduced-motion). */
-export type AnimName = 'none' | 'bob' | 'balloon' | 'drift' | 'sway' | 'twinkle' | 'breathe';
+export type AnimName =
+  | 'none'
+  | 'bob'
+  | 'balloon'
+  | 'drift'
+  | 'sway'
+  | 'twinkle'
+  | 'breathe'
+  | 'arc';
 
 /**
  * Easing for the enter animation. A named curve, or a cubic-bezier array
@@ -158,6 +166,8 @@ export interface HeroText {
 
 export interface PaperCutComposition {
   id: string;
+  /** Composition-owned CSS class for themed visuals/animations. */
+  rootClassName?: string;
   stageAspect: StageAspect;
   /** Floating decorations in the top (sky) band, behind the headline. */
   sky: PaperCutLayerConfig[];

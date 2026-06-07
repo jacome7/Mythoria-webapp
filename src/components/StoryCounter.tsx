@@ -1,8 +1,9 @@
 'use client';
 
+import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { FaBookReader } from 'react-icons/fa';
+import styles from './StoryCounter.module.css';
 
 const StoryCounter = () => {
   const tCommonStoryCounter = useTranslations('StoryCounter');
@@ -68,26 +69,48 @@ const StoryCounter = () => {
   }, [fetchStoryCount]);
 
   return (
-    <div className="stats shadow bg-primary text-primary-content">
-      <div className="stat">
-        <div className="stat-figure">
-          <FaBookReader className="text-3xl" />
-        </div>{' '}
-        {isLoading && (
-          <div className="stat-value">
-            <span className="loading loading-dots loading-md"></span>
-          </div>
-        )}
-        {error && (
-          <div className="stat-value text-error text-sm">{tCommonStoryCounter('error')}</div>
-        )}
-        {!isLoading && !error && storyCount !== null && (
-          <div className="stat-value">{storyCount.toLocaleString()}</div>
-        )}
-        {!isLoading && !error && storyCount === null && (
-          <div className="stat-value">{tCommonStoryCounter('notAvailable')}</div>
-        )}
-        <div className="stat-desc text-primary-content">{tCommonStoryCounter('description')}</div>
+    <div className={styles.counterCard}>
+      <Image
+        src="/homepage/kids_fantasy/yellow_star.webp"
+        alt=""
+        width={128}
+        height={134}
+        className={styles.starOne}
+        aria-hidden="true"
+      />
+      <Image
+        src="/homepage/kids_fantasy/yellow_star_1.webp"
+        alt=""
+        width={128}
+        height={136}
+        className={styles.starTwo}
+        aria-hidden="true"
+      />
+      <div className={styles.counterContent}>
+        <div className={styles.countGroup}>
+          {isLoading && (
+            <div className={styles.countValue}>
+              <span className="loading loading-dots loading-md"></span>
+            </div>
+          )}
+          {error && <div className={styles.errorValue}>{tCommonStoryCounter('error')}</div>}
+          {!isLoading && !error && storyCount !== null && (
+            <div className={styles.countValue}>{storyCount.toLocaleString()}</div>
+          )}
+          {!isLoading && !error && storyCount === null && (
+            <div className={styles.countValue}>{tCommonStoryCounter('notAvailable')}</div>
+          )}
+          <div className={styles.countDescription}>{tCommonStoryCounter('description')}</div>
+        </div>
+        <Image
+          src="/homepage/kids_fantasy/number_of_stories_icon.webp"
+          alt=""
+          width={128}
+          height={163}
+          sizes="88px"
+          className={styles.counterIcon}
+          aria-hidden="true"
+        />
       </div>
     </div>
   );

@@ -48,11 +48,12 @@ export default function PaperCutHero() {
   const subtitle = tr(text.subtitleKey);
   const emphasized = text.subtitleEmphasizedKey ? tr(text.subtitleEmphasizedKey) : '';
   const subtitleParts = emphasized ? subtitle.split(emphasized) : [subtitle];
+  const heroClassName = ['papercut-hero', composition.rootClassName].filter(Boolean).join(' ');
 
   return (
-    <section className="papercut-hero">
+    <section className={heroClassName}>
       {/* Sky band + headline / CTA */}
-      <div className="relative overflow-hidden px-4 pb-2 pt-8 sm:pt-10">
+      <div className="relative overflow-hidden px-4 pt-10 pb-1 sm:pt-12 sm:pb-4 lg:pt-8">
         {sky.map((layer) => (
           <PaperCutLayer
             key={layer.id}
@@ -61,11 +62,11 @@ export default function PaperCutHero() {
             scrollYProgress={scrollYProgress}
           />
         ))}
-        <div className="relative z-30 mx-auto max-w-2xl pt-24 text-center sm:pt-28 lg:pt-12">
-          <h1 className="font-display text-3xl leading-tight font-bold text-[color:var(--pc-navy)] sm:text-4xl md:text-5xl">
+        <div className="relative z-30 mx-auto max-w-[23rem] pt-28 text-center sm:max-w-[28rem] sm:pt-32 md:max-w-2xl lg:pt-16">
+          <h1 className="font-display text-[2.65rem] leading-[1.02] font-bold text-[color:var(--pc-navy)] sm:text-5xl md:text-6xl">
             {tr(text.headlineKey)}
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-base text-base-content/80 sm:text-lg">
+          <p className="mx-auto mt-5 max-w-[25rem] text-lg leading-relaxed text-base-content/80 sm:text-xl md:max-w-xl">
             {subtitleParts.map((part, i) => (
               <span key={i}>
                 {i > 0 && (
@@ -79,7 +80,7 @@ export default function PaperCutHero() {
           </p>
           <Link
             href={`/${locale}/${text.ctaPath}`}
-            className="btn btn-primary btn-lg mt-6 px-8 shadow-md"
+            className="btn btn-primary btn-lg mt-7 w-full max-w-[24rem] px-8 text-lg shadow-lg"
           >
             {tr(text.ctaKey)}
           </Link>

@@ -1,110 +1,119 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
-import { FaFacebook, FaInstagram, FaLinkedin, FaYoutube } from 'react-icons/fa';
 import { useLocale, useTranslations } from 'next-intl';
+import styles from './Footer.module.css';
+
+const socialLinks = [
+  {
+    href: 'https://www.facebook.com/MythoriaOfficial',
+    label: 'Mythoria on Facebook',
+    icon: '/homepage/kids_fantasy/facebook_icon.webp',
+    width: 160,
+    height: 159,
+  },
+  {
+    href: 'https://www.instagram.com/mythoria_books/',
+    label: 'Mythoria on Instagram',
+    icon: '/homepage/kids_fantasy/instagram_icon.webp',
+    width: 160,
+    height: 157,
+  },
+  {
+    href: 'https://linkedin.com/company/mythoria',
+    label: 'Mythoria on LinkedIn',
+    icon: '/homepage/kids_fantasy/linkedin_icon.webp',
+    width: 160,
+    height: 155,
+  },
+  {
+    href: 'https://youtube.com',
+    label: 'Mythoria on YouTube',
+    icon: '/homepage/kids_fantasy/youtube_icon.webp',
+    width: 160,
+    height: 150,
+  },
+] as const;
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const tCommonFooter = useTranslations('Footer');
   const locale = useLocale();
+
   return (
-    <footer className="bg-base-200 text-base-content p-6">
-      <div className="container mx-auto">
-        {/* Main footer content - centered */}
-        <div className="flex flex-col items-center mb-8">
-          {/* Social icons and links */}
-          <div className="w-full flex flex-col items-center">
-            {/* Social icons */}
-            <div className="mb-4">
-              <div className="flex gap-4 justify-center">
-                <a
-                  href="https://www.facebook.com/MythoriaOfficial"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="link link-hover"
-                  aria-label="Mythoria on Facebook"
-                  title="Mythoria on Facebook"
-                >
-                  <FaFacebook size={24} />
-                </a>
-                <a
-                  href="https://www.instagram.com/mythoria_books/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="link link-hover"
-                  aria-label="Mythoria on Instagram"
-                  title="Mythoria on Instagram"
-                >
-                  <FaInstagram size={24} />
-                </a>
-                <a
-                  href="https://linkedin.com/company/mythoria"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="link link-hover"
-                  aria-label="Mythoria on LinkedIn"
-                  title="Mythoria on LinkedIn"
-                >
-                  <FaLinkedin size={24} />
-                </a>
-                <a
-                  href="https://youtube.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="link link-hover"
-                  aria-label="Mythoria on YouTube"
-                  title="Mythoria on YouTube"
-                >
-                  <FaYoutube size={24} />
-                </a>
-                {/*}
-                <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="link link-hover">
-                  <FaTiktok size={24} />
-                </a>
-                */}
-              </div>
-            </div>
-            {/* Links */}
-            <div className="flex flex-col items-center gap-2">
-              <div className="flex items-center gap-2 text-sm">
-                <Link
-                  href={`/${locale}/pricing`}
-                  className="link link-hover underline text-primary"
-                >
-                  {tCommonFooter('pricingServices')}
-                </Link>
-                <span>|</span>
-                <Link
-                  href={`/${locale}/aboutUs`}
-                  className="link link-hover underline text-primary"
-                >
-                  {tCommonFooter('aboutUs')}
-                </Link>
-                <span>|</span>
-                <Link
-                  href={`/${locale}/contactUs`}
-                  className="link link-hover underline text-primary"
-                >
-                  {tCommonFooter('contactUs')}
-                </Link>
-              </div>
-            </div>
-          </div>
+    <footer className={styles.footer}>
+      <Image
+        src="/homepage/kids_fantasy/footer.webp"
+        alt=""
+        width={1920}
+        height={373}
+        sizes="100vw"
+        className={styles.backdrop}
+        aria-hidden="true"
+      />
+      <div className={styles.content}>
+        <div className={styles.socialRow}>
+          {socialLinks.map((social) => (
+            <a
+              key={social.label}
+              href={social.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.socialLink}
+              aria-label={social.label}
+              title={social.label}
+            >
+              <Image
+                src={social.icon}
+                alt=""
+                width={social.width}
+                height={social.height}
+                sizes="52px"
+                className={styles.socialIcon}
+              />
+            </a>
+          ))}
         </div>
 
-        {/* Copyright at the bottom */}
-        <div className="border-t border-base-300 pt-4 text-center text-xs">
-          <p className="text-xs">
-            &copy; {currentYear} {tCommonFooter('copyright')} |{' '}
-            <Link href={`/${locale}/privacy-policy`} className="link link-hover">
-              {tCommonFooter('privacyPolicy')}
-            </Link>{' '}
-            |{' '}
-            <Link href={`/${locale}/termsAndConditions`} className="link link-hover">
-              {tCommonFooter('termsConditions')}
-            </Link>
-          </p>
+        <nav className={styles.primaryNav} aria-label="Footer">
+          <Link href={`/${locale}/pricing`} className={styles.primaryLink}>
+            {tCommonFooter('pricingServices')}
+          </Link>
+          <span className={styles.separator} aria-hidden="true">
+            |
+          </span>
+          <Link href={`/${locale}/aboutUs`} className={styles.primaryLink}>
+            {tCommonFooter('aboutUs')}
+          </Link>
+          <span className={styles.separator} aria-hidden="true">
+            |
+          </span>
+          <Link href={`/${locale}/contactUs`} className={styles.primaryLink}>
+            {tCommonFooter('contactUs')}
+          </Link>
+        </nav>
+
+        <div className={styles.divider} aria-hidden="true">
+          <span />
+        </div>
+
+        <div className={styles.legal}>
+          <span>
+            &copy; {currentYear} {tCommonFooter('copyright')}
+          </span>
+          <span className={styles.legalSeparator} aria-hidden="true">
+            |
+          </span>
+          <Link href={`/${locale}/privacy-policy`} className={styles.legalLink}>
+            {tCommonFooter('privacyPolicy')}
+          </Link>
+          <span className={styles.legalSeparator} aria-hidden="true">
+            |
+          </span>
+          <Link href={`/${locale}/termsAndConditions`} className={styles.legalLink}>
+            {tCommonFooter('termsConditions')}
+          </Link>
         </div>
       </div>
     </footer>

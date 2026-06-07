@@ -7,28 +7,33 @@ import type { FeatureItem, Translator } from './types';
  */
 export default function FeatureCard({ items, t }: { items: FeatureItem[]; t: Translator }) {
   return (
-    <div className="relative z-30 mx-auto -mt-10 w-full max-w-4xl px-4 sm:-mt-14">
+    <div className="relative z-30 mx-auto -mt-20 w-full max-w-4xl px-2 sm:-mt-24 sm:px-4">
       {/* Warm cream card (matches the mockup) — solid rgba so it works without a
           Tailwind arbitrary-color-opacity build step. */}
       <div
-        className="rounded-3xl border border-base-content/10 px-4 py-5 shadow-xl backdrop-blur-sm sm:px-8 sm:py-7"
-        style={{ backgroundColor: 'rgba(244, 234, 214, 0.92)' }}
+        className="rounded-3xl border border-base-content/10 px-3 py-5 shadow-2xl backdrop-blur-sm sm:px-8 sm:py-7"
+        style={{ backgroundColor: 'rgba(250, 241, 222, 0.94)' }}
       >
         {/* Always 3 columns — even on a phone, as in the mockup. */}
-        <ul className="grid grid-cols-3 gap-2 sm:gap-6">
-          {items.map((item) => (
-            <li key={item.id} className="flex flex-col items-center text-center">
+        <ul className="grid grid-cols-3">
+          {items.map((item, index) => (
+            <li
+              key={item.id}
+              className={`flex min-w-0 flex-col items-center px-2 text-center sm:px-6 ${
+                index > 0 ? 'border-l border-base-content/15' : ''
+              }`}
+            >
               <Image
                 src={item.icon}
                 alt=""
                 width={56}
                 height={56}
-                className="h-9 w-9 object-contain sm:h-14 sm:w-14"
+                className="h-10 w-10 object-contain drop-shadow-md sm:h-14 sm:w-14"
               />
-              <h3 className="font-display mt-2 text-xs leading-tight font-semibold text-[color:var(--pc-navy)] sm:mt-3 sm:text-lg">
+              <h3 className="font-display mt-2 text-sm leading-tight font-semibold text-[color:var(--pc-navy)] sm:mt-3 sm:text-lg">
                 {t(item.titleKey)}
               </h3>
-              <p className="mt-1 text-[11px] leading-snug text-base-content/70 sm:text-sm">
+              <p className="mt-1 text-xs leading-snug text-base-content/75 sm:text-sm">
                 {t(item.descKey)}
               </p>
             </li>

@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import AnimatedLogo from '@/components/AnimatedLogo';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
+import styles from './AboutUsPage.module.css';
 
 export default function AboutUsPage() {
   const t = useTranslations('AboutUs');
@@ -23,22 +23,55 @@ export default function AboutUsPage() {
     img3.src = '/images/AboutUs/Oumpalumpas_smiling.jpg';
   }, []);
   return (
-    <div className="min-h-screen bg-base-100 text-base-content">
+    <div className={styles.page}>
       <div className="container mx-auto px-4 py-4">
         {/* Hero Section */}
         <ScrollFadeIn>
-          <header className="hero min-h-[40vh] bg-base-200 rounded-box my-4">
-            <div className="hero-content flex-col lg:flex-row w-full">
-              <div className="lg:w-1/2 text-center lg:text-left">
-                <h1 className="text-4xl md:text-5xl font-bold text-primary mb-8">
-                  ✨ {t('hero.title')}
+          <header className={`${styles.hero} my-4`}>
+            <Image
+              src="/homepage/kids_fantasy/yellow_star.webp"
+              alt=""
+              width={128}
+              height={134}
+              className={styles.heroStarLeft}
+              aria-hidden="true"
+            />
+            <Image
+              src="/homepage/kids_fantasy/yellow_star_1.webp"
+              alt=""
+              width={128}
+              height={136}
+              className={styles.heroStarRight}
+              aria-hidden="true"
+            />
+            <Image
+              src="/homepage/kids_fantasy/white_cloud_1.webp"
+              alt=""
+              width={200}
+              height={135}
+              className={styles.heroCloud}
+              aria-hidden="true"
+            />
+            <div className={styles.heroContent}>
+              <div className={styles.heroText}>
+                <h1 className="font-display mb-6 text-4xl font-bold leading-tight text-[color:var(--about-navy)] md:text-6xl">
+                  {t('hero.title')}
                 </h1>
-                <p className="text-lg leading-relaxed">{t('hero.intro')}</p>
-                <p className="py-6 text-xl font-semibold text-primary">{t('hero.tagline')}</p>
+                <p className="text-lg leading-relaxed text-base-content/80">{t('hero.intro')}</p>
+                <p className="font-display py-6 text-2xl font-bold text-[color:var(--about-navy)]">
+                  {t('hero.tagline')}
+                </p>
               </div>
-              {/* Right Side: Logo */}
-              <div className="lg:w-1/2 flex justify-center lg:justify-end mt-4 lg:mt-0">
-                <AnimatedLogo />
+              <div className={styles.logoStage}>
+                <Image
+                  src="/images/logo/papercut.jpg"
+                  alt="Mythoria"
+                  width={1024}
+                  height={1024}
+                  sizes="(min-width: 1024px) 320px, 240px"
+                  className={styles.logoImage}
+                  priority
+                />
               </div>
             </div>
           </header>
@@ -47,12 +80,12 @@ export default function AboutUsPage() {
         {/* Mission Section */}
         <ScrollFadeIn delay={100}>
           <section className="my-16">
-            <div className="card bg-base-100 shadow-xl">
-              <div className="card-body p-8 md:p-12">
-                <h2 className="card-title text-3xl md:text-4xl font-bold mb-6 text-primary">
+            <div className={styles.paperCard}>
+              <div className="p-8 md:p-12">
+                <h2 className="font-display mb-6 text-3xl font-bold text-[color:var(--about-navy)] md:text-4xl">
                   {t('mission.title')}
                 </h2>
-                <div className="space-y-4 text-lg leading-relaxed">
+                <div className="space-y-4 text-lg leading-relaxed text-base-content/80">
                   <p>{t('mission.paragraph1')}</p>
                   <p>{t('mission.paragraph2')}</p>
                 </div>
@@ -65,20 +98,20 @@ export default function AboutUsPage() {
         <ScrollFadeIn delay={200}>
           <section className="my-16">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
+              <h2 className="font-display mb-4 text-3xl font-bold text-[color:var(--about-navy)] md:text-5xl">
                 {t('team.title')}
               </h2>
-              <p className="text-lg">{t('team.subtitle')}</p>
+              <p className="mx-auto max-w-2xl text-lg text-base-content/80">{t('team.subtitle')}</p>
             </div>
 
             <div className="space-y-12">
               {/* Rodrigo Jácome */}
-              <div className="card bg-base-200 shadow-xl">
-                <div className="card-body">
+              <div className={styles.paperCard}>
+                <div className="p-6 md:p-8">
                   <div className="flex flex-col lg:flex-row gap-8 items-center">
                     <div className="lg:w-1/3 flex justify-center">
                       <div
-                        className="avatar cursor-pointer relative group"
+                        className={styles.avatarButton}
                         onMouseEnter={() => setShowRodrigoSmile(true)}
                         onMouseLeave={() => setShowRodrigoSmile(false)}
                         onClick={() => setShowRodrigoSmile(!showRodrigoSmile)}
@@ -92,13 +125,13 @@ export default function AboutUsPage() {
                         }}
                         aria-label={t('team.rodrigo.ariaLabel')}
                       >
-                        <div className="w-48 h-48 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 overflow-hidden relative">
+                        <div className={styles.avatarFrame}>
                           <Image
                             src="/images/AboutUs/Rodrigo.jpg"
                             alt="Rodrigo Jácome"
                             width={192}
                             height={192}
-                            className={`object-cover transition-opacity duration-500 ${showRodrigoSmile ? 'opacity-0' : 'opacity-100'}`}
+                            className={`h-full w-full object-cover transition-opacity duration-500 ${showRodrigoSmile ? 'opacity-0' : 'opacity-100'}`}
                             priority
                           />
                           <Image
@@ -106,28 +139,30 @@ export default function AboutUsPage() {
                             alt={t('team.rodrigo.altSmiling')}
                             width={192}
                             height={192}
-                            className={`object-cover absolute inset-0 transition-opacity duration-500 ${showRodrigoSmile ? 'opacity-100' : 'opacity-0'}`}
+                            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${showRodrigoSmile ? 'opacity-100' : 'opacity-0'}`}
                           />
                         </div>
                       </div>
                     </div>
                     <div className="lg:w-2/3 text-center lg:text-left">
-                      <h3 className="text-2xl md:text-3xl font-bold mb-2">
+                      <h3 className="font-display mb-3 text-2xl font-bold text-[color:var(--about-navy)] md:text-3xl">
                         {t('team.rodrigo.title')}
                       </h3>
-                      <p className="text-lg leading-relaxed">{t('team.rodrigo.description')}</p>
+                      <p className="text-lg leading-relaxed text-base-content/80">
+                        {t('team.rodrigo.description')}
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* André Silva */}
-              <div className="card bg-base-200 shadow-xl">
-                <div className="card-body">
+              <div className={styles.paperCard}>
+                <div className="p-6 md:p-8">
                   <div className="flex flex-col lg:flex-row-reverse gap-8 items-center">
                     <div className="lg:w-1/3 flex justify-center">
                       <div
-                        className="avatar cursor-pointer relative group"
+                        className={styles.avatarButton}
                         onMouseEnter={() => setShowAndreSmile(true)}
                         onMouseLeave={() => setShowAndreSmile(false)}
                         onClick={() => setShowAndreSmile(!showAndreSmile)}
@@ -141,13 +176,13 @@ export default function AboutUsPage() {
                         }}
                         aria-label={t('team.andre.ariaLabel')}
                       >
-                        <div className="w-48 h-48 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 overflow-hidden relative">
+                        <div className={styles.avatarFrame}>
                           <Image
                             src="/images/AboutUs/Andre.jpg"
                             alt="André Silva"
                             width={192}
                             height={192}
-                            className={`object-cover transition-opacity duration-500 ${showAndreSmile ? 'opacity-0' : 'opacity-100'}`}
+                            className={`h-full w-full object-cover transition-opacity duration-500 ${showAndreSmile ? 'opacity-0' : 'opacity-100'}`}
                             priority
                           />
                           <Image
@@ -155,28 +190,30 @@ export default function AboutUsPage() {
                             alt={t('team.andre.altSmiling')}
                             width={192}
                             height={192}
-                            className={`object-cover absolute inset-0 transition-opacity duration-500 ${showAndreSmile ? 'opacity-100' : 'opacity-0'}`}
+                            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${showAndreSmile ? 'opacity-100' : 'opacity-0'}`}
                           />
                         </div>
                       </div>
                     </div>
                     <div className="lg:w-2/3 text-center lg:text-left">
-                      <h3 className="text-2xl md:text-3xl font-bold mb-2">
+                      <h3 className="font-display mb-3 text-2xl font-bold text-[color:var(--about-navy)] md:text-3xl">
                         {t('team.andre.title')}
                       </h3>
-                      <p className="text-lg leading-relaxed">{t('team.andre.description')}</p>
+                      <p className="text-lg leading-relaxed text-base-content/80">
+                        {t('team.andre.description')}
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* AI Team */}
-              <div className="card bg-base-200 shadow-xl">
-                <div className="card-body">
+              <div className={styles.paperCard}>
+                <div className="p-6 md:p-8">
                   <div className="flex flex-col lg:flex-row gap-8 items-center">
                     <div className="lg:w-1/3 flex justify-center">
                       <div
-                        className="avatar cursor-pointer relative group"
+                        className={styles.avatarButton}
                         onMouseEnter={() => setShowOumpaLoompaSmile(true)}
                         onMouseLeave={() => setShowOumpaLoompaSmile(false)}
                         onClick={() => setShowOumpaLoompaSmile(!showOumpaLoompaSmile)}
@@ -190,13 +227,13 @@ export default function AboutUsPage() {
                         }}
                         aria-label={t('team.oumpaLoompas.ariaLabel')}
                       >
-                        <div className="w-48 h-48 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 overflow-hidden relative">
+                        <div className={styles.avatarFrame}>
                           <Image
                             src="/images/AboutUs/Oumpalumpas.jpg"
                             alt="Oumpa-Loompas"
                             width={192}
                             height={192}
-                            className={`object-cover transition-opacity duration-500 ${showOumpaLoompaSmile ? 'opacity-0' : 'opacity-100'}`}
+                            className={`h-full w-full object-cover transition-opacity duration-500 ${showOumpaLoompaSmile ? 'opacity-0' : 'opacity-100'}`}
                             priority
                           />
                           <Image
@@ -204,16 +241,16 @@ export default function AboutUsPage() {
                             alt={t('team.oumpaLoompas.altSmiling')}
                             width={192}
                             height={192}
-                            className={`object-cover absolute inset-0 transition-opacity duration-500 ${showOumpaLoompaSmile ? 'opacity-100' : 'opacity-0'}`}
+                            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${showOumpaLoompaSmile ? 'opacity-100' : 'opacity-0'}`}
                           />
                         </div>
                       </div>
                     </div>
                     <div className="lg:w-2/3 text-center lg:text-left">
-                      <h3 className="text-2xl md:text-3xl font-bold mb-4">
+                      <h3 className="font-display mb-3 text-2xl font-bold text-[color:var(--about-navy)] md:text-3xl">
                         {t('team.oumpaLoompas.title')}
                       </h3>
-                      <p className="text-lg leading-relaxed">
+                      <p className="text-lg leading-relaxed text-base-content/80">
                         {t('team.oumpaLoompas.description')}
                       </p>
                     </div>
@@ -227,12 +264,12 @@ export default function AboutUsPage() {
         {/* Commitment Section */}
         <ScrollFadeIn delay={100}>
           <section className="my-16">
-            <div className="card bg-base-100 shadow-xl">
-              <div className="card-body p-8 md:p-12">
-                <h2 className="card-title text-3xl md:text-4xl font-bold mb-6 text-primary">
+            <div className={styles.paperCard}>
+              <div className="p-8 md:p-12">
+                <h2 className="font-display mb-6 text-3xl font-bold text-[color:var(--about-navy)] md:text-4xl">
                   {t('commitment.title')}
                 </h2>
-                <div className="space-y-4 text-lg leading-relaxed">
+                <div className="space-y-4 text-lg leading-relaxed text-base-content/80">
                   <p>{t('commitment.paragraph1')}</p>
                   <p>{t('commitment.paragraph2')}</p>
                 </div>
@@ -244,12 +281,12 @@ export default function AboutUsPage() {
         {/* Our Story Section */}
         <ScrollFadeIn delay={200}>
           <section className="my-16">
-            <div className="card bg-base-100 shadow-xl">
-              <div className="card-body p-8 md:p-12">
-                <h2 className="card-title text-3xl md:text-4xl font-bold mb-6 text-primary">
+            <div className={styles.paperCard}>
+              <div className="p-8 md:p-12">
+                <h2 className="font-display mb-6 text-3xl font-bold text-[color:var(--about-navy)] md:text-4xl">
                   {t('ourStory.title')}
                 </h2>
-                <div className="space-y-4 text-lg leading-relaxed">
+                <div className="space-y-4 text-lg leading-relaxed text-base-content/80">
                   <p>{t('ourStory.paragraph1')}</p>
                   <p>
                     {t('ourStory.paragraph2Start')}{' '}
@@ -257,7 +294,7 @@ export default function AboutUsPage() {
                       href="https://inovagaia.pt/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="link link-primary font-semibold hover:underline"
+                      className="font-semibold text-[color:var(--about-navy)] underline-offset-4 hover:underline"
                     >
                       {t('ourStory.inovaGaiaText')}
                     </a>{' '}
@@ -265,8 +302,8 @@ export default function AboutUsPage() {
                   </p>
                   <p>{t('ourStory.paragraph3')}</p>
                   <div className="flex justify-center mt-6">
-                    <Link href="/p/mythoria-a-vision-unfolding" className="btn btn-primary btn-lg">
-                      📖 {t('ourStory.button')}
+                    <Link href="/p/mythoria-a-vision-unfolding" className={styles.primaryButton}>
+                      {t('ourStory.button')}
                     </Link>
                   </div>
                 </div>
@@ -278,9 +315,9 @@ export default function AboutUsPage() {
         {/* Partners Section */}
         <ScrollFadeIn delay={100}>
           <section className="my-16">
-            <div className="card bg-base-100 shadow-xl">
-              <div className="card-body p-8 md:p-12">
-                <h2 className="card-title text-3xl md:text-4xl font-bold mb-6 text-primary">
+            <div className={styles.paperCard}>
+              <div className="p-8 md:p-12">
+                <h2 className="font-display mb-8 text-3xl font-bold text-[color:var(--about-navy)] md:text-4xl">
                   {t('partners.title')}
                 </h2>
                 <div className="space-y-8">
@@ -293,13 +330,15 @@ export default function AboutUsPage() {
                           alt="InovaGaia"
                           width={768}
                           height={183}
-                          className="rounded-lg"
+                          className={styles.partnerLogo}
                           priority
                         />
                       </div>
                     </div>
                     <div className="lg:w-3/5 text-center lg:text-left">
-                      <p className="text-lg leading-relaxed">{t('partners.inovaGaia')}</p>
+                      <p className="text-lg leading-relaxed text-base-content/80">
+                        {t('partners.inovaGaia')}
+                      </p>
                     </div>
                   </div>
 
@@ -312,13 +351,15 @@ export default function AboutUsPage() {
                           alt="Google for Startups"
                           width={768}
                           height={243}
-                          className="rounded-lg"
+                          className={styles.partnerLogo}
                           priority
                         />
                       </div>
                     </div>
                     <div className="lg:w-3/5 text-center lg:text-left">
-                      <p className="text-lg leading-relaxed">{t('partners.googleForStartups')}</p>
+                      <p className="text-lg leading-relaxed text-base-content/80">
+                        {t('partners.googleForStartups')}
+                      </p>
                     </div>
                   </div>
 
@@ -337,13 +378,15 @@ export default function AboutUsPage() {
                             width={250}
                             height={100}
                             style={{ width: '250px', height: 'auto' }}
-                            className="rounded-lg hover:opacity-90 transition-opacity"
+                            className={styles.partnerLogo}
                           />
                         </a>
                       </div>
                     </div>
                     <div className="lg:w-3/5 text-center lg:text-left">
-                      <p className="text-lg leading-relaxed">{t('partners.elevenLabs')}</p>
+                      <p className="text-lg leading-relaxed text-base-content/80">
+                        {t('partners.elevenLabs')}
+                      </p>
                     </div>
                   </div>
 
@@ -360,12 +403,12 @@ export default function AboutUsPage() {
         {/* Company Transparency Section */}
         <ScrollFadeIn delay={100}>
           <section className="my-16">
-            <div className="card bg-base-200 shadow-xl">
-              <div className="card-body p-8 md:p-12">
-                <h2 className="card-title text-3xl md:text-4xl font-bold mb-6 text-primary">
+            <div className={styles.paperCard}>
+              <div className="p-8 md:p-12">
+                <h2 className="font-display mb-6 text-3xl font-bold text-[color:var(--about-navy)] md:text-4xl">
                   {t('transparency.title')}
                 </h2>
-                <p className="text-lg leading-relaxed">
+                <p className="text-lg leading-relaxed text-base-content/80">
                   {t('transparency.textStart')} <strong>{t('transparency.companyName')}</strong>
                   {t('transparency.textEnd')}
                 </p>
@@ -377,11 +420,23 @@ export default function AboutUsPage() {
         {/* Closing Message */}
         <ScrollFadeIn delay={200}>
           <section className="my-16 text-center">
-            <div className="hero bg-primary text-primary-content rounded-box">
-              <div className="hero-content py-12">
-                <div className="max-w-2xl">
-                  <p className="text-2xl font-bold">{t('closing.title')}</p>
-                  <p className="text-xl mt-4">{t('closing.subtitle')}</p>
+            <div className={styles.closingCard}>
+              <Image
+                src="/homepage/kids_fantasy/yellow_star_2.webp"
+                alt=""
+                width={128}
+                height={127}
+                className={styles.closingStar}
+                aria-hidden="true"
+              />
+              <div className="relative z-10 mx-auto max-w-2xl py-12 px-6">
+                <div>
+                  <p className="font-display text-3xl font-bold leading-tight text-[color:var(--about-navy)]">
+                    {t('closing.title')}
+                  </p>
+                  <p className="mt-4 text-xl leading-relaxed text-base-content/80">
+                    {t('closing.subtitle')}
+                  </p>
                 </div>
               </div>
             </div>

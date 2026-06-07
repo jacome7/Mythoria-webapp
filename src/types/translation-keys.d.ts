@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE. Run: npm run i18n:keys
-// Total keys: 2313
+// Total keys: 2321
 export type TranslationKey =
   | 'AIEditModal.buttons.applyChanges'
   | 'AIEditModal.buttons.cancel'
@@ -855,11 +855,18 @@ export type TranslationKey =
   | 'HomePage.gallery.style'
   | 'HomePage.gallery.synopsis'
   | 'HomePage.gallery.tags'
+  | 'HomePage.hero.alt.girl'
+  | 'HomePage.hero.features.meaningful.desc'
+  | 'HomePage.hero.features.meaningful.title'
+  | 'HomePage.hero.features.occasion.desc'
+  | 'HomePage.hero.features.occasion.title'
+  | 'HomePage.hero.features.personalized.desc'
+  | 'HomePage.hero.features.personalized.title'
+  | 'HomePage.hero.headline'
   | 'HomePage.hero.subtitle'
   | 'HomePage.hero.subtitleEmphasized'
   | 'HomePage.hero.tellYourOwnStory'
   | 'HomePage.hero.writeYourOwn'
-  | 'HomePage.howItWorks.conclusion'
   | 'HomePage.howItWorks.stepLabels.step1'
   | 'HomePage.howItWorks.stepLabels.step2'
   | 'HomePage.howItWorks.stepLabels.step3'
@@ -2004,6 +2011,7 @@ export type TranslationKey =
   | 'StorySteps.step4.fields.storyLanguageHelp'
   | 'StorySteps.step4.fields.title'
   | 'StorySteps.step4.fields.titleHelp'
+  | 'StorySteps.step4.generationReviewHint'
   | 'StorySteps.step4.heading'
   | 'StorySteps.step4.intro'
   | 'StorySteps.step4.languageOptions'

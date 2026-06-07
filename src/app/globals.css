@@ -69,18 +69,37 @@ body {
 
 /* Hero-scoped design tokens — never edits the global autumn theme. */
 .papercut-hero {
-  --pc-cream: #f4ead6;
-  --pc-cream-deep: #efe1c6;
+  --pc-cream: #f8efd9;
+  --pc-cream-deep: #f2e3c4;
   --pc-navy: var(--color-primary); /* autumn primary — headline / CTA */
   --pc-gold: var(--color-accent); /* autumn accent — sparkle / icons */
   position: relative;
   width: 100%;
   background: radial-gradient(
     125% 90% at 50% 0%,
-    #faf3e4 0%,
+    #fff7e6 0%,
     var(--pc-cream) 55%,
     var(--pc-cream-deep) 100%
   );
+  overflow: hidden;
+  padding-bottom: 2rem;
+}
+
+.homepage-paper-bg {
+  background: #fff7e6;
+}
+
+.homepage-audience-card {
+  --audience-card-top: #fff0d3;
+  --audience-card-bottom: #f8ddb8;
+  background: linear-gradient(180deg, var(--audience-card-top), var(--audience-card-bottom));
+  border: 1px solid rgba(94, 64, 26, 0.12);
+  box-shadow: 0 18px 32px rgba(74, 48, 14, 0.13);
+}
+
+.homepage-audience-card-kids {
+  --audience-card-top: #fff0d3;
+  --audience-card-bottom: #f7ddb8;
 }
 
 /* Whimsical display serif, scoped — only applied where this class is used. */
@@ -92,7 +111,7 @@ body {
 .pc-stage {
   position: relative;
   width: 100%;
-  overflow: hidden;
+  overflow: visible;
   aspect-ratio: var(--pc-aspect-base, 4 / 5);
 }
 @media (min-width: 768px) {
@@ -176,105 +195,5 @@ body {
 @media (min-width: 768px) {
   .pc-hide-md {
     display: block;
-  }
-}
-
-/* Subtle idle animations (run on the inner image so they never clobber
-   the wrapper's centering transform). Timing per-instance via custom props. */
-@keyframes pc-bob {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-6px);
-  }
-}
-@keyframes pc-balloon {
-  0%,
-  100% {
-    transform: translate(0, 0) rotate(-1.5deg);
-  }
-  50% {
-    transform: translate(6px, -10px) rotate(1.5deg);
-  }
-}
-@keyframes pc-drift {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(10px);
-  }
-}
-@keyframes pc-sway {
-  0%,
-  100% {
-    transform: rotate(-1.2deg);
-  }
-  50% {
-    transform: rotate(1.2deg);
-  }
-}
-@keyframes pc-twinkle {
-  0%,
-  100% {
-    opacity: 0.85;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.06);
-  }
-}
-@keyframes pc-breathe {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.025);
-  }
-}
-.pc-anim-bob .pc-img {
-  animation: pc-bob var(--pc-dur, 6000ms) ease-in-out var(--pc-delay, 0ms) infinite;
-}
-.pc-anim-balloon .pc-img {
-  animation: pc-balloon var(--pc-dur, 9000ms) ease-in-out var(--pc-delay, 0ms) infinite;
-}
-.pc-anim-drift .pc-img {
-  animation: pc-drift var(--pc-dur, 11000ms) ease-in-out var(--pc-delay, 0ms) infinite;
-}
-.pc-anim-sway .pc-img {
-  transform-origin: bottom center;
-  animation: pc-sway var(--pc-dur, 7000ms) ease-in-out var(--pc-delay, 0ms) infinite;
-}
-.pc-anim-twinkle .pc-img {
-  animation: pc-twinkle var(--pc-dur, 5000ms) ease-in-out var(--pc-delay, 0ms) infinite;
-}
-.pc-anim-breathe .pc-img {
-  transform-origin: bottom center;
-  animation: pc-breathe var(--pc-dur, 6500ms) ease-in-out var(--pc-delay, 0ms) infinite;
-}
-
-/* Promote only the continuously-animated images to their own GPU layer (used
-   sparingly — these layers are always in view while the hero is on screen).
-   Framer Motion manages will-change for the enter/parallax wrappers itself. */
-.pc-anim-bob .pc-img,
-.pc-anim-balloon .pc-img,
-.pc-anim-drift .pc-img,
-.pc-anim-sway .pc-img,
-.pc-anim-breathe .pc-img {
-  will-change: transform;
-}
-.pc-anim-twinkle .pc-img {
-  will-change: transform, opacity;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .pc-img {
-    animation: none !important;
-    will-change: auto !important;
   }
 }

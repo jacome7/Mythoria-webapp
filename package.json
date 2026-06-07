@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
-    "typecheck": "rimraf .next/types && tsc --noEmit",
+    "typecheck": "rimraf .next/types .next/dev/types && tsc --noEmit",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "postinstall": "patch-package",

@@ -1,0 +1,132 @@
+.root {
+  --kids-fantasy-animation-domain: 1;
+}
+
+/* Subtle idle animations for the kids_fantasy composition. These run on the
+   inner image so they never clobber the wrapper's centering transform. Timing
+   remains data-driven per layer via --pc-dur and --pc-delay. */
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes balloon {
+  0%,
+  100% {
+    transform: translate(0, 4px) rotate(-1.8deg);
+  }
+  50% {
+    transform: translate(7px, -14px) rotate(1.8deg);
+  }
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+}
+
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(-1.2deg);
+  }
+  50% {
+    transform: rotate(1.2deg);
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.025);
+  }
+}
+
+@keyframes arc {
+  0% {
+    transform: translate(-10px, 3px) rotate(-0.8deg);
+  }
+  50% {
+    transform: translate(4px, -7px) rotate(0.4deg);
+  }
+  100% {
+    transform: translate(18px, 3px) rotate(0.8deg);
+  }
+}
+
+.root :global(.pc-anim-bob .pc-img) {
+  animation: bob var(--pc-dur, 6000ms) ease-in-out var(--pc-delay, 0ms) infinite;
+}
+
+.root :global(.pc-anim-balloon .pc-img) {
+  animation: balloon var(--pc-dur, 9000ms) ease-in-out var(--pc-delay, 0ms) infinite;
+}
+
+.root :global(.pc-anim-drift .pc-img) {
+  animation: drift var(--pc-dur, 11000ms) ease-in-out var(--pc-delay, 0ms) infinite;
+}
+
+.root :global(.pc-anim-sway .pc-img) {
+  transform-origin: bottom center;
+  animation: sway var(--pc-dur, 7000ms) ease-in-out var(--pc-delay, 0ms) infinite;
+}
+
+.root :global(.pc-anim-twinkle .pc-img) {
+  animation: twinkle var(--pc-dur, 5000ms) ease-in-out var(--pc-delay, 0ms) infinite;
+}
+
+.root :global(.pc-anim-breathe .pc-img) {
+  transform-origin: bottom center;
+  animation: breathe var(--pc-dur, 6500ms) ease-in-out var(--pc-delay, 0ms) infinite;
+}
+
+.root :global(.pc-anim-arc .pc-img) {
+  animation: arc var(--pc-dur, 18000ms) ease-in-out var(--pc-delay, 0ms) infinite alternate;
+}
+
+/* Promote only the continuously animated images to their own GPU layer. Framer
+   Motion manages will-change for enter/parallax wrappers itself. */
+.root :global(.pc-anim-bob .pc-img),
+.root :global(.pc-anim-balloon .pc-img),
+.root :global(.pc-anim-drift .pc-img),
+.root :global(.pc-anim-sway .pc-img),
+.root :global(.pc-anim-breathe .pc-img),
+.root :global(.pc-anim-arc .pc-img) {
+  will-change: transform;
+}
+
+.root :global(.pc-anim-twinkle .pc-img) {
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root :global(.pc-img) {
+    animation: none !important;
+    will-change: auto !important;
+  }
+}
