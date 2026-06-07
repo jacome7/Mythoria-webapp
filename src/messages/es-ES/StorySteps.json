@@ -82,6 +82,23 @@
         "images": "imágenes"
       },
       "imageGalleryTitle": "Tus imágenes ({count}/3)",
+      "imageAnalysis": {
+        "statusUploading": "Subiendo…",
+        "statusAnalyzing": "Analizando…",
+        "statusReady": "Listo",
+        "statusFailed": "Error de análisis",
+        "retry": "Reintentar",
+        "viewDetails": "Ver detalles",
+        "attemptsExhausted": "No se pudo analizar esta imagen",
+        "detailsTitle": "Análisis de la imagen",
+        "typeLabel": "Tipo",
+        "descriptionLabel": "Descripción",
+        "textLabel": "Texto detectado",
+        "charactersLabel": "Personajes detectados",
+        "noText": "No se detectó texto.",
+        "noCharacters": "No se detectaron personas ni animales.",
+        "waitingHint": "Espera a que todas las imágenes terminen de analizarse antes de continuar."
+      },
       "photoTips": {
         "title": "📸 Consejos para fotos",
         "tips": [

@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useLocale } from 'next-intl';
 import { MdAccountBalanceWallet } from 'react-icons/md';
+import { FaFeatherAlt } from 'react-icons/fa';
 import styles from './Header.module.css';
 
 const dropdownMenuClassName = `dropdown-content ${styles.dropdownMenu}`;
@@ -312,6 +313,11 @@ const Header = () => {
                     <path d="M4 4h12a2 2 0 0 1 2 2v14l-5-3-5 3V6a2 2 0 0 0-2-2z" />
                   </svg>
                 }
+              />
+              <UserButton.Link
+                label={tCommonHeader('navigation.myPersonas')}
+                href={`/${locale}/my-personas`}
+                labelIcon={<FaFeatherAlt className="w-4 h-4" />}
               />
               <UserButton.Link
                 label={tCommonHeader('navigation.creditsAndPayments')}

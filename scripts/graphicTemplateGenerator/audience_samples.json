@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "samples": [
+    {
+      "targetAudience": "children_0-2",
+      "title": "Luna's Blanket Moon",
+      "promptText": "A cozy bedtime storybook cover for babies and toddlers: a safe nursery room at night, a soft blanket draped over a crib rail, plush stars, a smiling crescent moon outside the window, gentle moonlight, very simple shapes, calm expression, no busy details, warm protective mood, fully child-safe atmosphere."
+    },
+    {
+      "targetAudience": "children_3-6",
+      "title": "Milo and the Garden of Bells",
+      "promptText": "A wholesome preschool adventure cover: a curious preschool child with short brown hair, fully clothed in a yellow raincoat and boots, discovering glowing bell-shaped flowers in a friendly garden path, butterflies, soft morning light, joyful expression, safe supervised setting, magical but gentle atmosphere."
+    },
+    {
+      "targetAudience": "children_7-10",
+      "title": "The Clockwork Lighthouse Club",
+      "promptText": "A lively early elementary mystery cover: three fully clothed children on a seaside cliff beside a friendly clockwork lighthouse with brass gears, gulls, tide pools, a plain rolled map with only abstract route lines and no symbols, warm sunset light, adventurous teamwork mood, clear silhouettes, safe coastal setting. The lighthouse has no clock numerals, plaques, labels, signs, or nameplates."
+    },
+    {
+      "targetAudience": "children_11-14",
+      "title": "The Atlas Under the Stairs",
+      "promptText": "A middle-grade fantasy cover: an old house hallway where a glowing doorway of light opens beneath wooden stairs, a fully clothed young explorer holding a lantern, dust motes, soft ribbons of light tracing an abstract path toward a starry landscape, mysterious but safe atmosphere, strong sense of discovery. Avoid maps, papers, runes, glyphs, symbols, markings, labels, signs, books, and any text-bearing surface."
+    },
+    {
+      "targetAudience": "young_adult_15-17",
+      "title": "The Last Train to Aurora",
+      "promptText": "A young adult coming-of-age fantasy cover: two fully clothed teen friends on a quiet open train platform at dusk, a plain unmarked vintage train silhouette waiting in mist under northern lights, small glowing magical lights in their hands instead of tickets, wind moving their coats, cinematic emotional mood, hopeful mystery, no romance pose. There are no station boards, signs, posters, train plates, nameplates, tickets, labels, logos, badges, or text-bearing surfaces anywhere."
+    },
+    {
+      "targetAudience": "adult_18+",
+      "title": "The Orchard of Second Chances",
+      "promptText": "A reflective adult literary cover: an old orchard at golden hour, a weathered wooden gate, fallen apples, a path leading toward a small house with warm light in the windows, subtle symbols of renewal and memory, quiet emotional atmosphere, elegant composition, no people required."
+    },
+    {
+      "targetAudience": "all_ages",
+      "title": "The House Where Stories Gather",
+      "promptText": "An intergenerational all-ages cover: a warmly lit house at twilight with open windows revealing silhouettes of family members gathered together, floating story motifs around the roofline made from stars, leaves, lantern glow, and abstract ribbons of light, welcoming magical-realism mood, clear family-friendly composition. Avoid visible books, open pages, papers, signs, symbols, labels, writing, page marks, logos, or any text-bearing surface."
+    }
+  ]
+}

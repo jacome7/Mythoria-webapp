@@ -13,6 +13,7 @@ Each feature listed below has a dedicated document in `docs/features`. Use the t
 | Feature                            | What it covers                                                                                                                    | Detail document                                                        |
 | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | Story Creation Forge               | Guided five-step flow for author info, creative brief, character setup, style choices, and generation kickoff with credit checks. | [features/story-creation.md](features/story-creation.md)               |
+| Custom Writing Personas            | One-book custom narrator voices, saved persona presets, style sliders, and SGW prompt guidance.                                   | [features/writing-personas.md](features/writing-personas.md)           |
 | Story Characters                   | Character creation, editing, reuse, trait selection, and linking characters to stories.                                           | [features/story-characters.md](features/story-characters.md)           |
 | Edit Story                         | Chapter editing, AI-assisted text and image revision, translations, and audiobook narration controls.                             | [features/edit-story.md](features/edit-story.md)                       |
 | Story Library Console              | Library filtering, quick actions (read/edit/share/duplicate/print), and credit-aware status visibility.                           | [features/story-library-console.md](features/story-library-console.md) |
@@ -31,4 +32,4 @@ Each feature listed below has a dedicated document in `docs/features`. Use the t
 
 ## Last Updated
 
-26-January-2026
+31-May-2026

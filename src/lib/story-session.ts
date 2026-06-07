@@ -12,7 +12,7 @@ export interface Character {
   characteristics?: string;
   physicalDescription?: string;
   photoUrl?: string;
-  photoGcsUri?: string; // Full GCS path for the character photo
+  photoGcsUri?: string; // Current versioned GCS path for the character photo
   photoDataUrl?: string; // Client-side only: prepared image data URL for upload
   requestPhotoAnalysis?: boolean; // Client-side only: flag to trigger photo-based analysis after creation
 }

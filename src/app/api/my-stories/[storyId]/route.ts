@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
+import { writingPersonaStorySchema } from '@/lib/writing-persona-validation';
 import { storyService } from '@/db/services';
 import { db } from '@/db';
 import { stories, chapters } from '@/db/schema';
 import { and, asc, eq, max } from 'drizzle-orm';
 import { Storage } from '@google-cloud/storage';
+import { ZodError } from 'zod';
 
 // Load suffix from i18n messages at runtime based on locale
 type ActionsMessages = {
@@ -211,10 +213,22 @@ export async function PUT(
     }
 
     const updates = await request.json();
+
+    if (typeof updates === 'object' && updates !== null && 'customWritingPersona' in updates) {
+      updates.customWritingPersona = writingPersonaStorySchema.parse(updates.customWritingPersona);
+    }
+
     const updatedStory = await storyService.updateStory(storyId, updates);
 
     return NextResponse.json({ story: updatedStory });
   } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        { error: 'Invalid writing persona data', details: error.issues },
+        { status: 400 },
+      );
+    }
+
     console.error('Error updating story:', error);
     return NextResponse.json({ error: 'Failed to update story' }, { status: 500 });
   }

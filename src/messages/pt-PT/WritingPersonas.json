@@ -1,0 +1,156 @@
+{
+  "WritingPersonas": {
+    "eyebrow": "Vozes de escrita",
+    "title": "As minhas Personas",
+    "intro": "Guarde até três vozes narrativas para reutilizar ao criar uma história. A maioria dos autores só precisa de uma voz personalizada, mas esta prateleira fica pronta quando uma voz merece ser guardada.",
+    "signedOut": {
+      "title": "Inicie sessão para gerir as suas personas",
+      "description": "As suas personas de escrita pertencem à sua conta de autor.",
+      "action": "Iniciar sessão"
+    },
+    "guide": {
+      "title": "O que muda uma persona de escrita?",
+      "description": "Uma persona é a máscara do narrador: muda quem fala, a velocidade das frases, as palavras naturais, a quantidade de diálogo e os detalhes que a história nota primeiro.",
+      "link": "Ler o guia da Mythoria sobre personas literárias"
+    },
+    "create": {
+      "title": "Criar uma persona reutilizável",
+      "description": "Dê um nome a esta voz para a poder escolher novamente no fluxo de criação de histórias."
+    },
+    "edit": {
+      "title": "Editar persona",
+      "description": "Afine esta voz guardada. Histórias futuras usarão as definições atualizadas quando a selecionar."
+    },
+    "list": {
+      "title": "Personas guardadas",
+      "count": "{count}/{max} guardadas",
+      "summary": "POV {pov} · Tom {tone}/5 · Ritmo {rhythm}/5 · Vocabulário {vocabulary}/5"
+    },
+    "empty": {
+      "title": "Ainda não tem personas guardadas",
+      "description": "Crie uma aqui, ou faça uma voz personalizada para um único livro diretamente no Passo 4 quando a história precisar."
+    },
+    "actions": {
+      "create": "Criar Persona",
+      "save": "Guardar Persona",
+      "cancel": "Cancelar",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    },
+    "success": {
+      "saved": "Persona guardada.",
+      "deleted": "Persona eliminada."
+    },
+    "errors": {
+      "loadFailed": "Não foi possível carregar as suas personas de escrita. Tente novamente.",
+      "saveFailed": "Não foi possível guardar esta persona de escrita. Tente novamente.",
+      "deleteFailed": "Não foi possível eliminar esta persona de escrita. Tente novamente."
+    },
+    "form": {
+      "name": {
+        "label": "Nome da persona",
+        "placeholder": "ex.: Narrador acolhedor para dormir",
+        "help": "Só o utilizador vê este nome. Use algo que reconheça mais tarde."
+      },
+      "pov": {
+        "label": "Ponto de vista",
+        "help": "Escolha quem conta a história. Isto muda a proximidade do leitor à ação e às personagens.",
+        "options": {
+          "1st": "Primeira pessoa (eu / nós)",
+          "2nd": "Segunda pessoa (tu)",
+          "3rd-limited": "Terceira pessoa limitada",
+          "3rd-omniscient": "Terceira pessoa omnisciente",
+          "objective": "Observador objetivo"
+        }
+      },
+      "traits": {
+        "tone": {
+          "label": "Tom",
+          "low": "Sério",
+          "high": "Humorístico",
+          "help": "Define a cor emocional do narrador, de mais sóbria e sincera a mais brincalhona e divertida."
+        },
+        "formality": {
+          "label": "Formalidade",
+          "low": "Coloquial",
+          "high": "Académica",
+          "help": "Controla se a voz parece uma pessoa próxima, um narrador polido ou um cronista mais formal."
+        },
+        "rhythm": {
+          "label": "Ritmo",
+          "low": "Lento",
+          "high": "Rápido",
+          "help": "Molda o ritmo das frases e o avanço narrativo, de parágrafos contemplativos a batidas rápidas."
+        },
+        "vocabulary": {
+          "label": "Vocabulário",
+          "low": "Simples",
+          "high": "Erudito",
+          "help": "Ajusta a complexidade das palavras para a história soar simples, rica, poética ou mais avançada."
+        },
+        "fictionality": {
+          "label": "Ficcionalidade",
+          "low": "Factual",
+          "high": "Licença poética",
+          "help": "Indica ao motor se deve manter os acontecimentos mais realistas ou elevá-los livremente."
+        },
+        "dialogueDensity": {
+          "label": "Densidade de diálogo",
+          "low": "Escassa",
+          "high": "Faladora",
+          "help": "Muda a frequência com que as personagens falam. Mais diálogo pode tornar a história mais quente e rápida."
+        },
+        "sensoriality": {
+          "label": "Sensorialidade",
+          "low": "Escassa",
+          "high": "Rica",
+          "help": "Controla quanto a prosa nota imagens, sons, texturas, cheiros e ambiente."
+        },
+        "subtextIrony": {
+          "label": "Subtexto e ironia",
+          "low": "Direta",
+          "high": "Em camadas",
+          "help": "Acrescenta significado escondido, humor ou contraste entre o que é dito e o que a história sugere."
+        }
+      },
+      "techniques": {
+        "label": "Técnicas",
+        "help": "Ferramentas narrativas opcionais. Deixe vazio se quiser um narrador limpo e simples.",
+        "free-indirect-discourse": "Discurso indireto livre",
+        "unreliable-narrator": "Narrador pouco fiável",
+        "4th-wall-break": "Quebra da quarta parede",
+        "show-dont-tell": "Mostrar, não explicar",
+        "scene-anchoring": "Ancoragem de cena",
+        "lyrical-refrains": "Refrões líricos",
+        "oral-cadence": "Cadência oral"
+      },
+      "techniqueHelp": {
+        "free-indirect-discourse": "Mistura a narração com os pensamentos de uma personagem.",
+        "unreliable-narrator": "Permite que o narrador seja parcial, enganado ou brincalhão com a verdade.",
+        "4th-wall-break": "Permite pequenos acenos diretos ao leitor.",
+        "show-dont-tell": "Faz a emoção aparecer através de ação e detalhe.",
+        "scene-anchoring": "Mantém cada cena assente em lugar e movimento.",
+        "lyrical-refrains": "Repete frases poéticas para ritmo e memória.",
+        "oral-cadence": "Faz a prosa soar como uma história contada em voz alta."
+      },
+      "specialRequirements": {
+        "label": "Requisitos especiais",
+        "placeholder": "ex.: Manter os capítulos suaves, evitar sarcasmo e soar como um primo mais velho afetuoso.",
+        "help": "Adicione dicas curtas para esta voz. Não inclua informação privada que não queira usar na história."
+      }
+    },
+    "story": {
+      "createOneBook": "Criar uma voz personalizada para este livro",
+      "oneBookName": "Voz personalizada para este livro",
+      "savedLabel": "As suas personas guardadas",
+      "builtInLabel": "Personas Mythoria",
+      "customDescription": "Afine o narrador apenas para esta história. Não precisa de nome nem ocupa espaço na prateleira.",
+      "modalTitle": "Voz personalizada para este livro",
+      "modalDescription": "Estas definições guiam o motor de escrita para este rascunho. Moldam a máscara do narrador, não os factos da história.",
+      "useVoice": "Usar esta voz",
+      "savedBadge": "Guardada",
+      "customBadge": "Personalizada",
+      "manageLink": "Gerir personas guardadas"
+    }
+  }
+}

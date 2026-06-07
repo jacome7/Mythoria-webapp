@@ -1,0 +1,156 @@
+{
+  "WritingPersonas": {
+    "eyebrow": "Writing voices",
+    "title": "My Personas",
+    "intro": "Save up to three narrator voices you can reuse when creating a story. Most authors only need one custom voice, but this shelf is here when a voice is worth keeping.",
+    "signedOut": {
+      "title": "Sign in to manage your personas",
+      "description": "Your writing personas belong to your author account.",
+      "action": "Sign In"
+    },
+    "guide": {
+      "title": "What does a writing persona change?",
+      "description": "A persona is the narrator's mask: it changes who speaks, how fast the sentences move, which words feel natural, how much dialogue appears, and which details the story notices first.",
+      "link": "Read the Mythoria guide to literary personas"
+    },
+    "create": {
+      "title": "Create a reusable persona",
+      "description": "Give this voice a name so you can pick it again from the story creation flow."
+    },
+    "edit": {
+      "title": "Edit persona",
+      "description": "Tune this saved voice. Future stories will use the updated settings when you select it."
+    },
+    "list": {
+      "title": "Saved personas",
+      "count": "{count}/{max} saved",
+      "summary": "{pov} POV · Tone {tone}/5 · Rhythm {rhythm}/5 · Vocabulary {vocabulary}/5"
+    },
+    "empty": {
+      "title": "No saved personas yet",
+      "description": "Create one here, or make a one-book custom voice directly in Step 4 when the story needs it."
+    },
+    "actions": {
+      "create": "Create Persona",
+      "save": "Save Persona",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "success": {
+      "saved": "Persona saved.",
+      "deleted": "Persona deleted."
+    },
+    "errors": {
+      "loadFailed": "Could not load your writing personas. Please try again.",
+      "saveFailed": "Could not save this writing persona. Please try again.",
+      "deleteFailed": "Could not delete this writing persona. Please try again."
+    },
+    "form": {
+      "name": {
+        "label": "Persona name",
+        "placeholder": "e.g., Cozy bedtime storyteller",
+        "help": "Only you see this name. Use something you will recognize later."
+      },
+      "pov": {
+        "label": "Point of view",
+        "help": "Choose who tells the story. This changes how close the reader feels to the action and characters.",
+        "options": {
+          "1st": "First person (I / we)",
+          "2nd": "Second person (you)",
+          "3rd-limited": "Third person limited",
+          "3rd-omniscient": "Third person omniscient",
+          "objective": "Objective observer"
+        }
+      },
+      "traits": {
+        "tone": {
+          "label": "Tone",
+          "low": "Serious",
+          "high": "Humorous",
+          "help": "Sets the emotional color of the narrator, from grounded and earnest to playful and funny."
+        },
+        "formality": {
+          "label": "Formality",
+          "low": "Colloquial",
+          "high": "Academic",
+          "help": "Controls whether the voice feels like a close friend, a polished narrator, or a more formal chronicler."
+        },
+        "rhythm": {
+          "label": "Rhythm",
+          "low": "Slow",
+          "high": "Fast",
+          "help": "Shapes sentence pace and momentum, from reflective paragraphs to quick, energetic beats."
+        },
+        "vocabulary": {
+          "label": "Vocabulary",
+          "low": "Simple",
+          "high": "Erudite",
+          "help": "Adjusts word complexity so the story can feel plainspoken, rich, poetic, or more advanced."
+        },
+        "fictionality": {
+          "label": "Fictionality",
+          "low": "Factual",
+          "high": "Poetic license",
+          "help": "Tells the engine how strictly to stay grounded versus how freely it may heighten events."
+        },
+        "dialogueDensity": {
+          "label": "Dialogue Density",
+          "low": "Sparse",
+          "high": "Talkative",
+          "help": "Changes how often characters speak. More dialogue can make the story feel warmer and faster."
+        },
+        "sensoriality": {
+          "label": "Sensoriality",
+          "low": "Sparse",
+          "high": "Rich",
+          "help": "Controls how much the prose notices sights, sounds, textures, smells, and atmosphere."
+        },
+        "subtextIrony": {
+          "label": "Subtext & Irony",
+          "low": "Direct",
+          "high": "Layered",
+          "help": "Adds hidden meaning, wit, or contrast between what is said and what the story quietly suggests."
+        }
+      },
+      "techniques": {
+        "label": "Techniques",
+        "help": "Optional storytelling tools. Leave them empty when you want a clean, simple narrator.",
+        "free-indirect-discourse": "Free indirect discourse",
+        "unreliable-narrator": "Unreliable narrator",
+        "4th-wall-break": "Fourth-wall break",
+        "show-dont-tell": "Show, don't tell",
+        "scene-anchoring": "Scene anchoring",
+        "lyrical-refrains": "Lyrical refrains",
+        "oral-cadence": "Oral cadence"
+      },
+      "techniqueHelp": {
+        "free-indirect-discourse": "Blends narration with a character's thoughts.",
+        "unreliable-narrator": "Lets the narrator be partial, mistaken, or playful with truth.",
+        "4th-wall-break": "Allows brief direct winks to the reader.",
+        "show-dont-tell": "Pushes emotion through action and detail.",
+        "scene-anchoring": "Keeps each scene grounded in place and movement.",
+        "lyrical-refrains": "Repeats poetic phrases for rhythm and memory.",
+        "oral-cadence": "Makes the prose feel like a tale told aloud."
+      },
+      "specialRequirements": {
+        "label": "Special requirements",
+        "placeholder": "e.g., Keep chapters gentle, avoid sarcasm, and make the narrator sound like a warm older cousin.",
+        "help": "Add short writing tips for this voice. Do not include private information you do not want used in the story."
+      }
+    },
+    "story": {
+      "createOneBook": "Create a custom voice for this book",
+      "oneBookName": "Custom voice for this book",
+      "savedLabel": "Your saved personas",
+      "builtInLabel": "Mythoria personas",
+      "customDescription": "Tune the narrator for this story only. No name needed, no shelf space used.",
+      "modalTitle": "Custom voice for this book",
+      "modalDescription": "These settings guide the writing engine for this draft. They shape the narrator's mask, not the facts of your story.",
+      "useVoice": "Use this voice",
+      "savedBadge": "Saved",
+      "customBadge": "Custom",
+      "manageLink": "Manage saved personas"
+    }
+  }
+}

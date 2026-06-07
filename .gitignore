@@ -50,6 +50,7 @@ config.json
 secrets.json
 
 # IDE
+.codex/
 .idea/
 *.swp
 *.swo
@@ -86,6 +87,9 @@ coverage/
 
 # Dependency directories
 node_modules/
+scripts/graphicTemplateGenerator/.venv/
+scripts/graphicTemplateGenerator/generated/
+scripts/graphicTemplateGenerator/__pycache__/
 jspm_packages/
 
 # Optional npm cache directory
@@ -188,3 +192,4 @@ secrets/
 # Playwright auth storage state (Clerk) - do not commit authenticated session data
 tests/playwright/.auth/
 playwright/.auth/
+_mockups/

@@ -3,7 +3,7 @@
 import { Show, RedirectToSignIn } from '@clerk/nextjs';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import StepNavigation from '@/components/StepNavigation';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import { trackStoryCreation } from '@/lib/analytics';
@@ -11,7 +11,7 @@ import MediaCapture from './MediaCapture';
 import CharacterSelection from './CharacterSelection';
 import WritingTips from './WritingTips';
 import { useStep2Session } from '@/hooks/useStep2Session';
-import { useMediaUpload } from '@/hooks/useMediaUpload';
+import { useJobPolling } from '@/hooks/useJobPolling';
 
 type ContentType = 'text' | 'images' | 'audio';
 
@@ -40,7 +40,16 @@ export default function Step2Page() {
     saveToSession,
   } = useStep2Session();
 
-  const { uploadMedia } = useMediaUpload();
+  const { pollJob } = useJobPolling();
+  const locale = useLocale();
+
+  // Block navigation while any uploaded media is still uploading/analysing.
+  const imagesAnalyzing = uploadedImages.some(
+    (img) => img.status === 'uploading' || img.status === 'analyzing',
+  );
+  const audioUploading = uploadedAudio?.status === 'uploading';
+  const mediaBusy = imagesAnalyzing || audioUploading;
+
   const handleNextStep = async () => {
     try {
       setIsCreatingStory(true);
@@ -100,73 +109,64 @@ export default function Step2Page() {
         }
       }
 
-      // Process with GenAI if any content provided
-      if (storyText.trim() || uploadedImages.length > 0 || uploadedAudio) {
-        console.log('Processing content with GenAI (signed uploads)...');
+      // Images/audio were already uploaded + analysed in step 2; collect their
+      // object paths and kick off ASYNC structuring, then poll to completion.
+      const imageObjectPaths = uploadedImages
+        .filter((img) => img.status === 'done' && img.objectPath)
+        .map((img) => img.objectPath as string);
+      const audioObjectPath =
+        uploadedAudio?.status === 'done' ? uploadedAudio.objectPath : undefined;
 
-        let imageObjectPath: string | undefined;
-        let audioObjectPath: string | undefined;
-        let imageDataB64: string | undefined;
-        let audioDataB64: string | undefined;
-
-        if (uploadedImages.length > 0) {
-          const { objectPath, dataUrl } = await uploadMedia(
-            story.storyId,
-            'image',
-            uploadedImages[0].file,
-          );
-          imageObjectPath = objectPath;
-          imageDataB64 = dataUrl;
-        }
-
-        if (uploadedAudio) {
-          const { objectPath, dataUrl } = await uploadMedia(
-            story.storyId,
-            'audio',
-            uploadedAudio.file,
-          );
-          audioObjectPath = objectPath;
-          audioDataB64 = dataUrl;
-        }
-
-        // Send to GenAI for processing with object paths
+      if (storyText.trim() || imageObjectPaths.length > 0 || audioObjectPath) {
         const genaiResponse = await fetch('/api/stories/genai-structure', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            storyId: story.storyId,
             userDescription:
               storyText ||
-              (imageObjectPath || imageDataB64
+              (imageObjectPaths.length > 0
                 ? 'Analyze the images to create a story'
-                : audioObjectPath || audioDataB64
+                : audioObjectPath
                   ? 'Analyze the audio to create a story'
                   : ''),
-            // Prefer object paths; if not available, include base64 data
-            imageObjectPath,
+            imageObjectPaths,
             audioObjectPath,
-            imageData: imageDataB64,
-            audioData: audioDataB64,
-            storyId: story.storyId,
             characterIds: selectedCharacterIds.length > 0 ? selectedCharacterIds : undefined,
+            locale,
           }),
         });
 
-        const responseData = await genaiResponse.json();
-
-        if (genaiResponse.ok) {
-          console.log('GenAI processing successful:', responseData);
-          localStorage.setItem(
-            'genaiResults',
-            JSON.stringify({
-              story: responseData.story,
-              characters: responseData.characters,
-              processed: true,
-            }),
-          );
+        const startData = await genaiResponse.json();
+        if (genaiResponse.ok && startData?.jobId) {
+          // The structure job relocates staged inputs into {storyId}/inputs at
+          // job start. Remember this so returning to Step 2 re-points the
+          // restored inputs to their new location (the staging copies are gone).
+          if (imageObjectPaths.length > 0 || audioObjectPath) {
+            localStorage.setItem(
+              'step2RelocatedInputs',
+              JSON.stringify({
+                storyId: story.storyId,
+                paths: imageObjectPaths,
+                audioPath: audioObjectPath ?? null,
+              }),
+            );
+          }
+          const outcome = await pollJob<{ story?: unknown; characters?: unknown }>(startData.jobId);
+          if (outcome.status === 'completed' && outcome.result) {
+            localStorage.setItem(
+              'genaiResults',
+              JSON.stringify({
+                story: outcome.result.story,
+                characters: outcome.result.characters,
+                processed: true,
+              }),
+            );
+          } else {
+            console.error('Story structuring job failed:', outcome.error);
+          }
         } else {
-          console.error('GenAI processing failed:', responseData);
+          console.error('Failed to start story structuring:', startData);
         }
       }
 
@@ -287,12 +287,18 @@ export default function Step2Page() {
                   </div>
                 )}
 
+                {mediaBusy && (
+                  <div className="text-center text-sm text-warning mt-2">
+                    {tStoryStepsStep2('imageAnalysis.waitingHint')}
+                  </div>
+                )}
+
                 <StepNavigation
                   currentStep={2}
                   totalSteps={7}
                   nextHref={null}
                   prevHref="/tell-your-story/step-1"
-                  nextDisabled={isCreatingStory}
+                  nextDisabled={isCreatingStory || mediaBusy}
                   onNext={handleNextStep}
                   nextLabel={
                     isCreatingStory ? tStoryStepsStep2('processing') : tStoryStepsStep2('next')

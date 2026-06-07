@@ -2,11 +2,13 @@
 
 import { Show, RedirectToSignIn } from '@clerk/nextjs';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import StepNavigation from '@/components/StepNavigation';
 import ProgressIndicator from '@/components/ProgressIndicator';
+import WritingPersonaForm from '@/components/WritingPersonaForm';
 import { trackStoryCreation } from '@/lib/analytics';
 import { useStorySessionGuard } from '@/hooks/useStorySessionGuard';
 import { fetchStoryData } from '@/lib/story';
@@ -25,6 +27,17 @@ import {
   getAllLiteraryPersonas,
 } from '@/types/story-enums';
 import type { StoryData } from '@/types/story';
+import type { SavedWritingPersona, WritingPersonaSettings } from '@/types/writing-persona';
+
+const DEFAULT_GRAPHIC_TEMPLATE_AUDIENCE = TargetAudience.CHILDREN_3_6;
+
+const getGraphicTemplateImageSrc = (
+  audience: TargetAudience | '',
+  style: GraphicalStyle,
+): string => {
+  const audienceSegment = audience || DEFAULT_GRAPHIC_TEMPLATE_AUDIENCE;
+  return `/images/GraphicTemplates/${audienceSegment}/${style}.jpg`;
+};
 
 export default function Step4PageWrapper() {
   return (
@@ -43,6 +56,7 @@ function Step4Page() {
   const defaultPersona = LiteraryPersona.CLASSIC_NOVELIST;
   const editStoryId = searchParams?.get('edit');
   const tStoryStepsStep4 = useTranslations('StorySteps.step4');
+  const tWritingPersonas = useTranslations('WritingPersonas');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,6 +69,11 @@ function Step4Page() {
   const [novelStyle, setNovelStyle] = useState<NovelStyle | ''>('');
   const [graphicalStyle, setGraphicalStyle] = useState<GraphicalStyle | ''>('');
   const [literaryPersona, setLiteraryPersona] = useState<LiteraryPersona | ''>(defaultPersona);
+  const [customWritingPersona, setCustomWritingPersona] = useState<WritingPersonaSettings | null>(
+    null,
+  );
+  const [customWritingPersonaLabel, setCustomWritingPersonaLabel] = useState<string | null>(null);
+  const [savedWritingPersonas, setSavedWritingPersonas] = useState<SavedWritingPersona[]>([]);
   const [plotDescription, setPlotDescription] = useState('');
   const [additionalRequests, setAdditionalRequests] = useState('');
   const [imageGenerationInstructions, setImageGenerationInstructions] = useState('');
@@ -70,6 +89,7 @@ function Step4Page() {
   const [showGraphicalStyleDropdown, setShowGraphicalStyleDropdown] = useState(false);
   const [showLiteraryPersonaDropdown, setShowLiteraryPersonaDropdown] = useState(false);
   const [showPersonaMetaInfo, setShowPersonaMetaInfo] = useState(false);
+  const [showCustomPersonaModal, setShowCustomPersonaModal] = useState(false);
 
   // Language options from translation
   const languageOptions = tStoryStepsStep4.raw('languageOptions') as Array<{
@@ -160,12 +180,58 @@ function Step4Page() {
     literaryPersonaOptions.map((option) => [option.value, option]),
   ) as Record<LiteraryPersona, (typeof literaryPersonaOptions)[number]>;
 
+  const getSelectedPersonaName = () => {
+    if (customWritingPersona) {
+      return customWritingPersonaLabel || tWritingPersonas('story.oneBookName');
+    }
+
+    if (literaryPersona) {
+      return literaryPersonaOptionMap[literaryPersona]?.name || literaryPersona;
+    }
+
+    return '';
+  };
+
+  const getSelectedPersonaDescription = () => {
+    if (customWritingPersona) {
+      return tWritingPersonas('story.customDescription');
+    }
+
+    if (literaryPersona && literaryPersonaOptionMap[literaryPersona]?.description) {
+      return literaryPersonaOptionMap[literaryPersona].description;
+    }
+
+    return literaryPersonaMessages?.helper || '';
+  };
+
+  const getSavedPersonaSettings = (persona: SavedWritingPersona): WritingPersonaSettings => ({
+    pov: persona.pov,
+    tone: persona.tone,
+    formality: persona.formality,
+    rhythm: persona.rhythm,
+    vocabulary: persona.vocabulary,
+    fictionality: persona.fictionality,
+    dialogueDensity: persona.dialogueDensity,
+    sensoriality: persona.sensoriality,
+    subtextIrony: persona.subtextIrony,
+    techniques: persona.techniques,
+    specialRequirements: persona.specialRequirements,
+  });
+
+  const selectSavedPersona = (persona: SavedWritingPersona) => {
+    setCustomWritingPersona(getSavedPersonaSettings(persona));
+    setCustomWritingPersonaLabel(persona.name);
+    setLiteraryPersona('');
+    setShowLiteraryPersonaDropdown(false);
+  };
+
   const hasStyleSettingData = () => {
     return (
       place.trim() ||
       novelStyle ||
       graphicalStyle ||
       literaryPersona ||
+      !!customWritingPersona ||
       imageGenerationInstructions.trim()
     );
   };
@@ -176,8 +242,8 @@ function Step4Page() {
 
   const getStyleSettingPreview = () => {
     const parts = [];
-    if (literaryPersona && literaryPersonaOptionMap[literaryPersona])
-      parts.push(literaryPersonaOptionMap[literaryPersona].name);
+    const personaName = getSelectedPersonaName();
+    if (personaName) parts.push(personaName);
     if (novelStyle) parts.push(NovelStyleLabels[novelStyle]);
     if (graphicalStyle) parts.push(GraphicalStyleLabels[graphicalStyle]);
     if (place.trim()) parts.push(place.trim());
@@ -247,14 +313,31 @@ function Step4Page() {
       if (e.key === 'Escape') {
         if (showGraphicalStyleDropdown) setShowGraphicalStyleDropdown(false);
         if (showLiteraryPersonaDropdown) setShowLiteraryPersonaDropdown(false);
+        if (showCustomPersonaModal) setShowCustomPersonaModal(false);
       }
     };
 
-    if (showGraphicalStyleDropdown || showLiteraryPersonaDropdown) {
+    if (showGraphicalStyleDropdown || showLiteraryPersonaDropdown || showCustomPersonaModal) {
       document.addEventListener('keydown', handleEscape);
       return () => document.removeEventListener('keydown', handleEscape);
     }
-  }, [showGraphicalStyleDropdown, showLiteraryPersonaDropdown]);
+  }, [showGraphicalStyleDropdown, showLiteraryPersonaDropdown, showCustomPersonaModal]);
+
+  useEffect(() => {
+    const loadWritingPersonas = async () => {
+      try {
+        const response = await fetch('/api/writing-personas');
+        if (!response.ok) return;
+
+        const payload = (await response.json()) as { personas?: SavedWritingPersona[] };
+        setSavedWritingPersonas(payload.personas || []);
+      } catch (error) {
+        console.error('Error loading writing personas:', error);
+      }
+    };
+
+    loadWritingPersonas();
+  }, []);
 
   const loadStoryData = useCallback(
     async (storyId: string) => {
@@ -268,6 +351,8 @@ function Step4Page() {
         setNovelStyle(story.novelStyle || '');
         setGraphicalStyle(story.graphicalStyle || '');
         setLiteraryPersona((story.literaryPersona as LiteraryPersona | null) || defaultPersona);
+        setCustomWritingPersona(story.customWritingPersona || null);
+        setCustomWritingPersonaLabel(null);
         setPlotDescription(story.plotDescription || '');
         setAdditionalRequests(story.additionalRequests || '');
         setImageGenerationInstructions(story.imageGenerationInstructions || '');
@@ -343,7 +428,8 @@ function Step4Page() {
           targetAudience: targetAudience || null,
           novelStyle: novelStyle || null,
           graphicalStyle: graphicalStyle || null,
-          literaryPersona: literaryPersona || defaultPersona,
+          literaryPersona: customWritingPersona ? null : literaryPersona || defaultPersona,
+          customWritingPersona,
           plotDescription: plotDescription.trim() || null,
           additionalRequests: additionalRequests.trim() || null,
           imageGenerationInstructions: imageGenerationInstructions.trim() || null,
@@ -364,7 +450,9 @@ function Step4Page() {
         target_audience: targetAudience || undefined,
         novel_style: novelStyle || undefined,
         graphical_style: graphicalStyle || undefined,
-        literary_persona: literaryPersona || defaultPersona,
+        literary_persona: customWritingPersona
+          ? 'custom-writing-persona'
+          : literaryPersona || defaultPersona,
         chapter_count: chapterCount,
         has_plot_description: !!plotDescription.trim(),
         has_additional_requests: !!additionalRequests.trim(),
@@ -611,7 +699,7 @@ function Step4Page() {
                             <button
                               type="button"
                               className={`w-full text-left border border-base-300 rounded-lg bg-base-100 px-4 py-3 focus:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:ring-offset-2 ${
-                                !literaryPersona ? 'text-gray-500' : ''
+                                !literaryPersona && !customWritingPersona ? 'text-gray-500' : ''
                               }`}
                               onClick={() => setShowLiteraryPersonaDropdown(true)}
                               onKeyDown={(e) => {
@@ -623,17 +711,12 @@ function Step4Page() {
                             >
                               <div className="flex flex-col items-start gap-1">
                                 <span className="font-semibold whitespace-normal leading-snug">
-                                  {literaryPersona
-                                    ? literaryPersonaOptionMap[literaryPersona]?.name ||
-                                      literaryPersona
-                                    : literaryPersonaMessages?.placeholder ||
-                                      tStoryStepsStep4('placeholders.selectLiteraryPersona')}
+                                  {getSelectedPersonaName() ||
+                                    literaryPersonaMessages?.placeholder ||
+                                    tStoryStepsStep4('placeholders.selectLiteraryPersona')}
                                 </span>
                                 <span className="text-xs text-gray-600 whitespace-normal leading-snug">
-                                  {literaryPersona &&
-                                  literaryPersonaOptionMap[literaryPersona]?.description
-                                    ? literaryPersonaOptionMap[literaryPersona].description
-                                    : literaryPersonaMessages?.helper || ''}
+                                  {getSelectedPersonaDescription()}
                                 </span>
                               </div>
                             </button>
@@ -834,22 +917,38 @@ function Step4Page() {
                       </div>
 
                       <div className="overflow-y-auto max-h-full space-y-4">
+                        <div className="flex items-center justify-between gap-3">
+                          <h4 className="text-sm font-semibold uppercase tracking-wide text-base-content/60">
+                            {tWritingPersonas('story.builtInLabel')}
+                          </h4>
+                          <Link
+                            href={`/${locale}/my-personas`}
+                            className="link link-primary text-sm"
+                            onClick={() => setShowLiteraryPersonaDropdown(false)}
+                          >
+                            {tWritingPersonas('story.manageLink')}
+                          </Link>
+                        </div>
                         {literaryPersonaOptions.map((option) => (
                           <div
                             key={option.value}
                             className={`card bg-base-100 shadow-sm hover:shadow-lg transition-shadow cursor-pointer ${
-                              literaryPersona === option.value
+                              !customWritingPersona && literaryPersona === option.value
                                 ? 'border-2 border-primary'
                                 : 'border border-transparent'
                             }`}
                             onClick={() => {
                               setLiteraryPersona(option.value);
+                              setCustomWritingPersona(null);
+                              setCustomWritingPersonaLabel(null);
                               setShowLiteraryPersonaDropdown(false);
                             }}
                             onKeyDown={(e) => {
                               if (e.key === 'Enter' || e.key === ' ') {
                                 e.preventDefault();
                                 setLiteraryPersona(option.value);
+                                setCustomWritingPersona(null);
+                                setCustomWritingPersonaLabel(null);
                                 setShowLiteraryPersonaDropdown(false);
                               }
                             }}
@@ -915,6 +1014,83 @@ function Step4Page() {
                             </div>
                           </div>
                         ))}
+
+                        {savedWritingPersonas.length > 0 && (
+                          <>
+                            <h4 className="pt-2 text-sm font-semibold uppercase tracking-wide text-base-content/60">
+                              {tWritingPersonas('story.savedLabel')}
+                            </h4>
+                            {savedWritingPersonas.map((persona) => (
+                              <div
+                                key={persona.codename}
+                                className={`card bg-base-100 shadow-sm hover:shadow-lg transition-shadow cursor-pointer ${
+                                  customWritingPersonaLabel === persona.name
+                                    ? 'border-2 border-primary'
+                                    : 'border border-transparent'
+                                }`}
+                                onClick={() => selectSavedPersona(persona)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    selectSavedPersona(persona);
+                                  }
+                                }}
+                                tabIndex={0}
+                              >
+                                <div className="card-body p-4">
+                                  <div className="flex flex-wrap items-start justify-between gap-3">
+                                    <div>
+                                      <h4 className="card-title text-base">{persona.name}</h4>
+                                      <p className="mt-1 text-sm text-gray-600">
+                                        {tWritingPersonas('list.summary', {
+                                          pov: tWritingPersonas(`form.pov.options.${persona.pov}`),
+                                          tone: persona.tone,
+                                          rhythm: persona.rhythm,
+                                          vocabulary: persona.vocabulary,
+                                        })}
+                                      </p>
+                                    </div>
+                                    <span className="badge badge-primary badge-outline">
+                                      {tWritingPersonas('story.savedBadge')}
+                                    </span>
+                                  </div>
+                                  {persona.specialRequirements && (
+                                    <p className="mt-3 rounded-md bg-base-200 p-3 text-sm text-base-content/70">
+                                      {persona.specialRequirements}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </>
+                        )}
+
+                        <button
+                          type="button"
+                          className={`w-full rounded-lg border border-dashed p-4 text-left transition hover:border-primary hover:bg-primary/5 ${
+                            customWritingPersona && !customWritingPersonaLabel
+                              ? 'border-primary bg-primary/5'
+                              : 'border-base-300 bg-base-100'
+                          }`}
+                          onClick={() => {
+                            setShowLiteraryPersonaDropdown(false);
+                            setShowCustomPersonaModal(true);
+                          }}
+                        >
+                          <div className="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                              <h4 className="font-semibold">
+                                {tWritingPersonas('story.createOneBook')}
+                              </h4>
+                              <p className="mt-1 text-sm text-base-content/70">
+                                {tWritingPersonas('story.customDescription')}
+                              </p>
+                            </div>
+                            <span className="badge badge-secondary badge-outline">
+                              {tWritingPersonas('story.customBadge')}
+                            </span>
+                          </div>
+                        </button>
                       </div>
 
                       <div className="modal-action">
@@ -929,6 +1105,45 @@ function Step4Page() {
                     <div
                       className="modal-backdrop"
                       onClick={() => setShowLiteraryPersonaDropdown(false)}
+                    ></div>
+                  </div>
+                )}
+
+                {showCustomPersonaModal && (
+                  <div className="modal modal-open">
+                    <div className="modal-box w-[calc(100%-0.75rem)] sm:max-w-4xl sm:w-auto max-h-[90vh] overflow-y-auto px-4 sm:px-6">
+                      <div className="mb-5 flex items-start justify-between gap-3">
+                        <div>
+                          <h3 className="font-bold text-lg">
+                            {tWritingPersonas('story.modalTitle')}
+                          </h3>
+                          <p className="mt-1 text-sm text-base-content/70">
+                            {tWritingPersonas('story.modalDescription')}
+                          </p>
+                        </div>
+                        <button
+                          className="btn btn-sm btn-circle btn-ghost"
+                          onClick={() => setShowCustomPersonaModal(false)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                      <WritingPersonaForm
+                        initialSettings={customWritingPersona}
+                        submitLabel={tWritingPersonas('story.useVoice')}
+                        cancelLabel={tStoryStepsStep4('modal.close')}
+                        onCancel={() => setShowCustomPersonaModal(false)}
+                        onSubmit={({ settings }) => {
+                          setCustomWritingPersona(settings);
+                          setCustomWritingPersonaLabel(null);
+                          setLiteraryPersona('');
+                          setShowCustomPersonaModal(false);
+                        }}
+                      />
+                    </div>
+                    <div
+                      className="modal-backdrop"
+                      onClick={() => setShowCustomPersonaModal(false)}
                     ></div>
                   </div>
                 )}
@@ -1030,7 +1245,7 @@ function Step4Page() {
                             >
                               <figure className="px-4 pt-4">
                                 <Image
-                                  src={`/images/GraphicTemplates/YoungAdults/${style}.jpg`}
+                                  src={getGraphicTemplateImageSrc(targetAudience, style)}
                                   alt={tStoryStepsStep4('modal.altText', {
                                     style: GraphicalStyleLabels[style],
                                   })}
