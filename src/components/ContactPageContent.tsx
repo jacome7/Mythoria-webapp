@@ -1,8 +1,8 @@
 'use client';
 
+import { Heart, MessageCircle, Users } from 'lucide-react';
 import { useRef } from 'react';
 import { useTranslations } from 'next-intl';
-import { FaComments, FaUsers, FaHeart } from 'react-icons/fa';
 import ContactForm from './ContactForm';
 import CategoryGrid from './CategoryGrid';
 
@@ -34,7 +34,7 @@ const ContactPageContent = () => {
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
             <h2 className="text-2xl font-semibold mb-4 flex items-center gap-3">
-              <FaComments className="text-primary" />
+              <MessageCircle className="text-primary" />
               {tContactUsPage('scrollTitle')}
             </h2>
             <p className="mb-6 text-base-content/80">{tContactUsPage('scrollIntro')}</p>
@@ -54,7 +54,7 @@ const ContactPageContent = () => {
         <div className="card bg-gradient-to-r from-accent/10 to-warning/10 border border-accent/20 max-w-4xl mx-auto">
           <div className="card-body p-6">
             <h2 className="text-lg font-semibold mb-3 flex items-center gap-3">
-              <FaHeart className="text-accent" />
+              <Heart className="text-accent" />
               {tContactUsPage('bonus.title')}
             </h2>
             <p className="mb-2 text-sm">{tContactUsPage('bonus.content')}</p>
@@ -71,7 +71,7 @@ const ContactPageContent = () => {
         <div className="card bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 max-w-4xl mx-auto">
           <div className="card-body">
             <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
-              <FaUsers className="text-primary" />
+              <Users className="text-primary" />
               {tContactUsPage('join.title')}
             </h2>
             <p className="mb-4 text-base-content/80">{tContactUsPage('join.intro')}</p>

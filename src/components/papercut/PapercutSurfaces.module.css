@@ -226,10 +226,20 @@
   background: transparent !important;
 }
 
-.scope :global(.bg-base-100:not(.mythoria-story-content):not(.cl-rootBox *)),
-.scope :global(.bg-base-200:not(.mythoria-story-content):not(.cl-rootBox *)),
-.scope :global(.bg-base-300:not(.mythoria-story-content):not(.cl-rootBox *)),
-.scope :global(.bg-white:not(.mythoria-story-content):not(.cl-rootBox *)) {
+.scope
+  :global(
+    .bg-base-100:not(.mythoria-story-content):not(.cl-rootBox *):not(.mythoria-popup-surface)
+  ),
+.scope
+  :global(
+    .bg-base-200:not(.mythoria-story-content):not(.cl-rootBox *):not(.mythoria-popup-surface)
+  ),
+.scope
+  :global(
+    .bg-base-300:not(.mythoria-story-content):not(.cl-rootBox *):not(.mythoria-popup-surface)
+  ),
+.scope
+  :global(.bg-white:not(.mythoria-story-content):not(.cl-rootBox *):not(.mythoria-popup-surface)) {
   background-color: rgba(255, 248, 232, 0.82) !important;
 }
 
@@ -273,6 +283,15 @@
   pointer-events: none;
 }
 
+.scope :global(.hover\:bg-gray-50:hover),
+.scope :global(.hover\:bg-gray-100:hover),
+.scope :global(.hover\:bg-gray-200:hover),
+.scope :global(.hover\:bg-base-100:hover),
+.scope :global(.hover\:bg-base-200:hover),
+.scope :global(.hover\:bg-base-300:hover) {
+  background-color: rgba(247, 222, 184, 0.58) !important;
+}
+
 .scope :global(.card:not(.homepage-audience-card):not(.cl-card))::after,
 .scope :global(.modal-box)::after,
 .scope :global(.stats)::after,
@@ -305,6 +324,47 @@
 .scope :global(div.rounded-xl.bg-white > *) {
   position: relative;
   z-index: 1;
+}
+
+.scope :global(.mythoria-popup-surface),
+.scope :global(.dropdown-content),
+.scope :global(.modal-box),
+.scope :global(.modal-content),
+.scope :global([popover]),
+.scope :global(dialog[open]),
+.scope :global(.fixed.inset-0 > .bg-white),
+.scope :global(.fixed.inset-0 > .rounded-lg),
+.scope :global(.fixed.inset-0 > .rounded-xl) {
+  background: #fff !important;
+  background-color: #fff !important;
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.scope :global(.mythoria-popup-surface .bg-white),
+.scope :global(.dropdown-content .bg-white),
+.scope :global(.modal-box .bg-white),
+.scope :global(.modal-content .bg-white) {
+  background-color: #fff !important;
+}
+
+.scope :global(.modal-box),
+.scope :global(.modal-content) {
+  background-color: #fff7e6 !important;
+  background-image: linear-gradient(
+    145deg,
+    rgba(255, 248, 232, 0.98),
+    rgba(247, 222, 184, 0.96)
+  ) !important;
+}
+
+.scope :global(select),
+.scope :global(option),
+.scope :global(optgroup) {
+  background-color: #fff !important;
+  color: #111827 !important;
+  opacity: 1 !important;
 }
 
 .scope :global(h1:not(.cl-headerTitle)),

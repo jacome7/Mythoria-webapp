@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
-import { useTranslations, useLocale } from 'next-intl';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import type { IntentContext } from '@/types/intent-context';
 
 // Type definition matching the JSON structure
@@ -277,7 +277,7 @@ export default function InfiniteGallery({ intentContext }: InfiniteGalleryProps)
           aria-label="Previous book"
           disabled={isTransitioning}
         >
-          <FaChevronLeft className="text-2xl" />
+          <ChevronLeft className="text-2xl" />
         </button>
 
         <button
@@ -286,7 +286,7 @@ export default function InfiniteGallery({ intentContext }: InfiniteGalleryProps)
           aria-label="Next book"
           disabled={isTransitioning}
         >
-          <FaChevronRight className="text-2xl" />
+          <ChevronRight className="text-2xl" />
         </button>
       </div>
 

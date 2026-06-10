@@ -1,9 +1,12 @@
 'use client';
 
+import Image from 'next/image';
 import { useRef, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
+import { createPortal } from 'react-dom';
 import { UploadedImage, UploadedAudio } from '@/hooks/useStep2Session';
 import { useMediaUpload } from '@/hooks/useMediaUpload';
+import styles from './Step2Page.module.css';
 
 interface Props {
   activeModal: 'images' | 'audio' | null;
@@ -17,6 +20,8 @@ interface Props {
 
 const MAX_IMAGES = 3;
 const MAX_ANALYSIS_ATTEMPTS = 3; // initial attempt + 2 retries
+const modalSurfaceClass =
+  'modal-box !bg-[#fff7e6] !bg-gradient-to-br !from-[#fff8e8] !to-[#f7deb8] border border-[#5e401a]/20 shadow-[0_18px_30px_rgba(74,48,14,0.13)]';
 
 export default function MediaCapture({
   activeModal,
@@ -255,177 +260,190 @@ export default function MediaCapture({
 
   return (
     <>
-      {activeModal === 'images' && (
-        <div className="modal modal-open">
-          <div className="modal-box max-w-5xl w-11/12 h-[90vh] flex flex-col">
-            <div className="modal-header flex justify-between items-center mb-4">
-              <h3 className="font-bold text-2xl">📸 {t('tabImage')}</h3>
-              <button
-                className="btn btn-sm btn-circle btn-ghost"
-                onClick={() => {
-                  setActiveModal(null);
-                  stopCamera();
-                  saveToSession();
-                }}
-              >
-                ✕
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto">
-              {uploadedImages.length > 0 && (
-                <div className="mb-6">
-                  <h4 className="font-semibold mb-3">
-                    {t('imageGalleryTitle', { count: uploadedImages.length })}
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {uploadedImages.map((img) => (
-                      <div key={img.id} className="relative border rounded-lg overflow-hidden">
-                        <div className="aspect-video bg-base-200 relative">
-                          {img.preview ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={img.preview}
-                              alt="Story input"
-                              className="object-cover w-full h-full"
-                            />
-                          ) : (
-                            <div className="flex items-center justify-center w-full h-full text-4xl">
-                              🖼️
-                            </div>
-                          )}
-                          <button
-                            className="btn btn-xs btn-circle btn-error absolute top-2 right-2"
-                            onClick={() => removeImage(img.id)}
-                            aria-label={t('actions.remove')}
-                          >
-                            ✕
-                          </button>
-                        </div>
-                        <div className="p-2 space-y-2">
-                          <div className="flex items-center gap-2 text-sm">
-                            {(img.status === 'uploading' || img.status === 'analyzing') && (
-                              <span className="loading loading-spinner loading-xs text-primary" />
-                            )}
-                            {img.status === 'done' && <span className="text-success">✓</span>}
-                            {img.status === 'error' && <span className="text-error">⚠️</span>}
-                            <span
-                              className={
-                                img.status === 'error'
-                                  ? 'text-error'
-                                  : img.status === 'done'
-                                    ? 'text-success'
-                                    : 'text-gray-600'
-                              }
-                            >
-                              {statusLabel(img.status)}
-                            </span>
-                          </div>
-                          <div className="flex gap-2">
-                            {img.status === 'done' && (
-                              <button
-                                className="btn btn-xs btn-outline"
-                                onClick={() => setDetailsId(img.id)}
-                              >
-                                ℹ️ {t('imageAnalysis.viewDetails')}
-                              </button>
-                            )}
-                            {img.status === 'error' &&
-                              (img.attempts < MAX_ANALYSIS_ATTEMPTS && img.objectPath ? (
-                                <button
-                                  className="btn btn-xs btn-primary"
-                                  onClick={() => retryAnalysis(img.id)}
-                                >
-                                  🔄 {t('imageAnalysis.retry')}
-                                </button>
-                              ) : (
-                                <span className="text-xs text-error">
-                                  {t('imageAnalysis.attemptsExhausted')}
-                                </span>
-                              ))}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {uploadedImages.length < MAX_IMAGES && !isCapturing && (
-                <div className="text-center space-y-4">
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <button className="btn btn-primary btn-lg" onClick={startCamera}>
-                      📷 {t('takePhoto')}
-                    </button>
-                    <button
-                      className="btn btn-outline btn-lg"
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      🖼️ {t('uploadImage')}
-                    </button>
-                  </div>
-                  <p className="text-gray-600">{t('imageHelp')}</p>
-                </div>
-              )}
-              {isCapturing && (
-                <div className="text-center space-y-4">
-                  <video
-                    ref={videoRef}
-                    className="w-full max-w-md mx-auto rounded-lg border"
-                    autoPlay
-                    playsInline
-                    muted
+      {activeModal === 'images' &&
+        createPortal(
+          <div className={`modal modal-open ${styles.step2Modal}`}>
+            <div
+              className={`${modalSurfaceClass} ${styles.step2ModalBox} max-w-5xl w-11/12 flex flex-col`}
+            >
+              <div className="modal-header flex justify-between items-center mb-4">
+                <h3 className={styles.modalTitle}>
+                  <Image
+                    src="/Papercut_icons/camera.webp"
+                    alt=""
+                    width={64}
+                    height={64}
+                    className={`${styles.modalTitleIcon} ${styles.cameraIcon}`}
                   />
-                  <div className="flex gap-4 justify-center">
-                    <button
-                      className="btn btn-primary btn-lg"
-                      onClick={capturePhoto}
-                      disabled={uploadedImages.length >= MAX_IMAGES}
-                    >
-                      {t('buttons.capture')}
-                    </button>
-                    <button className="btn btn-outline btn-lg" onClick={stopCamera}>
-                      {t('buttons.cancel')}
-                    </button>
+                  {t('tabImage')}
+                </h3>
+                <button
+                  className="btn btn-sm btn-circle btn-ghost"
+                  onClick={() => {
+                    setActiveModal(null);
+                    stopCamera();
+                    saveToSession();
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto">
+                {uploadedImages.length > 0 && (
+                  <div className="mb-6">
+                    <h4 className="font-semibold mb-3">
+                      {t('imageGalleryTitle', { count: uploadedImages.length })}
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {uploadedImages.map((img) => (
+                        <div key={img.id} className="relative border rounded-lg overflow-hidden">
+                          <div className="aspect-video bg-base-200 relative">
+                            {img.preview ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={img.preview}
+                                alt="Story input"
+                                className="object-cover w-full h-full"
+                              />
+                            ) : (
+                              <div className="flex items-center justify-center w-full h-full text-4xl">
+                                🖼️
+                              </div>
+                            )}
+                            <button
+                              className="btn btn-xs btn-circle btn-error absolute top-2 right-2"
+                              onClick={() => removeImage(img.id)}
+                              aria-label={t('actions.remove')}
+                            >
+                              ✕
+                            </button>
+                          </div>
+                          <div className="p-2 space-y-2">
+                            <div className="flex items-center gap-2 text-sm">
+                              {(img.status === 'uploading' || img.status === 'analyzing') && (
+                                <span className="loading loading-spinner loading-xs text-primary" />
+                              )}
+                              {img.status === 'done' && <span className="text-success">✓</span>}
+                              {img.status === 'error' && <span className="text-error">⚠️</span>}
+                              <span
+                                className={
+                                  img.status === 'error'
+                                    ? 'text-error'
+                                    : img.status === 'done'
+                                      ? 'text-success'
+                                      : 'text-gray-600'
+                                }
+                              >
+                                {statusLabel(img.status)}
+                              </span>
+                            </div>
+                            <div className="flex gap-2">
+                              {img.status === 'done' && (
+                                <button
+                                  className="btn btn-xs btn-outline"
+                                  onClick={() => setDetailsId(img.id)}
+                                >
+                                  ℹ️ {t('imageAnalysis.viewDetails')}
+                                </button>
+                              )}
+                              {img.status === 'error' &&
+                                (img.attempts < MAX_ANALYSIS_ATTEMPTS && img.objectPath ? (
+                                  <button
+                                    className="btn btn-xs btn-primary"
+                                    onClick={() => retryAnalysis(img.id)}
+                                  >
+                                    🔄 {t('imageAnalysis.retry')}
+                                  </button>
+                                ) : (
+                                  <span className="text-xs text-error">
+                                    {t('imageAnalysis.attemptsExhausted')}
+                                  </span>
+                                ))}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
+                )}
+                {uploadedImages.length < MAX_IMAGES && !isCapturing && (
+                  <div className="text-center space-y-4">
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                      <button className="btn btn-primary btn-lg" onClick={startCamera}>
+                        📷 {t('takePhoto')}
+                      </button>
+                      <button
+                        className="btn btn-outline btn-lg"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        🖼️ {t('uploadImage')}
+                      </button>
+                    </div>
+                    <p className="text-gray-600">{t('imageHelp')}</p>
+                  </div>
+                )}
+                {isCapturing && (
+                  <div className="text-center space-y-4">
+                    <video
+                      ref={videoRef}
+                      className="w-full max-w-md mx-auto rounded-lg border"
+                      autoPlay
+                      playsInline
+                      muted
+                    />
+                    <div className="flex gap-4 justify-center">
+                      <button
+                        className="btn btn-primary btn-lg"
+                        onClick={capturePhoto}
+                        disabled={uploadedImages.length >= MAX_IMAGES}
+                      >
+                        {t('buttons.capture')}
+                      </button>
+                      <button className="btn btn-outline btn-lg" onClick={stopCamera}>
+                        {t('buttons.cancel')}
+                      </button>
+                    </div>
+                  </div>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  multiple
+                  className="hidden"
+                />
+                <canvas ref={canvasRef} className="hidden" />
+                <div className="mt-6 p-4 bg-base-200 rounded-lg">
+                  <h4 className="font-semibold mb-3">{t('photoTips.title')}</h4>
+                  <ul className="text-sm space-y-1 list-disc list-inside">
+                    {(t.raw('photoTips.tips') as string[]).map((tip: string, index: number) => (
+                      <li key={index}>{tip}</li>
+                    ))}
+                  </ul>
                 </div>
-              )}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                multiple
-                className="hidden"
-              />
-              <canvas ref={canvasRef} className="hidden" />
-              <div className="mt-6 p-4 bg-base-200 rounded-lg">
-                <h4 className="font-semibold mb-3">{t('photoTips.title')}</h4>
-                <ul className="text-sm space-y-1 list-disc list-inside">
-                  {(t.raw('photoTips.tips') as string[]).map((tip: string, index: number) => (
-                    <li key={index}>{tip}</li>
-                  ))}
-                </ul>
+              </div>
+              <div className="modal-action">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    setActiveModal(null);
+                    stopCamera();
+                    saveToSession();
+                  }}
+                >
+                  {t('actions.done')}
+                </button>
               </div>
             </div>
-            <div className="modal-action">
-              <button
-                className="btn btn-primary"
-                onClick={() => {
-                  setActiveModal(null);
-                  stopCamera();
-                  saveToSession();
-                }}
-              >
-                {t('actions.done')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
 
       {/* Image analysis details modal */}
       {detailsImage && (
         <div className="modal modal-open">
-          <div className="modal-box max-w-2xl">
+          <div className={`${modalSurfaceClass} max-w-2xl`}>
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold text-xl">ℹ️ {t('imageAnalysis.detailsTitle')}</h3>
               <button
@@ -483,134 +501,151 @@ export default function MediaCapture({
         </div>
       )}
 
-      {activeModal === 'audio' && (
-        <div className="modal modal-open">
-          <div className="modal-box max-w-5xl w-11/12 h-[90vh] flex flex-col">
-            <div className="modal-header flex justify-between items-center mb-4">
-              <h3 className="font-bold text-2xl">🎤 {t('tabRecord')}</h3>
-              <button
-                className="btn btn-sm btn-circle btn-ghost"
-                onClick={() => setActiveModal(null)}
-              >
-                ✕
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto">
-              {!uploadedAudio && !isRecording && (
-                <div className="text-center space-y-4">
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <button className="btn btn-primary btn-lg" onClick={startRecording}>
-                      🎤 {t('recordVoice')}
-                    </button>
-                    <button
-                      className="btn btn-outline btn-lg"
-                      onClick={() => audioInputRef.current?.click()}
-                    >
-                      📁 {t('uploadAudio')}
-                    </button>
-                  </div>
-                  <p className="text-gray-600">{t('audioHelp')}</p>
-                </div>
-              )}
-              {isRecording && (
-                <div className="text-center space-y-4">
-                  <div className="flex flex-col items-center space-y-4">
-                    <div className="relative">
-                      <div className="w-32 h-32 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
-                        <div className="text-white text-4xl">🎤</div>
-                      </div>
-                      <div className="absolute inset-0 rounded-full border-4 border-red-500 animate-ping"></div>
+      {activeModal === 'audio' &&
+        createPortal(
+          <div className={`modal modal-open ${styles.step2Modal}`}>
+            <div
+              className={`${modalSurfaceClass} ${styles.step2ModalBox} max-w-5xl w-11/12 flex flex-col`}
+            >
+              <div className="modal-header flex justify-between items-center mb-4">
+                <h3 className={styles.modalTitle}>
+                  <Image
+                    src="/Papercut_icons/microphone.webp"
+                    alt=""
+                    width={64}
+                    height={64}
+                    className={`${styles.modalTitleIcon} ${styles.microphoneIcon}`}
+                  />
+                  {t('tabRecord')}
+                </h3>
+                <button
+                  className="btn btn-sm btn-circle btn-ghost"
+                  onClick={() => setActiveModal(null)}
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto">
+                {!uploadedAudio && !isRecording && (
+                  <div className="text-center space-y-4">
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                      <button className="btn btn-primary btn-lg" onClick={startRecording}>
+                        🎤 {t('recordVoice')}
+                      </button>
+                      <button
+                        className="btn btn-outline btn-lg"
+                        onClick={() => audioInputRef.current?.click()}
+                      >
+                        📁 {t('uploadAudio')}
+                      </button>
                     </div>
-                    <p className="text-lg font-semibold text-red-600">{t('actions.recording')}</p>
-                    <p className="text-gray-600">{t('recordingHelp')}</p>
+                    <p className="text-gray-600">{t('audioHelp')}</p>
                   </div>
-                  <div className="flex gap-4 justify-center">
-                    <button className="btn btn-error btn-lg" onClick={stopRecording}>
-                      ⏹️ {t('actions.stopRecording')}
-                    </button>
-                  </div>
-                </div>
-              )}
-              {uploadedAudio && (
-                <div className="text-center space-y-4">
-                  <div className="card bg-base-200">
-                    <div className="card-body">
-                      <div className="flex items-center justify-center mb-2">
-                        <div className="text-6xl">🎵</div>
+                )}
+                {isRecording && (
+                  <div className="text-center space-y-4">
+                    <div className="flex flex-col items-center space-y-4">
+                      <div className="relative">
+                        <div className="w-32 h-32 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
+                          <div className="text-white text-4xl">🎤</div>
+                        </div>
+                        <div className="absolute inset-0 rounded-full border-4 border-red-500 animate-ping"></div>
                       </div>
-                      <div className="flex items-center justify-center gap-2 text-sm mb-2">
-                        {uploadedAudio.status === 'uploading' && (
-                          <span className="loading loading-spinner loading-xs text-primary" />
-                        )}
-                        {uploadedAudio.status === 'done' && <span className="text-success">✓</span>}
-                        {uploadedAudio.status === 'error' && <span className="text-error">⚠️</span>}
-                        <span
-                          className={
-                            uploadedAudio.status === 'error'
-                              ? 'text-error'
+                      <p className="text-lg font-semibold text-red-600">{t('actions.recording')}</p>
+                      <p className="text-gray-600">{t('recordingHelp')}</p>
+                    </div>
+                    <div className="flex gap-4 justify-center">
+                      <button className="btn btn-error btn-lg" onClick={stopRecording}>
+                        ⏹️ {t('actions.stopRecording')}
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {uploadedAudio && (
+                  <div className="text-center space-y-4">
+                    <div className="card bg-base-200">
+                      <div className="card-body">
+                        <div className="flex items-center justify-center mb-2">
+                          <div className="text-6xl">🎵</div>
+                        </div>
+                        <div className="flex items-center justify-center gap-2 text-sm mb-2">
+                          {uploadedAudio.status === 'uploading' && (
+                            <span className="loading loading-spinner loading-xs text-primary" />
+                          )}
+                          {uploadedAudio.status === 'done' && (
+                            <span className="text-success">✓</span>
+                          )}
+                          {uploadedAudio.status === 'error' && (
+                            <span className="text-error">⚠️</span>
+                          )}
+                          <span
+                            className={
+                              uploadedAudio.status === 'error'
+                                ? 'text-error'
+                                : uploadedAudio.status === 'done'
+                                  ? 'text-success'
+                                  : 'text-gray-600'
+                            }
+                          >
+                            {uploadedAudio.status === 'uploading'
+                              ? t('imageAnalysis.statusUploading')
                               : uploadedAudio.status === 'done'
-                                ? 'text-success'
-                                : 'text-gray-600'
-                          }
-                        >
-                          {uploadedAudio.status === 'uploading'
-                            ? t('imageAnalysis.statusUploading')
-                            : uploadedAudio.status === 'done'
-                              ? t('imageAnalysis.statusReady')
-                              : t('imageAnalysis.statusFailed')}
-                        </span>
-                      </div>
-                      {uploadedAudio.preview && (
-                        <audio
-                          src={uploadedAudio.preview}
-                          controls
-                          className="w-full max-w-md mx-auto"
-                        >
-                          {t('audioSupport.notSupported')}
-                        </audio>
-                      )}
-                      <div className="card-actions justify-center mt-2">
-                        <button className="btn btn-outline btn-sm" onClick={clearAudio}>
-                          🗑️ {t('actions.remove')}
-                        </button>
-                        <button className="btn btn-primary btn-sm" onClick={startRecording}>
-                          🔄 {t('actions.recordAgain')}
-                        </button>
+                                ? t('imageAnalysis.statusReady')
+                                : t('imageAnalysis.statusFailed')}
+                          </span>
+                        </div>
+                        {uploadedAudio.preview && (
+                          <audio
+                            src={uploadedAudio.preview}
+                            controls
+                            className="w-full max-w-md mx-auto"
+                          >
+                            {t('audioSupport.notSupported')}
+                          </audio>
+                        )}
+                        <div className="card-actions justify-center mt-2">
+                          <button className="btn btn-outline btn-sm" onClick={clearAudio}>
+                            🗑️ {t('actions.remove')}
+                          </button>
+                          <button className="btn btn-primary btn-sm" onClick={startRecording}>
+                            🔄 {t('actions.recordAgain')}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
+                )}
+                <input
+                  ref={audioInputRef}
+                  type="file"
+                  accept="audio/mp3,audio/mpeg,audio/wav,audio/m4a"
+                  onChange={handleAudioUpload}
+                  className="hidden"
+                />
+                <div className="mt-6 p-4 bg-base-200 rounded-lg">
+                  <h4 className="font-semibold mb-3">🎤 {t('recordingTips.title')}</h4>
+                  <ul className="text-sm space-y-1 list-disc list-inside">
+                    {(t.raw('recordingTips.tips') as string[]).map((tip: string, index: number) => (
+                      <li key={index}>{tip}</li>
+                    ))}
+                  </ul>
                 </div>
-              )}
-              <input
-                ref={audioInputRef}
-                type="file"
-                accept="audio/mp3,audio/mpeg,audio/wav,audio/m4a"
-                onChange={handleAudioUpload}
-                className="hidden"
-              />
-              <div className="mt-6 p-4 bg-base-200 rounded-lg">
-                <h4 className="font-semibold mb-3">🎤 {t('recordingTips.title')}</h4>
-                <ul className="text-sm space-y-1 list-disc list-inside">
-                  {(t.raw('recordingTips.tips') as string[]).map((tip: string, index: number) => (
-                    <li key={index}>{tip}</li>
-                  ))}
-                </ul>
+              </div>
+              <div className="modal-action">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    setActiveModal(null);
+                    saveToSession();
+                  }}
+                >
+                  {t('actions.done')}
+                </button>
               </div>
             </div>
-            <div className="modal-action">
-              <button
-                className="btn btn-primary"
-                onClick={() => {
-                  setActiveModal(null);
-                  saveToSession();
-                }}
-              >
-                {t('actions.done')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

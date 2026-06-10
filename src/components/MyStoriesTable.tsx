@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl';
-import { FiChevronUp, FiChevronDown } from 'react-icons/fi';
 import { Link } from '@/i18n/routing';
 import ShareModal from './ShareModal';
 import ToastContainer from './ToastContainer';
@@ -106,9 +106,9 @@ export default function MyStoriesTable() {
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) return null;
     return sortDirection === 'asc' ? (
-      <FiChevronUp className="w-4 h-4 inline ml-1" />
+      <ChevronUp className="w-4 h-4 inline ml-1" />
     ) : (
-      <FiChevronDown className="w-4 h-4 inline ml-1" />
+      <ChevronDown className="w-4 h-4 inline ml-1" />
     );
   };
 
@@ -135,40 +135,38 @@ export default function MyStoriesTable() {
           </div>
         </div>
       ) : (
-        <div className="overflow-x-auto overflow-y-visible">
+        <div className="overflow-x-auto overflow-y-visible rounded-lg border border-base-300 bg-base-100 shadow-sm">
           <table className="table table-zebra w-full">
             <thead>
               <tr>
-                <th className="px-2 py-1 md:px-4 md:py-2">
+                <th className="px-2 py-2 md:px-4">
                   <button
-                    className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
+                    className="inline-flex items-center justify-start rounded px-1.5 py-1 text-left text-sm font-semibold text-primary hover:bg-base-200"
                     onClick={() => handleSort('createdAt')}
                   >
                     {tMyStoriesPage('table.date')}
                     {getSortIcon('createdAt')}
                   </button>
                 </th>
-                <th className="px-2 py-1 md:px-4 md:py-2">
+                <th className="px-2 py-2 md:px-4">
                   <button
-                    className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
+                    className="inline-flex items-center justify-start rounded px-1.5 py-1 text-left text-sm font-semibold text-primary hover:bg-base-200"
                     onClick={() => handleSort('title')}
                   >
                     {tMyStoriesPage('table.title')}
                     {getSortIcon('title')}
                   </button>
                 </th>
-                <th className="px-2 py-1 md:px-4 md:py-2">
+                <th className="px-2 py-2 md:px-4">
                   <button
-                    className="btn btn-ghost btn-sm p-0 h-auto font-medium text-left justify-start"
+                    className="inline-flex items-center justify-start rounded px-1.5 py-1 text-left text-sm font-semibold text-primary hover:bg-base-200"
                     onClick={() => handleSort('status')}
                   >
                     {tMyStoriesPage('table.status.header')}
                     {getSortIcon('status')}
                   </button>
                 </th>
-                <th className="text-right px-2 py-1 md:px-4 md:py-2">
-                  {tMyStoriesPage('table.actions')}
-                </th>
+                <th className="px-3 py-2 text-right md:px-4">{tMyStoriesPage('table.actions')}</th>
               </tr>
             </thead>
             <tbody>

@@ -1,11 +1,10 @@
+import { CirclePlus, Coins, History, WalletCards } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { creditService } from '@/db/services';
 import { redirect } from 'next/navigation';
 import CreditsHistoryTable from '@/components/CreditsHistoryTable';
 import Link from 'next/link';
-import { MdAccountBalanceWallet, MdHistory, MdAddCircleOutline } from 'react-icons/md';
-import { FaCoins } from 'react-icons/fa';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
 
 export default async function CreditsAndPaymentsPage({
@@ -51,7 +50,7 @@ export default async function CreditsAndPaymentsPage({
         <ScrollFadeIn>
           <header className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4 flex items-center justify-center gap-3">
-              <MdAccountBalanceWallet />
+              <WalletCards />
               {t('title')}
             </h1>
             <p className="text-xl opacity-70">{t('subtitle')}</p>
@@ -68,7 +67,7 @@ export default async function CreditsAndPaymentsPage({
                   {t('currentBalance')}
                 </h2>
                 <div className="flex items-center gap-2 my-4">
-                  <FaCoins className="text-4xl text-yellow-500" />
+                  <Coins className="text-4xl text-yellow-500" />
                   <span className="text-5xl font-bold text-primary">{currentBalance}</span>
                 </div>
                 <p className="text-sm opacity-60">{t('creditsAvailable')}</p>
@@ -85,7 +84,7 @@ export default async function CreditsAndPaymentsPage({
                   href={`/${locale}/buy-credits`}
                   className="btn btn-primary btn-lg w-full max-w-xs gap-2 mt-4"
                 >
-                  <MdAddCircleOutline className="text-xl" />
+                  <CirclePlus className="text-xl" />
                   {t('buyCredits')}
                 </Link>
                 <p className="text-sm opacity-60 mt-2">{t('checkPricing')}</p>
@@ -99,7 +98,7 @@ export default async function CreditsAndPaymentsPage({
           <div className="card bg-base-100 shadow-xl border border-base-200">
             <div className="card-body p-0 sm:p-6">
               <div className="flex items-center gap-2 px-6 pt-6 sm:px-0 sm:pt-0 mb-4">
-                <MdHistory className="text-2xl text-primary" />
+                <History className="text-2xl text-primary" />
                 <h2 className="card-title text-2xl">{t('historyTitle')}</h2>
               </div>
               <div className="overflow-x-auto">

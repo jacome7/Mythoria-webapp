@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiLoader, FiAlertCircle, FiVolume2, FiArrowLeft, FiBook } from 'react-icons/fi';
+import { useParams, useRouter } from 'next/navigation';
+import { AlertCircle, ArrowLeft, BookOpen, Loader2, Volume2 } from 'lucide-react';
 import {
   useCastAudioPlayer,
   AudioChapterList,
@@ -138,7 +138,7 @@ export default function PublicListenPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
-          <FiLoader className="animate-spin text-4xl text-primary mx-auto" />
+          <Loader2 className="animate-spin text-4xl text-primary mx-auto" />
           <h2 className="text-xl font-semibold">{tPublicStoryPage('loading.title')}</h2>
           <p className="text-gray-600">{tPublicStoryPage('loading.subtitle')}</p>
         </div>
@@ -150,7 +150,7 @@ export default function PublicListenPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4 max-w-md mx-auto px-4">
-          <FiAlertCircle className="text-4xl text-red-500 mx-auto" />
+          <AlertCircle className="text-4xl text-red-500 mx-auto" />
           <h2 className="text-xl font-semibold text-gray-900">
             {tPublicStoryPage('errors.notFound')}
           </h2>
@@ -177,12 +177,12 @@ export default function PublicListenPage() {
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between">
               <button onClick={navigateBackToStory} className="btn btn-ghost btn-sm">
-                <FiArrowLeft className="w-4 h-4 mr-2" />
+                <ArrowLeft className="w-4 h-4 mr-2" />
                 <span className="hidden sm:inline">{tActions('backToStory')}</span>
                 <span className="sm:hidden">{tPublicStoryPage('listen.backMobile')}</span>
               </button>
               <h1 className="text-xl font-semibold text-gray-900 text-center flex-1 mx-4">
-                <FiVolume2 className="w-5 h-5 inline mr-2" />
+                <Volume2 className="w-5 h-5 inline mr-2" />
                 {tPublicStoryPage('listen.title', { title: story.title })}
               </h1>
               <div className="w-20"></div> {/* Spacer for centering */}
@@ -196,7 +196,7 @@ export default function PublicListenPage() {
         <div className="max-w-4xl mx-auto">
           {error && (
             <div className="alert alert-error mb-4">
-              <FiAlertCircle className="shrink-0" />
+              <AlertCircle className="shrink-0" />
               <span>{error}</span>
             </div>
           )}
@@ -205,7 +205,7 @@ export default function PublicListenPage() {
             <AudioChapterList chapters={audioChapters} {...audioControls} castControls={cast} />
           ) : (
             <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
-              <FiAlertCircle className="text-4xl text-gray-400 mx-auto mb-4" />
+              <AlertCircle className="text-4xl text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">
                 {tPublicStoryPage('listen.audioNotAvailableTitle')}
               </h3>
@@ -217,7 +217,7 @@ export default function PublicListenPage() {
                       href={`/${locale}/stories/listen/${story.storyId}`}
                       className="btn btn-primary"
                     >
-                      <FiVolume2 className="w-4 h-4 mr-2" />
+                      <Volume2 className="w-4 h-4 mr-2" />
                       {tPublicStoryPage('listen.createAudioNarration')}
                     </a>
                     <button onClick={navigateBackToStory} className="btn btn-outline">
@@ -226,7 +226,7 @@ export default function PublicListenPage() {
                   </>
                 ) : (
                   <button onClick={navigateBackToStory} className="btn btn-primary">
-                    <FiBook className="w-4 h-4 mr-2" />
+                    <BookOpen className="w-4 h-4 mr-2" />
                     {tPublicStoryPage('listen.readThisStory')}
                   </button>
                 )}

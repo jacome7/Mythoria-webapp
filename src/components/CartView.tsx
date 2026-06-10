@@ -1,5 +1,5 @@
+import { Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
 import { RefObject } from 'react';
-import { FaPlus, FaMinus, FaTrash, FaShoppingCart } from 'react-icons/fa';
 import type { CartItem, CreditPackage } from '@/types/cart';
 
 type TFunc = (key: string) => string;
@@ -8,7 +8,7 @@ const getIconComponent = (iconName: string) => {
   switch (iconName) {
     case 'FaShoppingCart':
     default:
-      return <FaShoppingCart />;
+      return <ShoppingCart />;
   }
 };
 
@@ -72,21 +72,21 @@ export default function CartView({
                         onClick={() => updateQuantity(item.packageId, item.quantity - 1)}
                         className="btn btn-sm btn-outline"
                       >
-                        <FaMinus />
+                        <Minus />
                       </button>
                       <span className="w-8 text-center font-semibold">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item.packageId, item.quantity + 1)}
                         className="btn btn-sm btn-outline"
                       >
-                        <FaPlus />
+                        <Plus />
                       </button>
                     </div>
                     <button
                       onClick={() => removeFromCart(item.packageId)}
                       className="btn btn-sm btn-error"
                     >
-                      <FaTrash />
+                      <Trash2 />
                     </button>
                   </div>
                 </div>

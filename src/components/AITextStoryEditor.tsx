@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { FiX, FiZap, FiEdit3, FiAlertCircle } from 'react-icons/fi';
+import { AlertCircle, Edit3, X, Zap } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import CreditConfirmationModal from './CreditConfirmationModal';
 import JobProgressModal from './JobProgressModal';
@@ -284,7 +284,7 @@ export default function AITextStoryEditor({
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <FiEdit3 className="w-5 h-5 text-blue-600" />
+              <Edit3 className="w-5 h-5 text-blue-600" />
             </div>
             <div>
               <h2 className="text-xl font-semibold text-gray-900">
@@ -304,7 +304,7 @@ export default function AITextStoryEditor({
             onClick={onClose}
             className="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
           >
-            <FiX className="w-5 h-5 text-gray-600" />
+            <X className="w-5 h-5 text-gray-600" />
           </button>
         </div>
 
@@ -388,7 +388,7 @@ export default function AITextStoryEditor({
             {editScope === 'story' && (
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center space-x-2 mb-2">
-                  <FiEdit3 className="w-4 h-4 text-gray-600" />
+                  <Edit3 className="w-4 h-4 text-gray-600" />
                   <span className="text-sm font-medium text-gray-900">
                     {tAITextStoryEditor('fullStoryExplanation.title')}
                   </span>
@@ -407,7 +407,7 @@ export default function AITextStoryEditor({
             {creditInfo && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <div className="flex items-center space-x-2 mb-2">
-                  <FiAlertCircle className="w-4 h-4 text-blue-600" />
+                  <AlertCircle className="w-4 h-4 text-blue-600" />
                   <span className="text-sm font-medium text-blue-900">
                     {tAITextStoryEditor('costEstimation.title')}
                   </span>
@@ -478,7 +478,7 @@ export default function AITextStoryEditor({
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <div className="flex items-center space-x-2">
-                  <FiAlertCircle className="w-4 h-4 text-red-600" />
+                  <AlertCircle className="w-4 h-4 text-red-600" />
                   <span className="text-sm text-red-600">{error}</span>
                 </div>
               </div>
@@ -504,7 +504,7 @@ export default function AITextStoryEditor({
                   </>
                 ) : (
                   <>
-                    <FiZap className="w-4 h-4" />
+                    <Zap className="w-4 h-4" />
                     <span>{tAITextStoryEditor('editButton')}</span>
                   </>
                 )}

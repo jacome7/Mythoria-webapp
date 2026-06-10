@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { BookOpen, Globe, Heart, ImageIcon, Save, User } from 'lucide-react';
 import Image from 'next/image';
-import { FiSave, FiImage, FiUser, FiBook, FiHeart, FiGlobe } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
 import { formatDate } from '@/utils/date';
 import { toAbsoluteImageUrl } from '../utils/image-url';
@@ -84,7 +84,7 @@ export default function StoryInfoEditor({
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold flex items-center gap-2">
-          <FiBook className="w-6 h-6" />
+          <BookOpen className="w-6 h-6" />
           {tStoryInfoEditor('title')}
         </h2>
         <button
@@ -95,7 +95,7 @@ export default function StoryInfoEditor({
           {isLoading ? (
             <span className="loading loading-spinner loading-sm"></span>
           ) : (
-            <FiSave className="w-4 h-4" />
+            <Save className="w-4 h-4" />
           )}
           {isLoading ? tStoryInfoEditor('saving') : tStoryInfoEditor('saveButton')}
         </button>
@@ -134,7 +134,7 @@ export default function StoryInfoEditor({
           {/* Dedication Message */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-base-content flex items-center gap-2">
-              <FiHeart className="w-4 h-4" />
+              <Heart className="w-4 h-4" />
               {tStoryInfoEditor('dedicationMessage')}
             </label>
             <textarea
@@ -148,7 +148,7 @@ export default function StoryInfoEditor({
           {/* Custom Author */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-base-content flex items-center gap-2">
-              <FiUser className="w-4 h-4" />
+              <User className="w-4 h-4" />
               {tStoryInfoEditor('authorName')}
             </label>
             <input
@@ -214,16 +214,16 @@ export default function StoryInfoEditor({
                     />
                   </div>
                   <button onClick={onEditCover} className="btn btn-sm btn-outline">
-                    <FiImage className="w-4 h-4" />
+                    <ImageIcon className="w-4 h-4" />
                     {tStoryInfoEditor('editCover')}
                   </button>
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <FiImage className="w-12 h-12 mx-auto text-base-content/30" />
+                  <ImageIcon className="w-12 h-12 mx-auto text-base-content/30" />
                   <p className="text-sm text-base-content/70">{tStoryInfoEditor('noCoverImage')}</p>
                   <button onClick={onEditCover} className="btn btn-sm btn-primary">
-                    <FiImage className="w-4 h-4" />
+                    <ImageIcon className="w-4 h-4" />
                     {tStoryInfoEditor('addCover')}
                   </button>
                 </div>
@@ -249,16 +249,16 @@ export default function StoryInfoEditor({
                     />
                   </div>
                   <button onClick={onEditBackcover} className="btn btn-sm btn-outline">
-                    <FiImage className="w-4 h-4" />
+                    <ImageIcon className="w-4 h-4" />
                     {tStoryInfoEditor('editBackCover')}
                   </button>
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <FiImage className="w-12 h-12 mx-auto text-base-content/30" />
+                  <ImageIcon className="w-12 h-12 mx-auto text-base-content/30" />
                   <p className="text-sm text-base-content/70">{tStoryInfoEditor('noBackCover')}</p>
                   <button onClick={onEditBackcover} className="btn btn-sm btn-primary">
-                    <FiImage className="w-4 h-4" />
+                    <ImageIcon className="w-4 h-4" />
                     {tStoryInfoEditor('addBackCover')}
                   </button>
                 </div>
@@ -280,7 +280,7 @@ export default function StoryInfoEditor({
                   onClick={onTranslateClick}
                   title={tStoryInfoEditor('translate')}
                 >
-                  <FiGlobe className="w-4 h-4" />
+                  <Globe className="w-4 h-4" />
                   <span className="ml-1 hidden sm:inline">{tStoryInfoEditor('translate')}</span>
                 </button>
                 <span>{story.storyLanguage || '—'}</span>

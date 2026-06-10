@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
 import styles from './AboutUsPage.module.css';
+import { homepageAsset } from '@/constants/homepageAssets';
 
 export default function AboutUsPage() {
   const t = useTranslations('AboutUs');
@@ -29,7 +30,7 @@ export default function AboutUsPage() {
         <ScrollFadeIn>
           <header className={`${styles.hero} my-4`}>
             <Image
-              src="/homepage/kids_fantasy/yellow_star.webp"
+              src={homepageAsset('sparkle_a.webp')}
               alt=""
               width={128}
               height={134}
@@ -37,7 +38,7 @@ export default function AboutUsPage() {
               aria-hidden="true"
             />
             <Image
-              src="/homepage/kids_fantasy/yellow_star_1.webp"
+              src={homepageAsset('sparkle_b.webp')}
               alt=""
               width={128}
               height={136}
@@ -45,7 +46,7 @@ export default function AboutUsPage() {
               aria-hidden="true"
             />
             <Image
-              src="/homepage/kids_fantasy/white_cloud_1.webp"
+              src={homepageAsset('cloud_small.webp')}
               alt=""
               width={200}
               height={135}
@@ -422,7 +423,7 @@ export default function AboutUsPage() {
           <section className="my-16 text-center">
             <div className={styles.closingCard}>
               <Image
-                src="/homepage/kids_fantasy/yellow_star_2.webp"
+                src={homepageAsset('sparkle_c.webp')}
                 alt=""
                 width={128}
                 height={127}

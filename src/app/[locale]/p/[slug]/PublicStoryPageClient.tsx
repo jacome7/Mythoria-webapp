@@ -5,17 +5,17 @@ import { Show } from '@clerk/nextjs';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import {
-  FiLoader,
-  FiAlertCircle,
-  FiUser,
-  FiCalendar,
-  FiTag,
-  FiEye,
-  FiPrinter,
-  FiVolume2,
-  FiEdit3,
-  FiDownload,
-} from 'react-icons/fi';
+  AlertCircle,
+  Calendar,
+  Download,
+  Edit3,
+  Eye,
+  Loader2,
+  Printer,
+  Tag,
+  User,
+  Volume2,
+} from 'lucide-react';
 import { SelfPrintModal } from '@/components/self-print/SelfPrintModal';
 import PublicStoryRating from '@/components/PublicStoryRating';
 import StoryReader from '@/components/StoryReader';
@@ -182,7 +182,7 @@ export default function PublicStoryPageClient() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
-          <FiLoader className="animate-spin text-4xl text-primary mx-auto" />
+          <Loader2 className="animate-spin text-4xl text-primary mx-auto" />
           <h2 className="text-xl font-semibold">{tPublicStoryPage('loading.title')}</h2>
           <p className="text-gray-600">{tPublicStoryPage('loading.subtitle')}</p>
         </div>
@@ -193,7 +193,7 @@ export default function PublicStoryPageClient() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4 max-w-md mx-auto px-4">
-          <FiAlertCircle className="text-4xl text-red-500 mx-auto" />
+          <AlertCircle className="text-4xl text-red-500 mx-auto" />
           <h2 className="text-xl font-semibold text-gray-900">
             {tPublicStoryPage('errors.notFound')}
           </h2>
@@ -230,7 +230,7 @@ export default function PublicStoryPageClient() {
                     href={`/${locale}/stories/print/${story.storyId}`}
                     className="btn btn-primary btn-sm flex items-center gap-2 text-xs sm:text-sm"
                   >
-                    <FiPrinter className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <Printer className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span className="hidden min-[480px]:inline">
                       {tPublicStoryPage('actions.orderPrint')}
                     </span>
@@ -241,7 +241,7 @@ export default function PublicStoryPageClient() {
                       className="btn btn-outline btn-sm flex items-center gap-2 text-xs sm:text-sm"
                       onClick={openSelfPrintModal}
                     >
-                      <FiDownload className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <Download className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span>{tPublicStoryPage('actions.downloadPdf')}</span>
                     </button>
                   </Show>
@@ -250,7 +250,7 @@ export default function PublicStoryPageClient() {
                       href={`/${locale}/sign-in?redirectUrl=${encodeURIComponent(`/${locale}/p/${slug}`)}`}
                       className="btn btn-outline btn-sm flex items-center gap-2 text-xs sm:text-sm"
                     >
-                      <FiDownload className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <Download className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span>{tPublicStoryPage('actions.downloadPdf')}</span>
                     </a>
                   </Show>
@@ -259,7 +259,7 @@ export default function PublicStoryPageClient() {
                       href={`/${locale}/p/${slug}/listen`}
                       className="btn btn-secondary btn-sm flex items-center gap-2 text-xs sm:text-sm"
                     >
-                      <FiVolume2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <Volume2 className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span className="hidden min-[480px]:inline">
                         {tPublicStoryPage('actions.listen')}
                       </span>
@@ -274,19 +274,19 @@ export default function PublicStoryPageClient() {
 
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mt-4">
               <div className="flex items-center gap-1">
-                <FiUser />
+                <User />
                 <span>
                   {tPublicStoryPage('labels.by')}{' '}
                   {story.authorName || tPublicStoryPage('labels.unknownAuthor')}
                 </span>
               </div>
               <div className="flex items-center gap-1">
-                <FiCalendar />
+                <Calendar />
                 <span>{formatDate(story.createdAt, { locale })}</span>
               </div>
               {story.targetAudience && (
                 <div className="flex items-center gap-1">
-                  <FiTag />
+                  <Tag />
                   <span>
                     {tGetInspiredPage(`targetAudience.${story.targetAudience}`) ||
                       story.targetAudience.replace('_', ' ')}
@@ -296,7 +296,7 @@ export default function PublicStoryPageClient() {
 
               {story.graphicalStyle && (
                 <div className="flex items-center gap-1">
-                  <FiEye />
+                  <Eye />
                   <span>
                     {tGetInspiredPage(`graphicalStyle.${story.graphicalStyle}`) ||
                       story.graphicalStyle.replace('_', ' ')}
@@ -306,7 +306,7 @@ export default function PublicStoryPageClient() {
 
               {story.novelStyle && (
                 <div className="flex items-center gap-1">
-                  <FiTag />
+                  <Tag />
                   <span>
                     {tGetInspiredPage(`novelStyle.${story.novelStyle}`) ||
                       story.novelStyle.replace('_', ' ')}
@@ -351,7 +351,7 @@ export default function PublicStoryPageClient() {
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
               <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
-                <FiAlertCircle className="text-4xl text-gray-400 mx-auto mb-4" />
+                <AlertCircle className="text-4xl text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
                   {tPublicStoryPage('errors.contentNotAvailable')}
                 </h3>
@@ -376,7 +376,7 @@ export default function PublicStoryPageClient() {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href={`/${locale}`} className="btn btn-primary flex items-center gap-2">
-                  <FiEdit3 className="w-4 h-4" />
+                  <Edit3 className="w-4 h-4" />
                   {tPublicStoryPage('actions.createOwnStory')}
                 </a>
 
@@ -384,7 +384,7 @@ export default function PublicStoryPageClient() {
                   href={`/${locale}/stories/print/${story.storyId}`}
                   className="btn btn-secondary flex items-center gap-2"
                 >
-                  <FiPrinter className="w-4 h-4" />
+                  <Printer className="w-4 h-4" />
                   {tPublicStoryPage('actions.orderPrintedBook')}
                 </a>
 
@@ -393,7 +393,7 @@ export default function PublicStoryPageClient() {
                     className="btn btn-outline flex items-center gap-2"
                     onClick={openSelfPrintModal}
                   >
-                    <FiDownload className="w-4 h-4" />
+                    <Download className="w-4 h-4" />
                     {tPublicStoryPage('actions.downloadPdf')}
                   </button>
                 </Show>
@@ -402,7 +402,7 @@ export default function PublicStoryPageClient() {
                     href={`/${locale}/sign-in?redirectUrl=${encodeURIComponent(`/${locale}/p/${slug}`)}`}
                     className="btn btn-outline flex items-center gap-2"
                   >
-                    <FiDownload className="w-4 h-4" />
+                    <Download className="w-4 h-4" />
                     {tPublicStoryPage('actions.downloadPdf')}
                   </a>
                 </Show>

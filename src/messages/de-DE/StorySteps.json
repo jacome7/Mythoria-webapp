@@ -11,7 +11,7 @@
         "signIn": "🔐 Anmelden und Abenteuer starten",
         "signUp": "✨ Autor*innenkonto erstellen"
       },
-      "heading": "Kapitel 1 – Die Autor*innen",
+      "heading": "Die Autor*innen",
       "intro": "Willkommen, Geschichtenerzähler*in! Bevor wir in dein magisches Abenteuer eintauchen, lass uns die Autor*innenangaben für deine Geschichte festlegen. Du kannst deinen eigenen Namen verwenden oder einen speziellen Autor*innennamen für dieses Märchen erfinden.",
       "fields": {
         "authorName": "Autor*innenname(n) *",
@@ -31,8 +31,8 @@
       }
     },
     "step2": {
-      "heading": "Kapitel 2 – Die Geschichte",
-      "intro": "Du kannst deine Geschichte zeichnen, aufnehmen oder einfach aufschreiben.",
+      "heading": "Die Geschichte",
+      "intro": "Tell your story with words, images, audio, or any mix you like.",
       "tellYourStoryLabel": "Erzähl deine Geschichte...",
       "textPlaceholder": "Es war einmal ... Lass deiner Fantasie freien Lauf! Teile dein Abenteuer, deine Träume oder jede Geschichte, die dir am Herzen liegt.",
       "textHelp": "Schreib so viel oder so wenig du möchtest. Du kannst alles später noch bearbeiten!",
@@ -45,6 +45,11 @@
       "uploadAudio": "Audiodatei hochladen",
       "imageHelp": "Zeichne deine Geschichte, mach ein Foto davon oder lade ein bestehendes Bild hoch, das deine Geschichte erzählt.",
       "audioHelp": "Nimm deine Geschichte direkt auf oder lade eine Audiodatei hoch. Perfekt, wenn du deine Geschichten lieber erzählst!",
+      "modeCards": {
+        "writeDescription": "Schreibe deine Geschichte mit Worten.",
+        "imageDescription": "Erstelle deine Geschichte mit Bildern.",
+        "recordDescription": "Nimm deine Stimme auf, um deine Geschichte zu erzählen."
+      },
       "recordingHelp": "Erzähl deine Geschichte! Sprich deutlich in dein Mikrofon.",
       "reassurance": "Wenn du oben schon Text geschrieben oder ein Bild hochgeladen hast, arbeiten unsere Oompa-Loompas fleißig daran, Figuren, Schauplätze und Themen herauszufiltern. Ansonsten führen dich die nächsten Schritte Schritt für Schritt durch das Erstellen deiner Geschichte.",
       "processing": "Wird mit KI verarbeitet...",
@@ -151,6 +156,7 @@
         "unknown": "Es ist ein unbekannter Fehler aufgetreten."
       },
       "characterSelection": {
+        "includeCharactersTitle": "Deine Figuren einbeziehen",
         "includeExistingTitle": "Deine vorhandenen Figuren übernehmen",
         "noneSelected": "Wähle Figuren aus, die in deiner Geschichte vorkommen sollen",
         "selectedCount": "{count, plural, =1 {# Figur ausgewählt} other {# Figuren ausgewählt}}",
@@ -159,19 +165,14 @@
       }
     },
     "step3": {
-      "heading": "Kapitel 3 – Die Figuren",
+      "heading": "Die Figuren",
       "intro": "Wer sind die Held*innen, Freund*innen und magischen Wesen in deiner Geschichte? Erstelle Figuren, die dein Abenteuer lebendig machen!",
       "addCharacter": "➕ Figur hinzufügen",
-      "chooseMethod": "Wähle, wie du eine Figur hinzufügen möchtest:",
       "createNew": "✨ Neue Figur erstellen",
       "useExisting": "📚 Vorhandene Figur verwenden",
       "orChooseExisting": "Oder wähle aus deinen vorhandenen Figuren:",
       "cancel": "Abbrechen",
       "loadingCharacters": "Deine Figuren werden geladen...",
-      "readyTitle": "Bereit, deine Figuren kennenzulernen?",
-      "readyDescription": "Jede großartige Geschichte braucht tolle Figuren! Klick auf \"Figur hinzufügen\", um neue Held*innen zu erstellen oder vorhandene Figuren aus deiner Bibliothek zu dieser Geschichte hinzuzufügen.",
-      "greatWork": "Großartig! Du hast {count, plural, =1 {# Figur} other {# Figuren}} erstellt.",
-      "youCanAlways": "Du kannst später jederzeit weitere Figuren hinzufügen oder zum nächsten Kapitel weitergehen, um deine Geschichte weiter auszuarbeiten.",
       "continuing": "Es geht weiter...",
       "progress": {
         "stepLabel": "Schritt {currentStep} von {totalSteps}"
@@ -193,7 +194,7 @@
       "next": "Weiter"
     },
     "step4": {
-      "heading": "Kapitel 4 – Die Handlung",
+      "heading": "Die Handlung",
       "intro": "Jetzt legen wir die Kernelemente deiner Geschichte fest. Erzähl uns, welche Welt du erschaffen willst, für wen du schreibst und wie deine Geschichte aussehen soll.",
       "fields": {
         "title": "Buchtitel *",
@@ -403,7 +404,7 @@
       "generationReviewHint": "Im nächsten Schritt kannst du Credits prüfen und die Generierung starten. Es wird noch nichts generiert."
     },
     "step5": {
-      "heading": "Kapitel 5 – Das Finale",
+      "heading": "Das Finale",
       "intro": "Wähle, wie du deine Geschichte erhalten möchtest. Du kannst mehrere Lieferformate auswählen, um dein Abenteuer auf unterschiedliche Arten zu genießen.",
       "deliveryOptions": "Lieferoptionen",
       "creating": "Wird erstellt...",

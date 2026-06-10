@@ -11,7 +11,7 @@
         "signIn": "🔐 Iniciar Sessão",
         "signUp": "✨ Criar Conta de Autor"
       },
-      "heading": "Capítulo 1 - O Autor",
+      "heading": "O Autor",
       "intro": "Bem-vindo, contador de histórias! Antes de mergulharmos na sua aventura mágica, vamos configurar a informação do autor para a sua história. Pode usar o seu próprio nome ou criar um nome de autor personalizado para este conto.",
       "fields": {
         "authorName": "Nome do Autor(es) *",
@@ -31,8 +31,8 @@
       }
     },
     "step2": {
-      "heading": "Capítulo 2 - A História",
-      "intro": "Pode criar a sua história desenhando-a, gravando-a ou simplesmente escrevendo-a.",
+      "heading": "A História",
+      "intro": "Tell your story with words, images, audio, or any mix you like.",
       "tellYourStoryLabel": "Conte a sua história...",
       "textPlaceholder": "Deixe a sua imaginação voar! Partilhe uma memória, aventura, os seus sonhos ou qualquer história que seja especial.",
       "textHelp": "Escreva tanto ou tão pouco quanto quiser. Pode sempre editar isto mais tarde!",
@@ -45,6 +45,11 @@
       "uploadAudio": "Carregar Áudio",
       "imageHelp": "Desenhe a sua história, tire-lhe uma foto ou carregue uma imagem existente que a represente.",
       "audioHelp": "Grave a sua história diretamente ou carregue um ficheiro de áudio. Perfeito para quem prefere contar as suas histórias!",
+      "modeCards": {
+        "writeDescription": "Escreva a sua história com palavras.",
+        "imageDescription": "Crie a sua história com imagens.",
+        "recordDescription": "Grave a sua voz para contar a sua história."
+      },
       "recordingHelp": "Conte a sua história! Fale claramente para o microfone.",
       "reassurance": "Se escreveu texto ou carregou uma imagem acima, os nossos Umpa Lumpas irão trabalhar arduamente para identificar as personagens, cenários e temas. Caso contrário, os próximos passos vão guiá-lo na criação da sua história passo a passo.",
       "processing": "A processar com IA...",
@@ -151,6 +156,7 @@
         "unknown": "Ocorreu um erro desconhecido."
       },
       "characterSelection": {
+        "includeCharactersTitle": "Incluir as suas personagens",
         "includeExistingTitle": "Incluir as suas personagens",
         "noneSelected": "Selecione personagens para incluir na sua história",
         "selectedCount": "{count, plural, =1 {# personagem selecionada} other {# personagens selecionadas}}",
@@ -159,19 +165,14 @@
       }
     },
     "step3": {
-      "heading": "Capítulo 3 - As Personagens",
+      "heading": "As Personagens",
       "intro": "Quem são os heróis, amigos e criaturas mágicas da sua história? Crie personagens que darão vida à sua aventura!",
       "addCharacter": "➕ Adicionar Personagem",
-      "chooseMethod": "Escolha como adicionar uma personagem:",
       "createNew": "✨ Criar Nova Personagem",
       "useExisting": "📚 Usar Personagem Existente",
       "orChooseExisting": "Ou escolha das suas personagens existentes:",
       "cancel": "Cancelar",
       "loadingCharacters": "A carregar as suas personagens...",
-      "readyTitle": "Preparado para conhecer as suas personagens?",
-      "readyDescription": "Toda a grande história precisa de personagens incríveis! Clique em \"Adicionar Personagem\" para criar novos heróis ou adicionar personagens existentes da sua biblioteca a esta história.",
-      "greatWork": "Bom trabalho! Criou {count, plural, =1 {# personagem} other {# personagens}}.",
-      "youCanAlways": "Pode sempre adicionar mais personagens mais tarde ou avançar para o próximo capítulo para desenvolver ainda mais a sua história.",
       "continuing": "A continuar...",
       "progress": {
         "stepLabel": "Capítulo {currentStep} de {totalSteps}"
@@ -193,7 +194,7 @@
       "next": "Seguinte"
     },
     "step4": {
-      "heading": "Capítulo 4 - O Enredo",
+      "heading": "O Enredo",
       "intro": "Vamos agora definir os elementos centrais da sua história. Fale-nos do mundo que quer criar, para quem escreve e como imagina a aparência da sua história.",
       "fields": {
         "title": "Título do Livro *",
@@ -403,7 +404,7 @@
       "generationReviewHint": "No próximo passo poderá rever os créditos e iniciar a geração. Nada será gerado ainda."
     },
     "step5": {
-      "heading": "Capítulo 5 - O Final",
+      "heading": "O Final",
       "intro": "Escolha como gostaria de receber a sua história. Pode selecionar vários formatos de entrega para desfrutar dela de diferentes maneiras.",
       "deliveryOptions": "Opções de Entrega",
       "creating": "A criar...",

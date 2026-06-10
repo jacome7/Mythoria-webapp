@@ -1,9 +1,10 @@
 .root {
-  --kids-fantasy-animation-domain: 1;
+  --papercut-animation-domain: 1;
 }
 
-/* Subtle idle animations for the kids_fantasy composition. These run on the
-   inner image so they never clobber the wrapper's centering transform. Timing
+/* Subtle idle animations shared by every paper-cut composition (compose this
+   module's .root into the composition's rootClassName). They run on the inner
+   image so they never clobber the wrapper's centering transform. Timing
    remains data-driven per layer via --pc-dur and --pc-delay. */
 @keyframes bob {
   0%,

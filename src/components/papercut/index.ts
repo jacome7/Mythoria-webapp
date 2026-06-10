@@ -13,4 +13,5 @@ export {
 } from './PapercutSurfaces';
 export { resolveComposition } from './registry';
 export { kidsFantasy } from './compositions/kidsFantasy';
+export { kidsSports } from './compositions/kidsSports';
 export type * from './types';

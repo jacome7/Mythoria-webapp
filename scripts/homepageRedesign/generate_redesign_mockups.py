@@ -27,7 +27,7 @@ DEFAULT_INPUT_DIR = Path(__file__).resolve().parent / "currentVersion"
 DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parent / "papercutMockups"
 ENV_FILE = ROOT / ".env.local"
 OPENAI_IMAGES_EDIT_URL = "https://api.openai.com/v1/images/edits"
-DEFAULT_STYLE_REFERENCE = ROOT / "public" / "homepage" / "kids_fantasy" / "Homepage_KidsFantasy.png"
+DEFAULT_STYLE_REFERENCE = ROOT / "public" / "homepage" / "kids_fantasy" / "mockup.png"
 
 
 STYLE_PROMPT = """Redesign the first Mythoria mobile screenshot in the same whimsical cardboard papercut visual language shown in the second reference image from the existing homepage.

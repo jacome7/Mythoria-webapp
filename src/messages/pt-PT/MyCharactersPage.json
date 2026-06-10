@@ -1,5 +1,11 @@
 {
   "MyCharactersPage": {
+    "signedOut": {
+      "welcome": "Bem-vindo às Minhas Personagens",
+      "needSignIn": "Inicie sessão para gerir as personagens das suas histórias.",
+      "signIn": "Entrar",
+      "createAccount": "Criar Conta"
+    },
     "noCharacters": {
       "title": "Ainda não tem personagens!",
       "subtitle": "Comece a criar personagens para as suas histórias para as ver aqui."

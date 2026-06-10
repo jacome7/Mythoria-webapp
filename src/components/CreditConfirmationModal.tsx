@@ -1,6 +1,6 @@
 'use client';
 
-import { FiCreditCard, FiX, FiZap } from 'react-icons/fi';
+import { CreditCard, X, Zap } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 
@@ -51,7 +51,7 @@ export default function CreditConfirmationModal({
         <div className="flex items-center justify-between p-6 border-b border-base-300">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-warning bg-opacity-20 rounded-lg">
-              <FiCreditCard className="w-5 h-5 text-warning" />
+              <CreditCard className="w-5 h-5 text-warning" />
             </div>
             <div>
               <h2 className="text-lg font-bold">
@@ -67,7 +67,7 @@ export default function CreditConfirmationModal({
             className="btn btn-ghost btn-sm btn-circle"
             disabled={isLoading}
           >
-            <FiX className="w-4 h-4" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
@@ -77,7 +77,7 @@ export default function CreditConfirmationModal({
           {isFullStory && message && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex items-center space-x-2 mb-2">
-                <FiZap className="w-4 h-4 text-blue-600" />
+                <Zap className="w-4 h-4 text-blue-600" />
                 <span className="text-sm font-medium text-blue-900">Full Story Edit</span>
               </div>
               <p className="text-sm text-blue-800 mb-2">{message}</p>
@@ -133,7 +133,7 @@ export default function CreditConfirmationModal({
                 {tCommonCreditConfirmation('creditBalance')}
               </span>
               <div className="flex items-center gap-1">
-                <FiZap className="w-4 h-4 text-warning" />
+                <Zap className="w-4 h-4 text-warning" />
                 <span className="font-bold">{currentBalance}</span>
               </div>
             </div>
@@ -150,7 +150,7 @@ export default function CreditConfirmationModal({
                       {tCommonCreditConfirmation('remainingBalance')}
                     </span>
                     <div className="flex items-center gap-1">
-                      <FiZap className="w-4 h-4 text-warning" />
+                      <Zap className="w-4 h-4 text-warning" />
                       <span className="font-bold">{remainingBalance}</span>
                     </div>
                   </div>
@@ -216,12 +216,12 @@ export default function CreditConfirmationModal({
                 <>
                   {isFree ? (
                     <>
-                      <FiZap className="w-4 h-4" />
+                      <Zap className="w-4 h-4" />
                       {tCommonCreditConfirmation('proceedFree')}
                     </>
                   ) : (
                     <>
-                      <FiCreditCard className="w-4 h-4" />
+                      <CreditCard className="w-4 h-4" />
                       {tCommonCreditConfirmation('proceedWithCredits', {
                         credits: requiredCredits,
                       })}
@@ -232,7 +232,7 @@ export default function CreditConfirmationModal({
             </button>
           ) : (
             <Link href="/buy-credits" className="btn btn-warning flex-1">
-              <FiCreditCard className="w-4 h-4" />
+              <CreditCard className="w-4 h-4" />
               {tCommonCreditConfirmation('buyCredits')}
             </Link>
           )}

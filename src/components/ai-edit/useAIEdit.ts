@@ -2,11 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { chapterService } from '@/db/services';
 
 interface Chapter {
   number: number;
   title: string;
+}
+
+interface ChaptersResponse {
+  chapters?: Array<{
+    chapterNumber: number;
+    title?: string | null;
+  }>;
 }
 
 interface UseAIEditProps {
@@ -21,21 +27,42 @@ export function useAIEdit({ storyId }: UseAIEditProps) {
   const [userRequest, setUserRequest] = useState('');
 
   useEffect(() => {
+    if (!storyId) {
+      setChapters([]);
+      return;
+    }
+
+    const controller = new AbortController();
+
     const loadChapters = async () => {
       try {
-        const table = await chapterService.getChapterTableOfContents(storyId);
-        const list = table.map((c: { chapterNumber: number; title: string }) => ({
+        const response = await fetch(`/api/stories/${encodeURIComponent(storyId)}/chapters`, {
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to load chapters: ${response.status}`);
+        }
+
+        const data = (await response.json()) as ChaptersResponse;
+        const list = (data.chapters ?? []).map((c) => ({
           number: c.chapterNumber,
           title: c.title || `Chapter ${c.chapterNumber}`,
         }));
+
         setChapters(list);
-      } catch {
+      } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') {
+          return;
+        }
+
         setChapters([]);
       }
     };
-    if (storyId) {
-      void loadChapters();
-    }
+
+    void loadChapters();
+
+    return () => controller.abort();
   }, [storyId]);
 
   return {

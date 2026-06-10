@@ -105,7 +105,7 @@ export interface Placement {
 /** One transparent-PNG layer rendered on its own element. */
 export interface PaperCutLayerConfig {
   id: string;
-  /** Public path, e.g. /homepage/kids_fantasy/dragon.png */
+  /** Public path, e.g. /homepage/kids_fantasy/companion_right.webp */
   src: string;
   /** Intrinsic pixel size — lets next/image reserve the aspect ratio (no CLS). */
   intrinsic: { w: number; h: number };

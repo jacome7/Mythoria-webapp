@@ -11,7 +11,7 @@
         "signIn": "🔐 Connectez-vous pour commencer votre aventure",
         "signUp": "✨ Créez votre compte d'auteur"
       },
-      "heading": "Chapitre 1 - L’auteur",
+      "heading": "L’auteur",
       "intro": "Bienvenue, conteur ! Avant de plonger dans votre aventure magique, configurons les informations sur l’auteur de votre histoire. Vous pouvez utiliser votre propre nom ou créer un nom d'auteur personnalisé pour ce récit.",
       "fields": {
         "authorName": "Nom(s) de l’auteur *",
@@ -31,8 +31,8 @@
       }
     },
     "step2": {
-      "heading": "Chapitre 2 - L’histoire",
-      "intro": "Vous pouvez créer votre histoire en la dessinant, en l’enregistrant ou simplement en l’écrivant.",
+      "heading": "L’histoire",
+      "intro": "Tell your story with words, images, audio, or any mix you like.",
       "tellYourStoryLabel": "Racontez votre histoire...",
       "textPlaceholder": "Il était une fois... Laissez libre cours à votre imagination ! Partagez votre aventure, vos rêves ou toute histoire qui vous tient à cœur.",
       "textHelp": "Écrivez autant ou aussi peu que vous le souhaitez. Vous pourrez toujours modifier cela plus tard !",
@@ -45,6 +45,11 @@
       "uploadAudio": "Téléverser un fichier audio",
       "imageHelp": "Dessinez votre histoire, prenez-la en photo ou téléversez une image existante qui la raconte.",
       "audioHelp": "Enregistrez directement votre histoire ou téléversez un fichier audio. Parfait pour ceux qui préfèrent raconter à voix haute !",
+      "modeCards": {
+        "writeDescription": "Écrivez votre histoire avec des mots.",
+        "imageDescription": "Créez votre histoire avec des images.",
+        "recordDescription": "Enregistrez votre voix pour raconter votre histoire."
+      },
       "recordingHelp": "Racontez votre histoire ! Parlez distinctement dans votre micro.",
       "reassurance": "Si vous avez écrit du texte ou téléversé une image ci-dessus, nos Oompa-Loompas travailleront dur pour extraire personnages, décors et thèmes. Sinon, les prochaines étapes vous guideront pour créer votre histoire pas à pas.",
       "processing": "Traitement avec l’IA...",
@@ -151,6 +156,7 @@
         "unknown": "Erreur inconnue."
       },
       "characterSelection": {
+        "includeCharactersTitle": "Inclure vos personnages",
         "includeExistingTitle": "Inclure vos personnages existants",
         "noneSelected": "Sélectionnez des personnages à inclure dans votre histoire",
         "selectedCount": "{count, plural, =1 {# personnage sélectionné} other {# personnages sélectionnés}}",
@@ -159,19 +165,14 @@
       }
     },
     "step3": {
-      "heading": "Chapitre 3 - Les Personnages",
+      "heading": "Les Personnages",
       "intro": "Qui sont les héros, amis et créatures magiques de votre histoire ? Créez les personnages qui donneront vie à votre aventure !",
       "addCharacter": "➕ Ajouter un personnage",
-      "chooseMethod": "Choisissez comment ajouter un personnage :",
       "createNew": "✨ Créer un nouveau personnage",
       "useExisting": "📚 Utiliser un personnage existant",
       "orChooseExisting": "Ou choisissez parmi vos personnages existants :",
       "cancel": "Annuler",
       "loadingCharacters": "Chargement de vos personnages...",
-      "readyTitle": "Prêt à rencontrer vos personnages ?",
-      "readyDescription": "Toute grande histoire a besoin de personnages formidables ! Cliquez sur \"Ajouter un personnage\" pour créer de nouveaux héros ou ajouter des personnages existants de votre bibliothèque à cette histoire.",
-      "greatWork": "Beau travail ! Vous avez créé {count, plural, =1 {# personnage} other {# personnages}}.",
-      "youCanAlways": "Vous pouvez toujours ajouter d’autres personnages plus tard ou passer au chapitre suivant pour développer davantage votre histoire.",
       "continuing": "Continuation...",
       "progress": {
         "stepLabel": "Étape {currentStep} sur {totalSteps}"
@@ -193,7 +194,7 @@
       "next": "Suivant"
     },
     "step4": {
-      "heading": "Chapitre 4 - L’intrigue",
+      "heading": "L’intrigue",
       "intro": "Définissons maintenant les éléments essentiels de votre histoire. Parlez-nous du monde que vous voulez créer, pour qui vous écrivez et comment vous imaginez votre histoire.",
       "fields": {
         "title": "Titre du livre *",
@@ -403,7 +404,7 @@
       "generationReviewHint": "À l’étape suivante, vous pourrez vérifier les crédits et lancer la génération. Rien ne sera encore généré."
     },
     "step5": {
-      "heading": "Chapitre 5 - Le final",
+      "heading": "Le final",
       "intro": "Choisissez comment vous souhaitez recevoir votre histoire. Vous pouvez sélectionner plusieurs formats pour en profiter de différentes façons.",
       "deliveryOptions": "Options de livraison",
       "creating": "Création...",

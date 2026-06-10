@@ -1,0 +1,339 @@
+{
+  "intent": "kids_fantasy",
+  "theme": "Kids fantasy adventure — paper-cut layered cardboard, cream paper sky, parchment hills, dragon, magical castle, soft moonlight, warm gold/teal palette",
+  "styleReference": ["mockup.png"],
+  "palette": {
+    "sky": "#f8efd9",
+    "hills": "#b5c9a0",
+    "navy": "#1a3a5c",
+    "gold": "#f4c542"
+  },
+  "assets": [
+    {
+      "file": "sky_left.webp",
+      "slot": "sky_left",
+      "usage": "PaperCutHero sky band — left floater (balloon)",
+      "description": "Hot-air balloon in warm cream and gold papercut style, floating left side of sky",
+      "dimensions": { "w": 300, "h": 465 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "sky_right.webp",
+      "slot": "sky_right",
+      "usage": "PaperCutHero sky band — right anchor (moon)",
+      "description": "Crescent moon in warm gold papercut style, glowing right side of sky",
+      "dimensions": { "w": 381, "h": 418 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "cloud_left.webp",
+      "slot": "cloud_left",
+      "usage": "PaperCutHero sky band — left drifting cloud",
+      "description": "Layered paper cloud, soft cream tones, left side",
+      "dimensions": { "w": 460, "h": 350 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "cloud_right.webp",
+      "slot": "cloud_right",
+      "usage": "PaperCutHero sky band — right drifting cloud",
+      "description": "Layered paper cloud, soft cream tones, right side",
+      "dimensions": { "w": 489, "h": 317 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "sparkles.webp",
+      "slot": "sparkles",
+      "usage": "PaperCutHero sky band — center twinkle accents",
+      "description": "Cluster of gold stars and small crescent, scattered across sky center",
+      "dimensions": { "w": 328, "h": 318 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "background.webp",
+      "slot": "background",
+      "usage": "PaperCutHero scene — deepest background layer (z1)",
+      "description": "Rolling parchment hills, distant castle towers, forest silhouette — full-bleed panorama",
+      "dimensions": { "w": 3840, "h": 2160 },
+      "transparentBackground": false,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "companion_right.webp",
+      "slot": "companion_right",
+      "usage": "PaperCutHero scene — right scene companion (dragon)",
+      "description": "Friendly papercut dragon perched right of center, warm teal scales, no idle animation",
+      "dimensions": { "w": 358, "h": 480 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "character.webp",
+      "slot": "character",
+      "usage": "PaperCutHero scene — priority LCP layer, centered anchor (girl with book)",
+      "description": "Smiling girl holding up a fantasy storybook — MUST read as a real person holding a real book; no enter animation, priority true",
+      "dimensions": { "w": 461, "h": 717 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "companion_left.webp",
+      "slot": "companion_left",
+      "usage": "PaperCutHero scene — left scene prop (boat)",
+      "description": "Small papercut sailing boat with cream sails, left foreground",
+      "dimensions": { "w": 331, "h": 330 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "foreground.webp",
+      "slot": "foreground",
+      "usage": "PaperCutHero scene — foremost scenery band (z16)",
+      "description": "Rolling green foreground hills with flowers and grass tufts, full-width strip",
+      "dimensions": { "w": 1920, "h": 1080 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "feature_personalized_icon.png",
+      "slot": "feature_personalized",
+      "usage": "FeatureCard col 1 icon — personalized stories",
+      "description": "Open book with a gold star above it, papercut style",
+      "dimensions": { "w": 137, "h": 116 },
+      "transparentBackground": true,
+      "format": "png",
+      "status": "final"
+    },
+    {
+      "file": "feature_meaningful_icon.png",
+      "slot": "feature_meaningful",
+      "usage": "FeatureCard col 2 icon — meaningful keepsake",
+      "description": "Heart shape with warm glow, papercut style",
+      "dimensions": { "w": 110, "h": 98 },
+      "transparentBackground": true,
+      "format": "png",
+      "status": "final"
+    },
+    {
+      "file": "feature_occasion_icon.png",
+      "slot": "feature_occasion",
+      "usage": "FeatureCard col 3 icon — any occasion",
+      "description": "Gift box with ribbon bow, papercut style",
+      "dimensions": { "w": 128, "h": 101 },
+      "transparentBackground": true,
+      "format": "png",
+      "status": "final"
+    },
+    {
+      "file": "button.webp",
+      "slot": "header_button",
+      "usage": "Header — decorative button texture/badge",
+      "description": "Rounded badge shape used as CTA button background in the header",
+      "dimensions": { "w": 512, "h": 136 },
+      "transparentBackground": false,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "footer.webp",
+      "slot": "footer_bg",
+      "usage": "Footer — full-width decorative banner",
+      "description": "Rolling hills and trees in papercut style, spans full footer width",
+      "dimensions": { "w": 1920, "h": 373 },
+      "transparentBackground": false,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "sparkle_a.webp",
+      "slot": "sparkle_a",
+      "usage": "Section decorations — small 4-point gold star",
+      "description": "Small yellow/gold 4-point starburst, used in QuoteOfTheDay, StoryCounter, aboutUs",
+      "dimensions": { "w": 128, "h": 134 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "sparkle_b.webp",
+      "slot": "sparkle_b",
+      "usage": "Section decorations — medium 4-point gold star",
+      "description": "Medium yellow/gold 4-point starburst",
+      "dimensions": { "w": 128, "h": 136 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "sparkle_c.webp",
+      "slot": "sparkle_c",
+      "usage": "Section decorations — large 4-point gold star",
+      "description": "Large yellow/gold 4-point starburst",
+      "dimensions": { "w": 128, "h": 127 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "sparkle_round.webp",
+      "slot": "sparkle_round",
+      "usage": "Section decorations — round gold star badge",
+      "description": "Rounded star/rosette shape in gold",
+      "dimensions": { "w": 90, "h": 92 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "cloud_small.webp",
+      "slot": "cloud_small",
+      "usage": "Section decorations — small white cloud, QuoteOfTheDay",
+      "description": "Soft white layered paper cloud, small size",
+      "dimensions": { "w": 200, "h": 135 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "cta_decor_left.webp",
+      "slot": "cta_decor_left",
+      "usage": "HomepageCta — left decorative plant",
+      "description": "Green leaves and flower cluster, papercut style, left side of CTA section",
+      "dimensions": { "w": 256, "h": 275 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "cta_decor_right.webp",
+      "slot": "cta_decor_right",
+      "usage": "HomepageCta — right decorative plant",
+      "description": "Mushroom and green leaf cluster, papercut style, right side of CTA section",
+      "dimensions": { "w": 256, "h": 316 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "number_of_stories_icon.webp",
+      "slot": "stories_counter_icon",
+      "usage": "StoryCounter — icon beside story count",
+      "description": "Stack of books or scroll icon",
+      "dimensions": { "w": 128, "h": 163 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "howitworks_step1_icon.webp",
+      "slot": "howitworks_step1",
+      "usage": "HowItWorks section — step 1 icon (The Author)",
+      "description": "Author figure with quill/pen, papercut style",
+      "dimensions": { "w": 234, "h": 268 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "howitworks_step2_icon.webp",
+      "slot": "howitworks_step2",
+      "usage": "HowItWorks section — step 2 icon (The Story)",
+      "description": "Open book with sparkle, papercut style",
+      "dimensions": { "w": 292, "h": 243 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "howitworks_step3_icon.webp",
+      "slot": "howitworks_step3",
+      "usage": "HowItWorks section — step 3 icon (The Characters)",
+      "description": "Two small character figures, papercut style",
+      "dimensions": { "w": 237, "h": 252 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "howitworks_step4_icon.webp",
+      "slot": "howitworks_step4",
+      "usage": "HowItWorks section — step 4 icon (The Plot)",
+      "description": "Scroll or map with a path/route, papercut style",
+      "dimensions": { "w": 293, "h": 286 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "howitworks_step5_icon.webp",
+      "slot": "howitworks_step5",
+      "usage": "HowItWorks section — step 5 icon (The Gift)",
+      "description": "Wrapped gift box with bow, papercut style",
+      "dimensions": { "w": 267, "h": 235 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "howitworks_step6_icon.webp",
+      "slot": "howitworks_step6",
+      "usage": "HowItWorks section — step 6 icon (The Magic)",
+      "description": "Magic wand or sparkle wand, papercut style",
+      "dimensions": { "w": 207, "h": 242 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "facebook_icon.webp",
+      "slot": "social_facebook",
+      "usage": "Footer — Facebook social link icon",
+      "dimensions": { "w": 160, "h": 159 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "instagram_icon.webp",
+      "slot": "social_instagram",
+      "usage": "Footer — Instagram social link icon",
+      "dimensions": { "w": 160, "h": 157 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "linkedin_icon.webp",
+      "slot": "social_linkedin",
+      "usage": "Footer — LinkedIn social link icon",
+      "dimensions": { "w": 160, "h": 155 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "youtube_icon.webp",
+      "slot": "social_youtube",
+      "usage": "Footer — YouTube social link icon",
+      "dimensions": { "w": 160, "h": 150 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    }
+  ]
+}

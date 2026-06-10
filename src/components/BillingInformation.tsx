@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { ChevronDown, ChevronUp, FileText, MapPin, User } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { useTranslations } from 'next-intl';
-import { FaChevronDown, FaChevronUp, FaUser, FaMapMarkerAlt, FaFileInvoice } from 'react-icons/fa';
 import { validateVATNumber, formatVATNumber, VATValidationResult } from '@/lib/vat-validation';
 
 export interface BillingInfo {
@@ -155,7 +155,7 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
       >
         {' '}
         <div className="flex items-center space-x-3">
-          <FaFileInvoice className="text-primary text-xl" />
+          <FileText className="text-primary text-xl" />
           <div>
             <h3 className="text-lg font-bold">{tBuyCreditsPage('title')}</h3>
             <p className="text-sm text-gray-600">
@@ -165,9 +165,9 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
         </div>
         <div className="flex items-center space-x-2">
           {isExpanded ? (
-            <FaChevronUp className="text-gray-500" />
+            <ChevronUp className="text-gray-500" />
           ) : (
-            <FaChevronDown className="text-gray-500" />
+            <ChevronDown className="text-gray-500" />
           )}
         </div>
       </div>
@@ -186,7 +186,7 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
             {/* Personal Information */}
             <div className="space-y-4">
               <div className="flex items-center space-x-2 mb-4">
-                <FaUser className="text-primary" />
+                <User className="text-primary" />
                 <h4 className="font-semibold">{tBuyCreditsPage('personalDetails')}</h4>
               </div>
 
@@ -267,7 +267,7 @@ export default function BillingInformation({ onBillingInfoChange }: BillingInfor
             {/* Address Information */}
             <div className="space-y-4">
               <div className="flex items-center space-x-2 mb-4">
-                <FaMapMarkerAlt className="text-primary" />
+                <MapPin className="text-primary" />
                 <h4 className="font-semibold">{tBuyCreditsPage('billingAddress')}</h4>
               </div>
 

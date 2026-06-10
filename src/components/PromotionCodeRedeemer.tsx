@@ -1,6 +1,6 @@
 'use client';
+import { Ticket } from 'lucide-react';
 import React, { useState } from 'react';
-import { FaTicketAlt } from 'react-icons/fa';
 // Using next-intl directly (pattern consistent with other components like BillingInformation/CreditsDisplay)
 import { useTranslations } from 'next-intl';
 
@@ -52,7 +52,7 @@ export const PromotionCodeRedeemer: React.FC<Props> = ({ onRedeemed, compact }) 
         onClick={() => setExpanded(true)}
         className="link link-primary flex items-center gap-2"
       >
-        <FaTicketAlt /> {tVoucher('haveCode')}
+        <Ticket /> {tVoucher('haveCode')}
       </button>
     );
   }

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { FiCalendar, FiClock } from 'react-icons/fi';
+import { Calendar, Clock } from 'lucide-react';
 import InlineMarkdown from '@/lib/blog/InlineMarkdown';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
 import { calculateReadingTimeFromMdx } from '@/lib/blog/readingTime';
@@ -98,7 +98,7 @@ export default function BlogListContent({
                       <div className="lg:w-3/5 card-body p-8">
                         <div className="flex flex-wrap items-center gap-4 text-sm text-base-content/60 mb-4">
                           <div className="flex items-center gap-2">
-                            <FiCalendar className="w-4 h-4" />
+                            <Calendar className="w-4 h-4" />
                             <span>
                               {t.publishedOn}{' '}
                               {formatDate(post.publishedAt!, {
@@ -110,7 +110,7 @@ export default function BlogListContent({
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <FiClock className="w-4 h-4" />
+                            <Clock className="w-4 h-4" />
                             <span>
                               {calculateReadingTimeFromMdx(post.contentMdx ?? post.summary)}{' '}
                               {t.readingTime}

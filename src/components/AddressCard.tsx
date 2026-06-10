@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { Check, Edit, MapPin, Trash2, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiEdit, FiTrash2, FiCheck, FiX, FiMapPin } from 'react-icons/fi';
 import { getCountryOptions } from '@/utils/countries';
 
 export interface Address {
@@ -109,7 +109,7 @@ export default function AddressCard({
         <div className="card-body">
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-2">
-              <FiMapPin className="w-4 h-4 text-primary" />
+              <MapPin className="w-4 h-4 text-primary" />
               <span className="badge badge-outline">
                 {tAddresses(`types.${address?.type || 'shipping'}`)}
               </span>
@@ -122,7 +122,7 @@ export default function AddressCard({
                   onEdit();
                 }}
               >
-                <FiEdit className="w-4 h-4" />
+                <Edit className="w-4 h-4" />
               </button>
               <button
                 className="btn btn-ghost btn-sm text-error"
@@ -135,7 +135,7 @@ export default function AddressCard({
                 {deleting ? (
                   <span className="loading loading-spinner loading-xs"></span>
                 ) : (
-                  <FiTrash2 className="w-4 h-4" />
+                  <Trash2 className="w-4 h-4" />
                 )}
               </button>
             </div>
@@ -289,7 +289,7 @@ export default function AddressCard({
         </div>
         <div className="card-actions justify-end mt-6">
           <button className="btn btn-ghost" onClick={onCancel} disabled={saving}>
-            <FiX className="w-4 h-4 mr-2" />
+            <X className="w-4 h-4 mr-2" />
             {tAddresses('buttons.cancel')}
           </button>
           <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
@@ -297,7 +297,7 @@ export default function AddressCard({
               <span className="loading loading-spinner loading-sm"></span>
             ) : (
               <>
-                <FiCheck className="w-4 h-4 mr-2" />
+                <Check className="w-4 h-4 mr-2" />
                 {tAddresses('buttons.save')}
               </>
             )}

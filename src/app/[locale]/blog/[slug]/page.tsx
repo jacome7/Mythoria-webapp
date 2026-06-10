@@ -1,9 +1,9 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound, permanentRedirect } from 'next/navigation';
-import { setRequestLocale, getTranslations } from 'next-intl/server';
+import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FiArrowLeft, FiCalendar, FiClock } from 'react-icons/fi';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
@@ -18,7 +18,7 @@ import BackToTopButton from '@/components/BackToTopButton';
 import InlineMarkdown from '@/lib/blog/InlineMarkdown';
 import { formatDate } from '@/utils/date';
 import { buildLocalizedPath, buildLocalizedUrl } from '@/lib/seo';
-import { resolveBlogPostRoute } from '@/lib/blog-route';
+import { resolveBlogPostRoute, type BlogRouteResolution } from '@/lib/blog-route';
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -102,7 +102,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const tBlogPost = await getTranslations({ locale, namespace: 'BlogPost' });
 
   // Fetch data before rendering — errors bubble to the nearest error.tsx boundary
-  let resolution;
+  let resolution: BlogRouteResolution;
   try {
     resolution = await resolveBlogPostRoute(locale as BlogLocale, slug);
   } catch (error) {
@@ -160,7 +160,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <div className="bg-base-200 border-b border-base-300">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <Link href={`/${locale}/blog`} className="btn btn-ghost btn-sm gap-2 hover:bg-base-300">
-            <FiArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4" />
             {tBlogPost('backToList')}
           </Link>
         </div>
@@ -171,7 +171,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-base-content/60 mb-6">
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2">
-                <FiCalendar className="w-4 h-4" />
+                <Calendar className="w-4 h-4" />
                 <span>
                   {tBlogPost('publishedOn', {
                     date: formatDate(post.publishedAt!, {
@@ -184,7 +184,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <FiClock className="w-4 h-4" />
+                <Clock className="w-4 h-4" />
                 <span>
                   {readingTime} {tBlogPost('readingTime')}
                 </span>

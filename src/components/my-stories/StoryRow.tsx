@@ -1,20 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import {
+  BookOpen,
+  Copy,
+  Download,
+  Edit3,
+  MoreVertical,
+  Printer,
+  Share2,
+  Trash2,
+  Volume2,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl';
-import {
-  FiEdit3,
-  FiTrash2,
-  FiShare2,
-  FiBook,
-  FiPrinter,
-  FiMoreVertical,
-  FiCopy,
-  FiDownload,
-  FiVolume2,
-} from 'react-icons/fi';
 import { Story } from '@/types/story';
 import { formatDate, FormatOptions } from '@/utils/date';
 
@@ -48,6 +48,7 @@ export default function StoryRow({
     bottom?: number;
     right: number;
   } | null>(null);
+  const actionButtonClass = 'btn btn-ghost btn-sm min-h-9 w-9 px-0';
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -172,137 +173,137 @@ export default function StoryRow({
           })()}
         </div>
       </td>
-      <td className="pl-2 pr-1 py-1 md:px-4 md:py-2">
-        <div className="hidden md:flex justify-end gap-0.5">
+      <td className="px-2 py-1 md:px-4 md:py-2">
+        <div className="hidden md:flex justify-end gap-1.5">
           <button
-            className={`btn btn-ghost btn-sm ${story.status !== 'published' ? 'btn-disabled' : ''}`}
+            className={`${actionButtonClass} ${story.status !== 'published' ? 'btn-disabled' : ''}`}
             onClick={() => story.status === 'published' && onDuplicate(story)}
             title={tMyStoriesPage('actions.duplicate')}
             disabled={story.status !== 'published'}
           >
-            <FiCopy className="w-4 h-4" />
+            <Copy className="w-4 h-4" />
           </button>
           {story.status === 'published' && (
             <Link
               href={`/${locale}/stories/${story.storyId}`}
-              className="btn btn-ghost btn-sm text-primary hover:bg-primary hover:text-primary-content"
+              className={`${actionButtonClass} text-primary hover:bg-primary hover:text-primary-content`}
               title="Read Story"
             >
-              <FiBook className="w-4 h-4" />
+              <BookOpen className="w-4 h-4" />
             </Link>
           )}
           {story.status === 'published' ? (
             <Link
               href={`/${locale}/stories/listen/${story.storyId}`}
-              className="btn btn-ghost btn-sm"
+              className={actionButtonClass}
               title={tMyStoriesPage('actions.listen')}
             >
-              <FiVolume2 className="w-4 h-4" />
+              <Volume2 className="w-4 h-4" />
             </Link>
           ) : (
             <button
-              className="btn btn-ghost btn-sm btn-disabled"
+              className={`${actionButtonClass} btn-disabled`}
               disabled
               title={tMyStoriesPage('actions.listenNotAvailable')}
             >
-              <FiVolume2 className="w-4 h-4" />
+              <Volume2 className="w-4 h-4" />
             </button>
           )}
           {story.status === 'writing' ? (
             <button
-              className="btn btn-ghost btn-sm btn-disabled"
+              className={`${actionButtonClass} btn-disabled`}
               disabled
               title={tCommonShare('tooltips.cannotShareWriting')}
             >
-              <FiShare2 className="w-4 h-4" />
+              <Share2 className="w-4 h-4" />
             </button>
           ) : story.status === 'draft' ? (
             <button
-              className="btn btn-ghost btn-sm btn-disabled"
+              className={`${actionButtonClass} btn-disabled`}
               disabled
               title={tCommonShare('tooltips.cannotShareDraft')}
             >
-              <FiShare2 className="w-4 h-4" />
+              <Share2 className="w-4 h-4" />
             </button>
           ) : (
             <button
-              className="btn btn-ghost btn-sm"
+              className={actionButtonClass}
               onClick={() => onShare(story)}
               title={tMyStoriesPage('actions.share')}
             >
-              <FiShare2 className="w-4 h-4" />
+              <Share2 className="w-4 h-4" />
             </button>
           )}
           {story.status === 'published' ? (
             <button
-              className="btn btn-ghost btn-sm"
+              className={actionButtonClass}
               onClick={() => onPrint(story)}
               title={tMyStoriesPage('actions.print')}
             >
-              <FiPrinter className="w-4 h-4" />
+              <Printer className="w-4 h-4" />
             </button>
           ) : (
             <button
-              className="btn btn-ghost btn-sm btn-disabled"
+              className={`${actionButtonClass} btn-disabled`}
               disabled
               title={tMyStoriesPage('actions.printNotAvailable')}
             >
-              <FiPrinter className="w-4 h-4" />
+              <Printer className="w-4 h-4" />
             </button>
           )}
           {story.status === 'published' ? (
             <button
-              className="btn btn-ghost btn-sm"
+              className={actionButtonClass}
               onClick={() => onDownload(story)}
               title={tMyStoriesPage('actions.downloadPdf')}
             >
-              <FiDownload className="w-4 h-4" />
+              <Download className="w-4 h-4" />
             </button>
           ) : (
             <button
-              className="btn btn-ghost btn-sm btn-disabled"
+              className={`${actionButtonClass} btn-disabled`}
               disabled
               title={tMyStoriesPage('actions.downloadNotAvailable')}
             >
-              <FiDownload className="w-4 h-4" />
+              <Download className="w-4 h-4" />
             </button>
           )}
           {story.status === 'writing' ? (
             <button
-              className="btn btn-ghost btn-sm btn-disabled"
+              className={`${actionButtonClass} btn-disabled`}
               disabled
               title="Cannot edit story while it's being written"
             >
-              <FiEdit3 className="w-4 h-4" />
+              <Edit3 className="w-4 h-4" />
             </button>
           ) : story.status === 'draft' ? (
             <Link
               href={`/${locale}/tell-your-story/step-3?edit=${story.storyId}`}
-              className="btn btn-ghost btn-sm"
+              className={actionButtonClass}
               title={tMyStoriesPage('actions.edit')}
             >
-              <FiEdit3 className="w-4 h-4" />
+              <Edit3 className="w-4 h-4" />
             </Link>
           ) : (
             <Link
               href={`/${locale}/stories/edit/${story.storyId}`}
-              className="btn btn-ghost btn-sm"
+              className={actionButtonClass}
               title={tMyStoriesPage('actions.edit')}
             >
-              <FiEdit3 className="w-4 h-4" />
+              <Edit3 className="w-4 h-4" />
             </Link>
           )}
           <button
-            className="btn btn-ghost btn-sm text-error hover:bg-error hover:text-error-content"
+            className={`${actionButtonClass} text-error hover:bg-error hover:text-error-content`}
             onClick={() => onDelete(story)}
             title={tMyStoriesPage('actions.delete')}
           >
-            <FiTrash2 className="w-4 h-4" />
+            <Trash2 className="w-4 h-4" />
           </button>
         </div>
-        <div className="md:hidden relative">
+        <div className="md:hidden relative flex justify-end">
           <button
-            className="btn btn-ghost btn-sm"
+            className="btn btn-ghost btn-sm min-h-9 w-10 px-0 mx-1"
             data-story-menu={story.storyId}
             onClick={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
@@ -322,7 +323,7 @@ export default function StoryRow({
               setOpenMenu((prev) => !prev);
             }}
           >
-            <FiMoreVertical className="w-4 h-4" />
+            <MoreVertical className="w-4 h-4" />
           </button>
           {openMenu && menuPosition && (
             <div
@@ -340,7 +341,7 @@ export default function StoryRow({
                     className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
                     onClick={() => setOpenMenu(false)}
                   >
-                    <FiBook className="w-4 h-4" />
+                    <BookOpen className="w-4 h-4" />
                     {tCommonActions('read')}
                   </Link>
                 )}
@@ -350,12 +351,12 @@ export default function StoryRow({
                     className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
                     onClick={() => setOpenMenu(false)}
                   >
-                    <FiVolume2 className="w-4 h-4" />
+                    <Volume2 className="w-4 h-4" />
                     {tMyStoriesPage('actions.listen')}
                   </Link>
                 ) : (
                   <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
-                    <FiVolume2 className="w-4 h-4" />
+                    <Volume2 className="w-4 h-4" />
                     {tMyStoriesPage('actions.listen')}
                   </div>
                 )}
@@ -368,12 +369,12 @@ export default function StoryRow({
                       setMenuPosition(null);
                     }}
                   >
-                    <FiShare2 className="w-4 h-4" />
+                    <Share2 className="w-4 h-4" />
                     {tMyStoriesPage('actions.share')}
                   </button>
                 ) : (
                   <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
-                    <FiShare2 className="w-4 h-4" />
+                    <Share2 className="w-4 h-4" />
                     {tMyStoriesPage('actions.share')}
                   </div>
                 )}
@@ -386,12 +387,12 @@ export default function StoryRow({
                       setMenuPosition(null);
                     }}
                   >
-                    <FiPrinter className="w-4 h-4" />
+                    <Printer className="w-4 h-4" />
                     {tMyStoriesPage('actions.print')}
                   </button>
                 ) : (
                   <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
-                    <FiPrinter className="w-4 h-4" />
+                    <Printer className="w-4 h-4" />
                     {tMyStoriesPage('actions.print')}
                   </div>
                 )}
@@ -404,18 +405,18 @@ export default function StoryRow({
                       setMenuPosition(null);
                     }}
                   >
-                    <FiDownload className="w-4 h-4" />
+                    <Download className="w-4 h-4" />
                     {tMyStoriesPage('actions.downloadPdf')}
                   </button>
                 ) : (
                   <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
-                    <FiDownload className="w-4 h-4" />
+                    <Download className="w-4 h-4" />
                     {tMyStoriesPage('actions.downloadPdf')}
                   </div>
                 )}
                 {story.status === 'writing' ? (
                   <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
-                    <FiEdit3 className="w-4 h-4" />
+                    <Edit3 className="w-4 h-4" />
                     {tMyStoriesPage('actions.edit')}
                   </div>
                 ) : story.status === 'draft' ? (
@@ -427,7 +428,7 @@ export default function StoryRow({
                       setMenuPosition(null);
                     }}
                   >
-                    <FiEdit3 className="w-4 h-4" />
+                    <Edit3 className="w-4 h-4" />
                     {tMyStoriesPage('actions.edit')}
                   </Link>
                 ) : (
@@ -439,7 +440,7 @@ export default function StoryRow({
                       setMenuPosition(null);
                     }}
                   >
-                    <FiEdit3 className="w-4 h-4" />
+                    <Edit3 className="w-4 h-4" />
                     {tMyStoriesPage('actions.edit')}
                   </Link>
                 )}
@@ -455,7 +456,7 @@ export default function StoryRow({
                   }}
                   disabled={story.status !== 'published'}
                 >
-                  <FiCopy className="w-4 h-4" />
+                  <Copy className="w-4 h-4" />
                   {tMyStoriesPage('actions.duplicate')}
                 </button>
                 <button
@@ -466,7 +467,7 @@ export default function StoryRow({
                     setMenuPosition(null);
                   }}
                 >
-                  <FiTrash2 className="w-4 h-4" />
+                  <Trash2 className="w-4 h-4" />
                   {tMyStoriesPage('actions.delete')}
                 </button>
               </div>

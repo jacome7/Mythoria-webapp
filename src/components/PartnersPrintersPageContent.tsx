@@ -1,17 +1,10 @@
 'use client';
 
+import { Loader2, Mail, MapPin, Phone, Printer, Store } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
-import {
-  FaMapMarkerAlt,
-  FaPhoneAlt,
-  FaEnvelope,
-  FaSpinner,
-  FaPrint,
-  FaStore,
-} from 'react-icons/fa';
 
 const PAGE_SIZE = 10;
 const PLACEHOLDER_LOGO = '/partners/partner-placeholder.svg';
@@ -82,15 +75,15 @@ const PARTNER_TYPES = [
     value: 'printer',
     labelKey: 'filters.types.printers',
     badgeKey: 'types.printer',
-    icon: FaPrint,
+    icon: Printer,
   },
   {
     value: 'attraction',
     labelKey: 'filters.types.attractions',
     badgeKey: 'types.attraction',
-    icon: FaMapMarkerAlt,
+    icon: MapPin,
   },
-  { value: 'retail', labelKey: 'filters.types.retail', badgeKey: 'types.retail', icon: FaStore },
+  { value: 'retail', labelKey: 'filters.types.retail', badgeKey: 'types.retail', icon: Store },
 ] as const;
 
 type PartnerType = (typeof PARTNER_TYPES)[number]['value'];
@@ -373,7 +366,7 @@ const PartnersDirectorySection = () => {
                         <h3 className="text-lg font-bold text-primary">{partner.name}</h3>
                       </div>
                       <div className="text-sm text-base-content/70 flex items-center gap-2">
-                        <FaMapMarkerAlt className="text-primary" />
+                        <MapPin className="text-primary" />
                         <span>
                           {partner.city || partner.countryCode || t('list.locationFallback')}
                         </span>
@@ -422,7 +415,7 @@ const PartnersDirectorySection = () => {
 
         {isLoading && (
           <div className="flex items-center justify-center gap-2 text-base-content/70">
-            <FaSpinner className="animate-spin" />
+            <Loader2 className="animate-spin" />
             <span>{t('list.loading')}</span>
           </div>
         )}
@@ -481,7 +474,7 @@ const PartnersDirectorySection = () => {
                 <div className="mt-6 space-y-4">
                   {selectedPartner.email && (
                     <div className="flex items-center gap-2">
-                      <FaEnvelope className="text-primary" />
+                      <Mail className="text-primary" />
                       <div>
                         <div className="text-sm font-semibold">{t('modal.email')}</div>
                         <a
@@ -495,7 +488,7 @@ const PartnersDirectorySection = () => {
                   )}
                   {selectedPartner.mobilePhone && (
                     <div className="flex items-center gap-2">
-                      <FaPhoneAlt className="text-primary" />
+                      <Phone className="text-primary" />
                       <div>
                         <div className="text-sm font-semibold">{t('modal.phone')}</div>
                         <a
@@ -509,7 +502,7 @@ const PartnersDirectorySection = () => {
                   )}
                   {address && (
                     <div className="flex items-center gap-2">
-                      <FaMapMarkerAlt className="text-primary" />
+                      <MapPin className="text-primary" />
                       <div>
                         <div className="text-sm font-semibold">{t('modal.address')}</div>
                         <a

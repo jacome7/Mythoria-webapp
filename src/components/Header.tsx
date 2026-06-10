@@ -7,9 +7,9 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useLocale } from 'next-intl';
-import { MdAccountBalanceWallet } from 'react-icons/md';
-import { FaFeatherAlt } from 'react-icons/fa';
+import { BookOpen, Feather, Users, WalletCards } from 'lucide-react';
 import styles from './Header.module.css';
+import { homepageAsset } from '@/constants/homepageAssets';
 
 const dropdownMenuClassName = `dropdown-content ${styles.dropdownMenu}`;
 const mobileMenuClassName = `dropdown dropdown-bottom ${styles.mobileMenu}`;
@@ -284,7 +284,7 @@ const Header = () => {
           <div className={styles.authSlot}>
             <Link href={`/${locale}/sign-in`} className={styles.signInButton}>
               <Image
-                src="/homepage/kids_fantasy/button.webp"
+                src={homepageAsset('button.webp')}
                 alt=""
                 fill
                 sizes="(max-width: 389px) 110px, (max-width: 639px) 125px, 152px"
@@ -300,31 +300,25 @@ const Header = () => {
               <UserButton.Link
                 label={tCommonHeader('navigation.myStories')}
                 href={`/${locale}/my-stories`}
-                labelIcon={
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="w-4 h-4"
-                  >
-                    <path d="M4 4h12a2 2 0 0 1 2 2v14l-5-3-5 3V6a2 2 0 0 0-2-2z" />
-                  </svg>
-                }
+                labelIcon={<BookOpen className="w-4 h-4" />}
+              />
+              <UserButton.Link
+                label={tCommonHeader('navigation.myCharacters')}
+                href={`/${locale}/my-characters`}
+                labelIcon={<Users className="w-4 h-4" />}
               />
               <UserButton.Link
                 label={tCommonHeader('navigation.myPersonas')}
                 href={`/${locale}/my-personas`}
-                labelIcon={<FaFeatherAlt className="w-4 h-4" />}
+                labelIcon={<Feather className="w-4 h-4" />}
               />
               <UserButton.Link
                 label={tCommonHeader('navigation.creditsAndPayments')}
                 href={`/${locale}/credits-and-payments`}
-                labelIcon={<MdAccountBalanceWallet className="w-4 h-4" />}
+                labelIcon={<WalletCards className="w-4 h-4" />}
               />
+              <UserButton.Action label="manageAccount" />
+              <UserButton.Action label="signOut" />
             </UserButton.MenuItems>
           </UserButton>
         )}

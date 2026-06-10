@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { FiX, FiImage, FiAlertCircle, FiZap, FiUpload, FiTrash2 } from 'react-icons/fi';
+import { AlertCircle, ImageIcon, Trash2, Upload, X, Zap } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toAbsoluteImageUrl } from '../utils/image-url';
 import CropperModal from './ai-image-editor/Cropper';
@@ -424,7 +424,7 @@ export default function AIImageEditor({
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-              <FiImage className="w-5 h-5 text-primary" />
+              <ImageIcon className="w-5 h-5 text-primary" />
             </div>
             <div>
               <h2 className="text-xl font-semibold text-gray-900">
@@ -437,7 +437,7 @@ export default function AIImageEditor({
             onClick={onClose}
             className="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
           >
-            <FiX className="w-5 h-5 text-gray-600" />
+            <X className="w-5 h-5 text-gray-600" />
           </button>
         </div>
 
@@ -497,7 +497,7 @@ export default function AIImageEditor({
                 </label>
                 {!selectedFile && (
                   <div className="border-2 border-dashed rounded-lg p-6 text-center flex flex-col items-center justify-center space-y-3">
-                    <FiUpload className="w-8 h-8 text-gray-400" />
+                    <Upload className="w-8 h-8 text-gray-400" />
                     <p className="text-sm text-gray-600">
                       {tAIImageEditor('helper.dragDropOrClick')}
                     </p>
@@ -535,7 +535,7 @@ export default function AIImageEditor({
                           className="p-1 rounded hover:bg-gray-200"
                           aria-label="Remove"
                         >
-                          <FiTrash2 className="w-4 h-4 text-gray-600" />
+                          <Trash2 className="w-4 h-4 text-gray-600" />
                         </button>
                       </div>
                     </div>
@@ -665,7 +665,7 @@ export default function AIImageEditor({
                         </>
                       ) : (
                         <>
-                          <FiImage className="w-4 h-4" />
+                          <ImageIcon className="w-4 h-4" />
                           <span>{tAIImageEditor('replaceButton')}</span>
                         </>
                       )}
@@ -679,7 +679,7 @@ export default function AIImageEditor({
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <div className="flex items-center space-x-2">
-                  <FiAlertCircle className="w-4 h-4 text-red-600" />
+                  <AlertCircle className="w-4 h-4 text-red-600" />
                   <span className="text-sm text-red-600">{error}</span>
                 </div>
               </div>
@@ -713,7 +713,7 @@ export default function AIImageEditor({
                     </>
                   ) : (
                     <>
-                      <FiZap className="w-4 h-4" />
+                      <Zap className="w-4 h-4" />
                       <span>
                         {mode === 'edit'
                           ? tAIImageEditor('generateButton')

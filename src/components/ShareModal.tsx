@@ -1,19 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { Check, Copy, Globe, Info, Lock, Mail, Share2, Users, X } from 'lucide-react';
+import { FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import { useTranslations } from 'next-intl';
-import {
-  FiX,
-  FiShare2,
-  FiCopy,
-  FiMail,
-  FiUsers,
-  FiGlobe,
-  FiLock,
-  FiCheck,
-  FiInfo,
-} from 'react-icons/fi';
-import { FaWhatsapp, FaFacebook } from 'react-icons/fa';
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -188,14 +178,14 @@ export default function ShareModal({
         <div className="flex items-center justify-between p-6 border-b">
           {' '}
           <div className="flex items-center gap-3">
-            <FiShare2 className="text-primary text-xl" />
+            <Share2 className="text-primary text-xl" />
             <h2 className="text-xl font-semibold">{tCommonShareModal('title')}</h2>
           </div>
           <button
             onClick={handleClose}
             className="p-1 hover:bg-gray-100 rounded-full transition-colors"
           >
-            <FiX className="text-xl" />
+            <X className="text-xl" />
           </button>
         </div>{' '}
         <div className="p-6 space-y-6">
@@ -229,12 +219,12 @@ export default function ShareModal({
                     >
                       {copied ? (
                         <>
-                          <FiCheck className="text-green-600" />
+                          <Check className="text-green-600" />
                           {tCommonShareModal('copied')}
                         </>
                       ) : (
                         <>
-                          <FiCopy />
+                          <Copy />
                           {tCommonShareModal('copy')}
                         </>
                       )}
@@ -248,7 +238,7 @@ export default function ShareModal({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-red-100 rounded-lg">
-                      <FiLock className="text-red-600" />
+                      <Lock className="text-red-600" />
                     </div>
                     <div>
                       <h4 className="font-medium">
@@ -294,7 +284,7 @@ export default function ShareModal({
                     onClick={() => handleEmail(getFullUrl(`/p/${slug}`))}
                     className="btn btn-outline btn-sm flex items-center gap-2"
                   >
-                    <FiMail />
+                    <Mail />
                     {tCommonShareModal('email')}
                   </button>
 
@@ -302,7 +292,7 @@ export default function ShareModal({
                     onClick={() => handleNativeShare(getFullUrl(`/p/${slug}`))}
                     className="btn btn-outline btn-sm flex items-center gap-2"
                   >
-                    <FiShare2 />
+                    <Share2 />
                     {tCommonShareModal('more')}
                   </button>
                 </div>
@@ -319,7 +309,7 @@ export default function ShareModal({
                     <span className="loading loading-spinner loading-sm"></span>
                   ) : (
                     <>
-                      <FiLock />
+                      <Lock />
                       {tCommonShareModal('makePrivate') || 'Make Private'}
                     </>
                   )}
@@ -338,7 +328,7 @@ export default function ShareModal({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-blue-100 rounded-lg">
-                      <FiUsers className="text-blue-600" />
+                      <Users className="text-blue-600" />
                     </div>{' '}
                     <div>
                       <h4 className="font-medium">{tCommonShareModal('allowEdit')}</h4>
@@ -357,7 +347,7 @@ export default function ShareModal({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-green-100 rounded-lg">
-                      <FiGlobe className="text-green-600" />
+                      <Globe className="text-green-600" />
                     </div>{' '}
                     <div>
                       <h4 className="font-medium">{tCommonShareModal('makePublic')}</h4>
@@ -380,7 +370,7 @@ export default function ShareModal({
               {/* Info Section */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <div className="flex items-start gap-3">
-                  <FiInfo className="text-blue-600 mt-0.5 flex-shrink-0" />
+                  <Info className="text-blue-600 mt-0.5 flex-shrink-0" />
                   <div className="text-sm">
                     {' '}
                     <p className="font-medium text-blue-900 mb-2">
@@ -410,7 +400,7 @@ export default function ShareModal({
                   <span className="loading loading-spinner loading-sm"></span>
                 ) : (
                   <>
-                    <FiShare2 />
+                    <Share2 />
                     {tCommonShareModal('generateLink')}
                   </>
                 )}
@@ -421,7 +411,7 @@ export default function ShareModal({
               {/* Success State */}
               <div className="text-center space-y-4">
                 <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <FiCheck className="text-green-600 text-2xl mx-auto mb-2" />
+                  <Check className="text-green-600 text-2xl mx-auto mb-2" />
                   <p className="text-green-800 font-medium">{shareData.message}</p>
                 </div>
                 {/* Share URL */}{' '}
@@ -443,12 +433,12 @@ export default function ShareModal({
                       {' '}
                       {copied ? (
                         <>
-                          <FiCheck className="text-green-600" />
+                          <Check className="text-green-600" />
                           {tCommonShareModal('copied')}
                         </>
                       ) : (
                         <>
-                          <FiCopy />
+                          <Copy />
                           {tCommonShareModal('copy')}
                         </>
                       )}
@@ -481,7 +471,7 @@ export default function ShareModal({
                       onClick={() => handleEmail(getFullUrl(shareData.url))}
                       className="btn btn-outline btn-sm flex items-center gap-2"
                     >
-                      <FiMail />
+                      <Mail />
                       {tCommonShareModal('email')}
                     </button>
 
@@ -489,7 +479,7 @@ export default function ShareModal({
                       onClick={() => handleNativeShare(getFullUrl(shareData.url))}
                       className="btn btn-outline btn-sm flex items-center gap-2"
                     >
-                      <FiShare2 />
+                      <Share2 />
                       {tCommonShareModal('more')}
                     </button>
                   </div>
@@ -499,7 +489,7 @@ export default function ShareModal({
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                     {' '}
                     <div className="flex items-center gap-2 text-yellow-800 text-sm">
-                      <FiLock />
+                      <Lock />
                       <span>{tCommonShareModal('privateExpires')}</span>
                     </div>
                   </div>

@@ -1,12 +1,12 @@
 'use client';
 
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { useTranslations, useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { AlertTriangle, CheckCircle, ShoppingCart } from 'lucide-react';
 import { Show } from '@clerk/nextjs';
 import { Link } from '@/i18n/routing';
 
-import { FaShoppingCart, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
+import { useSearchParams } from 'next/navigation';
 import CartView from '@/components/CartView';
 import PaymentSelector from '@/components/PaymentSelector';
 import PromotionCodeRedeemer from '@/components/PromotionCodeRedeemer';
@@ -19,7 +19,7 @@ const getIconComponent = (iconName: string) => {
   switch (iconName) {
     case 'FaShoppingCart':
     default:
-      return <FaShoppingCart />;
+      return <ShoppingCart />;
   }
 };
 
@@ -344,7 +344,7 @@ function BuyCreditsContent() {
                       </div>
                     ) : packagesError ? (
                       <div className="alert alert-error">
-                        <FaExclamationTriangle />
+                        <AlertTriangle />
                         <span>{packagesError}</span>
                       </div>
                     ) : (
@@ -429,10 +429,8 @@ function BuyCreditsContent() {
                         }`}
                       >
                         <div className="flex items-center space-x-2">
-                          {paymentStatus === 'success' && <FaCheckCircle />}
-                          {paymentStatus === 'error' && (
-                            <FaExclamationTriangle className="text-error" />
-                          )}
+                          {paymentStatus === 'success' && <CheckCircle />}
+                          {paymentStatus === 'error' && <AlertTriangle className="text-error" />}
                           {paymentStatus === 'processing' && (
                             <span className="loading loading-spinner loading-sm"></span>
                           )}

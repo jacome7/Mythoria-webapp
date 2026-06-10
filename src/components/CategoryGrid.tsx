@@ -1,7 +1,7 @@
 'use client';
 
+import { Bug, Coins, Handshake, Lightbulb, MessageCircle, Truck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { FaBug, FaTruck, FaCoins, FaComments, FaLightbulb, FaHandshake } from 'react-icons/fa';
 
 interface CategoryGridProps {
   onCategoryClick: (category: string) => void;
@@ -13,37 +13,37 @@ const CategoryGrid = ({ onCategoryClick }: CategoryGridProps) => {
   const categories = [
     {
       key: 'feature_ideas',
-      icon: FaLightbulb,
+      icon: Lightbulb,
       color: 'text-warning',
       label: tContactUsPage('categories.featureIdeas'),
     },
     {
       key: 'bug_report',
-      icon: FaBug,
+      icon: Bug,
       color: 'text-error',
       label: tContactUsPage('categories.reportBug'),
     },
     {
       key: 'delivery',
-      icon: FaTruck,
+      icon: Truck,
       color: 'text-success',
       label: tContactUsPage('categories.delivery'),
     },
     {
       key: 'credits',
-      icon: FaCoins,
+      icon: Coins,
       color: 'text-accent',
       label: tContactUsPage('categories.credits'),
     },
     {
       key: 'business_partnership',
-      icon: FaHandshake,
+      icon: Handshake,
       color: 'text-secondary',
       label: tContactUsPage('categories.businessPartnership'),
     },
     {
       key: 'general',
-      icon: FaComments,
+      icon: MessageCircle,
       color: 'text-primary',
       label: tContactUsPage('categories.general'),
     },

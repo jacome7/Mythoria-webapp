@@ -1,12 +1,12 @@
 'use client';
 
+import { useCallback, useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { ArrowLeft, Copy } from 'lucide-react';
 import AITextStoryEditor from '../../../../../components/AITextStoryEditor';
 import AIImageEditor from '../../../../../components/AIImageEditor';
-import { useEffect, useState, useCallback } from 'react';
-import { useParams, useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { useTranslations } from 'next-intl';
-import { FiArrowLeft, FiCopy } from 'react-icons/fi';
 import { convertApiChaptersToChapters, type ApiChapter } from '@/utils/chapterConversion';
 
 // Components
@@ -272,7 +272,7 @@ export default function StoryEditPage() {
             {tStoryEditPage('errors.failedToLoadStoryData')}
           </p>
           <button onClick={() => router.push(`/${locale}/stories`)} className="btn btn-primary">
-            <FiArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-4 h-4 mr-2" />
             {tActions('goBack')}
           </button>
         </div>
@@ -283,18 +283,21 @@ export default function StoryEditPage() {
   return (
     <div className="min-h-screen bg-base-100">
       {/* Header */}
-      <div className="bg-base-200 border-b border-base-300 px-4 py-3">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button onClick={handleGoBack} className="btn btn-ghost btn-sm">
-              <FiArrowLeft className="w-4 h-4" />
-              <span className="hidden sm:inline ml-2">{tActions('goBack')}</span>
-            </button>
+      <div className="relative z-40 overflow-visible bg-base-200 border-b border-base-300 px-3 py-2.5 sm:px-4 sm:py-3">
+        <div className="mx-auto grid max-w-7xl grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 sm:gap-3">
+          <button onClick={handleGoBack} className="btn btn-ghost btn-sm justify-self-start">
+            <ArrowLeft className="w-4 h-4" />
+            <span className="hidden sm:inline ml-2">{tActions('goBack')}</span>
+          </button>
 
-            <h1 className="text-xl font-bold">{storyData.story.title}</h1>
-          </div>
+          <h1
+            className="min-w-0 truncate px-1 text-center text-base font-bold leading-tight sm:px-3 sm:text-xl"
+            title={storyData.story.title}
+          >
+            {storyData.story.title}
+          </h1>
 
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 items-center justify-end gap-1.5 sm:gap-2">
             {/* Navigation */}
             <ChapterNavigation
               chapters={convertApiChaptersToChapters(storyData.chapters)}
@@ -302,7 +305,7 @@ export default function StoryEditPage() {
               onChapterChange={handleChapterChange}
             />
             <button onClick={handleDuplicate} className="btn btn-ghost btn-sm">
-              <FiCopy className="w-4 h-4" />
+              <Copy className="w-4 h-4" />
               <span className="hidden sm:inline ml-2">{tActions('duplicate')}</span>
             </button>
           </div>

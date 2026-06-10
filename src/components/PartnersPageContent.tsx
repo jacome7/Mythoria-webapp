@@ -1,7 +1,7 @@
 'use client';
 
+import { Handshake, MapPin } from 'lucide-react';
 import { useRef } from 'react';
-import { FaMapMarkerAlt, FaHandshake } from 'react-icons/fa';
 import { useTranslations } from 'next-intl';
 import PartnershipForm from './PartnershipForm';
 import ScrollFadeIn from './ScrollFadeIn';
@@ -36,11 +36,11 @@ const PartnersPageContent = () => {
               <p className="text-lg md:text-xl text-base-content/80">{t('hero.body')}</p>
               <div className="flex flex-wrap justify-center gap-4">
                 <button className="btn btn-primary btn-lg" onClick={scrollToDirectory}>
-                  <FaMapMarkerAlt className="mr-2" />
+                  <MapPin className="mr-2" />
                   {t('hero.ctaPrimary')}
                 </button>
                 <button className="btn btn-outline btn-lg" onClick={scrollToB2b}>
-                  <FaHandshake className="mr-2" />
+                  <Handshake className="mr-2" />
                   {t('hero.ctaSecondary')}
                 </button>
               </div>

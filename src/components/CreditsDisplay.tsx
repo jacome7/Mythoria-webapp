@@ -18,9 +18,10 @@ interface CreditHistoryEntry {
 
 interface CreditsDisplayProps {
   credits: number;
+  className?: string;
 }
 
-export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
+export default function CreditsDisplay({ credits, className = '' }: CreditsDisplayProps) {
   const tCommonCreditsDisplay = useTranslations('CreditsDisplay');
   const tCommonActions = useTranslations('Actions');
   const locale = useLocale();
@@ -77,8 +78,7 @@ export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
 
   return (
     <>
-      {' '}
-      <button className="btn btn-outline btn-primary" onClick={handleOpenModal}>
+      <button className={`btn btn-outline btn-primary ${className}`} onClick={handleOpenModal}>
         {tCommonCreditsDisplay('button', {
           credits: currentBalance.toString(),
         })}

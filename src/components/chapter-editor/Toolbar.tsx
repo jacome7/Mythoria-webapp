@@ -1,17 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import {
-  FORMAT_TEXT_COMMAND,
-  TextFormatType,
   $getSelection,
   $isRangeSelection,
-  TextNode,
   COMMAND_PRIORITY_EDITOR,
+  FORMAT_TEXT_COMMAND,
+  TextFormatType,
+  TextNode,
 } from 'lexical';
+import { Bold, ImageIcon, Italic, Type, Zap } from 'lucide-react';
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { useTranslations } from 'next-intl';
-import { FiBold, FiItalic, FiType, FiImage, FiZap } from 'react-icons/fi';
 import { TEXT_SIZE_OPTIONS, TextSize, FORMAT_TEXT_SIZE_COMMAND } from './lexical';
 
 interface ToolbarProps {
@@ -118,14 +118,14 @@ export default function Toolbar({ onImageInsert, onAIEdit }: ToolbarProps) {
             className={`btn btn-sm ${isBold ? 'btn-primary' : 'btn-ghost'}`}
             title={t('toolbar.bold')}
           >
-            <FiBold className="w-4 h-4" />
+            <Bold className="w-4 h-4" />
           </button>
           <button
             onClick={() => formatText('italic')}
             className={`btn btn-sm ${isItalic ? 'btn-primary' : 'btn-ghost'}`}
             title={t('toolbar.italic')}
           >
-            <FiItalic className="w-4 h-4" />
+            <Italic className="w-4 h-4" />
           </button>
           <div className="dropdown">
             <div
@@ -134,7 +134,7 @@ export default function Toolbar({ onImageInsert, onAIEdit }: ToolbarProps) {
               className="btn btn-sm btn-ghost gap-1"
               title={t('toolbar.textSize')}
             >
-              <FiType className="w-4 h-4" />
+              <Type className="w-4 h-4" />
               {t(`textSizes.${currentTextSize}`)}
             </div>
             <ul
@@ -162,7 +162,7 @@ export default function Toolbar({ onImageInsert, onAIEdit }: ToolbarProps) {
               className="btn btn-sm btn-primary"
               title={t('toolbar.aiEdit')}
             >
-              <FiZap className="w-4 h-4" />
+              <Zap className="w-4 h-4" />
               {t('toolbar.edit')}
             </button>
           )}
@@ -172,7 +172,7 @@ export default function Toolbar({ onImageInsert, onAIEdit }: ToolbarProps) {
               className="btn btn-sm btn-primary"
               title={t('toolbar.image')}
             >
-              <FiImage className="w-4 h-4" />
+              <ImageIcon className="w-4 h-4" />
               {t('toolbar.image')}
             </button>
           )}

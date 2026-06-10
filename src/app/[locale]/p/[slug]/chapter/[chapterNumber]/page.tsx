@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import { AlertCircle, Download, Edit3, Loader2, Printer } from 'lucide-react';
 import { Show } from '@clerk/nextjs';
 import { useParams } from 'next/navigation';
-import { useTranslations, useLocale } from 'next-intl';
-import { FiLoader, FiAlertCircle, FiEdit3, FiPrinter, FiDownload } from 'react-icons/fi';
 import StoryReader from '@/components/StoryReader';
 import PublicStoryRating from '@/components/PublicStoryRating';
 import { SelfPrintModal } from '@/components/self-print/SelfPrintModal';
@@ -104,7 +104,7 @@ export default function PublicChapterPage() {
     return (
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
-          <FiLoader className="animate-spin w-8 h-8 text-primary" />
+          <Loader2 className="animate-spin w-8 h-8 text-primary" />
           <p className="text-lg">{tLoading('default')}...</p>
         </div>
       </div>
@@ -115,7 +115,7 @@ export default function PublicChapterPage() {
     return (
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center space-y-4">
-          <FiAlertCircle className="w-16 h-16 text-error mx-auto" />
+          <AlertCircle className="w-16 h-16 text-error mx-auto" />
           <h1 className="text-2xl font-bold">{tPublicStoryChapter('chapterNotFound')}</h1>
           <p className="text-base-content/70">
             {error || tPublicStoryChapter('chapterNotAvailable')}
@@ -178,7 +178,7 @@ export default function PublicChapterPage() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a href={`/${locale}`} className="btn btn-primary flex items-center gap-2">
-                <FiEdit3 className="w-4 h-4" />
+                <Edit3 className="w-4 h-4" />
                 {tPublicStoryPage('actions.createOwnStory')}
               </a>
 
@@ -186,7 +186,7 @@ export default function PublicChapterPage() {
                 href={`/${locale}/stories/print/${story.storyId}`}
                 className="btn btn-secondary flex items-center gap-2"
               >
-                <FiPrinter className="w-4 h-4" />
+                <Printer className="w-4 h-4" />
                 {tPublicStoryPage('actions.orderPrintedBook')}
               </a>
 
@@ -195,7 +195,7 @@ export default function PublicChapterPage() {
                   className="btn btn-outline flex items-center gap-2"
                   onClick={openSelfPrintModal}
                 >
-                  <FiDownload className="w-4 h-4" />
+                  <Download className="w-4 h-4" />
                   {tPublicStoryPage('actions.downloadPdf')}
                 </button>
               </Show>
@@ -204,7 +204,7 @@ export default function PublicChapterPage() {
                   href={`/${locale}/sign-in?redirectUrl=${encodeURIComponent(`/${locale}/p/${slug}/chapter/${chapterNumber}`)}`}
                   className="btn btn-outline flex items-center gap-2"
                 >
-                  <FiDownload className="w-4 h-4" />
+                  <Download className="w-4 h-4" />
                   {tPublicStoryPage('actions.downloadPdf')}
                 </a>
               </Show>

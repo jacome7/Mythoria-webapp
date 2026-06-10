@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { FiEdit3 } from 'react-icons/fi';
+import { Edit3 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 interface ImageEditButtonProps {
@@ -45,7 +45,7 @@ export default function ImageEditButton({
           className="absolute top-2 right-2 z-10 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-2 shadow-lg transition-all duration-200 transform hover:scale-105"
           title={tImageEditButton('tooltip')}
         >
-          <FiEdit3 className="w-4 h-4" />
+          <Edit3 className="w-4 h-4" />
         </button>
       )}
     </div>

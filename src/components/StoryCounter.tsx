@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import styles from './StoryCounter.module.css';
+import { homepageAsset } from '@/constants/homepageAssets';
 
 const StoryCounter = () => {
   const tCommonStoryCounter = useTranslations('StoryCounter');
@@ -71,7 +72,7 @@ const StoryCounter = () => {
   return (
     <div className={styles.counterCard}>
       <Image
-        src="/homepage/kids_fantasy/yellow_star.webp"
+        src={homepageAsset('sparkle_a.webp')}
         alt=""
         width={128}
         height={134}
@@ -79,7 +80,7 @@ const StoryCounter = () => {
         aria-hidden="true"
       />
       <Image
-        src="/homepage/kids_fantasy/yellow_star_1.webp"
+        src={homepageAsset('sparkle_b.webp')}
         alt=""
         width={128}
         height={136}
@@ -103,7 +104,7 @@ const StoryCounter = () => {
           <div className={styles.countDescription}>{tCommonStoryCounter('description')}</div>
         </div>
         <Image
-          src="/homepage/kids_fantasy/number_of_stories_icon.webp"
+          src={homepageAsset('number_of_stories_icon.webp')}
           alt=""
           width={128}
           height={163}

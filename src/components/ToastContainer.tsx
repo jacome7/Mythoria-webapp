@@ -1,6 +1,6 @@
 'use client';
 
-import { FiX, FiCheckCircle, FiAlertCircle, FiAlertTriangle, FiInfo } from 'react-icons/fi';
+import { AlertCircle, AlertTriangle, CheckCircle, Info, X } from 'lucide-react';
 import { Toast } from '@/hooks/useToast';
 
 interface ToastContainerProps {
@@ -14,14 +14,14 @@ export default function ToastContainer({ toasts, onRemove }: ToastContainerProps
   const getToastIcon = (type: Toast['type']) => {
     switch (type) {
       case 'success':
-        return <FiCheckCircle className="w-5 h-5" />;
+        return <CheckCircle className="w-5 h-5" />;
       case 'error':
-        return <FiAlertCircle className="w-5 h-5" />;
+        return <AlertCircle className="w-5 h-5" />;
       case 'warning':
-        return <FiAlertTriangle className="w-5 h-5" />;
+        return <AlertTriangle className="w-5 h-5" />;
       case 'info':
       default:
-        return <FiInfo className="w-5 h-5" />;
+        return <Info className="w-5 h-5" />;
     }
   };
 
@@ -52,7 +52,7 @@ export default function ToastContainer({ toasts, onRemove }: ToastContainerProps
             </a>
           )}
           <button onClick={() => onRemove(toast.id)} className="btn btn-ghost btn-sm btn-square">
-            <FiX className="w-4 h-4" />
+            <X className="w-4 h-4" />
           </button>
         </div>
       ))}

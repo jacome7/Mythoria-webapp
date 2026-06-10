@@ -3,15 +3,15 @@
 import React, { useMemo } from 'react';
 import Image from 'next/image';
 import {
-  FiBook,
-  FiPlay,
-  FiPause,
-  FiSquare,
-  FiLoader,
-  FiRewind,
-  FiFastForward,
-  FiDownload,
-} from 'react-icons/fi';
+  BookOpen,
+  Download,
+  FastForward,
+  Loader2,
+  Pause,
+  Play,
+  Rewind,
+  Square,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { CastButton } from './CastButton';
 import { AudioChapter, AudioPlayerState, AudioPlayerActions, CastControlsState } from './types';
@@ -110,7 +110,7 @@ export function AudioChapterList({
                   />
                 ) : (
                   <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                    <FiBook className="w-6 h-6 text-gray-400" />
+                    <BookOpen className="w-6 h-6 text-gray-400" />
                   </div>
                 )}
               </div>
@@ -139,7 +139,7 @@ export function AudioChapterList({
                     <div className="mt-2 sm:mt-0 flex justify-center sm:justify-end">
                       {audioLoading[index] ? (
                         <div className="w-10 h-10 flex items-center justify-center">
-                          <FiLoader className="animate-spin text-gray-400" />
+                          <Loader2 className="animate-spin text-gray-400" />
                         </div>
                       ) : (
                         <div className="flex items-center gap-2">
@@ -148,7 +148,7 @@ export function AudioChapterList({
                             className="btn btn-circle btn-primary btn-sm"
                             title={tPublicStoryPage('listen.controls.play')}
                           >
-                            <FiPlay className="w-4 h-4 ml-0.5" />
+                            <Play className="w-4 h-4 ml-0.5" />
                           </button>
                           <button
                             onClick={() =>
@@ -160,7 +160,7 @@ export function AudioChapterList({
                             className="btn btn-circle btn-sm border border-primary bg-white text-primary hover:bg-primary hover:text-white"
                             title={tPublicStoryPage('listen.controls.download')}
                           >
-                            <FiDownload className="w-4 h-4" />
+                            <Download className="w-4 h-4" />
                           </button>
                         </div>
                       )}
@@ -196,7 +196,7 @@ export function AudioChapterList({
                       <div className="flex items-center gap-2">
                         {audioLoading[index] ? (
                           <div className="w-10 h-10 flex items-center justify-center">
-                            <FiLoader className="animate-spin text-gray-400" />
+                            <Loader2 className="animate-spin text-gray-400" />
                           </div>
                         ) : currentlyPlaying === index ? (
                           <button
@@ -204,7 +204,7 @@ export function AudioChapterList({
                             className="btn btn-circle btn-primary"
                             title={tPublicStoryPage('listen.controls.pause')}
                           >
-                            <FiPause className="w-5 h-5" />
+                            <Pause className="w-5 h-5" />
                           </button>
                         ) : (
                           <button
@@ -212,7 +212,7 @@ export function AudioChapterList({
                             className="btn btn-circle btn-primary"
                             title={tPublicStoryPage('listen.controls.play')}
                           >
-                            <FiPlay className="w-5 h-5 ml-0.5" />
+                            <Play className="w-5 h-5 ml-0.5" />
                           </button>
                         )}
                         {!audioLoading[index] && (
@@ -226,7 +226,7 @@ export function AudioChapterList({
                             className="btn btn-circle border border-primary bg-white text-primary hover:bg-primary hover:text-white"
                             title={tPublicStoryPage('listen.controls.download')}
                           >
-                            <FiDownload className="w-5 h-5" />
+                            <Download className="w-5 h-5" />
                           </button>
                         )}
                       </div>

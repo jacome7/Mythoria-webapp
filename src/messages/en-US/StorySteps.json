@@ -11,7 +11,7 @@
         "signIn": "🔐 Sign In to Start Your Adventure",
         "signUp": "✨ Create Your Author Account"
       },
-      "heading": "Chapter 1 - The Author",
+      "heading": "The Author",
       "intro": "Welcome, storyteller! Before we dive into your magical adventure, let's set up the author information for your story. You can use your own name or create a custom author name for this tale.",
       "fields": {
         "authorName": "Author Name(s) *",
@@ -31,8 +31,8 @@
       }
     },
     "step2": {
-      "heading": "Chapter 2 - The Story",
-      "intro": "You can create your story by drawing it, recording it, or simply writing it down.",
+      "heading": "The Story",
+      "intro": "Tell your story with words, images, audio, or any mix you like.",
       "tellYourStoryLabel": "Tell your story...",
       "textPlaceholder": "Once upon a time... Let your imagination run wild! Share your adventure, your dreams, or any story that's close to your heart.",
       "textHelp": "Write as much or as little as you'd like. You can always edit this later!",
@@ -45,6 +45,11 @@
       "uploadAudio": "Upload Audio File",
       "imageHelp": "Draw your story, take a photo of it, or upload an existing image that tells your tale.",
       "audioHelp": "Record your story directly or upload an audio file. Perfect for those who prefer to speak their tales!",
+      "modeCards": {
+        "writeDescription": "Write your story with words.",
+        "imageDescription": "Create your story with pictures.",
+        "recordDescription": "Record your voice to tell your story."
+      },
       "recordingHelp": "Tell your story! Speak clearly into your microphone.",
       "reassurance": "If you've written text or uploaded an image above, our Oompa-Loompas will work hard to extract characters, settings, and themes. Otherwise, the next steps will guide you through creating your story step by step.",
       "processing": "Processing with AI...",
@@ -151,6 +156,7 @@
         "unknown": "Unknown error occurred."
       },
       "characterSelection": {
+        "includeCharactersTitle": "Include your characters",
         "includeExistingTitle": "Include your existing characters",
         "noneSelected": "Select characters to include in your story",
         "selectedCount": "{count, plural, =1 {# character selected} other {# characters selected}}",
@@ -159,19 +165,14 @@
       }
     },
     "step3": {
-      "heading": "Chapter 3 - The Characters",
+      "heading": "The Characters",
       "intro": "Who are the heroes, friends, and magical creatures in your story? Create characters that will bring your adventure to life!",
       "addCharacter": "➕ Add Character",
-      "chooseMethod": "Choose how to add a character:",
       "createNew": "✨ Create New Character",
       "useExisting": "📚 Use Existing Character",
       "orChooseExisting": "Or choose from your existing characters:",
       "cancel": "Cancel",
       "loadingCharacters": "Loading your characters...",
-      "readyTitle": "Ready to meet your characters?",
-      "readyDescription": "Every great story needs amazing characters! Click \"Add Character\" to create new heroes or add existing characters from your library to this story.",
-      "greatWork": "Great work! You've created {count, plural, =1 {# character} other {# characters}}.",
-      "youCanAlways": "You can always add more characters later or continue to the next chapter to develop your story further.",
       "continuing": "Continuing...",
       "progress": {
         "stepLabel": "Step {currentStep} of {totalSteps}"
@@ -193,7 +194,7 @@
       "next": "Next"
     },
     "step4": {
-      "heading": "Chapter 4 - The Plot",
+      "heading": "The Plot",
       "intro": "Now let's define the core elements of your story. Tell us about the world you want to create, who you're writing for, and how you envision your story looking.",
       "fields": {
         "title": "Book Title *",
@@ -403,7 +404,7 @@
       "generationReviewHint": "On the next step you can review credits and start generation. Nothing will be generated yet."
     },
     "step5": {
-      "heading": "Chapter 5 - The Finale",
+      "heading": "The Finale",
       "intro": "Choose how you'd like to receive your story. You can select multiple delivery formats to enjoy your story in different ways.",
       "deliveryOptions": "Delivery Options",
       "creating": "Creating...",

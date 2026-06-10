@@ -1,17 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { AlertTriangle, CheckCircle, Download, Info, Mail, Shield, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
-import {
-  FiX,
-  FiDownload,
-  FiMail,
-  FiInfo,
-  FiAlertTriangle,
-  FiCheckCircle,
-  FiShield,
-} from 'react-icons/fi';
 import { fetchSelfPrintPricing } from '@/lib/pricing/fetch-self-print-pricing';
 import { trackPaidAction } from '@/lib/analytics';
 
@@ -242,7 +234,7 @@ export function SelfPrintModal({
 
   const renderError = () => (
     <div className="flex flex-col items-center justify-center py-12 text-center space-y-3">
-      <FiAlertTriangle className="w-10 h-10 text-error" />
+      <AlertTriangle className="w-10 h-10 text-error" />
       <p className="font-medium">{loadError || t('errors.loadFailed')}</p>
       <button className="btn btn-primary btn-sm" onClick={handleClose}>
         {t('actions.close')}
@@ -268,7 +260,7 @@ export function SelfPrintModal({
         {creditShortfall > 0 && (
           <div className="mt-3 alert alert-warning">
             <div>
-              <FiAlertTriangle className="w-5 h-5" />
+              <AlertTriangle className="w-5 h-5" />
               <div>
                 <h4 className="font-semibold">{t('costSection.needMore')}</h4>
                 <p className="text-sm">
@@ -314,11 +306,11 @@ export function SelfPrintModal({
 
       <div className="bg-base-200 rounded-lg p-4 space-y-3 text-sm">
         <div className="flex items-start gap-3">
-          <FiInfo className="w-5 h-5 text-primary mt-1 shrink-0" />
+          <Info className="w-5 h-5 text-primary mt-1 shrink-0" />
           <p className="break-words">{t('finePrint.deduction')}</p>
         </div>
         <div className="flex items-start gap-3">
-          <FiShield className="w-5 h-5 text-primary mt-1 shrink-0" />
+          <Shield className="w-5 h-5 text-primary mt-1 shrink-0" />
           <p className="break-words">
             {t.rich('finePrint.support', {
               email: (chunks) => (
@@ -333,7 +325,7 @@ export function SelfPrintModal({
 
       {submitError && (
         <div className="alert alert-error">
-          <FiAlertTriangle className="w-5 h-5" />
+          <AlertTriangle className="w-5 h-5" />
           <span>{submitError}</span>
         </div>
       )}
@@ -347,7 +339,7 @@ export function SelfPrintModal({
             <span className="loading loading-spinner loading-sm"></span>
           ) : (
             <>
-              <FiMail className="w-4 h-4" />
+              <Mail className="w-4 h-4" />
               <span>{t('actions.confirm')}</span>
             </>
           )}
@@ -362,7 +354,7 @@ export function SelfPrintModal({
     return (
       <div className="space-y-6">
         <div className="alert alert-success">
-          <FiCheckCircle className="w-5 h-5" />
+          <CheckCircle className="w-5 h-5" />
           <div>
             <h3 className="font-semibold">{t('success.title')}</h3>
             <p className="text-sm text-base-content/70">{t('success.description')}</p>
@@ -371,7 +363,7 @@ export function SelfPrintModal({
 
         <div className="bg-base-200 rounded-lg p-4">
           <div className="flex items-start gap-3">
-            <FiMail className="w-5 h-5 text-primary mt-1" />
+            <Mail className="w-5 h-5 text-primary mt-1" />
             <div className="space-y-2 w-full">
               <div>
                 <p className="font-medium">{t('success.recipientsHeading')}</p>
@@ -417,7 +409,7 @@ export function SelfPrintModal({
         <div className="flex items-start justify-between border-b border-base-200 p-5">
           <div className="flex-1 min-w-0 mr-4">
             <div className="flex items-center gap-2">
-              <FiDownload className="text-primary shrink-0" />
+              <Download className="text-primary shrink-0" />
               <h2 className="text-lg font-semibold">{t('title')}</h2>
             </div>
             {storyTitle && (
@@ -427,7 +419,7 @@ export function SelfPrintModal({
             )}
           </div>
           <button className="btn btn-ghost btn-sm shrink-0" onClick={handleClose}>
-            <FiX className="w-4 h-4" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 

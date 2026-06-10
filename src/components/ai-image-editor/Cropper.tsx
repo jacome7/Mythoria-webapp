@@ -1,7 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
+import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Cropper from 'react-easy-crop';
-import { FiX } from 'react-icons/fi';
 
 interface CropArea {
   x: number;
@@ -46,7 +46,7 @@ export default function CropperModal({
         <div className="p-4 border-b flex items-center justify-between">
           <h3 className="font-semibold text-gray-800 text-sm">{t('title')}</h3>
           <button onClick={onCancel} className="p-2 rounded hover:bg-gray-100">
-            <FiX className="w-4 h-4" />
+            <X className="w-4 h-4" />
           </button>
         </div>
         <div className="flex-1 relative bg-black">

@@ -1,7 +1,9 @@
 'use client';
 
 import { Show, RedirectToSignIn } from '@clerk/nextjs';
-import { useState } from 'react';
+import Image from 'next/image';
+import { useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/i18n/routing';
 import StepNavigation from '@/components/StepNavigation';
@@ -12,8 +14,53 @@ import CharacterSelection from './CharacterSelection';
 import WritingTips from './WritingTips';
 import { useStep2Session } from '@/hooks/useStep2Session';
 import { useJobPolling } from '@/hooks/useJobPolling';
+import styles from './Step2Page.module.css';
 
 type ContentType = 'text' | 'images' | 'audio';
+
+const modalSurfaceClass =
+  'modal-box !bg-[#fff7e6] !bg-gradient-to-br !from-[#fff8e8] !to-[#f7deb8] border border-[#5e401a]/20 shadow-[0_18px_30px_rgba(74,48,14,0.13)]';
+
+interface StoryModeCardProps {
+  title: string;
+  description: string;
+  imageSrc: string;
+  imageClassName?: string;
+  onClick: () => void;
+  status?: ReactNode;
+}
+
+function StoryModeCard({
+  title,
+  description,
+  imageSrc,
+  imageClassName,
+  onClick,
+  status,
+}: StoryModeCardProps) {
+  return (
+    <button type="button" onClick={onClick} className={styles.modeCard}>
+      <span className={styles.modeIconWrap} aria-hidden="true">
+        <Image
+          src={imageSrc}
+          alt=""
+          width={180}
+          height={150}
+          className={`${styles.modeIcon} ${imageClassName ?? ''}`}
+          sizes="(max-width: 640px) 32vw, 180px"
+        />
+      </span>
+      <span className={styles.modeCopy}>
+        <span className={styles.modeTitle}>{title}</span>
+        <span className={styles.modeDescription}>{description}</span>
+        {status && <span className={styles.modeStatus}>{status}</span>}
+      </span>
+      <span className={styles.modeArrow} aria-hidden="true">
+        <Image src="/Papercut_icons/select_button.webp" alt="" width={76} height={76} />
+      </span>
+    </button>
+  );
+}
 
 export default function Step2Page() {
   const router = useRouter();
@@ -49,6 +96,40 @@ export default function Step2Page() {
   );
   const audioUploading = uploadedAudio?.status === 'uploading';
   const mediaBusy = imagesAnalyzing || audioUploading;
+
+  const storyModeCards = [
+    {
+      type: 'text' as const,
+      title: tStoryStepsStep2('tabWrite'),
+      description: tStoryStepsStep2('modeCards.writeDescription'),
+      imageSrc: '/Papercut_icons/Pencil.webp',
+      imageClassName: styles.pencilIcon,
+      status: storyText.trim() ? tStoryStepsStep2('badgeLabels.added') : null,
+    },
+    {
+      type: 'images' as const,
+      title: tStoryStepsStep2('tabImage'),
+      description: tStoryStepsStep2('modeCards.imageDescription'),
+      imageSrc: '/Papercut_icons/camera.webp',
+      imageClassName: styles.cameraIcon,
+      status:
+        uploadedImages.length > 0
+          ? `${uploadedImages.length} ${
+              uploadedImages.length === 1
+                ? tStoryStepsStep2('badgeLabels.image')
+                : tStoryStepsStep2('badgeLabels.images')
+            }`
+          : null,
+    },
+    {
+      type: 'audio' as const,
+      title: tStoryStepsStep2('tabRecord'),
+      description: tStoryStepsStep2('modeCards.recordDescription'),
+      imageSrc: '/Papercut_icons/microphone.webp',
+      imageClassName: styles.microphoneIcon,
+      status: uploadedAudio ? tStoryStepsStep2('badgeLabels.added') : null,
+    },
+  ];
 
   const handleNextStep = async () => {
     try {
@@ -212,72 +293,21 @@ export default function Step2Page() {
                   <p className="text-gray-600 text-lg">{tStoryStepsStep2('intro')}</p>
                 </div>
 
-                {/* Progress Indicator - Removed */}
-
-                {/* Action Buttons - Reduced height */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                  {/* Write Button */}
-                  <button
-                    onClick={() => setActiveModal('text')}
-                    className={`btn h-auto py-3 px-4 flex flex-col items-center gap-2 ${
-                      storyText.trim() ? 'btn-outline btn-primary' : 'btn-outline'
-                    }`}
-                  >
-                    <span className="text-2xl">✍️</span>
-                    <span className="text-base font-semibold">{tStoryStepsStep2('tabWrite')}</span>
-                    {storyText.trim() && (
-                      <span className="badge badge-primary badge-sm">✓ Added</span>
-                    )}
-                  </button>
-
-                  {/* Image Button */}
-                  <button
-                    onClick={() => setActiveModal('images')}
-                    className={`btn h-auto py-3 px-4 flex flex-col items-center gap-2 ${
-                      uploadedImages.length > 0 ? 'btn-outline btn-primary' : 'btn-outline'
-                    }`}
-                  >
-                    <span className="text-2xl">📸</span>
-                    <span className="text-base font-semibold">{tStoryStepsStep2('tabImage')}</span>
-                    {uploadedImages.length > 0 && (
-                      <span className="badge badge-primary badge-sm">
-                        {uploadedImages.length}{' '}
-                        {uploadedImages.length === 1
-                          ? tStoryStepsStep2('badgeLabels.image')
-                          : tStoryStepsStep2('badgeLabels.images')}
-                      </span>
-                    )}
-                  </button>
-
-                  {/* Audio Button */}
-                  <button
-                    onClick={() => setActiveModal('audio')}
-                    className={`btn h-auto py-3 px-4 flex flex-col items-center gap-2 ${
-                      uploadedAudio ? 'btn-outline btn-primary' : 'btn-outline'
-                    }`}
-                  >
-                    <span className="text-2xl">🎤</span>
-                    <span className="text-base font-semibold">{tStoryStepsStep2('tabRecord')}</span>
-                    {uploadedAudio && (
-                      <span className="badge badge-primary badge-sm">
-                        {tStoryStepsStep2('badgeLabels.added')}
-                      </span>
-                    )}
-                  </button>
+                <div className={styles.modeStack}>
+                  {storyModeCards.map((card) => (
+                    <StoryModeCard
+                      key={card.type}
+                      title={card.title}
+                      description={card.description}
+                      imageSrc={card.imageSrc}
+                      imageClassName={card.imageClassName}
+                      status={card.status}
+                      onClick={() => setActiveModal(card.type)}
+                    />
+                  ))}
                 </div>
 
                 <CharacterSelection onChange={setSelectedCharacterIds} />
-                {/* Reassurance Message */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="text-2xl">💡</div>
-                    <div>
-                      <p className="text-blue-800 text-sm mt-1">
-                        {tStoryStepsStep2('reassurance')}
-                      </p>
-                    </div>
-                  </div>
-                </div>
 
                 {/* Auto-save indicator */}
                 {isSaving && (
@@ -310,26 +340,38 @@ export default function Step2Page() {
         </div>
 
         {/* Text Modal - Improved with better text area */}
-        {activeModal === 'text' && (
-          <div className="modal modal-open">
-            <div className="modal-box max-w-5xl w-11/12 h-[90vh] flex flex-col p-0">
-              <div className="modal-header flex justify-between items-center p-6 pb-4 border-b">
-                <h3 className="font-bold text-2xl">✍️ {tStoryStepsStep2('tabWrite')}</h3>
-                <button
-                  className="btn btn-sm btn-circle btn-ghost"
-                  onClick={() => setActiveModal(null)}
-                >
-                  ✕
-                </button>
-              </div>
+        {activeModal === 'text' &&
+          createPortal(
+            <div className={`modal modal-open ${styles.step2Modal}`}>
+              <div
+                className={`${modalSurfaceClass} ${styles.step2ModalBox} max-w-5xl w-11/12 flex flex-col p-0`}
+              >
+                <div className="modal-header flex justify-between items-center p-6 pb-4 border-b">
+                  <h3 className={styles.modalTitle}>
+                    <Image
+                      src="/Papercut_icons/Pencil.webp"
+                      alt=""
+                      width={64}
+                      height={64}
+                      className={`${styles.modalTitleIcon} ${styles.pencilIcon}`}
+                    />
+                    {tStoryStepsStep2('tabWrite')}
+                  </h3>
+                  <button
+                    className="btn btn-sm btn-circle btn-ghost"
+                    onClick={() => setActiveModal(null)}
+                  >
+                    ✕
+                  </button>
+                </div>
 
-              <div className="flex-1 flex flex-col overflow-hidden">
-                <div className="flex-1 flex flex-col px-6 py-4">
-                  {/* Enhanced text area with better scrolling */}
-                  <div className="flex-1 relative rounded-lg border border-base-300 overflow-hidden">
-                    <style
-                      dangerouslySetInnerHTML={{
-                        __html: `
+                <div className="flex-1 flex flex-col overflow-hidden">
+                  <div className="flex-1 flex flex-col px-6 py-4">
+                    {/* Enhanced text area with better scrolling */}
+                    <div className="flex-1 relative rounded-lg border border-base-300 overflow-hidden">
+                      <style
+                        dangerouslySetInnerHTML={{
+                          __html: `
                         .enhanced-textarea {
                           /* Firefox scrollbar */
                           scrollbar-width: thick;
@@ -386,43 +428,44 @@ export default function Step2Page() {
                           }
                         }
                       `,
-                      }}
-                    />
-                    <textarea
-                      className="enhanced-textarea w-full h-full p-4 resize-none text-base leading-relaxed border-0 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset"
-                      placeholder={tStoryStepsStep2('textPlaceholder')}
-                      value={storyText}
-                      onChange={(e) => setStoryText(e.target.value)}
-                    />
+                        }}
+                      />
+                      <textarea
+                        className="enhanced-textarea w-full h-full p-4 resize-none text-base leading-relaxed border-0 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset"
+                        placeholder={tStoryStepsStep2('textPlaceholder')}
+                        value={storyText}
+                        onChange={(e) => setStoryText(e.target.value)}
+                      />
+                    </div>
+
+                    <label className="label px-0 pt-2">
+                      <span className="label-text-alt break-words max-w-full whitespace-normal">
+                        {tStoryStepsStep2('textHelp')}
+                      </span>
+                    </label>
                   </div>
 
-                  <label className="label px-0 pt-2">
-                    <span className="label-text-alt break-words max-w-full whitespace-normal">
-                      {tStoryStepsStep2('textHelp')}
-                    </span>
-                  </label>
+                  {/* Writing Tips */}
+                  <div className="px-6 pb-4">
+                    <WritingTips />
+                  </div>
                 </div>
 
-                {/* Writing Tips */}
-                <div className="px-6 pb-4">
-                  <WritingTips />
+                <div className="modal-action p-6 pt-4 border-t">
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => {
+                      setActiveModal(null);
+                      saveToSession();
+                    }}
+                  >
+                    {tStoryStepsStep2('actions.done')}
+                  </button>
                 </div>
               </div>
-
-              <div className="modal-action p-6 pt-4 border-t">
-                <button
-                  className="btn btn-primary"
-                  onClick={() => {
-                    setActiveModal(null);
-                    saveToSession();
-                  }}
-                >
-                  {tStoryStepsStep2('actions.done')}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+            </div>,
+            document.body,
+          )}
 
         <MediaCapture
           activeModal={activeModal === 'images' || activeModal === 'audio' ? activeModal : null}
@@ -437,7 +480,7 @@ export default function Step2Page() {
         {/* Loading Modal */}
         {showLoadingModal && (
           <div className="modal modal-open">
-            <div className="modal-box max-w-md">
+            <div className={`${modalSurfaceClass} max-w-md`}>
               <div className="text-center space-y-6">
                 <h3 className="font-bold text-xl">{tStoryStepsStep2('loadingModal.title')}</h3>
 

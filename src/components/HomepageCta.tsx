@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import styles from './HomepageCta.module.css';
+import { homepageAsset } from '@/constants/homepageAssets';
 
 export default function HomepageCta() {
   const locale = useLocale();
@@ -13,7 +14,7 @@ export default function HomepageCta() {
     <section className="my-16">
       <div className={styles.card}>
         <Image
-          src="/homepage/kids_fantasy/green_leaf_and_flower.webp"
+          src={homepageAsset('cta_decor_left.webp')}
           alt=""
           width={256}
           height={275}
@@ -22,7 +23,7 @@ export default function HomepageCta() {
           aria-hidden="true"
         />
         <Image
-          src="/homepage/kids_fantasy/mushroom_and_green_leaf.webp"
+          src={homepageAsset('cta_decor_right.webp')}
           alt=""
           width={256}
           height={316}
@@ -31,7 +32,7 @@ export default function HomepageCta() {
           aria-hidden="true"
         />
         <Image
-          src="/homepage/kids_fantasy/yellow_star_2.webp"
+          src={homepageAsset('sparkle_c.webp')}
           alt=""
           width={128}
           height={127}
@@ -40,7 +41,7 @@ export default function HomepageCta() {
           aria-hidden="true"
         />
         <Image
-          src="/homepage/kids_fantasy/yellow_star_1.webp"
+          src={homepageAsset('sparkle_b.webp')}
           alt=""
           width={128}
           height={136}

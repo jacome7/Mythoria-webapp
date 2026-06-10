@@ -2,6 +2,7 @@
   --header-navy: var(--color-primary);
   position: relative;
   isolation: isolate;
+  z-index: 0;
   display: grid;
   min-height: 4.15rem;
   padding: 0.45rem 0.65rem;
@@ -13,6 +14,11 @@
   box-shadow: 0 7px 16px rgba(74, 48, 14, 0.12);
   color: var(--header-navy);
   font-family: var(--font-display), Georgia, 'Times New Roman', serif;
+}
+
+.header:has(.mobileMenu:focus-within),
+.header:has(.languageSlot:focus-within) {
+  z-index: 70;
 }
 
 .header > * {

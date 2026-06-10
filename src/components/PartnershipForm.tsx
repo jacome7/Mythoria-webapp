@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { Handshake, Send } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import NextImage from 'next/image';
 import { useTranslations } from 'next-intl';
-import { FaHandshake, FaPaperPlane } from 'react-icons/fa';
 
 interface PartnershipFormProps {
   className?: string;
@@ -276,7 +276,7 @@ const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
     <div className={`card bg-base-100 shadow-xl ${className}`}>
       <div className="card-body p-6">
         <div className="flex items-center gap-3 mb-4">
-          <FaHandshake className="text-2xl text-primary" />
+          <Handshake className="text-2xl text-primary" />
           <h2 className="text-2xl font-semibold">{t('title')}</h2>
         </div>
 
@@ -491,7 +491,7 @@ const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
               <span className="loading loading-spinner loading-sm"></span>
             ) : (
               <>
-                <FaPaperPlane className="mr-2" />
+                <Send className="mr-2" />
                 {t('submit')}
               </>
             )}

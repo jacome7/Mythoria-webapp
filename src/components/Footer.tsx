@@ -4,33 +4,34 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import styles from './Footer.module.css';
+import { homepageAsset } from '@/constants/homepageAssets';
 
 const socialLinks = [
   {
     href: 'https://www.facebook.com/MythoriaOfficial',
     label: 'Mythoria on Facebook',
-    icon: '/homepage/kids_fantasy/facebook_icon.webp',
+    icon: homepageAsset('facebook_icon.webp'),
     width: 160,
     height: 159,
   },
   {
     href: 'https://www.instagram.com/mythoria_books/',
     label: 'Mythoria on Instagram',
-    icon: '/homepage/kids_fantasy/instagram_icon.webp',
+    icon: homepageAsset('instagram_icon.webp'),
     width: 160,
     height: 157,
   },
   {
     href: 'https://linkedin.com/company/mythoria',
     label: 'Mythoria on LinkedIn',
-    icon: '/homepage/kids_fantasy/linkedin_icon.webp',
+    icon: homepageAsset('linkedin_icon.webp'),
     width: 160,
     height: 155,
   },
   {
     href: 'https://youtube.com',
     label: 'Mythoria on YouTube',
-    icon: '/homepage/kids_fantasy/youtube_icon.webp',
+    icon: homepageAsset('youtube_icon.webp'),
     width: 160,
     height: 150,
   },
@@ -44,7 +45,7 @@ const Footer = () => {
   return (
     <footer className={styles.footer}>
       <Image
-        src="/homepage/kids_fantasy/footer.webp"
+        src={homepageAsset('footer.webp')}
         alt=""
         width={1920}
         height={373}

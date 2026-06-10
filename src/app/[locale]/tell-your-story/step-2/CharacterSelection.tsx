@@ -1,24 +1,56 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslations } from 'next-intl';
+import styles from './CharacterSelection.module.css';
 
 interface Character {
   characterId: string;
   name: string;
   type?: string;
   role?: string;
+  photoUrl?: string | null;
 }
 
 interface Props {
   onChange: (ids: string[]) => void;
 }
 
+const CHARACTER_ICON_TYPES = [
+  'boy',
+  'girl',
+  'man',
+  'woman',
+  'person',
+  'dog',
+  'cat',
+  'bird',
+  'other_animal',
+  'elf_fairy_mythical',
+  'robot_cyborg',
+  'alien_extraterrestrial',
+  'other_creature',
+  'other',
+];
+
+const getCharacterIconPath = (type: string | undefined): string => {
+  const normalizedType = type?.trim().toLowerCase();
+  if (!normalizedType || !CHARACTER_ICON_TYPES.includes(normalizedType)) {
+    return '/CharacterIcons/other.png';
+  }
+
+  return `/CharacterIcons/${normalizedType}.png`;
+};
+
 export default function CharacterSelection({ onChange }: Props) {
   const t = useTranslations('StorySteps.step2');
   const [existingCharacters, setExistingCharacters] = useState<Character[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const suppressNextOpenRef = useRef(false);
 
   useEffect(() => {
     const fetchCharacters = async () => {
@@ -45,9 +77,17 @@ export default function CharacterSelection({ onChange }: Props) {
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
-  const selectAll = () => {
-    const ids = existingCharacters.map((c) => c.characterId);
-    setSelectedIds(ids);
+  const openModal = () => {
+    if (suppressNextOpenRef.current) return;
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    suppressNextOpenRef.current = true;
+    setIsModalOpen(false);
+    window.setTimeout(() => {
+      suppressNextOpenRef.current = false;
+    }, 0);
   };
 
   // Notify parent of selection changes after render commit (safe side-effect phase)
@@ -55,74 +95,104 @@ export default function CharacterSelection({ onChange }: Props) {
     onChange(selectedIds);
   }, [selectedIds, onChange]);
 
-  if (existingCharacters.length === 0 && !isLoading) {
+  if (isLoading || existingCharacters.length === 0) {
     return null;
   }
 
   return (
-    <div className="bg-gray-50 border border-gray-200 rounded-lg">
-      <div className="p-4 flex items-center gap-3">
-        <span className="text-xl">👥</span>
-        <div>
-          <h3 className="font-semibold text-gray-800">
-            {t('characterSelection.includeExistingTitle')}
-          </h3>
-          <p className="text-sm text-gray-600">
-            {selectedIds.length > 0
-              ? t('characterSelection.selectedCount', { count: selectedIds.length })
-              : t('characterSelection.noneSelected')}
-          </p>
-        </div>
-      </div>
-      <div className="border-t border-gray-200 p-4 max-h-60 overflow-y-auto">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <span className="loading loading-spinner loading-md"></span>
-            <span className="ml-2 text-gray-600">{t('characterSelection.loading')}</span>
-          </div>
-        ) : (
-          <>
-            {existingCharacters.length > 1 && (
-              <div className="mb-3 pb-3 border-b border-gray-200">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="checkbox checkbox-sm"
-                    checked={selectedIds.length === existingCharacters.length}
-                    onChange={selectAll}
-                  />
-                  <span className="text-sm font-medium text-gray-700">
-                    {t('characterSelection.selectAll', { count: existingCharacters.length })}
-                  </span>
-                </label>
-              </div>
-            )}
-            <div className="space-y-2">
-              {existingCharacters.map((character) => (
-                <label
-                  key={character.characterId}
-                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 cursor-pointer"
+    <>
+      <button type="button" className={styles.closedCard} onClick={openModal}>
+        <span className={styles.closedIconWrap} aria-hidden="true">
+          <Image
+            src="/Papercut_icons/characters.webp"
+            alt=""
+            width={120}
+            height={96}
+            className={styles.closedIcon}
+          />
+        </span>
+        <span className={styles.closedCopy}>
+          <span className={styles.closedTitle}>
+            {t('characterSelection.includeCharactersTitle')}
+          </span>
+          {selectedIds.length > 0 && (
+            <span className={styles.closedStatus}>
+              {t('characterSelection.selectedCount', { count: selectedIds.length })}
+            </span>
+          )}
+        </span>
+      </button>
+
+      {isModalOpen &&
+        createPortal(
+          <div
+            className={`modal modal-open ${styles.modalBackdrop}`}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className={styles.modalBox}>
+              <div className={styles.modalHeader}>
+                <h3 className={styles.modalTitle}>
+                  {t('characterSelection.includeCharactersTitle')}
+                </h3>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-circle btn-ghost"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    closeModal();
+                  }}
+                  aria-label="Close"
                 >
-                  <input
-                    type="checkbox"
-                    className="checkbox checkbox-sm"
-                    checked={selectedIds.includes(character.characterId)}
-                    onChange={() => toggle(character.characterId)}
-                  />
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-800">{character.name}</div>
-                    {(character.type || character.role) && (
-                      <div className="text-xs text-gray-500">
-                        {[character.type, character.role].filter(Boolean).join(' • ')}
-                      </div>
-                    )}
-                  </div>
-                </label>
-              ))}
+                  X
+                </button>
+              </div>
+
+              <div className={styles.characterGrid}>
+                {existingCharacters.map((character) => (
+                  <button
+                    type="button"
+                    key={character.characterId}
+                    className={`${styles.characterOption} ${
+                      selectedIds.includes(character.characterId)
+                        ? styles.characterOptionSelected
+                        : ''
+                    }`}
+                    onClick={() => toggle(character.characterId)}
+                    aria-pressed={selectedIds.includes(character.characterId)}
+                  >
+                    <span className={styles.characterAvatar}>
+                      <Image
+                        src={character.photoUrl || getCharacterIconPath(character.type)}
+                        alt=""
+                        width={72}
+                        height={72}
+                        className={
+                          character.photoUrl ? styles.characterPhoto : styles.characterFallback
+                        }
+                      />
+                    </span>
+                    <span className={styles.characterName}>{character.name}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className={styles.modalActions}>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    closeModal();
+                  }}
+                >
+                  {t('actions.done')}
+                </button>
+              </div>
             </div>
-          </>
+          </div>,
+          document.body,
         )}
-      </div>
-    </div>
+    </>
   );
 }

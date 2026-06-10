@@ -4,10 +4,12 @@ A practical, copy-paste guide for positioning and animating the home hero's
 paper-cut layers. **You don't touch React to do this** — every element is a
 plain data object in one file. Edit it, save, and the dev server hot-reloads.
 
-- **Edit layers here:** `src/components/papercut/compositions/kidsFantasy.ts`
+- **Edit layers here:** `src/components/papercut/compositions/<id>/index.ts` (e.g. `kidsFantasy/index.ts`)
+- **Shared idle keyframes:** `src/components/papercut/compositions/shared/animations.module.css`
+- **Per-intent palette vars:** `src/components/papercut/compositions/<id>/theme.module.css`
 - **Field definitions (with comments):** `src/components/papercut/types.ts`
 - **Renderer (rarely touched):** `src/components/papercut/PaperCutLayer.tsx`
-- **Global parallax distance + CSS keyframes:** `PaperCutHero.tsx` / `src/app/globals.css`
+- **Global parallax distance + CSS utilities:** `PaperCutHero.tsx` / `src/app/globals.css`
 - **Animation library:** [Motion](https://motion.dev) (Framer Motion), `motion/react`
 
 > Run `npm run dev`, open the homepage, change a number, save → it updates live.
@@ -21,7 +23,7 @@ Each papercut is one object in the composition's `sky[]` or `scene[]` array:
 ```ts
 {
   id: 'dragon',                          // unique name
-  src: '/homepage/kids_fantasy/dragon.png',
+  src: '/homepage/kids_fantasy/companion_right.webp',  // role-based shared name (see assets_metadata.json)
   intrinsic: { w: 498, h: 668 },         // the PNG's real pixel size (keep accurate → no layout shift)
   z: 9,                                  // stacking order (see §3)
   anchor: 'bottom',                      // measure y from 'top' or 'bottom'
@@ -105,8 +107,9 @@ neighbours don't move in sync).
 anim: 'sway', animDurMs: 7000, animDelayMs: 600,
 ```
 
-Idle loops are pure CSS (`@keyframes pc-*` in `globals.css`). To add a new loop:
-add a `@keyframes pc-myloop` + `.pc-anim-myloop .pc-img { animation: ... }` there
+Idle loops are pure CSS keyframes defined in
+`src/components/papercut/compositions/shared/animations.module.css` (shared by all
+compositions). To add a new loop: add a `@keyframes pc-myloop` + the class there,
 and add `'myloop'` to the `AnimName` union in `types.ts`.
 
 ### 4b. Entrance (`enter`) — plays once when the layer appears

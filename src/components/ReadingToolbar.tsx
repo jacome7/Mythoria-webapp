@@ -1,16 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { AlignJustify, BookOpen, ChevronDown, Maximize2, Minus, Plus, Type } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import {
-  FiMinus,
-  FiPlus,
-  FiType,
-  FiAlignJustify,
-  FiMaximize2,
-  FiChevronDown,
-  FiBook,
-} from 'react-icons/fi';
 
 interface Chapter {
   id: string;
@@ -103,16 +95,16 @@ export default function ReadingToolbar({
   };
 
   return (
-    <div className="reading-toolbar bg-base-200 border-b border-base-300 sticky top-0 z-50">
-      <div className="w-full max-w-[1200px] mx-auto">
-        <div className="flex items-center justify-between py-2">
+    <div className="reading-toolbar bg-base-200 border-b border-base-300 sticky top-0 z-50 overflow-visible">
+      <div className="w-full max-w-[1200px] mx-auto px-3 sm:px-4">
+        <div className="flex items-center justify-between gap-3 py-2">
           {/* Toggle Button */}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="btn btn-ghost btn-sm"
             aria-label={tReadingToolbar('toggleLabel')}
           >
-            <FiType className="w-4 h-4" />
+            <Type className="w-4 h-4" />
             <span className="hidden sm:inline ml-2">{tReadingToolbar('title')}</span>
           </button>
 
@@ -120,9 +112,9 @@ export default function ReadingToolbar({
           <div className="flex items-center gap-2">
             {/* Chapters Dropdown */}
             {chapters.length > 0 && (
-              <div className="dropdown dropdown-end">
+              <div className="dropdown dropdown-end relative">
                 <div tabIndex={0} role="button" className="btn btn-ghost btn-sm">
-                  <FiBook className="w-4 h-4" />
+                  <BookOpen className="w-4 h-4" />
                   <span className="hidden sm:inline ml-2">
                     {currentChapter === 0
                       ? tReadingToolbar('cover')
@@ -133,16 +125,16 @@ export default function ReadingToolbar({
                       ? tReadingToolbar('cover')
                       : tReadingToolbar('chapterLabel', { number: currentChapter })}
                   </span>
-                  <FiChevronDown className="w-3 h-3 ml-1" />
+                  <ChevronDown className="w-3 h-3 ml-1" />
                 </div>
                 <ul
                   tabIndex={0}
-                  className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow border border-base-300"
+                  className="dropdown-content menu !absolute !right-0 !top-full z-[80] mt-2 w-60 max-w-[calc(100vw-1.5rem)] max-h-[calc(100vh-9rem)] overflow-y-auto bg-base-100 rounded-box p-2 shadow-xl border border-base-300"
                 >
                   <li>
                     <button
                       onClick={() => onChapterChange?.(0)}
-                      className={`${currentChapter === 0 ? 'bg-primary/20' : ''}`}
+                      className={`w-full text-left ${currentChapter === 0 ? 'bg-primary/20' : ''}`}
                     >
                       {tReadingToolbar('coverAndToc')}
                     </button>
@@ -151,10 +143,12 @@ export default function ReadingToolbar({
                     <li key={chapter.id}>
                       <button
                         onClick={() => onChapterChange?.(chapter.chapterNumber)}
-                        className={`${currentChapter === chapter.chapterNumber ? 'bg-primary/20' : ''}`}
+                        className={`grid w-full grid-cols-[auto_minmax(0,1fr)] items-center gap-2 text-left ${
+                          currentChapter === chapter.chapterNumber ? 'bg-primary/20' : ''
+                        }`}
                       >
                         <span className="font-medium">Ch. {chapter.chapterNumber}</span>
-                        <span className="text-sm opacity-70 truncate">{chapter.title}</span>
+                        <span className="min-w-0 truncate text-sm opacity-70">{chapter.title}</span>
                       </button>
                     </li>
                   ))}
@@ -169,7 +163,7 @@ export default function ReadingToolbar({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Font Size Control */}
               <div className="flex items-center gap-3">
-                <FiType className="w-4 h-4 text-base-content/70" />
+                <Type className="w-4 h-4 text-base-content/70" />
                 <span className="text-sm font-medium min-w-fit">
                   {tReadingToolbar('controls.fontSize')}
                 </span>
@@ -180,7 +174,7 @@ export default function ReadingToolbar({
                     disabled={settings.fontSize <= 50}
                     aria-label={tReadingToolbar('controls.decreaseFontSize')}
                   >
-                    <FiMinus className="w-3 h-3" />
+                    <Minus className="w-3 h-3" />
                   </button>
                   <div className="flex-1 mx-2">
                     <input
@@ -200,14 +194,14 @@ export default function ReadingToolbar({
                     disabled={settings.fontSize >= 200}
                     aria-label={tReadingToolbar('controls.increaseFontSize')}
                   >
-                    <FiPlus className="w-3 h-3" />
+                    <Plus className="w-3 h-3" />
                   </button>
                   <span className="text-xs min-w-fit">{settings.fontSize}%</span>
                 </div>
               </div>
               {/* Line Height Control */}{' '}
               <div className="flex items-center gap-3">
-                <FiAlignJustify className="w-4 h-4 text-base-content/70" />
+                <AlignJustify className="w-4 h-4 text-base-content/70" />
                 <span className="text-sm font-medium min-w-fit">
                   {tReadingToolbar('controls.lineHeight')}
                 </span>
@@ -218,7 +212,7 @@ export default function ReadingToolbar({
                     disabled={settings.lineHeight <= 50}
                     aria-label={tReadingToolbar('controls.decreaseLineHeight')}
                   >
-                    <FiMinus className="w-3 h-3" />
+                    <Minus className="w-3 h-3" />
                   </button>
                   <div className="flex-1 mx-2">
                     <input
@@ -238,14 +232,14 @@ export default function ReadingToolbar({
                     disabled={settings.lineHeight >= 200}
                     aria-label={tReadingToolbar('controls.increaseLineHeight')}
                   >
-                    <FiPlus className="w-3 h-3" />
+                    <Plus className="w-3 h-3" />
                   </button>
                   <span className="text-xs min-w-fit">{settings.lineHeight}%</span>
                 </div>
               </div>
               {/* Margins Control */}{' '}
               <div className="flex items-center gap-3">
-                <FiMaximize2 className="w-4 h-4 text-base-content/70" />
+                <Maximize2 className="w-4 h-4 text-base-content/70" />
                 <span className="text-sm font-medium min-w-fit">
                   {tReadingToolbar('controls.margins')}
                 </span>
@@ -256,7 +250,7 @@ export default function ReadingToolbar({
                     disabled={settings.margins <= 50}
                     aria-label={tReadingToolbar('controls.decreaseMargins')}
                   >
-                    <FiMinus className="w-3 h-3" />
+                    <Minus className="w-3 h-3" />
                   </button>
                   <div className="flex-1 mx-2">
                     <input
@@ -276,7 +270,7 @@ export default function ReadingToolbar({
                     disabled={settings.margins >= 200}
                     aria-label={tReadingToolbar('controls.increaseMargins')}
                   >
-                    <FiPlus className="w-3 h-3" />
+                    <Plus className="w-3 h-3" />
                   </button>
                   <span className="text-xs min-w-fit">{settings.margins}%</span>
                 </div>

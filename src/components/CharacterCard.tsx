@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { FiCamera } from 'react-icons/fi';
+import { Camera } from 'lucide-react';
 import { Character } from '../lib/story-session';
 import {
   getCharacterRoleOptions,
@@ -295,6 +295,10 @@ export default function CharacterCard({
   };
 
   if (mode === 'view') {
+    const ageDisplayValue = formData.age
+      ? getAgeOptions().find((age) => age.value === formData.age)?.label || formData.age
+      : null;
+
     return (
       <div className="card bg-base-100 shadow-lg border">
         <div className="card-body">
@@ -328,45 +332,23 @@ export default function CharacterCard({
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="label">
-                <span className="label-text font-semibold">{tCharacters('fields.type')}</span>
-              </label>
-              <p className="text-gray-700">{getTypeDisplayValue(formData.type || '')}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-2 mb-4 text-sm">
+            <div className="flex items-baseline gap-2">
+              <span className="font-semibold text-base-content/75">
+                {tCharacters('fields.type')}:
+              </span>
+              <span className="text-gray-700">{getTypeDisplayValue(formData.type || '')}</span>
             </div>
 
-            {formData.age && (
-              <div>
-                <label className="label">
-                  <span className="label-text font-semibold">{tCharacters('fields.age')}</span>
-                </label>
-                <p className="text-gray-700">
-                  {getAgeOptions().find((age) => age.value === formData.age)?.label || formData.age}
-                </p>
-                {getAgeOptions().find((age) => age.value === formData.age)?.description && (
-                  <p className="text-sm text-gray-500 mt-1">
-                    {getAgeOptions().find((age) => age.value === formData.age)?.description}
-                  </p>
-                )}
+            {ageDisplayValue && (
+              <div className="flex items-baseline gap-2">
+                <span className="font-semibold text-base-content/75">
+                  {tCharacters('fields.age')}:
+                </span>
+                <span className="text-gray-700">{ageDisplayValue}</span>
               </div>
             )}
-          </div>{' '}
-          {/* Traits Display in View Mode - show after age */}
-          {formData.traits && formData.traits.length > 0 && (
-            <div className="mb-4">
-              <label className="label">
-                <span className="label-text font-semibold">{tCharacters('fields.traits')}</span>
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {formData.traits.map((trait) => (
-                  <div key={trait} className="px-2 py-1 rounded text-sm bg-gray-200 text-gray-700">
-                    {getTraitDisplayName(trait)}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          </div>
           {formData.characteristics && (
             <div className="mb-4">
               <label className="label">
@@ -377,22 +359,12 @@ export default function CharacterCard({
               <p className="text-gray-700">{formData.characteristics}</p>
             </div>
           )}
-          {formData.physicalDescription && (
-            <div className="mb-4">
-              <label className="label">
-                <span className="label-text font-semibold">
-                  {tCharacters('fields.physicalDescription')}
-                </span>
-              </label>
-              <p className="text-gray-700">{formData.physicalDescription}</p>
-            </div>
-          )}
           <div className="card-actions justify-end">
             <button className="btn btn-outline btn-sm" onClick={onEdit} disabled={deleting}>
               ✏️ {tCharacters('actions.edit')}
             </button>
             <button
-              className={`btn btn-error btn-sm ${deleting ? 'loading' : ''}`}
+              className={`btn btn-outline btn-sm ${deleting ? 'loading' : ''}`}
               onClick={handleDelete}
               disabled={deleting}
             >
@@ -441,7 +413,7 @@ export default function CharacterCard({
                 )}
               </div>
               <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
-                <FiCamera className="w-6 h-6 text-white" />
+                <Camera className="w-6 h-6 text-white" />
               </div>
             </button>
           ) : (
@@ -598,7 +570,7 @@ export default function CharacterCard({
             />
 
             {showTraitDropdown && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+              <div className="mythoria-popup-surface absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
                 {Object.entries(filteredTraits).map(
                   ([category, traits]) =>
                     traits.length > 0 && (

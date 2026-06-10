@@ -1,5 +1,5 @@
 import type { PaperCutComposition } from '../../types';
-import styles from './animations.module.css';
+import styles from '../shared/animations.module.css';
 
 const A = '/homepage/kids_fantasy';
 
@@ -11,7 +11,7 @@ export const kidsFantasy: PaperCutComposition = {
   sky: [
     {
       id: 'balloon',
-      src: `${A}/ballon.webp`,
+      src: `${A}/sky_left.webp`,
       intrinsic: { w: 300, h: 465 },
       z: 4,
       anchor: 'top',
@@ -26,7 +26,7 @@ export const kidsFantasy: PaperCutComposition = {
     },
     {
       id: 'cloud-top-left',
-      src: `${A}/cloud_top_left.webp`,
+      src: `${A}/cloud_left.webp`,
       intrinsic: { w: 460, h: 350 },
       z: 2,
       anchor: 'top',
@@ -42,7 +42,7 @@ export const kidsFantasy: PaperCutComposition = {
     },
     {
       id: 'cloud-top-right',
-      src: `${A}/cloud_top_right.webp`,
+      src: `${A}/cloud_right.webp`,
       intrinsic: { w: 489, h: 317 },
       z: 2,
       anchor: 'top',
@@ -58,7 +58,7 @@ export const kidsFantasy: PaperCutComposition = {
     },
     {
       id: 'moon',
-      src: `${A}/moon.webp`,
+      src: `${A}/sky_right.webp`,
       intrinsic: { w: 381, h: 418 },
       z: 3,
       anchor: 'top',
@@ -73,7 +73,7 @@ export const kidsFantasy: PaperCutComposition = {
     },
     {
       id: 'stars',
-      src: `${A}/stars.webp`,
+      src: `${A}/sparkles.webp`,
       intrinsic: { w: 328, h: 318 },
       z: 3,
       anchor: 'top',
@@ -105,7 +105,7 @@ export const kidsFantasy: PaperCutComposition = {
     },
     {
       id: 'dragon',
-      src: `${A}/dragon.webp`,
+      src: `${A}/companion_right.webp`,
       intrinsic: { w: 358, h: 480 },
       z: 9,
       anchor: 'bottom',
@@ -120,7 +120,7 @@ export const kidsFantasy: PaperCutComposition = {
     },
     {
       id: 'girl',
-      src: `${A}/girl_holding_book.webp`,
+      src: `${A}/character.webp`,
       intrinsic: { w: 461, h: 717 },
       altKey: 'hero.alt.girl',
       z: 10,
@@ -134,7 +134,7 @@ export const kidsFantasy: PaperCutComposition = {
     },
     {
       id: 'boat',
-      src: `${A}/boat.webp`,
+      src: `${A}/companion_left.webp`,
       intrinsic: { w: 331, h: 330 },
       z: 12,
       anchor: 'bottom',
@@ -173,19 +173,19 @@ export const kidsFantasy: PaperCutComposition = {
   features: [
     {
       id: 'personalized',
-      icon: `${A}/book_icon.png`,
+      icon: `${A}/feature_personalized_icon.png`,
       titleKey: 'hero.features.personalized.title',
       descKey: 'hero.features.personalized.desc',
     },
     {
       id: 'meaningful',
-      icon: `${A}/heart_icon.png`,
+      icon: `${A}/feature_meaningful_icon.png`,
       titleKey: 'hero.features.meaningful.title',
       descKey: 'hero.features.meaningful.desc',
     },
     {
       id: 'occasion',
-      icon: `${A}/users_icon.png`,
+      icon: `${A}/feature_occasion_icon.png`,
       titleKey: 'hero.features.occasion.title',
       descKey: 'hero.features.occasion.desc',
     },

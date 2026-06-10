@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { FiCreditCard } from 'react-icons/fi';
+import { CreditCard } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import { useLocale } from 'next-intl';
 
@@ -349,7 +349,7 @@ export default function PaymentStep({
             <h3 className="text-lg font-semibold mb-4">{tPrintOrder('payment.method')}</h3>
             <div className="space-y-4">
               <div className="alert alert-info">
-                <FiCreditCard className="w-5 h-5" />
+                <CreditCard className="w-5 h-5" />
                 <span>{tPrintOrder('payment.creditsInfo')}</span>
               </div>{' '}
               {/* Credits Balance */}

@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { Loader2, Play, Square } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { FiLoader, FiPlay, FiSquare } from 'react-icons/fi';
 
 interface VoiceSamplePlayerProps {
   sampleUrl: string;
@@ -62,11 +62,11 @@ export default function VoiceSamplePlayer({ sampleUrl }: VoiceSamplePlayerProps)
         aria-label={label}
       >
         {status === 'loading' ? (
-          <FiLoader className="w-4 h-4 animate-spin" />
+          <Loader2 className="w-4 h-4 animate-spin" />
         ) : status === 'playing' ? (
-          <FiSquare className="w-3.5 h-3.5" />
+          <Square className="w-3.5 h-3.5" />
         ) : (
-          <FiPlay className="w-4 h-4 ml-0.5" />
+          <Play className="w-4 h-4 ml-0.5" />
         )}
       </button>
       <span className="text-sm text-base-content/70">{label}</span>

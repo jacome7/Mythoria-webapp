@@ -11,6 +11,7 @@ const STATIC_ROUTES = [
   'get-inspired',
   'tell-your-story',
   'my-stories',
+  'my-characters',
   'profile',
   'blog',
   'buy-credits',

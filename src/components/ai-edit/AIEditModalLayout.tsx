@@ -1,4 +1,4 @@
-import { FiX, FiFileText, FiImage } from 'react-icons/fi';
+import { FileText, ImageIcon, X } from 'lucide-react';
 import type { useTranslations } from 'next-intl';
 import ImageEditingTab from '../ImageEditingTab';
 import { StoryImage } from '@/utils/imageUtils';
@@ -47,7 +47,7 @@ export default function AIEditModalLayout({
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-xl font-bold">{t('title')}</h2>
           <button onClick={onClose} className="p-2 rounded hover:bg-gray-100">
-            <FiX className="w-5 h-5" />
+            <X className="w-5 h-5" />
           </button>
         </div>
         <div className="flex space-x-2 p-4 border-b">
@@ -55,13 +55,13 @@ export default function AIEditModalLayout({
             className={`btn btn-sm ${activeTab === 'text' ? 'btn-primary' : ''}`}
             onClick={() => setActiveTab('text')}
           >
-            <FiFileText className="w-4 h-4 mr-1" /> {t('tabs.text')}
+            <FileText className="w-4 h-4 mr-1" /> {t('tabs.text')}
           </button>
           <button
             className={`btn btn-sm ${activeTab === 'images' ? 'btn-primary' : ''}`}
             onClick={() => setActiveTab('images')}
           >
-            <FiImage className="w-4 h-4 mr-1" /> {t('tabs.images')}
+            <ImageIcon className="w-4 h-4 mr-1" /> {t('tabs.images')}
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-4">

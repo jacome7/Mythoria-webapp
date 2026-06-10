@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiArrowLeft, FiMapPin, FiPrinter, FiBook } from 'react-icons/fi';
+import { ArrowLeft, BookOpen, MapPin, Printer } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { type Address as AddressType } from '@/components/AddressCard';
@@ -174,9 +174,9 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
     }
   };
   const steps = [
-    { id: 'story', title: tPrintOrder('steps.story'), icon: FiBook },
-    { id: 'address', title: tPrintOrder('steps.address'), icon: FiMapPin },
-    { id: 'payment', title: tPrintOrder('steps.payment'), icon: FiPrinter },
+    { id: 'story', title: tPrintOrder('steps.story'), icon: BookOpen },
+    { id: 'address', title: tPrintOrder('steps.address'), icon: MapPin },
+    { id: 'payment', title: tPrintOrder('steps.payment'), icon: Printer },
   ];
 
   const getCurrentStepIndex = () => steps.findIndex((step) => step.id === currentStep);
@@ -280,7 +280,7 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
             <span>{error}</span>
           </div>
           <Link href={`/${locale}/my-stories`} className="btn btn-primary mt-4">
-            <FiArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-4 h-4 mr-2" />
             {tPrintOrder('backToStories')}
           </Link>
         </div>
@@ -293,7 +293,7 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <Link href={`/${locale}/my-stories`} className="btn btn-ghost btn-sm">
-          <FiArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4" />
         </Link>
         <div>
           <h1 className="text-3xl font-bold">{tPrintOrder('title')}</h1>

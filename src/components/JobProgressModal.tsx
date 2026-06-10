@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { FiX, FiClock, FiCheckCircle, FiAlertCircle, FiLoader } from 'react-icons/fi';
+import { AlertCircle, CheckCircle, Clock, Loader2, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 interface JobProgressModalProps {
@@ -157,19 +157,19 @@ export default function JobProgressModal({
   };
 
   const getStatusIcon = () => {
-    if (!jobStatus) return <FiLoader className="w-5 h-5 animate-spin text-blue-600" />;
+    if (!jobStatus) return <Loader2 className="w-5 h-5 animate-spin text-blue-600" />;
 
     switch (jobStatus.status) {
       case 'pending':
-        return <FiClock className="w-5 h-5 text-yellow-600" />;
+        return <Clock className="w-5 h-5 text-yellow-600" />;
       case 'processing':
-        return <FiLoader className="w-5 h-5 animate-spin text-blue-600" />;
+        return <Loader2 className="w-5 h-5 animate-spin text-blue-600" />;
       case 'completed':
-        return <FiCheckCircle className="w-5 h-5 text-green-600" />;
+        return <CheckCircle className="w-5 h-5 text-green-600" />;
       case 'failed':
-        return <FiAlertCircle className="w-5 h-5 text-red-600" />;
+        return <AlertCircle className="w-5 h-5 text-red-600" />;
       default:
-        return <FiLoader className="w-5 h-5 animate-spin text-blue-600" />;
+        return <Loader2 className="w-5 h-5 animate-spin text-blue-600" />;
     }
   };
 
@@ -213,7 +213,7 @@ export default function JobProgressModal({
               onClick={onClose}
               className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
             >
-              <FiX className="w-4 h-4 text-gray-600" />
+              <X className="w-4 h-4 text-gray-600" />
             </button>
           )}
         </div>
@@ -259,7 +259,7 @@ export default function JobProgressModal({
           {jobStatus?.status === 'failed' && jobStatus.error && (
             <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
               <div className="flex items-center space-x-2">
-                <FiAlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+                <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
                 <span className="text-sm text-red-600">{jobStatus.error}</span>
               </div>
             </div>
@@ -269,7 +269,7 @@ export default function JobProgressModal({
           {jobStatus?.status === 'completed' && (
             <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
               <div className="flex items-center space-x-2">
-                <FiCheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
                 <span className="text-sm text-green-600">
                   {tJobProgressModal('status.completed')}
                 </span>

@@ -1,24 +1,24 @@
 'use client';
+import {
+  Baby,
+  BookOpen,
+  Cake,
+  Flag,
+  Gift,
+  Globe,
+  Heart,
+  Lightbulb,
+  Mail,
+  Phone,
+  Target,
+  Ticket,
+  Users,
+  VenusAndMars,
+} from 'lucide-react';
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { useUser } from '@clerk/nextjs';
-import {
-  FaVenusMars,
-  FaBirthdayCake,
-  FaBullseye,
-  FaUsers,
-  FaLightbulb,
-  FaHeart,
-  FaGift,
-  FaChild,
-  FaBookOpen,
-  FaTicketAlt,
-  FaPhone,
-  FaGlobe,
-  FaEnvelope,
-  FaFlag,
-} from 'react-icons/fa';
 import PromotionCodeRedeemer from '@/components/PromotionCodeRedeemer';
 import { SUPPORTED_LOCALES } from '@/config/locales';
 import { getCountryOptions, localeToCountry } from '@/utils/countries';
@@ -346,7 +346,7 @@ export default function OnboardingProfilePage() {
                   <div className="form-control w-full">
                     <label className="label">
                       <span className="label-text flex flex-wrap items-center gap-2 whitespace-normal break-words">
-                        <FaEnvelope className="mt-0.5" /> {t('contact.email')}
+                        <Mail className="mt-0.5" /> {t('contact.email')}
                       </span>
                     </label>
                     <input
@@ -360,7 +360,7 @@ export default function OnboardingProfilePage() {
                   <div className="form-control w-full">
                     <label className="label">
                       <span className="label-text flex flex-wrap items-center gap-2 whitespace-normal break-words">
-                        <FaPhone className="mt-0.5" /> {t('contact.mobile')}
+                        <Phone className="mt-0.5" /> {t('contact.mobile')}
                       </span>
                     </label>
                     <input
@@ -378,7 +378,7 @@ export default function OnboardingProfilePage() {
                   <div className="form-control w-full">
                     <label className="label">
                       <span className="label-text flex flex-wrap items-center gap-2 whitespace-normal break-words">
-                        <FaGlobe className="mt-0.5" /> {t('contact.language')}
+                        <Globe className="mt-0.5" /> {t('contact.language')}
                       </span>
                     </label>
                     <select
@@ -400,7 +400,7 @@ export default function OnboardingProfilePage() {
                   <div className="form-control w-full">
                     <label className="label">
                       <span className="label-text flex flex-wrap items-center gap-2 whitespace-normal break-words">
-                        <FaFlag className="mt-0.5" /> {t('contact.country')}
+                        <Flag className="mt-0.5" /> {t('contact.country')}
                       </span>
                     </label>
                     <select
@@ -440,7 +440,7 @@ export default function OnboardingProfilePage() {
                   <div className="form-control w-full max-w-xs">
                     <label className="label">
                       <span className="label-text flex flex-wrap items-start gap-2 whitespace-normal break-words">
-                        <FaVenusMars className="mt-0.5" /> {t('gender.label')}
+                        <VenusAndMars className="mt-0.5" /> {t('gender.label')}
                       </span>
                     </label>
                     <select
@@ -467,7 +467,7 @@ export default function OnboardingProfilePage() {
                     <div className="form-control w-full max-w-xs">
                       <label className="label">
                         <span className="label-text flex flex-wrap items-start gap-2 whitespace-normal break-words">
-                          <FaBirthdayCake className="mt-0.5" /> {t('literaryAge.label')}
+                          <Cake className="mt-0.5" /> {t('literaryAge.label')}
                         </span>
                       </label>
                       <select
@@ -497,7 +497,7 @@ export default function OnboardingProfilePage() {
                     <div className="form-control w-full">
                       <label className="label">
                         <span className="label-text flex flex-wrap items-start gap-2 whitespace-normal break-words">
-                          <FaBullseye className="mt-0.5" /> {t('primaryGoal.label')}
+                          <Target className="mt-0.5" /> {t('primaryGoal.label')}
                         </span>
                       </label>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -551,7 +551,7 @@ export default function OnboardingProfilePage() {
                     <div className="form-control w-full">
                       <label className="label">
                         <span className="label-text flex flex-wrap items-start gap-2 whitespace-normal break-words">
-                          <FaUsers className="mt-0.5" /> {t('audience.label')}
+                          <Users className="mt-0.5" /> {t('audience.label')}
                         </span>
                       </label>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -587,7 +587,7 @@ export default function OnboardingProfilePage() {
                     <div className="form-control w-full">
                       <label className="label">
                         <span className="label-text flex flex-wrap items-start gap-2 whitespace-normal break-words">
-                          <FaLightbulb className="mt-0.5" /> {t('interests.label')}
+                          <Lightbulb className="mt-0.5" /> {t('interests.label')}
                         </span>
                       </label>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -625,7 +625,7 @@ export default function OnboardingProfilePage() {
             {/* Gift Section */}
             <div className="card bg-primary text-primary-content shadow-xl">
               <div className="card-body items-center text-center">
-                <FaGift className="text-4xl mb-4" />
+                <Gift className="text-4xl mb-4" />
                 <h2 className="card-title text-2xl">{t('gift.section')}</h2>
                 <p>{t.rich('gift.copy', { credits: 5 })}</p>
                 <div className="card-actions justify-center mt-4">
@@ -640,7 +640,7 @@ export default function OnboardingProfilePage() {
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
                 <div className="flex items-center gap-3 mb-2">
-                  <FaTicketAlt className="text-primary text-2xl" />
+                  <Ticket className="text-primary text-2xl" />
                   <h2 className="card-title text-primary text-2xl m-0">
                     {tVoucher('sectionHeading')}
                   </h2>
@@ -657,15 +657,15 @@ export default function OnboardingProfilePage() {
                 <p></p>
                 <ul className="list-none space-y-2 mt-4">
                   <li className="flex items-start">
-                    <FaChild className="text-primary mr-3 mt-1 flex-shrink-0" />
+                    <Baby className="text-primary mr-3 mt-1 flex-shrink-0" />
                     <span>{t('ideas.item1')}</span>
                   </li>
                   <li className="flex items-start">
-                    <FaHeart className="text-primary mr-3 mt-1 flex-shrink-0" />
+                    <Heart className="text-primary mr-3 mt-1 flex-shrink-0" />
                     <span>{t('ideas.item2')}</span>
                   </li>
                   <li className="flex items-start">
-                    <FaGift className="text-primary mr-3 mt-1 flex-shrink-0" />
+                    <Gift className="text-primary mr-3 mt-1 flex-shrink-0" />
                     <span>{t('ideas.item3')}</span>
                   </li>
                 </ul>
@@ -679,7 +679,7 @@ export default function OnboardingProfilePage() {
                 <p>{t('inspiration.copy')}</p>
                 <div className="card-actions justify-end mt-4">
                   <Link href={`/${locale}/get-inspired`} className="btn btn-ghost text-accent">
-                    <FaBookOpen className="mr-2" />
+                    <BookOpen className="mr-2" />
                     {t('inspiration.button')}
                   </Link>
                 </div>

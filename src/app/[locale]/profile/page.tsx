@@ -1,23 +1,23 @@
 'use client';
-import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
+import { GENDER_OPTIONS, LITERARY_AGE_OPTIONS } from '@/constants/profileOptions';
+import {
+  Book,
+  Cake,
+  CirclePlus,
+  CreditCard,
+  Flag,
+  Globe,
+  Mail,
+  Phone,
+  User,
+  VenusAndMars,
+} from 'lucide-react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { SUPPORTED_LOCALES } from '@/config/locales';
 import { useUser } from '@clerk/nextjs';
 import CreditsDisplay from '@/components/CreditsDisplay';
 import Link from 'next/link';
-import { GENDER_OPTIONS, LITERARY_AGE_OPTIONS } from '@/constants/profileOptions';
-import { SUPPORTED_LOCALES } from '@/config/locales';
-import {
-  FaUser,
-  FaVenusMars,
-  FaBirthdayCake,
-  FaEnvelope,
-  FaPhone,
-  FaGlobe,
-  FaFlag,
-  FaBook,
-  FaCreditCard,
-  FaPlusCircle,
-} from 'react-icons/fa';
 import { getCountryOptions } from '@/utils/countries';
 
 interface ProfileDetails {
@@ -268,14 +268,14 @@ export default function AccountProfilePage() {
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
                 <h2 className="card-title text-2xl text-primary flex items-center">
-                  <FaUser className="mr-2" /> {t('details.title')}
+                  <User className="mr-2" /> {t('details.title')}
                 </h2>
                 <p className="text-sm opacity-80 mb-6">{t('details.description')}</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="form-control lg:space-y-2">
                     <label className="label block mb-1">
                       <span className="label-text font-semibold flex items-center">
-                        <FaUser className="mr-2" />
+                        <User className="mr-2" />
                         {t('details.displayName')}
                         {fieldStatus.displayName === 'saving' && (
                           <span className="loading loading-spinner loading-xs ml-2" />
@@ -295,7 +295,7 @@ export default function AccountProfilePage() {
                   <div className="form-control lg:space-y-2">
                     <label className="label block mb-1">
                       <span className="label-text font-semibold flex items-center">
-                        <FaVenusMars className="mr-2" />
+                        <VenusAndMars className="mr-2" />
                         {t('details.gender')}
                         {fieldStatus.gender === 'saving' && (
                           <span className="loading loading-spinner loading-xs ml-2" />
@@ -323,7 +323,7 @@ export default function AccountProfilePage() {
                   <div className="form-control lg:space-y-2">
                     <label className="label block mb-1">
                       <span className="label-text font-semibold flex items-center">
-                        <FaBirthdayCake className="mr-2" />
+                        <Cake className="mr-2" />
                         {t('details.ageRange')}
                         {fieldStatus.literaryAge === 'saving' && (
                           <span className="loading loading-spinner loading-xs ml-2" />
@@ -358,14 +358,14 @@ export default function AccountProfilePage() {
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
                 <h2 className="card-title text-2xl text-primary flex items-center">
-                  <FaEnvelope className="mr-2" /> {t('contact.title')}
+                  <Mail className="mr-2" /> {t('contact.title')}
                 </h2>
                 <p className="text-sm opacity-80 mb-6">{t('contact.description')}</p>
                 <div className="grid gap-6 md:grid-cols-2">
                   <div className="form-control lg:space-y-2">
                     <label className="label block mb-1">
                       <span className="label-text font-semibold flex items-center">
-                        <FaEnvelope className="mr-2" />
+                        <Mail className="mr-2" />
                         {t('contact.email')}
                       </span>
                     </label>
@@ -379,7 +379,7 @@ export default function AccountProfilePage() {
                   <div className="form-control lg:space-y-2">
                     <label className="label block mb-1">
                       <span className="label-text font-semibold flex items-center">
-                        <FaPhone className="mr-2" />
+                        <Phone className="mr-2" />
                         {t('contact.mobile')}
                         {fieldStatus.mobilePhone === 'saving' && (
                           <span className="loading loading-spinner loading-xs ml-2" />
@@ -401,7 +401,7 @@ export default function AccountProfilePage() {
                   <div className="form-control lg:space-y-2">
                     <label className="label block mb-1">
                       <span className="label-text font-semibold flex items-center">
-                        <FaGlobe className="mr-2" />
+                        <Globe className="mr-2" />
                         {t('contact.language')}
                         {fieldStatus.preferredLocale === 'saving' && (
                           <span className="loading loading-spinner loading-xs ml-2" />
@@ -428,7 +428,7 @@ export default function AccountProfilePage() {
                   <div className="form-control lg:space-y-2">
                     <label className="label block mb-1">
                       <span className="label-text font-semibold flex items-center">
-                        <FaFlag className="mr-2" />
+                        <Flag className="mr-2" />
                         {t('contact.country')}
                         {fieldStatus.countryOfOrigin === 'saving' && (
                           <span className="loading loading-spinner loading-xs ml-2" />
@@ -463,7 +463,7 @@ export default function AccountProfilePage() {
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
                 <h2 className="card-title text-2xl text-primary flex items-center">
-                  <FaEnvelope className="mr-2" /> {t('notifications.title')}
+                  <Mail className="mr-2" /> {t('notifications.title')}
                 </h2>
                 <p className="text-sm opacity-80 mb-6">{t('notifications.intro')}</p>
                 <div className="form-control lg:space-y-2 max-w-md">
@@ -508,7 +508,7 @@ export default function AccountProfilePage() {
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
                 <h2 className="card-title text-primary flex items-center">
-                  <FaCreditCard className="mr-2" /> {t('billing.title')}
+                  <CreditCard className="mr-2" /> {t('billing.title')}
                 </h2>
                 <div className="form-control lg:space-y-2 mb-4">
                   <label className="label block mb-1">
@@ -534,7 +534,7 @@ export default function AccountProfilePage() {
                   <CreditsDisplay credits={credits} />
                   <p className="text-xs opacity-70 mt-2">{t('billing.historyHint')}</p>
                   <Link href={`/${locale}/buy-credits`} className="btn btn-primary mt-4">
-                    <FaPlusCircle className="mr-2" /> {t('billing.addCredits')}
+                    <CirclePlus className="mr-2" /> {t('billing.addCredits')}
                   </Link>
                 </div>
               </div>
@@ -546,7 +546,7 @@ export default function AccountProfilePage() {
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
                 <h2 className="card-title text-primary flex items-center">
-                  <FaBook className="mr-2" /> {t('journey.title')}
+                  <Book className="mr-2" /> {t('journey.title')}
                 </h2>
                 <p className="opacity-80 text-sm mb-4">{t('journey.description')}</p>
                 <div className="stats shadow w-full">

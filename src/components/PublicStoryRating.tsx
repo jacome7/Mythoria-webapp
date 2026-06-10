@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { MessageSquare, Star } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
-import { FiMessageSquare, FiStar } from 'react-icons/fi';
 import { formatDate } from '@/utils/date';
 
 interface PublicStoryRatingProps {
@@ -232,7 +232,7 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
             plural: star !== 1 ? 's' : '',
           })}
         >
-          <FiStar
+          <Star
             className={
               (hoveredRating && star <= hoveredRating) || isFilled || isHalfFilled
                 ? 'fill-current'
@@ -417,7 +417,7 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
 
           <div className="rounded-lg bg-base-200/60 p-4 text-left">
             <div className="flex items-center gap-2 mb-2">
-              <FiMessageSquare className="text-primary text-lg" />
+              <MessageSquare className="text-primary text-lg" />
               <h4 className="font-semibold">{tCommonStoryRating('feedbackToAuthor.title')}</h4>
             </div>
             <p className="text-sm text-base-content/70">

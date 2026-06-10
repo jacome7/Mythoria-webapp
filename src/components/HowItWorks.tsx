@@ -5,15 +5,16 @@ import type { CSSProperties } from 'react';
 import { useTranslations } from 'next-intl';
 import ScrollFadeIn from './ScrollFadeIn';
 import styles from './HowItWorks.module.css';
+import { HOMEPAGE_ASSET_BASE } from '@/constants/homepageAssets';
 
-const ICON_BASE_PATH = '/homepage/kids_fantasy';
+const ICON_BASE_PATH = HOMEPAGE_ASSET_BASE;
 
 const steps = [
   {
     id: 'author',
     titleKey: 'steps.step1.title',
     descriptionKey: 'steps.step1.description',
-    icon: `${ICON_BASE_PATH}/howItWorks_The_Author_icon.webp`,
+    icon: `${ICON_BASE_PATH}/howitworks_step1_icon.webp`,
     width: 234,
     height: 268,
     iconTiltDeg: -4,
@@ -23,7 +24,7 @@ const steps = [
     id: 'story',
     titleKey: 'steps.step2.title',
     descriptionKey: 'steps.step2.description',
-    icon: `${ICON_BASE_PATH}/howItWorks_The_Story_icon.webp`,
+    icon: `${ICON_BASE_PATH}/howitworks_step2_icon.webp`,
     width: 292,
     height: 243,
     iconTiltDeg: 3,
@@ -33,7 +34,7 @@ const steps = [
     id: 'characters',
     titleKey: 'steps.step3.title',
     descriptionKey: 'steps.step3.description',
-    icon: `${ICON_BASE_PATH}/howItWorks_The_Characters_icon.webp`,
+    icon: `${ICON_BASE_PATH}/howitworks_step3_icon.webp`,
     width: 237,
     height: 252,
     iconTiltDeg: -2,
@@ -43,7 +44,7 @@ const steps = [
     id: 'plot',
     titleKey: 'steps.step4.title',
     descriptionKey: 'steps.step4.description',
-    icon: `${ICON_BASE_PATH}/howItWorks_The_Plot_icon.webp`,
+    icon: `${ICON_BASE_PATH}/howitworks_step4_icon.webp`,
     width: 293,
     height: 286,
     iconTiltDeg: 4,
@@ -53,7 +54,7 @@ const steps = [
     id: 'gift',
     titleKey: 'steps.step5.title',
     descriptionKey: 'steps.step5.description',
-    icon: `${ICON_BASE_PATH}/howItWorks_The_Gift_icon.webp`,
+    icon: `${ICON_BASE_PATH}/howitworks_step5_icon.webp`,
     width: 267,
     height: 235,
     iconTiltDeg: -3,
@@ -63,7 +64,7 @@ const steps = [
     id: 'magic',
     titleKey: 'steps.step6.title',
     descriptionKey: 'steps.step6.description',
-    icon: `${ICON_BASE_PATH}/howItWorks_The_Magic_icon.webp`,
+    icon: `${ICON_BASE_PATH}/howitworks_step6_icon.webp`,
     width: 207,
     height: 242,
     iconTiltDeg: 2,

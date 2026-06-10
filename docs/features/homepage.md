@@ -14,7 +14,7 @@ The Homepage is the first-touch experience for Mythoria. It showcases what the p
   - A layered paper-cut “theatre” diorama (sky decorations, scenery, a real photo of a reader holding a finished book, and foliage), each element on its own animated element.
   - A storybook headline (“Every story starts with you”) and a clear “Write your own story” call-to-action that leads to the story creation flow.
   - A 3-up feature card (Personalized · Meaningful · For Every Occasion) anchors the bottom of the scene.
-  - The scene is a **composition** chosen by the visitor's intent (see below). The full look — palette, typography, layering, animation — is documented in the [Paper-Cut Design System](../papercut-design-system.md).
+  - The scene is a **composition** chosen by the visitor's intent — or overridden via `?intent=` query param (see below). The full look — palette, typography, layering, animation — is documented in the [Paper-Cut Design System](../papercut-design-system.md).
 - **Audience-focused sections**
   - Four audience cards (Kids, Groups & Yearbooks, Adults, Companies) that link to public sample stories.
 - **“What drives us” mission block**
@@ -39,7 +39,18 @@ Visitors can arrive through **intent URLs** such as:
 - `/i/romance`
 - `/i/kids_bedtime/child`
 
-These links record the intent and (optionally) the recipient in a cookie, then redirect the visitor to the localized homepage. The hero uses this context to choose the paper-cut **composition** to display (via `src/components/papercut/registry.ts`). Today every visitor sees the `kids_fantasy` composition; additional intent-specific compositions are added over time.
+These links record the intent and (optionally) the recipient in a cookie, then redirect the visitor to the localized homepage. The hero uses this context to choose the paper-cut **composition** to display (via `src/components/papercut/registry.ts`).
+
+**Active intent → composition mapping:**
+
+| Intent         | Composition    | URL               |
+| -------------- | -------------- | ----------------- |
+| _(default)_    | `kids_fantasy` | `/`               |
+| `sports_teams` | `kids_sports`  | `/i/sports_teams` |
+
+**Query param override:** appending `?intent=<value>` to any homepage URL switches the composition without setting a cookie — useful for campaign previews and QA. Precedence: `?intent=` query param > intent cookie > default. The override is read via `useIntentOverride` in a `useEffect` (not `useSearchParams`) to avoid breaking static prerendering of the hero.
+
+**Phase-1 section assets policy:** only the hero diorama is intent-skinned. All sections below the hero (Footer, Header, HowItWorks, etc.) use the `kids_fantasy` asset folder via `homepageAsset()` from `src/constants/homepageAssets.ts`. Per-intent section art is a phase-2 candidate.
 
 ---
 
@@ -146,7 +157,8 @@ The **intent system** supports marketing and onboarding links that pre-contextua
 - **Paper-cut hero:** `src/components/papercut/` (renderer, compositions, registry) — see the [Paper-Cut Design System](../papercut-design-system.md)
 - **Sample gallery (unused on homepage):** `src/components/InfiniteGallery.tsx`
 - **Intent routes:** `src/app/i/[intent]/route.ts` and `src/app/i/[intent]/[recipient]/route.ts`
-- **Intent helpers:** `src/constants/intents.ts`, `src/constants/recipients.ts`, `src/types/intent-context.ts`, `src/hooks/useIntentContext.ts`
+- **Intent helpers:** `src/constants/intents.ts`, `src/constants/recipients.ts`, `src/types/intent-context.ts`, `src/hooks/useIntentContext.ts`, `src/hooks/useIntentOverride.ts` (`?intent=` query param)
+- **Section asset helper:** `src/constants/homepageAssets.ts` (`homepageAsset()` used by Footer, Header, HowItWorks, etc.)
 - **Translations:** `src/messages/<locale>/HomePage.json`, `src/messages/<locale>/StoryCounter.json`
 - **Sample book data:** `public/SampleBooks/SampleBooks.json`
 - **Story count API:** `src/app/api/stories/route.ts`

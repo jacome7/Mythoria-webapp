@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef, useId } from 'react';
-import mermaid from 'mermaid';
 
 interface MermaidChartProps {
   chart: string;
@@ -15,41 +14,49 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chart, id }) => {
   const chartId = id || `mermaid-${generatedId.replace(/:/g, '-')}`;
 
   useEffect(() => {
-    // Initialize mermaid with configuration
-    mermaid.initialize({
-      startOnLoad: false,
-      theme: 'default',
-      securityLevel: 'loose',
-      fontFamily: 'inherit',
-      flowchart: {
-        useMaxWidth: true,
-        htmlLabels: true,
-        curve: 'basis',
-      },
-      themeVariables: {
-        primaryColor: '#6366f1', // Tailwind indigo-500 to match your theme
-        primaryTextColor: '#1f2937', // Tailwind gray-800
-        primaryBorderColor: '#6366f1',
-        lineColor: '#6b7280', // Tailwind gray-500
-        secondaryColor: '#f3f4f6', // Tailwind gray-100
-        tertiaryColor: '#ffffff',
-        background: '#ffffff',
-        mainBkg: '#ffffff',
-        secondBkg: '#f9fafb', // Tailwind gray-50
-        tertiaryBkg: '#f3f4f6',
-      },
-    });
+    let cancelled = false;
 
     const renderChart = async () => {
       if (containerRef.current && chart) {
         try {
+          const { default: mermaid } = await import('mermaid');
+
+          if (cancelled || !containerRef.current) {
+            return;
+          }
+
+          // Initialize mermaid with configuration
+          mermaid.initialize({
+            startOnLoad: false,
+            theme: 'default',
+            securityLevel: 'loose',
+            fontFamily: 'inherit',
+            flowchart: {
+              useMaxWidth: true,
+              htmlLabels: true,
+              curve: 'basis',
+            },
+            themeVariables: {
+              primaryColor: '#6366f1', // Tailwind indigo-500 to match your theme
+              primaryTextColor: '#1f2937', // Tailwind gray-800
+              primaryBorderColor: '#6366f1',
+              lineColor: '#6b7280', // Tailwind gray-500
+              secondaryColor: '#f3f4f6', // Tailwind gray-100
+              tertiaryColor: '#ffffff',
+              background: '#ffffff',
+              mainBkg: '#ffffff',
+              secondBkg: '#f9fafb', // Tailwind gray-50
+              tertiaryBkg: '#f3f4f6',
+            },
+          });
+
           // Clear previous content
           containerRef.current.innerHTML = '';
 
           // Render the mermaid chart
           const { svg } = await mermaid.render(chartId, chart);
 
-          if (containerRef.current) {
+          if (!cancelled && containerRef.current) {
             containerRef.current.innerHTML = svg;
 
             // Apply additional styling to the SVG
@@ -62,7 +69,7 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chart, id }) => {
           }
         } catch (error) {
           console.error('Mermaid rendering error:', error);
-          if (containerRef.current) {
+          if (!cancelled && containerRef.current) {
             containerRef.current.innerHTML = `
               <div class="alert alert-error">
                 <span>Error rendering chart: ${error instanceof Error ? error.message : 'Unknown error'}</span>
@@ -73,7 +80,11 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chart, id }) => {
       }
     };
 
-    renderChart();
+    void renderChart();
+
+    return () => {
+      cancelled = true;
+    };
   }, [chart, chartId]);
 
   return (

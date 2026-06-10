@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { AlertCircle, Globe, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { FiX, FiGlobe, FiAlertCircle } from 'react-icons/fi';
 import { Link } from '@/i18n/routing';
 import JobProgressModal from './JobProgressModal';
 import { createTranslateJob } from '@/utils/async-job-api';
@@ -185,7 +185,7 @@ export default function TranslateFullStoryModal({
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <FiGlobe className="w-5 h-5 text-blue-600" />
+              <Globe className="w-5 h-5 text-blue-600" />
             </div>
             <div>
               <h2 className="text-lg font-semibold text-gray-900">{tModal('title')}</h2>
@@ -198,7 +198,7 @@ export default function TranslateFullStoryModal({
             onClick={onClose}
             className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
           >
-            <FiX className="w-4 h-4 text-gray-600" />
+            <X className="w-4 h-4 text-gray-600" />
           </button>
         </div>
 
@@ -262,7 +262,7 @@ export default function TranslateFullStoryModal({
           {/* Error */}
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-2 text-sm text-red-700">
-              <FiAlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}

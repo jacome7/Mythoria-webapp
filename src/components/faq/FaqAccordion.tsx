@@ -1,7 +1,7 @@
 'use client';
 
+import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
-import { FaChevronDown } from 'react-icons/fa';
 
 interface FaqEntry {
   id: string;
@@ -47,7 +47,7 @@ export default function FaqAccordion({ entries, sectionTitle }: FaqAccordionProp
               aria-controls={`faq-panel-${entry.id}`}
             >
               <span className="flex-1 font-medium text-base-content">{entry.title}</span>
-              <FaChevronDown
+              <ChevronDown
                 className={`mt-1 text-primary transition-transform duration-300 ${
                   isOpen ? 'rotate-180' : ''
                 }`}

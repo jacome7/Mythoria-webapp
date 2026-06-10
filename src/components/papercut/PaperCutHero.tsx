@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useScroll, useTransform } from 'motion/react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useIntentContext } from '@/hooks/useIntentContext';
+import { useIntentOverride } from '@/hooks/useIntentOverride';
 import PaperCutLayer from './PaperCutLayer';
 import PaperCutStage from './PaperCutStage';
 import FeatureCard from './FeatureCard';
@@ -30,7 +31,9 @@ export default function PaperCutHero() {
   const t = useTranslations('HomePage');
   const locale = useLocale();
   const intentContext = useIntentContext();
-  const composition = resolveComposition(intentContext?.intent);
+  const intentOverride = useIntentOverride();
+  // Precedence: ?intent= query param > intent cookie > default composition.
+  const composition = resolveComposition(intentOverride ?? intentContext?.intent);
 
   // Parallax driver. We use the document scroll position (rather than
   // useScroll({ target }), which needs a hydrated ref and can throw during SSR

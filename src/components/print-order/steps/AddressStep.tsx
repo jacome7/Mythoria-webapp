@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { FiPlus } from 'react-icons/fi';
+import { Plus } from 'lucide-react';
 import AddressCard, { type Address as AddressType } from '@/components/AddressCard';
 
 interface Address {
@@ -87,7 +87,7 @@ export default function AddressStep({
           )}
 
           <button className="btn btn-outline mb-4" onClick={() => onShowCreateAddress(true)}>
-            <FiPlus className="w-4 h-4 mr-2" />
+            <Plus className="w-4 h-4 mr-2" />
             {tPrintOrder('addressInfo.addNewAddress')}
           </button>
         </div>

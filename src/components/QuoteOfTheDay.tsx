@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import styles from './QuoteOfTheDay.module.css';
+import { homepageAsset } from '@/constants/homepageAssets';
 
 const QUOTE_REFRESH_INTERVAL_MS = 10_000;
 const QUOTE_FADE_DURATION_MS = 450;
@@ -107,7 +108,7 @@ export default function QuoteOfTheDay() {
       <div className="container mx-auto px-4">
         <div className={`${styles.card} ${isCardVisible ? styles.visible : styles.hidden}`}>
           <Image
-            src="/homepage/kids_fantasy/white_cloud_1.webp"
+            src={homepageAsset('cloud_small.webp')}
             alt=""
             width={200}
             height={135}
@@ -116,7 +117,7 @@ export default function QuoteOfTheDay() {
             aria-hidden="true"
           />
           <Image
-            src="/homepage/kids_fantasy/white_cloud_1.webp"
+            src={homepageAsset('cloud_small.webp')}
             alt=""
             width={200}
             height={135}
@@ -125,7 +126,7 @@ export default function QuoteOfTheDay() {
             aria-hidden="true"
           />
           <Image
-            src="/homepage/kids_fantasy/yellow_star.webp"
+            src={homepageAsset('sparkle_a.webp')}
             alt=""
             width={128}
             height={134}
@@ -134,7 +135,7 @@ export default function QuoteOfTheDay() {
             aria-hidden="true"
           />
           <Image
-            src="/homepage/kids_fantasy/yellow_star_2.webp"
+            src={homepageAsset('sparkle_c.webp')}
             alt=""
             width={128}
             height={127}

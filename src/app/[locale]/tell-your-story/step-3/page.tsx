@@ -33,12 +33,16 @@ function Step3Page() {
   const tStoryStepsStep3 = useTranslations('StorySteps.step3');
   const tCharacters = useTranslations('Characters');
   const tActions = useTranslations('Actions');
+  const tMyCharactersPage = useTranslations('MyCharactersPage');
   const [characters, setCharacters] = useState<Character[]>([]);
   const [availableCharacters, setAvailableCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showAddOptions, setShowAddOptions] = useState(false);
   const [editingCharacterId, setEditingCharacterId] = useState<string | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [characterToDelete, setCharacterToDelete] = useState<Character | null>(null);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [currentStoryId, setCurrentStoryId] = useState<string | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
   const [isInEditMode, setIsInEditMode] = useState(false); // Helper function to format role names for display
@@ -323,6 +327,35 @@ function Step3Page() {
       throw error;
     }
   };
+
+  const handleDeleteClick = (character: Character) => {
+    setCharacterToDelete(character);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteCancel = () => {
+    if (confirmingDelete) return;
+
+    setDeleteModalOpen(false);
+    setCharacterToDelete(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!characterToDelete?.characterId) return;
+
+    setConfirmingDelete(true);
+    try {
+      await handleDeleteCharacter(characterToDelete.characterId);
+      setDeleteModalOpen(false);
+      setCharacterToDelete(null);
+    } catch (error) {
+      console.error('Error deleting character:', error);
+      alert(tCharacters('errors.deleteFailed'));
+    } finally {
+      setConfirmingDelete(false);
+    }
+  };
+
   const handleNextStep = async () => {
     try {
       setIsNavigating(true);
@@ -394,7 +427,7 @@ function Step3Page() {
                         mode={editingCharacterId === character.characterId ? 'edit' : 'view'}
                         onSave={handleUpdateCharacter}
                         onEdit={() => setEditingCharacterId(character.characterId!)}
-                        onDelete={() => handleDeleteCharacter(character.characterId!)}
+                        onDelete={async () => handleDeleteClick(character)}
                         onCancel={() => setEditingCharacterId(null)}
                       />
                     ))}
@@ -413,7 +446,7 @@ function Step3Page() {
                     {/* Add Character Button/Options */}
                     {!showCreateForm && (
                       <div className="text-center">
-                        {!showAddOptions ? (
+                        {!showAddOptions && characters.length > 0 ? (
                           <button
                             className="btn btn-primary btn-lg"
                             onClick={() => setShowAddOptions(true)}
@@ -422,9 +455,6 @@ function Step3Page() {
                           </button>
                         ) : (
                           <div className="space-y-4">
-                            <div className="text-lg font-semibold">
-                              {tStoryStepsStep3('chooseMethod')}
-                            </div>
                             {/* Create New Character Option */}
                             <button
                               className="btn btn-primary btn-lg w-full"
@@ -451,7 +481,7 @@ function Step3Page() {
                                   </div>
                                   <ul
                                     tabIndex={0}
-                                    className="dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow-lg border max-h-60 overflow-y-auto"
+                                    className="mythoria-popup-surface dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow-lg border max-h-60 overflow-y-auto"
                                   >
                                     {availableCharacters.map((character) => (
                                       <li key={character.characterId}>
@@ -483,44 +513,16 @@ function Step3Page() {
                               </div>
                             )}
                             {/* Cancel Option */}
-                            <button
-                              className="btn btn-ghost"
-                              onClick={() => setShowAddOptions(false)}
-                            >
-                              {tStoryStepsStep3('cancel')}
-                            </button>
+                            {characters.length > 0 && (
+                              <button
+                                className="btn btn-ghost"
+                                onClick={() => setShowAddOptions(false)}
+                              >
+                                {tStoryStepsStep3('cancel')}
+                              </button>
+                            )}
                           </div>
                         )}
-                      </div>
-                    )}
-
-                    {/* Guidance Message */}
-                    {characters.length === 0 && !showCreateForm && !showAddOptions && (
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-                        <div className="text-4xl mb-4">🎭</div>
-                        <h3 className="text-xl font-semibold text-blue-800 mb-2">
-                          {tStoryStepsStep3('readyTitle')}
-                        </h3>
-                        <p className="text-blue-600">{tStoryStepsStep3('readyDescription')}</p>
-                      </div>
-                    )}
-
-                    {/* Helpful Tips */}
-                    {characters.length > 0 && (
-                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                        <div className="flex items-start space-x-3">
-                          <div className="text-2xl">💡</div>
-                          <div>
-                            <p className="text-green-800 font-medium">
-                              {tStoryStepsStep3('greatWork', {
-                                count: characters.length,
-                              })}
-                            </p>
-                            <p className="text-green-600 text-sm mt-1">
-                              {tStoryStepsStep3('youCanAlways')}
-                            </p>
-                          </div>
-                        </div>
                       </div>
                     )}
                   </div>
@@ -542,6 +544,36 @@ function Step3Page() {
             </div>
           </div>
         </div>
+
+        {deleteModalOpen && (
+          <div className="modal modal-open">
+            <div className="modal-box mythoria-popup-surface">
+              <h3 className="font-bold text-lg">
+                {tMyCharactersPage('deleteConfirm.title') || 'Delete Character'}
+              </h3>
+              <p className="py-4">
+                {tMyCharactersPage('deleteConfirm.message') ||
+                  'Are you sure you want to delete this character? This action cannot be undone.'}
+              </p>
+              <div className="modal-action">
+                <button
+                  className="btn btn-ghost"
+                  onClick={handleDeleteCancel}
+                  disabled={confirmingDelete}
+                >
+                  {tMyCharactersPage('deleteConfirm.cancel') || 'Cancel'}
+                </button>
+                <button
+                  className={`btn btn-error ${confirmingDelete ? 'loading' : ''}`}
+                  onClick={handleDeleteConfirm}
+                  disabled={confirmingDelete}
+                >
+                  {confirmingDelete ? '' : tMyCharactersPage('deleteConfirm.confirm') || 'Delete'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </Show>
     </>
   );

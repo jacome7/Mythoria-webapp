@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import { ArrowLeft, Download, Edit3, Printer, Share2, Volume2 } from 'lucide-react';
 import { Show } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
-import { useLocale, useTranslations } from 'next-intl';
-import { FiVolume2, FiEdit3, FiShare2, FiArrowLeft, FiPrinter, FiDownload } from 'react-icons/fi';
 import StoryReader from '../../../../../../../components/StoryReader';
 import StoryRating from '../../../../../../../components/StoryRating';
 import ShareModal from '../../../../../../../components/ShareModal';
@@ -155,33 +155,33 @@ export default function ReadChapterPage() {
         <div className="bg-base-200 border-b border-base-300 p-4 print:hidden">
           <div className="max-w-6xl mx-auto flex items-center justify-between">
             <button onClick={navigateToMyStories} className="btn btn-ghost btn-sm">
-              <FiArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-4 h-4 mr-2" />
               <span className="hidden sm:inline">{tActions('backToMyStories')}</span>
             </button>
 
             <div className="flex items-center gap-2">
               <button onClick={navigateToListen} className="btn btn-ghost btn-sm">
-                <FiVolume2 className="w-4 h-4" />
+                <Volume2 className="w-4 h-4" />
                 <span className="hidden sm:inline sm:ml-2">{tActions('listen')}</span>
               </button>
 
               <button onClick={navigateToEdit} className="btn btn-ghost btn-sm">
-                <FiEdit3 className="w-4 h-4" />
+                <Edit3 className="w-4 h-4" />
                 <span className="hidden sm:inline sm:ml-2">{tActions('edit')}</span>
               </button>
 
               <button onClick={handlePrint} className="btn btn-ghost btn-sm">
-                <FiPrinter className="w-4 h-4" />
+                <Printer className="w-4 h-4" />
                 <span className="hidden sm:inline sm:ml-2">{tActions('print')}</span>
               </button>
 
               <button onClick={handleDownload} className="btn btn-ghost btn-sm">
-                <FiDownload className="w-4 h-4" />
+                <Download className="w-4 h-4" />
                 <span className="hidden sm:inline sm:ml-2">{tActions('downloadPdf')}</span>
               </button>
 
               <button onClick={handleShare} className="btn btn-ghost btn-sm">
-                <FiShare2 className="w-4 h-4" />
+                <Share2 className="w-4 h-4" />
                 <span className="hidden sm:inline sm:ml-2">{tActions('share')}</span>
               </button>
             </div>

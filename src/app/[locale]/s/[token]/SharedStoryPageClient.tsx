@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiLoader, FiAlertCircle } from 'react-icons/fi';
+import { AlertCircle, Loader2 } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { toAbsoluteImageUrl } from '@/utils/image-url';
 import { getLogoForGraphicalStyle } from '@/utils/logo-mapping';
@@ -85,7 +85,7 @@ export default function SharedStoryPageClient() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
-          <FiLoader className="animate-spin text-4xl text-primary mx-auto" />
+          <Loader2 className="animate-spin text-4xl text-primary mx-auto" />
           <h2 className="text-xl font-semibold">{tSharedStoryPage('loading.title')}</h2>
           <p className="text-gray-600">{tSharedStoryPage('loading.subtitle')}</p>
         </div>
@@ -182,7 +182,7 @@ export default function SharedStoryPageClient() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4 max-w-md mx-auto px-4">
-          <FiAlertCircle className="text-4xl text-red-500 mx-auto" />
+          <AlertCircle className="text-4xl text-red-500 mx-auto" />
           <h2 className="text-xl font-semibold text-gray-900">
             {tSharedStoryPage('errors.unableToAccess')}
           </h2>
@@ -206,7 +206,7 @@ export default function SharedStoryPageClient() {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center space-y-4">
-        <FiLoader className="animate-spin text-4xl text-primary mx-auto" />
+        <Loader2 className="animate-spin text-4xl text-primary mx-auto" />
         <h2 className="text-xl font-semibold">{tSharedStoryPage('redirecting')}</h2>
       </div>
     </div>

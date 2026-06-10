@@ -1,10 +1,10 @@
 'use client';
 
+import { Feather, Pen, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useUser } from '@clerk/nextjs';
-import { FaFeatherAlt, FaPen, FaPlus, FaTrash } from 'react-icons/fa';
 import WritingPersonaForm from '@/components/WritingPersonaForm';
 import {
   WRITING_PERSONA_MAX_SAVED,
@@ -161,7 +161,7 @@ export default function MyPersonasPage() {
               onClick={() => setShowCreateForm(true)}
               disabled={!canCreate}
             >
-              <FaPlus className="h-4 w-4" />
+              <Plus className="h-4 w-4" />
               {t('actions.create')}
             </button>
           )}
@@ -172,7 +172,7 @@ export default function MyPersonasPage() {
 
         <div className="mb-6 rounded-lg border border-base-300 bg-base-100 p-4">
           <div className="flex items-start gap-3">
-            <FaFeatherAlt className="mt-1 h-5 w-5 text-primary" />
+            <Feather className="mt-1 h-5 w-5 text-primary" />
             <div>
               <h2 className="font-semibold">{t('guide.title')}</h2>
               <p className="mt-1 text-sm leading-relaxed text-base-content/70">
@@ -224,11 +224,11 @@ export default function MyPersonasPage() {
 
         {personas.length === 0 && !showCreateForm ? (
           <div className="rounded-lg border border-dashed border-base-300 bg-base-100 p-10 text-center">
-            <FaFeatherAlt className="mx-auto h-10 w-10 text-primary" />
+            <Feather className="mx-auto h-10 w-10 text-primary" />
             <h2 className="mt-4 text-2xl font-semibold">{t('empty.title')}</h2>
             <p className="mx-auto mt-2 max-w-xl text-base-content/70">{t('empty.description')}</p>
             <button className="btn btn-primary mt-6" onClick={() => setShowCreateForm(true)}>
-              <FaPlus className="h-4 w-4" />
+              <Plus className="h-4 w-4" />
               {t('actions.create')}
             </button>
           </div>
@@ -257,7 +257,7 @@ export default function MyPersonasPage() {
                           setShowCreateForm(false);
                         }}
                       >
-                        <FaPen className="h-3.5 w-3.5" />
+                        <Pen className="h-3.5 w-3.5" />
                         {t('actions.edit')}
                       </button>
                       <button
@@ -268,7 +268,7 @@ export default function MyPersonasPage() {
                         {deletingCodename === persona.codename ? (
                           <span className="loading loading-spinner loading-xs" />
                         ) : (
-                          <FaTrash className="h-3.5 w-3.5" />
+                          <Trash2 className="h-3.5 w-3.5" />
                         )}
                         {t('actions.delete')}
                       </button>

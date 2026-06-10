@@ -1,9 +1,9 @@
 'use client';
 
+import { AlertTriangle, Lock, Settings, Trash2, User } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useUser } from '@clerk/nextjs';
 import { useState } from 'react';
-import { FaTrash, FaExclamationTriangle, FaUser, FaCog, FaLock } from 'react-icons/fa';
 
 export default function DeleteAccountPage() {
   const tDeleteAccount = useTranslations('DeleteAccount');
@@ -59,7 +59,7 @@ export default function DeleteAccountPage() {
           // Instructions for non-logged users
           <div className="bg-white shadow-xl rounded-lg p-8 mb-8">
             <div className="flex items-center gap-3 mb-6">
-              <FaUser className="h-6 w-6 text-primary" />
+              <User className="h-6 w-6 text-primary" />
               <h2 className="text-2xl font-bold text-primary">
                 {tDeleteAccount('notLoggedIn.title')}
               </h2>
@@ -70,7 +70,7 @@ export default function DeleteAccountPage() {
 
             <div className="bg-base-100 border border-base-300 rounded-lg p-6 mb-6">
               <div className="flex items-center gap-2 mb-4">
-                <FaCog className="h-5 w-5 text-primary" />
+                <Settings className="h-5 w-5 text-primary" />
                 <h3 className="text-lg font-semibold text-primary">
                   {tDeleteAccount('notLoggedIn.steps.title')}
                 </h3>
@@ -79,7 +79,7 @@ export default function DeleteAccountPage() {
                 <li className="pl-2">{tDeleteAccount('notLoggedIn.steps.step1')}</li>
                 <li className="pl-2">{tDeleteAccount('notLoggedIn.steps.step2')}</li>
                 <li className="flex items-center gap-2 pl-2">
-                  <FaLock className="h-4 w-4 text-primary flex-shrink-0" />
+                  <Lock className="h-4 w-4 text-primary flex-shrink-0" />
                   <span>{tDeleteAccount('notLoggedIn.steps.step3')}</span>
                 </li>
                 <li className="pl-2">{tDeleteAccount('notLoggedIn.steps.step4')}</li>
@@ -87,7 +87,7 @@ export default function DeleteAccountPage() {
             </div>
 
             <div className="alert alert-warning">
-              <FaExclamationTriangle className="h-5 w-5" />
+              <AlertTriangle className="h-5 w-5" />
               <div>
                 <h4 className="font-bold">{tDeleteAccount('warning.title')}</h4>
                 <div className="text-sm">{tDeleteAccount('warning.description')}</div>
@@ -98,14 +98,14 @@ export default function DeleteAccountPage() {
           // Delete account form for logged users
           <div className="bg-white shadow-xl rounded-lg p-8 mb-8">
             <div className="flex items-center gap-3 mb-6">
-              <FaTrash className="h-6 w-6 text-error" />
+              <Trash2 className="h-6 w-6 text-error" />
               <h2 className="text-2xl font-bold text-error">{tDeleteAccount('loggedIn.title')}</h2>
             </div>
             <p className="text-gray-700 mb-8 text-lg">{tDeleteAccount('loggedIn.description')}</p>
 
             {/* Warning Alert */}
             <div className="alert alert-warning mb-6">
-              <FaExclamationTriangle className="h-5 w-5" />
+              <AlertTriangle className="h-5 w-5" />
               <div>
                 <h4 className="font-bold">{tDeleteAccount('warning.title')}</h4>
                 <div className="text-sm">{tDeleteAccount('warning.description')}</div>
@@ -114,7 +114,7 @@ export default function DeleteAccountPage() {
 
             {/* Consequences */}
             <div className="alert alert-error mb-8">
-              <FaExclamationTriangle className="h-5 w-5" />
+              <AlertTriangle className="h-5 w-5" />
               <div className="w-full">
                 <h4 className="font-bold mb-3">{tDeleteAccount('loggedIn.consequences.title')}</h4>
                 <ul className="space-y-2 text-sm">
@@ -139,7 +139,7 @@ export default function DeleteAccountPage() {
             </div>
 
             <button onClick={() => setIsDialogOpen(true)} className="btn btn-error btn-lg w-full">
-              <FaTrash className="h-5 w-5" />
+              <Trash2 className="h-5 w-5" />
               {tDeleteAccount('loggedIn.deleteButton')}
             </button>
 
@@ -198,7 +198,7 @@ export default function DeleteAccountPage() {
                         </>
                       ) : (
                         <>
-                          <FaTrash className="h-4 w-4" />
+                          <Trash2 className="h-4 w-4" />
                           {tDeleteAccount('confirmation.confirmDelete')}
                         </>
                       )}

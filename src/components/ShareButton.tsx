@@ -1,6 +1,6 @@
 'use client';
 
-import { FiShare2 } from 'react-icons/fi';
+import { Share2 } from 'lucide-react';
 
 interface ShareButtonProps {
   title: string;
@@ -36,7 +36,7 @@ export default function ShareButton({ title, summary, url, shareText }: ShareBut
 
   return (
     <button className="btn btn-outline btn-sm gap-2" onClick={handleShare}>
-      <FiShare2 className="w-4 h-4" />
+      <Share2 className="w-4 h-4" />
       {shareText}
     </button>
   );

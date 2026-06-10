@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiPlus } from 'react-icons/fi';
+import { createPortal } from 'react-dom';
+import { Plus } from 'lucide-react';
 import CharacterCard from './CharacterCard';
 import { Character } from '../lib/story-session';
 
@@ -14,6 +15,7 @@ interface CharacterWithDate extends Character {
 export default function MyCharactersTable() {
   const tMyCharactersPage = useTranslations('MyCharactersPage');
   const locale = useLocale();
+  const [isMounted, setIsMounted] = useState(false);
   const [characters, setCharacters] = useState<CharacterWithDate[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -34,6 +36,21 @@ export default function MyCharactersTable() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!showCreateForm) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [showCreateForm]);
 
   useEffect(() => {
     fetchCharacters();
@@ -183,6 +200,29 @@ export default function MyCharactersTable() {
     }
   };
 
+  const createCharacterModal =
+    isMounted && showCreateForm
+      ? createPortal(
+          <div
+            className="fixed inset-0 z-[1000] flex items-start justify-center overflow-y-auto bg-black/60 p-4 sm:items-center"
+            role="dialog"
+            aria-modal="true"
+            aria-label={tMyCharactersPage('createCharacter') || 'Create Character'}
+          >
+            <div className="mythoria-popup-surface max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto rounded-xl bg-base-100 shadow-xl">
+              <CharacterCard
+                mode="create"
+                onSave={handleCreateCharacter}
+                onEdit={() => {}}
+                onDelete={async () => {}}
+                onCancel={() => setShowCreateForm(false)}
+              />
+            </div>
+          </div>,
+          document.body,
+        )
+      : null;
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-96">
@@ -190,24 +230,31 @@ export default function MyCharactersTable() {
       </div>
     );
   }
-  if (characters.length === 0 && !showCreateForm) {
+  if (characters.length === 0) {
     return (
-      <div className="text-center py-16 bg-base-200 rounded-lg">
-        <div className="max-w-md mx-auto space-y-4">
-          <div className="text-4xl mb-4">🎭</div>
-          <h2 className="text-2xl font-semibold text-base-content">
-            {tMyCharactersPage('noCharacters.title') || 'No characters yet!'}
-          </h2>
-          <p className="text-base-content/70">
-            {tMyCharactersPage('noCharacters.subtitle') ||
-              'Start creating characters for your stories to see them here.'}
-          </p>
-          <button className="btn btn-primary btn-lg" onClick={() => setShowCreateForm(true)}>
-            <FiPlus className="w-5 h-5 mr-2" />
-            {tMyCharactersPage('createCharacter') || 'Create Character'}
-          </button>
+      <>
+        <div className="text-center py-16 bg-base-200 rounded-lg">
+          <div className="max-w-md mx-auto space-y-4">
+            <div className="text-4xl mb-4">🎭</div>
+            <h2 className="text-2xl font-semibold text-base-content">
+              {tMyCharactersPage('noCharacters.title') || 'No characters yet!'}
+            </h2>
+            <p className="text-base-content/70">
+              {tMyCharactersPage('noCharacters.subtitle') ||
+                'Start creating characters for your stories to see them here.'}
+            </p>
+            <button
+              className="btn btn-primary btn-lg"
+              onClick={() => setShowCreateForm(true)}
+              disabled={showCreateForm}
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              {tMyCharactersPage('createCharacter') || 'Create Character'}
+            </button>
+          </div>
         </div>
-      </div>
+        {createCharacterModal}
+      </>
     );
   }
 
@@ -217,7 +264,7 @@ export default function MyCharactersTable() {
       {!showCreateForm && !editingCharacter && (
         <div className="flex justify-end">
           <button className="btn btn-primary" onClick={() => setShowCreateForm(true)}>
-            <FiPlus className="w-5 h-5 mr-2" />
+            <Plus className="w-5 h-5 mr-2" />
             {tMyCharactersPage('createCharacter') || 'Create Character'}
           </button>
         </div>
@@ -238,17 +285,9 @@ export default function MyCharactersTable() {
             onCancel={() => setEditingCharacter(null)}
           />
         ))}
-        {/* Create New Character Form */}
-        {showCreateForm && (
-          <CharacterCard
-            mode="create"
-            onSave={handleCreateCharacter}
-            onEdit={() => {}}
-            onDelete={async () => {}}
-            onCancel={() => setShowCreateForm(false)}
-          />
-        )}
       </div>
+
+      {createCharacterModal}
 
       {/* Delete Confirmation Modal */}
       {deleteModalOpen && (

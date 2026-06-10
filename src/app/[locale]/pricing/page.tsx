@@ -1,18 +1,18 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { Link } from '@/i18n/routing';
+import { useCallback, useEffect, useState } from 'react';
 import {
-  FaShoppingCart,
-  FaBookOpen,
-  FaVolumeUp,
-  FaPrint,
-  FaGift,
-  FaQuestionCircle,
-  FaPalette,
-  FaInfoCircle,
-  FaFileDownload,
-} from 'react-icons/fa';
+  BookOpen,
+  CircleHelp,
+  Download,
+  Gift,
+  Info,
+  Palette,
+  Printer,
+  ShoppingCart,
+  Volume2,
+} from 'lucide-react';
+import { Link } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
 import { SELF_PRINTING_SERVICE_CODE } from '@/constants/pricing';
@@ -113,7 +113,7 @@ export default function PricingPage() {
     switch (iconName) {
       case 'FaShoppingCart':
       default:
-        return <FaShoppingCart />;
+        return <ShoppingCart />;
     }
   };
   return (
@@ -153,7 +153,7 @@ export default function PricingPage() {
                   <ul className="space-y-3">
                     <li className="flex items-center justify-between">
                       <span className="flex items-center">
-                        <FaBookOpen className="mr-2 text-primary" />
+                        <BookOpen className="mr-2 text-primary" />
                         {tPricingPage('serviceCosts.services.generateEbook')}
                       </span>
                       <span className="font-semibold">{getServiceCost('eBookGeneration')}</span>
@@ -161,7 +161,7 @@ export default function PricingPage() {
 
                     <li className="flex items-center justify-between">
                       <span className="flex items-center">
-                        <FaVolumeUp className="mr-2 text-primary" />
+                        <Volume2 className="mr-2 text-primary" />
                         {tPricingPage('serviceCosts.services.narrateAudiobook')}
                       </span>
                       <span className="font-semibold">{getServiceCost('audioBookGeneration')}</span>
@@ -170,7 +170,7 @@ export default function PricingPage() {
                     <li>
                       <div className="flex items-center justify-between">
                         <span className="flex items-center">
-                          <FaPalette className="mr-2 text-primary" />
+                          <Palette className="mr-2 text-primary" />
                           {tPricingPage('serviceCosts.services.editBook')}
                         </span>
                       </div>
@@ -186,7 +186,7 @@ export default function PricingPage() {
                               onClick={() => handleInfoClick('textReview')}
                               className="ml-2 text-info hover:text-info-focus"
                             >
-                              <FaInfoCircle className="text-sm" />
+                              <Info className="text-sm" />
                             </button>
                           </span>
                           <span className="font-semibold">{getServiceCost('AiTextEditing')}</span>
@@ -198,7 +198,7 @@ export default function PricingPage() {
                               onClick={() => handleInfoClick('imageGeneration')}
                               className="ml-2 text-info hover:text-info-focus"
                             >
-                              <FaInfoCircle className="text-sm" />
+                              <Info className="text-sm" />
                             </button>
                           </span>
                           <span className="font-semibold">{getServiceCost('AiImageEditing')}</span>
@@ -208,13 +208,13 @@ export default function PricingPage() {
 
                     <li className="flex items-center justify-between">
                       <span className="flex items-center">
-                        <FaFileDownload className="mr-2 text-primary" />
+                        <Download className="mr-2 text-primary" />
                         {tPricingPage('serviceCosts.services.downloadPdf')}
                         <button
                           onClick={() => handleInfoClick('selfPrinting')}
                           className="ml-2 text-info hover:text-info-focus"
                         >
-                          <FaInfoCircle className="text-sm" />
+                          <Info className="text-sm" />
                         </button>
                       </span>
                       <span className="font-semibold">
@@ -225,7 +225,7 @@ export default function PricingPage() {
                     <li>
                       <div className="flex items-center justify-between">
                         <span className="flex items-center">
-                          <FaPrint className="mr-2 text-primary" />
+                          <Printer className="mr-2 text-primary" />
                           {tPricingPage('serviceCosts.services.printShipBook')}
                         </span>
                       </div>
@@ -237,7 +237,7 @@ export default function PricingPage() {
                               onClick={() => handleInfoClick('printedBooks')}
                               className="ml-2 text-info hover:text-info-focus"
                             >
-                              <FaInfoCircle className="text-sm" />
+                              <Info className="text-sm" />
                             </button>
                           </span>
                           <span className="font-semibold">
@@ -255,7 +255,7 @@ export default function PricingPage() {
                               onClick={() => handleInfoClick('extraChapterCost')}
                               className="ml-2 text-info hover:text-info-focus"
                             >
-                              <FaInfoCircle className="text-sm" />
+                              <Info className="text-sm" />
                             </button>
                           </span>
                           <span className="font-semibold">
@@ -335,7 +335,7 @@ export default function PricingPage() {
         <ScrollFadeIn delay={300}>
           <div className="text-center mt-8 mb-4">
             <p className="text-lg text-primary font-semibold">
-              <FaGift className="inline mr-2" />
+              <Gift className="inline mr-2" />
               {tPricingPage('newUserMessage')}
             </p>
           </div>
@@ -350,7 +350,7 @@ export default function PricingPage() {
             className="my-16 hero bg-base-200 rounded-box p-4 sm:p-6 lg:p-10"
           >
             <div className="hero-content flex-col lg:flex-row max-w-none w-full px-0 sm:px-2">
-              <FaGift className="text-7xl text-accent mb-6 lg:mb-0 lg:mr-10" />
+              <Gift className="text-7xl text-accent mb-6 lg:mb-0 lg:mr-10" />
               <div>
                 <h2 className="text-3xl font-bold mb-4">{tPricingPage('whyCredits.title')}</h2>
                 <ul className="list-disc list-inside space-y-2 text-gray-700">
@@ -403,7 +403,7 @@ export default function PricingPage() {
         <div className="modal modal-open">
           <div className="modal-box w-10/12 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-4">
             <div className="flex items-start gap-3">
-              <FaInfoCircle className="text-info text-2xl mt-1 flex-shrink-0" />
+              <Info className="text-info text-2xl mt-1 flex-shrink-0" />
               <p className="text-base leading-relaxed flex-1">
                 {infoTexts[selectedInfo as keyof typeof infoTexts]}
               </p>

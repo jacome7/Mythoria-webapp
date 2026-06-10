@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { FiChevronDown, FiChevronRight } from 'react-icons/fi';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import {
   CHARACTER_TYPE_GROUPS,
   findCharacterTypeGroup,
@@ -97,7 +97,7 @@ export default function GroupedCharacterTypeSelect({
         className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 rounded-md bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
       >
         <span className={value ? 'text-gray-900' : 'text-gray-500'}>{displayValue}</span>
-        <FiChevronDown
+        <ChevronDown
           className={`h-5 w-5 text-gray-400 transition-transform duration-200 ${
             isOpen ? 'transform rotate-180' : ''
           }`}
@@ -106,7 +106,7 @@ export default function GroupedCharacterTypeSelect({
 
       {/* Dropdown Panel */}
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-96 overflow-y-auto">
+        <div className="mythoria-popup-surface absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-96 overflow-y-auto">
           {CHARACTER_TYPE_GROUPS.map((group) => (
             <div key={group.key} className="border-b border-gray-100 last:border-b-0">
               {/* Group Header */}
@@ -117,9 +117,9 @@ export default function GroupedCharacterTypeSelect({
               >
                 <span>{getGroupLabel(group.key)}</span>
                 {expandedGroups[group.key] ? (
-                  <FiChevronDown className="h-4 w-4 text-gray-500" />
+                  <ChevronDown className="h-4 w-4 text-gray-500" />
                 ) : (
-                  <FiChevronRight className="h-4 w-4 text-gray-500" />
+                  <ChevronRight className="h-4 w-4 text-gray-500" />
                 )}
               </button>
 

@@ -2,7 +2,7 @@
   --footer-navy: var(--color-primary);
   position: relative;
   isolation: isolate;
-  min-height: 18.5rem;
+  min-height: 16.25rem;
   overflow: hidden;
   background: #fff7e6;
   color: var(--footer-navy);
@@ -24,10 +24,10 @@
   position: relative;
   z-index: 1;
   display: flex;
-  min-height: 18.5rem;
+  min-height: 16.25rem;
   max-width: 72rem;
   margin: 0 auto;
-  padding: 2.1rem 0.5rem 1.5rem;
+  padding: 1.8rem 0.5rem 0.75rem;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
@@ -43,8 +43,8 @@
 
 .socialLink {
   display: inline-flex;
-  width: 2.85rem;
-  height: 2.85rem;
+  width: 2.65rem;
+  height: 2.65rem;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
@@ -60,7 +60,7 @@
 
 .socialIcon {
   display: block;
-  width: 2.85rem;
+  width: 2.65rem;
   height: auto;
   filter: drop-shadow(0 7px 6px rgba(28, 43, 35, 0.24));
 }
@@ -178,9 +178,13 @@
     gap: 0.95rem;
   }
 
-  .socialLink,
+  .socialLink {
+    width: 2.9rem;
+    height: 2.9rem;
+  }
+
   .socialIcon {
-    width: 3.15rem;
+    width: 2.9rem;
   }
 
   .primaryNav {
@@ -202,9 +206,13 @@
     padding-top: 1.9rem;
   }
 
-  .socialLink,
+  .socialLink {
+    width: 3.05rem;
+    height: 3.05rem;
+  }
+
   .socialIcon {
-    width: 3.35rem;
+    width: 3.05rem;
   }
 
   .primaryLink {

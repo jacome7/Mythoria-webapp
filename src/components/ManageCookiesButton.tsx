@@ -1,7 +1,7 @@
 'use client';
 
+import { Cookie } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { FaCookieBite } from 'react-icons/fa';
 import { clearConsent } from '@/lib/consent';
 
 /**
@@ -27,7 +27,7 @@ export default function ManageCookiesButton() {
       className="btn btn-outline btn-primary gap-2"
       aria-label={t('manageCookies')}
     >
-      <FaCookieBite className="w-4 h-4" />
+      <Cookie className="w-4 h-4" />
       {t('manageCookies')}
     </button>
   );

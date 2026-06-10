@@ -25,6 +25,33 @@
         }
       }
     },
+    "intents": {
+      "kids_sports": {
+        "hero": {
+          "headline": "Cada equipo tiene una historia",
+          "subtitle": "Convierte el equipo de tus hijos en los héroes de un libro bellamente ilustrado — perfecto para jugadores, entrenadores y familias orgullosas.",
+          "subtitleEmphasized": "héroes",
+          "cta": "Crea la historia de tu equipo",
+          "alt": {
+            "character": "Un niño sonriente con equipación de fútbol sosteniendo el libro Mythoria personalizado de su equipo"
+          },
+          "features": {
+            "personalized": {
+              "title": "Libros de Equipo Personalizados",
+              "desc": "Crea una historia protagonizada por tu equipo, el entrenador y los recuerdos de la temporada."
+            },
+            "meaningful": {
+              "title": "Recuerdos Que Perduran",
+              "desc": "Celebrad juntos amistades, victorias y momentos inolvidables."
+            },
+            "occasion": {
+              "title": "Perfecto para Cualquier Equipo",
+              "desc": "Fútbol, rugby, baloncesto o cualquier aventura de equipos juveniles."
+            }
+          }
+        }
+      }
+    },
     "words": [
       "Historia",
       "Aventura",

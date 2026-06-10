@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { Link } from '@/i18n/routing';
 import Cropper from 'react-easy-crop';
 import { useTranslations, useLocale } from 'next-intl';
-import { FiX, FiUpload, FiTrash2, FiInfo, FiCamera, FiZap, FiCheck, FiEdit3 } from 'react-icons/fi';
+import { Camera, Check, Info, Trash2, Upload, X, Zap } from 'lucide-react';
 
 interface CropArea {
   x: number;
@@ -41,7 +42,12 @@ export default function CharacterPhotoUpload({
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
   // Detect mobile device
+  const [isMounted, setIsMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -55,6 +61,17 @@ export default function CharacterPhotoUpload({
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isOpen]);
 
   // State
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -284,22 +301,29 @@ export default function CharacterPhotoUpload({
     cameraInputRef.current?.click();
   };
 
-  if (!isOpen) return null;
+  if (!isMounted || !isOpen) return null;
 
-  return (
+  return createPortal(
     <>
       {/* Main Modal */}
-      <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-        <div className="bg-base-100 rounded-xl shadow-xl w-full max-w-md">
+      <div
+        className="fixed inset-0 z-[1000] flex items-center justify-center overflow-y-auto bg-black/60 p-4"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="character-photo-upload-title"
+      >
+        <div className="mythoria-popup-surface w-full max-w-md rounded-xl bg-base-100 shadow-xl max-h-[calc(100vh-2rem)] overflow-y-auto">
           {/* Header */}
           <div className="p-4 border-b flex items-center justify-between">
-            <h3 className="font-semibold text-lg">{t('photoUpload.title')}</h3>
+            <h3 id="character-photo-upload-title" className="font-semibold text-lg">
+              {t('photoUpload.title')}
+            </h3>
             <button
               onClick={handleClose}
               className="btn btn-ghost btn-sm btn-circle"
               disabled={uploading || deleting}
             >
-              <FiX className="w-5 h-5" />
+              <X className="w-5 h-5" />
             </button>
           </div>
 
@@ -307,7 +331,7 @@ export default function CharacterPhotoUpload({
           <div className="p-4">
             {/* Consent message with info icon */}
             <div className="flex items-start gap-2 p-3 bg-info/10 rounded-lg mb-4">
-              <FiInfo className="w-5 h-5 text-info shrink-0 mt-0.5" />
+              <Info className="w-5 h-5 text-info shrink-0 mt-0.5" />
               <p className="text-sm text-base-content/80">
                 {t('photoUpload.consent')}
                 <button
@@ -315,7 +339,7 @@ export default function CharacterPhotoUpload({
                   className="ml-1 text-info hover:text-info-focus inline-flex items-center"
                   type="button"
                 >
-                  <FiInfo className="w-4 h-4" />
+                  <Info className="w-4 h-4" />
                 </button>
               </p>
             </div>
@@ -338,7 +362,7 @@ export default function CharacterPhotoUpload({
                   </div>
                 ) : (
                   <div className="w-32 h-32 rounded-full bg-base-200 flex items-center justify-center border-4 border-dashed border-base-300">
-                    <FiCamera className="w-12 h-12 text-base-content/30" />
+                    <Camera className="w-12 h-12 text-base-content/30" />
                   </div>
                 )}
 
@@ -366,7 +390,7 @@ export default function CharacterPhotoUpload({
                   {/* Camera capture button - only shown on mobile */}
                   {isMobile && (
                     <button onClick={triggerCameraInput} className="btn btn-primary w-full gap-2">
-                      <FiCamera className="w-4 h-4" />
+                      <Camera className="w-4 h-4" />
                       {t('photoUpload.takePhoto')}
                     </button>
                   )}
@@ -375,7 +399,7 @@ export default function CharacterPhotoUpload({
                     onClick={triggerFileInput}
                     className={`btn w-full gap-2 ${isMobile ? 'btn-outline btn-primary' : 'btn-primary'}`}
                   >
-                    <FiUpload className="w-4 h-4" />
+                    <Upload className="w-4 h-4" />
                     {currentPhotoUrl ? t('photoUpload.changePhoto') : t('photoUpload.selectPhoto')}
                   </button>
 
@@ -384,7 +408,7 @@ export default function CharacterPhotoUpload({
                       onClick={() => setShowDeleteConfirm(true)}
                       className="btn btn-error btn-outline w-full gap-2"
                     >
-                      <FiTrash2 className="w-4 h-4" />
+                      <Trash2 className="w-4 h-4" />
                       {t('photoUpload.deletePhoto')}
                     </button>
                   )}
@@ -480,7 +504,7 @@ export default function CharacterPhotoUpload({
                     />
                   </div>
                   <div className="absolute -bottom-1 -right-1 bg-success text-success-content rounded-full p-1.5">
-                    <FiCheck className="w-4 h-4" />
+                    <Check className="w-4 h-4" />
                   </div>
                 </div>
 
@@ -496,7 +520,7 @@ export default function CharacterPhotoUpload({
                   <div className="w-full p-4 bg-primary/5 rounded-lg border border-primary/20">
                     <div className="flex items-start gap-3">
                       <div className="bg-primary/10 rounded-full p-2 shrink-0">
-                        <FiZap className="w-5 h-5 text-primary" />
+                        <Zap className="w-5 h-5 text-primary" />
                       </div>
                       <div className="flex-1">
                         <h5 className="font-medium text-sm mb-1">
@@ -517,7 +541,7 @@ export default function CharacterPhotoUpload({
                             </>
                           ) : (
                             <>
-                              <FiZap className="w-4 h-4" />
+                              <Zap className="w-4 h-4" />
                               {t('photoUpload.extractNow')}
                             </>
                           )}
@@ -568,7 +592,7 @@ export default function CharacterPhotoUpload({
                 {/* Action buttons */}
                 <div className="flex flex-col gap-2">
                   <button onClick={handleAcceptDescription} className="btn btn-primary gap-2">
-                    <FiCheck className="w-4 h-4" />
+                    <Check className="w-4 h-4" />
                     {t('photoUpload.useDescription')}
                   </button>
                   <button onClick={handleClose} className="btn btn-ghost">
@@ -590,15 +614,19 @@ export default function CharacterPhotoUpload({
 
       {/* Info Modal */}
       {showInfoModal && (
-        <div className="fixed inset-0 z-[60] bg-black/60 flex items-center justify-center p-4">
-          <div className="bg-base-100 rounded-xl shadow-xl w-full max-w-md">
+        <div
+          className="fixed inset-0 z-[1010] flex items-center justify-center overflow-y-auto bg-black/60 p-4"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="mythoria-popup-surface w-full max-w-md rounded-xl bg-base-100 shadow-xl max-h-[calc(100vh-2rem)] overflow-y-auto">
             <div className="p-4 border-b flex items-center justify-between">
               <h3 className="font-semibold">{t('photoUpload.title')}</h3>
               <button
                 onClick={() => setShowInfoModal(false)}
                 className="btn btn-ghost btn-sm btn-circle"
               >
-                <FiX className="w-5 h-5" />
+                <X className="w-5 h-5" />
               </button>
             </div>
             <div className="p-4">
@@ -623,8 +651,12 @@ export default function CharacterPhotoUpload({
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 z-[60] bg-black/60 flex items-center justify-center p-4">
-          <div className="bg-base-100 rounded-xl shadow-xl w-full max-w-sm">
+        <div
+          className="fixed inset-0 z-[1010] flex items-center justify-center overflow-y-auto bg-black/60 p-4"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="mythoria-popup-surface w-full max-w-sm rounded-xl bg-base-100 shadow-xl">
             <div className="p-4 border-b">
               <h3 className="font-semibold">{t('photoUpload.deletePhoto')}</h3>
             </div>
@@ -652,6 +684,7 @@ export default function CharacterPhotoUpload({
           </div>
         </div>
       )}
-    </>
+    </>,
+    document.body,
   );
 }

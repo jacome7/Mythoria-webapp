@@ -170,22 +170,40 @@ Keyframes live in `globals.css` alongside the existing `fade-in`.
 
 ## 8. Recipe: author a new composition
 
-1. **Add art.** Drop transparent PNGs into
-   `public/homepage/<composition-id>/`.
-2. **Create the config** `src/components/papercut/compositions/<id>.ts`,
-   exporting a `PaperCutComposition` (see `kidsFantasy.ts` as the reference):
+1. **Add art.** Drop role-named transparent assets into `public/homepage/<composition-id>/`.
+   Use the **same filenames** across every intent folder — same filename = same slot:
+   `sky_left`, `sky_right`, `cloud_left`, `cloud_right`, `sparkles`, `background`,
+   `companion_right`, `character`, `companion_left`, `foreground`,
+   `feature_personalized_icon`, `feature_meaningful_icon`, `feature_occasion_icon`.
+   Copy `public/homepage/kids_fantasy/assets_metadata.json` as a starting template
+   and document every asset (`status: "placeholder"` until the real art lands).
+
+2. **Create the theme** `src/components/papercut/compositions/<id>/theme.module.css` —
+   declare per-intent palette overrides on `.root` (e.g. `--pc-navy`, `--pc-gold`).
+   Import shared keyframes from `../shared/animations.module.css`.
+   Set `rootClassName: \`${anims.root} ${theme.root}\`` on the composition — the
+   renderer merges it onto the section element, so CSS vars cascade to every layer.
+
+3. **Create the config** `src/components/papercut/compositions/<id>/index.ts`,
+   exporting a `PaperCutComposition` (see `kidsFantasy/index.ts` as the reference):
+   - `rootClassName` (see step 2),
    - `stageAspect` (base/md/lg),
    - `sky[]` and `scene[]` layers (`src`, `intrinsic`, `z`, `anchor`, `base`
      placement, optional `md`/`lg`, `shadow`, `anim`, `hideBelow`, one
-     `priority` on the LCP photo),
-   - `text` (i18n keys + `ctaPath`),
+     `priority` on the LCP character layer),
+   - `text` (i18n keys + `ctaPath`) — point at `intents.<id>.hero.*`,
    - optional `features[]`.
-3. **Register it** in `src/components/papercut/registry.ts` — map the relevant
+
+4. **Register it** in `src/components/papercut/registry.ts` — map the relevant
    intent(s) (and/or `default`) to the new composition. One line.
-4. **Add copy** keys under `HomePage` in `src/messages/en-US/HomePage.json`,
-   then mirror to the other locales and run `npm run i18n:parity`.
-5. **Tune live.** Run `npm run dev`, nudge the percentage positions and shadow
+
+5. **Add copy** keys under `intents.<id>.hero` in `src/messages/en-US/HomePage.json`,
+   then mirror to the other locales, run `npm run i18n:keys` (regenerates
+   `translation-keys.d.ts`), and `npm run i18n:parity`.
+
+6. **Tune live.** Run `npm run dev`, nudge the percentage positions and shadow
    tiers in the config until the diorama reads well at 375px / 768px / 1280px.
+   Also verify `/?intent=<intent>` switches to the new scene.
 
 No changes to the renderer (`PaperCutHero` / `PaperCutLayer` / `PaperCutStage`)
 are needed.
@@ -195,8 +213,11 @@ are needed.
 ## File map
 
 - Renderer & schema: `src/components/papercut/{types,PaperCutHero,PaperCutLayer,PaperCutStage,FeatureCard,registry,index}.ts(x)`
-- Compositions: `src/components/papercut/compositions/*.ts`
-- Styles & keyframes: `src/app/globals.css` (`.papercut-hero`, `.pc-*`, `@keyframes pc-*`)
+- Compositions: `src/components/papercut/compositions/<id>/index.ts` + `theme.module.css`
+- Shared keyframes: `src/components/papercut/compositions/shared/animations.module.css`
+- Styles: `src/app/globals.css` (`.papercut-hero`, `.pc-*`, shadow utilities)
 - Font: `src/app/layout.tsx` (Fraunces → `--font-display`)
-- Assets: `public/homepage/<composition-id>/*.png`
+- Assets: `public/homepage/<composition-id>/` (role-named, see `assets_metadata.json` in each folder)
+- Section asset helper: `src/constants/homepageAssets.ts` (`HOMEPAGE_ASSET_BASE`, `homepageAsset()`)
+- Intent override: `src/hooks/useIntentOverride.ts` (`?intent=` query param, reads `window.location.search` in `useEffect`)
 - Mount point: `src/app/[locale]/page.tsx`

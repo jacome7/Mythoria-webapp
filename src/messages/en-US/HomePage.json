@@ -25,6 +25,33 @@
         }
       }
     },
+    "intents": {
+      "kids_sports": {
+        "hero": {
+          "headline": "Every team has a story",
+          "subtitle": "Turn your kids' team into the heroes of a beautifully illustrated book — perfect for players, coaches and proud families.",
+          "subtitleEmphasized": "heroes",
+          "cta": "Create your team story",
+          "alt": {
+            "character": "A smiling boy in football kit holding his team's personalized Mythoria book"
+          },
+          "features": {
+            "personalized": {
+              "title": "Personalized Team Books",
+              "desc": "Create a story starring your team, coach and season memories."
+            },
+            "meaningful": {
+              "title": "Memories That Last",
+              "desc": "Celebrate friendships, victories and unforgettable moments together."
+            },
+            "occasion": {
+              "title": "Perfect for Every Team",
+              "desc": "Football, rugby, basketball or any youth team adventure."
+            }
+          }
+        }
+      }
+    },
     "words": [
       "Story",
       "Adventure",

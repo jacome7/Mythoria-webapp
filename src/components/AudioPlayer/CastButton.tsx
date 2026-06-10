@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { FiCast, FiX } from 'react-icons/fi';
+import { Cast, X } from 'lucide-react';
 import { CastControlsState } from './types';
 
 interface CastButtonProps {
@@ -43,7 +43,7 @@ export function CastButton({ controls, labels }: CastButtonProps) {
         disabled={isDisabled}
         title={isDisabled ? labels.unavailable : controls.isCasting ? labels.stop : labels.cast}
       >
-        {controls.isCasting ? <FiX className="w-4 h-4" /> : <FiCast className="w-4 h-4" />}
+        {controls.isCasting ? <X className="w-4 h-4" /> : <Cast className="w-4 h-4" />}
         <span className="hidden sm:inline">{controls.isCasting ? labels.stop : labels.cast}</span>
       </button>
       {castStatus && (

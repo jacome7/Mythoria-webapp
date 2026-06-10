@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Volume2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { FiVolume2 } from 'react-icons/fi';
 import ReadingToolbar, { ReadingSettings } from './ReadingToolbar';
 import { loadStoryCSS, removeStoryCSS } from '../lib/story-css';
 import { getLogoForGraphicalStyle } from '../utils/logo-mapping';
@@ -282,7 +282,7 @@ export default function StoryReader({
               }}
               className="btn btn-outline btn-primary btn-lg flex items-center gap-2"
             >
-              <FiVolume2 className="w-5 h-5" />
+              <Volume2 className="w-5 h-5" />
               {tStoryReader('listen')}
             </button>
           )}
@@ -475,6 +475,47 @@ export default function StoryReader({
         :global(.mythoria-story-content.prose) {
           max-width: none;
           color: inherit;
+        }
+
+        @media (max-width: 640px) {
+          :global(.mythoria-story-content.prose) {
+            margin: calc(1.25rem * var(--reading-margin-scale, 1)) !important;
+          }
+
+          :global(.mythoria-story-scope .story-container) {
+            width: 100%;
+            padding: 0 !important;
+            box-sizing: border-box;
+          }
+
+          :global(.mythoria-story-scope .mythoria-front-cover),
+          :global(.mythoria-story-scope .mythoria-back-cover) {
+            margin: 0 auto 1.5rem !important;
+          }
+
+          :global(.mythoria-story-scope .mythoria-cover-image) {
+            display: block;
+            width: 100%;
+            height: auto;
+            margin-inline: auto;
+          }
+
+          :global(.mythoria-story-scope .mythoria-table-of-contents),
+          :global(.mythoria-story-scope .mythoria-message),
+          :global(.mythoria-story-scope .mythoria-dedicatory),
+          :global(.mythoria-story-scope .mythoria-chapter) {
+            margin-right: 0 !important;
+            margin-left: 0 !important;
+          }
+
+          :global(.mythoria-story-scope .mythoria-story-title),
+          :global(.mythoria-story-scope .mythoria-chapter-title),
+          :global(.mythoria-story-scope .mythoria-toc-title) {
+            max-width: 100%;
+            margin-right: auto !important;
+            margin-left: auto !important;
+            text-align: center !important;
+          }
         }
 
         /* Ensure mythoria styles take precedence */

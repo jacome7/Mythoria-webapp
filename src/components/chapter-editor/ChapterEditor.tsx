@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { ChevronLeft, ImageIcon, Save } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -9,7 +10,6 @@ import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
-import { FiSave, FiImage, FiChevronLeft } from 'react-icons/fi';
 
 import Toolbar from './Toolbar';
 import {
@@ -125,7 +125,7 @@ export default function ChapterEditor({
                   }
                   className="btn btn-sm btn-outline"
                 >
-                  <FiImage className="w-4 h-4" />
+                  <ImageIcon className="w-4 h-4" />
                   {t('editImageButton')}
                 </button>
               )}
@@ -183,7 +183,7 @@ export default function ChapterEditor({
                         : t('goBackButton')
                     }
                   >
-                    <FiChevronLeft className="w-4 h-4" />
+                    <ChevronLeft className="w-4 h-4" />
                     {t('backButton')}
                   </button>
                 )}
@@ -197,7 +197,7 @@ export default function ChapterEditor({
                   {isLoading ? (
                     <span className="loading loading-spinner loading-sm"></span>
                   ) : (
-                    <FiSave className="w-4 h-4" />
+                    <Save className="w-4 h-4" />
                   )}
                   {isLoading ? t('saving') : t('saveButton')}
                 </button>

@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { Ticket } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
-import { FaTicketAlt } from 'react-icons/fa';
 
 interface ContactFormProps {
   className?: string;
@@ -138,7 +138,7 @@ function ContactFormContent({ className = '' }: ContactFormProps) {
     <div className={`card bg-base-100 shadow-xl ${className}`}>
       <div className="card-body p-6">
         <div className="flex items-center gap-3 mb-4">
-          <FaTicketAlt className="text-xl text-primary" />
+          <Ticket className="text-xl text-primary" />
           <h2 className="text-xl font-semibold">{tContactForm('form.title')}</h2>
         </div>
 
@@ -228,7 +228,7 @@ function ContactFormContent({ className = '' }: ContactFormProps) {
               <span className="loading loading-spinner loading-sm"></span>
             ) : (
               <>
-                <FaTicketAlt className="mr-2" />
+                <Ticket className="mr-2" />
                 {tContactForm('form.submit')}
               </>
             )}

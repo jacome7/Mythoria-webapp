@@ -117,3 +117,20 @@
     right: 7.2rem;
   }
 }
+
+@media (max-width: 639px) {
+  .cloudRight,
+  .starRight {
+    display: none;
+  }
+
+  .cloudLeft {
+    bottom: 1.2rem;
+    left: 1.1rem;
+  }
+
+  .starLeft {
+    bottom: 1.95rem;
+    left: calc(50% + 1.75rem);
+  }
+}

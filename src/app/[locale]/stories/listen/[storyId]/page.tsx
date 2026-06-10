@@ -1,22 +1,22 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import {
+  ArrowLeft,
+  BookOpen,
+  Copy,
+  CreditCard,
+  Download,
+  Edit3,
+  Loader2,
+  Printer,
+  Share2,
+  Volume2,
+} from 'lucide-react';
 import { Show } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
-import { useLocale, useTranslations } from 'next-intl';
-import {
-  FiBook,
-  FiVolume2,
-  FiEdit3,
-  FiShare2,
-  FiArrowLeft,
-  FiCreditCard,
-  FiLoader,
-  FiPrinter,
-  FiCopy,
-  FiDownload,
-} from 'react-icons/fi';
 import ToastContainer from '../../../../../components/ToastContainer';
 import { useToast } from '@/hooks/useToast';
 import ShareModal from '../../../../../components/ShareModal';
@@ -482,43 +482,43 @@ export default function ListenStoryPage() {
                   onClick={() => router.push(`/${locale}/my-stories`)}
                   className="btn btn-ghost btn-sm"
                 >
-                  <FiArrowLeft className="w-4 h-4 mr-2" />
+                  <ArrowLeft className="w-4 h-4 mr-2" />
                   <span className="hidden sm:inline">{tActions('backToMyStories')}</span>
                 </button>
 
                 <div className="flex items-center gap-2">
                   <button onClick={navigateToRead} className="btn btn-ghost btn-sm">
-                    <FiBook className="w-4 h-4" />
+                    <BookOpen className="w-4 h-4" />
                     <span className="hidden sm:inline sm:ml-2">{tActions('read')}</span>
                   </button>
 
                   <button className="btn btn-ghost btn-sm btn-active">
-                    <FiVolume2 className="w-4 h-4" />
+                    <Volume2 className="w-4 h-4" />
                     <span className="hidden sm:inline sm:ml-2">{tActions('listen')}</span>
                   </button>
 
                   <button onClick={navigateToEdit} className="btn btn-ghost btn-sm">
-                    <FiEdit3 className="w-4 h-4" />
+                    <Edit3 className="w-4 h-4" />
                     <span className="hidden sm:inline sm:ml-2">{tActions('edit')}</span>
                   </button>
 
                   <button onClick={navigateToPrint} className="btn btn-ghost btn-sm">
-                    <FiPrinter className="w-4 h-4" />
+                    <Printer className="w-4 h-4" />
                     <span className="hidden sm:inline sm:ml-2">{tActions('print')}</span>
                   </button>
 
                   <button onClick={handleDownload} className="btn btn-ghost btn-sm">
-                    <FiDownload className="w-4 h-4" />
+                    <Download className="w-4 h-4" />
                     <span className="hidden sm:inline sm:ml-2">{tActions('downloadPdf')}</span>
                   </button>
 
                   <button onClick={() => setShowShareModal(true)} className="btn btn-ghost btn-sm">
-                    <FiShare2 className="w-4 h-4" />
+                    <Share2 className="w-4 h-4" />
                     <span className="hidden sm:inline sm:ml-2">{tActions('share')}</span>
                   </button>
 
                   <button onClick={handleDuplicate} className="btn btn-ghost btn-sm">
-                    <FiCopy className="w-4 h-4" />
+                    <Copy className="w-4 h-4" />
                     <span className="hidden sm:inline sm:ml-2">{tActions('duplicate')}</span>
                   </button>
                 </div>
@@ -531,7 +531,7 @@ export default function ListenStoryPage() {
                 <div className="card bg-base-100 shadow-xl">
                   <div className="card-body">
                     <h2 className="card-title text-2xl mb-6">
-                      <FiVolume2 className="w-6 h-6 mr-2" />
+                      <Volume2 className="w-6 h-6 mr-2" />
                       {hasAudiobook(story.audiobookUri)
                         ? tListenStory('listenToStory', { title: story.title })
                         : tListenStory('bringToLife', { title: story.title })}
@@ -552,7 +552,7 @@ export default function ListenStoryPage() {
                           <div className="card-body">
                             <div className="text-center space-y-4">
                               <h3 className="card-title text-lg mb-4 justify-center">
-                                <FiVolume2 className="w-5 h-5 mr-2" />
+                                <Volume2 className="w-5 h-5 mr-2" />
                                 {tListenStory('wantNewNarration')}
                               </h3>
                               <p className="text-base-content/70 mb-4">
@@ -614,7 +614,7 @@ export default function ListenStoryPage() {
                                         className="btn btn-secondary btn-wide"
                                         disabled={isGeneratingAudio}
                                       >
-                                        <FiVolume2 className="w-4 h-4 mr-2" />
+                                        <Volume2 className="w-4 h-4 mr-2" />
                                         {tListenStory('narrateStoryAgain')}
                                       </button>
                                       <p className="text-sm text-base-content/60">
@@ -649,7 +649,7 @@ export default function ListenStoryPage() {
                                         onClick={navigateToPricing}
                                         className="btn btn-secondary btn-wide"
                                       >
-                                        <FiCreditCard className="w-4 h-4 mr-2" />
+                                        <CreditCard className="w-4 h-4 mr-2" />
                                         {tListenStory('buyMoreCredits')}
                                       </button>
                                     </div>
@@ -669,7 +669,7 @@ export default function ListenStoryPage() {
                       </div>
                     ) : isGeneratingAudio ? (
                       <div className="text-center py-16">
-                        <FiLoader className="w-16 h-16 mx-auto mb-4 text-primary animate-spin" />
+                        <Loader2 className="w-16 h-16 mx-auto mb-4 text-primary animate-spin" />
                         <h3 className="text-xl font-semibold mb-2">
                           {tListenStory('generatingAudiobook')}
                         </h3>
@@ -695,7 +695,7 @@ export default function ListenStoryPage() {
                       </div>
                     ) : (
                       <div className="text-center py-8">
-                        <FiVolume2 className="w-10 h-10 mx-auto mb-3 text-base-content/30" />
+                        <Volume2 className="w-10 h-10 mx-auto mb-3 text-base-content/30" />
                         <h3 className="text-xl font-semibold mb-2">
                           {tListenStory('convertYourStory')}
                         </h3>
@@ -747,14 +747,13 @@ export default function ListenStoryPage() {
                                   className="btn btn-primary btn-lg w-full"
                                   disabled={isGeneratingAudio}
                                 >
-                                  <FiVolume2 className="w-5 h-5 mr-2" />
+                                  <Volume2 className="w-5 h-5 mr-2" />
                                   {tListenStory('createAudiobook', {
                                     credits: audiobookCost.credits,
                                   })}
                                 </button>
                                 <p className="text-sm text-base-content/60">
-                                  {tListenStory('narrationTime')}{' '}
-                                  {tListenStory('reNarrateLater')}
+                                  {tListenStory('narrationTime')} {tListenStory('reNarrateLater')}
                                 </p>
                               </div>
                             ) : (
@@ -783,7 +782,7 @@ export default function ListenStoryPage() {
                                   onClick={navigateToPricing}
                                   className="btn btn-secondary btn-lg w-full"
                                 >
-                                  <FiCreditCard className="w-5 h-5 mr-2" />
+                                  <CreditCard className="w-5 h-5 mr-2" />
                                   {tListenStory('buyMoreCredits')}
                                 </button>
                               </div>

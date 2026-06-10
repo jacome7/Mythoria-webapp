@@ -1,6 +1,6 @@
 'use client';
 
-import { FiImage } from 'react-icons/fi';
+import { ImageIcon } from 'lucide-react';
 import ReferenceImageSection from './image-editing-tab/ReferenceImageSection';
 import PreviewSection from './image-editing-tab/PreviewSection';
 import PromptSection from './image-editing-tab/PromptSection';
@@ -36,7 +36,7 @@ export default function ImageEditingTab(props: ImageEditingTabProps) {
   if (storyImages.length === 0) {
     return (
       <div className="text-center py-12">
-        <FiImage className="w-12 h-12 text-base-content/40 mx-auto mb-4" />
+        <ImageIcon className="w-12 h-12 text-base-content/40 mx-auto mb-4" />
         <h3 className="text-lg font-medium text-base-content/70 mb-2">{t('noImages.title')}</h3>
         <p className="text-base-content/50">{t('noImages.description')}</p>
       </div>

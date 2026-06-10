@@ -1,9 +1,19 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import type { AnchorHTMLAttributes, ReactNode } from 'react';
 import StepNavigation from './StepNavigation';
 
 const pushMock = jest.fn();
 
-jest.mock('next/navigation', () => ({
+jest.mock('@/i18n/routing', () => ({
+  Link: ({
+    href,
+    children,
+    ...props
+  }: AnchorHTMLAttributes<HTMLAnchorElement> & { href: string; children: ReactNode }) => (
+    <a href={href} {...props}>
+      {children}
+    </a>
+  ),
   useRouter: () => ({
     push: pushMock,
   }),

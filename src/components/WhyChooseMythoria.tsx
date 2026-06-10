@@ -6,8 +6,9 @@ import type { CSSProperties } from 'react';
 import { useTranslations } from 'next-intl';
 import ScrollFadeIn from './ScrollFadeIn';
 import styles from './WhyChooseMythoria.module.css';
+import { HOMEPAGE_ASSET_BASE } from '@/constants/homepageAssets';
 
-const ICON_BASE_PATH = '/homepage/kids_fantasy';
+const ICON_BASE_PATH = HOMEPAGE_ASSET_BASE;
 
 interface HighlightIcon {
   src: string;

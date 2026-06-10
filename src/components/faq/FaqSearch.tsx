@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { FaSearch, FaTimes } from 'react-icons/fa';
+import { useEffect, useState } from 'react';
+import { Search, X } from 'lucide-react';
 
 interface FaqSection {
   sectionKey: string;
@@ -56,13 +56,13 @@ export default function FaqSearch({
             value={localQuery}
             onChange={(e) => setLocalQuery(e.target.value)}
           />
-          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50" />
           {localQuery && (
             <button
               onClick={handleClearSearch}
               className="btn btn-ghost btn-sm btn-circle absolute right-2 top-1/2 -translate-y-1/2"
             >
-              <FaTimes />
+              <X />
             </button>
           )}
         </div>
