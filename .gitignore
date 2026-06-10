@@ -124,6 +124,10 @@ next-env.d.ts
 *.tmp
 *.temp
 _mockups/
+playwright-report/
+**/__pycache__/
+**/__pychache__/
+test-results/
 
 # Database
 *.db
