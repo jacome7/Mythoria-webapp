@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import { useState, useEffect, useCallback } from 'react';
+import { Link } from '@/i18n/routing';
 import {
   FaShoppingCart,
   FaBookOpen,
@@ -381,7 +381,9 @@ export default function PricingPage() {
         {/* New FAQ Component Section - Pricing Related */}
         <ScrollFadeIn delay={300}>
           <section id="faq-pricing" className="my-16 px-2 sm:px-4">
-            <h2 className="text-4xl font-bold text-center mb-10">More Pricing Questions?</h2>
+            <h2 className="text-4xl font-bold text-center mb-10">
+              {tPricingPage('morePricingQuestions')}
+            </h2>
             <div className="max-w-4xl mx-auto">
               <FaqComponent
                 initialSection="credits-pricing-and-payments"

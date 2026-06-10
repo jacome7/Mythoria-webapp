@@ -27,7 +27,9 @@ import {
   getAudioChapters,
 } from '@/components/AudioPlayer';
 import { SelfPrintModal } from '../../../../../components/self-print/SelfPrintModal';
+import VoiceSamplePlayer from '@/components/VoiceSamplePlayer';
 import { getAvailableVoices, getDefaultVoice } from '@/lib/voice-options';
+import { TargetAudience } from '@/types/story-enums';
 
 interface Story {
   storyId: string;
@@ -83,6 +85,7 @@ interface VoiceSelectorProps {
   onVoiceChange: (voice: string) => void;
   voiceOptions: Array<{ value: string; label: string }>;
   tVoices: (key: string) => string;
+  sampleUrl: string;
 }
 
 function VoiceSelector({
@@ -90,6 +93,7 @@ function VoiceSelector({
   onVoiceChange,
   voiceOptions,
   tVoices,
+  sampleUrl,
 }: VoiceSelectorProps) {
   return (
     <div className="space-y-4">
@@ -110,23 +114,12 @@ function VoiceSelector({
         </select>
       </div>
 
+      <VoiceSamplePlayer sampleUrl={sampleUrl} />
+
       {selectedVoice && (
-        <div className="alert alert-info">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            className="stroke-current shrink-0 w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            ></path>
-          </svg>
-          <span className="text-sm">{tVoices(`descriptions.${selectedVoice.toLowerCase()}`)}</span>
-        </div>
+        <p className="text-sm text-base-content/60 text-left">
+          {tVoices(`descriptions.${selectedVoice.toLowerCase()}`)}
+        </p>
       )}
     </div>
   );
@@ -142,7 +135,6 @@ export default function ListenStoryPage() {
   const tPublicStoryPage = useTranslations('PublicStoryPage');
   const tActions = useTranslations('Actions');
   const tCreditsDisplay = useTranslations('CreditsDisplay');
-  const tDeliveryOptions = useTranslations('DeliveryOptions');
   const storyId = (params?.storyId as string | undefined) ?? '';
   const [story, setStory] = useState<Story | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
@@ -200,12 +192,22 @@ export default function ListenStoryPage() {
     [audioControls, playAudioWithCastToast],
   );
 
+  // Voice preview sample, matched to the story's target audience and locale
+  const sampleAudience = useMemo(() => {
+    const audiences = Object.values(TargetAudience) as string[];
+    return story?.targetAudience && audiences.includes(story.targetAudience)
+      ? story.targetAudience
+      : TargetAudience.ALL_AGES;
+  }, [story?.targetAudience]);
+  const assetsBase = process.env.NEXT_PUBLIC_ASSETS_BASE_URL ?? '/';
+  const voiceSampleUrl = `${assetsBase}audio/samples/${locale}/${encodeURIComponent(sampleAudience)}/${selectedVoice.toLowerCase()}.mp3`;
+
   // Voice options for narration - based on configured TTS provider
   const voiceOptions = useMemo(() => {
     const voices = getAvailableVoices();
     return voices.map((voice) => ({
       value: voice.value,
-      label: tVoices(voice.labelKey),
+      label: `${tVoices(voice.labelKey)} — ${tVoices(`shorts.${voice.value.toLowerCase()}`)}`,
     }));
   }, [tVoices]);
 
@@ -359,9 +361,9 @@ export default function ListenStoryPage() {
       setAudioGenerationProgress('');
 
       if (error instanceof Error) {
-        alert(tErrors('failedToStartAudiobook') + ': ' + error.message);
+        toastError(tErrors('failedToStartAudiobook') + ': ' + error.message);
       } else {
-        alert(tErrors('failedToStartAudiobook') + '. ' + tListenStory('tryAgainLater'));
+        toastError(tErrors('failedToStartAudiobook') + '. ' + tListenStory('tryAgainLater'));
       }
     }
   };
@@ -524,13 +526,15 @@ export default function ListenStoryPage() {
             </div>
 
             {/* Audio Listening Content */}
-            <div className="container mx-auto px-4">
+            <div className="container mx-auto px-4 pt-4 pb-6 sm:pt-6">
               <div className="max-w-4xl mx-auto">
                 <div className="card bg-base-100 shadow-xl">
                   <div className="card-body">
                     <h2 className="card-title text-2xl mb-6">
                       <FiVolume2 className="w-6 h-6 mr-2" />
-                      {tListenStory('listenToStory', { title: story.title })}
+                      {hasAudiobook(story.audiobookUri)
+                        ? tListenStory('listenToStory', { title: story.title })
+                        : tListenStory('bringToLife', { title: story.title })}
                     </h2>
 
                     {hasAudiobook(story.audiobookUri) ? (
@@ -563,6 +567,7 @@ export default function ListenStoryPage() {
                                     onVoiceChange={setSelectedVoice}
                                     voiceOptions={voiceOptions}
                                     tVoices={tVoices}
+                                    sampleUrl={voiceSampleUrl}
                                   />
 
                                   {/* Background Music Toggle */}
@@ -613,7 +618,8 @@ export default function ListenStoryPage() {
                                         {tListenStory('narrateStoryAgain')}
                                       </button>
                                       <p className="text-sm text-base-content/60">
-                                        {tListenStory('replaceCurrentNarration')}
+                                        {tListenStory('replaceCurrentNarration')}{' '}
+                                        {tListenStory('narrationTime')}
                                       </p>
                                     </div>
                                   ) : (
@@ -688,12 +694,12 @@ export default function ListenStoryPage() {
                         </div>
                       </div>
                     ) : (
-                      <div className="text-center py-16">
-                        <FiVolume2 className="w-16 h-16 mx-auto mb-4 text-base-content/30" />
+                      <div className="text-center py-8">
+                        <FiVolume2 className="w-10 h-10 mx-auto mb-3 text-base-content/30" />
                         <h3 className="text-xl font-semibold mb-2">
                           {tListenStory('convertYourStory')}
                         </h3>
-                        <p className="text-lg text-base-content/70 mb-6">
+                        <p className="text-base text-base-content/70 mb-6">
                           {tListenStory('convertDescription')}
                         </p>
 
@@ -706,6 +712,7 @@ export default function ListenStoryPage() {
                               onVoiceChange={setSelectedVoice}
                               voiceOptions={voiceOptions}
                               tVoices={tVoices}
+                              sampleUrl={voiceSampleUrl}
                             />
 
                             {/* Background Music Toggle */}
@@ -726,35 +733,30 @@ export default function ListenStoryPage() {
                               </p>
                             </div>
 
-                            <div className="card bg-base-200 shadow-md">
-                              <div className="card-body p-4">
-                                <h4 className="font-semibold">
-                                  {tDeliveryOptions('audiobook.name')}
-                                </h4>
-                                <p className="text-sm text-base-content/70 mb-2">
-                                  {tDeliveryOptions('audiobook.description')}
-                                </p>
-                                <div className="flex justify-between items-center">
-                                  <span className="text-lg font-bold">
-                                    {audiobookCost.credits} {tCreditsDisplay('credits')}
-                                  </span>
-                                  <span className="text-sm text-base-content/60">
-                                    {tCreditsDisplay('currentBalance')} {userCredits.currentBalance}{' '}
-                                    {tCreditsDisplay('credits')}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
+                            <p className="text-sm text-base-content/70">
+                              {tListenStory('priceLine', {
+                                cost: audiobookCost.credits,
+                                balance: userCredits.currentBalance,
+                              })}
+                            </p>
 
                             {userCredits.currentBalance >= audiobookCost.credits ? (
-                              <button
-                                onClick={handleGenerateAudiobook}
-                                className="btn btn-primary btn-lg w-full"
-                                disabled={isGeneratingAudio}
-                              >
-                                <FiVolume2 className="w-5 h-5 mr-2" />
-                                {tListenStory('narrateYourStory')}
-                              </button>
+                              <div className="space-y-2">
+                                <button
+                                  onClick={handleGenerateAudiobook}
+                                  className="btn btn-primary btn-lg w-full"
+                                  disabled={isGeneratingAudio}
+                                >
+                                  <FiVolume2 className="w-5 h-5 mr-2" />
+                                  {tListenStory('createAudiobook', {
+                                    credits: audiobookCost.credits,
+                                  })}
+                                </button>
+                                <p className="text-sm text-base-content/60">
+                                  {tListenStory('narrationTime')}{' '}
+                                  {tListenStory('reNarrateLater')}
+                                </p>
+                              </div>
                             ) : (
                               <div className="space-y-2">
                                 <div className="alert alert-warning">

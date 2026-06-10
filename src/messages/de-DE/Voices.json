@@ -1,6 +1,30 @@
 {
   "Voices": {
     "selectVoice": "Stimme auswählen",
+    "samplePlay": "Hörprobe abspielen",
+    "sampleStop": "Hörprobe stoppen",
+    "sampleUnavailable": "Hörprobe nicht verfügbar",
+    "shorts": {
+      "alloy": "neutral und ausgewogen",
+      "ash": "klar und präzise",
+      "ballad": "melodisch und sanft",
+      "coral": "warm und freundlich",
+      "echo": "tief und resonant",
+      "fable": "warm und erzählerisch",
+      "nova": "hell und energiegeladen",
+      "onyx": "tief und souverän",
+      "sage": "ruhig und bedacht",
+      "shimmer": "hell und lebendig",
+      "verse": "vielseitig und ausdrucksstark",
+      "charon": "klar und informativ (männlich)",
+      "aoede": "leicht und unbeschwert (weiblich)",
+      "puck": "fröhlich und verspielt (männlich)",
+      "kore": "bestimmt und selbstbewusst (weiblich)",
+      "fenrir": "dynamisch und mitreißend (männlich)",
+      "orus": "fest und verlässlich (männlich)",
+      "zephyr": "hell und heiter (weiblich)",
+      "sulafat": "warm und einladend (weiblich)"
+    },
     "names": {
       "alloy": "Alloy",
       "ash": "Ash",

@@ -1,7 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useRouter } from '@/i18n/routing';
 import { hasValidStorySession, getCurrentStoryId } from '@/lib/story-session';
 
 interface Options {

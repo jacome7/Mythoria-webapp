@@ -7,6 +7,7 @@ import path from 'path';
 import { routing, isValidLocale, Locale } from '@/i18n/routing';
 import React from 'react';
 import OfflineClient from './OfflineClient';
+import { papercutScopeClassName } from '@/components/papercut';
 
 // Message loading (mirrors logic used in root not-found for consistency)
 type Messages = Record<string, unknown>;
@@ -113,7 +114,7 @@ export default async function OfflinePage() {
     <NextIntlClientProvider locale={locale} messages={messages}>
       <div className="flex flex-col min-h-screen bg-base-100">
         <Header />
-        <main className="flex-grow">
+        <main className={papercutScopeClassName('flex-grow')}>
           <OfflineClient />
         </main>
         <Footer />

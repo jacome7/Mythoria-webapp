@@ -2,10 +2,10 @@
 
 import { Show, RedirectToSignIn } from '@clerk/nextjs';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useState, useEffect, useCallback, Suspense } from 'react';
-import { useRouter, useSearchParams, useParams } from 'next/navigation';
+import { useSearchParams, useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { Link, useRouter } from '@/i18n/routing';
 import StepNavigation from '@/components/StepNavigation';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import WritingPersonaForm from '@/components/WritingPersonaForm';
@@ -922,7 +922,7 @@ function Step4Page() {
                             {tWritingPersonas('story.builtInLabel')}
                           </h4>
                           <Link
-                            href={`/${locale}/my-personas`}
+                            href="/my-personas"
                             className="link link-primary text-sm"
                             onClick={() => setShowLiteraryPersonaDropdown(false)}
                           >

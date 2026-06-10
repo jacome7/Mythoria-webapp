@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
 import styles from './AboutUsPage.module.css';
 

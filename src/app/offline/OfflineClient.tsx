@@ -2,6 +2,7 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { PapercutCard, PapercutEmptyState, PapercutPage } from '@/components/papercut';
 
 // Separated client component to satisfy lint rules and avoid require()
 const OfflineClient: React.FC = () => {
@@ -32,36 +33,37 @@ const OfflineClient: React.FC = () => {
   }, []);
 
   return (
-    <div className="max-w-xl mx-auto text-center py-16 px-4">
-      <h1 className="text-4xl font-bold text-base-content mb-4">{t('title')}</h1>
-      <p className="text-base-content/70 mb-6 leading-relaxed">{t('description')}</p>
-      <div className="mb-8">
-        <h2 className="font-semibold mb-2">{t('tipsTitle')}</h2>
-        <ul className="list-disc list-inside text-left text-sm space-y-1">
+    <PapercutPage variant="auth">
+      <PapercutEmptyState title={t('title')} description={t('description')} icon="!">
+        <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
+          <button onClick={() => window.history.back()} className="btn btn-primary">
+            {t('actions.goBack')}
+          </button>
+          <button onClick={() => window.location.reload()} className="btn btn-outline">
+            {t('actions.retry')}
+          </button>
+          <Link href="/" className="btn btn-ghost">
+            {t('actions.goHome')}
+          </Link>
+        </div>
+      </PapercutEmptyState>
+
+      <PapercutCard className="mx-auto mt-8 max-w-xl p-6">
+        <h2 className="mb-3 text-xl font-semibold">{t('tipsTitle')}</h2>
+        <ul className="list-inside list-disc space-y-1 text-left text-sm leading-relaxed">
           <li>{t('tips.readCached')}</li>
           <li>{t('tips.reuseNav')}</li>
           <li>{t('tips.wait')}</li>
         </ul>
-      </div>
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <button onClick={() => window.history.back()} className="btn btn-primary">
-          {t('actions.goBack')}
-        </button>
-        <button onClick={() => window.location.reload()} className="btn btn-outline">
-          {t('actions.retry')}
-        </button>
-        <Link href="/" className="btn btn-ghost">
-          {t('actions.goHome')}
-        </Link>
-      </div>
-      <div className="mt-8 text-sm opacity-70" role="status" aria-live="polite">
-        {redirecting
-          ? t('status.backOnline')
-          : online
+        <div className="mt-6 text-sm opacity-70" role="status" aria-live="polite">
+          {redirecting
             ? t('status.backOnline')
-            : t('status.stillOffline')}
-      </div>
-    </div>
+            : online
+              ? t('status.backOnline')
+              : t('status.stillOffline')}
+        </div>
+      </PapercutCard>
+    </PapercutPage>
   );
 };
 

@@ -2,8 +2,8 @@
 
 import { Show, RedirectToSignIn } from '@clerk/nextjs';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
+import { useRouter } from '@/i18n/routing';
 import StepNavigation from '@/components/StepNavigation';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import { trackStoryCreation } from '@/lib/analytics';

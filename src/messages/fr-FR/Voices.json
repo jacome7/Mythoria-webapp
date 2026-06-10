@@ -1,6 +1,30 @@
 {
   "Voices": {
     "selectVoice": "Sélectionner la voix",
+    "samplePlay": "Écouter un extrait",
+    "sampleStop": "Arrêter l'extrait",
+    "sampleUnavailable": "Extrait indisponible",
+    "shorts": {
+      "alloy": "neutre et équilibrée",
+      "ash": "claire et précise",
+      "ballad": "mélodieuse et douce",
+      "coral": "chaleureuse et amicale",
+      "echo": "grave et résonnante",
+      "fable": "chaleureuse et narrative",
+      "nova": "vive et énergique",
+      "onyx": "grave et posée",
+      "sage": "calme et réfléchie",
+      "shimmer": "brillante et pétillante",
+      "verse": "polyvalente et expressive",
+      "charon": "claire et informative (masculine)",
+      "aoede": "légère et aérienne (féminine)",
+      "puck": "enjouée et espiègle (masculine)",
+      "kore": "ferme et assurée (féminine)",
+      "fenrir": "dynamique et entraînante (masculine)",
+      "orus": "ferme et stable (masculine)",
+      "zephyr": "lumineuse et joyeuse (féminine)",
+      "sulafat": "chaleureuse et accueillante (féminine)"
+    },
     "names": {
       "alloy": "Alloy",
       "ash": "Ash",

@@ -12,6 +12,7 @@ import { FaFeatherAlt } from 'react-icons/fa';
 import styles from './Header.module.css';
 
 const dropdownMenuClassName = `dropdown-content ${styles.dropdownMenu}`;
+const mobileMenuClassName = `dropdown dropdown-bottom ${styles.mobileMenu}`;
 
 const Header = () => {
   const tCommonHeader = useTranslations('Header');
@@ -29,7 +30,7 @@ const Header = () => {
     return (
       <header className={styles.header}>
         <div className={styles.headerStart}>
-          <div className={`dropdown ${styles.mobileMenu}`}>
+          <div className={mobileMenuClassName}>
             <label tabIndex={0} className={styles.mobileMenuButton}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -149,7 +150,7 @@ const Header = () => {
   return (
     <header className={styles.header}>
       <div className={styles.headerStart}>
-        <div className={`dropdown ${styles.mobileMenu}`}>
+        <div className={mobileMenuClassName}>
           <label tabIndex={0} className={styles.mobileMenuButton}>
             <svg
               xmlns="http://www.w3.org/2000/svg"

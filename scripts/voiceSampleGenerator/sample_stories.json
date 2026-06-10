@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "directorsNotes": {
+    "children_0-2": "A gentle bedtime storyteller soothing a baby to sleep. Speak very slowly and very softly, with a calm, lulling, sing-song rhythm and long peaceful pauses. Keep the energy low and warm throughout.",
+    "children_3-6": "A playful storyteller reading to preschoolers. Speak warmly and clearly with bright, animated expression, childlike wonder, and gentle excitement. Medium-slow pace.",
+    "children_7-10": "An adventurous storyteller for elementary-school kids. Lively, vivid and dynamic, building excitement and suspense, with clear articulation and a triumphant finish.",
+    "children_11-14": "A captivating storyteller for middle-grade readers. Confident, intriguing and slightly mysterious, building suspense with controlled pacing and dramatic pauses.",
+    "young_adult_15-17": "A cinematic narrator for a young-adult novel. Intimate and emotionally charged, with restrained intensity, natural modern delivery, and meaningful pauses.",
+    "adult_18+": "A refined literary audiobook narrator for adults. Measured, warm and reflective, with elegant phrasing, subtle emotional depth, and unhurried pacing.",
+    "all_ages": "A warm fireside storyteller entertaining the whole family. Inviting, expressive and good-humoured, with a twinkle of magic in the voice."
+  },
+  "samples": [
+    {
+      "targetAudience": "children_0-2",
+      "title": "Luna's Blanket Moon",
+      "texts": {
+        "en-US": "[softly] Little Luna snuggled under her warm blanket. [whispers] Hush now, the moon is awake. Outside the window, the smiling moon glowed, soft and round. \"Goodnight, stars,\" yawned Luna. \"Goodnight, moon.\" One by one, the stars twinkled, slow and gentle. And Luna closed her sleepy eyes and dreamed.",
+        "pt-PT": "[softly] A pequena Luna aconchegou-se debaixo do seu cobertor quentinho. [whispers] Chiu, a lua está acordada. Lá fora, na janela, a lua sorridente brilhava, suave e redonda. «Boa noite, estrelas», bocejou a Luna. «Boa noite, lua.» Uma a uma, as estrelas piscaram, devagarinho. E a Luna fechou os olhinhos cheios de sono e sonhou.",
+        "es-ES": "[softly] La pequeña Luna se acurrucó bajo su mantita calentita. [whispers] Shhh, la luna está despierta. Fuera, en la ventana, la luna sonriente brillaba, suave y redonda. «Buenas noches, estrellas», bostezó Luna. «Buenas noches, luna.» Una a una, las estrellas parpadearon, despacito. Y Luna cerró sus ojitos llenos de sueño y soñó.",
+        "fr-FR": "[softly] Petite Luna se blottit sous sa couverture toute douce. [whispers] Chut, la lune est réveillée. Dehors, à la fenêtre, la lune souriante brillait, douce et ronde. « Bonne nuit, les étoiles », bâilla Luna. « Bonne nuit, la lune. » Une à une, les étoiles scintillèrent, tout doucement. Et Luna ferma ses petits yeux pleins de sommeil et rêva.",
+        "de-DE": "[softly] Die kleine Luna kuschelte sich unter ihre warme Decke. [whispers] Leise, ganz leise, der Mond ist wach. Draußen vor dem Fenster leuchtete der lächelnde Mond, weich und rund. „Gute Nacht, ihr Sterne\", gähnte Luna. „Gute Nacht, lieber Mond.\" Einer nach dem anderen funkelten die Sterne, ganz sanft. Und Luna schloss ihre müden Augen und träumte."
+      }
+    },
+    {
+      "targetAudience": "children_3-6",
+      "title": "Milo and the Garden of Bells",
+      "texts": {
+        "en-US": "[cheerful] One sunny morning, Milo put on his yellow boots and splashed down the garden path. [amazed] And there — ding-a-ling! — the flowers were ringing like tiny bells! \"Hello, little bells,\" Milo giggled. A butterfly landed right on his nose. [whispers] \"Will you show me where the music comes from?\" And off they went!",
+        "pt-PT": "[cheerful] Numa manhã de sol, o Milo calçou as suas botas amarelas e desceu o caminho do jardim aos saltinhos. [amazed] E ali — dlim-dlim! — as flores tocavam como pequenos sinos! «Olá, sininhos», riu-se o Milo. Uma borboleta pousou-lhe mesmo no nariz. [whispers] «Mostras-me de onde vem a música?» E lá foram eles!",
+        "es-ES": "[cheerful] Una mañana de sol, Milo se puso sus botas amarillas y bajó dando saltitos por el sendero del jardín. [amazed] Y allí — ¡tilín, tilín! — ¡las flores sonaban como campanitas! «Hola, campanitas», rio Milo. Una mariposa se posó justo en su nariz. [whispers] «¿Me enseñas de dónde viene la música?» ¡Y allá fueron!",
+        "fr-FR": "[cheerful] Par un matin ensoleillé, Milo enfila ses bottes jaunes et descendit le sentier du jardin en sautillant. [amazed] Et là — dring, dring ! — les fleurs sonnaient comme de petites cloches ! « Bonjour, petites cloches », rit Milo. Un papillon se posa juste sur son nez. [whispers] « Tu me montres d'où vient la musique ? » Et les voilà partis !",
+        "de-DE": "[cheerful] An einem sonnigen Morgen zog Milo seine gelben Stiefel an und hüpfte den Gartenweg hinunter. [amazed] Und da — klingeling! — die Blumen läuteten wie kleine Glocken! „Hallo, kleine Glocken\", kicherte Milo. Ein Schmetterling landete direkt auf seiner Nase. [whispers] „Zeigst du mir, woher die Musik kommt?\" Und los ging's!"
+      }
+    },
+    {
+      "targetAudience": "children_7-10",
+      "title": "The Clockwork Lighthouse Club",
+      "texts": {
+        "en-US": "[excited] The old lighthouse was full of gears — brass wheels turning, ticking, humming! \"Look!\" shouted Maya, pointing at the map. \"The light only shines when all three of us wind it together.\" Tom grabbed the handle. Lila counted: \"One... two... THREE!\" [awe] And high above, the great lamp blazed across the waves.",
+        "pt-PT": "[excited] O velho farol estava cheio de engrenagens — rodas de latão a girar, a fazer tiquetaque, a zumbir! «Olhem!», gritou a Maia, apontando para o mapa. «A luz só acende quando lhe damos corda os três juntos.» O Tomé agarrou a manivela. A Lila contou: «Um... dois... TRÊS!» [awe] E lá no alto, a grande lâmpada iluminou as ondas.",
+        "es-ES": "[excited] El viejo faro estaba lleno de engranajes: ¡ruedas de latón girando, haciendo tictac, zumbando! «¡Mirad!», gritó Maya, señalando el mapa. «La luz solo se enciende si le damos cuerda los tres juntos.» Tom agarró la manivela. Lila contó: «Uno... dos... ¡TRES!» [awe] Y allá arriba, la gran lámpara iluminó las olas.",
+        "fr-FR": "[excited] Le vieux phare était rempli d'engrenages — des roues de laiton qui tournaient, tictaquaient, bourdonnaient ! « Regardez ! », cria Maya en montrant la carte. « La lumière ne s'allume que si nous la remontons tous les trois ensemble. » Tom saisit la manivelle. Lila compta : « Un... deux... TROIS ! » [awe] Et tout là-haut, la grande lampe embrasa les vagues.",
+        "de-DE": "[excited] Der alte Leuchtturm war voller Zahnräder — Messingräder, die sich drehten, tickten, summten! „Schaut!\", rief Maya und zeigte auf die Karte. „Das Licht leuchtet nur, wenn wir es zu dritt gemeinsam aufziehen.\" Tom packte die Kurbel. Lila zählte: „Eins... zwei... DREI!\" [awe] Und hoch oben strahlte die große Lampe über die Wellen."
+      }
+    },
+    {
+      "targetAudience": "children_11-14",
+      "title": "The Atlas Under the Stairs",
+      "texts": {
+        "en-US": "[curious] The door under the stairs had never been there before. Nora lifted her lantern, and the light bent — actually bent — toward the gap beneath the steps. [whispers] \"It's breathing,\" she said. Dust rose in slow ribbons, tracing a path of stars across the hallway floor. One step forward, and her world would never be the same.",
+        "pt-PT": "[curious] A porta debaixo das escadas nunca tinha estado ali. A Nora ergueu a lanterna, e a luz curvou-se — curvou-se mesmo — em direção à fresta debaixo dos degraus. [whispers] «Está a respirar», disse ela. O pó subia em fitas lentas, desenhando um caminho de estrelas no chão do corredor. Um passo em frente, e o seu mundo nunca mais seria o mesmo.",
+        "es-ES": "[curious] La puerta bajo la escalera nunca había estado allí. Nora levantó el farol, y la luz se curvó — se curvó de verdad — hacia la rendija bajo los peldaños. [whispers] «Está respirando», dijo. El polvo subía en cintas lentas, trazando un camino de estrellas por el suelo del pasillo. Un paso adelante, y su mundo nunca volvería a ser el mismo.",
+        "fr-FR": "[curious] La porte sous l'escalier n'avait jamais été là auparavant. Nora leva sa lanterne, et la lumière se courba — se courba vraiment — vers la fente sous les marches. [whispers] « Elle respire », dit-elle. La poussière montait en rubans lents, traçant un chemin d'étoiles sur le sol du couloir. Un pas en avant, et son monde ne serait plus jamais le même.",
+        "de-DE": "[curious] Die Tür unter der Treppe war vorher nie da gewesen. Nora hob ihre Laterne, und das Licht bog sich — bog sich wirklich — zu dem Spalt unter den Stufen. [whispers] „Sie atmet\", sagte sie. Staub stieg in langsamen Bändern auf und zeichnete einen Pfad aus Sternen über den Flurboden. Ein Schritt nach vorn, und ihre Welt würde nie mehr dieselbe sein."
+      }
+    },
+    {
+      "targetAudience": "young_adult_15-17",
+      "title": "The Last Train to Aurora",
+      "texts": {
+        "en-US": "[calm] The platform was empty when the last train came in, silent as falling snow. Jonah's hands were glowing again — that faint, impossible light. \"If we board,\" Mara said quietly, \"we don't come back.\" [tension] He looked at the northern lights folding across the sky, then at her. \"Maybe that's the point.\"",
+        "pt-PT": "[calm] A plataforma estava deserta quando o último comboio chegou, silencioso como neve a cair. As mãos do Jonas brilhavam outra vez — aquela luz ténue, impossível. «Se entrarmos», disse a Mara baixinho, «não voltamos.» [tension] Ele olhou para a aurora boreal a dobrar-se no céu, e depois para ela. «Talvez seja essa a ideia.»",
+        "es-ES": "[calm] El andén estaba vacío cuando llegó el último tren, silencioso como la nieve al caer. Las manos de Jonás brillaban otra vez — aquella luz tenue, imposible. «Si subimos», dijo Mara en voz baja, «no volvemos.» [tension] Él miró las auroras boreales plegándose en el cielo, y luego a ella. «Quizá de eso se trata.»",
+        "fr-FR": "[calm] Le quai était désert quand le dernier train est arrivé, silencieux comme la neige qui tombe. Les mains de Jonas brillaient encore — cette lueur faible, impossible. « Si on monte », dit Mara à voix basse, « on ne revient pas. » [tension] Il regarda les aurores boréales se plier dans le ciel, puis la regarda, elle. « C'est peut-être justement ça, l'idée. »",
+        "de-DE": "[calm] Der Bahnsteig war leer, als der letzte Zug einfuhr, lautlos wie fallender Schnee. Jonas' Hände leuchteten wieder — dieses schwache, unmögliche Licht. „Wenn wir einsteigen\", sagte Mara leise, „kommen wir nicht zurück.\" [tension] Er sah zu den Polarlichtern, die sich über den Himmel falteten, dann zu ihr. „Vielleicht ist genau das der Sinn.\""
+      }
+    },
+    {
+      "targetAudience": "adult_18+",
+      "title": "The Orchard of Second Chances",
+      "texts": {
+        "en-US": "[warm] The orchard was older than every promise Helena had ever broken. Fallen apples darkened in the long grass, sweet with the smell of endings. She rested a hand on the weathered gate. [calm] Some doors, her mother used to say, only open once you forgive yourself. Tonight, at last, the house lights were on.",
+        "pt-PT": "[warm] O pomar era mais antigo do que todas as promessas que a Helena alguma vez quebrara. As maçãs caídas escureciam na erva alta, doces com o cheiro dos finais. Ela pousou a mão no portão gasto. [calm] Algumas portas, dizia a sua mãe, só se abrem quando nos perdoamos a nós próprios. Esta noite, finalmente, as luzes da casa estavam acesas.",
+        "es-ES": "[warm] El huerto era más viejo que todas las promesas que Helena había roto jamás. Las manzanas caídas se oscurecían entre la hierba alta, dulces con el olor de los finales. Apoyó la mano en la puerta desgastada. [calm] Algunas puertas, decía su madre, solo se abren cuando una se perdona a sí misma. Esta noche, por fin, las luces de la casa estaban encendidas.",
+        "fr-FR": "[warm] Le verger était plus vieux que toutes les promesses qu'Helena avait jamais brisées. Les pommes tombées noircissaient dans les hautes herbes, sucrées de l'odeur des fins. Elle posa la main sur le portail usé. [calm] Certaines portes, disait sa mère, ne s'ouvrent que lorsqu'on s'est pardonné à soi-même. Ce soir, enfin, les lumières de la maison étaient allumées.",
+        "de-DE": "[warm] Der Obstgarten war älter als jedes Versprechen, das Helena je gebrochen hatte. Gefallene Äpfel dunkelten im hohen Gras, süß vom Geruch der Abschiede. Sie legte eine Hand auf das verwitterte Tor. [calm] Manche Türen, sagte ihre Mutter immer, öffnen sich erst, wenn man sich selbst verzeiht. Heute Abend, endlich, brannte Licht im Haus."
+      }
+    },
+    {
+      "targetAudience": "all_ages",
+      "title": "The House Where Stories Gather",
+      "texts": {
+        "en-US": "[warm] Every evening, when the first star appeared, the old house began to hum. Grandpa lit the lantern, the children gathered close, and even the cat pretended not to listen. [amusement] \"Tonight,\" Grandpa smiled, \"a story about all of us.\" Outside, ribbons of light curled around the roof — because stories, you know, like to be heard.",
+        "pt-PT": "[warm] Todas as noites, quando a primeira estrela aparecia, a velha casa começava a cantarolar. O avô acendia a lanterna, as crianças juntavam-se à roda, e até o gato fingia não estar a ouvir. [amusement] «Esta noite», sorriu o avô, «uma história sobre todos nós.» Lá fora, fitas de luz enrolavam-se no telhado — porque as histórias, sabem, gostam de ser ouvidas.",
+        "es-ES": "[warm] Cada noche, cuando aparecía la primera estrella, la vieja casa empezaba a tararear. El abuelo encendía el farol, los niños se acercaban, y hasta el gato fingía no escuchar. [amusement] «Esta noche», sonrió el abuelo, «un cuento sobre todos nosotros.» Fuera, cintas de luz se enroscaban en el tejado — porque a los cuentos, ya sabéis, les gusta que los escuchen.",
+        "fr-FR": "[warm] Chaque soir, quand la première étoile apparaissait, la vieille maison se mettait à fredonner. Grand-père allumait la lanterne, les enfants se serraient tout près, et même le chat faisait semblant de ne pas écouter. [amusement] « Ce soir », sourit Grand-père, « une histoire sur nous tous. » Dehors, des rubans de lumière s'enroulaient autour du toit — parce que les histoires, voyez-vous, aiment qu'on les écoute.",
+        "de-DE": "[warm] Jeden Abend, wenn der erste Stern erschien, begann das alte Haus zu summen. Großvater zündete die Laterne an, die Kinder rückten zusammen, und sogar die Katze tat so, als hörte sie nicht zu. [amusement] „Heute Abend\", lächelte Großvater, „eine Geschichte über uns alle.\" Draußen wanden sich Lichtbänder um das Dach — denn Geschichten, wisst ihr, werden gern gehört."
+      }
+    }
+  ]
+}

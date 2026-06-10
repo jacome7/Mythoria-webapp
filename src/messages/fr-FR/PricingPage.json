@@ -112,6 +112,7 @@
     },
     "errors": {
       "loadingFailed": "Impossible de charger les informations sur les prix"
-    }
+    },
+    "morePricingQuestions": "Vous avez d'autres questions sur les tarifs ?"
   }
 }

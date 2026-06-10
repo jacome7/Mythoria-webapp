@@ -2,8 +2,9 @@
 
 import { Show, RedirectToSignIn } from '@clerk/nextjs';
 import { useState, useEffect, useCallback, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/routing';
 import StepNavigation from '@/components/StepNavigation';
 import CharacterCard from '@/components/CharacterCard';
 import ProgressIndicator from '@/components/ProgressIndicator';

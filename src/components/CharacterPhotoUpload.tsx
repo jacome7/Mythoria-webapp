@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import Cropper from 'react-easy-crop';
 import { useTranslations, useLocale } from 'next-intl';
 import { FiX, FiUpload, FiTrash2, FiInfo, FiCamera, FiZap, FiCheck, FiEdit3 } from 'react-icons/fi';

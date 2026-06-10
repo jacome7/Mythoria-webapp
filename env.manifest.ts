@@ -584,6 +584,14 @@ export const envManifest: EnvVarDescriptor[] = [
     default: 'mythoria.pt',
     note: 'Domain for lead session cookies (e.g., .mythoria.pt). Optional in dev.',
   },
+  {
+    name: 'NEXT_PUBLIC_ASSETS_BASE_URL',
+    required: true,
+    scopes: ['prod', 'build', 'dev', 'public'],
+    default: 'https://storage.googleapis.com/mythoria-public/',
+    source: 'substitution',
+    note: 'Base URL for public static assets hosted on GCS. Must end with a trailing slash.',
+  },
 
   // Internal diagnostics
   {

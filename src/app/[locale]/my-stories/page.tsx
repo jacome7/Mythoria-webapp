@@ -2,17 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { Show } from '@clerk/nextjs';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { FiPlus } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
-import { useLocale } from 'next-intl';
 import MyStoriesTable from '@/components/MyStoriesTable';
 import MyCharactersTable from '@/components/MyCharactersTable';
 import CreditsDisplay from '@/components/CreditsDisplay';
 
 export default function MyStoriesPage() {
   const tMyStoriesPage = useTranslations('MyStoriesPage');
-  const locale = useLocale();
   const [authorName, setAuthorName] = useState<string>('');
   const [credits, setCredits] = useState<number>(0);
   const [loading, setLoading] = useState(true);
@@ -61,10 +59,10 @@ export default function MyStoriesPage() {
           <h1 className="text-4xl font-bold">{tMyStoriesPage('signedOut.welcome')}</h1>
           <p className="text-lg text-gray-600">{tMyStoriesPage('signedOut.needSignIn')}</p>
           <div className="space-x-4">
-            <Link href={`/${locale}/sign-in`} className="btn btn-primary">
+            <Link href="/sign-in" className="btn btn-primary">
               {tMyStoriesPage('signedOut.signIn')}
             </Link>
-            <Link href={`/${locale}/sign-up`} className="btn btn-outline">
+            <Link href="/sign-up" className="btn btn-outline">
               {tMyStoriesPage('signedOut.createAccount')}
             </Link>
           </div>

@@ -79,8 +79,11 @@
 
 .dropdownMenu {
   z-index: 60;
+  top: 100%;
+  bottom: auto;
+  inset-inline-start: 0;
   width: 14rem;
-  margin-top: 0.65rem;
+  margin-top: 1rem;
   padding: 0.45rem;
   border: 1px solid rgba(86, 60, 28, 0.22);
   border-radius: 0.8rem;
@@ -90,6 +93,7 @@
   color: var(--header-navy);
   font-family: var(--font-display), Georgia, 'Times New Roman', serif;
   list-style: none;
+  transform-origin: top;
 }
 
 .dropdownMenu li {

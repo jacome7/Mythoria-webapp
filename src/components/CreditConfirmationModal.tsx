@@ -2,7 +2,7 @@
 
 import { FiCreditCard, FiX, FiZap } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 
 interface CreditConfirmationModalProps {
   isOpen: boolean;

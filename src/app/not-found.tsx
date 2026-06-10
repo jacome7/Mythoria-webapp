@@ -7,6 +7,7 @@ import { readdir, readFile } from 'fs/promises';
 import path from 'path';
 import { routing, isValidLocale, Locale } from '@/i18n/routing';
 import NotFoundPageContent from '@/components/NotFoundPageContent';
+import { papercutScopeClassName } from '@/components/papercut';
 
 // Minimal duplication of message loading logic (mirrors [locale]/layout.tsx behavior)
 type Messages = Record<string, unknown>;
@@ -123,7 +124,7 @@ export default async function RootNotFound() {
       <NextIntlClientProvider locale={locale} messages={messages}>
         <div className="flex flex-col min-h-screen">
           <Header />
-          <main className="flex-grow">
+          <main className={papercutScopeClassName('flex-grow')}>
             <NotFoundPageContent />
           </main>
           <Footer />

@@ -33,11 +33,11 @@ export default async function PrivacyPolicyPage({ params }: PrivacyPolicyPagePro
 
           <div className="prose prose-lg max-w-none">
             {/* At-a-Glance Section */}
-            <div className="bg-blue-50 border-l-4 border-blue-400 p-6 mb-8 rounded-r-lg">
-              <h2 className="text-2xl font-semibold mb-4 text-blue-800">
+            <div className="bg-[#fff7e6] border-l-4 border-[rgba(86,60,28,0.36)] p-6 mb-8 rounded-r-lg">
+              <h2 className="text-2xl font-semibold mb-4 text-primary">
                 {tPrivacyPolicy('atAGlance.title')}
               </h2>
-              <div className="space-y-3 text-blue-700">
+              <div className="space-y-3 text-base-content">
                 <p>{tPrivacyPolicy('atAGlance.summary1')}</p>
                 <p>{tPrivacyPolicy('atAGlance.summary2')}</p>
                 <p>{tPrivacyPolicy('atAGlance.summary3')}</p>

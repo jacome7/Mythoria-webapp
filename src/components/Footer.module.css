@@ -27,7 +27,7 @@
   min-height: 18.5rem;
   max-width: 72rem;
   margin: 0 auto;
-  padding: 2.1rem 1rem 1.5rem;
+  padding: 2.1rem 0.5rem 1.5rem;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
@@ -67,18 +67,19 @@
 
 .primaryNav {
   display: flex;
+  width: 100%;
   max-width: 44rem;
   margin-top: 1.35rem;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 0.55rem 0.9rem;
+  gap: 0.2rem;
 }
 
 .primaryLink {
   color: var(--footer-navy);
   font-family: var(--font-display), Georgia, 'Times New Roman', serif;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   font-weight: 700;
   line-height: 1.15;
   text-decoration: none;
@@ -91,10 +92,14 @@
   text-underline-offset: 0.18em;
 }
 
-.separator,
+.separator {
+  display: inline;
+  color: rgba(86, 60, 28, 0.36);
+}
+
 .legalSeparator {
-  display: none;
-  color: rgba(20, 38, 35, 0.56);
+  display: inline;
+  color: rgba(86, 60, 28, 0.36);
 }
 
 .divider {
@@ -164,6 +169,8 @@
 
   .content {
     min-height: 16.5rem;
+    padding-right: 1rem;
+    padding-left: 1rem;
     padding-top: 2.25rem;
   }
 
@@ -178,11 +185,6 @@
 
   .primaryNav {
     gap: 0.65rem 1.3rem;
-  }
-
-  .separator,
-  .legalSeparator {
-    display: inline;
   }
 
   .primaryLink {

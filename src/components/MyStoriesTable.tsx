@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl';
 import { FiChevronUp, FiChevronDown } from 'react-icons/fi';
+import { Link } from '@/i18n/routing';
 import ShareModal from './ShareModal';
 import ToastContainer from './ToastContainer';
 import StoryRow from './my-stories/StoryRow';

@@ -1,10 +1,10 @@
 'use client';
 
-import Link from 'next/link';
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { Show } from '@clerk/nextjs';
+import { Link } from '@/i18n/routing';
 
 import { FaShoppingCart, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 import CartView from '@/components/CartView';
@@ -302,10 +302,10 @@ function BuyCreditsContent() {
                   {tMyStoriesPage('signedOut.needSignIn')}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link href={`/${locale}/sign-in`} className="btn btn-primary">
+                  <Link href="/sign-in" className="btn btn-primary">
                     {tMyStoriesPage('signedOut.signIn')}
                   </Link>
-                  <Link href={`/${locale}/sign-up`} className="btn btn-outline">
+                  <Link href="/sign-up" className="btn btn-outline">
                     {tMyStoriesPage('signedOut.createAccount')}
                   </Link>
                 </div>

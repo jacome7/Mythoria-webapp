@@ -48,7 +48,7 @@ const GEMINI_VOICES: VoiceOption[] = [
  */
 const DEFAULT_VOICES: Record<TTSProvider, string> = {
   openai: 'coral',
-  'google-genai': 'Charon',
+  'google-genai': 'Sulafat',
 };
 
 /**

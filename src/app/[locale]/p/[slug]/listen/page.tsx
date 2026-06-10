@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiLoader, FiAlertCircle, FiVolume2, FiArrowLeft } from 'react-icons/fi';
+import { FiLoader, FiAlertCircle, FiVolume2, FiArrowLeft, FiBook } from 'react-icons/fi';
 import {
   useCastAudioPlayer,
   AudioChapterList,
@@ -43,6 +43,7 @@ interface PublicStoryData {
     graphicalStyle?: string;
     createdAt: string;
     hasAudio?: boolean;
+    canGenerateAudio?: boolean;
     slug?: string;
   };
   chapters: Chapter[];
@@ -103,11 +104,6 @@ export default function PublicListenPage() {
         if (result.success) {
           setData(result);
 
-          // Check if story has audio
-          if (!result.story.hasAudio) {
-            setError(tPublicStoryPage('listen.audioNotAvailable'));
-          }
-
           console.log('[Public Listen Page] Story loaded successfully');
         } else {
           console.error('[Public Listen Page] API returned error:', result.error);
@@ -150,7 +146,7 @@ export default function PublicListenPage() {
     );
   }
 
-  if (error || !data) {
+  if (!data) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4 max-w-md mx-auto px-4">
@@ -162,7 +158,7 @@ export default function PublicListenPage() {
 
           <div className="space-y-2">
             <button onClick={navigateBackToStory} className="btn btn-primary btn-sm">
-              {tActions('goBack')}
+              {tPublicStoryPage('listen.backToStory')}
             </button>
           </div>
         </div>
@@ -171,6 +167,7 @@ export default function PublicListenPage() {
   }
 
   const { story } = data;
+  const hasAudio = hasAudiobook(story.audiobookUri);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -197,7 +194,14 @@ export default function PublicListenPage() {
       {/* Audio Content */}
       <div className="container mx-auto px-4 py-6">
         <div className="max-w-4xl mx-auto">
-          {hasAudiobook(data?.story?.audiobookUri) ? (
+          {error && (
+            <div className="alert alert-error mb-4">
+              <FiAlertCircle className="shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          {hasAudio ? (
             <AudioChapterList chapters={audioChapters} {...audioControls} castControls={cast} />
           ) : (
             <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
@@ -206,9 +210,27 @@ export default function PublicListenPage() {
                 {tPublicStoryPage('listen.audioNotAvailableTitle')}
               </h3>
               <p className="text-gray-600">{tPublicStoryPage('listen.audioNotAvailableDesc')}</p>
-              <button onClick={navigateBackToStory} className="btn btn-primary mt-4">
-                {tPublicStoryPage('listen.backToStory')}
-              </button>
+              <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
+                {story.canGenerateAudio ? (
+                  <>
+                    <a
+                      href={`/${locale}/stories/listen/${story.storyId}`}
+                      className="btn btn-primary"
+                    >
+                      <FiVolume2 className="w-4 h-4 mr-2" />
+                      {tPublicStoryPage('listen.createAudioNarration')}
+                    </a>
+                    <button onClick={navigateBackToStory} className="btn btn-outline">
+                      {tPublicStoryPage('listen.backToStory')}
+                    </button>
+                  </>
+                ) : (
+                  <button onClick={navigateBackToStory} className="btn btn-primary">
+                    <FiBook className="w-4 h-4 mr-2" />
+                    {tPublicStoryPage('listen.readThisStory')}
+                  </button>
+                )}
+              </div>
             </div>
           )}
         </div>

@@ -1,6 +1,30 @@
 {
   "Voices": {
-    "selectVoice": "Select Voice",
+    "selectVoice": "Select voice",
+    "samplePlay": "Hear a sample",
+    "sampleStop": "Stop sample",
+    "sampleUnavailable": "Sample unavailable",
+    "shorts": {
+      "alloy": "neutral, balanced",
+      "ash": "clear, precise",
+      "ballad": "melodic, smooth",
+      "coral": "warm, friendly",
+      "echo": "deep, resonant",
+      "fable": "warm, storytelling",
+      "nova": "bright, energetic",
+      "onyx": "deep, authoritative",
+      "sage": "calm, thoughtful",
+      "shimmer": "bright, lively",
+      "verse": "versatile, expressive",
+      "charon": "clear, informative (male)",
+      "aoede": "light, breezy (female)",
+      "puck": "upbeat, playful (male)",
+      "kore": "firm, confident (female)",
+      "fenrir": "dynamic, exciting (male)",
+      "orus": "steady, reliable (male)",
+      "zephyr": "bright, cheerful (female)",
+      "sulafat": "warm, inviting (female)"
+    },
     "names": {
       "alloy": "Alloy",
       "ash": "Ash",

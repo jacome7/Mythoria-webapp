@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { chapterService, authorService } from '@/db/services';
 import { eq } from 'drizzle-orm';
 import { db } from '@/db';
-import { stories } from '@/db/schema';
+import { authors, stories } from '@/db/schema';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
@@ -36,6 +37,20 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     // Check if any chapters have audio
     const hasAudio = chapters.some((chapter) => chapter.audioUri);
 
+    const { userId } = await auth();
+    const [currentAuthor] = userId
+      ? await db
+          .select({ authorId: authors.authorId })
+          .from(authors)
+          .where(eq(authors.clerkUserId, userId))
+          .limit(1)
+      : [];
+    const canGenerateAudio =
+      Boolean(currentAuthor) &&
+      currentAuthor?.authorId === story.authorId &&
+      story.status === 'published' &&
+      !hasAudio;
+
     // Transform story data for frontend
     const transformedStory = {
       storyId: story.storyId,
@@ -52,6 +67,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       slug: story.slug,
       hasAudio: hasAudio,
       audiobookUri: story.audiobookUri,
+      canGenerateAudio,
     };
 
     return NextResponse.json({

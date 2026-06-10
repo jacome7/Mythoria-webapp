@@ -33,10 +33,12 @@
     "listen": {
       "title": "Escucha \"{title}\"",
       "backMobile": "Volver",
-      "audioNotAvailable": "Esta historia no tiene narración disponible.",
+      "audioNotAvailable": "Esta historia todavía no tiene narración de audio.",
       "audioNotAvailableTitle": "Audio no disponible",
       "audioNotAvailableDesc": "Esta historia todavía no cuenta con narración de audio.",
       "backToStory": "Volver a la historia",
+      "createAudioNarration": "Crear narración de audio",
+      "readThisStory": "Leer esta historia",
       "duration": "Duración: {duration}",
       "chapterFallback": "Capítulo {number}",
       "chapterImageAlt": "Ilustración del capítulo {number}",
