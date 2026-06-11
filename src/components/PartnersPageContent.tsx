@@ -1,17 +1,18 @@
 'use client';
 
 import { Handshake, MapPin } from 'lucide-react';
+import Image from 'next/image';
 import { useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import PartnershipForm from './PartnershipForm';
-import ScrollFadeIn from './ScrollFadeIn';
 import PartnersDirectorySection from './PartnersPrintersPageContent';
+import styles from './PartnersPage.module.css';
 
 const PartnersPageContent = () => {
   const t = useTranslations('Partners');
-  const directoryRef = useRef<HTMLDivElement>(null);
-  const b2bRef = useRef<HTMLDivElement>(null);
-  const formRef = useRef<HTMLDivElement>(null);
+  const directoryRef = useRef<HTMLElement>(null);
+  const b2bRef = useRef<HTMLElement>(null);
+  const formRef = useRef<HTMLElement>(null);
 
   const scrollToDirectory = () => {
     directoryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -26,52 +27,76 @@ const PartnersPageContent = () => {
   };
 
   return (
-    <div className="space-y-16">
-      <ScrollFadeIn>
-        <section className="hero min-h-[60vh] bg-gradient-to-br from-base-100 via-base-200 to-base-100 rounded-box">
-          <div className="hero-content text-center">
-            <div className="max-w-4xl space-y-6">
-              <h1 className="text-5xl md:text-6xl font-bold text-primary">{t('hero.title')}</h1>
-              <p className="text-xl md:text-2xl text-base-content/80">{t('hero.subtitle')}</p>
-              <p className="text-lg md:text-xl text-base-content/80">{t('hero.body')}</p>
-              <div className="flex flex-wrap justify-center gap-4">
-                <button className="btn btn-primary btn-lg" onClick={scrollToDirectory}>
-                  <MapPin className="mr-2" />
-                  {t('hero.ctaPrimary')}
-                </button>
-                <button className="btn btn-outline btn-lg" onClick={scrollToB2b}>
-                  <Handshake className="mr-2" />
-                  {t('hero.ctaSecondary')}
-                </button>
-              </div>
+    <div className={styles.pageShell}>
+      <section className={styles.heroCard}>
+        <Image
+          className={`${styles.decorImage} ${styles.heroStarTop}`}
+          src="/Papercut_icons/sparkle_a.webp"
+          alt=""
+          width={128}
+          height={134}
+          aria-hidden="true"
+        />
+        <div className={styles.heroGrid}>
+          <div className={styles.heroCopy}>
+            <h1 className={styles.heroTitle}>{t('hero.title')}</h1>
+            <p className={styles.heroSubtitle}>{t('hero.subtitle')}</p>
+            <p className={styles.heroBody}>{t('hero.body')}</p>
+            <div className={styles.heroActions}>
+              <button className={styles.primaryButton} onClick={scrollToDirectory}>
+                <MapPin aria-hidden="true" />
+                {t('hero.ctaPrimary')}
+              </button>
+              <button className={styles.secondaryButton} onClick={scrollToB2b}>
+                <Handshake aria-hidden="true" />
+                {t('hero.ctaSecondary')}
+              </button>
             </div>
           </div>
-        </section>
-      </ScrollFadeIn>
-
-      <ScrollFadeIn delay={100}>
-        <section ref={directoryRef}>
-          <PartnersDirectorySection />
-        </section>
-      </ScrollFadeIn>
-
-      <ScrollFadeIn delay={100}>
-        <section ref={b2bRef} className="rounded-box bg-primary text-primary-content p-8 md:p-12">
-          <div className="max-w-4xl mx-auto space-y-4 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold">{t('b2b.title')}</h2>
-            <p className="text-lg text-primary-content/80">{t('b2b.body')}</p>
-            <button className="btn btn-secondary" onClick={scrollToForm}>
-              {t('b2b.cta')}
-            </button>
+          <div className={styles.heroArt} aria-hidden="true">
+            <Image
+              className={`${styles.decorImage} ${styles.heroCloud}`}
+              src="/Papercut_icons/cloud_right.webp"
+              alt=""
+              width={489}
+              height={317}
+            />
+            <Image
+              className={`${styles.decorImage} ${styles.heroStarSide}`}
+              src="/Papercut_icons/sparkle_b.webp"
+              alt=""
+              width={128}
+              height={136}
+            />
+            <Image
+              className={styles.heroImage}
+              src="/Papercut_icons/partners_page.webp"
+              alt=""
+              width={512}
+              height={520}
+              priority
+            />
           </div>
-        </section>
-      </ScrollFadeIn>
+        </div>
+      </section>
 
-      <ScrollFadeIn delay={100}>
-        <section ref={formRef} className="max-w-4xl mx-auto">
-          <PartnershipForm />
-        </section>
-      </ScrollFadeIn>
+      <section ref={directoryRef}>
+        <PartnersDirectorySection />
+      </section>
+
+      <section ref={b2bRef} className={styles.b2bPanel}>
+        <div>
+          <h2 className={styles.b2bTitle}>{t('b2b.title')}</h2>
+          <p className={styles.b2bBody}>{t('b2b.body')}</p>
+          <button className={styles.primaryButton} onClick={scrollToForm}>
+            {t('b2b.cta')}
+          </button>
+        </div>
+      </section>
+
+      <section ref={formRef} className={styles.formSection}>
+        <PartnershipForm />
+      </section>
     </div>
   );
 };

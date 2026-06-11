@@ -1,13 +1,17 @@
 'use client';
 
-import { Loader2, Mail, MapPin, Phone, Printer, Store } from 'lucide-react';
+import { FerrisWheel, Loader2, Mail, MapPin, Phone, Printer, Store } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
+import styles from './PartnersPage.module.css';
 
 const PAGE_SIZE = 10;
 const PLACEHOLDER_LOGO = '/partners/partner-placeholder.svg';
+
+const cx = (...classes: Array<string | false | null | undefined>) =>
+  classes.filter(Boolean).join(' ');
 
 type PartnerListItem = {
   id: string;
@@ -74,16 +78,14 @@ const PARTNER_TYPES = [
   {
     value: 'printer',
     labelKey: 'filters.types.printers',
-    badgeKey: 'types.printer',
     icon: Printer,
   },
   {
     value: 'attraction',
     labelKey: 'filters.types.attractions',
-    badgeKey: 'types.attraction',
-    icon: MapPin,
+    icon: FerrisWheel,
   },
-  { value: 'retail', labelKey: 'filters.types.retail', badgeKey: 'types.retail', icon: Store },
+  { value: 'retail', labelKey: 'filters.types.retail', icon: Store },
 ] as const;
 
 type PartnerType = (typeof PARTNER_TYPES)[number]['value'];
@@ -220,91 +222,95 @@ const PartnersDirectorySection = () => {
     return `https://www.google.com/maps/search/?api=1&query=${query}`;
   };
 
-  const getTypeMeta = (type: PartnerListItem['type']) =>
-    PARTNER_TYPES.find((option) => option.value === type);
-
   return (
-    <section className="space-y-10">
-      <div className="space-y-4 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold text-primary">{t('section.title')}</h2>
-        <p className="text-base-content/70 max-w-3xl mx-auto">{t('section.subtitle')}</p>
+    <section className={styles.directorySection}>
+      <div className={styles.sectionHeader}>
+        <Image
+          className={`${styles.decorImage} ${styles.sectionStar}`}
+          src="/Papercut_icons/sparkle_c.webp"
+          alt=""
+          width={128}
+          height={127}
+          aria-hidden="true"
+        />
+        <h2 className={styles.sectionTitle}>{t('section.title')}</h2>
+        <p className={styles.sectionSubtitle}>{t('section.subtitle')}</p>
       </div>
 
-      <div className="flex flex-wrap justify-center gap-2">
+      <div className={styles.typeTabs} aria-label={t('section.title')}>
         {PARTNER_TYPES.map((type) => {
           const Icon = type.icon;
           return (
             <button
               key={type.value}
-              className={`tab tab-bordered ${partnerType === type.value ? 'tab-active' : ''}`}
+              type="button"
+              className={cx(
+                styles.typeButton,
+                partnerType === type.value && styles.typeButtonActive,
+              )}
               onClick={() => setPartnerType(type.value)}
+              aria-pressed={partnerType === type.value}
             >
-              <Icon className="mr-2" />
+              <Icon aria-hidden="true" />
               {t(type.labelKey)}
             </button>
           );
         })}
       </div>
 
-      <section className="card bg-base-200 shadow-lg">
-        <div className="card-body">
-          <h3 className="text-2xl font-bold text-primary mb-4">{t('filters.title')}</h3>
-          <div className="grid gap-4 md:grid-cols-3">
-            <label className="form-control flex flex-col items-start gap-2">
-              <span className="label-text font-semibold">{t('filters.countryLabel')}</span>
-              <select
-                className="select select-bordered w-full"
-                value={countryCode}
-                onChange={(event) => handleCountryChange(event.target.value)}
-              >
-                <option value="">{t('filters.countryPlaceholder')}</option>
-                {COUNTRY_OPTIONS.map((option) => (
-                  <option key={option.code} value={option.code}>
-                    {t(`countries.${option.code}`)}
-                  </option>
-                ))}
-              </select>
-            </label>
+      <section className={styles.filterPanel}>
+        <h3 className={styles.filterTitle}>{t('filters.title')}</h3>
+        <div className={styles.filtersGrid}>
+          <label className={styles.fieldLabel}>
+            <span>{t('filters.countryLabel')}</span>
+            <select
+              className={styles.selectField}
+              value={countryCode}
+              onChange={(event) => handleCountryChange(event.target.value)}
+            >
+              <option value="">{t('filters.countryPlaceholder')}</option>
+              {COUNTRY_OPTIONS.map((option) => (
+                <option key={option.code} value={option.code}>
+                  {t(`countries.${option.code}`)}
+                </option>
+              ))}
+            </select>
+          </label>
 
-            <label className="form-control flex flex-col items-start gap-2">
-              <span className="label-text font-semibold">{t('filters.cityLabel')}</span>
-              <select
-                className="select select-bordered w-full"
-                value={city}
-                onChange={(event) => setCity(event.target.value)}
-                disabled={!countryCode}
-              >
-                <option value="">{t('filters.cityPlaceholder')}</option>
-                {availableCities.map((cityKey) => (
-                  <option key={cityKey} value={t(`cities.${countryCode}.${cityKey}`)}>
-                    {t(`cities.${countryCode}.${cityKey}`)}
-                  </option>
-                ))}
-              </select>
-            </label>
+          <label className={styles.fieldLabel}>
+            <span>{t('filters.cityLabel')}</span>
+            <select
+              className={styles.selectField}
+              value={city}
+              onChange={(event) => setCity(event.target.value)}
+              disabled={!countryCode}
+            >
+              <option value="">{t('filters.cityPlaceholder')}</option>
+              {availableCities.map((cityKey) => (
+                <option key={cityKey} value={t(`cities.${countryCode}.${cityKey}`)}>
+                  {t(`cities.${countryCode}.${cityKey}`)}
+                </option>
+              ))}
+            </select>
+          </label>
 
-            <div className="flex items-end">
-              <button className="btn btn-outline w-full" onClick={handleClearFilters}>
-                {t('filters.clear')}
-              </button>
-            </div>
-          </div>
-          <div className="mt-4 text-sm text-base-content/60">{t('list.helper')}</div>
+          <button type="button" className={styles.clearButton} onClick={handleClearFilters}>
+            {t('filters.clear')}
+          </button>
         </div>
+        <div className={styles.listHelper}>{t('list.helper')}</div>
       </section>
 
-      <section className="space-y-6">
+      <section className={styles.listSection}>
         {partners.length === 0 && !isLoading && !error && (
-          <div className="alert alert-info">{t('list.empty')}</div>
+          <div className={`alert alert-info ${styles.stateBox}`}>{t('list.empty')}</div>
         )}
 
-        {error && <div className="alert alert-error">{error}</div>}
+        {error && <div className={`alert alert-error ${styles.stateBox}`}>{error}</div>}
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className={styles.partnersGrid}>
           {partners.map((partner) => {
             const address = formatAddress(partner);
-            const typeMeta = getTypeMeta(partner.type);
-            const TypeIcon = typeMeta?.icon;
             const actionItems = [] as Array<{
               label: string;
               href?: string;
@@ -341,13 +347,10 @@ const PartnersDirectorySection = () => {
             );
 
             return (
-              <div
-                key={partner.id}
-                className="card bg-base-100 shadow-lg text-left transition hover:shadow-xl"
-              >
-                <div className="card-body">
-                  <div className="flex items-start gap-4">
-                    <div className="relative h-20 w-28 min-h-20 min-w-28 shrink-0 rounded-lg bg-base-200 overflow-hidden">
+              <div key={partner.id} className={styles.partnerCard}>
+                <div className={styles.partnerCardInner}>
+                  <div className={styles.partnerHeader}>
+                    <div className={styles.logoFrame}>
                       <Image
                         src={partner.logoUrl || PLACEHOLDER_LOGO}
                         alt={partner.name}
@@ -361,12 +364,10 @@ const PartnersDirectorySection = () => {
                         unoptimized
                       />
                     </div>
-                    <div className="min-w-0 flex-1 space-y-2">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="text-lg font-bold text-primary">{partner.name}</h3>
-                      </div>
-                      <div className="text-sm text-base-content/70 flex items-center gap-2">
-                        <MapPin className="text-primary" />
+                    <div className="min-w-0 flex-1">
+                      <h3 className={styles.partnerName}>{partner.name}</h3>
+                      <div className={styles.partnerLocation}>
+                        <MapPin aria-hidden="true" size={18} />
                         <span>
                           {partner.city || partner.countryCode || t('list.locationFallback')}
                         </span>
@@ -374,14 +375,19 @@ const PartnersDirectorySection = () => {
                     </div>
                   </div>
                   {partner.shortDescription && (
-                    <p className="text-sm text-base-content/70">{partner.shortDescription}</p>
+                    <p className={styles.partnerDescription}>{partner.shortDescription}</p>
                   )}
-                  <div className="card-actions mt-4 flex flex-wrap gap-2">
+                  <div className={styles.cardActions}>
                     {actionItems.map((action) =>
                       action.href ? (
                         <a
                           key={action.label}
-                          className={`btn btn-sm ${action.variant === 'primary' ? 'btn-primary' : 'btn-outline'}`}
+                          className={cx(
+                            'btn btn-sm',
+                            action.variant === 'primary'
+                              ? `btn-primary ${styles.miniPrimary}`
+                              : `btn-outline ${styles.miniSecondary}`,
+                          )}
                           href={action.href}
                           target="_blank"
                           rel="noreferrer"
@@ -391,7 +397,13 @@ const PartnersDirectorySection = () => {
                       ) : (
                         <button
                           key={action.label}
-                          className={`btn btn-sm ${action.variant === 'primary' ? 'btn-primary' : 'btn-outline'}`}
+                          type="button"
+                          className={cx(
+                            'btn btn-sm',
+                            action.variant === 'primary'
+                              ? `btn-primary ${styles.miniPrimary}`
+                              : `btn-outline ${styles.miniSecondary}`,
+                          )}
                           onClick={action.onClick}
                         >
                           {action.label}
@@ -400,7 +412,8 @@ const PartnersDirectorySection = () => {
                     )}
                     {!hasViewDetailsAction && (
                       <button
-                        className="btn btn-sm btn-ghost"
+                        type="button"
+                        className={`btn btn-sm btn-ghost ${styles.miniGhost}`}
                         onClick={() => setSelectedPartner(partner)}
                       >
                         {t('actions.viewDetails')}
@@ -414,14 +427,14 @@ const PartnersDirectorySection = () => {
         </div>
 
         {isLoading && (
-          <div className="flex items-center justify-center gap-2 text-base-content/70">
+          <div className={styles.loadingRow}>
             <Loader2 className="animate-spin" />
             <span>{t('list.loading')}</span>
           </div>
         )}
 
         {hasMore && !isLoading && (
-          <div className="flex justify-center">
+          <div className="mt-6 flex justify-center">
             <button className="btn btn-primary" onClick={() => loadPartners(offset)}>
               {t('list.loadMore')}
             </button>
@@ -435,7 +448,6 @@ const PartnersDirectorySection = () => {
         isMounted &&
         (() => {
           const address = formatAddress(selectedPartner);
-          const typeMeta = getTypeMeta(selectedPartner.type);
           return createPortal(
             <div className="modal modal-open">
               <div className="modal-box max-w-2xl max-h-[85vh] overflow-y-auto">

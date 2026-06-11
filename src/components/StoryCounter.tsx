@@ -6,13 +6,24 @@ import { useTranslations } from 'next-intl';
 import styles from './StoryCounter.module.css';
 import { homepageAsset } from '@/constants/homepageAssets';
 
-const StoryCounter = () => {
+interface StoryCounterProps {
+  count?: number | null;
+  description?: string;
+  className?: string;
+}
+
+const StoryCounter = ({ count, description, className }: StoryCounterProps) => {
   const tCommonStoryCounter = useTranslations('StoryCounter');
+  const shouldFetchCount = count === undefined;
   const [storyCount, setStoryCount] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(shouldFetchCount);
   const [error, setError] = useState<string | null>(null);
 
   const fetchStoryCount = useCallback(async () => {
+    if (!shouldFetchCount) {
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError(null); // Reset error state at the beginning of a fetch attempt
@@ -60,17 +71,24 @@ const StoryCounter = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [shouldFetchCount]);
 
   useEffect(() => {
+    if (!shouldFetchCount) {
+      return;
+    }
+
     fetchStoryCount(); // Fetch immediately on mount
     const intervalId = setInterval(fetchStoryCount, 150000); // Refresh every 150 seconds
 
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
-  }, [fetchStoryCount]);
+  }, [fetchStoryCount, shouldFetchCount]);
+
+  const displayCount = shouldFetchCount ? storyCount : (count ?? null);
+  const displayDescription = description ?? tCommonStoryCounter('description');
 
   return (
-    <div className={styles.counterCard}>
+    <div className={`${styles.counterCard} ${className ?? ''}`}>
       <Image
         src={homepageAsset('sparkle_a.webp')}
         alt=""
@@ -95,13 +113,13 @@ const StoryCounter = () => {
             </div>
           )}
           {error && <div className={styles.errorValue}>{tCommonStoryCounter('error')}</div>}
-          {!isLoading && !error && storyCount !== null && (
-            <div className={styles.countValue}>{storyCount.toLocaleString()}</div>
+          {!isLoading && !error && displayCount !== null && (
+            <div className={styles.countValue}>{displayCount.toLocaleString()}</div>
           )}
-          {!isLoading && !error && storyCount === null && (
+          {!isLoading && !error && displayCount === null && (
             <div className={styles.countValue}>{tCommonStoryCounter('notAvailable')}</div>
           )}
-          <div className={styles.countDescription}>{tCommonStoryCounter('description')}</div>
+          <div className={styles.countDescription}>{displayDescription}</div>
         </div>
         <Image
           src={homepageAsset('number_of_stories_icon.webp')}

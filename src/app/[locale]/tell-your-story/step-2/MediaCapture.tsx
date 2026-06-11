@@ -23,6 +23,8 @@ const MAX_ANALYSIS_ATTEMPTS = 3; // initial attempt + 2 retries
 const modalSurfaceClass =
   'modal-box !bg-[#fff7e6] !bg-gradient-to-br !from-[#fff8e8] !to-[#f7deb8] border border-[#5e401a]/20 shadow-[0_18px_30px_rgba(74,48,14,0.13)]';
 
+const stripLeadingTipsIcon = (value: string) => value.replace(/^\s*[📷📸🎤]\s*/u, '');
+
 export default function MediaCapture({
   activeModal,
   setActiveModal,
@@ -370,13 +372,27 @@ export default function MediaCapture({
                   <div className="text-center space-y-4">
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                       <button className="btn btn-primary btn-lg" onClick={startCamera}>
-                        📷 {t('takePhoto')}
+                        <Image
+                          src="/Papercut_icons/fa-camera-papercut.webp"
+                          alt=""
+                          width={24}
+                          height={24}
+                          aria-hidden="true"
+                        />
+                        {t('takePhoto')}
                       </button>
                       <button
                         className="btn btn-outline btn-lg"
                         onClick={() => fileInputRef.current?.click()}
                       >
-                        🖼️ {t('uploadImage')}
+                        <Image
+                          src="/Papercut_icons/fa-image-papercut.webp"
+                          alt=""
+                          width={24}
+                          height={24}
+                          aria-hidden="true"
+                        />
+                        {t('uploadImage')}
                       </button>
                     </div>
                     <p className="text-gray-600">{t('imageHelp')}</p>
@@ -415,7 +431,16 @@ export default function MediaCapture({
                 />
                 <canvas ref={canvasRef} className="hidden" />
                 <div className="mt-6 p-4 bg-base-200 rounded-lg">
-                  <h4 className="font-semibold mb-3">{t('photoTips.title')}</h4>
+                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    <Image
+                      src="/Papercut_icons/fa-camera-papercut.webp"
+                      alt=""
+                      width={20}
+                      height={20}
+                      aria-hidden="true"
+                    />
+                    {stripLeadingTipsIcon(t('photoTips.title'))}
+                  </h4>
                   <ul className="text-sm space-y-1 list-disc list-inside">
                     {(t.raw('photoTips.tips') as string[]).map((tip: string, index: number) => (
                       <li key={index}>{tip}</li>
@@ -530,7 +555,14 @@ export default function MediaCapture({
                   <div className="text-center space-y-4">
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                       <button className="btn btn-primary btn-lg" onClick={startRecording}>
-                        🎤 {t('recordVoice')}
+                        <Image
+                          src="/Papercut_icons/fa-microphone-papercut.webp"
+                          alt=""
+                          width={24}
+                          height={24}
+                          aria-hidden="true"
+                        />
+                        {t('recordVoice')}
                       </button>
                       <button
                         className="btn btn-outline btn-lg"
@@ -623,7 +655,9 @@ export default function MediaCapture({
                   className="hidden"
                 />
                 <div className="mt-6 p-4 bg-base-200 rounded-lg">
-                  <h4 className="font-semibold mb-3">🎤 {t('recordingTips.title')}</h4>
+                  <h4 className="font-semibold mb-3">
+                    {stripLeadingTipsIcon(t('recordingTips.title'))}
+                  </h4>
                   <ul className="text-sm space-y-1 list-disc list-inside">
                     {(t.raw('recordingTips.tips') as string[]).map((tip: string, index: number) => (
                       <li key={index}>{tip}</li>

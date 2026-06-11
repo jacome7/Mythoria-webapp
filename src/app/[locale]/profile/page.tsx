@@ -19,6 +19,7 @@ import { useUser } from '@clerk/nextjs';
 import CreditsDisplay from '@/components/CreditsDisplay';
 import Link from 'next/link';
 import { getCountryOptions } from '@/utils/countries';
+import StoryCounter from '@/components/StoryCounter';
 
 interface ProfileDetails {
   displayName: string;
@@ -549,20 +550,17 @@ export default function AccountProfilePage() {
                   <Book className="mr-2" /> {t('journey.title')}
                 </h2>
                 <p className="opacity-80 text-sm mb-4">{t('journey.description')}</p>
-                <div className="stats shadow w-full">
-                  <Link
-                    href={`/${locale}/my-stories`}
-                    className="stat text-center hover:bg-base-200 transition-colors"
-                    aria-label={t('journey.booksCreated')}
-                  >
-                    <div className="stat-title underline decoration-dotted">
-                      {t('journey.booksCreated')}
-                    </div>
-                    <div className="stat-value text-primary">
-                      {storyCount === null ? '—' : storyCount}
-                    </div>
-                  </Link>
-                </div>
+                <Link
+                  href={`/${locale}/my-stories`}
+                  className="block rounded-2xl transition-transform hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                  aria-label={t('journey.booksCreated')}
+                >
+                  <StoryCounter
+                    count={storyCount}
+                    description={t('journey.booksCreated')}
+                    className="w-full"
+                  />
+                </Link>
               </div>
             </div>
           </div>

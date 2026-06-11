@@ -177,9 +177,6 @@
       "progress": {
         "stepLabel": "Step {currentStep} of {totalSteps}"
       },
-      "badges": {
-        "editingDraft": "Editing Draft Story"
-      },
       "navigation": {
         "backToMyStories": "Back to My Stories"
       },

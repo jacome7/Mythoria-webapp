@@ -129,7 +129,7 @@ export default function ReadingToolbar({
                 </div>
                 <ul
                   tabIndex={0}
-                  className="dropdown-content menu !absolute !right-0 !top-full z-[80] mt-2 w-60 max-w-[calc(100vw-1.5rem)] max-h-[calc(100vh-9rem)] overflow-y-auto bg-base-100 rounded-box p-2 shadow-xl border border-base-300"
+                  className="dropdown-content menu !absolute !right-0 !top-full z-[80] mt-2 w-60 max-w-[calc(100vw-1.5rem)] max-h-[calc(100vh-9rem)] overflow-y-auto rounded-box border border-base-300 !bg-base-100 p-2 text-base-content opacity-100 shadow-xl"
                 >
                   <li>
                     <button

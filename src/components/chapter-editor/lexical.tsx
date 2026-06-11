@@ -206,11 +206,14 @@ export function ContentChangePlugin({
   const [editor] = useLexicalComposerContext();
 
   const handleChange = (editorState: EditorState) => {
-    editorState.read(() => {
-      const htmlString = $generateHtmlFromNodes(editor);
-      onContentChange?.(htmlString);
-      onHasChanges(currentTitle !== chapterTitle || htmlString !== initialContent);
-    });
+    editorState.read(
+      () => {
+        const htmlString = $generateHtmlFromNodes(editor);
+        onContentChange?.(htmlString);
+        onHasChanges(currentTitle !== chapterTitle || htmlString !== initialContent);
+      },
+      { editor },
+    );
   };
 
   return <OnChangePlugin onChange={handleChange} />;

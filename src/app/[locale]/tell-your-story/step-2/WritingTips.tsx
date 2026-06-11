@@ -1,16 +1,17 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 const WRITING_TIPS = [
-  { icon: '🌍', key: 'setting' },
-  { icon: '👥', key: 'characters' },
-  { icon: '⚔️', key: 'conflict' },
-  { icon: '❤️', key: 'emotion' },
-  { icon: '🎭', key: 'twist' },
-  { icon: '🎯', key: 'goal' },
-  { icon: '✨', key: 'magic' },
+  { iconSrc: '/Papercut_icons/fa-globe-americas-papercut.webp', key: 'setting' },
+  { iconSrc: '/Papercut_icons/fa-users-papercut.webp', key: 'characters' },
+  { iconSrc: '/Papercut_icons/gi-crossed-swords-papercut.webp', key: 'conflict' },
+  { iconSrc: '/Papercut_icons/fa-heart-papercut.webp', key: 'emotion' },
+  { iconSrc: '/Papercut_icons/gi-drama-masks-papercut.webp', key: 'twist' },
+  { iconSrc: '/Papercut_icons/fa-bullseye-papercut.webp', key: 'goal' },
+  { iconSrc: '/Papercut_icons/fa-magic-papercut.webp', key: 'magic' },
 ];
 
 export default function WritingTips() {
@@ -29,7 +30,7 @@ export default function WritingTips() {
   return (
     <div className="p-4 bg-base-200 rounded-lg">
       <h4 className="font-semibold mb-2 flex items-center gap-2">
-        <span className="text-xl">{currentTip.icon}</span>
+        <Image src={currentTip.iconSrc} alt="" width={24} height={24} aria-hidden="true" />
         <span className="text-sm">{t('writingTipsTitle')}</span>
       </h4>
       <p className="text-sm leading-relaxed animate-fade-in">

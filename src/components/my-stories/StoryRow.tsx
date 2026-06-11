@@ -1,8 +1,8 @@
 'use client';
 
+import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
 import { useEffect, useState } from 'react';
 import {
-  BookOpen,
   Copy,
   Download,
   Edit3,
@@ -12,7 +12,9 @@ import {
   Trash2,
   Volume2,
 } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl';
 import { Story } from '@/types/story';
@@ -28,6 +30,13 @@ interface StoryRowProps {
   onDownload: (story: Story) => void;
 }
 
+type GenerationStatusInfo = {
+  text: string;
+  className: string;
+  status: NonNullable<Story['storyGenerationStatus']>;
+  percentage: number;
+};
+
 export default function StoryRow({
   story,
   isMobile,
@@ -39,8 +48,8 @@ export default function StoryRow({
 }: StoryRowProps) {
   const tMyStoriesPage = useTranslations('MyStoriesPage');
   const tCommonShare = useTranslations('Share');
-  const tCommonActions = useTranslations('Actions');
   const locale = useLocale();
+  const router = useRouter();
 
   const [openMenu, setOpenMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState<{
@@ -49,6 +58,12 @@ export default function StoryRow({
     right: number;
   } | null>(null);
   const actionButtonClass = 'btn btn-ghost btn-sm min-h-9 w-9 px-0';
+  const primaryHref =
+    story.status === 'published'
+      ? `/${locale}/stories/${story.storyId}`
+      : story.status === 'draft'
+        ? `/${locale}/tell-your-story/step-3?edit=${story.storyId}`
+        : null;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -78,58 +93,100 @@ export default function StoryRow({
     locale,
   };
 
-  const getStatusBadgeClass = (status: string) => {
+  const getStatusIconInfo = (
+    status: Story['status'],
+  ): {
+    src: string;
+    imageClassName?: string;
+  } => {
     switch (status) {
       case 'draft':
-        return 'badge badge-secondary';
+        return {
+          src: '/Papercut_icons/PaperAndPencil.webp',
+          imageClassName: 'scale-110',
+        };
       case 'writing':
-        return 'badge badge-warning';
+        return {
+          src: '/Papercut_icons/PaperAndPencil.webp',
+          imageClassName: 'scale-110',
+        };
       case 'published':
-        return 'badge badge-success';
-      default:
-        return 'badge badge-ghost';
+        return {
+          src: '/Papercut_icons/fa-check-papercut.webp',
+        };
     }
   };
 
-  const getGenerationStatusInfo = (s: Story) => {
+  const getGenerationStatusInfo = (s: Story): GenerationStatusInfo | null => {
     if (!s.storyGenerationStatus) return null;
     const statusMap = {
       queued: {
         text: tMyStoriesPage('table.status.queued'),
-        class: 'badge-info',
-        icon: '⏳',
+        className: 'border-info/40 bg-info/10 text-info',
       },
       running: {
         text: tMyStoriesPage('table.status.running'),
-        class: 'badge-warning',
-        icon: '🔄',
+        className: 'border-warning/50 bg-warning/10 text-warning',
       },
       completed: {
         text: tMyStoriesPage('table.status.completed'),
-        class: 'badge-success',
-        icon: '✅',
+        className: 'border-success/50 bg-success/10 text-success',
       },
       failed: {
         text: tMyStoriesPage('table.status.failed'),
-        class: 'badge-error',
-        icon: '❌',
+        className: 'border-error/50 bg-error/10 text-error',
       },
       cancelled: {
         text: tMyStoriesPage('table.status.cancelled'),
-        class: 'badge-neutral',
-        icon: '⏹️',
+        className: 'border-neutral/40 bg-neutral/10 text-neutral',
       },
-    } as const;
+    } satisfies Record<
+      NonNullable<Story['storyGenerationStatus']>,
+      Omit<GenerationStatusInfo, 'percentage' | 'status'>
+    >;
     const info = statusMap[s.storyGenerationStatus];
-    return { ...info, percentage: s.storyGenerationCompletedPercentage || 0 };
+    return {
+      ...info,
+      status: s.storyGenerationStatus,
+      percentage: s.storyGenerationCompletedPercentage || 0,
+    };
+  };
+
+  const shouldIgnoreRowActivation = (target: EventTarget | null) => {
+    return (
+      target instanceof Element &&
+      Boolean(target.closest('a, button, input, select, textarea, [role="button"]'))
+    );
+  };
+
+  const handleRowClick = (event: ReactMouseEvent<HTMLTableRowElement>) => {
+    if (!primaryHref || shouldIgnoreRowActivation(event.target)) return;
+    router.push(primaryHref);
+  };
+
+  const handleRowKeyDown = (event: ReactKeyboardEvent<HTMLTableRowElement>) => {
+    if (!primaryHref || shouldIgnoreRowActivation(event.target)) return;
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+
+    event.preventDefault();
+    router.push(primaryHref);
   };
 
   return (
-    <tr>
-      <td className="px-2 py-1 md:px-4 md:py-2">
+    <tr
+      className={
+        primaryHref
+          ? 'cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60'
+          : undefined
+      }
+      onClick={handleRowClick}
+      onKeyDown={handleRowKeyDown}
+      tabIndex={primaryHref ? 0 : undefined}
+    >
+      <td className="px-1 py-1 text-sm md:px-3 md:py-2">
         {formatDate(story.createdAt, isMobile ? mobileDateOptions : desktopDateOptions)}
       </td>
-      <td className="font-medium px-2 py-1 md:px-4 md:py-2">
+      <td className="break-words px-2 py-1 font-medium leading-snug md:px-4 md:py-2">
         {story.status === 'published' ? (
           <Link
             href={`/${locale}/stories/${story.storyId}`}
@@ -141,29 +198,53 @@ export default function StoryRow({
           <span>{story.title}</span>
         )}
       </td>
-      <td className="px-2 py-1 md:px-4 md:py-2 whitespace-nowrap">
-        <div className="space-y-1">
-          <span
-            className={`${getStatusBadgeClass(story.status)} badge-sm text-xs whitespace-nowrap`}
-          >
-            {tMyStoriesPage(`status.${story.status}`)}
-          </span>
+      <td className="px-1 py-1 text-center md:px-2 md:py-2">
+        <div className="flex flex-col items-center gap-1">
+          {(() => {
+            const label = tMyStoriesPage(`status.${story.status}`);
+            const statusInfo = getStatusIconInfo(story.status);
+
+            return (
+              <span
+                aria-label={label}
+                className="inline-flex h-8 w-8 items-center justify-center"
+                title={label}
+              >
+                <Image
+                  src={statusInfo.src}
+                  alt=""
+                  aria-hidden="true"
+                  width={24}
+                  height={24}
+                  className={`h-6 w-6 object-contain ${statusInfo.imageClassName ?? ''}`}
+                  sizes="24px"
+                />
+                <span className="sr-only">{label}</span>
+              </span>
+            );
+          })()}
           {(() => {
             const genStatus = getGenerationStatusInfo(story);
             if (genStatus && story.status === 'writing') {
               return (
-                <div className="flex flex-col space-y-1">
-                  <span className={`badge badge-xs ${genStatus.class} whitespace-nowrap`}>
-                    {genStatus.icon} {genStatus.text}
+                <div className="flex flex-col items-center gap-1">
+                  <span
+                    aria-label={genStatus.text}
+                    className={`inline-flex h-1.5 w-1.5 rounded-full ${genStatus.className}`}
+                    title={genStatus.text}
+                  >
+                    <span className="sr-only">{genStatus.text}</span>
                   </span>
-                  {genStatus.percentage > 0 && genStatus.text === 'Generating' && (
-                    <div className="w-full">
+                  {genStatus.percentage > 0 && genStatus.status === 'running' && (
+                    <div className="w-10">
                       <progress
                         className="progress progress-primary w-full h-2"
                         value={genStatus.percentage}
                         max="100"
                       ></progress>
-                      <span className="text-xs text-gray-500">{genStatus.percentage}%</span>
+                      <span className="text-[0.625rem] leading-none text-gray-500">
+                        {genStatus.percentage}%
+                      </span>
                     </div>
                   )}
                 </div>
@@ -173,7 +254,7 @@ export default function StoryRow({
           })()}
         </div>
       </td>
-      <td className="px-2 py-1 md:px-4 md:py-2">
+      <td className="px-2 py-1 md:px-4 md:py-2" data-row-action-ignore="true">
         <div className="hidden md:flex justify-end gap-1.5">
           <button
             className={`${actionButtonClass} ${story.status !== 'published' ? 'btn-disabled' : ''}`}
@@ -183,15 +264,6 @@ export default function StoryRow({
           >
             <Copy className="w-4 h-4" />
           </button>
-          {story.status === 'published' && (
-            <Link
-              href={`/${locale}/stories/${story.storyId}`}
-              className={`${actionButtonClass} text-primary hover:bg-primary hover:text-primary-content`}
-              title="Read Story"
-            >
-              <BookOpen className="w-4 h-4" />
-            </Link>
-          )}
           {story.status === 'published' ? (
             <Link
               href={`/${locale}/stories/listen/${story.storyId}`}
@@ -200,7 +272,7 @@ export default function StoryRow({
             >
               <Volume2 className="w-4 h-4" />
             </Link>
-          ) : (
+          ) : story.status === 'writing' ? (
             <button
               className={`${actionButtonClass} btn-disabled`}
               disabled
@@ -208,24 +280,8 @@ export default function StoryRow({
             >
               <Volume2 className="w-4 h-4" />
             </button>
-          )}
-          {story.status === 'writing' ? (
-            <button
-              className={`${actionButtonClass} btn-disabled`}
-              disabled
-              title={tCommonShare('tooltips.cannotShareWriting')}
-            >
-              <Share2 className="w-4 h-4" />
-            </button>
-          ) : story.status === 'draft' ? (
-            <button
-              className={`${actionButtonClass} btn-disabled`}
-              disabled
-              title={tCommonShare('tooltips.cannotShareDraft')}
-            >
-              <Share2 className="w-4 h-4" />
-            </button>
-          ) : (
+          ) : null}
+          {story.status === 'published' ? (
             <button
               className={actionButtonClass}
               onClick={() => onShare(story)}
@@ -233,40 +289,32 @@ export default function StoryRow({
             >
               <Share2 className="w-4 h-4" />
             </button>
-          )}
-          {story.status === 'published' ? (
-            <button
-              className={actionButtonClass}
-              onClick={() => onPrint(story)}
-              title={tMyStoriesPage('actions.print')}
-            >
-              <Printer className="w-4 h-4" />
-            </button>
-          ) : (
+          ) : story.status === 'writing' ? (
             <button
               className={`${actionButtonClass} btn-disabled`}
               disabled
-              title={tMyStoriesPage('actions.printNotAvailable')}
+              title={tCommonShare('tooltips.cannotShareWriting')}
             >
-              <Printer className="w-4 h-4" />
+              <Share2 className="w-4 h-4" />
             </button>
-          )}
-          {story.status === 'published' ? (
-            <button
-              className={actionButtonClass}
-              onClick={() => onDownload(story)}
-              title={tMyStoriesPage('actions.downloadPdf')}
-            >
-              <Download className="w-4 h-4" />
-            </button>
-          ) : (
-            <button
-              className={`${actionButtonClass} btn-disabled`}
-              disabled
-              title={tMyStoriesPage('actions.downloadNotAvailable')}
-            >
-              <Download className="w-4 h-4" />
-            </button>
+          ) : null}
+          {story.status === 'published' && (
+            <>
+              <button
+                className={actionButtonClass}
+                onClick={() => onPrint(story)}
+                title={tMyStoriesPage('actions.print')}
+              >
+                <Printer className="w-4 h-4" />
+              </button>
+              <button
+                className={actionButtonClass}
+                onClick={() => onDownload(story)}
+                title={tMyStoriesPage('actions.downloadPdf')}
+              >
+                <Download className="w-4 h-4" />
+              </button>
+            </>
           )}
           {story.status === 'writing' ? (
             <button
@@ -335,16 +383,6 @@ export default function StoryRow({
               }}
             >
               <div className="p-2 space-y-1">
-                {story.status === 'published' && (
-                  <Link
-                    href={`/${locale}/stories/${story.storyId}`}
-                    className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
-                    onClick={() => setOpenMenu(false)}
-                  >
-                    <BookOpen className="w-4 h-4" />
-                    {tCommonActions('read')}
-                  </Link>
-                )}
                 {story.status === 'published' ? (
                   <Link
                     href={`/${locale}/stories/listen/${story.storyId}`}
@@ -355,64 +393,49 @@ export default function StoryRow({
                     {tMyStoriesPage('actions.listen')}
                   </Link>
                 ) : (
-                  <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
-                    <Volume2 className="w-4 h-4" />
-                    {tMyStoriesPage('actions.listen')}
-                  </div>
+                  story.status === 'writing' && (
+                    <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
+                      <Volume2 className="w-4 h-4" />
+                      {tMyStoriesPage('actions.listen')}
+                    </div>
+                  )
                 )}
-                {story.status === 'published' ? (
-                  <button
-                    className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
-                    onClick={() => {
-                      onShare(story);
-                      setOpenMenu(false);
-                      setMenuPosition(null);
-                    }}
-                  >
-                    <Share2 className="w-4 h-4" />
-                    {tMyStoriesPage('actions.share')}
-                  </button>
-                ) : (
-                  <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
-                    <Share2 className="w-4 h-4" />
-                    {tMyStoriesPage('actions.share')}
-                  </div>
-                )}
-                {story.status === 'published' ? (
-                  <button
-                    className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
-                    onClick={() => {
-                      onPrint(story);
-                      setOpenMenu(false);
-                      setMenuPosition(null);
-                    }}
-                  >
-                    <Printer className="w-4 h-4" />
-                    {tMyStoriesPage('actions.print')}
-                  </button>
-                ) : (
-                  <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
-                    <Printer className="w-4 h-4" />
-                    {tMyStoriesPage('actions.print')}
-                  </div>
-                )}
-                {story.status === 'published' ? (
-                  <button
-                    className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
-                    onClick={() => {
-                      onDownload(story);
-                      setOpenMenu(false);
-                      setMenuPosition(null);
-                    }}
-                  >
-                    <Download className="w-4 h-4" />
-                    {tMyStoriesPage('actions.downloadPdf')}
-                  </button>
-                ) : (
-                  <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
-                    <Download className="w-4 h-4" />
-                    {tMyStoriesPage('actions.downloadPdf')}
-                  </div>
+                {story.status === 'published' && (
+                  <>
+                    <button
+                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
+                      onClick={() => {
+                        onShare(story);
+                        setOpenMenu(false);
+                        setMenuPosition(null);
+                      }}
+                    >
+                      <Share2 className="w-4 h-4" />
+                      {tMyStoriesPage('actions.share')}
+                    </button>
+                    <button
+                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
+                      onClick={() => {
+                        onPrint(story);
+                        setOpenMenu(false);
+                        setMenuPosition(null);
+                      }}
+                    >
+                      <Printer className="w-4 h-4" />
+                      {tMyStoriesPage('actions.print')}
+                    </button>
+                    <button
+                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
+                      onClick={() => {
+                        onDownload(story);
+                        setOpenMenu(false);
+                        setMenuPosition(null);
+                      }}
+                    >
+                      <Download className="w-4 h-4" />
+                      {tMyStoriesPage('actions.downloadPdf')}
+                    </button>
+                  </>
                 )}
                 {story.status === 'writing' ? (
                   <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">

@@ -1,13 +1,11 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Story, SortField, SortDirection } from '@/types/story';
+import { Story } from '@/types/story';
 
 export function useStoriesTable(pageSize = Infinity) {
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortField, setSortField] = useState<SortField>('createdAt');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [currentPage, setCurrentPage] = useState(1);
 
   const fetchStories = useCallback(async () => {
@@ -28,47 +26,13 @@ export function useStoriesTable(pageSize = Infinity) {
     fetchStories();
   }, [fetchStories]);
 
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('asc');
-    }
-    setCurrentPage(1);
-  };
-
   const sortedStories = useMemo(() => {
     const sorted = [...stories];
     sorted.sort((a, b) => {
-      let aValue: string | number;
-      let bValue: string | number;
-      switch (sortField) {
-        case 'title':
-          aValue = a.title.toLowerCase();
-          bValue = b.title.toLowerCase();
-          break;
-        case 'createdAt':
-          aValue = new Date(a.createdAt).getTime();
-          bValue = new Date(b.createdAt).getTime();
-          break;
-        case 'updatedAt':
-          aValue = new Date(a.updatedAt).getTime();
-          bValue = new Date(b.updatedAt).getTime();
-          break;
-        case 'status':
-          aValue = a.status;
-          bValue = b.status;
-          break;
-        default:
-          return 0;
-      }
-      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
-      return 0;
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
     return sorted;
-  }, [stories, sortField, sortDirection]);
+  }, [stories]);
 
   // When pageSize is Infinity the previous implementation produced an empty array because:
   // start = (currentPage-1) * Infinity => 0 * Infinity = NaN, end = NaN + Infinity = NaN, slice(NaN, NaN) => slice(0,0)
@@ -85,9 +49,6 @@ export function useStoriesTable(pageSize = Infinity) {
     setStories,
     loading,
     fetchStories,
-    sortField,
-    sortDirection,
-    handleSort,
     paginatedStories,
     pageCount,
     currentPage,

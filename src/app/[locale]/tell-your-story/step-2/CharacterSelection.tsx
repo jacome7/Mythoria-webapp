@@ -7,15 +7,22 @@ import { useTranslations } from 'next-intl';
 import styles from './CharacterSelection.module.css';
 
 interface Character {
-  characterId: string;
+  characterId?: string;
   name: string;
-  type?: string;
+  type: string;
   role?: string;
-  photoUrl?: string | null;
+  photoUrl?: string;
 }
 
 interface Props {
-  onChange: (ids: string[]) => void;
+  onChange?: (ids: string[]) => void;
+  characters?: Character[];
+  isLoading?: boolean;
+  triggerLabel?: string;
+  triggerVariant?: 'card' | 'button';
+  title?: string;
+  clearSelectionOnDone?: boolean;
+  onDone?: (ids: string[], characters: Character[]) => void | Promise<void>;
 }
 
 const CHARACTER_ICON_TYPES = [
@@ -38,21 +45,37 @@ const CHARACTER_ICON_TYPES = [
 const getCharacterIconPath = (type: string | undefined): string => {
   const normalizedType = type?.trim().toLowerCase();
   if (!normalizedType || !CHARACTER_ICON_TYPES.includes(normalizedType)) {
-    return '/CharacterIcons/other.png';
+    return '/CharacterIcons/other.webp';
   }
 
-  return `/CharacterIcons/${normalizedType}.png`;
+  return `/CharacterIcons/${normalizedType}.webp`;
 };
 
-export default function CharacterSelection({ onChange }: Props) {
+export default function CharacterSelection({
+  onChange,
+  characters,
+  isLoading: controlledIsLoading,
+  triggerLabel,
+  triggerVariant = 'card',
+  title,
+  clearSelectionOnDone = false,
+  onDone,
+}: Props) {
   const t = useTranslations('StorySteps.step2');
   const [existingCharacters, setExistingCharacters] = useState<Character[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const suppressNextOpenRef = useRef(false);
+  const displayCharacters = characters ?? existingCharacters;
+  const modalTitle = title ?? t('characterSelection.includeCharactersTitle');
+  const isSelected = (character: Character) =>
+    Boolean(character.characterId && selectedIds.includes(character.characterId));
 
   useEffect(() => {
+    if (characters) return;
+
     const fetchCharacters = async () => {
       try {
         setIsLoading(true);
@@ -70,7 +93,7 @@ export default function CharacterSelection({ onChange }: Props) {
       }
     };
     fetchCharacters();
-  }, []);
+  }, [characters]);
 
   const toggle = (id: string) => {
     // Do not call onChange inside the state updater (runs during render) – causes React warning
@@ -92,36 +115,58 @@ export default function CharacterSelection({ onChange }: Props) {
 
   // Notify parent of selection changes after render commit (safe side-effect phase)
   useEffect(() => {
-    onChange(selectedIds);
+    onChange?.(selectedIds);
   }, [selectedIds, onChange]);
 
-  if (isLoading || existingCharacters.length === 0) {
+  const handleDone = async () => {
+    try {
+      setIsSubmitting(true);
+      await onDone?.(
+        selectedIds,
+        displayCharacters.filter(
+          (character) => character.characterId && selectedIds.includes(character.characterId),
+        ),
+      );
+      closeModal();
+      if (clearSelectionOnDone) {
+        setSelectedIds([]);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (controlledIsLoading || isLoading || displayCharacters.length === 0) {
     return null;
   }
 
   return (
     <>
-      <button type="button" className={styles.closedCard} onClick={openModal}>
-        <span className={styles.closedIconWrap} aria-hidden="true">
-          <Image
-            src="/Papercut_icons/characters.webp"
-            alt=""
-            width={120}
-            height={96}
-            className={styles.closedIcon}
-          />
-        </span>
-        <span className={styles.closedCopy}>
-          <span className={styles.closedTitle}>
-            {t('characterSelection.includeCharactersTitle')}
+      {triggerVariant === 'card' ? (
+        <button type="button" className={styles.closedCard} onClick={openModal}>
+          <span className={styles.closedIconWrap} aria-hidden="true">
+            <Image
+              src="/Papercut_icons/characters.webp"
+              alt=""
+              width={120}
+              height={96}
+              className={styles.closedIcon}
+            />
           </span>
-          {selectedIds.length > 0 && (
-            <span className={styles.closedStatus}>
-              {t('characterSelection.selectedCount', { count: selectedIds.length })}
-            </span>
-          )}
-        </span>
-      </button>
+          <span className={styles.closedCopy}>
+            <span className={styles.closedTitle}>{triggerLabel ?? modalTitle}</span>
+            {selectedIds.length > 0 && (
+              <span className={styles.closedStatus}>
+                {t('characterSelection.selectedCount', { count: selectedIds.length })}
+              </span>
+            )}
+          </span>
+        </button>
+      ) : (
+        <button type="button" className="btn btn-outline btn-lg w-full" onClick={openModal}>
+          {triggerLabel ?? modalTitle}
+        </button>
+      )}
 
       {isModalOpen &&
         createPortal(
@@ -132,9 +177,7 @@ export default function CharacterSelection({ onChange }: Props) {
           >
             <div className={styles.modalBox}>
               <div className={styles.modalHeader}>
-                <h3 className={styles.modalTitle}>
-                  {t('characterSelection.includeCharactersTitle')}
-                </h3>
+                <h3 className={styles.modalTitle}>{modalTitle}</h3>
                 <button
                   type="button"
                   className="btn btn-sm btn-circle btn-ghost"
@@ -149,17 +192,17 @@ export default function CharacterSelection({ onChange }: Props) {
               </div>
 
               <div className={styles.characterGrid}>
-                {existingCharacters.map((character) => (
+                {displayCharacters.map((character) => (
                   <button
                     type="button"
-                    key={character.characterId}
+                    key={character.characterId ?? character.name}
                     className={`${styles.characterOption} ${
-                      selectedIds.includes(character.characterId)
-                        ? styles.characterOptionSelected
-                        : ''
+                      isSelected(character) ? styles.characterOptionSelected : ''
                     }`}
-                    onClick={() => toggle(character.characterId)}
-                    aria-pressed={selectedIds.includes(character.characterId)}
+                    onClick={() => {
+                      if (character.characterId) toggle(character.characterId);
+                    }}
+                    aria-pressed={isSelected(character)}
                   >
                     <span className={styles.characterAvatar}>
                       <Image
@@ -181,9 +224,10 @@ export default function CharacterSelection({ onChange }: Props) {
                 <button
                   type="button"
                   className="btn btn-primary"
-                  onClick={(event) => {
+                  disabled={isSubmitting}
+                  onClick={async (event) => {
                     event.stopPropagation();
-                    closeModal();
+                    await handleDone();
                   }}
                 >
                   {t('actions.done')}

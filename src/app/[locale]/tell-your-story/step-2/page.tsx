@@ -21,6 +21,8 @@ type ContentType = 'text' | 'images' | 'audio';
 const modalSurfaceClass =
   'modal-box !bg-[#fff7e6] !bg-gradient-to-br !from-[#fff8e8] !to-[#f7deb8] border border-[#5e401a]/20 shadow-[0_18px_30px_rgba(74,48,14,0.13)]';
 
+const stripMagicIcon = (value: string) => value.replace(/^\s*✨\s*/u, '').replace(/\s*✨\s*$/u, '');
+
 interface StoryModeCardProps {
   title: string;
   description: string;
@@ -482,7 +484,16 @@ export default function Step2Page() {
           <div className="modal modal-open">
             <div className={`${modalSurfaceClass} max-w-md`}>
               <div className="text-center space-y-6">
-                <h3 className="font-bold text-xl">{tStoryStepsStep2('loadingModal.title')}</h3>
+                <h3 className="font-bold text-xl flex items-center justify-center gap-2">
+                  <Image
+                    src="/Papercut_icons/fa-magic-papercut.webp"
+                    alt=""
+                    width={28}
+                    height={28}
+                    aria-hidden="true"
+                  />
+                  {stripMagicIcon(tStoryStepsStep2('loadingModal.title'))}
+                </h3>
 
                 <div className="flex justify-center">
                   <span className="loading loading-spinner loading-lg text-primary"></span>
@@ -490,12 +501,26 @@ export default function Step2Page() {
 
                 <div className="space-y-3">
                   <p className="text-base">{tStoryStepsStep2('loadingModal.message')}</p>
-                  <p className="text-sm font-medium text-primary">
-                    {tStoryStepsStep2('loadingModal.pleaseWait')}
+                  <p className="text-sm font-medium text-primary flex items-center justify-center gap-1">
+                    {stripMagicIcon(tStoryStepsStep2('loadingModal.pleaseWait'))}
+                    <Image
+                      src="/Papercut_icons/fa-magic-papercut.webp"
+                      alt=""
+                      width={18}
+                      height={18}
+                      aria-hidden="true"
+                    />
                   </p>
                 </div>
 
-                <div className="text-6xl animate-bounce">🍫</div>
+                <Image
+                  src="/Papercut_icons/gi-chocolate-bar-papercut.webp"
+                  alt=""
+                  width={96}
+                  height={96}
+                  className="mx-auto animate-bounce"
+                  aria-hidden="true"
+                />
               </div>
             </div>
           </div>

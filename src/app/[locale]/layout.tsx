@@ -10,7 +10,7 @@ import StructuredData from '@/components/StructuredData';
 import LanguageAttribute from '@/components/LanguageAttribute';
 import LocaleSync from '@/components/LocaleSync';
 import CookieConsentBanner from '@/components/CookieConsentBanner';
-import { papercutScopeClassName } from '@/components/papercut';
+import { papercutScopeClassName, papercutStyles } from '@/components/papercut';
 import { readdir, readFile } from 'fs/promises';
 import path from 'path';
 import { Metadata, Viewport } from 'next';
@@ -338,6 +338,7 @@ export default async function LocaleLayout({
   // Get messages using the helper function
   const messages = await getMessages(locale);
   const metadata = (messages?.Metadata as MetadataMessages) || ({} as MetadataMessages);
+  const mainClassName = papercutScopeClassName('flex-grow', papercutStyles.footerBlend);
 
   // Structure data for JSON-LD
   const structuredData = {
@@ -370,7 +371,7 @@ export default async function LocaleLayout({
       <LocaleSync />
       <div className="flex flex-col min-h-screen">
         <StickyHeader />
-        <main className={papercutScopeClassName('flex-grow')}>{children}</main>
+        <main className={mainClassName}>{children}</main>
         <Footer />
       </div>
       <CookieConsentBanner />

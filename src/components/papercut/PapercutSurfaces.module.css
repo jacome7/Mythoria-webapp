@@ -20,6 +20,25 @@
   color: var(--color-base-content);
 }
 
+.footerBlend {
+  background:
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      transparent calc(100% - 7rem),
+      var(--pc-app-paper) calc(100% - 2.5rem),
+      var(--pc-app-paper) 100%
+    ),
+    radial-gradient(95rem 55rem at 12% -12%, rgba(255, 255, 255, 0.72), transparent 54%),
+    radial-gradient(60rem 36rem at 88% 8%, rgba(223, 240, 242, 0.42), transparent 58%),
+    linear-gradient(
+      180deg,
+      var(--pc-app-paper) 0%,
+      var(--pc-app-paper-deep) 48%,
+      var(--pc-app-paper) 100%
+    );
+}
+
 .scope::before,
 .scope::after {
   content: '';

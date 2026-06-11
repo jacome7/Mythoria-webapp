@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
@@ -10,7 +9,7 @@ import ToastContainer from './ToastContainer';
 import StoryRow from './my-stories/StoryRow';
 import { SelfPrintModal } from './self-print/SelfPrintModal';
 import { useStoriesTable } from '@/hooks/useStoriesTable';
-import { Story, SortField } from '@/types/story';
+import { Story } from '@/types/story';
 import { useToast } from '@/hooks/useToast';
 
 export default function MyStoriesTable() {
@@ -18,15 +17,7 @@ export default function MyStoriesTable() {
   const tCommonActions = useTranslations('Actions');
   const locale = useLocale();
 
-  const {
-    paginatedStories,
-    loading,
-    handleSort,
-    sortField,
-    sortDirection,
-    fetchStories,
-    setStories,
-  } = useStoriesTable();
+  const { paginatedStories, loading, fetchStories, setStories } = useStoriesTable();
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [storyToDelete, setStoryToDelete] = useState<Story | null>(null);
@@ -103,15 +94,6 @@ export default function MyStoriesTable() {
     }
   };
 
-  const getSortIcon = (field: SortField) => {
-    if (sortField !== field) return null;
-    return sortDirection === 'asc' ? (
-      <ChevronUp className="w-4 h-4 inline ml-1" />
-    ) : (
-      <ChevronDown className="w-4 h-4 inline ml-1" />
-    );
-  };
-
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-96">
@@ -136,37 +118,27 @@ export default function MyStoriesTable() {
         </div>
       ) : (
         <div className="overflow-x-auto overflow-y-visible rounded-lg border border-base-300 bg-base-100 shadow-sm">
-          <table className="table table-zebra w-full">
+          <table className="table table-zebra table-fixed w-full">
+            <colgroup>
+              <col className="w-[3.25rem] md:w-[4.75rem]" />
+              <col />
+              <col className="w-14 md:w-16" />
+              <col className="w-14 md:w-[21rem]" />
+            </colgroup>
             <thead>
               <tr>
-                <th className="px-2 py-2 md:px-4">
-                  <button
-                    className="inline-flex items-center justify-start rounded px-1.5 py-1 text-left text-sm font-semibold text-primary hover:bg-base-200"
-                    onClick={() => handleSort('createdAt')}
-                  >
-                    {tMyStoriesPage('table.date')}
-                    {getSortIcon('createdAt')}
-                  </button>
+                <th className="px-1 py-2 text-sm font-semibold text-primary md:px-3">
+                  {tMyStoriesPage('table.date')}
                 </th>
-                <th className="px-2 py-2 md:px-4">
-                  <button
-                    className="inline-flex items-center justify-start rounded px-1.5 py-1 text-left text-sm font-semibold text-primary hover:bg-base-200"
-                    onClick={() => handleSort('title')}
-                  >
-                    {tMyStoriesPage('table.title')}
-                    {getSortIcon('title')}
-                  </button>
+                <th className="px-2 py-2 text-sm font-semibold text-primary md:px-4">
+                  {tMyStoriesPage('table.title')}
                 </th>
-                <th className="px-2 py-2 md:px-4">
-                  <button
-                    className="inline-flex items-center justify-start rounded px-1.5 py-1 text-left text-sm font-semibold text-primary hover:bg-base-200"
-                    onClick={() => handleSort('status')}
-                  >
-                    {tMyStoriesPage('table.status.header')}
-                    {getSortIcon('status')}
-                  </button>
+                <th className="px-1 py-2 text-center text-sm font-semibold text-primary md:px-2">
+                  {tMyStoriesPage('table.status.header')}
                 </th>
-                <th className="px-3 py-2 text-right md:px-4">{tMyStoriesPage('table.actions')}</th>
+                <th className="px-1 py-2 text-right md:px-4">
+                  <span className="sr-only md:not-sr-only">{tMyStoriesPage('table.actions')}</span>
+                </th>
               </tr>
             </thead>
             <tbody>

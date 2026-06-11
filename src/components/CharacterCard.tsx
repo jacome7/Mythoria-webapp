@@ -126,7 +126,7 @@ export default function CharacterCard({
 
   // Map character type to icon filename
   const getCharacterIconPath = (type: string | undefined): string => {
-    if (!type) return '/CharacterIcons/other.png';
+    if (!type) return '/CharacterIcons/other.webp';
     // Normalize type to lowercase for icon lookup
     const normalizedType = type.toLowerCase();
     // List of known icon types
@@ -148,9 +148,9 @@ export default function CharacterCard({
       'other',
     ];
     if (knownTypes.includes(normalizedType)) {
-      return `/CharacterIcons/${normalizedType}.png`;
+      return `/CharacterIcons/${normalizedType}.webp`;
     }
-    return '/CharacterIcons/other.png';
+    return '/CharacterIcons/other.webp';
   };
 
   // Handle photo update from upload modal
@@ -319,7 +319,7 @@ export default function CharacterCard({
                       src={getCharacterIconPath(formData.type)}
                       alt={formData.type || 'character'}
                       fill
-                      className="object-cover p-1"
+                      className="object-contain p-2"
                     />
                   )}
                 </div>
@@ -408,7 +408,7 @@ export default function CharacterCard({
                     alt={formData.type || 'character'}
                     width={64}
                     height={64}
-                    className="object-cover w-full h-full p-1 opacity-60"
+                    className="object-contain w-full h-full p-2 opacity-60"
                   />
                 )}
               </div>
@@ -423,7 +423,7 @@ export default function CharacterCard({
                 alt={formData.type || 'character'}
                 width={64}
                 height={64}
-                className="object-cover w-full h-full p-1 opacity-60"
+                className="object-contain w-full h-full p-2 opacity-60"
               />
             </div>
           )}

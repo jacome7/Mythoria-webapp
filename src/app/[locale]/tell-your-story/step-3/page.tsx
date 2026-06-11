@@ -9,6 +9,7 @@ import StepNavigation from '@/components/StepNavigation';
 import CharacterCard from '@/components/CharacterCard';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import { trackStoryCreation } from '@/lib/analytics';
+import CharacterSelection from '../step-2/CharacterSelection';
 import {
   setStep3Data,
   Character,
@@ -47,55 +48,6 @@ function Step3Page() {
   const [isNavigating, setIsNavigating] = useState(false);
   const [isInEditMode, setIsInEditMode] = useState(false); // Helper function to format role names for display
   const sessionStoryId = useStorySessionGuard({ enabled: !editStoryId });
-  const formatRoleName = (role: string): string => {
-    const roleMap: Record<string, string> = {
-      protagonist: 'protagonist',
-      antagonist: 'antagonist',
-      supporting: 'supporting',
-      mentor: 'mentor',
-      comic_relief: 'comicRelief',
-      love_interest: 'loveInterest',
-      sidekick: 'sidekick',
-      narrator: 'narrator',
-      other: 'other',
-    };
-
-    const roleKey = `roles.${roleMap[role] || 'other'}`;
-    const translated = tCharacters(roleKey);
-    // If no translation found, fall back to formatted version
-    if (translated === roleKey) {
-      return role
-        .split('_')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-    }
-    return translated;
-  };
-
-  // Helper function to get type display value
-  const getTypeDisplayValue = (typeValue: string) => {
-    const typeMap: Record<string, string> = {
-      Boy: 'boy',
-      Girl: 'girl',
-      Baby: 'baby',
-      Man: 'man',
-      Woman: 'woman',
-      Human: 'human',
-      Dog: 'dog',
-      Dragon: 'dragon',
-      'Fantasy Creature': 'fantasyCreature',
-      Animal: 'animal',
-      Other: 'other',
-    };
-
-    const typeKey = `types.${typeMap[typeValue] || 'other'}`;
-    const translated = tCharacters(typeKey);
-    // If no translation found, fall back to original value
-    if (translated === typeKey) {
-      return typeValue;
-    }
-    return translated;
-  };
 
   const fetchStoryCharacters = useCallback(
     async (storyId?: string) => {
@@ -270,6 +222,19 @@ function Step3Page() {
     }
   };
 
+  const handleAddExistingCharacters = async (_ids: string[], selectedCharacters: Character[]) => {
+    if (selectedCharacters.length === 0) return;
+
+    try {
+      await Promise.all(
+        selectedCharacters.map((character) => handleAddExistingCharacter(character)),
+      );
+    } catch (error) {
+      console.error('Error adding existing characters:', error);
+      alert(tStoryStepsStep3('alerts.failedToAddCharacter'));
+    }
+  };
+
   const handleUpdateCharacter = async (characterData: Character) => {
     if (!characterData.characterId) return;
 
@@ -400,11 +365,6 @@ function Step3Page() {
               <div className="card-body">
                 <div className="flex items-center justify-between mb-6">
                   <h1 className="card-title text-3xl">{tStoryStepsStep3('heading')}</h1>
-                  {isInEditMode && (
-                    <div className="badge badge-info">
-                      {tStoryStepsStep3('badges.editingDraft')}
-                    </div>
-                  )}
                 </div>
 
                 <div className="prose max-w-none mb-6">
@@ -471,45 +431,13 @@ function Step3Page() {
                                 <div className="text-sm text-gray-600">
                                   {tStoryStepsStep3('orChooseExisting')}
                                 </div>
-                                <div className="dropdown dropdown-end w-full">
-                                  <div
-                                    tabIndex={0}
-                                    role="button"
-                                    className="btn btn-outline btn-lg w-full"
-                                  >
-                                    {tStoryStepsStep3('useExisting')}
-                                  </div>
-                                  <ul
-                                    tabIndex={0}
-                                    className="mythoria-popup-surface dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow-lg border max-h-60 overflow-y-auto"
-                                  >
-                                    {availableCharacters.map((character) => (
-                                      <li key={character.characterId}>
-                                        <button
-                                          className="text-left w-full p-3 hover:bg-base-200"
-                                          onClick={() => handleAddExistingCharacter(character)}
-                                        >
-                                          {' '}
-                                          <div>
-                                            <div className="font-semibold">{character.name}</div>
-                                            <div className="text-sm text-gray-500">
-                                              {getTypeDisplayValue(character.type || '')} •{' '}
-                                              {tCharacters('fields.role')}:{' '}
-                                              {formatRoleName(character.role || 'protagonist')}
-                                            </div>
-                                            {character.characteristics && (
-                                              <div className="text-xs text-gray-400 mt-1">
-                                                {character.characteristics.length > 50
-                                                  ? `${character.characteristics.substring(0, 50)}...`
-                                                  : character.characteristics}
-                                              </div>
-                                            )}
-                                          </div>
-                                        </button>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
+                                <CharacterSelection
+                                  characters={availableCharacters}
+                                  triggerVariant="button"
+                                  triggerLabel={tStoryStepsStep3('useExisting')}
+                                  onDone={handleAddExistingCharacters}
+                                  clearSelectionOnDone
+                                />
                               </div>
                             )}
                             {/* Cancel Option */}

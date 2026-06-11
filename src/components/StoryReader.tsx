@@ -165,6 +165,32 @@ export default function StoryReader({
   // Get logo URL based on graphical style
   const logoUrl = getLogoForGraphicalStyle(story.graphicalStyle);
 
+  const renderMythoriaMessage = () => (
+    <div className="mythoria-message">
+      <p className="mythoria-message-text">
+        {tStoryReader('storyImaginedBy')}{' '}
+        <i className="mythoria-author-emphasis">{story.authorName}</i>
+        {tStoryReader('storyImaginedByEnd')}
+      </p>
+      <p className="mythoria-message-text">{tStoryReader('craftedWith')}</p>
+      {/* Responsive Mythoria logo: ensure it never overflows small mobile screens */}
+      <div className="mythoria-logo-wrapper w-full flex justify-center px-2 sm:px-0">
+        <Image
+          src={logoUrl}
+          alt="Mythoria Logo"
+          className="mythoria-logo max-w-full h-auto"
+          width={400}
+          height={200}
+          // Provide responsive sizing hints: use ~80vw on very small screens, up to intrinsic 400px
+          sizes="(max-width: 480px) 80vw, (max-width: 768px) 60vw, 400px"
+          // Force responsive scaling (Next.js respects explicit style width/height over intrinsic wrapper width)
+          style={{ width: '100%', height: 'auto', maxWidth: '400px' }}
+          priority
+        />
+      </div>
+    </div>
+  );
+
   // Render first page content
   const renderFirstPage = () => (
     <div className="story-container">
@@ -194,31 +220,6 @@ export default function StoryReader({
         {tStoryReader('byAuthor', { authorName: story.authorName })}
       </div>
 
-      {/* Mythoria Message */}
-      <div className="mythoria-message">
-        <p className="mythoria-message-text">
-          {tStoryReader('storyImaginedBy')}{' '}
-          <i className="mythoria-author-emphasis">{story.authorName}</i>
-          {tStoryReader('storyImaginedByEnd')}
-        </p>
-        <p className="mythoria-message-text">{tStoryReader('craftedWith')}</p>
-        {/* Responsive Mythoria logo: ensure it never overflows small mobile screens */}
-        <div className="mythoria-logo-wrapper w-full flex justify-center px-2 sm:px-0">
-          <Image
-            src={logoUrl}
-            alt="Mythoria Logo"
-            className="mythoria-logo max-w-full h-auto"
-            width={400}
-            height={200}
-            // Provide responsive sizing hints: use ~80vw on very small screens, up to intrinsic 400px
-            sizes="(max-width: 480px) 80vw, (max-width: 768px) 60vw, 400px"
-            // Force responsive scaling (Next.js respects explicit style width/height over intrinsic wrapper width)
-            style={{ width: '100%', height: 'auto', maxWidth: '400px' }}
-            priority
-          />
-        </div>
-      </div>
-
       <div className="mythoria-page-break"></div>
 
       {/* Table of Contents */}
@@ -237,6 +238,9 @@ export default function StoryReader({
           ))}
         </ul>
       </div>
+
+      {/* Mythoria Message */}
+      {renderMythoriaMessage()}
 
       <div className="mythoria-page-break"></div>
 
@@ -477,9 +481,24 @@ export default function StoryReader({
           color: inherit;
         }
 
+        :global(.mythoria-story-scope .mythoria-chapter-image) {
+          display: flex !important;
+          justify-content: center !important;
+          width: 100%;
+          box-sizing: border-box;
+        }
+
+        :global(.mythoria-story-scope .mythoria-chapter-img) {
+          display: block;
+          max-width: 100%;
+          height: auto;
+          margin-right: auto;
+          margin-left: auto;
+        }
+
         @media (max-width: 640px) {
           :global(.mythoria-story-content.prose) {
-            margin: calc(1.25rem * var(--reading-margin-scale, 1)) !important;
+            margin: 0 !important;
           }
 
           :global(.mythoria-story-scope .story-container) {
@@ -506,6 +525,22 @@ export default function StoryReader({
           :global(.mythoria-story-scope .mythoria-chapter) {
             margin-right: 0 !important;
             margin-left: 0 !important;
+          }
+
+          :global(.mythoria-story-scope .mythoria-chapter) {
+            padding-right: 0 !important;
+            padding-left: 0 !important;
+          }
+
+          :global(.mythoria-story-scope .mythoria-chapter-content) {
+            padding-right: 0.75rem !important;
+            padding-left: 0.75rem !important;
+            box-sizing: border-box;
+          }
+
+          :global(.mythoria-story-scope .mythoria-chapter-image) {
+            padding-right: 0.75rem !important;
+            padding-left: 0.75rem !important;
           }
 
           :global(.mythoria-story-scope .mythoria-story-title),
