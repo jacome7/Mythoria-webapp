@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { normalizeLocale } from '@/utils/locale-utils';
+import styles from './GetInspiredPage.module.css';
 
 // StarRating component
 const StarRating = ({ rating, count }: { rating: number | null; count: number | null }) => {
@@ -207,13 +208,15 @@ export default function GetInspiredPage() {
         </div>
 
         {/* Filter Section */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8 max-w-6xl mx-auto">
+        <div
+          className={`${styles.filterPanel} bg-white rounded-xl shadow-lg p-6 mb-8 max-w-6xl mx-auto`}
+        >
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-bold text-gray-800">
+            <h3 className={`${styles.filterTitle} text-2xl`}>
               {tGetInspiredPage('filters.title')}
             </h3>
             {hasActiveFilters && (
-              <button onClick={clearAllFilters} className="btn btn-outline btn-sm">
+              <button onClick={clearAllFilters} className={styles.clearFiltersButton}>
                 {tGetInspiredPage('filters.clearAll')}
               </button>
             )}
@@ -221,14 +224,12 @@ export default function GetInspiredPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Target Audience Filter */}
-            <div className="dropdown dropdown-bottom w-full">
-              <div tabIndex={0} role="button" className="btn btn-outline w-full justify-between">
+            <div className="dropdown dropdown-bottom relative w-full">
+              <button type="button" tabIndex={0} className={styles.filterTrigger}>
                 <span>{tGetInspiredPage('filters.targetAudience')}</span>
                 <div className="flex items-center gap-2">
                   {filters.targetAudience.length > 0 && (
-                    <div className="badge badge-primary badge-sm">
-                      {filters.targetAudience.length}
-                    </div>
+                    <span className={styles.filterCountBadge}>{filters.targetAudience.length}</span>
                   )}
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -239,17 +240,19 @@ export default function GetInspiredPage() {
                     />
                   </svg>
                 </div>
-              </div>
+              </button>
               <ul
                 tabIndex={0}
-                className="dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow-lg max-h-64 overflow-y-auto"
+                className={`${styles.dropdownMenu} dropdown-content menu !absolute !left-0 !top-full z-[90] mt-2 max-h-64 w-full overflow-y-auto rounded-lg border p-2 opacity-100`}
               >
                 {targetAudienceOptions.map((option) => (
                   <li key={option}>
-                    <label className="cursor-pointer label justify-start gap-3">
+                    <label
+                      className={`${styles.filterOption} cursor-pointer label justify-start gap-3`}
+                    >
                       <input
                         type="checkbox"
-                        className="checkbox checkbox-sm"
+                        className="checkbox checkbox-primary checkbox-sm"
                         checked={filters.targetAudience.includes(option)}
                         onChange={() => handleFilterToggle('targetAudience', option)}
                       />
@@ -263,14 +266,12 @@ export default function GetInspiredPage() {
             </div>
 
             {/* Graphical Style Filter */}
-            <div className="dropdown dropdown-bottom w-full">
-              <div tabIndex={0} role="button" className="btn btn-outline w-full justify-between">
+            <div className="dropdown dropdown-bottom relative w-full">
+              <button type="button" tabIndex={0} className={styles.filterTrigger}>
                 <span>{tGetInspiredPage('filters.graphicalStyle')}</span>
                 <div className="flex items-center gap-2">
                   {filters.graphicalStyle.length > 0 && (
-                    <div className="badge badge-primary badge-sm">
-                      {filters.graphicalStyle.length}
-                    </div>
+                    <span className={styles.filterCountBadge}>{filters.graphicalStyle.length}</span>
                   )}
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -281,40 +282,38 @@ export default function GetInspiredPage() {
                     />
                   </svg>
                 </div>
-              </div>
+              </button>
               <ul
                 tabIndex={0}
-                className="dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow-lg max-h-64 overflow-y-auto"
+                className={`${styles.dropdownMenu} dropdown-content menu !absolute !left-0 !top-full z-[90] mt-2 max-h-64 w-full overflow-y-auto rounded-lg border p-2 opacity-100`}
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
-                  {graphicalStyleOptions.map((option) => (
-                    <li key={option} className="w-full">
-                      <label className="cursor-pointer label justify-start gap-3 w-full">
-                        <input
-                          type="checkbox"
-                          className="checkbox checkbox-sm"
-                          checked={filters.graphicalStyle.includes(option)}
-                          onChange={() => handleFilterToggle('graphicalStyle', option)}
-                        />
-                        <span className="label-text">
-                          {tGetInspiredPage(`graphicalStyle.${option}`)}
-                        </span>
-                      </label>
-                    </li>
-                  ))}
-                </div>
+                {graphicalStyleOptions.map((option) => (
+                  <li key={option} className="w-full">
+                    <label
+                      className={`${styles.filterOption} cursor-pointer label justify-start gap-3 w-full`}
+                    >
+                      <input
+                        type="checkbox"
+                        className="checkbox checkbox-primary checkbox-sm"
+                        checked={filters.graphicalStyle.includes(option)}
+                        onChange={() => handleFilterToggle('graphicalStyle', option)}
+                      />
+                      <span className="label-text">
+                        {tGetInspiredPage(`graphicalStyle.${option}`)}
+                      </span>
+                    </label>
+                  </li>
+                ))}
               </ul>
             </div>
 
             {/* Story Language Filter */}
-            <div className="dropdown dropdown-bottom w-full">
-              <div tabIndex={0} role="button" className="btn btn-outline w-full justify-between">
+            <div className="dropdown dropdown-bottom relative w-full">
+              <button type="button" tabIndex={0} className={styles.filterTrigger}>
                 <span>{tGetInspiredPage('filters.storyLanguage')}</span>
                 <div className="flex items-center gap-2">
                   {filters.storyLanguage.length > 0 && (
-                    <div className="badge badge-primary badge-sm">
-                      {filters.storyLanguage.length}
-                    </div>
+                    <span className={styles.filterCountBadge}>{filters.storyLanguage.length}</span>
                   )}
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -325,17 +324,19 @@ export default function GetInspiredPage() {
                     />
                   </svg>
                 </div>
-              </div>
+              </button>
               <ul
                 tabIndex={0}
-                className="dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow-lg max-h-64 overflow-y-auto"
+                className={`${styles.dropdownMenu} dropdown-content menu !absolute !left-0 !top-full z-[90] mt-2 max-h-64 w-full overflow-y-auto rounded-lg border p-2 opacity-100`}
               >
                 {storyLanguageOptions.map((option) => (
                   <li key={option}>
-                    <label className="cursor-pointer label justify-start gap-3">
+                    <label
+                      className={`${styles.filterOption} cursor-pointer label justify-start gap-3`}
+                    >
                       <input
                         type="checkbox"
-                        className="checkbox checkbox-sm"
+                        className="checkbox checkbox-primary checkbox-sm"
                         checked={filters.storyLanguage.includes(option)}
                         onChange={() => handleFilterToggle('storyLanguage', option)}
                       />
@@ -354,33 +355,36 @@ export default function GetInspiredPage() {
             <div className="mt-4 pt-4 border-t border-gray-200">
               <div className="flex flex-wrap gap-2">
                 {filters.targetAudience.map((filter) => (
-                  <div key={`ta-${filter}`} className="badge badge-primary gap-2">
+                  <div key={`ta-${filter}`} className={styles.activeFilterPill}>
                     {tGetInspiredPage(`targetAudience.${filter}`)}
                     <button
                       onClick={() => handleFilterToggle('targetAudience', filter)}
-                      className="btn btn-circle btn-ghost btn-xs"
+                      className={styles.activeFilterRemove}
+                      type="button"
                     >
                       ✕
                     </button>
                   </div>
                 ))}
                 {filters.graphicalStyle.map((filter) => (
-                  <div key={`gs-${filter}`} className="badge badge-secondary gap-2">
+                  <div key={`gs-${filter}`} className={styles.activeFilterPill}>
                     {tGetInspiredPage(`graphicalStyle.${filter}`)}
                     <button
                       onClick={() => handleFilterToggle('graphicalStyle', filter)}
-                      className="btn btn-circle btn-ghost btn-xs"
+                      className={styles.activeFilterRemove}
+                      type="button"
                     >
                       ✕
                     </button>
                   </div>
                 ))}
                 {filters.storyLanguage.map((filter) => (
-                  <div key={`sl-${filter}`} className="badge badge-accent gap-2">
+                  <div key={`sl-${filter}`} className={styles.activeFilterPill}>
                     {tGetInspiredPage(`storyLanguage.${filter}`)}
                     <button
                       onClick={() => handleFilterToggle('storyLanguage', filter)}
-                      className="btn btn-circle btn-ghost btn-xs"
+                      className={styles.activeFilterRemove}
+                      type="button"
                     >
                       ✕
                     </button>
@@ -453,19 +457,19 @@ export default function GetInspiredPage() {
                   )}
 
                   {/* Story metadata badges */}
-                  <div className="flex flex-wrap justify-center gap-1 mb-4">
+                  <div className={styles.storyMetadataTags}>
                     {story.targetAudience && (
-                      <div className="badge badge-outline badge-primary badge-xs">
+                      <div className={styles.storyMetadataTag}>
                         {tGetInspiredPage(`targetAudience.${story.targetAudience}`)}
                       </div>
                     )}
                     {story.graphicalStyle && (
-                      <div className="badge badge-outline badge-secondary badge-xs">
+                      <div className={styles.storyMetadataTag}>
                         {tGetInspiredPage(`graphicalStyle.${story.graphicalStyle}`)}
                       </div>
                     )}
                     {story.storyLanguage && (
-                      <div className="badge badge-outline badge-accent badge-xs">
+                      <div className={styles.storyMetadataTag}>
                         {tGetInspiredPage(`storyLanguage.${story.storyLanguage}`)}
                       </div>
                     )}

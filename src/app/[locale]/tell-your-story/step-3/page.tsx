@@ -435,6 +435,7 @@ function Step3Page() {
                                   characters={availableCharacters}
                                   triggerVariant="button"
                                   triggerLabel={tStoryStepsStep3('useExisting')}
+                                  triggerIconSrc="/Papercut_icons/gi-drama-masks-papercut.webp"
                                   onDone={handleAddExistingCharacters}
                                   clearSelectionOnDone
                                 />

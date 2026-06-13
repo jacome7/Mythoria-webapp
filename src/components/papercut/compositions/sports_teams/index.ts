@@ -13,8 +13,20 @@ export const sportsTeams: HeroComposition = {
   rootClassName: `${anims.root} ${theme.root}`,
   textNamespace: 'intents.sports_teams.hero',
   decor: {
-    sky_left: { anim: 'sway', animDurMs: 7000, base: { width: 20 }, md: { width: 13 }, lg: { width: 8 } },
-    sky_right: { anim: 'bob', animDurMs: 6000, base: { width: 15 }, md: { width: 10 }, lg: { width: 7 } },
+    sky_left: {
+      anim: 'sway',
+      animDurMs: 7000,
+      base: { width: 20 },
+      md: { width: 13 },
+      lg: { width: 8 },
+    },
+    sky_right: {
+      anim: 'bob',
+      animDurMs: 6000,
+      base: { width: 15 },
+      md: { width: 10 },
+      lg: { width: 7 },
+    },
   },
   ctaPath: 'tell-your-story',
 };

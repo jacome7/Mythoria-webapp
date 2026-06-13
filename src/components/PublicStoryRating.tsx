@@ -3,9 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { MessageSquare, Star } from 'lucide-react';
+import { ChevronDown, MessageSquare, Star } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { formatDate } from '@/utils/date';
+import styles from './PublicStoryRating.module.css';
 
 interface PublicStoryRatingProps {
   storyId: string;
@@ -54,6 +55,7 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
   const [authorSending, setAuthorSending] = useState<boolean>(false);
   const [authorSent, setAuthorSent] = useState<boolean>(false);
   const [authorError, setAuthorError] = useState<string | null>(null);
+  const [isAuthorFeedbackOpen, setIsAuthorFeedbackOpen] = useState<boolean>(false);
 
   const searchQuery = searchParams?.toString();
   const redirectPath = `${pathname}${searchQuery ? `?${searchQuery}` : ''}`;
@@ -415,89 +417,113 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
 
           <div className="divider my-6"></div>
 
-          <div className="rounded-lg bg-base-200/60 p-4 text-left">
-            <div className="flex items-center gap-2 mb-2">
-              <MessageSquare className="text-primary text-lg" />
-              <h4 className="font-semibold">{tCommonStoryRating('feedbackToAuthor.title')}</h4>
-            </div>
-            <p className="text-sm text-base-content/70">
-              {tCommonStoryRating('feedbackToAuthor.subtitle')}
-            </p>
+          <div className={styles.authorFeedbackPanel}>
+            <button
+              type="button"
+              className={styles.authorFeedbackToggle}
+              aria-expanded={isAuthorFeedbackOpen}
+              aria-controls="author-feedback-panel"
+              onClick={() => setIsAuthorFeedbackOpen((open) => !open)}
+            >
+              <span className="flex min-w-0 items-center gap-2">
+                <MessageSquare className={`${styles.authorFeedbackIcon} h-5 w-5`} />
+                <span className={styles.authorFeedbackTitle}>
+                  {tCommonStoryRating('feedbackToAuthor.title')}
+                </span>
+              </span>
+              <ChevronDown
+                className={`${styles.authorFeedbackChevron} h-5 w-5 ${
+                  isAuthorFeedbackOpen ? styles.authorFeedbackChevronOpen : ''
+                }`}
+                aria-hidden="true"
+              />
+            </button>
 
-            {!isLoaded ? (
-              <div className="flex justify-center mt-4">
-                <span className="loading loading-spinner loading-sm"></span>
-              </div>
-            ) : !isSignedIn ? (
-              <button
-                type="button"
-                className="btn btn-outline btn-primary mt-4"
-                onClick={() =>
-                  router.push(`/${locale}/sign-in?redirect=${encodeURIComponent(redirectPath)}`)
-                }
-              >
-                {tCommonStoryRating('feedbackToAuthor.signInButton')}
-              </button>
-            ) : (
-              <form onSubmit={handleAuthorFeedbackSubmit} className="mt-4 space-y-4">
-                <div>
-                  <label htmlFor="authorSubject" className="label">
-                    <span className="label-text">
-                      {tCommonStoryRating('feedbackToAuthor.subjectLabel')}
-                    </span>
-                  </label>
-                  <input
-                    id="authorSubject"
-                    type="text"
-                    className="input input-bordered w-full"
-                    placeholder={tCommonStoryRating('feedbackToAuthor.subjectPlaceholder')}
-                    value={authorSubject}
-                    onChange={(e) => setAuthorSubject(e.target.value)}
-                    maxLength={80}
-                    disabled={authorSending}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="authorMessage" className="label">
-                    <span className="label-text">
-                      {tCommonStoryRating('feedbackToAuthor.messageLabel')}
-                    </span>
-                  </label>
-                  <textarea
-                    id="authorMessage"
-                    className="textarea textarea-bordered w-full h-28 resize-none"
-                    placeholder={tCommonStoryRating('feedbackToAuthor.messagePlaceholder')}
-                    value={authorMessage}
-                    onChange={(e) => setAuthorMessage(e.target.value)}
-                    maxLength={800}
-                    disabled={authorSending}
-                  />
-                </div>
+            {isAuthorFeedbackOpen && (
+              <div id="author-feedback-panel" className={styles.authorFeedbackContent}>
+                <p className={styles.authorFeedbackSubtitle}>
+                  {tCommonStoryRating('feedbackToAuthor.subtitle')}
+                </p>
 
-                {authorSent && (
-                  <div className="alert alert-success">
-                    <span>{tCommonStoryRating('feedbackToAuthor.successMessage')}</span>
+                {!isLoaded ? (
+                  <div className="flex justify-center mt-4">
+                    <span className="loading loading-spinner loading-sm"></span>
                   </div>
-                )}
-
-                {authorError && (
-                  <div className="alert alert-error">
-                    <span>{authorError}</span>
-                  </div>
-                )}
-
-                <div className="flex justify-end">
+                ) : !isSignedIn ? (
                   <button
-                    type="submit"
-                    className="btn btn-primary"
-                    disabled={authorSending || !canSubmitAuthorFeedback}
+                    type="button"
+                    className="btn btn-outline btn-primary mt-4"
+                    onClick={() =>
+                      router.push(`/${locale}/sign-in?redirect=${encodeURIComponent(redirectPath)}`)
+                    }
                   >
-                    {authorSending
-                      ? tCommonStoryRating('feedbackToAuthor.submitting')
-                      : tCommonStoryRating('feedbackToAuthor.submit')}
+                    {tCommonStoryRating('feedbackToAuthor.signInButton')}
                   </button>
-                </div>
-              </form>
+                ) : (
+                  <form
+                    onSubmit={handleAuthorFeedbackSubmit}
+                    className={`${styles.authorFeedbackForm} space-y-4`}
+                  >
+                    <div>
+                      <label htmlFor="authorSubject" className="label">
+                        <span className="label-text">
+                          {tCommonStoryRating('feedbackToAuthor.subjectLabel')}
+                        </span>
+                      </label>
+                      <input
+                        id="authorSubject"
+                        type="text"
+                        className="input input-bordered w-full"
+                        placeholder={tCommonStoryRating('feedbackToAuthor.subjectPlaceholder')}
+                        value={authorSubject}
+                        onChange={(e) => setAuthorSubject(e.target.value)}
+                        maxLength={80}
+                        disabled={authorSending}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="authorMessage" className="label">
+                        <span className="label-text">
+                          {tCommonStoryRating('feedbackToAuthor.messageLabel')}
+                        </span>
+                      </label>
+                      <textarea
+                        id="authorMessage"
+                        className="textarea textarea-bordered w-full h-28 resize-none"
+                        placeholder={tCommonStoryRating('feedbackToAuthor.messagePlaceholder')}
+                        value={authorMessage}
+                        onChange={(e) => setAuthorMessage(e.target.value)}
+                        maxLength={800}
+                        disabled={authorSending}
+                      />
+                    </div>
+
+                    {authorSent && (
+                      <div className="alert alert-success">
+                        <span>{tCommonStoryRating('feedbackToAuthor.successMessage')}</span>
+                      </div>
+                    )}
+
+                    {authorError && (
+                      <div className="alert alert-error">
+                        <span>{authorError}</span>
+                      </div>
+                    )}
+
+                    <div className="flex justify-end">
+                      <button
+                        type="submit"
+                        className="btn btn-primary"
+                        disabled={authorSending || !canSubmitAuthorFeedback}
+                      >
+                        {authorSending
+                          ? tCommonStoryRating('feedbackToAuthor.submitting')
+                          : tCommonStoryRating('feedbackToAuthor.submit')}
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </div>
             )}
           </div>
         </div>

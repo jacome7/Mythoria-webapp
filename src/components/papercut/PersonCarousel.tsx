@@ -85,10 +85,7 @@ export default function PersonCarousel({
   useEffect(() => {
     if (!rotating || !inView || !pageVisible || paused) return;
     // The hold starts once the slide has finished entering.
-    const id = setTimeout(
-      () => setIndex((i) => (i + 1) % persons.length),
-      holdMs + ENTER_S * 1000,
-    );
+    const id = setTimeout(() => setIndex((i) => (i + 1) % persons.length), holdMs + ENTER_S * 1000);
     return () => clearTimeout(id);
   }, [rotating, inView, pageVisible, paused, index, holdMs, persons.length]);
 
@@ -96,7 +93,7 @@ export default function PersonCarousel({
 
   if (!rotating) {
     return (
-      <div className="pc-person-viewport" style={personAspect(persons[0])}>
+      <div className="pc-person-viewport" style={personViewportAspect(persons)}>
         <div className="pc-person-slide">
           <PersonImage person={persons[0]} alt={alt} priority />
         </div>
@@ -110,7 +107,7 @@ export default function PersonCarousel({
     <div
       ref={ref}
       className="pc-person-viewport"
-      style={personAspect(persons[0])}
+      style={personViewportAspect(persons)}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
@@ -135,7 +132,11 @@ export default function PersonCarousel({
   );
 }
 
-/** The first slide locks the viewport's aspect so rotation never shifts layout. */
-function personAspect(person: ResolvedAsset): React.CSSProperties {
-  return { aspectRatio: `${person.w} / ${person.h}` };
+/**
+ * Reserve enough vertical room for the tallest slide at the shared carousel
+ * width. Locale-specific person cutouts can have different aspect ratios.
+ */
+function personViewportAspect(persons: ResolvedAsset[]): React.CSSProperties {
+  const maxHeightRatio = Math.max(...persons.map((person) => person.h / person.w));
+  return { aspectRatio: `1 / ${maxHeightRatio}` };
 }

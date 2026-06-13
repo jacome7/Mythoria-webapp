@@ -24,6 +24,27 @@ interface SignUpClientProps {
   leadSession: LeadSessionData | null;
 }
 
+const featureIcons = {
+  free: '/Papercut_icons/fa-gift-papercut.webp',
+  character: '/Papercut_icons/fa-user-papercut-simple.webp',
+  quality: '/Papercut_icons/openBook.webp',
+  creativity: '/Papercut_icons/fa-rocket-papercut.webp',
+} as const;
+
+function withoutLeadingEmoji(text: string) {
+  const firstSpace = text.indexOf(' ');
+  return firstSpace > 0 && firstSpace <= 4 ? text.slice(firstSpace + 1) : text;
+}
+
+function FeatureRow({ icon, text }: { icon: string; text: string }) {
+  return (
+    <p className="flex items-center justify-center gap-2">
+      <Image src={icon} alt="" width={24} height={24} aria-hidden="true" className="shrink-0" />
+      <span>{withoutLeadingEmoji(text)}</span>
+    </p>
+  );
+}
+
 export default function SignUpClient({ locale, translations, leadSession }: SignUpClientProps) {
   const search = useSearchParams();
   const redirectParam = search?.get('redirect');
@@ -58,7 +79,7 @@ export default function SignUpClient({ locale, translations, leadSession }: Sign
         <div className="text-center space-y-8">
           <div className="flex justify-center">
             <Image
-              src="/Mythoria-logo-white-512x336.jpg"
+              src="/images/logo/papercut.jpg"
               alt="Mythoria Logo"
               width={256}
               height={168}
@@ -70,10 +91,10 @@ export default function SignUpClient({ locale, translations, leadSession }: Sign
             <p className="text-lg text-gray-600 max-w-md mx-auto">{translations.subtitle}</p>
           </div>
           <div className="space-y-2 text-sm text-gray-500">
-            <p>{translations.features.free}</p>
-            <p>{translations.features.character}</p>
-            <p>{translations.features.quality}</p>
-            <p>{translations.features.creativity}</p>
+            <FeatureRow icon={featureIcons.free} text={translations.features.free} />
+            <FeatureRow icon={featureIcons.character} text={translations.features.character} />
+            <FeatureRow icon={featureIcons.quality} text={translations.features.quality} />
+            <FeatureRow icon={featureIcons.creativity} text={translations.features.creativity} />
           </div>
         </div>
       </div>
@@ -84,12 +105,7 @@ export default function SignUpClient({ locale, translations, leadSession }: Sign
           <div className="bg-white rounded-2xl shadow-2xl p-2 sm:p-4 lg:p-8 border border-amber-100">
             {/* Mobile logo */}
             <div className="lg:hidden flex justify-center mb-6">
-              <Image
-                src="/Mythoria-logo-white-512x336.jpg"
-                alt="Mythoria Logo"
-                width={128}
-                height={84}
-              />
+              <Image src="/images/logo/papercut.jpg" alt="Mythoria Logo" width={128} height={84} />
             </div>
 
             <div className="text-center mb-8">

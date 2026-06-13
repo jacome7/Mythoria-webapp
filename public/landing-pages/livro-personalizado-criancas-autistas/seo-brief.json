@@ -1,0 +1,66 @@
+{
+  "slug": "livro-personalizado-criancas-autistas",
+  "locale": "pt-PT",
+  "targetCountry": "Portugal",
+  "metaTitle": "Livros personalizados para crianças autistas | Mythoria",
+  "metaDescription": "Crie uma história personalizada com interesses, rotinas e memórias familiares para ler, ouvir, partilhar, imprimir ou guardar com uma criança autista.",
+  "h1": "Livros personalizados para crianças autistas",
+  "primaryKeyword": "livros personalizados para crianças autistas",
+  "secondaryKeywords": [
+    "histórias personalizadas para crianças autistas",
+    "livro personalizado criança autista",
+    "histórias sociais personalizadas",
+    "livros infantis sobre autismo Portugal",
+    "histórias para rotinas crianças autistas"
+  ],
+  "longTailQueries": [
+    "como criar uma história personalizada para uma criança autista",
+    "livro personalizado com interesses de criança autista",
+    "história personalizada para rotina de criança autista",
+    "audiolivro personalizado para criança autista",
+    "presente personalizado para criança autista"
+  ],
+  "peopleAlsoAskStyleQuestions": [
+    "Que tipo de história posso criar para uma criança autista?",
+    "Posso incluir rotinas e interesses específicos?",
+    "A história pode ser ouvida como audiolivro?",
+    "Os exemplos são histórias reais?",
+    "A Mythoria serve para fins terapêuticos?"
+  ],
+  "answerEngineBlocks": [
+    {
+      "question": "Posso criar um livro personalizado para uma criança autista?",
+      "answer": "Sim. Na Mythoria pode criar uma história personalizada com interesses, rotinas, pessoas, lugares e memórias familiares para uma criança autista. A história pode ser lida, ouvida, partilhada, impressa ou guardada, sempre com envolvimento adulto."
+    },
+    {
+      "question": "Que cuidados deve ter uma página sobre livros personalizados para crianças autistas?",
+      "answer": "A página deve usar linguagem cuidadosa, evitar promessas médicas, não apresentar exemplos como testemunhos reais e explicar que a Mythoria é uma experiência criativa de leitura e memória, não uma ferramenta médica ou terapêutica."
+    }
+  ],
+  "recommendedInternalLinks": [
+    {
+      "label": "Criar uma história",
+      "target": "/pt-PT/create",
+      "reason": "Leva o utilizador para o início natural da primeira história."
+    },
+    {
+      "label": "Inspiração",
+      "target": "/pt-PT/get-inspired",
+      "reason": "Ajuda utilizadores cautelosos a ver exemplos antes de criar conta."
+    },
+    {
+      "label": "Formatos da Mythoria",
+      "target": "/pt-PT",
+      "reason": "Explica leitura digital, audiolivro, PDF e livro impresso quando disponível."
+    }
+  ],
+  "recommendedSchema": {
+    "faq": true,
+    "breadcrumb": true,
+    "product": false,
+    "article": false
+  },
+  "canonicalPath": "/pt-PT/lp/livro-personalizado-criancas-autistas",
+  "indexingRecommendation": "index_after_approval",
+  "avoidCreatingNearDuplicatePages": true
+}

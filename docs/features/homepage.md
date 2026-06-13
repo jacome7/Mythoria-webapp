@@ -46,7 +46,7 @@ These links record the intent and (optionally) the recipient in a cookie, then r
 | Intent         | Composition    | URL               |
 | -------------- | -------------- | ----------------- |
 | _(default)_    | `kids_fantasy` | `/`               |
-| `sports_teams` | `sports_teams`  | `/i/sports_teams` |
+| `sports_teams` | `sports_teams` | `/i/sports_teams` |
 | `romance`      | `romance`      | `/i/romance`      |
 
 **Query param override:** appending `?intent=<value>` to any homepage URL switches the composition without setting a cookie — useful for campaign previews and QA. Precedence: `?intent=` query param > intent cookie > default. The override is read via `useIntentOverride` in a `useEffect` (not `useSearchParams`) to avoid breaking static prerendering of the hero.

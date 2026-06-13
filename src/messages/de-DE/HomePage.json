@@ -95,12 +95,7 @@
       "Fantastik",
       "Mythos"
     ],
-    "fallbackWords": [
-      "Abenteuer",
-      "Liebesgeschichte",
-      "Geheimnis",
-      "Märchen"
-    ],
+    "fallbackWords": ["Abenteuer", "Liebesgeschichte", "Geheimnis", "Märchen"],
     "altTexts": {
       "kidsBook": "Kinderbuch",
       "groupsYearbooks": "Gruppen & Jahrbücher",
@@ -137,7 +132,7 @@
       "linkText": "Komm und lerne die Träumer hinter der Magie kennen"
     },
     "howItWorks": {
-      "title": "Mit Mythoria wird deine eigene Geschichte zum Kinderspiel:",
+      "title": "Wie erstellst du deine Geschichte?",
       "steps": {
         "step1": {
           "title": "Autor:in",
@@ -177,7 +172,7 @@
       "title": "Werd Teil unserer wachsenden Geschichtenerzähler-Community!"
     },
     "cta": {
-      "title": "Bereit, deine Storytelling-Reise zu starten?",
+      "title": "Bereit, eine Geschichte zu erstellen?",
       "subtitle": "Meld dich heute an und hol dir 5 Gratis-Credits für deine erste personalisierte Geschichte!",
       "button": "Jetzt gratis ausprobieren"
     },
@@ -221,7 +216,7 @@
           "details": "Eine Plattform, unendlich viele Stimmen."
         },
         "gentleCreditSystem": {
-          "title": "Sanftes Credit-System",
+          "title": "Einfaches Credit-System",
           "description": "Starte mit 5 Gratis-Credits. Lade nur auf, wenn du extra Kapitel, Illustrationen oder Prints brauchst.",
           "details": "Keine Abos, kein Druck – zahl, wann immer du träumst."
         },

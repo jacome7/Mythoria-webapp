@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "status": "draft",
+  "locale": "pt-PT",
+  "slug": "livro-personalizado-criancas-autistas",
+  "title": "Livros personalizados para crianças autistas",
+  "primaryIntent": "personalised_autism_stories",
+  "mappedExistingIntent": null,
+  "targetCountry": "Portugal",
+  "primaryGoal": "first_story_completed",
+  "secondaryGoal": "account_creation",
+  "primaryPersona": "pais e cuidadores",
+  "secondaryPersonas": ["professores", "terapeutas", "familiares"],
+  "recipientTypes": ["filho", "filha", "aluno", "criança"],
+  "riskRating": "yellow",
+  "sensitiveNiche": true,
+  "requiresHumanApproval": true,
+  "requiresExternalExpertReview": false,
+  "createdAt": "2026-06-13",
+  "updatedAt": "2026-06-13"
+}

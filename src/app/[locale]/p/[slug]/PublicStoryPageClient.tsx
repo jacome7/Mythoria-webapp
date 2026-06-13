@@ -7,6 +7,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import {
   AlertCircle,
   Calendar,
+  ChevronDown,
   Download,
   Edit3,
   Eye,
@@ -21,6 +22,7 @@ import PublicStoryRating from '@/components/PublicStoryRating';
 import StoryReader from '@/components/StoryReader';
 import { formatDate } from '@/utils/date';
 import { toAbsoluteImageUrl } from '@/utils/image-url';
+import styles from './PublicStoryPageClient.module.css';
 
 interface Chapter {
   id: string;
@@ -81,6 +83,7 @@ export default function PublicStoryPageClient() {
   const [data, setData] = useState<PublicStoryData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showSelfPrintModal, setShowSelfPrintModal] = useState(false);
+  const [isSynopsisOpen, setIsSynopsisOpen] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
@@ -178,6 +181,21 @@ export default function PublicStoryPageClient() {
     setTwitterTag('twitter:description', description);
     setTwitterTag('twitter:image', coverImage);
   }, [data, tPublicStoryPage]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(min-width: 640px)');
+    const syncSynopsisDisclosure = () => {
+      setIsSynopsisOpen(mediaQuery.matches);
+    };
+
+    syncSynopsisDisclosure();
+    mediaQuery.addEventListener('change', syncSynopsisDisclosure);
+
+    return () => {
+      mediaQuery.removeEventListener('change', syncSynopsisDisclosure);
+    };
+  }, []);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -316,13 +334,32 @@ export default function PublicStoryPageClient() {
             </div>
 
             {(story.synopsis || story.plotDescription) && (
-              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                <h3 className="font-bold text-gray-900 mb-2">
-                  {tPublicStoryPage('labels.synopsis')}
-                </h3>
-                <p className="text-gray-700 leading-relaxed text-sm">
-                  {story.synopsis || story.plotDescription}
-                </p>
+              <div className={`${styles.synopsisPanel} mt-4`}>
+                <button
+                  type="button"
+                  className={styles.synopsisToggle}
+                  aria-expanded={isSynopsisOpen}
+                  aria-controls="story-synopsis"
+                  onClick={() => setIsSynopsisOpen((open) => !open)}
+                >
+                  <span className={styles.synopsisTitle}>
+                    {tPublicStoryPage('labels.synopsis')}
+                  </span>
+                  <ChevronDown
+                    className={`${styles.synopsisChevron} h-5 w-5 ${
+                      isSynopsisOpen ? styles.synopsisChevronOpen : ''
+                    }`}
+                    aria-hidden="true"
+                  />
+                </button>
+                <div
+                  id="story-synopsis"
+                  className={`${styles.synopsisContent} ${
+                    isSynopsisOpen ? '' : styles.synopsisContentCollapsed
+                  }`}
+                >
+                  <p className={styles.synopsisBody}>{story.synopsis || story.plotDescription}</p>
+                </div>
               </div>
             )}
           </div>

@@ -1,0 +1,84 @@
+{
+  "imagePrompts": [
+    {
+      "bookId": "book-01",
+      "type": "cover",
+      "promptPath": "assets/covers/book-01-cover.prompt.md",
+      "targetPath": "assets/covers/book-01-cover.png",
+      "graphicalStyle": "watercolor",
+      "status": "pending_generation"
+    },
+    {
+      "bookId": "book-01",
+      "type": "use_case",
+      "promptPath": "assets/use-cases/book-01-use-case.prompt.md",
+      "targetPath": "assets/use-cases/book-01-use-case.png",
+      "useCase": "parent reading with child",
+      "status": "pending_generation"
+    },
+    {
+      "bookId": "book-02",
+      "type": "cover",
+      "promptPath": "assets/covers/book-02-cover.prompt.md",
+      "targetPath": "assets/covers/book-02-cover.png",
+      "graphicalStyle": "colored_pencil",
+      "status": "pending_generation"
+    },
+    {
+      "bookId": "book-02",
+      "type": "use_case",
+      "promptPath": "assets/use-cases/book-02-use-case.prompt.md",
+      "targetPath": "assets/use-cases/book-02-use-case.png",
+      "useCase": "audiobook listening moment",
+      "status": "pending_generation"
+    },
+    {
+      "bookId": "book-03",
+      "type": "cover",
+      "promptPath": "assets/covers/book-03-cover.prompt.md",
+      "targetPath": "assets/covers/book-03-cover.png",
+      "graphicalStyle": "digital_art",
+      "status": "pending_generation"
+    },
+    {
+      "bookId": "book-03",
+      "type": "use_case",
+      "promptPath": "assets/use-cases/book-03-use-case.prompt.md",
+      "targetPath": "assets/use-cases/book-03-use-case.png",
+      "useCase": "teacher using the book",
+      "status": "pending_generation"
+    },
+    {
+      "bookId": "book-04",
+      "type": "cover",
+      "promptPath": "assets/covers/book-04-cover.prompt.md",
+      "targetPath": "assets/covers/book-04-cover.png",
+      "graphicalStyle": "hand_drawn",
+      "status": "pending_generation"
+    },
+    {
+      "bookId": "book-04",
+      "type": "use_case",
+      "promptPath": "assets/use-cases/book-04-use-case.prompt.md",
+      "targetPath": "assets/use-cases/book-04-use-case.png",
+      "useCase": "caregiver using the book in a calm setting",
+      "status": "pending_generation"
+    },
+    {
+      "bookId": "book-05",
+      "type": "cover",
+      "promptPath": "assets/covers/book-05-cover.prompt.md",
+      "targetPath": "assets/covers/book-05-cover.png",
+      "graphicalStyle": "pixar_style",
+      "status": "pending_generation"
+    },
+    {
+      "bookId": "book-05",
+      "type": "use_case",
+      "promptPath": "assets/use-cases/book-05-use-case.prompt.md",
+      "targetPath": "assets/use-cases/book-05-use-case.png",
+      "useCase": "product shot of the book",
+      "status": "pending_generation"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "audioSamples": [
+    {
+      "bookId": "book-01",
+      "excerpt": "O comboio azul abriu as portas devagar. Primeiro, a mochila. Depois, o casaco. Depois, o sorriso pequeno do Tomás, que já sabia qual era a próxima paragem.",
+      "recommendedVoiceDirection": "Voz adulta, calma, pausada, com ritmo previsível e sem dramatização intensa.",
+      "recommendedDurationSeconds": 30,
+      "backgroundMusicRecommendation": "bedtime",
+      "pronunciationNotes": ["Tomás: acento na última sílaba"],
+      "safetyNotes": ["Evitar tom de correção ou treino."]
+    },
+    {
+      "bookId": "book-02",
+      "excerpt": "Na Ilha dos Sons Suaves, até as ondas falavam baixinho. Mara levantou a lanterna dourada e viu três caminhos: o do vento leve, o da areia quente e o do silêncio azul.",
+      "recommendedVoiceDirection": "Voz serena, ligeiramente mágica, com pausas naturais e volume emocional baixo.",
+      "recommendedDurationSeconds": 30,
+      "backgroundMusicRecommendation": "soft",
+      "pronunciationNotes": [],
+      "safetyNotes": ["Não dramatizar ruído ou desconforto."]
+    },
+    {
+      "bookId": "book-03",
+      "excerpt": "No mapa do Leo havia uma porta verde, uma mesa redonda e uma janela com luz. A professora sorriu e apontou para o primeiro desenho: 'Aqui guardamos a mochila.'",
+      "recommendedVoiceDirection": "Voz clara, educativa e suave, com frases bem separadas.",
+      "recommendedDurationSeconds": 30,
+      "backgroundMusicRecommendation": "none",
+      "pronunciationNotes": ["Leo: pronunciar como Lé-o, com duas sílabas"],
+      "safetyNotes": ["Evitar tom institucional ou clínico."]
+    },
+    {
+      "bookId": "book-04",
+      "excerpt": "Clara batia palmas muito depressa. Nico olhava para a janela. Então Clara desenhou uma estrela no chão e perguntou baixinho: 'Esta velocidade serve para nós?'",
+      "recommendedVoiceDirection": "Voz próxima e familiar, com ternura discreta e sem excesso dramático.",
+      "recommendedDurationSeconds": 30,
+      "backgroundMusicRecommendation": "soft",
+      "pronunciationNotes": [],
+      "safetyNotes": ["Não sugerir que uma criança é responsável por ajustar a outra."]
+    },
+    {
+      "bookId": "book-05",
+      "excerpt": "Dentro da caixa havia uma folha, uma fotografia e um botão azul. A avó disse: 'Cada coisa querida tem uma história pequena. Vamos abrir uma de cada vez.'",
+      "recommendedVoiceDirection": "Voz calorosa, lenta e íntima, como leitura de família ao fim da tarde.",
+      "recommendedDurationSeconds": 30,
+      "backgroundMusicRecommendation": "magical",
+      "pronunciationNotes": ["Noa: pronunciar Nó-a, com duas sílabas"],
+      "safetyNotes": ["Não usar tom nostálgico pesado."]
+    }
+  ]
+}

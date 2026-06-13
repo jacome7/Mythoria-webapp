@@ -22,7 +22,7 @@
 
 .content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   min-height: 16.25rem;
   max-width: 72rem;
@@ -32,6 +32,23 @@
   align-items: center;
   justify-content: flex-start;
   text-align: center;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  height: 4.75rem;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    #fff7e6 0%,
+    rgba(255, 247, 230, 0.86) 34%,
+    rgba(255, 247, 230, 0) 100%
+  );
 }
 
 .socialRow {

@@ -13,7 +13,13 @@ export const romance: HeroComposition = {
   rootClassName: `${anims.root} ${theme.root}`,
   textNamespace: 'intents.romance.hero',
   decor: {
-    sky_left: { anim: 'balloon', animDurMs: 10500, base: { width: 17 }, md: { width: 11 }, lg: { width: 7 } },
+    sky_left: {
+      anim: 'balloon',
+      animDurMs: 10500,
+      base: { width: 17 },
+      md: { width: 11 },
+      lg: { width: 7 },
+    },
     sky_right: { anim: 'bob', animDurMs: 7600 },
   },
   // The romance couple cutout is wider (723×1024) than the single-child

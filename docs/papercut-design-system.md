@@ -243,7 +243,7 @@ Keyframes live in `globals.css` alongside the existing `fade-in`.
 4. **Create the config** `src/components/papercut/compositions/<id>/index.ts`,
    exporting a ~25-line `HeroComposition` (see `romance/index.ts` as the
    reference): `id`, `rootClassName` (anims + theme), `textNamespace:
-   'intents.<id>.hero'`, optional `decor` tuning (per-slot `anim`, timing,
+'intents.<id>.hero'`, optional `decor` tuning (per-slot `anim`, timing,
    placement nudges), optional `person` band geometry, `ctaPath`.
 
 5. **Register it** in `src/components/papercut/registry.ts` — map the relevant

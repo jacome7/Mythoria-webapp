@@ -94,12 +94,7 @@
       "Relato",
       "Mito"
     ],
-    "fallbackWords": [
-      "Aventura",
-      "Historia de Amor",
-      "Misterio",
-      "Cuento de Hadas"
-    ],
+    "fallbackWords": ["Aventura", "Historia de Amor", "Misterio", "Cuento de Hadas"],
     "altTexts": {
       "kidsBook": "Libro Infantil",
       "groupsYearbooks": "Grupos y Anuarios",
@@ -136,7 +131,7 @@
       "linkText": "Ven a conocer a los soñadores detrás de la magia"
     },
     "howItWorks": {
-      "title": "Con Mythoria, crear tu propia historia es fácil:",
+      "title": "¿Cómo crear tu historia?",
       "steps": {
         "step1": {
           "title": "El Autor",
@@ -176,7 +171,7 @@
       "title": "¡Únete a Nuestra Creciente Comunidad de Narradores!"
     },
     "cta": {
-      "title": "¿Listo para comenzar tu viaje de narración?",
+      "title": "¿Listo para crear una historia?",
       "subtitle": "¡Regístrate hoy y recibe 5 créditos gratis para crear tu primera historia personalizada!",
       "button": "Pruébalo Gratis"
     },
@@ -220,7 +215,7 @@
           "details": "Una plataforma, voces infinitas."
         },
         "gentleCreditSystem": {
-          "title": "Sistema de Créditos Flexible",
+          "title": "Sistema de Créditos Simple",
           "description": "Comienza con 5 créditos gratis. Recarga solo cuando necesites capítulos, ilustraciones o impresiones extra.",
           "details": "Sin suscripciones, sin presión—paga mientras sueñas."
         },

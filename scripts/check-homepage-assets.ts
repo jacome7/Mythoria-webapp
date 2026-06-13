@@ -111,7 +111,10 @@ async function checkStyle(style: string): Promise<void> {
     if (entry.status === 'missing') continue;
     const filePath = path.join(dir, entry.file);
     if (!fs.existsSync(filePath)) {
-      fail(style, `metadata lists "${entry.file}" (status ${entry.status}) but it does not exist on disk`);
+      fail(
+        style,
+        `metadata lists "${entry.file}" (status ${entry.status}) but it does not exist on disk`,
+      );
       continue;
     }
     checkFilename(style, entry);
@@ -162,5 +165,7 @@ async function checkStyle(style: string): Promise<void> {
     console.error(`\nhomepage assets check FAILED with ${errors.length} error(s).`);
     process.exit(1);
   }
-  console.log(`homepage assets check passed for: ${STYLE_IDS.join(', ')} (${warnings.length} warning(s)).`);
+  console.log(
+    `homepage assets check passed for: ${STYLE_IDS.join(', ')} (${warnings.length} warning(s)).`,
+  );
 })();

@@ -1,0 +1,74 @@
+.authorFeedbackPanel {
+  border: 1px solid rgba(94, 64, 26, 0.16);
+  border-radius: 0.85rem;
+  background:
+    linear-gradient(145deg, rgba(255, 248, 232, 0.98), rgba(247, 222, 184, 0.92)), #fff7e6;
+  box-shadow:
+    0 12px 24px rgba(74, 48, 14, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  text-align: left;
+  overflow: hidden;
+}
+
+.authorFeedbackToggle {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: 0;
+  background: transparent;
+  color: var(--color-primary);
+  cursor: pointer;
+  padding: 0.85rem 1rem;
+  text-align: left;
+}
+
+.authorFeedbackToggle:hover,
+.authorFeedbackToggle:focus {
+  background: rgba(255, 241, 214, 0.72);
+}
+
+.authorFeedbackToggle:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-primary) 42%, transparent);
+  outline-offset: -2px;
+}
+
+.authorFeedbackTitle {
+  color: var(--color-primary);
+  font-family: var(--font-display), Georgia, 'Times New Roman', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.authorFeedbackIcon {
+  color: var(--color-primary);
+  flex: 0 0 auto;
+}
+
+.authorFeedbackChevron {
+  color: var(--color-primary);
+  flex: 0 0 auto;
+  transition: transform 180ms ease;
+}
+
+.authorFeedbackChevronOpen {
+  transform: rotate(180deg);
+}
+
+.authorFeedbackContent {
+  border-top: 1px solid rgba(94, 64, 26, 0.14);
+  padding: 0 1rem 1rem;
+}
+
+.authorFeedbackSubtitle {
+  color: rgba(45, 37, 26, 0.74);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  margin: 0.85rem 0 0;
+}
+
+.authorFeedbackForm {
+  margin-top: 1rem;
+}

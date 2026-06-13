@@ -17,7 +17,7 @@
               "desc": "Faça de qualquer pessoa a personagem principal."
             },
             "feature2": {
-              "title": "Significativas e Únicas",
+              "title": "Marcantes e Únicas",
               "desc": "Uma história que guardarão para sempre."
             },
             "feature3": {
@@ -95,12 +95,7 @@
       "Ficção",
       "Mito"
     ],
-    "fallbackWords": [
-      "Aventura",
-      "História de Amor",
-      "Mistério",
-      "Conto de Fadas"
-    ],
+    "fallbackWords": ["Aventura", "História de Amor", "Mistério", "Conto de Fadas"],
     "altTexts": {
       "kidsBook": "Livro Infantil",
       "groupsYearbooks": "Grupos & Álbuns",
@@ -137,7 +132,7 @@
       "linkText": "Venha conhecer os sonhadores por trás da magia"
     },
     "howItWorks": {
-      "title": "Com a Mythoria, criar a sua própria história é fácil:",
+      "title": "Como criar a sua história?",
       "steps": {
         "step1": {
           "title": "O Autor",
@@ -177,7 +172,7 @@
       "title": "Junte-se à nossa crescente comunidade de contadores de histórias!"
     },
     "cta": {
-      "title": "Pronto para começar a sua jornada de contar histórias?",
+      "title": "Pronto para criar uma história?",
       "subtitle": "Registe-se hoje e receba 5 créditos grátis para criar a sua primeira história personalizada!",
       "button": "Experimente Grátis"
     },
@@ -221,7 +216,7 @@
           "details": "Uma plataforma, vozes infinitas."
         },
         "gentleCreditSystem": {
-          "title": "Sistema de Créditos Suave",
+          "title": "Sistema de Créditos Simples",
           "description": "Comece com 5 créditos grátis. Recarregue apenas quando precisar de capítulos, ilustrações ou impressões extra.",
           "details": "Sem assinaturas, sem pressão—pague à medida que sonha."
         },

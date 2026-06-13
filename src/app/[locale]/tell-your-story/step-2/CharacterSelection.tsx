@@ -19,6 +19,7 @@ interface Props {
   characters?: Character[];
   isLoading?: boolean;
   triggerLabel?: string;
+  triggerIconSrc?: string;
   triggerVariant?: 'card' | 'button';
   title?: string;
   clearSelectionOnDone?: boolean;
@@ -56,6 +57,7 @@ export default function CharacterSelection({
   characters,
   isLoading: controlledIsLoading,
   triggerLabel,
+  triggerIconSrc,
   triggerVariant = 'card',
   title,
   clearSelectionOnDone = false,
@@ -70,6 +72,12 @@ export default function CharacterSelection({
   const suppressNextOpenRef = useRef(false);
   const displayCharacters = characters ?? existingCharacters;
   const modalTitle = title ?? t('characterSelection.includeCharactersTitle');
+  const buttonLabel = triggerLabel ?? modalTitle;
+  const firstButtonLabelSpace = buttonLabel.indexOf(' ');
+  const buttonLabelWithoutEmoji =
+    triggerIconSrc && firstButtonLabelSpace > 0 && firstButtonLabelSpace <= 4
+      ? buttonLabel.slice(firstButtonLabelSpace + 1)
+      : buttonLabel;
   const isSelected = (character: Character) =>
     Boolean(character.characterId && selectedIds.includes(character.characterId));
 
@@ -164,7 +172,10 @@ export default function CharacterSelection({
         </button>
       ) : (
         <button type="button" className="btn btn-outline btn-lg w-full" onClick={openModal}>
-          {triggerLabel ?? modalTitle}
+          {triggerIconSrc && (
+            <Image src={triggerIconSrc} alt="" width={24} height={24} aria-hidden="true" />
+          )}
+          {buttonLabelWithoutEmoji}
         </button>
       )}
 

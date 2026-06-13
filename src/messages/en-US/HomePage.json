@@ -95,12 +95,7 @@
       "Fiction",
       "Myth"
     ],
-    "fallbackWords": [
-      "Adventure",
-      "Love Story",
-      "Mystery",
-      "Fairy Tale"
-    ],
+    "fallbackWords": ["Adventure", "Love Story", "Mystery", "Fairy Tale"],
     "altTexts": {
       "kidsBook": "Kids Book",
       "groupsYearbooks": "Groups & Yearbooks",
@@ -137,7 +132,7 @@
       "linkText": "Come and meet the dreamers behind the magic"
     },
     "howItWorks": {
-      "title": "With Mythoria, creating your own story is easy:",
+      "title": "How to create your story?",
       "steps": {
         "step1": {
           "title": "The Author",
@@ -177,7 +172,7 @@
       "title": "Join Our Growing Community of Storytellers!"
     },
     "cta": {
-      "title": "Ready to start your storytelling journey?",
+      "title": "Ready to create a story?",
       "subtitle": "Sign up today and get 5 free credits to create your first personalized story!",
       "button": "Try It For Free"
     },
@@ -221,7 +216,7 @@
           "details": "One platform, infinite voices."
         },
         "gentleCreditSystem": {
-          "title": "Gentle Credit System",
+          "title": "Simple Credit System",
           "description": "Start with 5 free credits. Top up only when you need extra chapters, illustrations, or prints.",
           "details": "No subscriptions, no pressure—pay as you dream."
         },

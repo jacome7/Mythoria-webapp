@@ -10,6 +10,26 @@ interface SignInClientProps {
   locale: string;
 }
 
+const featureIcons = {
+  unlimited: '/Papercut_icons/sparkles.webp',
+  library: '/Papercut_icons/openBook.webp',
+  customize: '/Papercut_icons/Color_pallete.webp',
+} as const;
+
+function withoutLeadingEmoji(text: string) {
+  const firstSpace = text.indexOf(' ');
+  return firstSpace > 0 && firstSpace <= 4 ? text.slice(firstSpace + 1) : text;
+}
+
+function FeatureRow({ icon, text }: { icon: string; text: string }) {
+  return (
+    <p className="flex items-center justify-center gap-2">
+      <Image src={icon} alt="" width={24} height={24} aria-hidden="true" className="shrink-0" />
+      <span>{withoutLeadingEmoji(text)}</span>
+    </p>
+  );
+}
+
 export default function SignInClient({ locale }: SignInClientProps) {
   const tSignInPage = useTranslations('SignInPage');
   const search = useSearchParams();
@@ -24,7 +44,7 @@ export default function SignInClient({ locale }: SignInClientProps) {
         <div className="text-center space-y-8">
           <div className="flex justify-center">
             <Image
-              src="/Mythoria-logo-white-512x336.jpg"
+              src="/images/logo/papercut.jpg"
               alt="Mythoria Logo"
               width={256}
               height={168}
@@ -43,9 +63,9 @@ export default function SignInClient({ locale }: SignInClientProps) {
             </p>
           </div>
           <div className="space-y-2 text-sm text-gray-500">
-            <p>{tSignInPage('features.unlimited')}</p>
-            <p>{tSignInPage('features.library')}</p>
-            <p>{tSignInPage('features.customize')}</p>
+            <FeatureRow icon={featureIcons.unlimited} text={tSignInPage('features.unlimited')} />
+            <FeatureRow icon={featureIcons.library} text={tSignInPage('features.library')} />
+            <FeatureRow icon={featureIcons.customize} text={tSignInPage('features.customize')} />
           </div>
         </div>
       </div>
@@ -55,12 +75,7 @@ export default function SignInClient({ locale }: SignInClientProps) {
         <div className="w-full max-w-md">
           <div className="bg-white rounded-2xl shadow-2xl p-2 sm:p-4 lg:p-8 border border-orange-100">
             <div className="lg:hidden flex justify-center mb-6">
-              <Image
-                src="/Mythoria-logo-white-512x336.jpg"
-                alt="Mythoria Logo"
-                width={128}
-                height={84}
-              />
+              <Image src="/images/logo/papercut.jpg" alt="Mythoria Logo" width={128} height={84} />
             </div>
 
             {/* Mobile-only first-time user message */}

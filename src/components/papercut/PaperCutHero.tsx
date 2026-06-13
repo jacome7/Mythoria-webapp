@@ -38,10 +38,7 @@ const SCENE_ASPECT: StageAspect = { base: '1080 / 1072', md: '1920 / 1072', lg: 
  * floater in front slightly below, mirrored on the right, sparkles centered
  * above the title); compositions only nudge these via `composition.decor`.
  */
-const DECOR_TEMPLATE: Record<
-  DecorSlot,
-  Omit<PaperCutLayerConfig, 'id' | 'src' | 'intrinsic'>
-> = {
+const DECOR_TEMPLATE: Record<DecorSlot, Omit<PaperCutLayerConfig, 'id' | 'src' | 'intrinsic'>> = {
   cloud_left: {
     z: 2,
     anchor: 'top',
