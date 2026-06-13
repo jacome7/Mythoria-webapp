@@ -24,7 +24,10 @@ const withPWA = withPWAInit({
 
 const nextConfig: NextConfig = {
   // Allow LAN browser access to dev-only resources such as webpack HMR.
-  allowedDevOrigins: ['192.168.1.10'],
+  allowedDevOrigins: [
+    '192.168.1.10',
+    'c280-2001-818-c3da-6b00-9489-3215-83d3-af60.ngrok-free.app',
+  ],
   // Enable standalone output for better Docker performance
   output: 'standalone',
   // Google Cloud clients rely on native Node.js/gRPC runtime behavior. Keeping

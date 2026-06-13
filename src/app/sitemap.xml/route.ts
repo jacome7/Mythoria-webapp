@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { storyService, blogService } from '@/db/services';
 import { BlogLocale } from '@/db/services/blog';
+import { getIndexableLandingPages } from '@/content/landing-pages';
 import { routing } from '@/i18n/routing';
 import { BASE_URL, buildAbsoluteUrl, buildLocalizedUrl, shouldIncludeXDefault } from '@/lib/seo';
 import { normalizeLocale } from '@/utils/locale-utils';
@@ -89,6 +90,19 @@ export async function generateSitemap(): Promise<string> {
   blogIndexUrls.forEach(({ url }) => {
     const urlEntry = createUrlEntryWithHreflang(url, currentDate, 'weekly', '0.8', blogIndexUrls);
     urls.push(urlEntry);
+  });
+
+  // Add locale-specific landing pages. These are not expanded across all locales unless the
+  // content registry contains translated variants, avoiding duplicate SEO pages.
+  getIndexableLandingPages().forEach((page) => {
+    urls.push(
+      createUrlEntry(
+        buildLocalizedUrl(page.locale, `/lp/${page.slug}`),
+        new Date(page.updatedAt).toISOString(),
+        'weekly',
+        '0.8',
+      ),
+    );
   });
 
   // Add featured stories to sitemap with multilingual support

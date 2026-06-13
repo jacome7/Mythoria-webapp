@@ -258,9 +258,17 @@
       }
     },
     "gallery": {
+      "title": "Lass dich von echten Büchern inspirieren",
       "loading": "Weitere Bücher werden geladen...",
       "noMore": "Du hast alle unsere Beispielbücher gesehen!",
       "closeModal": "Schließen",
+      "previous": "Vorherige Bücher",
+      "next": "Nächste Bücher",
+      "controlsLabel": "Steuerung der Büchergalerie",
+      "viewDetails": "Details anzeigen für",
+      "imageUnavailable": "Cover nicht verfügbar",
+      "sceneUnavailable": "Szenenbild nicht verfügbar",
+      "sceneAlt": "Szene aus",
       "tags": "Tags",
       "style": "Stil",
       "synopsis": "Synopsis"

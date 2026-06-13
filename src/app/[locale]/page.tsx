@@ -11,6 +11,7 @@ import HowItWorks from '@/components/HowItWorks';
 import HomepageCta from '@/components/HomepageCta';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
 import PaperCutHero from '@/components/papercut/PaperCutHero';
+import HomepageBookGallery from '@/components/HomepageBookGallery';
 
 export default function Home() {
   const tHomePage = useTranslations('HomePage');
@@ -19,10 +20,11 @@ export default function Home() {
   return (
     <div className="homepage-paper-bg min-h-screen text-base-content">
       <PaperCutHero />
+      <HomepageBookGallery />
       <div className="container mx-auto px-4 py-4">
         {/* Audience Sections */}
         <ScrollFadeIn threshold={0.1} rootMargin="0px 0px -20px 0px">
-          <section className="my-16">
+          <section className="mt-6 mb-16">
             {/* Desktop Grid */}
             <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               <ScrollFadeIn delay={100} threshold={0.1} rootMargin="0px 0px -20px 0px">

@@ -257,9 +257,17 @@
       }
     },
     "gallery": {
+      "title": "Inspírate con libros reales",
       "loading": "Cargando más libros...",
       "noMore": "¡Has visto todos nuestros libros de muestra!",
       "closeModal": "Cerrar",
+      "previous": "Libros anteriores",
+      "next": "Libros siguientes",
+      "controlsLabel": "Controles de la galería de libros",
+      "viewDetails": "Ver detalles de",
+      "imageUnavailable": "Portada no disponible",
+      "sceneUnavailable": "Imagen de escena no disponible",
+      "sceneAlt": "Escena de",
       "tags": "Etiquetas",
       "style": "Estilo",
       "synopsis": "Sinopsis"

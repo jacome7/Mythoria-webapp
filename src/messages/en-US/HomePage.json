@@ -258,9 +258,17 @@
       }
     },
     "gallery": {
+      "title": "Get inspired by real books",
       "loading": "Loading more books...",
       "noMore": "You've seen all our sample books!",
       "closeModal": "Close",
+      "previous": "Previous books",
+      "next": "Next books",
+      "controlsLabel": "Book gallery controls",
+      "viewDetails": "View details for",
+      "imageUnavailable": "Cover not available",
+      "sceneUnavailable": "Scene image not available",
+      "sceneAlt": "Scene from",
       "tags": "Tags",
       "style": "Style",
       "synopsis": "Synopsis"

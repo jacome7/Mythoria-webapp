@@ -29,6 +29,7 @@ Each feature listed below has a dedicated document in `docs/features`. Use the t
 | Partners & Printing Directory      | Partner application workflow and public printing partner directory with filtering and detail views.                               | [features/partners.md](features/partners.md)                           |
 | Mythoria Home Experience           | Marketing homepage sections including hero, carousel, timeline, quotes, and live counters.                                        | [features/homepage.md](features/homepage.md)                           |
 | Mythoria Blog & Editorial          | Localized blog listing, MDX articles, reading time, and SEO navigation.                                                           | [features/blog.md](features/blog.md)                                   |
+| Landing Pages (Campaign/SEO)       | Typed, single-locale campaign pages under `/lp/{slug}` with SEO/GEO metadata, JSON-LD, and auto sitemap inclusion.                 | [features/landing-pages.md](features/landing-pages.md)                 |
 
 ## Last Updated
 
