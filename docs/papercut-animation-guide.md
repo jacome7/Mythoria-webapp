@@ -1,14 +1,17 @@
 # Paper-Cut Hero — Adjust & Animate Guide
 
 A practical, copy-paste guide for positioning and animating the home hero's
-paper-cut layers. **You don't touch React to do this** — every element is a
-plain data object in one file. Edit it, save, and the dev server hot-reloads.
+paper-cut layers. **You don't touch React to do this** — the canonical layer
+placements live in one template, and each style only tunes them with plain data.
+Edit, save, and the dev server hot-reloads.
 
-- **Edit layers here:** `src/components/papercut/compositions/<id>/index.ts` (e.g. `kidsFantasy/index.ts`)
+- **Canonical decor template (placements per slot):** `DECOR_TEMPLATE` in `src/components/papercut/PaperCutHero.tsx`
+- **Per-style tuning (`decor`, `person`, `personHoldMs`):** `src/components/papercut/compositions/<id>/index.ts`
 - **Shared idle keyframes:** `src/components/papercut/compositions/shared/animations.module.css`
-- **Per-intent palette vars:** `src/components/papercut/compositions/<id>/theme.module.css`
+- **Per-style palette vars:** `src/components/papercut/compositions/<id>/theme.module.css`
 - **Field definitions (with comments):** `src/components/papercut/types.ts`
-- **Renderer (rarely touched):** `src/components/papercut/PaperCutLayer.tsx`
+- **Person carousel:** `src/components/papercut/PersonCarousel.tsx`
+- **Layer renderer (rarely touched):** `src/components/papercut/PaperCutLayer.tsx`
 - **Global parallax distance + CSS utilities:** `PaperCutHero.tsx` / `src/app/globals.css`
 - **Animation library:** [Motion](https://motion.dev) (Framer Motion), `motion/react`
 
@@ -18,24 +21,34 @@ plain data object in one file. Edit it, save, and the dev server hot-reloads.
 
 ## 1. Anatomy of one layer
 
-Each papercut is one object in the composition's `sky[]` or `scene[]` array:
+The hero skeleton has five sky decor slots (`cloud_left`, `sky_left`,
+`cloud_right`, `sky_right`, `sparkles`). Their full layer configs live in the
+renderer's `DECOR_TEMPLATE`; each entry looks like:
 
 ```ts
 {
-  id: 'dragon',                          // unique name
-  src: '/homepage/kids_fantasy/companion_right.webp',  // role-based shared name (see assets_metadata.json)
-  intrinsic: { w: 498, h: 668 },         // the PNG's real pixel size (keep accurate → no layout shift)
-  z: 9,                                  // stacking order (see §3)
-  anchor: 'bottom',                      // measure y from 'top' or 'bottom'
-  base: { x: 64, y: 15, width: 36 },     // position + size, mobile-first (see §2)
-  md:   { width: 30 },                   // overrides at ≥768px
-  lg:   { x: 74, y: 11, width: 19 },     // overrides at ≥1024px
-  shadow: 'mid',                         // paper depth: 'none' | 'sky' | 'mid' | 'front'
-  anim: 'breathe',                       // idle loop (see §4a)
-  animDurMs: 6500,
-  enter: { fromOpacity: 0, fromY: 30, fromScale: 0.92, durationMs: 800, delayMs: 300 }, // §4b
-  parallax: { speed: -18 },              // scroll motion (§5)
+  z: 4,                                  // stacking order (see §3)
+  anchor: 'top',                         // measure y from 'top' or 'bottom'
+  base: { x: -1, y: 18, width: 23 },     // position + size, mobile-first (see §2)
+  md:   { x: 5, y: 22, width: 15 },      // overrides at ≥768px
+  lg:   { x: 9, y: 24, width: 9 },       // overrides at ≥1024px
+  shadow: 'front',                       // paper depth: 'none' | 'sky' | 'mid' | 'front'
+  anim: 'balloon',                       // idle loop (see §4a)
+  animDurMs: 9500,
+  enter: { fromOpacity: 0, fromScale: 0.86, fromY: -12, durationMs: 750 }, // §4b
+  parallax: { speed: -90, fadeOut: true }, // scroll motion (§5)
 }
+```
+
+A style overrides just what differs, in its composition's `decor` map —
+the override merges field-by-field onto the template:
+
+```ts
+// compositions/sports_teams/index.ts — the pennant sways instead of ballooning:
+decor: {
+  sky_left: { anim: 'sway', animDurMs: 7000, base: { width: 20 } },
+  sky_right: { anim: 'bob', animDurMs: 6000 },
+},
 ```
 
 At render time a layer becomes up to three nested elements, each owning a
@@ -46,6 +59,22 @@ positioner (place + center)  →  parallax wrapper (scroll)  →  enter wrapper 
 ```
 
 You never write that markup — you just set the fields above.
+
+### The person carousel (the scene's centerpiece)
+
+The middle of the scene is `PersonCarousel`, not a static layer. Behavior:
+
+- Each `person{n}` slide **eases in from the right** (0.6s), **holds centered**
+  for `personHoldMs` (default 4000ms), then **eases out to the left** (0.45s)
+  while the next slide enters — exit and enter overlap, the stage is never empty.
+- Rotation **pauses** when the carousel is off-screen, the tab is hidden, or the
+  visitor hovers/focuses it (WCAG 2.2.2); under `prefers-reduced-motion`, or
+  with a single slide, it renders fully static.
+- The first slide server-renders with `priority` and **no enter animation**
+  (`AnimatePresence initial={false}`) to protect LCP; the upcoming slide is
+  pre-decoded during the hold.
+- Tune the band geometry per style with `person: { width: {...}, bottom: {...} }`
+  and the timing with `personHoldMs` in the composition.
 
 ---
 
@@ -206,9 +235,10 @@ DevTools → Rendering → "Emulate prefers-reduced-motion". ([MDN](https://deve
 **Parallax can cause motion sickness** for users with vestibular disorders —
 keep speed differences gentle and the overall effect restrained. ([web.dev](https://web.dev/articles/animations-and-performance))
 
-**Protect the LCP.** The girl photo is the Largest Contentful Paint element, so
-it has `priority: true` and **no `enter`** (fading it in would delay LCP). Don't
-add an entrance to the priority layer.
+**Protect the LCP.** The scene background and the first person slide are the
+Largest Contentful Paint candidates: both are server-rendered with priority and
+**no entrance animation** (the carousel uses `AnimatePresence initial={false}`).
+Don't add an entrance to either.
 
 **Less is more / stagger.** A few well-timed moves read as "premium"; everything
 moving at once reads as noise. Stagger entrances and vary durations. Use
@@ -269,12 +299,13 @@ interface PaperCutLayerConfig {
 
 ---
 
-## 9. Adding a whole new themed scene
+## 9. Adding a whole new themed style
 
-Animation lives in the per-layer config, so a new composition (e.g. a romance or
-sci-fi scene) gets its own animations for free. See the
-[Paper-Cut Design System](./papercut-design-system.md) §8 for the "author a new
-composition" recipe (add PNGs → config file → one registry line).
+The skeleton (placements, carousel, parallax) is shared, so a new style (e.g.
+pet_stories) gets all motion for free and only tunes `decor`/`person` values.
+See the [Paper-Cut Design System](./papercut-design-system.md) §8 for the
+"author a new style" recipe (slot-named assets → metadata → ~25-line config →
+one registry line).
 
 ## Sources
 

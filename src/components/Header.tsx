@@ -68,7 +68,7 @@ const Header = () => {
               </li>
               <li>
                 <Link
-                  href={`/${locale}/tell-your-story/step-1`}
+                  href={`/${locale}/tell-your-story`}
                   className={styles.mobileMenuLink}
                   onClick={() => (document.activeElement as HTMLElement)?.blur()}
                 >
@@ -125,7 +125,7 @@ const Header = () => {
               </Link>
             </li>
             <li>
-              <Link href={`/${locale}/tell-your-story/step-1`} className={styles.desktopMenuLink}>
+              <Link href={`/${locale}/tell-your-story`} className={styles.desktopMenuLink}>
                 {tCommonHeader('navigation.tellYourStory')}
               </Link>
             </li>
@@ -188,7 +188,7 @@ const Header = () => {
             </li>
             <li>
               <Link
-                href={`/${locale}/tell-your-story/step-1`}
+                href={`/${locale}/tell-your-story`}
                 className={styles.mobileMenuLink}
                 onClick={() => (document.activeElement as HTMLElement)?.blur()}
               >
@@ -254,7 +254,7 @@ const Header = () => {
             </Link>
           </li>
           <li>
-            <Link href={`/${locale}/tell-your-story/step-1`} className={styles.desktopMenuLink}>
+            <Link href={`/${locale}/tell-your-story`} className={styles.desktopMenuLink}>
               {tCommonHeader('navigation.tellYourStory')}
             </Link>
           </li>

@@ -11,10 +11,10 @@ The Homepage is the first-touch experience for Mythoria. It showcases what the p
 ### What visitors see and can do
 
 - **Paper-cut storytelling hero**
-  - A layered paper-cut “theatre” diorama (sky decorations, scenery, a real photo of a reader holding a finished book, and foliage), each element on its own animated element.
-  - A storybook headline (“Every story starts with you”) and a clear “Write your own story” call-to-action that leads to the story creation flow.
-  - A 3-up feature card (Personalized · Meaningful · For Every Occasion) anchors the bottom of the scene.
-  - The scene is a **composition** chosen by the visitor's intent — or overridden via `?intent=` query param (see below). The full look — palette, typography, layering, animation — is documented in the [Paper-Cut Design System](../papercut-design-system.md).
+  - One shared skeleton, themed per style: cloud + themed floater pairs top-left/right (balloon, pennant, hearts…), sparkles above a centered headline/subtitle/CTA, then a scene sandwich — papercut background, a **rotating carousel of real people holding a real Mythoria book** (the product/human anchor, locale-aware covers), and a papercut foreground strip.
+  - Each person slide eases in from the right, holds ~4 s, eases out to the left; rotation pauses off-screen/hover and respects `prefers-reduced-motion`.
+  - A 3-up feature card (per-style icons + copy) anchors the bottom of the scene.
+  - The style is a **composition** chosen by the visitor's intent — or overridden via `?intent=` query param (see below). The full look — palette, typography, slot grammar, animation — is documented in the [Paper-Cut Design System](../papercut-design-system.md).
 - **Audience-focused sections**
   - Four audience cards (Kids, Groups & Yearbooks, Adults, Companies) that link to public sample stories.
 - **“What drives us” mission block**
@@ -46,11 +46,14 @@ These links record the intent and (optionally) the recipient in a cookie, then r
 | Intent         | Composition    | URL               |
 | -------------- | -------------- | ----------------- |
 | _(default)_    | `kids_fantasy` | `/`               |
-| `sports_teams` | `kids_sports`  | `/i/sports_teams` |
+| `sports_teams` | `sports_teams`  | `/i/sports_teams` |
+| `romance`      | `romance`      | `/i/romance`      |
 
 **Query param override:** appending `?intent=<value>` to any homepage URL switches the composition without setting a cookie — useful for campaign previews and QA. Precedence: `?intent=` query param > intent cookie > default. The override is read via `useIntentOverride` in a `useEffect` (not `useSearchParams`) to avoid breaking static prerendering of the hero.
 
-**Phase-1 section assets policy:** only the hero diorama is intent-skinned. All sections below the hero (Footer, Header, HowItWorks, etc.) use the `kids_fantasy` asset folder via `homepageAsset()` from `src/constants/homepageAssets.ts`. Per-intent section art is a phase-2 candidate.
+**Phase-1 section assets policy:** only the hero is intent-skinned. All sections below the hero (Footer, Header, HowItWorks, etc.) use the `kids_fantasy` asset folder via `homepageAsset()` from `src/constants/homepageAssets.ts`. Per-intent section art is a phase-2 candidate.
+
+**Locale-aware hero assets:** background/foreground/person assets may carry a locale suffix (e.g. `background_mobile_pt-PT.webp`, `person1_pt-PT.webp`). Resolution happens at build time through `src/components/papercut/heroManifest.ts` with the deterministic fallback chain `exact locale → en-US → unsuffixed → first available` — missing variants never 404. Each style folder documents its assets in `assets_metadata.json` (validated by `npm run homepage:assets`) and lists outstanding designer work in `MISSING_ASSETS.md`.
 
 ---
 
@@ -94,9 +97,9 @@ Key UI sections and their sources:
 
 - **Paper-cut hero + CTA**
   - Rendered by `src/components/papercut/PaperCutHero.tsx` (mounted full-bleed in `page.tsx`, before the page container).
-  - A data-driven composition system: `PaperCutHero` resolves a composition from the intent cookie (`resolveComposition`), then renders sky + scene layers (`PaperCutLayer` inside a `PaperCutStage`) and a `FeatureCard`.
-  - Copy comes from `HomePage.hero.*` (`headline`, `subtitle`, `subtitleEmphasized`, `tellYourOwnStory`, `features.*`, `alt.girl`). The legacy `hero.writeYourOwn` / `words` keys are no longer used on the homepage.
-  - To author a new composition, see the [Paper-Cut Design System](../papercut-design-system.md).
+  - The renderer owns the canonical skeleton (decor template, scene sandwich, feature card); `PaperCutHero` resolves a style composition from the intent cookie (`resolveComposition`), assets by slot name through `heroManifest.ts`, and renders `PaperCutLayer` decor, an `ArtDirectedImage` background/foreground pair and the `PersonCarousel` inside a `PaperCutStage`, plus `FeatureCard`.
+  - Copy comes from `HomePage.intents.<styleId>.hero.*` (`headline`, `subtitle`, `subtitleEmphasized`, `cta`, `alt.person`, `features.feature{1..3}.*`) — the default style reads `intents.kids_fantasy.hero.*`.
+  - To author a new style, see the [Paper-Cut Design System](../papercut-design-system.md).
 - **Sample audience cards (Kids, Groups, Adults, Companies)**
   - Hardcoded sample story links pointing to public story slugs.
   - Each card uses localized title/description + image alt text.

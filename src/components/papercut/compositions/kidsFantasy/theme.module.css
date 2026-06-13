@@ -1,0 +1,10 @@
+/* kids_fantasy palette — the default style, so these match the global hero
+   tokens; declared explicitly to make every composition self-describing. */
+.root {
+  --pc-navy: var(--color-primary); /* autumn primary — headline + emphasis */
+  --pc-gold: var(--color-accent); /* autumn accent — sparkle/icon warmth */
+  --pc-cta-bg: var(--color-primary);
+  --pc-cta-fg: var(--color-primary-content, #fff);
+  --pc-scene-fg-mobile-bottom: -25%;
+  --pc-scene-fg-desktop-bottom: -25%;
+}

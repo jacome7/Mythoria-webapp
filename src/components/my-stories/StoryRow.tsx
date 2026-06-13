@@ -17,6 +17,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl';
+import { createPortal } from 'react-dom';
 import { Story } from '@/types/story';
 import { formatDate, FormatOptions } from '@/utils/date';
 
@@ -71,7 +72,7 @@ export default function StoryRow({
       if (
         openMenu &&
         !target.closest(`[data-story-menu="${story.storyId}"]`) &&
-        !target.closest('.fixed')
+        !target.closest(`[data-story-menu-panel="${story.storyId}"]`)
       ) {
         setOpenMenu(false);
         setMenuPosition(null);
@@ -373,129 +374,135 @@ export default function StoryRow({
           >
             <MoreVertical className="w-4 h-4" />
           </button>
-          {openMenu && menuPosition && (
-            <div
-              className="fixed z-[9999] bg-base-100 border border-base-300 rounded-lg shadow-xl min-w-48"
-              style={{
-                top: menuPosition.top ? `${menuPosition.top}px` : 'auto',
-                bottom: menuPosition.bottom ? `${menuPosition.bottom}px` : 'auto',
-                right: `${menuPosition.right}px`,
-              }}
-            >
-              <div className="p-2 space-y-1">
-                {story.status === 'published' ? (
-                  <Link
-                    href={`/${locale}/stories/listen/${story.storyId}`}
-                    className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
-                    onClick={() => setOpenMenu(false)}
-                  >
-                    <Volume2 className="w-4 h-4" />
-                    {tMyStoriesPage('actions.listen')}
-                  </Link>
-                ) : (
-                  story.status === 'writing' && (
-                    <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
+          {openMenu &&
+            menuPosition &&
+            createPortal(
+              <div
+                data-story-menu-panel={story.storyId}
+                className="fixed z-[10000] bg-base-100 border border-base-300 rounded-lg shadow-xl min-w-48"
+                style={{
+                  top: menuPosition.top ? `${menuPosition.top}px` : 'auto',
+                  bottom: menuPosition.bottom ? `${menuPosition.bottom}px` : 'auto',
+                  right: `${menuPosition.right}px`,
+                  backgroundColor: 'var(--color-base-100)',
+                  isolation: 'isolate',
+                }}
+              >
+                <div className="p-2 space-y-1">
+                  {story.status === 'published' ? (
+                    <Link
+                      href={`/${locale}/stories/listen/${story.storyId}`}
+                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
+                      onClick={() => setOpenMenu(false)}
+                    >
                       <Volume2 className="w-4 h-4" />
                       {tMyStoriesPage('actions.listen')}
+                    </Link>
+                  ) : (
+                    story.status === 'writing' && (
+                      <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
+                        <Volume2 className="w-4 h-4" />
+                        {tMyStoriesPage('actions.listen')}
+                      </div>
+                    )
+                  )}
+                  {story.status === 'published' && (
+                    <>
+                      <button
+                        className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
+                        onClick={() => {
+                          onShare(story);
+                          setOpenMenu(false);
+                          setMenuPosition(null);
+                        }}
+                      >
+                        <Share2 className="w-4 h-4" />
+                        {tMyStoriesPage('actions.share')}
+                      </button>
+                      <button
+                        className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
+                        onClick={() => {
+                          onPrint(story);
+                          setOpenMenu(false);
+                          setMenuPosition(null);
+                        }}
+                      >
+                        <Printer className="w-4 h-4" />
+                        {tMyStoriesPage('actions.print')}
+                      </button>
+                      <button
+                        className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
+                        onClick={() => {
+                          onDownload(story);
+                          setOpenMenu(false);
+                          setMenuPosition(null);
+                        }}
+                      >
+                        <Download className="w-4 h-4" />
+                        {tMyStoriesPage('actions.downloadPdf')}
+                      </button>
+                    </>
+                  )}
+                  {story.status === 'writing' ? (
+                    <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
+                      <Edit3 className="w-4 h-4" />
+                      {tMyStoriesPage('actions.edit')}
                     </div>
-                  )
-                )}
-                {story.status === 'published' && (
-                  <>
-                    <button
-                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
+                  ) : story.status === 'draft' ? (
+                    <Link
+                      href={`/${locale}/tell-your-story/step-3?edit=${story.storyId}`}
+                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
                       onClick={() => {
-                        onShare(story);
                         setOpenMenu(false);
                         setMenuPosition(null);
                       }}
                     >
-                      <Share2 className="w-4 h-4" />
-                      {tMyStoriesPage('actions.share')}
-                    </button>
-                    <button
-                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
+                      <Edit3 className="w-4 h-4" />
+                      {tMyStoriesPage('actions.edit')}
+                    </Link>
+                  ) : (
+                    <Link
+                      href={`/${locale}/stories/edit/${story.storyId}`}
+                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
                       onClick={() => {
-                        onPrint(story);
                         setOpenMenu(false);
                         setMenuPosition(null);
                       }}
                     >
-                      <Printer className="w-4 h-4" />
-                      {tMyStoriesPage('actions.print')}
-                    </button>
-                    <button
-                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md w-full text-left"
-                      onClick={() => {
-                        onDownload(story);
-                        setOpenMenu(false);
-                        setMenuPosition(null);
-                      }}
-                    >
-                      <Download className="w-4 h-4" />
-                      {tMyStoriesPage('actions.downloadPdf')}
-                    </button>
-                  </>
-                )}
-                {story.status === 'writing' ? (
-                  <div className="flex items-center gap-2 px-3 py-2 text-sm text-base-content/50 rounded-md">
-                    <Edit3 className="w-4 h-4" />
-                    {tMyStoriesPage('actions.edit')}
-                  </div>
-                ) : story.status === 'draft' ? (
-                  <Link
-                    href={`/${locale}/tell-your-story/step-3?edit=${story.storyId}`}
-                    className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
+                      <Edit3 className="w-4 h-4" />
+                      {tMyStoriesPage('actions.edit')}
+                    </Link>
+                  )}
+                  <div className="border-t border-base-300 my-1"></div>
+                  <button
+                    className={`flex items-center gap-2 px-3 py-2 text-sm rounded-md w-full text-left ${story.status !== 'published' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-base-200'}`}
                     onClick={() => {
+                      if (story.status === 'published') {
+                        onDuplicate(story);
+                      }
+                      setOpenMenu(false);
+                      setMenuPosition(null);
+                    }}
+                    disabled={story.status !== 'published'}
+                  >
+                    <Copy className="w-4 h-4" />
+                    {tMyStoriesPage('actions.duplicate')}
+                  </button>
+                  <button
+                    className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-error hover:text-error-content rounded-md w-full text-left text-error"
+                    onClick={() => {
+                      onDelete(story);
                       setOpenMenu(false);
                       setMenuPosition(null);
                     }}
                   >
-                    <Edit3 className="w-4 h-4" />
-                    {tMyStoriesPage('actions.edit')}
-                  </Link>
-                ) : (
-                  <Link
-                    href={`/${locale}/stories/edit/${story.storyId}`}
-                    className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-base-200 rounded-md"
-                    onClick={() => {
-                      setOpenMenu(false);
-                      setMenuPosition(null);
-                    }}
-                  >
-                    <Edit3 className="w-4 h-4" />
-                    {tMyStoriesPage('actions.edit')}
-                  </Link>
-                )}
-                <div className="border-t border-base-300 my-1"></div>
-                <button
-                  className={`flex items-center gap-2 px-3 py-2 text-sm rounded-md w-full text-left ${story.status !== 'published' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-base-200'}`}
-                  onClick={() => {
-                    if (story.status === 'published') {
-                      onDuplicate(story);
-                    }
-                    setOpenMenu(false);
-                    setMenuPosition(null);
-                  }}
-                  disabled={story.status !== 'published'}
-                >
-                  <Copy className="w-4 h-4" />
-                  {tMyStoriesPage('actions.duplicate')}
-                </button>
-                <button
-                  className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-error hover:text-error-content rounded-md w-full text-left text-error"
-                  onClick={() => {
-                    onDelete(story);
-                    setOpenMenu(false);
-                    setMenuPosition(null);
-                  }}
-                >
-                  <Trash2 className="w-4 h-4" />
-                  {tMyStoriesPage('actions.delete')}
-                </button>
-              </div>
-            </div>
-          )}
+                    <Trash2 className="w-4 h-4" />
+                    {tMyStoriesPage('actions.delete')}
+                  </button>
+                </div>
+              </div>,
+              document.body,
+            )}
         </div>
       </td>
     </tr>

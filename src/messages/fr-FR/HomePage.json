@@ -1,52 +1,78 @@
 {
   "HomePage": {
     "title": "Accueillir",
-    "hero": {
-      "writeYourOwn": "Écrivez le vôtre",
-      "subtitle": "Transformez n'importe qui en héros d'un livre magnifiquement illustré - pour les enfants, les adultes ou les équipes entières.",
-      "subtitleEmphasized": "n'importe qui",
-      "tellYourOwnStory": "Écrivez votre propre histoire",
-      "headline": "Chaque histoire commence avec vous",
-      "alt": {
-        "girl": "Une fillette souriante tenant son livre Mythoria personnalisé"
-      },
-      "features": {
-        "personalized": {
-          "title": "Histoires Personnalisées",
-          "desc": "Faites de n'importe qui le héros principal."
-        },
-        "meaningful": {
-          "title": "Uniques et Précieuses",
-          "desc": "Une histoire qu'ils chériront toujours."
-        },
-        "occasion": {
-          "title": "Pour Chaque Occasion",
-          "desc": "Enfants, adultes ou équipes — chaque histoire compte."
-        }
-      }
-    },
     "intents": {
-      "kids_sports": {
+      "kids_fantasy": {
+        "hero": {
+          "headline": "Chaque histoire commence avec vous",
+          "subtitle": "Transformez n'importe qui en héros d'un livre magnifiquement illustré - pour les enfants, les adultes ou les équipes entières.",
+          "subtitleEmphasized": "n'importe qui",
+          "cta": "Écrivez votre propre histoire",
+          "alt": {
+            "person": "Une fillette souriante tenant son livre Mythoria personnalisé"
+          },
+          "features": {
+            "feature1": {
+              "title": "Histoires Personnalisées",
+              "desc": "Faites de n'importe qui le héros principal."
+            },
+            "feature2": {
+              "title": "Uniques et Précieuses",
+              "desc": "Une histoire qu'ils chériront toujours."
+            },
+            "feature3": {
+              "title": "Pour Chaque Occasion",
+              "desc": "Enfants, adultes ou équipes — chaque histoire compte."
+            }
+          }
+        }
+      },
+      "sports_teams": {
         "hero": {
           "headline": "Chaque équipe a une histoire",
           "subtitle": "Transformez l'équipe de vos enfants en héros d'un livre magnifiquement illustré — parfait pour les joueurs, les entraîneurs et les familles fières.",
           "subtitleEmphasized": "héros",
           "cta": "Créez l'histoire de votre équipe",
           "alt": {
-            "character": "Un garçon souriant en tenue de football tenant le livre Mythoria personnalisé de son équipe"
+            "person": "Un garçon souriant en tenue de football tenant le livre Mythoria personnalisé de son équipe"
           },
           "features": {
-            "personalized": {
+            "feature1": {
               "title": "Livres d'Équipe Personnalisés",
               "desc": "Créez une histoire mettant en scène votre équipe, votre entraîneur et les souvenirs de la saison."
             },
-            "meaningful": {
+            "feature2": {
               "title": "Des Souvenirs Qui Durent",
               "desc": "Célébrez ensemble les amitiés, les victoires et les moments inoubliables."
             },
-            "occasion": {
+            "feature3": {
               "title": "Parfait pour Chaque Équipe",
               "desc": "Football, rugby, basket ou toute aventure d'équipe de jeunes."
+            }
+          }
+        }
+      },
+      "romance": {
+        "hero": {
+          "headline": "Votre histoire, immortalisée.",
+          "subtitle": "Transformez votre relation en une histoire romantique, unique et illustrée — créée rien que pour vous deux.",
+          "subtitleEmphasized": "unique",
+          "cta": "Écrire notre histoire",
+          "alt": {
+            "person": "Un couple enlacé tenant son livre Mythoria personnalisé"
+          },
+          "features": {
+            "feature1": {
+              "title": "Votre histoire, à votre façon",
+              "desc": "Nous écrivons l'histoire à partir de qui vous êtes et de ce que vous avez vécu."
+            },
+            "feature2": {
+              "title": "Faite pour émouvoir",
+              "desc": "Chaque détail pensé pour créer une connexion véritable."
+            },
+            "feature3": {
+              "title": "Un cadeau inoubliable",
+              "desc": "Parfait pour les anniversaires, la Saint-Valentin, les demandes et bien plus."
             }
           }
         }
@@ -69,7 +95,12 @@
       "Fiction",
       "Mythe"
     ],
-    "fallbackWords": ["Aventure", "Histoire d'amour", "Mystère", "Conte de fées"],
+    "fallbackWords": [
+      "Aventure",
+      "Histoire d'amour",
+      "Mystère",
+      "Conte de fées"
+    ],
     "altTexts": {
       "kidsBook": "Livre pour enfants",
       "groupsYearbooks": "Groupes et annuaires",
@@ -180,7 +211,7 @@
           "details": "Transformez de vrais souvenirs en magie illustrée."
         },
         "privateByDefault": {
-          "title": "Privé par Défaut",
+          "title": "Confidentialité totale",
           "description": "Les brouillons restent privés. Partagez un lien avec vos proches quand vous êtes prêt, ou choisissez l'exposition publique.",
           "details": "Pas de projecteurs non désirés—votre histoire, votre calendrier."
         },

@@ -33,7 +33,7 @@ export default function FeatureCard({ items, t }: { items: FeatureItem[]; t: Tra
               <h3 className="font-display mt-2 text-sm leading-tight font-semibold text-[color:var(--pc-navy)] sm:mt-3 sm:text-lg">
                 {t(item.titleKey)}
               </h3>
-              <p className="mt-1 text-xs leading-snug text-base-content/75 sm:text-sm">
+              <p className="mt-1 hidden text-xs leading-snug text-base-content/75 sm:text-sm md:block">
                 {t(item.descKey)}
               </p>
             </li>

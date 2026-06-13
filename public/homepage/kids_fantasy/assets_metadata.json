@@ -1,18 +1,23 @@
 {
-  "intent": "kids_fantasy",
+  "schemaVersion": 2,
+  "styleId": "kids_fantasy",
   "theme": "Kids fantasy adventure — paper-cut layered cardboard, cream paper sky, parchment hills, dragon, magical castle, soft moonlight, warm gold/teal palette",
-  "styleReference": ["mockup.png"],
+  "styleReference": ["homepage_mobile_mockup.png"],
   "palette": {
     "sky": "#f8efd9",
     "hills": "#b5c9a0",
     "navy": "#1a3a5c",
     "gold": "#f4c542"
   },
+  "heroSlots": {
+    "_doc": "Canonical hero slot grammar shared by every style folder. Filenames are lowercase: {slot}.webp, {slot}_{device}.webp, {slot}_{device}_{locale}.webp, person{n}_{locale}.webp. Locale fallback chain at build time: exact locale -> en-US -> unsuffixed -> first available.",
+    "required": ["cloud_left", "cloud_right", "sky_left", "sky_right", "sparkles", "background", "foreground", "person1", "icon1", "icon2", "icon3"]
+  },
   "assets": [
     {
       "file": "sky_left.webp",
       "slot": "sky_left",
-      "usage": "PaperCutHero sky band — left floater (balloon)",
+      "usage": "PaperCutHero sky band — left floater, in front of cloud_left, slightly below",
       "description": "Hot-air balloon in warm cream and gold papercut style, floating left side of sky",
       "dimensions": { "w": 300, "h": 465 },
       "transparentBackground": true,
@@ -22,7 +27,7 @@
     {
       "file": "sky_right.webp",
       "slot": "sky_right",
-      "usage": "PaperCutHero sky band — right anchor (moon)",
+      "usage": "PaperCutHero sky band — right floater, in front of cloud_right, slightly below",
       "description": "Crescent moon in warm gold papercut style, glowing right side of sky",
       "dimensions": { "w": 381, "h": 418 },
       "transparentBackground": true,
@@ -32,7 +37,7 @@
     {
       "file": "cloud_left.webp",
       "slot": "cloud_left",
-      "usage": "PaperCutHero sky band — left drifting cloud",
+      "usage": "PaperCutHero sky band — top-left background cloud, behind sky_left",
       "description": "Layered paper cloud, soft cream tones, left side",
       "dimensions": { "w": 460, "h": 350 },
       "transparentBackground": true,
@@ -42,7 +47,7 @@
     {
       "file": "cloud_right.webp",
       "slot": "cloud_right",
-      "usage": "PaperCutHero sky band — right drifting cloud",
+      "usage": "PaperCutHero sky band — top-right background cloud, behind sky_right",
       "description": "Layered paper cloud, soft cream tones, right side",
       "dimensions": { "w": 489, "h": 317 },
       "transparentBackground": true,
@@ -52,7 +57,7 @@
     {
       "file": "sparkles.webp",
       "slot": "sparkles",
-      "usage": "PaperCutHero sky band — center twinkle accents",
+      "usage": "PaperCutHero sky band — twinkle cluster centered above the page title",
       "description": "Cluster of gold stars and small crescent, scattered across sky center",
       "dimensions": { "w": 328, "h": 318 },
       "transparentBackground": true,
@@ -60,83 +65,154 @@
       "status": "final"
     },
     {
-      "file": "background.webp",
+      "file": "background_laptop.webp",
       "slot": "background",
-      "usage": "PaperCutHero scene — deepest background layer (z1)",
-      "description": "Rolling parchment hills, distant castle towers, forest silhouette — full-bleed panorama",
+      "device": "laptop",
+      "usage": "HeroScene — back layer for tablet/laptop (z1), behind the person carousel",
+      "description": "Rolling parchment hills, distant castle towers, forest silhouette — full-bleed panorama. PLACEHOLDER: copy of the legacy 3840x2160 panorama; final art should be 1920x1072 to match other styles.",
       "dimensions": { "w": 3840, "h": 2160 },
-      "transparentBackground": false,
+      "transparentBackground": true,
       "format": "webp",
-      "status": "final"
+      "status": "placeholder"
     },
     {
-      "file": "companion_right.webp",
-      "slot": "companion_right",
-      "usage": "PaperCutHero scene — right scene companion (dragon)",
-      "description": "Friendly papercut dragon perched right of center, warm teal scales, no idle animation",
-      "dimensions": { "w": 358, "h": 480 },
+      "file": "background_mobile.webp",
+      "slot": "background",
+      "device": "mobile",
+      "usage": "HeroScene — back layer for mobile (z1), behind the person carousel",
+      "description": "Mobile crop of the fantasy panorama. PLACEHOLDER: copy of the legacy 3840x2160 panorama; final art should be 1080x1072 portrait-friendly crop.",
+      "dimensions": { "w": 3840, "h": 2160 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "placeholder"
+    },
+    {
+      "file": "foreground_laptop.webp",
+      "slot": "foreground",
+      "device": "laptop",
+      "usage": "HeroScene — front layer for tablet/laptop (z10), in front of the person carousel",
+      "description": "Rolling green foreground hills with flowers and grass tufts, full-width strip. PLACEHOLDER: copy of the legacy foreground; final art should be 1920x1072-compatible with transparent top.",
+      "dimensions": { "w": 1920, "h": 1072 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "placeholder"
+    },
+    {
+      "file": "foreground_mobile.webp",
+      "slot": "foreground",
+      "device": "mobile",
+      "usage": "HeroScene — front layer for mobile (z10), in front of the person carousel",
+      "description": "Mobile crop of the foreground hills. PLACEHOLDER: copy of the legacy foreground; final art should be ~1080-wide with transparent top.",
+      "dimensions": { "w": 1080, "h": 1072 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "placeholder"
+    },
+    {
+      "file": "person1_es-ES.webp",
+      "slot": "person1",
+      "locale": "es-ES",
+      "usage": "HeroScene person carousel — real person holding a real Mythoria book (z5, bottom-anchored, centered)",
+      "description": "Smiling child holding a personalized fantasy storybook with a Spanish cover title — photographic person, papercut scene around them",
+      "dimensions": { "w": 572, "h": 1024 },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
     },
     {
-      "file": "character.webp",
-      "slot": "character",
-      "usage": "PaperCutHero scene — priority LCP layer, centered anchor (girl with book)",
-      "description": "Smiling girl holding up a fantasy storybook — MUST read as a real person holding a real book; no enter animation, priority true",
+      "file": "person1_fr-FR.webp",
+      "slot": "person1",
+      "locale": "fr-FR",
+      "usage": "HeroScene person carousel — real person holding a real Mythoria book",
+      "description": "Smiling child holding a personalized fantasy storybook with a French cover title",
+      "dimensions": { "w": 572, "h": 1024 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "person1_pt-PT.webp",
+      "slot": "person1",
+      "locale": "pt-PT",
+      "usage": "HeroScene person carousel — real person holding a real Mythoria book",
+      "description": "Smiling girl holding up the 'SARA' fantasy storybook. DRAFT: legacy 461x717 cutout — re-export at 572x1024 to match siblings",
       "dimensions": { "w": 461, "h": 717 },
       "transparentBackground": true,
       "format": "webp",
-      "status": "final"
+      "status": "draft"
     },
     {
-      "file": "companion_left.webp",
-      "slot": "companion_left",
-      "usage": "PaperCutHero scene — left scene prop (boat)",
-      "description": "Small papercut sailing boat with cream sails, left foreground",
-      "dimensions": { "w": 331, "h": 330 },
+      "file": "person2_en-US.webp",
+      "slot": "person2",
+      "locale": "en-US",
+      "usage": "HeroScene person carousel — second rotation slide",
+      "description": "Child holding a personalized fantasy storybook with an English cover title",
+      "dimensions": { "w": 572, "h": 1024 },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
     },
     {
-      "file": "foreground.webp",
-      "slot": "foreground",
-      "usage": "PaperCutHero scene — foremost scenery band (z16)",
-      "description": "Rolling green foreground hills with flowers and grass tufts, full-width strip",
-      "dimensions": { "w": 1920, "h": 1080 },
+      "file": "person2_es-ES.webp",
+      "slot": "person2",
+      "locale": "es-ES",
+      "usage": "HeroScene person carousel — second rotation slide",
+      "description": "Child holding a personalized fantasy storybook with a Spanish cover title",
+      "dimensions": { "w": 572, "h": 1024 },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
     },
     {
-      "file": "feature_personalized_icon.png",
-      "slot": "feature_personalized",
+      "file": "person2_fr-FR.webp",
+      "slot": "person2",
+      "locale": "fr-FR",
+      "usage": "HeroScene person carousel — second rotation slide",
+      "description": "Child holding a personalized fantasy storybook with a French cover title",
+      "dimensions": { "w": 572, "h": 1024 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "person2_pt-PT.webp",
+      "slot": "person2",
+      "locale": "pt-PT",
+      "usage": "HeroScene person carousel — second rotation slide",
+      "description": "Child holding a personalized fantasy storybook with a Portuguese cover title",
+      "dimensions": { "w": 572, "h": 1024 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "icon1.webp",
+      "slot": "icon1",
       "usage": "FeatureCard col 1 icon — personalized stories",
       "description": "Open book with a gold star above it, papercut style",
-      "dimensions": { "w": 137, "h": 116 },
+      "dimensions": { "w": 160, "h": 135 },
       "transparentBackground": true,
-      "format": "png",
+      "format": "webp",
       "status": "final"
     },
     {
-      "file": "feature_meaningful_icon.png",
-      "slot": "feature_meaningful",
+      "file": "icon2.webp",
+      "slot": "icon2",
       "usage": "FeatureCard col 2 icon — meaningful keepsake",
       "description": "Heart shape with warm glow, papercut style",
-      "dimensions": { "w": 110, "h": 98 },
+      "dimensions": { "w": 160, "h": 136 },
       "transparentBackground": true,
-      "format": "png",
+      "format": "webp",
       "status": "final"
     },
     {
-      "file": "feature_occasion_icon.png",
-      "slot": "feature_occasion",
+      "file": "icon3.webp",
+      "slot": "icon3",
       "usage": "FeatureCard col 3 icon — any occasion",
       "description": "Gift box with ribbon bow, papercut style",
-      "dimensions": { "w": 128, "h": 101 },
+      "dimensions": { "w": 160, "h": 119 },
       "transparentBackground": true,
-      "format": "png",
+      "format": "webp",
       "status": "final"
     },
     {
@@ -295,6 +371,87 @@
       "usage": "HowItWorks section — step 6 icon (The Magic)",
       "description": "Magic wand or sparkle wand, papercut style",
       "dimensions": { "w": 207, "h": 242 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "highlights_your_own_story_icon.webp",
+      "slot": "highlights_your_own_story",
+      "usage": "WhyChooseMythoria — feature icon",
+      "dimensions": { "w": 160, "h": 201 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "highlights_from_idea_to_book_icon.webp",
+      "slot": "highlights_from_idea_to_book",
+      "usage": "WhyChooseMythoria — feature icon",
+      "dimensions": { "w": 160, "h": 207 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "highlights_full_story_editing_icon.webp",
+      "slot": "highlights_full_story_editing",
+      "usage": "WhyChooseMythoria — feature icon",
+      "dimensions": { "w": 160, "h": 206 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "highlights_gentle_credit_system_icon.webp",
+      "slot": "highlights_gentle_credit_system",
+      "usage": "WhyChooseMythoria — feature icon",
+      "dimensions": { "w": 160, "h": 168 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "highlights_inspiration_on_tap_icon.webp",
+      "slot": "highlights_inspiration_on_tap",
+      "usage": "WhyChooseMythoria — feature icon",
+      "dimensions": { "w": 140, "h": 238 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "highlights_made_for_every_audience_icon.webp",
+      "slot": "highlights_made_for_every_audience",
+      "usage": "WhyChooseMythoria — feature icon",
+      "dimensions": { "w": 160, "h": 148 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "highlights_multiple_art_styles_icon.webp",
+      "slot": "highlights_multiple_art_styles",
+      "usage": "WhyChooseMythoria — feature icon",
+      "dimensions": { "w": 160, "h": 200 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "highlights_private_by_default_icon.webp",
+      "slot": "highlights_private_by_default",
+      "usage": "WhyChooseMythoria — feature icon",
+      "dimensions": { "w": 160, "h": 226 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "highlights_add_your_own_photos_icon.webp",
+      "slot": "highlights_add_your_own_photos",
+      "usage": "WhyChooseMythoria — feature icon",
+      "dimensions": { "w": 278, "h": 290 },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"

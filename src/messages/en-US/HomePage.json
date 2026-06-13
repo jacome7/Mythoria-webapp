@@ -1,52 +1,78 @@
 {
   "HomePage": {
     "title": "Welcome",
-    "hero": {
-      "writeYourOwn": "Write your own",
-      "subtitle": "Turn anyone into the hero of a beautifully illustrated book — for children, grown-ups or entire teams.",
-      "subtitleEmphasized": "anyone",
-      "tellYourOwnStory": "Write your own story",
-      "headline": "Every story starts with you",
-      "alt": {
-        "girl": "A smiling girl holding her personalized Mythoria storybook"
-      },
-      "features": {
-        "personalized": {
-          "title": "Personalized Stories",
-          "desc": "Make the main character anyone you choose."
-        },
-        "meaningful": {
-          "title": "Meaningful & Unique",
-          "desc": "A story they'll treasure forever."
-        },
-        "occasion": {
-          "title": "For Every Occasion",
-          "desc": "Kids, adults or teams — every story matters."
-        }
-      }
-    },
     "intents": {
-      "kids_sports": {
+      "kids_fantasy": {
+        "hero": {
+          "headline": "Every story starts with you",
+          "subtitle": "Turn anyone into the hero of a beautifully illustrated book — for children, grown-ups or entire teams.",
+          "subtitleEmphasized": "anyone",
+          "cta": "Write your own story",
+          "alt": {
+            "person": "A smiling girl holding her personalized Mythoria storybook"
+          },
+          "features": {
+            "feature1": {
+              "title": "Personalized Stories",
+              "desc": "Make the main character anyone you choose."
+            },
+            "feature2": {
+              "title": "Meaningful & Unique",
+              "desc": "A story they'll treasure forever."
+            },
+            "feature3": {
+              "title": "For Every Occasion",
+              "desc": "Kids, adults or teams — every story matters."
+            }
+          }
+        }
+      },
+      "sports_teams": {
         "hero": {
           "headline": "Every team has a story",
           "subtitle": "Turn your kids' team into the heroes of a beautifully illustrated book — perfect for players, coaches and proud families.",
           "subtitleEmphasized": "heroes",
           "cta": "Create your team story",
           "alt": {
-            "character": "A smiling boy in football kit holding his team's personalized Mythoria book"
+            "person": "A smiling boy in football kit holding his team's personalized Mythoria book"
           },
           "features": {
-            "personalized": {
+            "feature1": {
               "title": "Personalized Team Books",
               "desc": "Create a story starring your team, coach and season memories."
             },
-            "meaningful": {
+            "feature2": {
               "title": "Memories That Last",
               "desc": "Celebrate friendships, victories and unforgettable moments together."
             },
-            "occasion": {
+            "feature3": {
               "title": "Perfect for Every Team",
               "desc": "Football, rugby, basketball or any youth team adventure."
+            }
+          }
+        }
+      },
+      "romance": {
+        "hero": {
+          "headline": "Your story, made timeless.",
+          "subtitle": "Turn your relationship into a romantic, one-of-a-kind illustrated story — made just for the two of you.",
+          "subtitleEmphasized": "one-of-a-kind",
+          "cta": "Write our story",
+          "alt": {
+            "person": "A couple embracing while holding their personalized Mythoria book"
+          },
+          "features": {
+            "feature1": {
+              "title": "Your story, your way",
+              "desc": "We write the story from who you are and what you've lived."
+            },
+            "feature2": {
+              "title": "Made to move them",
+              "desc": "Every detail crafted to create a true connection."
+            },
+            "feature3": {
+              "title": "An unforgettable gift",
+              "desc": "Perfect for anniversaries, Valentine's Day, proposals and more."
             }
           }
         }
@@ -69,7 +95,12 @@
       "Fiction",
       "Myth"
     ],
-    "fallbackWords": ["Adventure", "Love Story", "Mystery", "Fairy Tale"],
+    "fallbackWords": [
+      "Adventure",
+      "Love Story",
+      "Mystery",
+      "Fairy Tale"
+    ],
     "altTexts": {
       "kidsBook": "Kids Book",
       "groupsYearbooks": "Groups & Yearbooks",
@@ -180,7 +211,7 @@
           "details": "Turn real memories into illustrated magic."
         },
         "privateByDefault": {
-          "title": "Private by Default",
+          "title": "Total Privacy",
           "description": "Drafts stay private. Share a link with loved ones when you're ready, or opt in to the public showcase.",
           "details": "No unwanted spotlights—your story, your timeline."
         },

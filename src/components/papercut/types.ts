@@ -1,12 +1,18 @@
 import type { CSSProperties } from 'react';
+import type { HeroStyleId } from './heroManifest';
 
 /**
  * Paper-cut storytelling hero — data model.
  *
- * A "composition" is a themed paper-cut diorama (e.g. kids_fantasy). It is pure
- * data: arrays of layers, the hero copy keys, and the feature card items. The
- * renderer (`PaperCutHero` + `PaperCutLayer` + `PaperCutStage`) is generic, so a
- * new composition is just a new config file + one registry entry.
+ * A "composition" is a themed style variant of ONE shared hero skeleton
+ * (e.g. kids_fantasy, sports_teams, romance). The renderer (`PaperCutHero`)
+ * owns the canonical layout — cloud/sky decor pairs, sparkles, title block,
+ * background → person carousel → foreground scene sandwich, feature card —
+ * and a composition only supplies the style id (== its asset folder under
+ * public/homepage/), the theme CSS, the translation namespace and small
+ * per-slot animation/placement tuning. Assets resolve by slot name through
+ * `heroManifest.ts`, so a new style is: asset folder + metadata + a ~25-line
+ * composition + one registry entry.
  *
  * See docs/papercut-design-system.md for authoring guidance and conventions.
  */
@@ -105,7 +111,7 @@ export interface Placement {
 /** One transparent-PNG layer rendered on its own element. */
 export interface PaperCutLayerConfig {
   id: string;
-  /** Public path, e.g. /homepage/kids_fantasy/companion_right.webp */
+  /** Public path, e.g. /homepage/kids_fantasy/sky_left.webp */
   src: string;
   /** Intrinsic pixel size — lets next/image reserve the aspect ratio (no CLS). */
   intrinsic: { w: number; h: number };
@@ -153,28 +159,54 @@ export interface StageAspect {
   lg: string;
 }
 
-/** Hero copy — all i18n keys under the `HomePage` namespace. */
-export interface HeroText {
-  headlineKey: string;
-  subtitleKey: string;
-  /** Optional substring of the subtitle to wrap in <em>. */
-  subtitleEmphasizedKey?: string;
-  ctaKey: string;
-  /** Path appended after the locale, e.g. 'tell-your-story'. */
-  ctaPath: string;
+/** The five fixed sky-band decoration slots of the hero skeleton. */
+export type DecorSlot = 'cloud_left' | 'sky_left' | 'cloud_right' | 'sky_right' | 'sparkles';
+
+/**
+ * Per-style tuning for one decor slot. The renderer's template provides the
+ * canonical placement/animation; a composition only overrides what differs
+ * (e.g. a pennant sways while a balloon floats). Placement overrides are
+ * nudges merged field-by-field onto the template.
+ */
+export interface DecorTuning {
+  anim?: AnimName;
+  animDurMs?: number;
+  animDelayMs?: number;
+  base?: Partial<Placement>;
+  md?: Partial<Placement>;
+  lg?: Partial<Placement>;
 }
 
-export interface PaperCutComposition {
-  id: string;
-  /** Composition-owned CSS class for themed visuals/animations. */
-  rootClassName?: string;
-  stageAspect: StageAspect;
-  /** Floating decorations in the top (sky) band, behind the headline. */
-  sky: PaperCutLayerConfig[];
-  /** The diorama: mid-ground, character photo, and foreground. */
-  scene: PaperCutLayerConfig[];
-  text: HeroText;
-  features?: FeatureItem[];
+/** Width/offset tuning for the centered person carousel band (% of stage). */
+export interface PersonPlacement {
+  /** Band width, % of stage width. Defaults: base 54, md 34, lg 26. */
+  width?: { base?: number; md?: number; lg?: number };
+  /** Offset from the stage bottom, % of stage height. Defaults: base 8, md 7, lg 6. */
+  bottom?: { base?: number; md?: number; lg?: number };
+}
+
+/**
+ * One themed style variant of the shared hero skeleton. `id` doubles as the
+ * asset folder name (public/homepage/<id>/) and the manifest style id.
+ */
+export interface HeroComposition {
+  id: HeroStyleId;
+  /** Composition-owned CSS classes: shared animations root + theme palette. */
+  rootClassName: string;
+  /**
+   * next-intl namespace (under HomePage) for this style's copy,
+   * e.g. 'intents.kids_fantasy.hero'. Expected keys: headline, subtitle,
+   * subtitleEmphasized, cta, alt.person, features.feature{1..3}.{title,desc}.
+   */
+  textNamespace: `intents.${string}.hero`;
+  /** Per-slot overrides of the renderer's decor template. */
+  decor?: Partial<Record<DecorSlot, DecorTuning>>;
+  /** Person carousel band geometry overrides. */
+  person?: PersonPlacement;
+  /** How long each person stays centered before rotating, ms. Default 4000. */
+  personHoldMs?: number;
+  /** Path appended after the locale, e.g. 'tell-your-story'. */
+  ctaPath: string;
 }
 
 /** Minimal translator shape — assignable from next-intl's `useTranslations`. */

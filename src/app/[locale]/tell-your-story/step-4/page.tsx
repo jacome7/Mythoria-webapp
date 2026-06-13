@@ -896,9 +896,9 @@ function Step4Page() {
 
                 {/* Literary Persona Selector */}
                 {showLiteraryPersonaDropdown && (
-                  <div className="modal modal-open">
-                    <div className="modal-box w-[calc(100%-0.75rem)] sm:max-w-4xl sm:w-auto h-3/4 max-h-screen px-4 sm:px-6">
-                      <div className="flex justify-between items-center mb-4">
+                  <div className="modal modal-open !fixed !inset-0 !z-[10000] p-0 sm:p-4">
+                    <div className="modal-box flex h-[100dvh] max-h-[100dvh] w-full flex-col rounded-none px-4 sm:h-[90dvh] sm:max-h-[90dvh] sm:w-auto sm:max-w-4xl sm:rounded-box sm:px-6">
+                      <div className="mb-4 flex flex-shrink-0 items-center justify-between">
                         <h3 className="font-bold text-lg">
                           {literaryPersonaMessages?.label ||
                             tStoryStepsStep4('fields.literaryPersona')}
@@ -916,7 +916,7 @@ function Step4Page() {
                         </button>
                       </div>
 
-                      <div className="overflow-y-auto max-h-full space-y-4">
+                      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto">
                         <div className="flex items-center justify-between gap-3">
                           <h4 className="text-sm font-semibold uppercase tracking-wide text-base-content/60">
                             {tWritingPersonas('story.builtInLabel')}
@@ -1093,7 +1093,7 @@ function Step4Page() {
                         </button>
                       </div>
 
-                      <div className="modal-action">
+                      <div className="modal-action flex-shrink-0">
                         <button
                           className="btn"
                           onClick={() => setShowLiteraryPersonaDropdown(false)}
@@ -1205,9 +1205,9 @@ function Step4Page() {
 
                 {/* Graphical Style Custom Dropdown Gallery */}
                 {showGraphicalStyleDropdown && (
-                  <div className="modal modal-open">
-                    <div className="modal-box w-[calc(100%-0.75rem)] sm:max-w-4xl sm:w-auto h-3/4 max-h-screen px-4 sm:px-6">
-                      <div className="flex justify-between items-center mb-4">
+                  <div className="modal modal-open !fixed !inset-0 !z-[10000] p-0 sm:p-4">
+                    <div className="modal-box flex h-[100dvh] max-h-[100dvh] w-full flex-col rounded-none px-4 sm:h-[90dvh] sm:max-h-[90dvh] sm:w-auto sm:max-w-4xl sm:rounded-box sm:px-6">
+                      <div className="mb-4 flex flex-shrink-0 items-center justify-between">
                         <h3 className="font-bold text-lg">
                           {tStoryStepsStep4('fields.graphicStyle')}
                         </h3>
@@ -1224,7 +1224,7 @@ function Step4Page() {
                         </button>
                       </div>
 
-                      <div className="overflow-y-auto max-h-full">
+                      <div className="min-h-0 flex-1 overflow-y-auto">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {getAllGraphicalStyles().map((style) => (
                             <div
@@ -1274,7 +1274,7 @@ function Step4Page() {
                         </div>
                       </div>
 
-                      <div className="modal-action">
+                      <div className="modal-action flex-shrink-0">
                         <button
                           className="btn"
                           onClick={() => setShowGraphicalStyleDropdown(false)}

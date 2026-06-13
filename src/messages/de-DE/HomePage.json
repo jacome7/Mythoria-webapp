@@ -1,52 +1,78 @@
 {
   "HomePage": {
     "title": "Willkommen",
-    "hero": {
-      "writeYourOwn": "Schreib deine eigene",
-      "subtitle": "Mach aus jedem Menschen den Star eines wunderschön illustrierten Buchs – für Kinder, Erwachsene oder ganze Teams.",
-      "subtitleEmphasized": "wirklich jede:n",
-      "tellYourOwnStory": "Schreib deine eigene Geschichte",
-      "headline": "Jede Geschichte beginnt mit dir",
-      "alt": {
-        "girl": "Ein lächelndes Mädchen hält ihr personalisiertes Mythoria-Buch"
-      },
-      "features": {
-        "personalized": {
-          "title": "Personalisierte Geschichten",
-          "desc": "Mache jede beliebige Person zur Hauptfigur."
-        },
-        "meaningful": {
-          "title": "Bedeutungsvoll & Einzigartig",
-          "desc": "Eine Geschichte, die man für immer schätzt."
-        },
-        "occasion": {
-          "title": "Für Jeden Anlass",
-          "desc": "Kinder, Erwachsene oder Teams — jede Geschichte zählt."
-        }
-      }
-    },
     "intents": {
-      "kids_sports": {
+      "kids_fantasy": {
+        "hero": {
+          "headline": "Jede Geschichte beginnt mit dir",
+          "subtitle": "Mach aus jedem Menschen den Star eines wunderschön illustrierten Buchs – für Kinder, Erwachsene oder ganze Teams.",
+          "subtitleEmphasized": "wirklich jede:n",
+          "cta": "Schreib deine eigene Geschichte",
+          "alt": {
+            "person": "Ein lächelndes Mädchen hält ihr personalisiertes Mythoria-Buch"
+          },
+          "features": {
+            "feature1": {
+              "title": "Personalisierte Geschichten",
+              "desc": "Mache jede beliebige Person zur Hauptfigur."
+            },
+            "feature2": {
+              "title": "Bedeutungsvoll & Einzigartig",
+              "desc": "Eine Geschichte, die man für immer schätzt."
+            },
+            "feature3": {
+              "title": "Für Jeden Anlass",
+              "desc": "Kinder, Erwachsene oder Teams — jede Geschichte zählt."
+            }
+          }
+        }
+      },
+      "sports_teams": {
         "hero": {
           "headline": "Jedes Team hat eine Geschichte",
           "subtitle": "Verwandle das Team deiner Kinder in die Helden eines wunderschön illustrierten Buchs — perfekt für Spieler, Trainer und stolze Familien.",
           "subtitleEmphasized": "Helden",
           "cta": "Erstelle eure Teamgeschichte",
           "alt": {
-            "character": "Ein lächelnder Junge im Fußballtrikot hält das personalisierte Mythoria-Buch seines Teams"
+            "person": "Ein lächelnder Junge im Fußballtrikot hält das personalisierte Mythoria-Buch seines Teams"
           },
           "features": {
-            "personalized": {
+            "feature1": {
               "title": "Personalisierte Teambücher",
               "desc": "Erstelle eine Geschichte mit deinem Team, dem Trainer und den Erinnerungen der Saison."
             },
-            "meaningful": {
+            "feature2": {
               "title": "Erinnerungen, die bleiben",
               "desc": "Feiert gemeinsam Freundschaften, Siege und unvergessliche Momente."
             },
-            "occasion": {
+            "feature3": {
               "title": "Perfekt für jedes Team",
               "desc": "Fußball, Rugby, Basketball oder jedes andere Abenteuer junger Teams."
+            }
+          }
+        }
+      },
+      "romance": {
+        "hero": {
+          "headline": "Eure Geschichte, für die Ewigkeit.",
+          "subtitle": "Verwandelt eure Beziehung in eine romantische, einzigartige und illustrierte Geschichte — nur für euch beide gemacht.",
+          "subtitleEmphasized": "einzigartige",
+          "cta": "Unsere Geschichte schreiben",
+          "alt": {
+            "person": "Ein Paar in inniger Umarmung mit seinem personalisierten Mythoria-Buch"
+          },
+          "features": {
+            "feature1": {
+              "title": "Eure Geschichte, auf eure Art",
+              "desc": "Wir schreiben die Geschichte aus dem, wer ihr seid und was ihr erlebt habt."
+            },
+            "feature2": {
+              "title": "Gemacht, um zu berühren",
+              "desc": "Jedes Detail darauf ausgelegt, eine echte Verbindung zu schaffen."
+            },
+            "feature3": {
+              "title": "Ein unvergessliches Geschenk",
+              "desc": "Perfekt für Jahrestage, den Valentinstag, Anträge und vieles mehr."
             }
           }
         }
@@ -69,7 +95,12 @@
       "Fantastik",
       "Mythos"
     ],
-    "fallbackWords": ["Abenteuer", "Liebesgeschichte", "Geheimnis", "Märchen"],
+    "fallbackWords": [
+      "Abenteuer",
+      "Liebesgeschichte",
+      "Geheimnis",
+      "Märchen"
+    ],
     "altTexts": {
       "kidsBook": "Kinderbuch",
       "groupsYearbooks": "Gruppen & Jahrbücher",
@@ -180,7 +211,7 @@
           "details": "Mach aus echten Erinnerungen illustrierte Magie."
         },
         "privateByDefault": {
-          "title": "Standardmäßig privat",
+          "title": "Volle Privatsphäre",
           "description": "Entwürfe bleiben privat. Teil einen Link mit Lieblingsmenschen, wenn du bereit bist, oder entscheide dich für die öffentliche Galerie.",
           "details": "Kein ungewolltes Rampenlicht – deine Story, dein Timing."
         },

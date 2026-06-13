@@ -428,9 +428,7 @@ export default function CharacterCard({
             </div>
           )}
           <h3 className="card-title text-xl">
-            {mode === 'create'
-              ? `✨ ${tCharacters('titles.addNew')}`
-              : `✏️ ${tCharacters('titles.edit')}`}
+            {mode === 'create' ? tCharacters('titles.addNew') : `✏️ ${tCharacters('titles.edit')}`}
           </h3>
         </div>
 

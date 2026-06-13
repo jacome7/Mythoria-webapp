@@ -1,0 +1,251 @@
+{
+  "schemaVersion": 2,
+  "styleId": "romance",
+  "theme": "Romantic couple's story — paper-cut layered cardboard, blush-pink paper sky, hearts, hot-air balloon, seaside village, lamplight, wine/dusty-rose palette",
+  "styleReference": ["homepage_mobile_mockup.png"],
+  "palette": {
+    "sky": "#f9e9e4",
+    "blush": "#e8b4b8",
+    "wine": "#7a2b3f",
+    "rose": "#9c3d54",
+    "lamplight": "#f4a259"
+  },
+  "notes": "Assets marked 'placeholder' are copies of kids_fantasy assets and must be replaced with romance-themed art (pink clouds, heart sparkles).",
+  "heroSlots": {
+    "_doc": "Canonical hero slot grammar shared by every style folder. Filenames are lowercase: {slot}.webp, {slot}_{device}.webp, {slot}_{device}_{locale}.webp, person{n}_{locale}.webp. Locale fallback chain at build time: exact locale -> en-US -> unsuffixed -> first available.",
+    "required": ["cloud_left", "cloud_right", "sky_left", "sky_right", "sparkles", "background", "foreground", "person1", "icon1", "icon2", "icon3"]
+  },
+  "assets": [
+    {
+      "file": "sky_left.webp",
+      "slot": "sky_left",
+      "usage": "PaperCutHero sky band — left floater, in front of cloud_left, slightly below",
+      "description": "Red and cream striped hot-air balloon, papercut style, floating left side of sky",
+      "dimensions": { "w": 218, "h": 350 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "sky_right.webp",
+      "slot": "sky_right",
+      "usage": "PaperCutHero sky band — right floater, in front of cloud_right, slightly below",
+      "description": "Pink paper hearts and cloud cluster, papercut style, right side of sky",
+      "dimensions": { "w": 375, "h": 359 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "cloud_left.webp",
+      "slot": "cloud_left",
+      "usage": "PaperCutHero sky band — top-left background cloud, behind sky_left",
+      "description": "Layered paper cloud, soft cream tones. PLACEHOLDER: copy of kids_fantasy cloud; final art should be blush-pink romance cloud.",
+      "dimensions": { "w": 460, "h": 350 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "placeholder"
+    },
+    {
+      "file": "cloud_right.webp",
+      "slot": "cloud_right",
+      "usage": "PaperCutHero sky band — top-right background cloud, behind sky_right",
+      "description": "Layered paper cloud, soft cream tones. PLACEHOLDER: copy of kids_fantasy cloud; final art should be blush-pink romance cloud.",
+      "dimensions": { "w": 489, "h": 317 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "placeholder"
+    },
+    {
+      "file": "sparkles.webp",
+      "slot": "sparkles",
+      "usage": "PaperCutHero sky band — twinkle cluster centered above the page title",
+      "description": "Cluster of gold stars. PLACEHOLDER: copy of kids_fantasy sparkles; final art should mix a gold star with small paper hearts.",
+      "dimensions": { "w": 328, "h": 318 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "placeholder"
+    },
+    {
+      "file": "background_laptop.webp",
+      "slot": "background",
+      "device": "laptop",
+      "usage": "HeroScene — back layer for tablet/laptop (z1), default when no locale variant matches",
+      "description": "Seaside village panorama with boats, rooftops and pink hills, papercut style, no text",
+      "dimensions": { "w": 1920, "h": 1072 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "background_laptop_en-US.webp",
+      "slot": "background",
+      "device": "laptop",
+      "locale": "en-US",
+      "usage": "HeroScene — back layer for tablet/laptop, English variant",
+      "description": "Seaside village panorama, English-localized details",
+      "dimensions": { "w": 1920, "h": 1072 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "background_laptop_es-ES.webp",
+      "slot": "background",
+      "device": "laptop",
+      "locale": "es-ES",
+      "usage": "HeroScene — back layer for tablet/laptop, Spanish variant",
+      "description": "Seaside village panorama, Spanish-localized details",
+      "dimensions": { "w": 1920, "h": 1072 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "background_laptop_fr-FR.webp",
+      "slot": "background",
+      "device": "laptop",
+      "locale": "fr-FR",
+      "usage": "HeroScene — back layer for tablet/laptop, French variant",
+      "description": "Seaside village panorama, French-localized details",
+      "dimensions": { "w": 1920, "h": 1072 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "background_laptop_pt-PT.webp",
+      "slot": "background",
+      "device": "laptop",
+      "locale": "pt-PT",
+      "usage": "HeroScene — back layer for tablet/laptop, Portuguese variant",
+      "description": "Seaside village panorama, Portuguese-localized details",
+      "dimensions": { "w": 1920, "h": 1072 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "background_mobile.webp",
+      "slot": "background",
+      "device": "mobile",
+      "usage": "HeroScene — back layer for mobile (z1), default when no locale variant matches",
+      "description": "Mobile crop of the seaside village panorama, no text",
+      "dimensions": { "w": 1080, "h": 1072 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "background_mobile_en-US.webp",
+      "slot": "background",
+      "device": "mobile",
+      "locale": "en-US",
+      "usage": "HeroScene — back layer for mobile, English variant",
+      "description": "Mobile seaside village crop, English-localized details",
+      "dimensions": { "w": 1080, "h": 1072 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "background_mobile_es-ES.webp",
+      "slot": "background",
+      "device": "mobile",
+      "locale": "es-ES",
+      "usage": "HeroScene — back layer for mobile, Spanish variant",
+      "description": "Mobile seaside village crop, Spanish-localized details",
+      "dimensions": { "w": 1080, "h": 1072 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "background_mobile_fr-FR.webp",
+      "slot": "background",
+      "device": "mobile",
+      "locale": "fr-FR",
+      "usage": "HeroScene — back layer for mobile, French variant",
+      "description": "Mobile seaside village crop, French-localized details",
+      "dimensions": { "w": 1080, "h": 1072 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "background_mobile_pt-PT.webp",
+      "slot": "background",
+      "device": "mobile",
+      "locale": "pt-PT",
+      "usage": "HeroScene — back layer for mobile, Portuguese variant",
+      "description": "Mobile seaside village crop, Portuguese-localized details",
+      "dimensions": { "w": 1080, "h": 1072 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "foreground_laptop.webp",
+      "slot": "foreground",
+      "device": "laptop",
+      "usage": "HeroScene — front layer for tablet/laptop (z10), in front of the person carousel",
+      "description": "Pink foreground hills with street lamp and rose bushes, transparent top",
+      "dimensions": { "w": 1920, "h": 898 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "foreground_mobile.webp",
+      "slot": "foreground",
+      "device": "mobile",
+      "usage": "HeroScene — front layer for mobile (z10), in front of the person carousel",
+      "description": "Mobile crop of the pink foreground hills with street lamp",
+      "dimensions": { "w": 1180, "h": 898 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "person1_pt-PT.webp",
+      "slot": "person1",
+      "locale": "pt-PT",
+      "usage": "HeroScene person carousel — real couple holding a real Mythoria book (z5, bottom-anchored, centered)",
+      "description": "Embracing couple holding the 'MARTA & TIAGO' personalized romance book — photographic people, papercut scene around them",
+      "dimensions": { "w": 723, "h": 1024 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "icon1.webp",
+      "slot": "icon1",
+      "usage": "FeatureCard col 1 icon — your story, your way",
+      "description": "Pink paper heart, papercut style",
+      "dimensions": { "w": 142, "h": 129 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "icon2.webp",
+      "slot": "icon2",
+      "usage": "FeatureCard col 2 icon — made to move them",
+      "description": "Speech bubble with hearts, papercut style",
+      "dimensions": { "w": 146, "h": 136 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "icon3.webp",
+      "slot": "icon3",
+      "usage": "FeatureCard col 3 icon — an unforgettable gift",
+      "description": "Gift box with ribbon, papercut style",
+      "dimensions": { "w": 146, "h": 151 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    }
+  ]
+}

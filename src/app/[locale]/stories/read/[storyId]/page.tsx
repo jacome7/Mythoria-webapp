@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { ArrowLeft, BookOpen, Copy, Download, Edit3, Printer, Share2, Volume2 } from 'lucide-react';
+import { ArrowLeft, BookOpen, Copy, Edit3, Share2, Volume2 } from 'lucide-react';
 import { Show } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import StoryReader from '../../../../../components/StoryReader';
-import StoryRating from '../../../../../components/StoryRating';
+import StoryPrintActions from '../../../../../components/StoryPrintActions';
 import ShareModal from '../../../../../components/ShareModal';
 import { useToast } from '@/hooks/useToast';
 import ToastContainer from '../../../../../components/ToastContainer';
@@ -193,7 +193,7 @@ export default function ReadStoryPage() {
 
       <Show when="signed-in">
         {/* Action Bar */}
-        <div className="relative z-40 overflow-visible bg-base-200 border-b border-base-300 px-3 py-3 sm:px-4 print:hidden">
+        <div className="relative z-[80] overflow-visible bg-base-200 border-b border-base-300 px-3 py-3 sm:px-4 print:hidden">
           <div className="max-w-6xl mx-auto flex items-center justify-between gap-2">
             <button onClick={navigateToMyStories} className="btn btn-ghost btn-sm shrink-0">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -216,15 +216,7 @@ export default function ReadStoryPage() {
                 <span className="hidden sm:inline sm:ml-2">{tActions('edit')}</span>
               </button>
 
-              <button onClick={handlePrint} className="btn btn-ghost btn-sm">
-                <Printer className="w-4 h-4" />
-                <span className="hidden sm:inline sm:ml-2">{tActions('print')}</span>
-              </button>
-
-              <button onClick={handleDownload} className="btn btn-ghost btn-sm">
-                <Download className="w-4 h-4" />
-                <span className="hidden sm:inline sm:ml-2">{tActions('downloadPdf')}</span>
-              </button>
+              <StoryPrintActions onPrint={handlePrint} onDownload={handleDownload} />
 
               <button onClick={handleShare} className="btn btn-ghost btn-sm">
                 <Share2 className="w-4 h-4" />
@@ -246,11 +238,6 @@ export default function ReadStoryPage() {
           chapters={chapters}
           currentChapter={0} // 0 = first page
         />
-
-        {/* Story Rating */}
-        <div className="max-w-4xl mx-auto p-4 print:hidden">
-          <StoryRating storyId={storyId} />
-        </div>
 
         {/* Share Modal */}
         <ShareModal

@@ -150,11 +150,16 @@ async function getFallbackMessages(): Promise<Messages> {
     },
     HomePage: {
       words: ['Adventure', 'Love Story', 'Mystery', 'Fairy Tale'],
-      hero: {
-        writeYourOwn: 'Write Your Own',
-        subtitle: 'Create unique, fully illustrated books with AI',
-        subtitleEmphasized: 'AI',
-        tryItNow: 'Try It Now',
+      intents: {
+        kids_fantasy: {
+          hero: {
+            headline: 'Every story starts with you',
+            subtitle: 'Create unique, fully illustrated books with AI',
+            subtitleEmphasized: 'AI',
+            cta: 'Write your own story',
+            alt: { person: 'A smiling girl holding her personalized Mythoria storybook' },
+          },
+        },
       },
       audiences: {
         kids: {

@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { ArrowLeft, Download, Edit3, Printer, Share2, Volume2 } from 'lucide-react';
+import { ArrowLeft, Edit3, Share2, Volume2 } from 'lucide-react';
 import { Show } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import StoryReader from '../../../../../../../components/StoryReader';
 import StoryRating from '../../../../../../../components/StoryRating';
+import StoryPrintActions from '../../../../../../../components/StoryPrintActions';
 import ShareModal from '../../../../../../../components/ShareModal';
 import { SelfPrintModal } from '../../../../../../../components/self-print/SelfPrintModal';
 
@@ -148,11 +149,14 @@ export default function ReadChapterPage() {
     );
   }
 
+  const lastChapterNumber = Math.max(...chapters.map((chapter) => chapter.chapterNumber));
+  const isLastChapter = currentChapter.chapterNumber === lastChapterNumber;
+
   return (
     <div className="min-h-screen bg-base-100">
       <Show when="signed-in">
         {/* Action Bar */}
-        <div className="bg-base-200 border-b border-base-300 p-4 print:hidden">
+        <div className="relative z-[80] overflow-visible bg-base-200 border-b border-base-300 p-4 print:hidden">
           <div className="max-w-6xl mx-auto flex items-center justify-between">
             <button onClick={navigateToMyStories} className="btn btn-ghost btn-sm">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -170,15 +174,7 @@ export default function ReadChapterPage() {
                 <span className="hidden sm:inline sm:ml-2">{tActions('edit')}</span>
               </button>
 
-              <button onClick={handlePrint} className="btn btn-ghost btn-sm">
-                <Printer className="w-4 h-4" />
-                <span className="hidden sm:inline sm:ml-2">{tActions('print')}</span>
-              </button>
-
-              <button onClick={handleDownload} className="btn btn-ghost btn-sm">
-                <Download className="w-4 h-4" />
-                <span className="hidden sm:inline sm:ml-2">{tActions('downloadPdf')}</span>
-              </button>
+              <StoryPrintActions onPrint={handlePrint} onDownload={handleDownload} />
 
               <button onClick={handleShare} className="btn btn-ghost btn-sm">
                 <Share2 className="w-4 h-4" />
@@ -196,10 +192,11 @@ export default function ReadChapterPage() {
           currentChapter={chapterNumber}
         />
 
-        {/* Story Rating */}
-        <div className="max-w-4xl mx-auto p-4 print:hidden">
-          <StoryRating storyId={storyId} />
-        </div>
+        {isLastChapter && (
+          <div className="max-w-4xl mx-auto p-4 print:hidden">
+            <StoryRating storyId={storyId} />
+          </div>
+        )}
 
         {/* Share Modal */}
         <ShareModal

@@ -1,0 +1,11 @@
+/* sports_teams palette accents. Composed into the hero's rootClassName, so the
+   overrides cascade to the headline, subtitle emphasis, CTA and feature card.
+   The cream sky stays global; the green pitch comes from the artwork. */
+.root {
+  --pc-navy: #1f4e79; /* club blue for headline + emphasis */
+  --pc-gold: #f4c542; /* club yellow for sparkle/accents */
+  --pc-cta-bg: #1f4e79;
+  --pc-cta-fg: #fdf6e8;
+  --pc-scene-fg-mobile-bottom: -25%;
+  --pc-scene-fg-desktop-bottom: -25%;
+}

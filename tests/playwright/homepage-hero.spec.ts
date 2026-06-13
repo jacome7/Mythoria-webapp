@@ -33,15 +33,15 @@ test.describe('Homepage hero — default composition', () => {
   });
 });
 
-test.describe('Homepage hero — kids_sports via ?intent= query param', () => {
-  test('switches to kids_sports headline after hydration', async ({ page }) => {
+test.describe('Homepage hero — sports_teams via ?intent= query param', () => {
+  test('switches to sports_teams headline after hydration', async ({ page }) => {
     await page.goto('/en-US?intent=sports_teams', { waitUntil: 'domcontentloaded' });
 
     const h1 = page.locator('section.papercut-hero h1');
     await expect(h1).toBeVisible();
 
     // After client hydration, useIntentOverride reads the query param and
-    // resolveComposition picks kids_sports. The sports headline contains "team".
+    // resolveComposition picks sports_teams. The sports headline contains "team".
     await expect(h1).toContainText('team', { ignoreCase: true });
   });
 
@@ -65,7 +65,7 @@ test.describe('Homepage hero — kids_sports via ?intent= query param', () => {
   });
 });
 
-test.describe('Homepage hero — kids_sports via /i/ cookie flow', () => {
+test.describe('Homepage hero — sports_teams via /i/ cookie flow', () => {
   test('sets intent cookie and shows sports hero on redirect', async ({ page }) => {
     // /i/sports_teams sets the cookie and redirects to the localized homepage
     await page.goto('/i/sports_teams', { waitUntil: 'networkidle' });

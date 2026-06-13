@@ -1,0 +1,13 @@
+/* romance palette — wine headline on a blush-pink paper sky, dusty-rose CTA
+   (from the homepage_mobile_mockup). Cascades into the headline, subtitle
+   emphasis, CTA and feature card titles via the hero's rootClassName. */
+.root {
+  --pc-cream: #f9e9e4; /* blush paper sky */
+  --pc-cream-deep: #f3d8d2;
+  --pc-navy: #7a2b3f; /* wine — headline + emphasis */
+  --pc-gold: #d96a85; /* dusty pink — sparkle/icon warmth */
+  --pc-cta-bg: #9c3d54; /* dusty rose CTA */
+  --pc-cta-fg: #fff4ee;
+  --pc-scene-fg-mobile-bottom: -25%;
+  --pc-scene-fg-desktop-bottom: -25%;
+}

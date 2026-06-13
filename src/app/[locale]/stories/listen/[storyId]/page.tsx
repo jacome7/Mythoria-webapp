@@ -7,10 +7,8 @@ import {
   BookOpen,
   Copy,
   CreditCard,
-  Download,
   Edit3,
   Loader2,
-  Printer,
   Share2,
   Volume2,
 } from 'lucide-react';
@@ -20,6 +18,7 @@ import { useParams } from 'next/navigation';
 import ToastContainer from '../../../../../components/ToastContainer';
 import { useToast } from '@/hooks/useToast';
 import ShareModal from '../../../../../components/ShareModal';
+import StoryPrintActions from '../../../../../components/StoryPrintActions';
 import {
   useCastAudioPlayer,
   AudioChapterList,
@@ -476,7 +475,7 @@ export default function ListenStoryPage() {
         ) : story ? (
           <div>
             {/* Action Bar */}
-            <div className="bg-base-200 border-b border-base-300 p-4 print:hidden">
+            <div className="relative z-[80] overflow-visible bg-base-200 border-b border-base-300 p-4 print:hidden">
               <div className="max-w-6xl mx-auto flex items-center justify-between">
                 <button
                   onClick={() => router.push(`/${locale}/my-stories`)}
@@ -502,15 +501,7 @@ export default function ListenStoryPage() {
                     <span className="hidden sm:inline sm:ml-2">{tActions('edit')}</span>
                   </button>
 
-                  <button onClick={navigateToPrint} className="btn btn-ghost btn-sm">
-                    <Printer className="w-4 h-4" />
-                    <span className="hidden sm:inline sm:ml-2">{tActions('print')}</span>
-                  </button>
-
-                  <button onClick={handleDownload} className="btn btn-ghost btn-sm">
-                    <Download className="w-4 h-4" />
-                    <span className="hidden sm:inline sm:ml-2">{tActions('downloadPdf')}</span>
-                  </button>
+                  <StoryPrintActions onPrint={navigateToPrint} onDownload={handleDownload} />
 
                   <button onClick={() => setShowShareModal(true)} className="btn btn-ghost btn-sm">
                     <Share2 className="w-4 h-4" />

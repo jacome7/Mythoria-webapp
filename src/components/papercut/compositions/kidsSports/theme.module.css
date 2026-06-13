@@ -1,7 +1,0 @@
-/* kids_sports palette accents. Composed into the hero's rootClassName, so the
-   overrides cascade to the headline, subtitle emphasis, CTA and feature card.
-   The cream sky stays global; the green pitch comes from the artwork. */
-.root {
-  --pc-navy: #1f4e79; /* club blue for headline + emphasis */
-  --pc-gold: #f4c542; /* club yellow for sparkle/accents */
-}

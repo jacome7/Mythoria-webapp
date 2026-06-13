@@ -26,6 +26,7 @@
     "deploy": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy.ps1",
     "deploy:fast": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy.ps1 -Fast",
     "docs:serve": "npx serve docs/",
+    "homepage:assets": "tsx scripts/check-homepage-assets.ts",
     "i18n:parity": "tsx scripts/check-locale-parity.ts",
     "i18n:keys": "tsx scripts/generate-translation-keys.ts",
     "test": "cross-env NODE_OPTIONS=--no-deprecation jest",
@@ -34,7 +35,7 @@
     "test:e2e:mcp:contract": "cross-env SKIP_AUTH_SETUP=1 playwright test tests/playwright/mcp.contract.spec.ts",
     "test:e2e:mcp:auth": "cross-env SKIP_AUTH_SETUP=1 playwright test tests/playwright/mcp.authenticated.spec.ts --workers=1",
     "test:e2e:anon": "cross-env SKIP_AUTH_SETUP=1 playwright test tests/playwright/missing-translations_anonymous.spec.ts --workers=1",
-    "test:mcp:smoke": "tsx scripts/mcp-e2e-smoke.ts --base-url=http://localhost:3000",
+    "test:mcp:smoke": "tsx scripts/mcp-e2e-smoke.ts --base-url=http://192.168.1.10:3000",
     "test:mcp:smoke:prod": "tsx scripts/mcp-e2e-smoke.ts --base-url=https://mythoria.pt",
     "auth:mcp:token": "tsx scripts/get-mcp-oauth-token.ts",
     "check:env": "tsx ./scripts/check-env-parity.ts"
