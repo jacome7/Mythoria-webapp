@@ -4,6 +4,7 @@ import { and, desc, eq, ne } from 'drizzle-orm';
 import { db } from '../index';
 import {
   authors,
+  fiscalDocuments,
   paymentEvents,
   paymentMethods,
   paymentOrders,
@@ -53,6 +54,7 @@ export interface CalculatedOrderTotals {
   totalAmount: number;
   itemsBreakdown: Array<{
     packageId: number;
+    packageKey?: string;
     quantity: number;
     credits: number;
     unitPrice: number;
@@ -71,6 +73,13 @@ interface StripeCheckoutMetadata {
     invoicePdf?: string | null;
     paymentMethodType?: string | null;
     paymentStatus?: string | null;
+    amountSubtotal?: number | null;
+    amountTotal?: number | null;
+    totalDetails?: {
+      amount_tax?: number | null;
+      amount_discount?: number | null;
+      amount_shipping?: number | null;
+    } | null;
     customerDetails?: unknown;
   };
   orderTotals?: CalculatedOrderTotals;
@@ -262,6 +271,7 @@ export const paymentService = {
 
       itemsBreakdown.push({
         packageId: item.packageId,
+        packageKey: pkg.key,
         quantity: item.quantity,
         credits: pkg.credits,
         unitPrice: pkg.price,
@@ -392,16 +402,6 @@ export const paymentService = {
           },
           automatic_tax: {
             enabled: true,
-          },
-          invoice_creation: {
-            enabled: true,
-            invoice_data: {
-              description: `Mythoria Credits Purchase - ${orderTotals.totalCredits} credits`,
-              metadata: {
-                mythoriaOrderId: order.orderId,
-                mythoriaAuthorId: checkoutData.userId,
-              },
-            },
           },
           line_items: buildStripeCheckoutLineItems(orderTotals.itemsBreakdown),
           locale: mapToStripeCheckoutLocale(checkoutData.locale),
@@ -645,6 +645,9 @@ export const paymentService = {
           paymentIntentId,
           invoiceId,
           paymentStatus: session.payment_status,
+          amountSubtotal: session.amount_subtotal,
+          amountTotal: session.amount_total,
+          totalDetails: session.total_details,
           customerDetails: session.customer_details,
         },
       });
@@ -703,6 +706,9 @@ export const paymentService = {
         invoicePdf,
         paymentMethodType,
         paymentStatus: session.payment_status,
+        amountSubtotal: session.amount_subtotal,
+        amountTotal: session.amount_total,
+        totalDetails: session.total_details,
         customerDetails: session.customer_details,
       },
     });
@@ -738,6 +744,9 @@ export const paymentService = {
         paymentIntentId: getStripeId(session.payment_intent),
         invoiceId: getStripeId(session.invoice),
         paymentStatus: session.payment_status,
+        amountSubtotal: session.amount_subtotal,
+        amountTotal: session.amount_total,
+        totalDetails: session.total_details,
         customerDetails: session.customer_details,
       },
     });
@@ -904,6 +913,17 @@ export const paymentService = {
         charge,
       },
     });
+
+    try {
+      const { fiscalDocumentService } = await import('./fiscal-documents');
+      await fiscalDocumentService.recordFiscalEventForOrder(order.orderId, eventType, {
+        provider: 'stripe',
+        stripeEventId,
+        charge,
+      });
+    } catch (error) {
+      console.error('Failed to record fiscal refund event:', error);
+    }
   },
 
   async recordStripeDisputeEvent(dispute: Stripe.Dispute, stripeEventId?: string) {
@@ -922,6 +942,17 @@ export const paymentService = {
         dispute,
       },
     });
+
+    try {
+      const { fiscalDocumentService } = await import('./fiscal-documents');
+      await fiscalDocumentService.recordFiscalEventForOrder(order.orderId, 'dispute_created', {
+        provider: 'stripe',
+        stripeEventId,
+        dispute,
+      });
+    } catch (error) {
+      console.error('Failed to record fiscal dispute event:', error);
+    }
   },
 
   async completeOrder(
@@ -1044,6 +1075,13 @@ export const paymentService = {
         console.error('Error saving payment method:', error);
       }
     }
+
+    try {
+      const { fiscalDocumentService } = await import('./fiscal-documents');
+      await fiscalDocumentService.issueForCompletedStripeOrder(completedOrder);
+    } catch (error) {
+      console.error('Failed to issue KeyInvoice fiscal document:', error);
+    }
   },
 
   async savePaymentMethod(
@@ -1100,8 +1138,16 @@ export const paymentService = {
         metadata: paymentOrders.metadata,
         createdAt: paymentOrders.createdAt,
         updatedAt: paymentOrders.updatedAt,
+        fiscalDocumentId: fiscalDocuments.id,
+        fiscalDocumentStatus: fiscalDocuments.status,
+        fiscalDocumentFullNumber: fiscalDocuments.fullDocNumber,
+        fiscalDocumentDocType: fiscalDocuments.docType,
+        fiscalDocumentIssuedAt: fiscalDocuments.issuedAt,
+        fiscalDocumentPdfStoragePath: fiscalDocuments.pdfStoragePath,
+        fiscalDocumentLastError: fiscalDocuments.lastError,
       })
       .from(paymentOrders)
+      .leftJoin(fiscalDocuments, eq(fiscalDocuments.orderId, paymentOrders.orderId))
       .where(eq(paymentOrders.authorId, userId))
       .orderBy(desc(paymentOrders.createdAt))
       .limit(limit);
@@ -1117,6 +1163,20 @@ export const paymentService = {
         stripeInvoiceHostedUrl: stripe?.invoiceHostedUrl || null,
         stripeInvoicePdf: stripe?.invoicePdf || null,
         paymentMethodType: stripe?.paymentMethodType || null,
+        fiscalDocument: order.fiscalDocumentId
+          ? {
+              id: order.fiscalDocumentId,
+              status: order.fiscalDocumentStatus,
+              fullDocNumber: order.fiscalDocumentFullNumber,
+              docType: order.fiscalDocumentDocType,
+              issuedAt: order.fiscalDocumentIssuedAt,
+              pdfUrl:
+                order.fiscalDocumentStatus === 'issued' && order.fiscalDocumentPdfStoragePath
+                  ? `/api/payments/fiscal-documents/${order.fiscalDocumentId}/pdf`
+                  : null,
+              lastError: order.fiscalDocumentLastError,
+            }
+          : null,
       };
     });
   },

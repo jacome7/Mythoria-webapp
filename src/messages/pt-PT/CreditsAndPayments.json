@@ -6,6 +6,7 @@
   "needMore": "A ficar sem créditos?",
   "checkPricing": "Veja os nossos pacotes",
   "historyTitle": "Histórico de Transações",
+  "paymentHistoryTitle": "Histórico de Pagamentos",
   "credits": "créditos",
   "buyCredits": "Comprar Créditos",
   "table": {
@@ -13,6 +14,26 @@
     "event": "Evento",
     "amount": "Valor",
     "balance": "Saldo"
+  },
+  "paymentTable": {
+    "date": "Data",
+    "description": "Compra",
+    "amount": "Pago",
+    "status": "Pagamento",
+    "invoice": "Fatura",
+    "download": "Descarregar PDF",
+    "empty": "Ainda não existem pagamentos"
+  },
+  "invoiceStatus": {
+    "draft": "Rascunho de fatura",
+    "pending": "Fatura pendente",
+    "issuing": "Fatura em emissão",
+    "issued": "Fatura disponível",
+    "failed": "Fatura pendente",
+    "voided": "Fatura anulada",
+    "credit_note_required": "Correção pendente",
+    "credit_note_issued": "Corrigida",
+    "not_available": "Não disponível"
   },
   "eventTypes": {
     "initialCredit": "Crédito Inicial",

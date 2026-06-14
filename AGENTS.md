@@ -60,6 +60,8 @@ Following Next.js recommendations for CSS management:
 - `npm run db:studio` launches the Drizzle Studio inspector. `npm run db:seed` is currently a no-op placeholder; keep it updated if a real seed workflow is introduced.
 - Services under `src/db/services` should be covered by Jest tests co-located in the same directory.
 
+IMPORTANT: We currently only have ONE database instance, used on both development and production. Any changes to the development also affects productions. Alert user if any migration can delete or drop any data or make the production environment with errors.
+
 ## Development & Quality Checklist
 
 Run these commands after making code changes and before committing or opening a PR:

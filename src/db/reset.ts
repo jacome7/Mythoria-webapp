@@ -28,6 +28,9 @@ async function resetDatabase() {
     // Drop all tables and types in the correct order (considering foreign key constraints)
     const dropQueries = [
       // Drop tables that reference other tables first
+      'DROP TABLE IF EXISTS fiscal_document_events CASCADE;',
+      'DROP TABLE IF EXISTS fiscal_documents CASCADE;',
+      'DROP TABLE IF EXISTS keyinvoice_customers CASCADE;',
       'DROP TABLE IF EXISTS story_characters CASCADE;',
       'DROP TABLE IF EXISTS shipping_codes CASCADE;',
       'DROP TABLE IF EXISTS payments CASCADE;',
@@ -49,6 +52,9 @@ async function resetDatabase() {
       'DROP TYPE IF EXISTS address_type CASCADE;',
       'DROP TYPE IF EXISTS payment_provider CASCADE;',
       'DROP TYPE IF EXISTS credit_event_type CASCADE;',
+      'DROP TYPE IF EXISTS fiscal_document_provider CASCADE;',
+      'DROP TYPE IF EXISTS fiscal_document_status CASCADE;',
+      'DROP TYPE IF EXISTS fiscal_document_customer_mode CASCADE;',
 
       // Drop the drizzle migration table
       'DROP TABLE IF EXISTS __drizzle_migrations CASCADE;',

@@ -6,6 +6,7 @@
   "needMore": "Running low?",
   "checkPricing": "Check our packages",
   "historyTitle": "Transaction History",
+  "paymentHistoryTitle": "Payment History",
   "credits": "credits",
   "buyCredits": "Buy Credits",
   "table": {
@@ -13,6 +14,26 @@
     "event": "Event",
     "amount": "Amount",
     "balance": "Balance"
+  },
+  "paymentTable": {
+    "date": "Date",
+    "description": "Purchase",
+    "amount": "Paid",
+    "status": "Payment",
+    "invoice": "Invoice",
+    "download": "Download PDF",
+    "empty": "No payments yet"
+  },
+  "invoiceStatus": {
+    "draft": "Invoice draft",
+    "pending": "Invoice pending",
+    "issuing": "Invoice being issued",
+    "issued": "Invoice ready",
+    "failed": "Invoice pending",
+    "voided": "Invoice voided",
+    "credit_note_required": "Correction pending",
+    "credit_note_issued": "Corrected",
+    "not_available": "Not available"
   },
   "eventTypes": {
     "initialCredit": "Initial Credit",

@@ -12,6 +12,7 @@ export * from './blog';
 export * from './characters';
 export * from './writing-personas';
 export * from './payments';
+export * from './fiscal-documents';
 export * from './shipping';
 export * from './credits';
 export * from './credit-packages';

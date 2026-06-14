@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { paymentService } from '@/db/services';
+import { fiscalDocumentService, paymentService } from '@/db/services';
 import { getCurrentAuthor } from '@/lib/auth';
 
 export const runtime = 'nodejs';
@@ -39,6 +39,7 @@ export async function GET(request: NextRequest) {
 
     const metadata = order.metadata as StripeMetadata | null;
     const creditBundle = order.creditBundle as { credits: number; price: number };
+    const fiscalDocument = await fiscalDocumentService.getByOrderId(order.orderId);
 
     return NextResponse.json({
       success: true,
@@ -53,6 +54,16 @@ export async function GET(request: NextRequest) {
       invoiceId: metadata?.stripe?.invoiceId || null,
       invoiceHostedUrl: metadata?.stripe?.invoiceHostedUrl || null,
       invoicePdf: metadata?.stripe?.invoicePdf || null,
+      fiscalDocument: fiscalDocument
+        ? {
+            id: fiscalDocument.id,
+            status: fiscalDocument.status,
+            fullDocNumber: fiscalDocument.fullDocNumber,
+            issuedAt: fiscalDocument.issuedAt,
+            pdfUrl: fiscalDocumentService.fiscalPdfUrl(fiscalDocument),
+            lastError: fiscalDocument.lastError,
+          }
+        : null,
     });
   } catch (error) {
     console.error('Error fetching Stripe checkout session:', error);
