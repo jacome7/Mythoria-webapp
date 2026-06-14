@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { type Address as AddressType } from '@/components/AddressCard';
+import { trackPaidAction } from '@/lib/analytics';
 import type { PaymentOrderDetails } from '@/components/print-order/steps/PaymentStep';
 
 // Lazy load step components
@@ -154,6 +155,11 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
       const data = await response.json();
 
       if (data.success) {
+        trackPaidAction({
+          action_type: 'print',
+          story_id: story.storyId,
+          credits_spent: totalCost,
+        });
         // Redirect to my-stories instead of confirmation step
         router.push(`/${locale}/my-stories`);
       } else {

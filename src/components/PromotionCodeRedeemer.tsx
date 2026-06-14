@@ -3,6 +3,7 @@ import { Ticket } from 'lucide-react';
 import React, { useState } from 'react';
 // Using next-intl directly (pattern consistent with other components like BillingInformation/CreditsDisplay)
 import { useTranslations } from 'next-intl';
+import { trackEvent } from '@/lib/analytics';
 
 interface Props {
   onRedeemed?: (delta: number, newBalance: number) => void;
@@ -39,6 +40,11 @@ export const PromotionCodeRedeemer: React.FC<Props> = ({ onRedeemed, compact }) 
       setStatus('success');
       // Always localize success client-side to respect current locale.
       setMessage(tVoucher('success', { credits: data.creditsGranted, code: data.code }));
+      trackEvent('promo_code_redeemed', {
+        promo_code: data.code,
+        credits_granted: data.creditsGranted,
+        new_balance: data.newBalance,
+      });
       onRedeemed?.(data.creditsGranted, data.newBalance);
     } catch {
       setStatus('error');
