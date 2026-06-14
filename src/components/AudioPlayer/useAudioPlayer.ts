@@ -37,7 +37,7 @@ export function useAudioPlayer({
       const audioUrl = `${audioEndpoint}/${chapterIndex}`;
 
       try {
-        trackEvent('paid_action', {
+        trackEvent('audiobook_started', {
           action_type: 'audiobook',
           story_id: trackingData?.story_id,
           chapter_index: chapterIndex,
@@ -179,6 +179,12 @@ export function useAudioPlayer({
 
           try {
             await audio.play();
+            trackEvent('audiobook_started', {
+              story_id: trackingData?.story_id,
+              chapter_index: chapterIndex,
+              total_chapters: totalChaptersRef.current,
+              interaction_type: 'play_audio',
+            });
             setCurrentlyPlaying(chapterIndex);
           } catch (playError) {
             console.error('Play promise rejected for chapter', chapterIndex + 1, ':', playError);
@@ -208,6 +214,12 @@ export function useAudioPlayer({
 
           try {
             await audio.play();
+            trackEvent('audiobook_started', {
+              story_id: trackingData?.story_id,
+              chapter_index: chapterIndex,
+              total_chapters: totalChaptersRef.current,
+              interaction_type: 'play_audio',
+            });
             setCurrentlyPlaying(chapterIndex);
             setAudioLoading((prev) => ({ ...prev, [chapterIndex]: false }));
           } catch (playError) {
@@ -252,7 +264,7 @@ export function useAudioPlayer({
         }
       }
     },
-    [currentlyPlaying, audioEndpoint, tErrors, onError],
+    [currentlyPlaying, audioEndpoint, tErrors, onError, trackingData?.story_id],
   );
 
   // Keep ref of latest playAudio for ended event handlers

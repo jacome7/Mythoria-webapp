@@ -238,6 +238,26 @@ function BuyCreditsContent() {
     setPaymentMessage(tBuyCreditsPage('payment.stripeRedirecting'));
 
     try {
+      const checkoutItems = cart.map((item) => {
+        const pkg = getPackageById(item.packageId);
+        return {
+          item_id: `credit_package_${item.packageId}`,
+          item_name: pkg ? `${pkg.credits} Credits` : `Credit Package ${item.packageId}`,
+          price: pkg ? pkg.price : 0,
+          quantity: item.quantity,
+        };
+      });
+
+      trackCommerce.checkoutStarted({
+        purchase_amount: total,
+        credits_purchased: checkoutItems.reduce((sum, item, index) => {
+          const pkg = getPackageById(cart[index].packageId);
+          return sum + (pkg?.credits ?? 0) * item.quantity;
+        }, 0),
+        payment_method: 'stripe',
+        items: checkoutItems,
+      });
+
       const creditPackages = cart.map((item) => ({
         packageId: item.packageId,
         quantity: item.quantity,

@@ -11,15 +11,37 @@ declare global {
 }
 
 // Define core event types for better type safety
+export const GA4_EVENT_NAMES = [
+  'page_view',
+  'sign_up_started',
+  'sign_up_completed',
+  'story_creation_started',
+  'story_step_1_completed',
+  'story_step_2_completed',
+  'story_step_3_completed',
+  'story_step_4_completed',
+  'story_generation_requested',
+  'story_published',
+  'pricing_viewed',
+  'checkout_started',
+  'credit_pack_purchased',
+  'audiobook_started',
+  'print_order_started',
+  'self_print_started',
+  'share_link_created',
+  'promo_code_redeemed',
+] as const;
+
+export type GA4EventName = (typeof GA4_EVENT_NAMES)[number];
+
 export type AnalyticsEvent =
+  | GA4EventName
   | 'sign_up'
   | 'login'
   | 'logout'
-  | 'story_creation_started'
   | 'story_creation_step_completed'
   | 'story_creation_step_viewed'
   | 'story_creation_generate_clicked'
-  | 'story_generation_requested'
   | 'paid_action'
   | 'purchase';
 
@@ -113,8 +135,10 @@ export function trackEvent(eventName: AnalyticsEvent, parameters?: Record<string
  * Track authentication events
  */
 export const trackAuth = {
+  signUpStarted: (params: AuthEventParams = {}) => trackEvent('sign_up_started', params),
+
   signUp: (params: AuthEventParams = {}) => {
-    trackEvent('sign_up', params);
+    trackEvent('sign_up_completed', params);
     // Track Google Ads conversion
     trackMythoriaConversionsEnhanced.signUp(params.user_id as string);
   },
@@ -134,7 +158,26 @@ export const trackCommerce = {
    * @param params.credits_purchased - Number of credits purchased
    * @param params.transaction_id - Unique transaction identifier
    */
+  checkoutStarted: (params: CreditPurchaseEventParams = {}) => {
+    trackEvent('checkout_started', {
+      value: params.purchase_amount,
+      currency: 'EUR',
+      credits_purchased: params.credits_purchased,
+      payment_method: params.payment_method,
+      items: params.items,
+    });
+  },
+
   creditPurchase: (params: CreditPurchaseEventParams = {}) => {
+    trackEvent('credit_pack_purchased', {
+      transaction_id: params.transaction_id,
+      value: params.purchase_amount,
+      currency: 'EUR',
+      credits_purchased: params.credits_purchased,
+      payment_method: params.payment_method,
+      items: params.items,
+    });
+
     // Track standard GA4 purchase event for revenue tracking
     trackEvent('purchase', {
       transaction_id: params.transaction_id,
@@ -166,7 +209,12 @@ export const trackStoryCreation = {
   started: (params: StoryEventParams = {}) => trackEvent('story_creation_started', params),
 
   stepCompleted: (params: StoryEventParams = {}) => {
-    trackEvent('story_creation_step_completed', {
+    const stepCompletedEvent =
+      params.step && params.step >= 1 && params.step <= 4
+        ? (`story_step_${params.step}_completed` as AnalyticsEvent)
+        : 'story_creation_step_completed';
+
+    trackEvent(stepCompletedEvent, {
       ...params,
       step: params.step,
     });
@@ -185,10 +233,9 @@ export const trackStoryCreation = {
 
   generationRequested: (params: StoryEventParams = {}) => {
     trackEvent('story_generation_requested', params);
-    trackPaidAction({
-      action_type: 'ebook',
+    trackEvent('story_published', {
       story_id: params.story_id,
-      credits_spent: params.credits_spent as number | undefined,
+      story_genre: params.story_genre,
     });
     // Track Google Ads conversion for story creation
     trackMythoriaConversionsEnhanced.storyCreated(
@@ -198,8 +245,16 @@ export const trackStoryCreation = {
   },
 };
 
+const PAID_ACTION_EVENTS: Record<PaidActionType, AnalyticsEvent> = {
+  ebook: 'story_generation_requested',
+  audiobook: 'audiobook_started',
+  print: 'print_order_started',
+  self_print: 'self_print_started',
+  ai_edit: 'paid_action',
+};
+
 export const trackPaidAction = (params: PaidActionEventParams): void => {
-  trackEvent('paid_action', {
+  trackEvent(PAID_ACTION_EVENTS[params.action_type], {
     action_type: params.action_type,
     credits_spent: params.credits_spent,
     story_id: params.story_id,

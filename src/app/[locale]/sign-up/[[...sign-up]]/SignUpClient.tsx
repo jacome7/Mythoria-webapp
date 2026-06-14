@@ -3,9 +3,10 @@
 import { SignUp } from '@clerk/nextjs';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import type { LeadSessionData } from '@/types/lead';
 import { formatPhoneNumberForClerk } from '@/utils/phone-number';
+import { trackAuth } from '@/lib/analytics';
 
 interface SignUpClientProps {
   locale: string;
@@ -47,6 +48,12 @@ function FeatureRow({ icon, text }: { icon: string; text: string }) {
 
 export default function SignUpClient({ locale, translations, leadSession }: SignUpClientProps) {
   const search = useSearchParams();
+
+  useEffect(() => {
+    trackAuth.signUpStarted({
+      sign_up_method: leadSession?.email ? 'lead_session' : 'unknown',
+    });
+  }, [leadSession?.email]);
   const redirectParam = search?.get('redirect');
   const defaultRedirect = `/${locale}/profile/onboarding`;
   const safeRedirect =

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Check, Copy, Globe, Info, Lock, Mail, Share2, Users, X } from 'lucide-react';
 import { FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import { useTranslations } from 'next-intl';
+import { trackEvent } from '@/lib/analytics';
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -88,6 +89,13 @@ export default function ShareModal({
       console.log('Response data:', data);
       if (data.success) {
         setShareData(data);
+        trackEvent('share_link_created', {
+          story_id: storyId,
+          link_type: data.linkType,
+          access_level: data.accessLevel,
+          make_public: makePublic,
+          allow_edit: allowEdit,
+        });
         onShareSuccess?.(data);
       } else {
         console.error('Error creating share link:', data.error);
