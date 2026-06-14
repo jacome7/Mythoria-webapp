@@ -6,6 +6,7 @@
   "needMore": "Tu manques de crédits ?",
   "checkPricing": "Découvre nos forfaits",
   "historyTitle": "Historique des Transactions",
+  "paymentHistoryTitle": "Historique des Paiements",
   "credits": "crédits",
   "buyCredits": "Acheter des Crédits",
   "table": {
@@ -13,6 +14,26 @@
     "event": "Événement",
     "amount": "Montant",
     "balance": "Solde"
+  },
+  "paymentTable": {
+    "date": "Date",
+    "description": "Achat",
+    "amount": "Payé",
+    "status": "Paiement",
+    "invoice": "Facture",
+    "download": "Télécharger le PDF",
+    "empty": "Aucun paiement pour le moment"
+  },
+  "invoiceStatus": {
+    "draft": "Brouillon de facture",
+    "pending": "Facture en attente",
+    "issuing": "Facture en cours d'émission",
+    "issued": "Facture prête",
+    "failed": "Facture en attente",
+    "voided": "Facture annulée",
+    "credit_note_required": "Correction en attente",
+    "credit_note_issued": "Corrigée",
+    "not_available": "Non disponible"
   },
   "eventTypes": {
     "initialCredit": "Crédit Initial",

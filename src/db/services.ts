@@ -25,6 +25,7 @@ import { generateSlug, ensureUniqueSlug } from '@/lib/slug';
 
 // Export payment service
 export { paymentService } from './services/payment';
+export { fiscalDocumentService } from './services/fiscal-documents';
 export { creditPackagesService } from './services/credit-packages';
 export { blogService } from './services/blog';
 export { faqService } from './services/faq';

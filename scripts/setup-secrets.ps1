@@ -107,6 +107,7 @@ $GoogleAnalyticsApiSecret = $env:GOOGLE_ANALYTICS_API_SECRET
 $StripePublishableKey = $env:NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 $StripeSecretKey = $env:STRIPE_SECRET_KEY
 $StripeWebhookSecret = $env:STRIPE_WEBHOOK_SECRET
+$KeyInvoiceApiKey = $env:KEYINVOICE_API_KEY
 $StoryGenApiKey = $env:STORY_GENERATION_WORKFLOW_API_KEY
 $SgwWebhookSecret = $env:SGW_WEBHOOK_SECRET
 $AdminApiKey = $env:ADMIN_API_KEY
@@ -172,6 +173,10 @@ if (-not $StripeWebhookSecret) {
     Write-Err "STRIPE_WEBHOOK_SECRET not found in .env.production file."
     exit 1
 }
+if (-not $KeyInvoiceApiKey) {
+    Write-Err "KEYINVOICE_API_KEY not found in .env.production file."
+    exit 1
+}
 if (-not $StoryGenApiKey) {
     Write-Err "STORY_GENERATION_WORKFLOW_API_KEY not found in .env.production file."
     exit 1
@@ -208,6 +213,7 @@ Write-Host "  OK GOOGLE_ANALYTICS_API_SECRET: $($('*' * $GoogleAnalyticsApiSecre
 Write-Host "  OK NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: $($StripePublishableKey.Substring(0, [Math]::Min(20, $StripePublishableKey.Length)))..." -ForegroundColor Green
 Write-Host "  OK STRIPE_SECRET_KEY: $($('*' * $StripeSecretKey.Length))" -ForegroundColor Green
 Write-Host "  OK STRIPE_WEBHOOK_SECRET: $($('*' * $StripeWebhookSecret.Length))" -ForegroundColor Green
+Write-Host "  OK KEYINVOICE_API_KEY: $($('*' * $KeyInvoiceApiKey.Length))" -ForegroundColor Green
 Write-Host "  OK STORY_GENERATION_API_KEY: $($('*' * $StoryGenApiKey.Length))" -ForegroundColor Green
 Write-Host "  OK SGW_WEBHOOK_SECRET: $($('*' * $SgwWebhookSecret.Length))" -ForegroundColor Green
 Write-Host "  OK ADMIN_API_KEY: $($('*' * $AdminApiKey.Length))" -ForegroundColor Green
@@ -262,6 +268,9 @@ Set-GcpSecretValue -Name STRIPE_SECRET_KEY -Value $StripeSecretKey
 Write-Host "Creating or updating Stripe webhook secret..." -ForegroundColor Blue
 Set-GcpSecretValue -Name STRIPE_WEBHOOK_SECRET -Value $StripeWebhookSecret
 
+Write-Host "Creating or updating KeyInvoice API key secret..." -ForegroundColor Blue
+Set-GcpSecretValue -Name KEYINVOICE_API_KEY -Value $KeyInvoiceApiKey
+
 Write-Host "Creating Story Generation API key secret..." -ForegroundColor Blue
 $StoryGenApiKey.Trim() | Set-Content -Path temp_secret.txt -NoNewline; gcloud secrets create STORY_GENERATION_WORKFLOW_API_KEY --data-file=temp_secret.txt --replication-policy='automatic'; Remove-Item temp_secret.txt
 
@@ -295,6 +304,7 @@ gcloud secrets add-iam-policy-binding GOOGLE_ANALYTICS_API_SECRET --member="serv
 gcloud secrets add-iam-policy-binding NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding STRIPE_SECRET_KEY --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding STRIPE_WEBHOOK_SECRET --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
+gcloud secrets add-iam-policy-binding KEYINVOICE_API_KEY --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding SGW_WEBHOOK_SECRET --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding LEAD_BOUNCE_API_SECRET --member="serviceAccount:$cloudBuildServiceAccount" --role="roles/secretmanager.secretAccessor"
 
@@ -315,6 +325,7 @@ gcloud secrets add-iam-policy-binding GOOGLE_ANALYTICS_API_SECRET --member="serv
 gcloud secrets add-iam-policy-binding NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding STRIPE_SECRET_KEY --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding STRIPE_WEBHOOK_SECRET --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
+gcloud secrets add-iam-policy-binding KEYINVOICE_API_KEY --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding SGW_WEBHOOK_SECRET --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
 gcloud secrets add-iam-policy-binding LEAD_BOUNCE_API_SECRET --member="serviceAccount:$computeServiceAccount" --role="roles/secretmanager.secretAccessor"
 
@@ -335,6 +346,7 @@ Write-Host "  - GOOGLE_ANALYTICS_API_SECRET" -ForegroundColor White
 Write-Host "  - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY" -ForegroundColor White
 Write-Host "  - STRIPE_SECRET_KEY" -ForegroundColor White
 Write-Host "  - STRIPE_WEBHOOK_SECRET" -ForegroundColor White
+Write-Host "  - KEYINVOICE_API_KEY" -ForegroundColor White
 Write-Host "  - SGW_WEBHOOK_SECRET" -ForegroundColor White
 Write-Host "  - LEAD_BOUNCE_API_SECRET" -ForegroundColor White
 

@@ -6,6 +6,39 @@ Implement autonomous Portuguese-compliant invoicing for every completed Mythoria
 
 The offline KeyInvoice API extract is stored separately in [keyInvoice-api-reference.md](keyInvoice-api-reference.md). It was extracted from the authenticated KeyInvoice documentation page on 2026-06-04 and includes all 80 documented methods.
 
+## Implementation Status
+
+As of 2026-06-14, the first production path is implemented behind `KEYINVOICE_ENABLED`.
+
+Implemented:
+
+- Stripe Checkout invoice creation is disabled; Stripe remains the payment processor and tax-collection source.
+- Verified Stripe webhook completion still grants credits first, then calls `fiscalDocumentService.issueForCompletedStripeOrder`.
+- KeyInvoice v1 issues `DocType=34` (`Fatura-Recibo`) for completed credit purchases after payment confirmation when `KEYINVOICE_DRAFT_ONLY=false`.
+- Local/ngrok test payments must keep `KEYINVOICE_DRAFT_ONLY=true`; KeyInvoice API5 `insertDocument` creates a numbered fiscal document, so draft-only mode records the intended payload locally and does not call KeyInvoice.
+- Billing identity comes from Stripe Checkout `customer_details.tax_ids`. Valid Portuguese NIFs are checksum-validated; valid EU VAT formats are accepted through the existing VAT format validator. There is no local profile/billing form fallback in v1.
+- Orders without a valid VAT/tax ID are issued through the KeyInvoice final-consumer header path (`Name = "Consumidor Final"` when no better name exists) and store the Portuguese final-consumer NIF convention `999999990` in `fiscal_documents.final_consumer_vat_number`.
+- New tables store KeyInvoice customers, fiscal document state, and fiscal document request/response events.
+- KeyInvoice PDFs are stored in the private storage bucket and served through authenticated `GET /api/payments/fiscal-documents/[documentId]/pdf`.
+- Failed KeyInvoice issuance does not roll back completed payments or granted credits. Failed/pending documents can be retried with `npm run keyinvoice:retry`.
+- Refund and dispute Stripe events are recorded as fiscal events and mark issued documents as `credit_note_required`; automatic credit-note issuing is intentionally deferred.
+
+Configured from the live KeyInvoice account:
+
+- `KEYINVOICE_DOC_SERIES_ID=23` (`Fatura-Recibo 26`, `FR26`)
+- `KEYINVOICE_PAYMENT_METHOD_ID_STRIPE=7` (`Cartao de Credito`; v1 maps all Stripe-paid orders to one method)
+- `KEYINVOICE_TAX_ID_BY_RATE_JSON={"6":"3"}`
+- `KEYINVOICE_FALLBACK_TAX_ID=3`
+- `KEYINVOICE_PRODUCT_IDS_BY_PACKAGE_KEY_JSON={"credits5":"Mythoria-Pack-05","credits10":"Mythoria-Pack-10","credits30":"Mythoria-Pack-30","credits100":"Mythoria-Pack-100"}`
+- `KEYINVOICE_DRAFT_ONLY=true` locally/ngrok; `false` only for approved live issuing.
+
+Still required before enabling production:
+
+- Confirm with accounting that all current credit-package purchases should use the 6% fallback tax mapping for Mythoria's product/tax treatment.
+- Decide whether the v1 single payment method mapping is acceptable, or whether fiscal documents must distinguish Stripe credit-card and debit-card funding (`Cartao de Credito` vs `Cartao de Debito`).
+- Confirm whether `KEYINVOICE_REGISTER_AT` should remain disabled or whether the KeyInvoice account should communicate documents to AT through the API.
+- Verify the `insertDocument`, `getDocument`, and `getDocumentPDF` payloads against a KeyInvoice sandbox/live test order before setting `KEYINVOICE_DRAFT_ONLY=false`.
+
 ## Current Findings
 
 ### Portuguese invoicing requirements to account for
@@ -44,9 +77,9 @@ Primary sources researched:
   - `credits100`: 100 credits, EUR 79.00
 - The UI displays VAT at 6% by calculating `subtotal = total / 1.06`, then `VAT = subtotal * 0.06`.
 - Stripe Checkout is created by `src/app/api/payments/stripe/checkout/route.ts` and `paymentService.createStripeCheckoutSession`.
-- Stripe line items are EUR, tax-inclusive, and use `automatic_tax.enabled = true`, `tax_id_collection.enabled = true`, `billing_address_collection = auto`, and `invoice_creation.enabled = true`.
+- Stripe line items are EUR, tax-inclusive, and use `automatic_tax.enabled = true`, `tax_id_collection.enabled = true`, and `billing_address_collection = auto`. Stripe invoice creation is now disabled so KeyInvoice is the fiscal document system.
 - Stripe fulfillment happens only in verified webhooks at `src/app/api/payments/stripe/webhook/route.ts`.
-- Completed orders are stored in `payment_orders`; metadata already stores Stripe invoice ids, hosted invoice URLs, PDFs, payment method type, payment status, and `customer_details`.
+- Completed orders are stored in `payment_orders`; metadata stores Stripe payment intent ids, tax totals, payment method type, payment status, and `customer_details`.
 - `src/components/BillingInformation.tsx` exists but is currently unused by the buy-credits page, so manually entered billing information is not part of the current checkout request.
 - No KeyInvoice SDK/package exists. Use native `fetch` from Node runtime plus existing `zod` for payload/response validation; do not add a dependency unless it removes real complexity.
 
@@ -62,7 +95,7 @@ Authentication:
 Configuration discovery:
 
 - `SESSION.verifyUserInsertionPricesWithVAT`: confirm whether KeyInvoice expects line prices with VAT included. Mythoria prices are currently VAT-inclusive.
-- `TABLES.getTaxes`: locate the KeyInvoice tax id for `TaxValue = 6`; persist/configure it as `KEYINVOICE_VAT_6_TAX_ID`.
+- `TABLES.getTaxes`: locate the KeyInvoice tax id for `TaxValue = 6`; persist/configure it in `KEYINVOICE_TAX_ID_BY_RATE_JSON` and `KEYINVOICE_FALLBACK_TAX_ID`.
 - `TABLES.listDocumentSeries`: locate active series for `DocType = 34` (`Fatura-Recibo`) and optionally `DocType = 4` (`Fatura`), `7` (`Nota de Credito`), and receipt series.
 - `TABLES.listPaymentMethods`: map Stripe/card/MB WAY to the correct KeyInvoice payment method id.
 - `TABLES.company`: health/config sanity check for the authenticated company identity.
@@ -170,17 +203,15 @@ Keep full KeyInvoice request/response data in event/audit rows, but redact API k
 
 Update `env.manifest.ts`, `.env.local` examples, deployment substitutions, and Secret Manager:
 
+- `KEYINVOICE_ENABLED`, default `false`
 - `KEYINVOICE_API_URL`, default `https://login.keyinvoice.com/API5.php`
 - `KEYINVOICE_API_KEY`, secret
-- `KEYINVOICE_DEFAULT_DOC_TYPE`, default `34`
-- `KEYINVOICE_INVOICE_SERIES_ID`, optional/configured
-- `KEYINVOICE_RECEIPT_SERIES_ID`, optional/configured
-- `KEYINVOICE_CREDIT_NOTE_SERIES_ID`, optional/configured
-- `KEYINVOICE_VAT_RATE`, default `6`
-- `KEYINVOICE_VAT_TAX_ID`, configured after `getTaxes`
+- `KEYINVOICE_DOC_TYPE`, default `34`
+- `KEYINVOICE_DOC_SERIES_ID`, optional/configured
 - `KEYINVOICE_PAYMENT_METHOD_ID_STRIPE`, configured after `listPaymentMethods`
-- `KEYINVOICE_PRODUCT_ID_CREDITS`, or per-bundle ids if using products
-- `KEYINVOICE_SEND_EMAILS`, default `false`
+- `KEYINVOICE_TAX_ID_BY_RATE_JSON`, configured after `getTaxes`, for example `{"6":"<keyinvoice-tax-id>"}`
+- `KEYINVOICE_FALLBACK_TAX_ID`, configured to the 6% KeyInvoice tax id for the v1 fallback behavior
+- `KEYINVOICE_PRODUCT_IDS_BY_PACKAGE_KEY_JSON`, per-bundle KeyInvoice product ids
 - `KEYINVOICE_REGISTER_AT`, default `false` until confirmed/configured
 
 Run `npm run check:env` after implementation.
@@ -190,14 +221,12 @@ Run `npm run check:env` after implementation.
 ### Checkout creation
 
 1. Keep Stripe Checkout for payment.
-2. Decide whether to disable Stripe invoice creation after KeyInvoice goes live. Recommendation: stop using Stripe as customer-facing invoice source to avoid duplicate invoice confusion, but keep Stripe receipt/payment confirmation where needed.
+2. Stripe invoice creation is disabled so KeyInvoice is the customer-facing fiscal document source; keep Stripe receipt/payment confirmation where needed.
 3. Keep `tax_id_collection` and billing address collection enabled; it is useful source data for KeyInvoice.
-4. Persist intended fiscal behavior in `payment_orders.metadata.fiscal` at checkout creation:
-   - expected VAT rate
-   - tax-included pricing
-   - intended document type
-   - cart line breakdown
-   - customer collection source (`stripe_checkout`)
+4. Persist fiscal inputs in `payment_orders.metadata`:
+   - `orderTotals.itemsBreakdown` for cart line reconstruction
+   - Stripe tax totals and payment identifiers after checkout completion
+   - Stripe `customer_details` as the v1 billing identity source
 
 ### Webhook fulfillment
 
@@ -246,11 +275,11 @@ Preferred payload for paid credit order:
   "IdPaymentMethod": "<KEYINVOICE_PAYMENT_METHOD_ID_STRIPE>",
   "DocLines": [
     {
-      "IdProduct": "<KEYINVOICE_PRODUCT_ID_CREDITS>",
-      "ProductName": "Mythoria Credits - 10 credits",
+      "IdProduct": "<configured product id from KEYINVOICE_PRODUCT_IDS_BY_PACKAGE_KEY_JSON>",
+      "ProductName": "Geração de Livros - 10 créditos",
       "Qty": "1",
       "Price": "9.00",
-      "IdTax": "<KEYINVOICE_VAT_TAX_ID>"
+      "IdTax": "<configured tax id from KEYINVOICE_TAX_ID_BY_RATE_JSON or KEYINVOICE_FALLBACK_TAX_ID>"
     }
   ]
 }
@@ -304,7 +333,7 @@ Rules:
   - Stripe payment method id
   - document series ids
   - product/service ids
-- Decide whether Stripe invoice creation should be disabled after KeyInvoice launch.
+- Stripe invoice creation is disabled in the implemented v1 path.
 
 ### Phase 2 - KeyInvoice client module
 
@@ -344,7 +373,7 @@ Rules:
 ### Phase 6 - User-facing document access
 
 - Extend payment history/session responses with KeyInvoice fiscal document status and PDF/download URL.
-- Update UI labels from Stripe invoice language to Portuguese fiscal document language.
+- Keep UI labels focused on KeyInvoice fiscal document status and PDF downloads.
 - Add localized messages for pending/failed invoice generation.
 - Keep access authorization scoped to the owning author.
 
@@ -391,7 +420,7 @@ Rules:
 
 - Is 6% valid for all Mythoria paid credit purchases, or only for specific end products such as e-books/audiobooks?
 - Should the invoice be issued when credits are purchased or when credits are spent on a specific story/audiobook/print product?
-- Should Stripe invoices be disabled once KeyInvoice is live?
+- Stripe invoice creation is disabled in the implemented v1 path.
 - Which KeyInvoice document series should be used in production for `DocType = 34`, `4`, and credit notes?
 - Should Mythoria use KeyInvoice email delivery or store and send PDFs itself?
 - What is the accountant-approved treatment for EU B2B reverse charge and EU/non-EU B2C VAT/OSS?

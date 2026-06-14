@@ -91,21 +91,39 @@ STRIPE_SECRET_KEY: 'sk_live_...'
 STRIPE_WEBHOOK_SECRET: 'whsec_...'
 STRIPE_API_VERSION: '' # Optional; leave empty to use the installed Stripe SDK default
 STRIPE_CREDIT_TAX_CODE: '' # Optional; Stripe Tax product tax code for credit line items
+KEYINVOICE_ENABLED: 'false' # Set true only after KeyInvoice discovery and accounting approval
+KEYINVOICE_API_URL: 'https://login.keyinvoice.com/API5.php'
+KEYINVOICE_API_KEY: '...' # Secret Manager secret KEYINVOICE_API_KEY
+KEYINVOICE_DRAFT_ONLY: 'false' # Use true only for local/ngrok tests; it does not create a KeyInvoice document
+KEYINVOICE_DOC_TYPE: '34' # Fatura-Recibo
+KEYINVOICE_DOC_SERIES_ID: '23'
+KEYINVOICE_PAYMENT_METHOD_ID_STRIPE: '7' # Cartao de Credito; v1 maps all Stripe-paid orders here
+KEYINVOICE_TAX_ID_BY_RATE_JSON: '{"6":"3"}'
+KEYINVOICE_FALLBACK_TAX_ID: '3'
+KEYINVOICE_PRODUCT_IDS_BY_PACKAGE_KEY_JSON: '{"credits5":"Mythoria-Pack-05","credits10":"Mythoria-Pack-10","credits30":"Mythoria-Pack-30","credits100":"Mythoria-Pack-100"}'
+KEYINVOICE_REGISTER_AT: 'false'
 GOOGLE_ANALYTICS_API_SECRET: '...'
 LEAD_BOUNCE_API_SECRET: '...'
 ```
 
 ## Google Secret Manager Configuration
 
-The active Cloud Build pipeline reads these Stripe secrets from Secret Manager:
+The active Cloud Build pipeline reads these payment and fiscal secrets from Secret Manager:
 
 ```bash
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 STRIPE_SECRET_KEY
 STRIPE_WEBHOOK_SECRET
+KEYINVOICE_API_KEY
 ```
 
 `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` is browser-exposed by design, but it is still stored in Secret Manager so Cloud Build and Cloud Run use the same deployment mechanism as the other Stripe values.
+
+KeyInvoice production deployment requires the non-secret substitutions in `cloudbuild.yaml` to match the live KeyInvoice account. Run `npm run keyinvoice:smoke -- --strict` with `KEYINVOICE_API_KEY` set before enabling `KEYINVOICE_ENABLED`.
+
+For local/ngrok tests, keep `KEYINVOICE_DRAFT_ONLY=true`. KeyInvoice API5 `insertDocument` creates a numbered fiscal document, so draft-only mode records the intended payload in `fiscal_document_events` and marks the local `fiscal_documents` row as `draft` without calling KeyInvoice.
+
+Keep `KEYINVOICE_REGISTER_AT=false` until accounting confirms whether Mythoria should call KeyInvoice's real-time AT communication API or rely on the configured KeyInvoice/SAF-T workflow.
 
 ### Storing Secrets
 

@@ -72,6 +72,15 @@ STRIPE_SECRET_KEY="sk_test_..."
 STRIPE_WEBHOOK_SECRET="whsec_..." # from `stripe listen --forward-to localhost:3000/api/payments/stripe/webhook`
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..." # optional for Hosted Checkout v1
 STRIPE_CREDIT_TAX_CODE="" # optional; use the Stripe Tax dashboard default when unset
+KEYINVOICE_ENABLED="false" # set true only when testing fiscal document issuance
+KEYINVOICE_API_URL="https://login.keyinvoice.com/API5.php"
+KEYINVOICE_API_KEY="..." # required only when KEYINVOICE_ENABLED=true
+KEYINVOICE_DRAFT_ONLY="true" # local/ngrok safety: prepare a local draft payload without calling insertDocument
+KEYINVOICE_DOC_SERIES_ID="23"
+KEYINVOICE_PAYMENT_METHOD_ID_STRIPE="7"
+KEYINVOICE_TAX_ID_BY_RATE_JSON='{"6":"3"}'
+KEYINVOICE_FALLBACK_TAX_ID="3"
+KEYINVOICE_PRODUCT_IDS_BY_PACKAGE_KEY_JSON='{"credits5":"Mythoria-Pack-05","credits10":"Mythoria-Pack-10","credits30":"Mythoria-Pack-30","credits100":"Mythoria-Pack-100"}'
 NODE_ENV="development"
 NEXT_PUBLIC_FEATURE_FLAGS='{"ai_generation": true, "debug_mode": true}'
 ```

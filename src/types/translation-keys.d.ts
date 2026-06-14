@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE. Run: npm run i18n:keys
-// Total keys: 2503
+// Total keys: 2520
 export type TranslationKey =
   | 'AIEditModal.buttons.applyChanges'
   | 'AIEditModal.buttons.cancel'
@@ -2424,6 +2424,15 @@ export type TranslationKey =
   | 'historyTitle'
   | 'invalidRequest.message'
   | 'invalidRequest.title'
+  | 'invoiceStatus.credit_note_issued'
+  | 'invoiceStatus.credit_note_required'
+  | 'invoiceStatus.draft'
+  | 'invoiceStatus.failed'
+  | 'invoiceStatus.issued'
+  | 'invoiceStatus.issuing'
+  | 'invoiceStatus.not_available'
+  | 'invoiceStatus.pending'
+  | 'invoiceStatus.voided'
   | 'manageCookies'
   | 'manageCookiesDescription'
   | 'message'
@@ -2448,6 +2457,14 @@ export type TranslationKey =
   | 'partners.googleForStartups'
   | 'partners.inovaGaia'
   | 'partners.title'
+  | 'paymentHistoryTitle'
+  | 'paymentTable.amount'
+  | 'paymentTable.date'
+  | 'paymentTable.description'
+  | 'paymentTable.download'
+  | 'paymentTable.empty'
+  | 'paymentTable.invoice'
+  | 'paymentTable.status'
   | 'privacyLink'
   | 'rejectAll'
   | 'returnHome'
