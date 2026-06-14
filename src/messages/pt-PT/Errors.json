@@ -5,6 +5,8 @@
     "pleaseSignIn": "Por favor, inicie sessão para continuar",
     "storyNotAvailableYet": "Esta história ainda não está disponível.",
     "storyNotFoundGeneric": "História não encontrada.",
+    "storySignInRequired": "Esta história está protegida. Inicie sessão com a mesma conta que criou esta história e tente abrir o link novamente.",
+    "storyWrongAccount": "Esta história pertence a outra conta. Inicie sessão com a conta que recebeu o email da história e abra o link novamente.",
     "noPermission": "Não tem permissão para aceder a esta história.",
     "failedToLoad": "Falha ao carregar a história. Por favor, tente novamente.",
     "oops": "Ups!",

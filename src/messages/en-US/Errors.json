@@ -5,6 +5,8 @@
     "pleaseSignIn": "Please sign in to continue",
     "storyNotAvailableYet": "This story is not available yet.",
     "storyNotFoundGeneric": "Story not found.",
+    "storySignInRequired": "This story is locked. Please sign in with the same account that created this story, then try the link again.",
+    "storyWrongAccount": "This story belongs to another account. Sign in with the account that received the story email, then open the link again.",
     "noPermission": "You do not have permission to access this story.",
     "failedToLoad": "Failed to load the story. Please try again.",
     "oops": "Oops!",

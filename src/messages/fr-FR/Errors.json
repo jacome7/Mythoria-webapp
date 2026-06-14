@@ -5,6 +5,8 @@
     "pleaseSignIn": "Veuillez vous connecter pour continuer",
     "storyNotAvailableYet": "Cette histoire n'est pas encore disponible.",
     "storyNotFoundGeneric": "Histoire introuvable.",
+    "storySignInRequired": "Cette histoire est verrouillée. Connectez-vous avec le même compte que celui qui a créé cette histoire, puis réessayez le lien.",
+    "storyWrongAccount": "Cette histoire appartient à un autre compte. Connectez-vous avec le compte qui a reçu l'e-mail de l'histoire, puis ouvrez à nouveau le lien.",
     "noPermission": "Vous n'avez pas la permission d'accéder à cette histoire.",
     "failedToLoad": "N'a pas réussi à charger l'histoire. Veuillez réessayer.",
     "oops": "Oups!",

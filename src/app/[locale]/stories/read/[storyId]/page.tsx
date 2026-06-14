@@ -63,10 +63,12 @@ export default function ReadStoryPage() {
           const data = await response.json();
           setStory(data.story);
           setChapters(data.chapters);
+        } else if (response.status === 401) {
+          setLoadError(tErrors('storySignInRequired'));
+        } else if (response.status === 403) {
+          setLoadError(tErrors('storyWrongAccount'));
         } else if (response.status === 404) {
           setLoadError(tErrors('storyNotFoundGeneric'));
-        } else if (response.status === 403) {
-          setLoadError(tErrors('noPermission'));
         } else {
           setLoadError(tErrors('failedToLoad'));
         }

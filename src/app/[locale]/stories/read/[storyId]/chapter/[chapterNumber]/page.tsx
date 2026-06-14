@@ -61,10 +61,12 @@ export default function ReadChapterPage() {
           setStory(data.story);
           setChapters(data.chapters);
           setCurrentChapter(data.currentChapter);
+        } else if (response.status === 401) {
+          setError(tErrors('storySignInRequired'));
+        } else if (response.status === 403) {
+          setError(tErrors('storyWrongAccount'));
         } else if (response.status === 404) {
           setError(tErrors('storyNotFoundGeneric'));
-        } else if (response.status === 403) {
-          setError(tErrors('noPermission'));
         } else {
           setError(tErrors('failedToLoad'));
         }
