@@ -2,10 +2,7 @@ import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { notFound, permanentRedirect } from 'next/navigation';
 import LandingPageTemplate from '@/components/landing-pages/LandingPageTemplate';
-import {
-  getLandingPageBySlug,
-  getLandingPageStaticParams,
-} from '@/content/landing-pages';
+import { getLandingPageBySlug, getLandingPageStaticParams } from '@/content/landing-pages';
 import { routing } from '@/i18n/routing';
 import { buildAbsoluteUrl, buildLocalizedPath, buildLocalizedUrl } from '@/lib/seo';
 

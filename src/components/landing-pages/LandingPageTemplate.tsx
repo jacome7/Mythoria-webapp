@@ -129,7 +129,10 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
             {page.carefulBenefits.items.map((item) => (
-              <div key={item} className="rounded-2xl border border-primary/10 bg-white p-5 shadow-sm">
+              <div
+                key={item}
+                className="rounded-2xl border border-primary/10 bg-white p-5 shadow-sm"
+              >
                 <HeartHandshake className="mb-4 h-7 w-7 text-primary" aria-hidden="true" />
                 <p className="leading-relaxed text-base-content/75">{item}</p>
               </div>
@@ -327,18 +330,22 @@ function TwoColumnSection({
 }) {
   return (
     <section className="my-16 grid gap-6 lg:grid-cols-2">
-      {[{ title: leftTitle, body: leftBody }, { title: rightTitle, body: rightBody }].map(
-        (section) => (
-          <div key={section.title} className="rounded-2xl border border-primary/10 bg-white p-6 shadow-sm md:p-8">
-            <h2 className="font-display text-3xl font-bold text-[#33251c]">{section.title}</h2>
-            <div className="mt-5 space-y-4 text-lg leading-relaxed text-base-content/75">
-              {section.body.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
-            </div>
+      {[
+        { title: leftTitle, body: leftBody },
+        { title: rightTitle, body: rightBody },
+      ].map((section) => (
+        <div
+          key={section.title}
+          className="rounded-2xl border border-primary/10 bg-white p-6 shadow-sm md:p-8"
+        >
+          <h2 className="font-display text-3xl font-bold text-[#33251c]">{section.title}</h2>
+          <div className="mt-5 space-y-4 text-lg leading-relaxed text-base-content/75">
+            {section.body.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
           </div>
-        ),
-      )}
+        </div>
+      ))}
     </section>
   );
 }

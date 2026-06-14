@@ -78,33 +78,33 @@ Key files:
 
 ## Content Type Reference (`LandingPageContent`)
 
-| Field                  | Required | Purpose                                                                                  |
-| ---------------------- | -------- | ---------------------------------------------------------------------------------------- |
-| `slug`                 | yes      | URL slug under `/lp/`. Keep stable once indexed (changing it costs SEO / needs a redirect). |
-| `locale`               | yes      | Page locale (e.g. `pt-PT`). Must match the URL locale.                                   |
-| `title`                | yes      | The visible H1.                                                                          |
-| `metaTitle`            | yes      | `<title>` + OG/Twitter title.                                                            |
-| `metaDescription`      | yes      | Meta description + OG/Twitter description (keep ≤ ~155 chars).                            |
-| `primaryIntent`        | yes      | Analytics intent; appended to the create-story CTA query.                                |
-| `riskRating`           | yes      | `green` \| `yellow` \| `red` — editorial sensitivity flag.                               |
-| `updatedAt`            | yes      | `YYYY-MM-DD`. Drives the on-page "Atualizado em" line, `dateModified`, and sitemap `lastmod`. |
-| `indexable`            | yes      | `true` → indexable + included in sitemap; `false` → `noindex,nofollow` + excluded.       |
-| `breadcrumbLabel`      | no       | Short breadcrumb name (falls back to `title`).                                           |
-| `ogImageSrc`           | no       | Dedicated **1200×630** social image (falls back to `hero.imageSrc`).                      |
-| `primaryCta` / `secondaryCta` | yes | Button labels.                                                                         |
-| `hero`                 | yes      | `eyebrow`, `headline`, `subheadline`, `imageSrc`, `imageAlt`.                             |
-| `quickAnswer`          | yes      | `title`, `body` — one extractable answer paragraph.                                      |
-| `socialStoryExplainer` | no       | `title`, `body[]` — definitional explainer.                                              |
-| `intro` / `whyThisFits`| yes      | `title`, `body[]` two-column blocks.                                                     |
-| `carefulBenefits`      | yes      | `title`, `items[]` (5 statements).                                                       |
-| `useCases`             | no       | `title`, optional `intro`, `items[]` of `{ title, body }` concrete scenarios.            |
-| `books`                | yes      | 5 example concept cards. **`imageAlt` must match the title printed on the cover image.** |
-| `process` / `formats`  | yes      | `title` + `steps[]` / `items[]`.                                                         |
-| `forProfessionals`     | no       | `title`, `body[]`, `ctaLabel`, optional `ctaHref` (defaults to the localized `contactUs`).|
-| `glossary`             | no       | `title`, `terms[]` of `{ term, definition }`.                                            |
-| `faq`                  | yes      | `{ question, answer }[]` — also emitted as `FAQPage` JSON-LD.                             |
-| `safetyNote`           | yes      | `title`, `body` disclaimer.                                                              |
-| `finalCta`             | yes      | `title`, `body`.                                                                         |
+| Field                         | Required | Purpose                                                                                       |
+| ----------------------------- | -------- | --------------------------------------------------------------------------------------------- |
+| `slug`                        | yes      | URL slug under `/lp/`. Keep stable once indexed (changing it costs SEO / needs a redirect).   |
+| `locale`                      | yes      | Page locale (e.g. `pt-PT`). Must match the URL locale.                                        |
+| `title`                       | yes      | The visible H1.                                                                               |
+| `metaTitle`                   | yes      | `<title>` + OG/Twitter title.                                                                 |
+| `metaDescription`             | yes      | Meta description + OG/Twitter description (keep ≤ ~155 chars).                                |
+| `primaryIntent`               | yes      | Analytics intent; appended to the create-story CTA query.                                     |
+| `riskRating`                  | yes      | `green` \| `yellow` \| `red` — editorial sensitivity flag.                                    |
+| `updatedAt`                   | yes      | `YYYY-MM-DD`. Drives the on-page "Atualizado em" line, `dateModified`, and sitemap `lastmod`. |
+| `indexable`                   | yes      | `true` → indexable + included in sitemap; `false` → `noindex,nofollow` + excluded.            |
+| `breadcrumbLabel`             | no       | Short breadcrumb name (falls back to `title`).                                                |
+| `ogImageSrc`                  | no       | Dedicated **1200×630** social image (falls back to `hero.imageSrc`).                          |
+| `primaryCta` / `secondaryCta` | yes      | Button labels.                                                                                |
+| `hero`                        | yes      | `eyebrow`, `headline`, `subheadline`, `imageSrc`, `imageAlt`.                                 |
+| `quickAnswer`                 | yes      | `title`, `body` — one extractable answer paragraph.                                           |
+| `socialStoryExplainer`        | no       | `title`, `body[]` — definitional explainer.                                                   |
+| `intro` / `whyThisFits`       | yes      | `title`, `body[]` two-column blocks.                                                          |
+| `carefulBenefits`             | yes      | `title`, `items[]` (5 statements).                                                            |
+| `useCases`                    | no       | `title`, optional `intro`, `items[]` of `{ title, body }` concrete scenarios.                 |
+| `books`                       | yes      | 5 example concept cards. **`imageAlt` must match the title printed on the cover image.**      |
+| `process` / `formats`         | yes      | `title` + `steps[]` / `items[]`.                                                              |
+| `forProfessionals`            | no       | `title`, `body[]`, `ctaLabel`, optional `ctaHref` (defaults to the localized `contactUs`).    |
+| `glossary`                    | no       | `title`, `terms[]` of `{ term, definition }`.                                                 |
+| `faq`                         | yes      | `{ question, answer }[]` — also emitted as `FAQPage` JSON-LD.                                 |
+| `safetyNote`                  | yes      | `title`, `body` disclaimer.                                                                   |
+| `finalCta`                    | yes      | `title`, `body`.                                                                              |
 
 Optional sections render **only when present**, so the template stays reusable across future pages.
 
