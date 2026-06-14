@@ -5,6 +5,8 @@
     "pleaseSignIn": "Bitte melde dich an, um fortzufahren",
     "storyNotAvailableYet": "Diese Geschichte ist noch nicht verfügbar.",
     "storyNotFoundGeneric": "Geschichte nicht gefunden.",
+    "storySignInRequired": "Diese Geschichte ist gesperrt. Melde dich mit demselben Konto an, mit dem diese Geschichte erstellt wurde, und versuche den Link erneut.",
+    "storyWrongAccount": "Diese Geschichte gehört zu einem anderen Konto. Melde dich mit dem Konto an, das die Story-E-Mail erhalten hat, und öffne den Link erneut.",
     "noPermission": "Du hast keine Berechtigung, auf diese Geschichte zuzugreifen.",
     "failedToLoad": "Die Geschichte konnte nicht geladen werden. Bitte versuche es erneut.",
     "oops": "Ups!",

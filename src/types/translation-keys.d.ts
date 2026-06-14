@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE. Run: npm run i18n:keys
-// Total keys: 2501
+// Total keys: 2503
 export type TranslationKey =
   | 'AIEditModal.buttons.applyChanges'
   | 'AIEditModal.buttons.cancel'
@@ -715,6 +715,8 @@ export type TranslationKey =
   | 'Errors.pleaseSignIn'
   | 'Errors.storyNotAvailableYet'
   | 'Errors.storyNotFoundGeneric'
+  | 'Errors.storySignInRequired'
+  | 'Errors.storyWrongAccount'
   | 'Faq.allSections'
   | 'Faq.error'
   | 'Faq.loading'
