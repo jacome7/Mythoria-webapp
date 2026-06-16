@@ -143,11 +143,11 @@ config/local.json
 
 # Backup files
 *.backup
+*.backup.*
 *.bak
 backup/
 
 # Docker
-.dockerignore
 docker-compose.override.yml
 
 # Cloud Build

@@ -1,21 +1,24 @@
 import type { LandingPageContent } from './types';
 
 const slug = 'livro-personalizado-criancas-autistas';
-const assetBase = `/landing-page-assets/${slug}`;
+const assetBase = `/landing-pages/${slug}/assets`;
+
+const sampleAudioSrc =
+  'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=';
 
 export const autismStoriesLandingPage: LandingPageContent = {
   slug,
   locale: 'pt-PT',
   title: 'Livros personalizados para crianças com PEA e PHDA',
-  metaTitle: 'Livros personalizados para crianças com PEA e PHDA | Mythoria',
+  metaTitle: 'Livros personalizados para PEA, PHDA e neurodivergência | Mythoria',
   metaDescription:
     'Histórias personalizadas para crianças com PEA ou PHDA: use interesses e rotinas para antecipar situações novas, como o dentista ou a escola. Ler, ouvir ou imprimir.',
   primaryIntent: 'personalised_autism_stories',
   riskRating: 'yellow',
-  updatedAt: '2026-06-13',
+  updatedAt: '2026-06-15',
   indexable: true,
   breadcrumbLabel: 'Livros para crianças com PEA e PHDA',
-  ogImageSrc: `${assetBase}/hero/og-cover.jpg`,
+  ogImageSrc: `${assetBase}/hero/og-cover.svg`,
   primaryCta: 'Começar a minha história',
   secondaryCta: 'Ver exemplos',
   hero: {
@@ -23,9 +26,9 @@ export const autismStoriesLandingPage: LandingPageContent = {
     headline: 'Uma história feita com os detalhes que a criança já conhece e adora.',
     subheadline:
       'Transforme interesses, rotinas, pessoas e lugares familiares num livro personalizado para ler em conjunto, ouvir com calma, partilhar, imprimir ou guardar.',
-    imageSrc: `${assetBase}/hero/neurodiversity-reading-moment.jpeg`,
+    imageSrc: `${assetBase}/hero/mapa-primeiro-dia-hero.svg`,
     imageAlt:
-      'Livro personalizado Mythoria “Beatriz e as Constelações” pousado num ambiente calmo, ao lado de um mapa de estrelas e de uma pequena lanterna',
+      'Livro personalizado Mythoria “O Mapa do Primeiro Dia” pousado numa mesa clara, ao lado de cartões visuais e de um mapa verde',
   },
   quickAnswer: {
     title: 'Resposta rápida',
@@ -65,7 +68,7 @@ export const autismStoriesLandingPage: LandingPageContent = {
   useCases: {
     title: 'Situações em que uma história pode ajudar',
     intro:
-      'Os pais e os profissionais raramente procuram “um livro”; procuram ajuda para um momento concreto. Aqui ficam situações em que uma história personalizada pode preparar a criança — sempre como apoio, nunca como tratamento.',
+      'Os pais e os profissionais raramente querem apenas “um livro”; querem apoio para um momento concreto. Aqui ficam situações em que uma história personalizada pode preparar a criança — sempre como apoio, nunca como tratamento.',
     items: [
       {
         title: 'Preparar uma ida ao dentista',
@@ -108,68 +111,98 @@ export const autismStoriesLandingPage: LandingPageContent = {
   books: [
     {
       id: 'book-01',
-      title: 'Mateus e o Leão',
+      title: 'O Comboio que Sabia Esperar',
       synopsis:
-        'O Mateus leva o seu leão para todo o lado. Quando precisa de coragem — numa consulta ou num lugar novo — o leão lembra-lhe que pode respirar fundo e dar um passo de cada vez.',
+        'Tomás adora comboios e usa o seu Comboio Azul para atravessar a manhã passo a passo: acordar, vestir, tomar o pequeno-almoço e chegar à escola com tempo para respirar.',
       excerpt:
-        '“Vamos juntos”, sussurrou o Mateus ao leão. “Primeiro entramos, depois sentamo-nos. Eu seguro-te a ti, tu seguras-me a mim.”',
-      imageSrc: `${assetBase}/books/book-01-watercolor-cover.jpg`,
+        '“Agora é a estação do pequeno-almoço”, disse a mãe. “O comboio não precisa de correr.”',
+      imageSrc: `${assetBase}/books/o-comboio-que-sabia-esperar.svg`,
       imageAlt:
-        'Capa do livro personalizado “Mateus e o Leão”, com um menino a abraçar um leão, ao lado de um peluche num quarto acolhedor',
-      styleLabel: 'Aguarela',
-      contextLabel: 'Conforto e coragem',
+        'Fotografia do livro personalizado “O Comboio que Sabia Esperar” num ambiente calmo com um comboio azul e cartões de rotina',
+      styleLabel: 'Aguarela calma',
+      contextLabel: 'Rotina da manhã',
+      ageLabel: '4-6 anos',
+      sampleChapterHref: '/pt-PT/p/o-comboio-que-sabia-esperar',
+      audio: {
+        label: 'Ouvir amostra',
+        src: sampleAudioSrc,
+      },
     },
     {
       id: 'book-02',
-      title: 'O Castelo de Estrelas da Maria',
+      title: 'A Ilha dos Sons Suaves',
       synopsis:
-        'Ao deitar-se, a Maria transforma o quarto num castelo de estrelas. A história acompanha uma rotina de dormir calma, com luzes suaves e passos previsíveis até adormecer.',
+        'Mara visita uma ilha onde cada som tem cor e tamanho. Com uma lanterna pequena, aprende a escolher caminhos mais calmos e a pedir companhia quando o mundo parece demasiado cheio.',
       excerpt:
-        '“Quando as estrelas se acendem”, disse a Maria, “é sinal de que o dia já pode descansar.”',
-      imageSrc: `${assetBase}/books/book-02-calm-cover.jpeg`,
+        'A Mara levantou a lanterna. O som do sino ficou mais longe, como se tivesse encontrado uma estrada própria no ar.',
+      imageSrc: `${assetBase}/books/a-ilha-dos-sons-suaves.svg`,
       imageAlt:
-        'Capa do livro “O Castelo de Estrelas da Maria”, com uma menina na cama rodeada de estrelas brilhantes e um castelo ao fundo',
-      styleLabel: 'Ilustração digital',
-      contextLabel: 'Rotina de dormir',
+        'Fotografia do livro personalizado “A Ilha dos Sons Suaves” num recanto de leitura luminoso com tecidos suaves',
+      styleLabel: 'Lápis de cor',
+      contextLabel: 'Sons e escolhas',
+      ageLabel: '7-9 anos',
+      sampleChapterHref: '/pt-PT/p/a-ilha-dos-sons-suaves',
+      audio: {
+        label: 'Ouvir amostra',
+        src: sampleAudioSrc,
+      },
     },
     {
       id: 'book-03',
-      title: 'Turma 4.º A no Planetário do Porto',
+      title: 'O Mapa do Primeiro Dia',
       synopsis:
-        'Antes da visita de estudo, a turma descobre numa história o que vai ver no planetário: as luzes baixas, o céu de estrelas e onde se sentar. Assim, o passeio novo já parece familiar.',
+        'Leo leva um mapa verde para o primeiro dia numa sala nova. A mãe e a professora Sofia ajudam-no a reconhecer a porta, o cabide, o canto tranquilo e o regresso a casa.',
       excerpt:
-        '“No planetário, as luzes apagam-se devagar”, explicou a professora. “E depois… aparece o céu inteiro.”',
-      imageSrc: `${assetBase}/books/book-03-map-cover.jpeg`,
+        '“Primeiro vejo a porta. Depois encontro o cabide. Depois digo olá à professora Sofia.”',
+      imageSrc: `${assetBase}/books/o-mapa-do-primeiro-dia.svg`,
       imageAlt:
-        'Capa do livro “Turma 4.º A no Planetário do Porto”, com um grupo de crianças a apontar para constelações',
-      styleLabel: 'Arte digital',
-      contextLabel: 'Visita a um lugar novo',
+        'Fotografia do livro personalizado “O Mapa do Primeiro Dia” numa mesa clara com um mapa verde e cartões visuais',
+      styleLabel: 'Arte digital suave',
+      contextLabel: 'Primeiro dia',
+      ageLabel: '5-7 anos',
+      sampleChapterHref: '/pt-PT/p/o-mapa-do-primeiro-dia',
+      audio: {
+        label: 'Ouvir amostra',
+        src: sampleAudioSrc,
+      },
     },
     {
       id: 'book-04',
-      title: 'A Nossa Horta de Descobertas',
+      title: 'O Meu Irmão Tem um Ritmo de Estrela',
       synopsis:
-        'A Inês e o avô cuidam de uma horta passo a passo: cavar, semear, regar e esperar. Uma atividade prática e repetida que ajuda a manter a atenção e a celebrar cada pequena descoberta.',
+        'Clara quer brincar às naves espaciais com Nico, mas Nico prefere alinhar estrelas de papel. Com a tia Marta, descobrem uma regra simples: perguntar, esperar, escolher.',
       excerpt:
-        '“Primeiro a semente, depois a água, depois a paciência”, riu o avô. “A horta gosta de uma ordem.”',
-      imageSrc: `${assetBase}/books/book-04-family-cover.jpeg`,
+        '“O Nico não está longe”, disse a tia Marta. “Está numa órbita dele. Podemos fazer uma ponte, se perguntarmos primeiro.”',
+      imageSrc: `${assetBase}/books/o-meu-irmao-tem-um-ritmo-de-estrela.svg`,
       imageAlt:
-        'Capa do livro “A Nossa Horta de Descobertas”, com uma menina com uma lupa e um avô a cuidarem de uma horta soalheira',
-      styleLabel: 'Ilustração clássica',
-      contextLabel: 'Atenção e atividade',
+        'Fotografia do livro personalizado “O Meu Irmão Tem um Ritmo de Estrela” num recanto infantil com estrelas de papel',
+      styleLabel: 'Desenho manual',
+      contextLabel: 'Ritmos diferentes',
+      ageLabel: '7-10 anos',
+      sampleChapterHref: '/pt-PT/p/o-meu-irmao-tem-um-ritmo-de-estrela',
+      audio: {
+        label: 'Ouvir amostra',
+        src: sampleAudioSrc,
+      },
     },
     {
       id: 'book-05',
-      title: 'Recordar o Avô Manuel',
+      title: 'A Caixa das Coisas Queridas',
       synopsis:
-        'Uma família guarda memórias do avô Manuel: o banco junto ao rio, o cachecol cor de laranja, as histórias que contava. Uma forma serena de falar de saudade e de emoções.',
+        'Noa e a avó Helena preparam uma pequena caixa azul para um almoço de família: uma pedra lisa, um pano macio e um cartão de pausa ajudam a lembrar escolhas possíveis.',
       excerpt:
-        '“O avô gostava deste banco”, disse a mãe. “Podemos sentar-nos aqui e lembrar uma história de cada vez.”',
-      imageSrc: `${assetBase}/books/book-05-keepsake-cover.jpeg`,
+        '“Não é uma caixa para esconder o mundo”, disse a avó. “É uma caixa para te lembrar das escolhas que podes levar contigo.”',
+      imageSrc: `${assetBase}/books/a-caixa-das-coisas-queridas.svg`,
       imageAlt:
-        'Capa do livro “Recordar o Avô Manuel”, em lápis de cor, com um banco e um cachecol com vista para uma vila junto ao rio',
-      styleLabel: 'Lápis de cor',
-      contextLabel: 'Memórias e emoções',
+        'Fotografia do livro personalizado “A Caixa das Coisas Queridas” numa mesa clara com uma caixa azul e objetos familiares',
+      styleLabel: 'Minimalista suave',
+      contextLabel: 'Objetos familiares',
+      ageLabel: '5-7 anos',
+      sampleChapterHref: '/pt-PT/p/a-caixa-das-coisas-queridas',
+      audio: {
+        label: 'Ouvir amostra',
+        src: sampleAudioSrc,
+      },
     },
   ],
   process: {

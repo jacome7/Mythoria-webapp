@@ -8,8 +8,7 @@ specific intent or niche (a topic, audience, or use case), is written directly i
 assembled from a single **typed content object** rendered by one shared template. There is no CMS —
 content is version-controlled TypeScript.
 
-The engine is built so a new page is **content only**: author a content file, drop in assets,
-register it. The template, metadata, structured data, and sitemap inclusion are handled for you.
+The engine is built so a new page is **content-first**: author a typed content file, keep editorial/source artifacts in docs, and place only public runtime assets under the page's `public/landing-pages/{slug}/assets/` folder. The template, metadata, structured data, and sitemap inclusion are handled for you.
 
 ---
 
@@ -143,33 +142,41 @@ add a page.
 
 ## Assets
 
-Store assets under `public/landing-page-assets/{slug}/`:
+Use a strict source/runtime split:
 
 ```
-public/landing-page-assets/{slug}/
+src/content/landing-pages/<name>.<locale>.ts        # canonical runtime content
+docs/landing-pages/{slug}/                          # briefs, research, prompts, source JSON
+public/landing-pages/{slug}/assets/                 # only files that must be publicly served
 ├── hero/
-│   ├── <hero-image>           # in-page hero (any ratio)
-│   └── og-cover.jpg           # 1200×630 social image referenced by ogImageSrc
-└── books/
-    └── book-0N-*-cover.*      # five example covers
+│   ├── <hero-image>                                # in-page hero (any ratio)
+│   └── og-cover.*                                  # 1200×630 social image referenced by ogImageSrc
+├── books/
+│   └── <book-slug>.*                               # example book card artwork
+└── audio/
+    └── <book-slug>.*                               # optional sample audio files
 ```
 
-> The cover images carry **printed titles**. The content `title` and `imageAlt` for each book MUST
-> match the title on the image — otherwise the card text contradicts the cover. (`landing-pages.test.ts`
-> asserts `imageAlt` contains the book `title`.)
+Do **not** create or reference `public/landing-page-assets/`; that folder is deprecated.
+
+> The cover images carry **printed titles** when using rendered cover artwork. The content `title`
+> and `imageAlt` for each book MUST match the title represented by the asset — otherwise the card
+> text contradicts the visual. (`landing-pages.test.ts` asserts `imageAlt` contains the book `title`.)
 
 ---
 
 ## How to Add a New Landing Page
 
 1. **Create the content file:** `src/content/landing-pages/<name>.<locale>.ts` exporting a
-   `LandingPageContent` object. Use the `assetBase = /landing-page-assets/${slug}` pattern.
-2. **Add assets** under `public/landing-page-assets/{slug}/{hero,books}/`, including a 1200×630
-   `og-cover.jpg`.
-3. **Register it** in `src/content/landing-pages/index.ts` (import + add to the `landingPages` array).
-4. **Set `indexable`** (`true` to publish to search + sitemap).
-5. **Build** — the route, metadata, structured data, and sitemap entry are generated automatically.
-6. **Extend `landing-pages.test.ts`** if the page introduces new editorial guarantees.
+   `LandingPageContent` object. If the page has static assets, use `assetBase = /landing-pages/${slug}/assets`.
+2. **Add public runtime assets** under `public/landing-pages/{slug}/assets/{hero,books,audio}/`, including a 1200×630
+   `og-cover.*` when social sharing needs a dedicated image.
+3. **Move editorial/source artifacts** (briefs, prompts, draft JSON, checklists, research notes) to
+   `docs/landing-pages/{slug}/` so they are not served as public app assets.
+4. **Register it** in `src/content/landing-pages/index.ts` (import + add to the `landingPages` array).
+5. **Set `indexable`** (`true` to publish to search + sitemap).
+6. **Build** — the route, metadata, structured data, and sitemap entry are generated automatically.
+7. **Extend `landing-pages.test.ts`** if the page introduces new editorial guarantees.
 
 ---
 
@@ -192,5 +199,6 @@ public/landing-page-assets/{slug}/
 - **Template + JSON-LD:** `src/components/landing-pages/LandingPageTemplate.tsx`
 - **Route + metadata:** `src/app/[locale]/lp/[slug]/page.tsx`
 - **Tests:** `src/content/landing-pages/landing-pages.test.ts`
-- **Assets:** `public/landing-page-assets/{slug}/`
+- **Runtime assets:** `public/landing-pages/{slug}/assets/`
+- **Editorial/source artifacts:** `docs/landing-pages/{slug}/`
 - **SEO helpers:** `src/lib/seo.ts`
