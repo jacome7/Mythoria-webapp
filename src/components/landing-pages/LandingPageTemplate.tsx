@@ -3,6 +3,7 @@ import Link from 'next/link';
 import {
   ArrowRight,
   BookOpen,
+  FileText,
   CheckCircle2,
   Headphones,
   HeartHandshake,
@@ -172,15 +173,15 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
           <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-primary">
-                Exemplos ficcionais
+                Amostras completas
               </p>
               <h2 className="font-display mt-2 text-3xl font-bold text-[#33251c] md:text-4xl">
-                Cinco ideias de livros para começar
+                Cinco livros focados em PEA, PHDA e neurodivergência
               </h2>
             </div>
             <p className="max-w-2xl text-base-content/70">
-              Estes conceitos mostram caminhos possíveis. Não são testemunhos reais nem histórias
-              públicas já publicadas.
+              Estes conceitos mostram caminhos possíveis com capas, excertos e amostras áudio. Não
+              são testemunhos reais nem histórias públicas já publicadas.
             </p>
           </div>
 
@@ -201,12 +202,16 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
                 </div>
                 <div className="space-y-3 p-5">
                   <div className="flex flex-wrap gap-2">
-                    <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                      {book.contextLabel}
-                    </span>
-                    <span className="rounded-full bg-base-200 px-3 py-1 text-xs font-semibold text-base-content/65">
-                      {book.styleLabel}
-                    </span>
+                    {[book.contextLabel, book.styleLabel, book.ageLabel]
+                      .filter(Boolean)
+                      .map((label) => (
+                        <span
+                          key={label}
+                          className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
+                        >
+                          {label}
+                        </span>
+                      ))}
                   </div>
                   <h3 className="font-display text-xl font-bold leading-tight text-[#33251c]">
                     {book.title}
@@ -215,6 +220,26 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
                   <blockquote className="border-l-4 border-accent/60 pl-3 text-sm italic text-base-content/65">
                     {book.excerpt}
                   </blockquote>
+                  {book.audio && (
+                    <div className="rounded-xl bg-base-200 p-3">
+                      <p className="mb-2 text-sm font-semibold text-[#33251c]">
+                        {book.audio.label}
+                      </p>
+                      <audio controls preload="none" className="w-full">
+                        <source src={book.audio.src} type="audio/wav" />O seu navegador não suporta
+                        áudio HTML5.
+                      </audio>
+                    </div>
+                  )}
+                  {book.sampleChapterHref && (
+                    <Link
+                      href={book.sampleChapterHref}
+                      className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
+                    >
+                      <FileText className="h-4 w-4" aria-hidden="true" />
+                      Ler capítulo de amostra
+                    </Link>
+                  )}
                 </div>
               </article>
             ))}

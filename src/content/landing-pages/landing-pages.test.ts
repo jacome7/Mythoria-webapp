@@ -46,13 +46,39 @@ describe('landing page content registry', () => {
     expect(page?.faq.length).toBeGreaterThanOrEqual(8);
     expect(page?.ogImageSrc).toBeTruthy();
     expect(page?.breadcrumbLabel).toBeTruthy();
+    expect(page?.updatedAt).toBe('2026-06-15');
   });
 
-  it('keeps each book cover alt text aligned with its title', () => {
+  it('uses the live PEA/PHDA sample books with audio samples', () => {
     const page = getLandingPageBySlug('livro-personalizado-criancas-autistas');
+
+    expect(page?.books.map((book) => book.title)).toEqual([
+      'O Comboio que Sabia Esperar',
+      'A Ilha dos Sons Suaves',
+      'O Mapa do Primeiro Dia',
+      'O Meu Irmão Tem um Ritmo de Estrela',
+      'A Caixa das Coisas Queridas',
+    ]);
 
     page?.books.forEach((book) => {
       expect(book.imageAlt).toContain(book.title);
+      expect(book.imageSrc).toContain(
+        '/landing-pages/livro-personalizado-criancas-autistas/assets/books/',
+      );
+      expect(book.audio?.src).toMatch(/^data:audio\/wav;base64,/);
+      expect(book.sampleChapterHref).toContain('/pt-PT/p/');
     });
+  });
+
+  it('does not reference deprecated landing-page-assets paths or removed draft stories', () => {
+    const page = getLandingPageBySlug('livro-personalizado-criancas-autistas');
+    const serialized = JSON.stringify(page);
+
+    expect(serialized).not.toContain('/landing-page-assets/');
+    expect(serialized).not.toContain('Mateus e o Leão');
+    expect(serialized).not.toContain('O Castelo de Estrelas da Maria');
+    expect(serialized).not.toContain('Turma 4.º A no Planetário do Porto');
+    expect(serialized).not.toContain('A Nossa Horta de Descobertas');
+    expect(serialized).not.toContain('Recordar o Avô Manuel');
   });
 });

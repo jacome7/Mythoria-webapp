@@ -1,3 +1,8 @@
+export interface LandingPageBookAudio {
+  src: string;
+  label: string;
+}
+
 export interface LandingPageBook {
   id: string;
   title: string;
@@ -7,6 +12,9 @@ export interface LandingPageBook {
   imageAlt: string;
   styleLabel: string;
   contextLabel: string;
+  ageLabel?: string;
+  sampleChapterHref?: string;
+  audio?: LandingPageBookAudio;
 }
 
 export interface LandingPageFaq {
@@ -36,7 +44,7 @@ export interface LandingPageContent {
   indexable: boolean;
   /** Short label for the breadcrumb / structured data (falls back to `title`). */
   breadcrumbLabel?: string;
-  /** Dedicated 1200x630 social/OG image (falls back to `hero.imageSrc`). */
+  /** Dedicated 1200x630 social image (falls back to `hero.imageSrc`). */
   ogImageSrc?: string;
   primaryCta: string;
   secondaryCta: string;
