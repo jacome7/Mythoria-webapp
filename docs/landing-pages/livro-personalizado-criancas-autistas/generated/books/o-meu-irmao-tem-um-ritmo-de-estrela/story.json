@@ -1,0 +1,42 @@
+{
+  "id": "book-04",
+  "title": "O Meu Irmão Tem um Ritmo de Estrela",
+  "slug": "o-meu-irmao-tem-um-ritmo-de-estrela",
+  "language": "pt-PT",
+  "targetAudience": "children_7-10",
+  "graphicalStyle": "hand_drawn",
+  "novelStyle": "contemporary",
+  "synopsis": "Clara quer brincar com o irmão, mas descobre que cada pessoa tem o seu ritmo. Entre planetas de papel, almofadas e um telescópio imaginário, os dois inventam uma forma de estar juntos.",
+  "shortExcerpt": "Clara batia palmas muito depressa. Nico olhava para a janela. Então Clara desenhou uma estrela no chão e perguntou baixinho: 'Esta velocidade serve para nós?'",
+  "fictionalUserContext": {
+    "buyerName": "Marta",
+    "recipientName": "Clara e Nico",
+    "relationship": "tia e sobrinhos",
+    "context": "Família fictícia que quer uma história sobre irmãos com ritmos diferentes, sem transformar a diferença em problema."
+  },
+  "safetyNotes": [
+    "Evitar narrativas onde uma criança tem de corrigir ou salvar a outra.",
+    "Usar diferença de ritmo como imagem afetiva, não como etiqueta clínica."
+  ],
+  "chapters": [
+    {
+      "number": 1,
+      "title": "Órbitas Diferentes",
+      "summary": "Clara começa a perceber que brincar junto não precisa de ter o mesmo ritmo.",
+      "path": "chapters/chapter-01.md"
+    },
+    {
+      "number": 2,
+      "title": "A Ponte de Papel",
+      "summary": "Os irmãos experimentam uma forma respeitosa de convidar sem obrigar.",
+      "path": "chapters/chapter-02.md"
+    },
+    {
+      "number": 3,
+      "title": "A Nossa Velocidade",
+      "summary": "Clara e Nico inventam uma brincadeira com espera, escolha e ternura.",
+      "path": "chapters/chapter-03.md"
+    }
+  ],
+  "status": "static_review_only"
+}

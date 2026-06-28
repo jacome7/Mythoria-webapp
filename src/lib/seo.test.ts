@@ -5,6 +5,7 @@ jest.mock('@/i18n/routing', () => ({
 }));
 
 import {
+  buildAbsoluteUrl,
   buildLocalizedUrl,
   getCanonicalRedirectPath,
   getStaticLocalizedHreflangLinks,
@@ -14,6 +15,16 @@ describe('seo helpers', () => {
   it('builds slashless canonical localized URLs', () => {
     expect(buildLocalizedUrl('pt-PT', '/pricing/')).toBe('https://mythoria.pt/pt-PT/pricing');
     expect(buildLocalizedUrl('en-US')).toBe('https://mythoria.pt/en-US');
+  });
+
+  it('keeps already absolute asset URLs unchanged', () => {
+    expect(
+      buildAbsoluteUrl(
+        'https://storage.googleapis.com/mythoria-public/landing-page-assets/workshops-criancas/hero/og-cover.jpg',
+      ),
+    ).toBe(
+      'https://storage.googleapis.com/mythoria-public/landing-page-assets/workshops-criancas/hero/og-cover.jpg',
+    );
   });
 
   it('generates hreflang links only for supported static localized paths', () => {
@@ -30,5 +41,6 @@ describe('seo helpers', () => {
     expect(getCanonicalRedirectPath('/en-us/')).toBe('/en-US');
     expect(getCanonicalRedirectPath('/pt-PT/get-inspired/')).toBe('/pt-PT/get-inspired');
     expect(getCanonicalRedirectPath('/pt-PT/get-inspired')).toBeNull();
+    expect(getCanonicalRedirectPath('/pt-PT/lp/')).toBeNull();
   });
 });

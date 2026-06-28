@@ -2,9 +2,7 @@ import type { LandingPageContent } from './types';
 
 const slug = 'livro-personalizado-criancas-autistas';
 const assetBase = `/landing-pages/${slug}/assets`;
-
-const sampleAudioSrc =
-  'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=';
+const publicAudioBase = `https://storage.googleapis.com/mythoria-public/landing-page-assets/${slug}/audio`;
 
 export const autismStoriesLandingPage: LandingPageContent = {
   slug,
@@ -18,7 +16,7 @@ export const autismStoriesLandingPage: LandingPageContent = {
   updatedAt: '2026-06-15',
   indexable: true,
   breadcrumbLabel: 'Livros para crianças com PEA e PHDA',
-  ogImageSrc: `${assetBase}/hero/og-cover.svg`,
+  ogImageSrc: `${assetBase}/hero/og-cover.jpeg`,
   primaryCta: 'Começar a minha história',
   secondaryCta: 'Ver exemplos',
   hero: {
@@ -26,7 +24,7 @@ export const autismStoriesLandingPage: LandingPageContent = {
     headline: 'Uma história feita com os detalhes que a criança já conhece e adora.',
     subheadline:
       'Transforme interesses, rotinas, pessoas e lugares familiares num livro personalizado para ler em conjunto, ouvir com calma, partilhar, imprimir ou guardar.',
-    imageSrc: `${assetBase}/hero/mapa-primeiro-dia-hero.svg`,
+    imageSrc: `${assetBase}/hero/hero.jpeg`,
     imageAlt:
       'Livro personalizado Mythoria “O Mapa do Primeiro Dia” pousado numa mesa clara, ao lado de cartões visuais e de um mapa verde',
   },
@@ -116,17 +114,28 @@ export const autismStoriesLandingPage: LandingPageContent = {
         'Tomás adora comboios e usa o seu Comboio Azul para atravessar a manhã passo a passo: acordar, vestir, tomar o pequeno-almoço e chegar à escola com tempo para respirar.',
       excerpt:
         '“Agora é a estação do pequeno-almoço”, disse a mãe. “O comboio não precisa de correr.”',
-      imageSrc: `${assetBase}/books/o-comboio-que-sabia-esperar.svg`,
+      imageSrc: `${assetBase}/books/o-comboio-que-sabia-esperar/card.jpeg`,
       imageAlt:
         'Fotografia do livro personalizado “O Comboio que Sabia Esperar” num ambiente calmo com um comboio azul e cartões de rotina',
-      styleLabel: 'Aguarela calma',
+      styleLabel: 'Aguarela minimalista',
       contextLabel: 'Rotina da manhã',
       ageLabel: '4-6 anos',
-      sampleChapterHref: '/pt-PT/p/o-comboio-que-sabia-esperar',
-      audio: {
-        label: 'Ouvir amostra',
-        src: sampleAudioSrc,
-      },
+      chapters: [
+        {
+          title: 'A Estação da Mochila',
+          summary: 'Tomás transforma o início da manhã numa primeira paragem clara e segura.',
+        },
+        {
+          title: 'A Estação do Pequeno-Almoço',
+          summary: 'A rotina avança com frases curtas, escolhas pequenas e tempo para respirar.',
+        },
+        {
+          title: 'Chegar com Tempo',
+          summary: 'A viagem termina na escola com previsibilidade, companhia e uma chegada calma.',
+        },
+      ],
+      audioSampleTitle: 'Ouvir excerto áudio',
+      audioSampleSrc: `${publicAudioBase}/o-comboio-que-sabia-esperar-sample.mp3`,
     },
     {
       id: 'book-02',
@@ -135,17 +144,29 @@ export const autismStoriesLandingPage: LandingPageContent = {
         'Mara visita uma ilha onde cada som tem cor e tamanho. Com uma lanterna pequena, aprende a escolher caminhos mais calmos e a pedir companhia quando o mundo parece demasiado cheio.',
       excerpt:
         'A Mara levantou a lanterna. O som do sino ficou mais longe, como se tivesse encontrado uma estrada própria no ar.',
-      imageSrc: `${assetBase}/books/a-ilha-dos-sons-suaves.svg`,
+      imageSrc: `${assetBase}/books/a-ilha-dos-sons-suaves/card.jpeg`,
       imageAlt:
         'Fotografia do livro personalizado “A Ilha dos Sons Suaves” num recanto de leitura luminoso com tecidos suaves',
-      styleLabel: 'Lápis de cor',
+      styleLabel: 'Minimalista suave',
       contextLabel: 'Sons e escolhas',
       ageLabel: '7-9 anos',
-      sampleChapterHref: '/pt-PT/p/a-ilha-dos-sons-suaves',
-      audio: {
-        label: 'Ouvir amostra',
-        src: sampleAudioSrc,
-      },
+      chapters: [
+        {
+          title: 'A Lanterna Dourada',
+          summary: 'Mara chega a uma ilha onde os sons aparecem com cor, tamanho e distância.',
+        },
+        {
+          title: 'O Caminho do Vento Leve',
+          summary: 'Mara escolhe o percurso mais tranquilo e aprende que pode mudar de caminho.',
+        },
+        {
+          title: 'O Silêncio Azul',
+          summary:
+            'A aventura termina num recanto de leitura onde Mara se sente acompanhada sem pressa.',
+        },
+      ],
+      audioSampleTitle: 'Ouvir excerto áudio',
+      audioSampleSrc: `${publicAudioBase}/a-ilha-dos-sons-suaves-sample.mp3`,
     },
     {
       id: 'book-03',
@@ -154,17 +175,29 @@ export const autismStoriesLandingPage: LandingPageContent = {
         'Leo leva um mapa verde para o primeiro dia numa sala nova. A mãe e a professora Sofia ajudam-no a reconhecer a porta, o cabide, o canto tranquilo e o regresso a casa.',
       excerpt:
         '“Primeiro vejo a porta. Depois encontro o cabide. Depois digo olá à professora Sofia.”',
-      imageSrc: `${assetBase}/books/o-mapa-do-primeiro-dia.svg`,
+      imageSrc: `${assetBase}/books/o-mapa-do-primeiro-dia/card.jpeg`,
       imageAlt:
         'Fotografia do livro personalizado “O Mapa do Primeiro Dia” numa mesa clara com um mapa verde e cartões visuais',
-      styleLabel: 'Arte digital suave',
+      styleLabel: 'Arte digital minimalista',
       contextLabel: 'Primeiro dia',
       ageLabel: '5-7 anos',
-      sampleChapterHref: '/pt-PT/p/o-mapa-do-primeiro-dia',
-      audio: {
-        label: 'Ouvir amostra',
-        src: sampleAudioSrc,
-      },
+      chapters: [
+        {
+          title: 'A Porta Verde',
+          summary: 'Leo usa o mapa para reconhecer a primeira pista da nova sala.',
+        },
+        {
+          title: 'A Mesa Redonda',
+          summary: 'A sala nova fica mais simples quando cada lugar aparece um de cada vez.',
+        },
+        {
+          title: 'O Canto Tranquilo',
+          summary:
+            'Leo encontra um lugar de pausa e termina o primeiro dia com uma escolha pequena.',
+        },
+      ],
+      audioSampleTitle: 'Ouvir excerto áudio',
+      audioSampleSrc: `${publicAudioBase}/o-mapa-do-primeiro-dia-sample.mp3`,
     },
     {
       id: 'book-04',
@@ -173,17 +206,28 @@ export const autismStoriesLandingPage: LandingPageContent = {
         'Clara quer brincar às naves espaciais com Nico, mas Nico prefere alinhar estrelas de papel. Com a tia Marta, descobrem uma regra simples: perguntar, esperar, escolher.',
       excerpt:
         '“O Nico não está longe”, disse a tia Marta. “Está numa órbita dele. Podemos fazer uma ponte, se perguntarmos primeiro.”',
-      imageSrc: `${assetBase}/books/o-meu-irmao-tem-um-ritmo-de-estrela.svg`,
+      imageSrc: `${assetBase}/books/o-meu-irmao-tem-um-ritmo-de-estrela/card.jpeg`,
       imageAlt:
         'Fotografia do livro personalizado “O Meu Irmão Tem um Ritmo de Estrela” num recanto infantil com estrelas de papel',
-      styleLabel: 'Desenho manual',
+      styleLabel: 'Minimalista suave',
       contextLabel: 'Ritmos diferentes',
       ageLabel: '7-10 anos',
-      sampleChapterHref: '/pt-PT/p/o-meu-irmao-tem-um-ritmo-de-estrela',
-      audio: {
-        label: 'Ouvir amostra',
-        src: sampleAudioSrc,
-      },
+      chapters: [
+        {
+          title: 'Órbitas Diferentes',
+          summary: 'Clara começa a perceber que brincar junto não precisa de ter o mesmo ritmo.',
+        },
+        {
+          title: 'A Ponte de Papel',
+          summary: 'Os irmãos experimentam uma forma respeitosa de convidar sem obrigar.',
+        },
+        {
+          title: 'A Nossa Velocidade',
+          summary: 'Clara e Nico inventam uma brincadeira com espera, escolha e ternura.',
+        },
+      ],
+      audioSampleTitle: 'Ouvir excerto áudio',
+      audioSampleSrc: `${publicAudioBase}/o-meu-irmao-tem-um-ritmo-de-estrela-sample.mp3`,
     },
     {
       id: 'book-05',
@@ -192,17 +236,28 @@ export const autismStoriesLandingPage: LandingPageContent = {
         'Noa e a avó Helena preparam uma pequena caixa azul para um almoço de família: uma pedra lisa, um pano macio e um cartão de pausa ajudam a lembrar escolhas possíveis.',
       excerpt:
         '“Não é uma caixa para esconder o mundo”, disse a avó. “É uma caixa para te lembrar das escolhas que podes levar contigo.”',
-      imageSrc: `${assetBase}/books/a-caixa-das-coisas-queridas.svg`,
+      imageSrc: `${assetBase}/books/a-caixa-das-coisas-queridas/card.jpeg`,
       imageAlt:
         'Fotografia do livro personalizado “A Caixa das Coisas Queridas” numa mesa clara com uma caixa azul e objetos familiares',
       styleLabel: 'Minimalista suave',
       contextLabel: 'Objetos familiares',
       ageLabel: '5-7 anos',
-      sampleChapterHref: '/pt-PT/p/a-caixa-das-coisas-queridas',
-      audio: {
-        label: 'Ouvir amostra',
-        src: sampleAudioSrc,
-      },
+      chapters: [
+        {
+          title: 'A Folha do Parque',
+          summary: 'Noa e a avó Helena abrem a caixa com uma memória simples e luminosa.',
+        },
+        {
+          title: 'O Botão Azul',
+          summary: 'Um objeto pequeno abre uma história familiar sem usar dados reais.',
+        },
+        {
+          title: 'Uma História de Cada Vez',
+          summary: 'A caixa ensina que as memórias podem ser abertas com calma, uma por uma.',
+        },
+      ],
+      audioSampleTitle: 'Ouvir excerto áudio',
+      audioSampleSrc: `${publicAudioBase}/a-caixa-das-coisas-queridas-sample.mp3`,
     },
   ],
   process: {

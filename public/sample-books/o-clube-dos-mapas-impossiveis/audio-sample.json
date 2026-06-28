@@ -1,0 +1,14 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "No início era apenas um mapa desenhado a lápis: uma ponte, três chaves e um farol no meio de uma biblioteca. Depois as ruas começaram a levantar-se do papel. Lara, Nico e Beatriz percebem que cada pista responde a uma ideia diferente, e que nenhum deles consegue resolver o caminho sozinho. O Clube dos Mapas Impossíveis nasce quando a aventura pede imaginação, atenção e equipa.",
+  "voiceDirection": "Narrar em Português de Portugal, com tom de mistério leve e inteligente, ritmo envolvente para crianças dos dez aos doze anos.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview-tts",
+  "voice": "Sulafat",
+  "recommendedDurationSeconds": 38,
+  "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-clube-dos-mapas-impossiveis/assets/audio-teaser.mp3",
+  "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-clube-dos-mapas-impossiveis/assets/audio-teaser.mp3",
+  "generatedAt": "2026-06-16T23:21:14.222Z"
+}

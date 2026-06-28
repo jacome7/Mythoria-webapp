@@ -1,0 +1,42 @@
+{
+  "id": "book-01",
+  "title": "O Comboio que Sabia Esperar",
+  "slug": "o-comboio-que-sabia-esperar",
+  "language": "pt-PT",
+  "targetAudience": "children_3-6",
+  "graphicalStyle": "watercolor",
+  "novelStyle": "educational",
+  "synopsis": "Tomás adora comboios e conhece cada som da estação. Nesta história, a sua rotina de manhã transforma-se numa viagem com paragens claras, escolhas simples e uma chegada feliz à escola.",
+  "shortExcerpt": "O comboio azul abriu as portas devagar. Primeiro, a mochila. Depois, o casaco. Depois, o sorriso pequeno do Tomás, que já sabia qual era a próxima paragem.",
+  "fictionalUserContext": {
+    "buyerName": "Inês",
+    "recipientName": "Tomás",
+    "relationship": "mãe e filho",
+    "context": "Família fictícia que quer criar uma história calma sobre a rotina antes da escola, usando o interesse do Tomás por comboios."
+  },
+  "safetyNotes": [
+    "Não apresentar a rotina como intervenção clínica.",
+    "Manter a leitura como momento acompanhado por adulto."
+  ],
+  "chapters": [
+    {
+      "number": 1,
+      "title": "A Estação da Mochila",
+      "summary": "Tomás transforma o início da manhã numa primeira paragem clara e segura.",
+      "path": "chapters/chapter-01.md"
+    },
+    {
+      "number": 2,
+      "title": "A Estação do Pequeno-Almoço",
+      "summary": "A rotina avança com frases curtas, escolhas pequenas e tempo para respirar.",
+      "path": "chapters/chapter-02.md"
+    },
+    {
+      "number": 3,
+      "title": "Chegar com Tempo",
+      "summary": "A viagem termina na escola com previsibilidade, companhia e uma chegada calma.",
+      "path": "chapters/chapter-03.md"
+    }
+  ],
+  "status": "static_review_only"
+}

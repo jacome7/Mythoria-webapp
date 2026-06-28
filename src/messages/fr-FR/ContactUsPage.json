@@ -1,51 +1,51 @@
 {
   "ContactUsPage": {
-    "title": "Contacter mythoria",
-    "intro": "Salutations, collègue aventurier! Que vous soyez de la comté, de Poudlard ou d'une galaxie loin, loin, nous sommes là pour vous aider dans votre voyage à travers le monde merveilleux de Mythoria. Vos commentaires sont aussi précieux que le seul anneau (mais plus facile à gérer, nous promettons!).",
-    "scrollTitle": "Envoyez-nous votre hibou (ou remplissez simplement le formulaire)",
-    "scrollIntro": "Choisissez le parchemin qui convient le mieux à votre quête:",
+    "title": "Contacter Mythoria",
+    "intro": "Vous avez une question, une idée ou besoin d'aide avec une histoire ou un livre imprimé ? Dites-nous ce qui se passe et nous vous répondrons dès que possible. Nous apprécions les retours clairs, surtout lorsqu'ils nous aident à rendre Mythoria plus simple à utiliser.",
+    "scrollTitle": "Comment pouvons-nous vous aider ?",
+    "scrollIntro": "Choisissez le sujet le plus proche de votre message :",
     "categories": {
-      "featureIdeas": "Idées de fonctionnalités (inspirer comme Tolkien)",
-      "reportBug": "Signaler un bug (même Sherlock Holmes avait besoin d'indices!)",
-      "delivery": "Livraison du livre imprimé (nos hiboux peuvent avoir besoin de directions)",
-      "credits": "Crédits et paiements (les gobelins de Gringotts sont stricts!)",
-      "general": "Enchantement général (soutien)",
+      "featureIdeas": "Idées de fonctionnalités",
+      "reportBug": "Signaler un bug",
+      "delivery": "Livraison de livre imprimé",
+      "credits": "Crédits et paiements",
+      "general": "Assistance générale",
       "businessPartnership": "Partenariat commercial"
     },
     "categoriesShort": {
       "featureIdeas": "Idées de fonctionnalités",
       "reportBug": "Signaler un bug",
-      "delivery": "Livraison du livre imprimé",
+      "delivery": "Livraison de livre imprimé",
       "credits": "Crédits et paiements",
       "businessPartnership": "Partenariat commercial",
-      "general": "Enchantement général"
+      "general": "Assistance générale"
     },
     "form": {
-      "title": "La forme magique",
-      "name": "Votre nom:",
-      "namePlaceholder": "Alias ​​sorcier",
-      "email": "Votre e-mail:",
-      "emailPlaceholder": "Afin que nos pigeons de transporteur puissent vous trouver",
-      "category": "Sélectionnez votre quête:",
-      "selectCategory": "Choisissez une catégorie ...",
-      "message": "Votre message magique:",
-      "messagePlaceholder": "Partagez vos pensées, vos idées ou vos commentaires magiques ...",
-      "submit": "Spel"
+      "title": "Formulaire de contact",
+      "name": "Votre nom :",
+      "namePlaceholder": "Indiquez votre nom",
+      "email": "Votre e-mail :",
+      "emailPlaceholder": "Indiquez votre adresse e-mail",
+      "category": "Sélectionnez un sujet :",
+      "selectCategory": "Choisissez une catégorie...",
+      "message": "Votre message :",
+      "messagePlaceholder": "Partagez votre question, votre idée ou votre retour...",
+      "submit": "Envoyer le message"
     },
     "join": {
-      "title": "Rejoignez la bourse",
-      "intro": "Mythoria est dans une quête épique pour conquérir les nouveaux royaumes et nous recherchons des âmes courageuses pour rejoindre notre bourse!",
-      "printing": "Impression et partenaires logistiques: Êtes-vous prêt à voyager à travers la Terre du Milieu ou Westeros pour livrer des histoires qui comptent? Rejoignez-nous pour répandre la magie de la narration personnalisée.",
-      "country": "Managers de pays et sorciers locaux: aidez Mythoria à prendre le contrôle du monde (pacifiquement, nous vous assurons). Apportez la joie de la narration à votre royaume et au-delà!",
-      "developers": "Développeurs qui vibe le code et parlent AI: parlez-vous couramment binaire et discutez sans effort avec l'IA? Nous avons besoin de développeurs qualifiés qui vibe avec une technologie innovante et une intelligence artificielle pour améliorer l'expérience de Mythoria.",
-      "call": "Vous souhaitez devenir mythorien? Envoyez-nous vos coordonnées en utilisant le formulaire enchanté ci-dessus et faites-nous savoir votre domaine d'intérêt."
+      "title": "Collaborer avec Mythoria",
+      "intro": "Nous construisons Mythoria avec des personnes et des partenaires qui tiennent aux histoires personnelles, au service soigné et à une technologie bien utilisée.",
+      "printing": "Partenaires impression et logistique : aidez-nous à livrer des livres personnalisés avec qualité, soin et délais fiables.",
+      "country": "Responsables pays et partenaires locaux : aidez-nous à proposer Mythoria à de nouveaux marchés, de nouvelles langues et de nouvelles communautés.",
+      "developers": "Développeurs et spécialistes IA : collaborez avec nous sur des outils qui rendent la création d'histoires plus simple, rapide et personnelle.",
+      "call": "Si vous souhaitez collaborer avec nous, envoyez-nous vos coordonnées avec le formulaire ci-dessus et indiquez votre domaine d'intérêt."
     },
     "bonus": {
-      "title": "Alerte des crédits bonus!",
-      "content": "Vous avez un œil vif pour les insectes ou un esprit imaginatif qui éclate d'idées? Gagnez des crédits magiques supplémentaires pour chaque fonctionnalité de bogue valide ou inspiré suggéré.",
-      "disclaimer": "(*) La décision finale repose sur nos délicieuses oompa Loompas. Ils sont charmants imprévisibles, mais ils aiment la créativité enrichissante!",
-      "closing": "Créons la magie ensemble!"
+      "title": "Aidez-nous à améliorer Mythoria",
+      "content": "Si vous signalez un bug valide ou suggérez une fonctionnalité utile à d'autres conteurs, nous pouvons vous remercier avec des crédits bonus.",
+      "disclaimer": "(*) Les crédits bonus sont examinés par l'équipe Mythoria et attribués à notre discrétion.",
+      "closing": "Merci de nous aider à écrire le prochain chapitre de Mythoria."
     },
-    "faqTitle": "Foire Aux Questions"
+    "faqTitle": "Foire aux questions"
   }
 }

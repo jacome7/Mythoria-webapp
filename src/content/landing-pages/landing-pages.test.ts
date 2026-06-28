@@ -1,5 +1,6 @@
 import {
   getIndexableLandingPages,
+  getLandingPageIndexItems,
   getLandingPageBySlug,
   getLandingPageStaticParams,
 } from './index';
@@ -19,9 +20,14 @@ describe('landing page content registry', () => {
       locale: 'pt-PT',
       slug: 'livro-personalizado-criancas-autistas',
     });
+    expect(getLandingPageStaticParams()).toContainEqual({
+      locale: 'pt-PT',
+      slug: 'workshops-criancas',
+    });
     expect(getIndexableLandingPages().map((page) => page.slug)).toContain(
       'livro-personalizado-criancas-autistas',
     );
+    expect(getIndexableLandingPages().map((page) => page.slug)).toContain('workshops-criancas');
   });
 
   it('uses respectful PEA/PHDA terminology in the title and metadata', () => {
@@ -44,13 +50,20 @@ describe('landing page content registry', () => {
     expect(page?.glossary?.terms.length).toBeGreaterThanOrEqual(4);
     expect(page?.forProfessionals?.ctaLabel).toBeTruthy();
     expect(page?.faq.length).toBeGreaterThanOrEqual(8);
-    expect(page?.ogImageSrc).toBeTruthy();
+    expect(page?.hero.imageSrc).toContain(
+      '/landing-pages/livro-personalizado-criancas-autistas/assets/hero/hero.jpeg',
+    );
+    expect(page?.ogImageSrc).toContain(
+      '/landing-pages/livro-personalizado-criancas-autistas/assets/hero/og-cover.jpeg',
+    );
     expect(page?.breadcrumbLabel).toBeTruthy();
     expect(page?.updatedAt).toBe('2026-06-15');
   });
 
   it('uses the live PEA/PHDA sample books with audio samples', () => {
     const page = getLandingPageBySlug('livro-personalizado-criancas-autistas');
+    const audioBase =
+      'https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/audio/';
 
     expect(page?.books.map((book) => book.title)).toEqual([
       'O Comboio que Sabia Esperar',
@@ -65,8 +78,11 @@ describe('landing page content registry', () => {
       expect(book.imageSrc).toContain(
         '/landing-pages/livro-personalizado-criancas-autistas/assets/books/',
       );
-      expect(book.audio?.src).toMatch(/^data:audio\/wav;base64,/);
-      expect(book.sampleChapterHref).toContain('/pt-PT/p/');
+      expect(book.imageSrc).toContain('/card.jpeg');
+      expect(book.audio).toBeUndefined();
+      expect(book.audioSampleSrc).toMatch(new RegExp(`^${audioBase}.+\\.mp3$`));
+      expect(book.sampleChapterHref).toBeUndefined();
+      expect(book.chapters).toHaveLength(3);
     });
   });
 
@@ -74,11 +90,71 @@ describe('landing page content registry', () => {
     const page = getLandingPageBySlug('livro-personalizado-criancas-autistas');
     const serialized = JSON.stringify(page);
 
-    expect(serialized).not.toContain('/landing-page-assets/');
+    expect(serialized).not.toContain('"imageSrc":"/landing-page-assets/');
+    expect(serialized).not.toContain('"hero":{"imageSrc":"/landing-page-assets/');
     expect(serialized).not.toContain('Mateus e o Leão');
     expect(serialized).not.toContain('O Castelo de Estrelas da Maria');
     expect(serialized).not.toContain('Turma 4.º A no Planetário do Porto');
     expect(serialized).not.toContain('A Nossa Horta de Descobertas');
     expect(serialized).not.toContain('Recordar o Avô Manuel');
+  });
+
+  it('registers the workshops landing page with workshop-specific sections', () => {
+    const page = getLandingPageBySlug('workshops-criancas');
+    const serialized = JSON.stringify(page);
+
+    expect(page).toBeDefined();
+    expect(page?.locale).toBe('pt-PT');
+    expect(page?.indexable).toBe(true);
+    expect(page?.updatedAt).toBe('2026-06-16');
+    expect(page?.primaryCtaHref).toContain('/pt-PT/contactUs');
+    expect(page?.hero.imageSrc).toContain(
+      'https://storage.googleapis.com/mythoria-public/landing-page-assets/workshops-criancas/',
+    );
+    expect(page?.books[0]?.audioSampleSrc).toBe(
+      'https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-gato-que-guardava-a-lua/assets/audio-teaser.mp3',
+    );
+    expect(page?.books.map((book) => book.title)).toEqual([
+      'O Gato que Guardava a Lua',
+      'A Final do Bairro das Estrelas',
+      'O Clube dos Mapas Impossíveis',
+    ]);
+    expect(page?.templateIcons?.heroEyebrow?.src).toBe('/Papercut_icons/sparkles.webp');
+    expect(page?.templateIcons?.ctaArrow?.src).toBe(
+      '/Papercut_icons/fa-chevron-right-papercut.webp',
+    );
+    expect(page?.templateIcons?.sampleChapter?.src).toBe('/Papercut_icons/openBook.webp');
+    expect(page?.templateIcons?.formats).toHaveLength(4);
+    expect(page?.books).toHaveLength(3);
+    expect(page?.books.every((book) => !book.chapters)).toBe(true);
+    expect(
+      page?.books.every((book) => book.sampleChapter?.imageSrc.includes('/chapter-01.jpeg')),
+    ).toBe(true);
+    expect(page?.books.every((book) => book.sampleChapter?.paragraphs.length)).toBe(true);
+    expect(page?.workshop?.audiences.items.length).toBeGreaterThanOrEqual(6);
+    expect(page?.workshop?.paperToBook.steps.length).toBeGreaterThanOrEqual(7);
+    expect(page?.workshop?.ageActivities.items).toHaveLength(3);
+    expect(page?.workshop?.exampleLibrary).toBeUndefined();
+    expect(page?.workshop?.personas).toBeUndefined();
+    expect(page?.workshop?.learningOutcomes.items).toHaveLength(6);
+    expect(
+      page?.workshop?.learningOutcomes.items.every((item) =>
+        item.iconSrc?.startsWith('/Papercut_icons/'),
+      ),
+    ).toBe(true);
+    expect(page?.glossary).toBeUndefined();
+    expect(page?.faq).toHaveLength(7);
+    expect(page?.structuredData?.serviceName).toContain('Workshops Mythoria');
+    expect(serialized).not.toContain('landing page');
+    expect(serialized).not.toContain('comprador B2B');
+    expect(serialized).not.toContain('produto premium');
+    expect(serialized).not.toContain('programador');
+  });
+
+  it('builds localized landing page index links from the registry', () => {
+    const hrefs = getLandingPageIndexItems().map((page) => page.href);
+
+    expect(hrefs).toContain('/pt-PT/lp/livro-personalizado-criancas-autistas');
+    expect(hrefs).toContain('/pt-PT/lp/workshops-criancas');
   });
 });

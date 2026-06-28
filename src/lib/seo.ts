@@ -43,6 +43,10 @@ export function normalizePathname(pathname: string): string {
 }
 
 export function buildAbsoluteUrl(pathname: string): string {
+  if (pathname.startsWith('http://') || pathname.startsWith('https://')) {
+    return pathname;
+  }
+
   const normalized = normalizePathname(pathname);
   return normalized === '/' ? BASE_URL : `${BASE_URL}${normalized}`;
 }
@@ -115,6 +119,14 @@ export function getCanonicalRedirectPath(pathname: string): string | null {
   }
 
   let rewritten = segments.join('/');
+  const pathSuffix = segments.slice(2).join('/');
+  const isLandingPageIndex =
+    Boolean(localeLookup.get((segments[1] ?? '').toLowerCase())) && pathSuffix === 'lp/';
+
+  if (isLandingPageIndex) {
+    return changed ? rewritten : null;
+  }
+
   if (rewritten.length > 1 && rewritten.endsWith('/')) {
     rewritten = rewritten.replace(/\/+$/, '');
     changed = true;

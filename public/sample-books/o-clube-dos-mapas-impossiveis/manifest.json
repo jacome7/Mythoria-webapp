@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0",
+  "status": "draft",
+  "slug": "o-clube-dos-mapas-impossiveis",
+  "title": "O Clube dos Mapas Impossíveis",
+  "language": "pt-PT",
+  "experimentalLanguage": false,
+  "placement": "seo-landing-page",
+  "usageTags": ["workshops-criancas", "landing-page-demo", "sample-book"],
+  "riskRating": "yellow",
+  "sensitiveNiche": true,
+  "requiresHumanApproval": true,
+  "createdAt": "2026-06-16",
+  "updatedAt": "2026-06-16"
+}

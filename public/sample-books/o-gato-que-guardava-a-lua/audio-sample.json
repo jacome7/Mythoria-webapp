@@ -1,0 +1,14 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "Esta história começou num desenho simples: um gato, uma varanda e uma lua redonda como uma bola de lã. Quando o Nilo percebe que a lua caiu no seu tapete azul, decide guardá-la com muito cuidado. Mas uma lua não fica quieta para sempre. Entre estrelas de papel, vasos de manjerico e bigodes atentos, Inês descobre que uma ideia pequena pode iluminar uma aventura inteira.",
+  "voiceDirection": "Narrar em Português de Portugal, com voz calorosa, curiosa e ligeiramente divertida, ritmo claro para crianças dos cinco aos sete anos.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview-tts",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 35,
+  "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-gato-que-guardava-a-lua/assets/audio-teaser.mp3",
+  "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-gato-que-guardava-a-lua/assets/audio-teaser.mp3",
+  "generatedAt": "2026-06-16T23:19:59.047Z"
+}

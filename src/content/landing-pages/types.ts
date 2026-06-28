@@ -3,6 +3,18 @@ export interface LandingPageBookAudio {
   label: string;
 }
 
+export interface LandingPageBookChapter {
+  title: string;
+  summary: string;
+}
+
+export interface LandingPageBookSampleChapter {
+  title: string;
+  imageSrc: string;
+  imageAlt: string;
+  paragraphs: string[];
+}
+
 export interface LandingPageBook {
   id: string;
   title: string;
@@ -15,6 +27,12 @@ export interface LandingPageBook {
   ageLabel?: string;
   sampleChapterHref?: string;
   audio?: LandingPageBookAudio;
+  chapterCountLabel?: string;
+  durationLabel?: string;
+  chapters?: LandingPageBookChapter[];
+  sampleChapter?: LandingPageBookSampleChapter;
+  audioSampleSrc?: string;
+  audioSampleTitle?: string;
 }
 
 export interface LandingPageFaq {
@@ -27,9 +45,134 @@ export interface LandingPageUseCase {
   body: string;
 }
 
+export interface LandingPageIconItem {
+  title: string;
+  body: string;
+  iconSrc: string;
+  iconAlt: string;
+}
+
 export interface LandingPageGlossaryTerm {
   term: string;
   definition: string;
+}
+
+export interface LandingPageBookSection {
+  eyebrow: string;
+  title: string;
+  intro: string;
+}
+
+export interface LandingPageTemplateIcon {
+  src: string;
+  alt: string;
+}
+
+export interface LandingPageTemplateIcons {
+  heroEyebrow?: LandingPageTemplateIcon;
+  ctaArrow?: LandingPageTemplateIcon;
+  quickAnswer?: LandingPageTemplateIcon;
+  audioSample?: LandingPageTemplateIcon;
+  professionalPanel?: LandingPageTemplateIcon;
+  safetyNote?: LandingPageTemplateIcon;
+  sampleChapter?: LandingPageTemplateIcon;
+  formats?: LandingPageTemplateIcon[];
+}
+
+export interface LandingPageWorkshopStep extends LandingPageIconItem {}
+
+export interface LandingPageAgeActivity {
+  ageRange: string;
+  title: string;
+  objective: string;
+  activitySteps: string[];
+  concepts: string[];
+  exampleTitle: string;
+  exampleBody: string;
+  imageSrc: string;
+  imageAlt: string;
+}
+
+export interface LandingPageExampleIdea {
+  age: string;
+  title: string;
+  activityType: string;
+  teaches: string;
+}
+
+export interface LandingPageLearningOutcome {
+  title: string;
+  body: string;
+  iconSrc?: string;
+  iconAlt?: string;
+}
+
+export interface LandingPageWorkshopFormat {
+  title: string;
+  duration: string;
+  idealFor: string;
+  result: string;
+}
+
+export interface LandingPagePersonaExample {
+  idea: string;
+  persona: string;
+  result: string;
+}
+
+export interface LandingPageWorkshopContent {
+  audiences: {
+    title: string;
+    intro: string;
+    items: LandingPageIconItem[];
+  };
+  paperToBook: {
+    title: string;
+    body: string;
+    imageSrc: string;
+    imageAlt: string;
+    steps: LandingPageWorkshopStep[];
+  };
+  ageActivities: {
+    title: string;
+    intro: string;
+    items: LandingPageAgeActivity[];
+  };
+  exampleLibrary?: {
+    title: string;
+    intro: string;
+    items: LandingPageExampleIdea[];
+  };
+  learningOutcomes: {
+    title: string;
+    intro: string;
+    items: LandingPageLearningOutcome[];
+  };
+  workshopFormats: {
+    title: string;
+    intro: string;
+    items: LandingPageWorkshopFormat[];
+  };
+  businessBenefits: {
+    title: string;
+    intro: string;
+    items: LandingPageLearningOutcome[];
+  };
+  personas?: {
+    title: string;
+    intro: string;
+    items: LandingPagePersonaExample[];
+  };
+  implementationKit?: {
+    title: string;
+    intro: string;
+    items: LandingPageIconItem[];
+  };
+  finalResults: {
+    title: string;
+    intro: string;
+    items: LandingPageIconItem[];
+  };
 }
 
 export interface LandingPageContent {
@@ -46,8 +189,13 @@ export interface LandingPageContent {
   breadcrumbLabel?: string;
   /** Dedicated 1200x630 social image (falls back to `hero.imageSrc`). */
   ogImageSrc?: string;
+  /** Optional dedicated CTA hrefs. Defaults to the story creation flow and #exemplos. */
+  primaryCtaHref?: string;
+  secondaryCtaHref?: string;
   primaryCta: string;
   secondaryCta: string;
+  templateIcons?: LandingPageTemplateIcons;
+  booksSection?: LandingPageBookSection;
   hero: {
     eyebrow: string;
     headline: string;
@@ -80,7 +228,7 @@ export interface LandingPageContent {
   };
   carefulBenefits: {
     title: string;
-    items: string[];
+    items: Array<string | LandingPageIconItem>;
   };
   books: LandingPageBook[];
   process: {
@@ -104,13 +252,19 @@ export interface LandingPageContent {
     title: string;
     terms: LandingPageGlossaryTerm[];
   };
+  workshop?: LandingPageWorkshopContent;
   faq: LandingPageFaq[];
-  safetyNote: {
+  safetyNote?: {
     title: string;
     body: string;
   };
   finalCta: {
     title: string;
     body: string;
+  };
+  structuredData?: {
+    about: string[];
+    serviceName: string;
+    serviceType: string;
   };
 }

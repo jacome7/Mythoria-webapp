@@ -1,0 +1,46 @@
+{
+  "id": "workshop-book-02",
+  "title": "A Final do Bairro das Estrelas",
+  "slug": "a-final-do-bairro-das-estrelas",
+  "language": "pt-PT",
+  "targetAudience": "children_7-10",
+  "readerAgeBand": "8-10 anos",
+  "buyerPersona": "Campo de férias, ATL ou escola que quer demonstrar uma história criada a partir de desporto e colaboração",
+  "recipientType": "grupo de crianças participante num workshop",
+  "storyIntent": "Mostrar como uma ideia sobre futebol pode virar uma aventura de equipa, regras, escolhas e leitura em voz alta.",
+  "synopsis": "Uma equipa de bairro descobre que a bola da final brilha sempre que alguém faz um passe generoso. Para ganhar, terão de deixar de jogar cada um por si.",
+  "shortExcerpt": "A bola não brilhou quando Rui tentou fintar toda a gente. Só acendeu quando passou para a Mia, que estava livre junto ao muro das constelações.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "Rui achava que a final se ganhava com o remate mais forte do bairro. Depois a bola começou a brilhar apenas quando alguém fazia um passe pensado para outro colega. Entre fintas, constelações desenhadas a giz e uma baliza que parecia guardar segredos, a equipa percebe que a melhor jogada não pertence a uma só pessoa. Pertence a todos.",
+  "graphicalStyle": "euro_comic_book",
+  "novelStyle": "sports_adventure",
+  "fictionalUserContext": "Cenário totalmente ficcional criado para demonstrar uma oficina Mythoria: várias crianças imaginam uma história a partir de futebol, regras e trabalho de equipa.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/a-final-do-bairro-das-estrelas/assets/cover.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-final-do-bairro-das-estrelas/assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/a-final-do-bairro-das-estrelas/assets/feature.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-final-do-bairro-das-estrelas/assets/feature.jpeg"
+  },
+  "sampleChapterImage": {
+    "localPath": "assets/chapter-01.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/a-final-do-bairro-das-estrelas/assets/chapter-01.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-final-do-bairro-das-estrelas/assets/chapter-01.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/a-final-do-bairro-das-estrelas/assets/audio-teaser.mp3",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-final-do-bairro-das-estrelas/assets/audio-teaser.mp3",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview-tts",
+    "voice": "Puck"
+  },
+  "safetyNotes": [
+    "A história é ficcional e não representa uma equipa real.",
+    "Desporto apresentado de forma cooperativa e segura.",
+    "Sem marcas, clubes reais ou promessas de desempenho."
+  ]
+}

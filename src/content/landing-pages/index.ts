@@ -1,7 +1,11 @@
 import { autismStoriesLandingPage } from './autism-stories.pt-PT';
-import type { LandingPageContent } from './types';
+import type { LandingPageBook, LandingPageContent, LandingPageTemplateIcon } from './types';
+import { workshopsChildrenLandingPage } from './workshops-criancas.pt-PT';
 
-const landingPages = [autismStoriesLandingPage] satisfies LandingPageContent[];
+const landingPages = [
+  autismStoriesLandingPage,
+  workshopsChildrenLandingPage,
+] satisfies LandingPageContent[];
 
 export function getLandingPageBySlug(slug: string): LandingPageContent | undefined {
   return landingPages.find((page) => page.slug === slug);
@@ -18,4 +22,16 @@ export function getLandingPageStaticParams(): Array<{ locale: string; slug: stri
   }));
 }
 
-export type { LandingPageContent };
+export function getLandingPageIndexItems() {
+  return getIndexableLandingPages().map((page) => ({
+    title: page.title,
+    metaDescription: page.metaDescription,
+    locale: page.locale,
+    slug: page.slug,
+    indexable: page.indexable,
+    updatedAt: page.updatedAt,
+    href: `/${page.locale}/lp/${page.slug}`,
+  }));
+}
+
+export type { LandingPageBook, LandingPageContent, LandingPageTemplateIcon };

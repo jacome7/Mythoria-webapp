@@ -1,0 +1,14 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "Rui achava que a final se ganhava com o remate mais forte do bairro. Depois a bola começou a brilhar apenas quando alguém fazia um passe pensado para outro colega. Entre fintas, constelações desenhadas a giz e uma baliza que parecia guardar segredos, a equipa percebe que a melhor jogada não pertence a uma só pessoa. Pertence a todos.",
+  "voiceDirection": "Narrar em Português de Portugal, com energia de aventura desportiva, ritmo vivo, mas claro para crianças dos oito aos dez anos.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview-tts",
+  "voice": "Puck",
+  "recommendedDurationSeconds": 32,
+  "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/a-final-do-bairro-das-estrelas/assets/audio-teaser.mp3",
+  "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-final-do-bairro-das-estrelas/assets/audio-teaser.mp3",
+  "generatedAt": "2026-06-16T23:20:34.978Z"
+}

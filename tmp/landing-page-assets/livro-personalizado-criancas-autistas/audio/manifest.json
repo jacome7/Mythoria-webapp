@@ -1,0 +1,57 @@
+[
+  {
+    "bookId": "book-01",
+    "title": "O Comboio que Sabia Esperar",
+    "slug": "o-comboio-que-sabia-esperar",
+    "localPath": "tmp/landing-page-assets/livro-personalizado-criancas-autistas/audio/o-comboio-que-sabia-esperar-sample.mp3",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/audio/o-comboio-que-sabia-esperar-sample.mp3",
+    "voice": "Sulafat",
+    "status": "generated",
+    "durationSeconds": 14.5,
+    "sizeBytes": 116780
+  },
+  {
+    "bookId": "book-02",
+    "title": "A Ilha dos Sons Suaves",
+    "slug": "a-ilha-dos-sons-suaves",
+    "localPath": "tmp/landing-page-assets/livro-personalizado-criancas-autistas/audio/a-ilha-dos-sons-suaves-sample.mp3",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/audio/a-ilha-dos-sons-suaves-sample.mp3",
+    "voice": "Sulafat",
+    "status": "generated",
+    "durationSeconds": 17.3,
+    "sizeBytes": 139244
+  },
+  {
+    "bookId": "book-03",
+    "title": "O Mapa do Primeiro Dia",
+    "slug": "o-mapa-do-primeiro-dia",
+    "localPath": "tmp/landing-page-assets/livro-personalizado-criancas-autistas/audio/o-mapa-do-primeiro-dia-sample.mp3",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/audio/o-mapa-do-primeiro-dia-sample.mp3",
+    "voice": "Sulafat",
+    "status": "generated",
+    "durationSeconds": 15.8,
+    "sizeBytes": 127148
+  },
+  {
+    "bookId": "book-04",
+    "title": "O Meu Irmão Tem um Ritmo de Estrela",
+    "slug": "o-meu-irmao-tem-um-ritmo-de-estrela",
+    "localPath": "tmp/landing-page-assets/livro-personalizado-criancas-autistas/audio/o-meu-irmao-tem-um-ritmo-de-estrela-sample.mp3",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/audio/o-meu-irmao-tem-um-ritmo-de-estrela-sample.mp3",
+    "voice": "Sulafat",
+    "status": "generated",
+    "durationSeconds": 12.5,
+    "sizeBytes": 100460
+  },
+  {
+    "bookId": "book-05",
+    "title": "A Caixa das Coisas Queridas",
+    "slug": "a-caixa-das-coisas-queridas",
+    "localPath": "tmp/landing-page-assets/livro-personalizado-criancas-autistas/audio/a-caixa-das-coisas-queridas-sample.mp3",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/audio/a-caixa-das-coisas-queridas-sample.mp3",
+    "voice": "Sulafat",
+    "status": "generated",
+    "durationSeconds": 17.3,
+    "sizeBytes": 139244
+  }
+]

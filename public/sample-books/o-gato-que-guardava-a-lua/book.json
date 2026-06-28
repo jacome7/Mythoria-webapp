@@ -1,0 +1,46 @@
+{
+  "id": "workshop-book-01",
+  "title": "O Gato que Guardava a Lua",
+  "slug": "o-gato-que-guardava-a-lua",
+  "language": "pt-PT",
+  "targetAudience": "children_3-6",
+  "readerAgeBand": "5-7 anos",
+  "buyerPersona": "ATL, biblioteca ou atelier criativo que quer mostrar um exemplo simples para crianças mais novas",
+  "recipientType": "criança participante num workshop",
+  "storyIntent": "Mostrar como um desenho de um animal de estimação pode transformar-se numa história curta, visual e fácil de ler em voz alta.",
+  "synopsis": "Inês desenha o gato da família com uma lua redonda entre as patas. Quando a folha começa a brilhar, o gato Nilo decide guardar a lua até descobrir a quem ela pertence.",
+  "shortExcerpt": "O Nilo sentou-se muito direito, como os guardas dos castelos nos livros. Só que, em vez de espada, tinha bigodes. E, em vez de castelo, tinha uma lua a fazer cócegas nas patas.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "Esta história começou num desenho simples: um gato, uma varanda e uma lua redonda como uma bola de lã. Quando o Nilo percebe que a lua caiu no seu tapete azul, decide guardá-la com muito cuidado. Mas uma lua não fica quieta para sempre. Entre estrelas de papel, vasos de manjerico e bigodes atentos, Inês descobre que uma ideia pequena pode iluminar uma aventura inteira.",
+  "graphicalStyle": "colored_pencil",
+  "novelStyle": "fairy_tale",
+  "fictionalUserContext": "Cenário totalmente ficcional criado para demonstrar uma oficina Mythoria: uma criança inventa uma história a partir de um desenho de um gato.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-gato-que-guardava-a-lua/assets/cover.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-gato-que-guardava-a-lua/assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-gato-que-guardava-a-lua/assets/feature.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-gato-que-guardava-a-lua/assets/feature.jpeg"
+  },
+  "sampleChapterImage": {
+    "localPath": "assets/chapter-01.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-gato-que-guardava-a-lua/assets/chapter-01.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-gato-que-guardava-a-lua/assets/chapter-01.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-gato-que-guardava-a-lua/assets/audio-teaser.mp3",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-gato-que-guardava-a-lua/assets/audio-teaser.mp3",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview-tts",
+    "voice": "Aoede"
+  },
+  "safetyNotes": [
+    "A história é ficcional e não representa uma criança real.",
+    "Tema adequado para crianças pequenas, com adulto a orientar criação e leitura.",
+    "Sem promessas educativas, terapêuticas ou comportamentais."
+  ]
+}

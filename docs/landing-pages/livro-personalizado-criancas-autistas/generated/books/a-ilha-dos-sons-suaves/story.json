@@ -1,0 +1,42 @@
+{
+  "id": "book-02",
+  "title": "A Ilha dos Sons Suaves",
+  "slug": "a-ilha-dos-sons-suaves",
+  "language": "pt-PT",
+  "targetAudience": "children_7-10",
+  "graphicalStyle": "colored_pencil",
+  "novelStyle": "fantasy",
+  "synopsis": "Mara visita uma ilha onde cada som tem uma cor e uma distância. Com a ajuda de uma lanterna dourada, escolhe caminhos tranquilos, descobre sons amigos e encontra um canto perfeito para ler.",
+  "shortExcerpt": "Na Ilha dos Sons Suaves, até as ondas falavam baixinho. Mara levantou a lanterna dourada e viu três caminhos: o do vento leve, o da areia quente e o do silêncio azul.",
+  "fictionalUserContext": {
+    "buyerName": "Rui",
+    "recipientName": "Mara",
+    "relationship": "pai e filha",
+    "context": "Família fictícia que quer uma história de aventura suave, com menos estímulos e linguagem poética simples."
+  },
+  "safetyNotes": [
+    "Evitar representar sobrecarga sensorial de forma assustadora.",
+    "Não sugerir que a história resolve dificuldades sensoriais."
+  ],
+  "chapters": [
+    {
+      "number": 1,
+      "title": "A Lanterna Dourada",
+      "summary": "Mara chega a uma ilha onde os sons aparecem com cor, tamanho e distância.",
+      "path": "chapters/chapter-01.md"
+    },
+    {
+      "number": 2,
+      "title": "O Caminho do Vento Leve",
+      "summary": "Mara escolhe o percurso mais tranquilo e aprende que pode mudar de caminho.",
+      "path": "chapters/chapter-02.md"
+    },
+    {
+      "number": 3,
+      "title": "O Silêncio Azul",
+      "summary": "A aventura termina num recanto de leitura onde Mara se sente acompanhada sem pressa.",
+      "path": "chapters/chapter-03.md"
+    }
+  ],
+  "status": "static_review_only"
+}

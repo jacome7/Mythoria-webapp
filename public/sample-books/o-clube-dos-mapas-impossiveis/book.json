@@ -1,0 +1,46 @@
+{
+  "id": "workshop-book-03",
+  "title": "O Clube dos Mapas Impossíveis",
+  "slug": "o-clube-dos-mapas-impossiveis",
+  "language": "pt-PT",
+  "targetAudience": "children_11-14",
+  "readerAgeBand": "10-12 anos",
+  "buyerPersona": "Biblioteca, escola ou atelier que quer demonstrar uma história mais estruturada para crianças mais velhas",
+  "recipientType": "grupo de crianças participante num workshop",
+  "storyIntent": "Mostrar como crianças até aos 12 anos podem trabalhar mapa, pistas, personagens e revisão criativa numa aventura de mistério leve.",
+  "synopsis": "Três colegas desenham um mapa impossível durante o workshop. À noite, o mapa abre uma cidade de papel dentro da biblioteca, com pontes, chaves e um farol que só aparece a quem sabe colaborar.",
+  "shortExcerpt": "O mapa não mostrava o caminho mais curto. Mostrava o caminho que cada um ainda não tinha coragem de sugerir.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "No início era apenas um mapa desenhado a lápis: uma ponte, três chaves e um farol no meio de uma biblioteca. Depois as ruas começaram a levantar-se do papel. Lara, Nico e Beatriz percebem que cada pista responde a uma ideia diferente, e que nenhum deles consegue resolver o caminho sozinho. O Clube dos Mapas Impossíveis nasce quando a aventura pede imaginação, atenção e equipa.",
+  "graphicalStyle": "watercolor",
+  "novelStyle": "mystery",
+  "fictionalUserContext": "Cenário totalmente ficcional criado para demonstrar uma oficina Mythoria: crianças desenham um mapa e transformam pistas em narrativa colaborativa.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-clube-dos-mapas-impossiveis/assets/cover.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-clube-dos-mapas-impossiveis/assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-clube-dos-mapas-impossiveis/assets/feature.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-clube-dos-mapas-impossiveis/assets/feature.jpeg"
+  },
+  "sampleChapterImage": {
+    "localPath": "assets/chapter-01.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-clube-dos-mapas-impossiveis/assets/chapter-01.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-clube-dos-mapas-impossiveis/assets/chapter-01.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-clube-dos-mapas-impossiveis/assets/audio-teaser.mp3",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-clube-dos-mapas-impossiveis/assets/audio-teaser.mp3",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview-tts",
+    "voice": "Sulafat"
+  },
+  "safetyNotes": [
+    "A história é ficcional e não representa crianças, escola ou biblioteca reais.",
+    "Mistério leve e colaborativo, sem perigo realista ou conteúdo assustador.",
+    "Sem promessas educativas ou clínicas."
+  ]
+}

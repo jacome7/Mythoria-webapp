@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mythoria Sample Book Generator"
+  short_description: "Create complete Mythoria sample-book packs"
+  default_prompt: "Use $mythoria-sample-book-generator to create a complete Mythoria sample-book pack for a homepage or SEO landing page."

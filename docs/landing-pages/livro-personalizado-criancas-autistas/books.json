@@ -23,14 +23,18 @@
         "context": "Família fictícia que quer criar uma história calma sobre a rotina antes da escola, usando o interesse do Tomás por comboios."
       },
       "coverImage": {
-        "targetPath": "assets/covers/book-01-cover.png",
+        "targetPath": "public/landing-pages/livro-personalizado-criancas-autistas/assets/books/o-comboio-que-sabia-esperar/cover.jpeg",
         "promptPath": "assets/covers/book-01-cover.prompt.md",
-        "status": "pending_generation"
+        "gcsUri": "gs://mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-comboio-que-sabia-esperar/cover.jpeg",
+        "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-comboio-que-sabia-esperar/cover.jpeg",
+        "status": "generated"
       },
       "useCaseImage": {
-        "targetPath": "assets/use-cases/book-01-use-case.png",
+        "targetPath": "public/landing-pages/livro-personalizado-criancas-autistas/assets/books/o-comboio-que-sabia-esperar/card.jpeg",
         "promptPath": "assets/use-cases/book-01-use-case.prompt.md",
-        "status": "pending_generation"
+        "gcsUri": "gs://mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-comboio-que-sabia-esperar/card.jpeg",
+        "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-comboio-que-sabia-esperar/card.jpeg",
+        "status": "generated"
       },
       "audioSample": {
         "text": "O comboio azul abriu as portas devagar. Primeiro, a mochila. Depois, o casaco. Depois, o sorriso pequeno do Tomás, que já sabia qual era a próxima paragem.",
@@ -73,14 +77,18 @@
         "context": "Família fictícia que quer uma história de aventura suave, com menos estímulos e linguagem poética simples."
       },
       "coverImage": {
-        "targetPath": "assets/covers/book-02-cover.png",
+        "targetPath": "public/landing-pages/livro-personalizado-criancas-autistas/assets/books/a-ilha-dos-sons-suaves/cover.jpeg",
         "promptPath": "assets/covers/book-02-cover.prompt.md",
-        "status": "pending_generation"
+        "gcsUri": "gs://mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/a-ilha-dos-sons-suaves/cover.jpeg",
+        "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/a-ilha-dos-sons-suaves/cover.jpeg",
+        "status": "generated"
       },
       "useCaseImage": {
-        "targetPath": "assets/use-cases/book-02-use-case.png",
+        "targetPath": "public/landing-pages/livro-personalizado-criancas-autistas/assets/books/a-ilha-dos-sons-suaves/card.jpeg",
         "promptPath": "assets/use-cases/book-02-use-case.prompt.md",
-        "status": "pending_generation"
+        "gcsUri": "gs://mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/a-ilha-dos-sons-suaves/card.jpeg",
+        "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/a-ilha-dos-sons-suaves/card.jpeg",
+        "status": "generated"
       },
       "audioSample": {
         "text": "Na Ilha dos Sons Suaves, até as ondas falavam baixinho. Mara levantou a lanterna dourada e viu três caminhos: o do vento leve, o da areia quente e o do silêncio azul.",
@@ -123,14 +131,18 @@
         "context": "Cenário fictício de uma professora que quer preparar uma chegada a uma nova sala com linguagem visual simples."
       },
       "coverImage": {
-        "targetPath": "assets/covers/book-03-cover.png",
+        "targetPath": "public/landing-pages/livro-personalizado-criancas-autistas/assets/books/o-mapa-do-primeiro-dia/cover.jpeg",
         "promptPath": "assets/covers/book-03-cover.prompt.md",
-        "status": "pending_generation"
+        "gcsUri": "gs://mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-mapa-do-primeiro-dia/cover.jpeg",
+        "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-mapa-do-primeiro-dia/cover.jpeg",
+        "status": "generated"
       },
       "useCaseImage": {
-        "targetPath": "assets/use-cases/book-03-use-case.png",
+        "targetPath": "public/landing-pages/livro-personalizado-criancas-autistas/assets/books/o-mapa-do-primeiro-dia/card.jpeg",
         "promptPath": "assets/use-cases/book-03-use-case.prompt.md",
-        "status": "pending_generation"
+        "gcsUri": "gs://mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-mapa-do-primeiro-dia/card.jpeg",
+        "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-mapa-do-primeiro-dia/card.jpeg",
+        "status": "generated"
       },
       "audioSample": {
         "text": "No mapa do Leo havia uma porta verde, uma mesa redonda e uma janela com luz. A professora sorriu e apontou para o primeiro desenho: 'Aqui guardamos a mochila.'",
@@ -173,14 +185,18 @@
         "context": "Família fictícia que quer uma história sobre irmãos com ritmos diferentes, sem transformar a diferença em problema."
       },
       "coverImage": {
-        "targetPath": "assets/covers/book-04-cover.png",
+        "targetPath": "public/landing-pages/livro-personalizado-criancas-autistas/assets/books/o-meu-irmao-tem-um-ritmo-de-estrela/cover.jpeg",
         "promptPath": "assets/covers/book-04-cover.prompt.md",
-        "status": "pending_generation"
+        "gcsUri": "gs://mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-meu-irmao-tem-um-ritmo-de-estrela/cover.jpeg",
+        "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-meu-irmao-tem-um-ritmo-de-estrela/cover.jpeg",
+        "status": "generated"
       },
       "useCaseImage": {
-        "targetPath": "assets/use-cases/book-04-use-case.png",
+        "targetPath": "public/landing-pages/livro-personalizado-criancas-autistas/assets/books/o-meu-irmao-tem-um-ritmo-de-estrela/card.jpeg",
         "promptPath": "assets/use-cases/book-04-use-case.prompt.md",
-        "status": "pending_generation"
+        "gcsUri": "gs://mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-meu-irmao-tem-um-ritmo-de-estrela/card.jpeg",
+        "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-meu-irmao-tem-um-ritmo-de-estrela/card.jpeg",
+        "status": "generated"
       },
       "audioSample": {
         "text": "Clara batia palmas muito depressa. Nico olhava para a janela. Então Clara desenhou uma estrela no chão e perguntou baixinho: 'Esta velocidade serve para nós?'",
@@ -223,14 +239,18 @@
         "context": "Família fictícia que quer preservar objetos e frases familiares num livro bonito para ler em conjunto."
       },
       "coverImage": {
-        "targetPath": "assets/covers/book-05-cover.png",
+        "targetPath": "public/landing-pages/livro-personalizado-criancas-autistas/assets/books/a-caixa-das-coisas-queridas/cover.jpeg",
         "promptPath": "assets/covers/book-05-cover.prompt.md",
-        "status": "pending_generation"
+        "gcsUri": "gs://mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/a-caixa-das-coisas-queridas/cover.jpeg",
+        "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/a-caixa-das-coisas-queridas/cover.jpeg",
+        "status": "generated"
       },
       "useCaseImage": {
-        "targetPath": "assets/use-cases/book-05-use-case.png",
+        "targetPath": "public/landing-pages/livro-personalizado-criancas-autistas/assets/books/a-caixa-das-coisas-queridas/card.jpeg",
         "promptPath": "assets/use-cases/book-05-use-case.prompt.md",
-        "status": "pending_generation"
+        "gcsUri": "gs://mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/a-caixa-das-coisas-queridas/card.jpeg",
+        "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/a-caixa-das-coisas-queridas/card.jpeg",
+        "status": "generated"
       },
       "audioSample": {
         "text": "Dentro da caixa havia uma folha, uma fotografia e um botão azul. A avó disse: 'Cada coisa querida tem uma história pequena. Vamos abrir uma de cada vez.'",

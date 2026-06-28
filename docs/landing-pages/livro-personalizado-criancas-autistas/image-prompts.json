@@ -4,81 +4,101 @@
       "bookId": "book-01",
       "type": "cover",
       "promptPath": "assets/covers/book-01-cover.prompt.md",
-      "targetPath": "assets/covers/book-01-cover.png",
+      "targetPath": "public/landing-pages/livro-personalizado-criancas-autistas/assets/books/o-comboio-que-sabia-esperar/cover.jpeg",
       "graphicalStyle": "watercolor",
-      "status": "pending_generation"
+      "status": "generated",
+      "gcsUri": "gs://mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-comboio-que-sabia-esperar/cover.jpeg",
+      "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-comboio-que-sabia-esperar/cover.jpeg"
     },
     {
       "bookId": "book-01",
       "type": "use_case",
       "promptPath": "assets/use-cases/book-01-use-case.prompt.md",
-      "targetPath": "assets/use-cases/book-01-use-case.png",
+      "targetPath": "public/landing-pages/livro-personalizado-criancas-autistas/assets/books/o-comboio-que-sabia-esperar/card.jpeg",
       "useCase": "parent reading with child",
-      "status": "pending_generation"
+      "status": "generated",
+      "gcsUri": "gs://mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-comboio-que-sabia-esperar/card.jpeg",
+      "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-comboio-que-sabia-esperar/card.jpeg"
     },
     {
       "bookId": "book-02",
       "type": "cover",
       "promptPath": "assets/covers/book-02-cover.prompt.md",
-      "targetPath": "assets/covers/book-02-cover.png",
+      "targetPath": "public/landing-pages/livro-personalizado-criancas-autistas/assets/books/a-ilha-dos-sons-suaves/cover.jpeg",
       "graphicalStyle": "colored_pencil",
-      "status": "pending_generation"
+      "status": "generated",
+      "gcsUri": "gs://mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/a-ilha-dos-sons-suaves/cover.jpeg",
+      "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/a-ilha-dos-sons-suaves/cover.jpeg"
     },
     {
       "bookId": "book-02",
       "type": "use_case",
       "promptPath": "assets/use-cases/book-02-use-case.prompt.md",
-      "targetPath": "assets/use-cases/book-02-use-case.png",
+      "targetPath": "public/landing-pages/livro-personalizado-criancas-autistas/assets/books/a-ilha-dos-sons-suaves/card.jpeg",
       "useCase": "audiobook listening moment",
-      "status": "pending_generation"
+      "status": "generated",
+      "gcsUri": "gs://mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/a-ilha-dos-sons-suaves/card.jpeg",
+      "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/a-ilha-dos-sons-suaves/card.jpeg"
     },
     {
       "bookId": "book-03",
       "type": "cover",
       "promptPath": "assets/covers/book-03-cover.prompt.md",
-      "targetPath": "assets/covers/book-03-cover.png",
+      "targetPath": "public/landing-pages/livro-personalizado-criancas-autistas/assets/books/o-mapa-do-primeiro-dia/cover.jpeg",
       "graphicalStyle": "digital_art",
-      "status": "pending_generation"
+      "status": "generated",
+      "gcsUri": "gs://mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-mapa-do-primeiro-dia/cover.jpeg",
+      "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-mapa-do-primeiro-dia/cover.jpeg"
     },
     {
       "bookId": "book-03",
       "type": "use_case",
       "promptPath": "assets/use-cases/book-03-use-case.prompt.md",
-      "targetPath": "assets/use-cases/book-03-use-case.png",
+      "targetPath": "public/landing-pages/livro-personalizado-criancas-autistas/assets/books/o-mapa-do-primeiro-dia/card.jpeg",
       "useCase": "teacher using the book",
-      "status": "pending_generation"
+      "status": "generated",
+      "gcsUri": "gs://mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-mapa-do-primeiro-dia/card.jpeg",
+      "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-mapa-do-primeiro-dia/card.jpeg"
     },
     {
       "bookId": "book-04",
       "type": "cover",
       "promptPath": "assets/covers/book-04-cover.prompt.md",
-      "targetPath": "assets/covers/book-04-cover.png",
+      "targetPath": "public/landing-pages/livro-personalizado-criancas-autistas/assets/books/o-meu-irmao-tem-um-ritmo-de-estrela/cover.jpeg",
       "graphicalStyle": "hand_drawn",
-      "status": "pending_generation"
+      "status": "generated",
+      "gcsUri": "gs://mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-meu-irmao-tem-um-ritmo-de-estrela/cover.jpeg",
+      "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-meu-irmao-tem-um-ritmo-de-estrela/cover.jpeg"
     },
     {
       "bookId": "book-04",
       "type": "use_case",
       "promptPath": "assets/use-cases/book-04-use-case.prompt.md",
-      "targetPath": "assets/use-cases/book-04-use-case.png",
+      "targetPath": "public/landing-pages/livro-personalizado-criancas-autistas/assets/books/o-meu-irmao-tem-um-ritmo-de-estrela/card.jpeg",
       "useCase": "caregiver using the book in a calm setting",
-      "status": "pending_generation"
+      "status": "generated",
+      "gcsUri": "gs://mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-meu-irmao-tem-um-ritmo-de-estrela/card.jpeg",
+      "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/o-meu-irmao-tem-um-ritmo-de-estrela/card.jpeg"
     },
     {
       "bookId": "book-05",
       "type": "cover",
       "promptPath": "assets/covers/book-05-cover.prompt.md",
-      "targetPath": "assets/covers/book-05-cover.png",
+      "targetPath": "public/landing-pages/livro-personalizado-criancas-autistas/assets/books/a-caixa-das-coisas-queridas/cover.jpeg",
       "graphicalStyle": "pixar_style",
-      "status": "pending_generation"
+      "status": "generated",
+      "gcsUri": "gs://mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/a-caixa-das-coisas-queridas/cover.jpeg",
+      "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/a-caixa-das-coisas-queridas/cover.jpeg"
     },
     {
       "bookId": "book-05",
       "type": "use_case",
       "promptPath": "assets/use-cases/book-05-use-case.prompt.md",
-      "targetPath": "assets/use-cases/book-05-use-case.png",
+      "targetPath": "public/landing-pages/livro-personalizado-criancas-autistas/assets/books/a-caixa-das-coisas-queridas/card.jpeg",
       "useCase": "product shot of the book",
-      "status": "pending_generation"
+      "status": "generated",
+      "gcsUri": "gs://mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/a-caixa-das-coisas-queridas/card.jpeg",
+      "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/books/a-caixa-das-coisas-queridas/card.jpeg"
     }
   ]
 }

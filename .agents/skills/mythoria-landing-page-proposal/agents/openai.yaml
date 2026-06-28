@@ -1,0 +1,5 @@
+interface:
+  display_name: "Mythoria Landing Page Proposal"
+  short_description: "Draft niche landing-page proposal packs"
+  default_prompt: "Use $mythoria-landing-page-proposal to create a pt-PT landing-page proposal folder for a Mythoria niche."
+

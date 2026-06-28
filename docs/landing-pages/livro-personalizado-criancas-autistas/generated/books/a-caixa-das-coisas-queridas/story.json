@@ -1,0 +1,42 @@
+{
+  "id": "book-05",
+  "title": "A Caixa das Coisas Queridas",
+  "slug": "a-caixa-das-coisas-queridas",
+  "language": "pt-PT",
+  "targetAudience": "all_ages",
+  "graphicalStyle": "pixar_style",
+  "novelStyle": "contemporary",
+  "synopsis": "Uma criança e a avó guardam pequenos objetos numa caixa: uma folha do parque, uma fotografia, um bilhete amarelo e uma frase repetida em casa. Cada objeto abre uma memória curta e luminosa.",
+  "shortExcerpt": "Dentro da caixa havia uma folha, uma fotografia e um botão azul. A avó disse: 'Cada coisa querida tem uma história pequena. Vamos abrir uma de cada vez.'",
+  "fictionalUserContext": {
+    "buyerName": "Helena",
+    "recipientName": "Noa",
+    "relationship": "avó e neta",
+    "context": "Família fictícia que quer preservar objetos e frases familiares num livro bonito para ler em conjunto."
+  },
+  "safetyNotes": [
+    "Não usar dados reais ou fotografias reais nos exemplos públicos.",
+    "Manter objetos e nomes como ficcionais."
+  ],
+  "chapters": [
+    {
+      "number": 1,
+      "title": "A Folha do Parque",
+      "summary": "Noa e a avó Helena abrem a caixa com uma memória simples e luminosa.",
+      "path": "chapters/chapter-01.md"
+    },
+    {
+      "number": 2,
+      "title": "O Botão Azul",
+      "summary": "Um objeto pequeno abre uma história familiar sem usar dados reais.",
+      "path": "chapters/chapter-02.md"
+    },
+    {
+      "number": 3,
+      "title": "Uma História de Cada Vez",
+      "summary": "A caixa ensina que as memórias podem ser abertas com calma, uma por uma.",
+      "path": "chapters/chapter-03.md"
+    }
+  ],
+  "status": "static_review_only"
+}

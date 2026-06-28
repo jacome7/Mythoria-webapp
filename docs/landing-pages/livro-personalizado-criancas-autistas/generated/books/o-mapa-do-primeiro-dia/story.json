@@ -1,0 +1,42 @@
+{
+  "id": "book-03",
+  "title": "O Mapa do Primeiro Dia",
+  "slug": "o-mapa-do-primeiro-dia",
+  "language": "pt-PT",
+  "targetAudience": "children_3-6",
+  "graphicalStyle": "digital_art",
+  "novelStyle": "educational",
+  "synopsis": "Leo recebe um mapa simples para conhecer uma sala nova. Cada página mostra um lugar, uma pessoa e uma pequena escolha, com um final que celebra a coragem tranquila de experimentar algo pela primeira vez.",
+  "shortExcerpt": "No mapa do Leo havia uma porta verde, uma mesa redonda e uma janela com luz. A professora sorriu e apontou para o primeiro desenho: 'Aqui guardamos a mochila.'",
+  "fictionalUserContext": {
+    "buyerName": "Sofia",
+    "recipientName": "Leo",
+    "relationship": "professora e aluno",
+    "context": "Cenário fictício de uma professora que quer preparar uma chegada a uma nova sala com linguagem visual simples."
+  },
+  "safetyNotes": [
+    "Não prometer adaptação escolar.",
+    "Manter o foco em familiarização e leitura acompanhada."
+  ],
+  "chapters": [
+    {
+      "number": 1,
+      "title": "A Porta Verde",
+      "summary": "Leo usa o mapa para reconhecer a primeira pista da nova sala.",
+      "path": "chapters/chapter-01.md"
+    },
+    {
+      "number": 2,
+      "title": "A Mesa Redonda",
+      "summary": "A sala nova fica mais simples quando cada lugar aparece um de cada vez.",
+      "path": "chapters/chapter-02.md"
+    },
+    {
+      "number": 3,
+      "title": "O Canto Tranquilo",
+      "summary": "Leo encontra um lugar de pausa e termina o primeiro dia com uma escolha pequena.",
+      "path": "chapters/chapter-03.md"
+    }
+  ],
+  "status": "static_review_only"
+}
