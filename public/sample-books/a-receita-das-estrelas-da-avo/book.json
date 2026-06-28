@@ -1,0 +1,41 @@
+{
+  "id": "grandparents-book-01",
+  "title": "A Receita das Estrelas da Avó",
+  "slug": "a-receita-das-estrelas-da-avo",
+  "language": "pt-PT",
+  "targetAudience": "children_3-6",
+  "readerAgeBand": "4-7 anos",
+  "buyerPersona": "Família portuguesa que quer transformar uma receita da avó num presente de leitura para netos pequenos",
+  "recipientType": "avó e neto",
+  "storyIntent": "Mostrar como uma receita, cheiros de casa e palavras repetidas em família podem tornar-se uma história personalizada para leitura acompanhada.",
+  "synopsis": "Numa cozinha com azulejos azuis, a avó Celeste ensina o neto Nuno a fazer bolinhos de canela. Quando a farinha começa a brilhar, cada estrela que sai da tigela guarda uma palavra de casa.",
+  "shortExcerpt": "A avó dizia que as receitas não começavam nos ingredientes. Começavam nas mãos de quem chamava a família para a mesa.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "O Nuno achava que uma receita era só farinha, ovos e canela. A avó Celeste sabia que faltava uma coisa: uma palavra de casa. Quando a colher mexeu a massa e pequenas estrelas subiram da tigela, cada estrela trouxe uma memória para guardar. Entre azulejos, risos e cheiro a bolinhos quentes, Nuno descobriu que cozinhar com a avó também era aprender uma história.",
+  "graphicalStyle": "colored_pencil",
+  "novelStyle": "fairy_tale",
+  "fictionalUserContext": "Cenário ficcional criado para demonstrar uma amostra Mythoria sobre avós, netos, receitas familiares e leitura partilhada.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/a-receita-das-estrelas-da-avo/assets/cover.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-receita-das-estrelas-da-avo/assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/a-receita-das-estrelas-da-avo/assets/feature.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-receita-das-estrelas-da-avo/assets/feature.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "provider": "google-genai",
+    "model": "gemini-2.5-flash-preview-tts",
+    "voice": "Aoede",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/a-receita-das-estrelas-da-avo/assets/audio-teaser.mp3",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-receita-das-estrelas-da-avo/assets/audio-teaser.mp3"
+  },
+  "safetyNotes": [
+    "A história é ficcional e não representa uma família real.",
+    "Tema familiar e de memória, com leitura e revisão por adultos.",
+    "Sem promessas educativas, terapêuticas, linguísticas ou comportamentais."
+  ]
+}

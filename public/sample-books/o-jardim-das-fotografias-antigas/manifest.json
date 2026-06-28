@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0",
+  "status": "draft",
+  "slug": "o-jardim-das-fotografias-antigas",
+  "title": "O Jardim das Fotografias Antigas",
+  "language": "pt-PT",
+  "experimentalLanguage": false,
+  "placement": "seo_landing_page",
+  "usageTags": ["seo", "grandparents", "diaspora", "pt-PT"],
+  "riskRating": "yellow",
+  "sensitiveNiche": true,
+  "requiresHumanApproval": true,
+  "createdAt": "2026-06-28",
+  "updatedAt": "2026-06-28"
+}

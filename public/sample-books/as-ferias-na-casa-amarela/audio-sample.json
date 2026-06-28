@@ -1,0 +1,14 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "Quando chegaram à casa amarela dos avós, Tomás e Clara traziam malas, saudades e poucas palavras portuguesas prontas a sair. A avó tinha pastéis na mesa. O avô tinha um mapa da vila. Os primos tinham pressa de ir à praia. No primeiro dia, disseram hello ao mar. No segundo, descobriram que olá também podia ser uma aventura.",
+  "voiceDirection": "Português de Portugal, voz viva e divertida, ritmo de aventura familiar para crianças dos sete aos onze anos.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-2.5-flash-preview-tts",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 36,
+  "generatedAt": "2026-06-28T22:20:44.111Z",
+  "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/as-ferias-na-casa-amarela/assets/audio-teaser.mp3",
+  "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/as-ferias-na-casa-amarela/assets/audio-teaser.mp3"
+}

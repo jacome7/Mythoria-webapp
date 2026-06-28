@@ -1,0 +1,41 @@
+{
+  "id": "grandparents-book-03",
+  "title": "A Mala que Falava Português",
+  "slug": "a-mala-que-falava-portugues",
+  "language": "pt-PT",
+  "targetAudience": "children_7-10",
+  "readerAgeBand": "6-10 anos",
+  "buyerPersona": "Família portuguesa na diáspora que quer aproximar netos da língua portuguesa através de palavras de casa",
+  "recipientType": "avós e neta",
+  "storyIntent": "Mostrar como palavras, videochamadas, fotografias e objetos familiares podem tornar o português uma aventura afetiva.",
+  "synopsis": "Lia vive longe de Portugal e entende muitas palavras, mas responde noutra língua. Quando recebe uma mala pequena dos avós, cada objeto lá dentro só acorda quando ela tenta uma palavra portuguesa.",
+  "shortExcerpt": "A palavra saudade não saiu perfeita. Mesmo assim, a mala abriu-se como se tivesse esperado por aquela tentativa.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "A Lia vivia longe de Portugal e guardava muitas palavras na cabeça, mas poucas saíam pela boca. Um dia, os avós enviaram-lhe uma mala pequena. Dentro havia postais, uma fita verde e vermelha, fotografias e uma palavra escrita num papel: saudade. Quando Lia tentou dizê-la, a mala abriu-se sozinha. Afinal, algumas palavras não precisam de sair perfeitas para encontrarem o caminho de casa.",
+  "graphicalStyle": "hand_drawn",
+  "novelStyle": "educational",
+  "fictionalUserContext": "Cenário ficcional criado para demonstrar uma amostra Mythoria sobre famílias portuguesas emigrantes, avós por videochamada e língua de herança.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/a-mala-que-falava-portugues/assets/cover.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-mala-que-falava-portugues/assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/a-mala-que-falava-portugues/assets/feature.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-mala-que-falava-portugues/assets/feature.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "provider": "google-genai",
+    "model": "gemini-2.5-flash-preview-tts",
+    "voice": "Aoede",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/a-mala-que-falava-portugues/assets/audio-teaser.mp3",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-mala-que-falava-portugues/assets/audio-teaser.mp3"
+  },
+  "safetyNotes": [
+    "A história é ficcional e não representa uma família real.",
+    "Tema de língua de herança tratado como experiência familiar, sem prometer aprendizagem garantida.",
+    "Sem promessas educativas, terapêuticas, linguísticas ou comportamentais."
+  ]
+}

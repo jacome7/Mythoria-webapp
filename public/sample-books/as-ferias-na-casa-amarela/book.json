@@ -1,0 +1,41 @@
+{
+  "id": "grandparents-book-05",
+  "title": "As Férias na Casa Amarela",
+  "slug": "as-ferias-na-casa-amarela",
+  "language": "pt-PT",
+  "targetAudience": "children_7-10",
+  "readerAgeBand": "7-11 anos",
+  "buyerPersona": "Família emigrante que quer preparar ou recordar férias em Portugal com avós, primos e palavras de casa",
+  "recipientType": "avós, netos e primos",
+  "storyIntent": "Mostrar como uma viagem a Portugal pode transformar-se numa aventura alegre sobre família, língua e lugares reconhecíveis.",
+  "synopsis": "Dois irmãos chegam à casa amarela dos avós para as férias. Entre primos, praia, mercado e palavras novas, descobrem que falar português pode ser uma brincadeira de equipa.",
+  "shortExcerpt": "No primeiro dia disseram hello ao mar. No segundo, já corriam pela areia a gritar olá como quem descobria uma porta secreta.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "Quando chegaram à casa amarela dos avós, Tomás e Clara traziam malas, saudades e poucas palavras portuguesas prontas a sair. A avó tinha pastéis na mesa. O avô tinha um mapa da vila. Os primos tinham pressa de ir à praia. No primeiro dia, disseram hello ao mar. No segundo, descobriram que olá também podia ser uma aventura.",
+  "graphicalStyle": "euro_comic_book",
+  "novelStyle": "adventure",
+  "fictionalUserContext": "Cenário ficcional criado para demonstrar uma amostra Mythoria sobre férias em Portugal, famílias emigrantes, avós, netos e língua portuguesa.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/as-ferias-na-casa-amarela/assets/cover.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/as-ferias-na-casa-amarela/assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/as-ferias-na-casa-amarela/assets/feature.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/as-ferias-na-casa-amarela/assets/feature.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "provider": "google-genai",
+    "model": "gemini-2.5-flash-preview-tts",
+    "voice": "Aoede",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/as-ferias-na-casa-amarela/assets/audio-teaser.mp3",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/as-ferias-na-casa-amarela/assets/audio-teaser.mp3"
+  },
+  "safetyNotes": [
+    "A história é ficcional e não representa uma família real.",
+    "Tema de viagem familiar e língua de herança tratado como inspiração, sem prometer aprendizagem garantida.",
+    "Sem promessas educativas, terapêuticas, linguísticas ou comportamentais."
+  ]
+}

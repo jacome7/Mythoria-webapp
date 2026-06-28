@@ -1,0 +1,14 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "A Lia vivia longe de Portugal e guardava muitas palavras na cabeça, mas poucas saíam pela boca. Um dia, os avós enviaram-lhe uma mala pequena. Dentro havia postais, uma fita verde e vermelha, fotografias e uma palavra escrita num papel: saudade. Quando Lia tentou dizê-la, a mala abriu-se sozinha. Afinal, algumas palavras não precisam de sair perfeitas para encontrarem o caminho de casa.",
+  "voiceDirection": "Português de Portugal, voz calorosa, encorajadora e clara, ritmo médio-lento para uma história sobre língua de herança.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-2.5-flash-preview-tts",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 43,
+  "generatedAt": "2026-06-28T22:20:15.846Z",
+  "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/a-mala-que-falava-portugues/assets/audio-teaser.mp3",
+  "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-mala-que-falava-portugues/assets/audio-teaser.mp3"
+}

@@ -1,0 +1,11 @@
+{
+  "status": "pending_generation",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "A Matilde abriu a primeira carta da avó Rosa e encontrou uma palavra sublinhada: saudade. Não era uma palavra triste, dizia a carta. Era uma forma de guardar caminho. Quando os azulejos da mesa começaram a brilhar, a Matilde percebeu que aquelas cartas eram portas para histórias de família, cheias de Lisboa, chá quente e abraços que atravessam países.",
+  "voiceDirection": "Português de Portugal, sotaque de Lisboa, tom quente e narrativo, ritmo calmo para leitura em família.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview-tts",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 42
+}

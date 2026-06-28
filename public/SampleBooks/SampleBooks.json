@@ -612,5 +612,133 @@
     ],
     "tags": "sono,independência,medos,noite,coragem",
     "style": "cartoon"
+  },
+  {
+    "id": "pea-comboio-que-sabia-esperar",
+    "title": "O Comboio que Sabia Esperar",
+    "synopses": "Tomás adora comboios e usa o seu Comboio Azul para atravessar a manhã passo a passo: acordar, vestir, tomar o pequeno-almoço e chegar à escola com tempo para respirar.",
+    "locale": "pt-PT",
+    "intent": "neurodiversity",
+    "recipients": [
+      "child",
+      "parent",
+      "family"
+    ],
+    "tags": "PEA,PHDA,rotina,manhã,escola,previsibilidade",
+    "style": "Aguarela minimalista",
+    "audioSampleSrc": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/audio/o-comboio-que-sabia-esperar-sample.mp3",
+    "audioSampleTitle": "Ouvir excerto áudio"
+  },
+  {
+    "id": "pea-ilha-dos-sons-suaves",
+    "title": "A Ilha dos Sons Suaves",
+    "synopses": "Mara visita uma ilha onde cada som tem cor e tamanho. Com uma lanterna pequena, aprende a escolher caminhos mais calmos e a pedir companhia quando o mundo parece demasiado cheio.",
+    "locale": "pt-PT",
+    "intent": "neurodiversity",
+    "recipients": [
+      "child",
+      "parent",
+      "family"
+    ],
+    "tags": "PEA,PHDA,sons,escolhas,sobrecarga sensorial,calma",
+    "style": "Minimalista suave",
+    "audioSampleSrc": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/audio/a-ilha-dos-sons-suaves-sample.mp3",
+    "audioSampleTitle": "Ouvir excerto áudio"
+  },
+  {
+    "id": "pea-mapa-do-primeiro-dia",
+    "title": "O Mapa do Primeiro Dia",
+    "synopses": "Leo leva um mapa verde para o primeiro dia numa sala nova. A mãe e a professora Sofia ajudam-no a reconhecer a porta, o cabide, o canto tranquilo e o regresso a casa.",
+    "locale": "pt-PT",
+    "intent": "neurodiversity",
+    "recipients": [
+      "child",
+      "parent",
+      "class"
+    ],
+    "tags": "PEA,PHDA,primeiro dia,escola,transição,cartões visuais",
+    "style": "Arte digital minimalista",
+    "audioSampleSrc": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/audio/o-mapa-do-primeiro-dia-sample.mp3",
+    "audioSampleTitle": "Ouvir excerto áudio"
+  },
+  {
+    "id": "pea-irmao-ritmo-de-estrela",
+    "title": "O Meu Irmão Tem um Ritmo de Estrela",
+    "synopses": "Clara quer brincar às naves espaciais com Nico, mas Nico prefere alinhar estrelas de papel. Com a tia Marta, descobrem uma regra simples: perguntar, esperar, escolher.",
+    "locale": "pt-PT",
+    "intent": "neurodiversity",
+    "recipients": [
+      "child",
+      "sibling",
+      "family"
+    ],
+    "tags": "PEA,PHDA,irmãos,ritmos diferentes,espera,escolha",
+    "style": "Minimalista suave",
+    "audioSampleSrc": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/audio/o-meu-irmao-tem-um-ritmo-de-estrela-sample.mp3",
+    "audioSampleTitle": "Ouvir excerto áudio"
+  },
+  {
+    "id": "pea-caixa-das-coisas-queridas",
+    "title": "A Caixa das Coisas Queridas",
+    "synopses": "Noa e a avó Helena preparam uma pequena caixa azul para um almoço de família: uma pedra lisa, um pano macio e um cartão de pausa ajudam a lembrar escolhas possíveis.",
+    "locale": "pt-PT",
+    "intent": "neurodiversity",
+    "recipients": [
+      "child",
+      "grandparent",
+      "family"
+    ],
+    "tags": "PEA,PHDA,objetos familiares,família,pausa,escolhas",
+    "style": "Minimalista suave",
+    "audioSampleSrc": "https://storage.googleapis.com/mythoria-public/landing-page-assets/livro-personalizado-criancas-autistas/audio/a-caixa-das-coisas-queridas-sample.mp3",
+    "audioSampleTitle": "Ouvir excerto áudio"
+  },
+  {
+    "id": "workshop-gato-guardava-lua",
+    "title": "O Gato que Guardava a Lua",
+    "synopses": "Exemplo para os 5-7 anos, criado a partir de um desenho de animal de estimação. Mostra como uma ideia pequena pode virar uma história calorosa, visual e fácil de ler em voz alta.",
+    "locale": "pt-PT",
+    "intent": "school_projects",
+    "recipients": [
+      "child",
+      "class",
+      "team"
+    ],
+    "tags": "workshop,desenho,animal de estimação,leitura em voz alta,criatividade",
+    "style": "Lápis de cor",
+    "audioSampleSrc": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-gato-que-guardava-a-lua/assets/audio-teaser.mp3",
+    "audioSampleTitle": "Ouvir excerto narrado"
+  },
+  {
+    "id": "workshop-final-bairro-estrelas",
+    "title": "A Final do Bairro das Estrelas",
+    "synopses": "Exemplo para os 8-10 anos, criado a partir de uma ideia sobre futebol. Mostra como desporto, regras e colaboração podem transformar-se numa aventura de equipa.",
+    "locale": "pt-PT",
+    "intent": "school_projects",
+    "recipients": [
+      "child",
+      "class",
+      "team"
+    ],
+    "tags": "workshop,futebol,equipa,colaboração,regras,criatividade",
+    "style": "Banda desenhada",
+    "audioSampleSrc": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-final-do-bairro-das-estrelas/assets/audio-teaser.mp3",
+    "audioSampleTitle": "Ouvir excerto narrado"
+  },
+  {
+    "id": "workshop-clube-mapas-impossiveis",
+    "title": "O Clube dos Mapas Impossíveis",
+    "synopses": "Exemplo para os 10-12 anos, criado a partir de um mapa desenhado em grupo. Mostra como crianças mais velhas podem trabalhar pistas, mundo ficcional e revisão criativa.",
+    "locale": "pt-PT",
+    "intent": "school_projects",
+    "recipients": [
+      "child",
+      "class",
+      "team"
+    ],
+    "tags": "workshop,mapas,trabalho de grupo,pistas,revisão criativa",
+    "style": "Aguarela",
+    "audioSampleSrc": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-clube-dos-mapas-impossiveis/assets/audio-teaser.mp3",
+    "audioSampleTitle": "Ouvir excerto narrado"
   }
 ]

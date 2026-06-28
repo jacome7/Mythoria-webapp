@@ -1,0 +1,39 @@
+{
+  "id": "grandparents-book-01",
+  "title": "As Cartas da Avó Rosa",
+  "slug": "as-cartas-da-avo-rosa",
+  "language": "pt-PT",
+  "targetAudience": "children_7-10",
+  "readerAgeBand": "6-10 anos",
+  "buyerPersona": "Família portuguesa em Portugal ou na diáspora que quer oferecer aos avós uma história com memórias, cartas e palavras de casa",
+  "recipientType": "avós e netos",
+  "storyIntent": "Mostrar como cartas, fotografias, expressões portuguesas e memórias familiares podem transformar-se num livro personalizado para leitura partilhada.",
+  "synopsis": "Matilde encontra uma caixa de cartas antigas da avó Rosa. Cada carta guarda uma palavra portuguesa, uma memória de Lisboa e uma pequena missão para a neta descobrir com a família.",
+  "shortExcerpt": "“Esta palavra não se traduz bem”, escreveu a avó Rosa. “Mas cabe inteira num abraço.”",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "A Matilde abriu a primeira carta da avó Rosa e encontrou uma palavra sublinhada: saudade. Não era uma palavra triste, dizia a carta. Era uma forma de guardar caminho. Quando os azulejos da mesa começaram a brilhar, a Matilde percebeu que aquelas cartas eram portas para histórias de família, cheias de Lisboa, chá quente e abraços que atravessam países.",
+  "graphicalStyle": "colored_pencil",
+  "novelStyle": "contemporary",
+  "fictionalUserContext": "Cenário ficcional criado para demonstrar uma landing page Mythoria sobre avós, netos, língua portuguesa e famílias emigrantes.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/as-cartas-da-avo-rosa/assets/cover.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/as-cartas-da-avo-rosa/assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/as-cartas-da-avo-rosa/assets/feature.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/as-cartas-da-avo-rosa/assets/feature.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview-tts",
+    "voice": "Aoede"
+  },
+  "safetyNotes": [
+    "A história é ficcional e não representa uma família real.",
+    "Tema familiar e de memória, com recomendação de revisão adulta antes de partilhar ou imprimir.",
+    "Sem promessas educativas, terapêuticas, linguísticas ou comportamentais."
+  ]
+}

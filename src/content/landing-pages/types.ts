@@ -57,6 +57,14 @@ export interface LandingPageGlossaryTerm {
   definition: string;
 }
 
+export interface LandingPageTestimonial {
+  quote: string;
+  author: string;
+  role: string;
+  location?: string;
+  stars?: number;
+}
+
 export interface LandingPageBookSection {
   eyebrow: string;
   title: string;
@@ -118,6 +126,38 @@ export interface LandingPagePersonaExample {
   idea: string;
   persona: string;
   result: string;
+}
+
+export interface LandingPageChoiceGroup {
+  title: string;
+  body: string;
+  choices: string[];
+  iconSrc?: string;
+  iconAlt?: string;
+}
+
+export interface LandingPageAgePath {
+  ageRange: string;
+  title: string;
+  body: string;
+  steps: string[];
+  exampleTitle: string;
+  exampleBody: string;
+  imageSrc: string;
+  imageAlt: string;
+}
+
+export interface LandingPageLanguageExample {
+  label: string;
+  phrase: string;
+  note: string;
+}
+
+export interface LandingPageDiasporaContent {
+  title: string;
+  body: string[];
+  options: LandingPageIconItem[];
+  languageExamples: LandingPageLanguageExample[];
 }
 
 export interface LandingPageWorkshopContent {
@@ -218,6 +258,18 @@ export interface LandingPageContent {
     intro?: string;
     items: LandingPageUseCase[];
   };
+  personalization?: {
+    title: string;
+    intro: string;
+    groups: LandingPageChoiceGroup[];
+    ctaLabel: string;
+  };
+  agePaths?: {
+    title: string;
+    intro: string;
+    items: LandingPageAgePath[];
+  };
+  diaspora?: LandingPageDiasporaContent;
   intro: {
     title: string;
     body: string[];
@@ -261,6 +313,12 @@ export interface LandingPageContent {
   finalCta: {
     title: string;
     body: string;
+  };
+  trustBadges?: string[];
+  testimonials?: {
+    title: string;
+    intro?: string;
+    items: LandingPageTestimonial[];
   };
   structuredData?: {
     about: string[];

@@ -17,18 +17,14 @@ const copy = {
     title: 'Landing pages',
     intro:
       'Lista simples das landing pages registadas no Mythoria, para navegação e revisão rápida.',
-    statusLabel: 'Indexável',
     updatedLabel: 'Atualizada em',
-    openLabel: 'Abrir landing page',
     empty: 'Ainda não existem landing pages indexáveis.',
   },
   fallback: {
     eyebrow: 'Internal index',
     title: 'Landing pages',
     intro: 'Simple list of registered Mythoria landing pages for quick navigation and review.',
-    statusLabel: 'Indexable',
     updatedLabel: 'Updated',
-    openLabel: 'Open landing page',
     empty: 'There are no indexable landing pages yet.',
   },
 } as const;
@@ -69,41 +65,31 @@ export default async function LandingPageIndexRoute({ params }: LandingPageIndex
         {pages.length > 0 ? (
           <div className="mt-10 grid gap-4">
             {pages.map((page) => (
-              <article
+              <Link
                 key={`${page.locale}-${page.slug}`}
-                className="rounded-2xl border border-primary/10 bg-white p-5 shadow-sm"
+                href={page.href}
+                className="block rounded-2xl border border-primary/10 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-[#fff8ea]"
               >
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                  <div>
-                    <div className="mb-3 flex flex-wrap gap-2">
-                      <span className="rounded-full bg-primary px-3 py-1 text-xs font-bold text-white">
-                        {page.locale}
-                      </span>
-                      <span className="rounded-full bg-base-200 px-3 py-1 text-xs font-semibold text-base-content/70">
-                        /lp/{page.slug}
-                      </span>
-                      <span className="rounded-full bg-success/15 px-3 py-1 text-xs font-semibold text-success">
-                        {t.statusLabel}
-                      </span>
-                    </div>
-                    <h2 className="font-display text-2xl font-bold leading-tight text-[#33251c]">
-                      {page.title}
-                    </h2>
-                    <p className="mt-2 max-w-3xl leading-relaxed text-base-content/70">
-                      {page.metaDescription}
-                    </p>
-                    <p className="mt-3 text-sm text-base-content/55">
-                      {t.updatedLabel} {formatDate(page.updatedAt, locale)}
-                    </p>
+                <article>
+                  <div className="mb-3 flex flex-wrap gap-2">
+                    <span className="rounded-full bg-primary px-3 py-1 text-xs font-bold text-white">
+                      {page.locale}
+                    </span>
+                    <span className="rounded-full bg-base-200 px-3 py-1 text-xs font-semibold text-base-content/70">
+                      /lp/{page.slug}
+                    </span>
                   </div>
-                  <Link
-                    href={page.href}
-                    className="btn btn-primary h-auto min-h-12 shrink-0 whitespace-normal py-3 text-center leading-tight"
-                  >
-                    {t.openLabel}
-                  </Link>
-                </div>
-              </article>
+                  <h2 className="font-display text-2xl font-bold leading-tight text-[#33251c]">
+                    {page.title}
+                  </h2>
+                  <p className="mt-2 max-w-3xl leading-relaxed text-base-content/70">
+                    {page.metaDescription}
+                  </p>
+                  <p className="mt-3 text-sm text-base-content/55">
+                    {t.updatedLabel} {formatDate(page.updatedAt, locale)}
+                  </p>
+                </article>
+              </Link>
             ))}
           </div>
         ) : (

@@ -1,9 +1,11 @@
 import { autismStoriesLandingPage } from './autism-stories.pt-PT';
+import { grandparentsStoriesLandingPage } from './grandparents-stories.pt-PT';
 import type { LandingPageBook, LandingPageContent, LandingPageTemplateIcon } from './types';
 import { workshopsChildrenLandingPage } from './workshops-criancas.pt-PT';
 
 const landingPages = [
   autismStoriesLandingPage,
+  grandparentsStoriesLandingPage,
   workshopsChildrenLandingPage,
 ] satisfies LandingPageContent[];
 

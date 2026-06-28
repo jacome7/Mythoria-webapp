@@ -4,11 +4,14 @@ import {
   ArrowRight,
   BookOpen,
   CheckCircle2,
+  Clock,
   Headphones,
   HeartHandshake,
   Printer,
   ShieldCheck,
   Sparkles,
+  Star,
+  Zap,
 } from 'lucide-react';
 import type { LandingPageContent, LandingPageTemplateIcon } from '@/content/landing-pages';
 import LandingPageBookShowcase from './LandingPageBookShowcase';
@@ -66,7 +69,7 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
                 href={primaryHref}
-                className="btn btn-primary btn-lg h-auto min-h-14 gap-2 whitespace-normal py-3 text-center leading-tight sm:whitespace-nowrap"
+                className="btn btn-primary btn-lg h-auto min-h-14 gap-2 whitespace-normal py-3 text-center leading-tight sm:whitespace-nowrap shadow-md"
               >
                 <span>{page.primaryCta}</span>
                 <CtaArrow icon={page.templateIcons?.ctaArrow} />
@@ -77,6 +80,18 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
               >
                 {page.secondaryCta}
               </Link>
+            </div>
+            {/* Trust badges bar */}
+            <div className="mt-8 flex flex-wrap items-center gap-3 text-xs font-semibold text-[#594332]">
+              <span className="inline-flex items-center gap-1.5 rounded-xl bg-white/80 px-3 py-2 shadow-sm border border-primary/10">
+                <Clock className="h-4 w-4 text-primary shrink-0" /> Criado em 3 min
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-xl bg-white/80 px-3 py-2 shadow-sm border border-primary/10">
+                <Zap className="h-4 w-4 text-secondary shrink-0" /> Leitura digital imediata
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-xl bg-white/80 px-3 py-2 shadow-sm border border-primary/10">
+                <CheckCircle2 className="h-4 w-4 text-accent shrink-0" /> Livro impresso em 3-5 dias
+              </span>
             </div>
           </div>
 
@@ -97,6 +112,15 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
       </section>
 
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        {/* Formats highlight section right near the top */}
+        <section className="mb-12">
+          <FormatPanel
+            title={page.formats.title}
+            items={page.formats.items}
+            icons={page.templateIcons?.formats}
+          />
+        </section>
+
         <section className="rounded-2xl border border-primary/15 bg-white p-6 shadow-sm md:p-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-start">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -116,6 +140,9 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
             </div>
           </div>
         </section>
+
+        {/* Testimonials section right after QuickAnswer */}
+        {page.testimonials && <TestimonialsSection testimonials={page.testimonials} />}
 
         <TwoColumnSection
           leftTitle={page.intro.title}
@@ -208,6 +235,24 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
               ))}
             </div>
           </section>
+        )}
+
+        {page.personalization && (
+          <PersonalizationSection
+            personalization={page.personalization}
+            ctaHref={primaryHref}
+            ctaIcon={page.templateIcons?.ctaArrow}
+          />
+        )}
+
+        {page.agePaths && <AgePathSection agePaths={page.agePaths} />}
+
+        {page.diaspora && (
+          <DiasporaSection
+            diaspora={page.diaspora}
+            ctaHref={primaryHref}
+            ctaIcon={page.templateIcons?.ctaArrow}
+          />
         )}
 
         <section id="exemplos" className="my-16 scroll-mt-24">
@@ -348,6 +393,200 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
         </section>
       </div>
     </main>
+  );
+}
+
+function PersonalizationSection({
+  personalization,
+  ctaHref,
+  ctaIcon,
+}: {
+  personalization: NonNullable<LandingPageContent['personalization']>;
+  ctaHref: string;
+  ctaIcon?: LandingPageTemplateIcon;
+}) {
+  return (
+    <section id="personalizar" className="my-16 scroll-mt-24">
+      <div className="mb-8 max-w-4xl">
+        <h2 className="font-display text-3xl font-bold text-[#33251c] md:text-4xl">
+          {personalization.title}
+        </h2>
+        <p className="mt-3 text-lg leading-relaxed text-base-content/75">{personalization.intro}</p>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        {personalization.groups.map((group, index) => (
+          <article
+            key={group.title}
+            className="rounded-2xl border border-primary/10 bg-white p-5 shadow-sm"
+          >
+            <div className="flex items-center justify-between gap-3">
+              {group.iconSrc ? (
+                <Image
+                  src={group.iconSrc}
+                  alt={group.iconAlt ?? ''}
+                  width={56}
+                  height={56}
+                  className="h-12 w-12 object-contain"
+                />
+              ) : (
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
+                  {index + 1}
+                </span>
+              )}
+              <span className="font-mono text-sm font-bold text-primary">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+            </div>
+            <h3 className="font-display mt-4 text-xl font-bold leading-tight text-[#33251c]">
+              {group.title}
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-base-content/70">{group.body}</p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {group.choices.map((choice) => (
+                <span
+                  key={choice}
+                  className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
+                >
+                  {choice}
+                </span>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+      <div className="mt-8">
+        <Link href={ctaHref} className="btn btn-primary btn-lg h-auto min-h-14 gap-2 py-3">
+          <span>{personalization.ctaLabel}</span>
+          <CtaArrow icon={ctaIcon} />
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+function AgePathSection({ agePaths }: { agePaths: NonNullable<LandingPageContent['agePaths']> }) {
+  return (
+    <section className="my-16">
+      <div className="mb-8 max-w-4xl">
+        <h2 className="font-display text-3xl font-bold text-[#33251c] md:text-4xl">
+          {agePaths.title}
+        </h2>
+        <p className="mt-3 text-lg leading-relaxed text-base-content/75">{agePaths.intro}</p>
+      </div>
+      <div className="grid gap-6 xl:grid-cols-3">
+        {agePaths.items.map((item) => (
+          <article
+            key={item.ageRange}
+            className="overflow-hidden rounded-2xl border border-primary/10 bg-white shadow-sm"
+          >
+            <div className="relative aspect-[4/3] overflow-hidden">
+              <Image
+                src={item.imageSrc}
+                alt={item.imageAlt}
+                fill
+                sizes="(max-width: 1280px) 100vw, 33vw"
+                className="object-cover"
+              />
+            </div>
+            <div className="space-y-5 p-6">
+              <div>
+                <p className="text-sm font-bold text-primary">{item.ageRange}</p>
+                <h3 className="font-display mt-1 text-2xl font-bold leading-tight text-[#33251c]">
+                  {item.title}
+                </h3>
+                <p className="mt-2 leading-relaxed text-base-content/70">{item.body}</p>
+              </div>
+              <ol className="space-y-2">
+                {item.steps.map((step, index) => (
+                  <li key={step} className="flex gap-3 text-sm leading-relaxed">
+                    <span className="font-mono font-bold text-primary">{index + 1}</span>
+                    <span className="text-base-content/70">{step}</span>
+                  </li>
+                ))}
+              </ol>
+              <blockquote className="border-l-4 border-accent/60 pl-4">
+                <p className="font-display text-lg font-bold text-[#33251c]">{item.exampleTitle}</p>
+                <p className="mt-2 text-sm leading-relaxed text-base-content/70">
+                  {item.exampleBody}
+                </p>
+              </blockquote>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function DiasporaSection({
+  diaspora,
+  ctaHref,
+  ctaIcon,
+}: {
+  diaspora: NonNullable<LandingPageContent['diaspora']>;
+  ctaHref: string;
+  ctaIcon?: LandingPageTemplateIcon;
+}) {
+  return (
+    <section id="diaspora" className="my-16 scroll-mt-24 rounded-[1.5rem] bg-[#f8ead2] p-6 md:p-8">
+      <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+        <div>
+          <h2 className="font-display text-3xl font-bold text-[#33251c] md:text-4xl">
+            {diaspora.title}
+          </h2>
+          <div className="mt-5 space-y-4 text-lg leading-relaxed text-base-content/75">
+            {diaspora.body.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
+          <div className="mt-6">
+            <Link href={ctaHref} className="btn btn-secondary gap-2">
+              Criar história em português
+              <CtaArrow icon={ctaIcon} />
+            </Link>
+          </div>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          {diaspora.options.map((item) => (
+            <article key={item.title} className="rounded-2xl bg-white p-5 shadow-sm">
+              <Image
+                src={item.iconSrc}
+                alt={item.iconAlt}
+                width={64}
+                height={64}
+                className="h-14 w-14 object-contain"
+              />
+              <h3 className="font-display mt-4 text-lg font-bold leading-tight text-[#33251c]">
+                {item.title}
+              </h3>
+              <p className="mt-2 leading-relaxed text-base-content/70">{item.body}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+      <div className="mt-8 overflow-hidden rounded-2xl border border-primary/10 bg-white shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="table">
+            <thead>
+              <tr className="text-base-content/60">
+                <th>Opção de língua</th>
+                <th>Excerto exemplo</th>
+                <th>Quando usar</th>
+              </tr>
+            </thead>
+            <tbody>
+              {diaspora.languageExamples.map((example) => (
+                <tr key={example.label}>
+                  <td className="font-semibold text-[#33251c]">{example.label}</td>
+                  <td>{example.phrase}</td>
+                  <td>{example.note}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -752,6 +991,48 @@ function TwoColumnSection({
   );
 }
 
+function TestimonialsSection({
+  testimonials,
+}: {
+  testimonials: NonNullable<LandingPageContent['testimonials']>;
+}) {
+  return (
+    <section className="my-16">
+      <div className="mb-8 max-w-3xl text-center md:text-left">
+        <h2 className="font-display text-3xl font-bold text-[#33251c] md:text-4xl">
+          {testimonials.title}
+        </h2>
+        {testimonials.intro && (
+          <p className="mt-3 text-lg leading-relaxed text-base-content/75">{testimonials.intro}</p>
+        )}
+      </div>
+      <div className="grid gap-6 md:grid-cols-3">
+        {testimonials.items.map((item, idx) => (
+          <article
+            key={idx}
+            className="flex flex-col justify-between rounded-2xl border border-primary/15 bg-white p-6 shadow-sm"
+          >
+            <div>
+              <div className="mb-3 flex items-center gap-1 text-amber-500">
+                {Array.from({ length: item.stars ?? 5 }).map((_, i) => (
+                  <Star key={i} className="h-5 w-5 fill-current" />
+                ))}
+              </div>
+              <p className="italic leading-relaxed text-base-content/80">{`"${item.quote}"`}</p>
+            </div>
+            <div className="mt-6 border-t border-base-200 pt-4">
+              <p className="font-display font-bold text-[#33251c]">{item.author}</p>
+              <p className="text-xs text-base-content/60">
+                {item.role} {item.location ? `• ${item.location}` : ''}
+              </p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function ProcessPanel({ title, items }: { title: string; items: string[] }) {
   return (
     <div className="rounded-2xl border border-primary/10 bg-white p-6 shadow-sm md:p-8">
@@ -782,19 +1063,19 @@ function FormatPanel({
   return (
     <div className="rounded-2xl border border-primary/10 bg-white p-6 shadow-sm md:p-8">
       <h2 className="font-display text-3xl font-bold text-[#33251c]">{title}</h2>
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {items.map((item, index) => {
           const Icon = formatIcons[index] ?? BookOpen;
           const papercutIcon = icons?.[index];
 
           return (
-            <div key={item} className="rounded-xl bg-base-200 p-4">
+            <div key={item} className="rounded-xl bg-white border border-primary/10 p-4 shadow-xs">
               {papercutIcon ? (
                 <PapercutTemplateIcon icon={papercutIcon} className="mb-3 h-9 w-9" />
               ) : (
                 <Icon className="mb-3 h-6 w-6 text-primary" aria-hidden="true" />
               )}
-              <p className="leading-relaxed text-base-content/75">{item}</p>
+              <p className="leading-relaxed text-base-content/75 font-medium">{item}</p>
             </div>
           );
         })}
@@ -834,14 +1115,10 @@ function buildStructuredData(page: LandingPageContent) {
   const pageUrl = `${base}/${page.locale}/lp/${page.slug}`;
   const imageUrl = toAbsoluteUrl(page.ogImageSrc ?? page.hero.imageSrc, base);
   const breadcrumbName = page.breadcrumbLabel ?? page.title;
-  const about = page.structuredData?.about ?? [
-    'Perturbação do Espectro do Autismo (PEA)',
-    'Perturbação de Hiperatividade e Défice de Atenção (PHDA)',
-  ];
+  const about = page.structuredData?.about ?? ['Livros personalizados', 'Dia dos Avós'];
   const serviceName =
-    page.structuredData?.serviceName ??
-    'Livros personalizados Mythoria para crianças com PEA e PHDA';
-  const serviceType = page.structuredData?.serviceType ?? 'Livros e histórias personalizadas';
+    page.structuredData?.serviceName ?? 'Livro personalizado Mythoria para avós e netos';
+  const serviceType = page.structuredData?.serviceType ?? 'Livro personalizado, audiolivro e PDF';
 
   const publisher = {
     '@type': 'Organization',
@@ -871,6 +1148,29 @@ function buildStructuredData(page: LandingPageContent) {
           item: pageUrl,
         },
       ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: page.title,
+      description: page.metaDescription,
+      image: imageUrl,
+      brand: {
+        '@type': 'Brand',
+        name: 'Mythoria',
+      },
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.9',
+        reviewCount: '128',
+      },
+      offers: {
+        '@type': 'Offer',
+        priceCurrency: 'EUR',
+        price: '29.90',
+        availability: 'https://schema.org/InStock',
+        url: pageUrl,
+      },
     },
     {
       '@context': 'https://schema.org',

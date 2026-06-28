@@ -99,7 +99,17 @@ export default function LandingPageBookShowcase({
               {book.chapters?.length ? (
                 <div className="rounded-xl border border-primary/10 bg-white/80 p-4">
                   <div className="mb-3 flex items-center gap-2 text-sm font-bold text-primary">
-                    <BookOpen className="h-4 w-4" aria-hidden="true" />
+                    {sampleChapterIcon ? (
+                      <Image
+                        src={sampleChapterIcon.src}
+                        alt={sampleChapterIcon.alt}
+                        width={32}
+                        height={32}
+                        className="h-5 w-5 object-contain"
+                      />
+                    ) : (
+                      <BookOpen className="h-4 w-4" aria-hidden="true" />
+                    )}
                     <span>Capítulos</span>
                   </div>
                   <ol className="space-y-2 text-sm leading-relaxed text-base-content/70">

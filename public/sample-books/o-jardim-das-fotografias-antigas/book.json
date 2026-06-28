@@ -1,0 +1,41 @@
+{
+  "id": "grandparents-book-04",
+  "title": "O Jardim das Fotografias Antigas",
+  "slug": "o-jardim-das-fotografias-antigas",
+  "language": "pt-PT",
+  "targetAudience": "children_11-14",
+  "readerAgeBand": "10-12 anos",
+  "buyerPersona": "Família que quer preservar fotografias, lugares e histórias de avós num livro para crianças mais velhas",
+  "recipientType": "avó e netos",
+  "storyIntent": "Mostrar como fotografias antigas podem inspirar uma narrativa de raízes familiares, perguntas e memória partilhada.",
+  "synopsis": "Marta e Simão ajudam a avó Irene a pendurar fotografias no jardim. Ao pôr cada fotografia contra a luz, descobrem caminhos para lugares de que a família fala, mas que eles ainda não conhecem.",
+  "shortExcerpt": "A fotografia era pequena, mas quando a avó a segurou contra o sol, abriu uma rua inteira dentro da tarde.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "No jardim da avó Irene, as fotografias antigas não ficavam presas ao papel. Quando Marta e Simão as penduraram no fio da roupa, cada imagem acendeu uma pequena janela: uma rua de pedra, uma festa de verão, uma casa que já não existia. A avó não lhes deu respostas prontas. Deu-lhes perguntas. E, no fim da tarde, os netos descobriram que uma fotografia também pode ser uma porta.",
+  "graphicalStyle": "watercolor",
+  "novelStyle": "contemporary",
+  "fictionalUserContext": "Cenário ficcional criado para demonstrar uma amostra Mythoria sobre fotografias antigas, avós, netos e preservação cuidadosa de memórias familiares.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-jardim-das-fotografias-antigas/assets/cover.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-jardim-das-fotografias-antigas/assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-jardim-das-fotografias-antigas/assets/feature.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-jardim-das-fotografias-antigas/assets/feature.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "provider": "google-genai",
+    "model": "gemini-2.5-flash-preview-tts",
+    "voice": "Aoede",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-jardim-das-fotografias-antigas/assets/audio-teaser.mp3",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-jardim-das-fotografias-antigas/assets/audio-teaser.mp3"
+  },
+  "safetyNotes": [
+    "A história é ficcional e não representa uma família real.",
+    "Tema de memória familiar tratado com cuidado e revisão adulta.",
+    "Sem promessas educativas, terapêuticas, linguísticas ou comportamentais."
+  ]
+}

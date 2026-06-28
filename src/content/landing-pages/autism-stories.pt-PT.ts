@@ -3,6 +3,7 @@ import type { LandingPageContent } from './types';
 const slug = 'livro-personalizado-criancas-autistas';
 const assetBase = `/landing-pages/${slug}/assets`;
 const publicAudioBase = `https://storage.googleapis.com/mythoria-public/landing-page-assets/${slug}/audio`;
+const iconBase = '/Papercut_icons';
 
 export const autismStoriesLandingPage: LandingPageContent = {
   slug,
@@ -19,6 +20,54 @@ export const autismStoriesLandingPage: LandingPageContent = {
   ogImageSrc: `${assetBase}/hero/og-cover.jpeg`,
   primaryCta: 'Começar a minha história',
   secondaryCta: 'Ver exemplos',
+  templateIcons: {
+    heroEyebrow: {
+      src: `${iconBase}/sparkles.webp`,
+      alt: '',
+    },
+    ctaArrow: {
+      src: `${iconBase}/fa-chevron-right-papercut.webp`,
+      alt: '',
+    },
+    quickAnswer: {
+      src: `${iconBase}/fa-check-papercut.webp`,
+      alt: '',
+    },
+    audioSample: {
+      src: `${iconBase}/fa-microphone-papercut.webp`,
+      alt: '',
+    },
+    sampleChapter: {
+      src: `${iconBase}/openBook.webp`,
+      alt: '',
+    },
+    professionalPanel: {
+      src: `${iconBase}/fa-heart-business-family-papercut.png`,
+      alt: '',
+    },
+    safetyNote: {
+      src: `${iconBase}/fa-exclamation-triangle-papercut.webp`,
+      alt: '',
+    },
+    formats: [
+      {
+        src: `${iconBase}/openBook.webp`,
+        alt: '',
+      },
+      {
+        src: `${iconBase}/fa-microphone-papercut.webp`,
+        alt: '',
+      },
+      {
+        src: `${iconBase}/fa-file-upload-papercut.webp`,
+        alt: '',
+      },
+      {
+        src: `${iconBase}/fa-book-open-papercut.png`,
+        alt: '',
+      },
+    ],
+  },
   hero: {
     eyebrow: 'Histórias personalizadas para PEA e PHDA',
     headline: 'Uma história feita com os detalhes que a criança já conhece e adora.',
@@ -56,11 +105,36 @@ export const autismStoriesLandingPage: LandingPageContent = {
   carefulBenefits: {
     title: 'Como uma história personalizada pode ajudar',
     items: [
-      'Tornar a leitura mais próxima, familiar e relevante para a criança.',
-      'Incluir interesses, rotinas, lugares e pessoas que a criança reconhece.',
-      'Antecipar situações novas e tornar as transições mais previsíveis.',
-      'Apoiar rotinas e momentos de atenção com passos simples e claros.',
-      'Guardar memórias num formato bonito para partilhar ou imprimir.',
+      {
+        title: 'Tornar a leitura mais próxima, familiar e relevante para a criança.',
+        body: '',
+        iconSrc: `${iconBase}/openBook.webp`,
+        iconAlt: 'Ícone papercut de livro aberto',
+      },
+      {
+        title: 'Incluir interesses, rotinas, lugares e pessoas que a criança reconhece.',
+        body: '',
+        iconSrc: `${iconBase}/fa-heart-papercut.webp`,
+        iconAlt: 'Ícone papercut de coração',
+      },
+      {
+        title: 'Antecipar situações novas e tornar as transições mais previsíveis.',
+        body: '',
+        iconSrc: `${iconBase}/fa-route-papercut.webp`,
+        iconAlt: 'Ícone papercut de percurso com marcadores',
+      },
+      {
+        title: 'Apoiar rotinas e momentos de atenção com passos simples e claros.',
+        body: '',
+        iconSrc: `${iconBase}/fa-check-papercut.webp`,
+        iconAlt: 'Ícone papercut de confirmação',
+      },
+      {
+        title: 'Guardar memórias num formato bonito para partilhar ou imprimir.',
+        body: '',
+        iconSrc: `${iconBase}/fa-gift-papercut.webp`,
+        iconAlt: 'Ícone papercut de presente',
+      },
     ],
   },
   useCases: {
@@ -355,11 +429,6 @@ export const autismStoriesLandingPage: LandingPageContent = {
       question: 'As histórias podem ser mais calmas?',
       answer:
         'Sim. Pode escolher um tom mais suave, com frases simples, ritmo tranquilo e menos intensidade emocional.',
-    },
-    {
-      question: 'Os exemplos desta página são histórias reais?',
-      answer:
-        'Não. São conceitos ficcionais para mostrar caminhos possíveis. Qualquer história pública deve ser criada e revista separadamente.',
     },
   ],
   safetyNote: {

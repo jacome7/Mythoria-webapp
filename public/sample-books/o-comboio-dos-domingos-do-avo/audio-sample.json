@@ -1,0 +1,14 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "Tiago pensava que o comboio de domingo fazia sempre o mesmo caminho. O avô Artur sabia que havia bilhetes capazes de lembrar. Naquela manhã, quando o papel antigo brilhou na mão do neto, a estação ganhou novas placas: a rua da primeira bicicleta, a ponte das histórias e a praia onde o avô aprendeu a esperar. O destino não estava escrito. Tinha de ser perguntado.",
+  "voiceDirection": "Português de Portugal, voz masculina ou feminina calorosa, ritmo de aventura calma para crianças dos sete aos dez anos.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-2.5-flash-preview-tts",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 40,
+  "generatedAt": "2026-06-28T22:20:01.926Z",
+  "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-comboio-dos-domingos-do-avo/assets/audio-teaser.mp3",
+  "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-comboio-dos-domingos-do-avo/assets/audio-teaser.mp3"
+}

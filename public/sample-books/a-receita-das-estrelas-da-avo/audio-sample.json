@@ -1,0 +1,14 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "O Nuno achava que uma receita era só farinha, ovos e canela. A avó Celeste sabia que faltava uma coisa: uma palavra de casa. Quando a colher mexeu a massa e pequenas estrelas subiram da tigela, cada estrela trouxe uma memória para guardar. Entre azulejos, risos e cheiro a bolinhos quentes, Nuno descobriu que cozinhar com a avó também era aprender uma história.",
+  "voiceDirection": "Português de Portugal, sotaque de Lisboa, voz calorosa e sorridente, ritmo calmo para crianças pequenas e leitura em família.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-2.5-flash-preview-tts",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 38,
+  "generatedAt": "2026-06-28T22:19:46.254Z",
+  "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/a-receita-das-estrelas-da-avo/assets/audio-teaser.mp3",
+  "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-receita-das-estrelas-da-avo/assets/audio-teaser.mp3"
+}

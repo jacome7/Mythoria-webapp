@@ -19,6 +19,8 @@ interface SampleBook {
   recipients: string[];
   tags: string;
   style: string;
+  audioSampleSrc?: string;
+  audioSampleTitle?: string;
 }
 
 const AUTO_SCROLL_INTERVAL_MS = 3600;
@@ -359,6 +361,15 @@ export default function HomepageBookGallery() {
                   <h4>{t('style')}:</h4>
                   <span className="badge badge-secondary">{selectedBook.style}</span>
                 </div>
+
+                {selectedBook.audioSampleSrc && (
+                  <div className={styles.modalSection}>
+                    <h4>{selectedBook.audioSampleTitle ?? 'Audio sample'}:</h4>
+                    <audio controls className="w-full">
+                      <source src={selectedBook.audioSampleSrc} type="audio/mpeg" />
+                    </audio>
+                  </div>
+                )}
 
                 <div className={styles.modalSection}>
                   <h4>{t('synopsis')}:</h4>

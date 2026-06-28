@@ -24,10 +24,17 @@ describe('landing page content registry', () => {
       locale: 'pt-PT',
       slug: 'workshops-criancas',
     });
+    expect(getLandingPageStaticParams()).toContainEqual({
+      locale: 'pt-PT',
+      slug: 'livro-personalizado-avos-netos',
+    });
     expect(getIndexableLandingPages().map((page) => page.slug)).toContain(
       'livro-personalizado-criancas-autistas',
     );
     expect(getIndexableLandingPages().map((page) => page.slug)).toContain('workshops-criancas');
+    expect(getIndexableLandingPages().map((page) => page.slug)).toContain(
+      'livro-personalizado-avos-netos',
+    );
   });
 
   it('uses respectful PEA/PHDA terminology in the title and metadata', () => {
@@ -84,6 +91,32 @@ describe('landing page content registry', () => {
       expect(book.sampleChapterHref).toBeUndefined();
       expect(book.chapters).toHaveLength(3);
     });
+  });
+
+  it('uses papercut icons across the autism landing page template sections', () => {
+    const page = getLandingPageBySlug('livro-personalizado-criancas-autistas');
+
+    expect(page?.templateIcons?.heroEyebrow?.src).toBe('/Papercut_icons/sparkles.webp');
+    expect(page?.templateIcons?.ctaArrow?.src).toBe(
+      '/Papercut_icons/fa-chevron-right-papercut.webp',
+    );
+    expect(page?.templateIcons?.quickAnswer?.src).toBe('/Papercut_icons/fa-check-papercut.webp');
+    expect(page?.templateIcons?.audioSample?.src).toBe(
+      '/Papercut_icons/fa-microphone-papercut.webp',
+    );
+    expect(page?.templateIcons?.sampleChapter?.src).toBe('/Papercut_icons/openBook.webp');
+    expect(page?.templateIcons?.professionalPanel?.src).toBe(
+      '/Papercut_icons/fa-heart-business-family-papercut.png',
+    );
+    expect(page?.templateIcons?.safetyNote?.src).toBe(
+      '/Papercut_icons/fa-exclamation-triangle-papercut.webp',
+    );
+    expect(page?.templateIcons?.formats).toHaveLength(4);
+    expect(
+      page?.carefulBenefits.items.every(
+        (item) => typeof item !== 'string' && item.iconSrc.startsWith('/Papercut_icons/'),
+      ),
+    ).toBe(true);
   });
 
   it('does not reference deprecated landing-page-assets paths or removed draft stories', () => {
@@ -156,5 +189,58 @@ describe('landing page content registry', () => {
 
     expect(hrefs).toContain('/pt-PT/lp/livro-personalizado-criancas-autistas');
     expect(hrefs).toContain('/pt-PT/lp/workshops-criancas');
+    expect(hrefs).toContain('/pt-PT/lp/livro-personalizado-avos-netos');
+  });
+
+  it('registers the grandparents landing page with diaspora and guided creation sections', () => {
+    const page = getLandingPageBySlug('livro-personalizado-avos-netos');
+    const serialized = JSON.stringify(page);
+
+    expect(page).toBeDefined();
+    expect(page?.locale).toBe('pt-PT');
+    expect(page?.indexable).toBe(true);
+    expect(page?.riskRating).toBe('yellow');
+    expect(page?.updatedAt).toBe('2026-06-28');
+    expect(page?.books).toHaveLength(5);
+    expect(page?.books.map((book) => book.title)).toEqual([
+      'A Receita das Estrelas da Avó',
+      'O Comboio dos Domingos do Avô',
+      'A Mala que Falava Português',
+      'O Jardim das Fotografias Antigas',
+      'As Férias na Casa Amarela',
+    ]);
+    expect(page?.hero.imageSrc).toBe(
+      'https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-receita-das-estrelas-da-avo/assets/feature.jpeg',
+    );
+    expect(page?.ogImageSrc).toBe(
+      'https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-receita-das-estrelas-da-avo/assets/feature.jpeg',
+    );
+    page?.books.forEach((book) => {
+      expect(book.imageSrc).toMatch(
+        /^https:\/\/storage\.googleapis\.com\/mythoria-public\/landing-page-assets\/sample-books\/.+\/assets\/feature\.jpeg$/,
+      );
+      expect(book.sampleChapter?.imageSrc).toMatch(
+        /^https:\/\/storage\.googleapis\.com\/mythoria-public\/landing-page-assets\/sample-books\/.+\/assets\/cover\.jpeg$/,
+      );
+      expect(book.audioSampleSrc).toMatch(
+        /^https:\/\/storage\.googleapis\.com\/mythoria-public\/landing-page-assets\/sample-books\/.+\/assets\/audio-teaser\.mp3$/,
+      );
+      expect(book.sampleChapter?.paragraphs.length).toBeGreaterThanOrEqual(6);
+    });
+    expect(page?.personalization?.groups).toHaveLength(5);
+    expect(page?.agePaths?.items).toHaveLength(3);
+    expect(page?.diaspora?.languageExamples.length).toBeGreaterThanOrEqual(4);
+    expect(page?.faq.length).toBeGreaterThanOrEqual(12);
+    expect(page?.templateIcons?.heroEyebrow?.src).toBe('/Papercut_icons/sparkles.webp');
+    expect(page?.carefulBenefits.items).toHaveLength(5);
+    expect(
+      page?.carefulBenefits.items.every(
+        (item) => typeof item !== 'string' && item.iconSrc.startsWith('/Papercut_icons/'),
+      ),
+    ).toBe(true);
+    expect(serialized).toContain('Mirandês');
+    expect(serialized).toContain('Português + francês');
+    expect(serialized).not.toContain('/SampleBooks');
+    expect(serialized).not.toContain('Gerar com IA');
   });
 });

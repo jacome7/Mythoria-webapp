@@ -1,0 +1,14 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "No jardim da avó Irene, as fotografias antigas não ficavam presas ao papel. Quando Marta e Simão as penduraram no fio da roupa, cada imagem acendeu uma pequena janela: uma rua de pedra, uma festa de verão, uma casa que já não existia. A avó não lhes deu respostas prontas. Deu-lhes perguntas. E, no fim da tarde, os netos descobriram que uma fotografia também pode ser uma porta.",
+  "voiceDirection": "Português de Portugal, voz serena e expressiva, tom de memória familiar sem dramatizar, ritmo adequado para crianças mais velhas.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-2.5-flash-preview-tts",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 45,
+  "generatedAt": "2026-06-28T22:20:31.418Z",
+  "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-jardim-das-fotografias-antigas/assets/audio-teaser.mp3",
+  "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-jardim-das-fotografias-antigas/assets/audio-teaser.mp3"
+}
