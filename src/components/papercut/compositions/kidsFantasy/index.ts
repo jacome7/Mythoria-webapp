@@ -18,5 +18,5 @@ export const kidsFantasy: HeroComposition = {
   person: {
     bottom: { base: 10, md: 8, lg: 7 },
   },
-  ctaPath: 'tell-your-story',
+  ctaPath: 'sign-up',
 };
