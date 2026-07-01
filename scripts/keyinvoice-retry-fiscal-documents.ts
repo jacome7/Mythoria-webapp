@@ -8,22 +8,29 @@ config({ path: '.env', override: false, quiet: true });
 async function main() {
   const limitArg = process.argv.find((arg) => arg.startsWith('--limit='));
   const limit = limitArg ? Number(limitArg.split('=')[1]) : 25;
+  const orderIds = process.argv
+    .filter((arg) => arg.startsWith('--order-id='))
+    .map((arg) => arg.split('=')[1]?.trim())
+    .filter((value): value is string => Boolean(value));
   const results = await fiscalDocumentService.retryDueDocuments(
     Number.isFinite(limit) ? limit : 25,
+    orderIds,
   );
 
   console.log(
     JSON.stringify(
       {
         attempted: results.length,
-        documents: results.map((document) =>
-          document
+        documents: results.map((result) =>
+          result.document
             ? {
-                id: document.id,
-                orderId: document.orderId,
-                status: document.status,
-                fullDocNumber: document.fullDocNumber,
-                lastError: document.lastError,
+                id: result.document.id,
+                orderId: result.document.orderId,
+                status: result.document.status,
+                docNum: result.document.docNum,
+                fullDocNumber: result.document.fullDocNumber,
+                lastError: result.document.lastError,
+                retrySkippedReason: result.retrySkippedReason || null,
               }
             : null,
         ),

@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Fraunces } from 'next/font/google';
 import { ClerkProvider } from '@clerk/nextjs';
 import { enUS, ptPT, esES, frFR, deDE } from '@clerk/localizations';
 import GoogleAnalytics from '../components/GoogleAnalytics';
@@ -7,15 +6,6 @@ import AnalyticsProvider from '../components/AnalyticsProvider';
 import { headers } from 'next/headers';
 import { SUPPORTED_LOCALES } from '@/config/locales';
 import './globals.css';
-
-// Whimsical storybook display serif. Exposed as the `--font-display` CSS variable
-// and applied ONLY to paper-cut hero headlines — body/header text stays Arial.
-const fraunces = Fraunces({
-  subsets: ['latin'],
-  weight: ['400', '600', '700'],
-  display: 'swap',
-  variable: '--font-display',
-});
 
 // Base metadata for non-localized routes only
 export const metadata: Metadata = {
@@ -60,7 +50,7 @@ export default async function RootLayout({
 
   return (
     <ClerkProvider localization={clerkLocalization}>
-      <html lang={locale} data-theme="autumn" className={fraunces.variable}>
+      <html lang={locale} data-theme="autumn">
         <head>
           <GoogleAnalytics
             measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-86D0QFW197'}

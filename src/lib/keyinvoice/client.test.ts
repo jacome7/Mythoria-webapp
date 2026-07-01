@@ -1,4 +1,4 @@
-import { keyInvoiceClient, resetKeyInvoiceSessionForTests } from './client';
+import { KeyInvoiceApiError, keyInvoiceClient, resetKeyInvoiceSessionForTests } from './client';
 
 function mockJson(json: unknown, status = 200) {
   return {
@@ -71,5 +71,39 @@ describe('keyInvoiceClient', () => {
     await expect(keyInvoiceClient.listPaymentMethods()).resolves.toEqual({
       Payments: [{ IdPayment: '7', Name: 'Cartão de Crédito' }],
     });
+  });
+
+  it('retries retryable transport failures for authentication', async () => {
+    const timeout = new TypeError('fetch failed');
+    Object.defineProperty(timeout, 'cause', {
+      value: { code: 'UND_ERR_CONNECT_TIMEOUT' },
+    });
+
+    fetchMock
+      .mockRejectedValueOnce(timeout)
+      .mockRejectedValueOnce(timeout)
+      .mockResolvedValueOnce(mockJson({ Status: 1, Sid: 'sid-1' }))
+      .mockResolvedValueOnce(mockJson({ Status: 1, Data: { VATIN: 'PT123' } }));
+
+    await expect(keyInvoiceClient.company()).resolves.toEqual({ VATIN: 'PT123' });
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+  });
+
+  it('does not retry insertDocument transport failures after authentication', async () => {
+    const timeout = new TypeError('fetch failed');
+    Object.defineProperty(timeout, 'cause', {
+      value: { code: 'UND_ERR_CONNECT_TIMEOUT' },
+    });
+
+    fetchMock
+      .mockResolvedValueOnce(mockJson({ Status: 1, Sid: 'sid-1' }))
+      .mockRejectedValueOnce(timeout);
+
+    await expect(keyInvoiceClient.insertDocument({ DocType: '34' })).rejects.toMatchObject({
+      name: 'KeyInvoiceApiError',
+      method: 'insertDocument',
+      message: expect.stringContaining('UND_ERR_CONNECT_TIMEOUT'),
+    } satisfies Partial<KeyInvoiceApiError>);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });

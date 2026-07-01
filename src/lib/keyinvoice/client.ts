@@ -134,6 +134,9 @@ interface SessionCache {
 
 let sessionCache: SessionCache | null = null;
 
+const TRANSPORT_RETRY_ATTEMPTS = 3;
+const TRANSPORT_RETRY_BASE_DELAY_MS = 100;
+
 export class KeyInvoiceApiError extends Error {
   constructor(
     message: string,
@@ -162,15 +165,109 @@ function sanitizeHeaders(headers: HeadersInit): HeadersInit {
   return safeHeaders;
 }
 
+function errorRecord(error: unknown): Record<string, unknown> | null {
+  return error && typeof error === 'object' ? (error as Record<string, unknown>) : null;
+}
+
+function nestedCause(error: unknown): unknown {
+  return errorRecord(error)?.cause;
+}
+
+function transportErrorCode(error: unknown): string | undefined {
+  const directCode = errorRecord(error)?.code;
+  if (typeof directCode === 'string') return directCode;
+
+  const causeCode = errorRecord(nestedCause(error))?.code;
+  return typeof causeCode === 'string' ? causeCode : undefined;
+}
+
+function transportErrorMessage(error: unknown): string {
+  if (error instanceof Error && error.message) return error.message;
+  return 'unknown transport error';
+}
+
+function serializeTransportError(error: unknown): Record<string, unknown> {
+  const cause = nestedCause(error);
+  return {
+    name: error instanceof Error ? error.name : undefined,
+    message: transportErrorMessage(error),
+    code: transportErrorCode(error),
+    cause:
+      cause instanceof Error
+        ? {
+            name: cause.name,
+            message: cause.message,
+            code: transportErrorCode(cause),
+          }
+        : cause,
+  };
+}
+
+function isRetryableTransportError(error: unknown): boolean {
+  const code = transportErrorCode(error);
+  if (
+    code &&
+    [
+      'UND_ERR_CONNECT_TIMEOUT',
+      'UND_ERR_HEADERS_TIMEOUT',
+      'UND_ERR_SOCKET',
+      'ECONNRESET',
+      'ETIMEDOUT',
+      'EAI_AGAIN',
+    ].includes(code)
+  ) {
+    return true;
+  }
+
+  return error instanceof TypeError && /fetch failed|network/i.test(error.message);
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function postKeyInvoice(
   body: KeyInvoicePayload,
   headers: HeadersInit,
+  options: { retryTransport?: boolean } = {},
 ): Promise<{ status: number; json: unknown }> {
-  const response = await fetch(getKeyInvoiceApiUrl(), {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(body),
-  });
+  const method = String(body.method || 'unknown');
+  const attempts = options.retryTransport === false ? 1 : TRANSPORT_RETRY_ATTEMPTS;
+  let response: Response | null = null;
+
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      response = await fetch(getKeyInvoiceApiUrl(), {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+      });
+      break;
+    } catch (error) {
+      if (attempt < attempts && isRetryableTransportError(error)) {
+        await sleep(TRANSPORT_RETRY_BASE_DELAY_MS * attempt);
+        continue;
+      }
+
+      const code = transportErrorCode(error);
+      const codeSuffix = code ? ` (${code})` : '';
+      throw new KeyInvoiceApiError(
+        `KeyInvoice ${method} transport failed${codeSuffix}: ${transportErrorMessage(error)}`,
+        method,
+        undefined,
+        {
+          headers: sanitizeHeaders(headers),
+          attempt,
+          attempts,
+          cause: serializeTransportError(error),
+        },
+      );
+    }
+  }
+
+  if (!response) {
+    throw new KeyInvoiceApiError(`KeyInvoice ${method} transport failed`, method);
+  }
 
   let json: unknown;
   try {
@@ -178,7 +275,7 @@ async function postKeyInvoice(
   } catch {
     throw new KeyInvoiceApiError(
       `KeyInvoice returned a non-JSON response (${response.status})`,
-      String(body.method || 'unknown'),
+      method,
       response.status,
       { headers: sanitizeHeaders(headers) },
     );
@@ -200,6 +297,7 @@ async function authenticate(force = false): Promise<string> {
       Apikey: apiKey,
       'Content-Type': 'application/json',
     },
+    { retryTransport: true },
   );
 
   if (status < 200 || status >= 300) {
@@ -234,7 +332,7 @@ async function authenticate(force = false): Promise<string> {
 async function callRaw(
   method: string,
   payload: KeyInvoicePayload = {},
-  options: { retryAuth?: boolean; allowStatus0?: boolean } = {},
+  options: { retryAuth?: boolean; allowStatus0?: boolean; retryTransport?: boolean } = {},
 ): Promise<unknown> {
   const sid = await authenticate();
   const { status, json } = await postKeyInvoice(
@@ -243,6 +341,7 @@ async function callRaw(
       Sid: sid,
       'Content-Type': 'application/json',
     },
+    { retryTransport: options.retryTransport !== false },
   );
 
   if (status < 200 || status >= 300) {
@@ -275,8 +374,9 @@ async function callData<T>(
   method: string,
   payload: KeyInvoicePayload,
   schema: z.ZodType<T>,
+  options: { retryTransport?: boolean } = {},
 ): Promise<T> {
-  const data = await callRaw(method, payload);
+  const data = await callRaw(method, payload, options);
   return schema.parse(data);
 }
 
@@ -332,7 +432,9 @@ export const keyInvoiceClient = {
   },
 
   async insertDocument(payload: KeyInvoicePayload): Promise<InsertDocumentResult> {
-    return callData('insertDocument', payload, insertDocumentResultSchema);
+    return callData('insertDocument', payload, insertDocumentResultSchema, {
+      retryTransport: false,
+    });
   },
 
   async getDocument(params: {

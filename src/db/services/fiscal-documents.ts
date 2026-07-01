@@ -28,6 +28,12 @@ import { storeFiscalDocumentPdf } from '@/lib/keyinvoice/pdf-storage';
 import { normalizeVatForKeyInvoice } from '@/lib/keyinvoice/vat';
 
 type FiscalStatus = FiscalDocument['status'];
+export type FiscalRetrySkipReason = 'insert_document_response_unknown';
+
+export interface FiscalDocumentRetryResult {
+  document: FiscalDocument | null;
+  retrySkippedReason?: FiscalRetrySkipReason;
+}
 
 interface StripeCustomerDetails {
   name?: string | null;
@@ -160,6 +166,14 @@ function fiscalPdfUrl(document: FiscalDocument | null | undefined): string | nul
   return `/api/payments/fiscal-documents/${document.id}/pdf`;
 }
 
+export function retrySkipReasonForDocument(
+  document: Pick<FiscalDocument, 'docNum'>,
+  hasInsertDocumentRequestedEvent: boolean,
+): FiscalRetrySkipReason | null {
+  if (document.docNum) return null;
+  return hasInsertDocumentRequestedEvent ? 'insert_document_response_unknown' : null;
+}
+
 function lineItemsFromOrder(order: PaymentOrder): KeyInvoiceOrderLine[] {
   const metadata = metadataForOrder(order);
   const items = metadata.orderTotals?.itemsBreakdown;
@@ -208,6 +222,21 @@ async function getFiscalDocumentByOrderId(orderId: string): Promise<FiscalDocume
     .where(eq(fiscalDocuments.orderId, orderId))
     .limit(1);
   return document || null;
+}
+
+async function hasInsertDocumentRequestedEvent(documentId: string): Promise<boolean> {
+  const rows = await db
+    .select({ id: fiscalDocumentEvents.id })
+    .from(fiscalDocumentEvents)
+    .where(
+      and(
+        eq(fiscalDocumentEvents.fiscalDocumentId, documentId),
+        eq(fiscalDocumentEvents.eventType, 'insert_document_requested'),
+      ),
+    )
+    .limit(1);
+
+  return rows.length > 0;
 }
 
 async function ensureFiscalDocument(order: PaymentOrder, docType: string): Promise<FiscalDocument> {
@@ -651,27 +680,50 @@ export const fiscalDocumentService = {
     }
   },
 
-  async retryDueDocuments(limit = 25): Promise<Array<FiscalDocument | null>> {
+  async retryDueDocuments(
+    limit = 25,
+    orderIds: string[] = [],
+  ): Promise<FiscalDocumentRetryResult[]> {
     if (!isKeyInvoiceEnabled()) return [];
 
     const now = new Date();
+    const conditions = [
+      eq(paymentOrders.status, 'completed'),
+      inArray(fiscalDocuments.status, ['pending', 'failed']),
+      or(isNull(fiscalDocuments.nextRetryAt), lt(fiscalDocuments.nextRetryAt, now)),
+    ];
+
+    if (orderIds.length) {
+      conditions.push(inArray(fiscalDocuments.orderId, orderIds));
+    }
+
     const rows = await db
-      .select({ order: paymentOrders })
+      .select({ document: fiscalDocuments, order: paymentOrders })
       .from(fiscalDocuments)
       .innerJoin(paymentOrders, eq(paymentOrders.orderId, fiscalDocuments.orderId))
-      .where(
-        and(
-          eq(paymentOrders.status, 'completed'),
-          inArray(fiscalDocuments.status, ['pending', 'failed']),
-          or(isNull(fiscalDocuments.nextRetryAt), lt(fiscalDocuments.nextRetryAt, now)),
-        ),
-      )
+      .where(and(...conditions))
       .orderBy(asc(fiscalDocuments.createdAt))
       .limit(limit);
 
-    const results: Array<FiscalDocument | null> = [];
+    const results: FiscalDocumentRetryResult[] = [];
     for (const row of rows) {
-      results.push(await this.issueForCompletedStripeOrder(row.order));
+      const retrySkippedReason = retrySkipReasonForDocument(
+        row.document,
+        await hasInsertDocumentRequestedEvent(row.document.id),
+      );
+
+      if (retrySkippedReason) {
+        await recordFiscalEvent({
+          fiscalDocumentId: row.document.id,
+          orderId: row.document.orderId,
+          eventType: 'retry_skipped_reconciliation_required',
+          responsePayload: { reason: retrySkippedReason },
+        });
+        results.push({ document: row.document, retrySkippedReason });
+        continue;
+      }
+
+      results.push({ document: await this.issueForCompletedStripeOrder(row.order) });
     }
     return results;
   },
