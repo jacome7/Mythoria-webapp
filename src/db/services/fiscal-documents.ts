@@ -29,10 +29,22 @@ import { normalizeVatForKeyInvoice } from '@/lib/keyinvoice/vat';
 
 type FiscalStatus = FiscalDocument['status'];
 export type FiscalRetrySkipReason = 'insert_document_response_unknown';
+export type AdminFiscalRetryBlockReason =
+  | 'document_status_not_retryable'
+  | 'payment_order_not_completed'
+  | 'retry_not_due'
+  | FiscalRetrySkipReason;
 
 export interface FiscalDocumentRetryResult {
   document: FiscalDocument | null;
   retrySkippedReason?: FiscalRetrySkipReason;
+}
+
+export interface AdminFiscalRetryResult {
+  outcome: 'not_found' | 'not_retryable' | 'retried';
+  document: FiscalDocument | null;
+  reason?: AdminFiscalRetryBlockReason;
+  orderStatus?: PaymentOrder['status'];
 }
 
 interface StripeCustomerDetails {
@@ -174,6 +186,31 @@ export function retrySkipReasonForDocument(
   return hasInsertDocumentRequestedEvent ? 'insert_document_response_unknown' : null;
 }
 
+export function adminRetryBlockReasonForDocument(params: {
+  document: Pick<FiscalDocument, 'status' | 'nextRetryAt' | 'docNum'>;
+  order: Pick<PaymentOrder, 'status'>;
+  hasInsertDocumentRequestedEvent: boolean;
+  now?: Date;
+}): AdminFiscalRetryBlockReason | null {
+  if (!['pending', 'failed'].includes(params.document.status)) {
+    return 'document_status_not_retryable';
+  }
+
+  if (params.order.status !== 'completed') {
+    return 'payment_order_not_completed';
+  }
+
+  const now = params.now || new Date();
+  if (params.document.nextRetryAt && params.document.nextRetryAt > now) {
+    return 'retry_not_due';
+  }
+
+  return retrySkipReasonForDocument(
+    params.document,
+    params.hasInsertDocumentRequestedEvent,
+  );
+}
+
 function lineItemsFromOrder(order: PaymentOrder): KeyInvoiceOrderLine[] {
   const metadata = metadataForOrder(order);
   const items = metadata.orderTotals?.itemsBreakdown;
@@ -222,6 +259,19 @@ async function getFiscalDocumentByOrderId(orderId: string): Promise<FiscalDocume
     .where(eq(fiscalDocuments.orderId, orderId))
     .limit(1);
   return document || null;
+}
+
+async function getFiscalDocumentWithOrderById(
+  documentId: string,
+): Promise<{ document: FiscalDocument; order: PaymentOrder } | null> {
+  const [row] = await db
+    .select({ document: fiscalDocuments, order: paymentOrders })
+    .from(fiscalDocuments)
+    .innerJoin(paymentOrders, eq(paymentOrders.orderId, fiscalDocuments.orderId))
+    .where(eq(fiscalDocuments.id, documentId))
+    .limit(1);
+
+  return row || null;
 }
 
 async function hasInsertDocumentRequestedEvent(documentId: string): Promise<boolean> {
@@ -422,6 +472,63 @@ export const fiscalDocumentService = {
       .where(and(eq(fiscalDocuments.id, documentId), eq(fiscalDocuments.authorId, authorId)))
       .limit(1);
     return document || null;
+  },
+
+  async retryByFiscalDocumentId(
+    documentId: string,
+    audit: { adminEmail?: string | null; source?: string | null } = {},
+  ): Promise<AdminFiscalRetryResult> {
+    const row = await getFiscalDocumentWithOrderById(documentId);
+    if (!row) {
+      return { outcome: 'not_found', document: null };
+    }
+
+    const hasInsertRequest = await hasInsertDocumentRequestedEvent(row.document.id);
+    const reason = adminRetryBlockReasonForDocument({
+      document: row.document,
+      order: row.order,
+      hasInsertDocumentRequestedEvent: hasInsertRequest,
+    });
+
+    if (reason) {
+      if (reason === 'insert_document_response_unknown') {
+        await recordFiscalEvent({
+          fiscalDocumentId: row.document.id,
+          orderId: row.document.orderId,
+          eventType: 'retry_skipped_reconciliation_required',
+          responsePayload: {
+            reason,
+            requestedBy: {
+              adminEmail: audit.adminEmail || null,
+              source: audit.source || null,
+            },
+          },
+        });
+      }
+
+      return {
+        outcome: 'not_retryable',
+        document: row.document,
+        reason,
+        orderStatus: row.order.status,
+      };
+    }
+
+    await recordFiscalEvent({
+      fiscalDocumentId: row.document.id,
+      orderId: row.document.orderId,
+      eventType: 'admin_retry_requested',
+      requestPayload: {
+        adminEmail: audit.adminEmail || null,
+        source: audit.source || null,
+      },
+    });
+
+    return {
+      outcome: 'retried',
+      document: await this.issueForCompletedStripeOrder(row.order),
+      orderStatus: row.order.status,
+    };
   },
 
   async issueForCompletedStripeOrder(order: PaymentOrder): Promise<FiscalDocument | null> {
