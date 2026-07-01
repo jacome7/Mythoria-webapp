@@ -2,6 +2,7 @@ import { and, asc, eq, inArray, isNull, lt, or, sql } from 'drizzle-orm';
 
 import { db } from '@/db';
 import {
+  authors,
   fiscalDocumentEvents,
   fiscalDocuments,
   keyInvoiceCustomers,
@@ -28,6 +29,8 @@ import { storeFiscalDocumentPdf } from '@/lib/keyinvoice/pdf-storage';
 import { normalizeVatForKeyInvoice } from '@/lib/keyinvoice/vat';
 
 type FiscalStatus = FiscalDocument['status'];
+type NormalizedVat = NonNullable<ReturnType<typeof normalizeVatForKeyInvoice>>;
+export type KeyInvoiceVatSource = 'stripe_checkout_tax_id' | 'author_profile_fiscal_number' | 'none';
 export type FiscalRetrySkipReason = 'insert_document_response_unknown';
 export type AdminFiscalRetryBlockReason =
   | 'document_status_not_retryable'
@@ -79,16 +82,38 @@ interface StripeCheckoutMetadata {
   };
 }
 
+interface AuthorFiscalIdentity {
+  displayName: string;
+  email: string;
+  fiscalNumber: string | null;
+  mobilePhone: string | null;
+  countryOfOrigin: string | null;
+}
+
+export type ResolvedVatForKeyInvoice =
+  | {
+      source: Exclude<KeyInvoiceVatSource, 'none'>;
+      rawValue: string;
+      normalizedVat: NormalizedVat;
+    }
+  | {
+      source: 'none';
+      rawValue: null;
+      normalizedVat: null;
+    };
+
 type ResolvedCustomer =
   | {
       mode: 'keyinvoice_client';
       keyInvoiceClientId: string;
       keyInvoiceCustomerId: string;
       vatin: string;
+      vatSource: Exclude<KeyInvoiceVatSource, 'none'>;
       source: KeyInvoiceCustomerSource;
     }
   | {
       mode: 'final_consumer';
+      vatSource: 'none';
       source: KeyInvoiceCustomerSource;
     };
 
@@ -108,6 +133,35 @@ function getStripeTaxId(customerDetails?: StripeCustomerDetails | null): string 
 
   const first = taxIds.find((taxId) => typeof taxId?.value === 'string' && taxId.value.trim());
   return first?.value?.trim() || null;
+}
+
+export function resolveKeyInvoiceVat(params: {
+  stripeTaxId?: string | null;
+  authorFiscalNumber?: string | null;
+}): ResolvedVatForKeyInvoice {
+  const stripeVat = normalizeVatForKeyInvoice(params.stripeTaxId);
+  if (stripeVat) {
+    return {
+      source: 'stripe_checkout_tax_id',
+      rawValue: params.stripeTaxId?.trim() || stripeVat.input,
+      normalizedVat: stripeVat,
+    };
+  }
+
+  const profileVat = normalizeVatForKeyInvoice(params.authorFiscalNumber);
+  if (profileVat) {
+    return {
+      source: 'author_profile_fiscal_number',
+      rawValue: params.authorFiscalNumber?.trim() || profileVat.input,
+      normalizedVat: profileVat,
+    };
+  }
+
+  return {
+    source: 'none',
+    rawValue: null,
+    normalizedVat: null,
+  };
 }
 
 function creditPackagePayloadLine(
@@ -132,11 +186,12 @@ function creditPackagePayloadLine(
 
 function sourceFromStripeCustomerDetails(
   customerDetails?: StripeCustomerDetails | null,
+  author?: AuthorFiscalIdentity | null,
 ): KeyInvoiceCustomerSource {
   return {
-    name: customerDetails?.name || null,
-    email: customerDetails?.email || null,
-    phone: customerDetails?.phone || null,
+    name: customerDetails?.name || author?.displayName || null,
+    email: customerDetails?.email || author?.email || null,
+    phone: customerDetails?.phone || author?.mobilePhone || null,
     address: customerDetails?.address
       ? {
           line1: customerDetails.address.line1 || null,
@@ -145,7 +200,9 @@ function sourceFromStripeCustomerDetails(
           postalCode: customerDetails.address.postal_code || null,
           country: customerDetails.address.country || null,
         }
-      : null,
+      : author?.countryOfOrigin
+        ? { country: author.countryOfOrigin }
+        : null,
   };
 }
 
@@ -173,9 +230,74 @@ function decimalString(value?: string | number | null): string | null {
   return Number.isFinite(numeric) ? numeric.toFixed(2) : null;
 }
 
+function formatFullDocNumber(
+  docType?: string | null,
+  docSeries?: string | null,
+  docNum?: string | null,
+): string | null {
+  return docType && docSeries && docNum ? `${docType} ${docSeries}/${docNum}` : null;
+}
+
 function fiscalPdfUrl(document: FiscalDocument | null | undefined): string | null {
   if (!document?.pdfStoragePath || document.status !== 'issued') return null;
   return `/api/payments/fiscal-documents/${document.id}/pdf`;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isPdfGenerationError(error: unknown): boolean {
+  return /ficheiro|file|pdf|documentbinary|gerar os dados/i.test(toErrorMessage(error));
+}
+
+export async function getKeyInvoiceDocumentPdfWithFallback(
+  params: {
+    docType: string;
+    docNum: string;
+    docSeries?: string | null;
+  },
+  options: { retryDelayMs?: number } = {},
+): Promise<{
+  pdf: Awaited<ReturnType<typeof keyInvoiceClient.getDocumentPDF>>;
+  signed: boolean;
+  fallbackUsed: boolean;
+  attempts: number;
+}> {
+  try {
+    return {
+      pdf: await keyInvoiceClient.getDocumentPDF({ ...params, signed: true }),
+      signed: true,
+      fallbackUsed: false,
+      attempts: 1,
+    };
+  } catch (firstError) {
+    if (!isPdfGenerationError(firstError)) {
+      throw firstError;
+    }
+
+    await sleep(options.retryDelayMs ?? 250);
+
+    try {
+      return {
+        pdf: await keyInvoiceClient.getDocumentPDF({ ...params, signed: true }),
+        signed: true,
+        fallbackUsed: false,
+        attempts: 2,
+      };
+    } catch (secondError) {
+      if (!isPdfGenerationError(secondError)) {
+        throw secondError;
+      }
+
+      return {
+        pdf: await keyInvoiceClient.getDocumentPDF({ ...params, signed: false }),
+        signed: false,
+        fallbackUsed: true,
+        attempts: 3,
+      };
+    }
+  }
 }
 
 export function retrySkipReasonForDocument(
@@ -289,6 +411,22 @@ async function hasInsertDocumentRequestedEvent(documentId: string): Promise<bool
   return rows.length > 0;
 }
 
+async function getAuthorFiscalIdentity(authorId: string): Promise<AuthorFiscalIdentity | null> {
+  const [author] = await db
+    .select({
+      displayName: authors.displayName,
+      email: authors.email,
+      fiscalNumber: authors.fiscalNumber,
+      mobilePhone: authors.mobilePhone,
+      countryOfOrigin: authors.countryOfOrigin,
+    })
+    .from(authors)
+    .where(eq(authors.authorId, authorId))
+    .limit(1);
+
+  return author || null;
+}
+
 async function ensureFiscalDocument(order: PaymentOrder, docType: string): Promise<FiscalDocument> {
   const existing = await getFiscalDocumentByOrderId(order.orderId);
   if (existing) return existing;
@@ -395,14 +533,58 @@ async function upsertKeyInvoiceCustomer(params: {
   return customer;
 }
 
-async function resolveCustomer(order: PaymentOrder): Promise<ResolvedCustomer> {
-  const metadata = metadataForOrder(order);
-  const customerDetails = metadata.stripe?.customerDetails || null;
-  const source = sourceFromStripeCustomerDetails(customerDetails);
-  const normalizedVat = normalizeVatForKeyInvoice(getStripeTaxId(customerDetails));
+export function buildRemoteDocumentSyncValues(
+  document: Pick<FiscalDocument, 'docType' | 'docSeries' | 'docNum' | 'fullDocNumber'>,
+  remoteDocument: Awaited<ReturnType<typeof keyInvoiceClient.getDocument>>,
+) {
+  const docType = remoteDocument.DocType || document.docType;
+  const docSeries = remoteDocument.DocSeries || document.docSeries;
+  const docNum = remoteDocument.DocNum || document.docNum;
+
+  return {
+    docType,
+    docSeries,
+    docNum,
+    fullDocNumber:
+      remoteDocument.FullDocNumber ||
+      document.fullDocNumber ||
+      formatFullDocNumber(docType, docSeries, docNum),
+    atDocCodeId: remoteDocument.ATDocCodeID || null,
+    grossTotal: decimalString(remoteDocument.GrossTotal),
+    netTotal: decimalString(remoteDocument.NetTotal),
+    taxTotal: decimalString(remoteDocument.TaxTotal),
+  };
+}
+
+async function syncRemoteDocumentData(
+  document: FiscalDocument,
+  remoteDocument: Awaited<ReturnType<typeof keyInvoiceClient.getDocument>>,
+): Promise<FiscalDocument> {
+  const [updated] = await db
+    .update(fiscalDocuments)
+    .set({
+      ...buildRemoteDocumentSyncValues(document, remoteDocument),
+      updatedAt: new Date(),
+    })
+    .where(eq(fiscalDocuments.id, document.id))
+    .returning();
+
+  return updated || document;
+}
+
+async function resolveCustomer(params: {
+  order: PaymentOrder;
+  source: KeyInvoiceCustomerSource;
+  vatResolution: ResolvedVatForKeyInvoice;
+}): Promise<ResolvedCustomer> {
+  const normalizedVat = params.vatResolution.normalizedVat;
 
   if (!normalizedVat) {
-    return { mode: 'final_consumer', source };
+    return {
+      mode: 'final_consumer',
+      vatSource: 'none',
+      source: params.source,
+    };
   }
 
   const existingLocal = await db
@@ -417,7 +599,8 @@ async function resolveCustomer(order: PaymentOrder): Promise<ResolvedCustomer> {
       keyInvoiceClientId: existingLocal[0].keyInvoiceClientId,
       keyInvoiceCustomerId: existingLocal[0].id,
       vatin: normalizedVat.keyInvoiceVatin,
-      source,
+      vatSource: params.vatResolution.source,
+      source: params.source,
     };
   }
 
@@ -429,23 +612,23 @@ async function resolveCustomer(order: PaymentOrder): Promise<ResolvedCustomer> {
   } else {
     const inserted = await keyInvoiceClient.insertClient({
       VATIN: normalizedVat.keyInvoiceVatin,
-      Name: customerDisplayName(source),
-      Address: customerAddress(source) || undefined,
-      PostalCode: source.address?.postalCode || undefined,
-      Locality: source.address?.city || undefined,
-      CountryCode: source.address?.country || normalizedVat.countryCode,
-      Phone: source.phone || undefined,
-      Email: source.email || undefined,
-      Comments: `Mythoria author ${order.authorId}`,
+      Name: customerDisplayName(params.source),
+      Address: customerAddress(params.source) || undefined,
+      PostalCode: params.source.address?.postalCode || undefined,
+      Locality: params.source.address?.city || undefined,
+      CountryCode: params.source.address?.country || normalizedVat.countryCode,
+      Phone: params.source.phone || undefined,
+      Email: params.source.email || undefined,
+      Comments: `Mythoria author ${params.order.authorId}`,
     });
     keyInvoiceClientId = inserted.Id;
   }
 
   const localCustomer = await upsertKeyInvoiceCustomer({
-    authorId: order.authorId,
+    authorId: params.order.authorId,
     vatin: normalizedVat.keyInvoiceVatin,
     keyInvoiceClientId,
-    source,
+    source: params.source,
     countryCode: normalizedVat.countryCode,
   });
 
@@ -454,7 +637,8 @@ async function resolveCustomer(order: PaymentOrder): Promise<ResolvedCustomer> {
     keyInvoiceClientId,
     keyInvoiceCustomerId: localCustomer.id,
     vatin: normalizedVat.keyInvoiceVatin,
-    source,
+    vatSource: params.vatResolution.source,
+    source: params.source,
   };
 }
 
@@ -547,8 +731,12 @@ export const fiscalDocumentService = {
     try {
       const metadata = metadataForOrder(order);
       const customerDetails = metadata.stripe?.customerDetails || null;
-      const customerSource = sourceFromStripeCustomerDetails(customerDetails);
-      const normalizedVat = normalizeVatForKeyInvoice(getStripeTaxId(customerDetails));
+      const authorIdentity = await getAuthorFiscalIdentity(order.authorId);
+      const customerSource = sourceFromStripeCustomerDetails(customerDetails, authorIdentity);
+      const vatResolution = resolveKeyInvoiceVat({
+        stripeTaxId: getStripeTaxId(customerDetails),
+        authorFiscalNumber: authorIdentity?.fiscalNumber,
+      });
       const tax = selectKeyInvoiceTax({
         amountTotalCents: order.amount,
         amountTaxCents: metadata.stripe?.totalDetails?.amount_tax,
@@ -568,8 +756,8 @@ export const fiscalDocumentService = {
           } / Mythoria ${order.orderId}`,
           Comments: `Pagamento recebido via Stripe. Ordem Mythoria ${order.orderId}.`,
           IdPaymentMethod: config.paymentMethodId,
-          ...(normalizedVat
-            ? { DraftCustomerVATIN: normalizedVat.keyInvoiceVatin }
+          ...(vatResolution.normalizedVat
+            ? { DraftCustomerVATIN: vatResolution.normalizedVat.keyInvoiceVatin }
             : {
                 Name: customerDisplayName(customerSource),
                 Address: customerAddress(customerSource) || undefined,
@@ -592,13 +780,17 @@ export const fiscalDocumentService = {
               tax,
               draftOnly: true,
               remoteKeyInvoiceDocumentCreated: false,
-              ...(normalizedVat
+              ...(vatResolution.normalizedVat
                 ? {
                     customerMode: 'keyinvoice_client',
-                    vatin: normalizedVat.keyInvoiceVatin,
-                    countryCode: normalizedVat.countryCode,
+                    vatSource: vatResolution.source,
+                    vatin: vatResolution.normalizedVat.keyInvoiceVatin,
+                    countryCode: vatResolution.normalizedVat.countryCode,
                   }
-                : buildFinalConsumerAuditData()),
+                : {
+                    ...buildFinalConsumerAuditData(),
+                    vatSource: 'none',
+                  }),
             },
           },
         });
@@ -607,10 +799,10 @@ export const fiscalDocumentService = {
           .update(fiscalDocuments)
           .set({
             status: 'draft',
-            customerMode: normalizedVat ? 'keyinvoice_client' : 'final_consumer',
+            customerMode: vatResolution.normalizedVat ? 'keyinvoice_client' : 'final_consumer',
             keyInvoiceCustomerId: null,
             keyInvoiceClientId: null,
-            finalConsumerVatNumber: normalizedVat ? null : FINAL_CONSUMER_VATIN,
+            finalConsumerVatNumber: vatResolution.normalizedVat ? null : FINAL_CONSUMER_VATIN,
             vatRate: tax.vatRate.toFixed(2),
             taxId: tax.taxId,
             stripeCheckoutSessionId: metadata.stripe?.checkoutSessionId || null,
@@ -625,7 +817,11 @@ export const fiscalDocumentService = {
         return draft;
       }
 
-      const customer = await resolveCustomer(order);
+      const customer = await resolveCustomer({
+        order,
+        source: customerSource,
+        vatResolution,
+      });
 
       await db
         .update(fiscalDocuments)
@@ -681,7 +877,14 @@ export const fiscalDocumentService = {
             ...payload,
             fiscal: {
               tax,
-              ...(customer.mode === 'final_consumer' ? buildFinalConsumerAuditData() : {}),
+              customerMode: customer.mode,
+              vatSource: customer.vatSource,
+              ...(customer.mode === 'keyinvoice_client'
+                ? {
+                    vatin: customer.vatin,
+                    keyInvoiceClientId: customer.keyInvoiceClientId,
+                  }
+                : buildFinalConsumerAuditData()),
             },
           },
         });
@@ -715,21 +918,33 @@ export const fiscalDocumentService = {
         throw new Error('KeyInvoice document number missing after insertDocument');
       }
 
+      const keyInvoiceDocumentIdentity = {
+        docType: documentForPdf.docType || config.docType,
+        docSeries: documentForPdf.docSeries || config.docSeriesId || null,
+        docNum: documentForPdf.docNum,
+      };
       const remoteDocument = await keyInvoiceClient.getDocument({
-        docType: documentForPdf.docType,
-        docSeries: documentForPdf.docSeries,
-        docNum: documentForPdf.docNum,
+        docType: keyInvoiceDocumentIdentity.docType,
+        docSeries: keyInvoiceDocumentIdentity.docSeries,
+        docNum: keyInvoiceDocumentIdentity.docNum,
       });
-      const pdf = await keyInvoiceClient.getDocumentPDF({
-        docType: documentForPdf.docType,
-        docSeries: documentForPdf.docSeries,
-        docNum: documentForPdf.docNum,
+      documentForPdf = await syncRemoteDocumentData(documentForPdf, remoteDocument);
+
+      const pdfDocumentIdentity = {
+        docType: documentForPdf.docType || keyInvoiceDocumentIdentity.docType,
+        docSeries: documentForPdf.docSeries || keyInvoiceDocumentIdentity.docSeries,
+        docNum: documentForPdf.docNum || keyInvoiceDocumentIdentity.docNum,
+      };
+      const pdfResult = await getKeyInvoiceDocumentPdfWithFallback({
+        docType: pdfDocumentIdentity.docType,
+        docSeries: pdfDocumentIdentity.docSeries,
+        docNum: pdfDocumentIdentity.docNum,
       });
       const storedPdf = await storeFiscalDocumentPdf({
         authorId: order.authorId,
         orderId: order.orderId,
         fullDocNumber: documentForPdf.fullDocNumber || remoteDocument.DocNum,
-        pdfBase64: pdf.DocumentBinary,
+        pdfBase64: pdfResult.pdf.DocumentBinary,
       });
 
       await recordFiscalEvent({
@@ -741,14 +956,19 @@ export const fiscalDocumentService = {
           sha256: storedPdf.sha256,
           size: storedPdf.size,
           remoteDocument,
+          pdf: {
+            signed: pdfResult.signed,
+            fallbackUsed: pdfResult.fallbackUsed,
+            attempts: pdfResult.attempts,
+          },
         },
       });
 
       if (config.registerAt) {
         const atResponse = await keyInvoiceClient.registerInvoiceAT({
-          docType: documentForPdf.docType,
-          docSeries: documentForPdf.docSeries,
-          docNum: documentForPdf.docNum,
+          docType: pdfDocumentIdentity.docType,
+          docSeries: pdfDocumentIdentity.docSeries,
+          docNum: pdfDocumentIdentity.docNum,
         });
         await recordFiscalEvent({
           fiscalDocumentId: lockedDocument.id,
@@ -765,6 +985,14 @@ export const fiscalDocumentService = {
           docType: remoteDocument.DocType || documentForPdf.docType,
           docSeries: remoteDocument.DocSeries || documentForPdf.docSeries,
           docNum: remoteDocument.DocNum || documentForPdf.docNum,
+          fullDocNumber:
+            remoteDocument.FullDocNumber ||
+            documentForPdf.fullDocNumber ||
+            formatFullDocNumber(
+              pdfDocumentIdentity.docType,
+              pdfDocumentIdentity.docSeries,
+              pdfDocumentIdentity.docNum,
+            ),
           atDocCodeId: remoteDocument.ATDocCodeID || null,
           grossTotal: decimalString(remoteDocument.GrossTotal),
           netTotal: decimalString(remoteDocument.NetTotal),

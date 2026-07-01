@@ -106,4 +106,29 @@ describe('keyInvoiceClient', () => {
     } satisfies Partial<KeyInvoiceApiError>);
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
+
+  it('omits the Signed flag when requesting an unsigned document PDF', async () => {
+    fetchMock
+      .mockResolvedValueOnce(mockJson({ Status: 1, Sid: 'sid-1' }))
+      .mockResolvedValueOnce(mockJson({ Status: 1, Data: { DocumentBinary: 'base64-pdf' } }));
+
+    await expect(
+      keyInvoiceClient.getDocumentPDF({
+        docType: '34',
+        docSeries: '23',
+        docNum: '9',
+        signed: false,
+      }),
+    ).resolves.toEqual({ DocumentBinary: 'base64-pdf' });
+
+    const body = JSON.parse(fetchMock.mock.calls[1][1].body as string);
+    expect(body).toMatchObject({
+      method: 'getDocumentPDF',
+      DocType: '34',
+      DocSeries: '23',
+      DocNum: '9',
+      Format: 'A4',
+    });
+    expect(body.Signed).toBeUndefined();
+  });
 });

@@ -16,7 +16,7 @@ Implemented:
 - Verified Stripe webhook completion still grants credits first, then calls `fiscalDocumentService.issueForCompletedStripeOrder`.
 - KeyInvoice v1 issues `DocType=34` (`Fatura-Recibo`) for completed credit purchases after payment confirmation when `KEYINVOICE_DRAFT_ONLY=false`.
 - Local/ngrok test payments must keep `KEYINVOICE_DRAFT_ONLY=true`; KeyInvoice API5 `insertDocument` creates a numbered fiscal document, so draft-only mode records the intended payload locally and does not call KeyInvoice.
-- Billing identity comes from Stripe Checkout `customer_details.tax_ids`. Valid Portuguese NIFs are checksum-validated; valid EU VAT formats are accepted through the existing VAT format validator. There is no local profile/billing form fallback in v1.
+- Billing identity resolves VAT/NIF from Stripe Checkout `customer_details.tax_ids` first, then falls back to the saved author profile `authors.fiscal_number`. Valid Portuguese NIFs are checksum-validated; valid EU VAT formats are accepted through the existing VAT format validator. Manually entered `BillingInformation` remains unused by checkout in v1.
 - Orders without a valid VAT/tax ID are issued through the KeyInvoice final-consumer header path (`Name = "Consumidor Final"` when no better name exists) and store the Portuguese final-consumer NIF convention `999999990` in `fiscal_documents.final_consumer_vat_number`.
 - New tables store KeyInvoice customers, fiscal document state, and fiscal document request/response events.
 - KeyInvoice PDFs are stored in the private storage bucket and served through authenticated `GET /api/payments/fiscal-documents/[documentId]/pdf`.
@@ -242,17 +242,18 @@ Run `npm run check:env` after implementation.
 ### Customer resolution
 
 1. Extract billing data from expanded Stripe Checkout Session `customer_details` and `tax_ids` if available.
-2. Normalize VAT/NIF:
+2. If Stripe does not provide a valid VAT/NIF, read the author profile `fiscal_number` as the fallback fiscal identity.
+3. Normalize VAT/NIF:
    - strip spaces/dashes
    - support `PT123456789` and bare `123456789`
    - validate Portuguese NIF checksum for PT numbers
    - validate EU VAT numbers through VIES or an approved validation endpoint before treating as valid for B2B customer creation
-3. If valid VAT/NIF:
+4. If valid VAT/NIF:
    - call `clientExists` by `VATIN`
    - if found, optionally `getClient`
    - if not found, `insertClient`
    - store `keyInvoiceClientId`
-4. If no valid VAT/NIF:
+5. If no valid VAT/NIF:
    - do not create a KeyInvoice client
    - issue document as final consumer with `Name = "Consumidor Final"` when no better customer name is available
    - include address/country only if collected and legally appropriate
@@ -360,7 +361,7 @@ Rules:
 - Replace current format-only VAT validation with server-side validation for fiscal use.
 - Add Portuguese NIF checksum validation.
 - Add VIES validation for EU VAT numbers or document a deliberate first release limited to PT NIF.
-- Store normalized billing identity from Stripe `customer_details` after payment.
+- Store normalized billing identity from Stripe `customer_details` after payment, and use `authors.fiscal_number` as a fallback when Stripe has no valid tax id.
 - Decide whether to reintroduce `BillingInformation` into the checkout flow or rely only on Stripe Checkout collection.
 
 ### Phase 5 - Webhook integration

@@ -34,6 +34,7 @@ export const getDocumentResultSchema = z.object({
     .optional()
     .transform((value) => value?.toString()),
   DocNum: z.union([z.string(), z.number()]).transform(String),
+  FullDocNumber: z.string().optional(),
   Date: z.string().optional(),
   IdClient: z
     .union([z.string(), z.number()])
@@ -457,6 +458,7 @@ export const keyInvoiceClient = {
     docType: string;
     docNum: string;
     docSeries?: string | null;
+    signed?: boolean;
   }): Promise<GetDocumentPdfResult> {
     return callData(
       'getDocumentPDF',
@@ -464,7 +466,7 @@ export const keyInvoiceClient = {
         DocType: params.docType,
         DocNum: params.docNum,
         Format: 'A4',
-        Signed: 1,
+        ...(params.signed === false ? {} : { Signed: 1 }),
         ...(params.docSeries ? { DocSeries: params.docSeries } : {}),
       },
       getDocumentPdfResultSchema,

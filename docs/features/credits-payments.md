@@ -17,7 +17,7 @@ Mythoria uses a credit-based economy for paid services such as e-books, printed 
 - Promotion codes can add bonus credits to the user's balance; they do not currently change cart pricing.
 - Stripe Hosted Checkout is the only customer-facing checkout path for cards, wallets, MB WAY, billing details, tax ID collection, and automatic tax.
 - Public credit prices remain EUR tax-inclusive. Stripe remains the payment source of truth; KeyInvoice is the fiscal document source of truth when `KEYINVOICE_ENABLED=true` and `KEYINVOICE_DRAFT_ONLY=false`.
-- After a verified Stripe payment completes, Mythoria issues a KeyInvoice `Fatura-Recibo` (`DocType=34`) for the completed credit order. If Stripe collected a valid VAT/tax ID, the document is issued to the corresponding KeyInvoice customer; otherwise it is issued as final consumer (`Consumidor Final`) and Mythoria records the Portuguese final-consumer NIF convention `999999990` locally. Local/ngrok testing should use `KEYINVOICE_DRAFT_ONLY=true`, which prepares a local draft payload and does not call KeyInvoice `insertDocument`.
+- After a verified Stripe payment completes, Mythoria issues a KeyInvoice `Fatura-Recibo` (`DocType=34`) for the completed credit order. VAT identity is resolved from Stripe Checkout tax IDs first, then from the author's saved profile VAT/NIF, and valid values issue the document to the corresponding KeyInvoice customer. If neither source has a valid VAT/NIF, the document is issued as final consumer (`Consumidor Final`) and Mythoria records the Portuguese final-consumer NIF convention `999999990` locally. Local/ngrok testing should use `KEYINVOICE_DRAFT_ONLY=true`, which prepares a local draft payload and does not call KeyInvoice `insertDocument`.
 
 ### Credit Usage
 
@@ -50,7 +50,7 @@ Mythoria uses a credit-based economy for paid services such as e-books, printed 
 - Stripe order creation stores pending `payment_orders`. Credit fulfillment is idempotent and only transitions an order to completed once.
 - Stripe order metadata stores payment intent IDs, payment method type, Stripe tax totals, and customer details when Stripe provides them.
 - `fiscal_documents`, `keyinvoice_customers`, and `fiscal_document_events` store KeyInvoice document identity, customer mapping, PDF storage path, retry state, and request/response audit events.
-- `fiscalDocumentService.issueForCompletedStripeOrder` runs after credit fulfillment. In draft-only mode it records `draft_document_prepared` and marks the row `draft`. Otherwise KeyInvoice failures do not roll back completed payments or granted credits; the fiscal document is marked `failed` with `nextRetryAt` for `npm run keyinvoice:retry`.
+- `fiscalDocumentService.issueForCompletedStripeOrder` runs after credit fulfillment. In draft-only mode it records `draft_document_prepared` and marks the row `draft`. Otherwise KeyInvoice failures do not roll back completed payments or granted credits; the fiscal document is marked `failed` with `nextRetryAt` for `npm run keyinvoice:retry`. If the remote document was already created, retries resume readback/PDF storage without calling `insertDocument` again.
 - KeyInvoice tax mapping uses Stripe's reported tax amount when it matches configured `KEYINVOICE_TAX_ID_BY_RATE_JSON`. If no mapping matches, the service uses the configured fallback tax id for 6%, per the current Mythoria v1 decision.
 - Issued PDFs are stored in the private storage bucket and exposed through an authenticated download route, not a public object URL.
 
