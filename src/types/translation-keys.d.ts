@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE. Run: npm run i18n:keys
-// Total keys: 2520
+// Total keys: 2531
 export type TranslationKey =
   | 'AIEditModal.buttons.applyChanges'
   | 'AIEditModal.buttons.cancel'
@@ -889,6 +889,17 @@ export type TranslationKey =
   | 'HomePage.howItWorks.steps.step6.description'
   | 'HomePage.howItWorks.steps.step6.title'
   | 'HomePage.howItWorks.title'
+  | 'HomePage.intents.grandparents.hero.alt.person'
+  | 'HomePage.intents.grandparents.hero.cta'
+  | 'HomePage.intents.grandparents.hero.features.feature1.desc'
+  | 'HomePage.intents.grandparents.hero.features.feature1.title'
+  | 'HomePage.intents.grandparents.hero.features.feature2.desc'
+  | 'HomePage.intents.grandparents.hero.features.feature2.title'
+  | 'HomePage.intents.grandparents.hero.features.feature3.desc'
+  | 'HomePage.intents.grandparents.hero.features.feature3.title'
+  | 'HomePage.intents.grandparents.hero.headline'
+  | 'HomePage.intents.grandparents.hero.subtitle'
+  | 'HomePage.intents.grandparents.hero.subtitleEmphasized'
   | 'HomePage.intents.kids_fantasy.hero.alt.person'
   | 'HomePage.intents.kids_fantasy.hero.cta'
   | 'HomePage.intents.kids_fantasy.hero.features.feature1.desc'

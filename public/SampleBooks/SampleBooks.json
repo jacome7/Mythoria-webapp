@@ -740,5 +740,90 @@
     "style": "Aguarela",
     "audioSampleSrc": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-clube-dos-mapas-impossiveis/assets/audio-teaser.mp3",
     "audioSampleTitle": "Ouvir excerto narrado"
+  },
+  {
+    "id": "a-receita-das-estrelas-da-avo",
+    "title": "A Receita das Estrelas da Avó",
+    "synopses": "Numa cozinha com azulejos azuis, a avó Celeste ensina o neto Nuno a fazer bolinhos de canela. Quando a farinha começa a brilhar, cada estrela que sai da tigela guarda uma palavra de casa.",
+    "locale": "pt-PT",
+    "intent": "grandparents",
+    "recipients": [
+      "child",
+      "family",
+      "grandparent",
+      "parent"
+    ],
+    "tags": "avós,netos,receitas,memórias,português",
+    "style": "Lápis de cor",
+    "audioSampleSrc": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-receita-das-estrelas-da-avo/assets/audio-teaser.mp3",
+    "audioSampleTitle": "Ouvir excerto narrado"
+  },
+  {
+    "id": "o-comboio-dos-domingos-do-avo",
+    "title": "O Comboio dos Domingos do Avô",
+    "synopses": "Todos os domingos, o avô Artur guarda um bilhete antigo no bolso. Quando o neto Tiago o abre, o comboio da estação passa a parar em lugares feitos de memórias da família.",
+    "locale": "pt-PT",
+    "intent": "grandparents",
+    "recipients": [
+      "child",
+      "family",
+      "grandparent",
+      "parent"
+    ],
+    "tags": "avós,netos,domingos,viagem,memórias",
+    "style": "Aguarela",
+    "audioSampleSrc": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-comboio-dos-domingos-do-avo/assets/audio-teaser.mp3",
+    "audioSampleTitle": "Ouvir excerto narrado"
+  },
+  {
+    "id": "a-mala-que-falava-portugues",
+    "title": "A Mala que Falava Português",
+    "synopses": "Lia vive longe de Portugal e entende muitas palavras, mas responde noutra língua. Quando recebe uma mala pequena dos avós, cada objeto lá dentro só acorda quando ela tenta uma palavra portuguesa.",
+    "locale": "pt-PT",
+    "intent": "grandparents",
+    "recipients": [
+      "child",
+      "family",
+      "grandparent",
+      "parent"
+    ],
+    "tags": "avós,netos,diaspora,português,bilingue",
+    "style": "Desenho à mão",
+    "audioSampleSrc": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-mala-que-falava-portugues/assets/audio-teaser.mp3",
+    "audioSampleTitle": "Ouvir excerto narrado"
+  },
+  {
+    "id": "o-jardim-das-fotografias-antigas",
+    "title": "O Jardim das Fotografias Antigas",
+    "synopses": "Marta e Simão ajudam a avó Irene a pendurar fotografias no jardim. Ao pôr cada fotografia contra a luz, descobrem caminhos para lugares de que a família fala, mas que eles ainda não conhecem.",
+    "locale": "pt-PT",
+    "intent": "grandparents",
+    "recipients": [
+      "child",
+      "family",
+      "grandparent",
+      "parent"
+    ],
+    "tags": "avós,netos,fotografias,família,raízes",
+    "style": "Aguarela",
+    "audioSampleSrc": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-jardim-das-fotografias-antigas/assets/audio-teaser.mp3",
+    "audioSampleTitle": "Ouvir excerto narrado"
+  },
+  {
+    "id": "as-ferias-na-casa-amarela",
+    "title": "As Férias na Casa Amarela",
+    "synopses": "Dois irmãos chegam à casa amarela dos avós para as férias. Entre primos, praia, mercado e palavras novas, descobrem que falar português pode ser uma brincadeira de equipa.",
+    "locale": "pt-PT",
+    "intent": "grandparents",
+    "recipients": [
+      "child",
+      "family",
+      "grandparent",
+      "parent"
+    ],
+    "tags": "avós,netos,férias,Portugal,diaspora",
+    "style": "Banda desenhada europeia",
+    "audioSampleSrc": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/as-ferias-na-casa-amarela/assets/audio-teaser.mp3",
+    "audioSampleTitle": "Ouvir excerto narrado"
   }
 ]

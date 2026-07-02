@@ -2,8 +2,8 @@ import type { LandingPageContent } from './types';
 
 const slug = 'livro-personalizado-avos-netos';
 const iconBase = '/Papercut_icons';
-const sampleBookBase =
-  'https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books';
+const assetBase = `/landing-pages/${slug}/assets`;
+const sampleBookBase = `${assetBase}/books`;
 
 export const grandparentsStoriesLandingPage: LandingPageContent = {
   slug,
@@ -12,14 +12,14 @@ export const grandparentsStoriesLandingPage: LandingPageContent = {
   metaTitle: 'Livro Personalizado Dia dos Avós | O Presente Mais Emocional | Mythoria',
   metaDescription:
     'Crie um livro personalizado único para o Dia dos Avós com memórias da família, fotografias e audiolivro. Entrega rápida e versão digital imediata.',
-  primaryIntent: 'grandparents_grandchildren_personalized_book',
+  primaryIntent: 'grandparents',
   riskRating: 'yellow',
   updatedAt: '2026-06-28',
   indexable: true,
   breadcrumbLabel: 'Livro para avós e netos',
-  ogImageSrc: `${sampleBookBase}/a-receita-das-estrelas-da-avo/assets/feature.jpeg`,
+  ogImageSrc: `${sampleBookBase}/a-receita-das-estrelas-da-avo/feature.jpeg`,
   primaryCta: 'Criar o Nosso Livro dos Avós',
-  primaryCtaHref: `/pt-PT/tell-your-story/step-1?landingSlug=${slug}&primaryIntent=grandparents_grandchildren_personalized_book`,
+  primaryCtaHref: `/pt-PT/tell-your-story/step-1?landingSlug=${slug}&primaryIntent=grandparents`,
   secondaryCta: 'Ver exemplos por dentro',
   secondaryCtaHref: '#exemplos',
   testimonials: {
@@ -111,7 +111,7 @@ export const grandparentsStoriesLandingPage: LandingPageContent = {
     headline: 'O presente do Dia dos Avós que vai fazer a família chorar de alegria.',
     subheadline:
       'Transforme nomes, memórias reais, receitas e fotografias num livro personalizado impresso e num audiolivro mágico. Criado em 3 minutos no seu telemóvel.',
-    imageSrc: `${sampleBookBase}/a-receita-das-estrelas-da-avo/assets/feature.jpeg`,
+    imageSrc: `${sampleBookBase}/a-receita-das-estrelas-da-avo/feature.jpeg`,
     imageAlt:
       'Livro físico “A Receita das Estrelas da Avó” sobre uma mesa de cozinha portuguesa com receita e canela',
   },
@@ -212,7 +212,7 @@ export const grandparentsStoriesLandingPage: LandingPageContent = {
         exampleTitle: 'A Avó que Guardava Estrelas',
         exampleBody:
           'Uma história para dormir em que cada estrela ensina uma palavra de casa: colo, pão, rua, beijo, saudade.',
-        imageSrc: `${sampleBookBase}/a-receita-das-estrelas-da-avo/assets/cover.jpeg`,
+        imageSrc: `${sampleBookBase}/a-receita-das-estrelas-da-avo/cover.jpeg`,
         imageAlt: 'Capa do livro “A Receita das Estrelas da Avó” com avó, neto e cozinha iluminada',
       },
       {
@@ -227,7 +227,7 @@ export const grandparentsStoriesLandingPage: LandingPageContent = {
         exampleTitle: 'A Receita Secreta da Avó Rosa',
         exampleBody:
           'A farinha desaparece da cozinha e só uma pista escrita num azulejo ajuda a descobrir o ingrediente secreto.',
-        imageSrc: `${sampleBookBase}/o-comboio-dos-domingos-do-avo/assets/cover.jpeg`,
+        imageSrc: `${sampleBookBase}/o-comboio-dos-domingos-do-avo/cover.jpeg`,
         imageAlt:
           'Capa do livro “O Comboio dos Domingos do Avô” com avô, neto e estação portuguesa',
       },
@@ -243,7 +243,7 @@ export const grandparentsStoriesLandingPage: LandingPageContent = {
         exampleTitle: 'A Mala das Palavras Portuguesas',
         exampleBody:
           'Uma neta em França descobre que cada palavra portuguesa guardada na mala abre uma porta para uma memória da família.',
-        imageSrc: `${sampleBookBase}/o-jardim-das-fotografias-antigas/assets/cover.jpeg`,
+        imageSrc: `${sampleBookBase}/o-jardim-das-fotografias-antigas/cover.jpeg`,
         imageAlt:
           'Capa do livro “O Jardim das Fotografias Antigas” com avó, netos e fotografias no jardim',
       },
@@ -347,7 +347,7 @@ export const grandparentsStoriesLandingPage: LandingPageContent = {
         'Numa cozinha com azulejos azuis, a avó Celeste ensina o neto Nuno a fazer bolinhos de canela. Quando a farinha começa a brilhar, cada estrela que sai da tigela guarda uma palavra de casa.',
       excerpt:
         'A avó dizia que as receitas não começavam nos ingredientes. Começavam nas mãos de quem chamava a família para a mesa.',
-      imageSrc: `${sampleBookBase}/a-receita-das-estrelas-da-avo/assets/feature.jpeg`,
+      imageSrc: `${sampleBookBase}/a-receita-das-estrelas-da-avo/feature.jpeg`,
       imageAlt:
         'Livro físico “A Receita das Estrelas da Avó” numa cozinha portuguesa com receita e canela',
       styleLabel: 'Lápis de cor',
@@ -355,11 +355,11 @@ export const grandparentsStoriesLandingPage: LandingPageContent = {
       ageLabel: '4-7 anos',
       chapterCountLabel: '4 capítulos',
       durationLabel: 'Áudio 34 s',
-      audioSampleSrc: `${sampleBookBase}/a-receita-das-estrelas-da-avo/assets/audio-teaser.mp3`,
+      audioSampleSrc: `${sampleBookBase}/a-receita-das-estrelas-da-avo/audio-teaser.mp3`,
       audioSampleTitle: 'Ouvir excerto narrado',
       sampleChapter: {
         title: 'A primeira estrela de canela',
-        imageSrc: `${sampleBookBase}/a-receita-das-estrelas-da-avo/assets/cover.jpeg`,
+        imageSrc: `${sampleBookBase}/a-receita-das-estrelas-da-avo/cover.jpeg`,
         imageAlt: 'Capa ilustrada do livro “A Receita das Estrelas da Avó”',
         paragraphs: [
           'O Nuno chegou à cozinha da avó Celeste com as mangas arregaçadas e uma pergunta muito séria. “Hoje posso mexer a massa sozinho?” A avó olhou por cima dos óculos. Tinha farinha no avental, uma colher de pau na mão e aquele sorriso que aparecia sempre antes de uma surpresa.',
@@ -380,7 +380,7 @@ export const grandparentsStoriesLandingPage: LandingPageContent = {
         'Todos os domingos, o avô Artur guarda um bilhete antigo no bolso. Quando o neto Tiago o abre, o comboio da estação passa a parar em lugares feitos de memórias da família.',
       excerpt:
         'O bilhete não dizia destino. Dizia apenas: domingo, banco da janela, levar perguntas para o avô.',
-      imageSrc: `${sampleBookBase}/o-comboio-dos-domingos-do-avo/assets/feature.jpeg`,
+      imageSrc: `${sampleBookBase}/o-comboio-dos-domingos-do-avo/feature.jpeg`,
       imageAlt:
         'Livro físico “O Comboio dos Domingos do Avô” num banco de estação portuguesa com bilhetes antigos',
       styleLabel: 'Aguarela',
@@ -388,11 +388,11 @@ export const grandparentsStoriesLandingPage: LandingPageContent = {
       ageLabel: '7-10 anos',
       chapterCountLabel: '5 capítulos',
       durationLabel: 'Áudio 33 s',
-      audioSampleSrc: `${sampleBookBase}/o-comboio-dos-domingos-do-avo/assets/audio-teaser.mp3`,
+      audioSampleSrc: `${sampleBookBase}/o-comboio-dos-domingos-do-avo/audio-teaser.mp3`,
       audioSampleTitle: 'Ouvir excerto narrado',
       sampleChapter: {
         title: 'O bilhete que perguntava',
-        imageSrc: `${sampleBookBase}/o-comboio-dos-domingos-do-avo/assets/cover.jpeg`,
+        imageSrc: `${sampleBookBase}/o-comboio-dos-domingos-do-avo/cover.jpeg`,
         imageAlt: 'Capa ilustrada do livro “O Comboio dos Domingos do Avô”',
         paragraphs: [
           'O Tiago sabia três coisas sobre os domingos. A primeira: o avô Artur chegava sempre cinco minutos antes da hora marcada. A segunda: trazia rebuçados de limão no bolso esquerdo. A terceira: nunca se sentava no comboio sem cumprimentar primeiro o revisor.',
@@ -413,7 +413,7 @@ export const grandparentsStoriesLandingPage: LandingPageContent = {
         'Lia vive longe de Portugal e entende muitas palavras, mas responde noutra língua. Quando recebe uma mala pequena dos avós, cada objeto lá dentro só acorda quando ela tenta uma palavra portuguesa.',
       excerpt:
         'A palavra saudade não saiu perfeita. Mesmo assim, a mala abriu-se como se tivesse esperado por aquela tentativa.',
-      imageSrc: `${sampleBookBase}/a-mala-que-falava-portugues/assets/feature.jpeg`,
+      imageSrc: `${sampleBookBase}/a-mala-que-falava-portugues/feature.jpeg`,
       imageAlt:
         'Livro físico “A Mala que Falava Português” numa mesa de cabeceira com mala pequena e postais portugueses',
       styleLabel: 'Desenho à mão',
@@ -421,11 +421,11 @@ export const grandparentsStoriesLandingPage: LandingPageContent = {
       ageLabel: '6-10 anos',
       chapterCountLabel: '5 capítulos',
       durationLabel: 'Áudio 36 s',
-      audioSampleSrc: `${sampleBookBase}/a-mala-que-falava-portugues/assets/audio-teaser.mp3`,
+      audioSampleSrc: `${sampleBookBase}/a-mala-que-falava-portugues/audio-teaser.mp3`,
       audioSampleTitle: 'Ouvir excerto narrado',
       sampleChapter: {
         title: 'A palavra que destrancou a mala',
-        imageSrc: `${sampleBookBase}/a-mala-que-falava-portugues/assets/cover.jpeg`,
+        imageSrc: `${sampleBookBase}/a-mala-que-falava-portugues/cover.jpeg`,
         imageAlt: 'Capa ilustrada do livro “A Mala que Falava Português”',
         paragraphs: [
           'A Lia percebia português melhor do que dizia. Percebia quando a avó perguntava, no ecrã do tablet, se ela já tinha jantado. Percebia quando o avô dizia “estás tão crescida” com aquela voz de quem se admirava todas as semanas.',
@@ -446,7 +446,7 @@ export const grandparentsStoriesLandingPage: LandingPageContent = {
         'Marta e Simão ajudam a avó Irene a pendurar fotografias no jardim. Ao pôr cada fotografia contra a luz, descobrem caminhos para lugares de que a família fala, mas que eles ainda não conhecem.',
       excerpt:
         'A fotografia era pequena, mas quando a avó a segurou contra o sol, abriu uma rua inteira dentro da tarde.',
-      imageSrc: `${sampleBookBase}/o-jardim-das-fotografias-antigas/assets/feature.jpeg`,
+      imageSrc: `${sampleBookBase}/o-jardim-das-fotografias-antigas/feature.jpeg`,
       imageAlt:
         'Livro físico “O Jardim das Fotografias Antigas” numa mesa de jardim com fotografias antigas',
       styleLabel: 'Aguarela',
@@ -454,11 +454,11 @@ export const grandparentsStoriesLandingPage: LandingPageContent = {
       ageLabel: '10-12 anos',
       chapterCountLabel: '6 capítulos',
       durationLabel: 'Áudio 31 s',
-      audioSampleSrc: `${sampleBookBase}/o-jardim-das-fotografias-antigas/assets/audio-teaser.mp3`,
+      audioSampleSrc: `${sampleBookBase}/o-jardim-das-fotografias-antigas/audio-teaser.mp3`,
       audioSampleTitle: 'Ouvir excerto narrado',
       sampleChapter: {
         title: 'A fotografia que tinha vento',
-        imageSrc: `${sampleBookBase}/o-jardim-das-fotografias-antigas/assets/cover.jpeg`,
+        imageSrc: `${sampleBookBase}/o-jardim-das-fotografias-antigas/cover.jpeg`,
         imageAlt: 'Capa ilustrada do livro “O Jardim das Fotografias Antigas”',
         paragraphs: [
           'A avó Irene guardava fotografias em caixas de sapatos. Não era por falta de álbuns. Tinha três álbuns grandes, com capas grossas, mas dizia que algumas fotografias gostavam de respirar antes de ficarem presas entre páginas.',
@@ -479,7 +479,7 @@ export const grandparentsStoriesLandingPage: LandingPageContent = {
         'Dois irmãos chegam à casa amarela dos avós para as férias. Entre primos, praia, mercado e palavras novas, descobrem que falar português pode ser uma brincadeira de equipa.',
       excerpt:
         'No primeiro dia disseram hello ao mar. No segundo, já corriam pela areia a gritar olá como quem descobria uma porta secreta.',
-      imageSrc: `${sampleBookBase}/as-ferias-na-casa-amarela/assets/feature.jpeg`,
+      imageSrc: `${sampleBookBase}/as-ferias-na-casa-amarela/feature.jpeg`,
       imageAlt:
         'Livro físico “As Férias na Casa Amarela” numa mesa de verão junto a casa portuguesa amarela',
       styleLabel: 'Banda desenhada europeia',
@@ -487,11 +487,11 @@ export const grandparentsStoriesLandingPage: LandingPageContent = {
       ageLabel: '7-11 anos',
       chapterCountLabel: '6 capítulos',
       durationLabel: 'Áudio 30 s',
-      audioSampleSrc: `${sampleBookBase}/as-ferias-na-casa-amarela/assets/audio-teaser.mp3`,
+      audioSampleSrc: `${sampleBookBase}/as-ferias-na-casa-amarela/audio-teaser.mp3`,
       audioSampleTitle: 'Ouvir excerto narrado',
       sampleChapter: {
         title: 'O primeiro olá ao mar',
-        imageSrc: `${sampleBookBase}/as-ferias-na-casa-amarela/assets/cover.jpeg`,
+        imageSrc: `${sampleBookBase}/as-ferias-na-casa-amarela/cover.jpeg`,
         imageAlt: 'Capa ilustrada do livro “As Férias na Casa Amarela”',
         paragraphs: [
           'A casa dos avós era amarela mesmo a sério. Não era amarelo discreto, nem amarelo de lápis gasto. Era amarelo de sol inteiro, com janelas verdes, vasos de manjericos e uma porta que parecia estar sempre quase a rir.',
@@ -531,7 +531,7 @@ export const grandparentsStoriesLandingPage: LandingPageContent = {
       'Para receber o livro físico impresso em capa dura a tempo da festa, encomende com 3 a 5 dias úteis de antecedência.',
     ],
     ctaLabel: 'Criar o Nosso Livro dos Avós',
-    ctaHref: `/pt-PT/tell-your-story/step-1?landingSlug=${slug}&primaryIntent=grandparents_grandchildren_personalized_book`,
+    ctaHref: `/pt-PT/tell-your-story/step-1?landingSlug=${slug}&primaryIntent=grandparents`,
   },
   faq: [
     {

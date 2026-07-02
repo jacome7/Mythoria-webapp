@@ -76,6 +76,31 @@
             }
           }
         }
+      },
+      "grandparents": {
+        "hero": {
+          "headline": "As histórias dos avós, eternizadas.",
+          "subtitle": "Crie um livro ilustrado com os avós e os netos no centro — um presente único que guarda receitas, lugares, frases, fotografias e a ligação entre gerações.",
+          "subtitleEmphasized": "ligação entre gerações",
+          "cta": "Criar a nossa história",
+          "alt": {
+            "person": "Avós e um neto a segurar o seu livro Mythoria personalizado da família"
+          },
+          "features": {
+            "feature1": {
+              "title": "Memórias de família",
+              "desc": "Transforme receitas, lugares, fotografias e frases de casa em cenas que todos reconhecem."
+            },
+            "feature2": {
+              "title": "Feita em conjunto",
+              "desc": "Avós, pais e crianças podem juntar detalhes, rever, ouvir e partilhar."
+            },
+            "feature3": {
+              "title": "Um presente para guardar",
+              "desc": "Envie em digital no próprio dia, ouça em áudio ou transforme num livro impresso."
+            }
+          }
+        }
       }
     },
     "words": [

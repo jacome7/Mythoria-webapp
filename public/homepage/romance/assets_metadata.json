@@ -218,6 +218,50 @@
       "status": "final"
     },
     {
+      "file": "person1_en-US.webp",
+      "slot": "person1",
+      "locale": "en-US",
+      "usage": "HeroScene person carousel — real couple holding a real Mythoria book (z5, bottom-anchored, centered)",
+      "description": "Embracing couple holding the localized English personalized romance book — photographic people, papercut scene around them",
+      "dimensions": { "w": 723, "h": 1024 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "person1_es-ES.webp",
+      "slot": "person1",
+      "locale": "es-ES",
+      "usage": "HeroScene person carousel — real couple holding a real Mythoria book (z5, bottom-anchored, centered)",
+      "description": "Embracing couple holding the localized Spanish personalized romance book — photographic people, papercut scene around them",
+      "dimensions": { "w": 723, "h": 1024 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "person1_fr-FR.webp",
+      "slot": "person1",
+      "locale": "fr-FR",
+      "usage": "HeroScene person carousel — real couple holding a real Mythoria book (z5, bottom-anchored, centered)",
+      "description": "Embracing couple holding the localized French personalized romance book — photographic people, papercut scene around them",
+      "dimensions": { "w": 723, "h": 1024 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "person1_de-DE.webp",
+      "slot": "person1",
+      "locale": "de-DE",
+      "usage": "HeroScene person carousel — real couple holding a real Mythoria book (z5, bottom-anchored, centered)",
+      "description": "Embracing couple holding the localized German personalized romance book — photographic people, papercut scene around them",
+      "dimensions": { "w": 723, "h": 1024 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
       "file": "icon1.webp",
       "slot": "icon1",
       "usage": "FeatureCard col 1 icon — your story, your way",

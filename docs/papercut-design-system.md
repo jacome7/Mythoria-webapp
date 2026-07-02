@@ -22,7 +22,8 @@ typography, layering rules, animation, and **how to author a new composition**.
   layout; a "composition" is a style variant that fills the same named slots
   with its own artwork, palette and copy. The style shown adapts to the
   visitor's intent (see the [intent feature](./features/homepage.md)) —
-  `kids_fantasy` is the default; `sports_teams` and `romance` are live variants.
+  `kids_fantasy` is the default; `sports_teams`, `romance`, and
+  `grandparents` are live variants.
 - **A real person holding a real book, always.** The center of every style is a
   photographic person (or couple/animal) holding a physical Mythoria book — the
   "human feeling" anchor and the product shot. Everything around them is paper.

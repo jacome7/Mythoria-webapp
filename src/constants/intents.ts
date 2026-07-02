@@ -12,6 +12,7 @@ export const STORY_INTENTS = [
   'learning_and_discovery',
   'pet_stories',
   'remembrance',
+  'grandparents',
   'school_projects',
   'sports_teams',
   'family_travels',

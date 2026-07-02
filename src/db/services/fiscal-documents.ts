@@ -30,7 +30,10 @@ import { normalizeVatForKeyInvoice } from '@/lib/keyinvoice/vat';
 
 type FiscalStatus = FiscalDocument['status'];
 type NormalizedVat = NonNullable<ReturnType<typeof normalizeVatForKeyInvoice>>;
-export type KeyInvoiceVatSource = 'stripe_checkout_tax_id' | 'author_profile_fiscal_number' | 'none';
+export type KeyInvoiceVatSource =
+  | 'stripe_checkout_tax_id'
+  | 'author_profile_fiscal_number'
+  | 'none';
 export type FiscalRetrySkipReason = 'insert_document_response_unknown';
 export type AdminFiscalRetryBlockReason =
   | 'document_status_not_retryable'
@@ -327,10 +330,7 @@ export function adminRetryBlockReasonForDocument(params: {
     return 'retry_not_due';
   }
 
-  return retrySkipReasonForDocument(
-    params.document,
-    params.hasInsertDocumentRequestedEvent,
-  );
+  return retrySkipReasonForDocument(params.document, params.hasInsertDocumentRequestedEvent);
 }
 
 function lineItemsFromOrder(order: PaymentOrder): KeyInvoiceOrderLine[] {

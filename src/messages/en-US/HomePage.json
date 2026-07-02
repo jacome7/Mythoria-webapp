@@ -76,6 +76,31 @@
             }
           }
         }
+      },
+      "grandparents": {
+        "hero": {
+          "headline": "Grandparents' stories, made forever.",
+          "subtitle": "Create an illustrated book with grandparents and grandchildren at the heart of it — a unique gift that preserves recipes, places, sayings, photos and the bond between generations.",
+          "subtitleEmphasized": "bond between generations",
+          "cta": "Create our family story",
+          "alt": {
+            "person": "Grandparents and a grandchild holding their personalized Mythoria family book"
+          },
+          "features": {
+            "feature1": {
+              "title": "Family memories",
+              "desc": "Turn recipes, places, photos and little sayings into scenes everyone recognizes."
+            },
+            "feature2": {
+              "title": "Made together",
+              "desc": "Grandparents, parents and children can add details, review, listen and share."
+            },
+            "feature3": {
+              "title": "A gift to keep",
+              "desc": "Send it digitally today, hear it as audio, or turn it into a printed book."
+            }
+          }
+        }
       }
     },
     "words": [

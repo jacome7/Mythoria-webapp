@@ -19,4 +19,5 @@ export { resolveComposition } from './registry';
 export { kidsFantasy } from './compositions/kidsFantasy';
 export { sportsTeams } from './compositions/sports_teams';
 export { romance } from './compositions/romance';
+export { grandparents } from './compositions/grandparents';
 export type * from './types';

@@ -1,6 +1,7 @@
 import kidsFantasyMeta from '../../../public/homepage/kids_fantasy/assets_metadata.json';
 import sportsTeamsMeta from '../../../public/homepage/sports_teams/assets_metadata.json';
 import romanceMeta from '../../../public/homepage/romance/assets_metadata.json';
+import grandparentsMeta from '../../../public/homepage/grandparents/assets_metadata.json';
 
 /**
  * Build-time manifest of the hero assets in every style folder
@@ -13,7 +14,7 @@ import romanceMeta from '../../../public/homepage/romance/assets_metadata.json';
  * See docs/papercut-design-system.md ("Style folders") for the slot grammar.
  */
 
-export type HeroStyleId = 'kids_fantasy' | 'sports_teams' | 'romance';
+export type HeroStyleId = 'kids_fantasy' | 'sports_teams' | 'romance' | 'grandparents';
 export type HeroDevice = 'laptop' | 'mobile';
 
 export type AssetStatus = 'final' | 'draft' | 'placeholder' | 'missing';
@@ -45,6 +46,7 @@ const MANIFEST: Record<HeroStyleId, StyleMetadata> = {
   kids_fantasy: kidsFantasyMeta as StyleMetadata,
   sports_teams: sportsTeamsMeta as StyleMetadata,
   romance: romanceMeta as StyleMetadata,
+  grandparents: grandparentsMeta as StyleMetadata,
 };
 
 const FALLBACK_LOCALE = 'en-US';

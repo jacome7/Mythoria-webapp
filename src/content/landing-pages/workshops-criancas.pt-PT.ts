@@ -1,9 +1,8 @@
 import type { LandingPageContent } from './types';
 
 const slug = 'workshops-criancas';
-const assetBase = `https://storage.googleapis.com/mythoria-public/landing-page-assets/${slug}`;
-const sampleBookBase =
-  'https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books';
+const assetBase = `/landing-pages/${slug}/assets`;
+const sampleBookBase = `${assetBase}/sample-books`;
 const iconBase = '/Papercut_icons';
 
 export const workshopsChildrenLandingPage: LandingPageContent = {
@@ -482,18 +481,18 @@ export const workshopsChildrenLandingPage: LandingPageContent = {
         'Exemplo para os 5-7 anos, criado a partir de um desenho de animal de estimação. Mostra como uma ideia pequena pode virar uma história calorosa, visual e fácil de ler em voz alta.',
       excerpt:
         'O Nilo sentou-se muito direito, como os guardas dos castelos nos livros. Só que, em vez de espada, tinha bigodes.',
-      imageSrc: `${sampleBookBase}/o-gato-que-guardava-a-lua/assets/feature.jpeg`,
+      imageSrc: `${sampleBookBase}/o-gato-que-guardava-a-lua/feature.jpeg`,
       imageAlt:
         'Livro físico O Gato que Guardava a Lua numa mesa de workshop, ao lado de desenho infantil e lápis de cor',
       styleLabel: 'Lápis de cor',
       contextLabel: '5-7 anos',
       chapterCountLabel: '4 capítulos',
       durationLabel: 'Áudio 34 s',
-      audioSampleSrc: `${sampleBookBase}/o-gato-que-guardava-a-lua/assets/audio-teaser.mp3`,
+      audioSampleSrc: `${sampleBookBase}/o-gato-que-guardava-a-lua/audio-teaser.mp3`,
       audioSampleTitle: 'Ouvir excerto narrado',
       sampleChapter: {
         title: 'A lua no tapete azul',
-        imageSrc: `${sampleBookBase}/o-gato-que-guardava-a-lua/assets/chapter-01.jpeg`,
+        imageSrc: `${sampleBookBase}/o-gato-que-guardava-a-lua/chapter-01.jpeg`,
         imageAlt:
           'Ilustração do capítulo de O Gato que Guardava a Lua, com um gato numa varanda a guardar uma lua brilhante',
         paragraphs: [
@@ -535,18 +534,18 @@ export const workshopsChildrenLandingPage: LandingPageContent = {
         'Exemplo para os 8-10 anos, criado a partir de uma ideia sobre futebol. Mostra como desporto, regras e colaboração podem transformar-se numa aventura de equipa.',
       excerpt:
         'A bola não brilhou quando Rui tentou fintar toda a gente. Só acendeu quando passou para a Mia, que estava livre junto ao muro das constelações.',
-      imageSrc: `${sampleBookBase}/a-final-do-bairro-das-estrelas/assets/feature.jpeg`,
+      imageSrc: `${sampleBookBase}/a-final-do-bairro-das-estrelas/feature.jpeg`,
       imageAlt:
         'Livro físico A Final do Bairro das Estrelas numa mesa de workshop, junto a bola e desenho de táticas',
       styleLabel: 'Banda desenhada',
       contextLabel: '8-10 anos',
       chapterCountLabel: '5 capítulos',
       durationLabel: 'Áudio 25 s',
-      audioSampleSrc: `${sampleBookBase}/a-final-do-bairro-das-estrelas/assets/audio-teaser.mp3`,
+      audioSampleSrc: `${sampleBookBase}/a-final-do-bairro-das-estrelas/audio-teaser.mp3`,
       audioSampleTitle: 'Ouvir excerto narrado',
       sampleChapter: {
         title: 'O passe que acendeu',
-        imageSrc: `${sampleBookBase}/a-final-do-bairro-das-estrelas/assets/chapter-01.jpeg`,
+        imageSrc: `${sampleBookBase}/a-final-do-bairro-das-estrelas/chapter-01.jpeg`,
         imageAlt:
           'Ilustração do capítulo de A Final do Bairro das Estrelas, com crianças a jogar futebol e uma bola brilhante',
         paragraphs: [
@@ -591,18 +590,18 @@ export const workshopsChildrenLandingPage: LandingPageContent = {
         'Exemplo para os 10-12 anos, criado a partir de um mapa desenhado em grupo. Mostra como crianças mais velhas podem trabalhar pistas, mundo ficcional e revisão criativa.',
       excerpt:
         'O mapa não mostrava o caminho mais curto. Mostrava o caminho que cada um ainda não tinha coragem de sugerir.',
-      imageSrc: `${sampleBookBase}/o-clube-dos-mapas-impossiveis/assets/feature.jpeg`,
+      imageSrc: `${sampleBookBase}/o-clube-dos-mapas-impossiveis/feature.jpeg`,
       imageAlt:
         'Livro físico O Clube dos Mapas Impossíveis numa mesa de workshop, junto a mapas desenhados e notas coloridas',
       styleLabel: 'Aguarela',
       contextLabel: '10-12 anos',
       chapterCountLabel: '6 capítulos',
       durationLabel: 'Áudio 36 s',
-      audioSampleSrc: `${sampleBookBase}/o-clube-dos-mapas-impossiveis/assets/audio-teaser.mp3`,
+      audioSampleSrc: `${sampleBookBase}/o-clube-dos-mapas-impossiveis/audio-teaser.mp3`,
       audioSampleTitle: 'Ouvir excerto narrado',
       sampleChapter: {
         title: 'A ponte que não estava desenhada',
-        imageSrc: `${sampleBookBase}/o-clube-dos-mapas-impossiveis/assets/chapter-01.jpeg`,
+        imageSrc: `${sampleBookBase}/o-clube-dos-mapas-impossiveis/chapter-01.jpeg`,
         imageAlt:
           'Ilustração do capítulo de O Clube dos Mapas Impossíveis, com três crianças à volta de um mapa luminoso numa biblioteca',
         paragraphs: [

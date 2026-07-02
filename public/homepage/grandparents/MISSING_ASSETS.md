@@ -1,35 +1,30 @@
-# romance — Missing / draft assets
+# grandparents — Missing / draft assets
 
 Canonical naming: `{slot}.webp`, `{slot}_{device}.webp`, `{slot}_{device}_{locale}.webp`, `person{n}_{locale}.webp`.
 Locales: `en-US`, `pt-PT`, `es-ES`, `fr-FR`, `de-DE`. Devices: `laptop` (also used by tablet), `mobile`.
 See `assets_metadata.json` for per-asset specs (dimensions, transparency, status).
 
-## Placeholders to replace with final art
+## Required runtime assets
 
-| File | Target spec | Notes |
+No required runtime assets are currently missing. The `grandparents` hero has:
+
+- sky decor: `cloud_left`, `cloud_right`, `sky_left`, `sky_right`, `sparkles`
+- scene art: `background_{laptop,mobile}` with all five supported locale suffixes
+- foreground art: `foreground_{laptop,mobile}`
+- person art: `person1_{locale}` for all five supported locales
+- feature icons: `icon1`, `icon2`, `icon3`
+
+The background locale variants are intentionally identical today because the artwork contains no embedded text.
+
+## Optional future improvements
+
+| Asset | Target spec | Notes |
 | --- | --- | --- |
-| `cloud_left.webp` | ~460×350, transparent | Copy of kids_fantasy cream cloud — final art should be a blush-pink romance cloud (see mockup). |
-| `cloud_right.webp` | ~489×317, transparent | Same as above, right side. |
-| `sparkles.webp` | ~328×318, transparent | Copy of kids_fantasy gold sparkles — final art should mix a gold star with small paper hearts. |
-
-## Missing person images (carousel skips missing locales via fallback — all locales currently fall back to pt-PT)
-
-| File | Spec |
-| --- | --- |
-| `person1_en-US.webp` | 723×1024, transparent, real couple holding a real Mythoria romance book, English cover |
-| `person1_es-ES.webp` | 723×1024, Spanish cover |
-| `person1_fr-FR.webp` | 723×1024, French cover |
-| `person1_de-DE.webp` | 723×1024, German cover |
-| `person2_{locale}.webp` (optional) | A second couple/pose to enable carousel rotation (currently only one person slide exists, so the hero renders a static image). |
-
-## Missing locale backgrounds
-
-| File | Spec |
-| --- | --- |
-| `background_laptop_de-DE.webp` | 1920×1072 — German variant (de-DE currently falls back to en-US) |
-| `background_mobile_de-DE.webp` | 1080×1072 — German variant |
+| `person2_{locale}.webp` | Transparent WebP, same family-story scale and bottom anchor as `person1_{locale}.webp` | Optional second grandparent/grandchild pose if the hero should rotate instead of rendering one static family image. |
+| warmer `foreground_{device}.webp` variants | Transparent WebP matching current dimensions | Optional if the scene should match the red/plum foliage in `homepage_mobile_mockup.png` more closely. Current green/blue foliage is final and usable. |
 
 ## Design guidance
 
-- Persons must read as **real photographic people holding a real book** (the mockup couple holds "MARTA & TIAGO"), bottom-anchored, consistent scale across `person{n}` files.
-- Palette: wine `#7a2b3f`, dusty rose `#9c3d54`, blush `#e8b4b8`, warm lamplight accents — keep the cardboard papercut texture.
+- Persons must read as real photographic grandparents and a grandchild holding a real Mythoria book.
+- Keep the visual focus on intergenerational warmth: family memories, recipes, places, sayings, photos, shared reading, audio, and printed keepsakes.
+- Palette: heritage plum `#552235`, rose CTA `#a33152`, warm gold `#d99a2b`, cream paper sky `#f8ead7` / `#efd6b8`.

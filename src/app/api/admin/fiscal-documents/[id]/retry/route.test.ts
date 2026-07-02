@@ -12,8 +12,7 @@ import { fiscalDocumentService } from '@/db/services';
 
 import { POST } from './route';
 
-const retryByFiscalDocumentIdMock =
-  fiscalDocumentService.retryByFiscalDocumentId as jest.Mock;
+const retryByFiscalDocumentIdMock = fiscalDocumentService.retryByFiscalDocumentId as jest.Mock;
 
 function request(body: unknown, apiKey = 'admin-secret') {
   return new NextRequest('https://mythoria.pt/api/admin/fiscal-documents/doc-1/retry', {

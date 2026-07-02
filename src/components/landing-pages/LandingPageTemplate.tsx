@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import type { LandingPageContent, LandingPageTemplateIcon } from '@/content/landing-pages';
 import LandingPageBookShowcase from './LandingPageBookShowcase';
+import LandingPageFloatingNavigation from './LandingPageFloatingNavigation';
 
 interface LandingPageTemplateProps {
   page: LandingPageContent;
@@ -37,7 +38,11 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
   };
 
   return (
-    <main className="min-h-screen bg-[#fff8ea] text-base-content">
+    <main
+      id="landing-page-top"
+      tabIndex={-1}
+      className="min-h-screen bg-[#fff8ea] text-base-content focus:outline-none"
+    >
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -45,7 +50,10 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
         }}
       />
 
-      <section className="relative overflow-hidden border-b border-primary/10 bg-[#f8ead2]">
+      <section
+        id="landing-page-hero"
+        className="relative overflow-hidden border-b border-primary/10 bg-[#f8ead2]"
+      >
         <div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-primary via-secondary to-accent" />
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1fr_0.88fr] lg:px-8 lg:py-20">
           <div className="max-w-3xl">
@@ -255,7 +263,7 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
           />
         )}
 
-        <section id="exemplos" className="my-16 scroll-mt-24">
+        <section id="exemplos" tabIndex={-1} className="my-16 scroll-mt-24 focus:outline-none">
           <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-primary">
@@ -392,6 +400,7 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
           </div>
         </section>
       </div>
+      <LandingPageFloatingNavigation />
     </main>
   );
 }

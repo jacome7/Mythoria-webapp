@@ -76,6 +76,31 @@
             }
           }
         }
+      },
+      "grandparents": {
+        "hero": {
+          "headline": "Les histoires des grands-parents, pour toujours.",
+          "subtitle": "Créez un livre illustré avec les grands-parents et les petits-enfants au cœur de l'histoire — un cadeau unique qui garde les recettes, les lieux, les mots, les photos et le lien entre les générations.",
+          "subtitleEmphasized": "lien entre les générations",
+          "cta": "Créer notre histoire",
+          "alt": {
+            "person": "Des grands-parents et un petit-fils tenant leur livre familial Mythoria personnalisé"
+          },
+          "features": {
+            "feature1": {
+              "title": "Souvenirs de famille",
+              "desc": "Transformez recettes, lieux, photos et petits mots en scènes que chacun reconnaît."
+            },
+            "feature2": {
+              "title": "Créée ensemble",
+              "desc": "Grands-parents, parents et enfants peuvent ajouter, relire, écouter et partager."
+            },
+            "feature3": {
+              "title": "Un cadeau à garder",
+              "desc": "Envoyez-le en numérique, écoutez-le en audio ou transformez-le en livre imprimé."
+            }
+          }
+        }
       }
     },
     "words": [

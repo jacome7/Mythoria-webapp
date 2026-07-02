@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 /**
  * Homepage hero composition tests.
@@ -6,10 +6,27 @@ import { test, expect } from '@playwright/test';
  * (query param and cookie flows) and that all /homepage/ assets load without 404s.
  */
 
+function collectHydrationErrors(page: Page): string[] {
+  const hydrationErrors: string[] = [];
+
+  page.on('console', (message) => {
+    const text = message.text();
+    if (message.type() === 'error' && text.includes('Hydration failed')) {
+      hydrationErrors.push(text);
+    }
+  });
+  page.on('pageerror', (error) => {
+    if (error.message.includes('Hydration failed')) {
+      hydrationErrors.push(error.message);
+    }
+  });
+
+  return hydrationErrors;
+}
+
 test.describe('Homepage hero — default composition', () => {
   test('renders kids_fantasy headline without ?intent param', async ({ page }) => {
-    const response = await page.goto('/en-US', { waitUntil: 'domcontentloaded' });
-    expect(response?.ok()).toBeTruthy();
+    await page.goto('/en-US', { waitUntil: 'domcontentloaded' });
 
     // The kids_fantasy headline key resolves to text containing "story"
     const hero = page.locator('section.papercut-hero');
@@ -34,14 +51,13 @@ test.describe('Homepage hero — default composition', () => {
 });
 
 test.describe('Homepage hero — sports_teams via ?intent= query param', () => {
-  test('switches to sports_teams headline after hydration', async ({ page }) => {
+  test('renders sports_teams headline from query intent', async ({ page }) => {
     await page.goto('/en-US?intent=sports_teams', { waitUntil: 'domcontentloaded' });
 
     const h1 = page.locator('section.papercut-hero h1');
     await expect(h1).toBeVisible();
 
-    // After client hydration, useIntentOverride reads the query param and
-    // resolveComposition picks sports_teams. The sports headline contains "team".
+    // Query intent has precedence over the default composition.
     await expect(h1).toContainText('team', { ignoreCase: true });
   });
 
@@ -99,5 +115,67 @@ test.describe('Homepage hero — sports_teams via /i/ cookie flow', () => {
     await expect(h1).toBeVisible();
     // Default composition should not say "team"
     await expect(h1).not.toContainText('team', { ignoreCase: true });
+  });
+});
+
+test.describe('Homepage hero — grandparents intent', () => {
+  test('switches to grandparents headline with ?intent=grandparents', async ({ page }) => {
+    const hydrationErrors = collectHydrationErrors(page);
+    await page.goto('/en-US?intent=grandparents', { waitUntil: 'domcontentloaded' });
+
+    const h1 = page.locator('section.papercut-hero h1');
+    await expect(h1).toBeVisible();
+    await expect(h1).toContainText('Grandparents', { ignoreCase: true });
+    expect(hydrationErrors).toEqual([]);
+  });
+
+  test('no /homepage/ asset returns 404 with ?intent=grandparents', async ({ page }) => {
+    const failed: string[] = [];
+    page.on('response', (resp) => {
+      if (resp.url().includes('/homepage/') && resp.status() === 404) {
+        failed.push(`${resp.status()} ${resp.url()}`);
+      }
+    });
+    await page.goto('/en-US?intent=grandparents', { waitUntil: 'networkidle' });
+    expect(failed, `404s on homepage assets:\n${failed.join('\n')}`).toHaveLength(0);
+  });
+
+  test('sets intent cookie and shows grandparents hero on redirect', async ({ page }) => {
+    const hydrationErrors = collectHydrationErrors(page);
+    await page.goto('/i/grandparents', { waitUntil: 'networkidle' });
+
+    expect(page.url()).not.toContain('/i/');
+
+    const h1 = page.locator('section.papercut-hero h1');
+    await expect(h1).toBeVisible();
+    await expect(h1).toContainText('Grandparents', { ignoreCase: true });
+
+    const cookies = await page.context().cookies();
+    const intentCookie = cookies.find((c) => c.name === 'mythoria_intent_context');
+    expect(intentCookie).toBeDefined();
+    expect(intentCookie?.value).toContain('grandparents');
+    expect(hydrationErrors).toEqual([]);
+  });
+});
+
+test.describe('Homepage hero — landing page intent handoff', () => {
+  test('grandparents landing page sets homepage intent cookie', async ({ page }) => {
+    const hydrationErrors = collectHydrationErrors(page);
+
+    await page.goto('/pt-PT/lp/livro-personalizado-avos-netos', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    const cookies = await page.context().cookies();
+    const intentCookie = cookies.find((c) => c.name === 'mythoria_intent_context');
+    expect(intentCookie).toBeDefined();
+    expect(decodeURIComponent(intentCookie?.value ?? '')).toContain('grandparents');
+
+    await page.goto('/pt-PT', { waitUntil: 'domcontentloaded' });
+
+    const h1 = page.locator('section.papercut-hero h1');
+    await expect(h1).toBeVisible();
+    await expect(h1).toContainText('avós', { ignoreCase: true });
+    expect(hydrationErrors).toEqual([]);
   });
 });

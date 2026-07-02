@@ -1,27 +1,44 @@
 {
   "schemaVersion": 2,
-  "styleId": "romance",
-  "theme": "Romantic couple's story — paper-cut layered cardboard, blush-pink paper sky, hearts, hot-air balloon, seaside village, lamplight, wine/dusty-rose palette",
-  "styleReference": ["homepage_mobile_mockup.png"],
+  "styleId": "grandparents",
+  "theme": "Grandparents and grandchildren family-story — paper-cut layered cardboard, warm cream sky, Douro river and bridge, heritage plum and gold accents",
+  "styleReference": [
+    "homepage_mobile_mockup.png"
+  ],
   "palette": {
-    "sky": "#f9e9e4",
-    "blush": "#e8b4b8",
-    "wine": "#7a2b3f",
-    "rose": "#9c3d54",
-    "lamplight": "#f4a259"
+    "sky": "#f8ead7",
+    "cream": "#efd6b8",
+    "plum": "#552235",
+    "rose": "#a33152",
+    "gold": "#d99a2b"
   },
-  "notes": "Assets marked 'placeholder' are copies of kids_fantasy assets and must be replaced with romance-themed art (pink clouds, heart sparkles).",
+  "notes": "Runtime hero assets are complete for the five supported locales. Background locale variants are intentionally identical because they contain no embedded text.",
   "heroSlots": {
     "_doc": "Canonical hero slot grammar shared by every style folder. Filenames are lowercase: {slot}.webp, {slot}_{device}.webp, {slot}_{device}_{locale}.webp, person{n}_{locale}.webp. Locale fallback chain at build time: exact locale -> en-US -> unsuffixed -> first available.",
-    "required": ["cloud_left", "cloud_right", "sky_left", "sky_right", "sparkles", "background", "foreground", "person1", "icon1", "icon2", "icon3"]
+    "required": [
+      "cloud_left",
+      "cloud_right",
+      "sky_left",
+      "sky_right",
+      "sparkles",
+      "background",
+      "foreground",
+      "person1",
+      "icon1",
+      "icon2",
+      "icon3"
+    ]
   },
   "assets": [
     {
       "file": "sky_left.webp",
       "slot": "sky_left",
-      "usage": "PaperCutHero sky band — left floater, in front of cloud_left, slightly below",
-      "description": "Red and cream striped hot-air balloon, papercut style, floating left side of sky",
-      "dimensions": { "w": 218, "h": 350 },
+      "usage": "PaperCutHero sky band — left floater, in front of cloud_left",
+      "description": "Blue paper hot-air balloon, papercut style, for the grandparents family-story sky.",
+      "dimensions": {
+        "w": 218,
+        "h": 320
+      },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
@@ -29,9 +46,12 @@
     {
       "file": "sky_right.webp",
       "slot": "sky_right",
-      "usage": "PaperCutHero sky band — right floater, in front of cloud_right, slightly below",
-      "description": "Pink paper hearts and cloud cluster, papercut style, right side of sky",
-      "dimensions": { "w": 375, "h": 359 },
+      "usage": "PaperCutHero sky band — right floater, in front of cloud_right",
+      "description": "Golden crescent moon, papercut style, for the grandparents family-story sky.",
+      "dimensions": {
+        "w": 381,
+        "h": 418
+      },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
@@ -40,39 +60,66 @@
       "file": "cloud_left.webp",
       "slot": "cloud_left",
       "usage": "PaperCutHero sky band — top-left background cloud, behind sky_left",
-      "description": "Layered paper cloud, soft cream tones. PLACEHOLDER: copy of kids_fantasy cloud; final art should be blush-pink romance cloud.",
-      "dimensions": { "w": 460, "h": 350 },
+      "description": "Layered warm cream paper cloud behind the hot-air balloon.",
+      "dimensions": {
+        "w": 460,
+        "h": 350
+      },
       "transparentBackground": true,
       "format": "webp",
-      "status": "placeholder"
+      "status": "final"
     },
     {
       "file": "cloud_right.webp",
       "slot": "cloud_right",
       "usage": "PaperCutHero sky band — top-right background cloud, behind sky_right",
-      "description": "Layered paper cloud, soft cream tones. PLACEHOLDER: copy of kids_fantasy cloud; final art should be blush-pink romance cloud.",
-      "dimensions": { "w": 489, "h": 317 },
+      "description": "Layered warm cream paper cloud behind the crescent moon.",
+      "dimensions": {
+        "w": 489,
+        "h": 317
+      },
       "transparentBackground": true,
       "format": "webp",
-      "status": "placeholder"
+      "status": "final"
     },
     {
       "file": "sparkles.webp",
       "slot": "sparkles",
       "usage": "PaperCutHero sky band — twinkle cluster centered above the page title",
-      "description": "Cluster of gold stars. PLACEHOLDER: copy of kids_fantasy sparkles; final art should mix a gold star with small paper hearts.",
-      "dimensions": { "w": 328, "h": 318 },
+      "description": "Warm golden paper star with small sparkle dots.",
+      "dimensions": {
+        "w": 328,
+        "h": 318
+      },
       "transparentBackground": true,
       "format": "webp",
-      "status": "placeholder"
+      "status": "final"
     },
     {
       "file": "background_laptop.webp",
       "slot": "background",
       "device": "laptop",
-      "usage": "HeroScene — back layer for tablet/laptop (z1), default when no locale variant matches",
-      "description": "Seaside village panorama with boats, rooftops and pink hills, papercut style, no text",
-      "dimensions": { "w": 1920, "h": 1072 },
+      "usage": "HeroScene — back layer for tablet/laptop, default when no locale variant matches",
+      "description": "Douro-inspired river and bridge panorama in layered papercut style, no embedded text.",
+      "dimensions": {
+        "w": 1920,
+        "h": 815
+      },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "background_laptop_de-DE.webp",
+      "slot": "background",
+      "device": "laptop",
+      "locale": "de-DE",
+      "usage": "HeroScene — back layer for tablet/laptop, de-DE variant",
+      "description": "Douro-inspired river and bridge panorama in layered papercut style. Locale variants are text-free and visually identical today.",
+      "dimensions": {
+        "w": 1920,
+        "h": 815
+      },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
@@ -82,9 +129,12 @@
       "slot": "background",
       "device": "laptop",
       "locale": "en-US",
-      "usage": "HeroScene — back layer for tablet/laptop, English variant",
-      "description": "Seaside village panorama, English-localized details",
-      "dimensions": { "w": 1920, "h": 1072 },
+      "usage": "HeroScene — back layer for tablet/laptop, en-US variant",
+      "description": "Douro-inspired river and bridge panorama in layered papercut style. Locale variants are text-free and visually identical today.",
+      "dimensions": {
+        "w": 1920,
+        "h": 815
+      },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
@@ -94,9 +144,12 @@
       "slot": "background",
       "device": "laptop",
       "locale": "es-ES",
-      "usage": "HeroScene — back layer for tablet/laptop, Spanish variant",
-      "description": "Seaside village panorama, Spanish-localized details",
-      "dimensions": { "w": 1920, "h": 1072 },
+      "usage": "HeroScene — back layer for tablet/laptop, es-ES variant",
+      "description": "Douro-inspired river and bridge panorama in layered papercut style. Locale variants are text-free and visually identical today.",
+      "dimensions": {
+        "w": 1920,
+        "h": 815
+      },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
@@ -106,9 +159,12 @@
       "slot": "background",
       "device": "laptop",
       "locale": "fr-FR",
-      "usage": "HeroScene — back layer for tablet/laptop, French variant",
-      "description": "Seaside village panorama, French-localized details",
-      "dimensions": { "w": 1920, "h": 1072 },
+      "usage": "HeroScene — back layer for tablet/laptop, fr-FR variant",
+      "description": "Douro-inspired river and bridge panorama in layered papercut style. Locale variants are text-free and visually identical today.",
+      "dimensions": {
+        "w": 1920,
+        "h": 815
+      },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
@@ -118,9 +174,12 @@
       "slot": "background",
       "device": "laptop",
       "locale": "pt-PT",
-      "usage": "HeroScene — back layer for tablet/laptop, Portuguese variant",
-      "description": "Seaside village panorama, Portuguese-localized details",
-      "dimensions": { "w": 1920, "h": 1072 },
+      "usage": "HeroScene — back layer for tablet/laptop, pt-PT variant",
+      "description": "Douro-inspired river and bridge panorama in layered papercut style. Locale variants are text-free and visually identical today.",
+      "dimensions": {
+        "w": 1920,
+        "h": 815
+      },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
@@ -129,9 +188,27 @@
       "file": "background_mobile.webp",
       "slot": "background",
       "device": "mobile",
-      "usage": "HeroScene — back layer for mobile (z1), default when no locale variant matches",
-      "description": "Mobile crop of the seaside village panorama, no text",
-      "dimensions": { "w": 1080, "h": 1072 },
+      "usage": "HeroScene — back layer for mobile, default when no locale variant matches",
+      "description": "Douro-inspired river and bridge panorama in layered papercut style, no embedded text.",
+      "dimensions": {
+        "w": 1080,
+        "h": 988
+      },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "background_mobile_de-DE.webp",
+      "slot": "background",
+      "device": "mobile",
+      "locale": "de-DE",
+      "usage": "HeroScene — back layer for mobile, de-DE variant",
+      "description": "Douro-inspired river and bridge panorama in layered papercut style. Locale variants are text-free and visually identical today.",
+      "dimensions": {
+        "w": 1080,
+        "h": 988
+      },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
@@ -141,9 +218,12 @@
       "slot": "background",
       "device": "mobile",
       "locale": "en-US",
-      "usage": "HeroScene — back layer for mobile, English variant",
-      "description": "Mobile seaside village crop, English-localized details",
-      "dimensions": { "w": 1080, "h": 1072 },
+      "usage": "HeroScene — back layer for mobile, en-US variant",
+      "description": "Douro-inspired river and bridge panorama in layered papercut style. Locale variants are text-free and visually identical today.",
+      "dimensions": {
+        "w": 1080,
+        "h": 988
+      },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
@@ -153,9 +233,12 @@
       "slot": "background",
       "device": "mobile",
       "locale": "es-ES",
-      "usage": "HeroScene — back layer for mobile, Spanish variant",
-      "description": "Mobile seaside village crop, Spanish-localized details",
-      "dimensions": { "w": 1080, "h": 1072 },
+      "usage": "HeroScene — back layer for mobile, es-ES variant",
+      "description": "Douro-inspired river and bridge panorama in layered papercut style. Locale variants are text-free and visually identical today.",
+      "dimensions": {
+        "w": 1080,
+        "h": 988
+      },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
@@ -165,9 +248,12 @@
       "slot": "background",
       "device": "mobile",
       "locale": "fr-FR",
-      "usage": "HeroScene — back layer for mobile, French variant",
-      "description": "Mobile seaside village crop, French-localized details",
-      "dimensions": { "w": 1080, "h": 1072 },
+      "usage": "HeroScene — back layer for mobile, fr-FR variant",
+      "description": "Douro-inspired river and bridge panorama in layered papercut style. Locale variants are text-free and visually identical today.",
+      "dimensions": {
+        "w": 1080,
+        "h": 988
+      },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
@@ -177,9 +263,12 @@
       "slot": "background",
       "device": "mobile",
       "locale": "pt-PT",
-      "usage": "HeroScene — back layer for mobile, Portuguese variant",
-      "description": "Mobile seaside village crop, Portuguese-localized details",
-      "dimensions": { "w": 1080, "h": 1072 },
+      "usage": "HeroScene — back layer for mobile, pt-PT variant",
+      "description": "Douro-inspired river and bridge panorama in layered papercut style. Locale variants are text-free and visually identical today.",
+      "dimensions": {
+        "w": 1080,
+        "h": 988
+      },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
@@ -188,9 +277,12 @@
       "file": "foreground_laptop.webp",
       "slot": "foreground",
       "device": "laptop",
-      "usage": "HeroScene — front layer for tablet/laptop (z10), in front of the person carousel",
-      "description": "Pink foreground hills with street lamp and rose bushes, transparent top",
-      "dimensions": { "w": 1920, "h": 898 },
+      "usage": "HeroScene — front layer for tablet/laptop, in front of the person carousel",
+      "description": "Layered green and blue paper foliage with small hearts, transparent top.",
+      "dimensions": {
+        "w": 1920,
+        "h": 898
+      },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
@@ -199,9 +291,68 @@
       "file": "foreground_mobile.webp",
       "slot": "foreground",
       "device": "mobile",
-      "usage": "HeroScene — front layer for mobile (z10), in front of the person carousel",
-      "description": "Mobile crop of the pink foreground hills with street lamp",
-      "dimensions": { "w": 1180, "h": 898 },
+      "usage": "HeroScene — front layer for mobile, in front of the person carousel",
+      "description": "Mobile crop of layered green and blue paper foliage with small hearts.",
+      "dimensions": {
+        "w": 1180,
+        "h": 791
+      },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "person1_de-DE.webp",
+      "slot": "person1",
+      "locale": "de-DE",
+      "usage": "HeroScene person carousel — real grandparents and grandchild holding a real Mythoria book",
+      "description": "Grandparents and a grandchild holding a German-language personalized grandparents book.",
+      "dimensions": {
+        "w": 1013,
+        "h": 1024
+      },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "person1_en-US.webp",
+      "slot": "person1",
+      "locale": "en-US",
+      "usage": "HeroScene person carousel — real grandparents and grandchild holding a real Mythoria book",
+      "description": "Grandparents and a grandchild holding an English-language personalized grandparents book.",
+      "dimensions": {
+        "w": 1013,
+        "h": 1024
+      },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "person1_es-ES.webp",
+      "slot": "person1",
+      "locale": "es-ES",
+      "usage": "HeroScene person carousel — real grandparents and grandchild holding a real Mythoria book",
+      "description": "Grandparents and a grandchild holding a Spanish-language personalized grandparents book.",
+      "dimensions": {
+        "w": 1016,
+        "h": 1024
+      },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "person1_fr-FR.webp",
+      "slot": "person1",
+      "locale": "fr-FR",
+      "usage": "HeroScene person carousel — real grandparents and grandchild holding a real Mythoria book",
+      "description": "Grandparents and a grandchild holding a French-language personalized grandparents book.",
+      "dimensions": {
+        "w": 1013,
+        "h": 1024
+      },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
@@ -210,9 +361,12 @@
       "file": "person1_pt-PT.webp",
       "slot": "person1",
       "locale": "pt-PT",
-      "usage": "HeroScene person carousel — real couple holding a real Mythoria book (z5, bottom-anchored, centered)",
-      "description": "Embracing couple holding the 'MARTA & TIAGO' personalized romance book — photographic people, papercut scene around them",
-      "dimensions": { "w": 723, "h": 1024 },
+      "usage": "HeroScene person carousel — real grandparents and grandchild holding a real Mythoria book",
+      "description": "Grandparents and a grandchild holding a Portuguese-language personalized grandparents book.",
+      "dimensions": {
+        "w": 1013,
+        "h": 1024
+      },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
@@ -220,9 +374,12 @@
     {
       "file": "icon1.webp",
       "slot": "icon1",
-      "usage": "FeatureCard col 1 icon — your story, your way",
-      "description": "Pink paper heart, papercut style",
-      "dimensions": { "w": 142, "h": 129 },
+      "usage": "FeatureCard col 1 icon — family memories",
+      "description": "Green layered paper heart icon for family memories.",
+      "dimensions": {
+        "w": 142,
+        "h": 124
+      },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
@@ -230,9 +387,12 @@
     {
       "file": "icon2.webp",
       "slot": "icon2",
-      "usage": "FeatureCard col 2 icon — made to move them",
-      "description": "Speech bubble with hearts, papercut style",
-      "dimensions": { "w": 146, "h": 136 },
+      "usage": "FeatureCard col 2 icon — made together",
+      "description": "Blue speech bubble with two people and a small heart, papercut style.",
+      "dimensions": {
+        "w": 146,
+        "h": 131
+      },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
@@ -240,9 +400,12 @@
     {
       "file": "icon3.webp",
       "slot": "icon3",
-      "usage": "FeatureCard col 3 icon — an unforgettable gift",
-      "description": "Gift box with ribbon, papercut style",
-      "dimensions": { "w": 146, "h": 151 },
+      "usage": "FeatureCard col 3 icon — a gift to keep",
+      "description": "Green gift box with pale blue ribbon, papercut style.",
+      "dimensions": {
+        "w": 146,
+        "h": 150
+      },
       "transparentBackground": true,
       "format": "webp",
       "status": "final"

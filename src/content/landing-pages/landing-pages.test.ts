@@ -2,6 +2,7 @@ import {
   getIndexableLandingPages,
   getLandingPageIndexItems,
   getLandingPageBySlug,
+  getLandingPageIntentContext,
   getLandingPageStaticParams,
 } from './index';
 
@@ -141,11 +142,9 @@ describe('landing page content registry', () => {
     expect(page?.indexable).toBe(true);
     expect(page?.updatedAt).toBe('2026-06-16');
     expect(page?.primaryCtaHref).toContain('/pt-PT/contactUs');
-    expect(page?.hero.imageSrc).toContain(
-      'https://storage.googleapis.com/mythoria-public/landing-page-assets/workshops-criancas/',
-    );
+    expect(page?.hero.imageSrc).toContain('/landing-pages/workshops-criancas/assets/');
     expect(page?.books[0]?.audioSampleSrc).toBe(
-      'https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-gato-que-guardava-a-lua/assets/audio-teaser.mp3',
+      '/landing-pages/workshops-criancas/assets/sample-books/o-gato-que-guardava-a-lua/audio-teaser.mp3',
     );
     expect(page?.books.map((book) => book.title)).toEqual([
       'O Gato que Guardava a Lua',
@@ -201,6 +200,7 @@ describe('landing page content registry', () => {
     expect(page?.indexable).toBe(true);
     expect(page?.riskRating).toBe('yellow');
     expect(page?.updatedAt).toBe('2026-06-28');
+    expect(page?.primaryIntent).toBe('grandparents');
     expect(page?.books).toHaveLength(5);
     expect(page?.books.map((book) => book.title)).toEqual([
       'A Receita das Estrelas da Avó',
@@ -210,20 +210,20 @@ describe('landing page content registry', () => {
       'As Férias na Casa Amarela',
     ]);
     expect(page?.hero.imageSrc).toBe(
-      'https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-receita-das-estrelas-da-avo/assets/feature.jpeg',
+      '/landing-pages/livro-personalizado-avos-netos/assets/books/a-receita-das-estrelas-da-avo/feature.jpeg',
     );
     expect(page?.ogImageSrc).toBe(
-      'https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-receita-das-estrelas-da-avo/assets/feature.jpeg',
+      '/landing-pages/livro-personalizado-avos-netos/assets/books/a-receita-das-estrelas-da-avo/feature.jpeg',
     );
     page?.books.forEach((book) => {
       expect(book.imageSrc).toMatch(
-        /^https:\/\/storage\.googleapis\.com\/mythoria-public\/landing-page-assets\/sample-books\/.+\/assets\/feature\.jpeg$/,
+        /^\/landing-pages\/livro-personalizado-avos-netos\/assets\/books\/.+\/feature\.jpeg$/,
       );
       expect(book.sampleChapter?.imageSrc).toMatch(
-        /^https:\/\/storage\.googleapis\.com\/mythoria-public\/landing-page-assets\/sample-books\/.+\/assets\/cover\.jpeg$/,
+        /^\/landing-pages\/livro-personalizado-avos-netos\/assets\/books\/.+\/cover\.jpeg$/,
       );
       expect(book.audioSampleSrc).toMatch(
-        /^https:\/\/storage\.googleapis\.com\/mythoria-public\/landing-page-assets\/sample-books\/.+\/assets\/audio-teaser\.mp3$/,
+        /^\/landing-pages\/livro-personalizado-avos-netos\/assets\/books\/.+\/audio-teaser\.mp3$/,
       );
       expect(book.sampleChapter?.paragraphs.length).toBeGreaterThanOrEqual(6);
     });
@@ -242,5 +242,12 @@ describe('landing page content registry', () => {
     expect(serialized).toContain('Português + francês');
     expect(serialized).not.toContain('/SampleBooks');
     expect(serialized).not.toContain('Gerar com IA');
+  });
+
+  it('builds homepage intent context for canonical landing page intents only', () => {
+    expect(getLandingPageIntentContext('pt-PT', 'livro-personalizado-avos-netos')).toEqual({
+      intent: 'grandparents',
+    });
+    expect(getLandingPageIntentContext('pt-PT', 'workshops-criancas')).toBeNull();
   });
 });

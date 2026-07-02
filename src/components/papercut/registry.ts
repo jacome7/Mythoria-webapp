@@ -3,6 +3,7 @@ import type { HeroComposition } from './types';
 import { kidsFantasy } from './compositions/kidsFantasy';
 import { sportsTeams } from './compositions/sports_teams';
 import { romance } from './compositions/romance';
+import { grandparents } from './compositions/grandparents';
 
 /**
  * Maps a visitor's intent (or the no-intent default) to a hero style
@@ -20,6 +21,7 @@ const COMPOSITIONS: Partial<Record<StoryIntent | 'default', HeroComposition>> = 
   default: kidsFantasy,
   sports_teams: sportsTeams,
   romance: romance,
+  grandparents: grandparents,
 };
 
 export function resolveComposition(intent?: StoryIntent | string | null): HeroComposition {

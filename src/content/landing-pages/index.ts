@@ -2,6 +2,8 @@ import { autismStoriesLandingPage } from './autism-stories.pt-PT';
 import { grandparentsStoriesLandingPage } from './grandparents-stories.pt-PT';
 import type { LandingPageBook, LandingPageContent, LandingPageTemplateIcon } from './types';
 import { workshopsChildrenLandingPage } from './workshops-criancas.pt-PT';
+import { isValidIntent, normalizeIntent } from '@/constants/intents';
+import type { IntentContext } from '@/types/intent-context';
 
 const landingPages = [
   autismStoriesLandingPage,
@@ -11,6 +13,16 @@ const landingPages = [
 
 export function getLandingPageBySlug(slug: string): LandingPageContent | undefined {
   return landingPages.find((page) => page.slug === slug);
+}
+
+export function getLandingPageIntentContext(locale: string, slug: string): IntentContext | null {
+  const page = landingPages.find((item) => item.locale === locale && item.slug === slug);
+  if (!page) return null;
+
+  const intent = normalizeIntent(page.primaryIntent);
+  if (!isValidIntent(intent)) return null;
+
+  return { intent };
 }
 
 export function getIndexableLandingPages(): LandingPageContent[] {

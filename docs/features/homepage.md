@@ -48,10 +48,11 @@ These links record the intent and (optionally) the recipient in a cookie, then r
 | _(default)_    | `kids_fantasy` | `/`               |
 | `sports_teams` | `sports_teams` | `/i/sports_teams` |
 | `romance`      | `romance`      | `/i/romance`      |
+| `grandparents` | `grandparents` | `/i/grandparents` |
 
 **Query param override:** appending `?intent=<value>` to any homepage URL switches the composition without setting a cookie — useful for campaign previews and QA. Precedence: `?intent=` query param > intent cookie > default. The override is read via `useIntentOverride` in a `useEffect` (not `useSearchParams`) to avoid breaking static prerendering of the hero.
 
-**Phase-1 section assets policy:** only the hero is intent-skinned. All sections below the hero (Footer, Header, HowItWorks, etc.) use the `kids_fantasy` asset folder via `homepageAsset()` from `src/constants/homepageAssets.ts`. Per-intent section art is a phase-2 candidate.
+**Phase-1 section assets policy:** only the hero is intent-skinned. All sections below the hero (Footer, Header, HowItWorks, etc.) use the `kids_fantasy` asset folder via `homepageAsset()` from `src/constants/homepageAssets.ts`. The homepage book gallery is intent-prioritized through the intent cookie, so a visitor with `grandparents` context sees grandparents sample books first. Per-intent section art is a phase-2 candidate.
 
 **Locale-aware hero assets:** background/foreground/person assets may carry a locale suffix (e.g. `background_mobile_pt-PT.webp`, `person1_pt-PT.webp`). Resolution happens at build time through `src/components/papercut/heroManifest.ts` with the deterministic fallback chain `exact locale → en-US → unsuffixed → first available` — missing variants never 404. Each style folder documents its assets in `assets_metadata.json` (validated by `npm run homepage:assets`) and lists outstanding designer work in `MISSING_ASSETS.md`.
 

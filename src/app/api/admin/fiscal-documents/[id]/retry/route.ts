@@ -9,7 +9,11 @@ interface RetryRequestBody {
   source?: string | null;
 }
 
-function documentPayload(document: NonNullable<Awaited<ReturnType<typeof fiscalDocumentService.retryByFiscalDocumentId>>['document']>) {
+function documentPayload(
+  document: NonNullable<
+    Awaited<ReturnType<typeof fiscalDocumentService.retryByFiscalDocumentId>>['document']
+  >,
+) {
   return {
     id: document.id,
     orderId: document.orderId,
@@ -42,10 +46,7 @@ async function parseBody(request: NextRequest): Promise<RetryRequestBody> {
   };
 }
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const expectedApiKey = process.env.ADMIN_API_KEY;
   if (!expectedApiKey) {
     return NextResponse.json({ error: 'ADMIN_API_KEY is not configured' }, { status: 500 });

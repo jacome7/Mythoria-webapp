@@ -76,6 +76,31 @@
             }
           }
         }
+      },
+      "grandparents": {
+        "hero": {
+          "headline": "Die Geschichten der Großeltern, für immer bewahrt.",
+          "subtitle": "Erstelle ein illustriertes Buch mit Großeltern und Enkelkindern im Mittelpunkt — ein einzigartiges Geschenk, das Rezepte, Orte, Sprüche, Fotos und die Verbindung zwischen Generationen bewahrt.",
+          "subtitleEmphasized": "Verbindung zwischen Generationen",
+          "cta": "Unsere Geschichte erstellen",
+          "alt": {
+            "person": "Großeltern und ein Enkelkind halten ihr personalisiertes Mythoria-Familienbuch"
+          },
+          "features": {
+            "feature1": {
+              "title": "Familienerinnerungen",
+              "desc": "Mach aus Rezepten, Orten, Fotos und Sprüchen Szenen, die alle wiedererkennen."
+            },
+            "feature2": {
+              "title": "Gemeinsam gemacht",
+              "desc": "Großeltern, Eltern und Kinder können Details ergänzen, prüfen, hören und teilen."
+            },
+            "feature3": {
+              "title": "Ein Geschenk zum Bewahren",
+              "desc": "Digital sofort senden, als Audio hören oder in ein gedrucktes Buch verwandeln."
+            }
+          }
+        }
       }
     },
     "words": [

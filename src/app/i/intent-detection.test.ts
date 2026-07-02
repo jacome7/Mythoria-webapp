@@ -12,6 +12,7 @@ describe('Intent Detection Flow', () => {
       expect(isValidIntent('romance')).toBe(true);
       expect(isValidIntent('kids_bedtime')).toBe(true);
       expect(isValidIntent('neurodiversity')).toBe(true);
+      expect(isValidIntent('grandparents')).toBe(true);
     });
 
     it('should reject invalid intents', () => {
@@ -113,6 +114,15 @@ describe('Intent Detection Flow', () => {
 
       expect(segments[0]).toBe('i');
       expect(segments[1]).toBe('romance');
+      expect(segments[2]).toBeUndefined();
+    });
+
+    it('should handle grandparents URL pattern', () => {
+      const urlPattern = '/i/grandparents';
+      const segments = urlPattern.split('/').filter(Boolean);
+
+      expect(segments[0]).toBe('i');
+      expect(segments[1]).toBe('grandparents');
       expect(segments[2]).toBeUndefined();
     });
 

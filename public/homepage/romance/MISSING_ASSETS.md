@@ -12,14 +12,12 @@ See `assets_metadata.json` for per-asset specs (dimensions, transparency, status
 | `cloud_right.webp` | ~489×317, transparent | Same as above, right side. |
 | `sparkles.webp` | ~328×318, transparent | Copy of kids_fantasy gold sparkles — final art should mix a gold star with small paper hearts. |
 
-## Missing person images (carousel skips missing locales via fallback — all locales currently fall back to pt-PT)
+## Person images
+
+`person1_{locale}.webp` is now available for all supported locales: `en-US`, `pt-PT`, `es-ES`, `fr-FR`, and `de-DE`.
 
 | File | Spec |
 | --- | --- |
-| `person1_en-US.webp` | 723×1024, transparent, real couple holding a real Mythoria romance book, English cover |
-| `person1_es-ES.webp` | 723×1024, Spanish cover |
-| `person1_fr-FR.webp` | 723×1024, French cover |
-| `person1_de-DE.webp` | 723×1024, German cover |
 | `person2_{locale}.webp` (optional) | A second couple/pose to enable carousel rotation (currently only one person slide exists, so the hero renders a static image). |
 
 ## Missing locale backgrounds

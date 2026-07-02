@@ -23,6 +23,11 @@ interface SampleBook {
   audioSampleTitle?: string;
 }
 
+interface HomepageBookGalleryProps {
+  initialIntentContext?: IntentContext | null;
+  intentOverrideActive?: boolean;
+}
+
 const AUTO_SCROLL_INTERVAL_MS = 3600;
 const TRACK_COPIES = 3;
 const BOOK_TILTS = ['-3deg', '2deg', '-1.5deg', '3deg', '-2deg', '1deg'];
@@ -67,10 +72,16 @@ function parseTags(tags: string): string[] {
     .filter(Boolean);
 }
 
-export default function HomepageBookGallery() {
+export default function HomepageBookGallery({
+  initialIntentContext = null,
+  intentOverrideActive = false,
+}: HomepageBookGalleryProps) {
   const t = useTranslations('HomePage.gallery');
   const currentLocale = useLocale();
-  const intentContext = useIntentContext();
+  const cookieIntentContext = useIntentContext();
+  const intentContext = intentOverrideActive
+    ? initialIntentContext
+    : (initialIntentContext ?? cookieIntentContext);
 
   const [books, setBooks] = useState<SampleBook[]>([]);
   const [selectedBook, setSelectedBook] = useState<SampleBook | null>(null);

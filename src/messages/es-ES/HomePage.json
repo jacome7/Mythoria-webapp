@@ -76,6 +76,31 @@
             }
           }
         }
+      },
+      "grandparents": {
+        "hero": {
+          "headline": "Las historias de los abuelos, para siempre.",
+          "subtitle": "Crea un libro ilustrado con abuelos y nietos como protagonistas — un regalo único que conserva recetas, lugares, frases, fotos y el vínculo entre generaciones.",
+          "subtitleEmphasized": "vínculo entre generaciones",
+          "cta": "Crear nuestra historia",
+          "alt": {
+            "person": "Abuelos y un nieto sosteniendo su libro familiar personalizado de Mythoria"
+          },
+          "features": {
+            "feature1": {
+              "title": "Recuerdos de familia",
+              "desc": "Convierte recetas, lugares, fotos y frases de casa en escenas que todos reconocen."
+            },
+            "feature2": {
+              "title": "Hecha juntos",
+              "desc": "Abuelos, padres y niños pueden añadir detalles, revisar, escuchar y compartir."
+            },
+            "feature3": {
+              "title": "Un regalo para guardar",
+              "desc": "Envíalo en digital hoy, escúchalo en audio o conviértelo en un libro impreso."
+            }
+          }
+        }
       }
     },
     "words": [

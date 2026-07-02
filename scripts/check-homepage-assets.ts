@@ -18,7 +18,7 @@ import path from 'node:path';
 import sharp from 'sharp';
 import { SUPPORTED_LOCALES } from '../src/config/locales';
 
-const STYLE_IDS = ['kids_fantasy', 'sports_teams', 'romance'] as const;
+const STYLE_IDS = ['kids_fantasy', 'sports_teams', 'romance', 'grandparents'] as const;
 const HOMEPAGE_DIR = path.join(__dirname, '..', 'public', 'homepage');
 
 /** Files that live in a style folder but are not runtime assets. */

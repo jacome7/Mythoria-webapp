@@ -12,6 +12,7 @@ import PaperCutStage from './PaperCutStage';
 import PersonCarousel from './PersonCarousel';
 import { resolveAsset, resolvePersons, type HeroStyleId } from './heroManifest';
 import { resolveComposition } from './registry';
+import type { IntentContext } from '@/types/intent-context';
 import type {
   DecorSlot,
   DecorTuning,
@@ -143,13 +144,26 @@ function buildDecorLayer(style: HeroStyleId, slot: DecorSlot, tuning?: DecorTuni
  * Rendered full-bleed (outside the page container). All internal z-indices are
  * < 50 so the sticky frosted header always stays on top.
  */
-export default function PaperCutHero() {
+interface PaperCutHeroProps {
+  initialIntentOverride?: string | null;
+  initialIntentContext?: IntentContext | null;
+}
+
+export default function PaperCutHero({
+  initialIntentOverride = null,
+  initialIntentContext = null,
+}: PaperCutHeroProps) {
   const t = useTranslations('HomePage');
   const locale = useLocale();
   const intentContext = useIntentContext();
   const intentOverride = useIntentOverride();
   // Precedence: ?intent= query param > intent cookie > default composition.
-  const composition: HeroComposition = resolveComposition(intentOverride ?? intentContext?.intent);
+  const composition: HeroComposition = resolveComposition(
+    intentOverride ??
+      initialIntentOverride ??
+      intentContext?.intent ??
+      initialIntentContext?.intent,
+  );
   const style = composition.id;
   const ns = composition.textNamespace;
 

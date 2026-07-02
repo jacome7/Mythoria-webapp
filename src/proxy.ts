@@ -2,9 +2,29 @@ import { clerkMiddleware } from '@clerk/nextjs/server';
 import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 import { routing } from './i18n/routing';
+import { getLandingPageIntentContext } from '@/content/landing-pages';
 import { getCanonicalRedirectPath } from '@/lib/seo';
+import { INTENT_CONTEXT_COOKIE, INTENT_CONTEXT_MAX_AGE } from '@/types/intent-context';
 
 const intlMiddleware = createMiddleware(routing);
+
+function applyLandingPageIntentCookie(req: NextRequest, response: NextResponse): NextResponse {
+  const [locale, lpSegment, slug, ...rest] = req.nextUrl.pathname.split('/').filter(Boolean);
+  if (lpSegment !== 'lp' || !slug || rest.length > 0) return response;
+
+  const intentContext = getLandingPageIntentContext(locale, slug);
+  if (!intentContext) return response;
+
+  response.cookies.set(INTENT_CONTEXT_COOKIE, JSON.stringify(intentContext), {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: INTENT_CONTEXT_MAX_AGE,
+    path: '/',
+  });
+
+  return response;
+}
 
 export const proxy = clerkMiddleware(
   async (auth, req: NextRequest) => {
@@ -33,6 +53,7 @@ export const proxy = clerkMiddleware(
     if (
       pathname === '/offline' ||
       pathname.startsWith('/SampleBooks/') ||
+      pathname.startsWith('/sample-books/') ||
       pathname.startsWith('/i/')
     ) {
       const res = NextResponse.next();
@@ -63,13 +84,13 @@ export const proxy = clerkMiddleware(
     // Add the pathname to headers so we can access it in the root layout
     if (response) {
       response.headers.set('x-pathname', req.nextUrl.pathname);
-      return response;
+      return applyLandingPageIntentCookie(req, response);
     }
 
     // If no response from intl middleware, create one and add the header
     const newResponse = NextResponse.next();
     newResponse.headers.set('x-pathname', req.nextUrl.pathname);
-    return newResponse;
+    return applyLandingPageIntentCookie(req, newResponse);
   },
   {
     // Add clock skew tolerance to Clerk configuration
@@ -80,7 +101,7 @@ export const proxy = clerkMiddleware(
 export const config = {
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params
-    '/((?!_next|manifest|[^?]*\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|txt|pdf|webmanifest|xml)).*)',
+    '/((?!_next|manifest|[^?]*\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|mp3|m4a|wav|ogg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|txt|pdf|webmanifest|xml)).*)',
     // Always run for API routes
     '/(api|trpc)(.*)',
   ],

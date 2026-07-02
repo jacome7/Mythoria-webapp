@@ -1,0 +1,12 @@
+/* grandparents palette — warm heritage paper, plum headline, river CTA and
+   gold accents. The scene artwork carries the Douro greens and blues. */
+.root {
+  --pc-cream: #f8ead7;
+  --pc-cream-deep: #efd6b8;
+  --pc-navy: #552235;
+  --pc-gold: #d99a2b;
+  --pc-cta-bg: #0d6170;
+  --pc-cta-fg: #fff7ec;
+  --pc-scene-fg-mobile-bottom: -21%;
+  --pc-scene-fg-desktop-bottom: -25%;
+}
