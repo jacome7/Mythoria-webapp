@@ -4,6 +4,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { getLandingPageIndexItems } from '@/content/landing-pages';
 import { routing } from '@/i18n/routing';
+import { buildLocalizedUrl } from '@/lib/seo';
 
 interface LandingPageIndexRouteProps {
   params: Promise<{
@@ -13,10 +14,10 @@ interface LandingPageIndexRouteProps {
 
 const copy = {
   'pt-PT': {
-    eyebrow: 'Índice interno',
+    eyebrow: 'Guias Mythoria',
     title: 'Landing pages',
     intro:
-      'Lista simples das landing pages registadas no Mythoria, para navegação e revisão rápida.',
+      'Explore as páginas especializadas da Mythoria para livros personalizados, workshops e ocasiões familiares.',
     updatedLabel: 'Atualizada em',
     empty: 'Ainda não existem landing pages indexáveis.',
   },
@@ -33,11 +34,28 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: LandingPageIndexRouteProps): Promise<Metadata> {
+  const { locale } = await params;
+  const canonicalUrl = buildLocalizedUrl('pt-PT', '/lp');
+  const isCanonicalLocale = locale === 'pt-PT';
+
   return {
-    title: 'Landing pages | Mythoria',
-    description: 'Internal index of Mythoria landing pages.',
-    robots: 'noindex,nofollow',
+    title: 'Landing pages Mythoria | Livros personalizados e workshops',
+    description:
+      'Explore as páginas especializadas da Mythoria para livros personalizados, workshops infantis e presentes familiares.',
+    robots: isCanonicalLocale
+      ? 'index,follow,max-snippet:-1,max-image-preview:large'
+      : 'noindex,follow',
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: 'Landing pages Mythoria | Livros personalizados e workshops',
+      description:
+        'Explore as páginas especializadas da Mythoria para livros personalizados, workshops infantis e presentes familiares.',
+      type: 'website',
+      url: canonicalUrl,
+    },
   };
 }
 

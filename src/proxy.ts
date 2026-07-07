@@ -47,6 +47,12 @@ export const proxy = clerkMiddleware(
       return NextResponse.redirect(redirectUrl, 308);
     }
 
+    if (pathname === '/lp' || pathname === '/lp/') {
+      const redirectUrl = req.nextUrl.clone();
+      redirectUrl.pathname = '/pt-PT/lp';
+      return NextResponse.redirect(redirectUrl, 308);
+    }
+
     // Allow the PWA offline fallback route to remain at root without locale prefix.
     // We skip the i18n middleware so it doesn't redirect /offline -> /en-US/offline (which 404s)
     // Also allow /i/ intent detection routes to bypass both i18n and auth

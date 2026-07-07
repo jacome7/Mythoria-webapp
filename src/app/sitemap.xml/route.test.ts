@@ -88,6 +88,8 @@ describe('sitemap.xml route', () => {
     expect(xml).toContain(
       '<loc>https://mythoria.pt/pt-PT/lp/livro-personalizado-criancas-autistas</loc>',
     );
+    expect(xml).toContain('<loc>https://mythoria.pt/pt-PT/lp</loc>');
+    expect(xml).not.toContain('<loc>https://mythoria.pt/lp</loc>');
     expect(xml).not.toContain('https://mythoria.pt/en-US/lp/livro-personalizado-criancas-autistas');
     expect(xml).not.toContain('https://mythoria.pt/es-ES/lp/livro-personalizado-criancas-autistas');
 

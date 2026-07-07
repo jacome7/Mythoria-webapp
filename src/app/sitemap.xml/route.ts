@@ -92,6 +92,8 @@ export async function generateSitemap(): Promise<string> {
     urls.push(urlEntry);
   });
 
+  urls.push(createUrlEntry(buildLocalizedUrl('pt-PT', '/lp'), currentDate, 'weekly', '0.8'));
+
   // Add locale-specific landing pages. These are not expanded across all locales unless the
   // content registry contains translated variants, avoiding duplicate SEO pages.
   getIndexableLandingPages().forEach((page) => {
