@@ -10,39 +10,43 @@ import { trackAuth, setUserId, setUserProperties } from '../lib/analytics';
 export function useAuthTracking() {
   const { isSignedIn, user, isLoaded } = useUser();
   const prevSignedInRef = useRef<boolean | null>(null);
-  const hasTrackedSignupRef = useRef(false);
+  const hasTrackedAuthEventRef = useRef(false);
 
   useEffect(() => {
     if (!isLoaded) return;
 
     const prevSignedIn = prevSignedInRef.current;
-    const currentSignedIn = isSignedIn; // Track sign up (user went from not signed in to signed in, and it's a new user)
+    const currentSignedIn = isSignedIn;
     if (!prevSignedIn && currentSignedIn && user && user.createdAt) {
       const createdAt = new Date(user.createdAt);
       const now = new Date();
       const timeDiff = now.getTime() - createdAt.getTime();
       const isNewUser = timeDiff < 5 * 60 * 1000; // Within 5 minutes is considered "new"
+      const method = normalizeAuthMethod(user.externalAccounts?.[0]?.provider);
 
-      if (isNewUser && !hasTrackedSignupRef.current) {
+      // Associate the event with Clerk's stable User-ID before emitting it.
+      setUserId(user.id);
+
+      if (isNewUser && !hasTrackedAuthEventRef.current && !hasStoredSignupMarker(user.id)) {
         trackAuth.signUp({
           user_id: user.id,
-          sign_up_method: user.primaryEmailAddress ? 'email' : 'social',
+          method,
         });
-
-        hasTrackedSignupRef.current = true;
-      } else if (!hasTrackedSignupRef.current) {
+        storeSignupMarker(user.id);
+        hasTrackedAuthEventRef.current = true;
+      } else if (!hasTrackedAuthEventRef.current) {
         // Existing user logging in
         trackAuth.login({
           user_id: user.id,
-          login_method: user.primaryEmailAddress ? 'email' : 'social',
+          method,
         });
+        hasTrackedAuthEventRef.current = true;
       }
 
       // Set user properties for analytics
-      setUserId(user.id);
       setUserProperties({
         signup_date: user.createdAt.toISOString(),
-        email_verified: !!user.primaryEmailAddress?.verification.status,
+        email_verified: user.primaryEmailAddress?.verification.status === 'verified',
         profile_complete: !!(user.firstName && user.lastName),
       });
     }
@@ -61,4 +65,37 @@ export function useAuthTracking() {
     user,
     isLoaded,
   };
+}
+
+const signupMarkerKey = (userId: string): string => `mythoria:analytics:signup:${userId}`;
+
+export function normalizeAuthMethod(provider?: string | null): string {
+  if (!provider) return 'email';
+
+  return (
+    provider
+      .toLowerCase()
+      .replace(/^oauth_?/, '')
+      .replace(/^saml_?/, '') || 'social'
+  );
+}
+
+export function hasStoredSignupMarker(userId: string): boolean {
+  if (typeof window === 'undefined') return false;
+
+  try {
+    return window.localStorage.getItem(signupMarkerKey(userId)) === '1';
+  } catch {
+    return false;
+  }
+}
+
+export function storeSignupMarker(userId: string): void {
+  if (typeof window === 'undefined') return;
+
+  try {
+    window.localStorage.setItem(signupMarkerKey(userId), '1');
+  } catch {
+    // Analytics must not interrupt authentication when storage is unavailable.
+  }
 }

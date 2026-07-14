@@ -11,6 +11,14 @@ import {
   type PaymentOrder,
 } from '../schema';
 import { ga4Service } from '../../lib/analytics/ga4';
+import {
+  buildCheckoutPayload,
+  buildPurchasePayload,
+  type CreditOrderTotals,
+  type GA4CheckoutPayload,
+  type GA4PurchasePayload,
+  type StoredAnalyticsContext,
+} from '../../lib/analytics/ecommerce';
 import { notificationClient } from '../../lib/notifications/client';
 import { creditPackagesService } from './credit-packages';
 
@@ -45,22 +53,10 @@ export interface CreateStripeCheckoutRequest extends CreateOrderRequest {
   locale?: string;
   successUrl: string;
   cancelUrl: string;
-  clientId?: string;
-  sessionId?: string;
+  analyticsContext?: StoredAnalyticsContext;
 }
 
-export interface CalculatedOrderTotals {
-  totalCredits: number;
-  totalAmount: number;
-  itemsBreakdown: Array<{
-    packageId: number;
-    packageKey?: string;
-    quantity: number;
-    credits: number;
-    unitPrice: number;
-    totalPrice: number;
-  }>;
-}
+export type CalculatedOrderTotals = CreditOrderTotals;
 
 interface StripeCheckoutMetadata {
   stripe?: {
@@ -86,7 +82,11 @@ interface StripeCheckoutMetadata {
   creditPackages?: CreateOrderRequest['creditPackages'];
   analytics?: {
     client_id?: string;
-    session_id?: string;
+    session_id?: number | string;
+    user_id?: string;
+    analytics_storage?: 'granted' | 'denied';
+    ad_user_data?: 'granted' | 'denied';
+    ad_personalization?: 'granted' | 'denied';
   };
   [key: string]: unknown;
 }
@@ -163,6 +163,39 @@ function mergeMetadata(
       ...(updates.analytics || {}),
     },
   };
+}
+
+/** Build the authoritative GA4 purchase from the stored order and Stripe's final totals. */
+export function buildPaymentOrderPurchasePayload(order: PaymentOrder): GA4PurchasePayload {
+  const metadata = order.metadata as StripeCheckoutMetadata | null;
+  const creditBundle = order.creditBundle as { credits: number; price: number };
+  const grossAmountCents = metadata?.stripe?.amountTotal ?? order.amount;
+  const orderTotals: CalculatedOrderTotals = metadata?.orderTotals?.itemsBreakdown?.length
+    ? metadata.orderTotals
+    : {
+        totalCredits: creditBundle.credits,
+        totalAmount: grossAmountCents / 100,
+        itemsBreakdown: [
+          {
+            packageId: 0,
+            packageKey: `legacy_${creditBundle.credits}`,
+            quantity: 1,
+            credits: creditBundle.credits,
+            unitPrice: grossAmountCents / 100,
+            totalPrice: grossAmountCents / 100,
+          },
+        ],
+      };
+
+  return buildPurchasePayload({
+    transactionId: order.orderId,
+    currency: order.currency || 'EUR',
+    grossAmountCents,
+    taxAmountCents: metadata?.stripe?.totalDetails?.amount_tax ?? 0,
+    shippingAmountCents: metadata?.stripe?.totalDetails?.amount_shipping ?? 0,
+    paymentType: metadata?.stripe?.paymentMethodType || undefined,
+    orderTotals,
+  });
 }
 
 export function buildStripeCheckoutLineItems(
@@ -333,9 +366,11 @@ export const paymentService = {
     return customer.id;
   },
 
-  async createStripeCheckoutSession(
-    checkoutData: CreateStripeCheckoutRequest,
-  ): Promise<{ order: PaymentOrder; checkoutSession: Stripe.Checkout.Session }> {
+  async createStripeCheckoutSession(checkoutData: CreateStripeCheckoutRequest): Promise<{
+    order: PaymentOrder;
+    checkoutSession: Stripe.Checkout.Session;
+    ecommerce: GA4CheckoutPayload;
+  }> {
     const stripe = getStripeClient();
     const orderTotals = await this.calculateOrderTotal(checkoutData.creditPackages);
     const amountInCents = Math.round(orderTotals.totalAmount * 100);
@@ -361,10 +396,18 @@ export const paymentService = {
         metadata: {
           orderTotals,
           creditPackages: checkoutData.creditPackages,
-          analytics: {
-            client_id: checkoutData.clientId,
-            session_id: checkoutData.sessionId,
-          },
+          ...(checkoutData.analyticsContext
+            ? {
+                analytics: {
+                  client_id: checkoutData.analyticsContext.clientId,
+                  session_id: checkoutData.analyticsContext.sessionId,
+                  user_id: checkoutData.analyticsContext.userId,
+                  analytics_storage: checkoutData.analyticsContext.consent.analyticsStorage,
+                  ad_user_data: checkoutData.analyticsContext.consent.adUserData,
+                  ad_personalization: checkoutData.analyticsContext.consent.adPersonalization,
+                },
+              }
+            : {}),
           stripe: {
             customerId,
           },
@@ -458,7 +501,12 @@ export const paymentService = {
         },
       });
 
-      return { order: updatedOrder, checkoutSession };
+      const persistedOrder = updatedOrder || order;
+      return {
+        order: persistedOrder,
+        checkoutSession,
+        ecommerce: buildCheckoutPayload(orderTotals, persistedOrder.currency || 'EUR'),
+      };
     } catch (error) {
       await this.updateOrderStatus(order.orderId, 'failed');
       await db.insert(paymentEvents).values({
@@ -1024,24 +1072,24 @@ export const paymentService = {
     }
 
     try {
-      const creditBundle = completedOrder.creditBundle as { credits: number; price: number };
       const metadata = completedOrder.metadata as StripeCheckoutMetadata | null;
-      await ga4Service.sendPurchaseEvent({
-        client_id: metadata?.analytics?.client_id,
-        session_id: metadata?.analytics?.session_id,
-        user_id: completedOrder.authorId,
-        transaction_id: completedOrder.orderId,
-        value: creditBundle.price,
-        currency: completedOrder.currency || 'EUR',
-        items: [
-          {
-            item_id: `credits-${creditBundle.credits}`,
-            item_name: `${creditBundle.credits} Credits Bundle`,
-            price: creditBundle.price,
-            quantity: 1,
+      const analytics = metadata?.analytics;
+      const parsedSessionId = Number(analytics?.session_id);
+
+      if (analytics?.analytics_storage === 'granted' && analytics.client_id) {
+        await ga4Service.sendPurchaseEvent({
+          ...buildPaymentOrderPurchasePayload(completedOrder),
+          client_id: analytics.client_id,
+          user_id: analytics.user_id,
+          ...(Number.isSafeInteger(parsedSessionId) && parsedSessionId > 0
+            ? { session_id: parsedSessionId }
+            : {}),
+          consent: {
+            adUserData: analytics.ad_user_data === 'granted' ? 'granted' : 'denied',
+            adPersonalization: analytics.ad_personalization === 'granted' ? 'granted' : 'denied',
           },
-        ],
-      });
+        });
+      }
     } catch (error) {
       console.error('Failed to send GA4 purchase event:', error);
     }

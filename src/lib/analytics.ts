@@ -1,20 +1,30 @@
 'use client';
 
+import { getStoredConsent } from './consent';
+import type {
+  ClientAnalyticsContext,
+  GA4CheckoutPayload,
+  GA4PurchasePayload,
+} from './analytics/ecommerce';
 import { trackMythoriaConversionsEnhanced } from './googleAdsConversions';
 
-// Extend Window interface to include gtag
 declare global {
   interface Window {
-    gtag: (...args: any[]) => void;
-    dataLayer: any[];
+    gtag: (...args: unknown[]) => void;
+    dataLayer: unknown[];
   }
 }
 
-// Define core event types for better type safety
+const DEFAULT_MEASUREMENT_ID = 'G-86D0QFW197';
+const isDebugModeEnabled = process.env.NEXT_PUBLIC_GA_DEBUG === 'true';
+
 export const GA4_EVENT_NAMES = [
   'page_view',
   'sign_up_started',
+  'sign_up',
   'sign_up_completed',
+  'login',
+  'logout',
   'story_creation_started',
   'story_step_1_completed',
   'story_step_2_completed',
@@ -23,8 +33,10 @@ export const GA4_EVENT_NAMES = [
   'story_generation_requested',
   'story_published',
   'pricing_viewed',
+  'begin_checkout',
   'checkout_started',
   'credit_pack_purchased',
+  'purchase',
   'audiobook_started',
   'print_order_started',
   'self_print_started',
@@ -36,16 +48,11 @@ export type GA4EventName = (typeof GA4_EVENT_NAMES)[number];
 
 export type AnalyticsEvent =
   | GA4EventName
-  | 'sign_up'
-  | 'login'
-  | 'logout'
   | 'story_creation_step_completed'
   | 'story_creation_step_viewed'
   | 'story_creation_generate_clicked'
-  | 'paid_action'
-  | 'purchase';
+  | 'paid_action';
 
-// Event parameters interface
 export interface AnalyticsEventParams {
   [key: string]:
     | string
@@ -56,38 +63,27 @@ export interface AnalyticsEventParams {
     | Record<string, unknown>;
 }
 
-// Specific parameter interfaces for type safety
 export interface StoryEventParams extends AnalyticsEventParams {
   story_id?: string;
   story_genre?: string;
   total_chapters?: number;
   step?: number;
   credits_spent?: number;
+  run_id?: string;
 }
 
 export interface AuthEventParams extends AnalyticsEventParams {
   user_id?: string;
+  method?: string;
   sign_up_method?: string;
   login_method?: string;
 }
 
-export interface CreditPurchaseEventParams extends AnalyticsEventParams {
-  /** Purchase amount in euros (NOT cents). E.g., 5.00 for €5 */
-  purchase_amount?: number;
-  /** Number of credits purchased */
-  credits_purchased?: number;
-  /** Payment method used (stripe, card, mb_way, etc.) */
+export type CheckoutEventParams = GA4CheckoutPayload & {
   payment_method?: string;
-  /** Items purchased (for GA4 ecommerce) */
-  items?: Array<{
-    item_id: string;
-    item_name: string;
-    price: number;
-    quantity: number;
-  }>;
-  /** Transaction ID */
-  transaction_id?: string;
-}
+};
+
+export type CreditPurchaseEventParams = GA4PurchasePayload;
 
 export type PaidActionType = 'ebook' | 'audiobook' | 'print' | 'self_print' | 'ai_edit';
 
@@ -97,32 +93,39 @@ export interface PaidActionEventParams extends AnalyticsEventParams {
   story_id?: string;
 }
 
-/**
- * Track a custom event in Google Analytics
- * @param eventName - The name of the event to track
- * @param parameters - Optional parameters to include with the event
- */
-export function trackEvent(eventName: AnalyticsEvent, parameters?: Record<string, unknown>): void {
-  if (typeof window === 'undefined') {
-    return;
-  }
+const getMeasurementId = (): string =>
+  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || DEFAULT_MEASUREMENT_ID;
 
-  if (!window.gtag) {
-    console.warn('⚠️ [Analytics] gtag not available yet for event:', eventName);
-    return;
-  }
+export function ensureGtag(): Window['gtag'] | null {
+  if (typeof window === 'undefined') return null;
+
+  window.dataLayer = window.dataLayer || [];
+  window.gtag =
+    window.gtag ||
+    ((...args: unknown[]) => {
+      window.dataLayer.push(args);
+    });
+
+  return window.gtag;
+}
+
+/** Queue a GA4 event even when the external Google tag is still loading. */
+export function trackEvent(eventName: AnalyticsEvent, parameters?: Record<string, unknown>): void {
+  const gtag = ensureGtag();
+  if (!gtag) return;
 
   try {
     const eventParams = {
-      ...parameters,
       timestamp: new Date().toISOString(),
       page_location: window.location.href,
       page_title: document.title,
+      ...parameters,
+      send_to: getMeasurementId(),
+      ...(isDebugModeEnabled ? { debug_mode: true } : {}),
     };
 
-    window.gtag('event', eventName, eventParams);
+    gtag('event', eventName, eventParams);
 
-    // Development-only console log for debugging
     if (process.env.NODE_ENV === 'development') {
       console.log('📊 [Analytics] Event tracked:', eventName, eventParams);
     }
@@ -131,80 +134,64 @@ export function trackEvent(eventName: AnalyticsEvent, parameters?: Record<string
   }
 }
 
-/**
- * Track authentication events
- */
+export function setUserId(userId: string | null): void {
+  const gtag = ensureGtag();
+  if (!gtag) return;
+
+  try {
+    gtag('set', { user_id: userId });
+  } catch (error) {
+    console.error('Error setting user ID:', error);
+  }
+}
+
 export const trackAuth = {
   signUpStarted: (params: AuthEventParams = {}) => trackEvent('sign_up_started', params),
 
-  signUp: (params: AuthEventParams = {}) => {
-    trackEvent('sign_up_completed', params);
-    // Track Google Ads conversion
-    trackMythoriaConversionsEnhanced.signUp(params.user_id as string);
+  signUp: ({ user_id: userId, method, sign_up_method: legacyMethod }: AuthEventParams = {}) => {
+    if (userId) setUserId(userId);
+    const normalizedMethod = method || legacyMethod || 'email';
+
+    trackEvent('sign_up', { method: normalizedMethod });
+    trackEvent('sign_up_completed', { sign_up_method: normalizedMethod });
+    trackMythoriaConversionsEnhanced.signUp(userId);
   },
 
-  login: (params: AuthEventParams = {}) => trackEvent('login', params),
+  login: ({ user_id: userId, method, login_method: legacyMethod }: AuthEventParams = {}) => {
+    if (userId) setUserId(userId);
+    trackEvent('login', { method: method || legacyMethod || 'email' });
+  },
 
-  logout: (params: AuthEventParams = {}) => trackEvent('logout', params),
+  logout: (params: AuthEventParams = {}) => {
+    const { user_id: _userId, ...eventParams } = params;
+    trackEvent('logout', eventParams);
+    setUserId(null);
+  },
 };
 
-/**
- * Track commerce and credit events
- */
 export const trackCommerce = {
-  /**
-   * Track credit purchase
-   * @param params.purchase_amount - Amount in euros (NOT cents). E.g., 5.00 for €5
-   * @param params.credits_purchased - Number of credits purchased
-   * @param params.transaction_id - Unique transaction identifier
-   */
-  checkoutStarted: (params: CreditPurchaseEventParams = {}) => {
+  checkoutStarted: (params: CheckoutEventParams) => {
+    const { payment_method: paymentMethod, ...ecommerce } = params;
+    trackEvent('begin_checkout', ecommerce);
     trackEvent('checkout_started', {
-      value: params.purchase_amount,
-      currency: 'EUR',
-      credits_purchased: params.credits_purchased,
-      payment_method: params.payment_method,
-      items: params.items,
+      ...ecommerce,
+      ...(paymentMethod ? { payment_method: paymentMethod } : {}),
     });
   },
 
-  creditPurchase: (params: CreditPurchaseEventParams = {}) => {
-    trackEvent('credit_pack_purchased', {
-      transaction_id: params.transaction_id,
-      value: params.purchase_amount,
-      currency: 'EUR',
-      credits_purchased: params.credits_purchased,
-      payment_method: params.payment_method,
-      items: params.items,
-    });
+  creditPurchase: (params: CreditPurchaseEventParams) => {
+    trackEvent('credit_pack_purchased', { ...params });
+    trackEvent('purchase', { ...params });
 
-    // Track standard GA4 purchase event for revenue tracking
-    trackEvent('purchase', {
-      transaction_id: params.transaction_id,
-      value: params.purchase_amount,
-      currency: 'EUR',
-      items: params.items || [
-        {
-          item_id: 'credit_pack', // Generic fallback
-          item_name: `${params.credits_purchased} Credits`,
-          price: params.purchase_amount,
-          quantity: 1,
-        },
-      ],
-    });
-
-    // Track Google Ads conversion (expects amount in euros)
+    // The direct Ads conversion is retained during migration and uses the charged gross amount.
     trackMythoriaConversionsEnhanced.creditPurchase(
-      (params.purchase_amount as number) || 0,
-      'EUR',
-      params.transaction_id as string,
+      params.gross_value,
+      params.currency,
+      params.transaction_id,
     );
   },
 };
 
-/**
- * Track story creation flow events
- */
 export const trackStoryCreation = {
   started: (params: StoryEventParams = {}) => trackEvent('story_creation_started', params),
 
@@ -214,17 +201,11 @@ export const trackStoryCreation = {
         ? (`story_step_${params.step}_completed` as AnalyticsEvent)
         : 'story_creation_step_completed';
 
-    trackEvent(stepCompletedEvent, {
-      ...params,
-      step: params.step,
-    });
+    trackEvent(stepCompletedEvent, params);
   },
 
   stepViewed: (params: StoryEventParams = {}) => {
-    trackEvent('story_creation_step_viewed', {
-      ...params,
-      step: params.step,
-    });
+    trackEvent('story_creation_step_viewed', params);
   },
 
   generateClicked: (params: StoryEventParams = {}) => {
@@ -233,11 +214,6 @@ export const trackStoryCreation = {
 
   generationRequested: (params: StoryEventParams = {}) => {
     trackEvent('story_generation_requested', params);
-    trackEvent('story_published', {
-      story_id: params.story_id,
-      story_genre: params.story_genre,
-    });
-    // Track Google Ads conversion for story creation
     trackMythoriaConversionsEnhanced.storyCreated(
       params.story_id as string,
       params.user_id as string,
@@ -261,38 +237,55 @@ export const trackPaidAction = (params: PaidActionEventParams): void => {
   });
 };
 
-/**
- * Set user properties for analytics
- * @param properties - User properties to set
- */
 export function setUserProperties(properties: Record<string, string | number | boolean>): void {
-  if (typeof window === 'undefined' || !window.gtag) {
-    return;
-  }
+  const gtag = ensureGtag();
+  if (!gtag) return;
 
   try {
-    window.gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-86D0QFW197', {
-      user_properties: properties,
-    });
+    gtag('set', 'user_properties', properties);
   } catch (error) {
     console.error('Error setting user properties:', error);
   }
 }
 
-/**
- * Set user ID for analytics
- * @param userId - The user ID to set
- */
-export function setUserId(userId: string): void {
-  if (typeof window === 'undefined' || !window.gtag) {
-    return;
-  }
+const getGtagValue = (fieldName: 'client_id' | 'session_id'): Promise<unknown> =>
+  new Promise((resolve) => {
+    const gtag = ensureGtag();
+    if (!gtag) {
+      resolve(undefined);
+      return;
+    }
 
-  try {
-    window.gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-86D0QFW197', {
-      user_id: userId,
-    });
-  } catch (error) {
-    console.error('Error setting user ID:', error);
-  }
+    gtag('get', getMeasurementId(), fieldName, resolve);
+  });
+
+/** Return consent-gated GA identifiers for server-side Measurement Protocol delivery. */
+export async function getGoogleAnalyticsContext(
+  timeoutMs = 1000,
+): Promise<ClientAnalyticsContext | undefined> {
+  const consent = getStoredConsent()?.state;
+  if (consent?.analytics_storage !== 'granted') return undefined;
+
+  const timeout = new Promise<undefined>((resolve) => {
+    window.setTimeout(() => resolve(undefined), timeoutMs);
+  });
+  const identifiers = Promise.all([getGtagValue('client_id'), getGtagValue('session_id')]);
+  const result = await Promise.race([identifiers, timeout]);
+  if (!result) return undefined;
+
+  const [rawClientId, rawSessionId] = result;
+  const clientId = typeof rawClientId === 'string' ? rawClientId.trim() : '';
+  if (!clientId) return undefined;
+
+  const sessionId = Number(rawSessionId);
+
+  return {
+    clientId,
+    ...(Number.isSafeInteger(sessionId) && sessionId > 0 ? { sessionId } : {}),
+    consent: {
+      analyticsStorage: 'granted',
+      adUserData: consent.ad_user_data,
+      adPersonalization: consent.ad_personalization,
+    },
+  };
 }

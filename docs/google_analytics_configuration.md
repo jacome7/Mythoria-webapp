@@ -1,136 +1,58 @@
-# Mythoria Google Analytics Configuration Guide
+# Mythoria Google Analytics configuration
 
-This guide describes how to set up GA4 for Mythoria, wire required environment variables, and configure funnels to understand conversion from visitor → author → paying customer.
+## Environment
 
-## 1) GA4 property & data stream setup
+Configure these values in every deployed environment:
 
-1. Create a **GA4 Property** in Google Analytics.
-2. Create a **Web data stream** for the Mythoria domain.
-3. Copy the **Measurement ID** (format: `G-XXXXXXXXXX`).
-4. (Recommended) Enable **Enhanced Measurement** in the data stream for baseline web interactions.
+- `NEXT_PUBLIC_GA_MEASUREMENT_ID`: GA4 web-stream measurement ID.
+- `GOOGLE_ANALYTICS_API_SECRET`: Measurement Protocol API secret.
+- `NEXT_PUBLIC_GOOGLE_TAG_ID`: shared Google Tag ID when used.
+- `NEXT_PUBLIC_GOOGLE_ADS_ID`: direct Google Ads conversion ID retained during migration.
+- `NEXT_PUBLIC_GA_DEBUG`: set to `true` only for GA4 DebugView validation.
 
-## 2) Required environment variables
+The legacy `NEXT_PUBLIC_GA_DEBUG_MODE` name is not used.
 
-Mythoria expects the following in production:
+## GA4 and Google Ads setup
 
-- `NEXT_PUBLIC_GA_MEASUREMENT_ID` – GA4 measurement ID used by the main tag and client events.
-- `GOOGLE_ANALYTICS_API_SECRET` – Measurement Protocol API secret for server-side purchase events.
-- `NEXT_PUBLIC_GOOGLE_ADS_ID` – Google Ads conversion ID for gtag conversions.
-- `NEXT_PUBLIC_GOOGLE_TAG_ID` – Primary Google Tag ID (if used).
-- `NEXT_PUBLIC_GA_DEBUG_MODE` (or `NEXT_PUBLIC_GA_DEBUG` if standardized) – optional debug mode flag.
+1. Link the GA4 property to Google Ads.
+2. Confirm `sign_up`, `story_generation_requested`, and `purchase` in GA4 Realtime/DebugView before marking them as key events.
+3. Confirm `purchase` contains one unique order `transaction_id`, `EUR` currency, net `value`, separate `tax`, exact `gross_value`, and every package in `items`.
+4. Import the three GA4 key events into Google Ads as Primary conversions.
+5. Change the existing direct Ads conversions to Secondary after the imported conversions are verified. Do not optimize against both delivery mechanisms as Primary.
 
-> These are defined in `env.manifest.ts` and should be provisioned via Secret Manager or environment substitutions.
+Recommended counting:
 
-## 3) Consent Mode configuration
+- `sign_up`: one.
+- `story_generation_requested`: every if each generated story has value; otherwise one for activation-focused campaigns.
+- `purchase`: every, using the event value.
 
-Mythoria implements Consent Mode v2 with a cookie-backed consent state:
+## Validation checklist
 
-1. **Default** consent is denied (`ad_storage`, `analytics_storage`, etc.).
-2. `GoogleAnalytics` reads the consent cookie before hydration and calls `gtag('consent', 'default', ...)`.
-3. Consent updates are applied with `updateGoogleConsent`.
+For a release candidate:
 
-**Recommendations**
+1. Enable `NEXT_PUBLIC_GA_DEBUG=true` in a non-production environment.
+2. Accept analytics consent and verify one manual `page_view` on initial load and each SPA navigation.
+3. Create an account and verify `user_id` is set before `sign_up`, with a stable `method`; reload and confirm signup is not emitted again.
+4. Complete the story wizard and verify one `story_generation_requested` with `story_id`, workflow `run_id`, and credits; verify no `story_published` event.
+5. Start a multi-package/multi-quantity Stripe test checkout and verify `begin_checkout` contains all server-returned items.
+6. Complete the payment and verify one deduplicated `purchase` for the order ID with all items, net value, tax, and gross charge.
+7. Inspect the server logs for Measurement Protocol failures. A missing/denied analytics consent or missing GA client ID intentionally suppresses server delivery.
+8. Submit a representative payload to Google's non-reporting strict Measurement Protocol debug endpoint before production rollout.
 
-- Ensure the cookie banner fires consent updates **before** other tracking events.
-- Document consent changes for privacy compliance in the public policy pages.
+## Suggested GA4 custom definitions
 
-## 4) Event taxonomy used by Mythoria
+Register event-scoped custom dimensions/metrics only when they will be used in reports:
 
-Mythoria uses a streamlined event set:
+- Dimensions: `story_id`, `run_id`, `story_genre`, `payment_type`.
+- Metrics: `credits_spent`, `credits_purchased`, `gross_value`.
 
-- **Auth:** `sign_up`, `login`, `logout`
-- **Story creation:** `story_creation_started`, `story_creation_step_completed`, `story_generation_requested`
-- **Paid actions:** `paid_action` (`action_type`, `credits_spent`)
-- **Commerce:** GA4 `purchase`
+GA4's built-in ecommerce fields (`transaction_id`, `currency`, `value`, `tax`, and item fields) do not need custom definitions.
 
-### Optional custom dimensions / parameters
+## Funnels
 
-Define custom dimensions for commonly-used event parameters so they appear in GA4 reports:
+- Acquisition: `page_view` → `sign_up`.
+- Activation: `sign_up` → `story_creation_started` → story step events → `story_generation_requested`.
+- Revenue: pricing `page_view` → `begin_checkout` → `purchase`.
+- Retention: first `purchase` → paid actions → repeat `purchase`.
 
-- `story_id`, `story_genre`, `total_chapters`
-- `purchase_amount`, `credits_purchased`, `payment_method`, `transaction_id`
-- `partnership_type`, `primary_location`
-
-## 5) Ecommerce configuration (credit bundles)
-
-Mythoria already sends `purchase` events with `items`. To expand ecommerce insights, optionally add:
-
-- `view_item_list` when a user views the credit package list.
-- `select_item` when a package is chosen.
-- `add_to_cart` when a bundle is added.
-- `begin_checkout` when the payment selector is opened.
-- `add_payment_info` when a payment method is chosen.
-
-Each of these should pass `items` with `item_id`, `item_name`, `price`, and `quantity`.
-
-## 6) Google Ads conversions
-
-Mythoria fires Google Ads conversions via `gtag('event', 'conversion', ...)` using the Ads ID and conversion labels. Recommended setup:
-
-1. Create conversions in Google Ads for:
-   - **Sign-up**
-   - **Story generation requested**
-   - **Credit purchase**
-2. Confirm each conversion label is mapped in code.
-3. Import GA4 purchase events into Google Ads for bidding/ROAS if desired.
-
-### Optional: Enhanced conversions
-
-If user consent is granted, consider sending **hashed email / phone** alongside Ads conversions to improve attribution and bidding (Enhanced Conversions).
-
-## 7) Funnels to identify conversion to paid users
-
-Below are suggested funnels based on current UI flows and tracking. Each funnel should be configured in GA4 Explorations or as a custom funnel report.
-
-### Funnel A: Visitor → Story creation
-
-1. **Landing page / marketing content** (page view)
-2. **Story creation started** (`story_creation_started`)
-3. **Story step completed** (`story_creation_step_completed` with `step`)
-4. **Generation requested** (`story_generation_requested`)
-5. **Story published** (future event recommendation)
-
-**Goal:** Identify where authors drop off during the creation wizard.
-
-### Funnel B: Pricing → Credit purchase
-
-1. **Pricing page view** (page view)
-2. **Credit bundle selected** (recommended `select_item`)
-3. **Add to cart** (recommended `add_to_cart`)
-4. **Begin checkout** (recommended `begin_checkout`)
-5. **Purchase** (`purchase`)
-
-**Goal:** Measure friction in the paid conversion path.
-
-### Funnel C: Credits → Paid actions
-
-1. **Credits purchased** (`purchase`)
-2. **Story generation** (`story_generation_requested`)
-3. **Audiobook generation** (`paid_action` with `action_type: audiobook` - recommend)
-4. **Print order submitted** (`paid_action` with `action_type: print` - recommend)
-5. **Self-print requested** (`paid_action` with `action_type: self_print`)
-
-**Goal:** Understand which paid features drive credit consumption and repeat purchases.
-
-### Funnel D: Retention / repeat purchase
-
-1. **First purchase** (`purchase`)
-2. **Second purchase** (`purchase` + cohort filters)
-3. **Paid actions performed** (paid feature events)
-
-**Goal:** Determine whether paid actions correlate with repeat purchases.
-
-## 8) Recommended improvements for tracking quality
-
-1. **Implement “paid action” events** for audiobook generation, print orders, self‑print requests, AI edits, and story translation.
-2. **Add `transaction_id` consistently** for all credit purchase events, including Stripe Checkout redirect callbacks.
-3. **Persist client_id in orders** so server-side GA4 events can be linked to client sessions.
-4. **Create a tracking spec** that maps each Mythoria paid feature to GA4 event names and parameters.
-5. **Expose a debug mode toggle** (align GA debug env var) and document how to validate events in GA DebugView.
-
-## References
-
-- GA4 Measurement Protocol: https://developers.google.com/analytics/devguides/collection/protocol/ga4
-- GA4 recommended events: https://support.google.com/analytics/answer/9267735?hl=en
-- Google Consent Mode: https://developers.google.com/tag-platform/devguides/consent
-- Google Ads enhanced conversions: https://support.google.com/google-ads/answer/9888656?hl=en
+See [analytics.md](analytics.md) for payload semantics, consent behavior, and deferred improvements.

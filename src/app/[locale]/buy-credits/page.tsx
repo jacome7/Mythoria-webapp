@@ -12,7 +12,8 @@ import PaymentSelector from '@/components/PaymentSelector';
 import PromotionCodeRedeemer from '@/components/PromotionCodeRedeemer';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
 import { useCart } from '@/hooks/useCart';
-import { trackCommerce } from '@/lib/analytics';
+import { getGoogleAnalyticsContext, trackCommerce } from '@/lib/analytics';
+import type { GA4CheckoutPayload, GA4PurchasePayload } from '@/lib/analytics/ecommerce';
 import type { CreditPackage } from '@/types/cart';
 
 const getIconComponent = (iconName: string) => {
@@ -97,37 +98,11 @@ function BuyCreditsContent() {
           }
 
           if (data.status === 'completed') {
-            const trackingAmountEuros = data.amount ? Number(data.amount) / 100 : total;
-            const trackingCredits = Number(data.credits || 0);
-            const items =
-              cart.length > 0
-                ? cart.map((item) => {
-                    const pkg = getPackageById(item.packageId);
-                    return {
-                      item_id: `credit_package_${item.packageId}`,
-                      item_name: pkg
-                        ? `${pkg.credits} Credits`
-                        : `Credit Package ${item.packageId}`,
-                      price: pkg ? pkg.price : 0,
-                      quantity: item.quantity,
-                    };
-                  })
-                : [
-                    {
-                      item_id: `credits-${trackingCredits}`,
-                      item_name: `${trackingCredits} Credits`,
-                      price: trackingAmountEuros,
-                      quantity: 1,
-                    },
-                  ];
-
-            trackCommerce.creditPurchase({
-              purchase_amount: trackingAmountEuros,
-              credits_purchased: trackingCredits,
-              transaction_id: data.orderId,
-              payment_method: data.paymentMethodType || 'stripe',
-              items,
-            });
+            if (data.ecommerce) {
+              trackCommerce.creditPurchase(data.ecommerce as GA4PurchasePayload);
+            } else {
+              console.error('Completed Stripe order did not include its ecommerce payload');
+            }
 
             setPaymentStatus('success');
             setPaymentMessage(tBuyCreditsPage('payment.success'));
@@ -238,30 +213,11 @@ function BuyCreditsContent() {
     setPaymentMessage(tBuyCreditsPage('payment.stripeRedirecting'));
 
     try {
-      const checkoutItems = cart.map((item) => {
-        const pkg = getPackageById(item.packageId);
-        return {
-          item_id: `credit_package_${item.packageId}`,
-          item_name: pkg ? `${pkg.credits} Credits` : `Credit Package ${item.packageId}`,
-          price: pkg ? pkg.price : 0,
-          quantity: item.quantity,
-        };
-      });
-
-      trackCommerce.checkoutStarted({
-        purchase_amount: total,
-        credits_purchased: checkoutItems.reduce((sum, item, index) => {
-          const pkg = getPackageById(cart[index].packageId);
-          return sum + (pkg?.credits ?? 0) * item.quantity;
-        }, 0),
-        payment_method: 'stripe',
-        items: checkoutItems,
-      });
-
       const creditPackages = cart.map((item) => ({
         packageId: item.packageId,
         quantity: item.quantity,
       }));
+      const analyticsContext = await getGoogleAnalyticsContext();
 
       const response = await fetch('/api/payments/stripe/checkout', {
         method: 'POST',
@@ -271,6 +227,7 @@ function BuyCreditsContent() {
         body: JSON.stringify({
           creditPackages,
           locale,
+          analyticsContext,
         }),
       });
 
@@ -282,6 +239,15 @@ function BuyCreditsContent() {
 
       if (!data.checkoutUrl) {
         throw new Error(tBuyCreditsPage('errors.orderCreationFailed'));
+      }
+
+      if (data.ecommerce) {
+        trackCommerce.checkoutStarted({
+          ...(data.ecommerce as GA4CheckoutPayload),
+          payment_method: 'stripe',
+        });
+      } else {
+        console.error('Stripe checkout did not include its ecommerce payload');
       }
 
       window.location.href = data.checkoutUrl;

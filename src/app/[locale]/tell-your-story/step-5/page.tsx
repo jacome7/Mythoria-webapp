@@ -206,6 +206,7 @@ function Step5Page() {
 
       trackStoryCreation.generationRequested({
         story_id: currentStoryId,
+        run_id: result.runId,
         ebook_requested: true,
         printed_requested: false,
         audiobook_requested: false,

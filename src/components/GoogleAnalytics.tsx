@@ -1,9 +1,7 @@
-'use client';
-
 import Script from 'next/script';
 import { getDefaultConsent, CONSENT_COOKIE_NAME } from '@/lib/consent';
 
-const isDebugModeEnabled = process.env.NEXT_PUBLIC_GA_DEBUG_MODE === 'true';
+const isDebugModeEnabled = process.env.NEXT_PUBLIC_GA_DEBUG === 'true';
 
 interface GoogleAnalyticsProps {
   measurementId: string;
@@ -20,14 +18,14 @@ export default function GoogleAnalytics({
     return null;
   }
 
-  // Use the primary measurement ID for the script source
   const scriptId = googleTagId || measurementId;
+  const debugConfig = isDebugModeEnabled ? ', debug_mode: true' : '';
 
   // Generate the inline script to initialize gtag and set consent defaults.
   // We read the cookie manually here because this script runs before React hydration.
   const initScript = `
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    window.gtag = window.gtag || function(){window.dataLayer.push(arguments);};
 
     // 1. Parse stored consent from cookie (synchronously)
     var storedConsent = null;
@@ -44,7 +42,7 @@ export default function GoogleAnalytics({
     // 3. Set consent defaults BEFORE any config
     // We use wait_for_update: 500 to give the consent banner a chance to load and update consent
     // if this is the first visit, although we default to denied anyway.
-    gtag('consent', 'default', {
+    window.gtag('consent', 'default', {
       ad_storage: consentState.ad_storage,
       ad_user_data: consentState.ad_user_data,
       ad_personalization: consentState.ad_personalization,
@@ -53,31 +51,25 @@ export default function GoogleAnalytics({
     });
 
     // 4. Set other flags
-    gtag('set', 'ads_data_redaction', true);
-    gtag('set', 'url_passthrough', true);
+    window.gtag('set', 'ads_data_redaction', true);
+    window.gtag('set', 'url_passthrough', true);
     
     // Set developer ID for Next.js integration tracking
-    gtag('set', 'developer_id.dZTNiMT', true);
+    window.gtag('set', 'developer_id.dZTNiMT', true);
 
     // 5. Initialize the library
-    gtag('js', new Date());
+    window.gtag('js', new Date());
 
-    // 6. Configure Google Tag (Initial config)
-    // Note: We DO NOT configure the measurementId here to avoid duplicate page views.
-    // The useGoogleAnalytics hook handles the initial page view and subsequent route changes.
-    
-    ${googleAdsId ? `gtag('config', '${googleAdsId}');` : ''}
-    ${googleTagId ? `gtag('config', '${googleTagId}');` : ''}
+    // React sends one manual page_view for the initial URL and every SPA navigation.
+    window.gtag('config', ${JSON.stringify(measurementId)}, { send_page_view: false${debugConfig} });
+    ${googleAdsId ? `window.gtag('config', ${JSON.stringify(googleAdsId)}, { send_page_view: false });` : ''}
+    ${googleTagId ? `window.gtag('config', ${JSON.stringify(googleTagId)}, { send_page_view: false });` : ''}
   `;
 
   return (
     <>
       {/* Inline script to initialize Consent Mode and gtag immediately */}
-      <Script
-        id="gtag-init"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{ __html: initScript }}
-      />
+      <script id="gtag-init" dangerouslySetInnerHTML={{ __html: initScript }} />
 
       {/* External Google Tag script */}
       <Script

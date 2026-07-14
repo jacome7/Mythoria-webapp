@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { paymentService } from '@/db/services';
 import { getCurrentAuthor } from '@/lib/auth';
-import { ga4Service } from '@/lib/analytics/ga4';
+import { sanitizeClientAnalyticsContext } from '@/lib/analytics/ecommerce';
 import { normalizeLocale } from '@/utils/locale-utils';
 
 export const runtime = 'nodejs';
@@ -14,6 +14,7 @@ interface StripeCheckoutRequest {
     quantity: number;
   }>;
   locale?: string;
+  analyticsContext?: unknown;
 }
 
 function getRequestOrigin(request: NextRequest): string {
@@ -73,9 +74,9 @@ export async function POST(request: NextRequest) {
     const origin = getRequestOrigin(request);
     const successUrl = `${origin}/${locale}/buy-credits?payment=stripe_success&session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = `${origin}/${locale}/buy-credits?payment=cancel`;
-    const gaCookie = request.cookies.get('_ga')?.value;
+    const analyticsContext = sanitizeClientAnalyticsContext(body.analyticsContext);
 
-    const { order, checkoutSession } = await paymentService.createStripeCheckoutSession({
+    const { order, checkoutSession, ecommerce } = await paymentService.createStripeCheckoutSession({
       userId: author.authorId,
       email: author.email,
       displayName: author.displayName,
@@ -85,8 +86,9 @@ export async function POST(request: NextRequest) {
       successUrl,
       cancelUrl,
       idempotencyKey: uuidv4(),
-      clientId: ga4Service.extractClientId(gaCookie),
-      sessionId: request.cookies.get('_ga_G3P')?.value,
+      ...(analyticsContext
+        ? { analyticsContext: { ...analyticsContext, userId: author.clerkUserId } }
+        : {}),
     });
 
     if (!checkoutSession.url) {
@@ -101,6 +103,7 @@ export async function POST(request: NextRequest) {
       amount: order.amount,
       currency: order.currency,
       credits: (order.creditBundle as { credits: number }).credits,
+      ecommerce,
     });
   } catch (error) {
     console.error('Error creating Stripe checkout session:', error);

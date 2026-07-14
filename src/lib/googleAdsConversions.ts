@@ -15,10 +15,14 @@ export interface ConversionParams {
  * @param params - Additional parameters for the conversion
  */
 export function trackConversion(conversionLabel: string, params: ConversionParams = {}): void {
-  if (typeof window === 'undefined' || !window.gtag) {
-    console.log(`Conversion event (not sent): ${conversionLabel}`, params);
-    return;
-  }
+  if (typeof window === 'undefined') return;
+
+  window.dataLayer = window.dataLayer || [];
+  window.gtag =
+    window.gtag ||
+    ((...args: unknown[]) => {
+      window.dataLayer.push(args);
+    });
 
   try {
     const eventParams = {

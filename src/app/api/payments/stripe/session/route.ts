@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { fiscalDocumentService, paymentService } from '@/db/services';
+import { buildPaymentOrderPurchasePayload } from '@/db/services/payment';
 import { getCurrentAuthor } from '@/lib/auth';
 
 export const runtime = 'nodejs';
@@ -64,6 +65,7 @@ export async function GET(request: NextRequest) {
             lastError: fiscalDocument.lastError,
           }
         : null,
+      ecommerce: buildPaymentOrderPurchasePayload(order),
     });
   } catch (error) {
     console.error('Error fetching Stripe checkout session:', error);

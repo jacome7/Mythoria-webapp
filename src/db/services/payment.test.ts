@@ -1,5 +1,6 @@
 import {
   buildStripeCheckoutLineItems,
+  buildPaymentOrderPurchasePayload,
   mapToStripeCheckoutLocale,
   paymentService,
   type CreditPackage,
@@ -159,5 +160,76 @@ describe('mapToStripeCheckoutLocale', () => {
   it('falls back to auto for unsupported locale input', () => {
     expect(mapToStripeCheckoutLocale('it-IT')).toBe('auto');
     expect(mapToStripeCheckoutLocale()).toBe('auto');
+  });
+});
+
+describe('buildPaymentOrderPurchasePayload', () => {
+  it('uses stored package lines and final Stripe totals as the shared purchase payload', () => {
+    const order = {
+      orderId: 'order-123',
+      amount: 3800,
+      currency: 'EUR',
+      creditBundle: { credits: 400, price: 38 },
+      metadata: {
+        orderTotals: {
+          totalCredits: 400,
+          totalAmount: 38,
+          itemsBreakdown: [
+            {
+              packageId: 1,
+              packageKey: 'starter',
+              quantity: 2,
+              credits: 100,
+              unitPrice: 10,
+              totalPrice: 20,
+            },
+            {
+              packageId: 2,
+              packageKey: 'creator',
+              quantity: 1,
+              credits: 200,
+              unitPrice: 18,
+              totalPrice: 18,
+            },
+          ],
+        },
+        stripe: {
+          amountTotal: 3700,
+          paymentMethodType: 'card',
+          totalDetails: { amount_tax: 209, amount_discount: 100, amount_shipping: 0 },
+        },
+      },
+    } as unknown as Parameters<typeof buildPaymentOrderPurchasePayload>[0];
+
+    const webhookPayload = buildPaymentOrderPurchasePayload(order);
+    const browserPayload = buildPaymentOrderPurchasePayload(order);
+
+    expect(browserPayload).toEqual(webhookPayload);
+    expect(webhookPayload).toMatchObject({
+      transaction_id: 'order-123',
+      value: 34.91,
+      tax: 2.09,
+      gross_value: 37,
+      payment_type: 'card',
+    });
+    expect(webhookPayload.items).toHaveLength(2);
+  });
+
+  it('provides a stable legacy item when old metadata has no breakdown', () => {
+    const order = {
+      orderId: 'legacy-order',
+      amount: 999,
+      currency: 'eur',
+      creditBundle: { credits: 100, price: 9.99 },
+      metadata: null,
+    } as unknown as Parameters<typeof buildPaymentOrderPurchasePayload>[0];
+
+    expect(buildPaymentOrderPurchasePayload(order)).toMatchObject({
+      transaction_id: 'legacy-order',
+      value: 9.99,
+      gross_value: 9.99,
+      tax: 0,
+      items: [{ item_id: 'credit_package_legacy_100', quantity: 1, price: 9.99 }],
+    });
   });
 });
