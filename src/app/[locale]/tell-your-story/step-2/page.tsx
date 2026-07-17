@@ -1,8 +1,8 @@
 'use client';
 
-import { Show, RedirectToSignIn } from '@clerk/nextjs';
+import { Show, RedirectToSignIn, useAuth } from '@clerk/nextjs';
 import Image from 'next/image';
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/i18n/routing';
@@ -65,6 +65,8 @@ function StoryModeCard({
 }
 
 export default function Step2Page() {
+  const { isSignedIn } = useAuth();
+  const hasTrackedStepView = useRef(false);
   const router = useRouter();
   const tStoryStepsStep2 = useTranslations('StorySteps.step2');
   const tStoryStepsCommon = useTranslations('StorySteps.common');
@@ -91,6 +93,12 @@ export default function Step2Page() {
 
   const { pollJob } = useJobPolling();
   const locale = useLocale();
+
+  useEffect(() => {
+    if (!isSignedIn || hasTrackedStepView.current) return;
+    hasTrackedStepView.current = true;
+    trackStoryCreation.stepViewed({ step: 2 });
+  }, [isSignedIn]);
 
   // Block navigation while any uploaded media is still uploading/analysing.
   const imagesAnalyzing = uploadedImages.some(

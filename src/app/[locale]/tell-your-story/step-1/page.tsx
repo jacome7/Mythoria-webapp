@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import StepNavigation from '@/components/StepNavigation';
 import ClientAuthWrapper from '@/components/ClientAuthWrapper';
@@ -23,6 +24,8 @@ interface AuthorData {
 export default function Step1Page() {
   const locale = useLocale();
   const tStoryStepsStep1 = useTranslations('StorySteps.step1');
+  const searchParams = useSearchParams();
+  const hasTrackedStart = useRef(false);
   const [, setAuthorData] = useState<AuthorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -53,6 +56,11 @@ export default function Step1Page() {
 
       const data: AuthorData = await response.json();
       setAuthorData(data);
+      if (!hasTrackedStart.current) {
+        hasTrackedStart.current = true;
+        trackStoryCreation.started({ step_number: 1, user_profile_exists: true });
+        trackStoryCreation.stepViewed({ step: 1 });
+      }
 
       // Load existing step 1 data from session storage
       const step1Data = getStep1Data();
@@ -79,13 +87,16 @@ export default function Step1Page() {
   }, [tStoryStepsStep1]);
   useEffect(() => {
     fetchAuthorData();
-
-    // Track that user started story creation process
-    trackStoryCreation.started({
-      step: 1,
-      user_profile_exists: true, // We can set this based on response later
-    });
   }, [fetchAuthorData]);
+
+  const safeQuery = new URLSearchParams();
+  ['landingSlug', 'primaryIntent', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_id'].forEach(
+    (key) => {
+      const value = searchParams.get(key);
+      if (value && value.length <= 255) safeQuery.set(key, value);
+    },
+  );
+  const redirectPath = `/${locale}/tell-your-story/step-1${safeQuery.size ? `?${safeQuery}` : ''}`;
   // Function to check if current values differ from original values
   const checkForChanges = (currentCustomAuthor: string, currentDedicationMessage: string) => {
     const hasChanged =
@@ -147,10 +158,16 @@ export default function Step1Page() {
               {tStoryStepsStep1('unauthenticated.description')}
             </p>
             <div className="space-y-4 sm:space-y-0 sm:space-x-4">
-              <Link href={`/${locale}/sign-in`} className="btn btn-primary btn-lg">
+              <Link
+                href={`/${locale}/sign-in?redirect=${encodeURIComponent(redirectPath)}`}
+                className="btn btn-primary btn-lg"
+              >
                 {tStoryStepsStep1('unauthenticated.signIn')}
               </Link>
-              <Link href={`/${locale}/sign-up`} className="btn btn-outline btn-lg">
+              <Link
+                href={`/${locale}/sign-up?redirect=${encodeURIComponent(redirectPath)}`}
+                className="btn btn-outline btn-lg"
+              >
                 {tStoryStepsStep1('unauthenticated.signUp')}
               </Link>
             </div>

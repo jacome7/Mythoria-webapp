@@ -17,10 +17,15 @@ import {
 
 const publishStoryRequestMock = jest.fn();
 const publishAudiobookRequestMock = jest.fn();
+const startStoryGenerationMock = jest.fn();
 
 jest.mock('@/lib/pubsub', () => ({
   publishStoryRequest: (...args: unknown[]) => publishStoryRequestMock(...args),
   publishAudiobookRequest: (...args: unknown[]) => publishAudiobookRequestMock(...args),
+}));
+
+jest.mock('@/lib/story-generation', () => ({
+  startStoryGeneration: (...args: unknown[]) => startStoryGenerationMock(...args),
 }));
 
 jest.mock('@/db/services', () => ({
@@ -1043,7 +1048,6 @@ describe('story creation tools', () => {
       breakdown: [{ serviceCode: 'eBookGeneration', credits: 3 }],
     });
     mockedCreditService.getAuthorCreditBalance.mockResolvedValue(10);
-    mockedCreditService.deductCredits.mockResolvedValue({ id: 'ledger-1' } as any);
     mockedStoryService.updateStory.mockResolvedValue({
       ...baseStory,
       storyId: 'story-generate',
@@ -1052,7 +1056,12 @@ describe('story creation tools', () => {
       novelStyle: 'fantasy',
       graphicalStyle: 'watercolor',
     } as any);
-    publishStoryRequestMock.mockResolvedValue('msg-1');
+    startStoryGenerationMock.mockResolvedValue({
+      runId: 'run-1',
+      queueStatus: 'queued',
+      remainingCredits: 7,
+      duplicate: false,
+    });
 
     const handler = getToolHandler('mythoria.story.start_generation', authenticatedContext);
     const result = await handler({
@@ -1061,8 +1070,13 @@ describe('story creation tools', () => {
     });
     const payload = result.structuredContent as Record<string, any>;
 
-    expect(mockedCreditService.deductCredits).toHaveBeenCalledTimes(1);
-    expect(publishStoryRequestMock).toHaveBeenCalled();
+    expect(startStoryGenerationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        authorId: 'author-1',
+        storyId: 'story-generate',
+        features: { ebook: true, audiobook: false, printed: false },
+      }),
+    );
     expect(payload.status).toBe('queued');
     expect(payload.job.type).toBe('story_generation');
     expect(typeof payload.job.jobId).toBe('string');

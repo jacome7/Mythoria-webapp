@@ -4,9 +4,8 @@ import { getStoredConsent } from './consent';
 import type {
   ClientAnalyticsContext,
   GA4CheckoutPayload,
-  GA4PurchasePayload,
+  GA4EcommerceItem,
 } from './analytics/ecommerce';
-import { trackMythoriaConversionsEnhanced } from './googleAdsConversions';
 
 declare global {
   interface Window {
@@ -21,37 +20,31 @@ const isDebugModeEnabled = process.env.NEXT_PUBLIC_GA_DEBUG === 'true';
 export const GA4_EVENT_NAMES = [
   'page_view',
   'sign_up_started',
-  'sign_up',
-  'sign_up_completed',
   'login',
-  'logout',
+  'landing_cta_click',
+  'landing_section_view',
   'story_creation_started',
-  'story_step_1_completed',
-  'story_step_2_completed',
-  'story_step_3_completed',
-  'story_step_4_completed',
+  'story_step_viewed',
+  'story_step_completed',
+  'story_generation_attempted',
   'story_generation_requested',
-  'story_published',
-  'pricing_viewed',
+  'story_generation_completed',
+  'story_generation_failed',
+  'view_item_list',
+  'select_item',
+  'add_to_cart',
+  'remove_from_cart',
   'begin_checkout',
-  'checkout_started',
-  'credit_pack_purchased',
   'purchase',
-  'audiobook_started',
-  'print_order_started',
-  'self_print_started',
-  'share_link_created',
-  'promo_code_redeemed',
+  'refund',
+  'share',
+  'earn_virtual_currency',
+  'audiobook_interaction',
+  'paid_action',
 ] as const;
 
 export type GA4EventName = (typeof GA4_EVENT_NAMES)[number];
-
-export type AnalyticsEvent =
-  | GA4EventName
-  | 'story_creation_step_completed'
-  | 'story_creation_step_viewed'
-  | 'story_creation_generate_clicked'
-  | 'paid_action';
+export type AnalyticsEvent = GA4EventName;
 
 export interface AnalyticsEventParams {
   [key: string]:
@@ -68,8 +61,10 @@ export interface StoryEventParams extends AnalyticsEventParams {
   story_genre?: string;
   total_chapters?: number;
   step?: number;
+  step_number?: number;
   credits_spent?: number;
   run_id?: string;
+  blocked_reason?: string;
 }
 
 export interface AuthEventParams extends AnalyticsEventParams {
@@ -79,16 +74,12 @@ export interface AuthEventParams extends AnalyticsEventParams {
   login_method?: string;
 }
 
-export type CheckoutEventParams = GA4CheckoutPayload & {
-  payment_method?: string;
-};
-
-export type CreditPurchaseEventParams = GA4PurchasePayload;
-
 export type PaidActionType = 'ebook' | 'audiobook' | 'print' | 'self_print' | 'ai_edit';
+export type PaidActionStage = 'started' | 'completed' | 'failed';
 
 export interface PaidActionEventParams extends AnalyticsEventParams {
   action_type: PaidActionType;
+  action_stage?: PaidActionStage;
   credits_spent?: number;
   story_id?: string;
 }
@@ -98,46 +89,39 @@ const getMeasurementId = (): string =>
 
 export function ensureGtag(): Window['gtag'] | null {
   if (typeof window === 'undefined') return null;
-
   window.dataLayer = window.dataLayer || [];
   window.gtag =
     window.gtag ||
     ((...args: unknown[]) => {
       window.dataLayer.push(args);
     });
-
   return window.gtag;
 }
 
-/** Queue a GA4 event even when the external Google tag is still loading. */
+/** Queue a consent-aware GA4 event without injecting high-cardinality page context. */
 export function trackEvent(eventName: AnalyticsEvent, parameters?: Record<string, unknown>): void {
   const gtag = ensureGtag();
   if (!gtag) return;
 
   try {
     const eventParams = {
-      timestamp: new Date().toISOString(),
-      page_location: window.location.href,
-      page_title: document.title,
       ...parameters,
       send_to: getMeasurementId(),
       ...(isDebugModeEnabled ? { debug_mode: true } : {}),
     };
-
     gtag('event', eventName, eventParams);
 
     if (process.env.NODE_ENV === 'development') {
-      console.log('📊 [Analytics] Event tracked:', eventName, eventParams);
+      console.log('[Analytics] Event tracked:', eventName, eventParams);
     }
   } catch (error) {
-    console.error('❌ [Analytics] Error tracking event:', eventName, error);
+    console.error('[Analytics] Error tracking event:', eventName, error);
   }
 }
 
 export function setUserId(userId: string | null): void {
   const gtag = ensureGtag();
   if (!gtag) return;
-
   try {
     gtag('set', { user_id: userId });
   } catch (error) {
@@ -147,91 +131,57 @@ export function setUserId(userId: string | null): void {
 
 export const trackAuth = {
   signUpStarted: (params: AuthEventParams = {}) => trackEvent('sign_up_started', params),
-
-  signUp: ({ user_id: userId, method, sign_up_method: legacyMethod }: AuthEventParams = {}) => {
-    if (userId) setUserId(userId);
-    const normalizedMethod = method || legacyMethod || 'email';
-
-    trackEvent('sign_up', { method: normalizedMethod });
-    trackEvent('sign_up_completed', { sign_up_method: normalizedMethod });
-    trackMythoriaConversionsEnhanced.signUp(userId);
-  },
-
   login: ({ user_id: userId, method, login_method: legacyMethod }: AuthEventParams = {}) => {
     if (userId) setUserId(userId);
     trackEvent('login', { method: method || legacyMethod || 'email' });
   },
-
-  logout: (params: AuthEventParams = {}) => {
-    const { user_id: _userId, ...eventParams } = params;
-    trackEvent('logout', eventParams);
-    setUserId(null);
-  },
 };
 
+interface ItemListParams {
+  item_list_id: string;
+  item_list_name: string;
+  items: GA4EcommerceItem[];
+}
+
 export const trackCommerce = {
-  checkoutStarted: (params: CheckoutEventParams) => {
-    const { payment_method: paymentMethod, ...ecommerce } = params;
-    trackEvent('begin_checkout', ecommerce);
-    trackEvent('checkout_started', {
-      ...ecommerce,
-      ...(paymentMethod ? { payment_method: paymentMethod } : {}),
-    });
-  },
+  viewItemList: (params: ItemListParams) => trackEvent('view_item_list', { ...params }),
+  selectItem: (params: ItemListParams) => trackEvent('select_item', { ...params }),
+  addToCart: (params: { currency: string; value: number; items: GA4EcommerceItem[] }) =>
+    trackEvent('add_to_cart', params),
+  removeFromCart: (params: { currency: string; value: number; items: GA4EcommerceItem[] }) =>
+    trackEvent('remove_from_cart', params),
+  checkoutStarted: (params: GA4CheckoutPayload) => trackEvent('begin_checkout', { ...params }),
+};
 
-  creditPurchase: (params: CreditPurchaseEventParams) => {
-    trackEvent('credit_pack_purchased', { ...params });
-    trackEvent('purchase', { ...params });
-
-    // The direct Ads conversion is retained during migration and uses the charged gross amount.
-    trackMythoriaConversionsEnhanced.creditPurchase(
-      params.gross_value,
-      params.currency,
-      params.transaction_id,
-    );
-  },
+const normalizedStepParams = (params: StoryEventParams): StoryEventParams => {
+  const { step, ...rest } = params;
+  return {
+    ...rest,
+    ...(params.step_number !== undefined
+      ? { step_number: params.step_number }
+      : step !== undefined
+        ? { step_number: step }
+        : {}),
+  };
 };
 
 export const trackStoryCreation = {
-  started: (params: StoryEventParams = {}) => trackEvent('story_creation_started', params),
-
-  stepCompleted: (params: StoryEventParams = {}) => {
-    const stepCompletedEvent =
-      params.step && params.step >= 1 && params.step <= 4
-        ? (`story_step_${params.step}_completed` as AnalyticsEvent)
-        : 'story_creation_step_completed';
-
-    trackEvent(stepCompletedEvent, params);
-  },
-
-  stepViewed: (params: StoryEventParams = {}) => {
-    trackEvent('story_creation_step_viewed', params);
-  },
-
-  generateClicked: (params: StoryEventParams = {}) => {
-    trackEvent('story_creation_generate_clicked', params);
-  },
-
-  generationRequested: (params: StoryEventParams = {}) => {
-    trackEvent('story_generation_requested', params);
-    trackMythoriaConversionsEnhanced.storyCreated(
-      params.story_id as string,
-      params.user_id as string,
-    );
-  },
-};
-
-const PAID_ACTION_EVENTS: Record<PaidActionType, AnalyticsEvent> = {
-  ebook: 'story_generation_requested',
-  audiobook: 'audiobook_started',
-  print: 'print_order_started',
-  self_print: 'self_print_started',
-  ai_edit: 'paid_action',
+  started: (params: StoryEventParams = {}) =>
+    trackEvent('story_creation_started', normalizedStepParams(params)),
+  stepCompleted: (params: StoryEventParams = {}) =>
+    trackEvent('story_step_completed', normalizedStepParams(params)),
+  stepViewed: (params: StoryEventParams = {}) =>
+    trackEvent('story_step_viewed', normalizedStepParams(params)),
+  generateClicked: (params: StoryEventParams = {}) =>
+    trackEvent('story_generation_attempted', normalizedStepParams(params)),
+  generationRequested: (params: StoryEventParams = {}) =>
+    trackEvent('story_generation_requested', normalizedStepParams(params)),
 };
 
 export const trackPaidAction = (params: PaidActionEventParams): void => {
-  trackEvent(PAID_ACTION_EVENTS[params.action_type], {
+  trackEvent('paid_action', {
     action_type: params.action_type,
+    action_stage: params.action_stage || 'started',
     credits_spent: params.credits_spent,
     story_id: params.story_id,
   });
@@ -240,7 +190,6 @@ export const trackPaidAction = (params: PaidActionEventParams): void => {
 export function setUserProperties(properties: Record<string, string | number | boolean>): void {
   const gtag = ensureGtag();
   if (!gtag) return;
-
   try {
     gtag('set', 'user_properties', properties);
   } catch (error) {
@@ -255,7 +204,6 @@ const getGtagValue = (fieldName: 'client_id' | 'session_id'): Promise<unknown> =
       resolve(undefined);
       return;
     }
-
     gtag('get', getMeasurementId(), fieldName, resolve);
   });
 
@@ -276,7 +224,6 @@ export async function getGoogleAnalyticsContext(
   const [rawClientId, rawSessionId] = result;
   const clientId = typeof rawClientId === 'string' ? rawClientId.trim() : '';
   if (!clientId) return undefined;
-
   const sessionId = Number(rawSessionId);
 
   return {

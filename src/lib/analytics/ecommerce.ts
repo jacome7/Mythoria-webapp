@@ -67,13 +67,13 @@ export interface GA4EcommerceItem {
   item_category: 'Credits';
   price: number;
   quantity: number;
-  gross_unit_price: number;
+  item_variant?: string;
+  discount?: number;
 }
 
 export interface GA4CheckoutPayload {
   currency: string;
   value: number;
-  gross_value: number;
   credits_purchased: number;
   items: GA4EcommerceItem[];
 }
@@ -82,7 +82,8 @@ export interface GA4PurchasePayload extends GA4CheckoutPayload {
   transaction_id: string;
   tax: number;
   shipping?: number;
-  payment_type?: string;
+  coupon?: string;
+  customer_type?: 'new' | 'returning';
 }
 
 interface PurchasePayloadInput {
@@ -91,7 +92,8 @@ interface PurchasePayloadInput {
   grossAmountCents: number;
   taxAmountCents?: number;
   shippingAmountCents?: number;
-  paymentType?: string;
+  coupon?: string;
+  customerType?: 'new' | 'returning';
   orderTotals: CreditOrderTotals;
 }
 
@@ -129,15 +131,20 @@ const allocateCents = (totalCents: number, weights: number[]): number[] => {
 };
 
 const buildItems = (orderTotals: CreditOrderTotals, lineValueCents: number[]): GA4EcommerceItem[] =>
-  orderTotals.itemsBreakdown.map((item, index) => ({
-    item_id: toStableItemId(item),
-    item_name: `${item.credits} Mythoria Credits`,
-    item_brand: 'Mythoria',
-    item_category: 'Credits',
-    price: Number((lineValueCents[index] / 100 / item.quantity).toFixed(6)),
-    quantity: item.quantity,
-    gross_unit_price: Number(item.unitPrice.toFixed(2)),
-  }));
+  orderTotals.itemsBreakdown.map((item, index) => {
+    const price = Number((lineValueCents[index] / 100 / item.quantity).toFixed(6));
+    const grossUnitPrice = Number(item.unitPrice.toFixed(2));
+    return {
+      item_id: toStableItemId(item),
+      item_name: `${item.credits} Mythoria Credits`,
+      item_brand: 'Mythoria',
+      item_category: 'Credits',
+      item_variant: item.packageKey || String(item.packageId),
+      price,
+      quantity: item.quantity,
+      ...(grossUnitPrice > price ? { discount: Number((grossUnitPrice - price).toFixed(6)) } : {}),
+    };
+  });
 
 export function buildCheckoutPayload(
   orderTotals: CreditOrderTotals,
@@ -151,7 +158,6 @@ export function buildCheckoutPayload(
   return {
     currency: currency.toUpperCase(),
     value: toCurrencyUnits(grossAmountCents),
-    gross_value: toCurrencyUnits(grossAmountCents),
     credits_purchased: orderTotals.totalCredits,
     items: buildItems(orderTotals, lineGrossCents),
   };
@@ -163,7 +169,8 @@ export function buildPurchasePayload({
   grossAmountCents,
   taxAmountCents = 0,
   shippingAmountCents = 0,
-  paymentType,
+  coupon,
+  customerType,
   orderTotals,
 }: PurchasePayloadInput): GA4PurchasePayload {
   const normalizedGrossCents = Math.max(0, Math.round(grossAmountCents));
@@ -182,11 +189,11 @@ export function buildPurchasePayload({
     transaction_id: transactionId,
     currency: currency.toUpperCase(),
     value: toCurrencyUnits(netValueCents),
-    gross_value: toCurrencyUnits(normalizedGrossCents),
     tax: toCurrencyUnits(normalizedTaxCents),
     ...(normalizedShippingCents > 0 ? { shipping: toCurrencyUnits(normalizedShippingCents) } : {}),
     credits_purchased: orderTotals.totalCredits,
-    ...(paymentType ? { payment_type: paymentType } : {}),
+    ...(coupon ? { coupon } : {}),
+    ...(customerType ? { customer_type: customerType } : {}),
     items: buildItems(orderTotals, lineNetCents),
   };
 }

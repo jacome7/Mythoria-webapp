@@ -89,7 +89,10 @@ export default function ShareModal({
       console.log('Response data:', data);
       if (data.success) {
         setShareData(data);
-        trackEvent('share_link_created', {
+        trackEvent('share', {
+          method: 'link',
+          content_type: 'story',
+          item_id: storyId,
           story_id: storyId,
           link_type: data.linkType,
           access_level: data.accessLevel,

@@ -3,11 +3,27 @@ import { headers } from 'next/headers';
 import { WebhookEvent } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { authors } from '@/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { analyticsOutbox, authors, creditLedger } from '@/db/schema';
+import { eq, and, sql } from 'drizzle-orm';
 import { detectUserLocaleFromEmail } from '@/utils/locale-utils';
 import { authorService } from '@/db/services';
-import { creditLedger } from '@/db/schema';
+
+async function ensureSignUpOutbox(clerkUserId: string, occurredAt = new Date(), method = 'email') {
+  await db
+    .insert(analyticsOutbox)
+    .values({
+      dedupeKey: `sign_up:${clerkUserId}`,
+      eventName: 'sign_up',
+      userId: clerkUserId,
+      params: { method },
+      occurredAt,
+      availableAt: new Date(occurredAt.getTime() + 24 * 60 * 60 * 1000),
+    })
+    .onConflictDoUpdate({
+      target: analyticsOutbox.dedupeKey,
+      set: { params: sql`${analyticsOutbox.params} || ${JSON.stringify({ method })}::jsonb` },
+    });
+}
 
 export async function POST(req: Request) {
   const headerPayload = await headers();
@@ -74,8 +90,16 @@ export async function POST(req: Request) {
 async function handleUserCreated(evt: WebhookEvent) {
   if (evt.type !== 'user.created') return;
 
-  const { id, email_addresses, first_name, last_name, phone_numbers, primary_phone_number_id } =
-    evt.data;
+  const {
+    id,
+    email_addresses,
+    external_accounts,
+    first_name,
+    last_name,
+    phone_numbers,
+    primary_phone_number_id,
+  } = evt.data;
+  const signUpMethod = external_accounts?.[0]?.provider?.replace(/^oauth_/, '') || 'email';
 
   // Debug logging to see what Clerk sends
   console.log('[webhook.user.created] Event data:', {
@@ -131,6 +155,7 @@ async function handleUserCreated(evt: WebhookEvent) {
 
     // Ensure initial credits exist (race-safe check)
     await ensureInitialCredits(existing[0].authorId);
+    await ensureSignUpOutbox(id, new Date(), signUpMethod);
     console.log('Webhook user already existed, ensured initial credits:', id);
     return;
   }
@@ -141,6 +166,7 @@ async function handleUserCreated(evt: WebhookEvent) {
       email: primaryEmail.email_address,
       displayName: userName,
       preferredLocale: userLocale,
+      signUpMethod,
       ...(primaryPhone?.phone_number && { mobilePhone: primaryPhone.phone_number }),
     };
 
@@ -152,6 +178,7 @@ async function handleUserCreated(evt: WebhookEvent) {
     });
 
     const author = await authorService.createAuthor(authorData);
+    await ensureSignUpOutbox(id, new Date(), signUpMethod);
     console.log(
       'User created in database via webhook service logic:',
       id,
@@ -189,6 +216,7 @@ async function handleUserCreated(evt: WebhookEvent) {
         .from(authors)
         .where(eq(authors.clerkUserId, id));
       if (updated) await ensureInitialCredits(updated.authorId);
+      await ensureSignUpOutbox(id, new Date(), signUpMethod);
       console.log(
         'Duplicate email on webhook, updated existing author and ensured credits for:',
         primaryEmail.email_address,

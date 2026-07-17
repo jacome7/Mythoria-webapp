@@ -17,7 +17,8 @@ import {
   storyCharacterService,
   storyService,
 } from '@/db/services';
-import { publishAudiobookRequest, publishStoryRequest } from '@/lib/pubsub';
+import { publishAudiobookRequest } from '@/lib/pubsub';
+import { startStoryGeneration } from '@/lib/story-generation';
 import {
   getAvailableVoices,
   getDefaultVoice,
@@ -4451,50 +4452,17 @@ function registerStoryTools(server: McpServer, authContext: McpAuthContext) {
           );
         }
 
-        const creditTransactions = [];
-        for (const item of pricing.breakdown) {
-          const eventType = getCreditEventType(item.serviceCode);
-          const ledgerEntry = await creditService.deductCredits(
-            author.authorId,
-            item.credits,
-            eventType,
-            story.storyId,
-          );
-          creditTransactions.push({
-            id: ledgerEntry.id,
-            amount: item.credits,
-            serviceCode: item.serviceCode,
-            label: getCreditServiceLabel(item.serviceCode),
-          });
-        }
-
-        const generationUpdates: Parameters<typeof storyService.updateStory>[1] = {
-          status: 'writing',
+        const generation = await startStoryGeneration({
+          authorId: author.authorId,
+          clerkUserId: author.clerkUserId,
+          storyId: story.storyId,
+          idempotencyKey: crypto.randomUUID(),
           features,
-          ...(input.deliveryAddress !== undefined
-            ? { deliveryAddress: input.deliveryAddress ?? undefined }
-            : {}),
-          ...(sanitizeOptionalText(input.customAuthor) !== undefined
-            ? { customAuthor: sanitizeOptionalText(input.customAuthor) ?? undefined }
-            : {}),
-          ...(sanitizeOptionalText(input.dedicationMessage) !== undefined
-            ? { dedicationMessage: sanitizeOptionalText(input.dedicationMessage) ?? undefined }
-            : {}),
-        };
-
-        await storyService.updateStory(story.storyId, generationUpdates);
-
-        const runId = crypto.randomUUID();
-        try {
-          await publishStoryRequest({
-            storyId: story.storyId,
-            runId,
-            timestamp: new Date().toISOString(),
-          });
-        } catch (error) {
-          console.error('Failed to publish story request from MCP tool:', error);
-          throw new McpToolUserError('Failed to queue story generation workflow.');
-        }
+          deliveryAddress: input.deliveryAddress,
+          customAuthor: sanitizeOptionalText(input.customAuthor),
+          dedicationMessage: sanitizeOptionalText(input.dedicationMessage),
+        });
+        const runId = generation.runId;
 
         const refreshedStory = ensureStoryOwnership(
           await storyService.getStoryById(story.storyId),
@@ -4513,9 +4481,9 @@ function registerStoryTools(server: McpServer, authContext: McpAuthContext) {
             features,
             creditUsage: {
               deducted: pricing.total,
-              transactions: creditTransactions,
+              transactions: [],
               previousBalance: currentBalance,
-              newBalance: Math.max(0, currentBalance - pricing.total),
+              newBalance: generation.remainingCredits,
             },
             generationExpectations: {
               expectedWaitSeconds: 300,

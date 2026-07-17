@@ -24,6 +24,7 @@ export * from './promotion-codes';
 export * from './leads';
 export * from './faq';
 export * from './partners';
+export * from './analytics';
 
 // Relations
 export * from './relations';

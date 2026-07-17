@@ -17,7 +17,6 @@ import { useTranslations } from 'next-intl';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
 import { SELF_PRINTING_SERVICE_CODE } from '@/constants/pricing';
 import FaqComponent from '@/components/faq/FaqComponent';
-import { trackEvent } from '@/lib/analytics';
 
 interface CreditPackage {
   id: number;
@@ -101,7 +100,6 @@ export default function PricingPage() {
   }, [tPricingPage]);
 
   useEffect(() => {
-    trackEvent('pricing_viewed');
     fetchServices();
     fetchCreditPackages();
   }, [fetchServices, fetchCreditPackages]);

@@ -59,51 +59,40 @@ async function gotoAndCheck(page: Page, fullPath: string) {
   expect(errorLike).toBeLessThan(2);
 }
 
-for (const locale of LOCALES) {
-  test.describe(`i18n coverage for ${locale}`, () => {
-    test.beforeEach(async ({ page }) => {
-      await page.addInitScript(
-        ({ l, tag }: { l: string; tag: string }) => {
-          try {
-            localStorage.setItem('mythoria-locale', l);
-          } catch {}
-          (window as unknown as { __i18nMissingLogs: string[] }).__i18nMissingLogs = [] as string[];
-          const origWarn = window.console.warn;
-          window.console.warn = (...args: unknown[]) => {
-            if (args.length && typeof args[0] === 'string' && args[0].startsWith(tag)) {
-              try {
-                (window as unknown as { __i18nMissingLogs: string[] }).__i18nMissingLogs.push(
-                  args[0] as string,
-                );
-              } catch {}
-            }
-            return origWarn(...(args as [unknown]));
-          };
-        },
-        { l: locale, tag: MISSING_LOG_TAG },
-      );
-    });
-
-    test(`static pages (${locale})`, async ({ page }) => {
-      for (const r of STATIC_ROUTES) {
-        await gotoAndCheck(page, `/${locale}/${r}`.replace(/\/$/, ''));
+test('all anonymous locale pages contain complete translations', async ({ page }) => {
+  await page.addInitScript((tag: string) => {
+    (window as unknown as { __i18nMissingLogs: string[] }).__i18nMissingLogs = [];
+    const origWarn = window.console.warn;
+    window.console.warn = (...args: unknown[]) => {
+      if (args.length && typeof args[0] === 'string' && args[0].startsWith(tag)) {
+        (window as unknown as { __i18nMissingLogs: string[] }).__i18nMissingLogs.push(
+          args[0] as string,
+        );
       }
+      return origWarn(...(args as [unknown]));
+    };
+  }, MISSING_LOG_TAG);
+
+  for (const locale of LOCALES) {
+    await test.step(locale, async () => {
+      await page.goto(`/${locale}`, { waitUntil: 'domcontentloaded' });
+      await page.evaluate((currentLocale) => {
+        localStorage.setItem('mythoria-locale', currentLocale);
+        (window as unknown as { __i18nMissingLogs: string[] }).__i18nMissingLogs = [];
+      }, locale);
+
+      for (const route of STATIC_ROUTES) {
+        await gotoAndCheck(page, `/${locale}/${route}`.replace(/\/$/, ''));
+      }
+      for (const route of SAMPLE_DYNAMIC) {
+        await gotoAndCheck(page, `/${locale}/${route}`);
+      }
+
       const logs = await collectMissingLogs(page);
       expect(
         logs,
-        `Missing translation console logs (static pages ${locale}):\n${logs.join('\n')}`,
+        `Missing translation console logs (${locale}):\n${logs.join('\n')}`,
       ).toHaveLength(0);
     });
-
-    test(`sample dynamic content (${locale})`, async ({ page }) => {
-      for (const dyn of SAMPLE_DYNAMIC) {
-        await gotoAndCheck(page, `/${locale}/${dyn}`);
-      }
-      const logs = await collectMissingLogs(page);
-      expect(
-        logs,
-        `Missing translation console logs (dynamic content ${locale}):\n${logs.join('\n')}`,
-      ).toHaveLength(0);
-    });
-  });
-}
+  }
+});

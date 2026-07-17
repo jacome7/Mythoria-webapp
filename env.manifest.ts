@@ -480,6 +480,13 @@ export const envManifest: EnvVarDescriptor[] = [
     note: 'Required for server-side Measurement Protocol events.',
   },
   {
+    name: 'ANALYTICS_SCHEDULER_SERVICE_ACCOUNT',
+    required: true,
+    scopes: ['prod', 'runtime'],
+    source: 'substitution',
+    note: 'OIDC identity allowed to invoke analytics outbox and reconciliation endpoints.',
+  },
+  {
     name: 'NEXT_PUBLIC_GOOGLE_ADS_ID',
     required: true,
     scopes: ['prod', 'build', 'public'],

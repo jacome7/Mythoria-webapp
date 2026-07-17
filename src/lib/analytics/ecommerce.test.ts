@@ -35,7 +35,6 @@ describe('GA4 ecommerce payloads', () => {
     expect(payload).toEqual({
       currency: 'EUR',
       value: 38,
-      gross_value: 38,
       credits_purchased: 400,
       items: [
         {
@@ -43,8 +42,8 @@ describe('GA4 ecommerce payloads', () => {
           item_name: '100 Mythoria Credits',
           item_brand: 'Mythoria',
           item_category: 'Credits',
+          item_variant: 'starter',
           price: 10,
-          gross_unit_price: 10,
           quantity: 2,
         },
         {
@@ -52,8 +51,8 @@ describe('GA4 ecommerce payloads', () => {
           item_name: '200 Mythoria Credits',
           item_brand: 'Mythoria',
           item_category: 'Credits',
+          item_variant: 'creator',
           price: 18,
-          gross_unit_price: 18,
           quantity: 1,
         },
       ],
@@ -66,7 +65,7 @@ describe('GA4 ecommerce payloads', () => {
       currency: 'eur',
       grossAmountCents: 3800,
       taxAmountCents: 215,
-      paymentType: 'card',
+      customerType: 'new',
       orderTotals,
     });
 
@@ -80,9 +79,8 @@ describe('GA4 ecommerce payloads', () => {
       currency: 'EUR',
       value: 35.85,
       tax: 2.15,
-      gross_value: 38,
       credits_purchased: 400,
-      payment_type: 'card',
+      customer_type: 'new',
     });
     expect(payload.items.map((item) => item.item_id)).toEqual([
       'credit_package_starter',
@@ -101,7 +99,8 @@ describe('GA4 ecommerce payloads', () => {
       orderTotals,
     });
 
-    expect(payload).toMatchObject({ value: 36, tax: 2, shipping: 1, gross_value: 39 });
+    expect(payload).toMatchObject({ value: 36, tax: 2, shipping: 1 });
+    expect(payload).not.toHaveProperty('gross_value');
   });
 
   it('accepts only consented genuine client IDs and numeric session IDs', () => {

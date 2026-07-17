@@ -37,8 +37,8 @@ export function useAudioPlayer({
       const audioUrl = `${audioEndpoint}/${chapterIndex}`;
 
       try {
-        trackEvent('audiobook_started', {
-          action_type: 'audiobook',
+        trackEvent('audiobook_interaction', {
+          action_type: 'download',
           story_id: trackingData?.story_id,
           chapter_index: chapterIndex,
           interaction_type: 'download_audio',
@@ -179,7 +179,8 @@ export function useAudioPlayer({
 
           try {
             await audio.play();
-            trackEvent('audiobook_started', {
+            trackEvent('audiobook_interaction', {
+              action_type: 'play',
               story_id: trackingData?.story_id,
               chapter_index: chapterIndex,
               total_chapters: totalChaptersRef.current,
@@ -214,7 +215,8 @@ export function useAudioPlayer({
 
           try {
             await audio.play();
-            trackEvent('audiobook_started', {
+            trackEvent('audiobook_interaction', {
+              action_type: 'play',
               story_id: trackingData?.story_id,
               chapter_index: chapterIndex,
               total_chapters: totalChaptersRef.current,

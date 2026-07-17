@@ -1,8 +1,8 @@
 'use client';
 
-import { Show, RedirectToSignIn } from '@clerk/nextjs';
+import { Show, RedirectToSignIn, useAuth } from '@clerk/nextjs';
 import Image from 'next/image';
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useCallback, Suspense, useRef } from 'react';
 import { useSearchParams, useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/routing';
@@ -48,6 +48,8 @@ export default function Step4PageWrapper() {
 }
 
 function Step4Page() {
+  const { isSignedIn } = useAuth();
+  const hasTrackedStepView = useRef(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const params = useParams() as { locale?: string } | null;
@@ -68,6 +70,12 @@ function Step4Page() {
   );
   const [novelStyle, setNovelStyle] = useState<NovelStyle | ''>('');
   const [graphicalStyle, setGraphicalStyle] = useState<GraphicalStyle | ''>('');
+
+  useEffect(() => {
+    if (!isSignedIn || hasTrackedStepView.current) return;
+    hasTrackedStepView.current = true;
+    trackStoryCreation.stepViewed({ step: 4 });
+  }, [isSignedIn]);
   const [literaryPersona, setLiteraryPersona] = useState<LiteraryPersona | ''>(defaultPersona);
   const [customWritingPersona, setCustomWritingPersona] = useState<WritingPersonaSettings | null>(
     null,

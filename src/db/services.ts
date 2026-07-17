@@ -14,6 +14,7 @@ import {
   printRequests,
   promotionCodes,
   promotionCodeRedemptions,
+  analyticsOutbox,
 } from './schema';
 import { eq, and, or, count, desc, sql, asc, max } from 'drizzle-orm';
 import { ClerkUserForSync } from '@/types/clerk';
@@ -38,24 +39,46 @@ export const authorService = {
     displayName: string;
     preferredLocale?: string;
     mobilePhone?: string;
+    signUpMethod?: string;
   }) {
     const normalizedLocale = normalizeLocale(authorData.preferredLocale);
-    const [author] = await db
-      .insert(authors)
-      .values({
-        clerkUserId: authorData.clerkUserId,
-        email: authorData.email,
-        displayName: authorData.displayName,
-        preferredLocale: normalizedLocale,
-        ...(authorData.mobilePhone && { mobilePhone: authorData.mobilePhone }),
-      })
-      .returning();
-
-    // Initialize credits for new author with initial credits from pricing table
     const initialCredits = await pricingService.getInitialAuthorCredits();
-    await creditService.initializeAuthorCredits(author.authorId, initialCredits);
+    return db.transaction(async (tx) => {
+      const [author] = await tx
+        .insert(authors)
+        .values({
+          clerkUserId: authorData.clerkUserId,
+          email: authorData.email,
+          displayName: authorData.displayName,
+          preferredLocale: normalizedLocale,
+          ...(authorData.mobilePhone && { mobilePhone: authorData.mobilePhone }),
+        })
+        .returning();
 
-    return author;
+      await tx.insert(creditLedger).values({
+        authorId: author.authorId,
+        amount: initialCredits,
+        creditEventType: 'initialCredit',
+        idempotencyKey: `initial_credit:${authorData.clerkUserId}`,
+      });
+      await tx.insert(authorCreditBalances).values({
+        authorId: author.authorId,
+        totalCredits: initialCredits,
+        lastUpdated: new Date(),
+      });
+      await tx
+        .insert(analyticsOutbox)
+        .values({
+          dedupeKey: `sign_up:${authorData.clerkUserId}`,
+          eventName: 'sign_up',
+          userId: authorData.clerkUserId,
+          params: { method: authorData.signUpMethod || 'unknown' },
+          availableAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        })
+        .onConflictDoNothing({ target: analyticsOutbox.dedupeKey });
+
+      return author;
+    });
   },
   async syncUserOnSignIn(clerkUser: ClerkUserForSync) {
     const currentTime = new Date();
@@ -121,12 +144,33 @@ export const authorService = {
       });
 
       try {
-        // Try to insert new user
-        const [newAuthor] = await db.insert(authors).values(newAuthorData).returning();
-
-        // Initialize credits for new author with initial credits from pricing table
         const initialCredits = await pricingService.getInitialAuthorCredits();
-        await creditService.initializeAuthorCredits(newAuthor.authorId, initialCredits);
+        const newAuthor = await db.transaction(async (tx) => {
+          const [created] = await tx.insert(authors).values(newAuthorData).returning();
+          await tx.insert(creditLedger).values({
+            authorId: created.authorId,
+            amount: initialCredits,
+            creditEventType: 'initialCredit',
+            idempotencyKey: `initial_credit:${clerkUser.id}`,
+          });
+          await tx.insert(authorCreditBalances).values({
+            authorId: created.authorId,
+            totalCredits: initialCredits,
+            lastUpdated: new Date(),
+          });
+          await tx
+            .insert(analyticsOutbox)
+            .values({
+              dedupeKey: `sign_up:${clerkUser.id}`,
+              eventName: 'sign_up',
+              userId: clerkUser.id,
+              params: { method: 'unknown' },
+              occurredAt: currentTime,
+              availableAt: new Date(currentTime.getTime() + 24 * 60 * 60 * 1000),
+            })
+            .onConflictDoNothing({ target: analyticsOutbox.dedupeKey });
+          return created;
+        });
         console.log(
           'Created new user on sign-in:',
           newAuthor.clerkUserId,

@@ -7,86 +7,74 @@ jest.mock('next/server', () => ({
   },
 }));
 
-jest.mock('crypto', () => ({ randomUUID: () => 'run-uuid-1' }));
-
 const getCurrentAuthorMock = jest.fn();
-const getStoryByIdMock = jest.fn();
-const updateStoryMock = jest.fn();
-const publishStoryRequestMock = jest.fn();
+const startStoryGenerationMock = jest.fn();
 
-jest.mock('@/lib/auth', () => ({
-  getCurrentAuthor: () => getCurrentAuthorMock(),
+jest.mock('@/lib/auth', () => ({ getCurrentAuthor: () => getCurrentAuthorMock() }));
+jest.mock('@/lib/story-generation', () => ({
+  startStoryGeneration: (...args: unknown[]) => startStoryGenerationMock(...args),
 }));
-
-jest.mock('@/db/services', () => ({
-  storyService: {
-    getStoryById: (...args: unknown[]) => getStoryByIdMock(...args),
-    updateStory: (...args: unknown[]) => updateStoryMock(...args),
-  },
-}));
-
-jest.mock('@/lib/pubsub', () => ({
-  publishStoryRequest: (...args: unknown[]) => publishStoryRequestMock(...args),
-}));
+jest.mock('@/db', () => ({ db: {} }));
 
 import type { NextRequest } from 'next/server';
 import { POST } from './route';
 
+const validBody = {
+  storyId: '11111111-1111-4111-8111-111111111111',
+  idempotencyKey: '22222222-2222-4222-8222-222222222222',
+  features: { ebook: true, printed: false, audiobook: false },
+};
+
+const requestFor = (body: unknown) =>
+  ({
+    json: async () => body,
+    cookies: { get: () => undefined },
+  }) as unknown as NextRequest;
+
 describe('POST /api/stories/complete', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    getCurrentAuthorMock.mockResolvedValue({ authorId: 'author-1' });
-  });
-
-  it('validates request schema with zod and returns 400 for bad payload', async () => {
-    const response = (await POST({
-      json: async () => ({ storyId: 'story-1', features: { ebook: true } }),
-    } as unknown as NextRequest)) as { status: number; json: () => Promise<unknown> };
-
-    expect(response.status).toBe(400);
-    const payload = (await response.json()) as { error: string; details: unknown[] };
-    expect(payload.error).toBe('Invalid request data');
-    expect(payload.details.length).toBeGreaterThan(0);
-    expect(getStoryByIdMock).not.toHaveBeenCalled();
-  });
-
-  it('validates ownership before starting workflow', async () => {
-    getStoryByIdMock.mockResolvedValue({ storyId: 'story-1', authorId: 'other-author' });
-
-    const response = (await POST({
-      json: async () => ({
-        storyId: 'story-1',
-        features: { ebook: true, printed: false, audiobook: false },
-      }),
-    } as unknown as NextRequest)) as { status: number; json: () => Promise<unknown> };
-
-    expect(response.status).toBe(404);
-    await expect(response.json()).resolves.toEqual({ error: 'Story not found' });
-    expect(updateStoryMock).not.toHaveBeenCalled();
-  });
-
-  it('returns 500 when workflow publish fails after status update', async () => {
-    getStoryByIdMock.mockResolvedValue({ storyId: 'story-1', authorId: 'author-1' });
-    updateStoryMock.mockResolvedValue({});
-    publishStoryRequestMock.mockRejectedValue(new Error('pubsub down'));
-
-    const response = (await POST({
-      json: async () => ({
-        storyId: 'story-1',
-        features: { ebook: true, printed: true, audiobook: true },
-      }),
-    } as unknown as NextRequest)) as { status: number; json: () => Promise<unknown> };
-
-    expect(response.status).toBe(500);
-    await expect(response.json()).resolves.toEqual({
-      error: 'Failed to start story generation workflow',
+    getCurrentAuthorMock.mockResolvedValue({
+      authorId: 'author-1',
+      clerkUserId: 'user-1',
     });
-    expect(updateStoryMock).toHaveBeenCalledWith(
-      'story-1',
-      expect.objectContaining({ status: 'writing' }),
+  });
+
+  it('returns 400 for a request without an idempotency key', async () => {
+    const response = await POST(
+      requestFor({ storyId: validBody.storyId, features: validBody.features }),
     );
-    expect(publishStoryRequestMock).toHaveBeenCalledWith(
-      expect.objectContaining({ storyId: 'story-1', runId: 'run-uuid-1' }),
+    expect(response.status).toBe(400);
+    expect(startStoryGenerationMock).not.toHaveBeenCalled();
+  });
+
+  it('returns the durable queue result with 202', async () => {
+    startStoryGenerationMock.mockResolvedValue({
+      storyId: validBody.storyId,
+      runId: '33333333-3333-4333-8333-333333333333',
+      status: 'queued',
+      remainingCredits: 7,
+      duplicate: false,
+    });
+    const response = await POST(requestFor(validBody));
+    expect(response.status).toBe(202);
+    await expect(response.json()).resolves.toMatchObject({
+      status: 'queued',
+      remainingCredits: 7,
+    });
+    expect(startStoryGenerationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        authorId: 'author-1',
+        clerkUserId: 'user-1',
+        idempotencyKey: validBody.idempotencyKey,
+      }),
     );
+  });
+
+  it('maps insufficient credits to a conflict without publishing', async () => {
+    startStoryGenerationMock.mockRejectedValue(new Error('Insufficient credits'));
+    const response = await POST(requestFor(validBody));
+    expect(response.status).toBe(409);
+    await expect(response.json()).resolves.toEqual({ error: 'Insufficient credits' });
   });
 });

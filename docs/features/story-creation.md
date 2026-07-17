@@ -197,11 +197,11 @@ Guarding logic:
 
 #### Credits & Pricing
 
-| Endpoint                                | Method | Purpose                                   |
-| --------------------------------------- | ------ | ----------------------------------------- |
-| `/api/pricing/services`                 | GET    | Fetch service pricing (eBook generation). |
-| `/api/my-credits`                       | GET    | Fetch current credit balance.             |
-| `/api/stories/{storyId}/deduct-credits` | POST   | Deduct credits before generation.         |
+| Endpoint                | Method | Purpose                                        |
+| ----------------------- | ------ | ---------------------------------------------- |
+| `/api/pricing/services` | GET    | Fetch service pricing (eBook generation).      |
+| `/api/my-credits`       | GET    | Fetch current credit balance.                  |
+| `/api/stories/complete` | POST   | Atomically debit credits and queue generation. |
 
 ### AI Structuring & Generation Workflow
 
@@ -290,7 +290,7 @@ Story creation events are tracked through `trackStoryCreation` in `src/lib/analy
 - **Add new story fields:** extend `src/types/story.ts`, update the story schema, and wire new fields into Step 4’s `PUT /api/my-stories/{storyId}` request.
 - **Add new styles/personas:** update `src/types/story-enums.ts` and ensure localized labels are present.
 - **Modify AI inputs:** image analysis lives in SGW `src/services/image-analysis.ts` + `src/prompts/image-analysis.json` (schema `src/prompts/schemas/image-metadata.json`); structuring in SGW `src/services/story-structure.ts` + `src/prompts/en-US/text-structure.json`. The webapp starts the async job via `/api/stories/genai-structure` and polls `/api/jobs/:jobId`.
-- **Change credits logic:** update `/api/stories/{storyId}/deduct-credits` and the pricing service pipeline.
+- **Change credits logic:** update the central story-generation service and its pricing pipeline; clients must never debit credits separately.
 
 ---
 

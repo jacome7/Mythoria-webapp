@@ -37,13 +37,17 @@ describe('useGoogleAnalytics', () => {
     );
 
     mockPathname = '/en-US/pricing';
-    mockSearchParams = new URLSearchParams('package=starter');
+    mockSearchParams = new URLSearchParams(
+      'package=starter&token=secret&utm_source=google&utm_campaign=summer',
+    );
     rerender(<AnalyticsHarness />);
 
     expect(mockTrackEvent).toHaveBeenCalledTimes(2);
     expect(mockTrackEvent).toHaveBeenLastCalledWith(
       'page_view',
-      expect.objectContaining({ page_path: '/en-US/pricing?package=starter' }),
+      expect.objectContaining({
+        page_path: '/en-US/pricing?utm_source=google&utm_campaign=summer',
+      }),
     );
   });
 });

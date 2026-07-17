@@ -1,6 +1,7 @@
 import {
   buildStripeCheckoutLineItems,
   buildPaymentOrderPurchasePayload,
+  getStripeRefundAmountCents,
   mapToStripeCheckoutLocale,
   paymentService,
   type CreditPackage,
@@ -209,9 +210,9 @@ describe('buildPaymentOrderPurchasePayload', () => {
       transaction_id: 'order-123',
       value: 34.91,
       tax: 2.09,
-      gross_value: 37,
-      payment_type: 'card',
     });
+    expect(webhookPayload).not.toHaveProperty('gross_value');
+    expect(webhookPayload).not.toHaveProperty('payment_type');
     expect(webhookPayload.items).toHaveLength(2);
   });
 
@@ -227,9 +228,35 @@ describe('buildPaymentOrderPurchasePayload', () => {
     expect(buildPaymentOrderPurchasePayload(order)).toMatchObject({
       transaction_id: 'legacy-order',
       value: 9.99,
-      gross_value: 9.99,
       tax: 0,
       items: [{ item_id: 'credit_package_legacy_100', quantity: 1, price: 9.99 }],
     });
+    expect(buildPaymentOrderPurchasePayload(order)).not.toHaveProperty('gross_value');
+  });
+});
+
+describe('getStripeRefundAmountCents', () => {
+  it('uses the webhook delta for repeated partial refunds', () => {
+    const charge = { amount_refunded: 700, refunds: { data: [] } } as any;
+    const event = {
+      data: { object: charge, previous_attributes: { amount_refunded: 400 } },
+    } as any;
+
+    expect(getStripeRefundAmountCents(event, charge)).toBe(300);
+  });
+
+  it('falls back to Stripe latest refund amount when previous attributes are absent', () => {
+    const charge = {
+      amount_refunded: 700,
+      refunds: {
+        data: [
+          { amount: 400, created: 10 },
+          { amount: 300, created: 20 },
+        ],
+      },
+    } as any;
+    const event = { data: { object: charge } } as any;
+
+    expect(getStripeRefundAmountCents(event, charge)).toBe(300);
   });
 });

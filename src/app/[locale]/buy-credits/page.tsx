@@ -13,7 +13,7 @@ import PromotionCodeRedeemer from '@/components/PromotionCodeRedeemer';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
 import { useCart } from '@/hooks/useCart';
 import { getGoogleAnalyticsContext, trackCommerce } from '@/lib/analytics';
-import type { GA4CheckoutPayload, GA4PurchasePayload } from '@/lib/analytics/ecommerce';
+import type { GA4CheckoutPayload, GA4EcommerceItem } from '@/lib/analytics/ecommerce';
 import type { CreditPackage } from '@/types/cart';
 
 const getIconComponent = (iconName: string) => {
@@ -23,6 +23,16 @@ const getIconComponent = (iconName: string) => {
       return <ShoppingCart />;
   }
 };
+
+const toAnalyticsItem = (pkg: CreditPackage, quantity: number): GA4EcommerceItem => ({
+  item_id: `credit_package_${pkg.key || pkg.id}`,
+  item_name: `${pkg.credits} Mythoria Credits`,
+  item_brand: 'Mythoria',
+  item_category: 'Credits',
+  item_variant: pkg.key || String(pkg.id),
+  price: pkg.price,
+  quantity,
+});
 
 function BuyCreditsContent() {
   const searchParams = useSearchParams();
@@ -98,12 +108,6 @@ function BuyCreditsContent() {
           }
 
           if (data.status === 'completed') {
-            if (data.ecommerce) {
-              trackCommerce.creditPurchase(data.ecommerce as GA4PurchasePayload);
-            } else {
-              console.error('Completed Stripe order did not include its ecommerce payload');
-            }
-
             setPaymentStatus('success');
             setPaymentMessage(tBuyCreditsPage('payment.success'));
             clearCart();
@@ -160,6 +164,11 @@ function BuyCreditsContent() {
         (a: CreditPackage, b: CreditPackage) => a.price - b.price,
       );
       setCreditPackages(sortedPackages);
+      trackCommerce.viewItemList({
+        item_list_id: 'credit_packages',
+        item_list_name: 'Mythoria credit packages',
+        items: sortedPackages.map((pkg: CreditPackage) => toAnalyticsItem(pkg, 1)),
+      });
     } catch (error) {
       console.error('Error fetching credit packages:', error);
       setPackagesError(tPricingPage('errors.loadingFailed'));
@@ -198,8 +207,47 @@ function BuyCreditsContent() {
   };
 
   const handleAddToCart = (packageId: number) => {
+    const pkg = getPackageById(packageId);
+    if (pkg) {
+      const item = toAnalyticsItem(pkg, 1);
+      trackCommerce.selectItem({
+        item_list_id: 'credit_packages',
+        item_list_name: 'Mythoria credit packages',
+        items: [item],
+      });
+      trackCommerce.addToCart({ currency: 'EUR', value: pkg.price, items: [item] });
+    }
     addToCart(packageId);
     setTimeout(scrollToCartItems, 100);
+  };
+
+  const handleUpdateQuantity = (packageId: number, quantity: number) => {
+    const current = cart.find((item) => item.packageId === packageId)?.quantity || 0;
+    const pkg = getPackageById(packageId);
+    if (pkg && quantity !== current) {
+      const delta = Math.abs(quantity - current);
+      const analytics = {
+        currency: 'EUR',
+        value: pkg.price * delta,
+        items: [toAnalyticsItem(pkg, delta)],
+      };
+      if (quantity > current) trackCommerce.addToCart(analytics);
+      else trackCommerce.removeFromCart(analytics);
+    }
+    updateQuantity(packageId, quantity);
+  };
+
+  const handleRemoveFromCart = (packageId: number) => {
+    const current = cart.find((item) => item.packageId === packageId);
+    const pkg = getPackageById(packageId);
+    if (pkg && current) {
+      trackCommerce.removeFromCart({
+        currency: 'EUR',
+        value: pkg.price * current.quantity,
+        items: [toAnalyticsItem(pkg, current.quantity)],
+      });
+    }
+    removeFromCart(packageId);
   };
 
   const handlePlaceOrder = async () => {
@@ -242,10 +290,7 @@ function BuyCreditsContent() {
       }
 
       if (data.ecommerce) {
-        trackCommerce.checkoutStarted({
-          ...(data.ecommerce as GA4CheckoutPayload),
-          payment_method: 'stripe',
-        });
+        trackCommerce.checkoutStarted(data.ecommerce as GA4CheckoutPayload);
       } else {
         console.error('Stripe checkout did not include its ecommerce payload');
       }
@@ -396,8 +441,8 @@ function BuyCreditsContent() {
                       creditPackages={creditPackages}
                       tBuyCreditsPage={tBuyCreditsPage}
                       tPricingPage={tPricingPage}
-                      updateQuantity={updateQuantity}
-                      removeFromCart={removeFromCart}
+                      updateQuantity={handleUpdateQuantity}
+                      removeFromCart={handleRemoveFromCart}
                       subtotal={subtotal}
                       vatAmount={vatAmount}
                       total={total}

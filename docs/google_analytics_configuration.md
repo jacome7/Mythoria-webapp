@@ -1,58 +1,55 @@
 # Mythoria Google Analytics configuration
 
-## Environment
+## Production target
 
-Configure these values in every deployed environment:
+- GA4 property: `490896080`
+- Web stream: `11298562317`
+- Measurement ID: `G-86D0QFW197`
+- Google Ads account: `467-414-9195`
 
-- `NEXT_PUBLIC_GA_MEASUREMENT_ID`: GA4 web-stream measurement ID.
-- `GOOGLE_ANALYTICS_API_SECRET`: Measurement Protocol API secret.
-- `NEXT_PUBLIC_GOOGLE_TAG_ID`: shared Google Tag ID when used.
-- `NEXT_PUBLIC_GOOGLE_ADS_ID`: direct Google Ads conversion ID retained during migration.
-- `NEXT_PUBLIC_GA_DEBUG`: set to `true` only for GA4 DebugView validation.
+Do not modify linked Google Ads account `340-593-2333`.
 
-The legacy `NEXT_PUBLIC_GA_DEBUG_MODE` name is not used.
+## Key events and Ads goals
 
-## GA4 and Google Ads setup
+Keep exactly these GA4 key events:
 
-1. Link the GA4 property to Google Ads.
-2. Confirm `sign_up`, `story_generation_requested`, and `purchase` in GA4 Realtime/DebugView before marking them as key events.
-3. Confirm `purchase` contains one unique order `transaction_id`, `EUR` currency, net `value`, separate `tax`, exact `gross_value`, and every package in `items`.
-4. Import the three GA4 key events into Google Ads as Primary conversions.
-5. Change the existing direct Ads conversions to Secondary after the imported conversions are verified. Do not optimize against both delivery mechanisms as Primary.
+- `sign_up`
+- `story_generation_completed`
+- `purchase`
 
-Recommended counting:
+In Ads, imported `sign_up` is Primary for acquisition, imported `purchase` is Primary for revenue, and imported `story_generation_completed` is Secondary. Existing direct conversion actions are Secondary. `story_generation_requested` is diagnostic and is not imported.
 
-- `sign_up`: one.
-- `story_generation_requested`: every if each generated story has value; otherwise one for activation-focused campaigns.
-- `purchase`: every, using the event value.
+## Custom definitions
 
-## Validation checklist
+Register these event-scoped dimensions:
 
-For a release candidate:
+- `landing_slug`
+- `cta_placement`
+- `primary_intent`
+- `step_number`
+- `blocked_reason`
+- `failure_stage`
+- `failure_code`
+- `action_type`
+- `customer_type`
 
-1. Enable `NEXT_PUBLIC_GA_DEBUG=true` in a non-production environment.
-2. Accept analytics consent and verify one manual `page_view` on initial load and each SPA navigation.
-3. Create an account and verify `user_id` is set before `sign_up`, with a stable `method`; reload and confirm signup is not emitted again.
-4. Complete the story wizard and verify one `story_generation_requested` with `story_id`, workflow `run_id`, and credits; verify no `story_published` event.
-5. Start a multi-package/multi-quantity Stripe test checkout and verify `begin_checkout` contains all server-returned items.
-6. Complete the payment and verify one deduplicated `purchase` for the order ID with all items, net value, tax, and gross charge.
-7. Inspect the server logs for Measurement Protocol failures. A missing/denied analytics consent or missing GA client ID intentionally suppresses server delivery.
-8. Submit a representative payload to Google's non-reporting strict Measurement Protocol debug endpoint before production rollout.
+Register these event-scoped metrics:
 
-## Suggested GA4 custom definitions
+- `credits_spent`
+- `credits_purchased`
+- `duration_seconds`
 
-Register event-scoped custom dimensions/metrics only when they will be used in reports:
+Do not register application, payment, story, workflow, transaction, client, session, or user IDs.
 
-- Dimensions: `story_id`, `run_id`, `story_genre`, `payment_type`.
-- Metrics: `credits_spent`, `credits_purchased`, `gross_value`.
+## Privacy and validation
 
-GA4's built-in ecommerce fields (`transaction_id`, `currency`, `value`, `tax`, and item fields) do not need custom definitions.
+- Keep Enhanced Measurement scroll enabled; do not add global custom scroll events.
+- Redact authentication, payment, session, token, code, and state query parameters while retaining allowlisted campaign attribution.
+- Validate Measurement Protocol payloads using `/debug/mp/collect` with `ENFORCE_RECOMMENDATIONS` before EU production delivery.
+- Treat a 2xx delivery response as transport acceptance, not schema validation.
 
-## Funnels
+## Release checks
 
-- Acquisition: `page_view` → `sign_up`.
-- Activation: `sign_up` → `story_creation_started` → story step events → `story_generation_requested`.
-- Revenue: pricing `page_view` → `begin_checkout` → `purchase`.
-- Retention: first `purchase` → paid actions → repeat `purchase`.
+Verify one server `sign_up`, one requested and one terminal event per generation run, one purchase per Stripe order, idempotent refunds, consent denial suppression, sanitized URLs, and the landing 50%-visible-for-one-second rule. Production validation must not perform a live card charge.
 
-See [analytics.md](analytics.md) for payload semantics, consent behavior, and deferred improvements.
+See [analytics.md](analytics.md) for lifecycle and payload semantics.

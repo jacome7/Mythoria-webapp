@@ -40,7 +40,8 @@ export const PromotionCodeRedeemer: React.FC<Props> = ({ onRedeemed, compact }) 
       setStatus('success');
       // Always localize success client-side to respect current locale.
       setMessage(tVoucher('success', { credits: data.creditsGranted, code: data.code }));
-      trackEvent('promo_code_redeemed', {
+      trackEvent('earn_virtual_currency', {
+        virtual_currency_name: 'credits',
         promo_code: data.code,
         credits_granted: data.creditsGranted,
         new_balance: data.newBalance,

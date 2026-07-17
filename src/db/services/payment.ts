@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import { and, desc, eq, ne } from 'drizzle-orm';
+import { and, count, desc, eq, ne, sql } from 'drizzle-orm';
 
 import { db } from '../index';
 import {
@@ -8,9 +8,11 @@ import {
   paymentEvents,
   paymentMethods,
   paymentOrders,
+  analyticsOutbox,
+  authorCreditBalances,
+  creditLedger,
   type PaymentOrder,
 } from '../schema';
-import { ga4Service } from '../../lib/analytics/ga4';
 import {
   buildCheckoutPayload,
   buildPurchasePayload,
@@ -166,7 +168,10 @@ function mergeMetadata(
 }
 
 /** Build the authoritative GA4 purchase from the stored order and Stripe's final totals. */
-export function buildPaymentOrderPurchasePayload(order: PaymentOrder): GA4PurchasePayload {
+export function buildPaymentOrderPurchasePayload(
+  order: PaymentOrder,
+  customerType?: 'new' | 'returning',
+): GA4PurchasePayload {
   const metadata = order.metadata as StripeCheckoutMetadata | null;
   const creditBundle = order.creditBundle as { credits: number; price: number };
   const grossAmountCents = metadata?.stripe?.amountTotal ?? order.amount;
@@ -193,9 +198,20 @@ export function buildPaymentOrderPurchasePayload(order: PaymentOrder): GA4Purcha
     grossAmountCents,
     taxAmountCents: metadata?.stripe?.totalDetails?.amount_tax ?? 0,
     shippingAmountCents: metadata?.stripe?.totalDetails?.amount_shipping ?? 0,
-    paymentType: metadata?.stripe?.paymentMethodType || undefined,
+    customerType,
     orderTotals,
   });
+}
+
+export function getStripeRefundAmountCents(event: Stripe.Event, charge: Stripe.Charge): number {
+  const previous = event.data.previous_attributes as { amount_refunded?: number } | undefined;
+  if (typeof previous?.amount_refunded === 'number') {
+    return Math.max(0, charge.amount_refunded - previous.amount_refunded);
+  }
+  const latestRefund = [...(charge.refunds?.data || [])].sort(
+    (left, right) => right.created - left.created,
+  )[0];
+  return latestRefund?.amount ?? charge.amount_refunded;
 }
 
 export function buildStripeCheckoutLineItems(
@@ -637,6 +653,7 @@ export const paymentService = {
             event.data.object as Stripe.Charge,
             'refund_completed',
             event.id,
+            getStripeRefundAmountCents(event, event.data.object as Stripe.Charge),
           );
           return { success: true, message: 'Stripe charge refund recorded' };
 
@@ -945,6 +962,7 @@ export const paymentService = {
     charge: Stripe.Charge,
     eventType: 'refund_completed' | 'refund_initiated',
     stripeEventId?: string,
+    refundAmountCents?: number,
   ) {
     const paymentIntentId = getStripeId(charge.payment_intent);
     if (!paymentIntentId) return;
@@ -952,14 +970,51 @@ export const paymentService = {
     const order = await this.getOrderByStripePaymentIntentId(paymentIntentId);
     if (!order) return;
 
-    await db.insert(paymentEvents).values({
-      orderId: order.orderId,
-      eventType,
-      data: {
-        provider: 'stripe',
-        stripeEventId,
-        charge,
-      },
+    await db.transaction(async (tx) => {
+      await tx.insert(paymentEvents).values({
+        orderId: order.orderId,
+        eventType,
+        data: {
+          provider: 'stripe',
+          stripeEventId,
+          charge,
+        },
+      });
+
+      const metadata = order.metadata as StripeCheckoutMetadata | null;
+      const analytics = metadata?.analytics;
+      if (
+        eventType === 'refund_completed' &&
+        analytics?.analytics_storage === 'granted' &&
+        analytics.client_id
+      ) {
+        const purchase = buildPaymentOrderPurchasePayload(order);
+        const authoritativeRefundAmount = refundAmountCents ?? charge.amount_refunded;
+        const fullRefund = authoritativeRefundAmount >= order.amount;
+        await tx
+          .insert(analyticsOutbox)
+          .values({
+            dedupeKey: `refund:${stripeEventId || `${charge.id}:${charge.amount_refunded}`}`,
+            eventName: 'refund',
+            clientId: analytics.client_id,
+            userId: analytics.user_id,
+            sessionId: Number.isSafeInteger(Number(analytics.session_id))
+              ? Number(analytics.session_id)
+              : undefined,
+            consent: {
+              analyticsStorage: 'granted',
+              adUserData: analytics.ad_user_data === 'granted' ? 'granted' : 'denied',
+              adPersonalization: analytics.ad_personalization === 'granted' ? 'granted' : 'denied',
+            },
+            params: {
+              transaction_id: order.orderId,
+              currency: order.currency.toUpperCase(),
+              value: authoritativeRefundAmount / 100,
+              ...(fullRefund ? { items: purchase.items } : {}),
+            },
+          })
+          .onConflictDoNothing({ target: analyticsOutbox.dedupeKey });
+      }
     });
 
     try {
@@ -1034,14 +1089,27 @@ export const paymentService = {
       completedOrder = updatedOrder;
 
       const creditBundle = updatedOrder.creditBundle as { credits: number; price: number };
-      const { creditService } = await import('../services');
-
-      await creditService.addCredits(
-        updatedOrder.authorId,
-        creditBundle.credits,
-        'creditPurchase',
-        updatedOrder.orderId,
-      );
+      await tx.insert(creditLedger).values({
+        authorId: updatedOrder.authorId,
+        amount: creditBundle.credits,
+        creditEventType: 'creditPurchase',
+        purchaseId: updatedOrder.orderId,
+        idempotencyKey: `purchase:${updatedOrder.orderId}`,
+      });
+      await tx
+        .insert(authorCreditBalances)
+        .values({
+          authorId: updatedOrder.authorId,
+          totalCredits: creditBundle.credits,
+          lastUpdated: new Date(),
+        })
+        .onConflictDoUpdate({
+          target: authorCreditBalances.authorId,
+          set: {
+            totalCredits: sql`${authorCreditBalances.totalCredits} + ${creditBundle.credits}`,
+            lastUpdated: new Date(),
+          },
+        });
 
       await tx.insert(paymentEvents).values([
         {
@@ -1061,6 +1129,43 @@ export const paymentService = {
         },
       ]);
 
+      const metadata = updatedOrder.metadata as StripeCheckoutMetadata | null;
+      const analytics = metadata?.analytics;
+      if (analytics?.analytics_storage === 'granted' && analytics.client_id) {
+        const [completedCount] = await tx
+          .select({ value: count() })
+          .from(paymentOrders)
+          .where(
+            and(
+              eq(paymentOrders.authorId, updatedOrder.authorId),
+              eq(paymentOrders.status, 'completed'),
+            ),
+          );
+        await tx
+          .insert(analyticsOutbox)
+          .values({
+            dedupeKey: `purchase:${updatedOrder.orderId}`,
+            eventName: 'purchase',
+            clientId: analytics.client_id,
+            userId: analytics.user_id,
+            sessionId: Number.isSafeInteger(Number(analytics.session_id))
+              ? Number(analytics.session_id)
+              : undefined,
+            consent: {
+              analyticsStorage: 'granted',
+              adUserData: analytics.ad_user_data === 'granted' ? 'granted' : 'denied',
+              adPersonalization: analytics.ad_personalization === 'granted' ? 'granted' : 'denied',
+            },
+            params: {
+              ...buildPaymentOrderPurchasePayload(
+                updatedOrder,
+                Number(completedCount?.value || 0) <= 1 ? 'new' : 'returning',
+              ),
+            },
+          })
+          .onConflictDoNothing({ target: analyticsOutbox.dedupeKey });
+      }
+
       console.log(
         `Order ${updatedOrder.orderId} completed - ${creditBundle.credits} credits added to user ${updatedOrder.authorId}`,
       );
@@ -1069,29 +1174,6 @@ export const paymentService = {
     if (!completedOrder) {
       console.log(`Order ${order.orderId} was completed by another webhook worker`);
       return;
-    }
-
-    try {
-      const metadata = completedOrder.metadata as StripeCheckoutMetadata | null;
-      const analytics = metadata?.analytics;
-      const parsedSessionId = Number(analytics?.session_id);
-
-      if (analytics?.analytics_storage === 'granted' && analytics.client_id) {
-        await ga4Service.sendPurchaseEvent({
-          ...buildPaymentOrderPurchasePayload(completedOrder),
-          client_id: analytics.client_id,
-          user_id: analytics.user_id,
-          ...(Number.isSafeInteger(parsedSessionId) && parsedSessionId > 0
-            ? { session_id: parsedSessionId }
-            : {}),
-          consent: {
-            adUserData: analytics.ad_user_data === 'granted' ? 'granted' : 'denied',
-            adPersonalization: analytics.ad_personalization === 'granted' ? 'granted' : 'denied',
-          },
-        });
-      }
-    } catch (error) {
-      console.error('Failed to send GA4 purchase event:', error);
     }
 
     try {

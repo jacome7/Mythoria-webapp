@@ -1,7 +1,7 @@
 'use client';
 
-import { Show, RedirectToSignIn } from '@clerk/nextjs';
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { Show, RedirectToSignIn, useAuth } from '@clerk/nextjs';
+import { useState, useEffect, useCallback, Suspense, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/routing';
@@ -28,6 +28,8 @@ export default function Step3PageWrapper() {
 }
 
 function Step3Page() {
+  const { isSignedIn } = useAuth();
+  const hasTrackedStepView = useRef(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const editStoryId = searchParams?.get('edit') ?? null;
@@ -43,6 +45,12 @@ function Step3Page() {
   const [editingCharacterId, setEditingCharacterId] = useState<string | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [characterToDelete, setCharacterToDelete] = useState<Character | null>(null);
+
+  useEffect(() => {
+    if (!isSignedIn || hasTrackedStepView.current) return;
+    hasTrackedStepView.current = true;
+    trackStoryCreation.stepViewed({ step: 3 });
+  }, [isSignedIn]);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [currentStoryId, setCurrentStoryId] = useState<string | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);

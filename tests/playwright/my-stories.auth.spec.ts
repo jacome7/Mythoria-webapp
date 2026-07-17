@@ -12,7 +12,7 @@ test.describe('Authenticated My Stories page', () => {
     // Expect absence of the signed out call-to-action and presence of the story-only toolbar.
     // Signed out container has a sign-in button; we assert it's not visible.
     const signInButton = page.getByRole('link', { name: /sign in/i });
-    if (await signInButton.isVisible()) {
+    if (await signInButton.first().isVisible()) {
       // If visible, then auth state failed to load; make this a hard failure with a hint.
       throw new Error(
         'Expected authenticated session, but sign-in button is visible. Ensure auth.setup.ts ran and credentials are valid.',

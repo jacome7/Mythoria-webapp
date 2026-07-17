@@ -18,30 +18,22 @@ export function useAuthTracking() {
     const prevSignedIn = prevSignedInRef.current;
     const currentSignedIn = isSignedIn;
     if (!prevSignedIn && currentSignedIn && user && user.createdAt) {
-      const createdAt = new Date(user.createdAt);
-      const now = new Date();
-      const timeDiff = now.getTime() - createdAt.getTime();
-      const isNewUser = timeDiff < 5 * 60 * 1000; // Within 5 minutes is considered "new"
       const method = normalizeAuthMethod(user.externalAccounts?.[0]?.provider);
 
       // Associate the event with Clerk's stable User-ID before emitting it.
       setUserId(user.id);
 
-      if (isNewUser && !hasTrackedAuthEventRef.current && !hasStoredSignupMarker(user.id)) {
-        trackAuth.signUp({
-          user_id: user.id,
-          method,
-        });
-        storeSignupMarker(user.id);
-        hasTrackedAuthEventRef.current = true;
-      } else if (!hasTrackedAuthEventRef.current) {
-        // Existing user logging in
+      if (!hasTrackedAuthEventRef.current) {
         trackAuth.login({
           user_id: user.id,
           method,
         });
         hasTrackedAuthEventRef.current = true;
       }
+
+      void fetch('/api/analytics/attribution/link', { method: 'POST' }).catch(() => {
+        // Attribution is best-effort and must never interrupt authentication.
+      });
 
       // Set user properties for analytics
       setUserProperties({
@@ -51,9 +43,8 @@ export function useAuthTracking() {
       });
     }
 
-    // Track logout (user went from signed in to not signed in)
     if (prevSignedIn && !currentSignedIn) {
-      trackAuth.logout();
+      setUserId(null);
     }
 
     // Update the ref for next comparison
@@ -67,8 +58,6 @@ export function useAuthTracking() {
   };
 }
 
-const signupMarkerKey = (userId: string): string => `mythoria:analytics:signup:${userId}`;
-
 export function normalizeAuthMethod(provider?: string | null): string {
   if (!provider) return 'email';
 
@@ -78,24 +67,4 @@ export function normalizeAuthMethod(provider?: string | null): string {
       .replace(/^oauth_?/, '')
       .replace(/^saml_?/, '') || 'social'
   );
-}
-
-export function hasStoredSignupMarker(userId: string): boolean {
-  if (typeof window === 'undefined') return false;
-
-  try {
-    return window.localStorage.getItem(signupMarkerKey(userId)) === '1';
-  } catch {
-    return false;
-  }
-}
-
-export function storeSignupMarker(userId: string): void {
-  if (typeof window === 'undefined') return;
-
-  try {
-    window.localStorage.setItem(signupMarkerKey(userId), '1');
-  } catch {
-    // Analytics must not interrupt authentication when storage is unavailable.
-  }
 }

@@ -24,7 +24,7 @@ function needsAuthSetup(): boolean {
 
 const includeSetup = needsAuthSetup();
 const hasAuthFile = fs.existsSync(authFile);
-const storageStatePath = skipAuthSetup && !hasAuthFile ? undefined : authFile;
+const storageStatePath = skipAuthSetup ? undefined : hasAuthFile ? authFile : undefined;
 if (!includeSetup) {
   console.log(
     'Playwright auth setup project skipped (existing auth state considered fresh). Set REFRESH_AUTH=1 to force.',

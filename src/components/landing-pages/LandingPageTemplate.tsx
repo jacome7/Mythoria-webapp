@@ -16,6 +16,7 @@ import {
 import type { LandingPageContent, LandingPageTemplateIcon } from '@/content/landing-pages';
 import LandingPageBookShowcase from './LandingPageBookShowcase';
 import LandingPageFloatingNavigation from './LandingPageFloatingNavigation';
+import LandingAnalytics from './LandingAnalytics';
 
 interface LandingPageTemplateProps {
   page: LandingPageContent;
@@ -43,6 +44,7 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
       tabIndex={-1}
       className="min-h-screen bg-[#fff8ea] text-base-content focus:outline-none"
     >
+      <LandingAnalytics landingSlug={page.slug} primaryIntent={page.primaryIntent} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -52,6 +54,8 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
 
       <section
         id="landing-page-hero"
+        data-analytics-section="hero"
+        data-section-position="1"
         className="relative overflow-hidden border-b border-primary/10 bg-[#f8ead2]"
       >
         <div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-primary via-secondary to-accent" />
@@ -77,6 +81,8 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
                 href={primaryHref}
+                data-cta-placement="hero_primary"
+                data-capture-attribution="true"
                 className="btn btn-primary btn-lg h-auto min-h-14 gap-2 whitespace-normal py-3 text-center leading-tight sm:whitespace-nowrap shadow-md"
               >
                 <span>{page.primaryCta}</span>
@@ -84,6 +90,7 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
               </Link>
               <Link
                 href={secondaryHref}
+                data-cta-placement="hero_secondary"
                 className="btn btn-outline btn-primary btn-lg h-auto min-h-14 whitespace-normal py-3 text-center leading-tight sm:whitespace-nowrap"
               >
                 {page.secondaryCta}
@@ -121,7 +128,11 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
 
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         {/* Formats highlight section right near the top */}
-        <section className="mb-12">
+        <section
+          className="mb-12"
+          data-analytics-section="pricing_or_offer"
+          data-section-position="4"
+        >
           <FormatPanel
             title={page.formats.title}
             items={page.formats.items}
@@ -263,7 +274,13 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
           />
         )}
 
-        <section id="exemplos" tabIndex={-1} className="my-16 scroll-mt-24 focus:outline-none">
+        <section
+          id="exemplos"
+          tabIndex={-1}
+          className="my-16 scroll-mt-24 focus:outline-none"
+          data-analytics-section="examples"
+          data-section-position="2"
+        >
           <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-primary">
@@ -283,7 +300,11 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
           />
         </section>
 
-        <section className="my-16 grid gap-6 lg:grid-cols-2">
+        <section
+          className="my-16 grid gap-6 lg:grid-cols-2"
+          data-analytics-section="how_it_works"
+          data-section-position="3"
+        >
           <ProcessPanel title={page.process.title} items={page.process.steps} />
           <FormatPanel
             title={page.formats.title}
@@ -313,7 +334,11 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
                   ))}
                 </div>
                 <div className="mt-6">
-                  <Link href={professionalHref} className="btn btn-secondary gap-2">
+                  <Link
+                    href={professionalHref}
+                    className="btn btn-secondary gap-2"
+                    data-cta-placement="professional_panel"
+                  >
                     {page.forProfessionals.ctaLabel}
                     <CtaArrow icon={page.templateIcons?.ctaArrow} />
                   </Link>
@@ -342,7 +367,7 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
           </section>
         )}
 
-        <section className="my-16">
+        <section className="my-16" data-analytics-section="faq" data-section-position="5">
           <h2 className="font-display mb-8 text-3xl font-bold text-[#33251c] md:text-4xl">
             Perguntas frequentes
           </h2>
@@ -382,7 +407,11 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
           </section>
         )}
 
-        <section className="my-16 text-center">
+        <section
+          className="my-16 text-center"
+          data-analytics-section="final_cta"
+          data-section-position="6"
+        >
           <h2 className="font-display text-3xl font-bold text-[#33251c] md:text-5xl">
             {page.finalCta.title}
           </h2>
@@ -392,6 +421,8 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
           <div className="mt-8">
             <Link
               href={primaryHref}
+              data-cta-placement="final_primary"
+              data-capture-attribution="true"
               className="btn btn-secondary btn-lg h-auto min-h-14 gap-2 whitespace-normal py-3 text-center leading-tight sm:whitespace-nowrap"
             >
               <span>{page.primaryCta}</span>

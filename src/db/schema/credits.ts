@@ -1,4 +1,12 @@
-import { pgTable, uuid, timestamp, integer, index } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  uuid,
+  timestamp,
+  integer,
+  index,
+  varchar,
+  uniqueIndex,
+} from 'drizzle-orm/pg-core';
 import { isNotNull } from 'drizzle-orm';
 import { authors } from './authors';
 import { stories } from './stories';
@@ -21,6 +29,7 @@ export const creditLedger = pgTable(
     creditEventType: creditEventTypeEnum('credit_event_type').notNull(),
     purchaseId: uuid('purchase_id'), // FK to purchases table (to be created later)
     storyId: uuid('story_id').references(() => stories.storyId, { onDelete: 'set null' }), // Can be null
+    idempotencyKey: varchar('idempotency_key', { length: 255 }),
   },
   (table) => ({
     // Indexes for performance optimization
@@ -34,6 +43,9 @@ export const creditLedger = pgTable(
     storyIdIdx: index('credit_ledger_story_id_idx')
       .on(table.storyId)
       .where(isNotNull(table.storyId)),
+    idempotencyKeyUnique: uniqueIndex('credit_ledger_idempotency_key_unique').on(
+      table.idempotencyKey,
+    ),
   }),
 );
 

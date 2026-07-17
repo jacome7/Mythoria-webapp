@@ -1,13 +1,13 @@
 'use client';
 
-import { Show, RedirectToSignIn } from '@clerk/nextjs';
+import { Show, RedirectToSignIn, useAuth } from '@clerk/nextjs';
 import { useState, useEffect, Suspense, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import StepNavigation from '@/components/StepNavigation';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import StoryGenerationProgress from '@/components/StoryGenerationProgress';
-import { trackStoryCreation } from '@/lib/analytics';
+import { getGoogleAnalyticsContext, trackStoryCreation } from '@/lib/analytics';
 import { getStep1Data } from '@/lib/story-session';
 import { fetchStoryData } from '@/lib/story';
 import { useStorySessionGuard } from '@/hooks/useStorySessionGuard';
@@ -36,6 +36,7 @@ export default function Step5PageWrapper() {
 }
 
 function Step5Page() {
+  const { isSignedIn } = useAuth();
   const searchParams = useSearchParams();
   const editStoryId = searchParams?.get('edit');
   const locale = useLocale();
@@ -49,6 +50,7 @@ function Step5Page() {
   const [userCredits, setUserCredits] = useState<number>(0);
   const [ebookPricing, setEbookPricing] = useState<EbookPricing | null>(null);
   const hasTrackedStepView = useRef(false);
+  const generationIdempotencyKey = useRef<string | null>(null);
 
   const loadStoryData = async (storyId: string) => {
     try {
@@ -104,7 +106,8 @@ function Step5Page() {
   }, [currentStoryId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (loading || !currentStoryId || !storyData || hasTrackedStepView.current) return;
+    if (!isSignedIn || loading || !currentStoryId || !storyData || hasTrackedStepView.current)
+      return;
 
     hasTrackedStepView.current = true;
     trackStoryCreation.stepViewed({
@@ -115,7 +118,7 @@ function Step5Page() {
       user_credits: userCredits,
       can_generate: !!ebookPricing && userCredits >= ebookPricing.cost,
     });
-  }, [currentStoryId, ebookPricing, loading, storyData, userCredits]);
+  }, [currentStoryId, ebookPricing, isSignedIn, loading, storyData, userCredits]);
 
   const hasInsufficientCredits = () => {
     // If pricing isn't loaded yet, assume insufficient credits to prevent premature actions
@@ -124,6 +127,14 @@ function Step5Page() {
   };
 
   const handleCompleteStory = async () => {
+    const blockedReason =
+      !currentStoryId || !storyData
+        ? 'story_data_missing'
+        : !ebookPricing
+          ? 'pricing_missing'
+          : userCredits < ebookPricing.cost
+            ? 'insufficient_credits'
+            : undefined;
     trackStoryCreation.generateClicked({
       step: 5,
       story_id: currentStoryId || undefined,
@@ -132,6 +143,7 @@ function Step5Page() {
       ebook_cost: ebookPricing?.cost,
       user_credits: userCredits,
       can_generate: !!ebookPricing && userCredits >= ebookPricing.cost,
+      blocked_reason: blockedReason,
     });
 
     if (!currentStoryId || !storyData || !ebookPricing) {
@@ -148,35 +160,12 @@ function Step5Page() {
     setError(null);
 
     try {
-      // First, deduct credits for the ebook generation
-      const creditsResponse = await fetch(`/api/stories/${currentStoryId}/deduct-credits`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          storyId: currentStoryId,
-          selectedFeatures: { ebook: true, printed: false, audiobook: false },
-        }),
-      });
-
-      if (!creditsResponse.ok) {
-        const creditsError = await creditsResponse.json();
-        console.error('Failed to deduct credits:', creditsError);
-        setError(tStoryStepsStep5('alerts.failedToDeductCredits'));
-        return;
-      }
-
-      const creditsResult = await creditsResponse.json();
-      console.log('Credits deducted successfully:', creditsResult);
-
-      // Update local credit balance
-      setUserCredits(creditsResult.newBalance);
-
       // Get step 1 data from session
       const step1Data = getStep1Data();
       const dedicationMessage = step1Data?.dedicationMessage || '';
       const customAuthor = step1Data?.customAuthor || '';
+      const analyticsContext = await getGoogleAnalyticsContext();
+      generationIdempotencyKey.current ||= crypto.randomUUID();
 
       const response = await fetch('/api/stories/complete', {
         method: 'POST',
@@ -185,9 +174,11 @@ function Step5Page() {
         },
         body: JSON.stringify({
           storyId: currentStoryId,
+          idempotencyKey: generationIdempotencyKey.current,
           features: { ebook: true, printed: false, audiobook: false },
           dedicationMessage: dedicationMessage,
           customAuthor: customAuthor,
+          analyticsContext,
         }),
       });
 
@@ -200,20 +191,7 @@ function Step5Page() {
 
       const result = await response.json();
       console.log('Story generation started:', result);
-
-      // Track story generation request
-      const hasDedication = !!step1Data?.dedicationMessage;
-
-      trackStoryCreation.generationRequested({
-        story_id: currentStoryId,
-        run_id: result.runId,
-        ebook_requested: true,
-        printed_requested: false,
-        audiobook_requested: false,
-        has_delivery_address: false,
-        has_dedication: hasDedication,
-        credits_spent: ebookPricing.cost,
-      });
+      setUserCredits(result.remainingCredits);
 
       // Show the progress component instead of navigating to next step
       setStoryGenerationStarted(true);
