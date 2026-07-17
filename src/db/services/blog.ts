@@ -35,42 +35,28 @@ export const blogService = {
   },
 
   async upsertTranslation(input: UpsertTranslationInput) {
-    const [existing] = await db
-      .select({ id: blogPostTranslations.id })
-      .from(blogPostTranslations)
-      .where(
-        and(
-          eq(blogPostTranslations.postId, input.postId),
-          eq(blogPostTranslations.locale, input.locale),
-        ),
-      );
-    if (existing) {
-      const [updated] = await db
-        .update(blogPostTranslations)
-        .set({
+    const [translation] = await db
+      .insert(blogPostTranslations)
+      .values({
+        postId: input.postId,
+        locale: input.locale,
+        slug: input.slug,
+        title: input.title,
+        summary: input.summary,
+        contentMdx: input.contentMdx,
+      })
+      .onConflictDoUpdate({
+        target: [blogPostTranslations.postId, blogPostTranslations.locale],
+        set: {
           slug: input.slug,
           title: input.title,
           summary: input.summary,
           contentMdx: input.contentMdx,
           updatedAt: new Date(),
-        })
-        .where(eq(blogPostTranslations.id, existing.id))
-        .returning();
-      return updated;
-    } else {
-      const [created] = await db
-        .insert(blogPostTranslations)
-        .values({
-          postId: input.postId,
-          locale: input.locale,
-          slug: input.slug,
-          title: input.title,
-          summary: input.summary,
-          contentMdx: input.contentMdx,
-        })
-        .returning();
-      return created;
-    }
+        },
+      })
+      .returning();
+    return translation;
   },
 
   async publish(postId: string) {
@@ -106,6 +92,8 @@ export const blogService = {
         title: blogPostTranslations.title,
         summary: blogPostTranslations.summary,
         contentMdx: blogPostTranslations.contentMdx,
+        postUpdatedAt: blogPosts.updatedAt,
+        translationUpdatedAt: blogPostTranslations.updatedAt,
       })
       .from(blogPosts)
       .innerJoin(blogPostTranslations, eq(blogPostTranslations.postId, blogPosts.id))
@@ -130,6 +118,8 @@ export const blogService = {
         summary: blogPostTranslations.summary,
         contentMdx: blogPostTranslations.contentMdx,
         locale: blogPostTranslations.locale,
+        postUpdatedAt: blogPosts.updatedAt,
+        translationUpdatedAt: blogPostTranslations.updatedAt,
       })
       .from(blogPosts)
       .innerJoin(blogPostTranslations, eq(blogPostTranslations.postId, blogPosts.id))
@@ -143,8 +133,8 @@ export const blogService = {
     return row || null;
   },
 
-  async getPublishedByAnySlug(slug: string) {
-    const [row] = await db
+  async getPublishedMatchesByAnySlug(slug: string) {
+    return db
       .select({
         id: blogPosts.id,
         slugBase: blogPosts.slugBase,
@@ -160,8 +150,8 @@ export const blogService = {
       })
       .from(blogPosts)
       .innerJoin(blogPostTranslations, eq(blogPostTranslations.postId, blogPosts.id))
-      .where(and(eq(blogPosts.status, 'published'), eq(blogPostTranslations.slug, slug)));
-    return row || null;
+      .where(and(eq(blogPosts.status, 'published'), eq(blogPostTranslations.slug, slug)))
+      .orderBy(asc(blogPosts.slugBase), asc(blogPostTranslations.locale));
   },
 
   async getAdjacent(locale: BlogLocale, publishedAt: Date) {
@@ -213,12 +203,33 @@ export const blogService = {
         locale: blogPostTranslations.locale,
         slug: blogPostTranslations.slug,
         publishedAt: blogPosts.publishedAt,
+        postUpdatedAt: blogPosts.updatedAt,
+        translationUpdatedAt: blogPostTranslations.updatedAt,
       })
       .from(blogPosts)
       .innerJoin(blogPostTranslations, eq(blogPostTranslations.postId, blogPosts.id))
       .where(and(eq(blogPosts.status, 'published'), eq(blogPosts.slugBase, slugBase)))
       .orderBy(asc(blogPostTranslations.locale));
     return rows;
+  },
+
+  async getPublishedSitemapTranslations() {
+    return db
+      .select({
+        slugBase: blogPosts.slugBase,
+        locale: blogPostTranslations.locale,
+        slug: blogPostTranslations.slug,
+        title: blogPostTranslations.title,
+        summary: blogPostTranslations.summary,
+        contentMdx: blogPostTranslations.contentMdx,
+        publishedAt: blogPosts.publishedAt,
+        postUpdatedAt: blogPosts.updatedAt,
+        translationUpdatedAt: blogPostTranslations.updatedAt,
+      })
+      .from(blogPosts)
+      .innerJoin(blogPostTranslations, eq(blogPostTranslations.postId, blogPosts.id))
+      .where(eq(blogPosts.status, 'published'))
+      .orderBy(asc(blogPosts.slugBase), asc(blogPostTranslations.locale));
   },
 };
 

@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
       status: 'healthy' as const,
       database: 'connected' as const,
       genai: genaiStatus,
+      gitSha: process.env.APP_GIT_SHA || 'unknown',
       timestamp: new Date().toISOString(),
     };
 
@@ -44,6 +45,7 @@ export async function GET(request: NextRequest) {
     const basicInfo = {
       status: 'unhealthy' as const,
       database: 'disconnected' as const,
+      gitSha: process.env.APP_GIT_SHA || 'unknown',
       timestamp: new Date().toISOString(),
     };
 

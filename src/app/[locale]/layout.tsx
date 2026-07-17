@@ -1,6 +1,5 @@
 // Wrapped provider with instrumentation for missing translation detection
 import ClientProvider from '@/i18n/ClientProvider';
-import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { routing } from '../../i18n/routing';
 import { setRequestLocale } from 'next-intl/server';
@@ -15,7 +14,6 @@ import { readdir, readFile } from 'fs/promises';
 import path from 'path';
 import { Metadata, Viewport } from 'next';
 import { getManifestUrl } from '@/lib/manifest';
-import { buildAbsoluteUrl, getStaticLocalizedHreflangLinks, normalizePathname } from '@/lib/seo';
 
 interface MetadataMessages {
   title?: string;
@@ -77,124 +75,21 @@ async function getMessages(locale: string): Promise<Messages> {
           }
         } catch (parseError) {
           console.error(`Failed to parse ${file} for locale ${locale}:`, parseError);
+          throw parseError;
         }
       }
     }
 
     // Add validation
     if (Object.keys(messages).length === 0) {
-      console.warn(`No messages found for locale: ${locale}`);
-      // Return fallback messages
-      return await getFallbackMessages();
+      throw new Error(`No messages found for locale: ${locale}`);
     }
 
     return messages;
   } catch (error) {
     console.error(`Failed to load messages for locale ${locale}:`, error);
-    // Return fallback messages
-    return await getFallbackMessages();
+    throw error;
   }
-}
-
-async function getFallbackMessages(): Promise<Messages> {
-  try {
-    // Try to load default English messages
-    const fallbackDir = path.join(process.cwd(), 'src', 'messages', 'en-US');
-    const files = await readdir(fallbackDir);
-    let messages: Messages = {};
-
-    for (const file of files) {
-      if (file.endsWith('.json')) {
-        const filePath = path.join(fallbackDir, file);
-        try {
-          const content = await readFile(filePath, 'utf8');
-          const json = JSON.parse(content);
-          messages = { ...messages, ...json };
-        } catch (parseError) {
-          console.error(`Failed to parse fallback file ${file}:`, parseError);
-        }
-      }
-    }
-
-    if (Object.keys(messages).length > 0) {
-      return messages;
-    }
-  } catch (fallbackError) {
-    console.error('Failed to load fallback messages:', fallbackError);
-  }
-
-  // Return minimal fallback structure with proper namespaces
-  return {
-    Header: {
-      navigation: {
-        homepage: 'Homepage',
-        getInspired: 'Get Inspired',
-        tellYourStory: 'Tell Your Story',
-        myStories: 'My Stories',
-        pricing: 'Pricing',
-        dashboard: 'Dashboard',
-      },
-      auth: {
-        signIn: 'Sign In',
-        signUp: 'Sign Up',
-      },
-      logoAlt: 'Mythoria Logo',
-    },
-    Footer: {
-      aboutFounder: 'About the founder',
-      readMyStory: 'Read my story',
-      privacyPolicy: 'Privacy & Cookies',
-      termsConditions: 'Terms & Conditions',
-      contactUs: 'Contact Us',
-      copyright: '© 2024 Mythoria',
-    },
-    HomePage: {
-      words: ['Adventure', 'Love Story', 'Mystery', 'Fairy Tale'],
-      intents: {
-        kids_fantasy: {
-          hero: {
-            headline: 'Every story starts with you',
-            subtitle: 'Create unique, fully illustrated books with AI',
-            subtitleEmphasized: 'AI',
-            cta: 'Write your own story',
-            alt: { person: 'A smiling girl holding her personalized Mythoria storybook' },
-          },
-        },
-      },
-      audiences: {
-        kids: {
-          title: 'For Kids 🎈',
-          description: 'Turn your child into the hero of their own magical adventure!',
-        },
-        adults: {
-          title: 'For Adults ❤️',
-          description: 'Relive your memories as a stunning illustrated story.',
-        },
-        companies: {
-          title: 'For Companies 🌟',
-          description: 'Create personalized storybooks for your team.',
-        },
-      },
-    },
-    MyStoriesPage: {
-      title: 'My Stories',
-      description: 'View and manage all your created stories',
-      writeNewStory: 'Write New Story',
-      defaults: {
-        authorName: 'Storyteller',
-      },
-      tabs: {
-        myStories: 'My Stories',
-        myCharacters: 'My Characters',
-      },
-      signedOut: {
-        welcome: 'Welcome to My Stories',
-        needSignIn: 'Every storyteller needs an account to keep their magical credits safe!',
-        signIn: 'Sign In',
-        createAccount: 'Create Account',
-      },
-    },
-  };
 }
 
 export async function generateMetadata({
@@ -280,29 +175,22 @@ export async function generateMetadata({
     console.error(`Failed to load metadata for locale ${locale}:`, error);
   }
 
-  const headersList = await headers();
-  const currentPathname = normalizePathname(headersList.get('x-pathname') || `/${locale}`);
-  const currentUrl = buildAbsoluteUrl(currentPathname);
-  const hreflangLinks = getStaticLocalizedHreflangLinks(currentPathname);
-
   return {
     title: metadata.title,
     description: metadata.description,
-    robots: 'index,follow,max-snippet:-1,max-image-preview:large',
+    robots: {
+      index: false,
+      follow: false,
+    },
     manifest: getManifestUrl(locale),
     appleWebApp: {
       capable: true,
       statusBarStyle: 'default',
       title: 'Mythoria',
     },
-    alternates: {
-      canonical: currentUrl,
-      ...(hreflangLinks ? { languages: hreflangLinks } : {}),
-    },
     openGraph: {
       type: 'website',
       siteName: 'Mythoria',
-      url: currentUrl,
       title: metadata.openGraph.title,
       description: metadata.openGraph.description,
       images: [

@@ -1,13 +1,16 @@
 jest.mock('@/i18n/routing', () => ({
   routing: {
     locales: ['en-US', 'pt-PT', 'es-ES', 'fr-FR', 'de-DE'],
+    defaultLocale: 'en-US',
   },
 }));
 
 import {
   buildAbsoluteUrl,
   buildLocalizedUrl,
+  canonicalizePathname,
   getCanonicalRedirectPath,
+  getSeoRoutePolicy,
   getStaticLocalizedHreflangLinks,
 } from './seo';
 
@@ -41,6 +44,31 @@ describe('seo helpers', () => {
     expect(getCanonicalRedirectPath('/en-us/')).toBe('/en-US');
     expect(getCanonicalRedirectPath('/pt-PT/get-inspired/')).toBe('/pt-PT/get-inspired');
     expect(getCanonicalRedirectPath('/pt-PT/get-inspired')).toBeNull();
-    expect(getCanonicalRedirectPath('/pt-PT/lp/')).toBeNull();
+    expect(getCanonicalRedirectPath('/pt-PT/lp/')).toBe('/pt-PT/lp');
+    expect(getCanonicalRedirectPath('/')).toBe('/en-US');
+    expect(getCanonicalRedirectPath('//en-us///blog/post//')).toBe('/en-US/blog/post');
+  });
+
+  it('classifies public, entity-backed, and private routes', () => {
+    expect(getSeoRoutePolicy('/en-US/pricing')).toMatchObject({
+      kind: 'static-public',
+      indexable: true,
+      includeInSitemap: true,
+    });
+    expect(getSeoRoutePolicy('/pt-PT/blog/a-post')).toMatchObject({
+      kind: 'blog-post',
+      entityValidationRequired: true,
+    });
+    expect(getSeoRoutePolicy('/en-US/my-stories')).toMatchObject({
+      kind: 'private',
+      indexable: false,
+      includeInSitemap: false,
+    });
+    expect(getSeoRoutePolicy('/en-US/partners')).toMatchObject({
+      kind: 'public-low-value',
+      follow: true,
+      indexable: false,
+    });
+    expect(canonicalizePathname('https://mythoria.pt/en-US///pricing/')).toBe('/en-US/pricing');
   });
 });

@@ -29,10 +29,13 @@ export async function resolveBlogPostRoute(
     };
   }
 
-  const matchedTranslation = await blogService.getPublishedByAnySlug(slug);
-  if (!matchedTranslation) {
+  const matches = await blogService.getPublishedMatchesByAnySlug(slug);
+  const slugBases = new Set(matches.map((match) => match.slugBase));
+  if (slugBases.size !== 1) {
     return { type: 'notFound' };
   }
+
+  const matchedTranslation = matches[0]!;
 
   const translations = await blogService.getPublishedTranslationsBySlugBase(
     matchedTranslation.slugBase,

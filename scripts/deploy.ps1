@@ -23,6 +23,7 @@ $BASE_SERVICE_NAME = 'mythoria-webapp'
 $SERVICE_NAME = if ($Staging) { "$BASE_SERVICE_NAME-staging" } else { $BASE_SERVICE_NAME }
 $REGION = 'europe-west9'
 $IMAGE_NAME = "gcr.io/$PROJECT_ID/$SERVICE_NAME"
+$GIT_SHA = $null
 # -----------------------------------------------------------------------------
 
 function Show-Help {
@@ -90,6 +91,18 @@ function Test-Prerequisites {
 
     & gcloud config set project $PROJECT_ID | Out-Null
     Write-Success "Using project $PROJECT_ID"
+
+    $branch = (& git branch --show-current).Trim()
+    if (-not $Staging -and $branch -ne 'master') {
+        throw "Production deployments must run from master (current: $branch)."
+    }
+    $dirty = & git status --porcelain
+    if ($dirty) {
+        throw 'Deployments require a clean worktree so the image is exactly traceable to a commit.'
+    }
+    $script:GIT_SHA = (& git rev-parse HEAD).Trim()
+    if (-not $script:GIT_SHA) { throw 'Unable to resolve Git SHA.' }
+    Write-Success "Source revision $script:GIT_SHA"
 }
 
 function Run-PreDeploymentChecks {
@@ -105,7 +118,7 @@ function Run-PreDeploymentChecks {
 function Deploy-With-CloudBuild {
     Write-Info "Starting Cloud Build submission"
     # Pass service name and region as substitutions
-    & gcloud builds submit --config cloudbuild.yaml --substitutions "_SERVICE_NAME=$SERVICE_NAME,_REGION=$REGION"
+    & gcloud builds submit --config cloudbuild.yaml --substitutions "_SERVICE_NAME=$SERVICE_NAME,_REGION=$REGION,_GIT_SHA=$GIT_SHA"
     Write-Success "Cloud Build finished"
 }
 
@@ -120,9 +133,14 @@ function Test-Deployment {
     $serviceUrl = & gcloud run services describe $SERVICE_NAME --region $REGION --format="value(status.url)"
 
     if ($serviceUrl) {
+        $health = Invoke-RestMethod -Uri "$serviceUrl/api/health" -TimeoutSec 30
+        if ($health.gitSha -ne $GIT_SHA) {
+            throw "Deployed health SHA '$($health.gitSha)' does not match '$GIT_SHA'."
+        }
         Write-Success "Deployment successful"
         Write-Host ""
         Write-Host "Service URL: $serviceUrl" -ForegroundColor Cyan
+        Write-Host "Git SHA: $GIT_SHA" -ForegroundColor Cyan
         Write-Host "Console: https://console.cloud.google.com/run/detail/$REGION/$SERVICE_NAME" -ForegroundColor Cyan
         Write-Host ""
     }

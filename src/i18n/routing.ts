@@ -5,6 +5,9 @@ import { SUPPORTED_LOCALES, SupportedLocale } from '@/config/locales';
 export const routing = defineRouting({
   locales: SUPPORTED_LOCALES as SupportedLocale[],
   defaultLocale: (SUPPORTED_LOCALES[0] as SupportedLocale) || 'en-US',
+  // Dynamic slugs do not share the same pathname across locales. Metadata and
+  // the sitemap emit only verified reciprocal alternate clusters.
+  alternateLinks: false,
 });
 
 export type Locale = SupportedLocale;

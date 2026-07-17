@@ -1,6 +1,7 @@
 import FaqComponent from '@/components/faq/FaqComponent';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
+import { buildStaticPageMetadata } from '@/lib/static-page-metadata';
 
 export async function generateMetadata({
   params,
@@ -10,15 +11,12 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'FaqPage' });
 
-  return {
+  return buildStaticPageMetadata({
+    locale,
+    path: '/faqs',
     title: t('metaTitle'),
     description: t('metaDescription'),
-    alternates: { canonical: `https://mythoria.pt/${locale}/faqs` },
-    openGraph: {
-      title: t('metaTitle'),
-      description: t('metaDescription'),
-    },
-  };
+  });
 }
 
 export default async function FaqsPage({ params }: { params: Promise<{ locale: string }> }) {

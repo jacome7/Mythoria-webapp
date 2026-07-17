@@ -23,9 +23,14 @@ export function buildStaticPageMetadata({
     ]),
   );
 
+  if (path === '' || path === '/') {
+    languages['x-default'] = buildLocalizedUrl(routing.defaultLocale);
+  }
+
   return {
     title,
     ...(description ? { description } : {}),
+    robots: 'index,follow,max-snippet:-1,max-image-preview:large',
     alternates: {
       canonical,
       languages,

@@ -82,7 +82,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     };
   } catch (error) {
     console.error('Failed to generate metadata for blog post:', error);
-    return { title: 'Blog Post' };
+    throw error;
   }
 }
 
@@ -107,7 +107,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     resolution = await resolveBlogPostRoute(locale as BlogLocale, slug);
   } catch (error) {
     console.error('Failed to load blog post:', error);
-    notFound();
+    throw error;
   }
 
   if (resolution.type === 'notFound') {
@@ -146,7 +146,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             '@type': 'Article',
             headline: post.title,
             datePublished: post.publishedAt?.toISOString(),
-            dateModified: post.publishedAt?.toISOString(),
+            dateModified: new Date(
+              Math.max(
+                post.publishedAt?.getTime() ?? 0,
+                post.postUpdatedAt.getTime(),
+                post.translationUpdatedAt.getTime(),
+              ),
+            ).toISOString(),
             image: post.heroImageUrl ? [post.heroImageUrl] : undefined,
             inLanguage: locale,
             mainEntityOfPage: {

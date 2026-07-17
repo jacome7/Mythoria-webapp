@@ -21,10 +21,9 @@ import { SelfPrintModal } from '@/components/self-print/SelfPrintModal';
 import PublicStoryRating from '@/components/PublicStoryRating';
 import StoryReader from '@/components/StoryReader';
 import { formatDate } from '@/utils/date';
-import { toAbsoluteImageUrl } from '@/utils/image-url';
 import styles from './PublicStoryPageClient.module.css';
 
-interface Chapter {
+export interface PublicStoryChapter {
   id: string;
   chapterNumber: number;
   title: string;
@@ -37,7 +36,7 @@ interface Chapter {
   updatedAt: Date;
 }
 
-interface PublicStoryData {
+export interface PublicStoryData {
   success: boolean;
   story: {
     storyId: string;
@@ -64,12 +63,12 @@ interface PublicStoryData {
     slug?: string;
     hasAudio?: boolean;
   };
-  chapters: Chapter[];
+  chapters: PublicStoryChapter[];
   accessLevel: 'public';
   error?: string;
 }
 
-export default function PublicStoryPageClient() {
+export default function PublicStoryPageClient({ initialData }: { initialData: PublicStoryData }) {
   const params = useParams();
   const locale = useLocale();
   const tPublicStoryPage = useTranslations('PublicStoryPage');
@@ -79,14 +78,14 @@ export default function PublicStoryPageClient() {
     ? (params?.slug[0] ?? '')
     : ((params?.slug as string | undefined) ?? '');
 
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<PublicStoryData | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<PublicStoryData | null>(initialData);
   const [error, setError] = useState<string | null>(null);
   const [showSelfPrintModal, setShowSelfPrintModal] = useState(false);
   const [isSynopsisOpen, setIsSynopsisOpen] = useState(false);
 
   useEffect(() => {
-    if (!slug) return;
+    if (!slug || data) return;
     const fetchPublicStory = async () => {
       try {
         const response = await fetch(`/api/p/${slug}`);
@@ -116,71 +115,7 @@ export default function PublicStoryPageClient() {
     };
 
     fetchPublicStory();
-  }, [slug, tPublicStoryPage]);
-  // Generate metadata for the page
-  useEffect(() => {
-    if (!data?.story) return;
-    const story = data.story;
-    // Set page title directly with the format "StoryTitle | Mythoria"
-    document.title = `${story.title} | Mythoria`;
-
-    // Set meta description
-    const metaDescription = document.querySelector('meta[name="description"]');
-    const description =
-      story.synopsis ||
-      story.plotDescription ||
-      tPublicStoryPage('metadata.defaultDescription', { title: story.title });
-
-    if (metaDescription) {
-      metaDescription.setAttribute('content', description);
-    } else {
-      const meta = document.createElement('meta');
-      meta.name = 'description';
-      meta.content = description;
-      document.head.appendChild(meta);
-    }
-
-    const coverImage =
-      toAbsoluteImageUrl(story.coverUri) ||
-      `${window.location.origin}/Mythoria-logo-white-512x336.jpg`;
-
-    // Set Open Graph tags
-    const setMetaTag = (property: string, content: string) => {
-      let meta = document.querySelector(`meta[property="${property}"]`);
-      if (!meta) {
-        meta = document.createElement('meta');
-        meta.setAttribute('property', property);
-        document.head.appendChild(meta);
-      }
-      meta.setAttribute('content', content);
-    };
-
-    setMetaTag('og:title', `Mythoria | ${story.title}`);
-    setMetaTag('og:description', description);
-    setMetaTag('og:type', 'article');
-    setMetaTag('og:url', window.location.href);
-    setMetaTag('og:site_name', 'Mythoria');
-    setMetaTag('og:image', coverImage);
-    setMetaTag('og:image:width', '1200');
-    setMetaTag('og:image:height', '630');
-    setMetaTag('og:image:alt', tPublicStoryPage('metadata.coverImageAlt', { title: story.title }));
-
-    // Twitter Card tags
-    const setTwitterTag = (name: string, content: string) => {
-      let meta = document.querySelector(`meta[name="${name}"]`);
-      if (!meta) {
-        meta = document.createElement('meta');
-        meta.setAttribute('name', name);
-        document.head.appendChild(meta);
-      }
-      meta.setAttribute('content', content);
-    };
-
-    setTwitterTag('twitter:card', 'summary_large_image');
-    setTwitterTag('twitter:title', `Mythoria | ${story.title}`);
-    setTwitterTag('twitter:description', description);
-    setTwitterTag('twitter:image', coverImage);
-  }, [data, tPublicStoryPage]);
+  }, [data, slug, tPublicStoryPage]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(min-width: 640px)');

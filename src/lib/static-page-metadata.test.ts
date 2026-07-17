@@ -1,6 +1,7 @@
 jest.mock('@/i18n/routing', () => ({
   routing: {
     locales: ['en-US', 'pt-PT', 'es-ES'],
+    defaultLocale: 'en-US',
   },
 }));
 
@@ -22,5 +23,17 @@ describe('buildStaticPageMetadata', () => {
       'es-ES': 'https://mythoria.pt/es-ES/privacy-policy',
     });
     expect(metadata.openGraph?.url).toBe('https://mythoria.pt/en-US/privacy-policy');
+    expect(metadata.robots).toBe('index,follow,max-snippet:-1,max-image-preview:large');
+  });
+
+  it('points homepage x-default directly at the final default locale URL', () => {
+    const metadata = buildStaticPageMetadata({
+      locale: 'pt-PT',
+      path: '',
+      title: 'Mythoria',
+    });
+    expect(metadata.alternates?.languages).toEqual(
+      expect.objectContaining({ 'x-default': 'https://mythoria.pt/en-US' }),
+    );
   });
 });

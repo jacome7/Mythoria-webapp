@@ -43,6 +43,13 @@ export const envManifest: EnvVarDescriptor[] = [
     note: 'Framework provided; build scope not enforced.',
   },
   {
+    name: 'APP_GIT_SHA',
+    required: true,
+    scopes: ['prod', 'build', 'runtime'],
+    source: 'substitution',
+    note: 'Immutable source commit embedded in the image and exposed by the health endpoint.',
+  },
+  {
     name: 'PORT',
     required: false,
     scopes: ['dev', 'runtime'],

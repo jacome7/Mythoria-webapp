@@ -93,6 +93,18 @@ const Footer = () => {
           <Link href={`/${locale}/contactUs`} className={styles.primaryLink}>
             {tCommonFooter('contactUs')}
           </Link>
+          <span className={styles.separator} aria-hidden="true">
+            |
+          </span>
+          <Link href={`/${locale}/blog`} className={styles.primaryLink}>
+            {tCommonFooter('blog')}
+          </Link>
+          <span className={styles.separator} aria-hidden="true">
+            |
+          </span>
+          <Link href={`/${locale}/faqs`} className={styles.primaryLink}>
+            {tCommonFooter('faqs')}
+          </Link>
         </nav>
 
         <div className={styles.divider} aria-hidden="true">

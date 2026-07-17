@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { TextEncoder, TextDecoder } from 'util';
+import { ReadableStream, TransformStream, WritableStream } from 'stream/web';
 
 // Mock uuid before any imports
 jest.mock('uuid', () => ({
@@ -10,6 +11,25 @@ jest.mock('uuid', () => ({
 // Narrow global augmentation instead of using 'any'
 (global as unknown as { TextEncoder: typeof TextEncoder }).TextEncoder = TextEncoder;
 (global as unknown as { TextDecoder: typeof TextDecoder }).TextDecoder = TextDecoder;
+(globalThis as unknown as { TextEncoder: typeof TextEncoder }).TextEncoder = TextEncoder;
+(globalThis as unknown as { TextDecoder: typeof TextDecoder }).TextDecoder = TextDecoder;
+(globalThis as unknown as { ReadableStream: typeof globalThis.ReadableStream }).ReadableStream ??=
+  ReadableStream as typeof globalThis.ReadableStream;
+(
+  globalThis as unknown as { TransformStream: typeof globalThis.TransformStream }
+).TransformStream ??= TransformStream as typeof globalThis.TransformStream;
+(globalThis as unknown as { WritableStream: typeof globalThis.WritableStream }).WritableStream ??=
+  WritableStream as typeof globalThis.WritableStream;
+// Loaded after encoders are installed because undici reads them during module initialization.
+const {
+  Request: EdgeRequest,
+  Response: EdgeResponse,
+  Headers: EdgeHeaders,
+} = require('next/dist/compiled/@edge-runtime/primitives/fetch');
+(globalThis as unknown as { Request: typeof Request }).Request ??= EdgeRequest as typeof Request;
+(globalThis as unknown as { Response: typeof Response }).Response ??=
+  EdgeResponse as typeof Response;
+(globalThis as unknown as { Headers: typeof Headers }).Headers ??= EdgeHeaders as typeof Headers;
 
 // Reduce noisy expected logs during tests while preserving real error output
 const originalError: typeof console.error = console.error.bind(console);

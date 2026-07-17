@@ -218,6 +218,13 @@
       "when": 1785300000000,
       "tag": "0030_pale_marvex",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1785400000000,
+      "tag": "0031_magenta_riptide",
+      "breakpoints": true
     }
   ]
 }

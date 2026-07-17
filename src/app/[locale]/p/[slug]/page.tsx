@@ -1,10 +1,11 @@
 import { Metadata } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
-import PublicStoryPageClient from './PublicStoryPageClient';
+import PublicStoryPageClient, { type PublicStoryData } from './PublicStoryPageClient';
 import { toAbsoluteImageUrl } from '@/utils/image-url';
-import { storyService } from '@/db/services';
+import { authorService, chapterService, storyService } from '@/db/services';
 import { normalizeLocale } from '@/utils/locale-utils';
 import { buildLocalizedPath, buildLocalizedUrl } from '@/lib/seo';
+import { isSearchIndexableStory } from '@/lib/story-seo';
 
 const toAbsoluteOgUrl = (url: string | null | undefined): string | undefined => {
   if (!url) return undefined;
@@ -56,13 +57,13 @@ export async function generateMetadata({
   const ogDescription =
     story.synopsis || story.plotDescription || `Read "${story.title}" on Mythoria.`;
   const coverUrl = toAbsoluteOgUrl(toAbsoluteImageUrl(story.coverUri) || undefined);
+  const indexable = isSearchIndexableStory(story);
 
   return {
     title: ogTitle,
     description: ogDescription,
-    alternates: {
-      canonical: canonicalUrl,
-    },
+    robots: indexable ? 'index,follow,max-snippet:-1,max-image-preview:large' : 'noindex,follow',
+    ...(indexable ? { alternates: { canonical: canonicalUrl } } : {}),
     openGraph: {
       title: ogTitle,
       description: ogDescription,
@@ -112,5 +113,61 @@ export default async function PublicStoryPage({
     permanentRedirect(buildLocalizedPath(canonicalLocale, `/p/${slug}`));
   }
 
-  return <PublicStoryPageClient />;
+  const [fullStory, chapters] = await Promise.all([
+    storyService.getStoryBySlug(slug),
+    chapterService.getStoryChapters(story.storyId),
+  ]);
+  if (!fullStory?.isPublic) notFound();
+
+  const author = await authorService.getAuthorById(fullStory.authorId);
+  if (!author) notFound();
+
+  const initialData: PublicStoryData = {
+    success: true,
+    story: {
+      storyId: fullStory.storyId,
+      title: fullStory.title,
+      authorName: fullStory.customAuthor || author.displayName,
+      synopsis: fullStory.synopsis ?? undefined,
+      targetAudience: fullStory.targetAudience ?? undefined,
+      graphicalStyle: fullStory.graphicalStyle ?? undefined,
+      novelStyle: fullStory.novelStyle ?? undefined,
+      plotDescription: fullStory.plotDescription ?? undefined,
+      createdAt: fullStory.createdAt.toISOString(),
+      isPublic: true,
+      dedicationMessage: fullStory.dedicationMessage ?? undefined,
+      coverUri: fullStory.coverUri ?? undefined,
+      backcoverUri: fullStory.backcoverUri ?? undefined,
+      slug: fullStory.slug ?? undefined,
+      hasAudio: chapters.some((chapter) => Boolean(chapter.audioUri)),
+    },
+    chapters,
+    accessLevel: 'public',
+  };
+  const indexable = isSearchIndexableStory(story);
+  const canonicalUrl = buildLocalizedUrl(canonicalLocale, `/p/${slug}`);
+
+  return (
+    <>
+      {indexable && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Book',
+              name: story.title,
+              description: story.synopsis,
+              image: toAbsoluteOgUrl(toAbsoluteImageUrl(story.coverUri) || undefined),
+              inLanguage: canonicalLocale,
+              url: canonicalUrl,
+              dateModified: story.updatedAt.toISOString(),
+              author: story.authorName ? { '@type': 'Person', name: story.authorName } : undefined,
+            }),
+          }}
+        />
+      )}
+      <PublicStoryPageClient initialData={initialData} />
+    </>
+  );
 }

@@ -23,6 +23,7 @@ import { CharacterRole, CharacterAge, isValidCharacterAge } from '../types/chara
 import { toAbsoluteImageUrl, toRelativeImagePath } from '../utils/image-url';
 import { normalizeLocale, detectUserLocaleFromEmail } from '@/utils/locale-utils';
 import { generateSlug, ensureUniqueSlug } from '@/lib/slug';
+import { isSearchIndexableStory } from '@/lib/story-seo';
 
 // Export payment service
 export { paymentService } from './services/payment';
@@ -329,12 +330,23 @@ export const storyService = {
   async getPublicStorySeoData(slug: string) {
     const [story] = await db
       .select({
+        storyId: stories.storyId,
         title: stories.title,
         synopsis: stories.synopsis,
         plotDescription: stories.plotDescription,
         coverUri: stories.coverUri,
         storyLanguage: stories.storyLanguage,
         slug: stories.slug,
+        isPublic: stories.isPublic,
+        isFeatured: stories.isFeatured,
+        status: stories.status,
+        createdAt: stories.createdAt,
+        updatedAt: stories.updatedAt,
+        hasMeaningfulContent: sql<boolean>`exists (
+          select 1 from ${chapters}
+          where ${chapters.storyId} = ${stories.storyId}
+            and length(${chapters.htmlContent}) > 200
+        )`,
         authorName: authors.displayName,
       })
       .from(stories)
@@ -429,6 +441,17 @@ export const storyService = {
         targetAudience: stories.targetAudience,
         graphicalStyle: stories.graphicalStyle,
         storyLanguage: stories.storyLanguage,
+        synopsis: stories.synopsis,
+        coverUri: stories.coverUri,
+        status: stories.status,
+        isPublic: stories.isPublic,
+        isFeatured: stories.isFeatured,
+        updatedAt: stories.updatedAt,
+        hasMeaningfulContent: sql<boolean>`exists (
+          select 1 from ${chapters}
+          where ${chapters.storyId} = ${stories.storyId}
+            and length(${chapters.htmlContent}) > 200
+        )`,
         averageRating: ratingsSubquery.averageRating,
         ratingCount: ratingsSubquery.ratingCount,
       })
@@ -437,7 +460,7 @@ export const storyService = {
       .leftJoin(ratingsSubquery, eq(stories.storyId, ratingsSubquery.storyId))
       .where(and(...conditions))
       .orderBy(desc(stories.createdAt)); // Convert string rating to number and ensure proper types
-    return result.map((story) => ({
+    return result.filter(isSearchIndexableStory).map((story) => ({
       ...story,
       featureImageUri: toAbsoluteImageUrl(story.featureImageUri),
       averageRating: story.averageRating

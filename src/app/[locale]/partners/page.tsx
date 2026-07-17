@@ -13,6 +13,7 @@ export async function generateMetadata({
   return {
     title: t('metadata.title'),
     description: t('metadata.description'),
+    robots: 'noindex,follow',
     keywords: [
       t('metadata.keywords.0'),
       t('metadata.keywords.1'),
@@ -27,7 +28,7 @@ export async function generateMetadata({
       title: t('metadata.ogTitle'),
       description: t('metadata.ogDescription'),
       type: 'website',
-      url: 'https://mythoria.pt/partners',
+      url: `https://mythoria.pt/${locale}/partners`,
       images: [
         {
           url: 'https://mythoria.pt/Mythoria-logo-white-512x336.jpg',

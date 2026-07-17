@@ -1,6 +1,8 @@
 # Use the official Node.js 24.16.0 Alpine image (latest LTS)
 FROM node:24.16.0-alpine AS builder
 
+ARG APP_GIT_SHA=unknown
+
 # Set the working directory in the container.
 WORKDIR /app
 
@@ -41,6 +43,7 @@ ENV NEXT_PUBLIC_TTS_PROVIDER=$NEXT_PUBLIC_TTS_PROVIDER
 ENV NEXT_PUBLIC_DEFAULT_CURRENCY=$NEXT_PUBLIC_DEFAULT_CURRENCY
 ENV NEXT_PUBLIC_APP_DOMAIN=$NEXT_PUBLIC_APP_DOMAIN
 ENV NEXT_PUBLIC_ASSETS_BASE_URL=$NEXT_PUBLIC_ASSETS_BASE_URL
+ENV APP_GIT_SHA=$APP_GIT_SHA
 
 # Copy package.json and package-lock.json (if available)
 COPY package*.json ./
@@ -65,6 +68,8 @@ RUN npm run build \
 
 # Production stage - use same Node.js version as builder
 FROM node:24.16.0-alpine AS runner
+
+ARG APP_GIT_SHA=unknown
 
 # Set the working directory in the container.
 WORKDIR /app
@@ -97,6 +102,9 @@ EXPOSE 3000
 ENV PORT=3000
 ENV NODE_ENV=production
 ENV HOSTNAME="0.0.0.0"
+ENV APP_GIT_SHA=$APP_GIT_SHA
+
+LABEL org.opencontainers.image.revision=$APP_GIT_SHA
 
 # Command to run the application using standalone server
 CMD ["node", "server.js"]

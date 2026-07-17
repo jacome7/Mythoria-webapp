@@ -1,6 +1,9 @@
 import { routing } from '@/i18n/routing';
 
 export const BASE_URL = 'https://mythoria.pt';
+export const DEFAULT_LOCALE = routing.defaultLocale;
+export const CANONICAL_HOST = new URL(BASE_URL).hostname;
+export const PUBLIC_HOST_ALIASES = new Set([CANONICAL_HOST, `www.${CANONICAL_HOST}`]);
 
 export const STATIC_LOCALIZED_PATH_SUFFIXES = new Set([
   '',
@@ -18,7 +21,40 @@ export const STATIC_LOCALIZED_PATH_SUFFIXES = new Set([
 
 const localeLookup = new Map(routing.locales.map((locale) => [locale.toLowerCase(), locale]));
 
-export function normalizePathname(pathname: string): string {
+export type SeoRouteKind =
+  | 'static-public'
+  | 'blog-post'
+  | 'landing-index'
+  | 'landing-page'
+  | 'public-story'
+  | 'public-low-value'
+  | 'private'
+  | 'unknown';
+
+export type SeoRoutePolicy = {
+  kind: SeoRouteKind;
+  indexable: boolean;
+  follow: boolean;
+  includeInSitemap: boolean;
+  canonicalPath?: string;
+  entityValidationRequired: boolean;
+};
+
+const PRIVATE_LOCALIZED_PREFIXES = [
+  '/buy-credits',
+  '/credits-and-payments',
+  '/my-characters',
+  '/my-personas',
+  '/my-stories',
+  '/profile',
+  '/s',
+  '/sign-in',
+  '/sign-up',
+  '/stories',
+  '/unsubscribe',
+];
+
+export function canonicalizePathname(pathname: string): string {
   if (!pathname) {
     return '/';
   }
@@ -34,13 +70,16 @@ export function normalizePathname(pathname: string): string {
 
   const [pathOnly] = candidatePath.split('?');
   const withLeadingSlash = pathOnly.startsWith('/') ? pathOnly : `/${pathOnly}`;
+  const withoutDuplicateSlashes = withLeadingSlash.replace(/\/{2,}/g, '/');
 
-  if (withLeadingSlash === '/') {
+  if (withoutDuplicateSlashes === '/') {
     return '/';
   }
 
-  return withLeadingSlash.replace(/\/+$/, '');
+  return withoutDuplicateSlashes.replace(/\/+$/, '');
 }
+
+export const normalizePathname = canonicalizePathname;
 
 export function buildAbsoluteUrl(pathname: string): string {
   if (pathname.startsWith('http://') || pathname.startsWith('https://')) {
@@ -103,11 +142,17 @@ export function shouldIncludeXDefault(pathname: string): boolean {
 
 export function getCanonicalRedirectPath(pathname: string): string | null {
   if (!pathname || pathname === '/') {
-    return null;
+    return `/${DEFAULT_LOCALE}`;
   }
 
-  const segments = pathname.split('/');
+  const normalizedSlashes = pathname.startsWith('/') ? pathname : `/${pathname}`;
+  const collapsed = normalizedSlashes.replace(/\/{2,}/g, '/');
+  const segments = collapsed.split('/');
   let changed = false;
+
+  if (collapsed !== pathname) {
+    changed = true;
+  }
 
   const firstSegment = segments[1];
   if (firstSegment) {
@@ -119,12 +164,9 @@ export function getCanonicalRedirectPath(pathname: string): string | null {
   }
 
   let rewritten = segments.join('/');
-  const pathSuffix = segments.slice(2).join('/');
-  const isLandingPageIndex =
-    Boolean(localeLookup.get((segments[1] ?? '').toLowerCase())) && pathSuffix === 'lp/';
 
-  if (isLandingPageIndex) {
-    return changed ? rewritten : null;
+  if (rewritten === '/lp' || rewritten === '/lp/') {
+    return '/pt-PT/lp';
   }
 
   if (rewritten.length > 1 && rewritten.endsWith('/')) {
@@ -133,4 +175,116 @@ export function getCanonicalRedirectPath(pathname: string): string | null {
   }
 
   return changed ? rewritten || '/' : null;
+}
+
+function isPathWithin(pathSuffix: string, prefix: string): boolean {
+  return pathSuffix === prefix || pathSuffix.startsWith(`${prefix}/`);
+}
+
+export function getSeoRoutePolicy(pathname: string): SeoRoutePolicy {
+  const canonicalPath = canonicalizePathname(pathname);
+  const { locale, pathSuffix } = extractLocalizedPath(canonicalPath);
+
+  if (!locale) {
+    return {
+      kind: 'unknown',
+      indexable: false,
+      follow: false,
+      includeInSitemap: false,
+      entityValidationRequired: false,
+    };
+  }
+
+  const base = { canonicalPath: buildLocalizedPath(locale, pathSuffix) };
+
+  if (STATIC_LOCALIZED_PATH_SUFFIXES.has(pathSuffix) && pathSuffix !== '/partners') {
+    return {
+      ...base,
+      kind: 'static-public',
+      indexable: true,
+      follow: true,
+      includeInSitemap: true,
+      entityValidationRequired: false,
+    };
+  }
+
+  if (pathSuffix === '/partners') {
+    return {
+      ...base,
+      kind: 'public-low-value',
+      indexable: false,
+      follow: true,
+      includeInSitemap: false,
+      entityValidationRequired: false,
+    };
+  }
+
+  if (pathSuffix === '/lp') {
+    const indexable = locale === 'pt-PT';
+    return {
+      ...base,
+      kind: 'landing-index',
+      indexable,
+      follow: true,
+      includeInSitemap: indexable,
+      entityValidationRequired: false,
+    };
+  }
+
+  if (/^\/lp\/[^/]+$/.test(pathSuffix)) {
+    return {
+      ...base,
+      kind: 'landing-page',
+      indexable: true,
+      follow: true,
+      includeInSitemap: true,
+      entityValidationRequired: true,
+    };
+  }
+
+  if (/^\/blog\/[^/]+$/.test(pathSuffix)) {
+    return {
+      ...base,
+      kind: 'blog-post',
+      indexable: true,
+      follow: true,
+      includeInSitemap: true,
+      entityValidationRequired: true,
+    };
+  }
+
+  if (/^\/p\/[^/]+$/.test(pathSuffix)) {
+    return {
+      ...base,
+      kind: 'public-story',
+      indexable: true,
+      follow: true,
+      includeInSitemap: true,
+      entityValidationRequired: true,
+    };
+  }
+
+  if (
+    PRIVATE_LOCALIZED_PREFIXES.some((prefix) => isPathWithin(pathSuffix, prefix)) ||
+    pathSuffix.startsWith('/tell-your-story/step-') ||
+    pathSuffix.startsWith('/p/')
+  ) {
+    return {
+      ...base,
+      kind: 'private',
+      indexable: false,
+      follow: false,
+      includeInSitemap: false,
+      entityValidationRequired: false,
+    };
+  }
+
+  return {
+    ...base,
+    kind: 'unknown',
+    indexable: false,
+    follow: false,
+    includeInSitemap: false,
+    entityValidationRequired: false,
+  };
 }

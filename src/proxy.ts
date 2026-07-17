@@ -3,10 +3,45 @@ import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 import { routing } from './i18n/routing';
 import { getLandingPageIntentContext } from '@/content/landing-pages';
-import { getCanonicalRedirectPath } from '@/lib/seo';
+import { BASE_URL, PUBLIC_HOST_ALIASES, getCanonicalRedirectPath } from '@/lib/seo';
 import { INTENT_CONTEXT_COOKIE, INTENT_CONTEXT_MAX_AGE } from '@/types/intent-context';
 
 const intlMiddleware = createMiddleware(routing);
+
+function firstForwardedValue(value: string | null): string | null {
+  return value?.split(',')[0]?.trim() || null;
+}
+
+export function getCanonicalRequestRedirect(req: NextRequest): URL | null {
+  const forwardedHost = firstForwardedValue(req.headers.get('x-forwarded-host'));
+  const requestHost = forwardedHost || req.headers.get('host') || req.nextUrl.host;
+  const hostname = requestHost.split(':')[0].toLowerCase();
+  const forwardedProtocol = firstForwardedValue(req.headers.get('x-forwarded-proto'));
+  const requestProtocol = forwardedProtocol || req.nextUrl.protocol.replace(':', '');
+  const isPublicHost = PUBLIC_HOST_ALIASES.has(hostname);
+  const canonicalPath = getCanonicalRedirectPath(req.nextUrl.pathname);
+
+  const destination = new URL(req.url);
+  if (canonicalPath) destination.pathname = canonicalPath;
+
+  if (isPublicHost) {
+    const canonicalOrigin = new URL(BASE_URL);
+    destination.protocol = canonicalOrigin.protocol;
+    destination.hostname = canonicalOrigin.hostname;
+    destination.port = canonicalOrigin.port;
+  }
+
+  const source = new URL(req.url);
+  source.protocol = `${requestProtocol}:`;
+  source.host = requestHost;
+
+  return destination.toString() === source.toString() ? null : destination;
+}
+
+export function getCanonicalRedirectResponse(req: NextRequest): NextResponse | null {
+  const destination = getCanonicalRequestRedirect(req);
+  return destination ? NextResponse.redirect(destination, 308) : null;
+}
 
 function applyLandingPageIntentCookie(req: NextRequest, response: NextResponse): NextResponse {
   const [locale, lpSegment, slug, ...rest] = req.nextUrl.pathname.split('/').filter(Boolean);
@@ -40,18 +75,8 @@ export const proxy = clerkMiddleware(
       return NextResponse.next();
     }
 
-    const canonicalPath = getCanonicalRedirectPath(pathname);
-    if (canonicalPath) {
-      const redirectUrl = req.nextUrl.clone();
-      redirectUrl.pathname = canonicalPath;
-      return NextResponse.redirect(redirectUrl, 308);
-    }
-
-    if (pathname === '/lp' || pathname === '/lp/') {
-      const redirectUrl = req.nextUrl.clone();
-      redirectUrl.pathname = '/pt-PT/lp';
-      return NextResponse.redirect(redirectUrl, 308);
-    }
+    const canonicalRedirect = getCanonicalRedirectResponse(req);
+    if (canonicalRedirect) return canonicalRedirect;
 
     // Allow the PWA offline fallback route to remain at root without locale prefix.
     // We skip the i18n middleware so it doesn't redirect /offline -> /en-US/offline (which 404s)

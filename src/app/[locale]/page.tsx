@@ -2,9 +2,28 @@ import { isValidIntent, normalizeIntent, type StoryIntent } from '@/constants/in
 import { getIntentContext } from '@/app/i/actions';
 import type { IntentContext } from '@/types/intent-context';
 import HomePageClient from './HomePageClient';
+import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
+import { buildStaticPageMetadata } from '@/lib/static-page-metadata';
 
 interface HomePageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Metadata' });
+
+  return buildStaticPageMetadata({
+    locale,
+    path: '',
+    title: t('title'),
+    description: t('description'),
+  });
 }
 
 function firstSearchParam(value: string | string[] | undefined): string | null {
