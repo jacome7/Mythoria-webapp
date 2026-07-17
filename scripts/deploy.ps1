@@ -132,9 +132,10 @@ function Deploy-Fast {
 function Test-Deployment {
     Write-Info "Fetching service URL"
     $serviceUrl = & $GCLOUD run services describe $SERVICE_NAME --region $REGION --format="value(status.url)"
+    $healthUrl = if ($Staging) { "$serviceUrl/api/health" } else { 'https://mythoria.pt/api/health' }
 
     if ($serviceUrl) {
-        $health = Invoke-RestMethod -Uri "$serviceUrl/api/health" -TimeoutSec 30
+        $health = Invoke-RestMethod -Uri $healthUrl -TimeoutSec 30
         if ($health.gitSha -ne $GIT_SHA) {
             throw "Deployed health SHA '$($health.gitSha)' does not match '$GIT_SHA'."
         }

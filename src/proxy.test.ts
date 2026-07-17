@@ -35,4 +35,24 @@ describe('proxy canonical redirects', () => {
     expect(getCanonicalRequestRedirect(new NextRequest('https://mythoria.pt/en-US'))).toBeNull();
     expect(getCanonicalRequestRedirect(new NextRequest('http://localhost:3000/en-US'))).toBeNull();
   });
+
+  it('compares forwarded public and run.app requests against their external URL', () => {
+    const publicRequest = new NextRequest('http://localhost:3000/api/health', {
+      headers: {
+        host: 'localhost:3000',
+        'x-forwarded-host': 'mythoria.pt',
+        'x-forwarded-proto': 'https',
+      },
+    });
+    const runAppRequest = new NextRequest('http://localhost:3000/api/health', {
+      headers: {
+        host: 'localhost:3000',
+        'x-forwarded-host': 'mythoria-webapp.example.a.run.app',
+        'x-forwarded-proto': 'https',
+      },
+    });
+
+    expect(getCanonicalRequestRedirect(publicRequest)).toBeNull();
+    expect(getCanonicalRequestRedirect(runAppRequest)).toBeNull();
+  });
 });

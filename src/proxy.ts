@@ -21,7 +21,12 @@ export function getCanonicalRequestRedirect(req: NextRequest): URL | null {
   const isPublicHost = PUBLIC_HOST_ALIASES.has(hostname);
   const canonicalPath = getCanonicalRedirectPath(req.nextUrl.pathname);
 
-  const destination = new URL(req.url);
+  const source = new URL(
+    `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    `${requestProtocol}://${requestHost}`,
+  );
+
+  const destination = new URL(source);
   if (canonicalPath) destination.pathname = canonicalPath;
 
   if (isPublicHost) {
@@ -30,10 +35,6 @@ export function getCanonicalRequestRedirect(req: NextRequest): URL | null {
     destination.hostname = canonicalOrigin.hostname;
     destination.port = canonicalOrigin.port;
   }
-
-  const source = new URL(req.url);
-  source.protocol = `${requestProtocol}:`;
-  source.host = requestHost;
 
   return destination.toString() === source.toString() ? null : destination;
 }
