@@ -24,6 +24,7 @@ $SERVICE_NAME = if ($Staging) { "$BASE_SERVICE_NAME-staging" } else { $BASE_SERV
 $REGION = 'europe-west9'
 $IMAGE_NAME = "gcr.io/$PROJECT_ID/$SERVICE_NAME"
 $GIT_SHA = $null
+$GCLOUD = if ($IsWindows -or $env:OS -eq 'Windows_NT') { 'gcloud.cmd' } else { 'gcloud' }
 # -----------------------------------------------------------------------------
 
 function Show-Help {
@@ -68,7 +69,7 @@ function Test-Prerequisites {
     Write-Info "Checking prerequisites..."
 
     try {
-        & gcloud --version  | Out-Null
+        & $GCLOUD --version  | Out-Null
         Write-Success "Google Cloud CLI is available"
     }
     catch {
@@ -78,7 +79,7 @@ function Test-Prerequisites {
 
 
     try {
-        $account = (& gcloud auth list --filter=status:ACTIVE --format="value(account)") | Select-Object -First 1
+        $account = (& $GCLOUD auth list --filter=status:ACTIVE --format="value(account)") | Select-Object -First 1
         if (-not $account) {
             Write-Err "Not authenticated with Google Cloud — run 'gcloud auth login' first."
             throw "Unauthenticated"
@@ -89,7 +90,7 @@ function Test-Prerequisites {
         throw
     }
 
-    & gcloud config set project $PROJECT_ID | Out-Null
+    & $GCLOUD config set project $PROJECT_ID | Out-Null
     Write-Success "Using project $PROJECT_ID"
 
     $branch = (& git branch --show-current).Trim()
@@ -118,7 +119,7 @@ function Run-PreDeploymentChecks {
 function Deploy-With-CloudBuild {
     Write-Info "Starting Cloud Build submission"
     # Pass service name and region as substitutions
-    & gcloud builds submit --config cloudbuild.yaml --substitutions "_SERVICE_NAME=$SERVICE_NAME,_REGION=$REGION,_GIT_SHA=$GIT_SHA"
+    & $GCLOUD builds submit --config cloudbuild.yaml --substitutions "_SERVICE_NAME=$SERVICE_NAME,_REGION=$REGION,_GIT_SHA=$GIT_SHA"
     Write-Success "Cloud Build finished"
 }
 
@@ -130,7 +131,7 @@ function Deploy-Fast {
 
 function Test-Deployment {
     Write-Info "Fetching service URL"
-    $serviceUrl = & gcloud run services describe $SERVICE_NAME --region $REGION --format="value(status.url)"
+    $serviceUrl = & $GCLOUD run services describe $SERVICE_NAME --region $REGION --format="value(status.url)"
 
     if ($serviceUrl) {
         $health = Invoke-RestMethod -Uri "$serviceUrl/api/health" -TimeoutSec 30
