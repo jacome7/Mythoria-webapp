@@ -17,6 +17,7 @@ export interface LandingPageBookSampleChapter {
 
 export interface LandingPageBook {
   id: string;
+  slug?: string;
   title: string;
   synopsis: string;
   excerpt: string;
@@ -33,6 +34,7 @@ export interface LandingPageBook {
   sampleChapter?: LandingPageBookSampleChapter;
   audioSampleSrc?: string;
   audioSampleTitle?: string;
+  fictionalLabel?: string;
 }
 
 export interface LandingPageFaq {
@@ -43,6 +45,8 @@ export interface LandingPageFaq {
 export interface LandingPageUseCase {
   title: string;
   body: string;
+  iconSrc?: string;
+  iconAlt?: string;
 }
 
 export interface LandingPageIconItem {
@@ -66,9 +70,9 @@ export interface LandingPageTestimonial {
 }
 
 export interface LandingPageBookSection {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
-  intro: string;
+  intro?: string;
 }
 
 export interface LandingPageTemplateIcon {
@@ -85,6 +89,43 @@ export interface LandingPageTemplateIcons {
   safetyNote?: LandingPageTemplateIcon;
   sampleChapter?: LandingPageTemplateIcon;
   formats?: LandingPageTemplateIcon[];
+}
+
+export interface LandingPageSupportPath {
+  id: 'grow-and-change' | 'remember-and-say-goodbye';
+  title: string;
+  body: string;
+  ctaLabel: string;
+  tone: 'warm' | 'calm';
+}
+
+export interface LandingPageSupportChallenge {
+  id: string;
+  pathId: LandingPageSupportPath['id'];
+  title: string;
+  ageRange: string;
+  body: string;
+  primaryIntent: string;
+  priority: number;
+  iconSrc: string;
+  iconAlt: string;
+}
+
+export interface LandingPageSupportHub {
+  title: string;
+  intro: string;
+  paths: LandingPageSupportPath[];
+  challengesTitle: string;
+  challengesIntro: string;
+  initialVisibleCount: number;
+  showMoreLabel: string;
+  showLessLabel: string;
+  challenges: LandingPageSupportChallenge[];
+}
+
+export interface LandingPageAnalyticsConfig {
+  pageViewEvent?: 'landing_page_view' | 'supportive_story_page_view';
+  variant?: string;
 }
 
 export interface LandingPageWorkshopStep extends LandingPageIconItem {}
@@ -225,6 +266,12 @@ export interface LandingPageContent {
   riskRating: 'green' | 'yellow' | 'red';
   updatedAt: string;
   indexable: boolean;
+  /** Lists the page in `/lp` without making it indexable by search engines. */
+  showInLandingPageIndex?: boolean;
+  /** Shows the formats panel directly below the hero. Defaults to true. */
+  showFormatsNearHero?: boolean;
+  /** Repeats the formats panel beside the process panel. Defaults to true. */
+  showFormatsNearProcess?: boolean;
   /** Short label for the breadcrumb / structured data (falls back to `title`). */
   breadcrumbLabel?: string;
   /** Dedicated 1200x630 social image (falls back to `hero.imageSrc`). */
@@ -235,9 +282,12 @@ export interface LandingPageContent {
   primaryCta: string;
   secondaryCta: string;
   templateIcons?: LandingPageTemplateIcons;
+  analytics?: LandingPageAnalyticsConfig;
+  supportHub?: LandingPageSupportHub;
   booksSection?: LandingPageBookSection;
   hero: {
     eyebrow: string;
+    heading?: string;
     headline: string;
     subheadline: string;
     imageSrc: string;
@@ -310,6 +360,11 @@ export interface LandingPageContent {
     title: string;
     body: string;
   };
+  trustAndPrivacy?: {
+    title: string;
+    intro: string;
+    items: LandingPageIconItem[];
+  };
   finalCta: {
     title: string;
     body: string;
@@ -324,5 +379,6 @@ export interface LandingPageContent {
     about: string[];
     serviceName: string;
     serviceType: string;
+    includeProduct?: boolean;
   };
 }

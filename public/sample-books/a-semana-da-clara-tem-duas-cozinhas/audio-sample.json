@@ -1,0 +1,13 @@
+{
+  "status": "generated",
+  "generatedAt": "2026-07-17T16:41:21.044Z",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "A semana da Clara passou a ter duas cozinhas, duas escovas de dentes e um calendário com duas cores. Os adultos explicaram o plano e repetiram uma coisa importante: ela não tinha causado a separação e não precisava de a resolver. Em cada casa havia rotinas diferentes, perguntas por responder e um lugar que continuava a ser dela.",
+  "voiceDirection": "Português de Portugal, sotaque de Lisboa, voz calma, factual e calorosa, sem dramatização, promessa de reconciliação ou preferência por uma casa.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 38,
+  "actualDurationSeconds": 24.82
+}

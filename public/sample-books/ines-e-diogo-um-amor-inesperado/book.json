@@ -1,0 +1,47 @@
+{
+  "id": "romance-book-01",
+  "title": "Inês & Diogo — Um Amor Inesperado",
+  "slug": "ines-e-diogo-um-amor-inesperado",
+  "language": "pt-PT",
+  "targetAudience": "adult_18+",
+  "readerAgeBand": "Adultos",
+  "buyerPersona": "Pessoa que quer transformar a origem da relação numa prenda profundamente pessoal",
+  "recipientType": "companheiro ou companheira",
+  "storyIntent": "Celebrar o encontro inesperado que iniciou uma vida em comum",
+  "synopsis": "Uma chuvada em Lisboa obriga Inês e Diogo a partilhar o único lugar seco de uma esplanada. O atraso transforma-se no primeiro capítulo de uma vida de elétricos perdidos, livros emprestados e domingos demorados.",
+  "shortExcerpt": "A chuva começou três minutos antes de Inês decidir que aquele seria um dia perfeitamente normal.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "A chuva chegou primeiro. Depois vieram o toldo apertado, um livro emprestado e uma conversa que nenhum dos dois quis terminar. Inês ainda acreditava que aquele seria um dia normal. Diogo já desconfiava de que alguns atrasos sabem exatamente onde nos querem levar. Quando o elétrico passou, já quase não chovia. Ficaram mais dez minutos, só porque ainda havia café nas chávenas e muitas perguntas por fazer.",
+  "graphicalStyle": "watercolor",
+  "novelStyle": "romance",
+  "fictionalUserContext": "Cenário inteiramente ficcional criado para demonstrar uma história romântica Mythoria; não representa clientes nem acontecimentos reais.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/ines-e-diogo-um-amor-inesperado/assets/cover.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/ines-e-diogo-um-amor-inesperado/assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/ines-e-diogo-um-amor-inesperado/assets/feature.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/ines-e-diogo-um-amor-inesperado/assets/feature.jpeg"
+  },
+  "sampleChapterImage": {
+    "localPath": "assets/chapter-01.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/ines-e-diogo-um-amor-inesperado/assets/chapter-01.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/ines-e-diogo-um-amor-inesperado/assets/chapter-01.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/ines-e-diogo-um-amor-inesperado/assets/audio-teaser.mp3",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/ines-e-diogo-um-amor-inesperado/assets/audio-teaser.mp3",
+    "status": "generated",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview-tts",
+    "voice": "Aoede"
+  },
+  "safetyNotes": [
+    "A história é ficcional e não representa um casal real.",
+    "As imagens mostram apenas adultos plenamente vestidos em contextos comuns.",
+    "Não são usados testemunhos, avaliações ou dados pessoais reais."
+  ]
+}

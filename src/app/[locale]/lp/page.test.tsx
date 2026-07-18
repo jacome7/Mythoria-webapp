@@ -8,7 +8,8 @@ jest.mock('@/i18n/routing', () => ({
   },
 }));
 
-import { generateMetadata } from './page';
+import { render, screen } from '@testing-library/react';
+import LandingPageIndexRoute, { generateMetadata } from './page';
 
 describe('landing page index metadata', () => {
   it('indexes the canonical Portuguese landing page index', async () => {
@@ -27,5 +28,18 @@ describe('landing page index metadata', () => {
 
     expect(metadata.robots).toBe('noindex,follow');
     expect(metadata.alternates?.canonical).toBe('https://mythoria.pt/pt-PT/lp');
+  });
+
+  it('links to the romance landing page from the Portuguese index', async () => {
+    render(
+      await LandingPageIndexRoute({
+        params: Promise.resolve({ locale: 'pt-PT' }),
+      }),
+    );
+
+    expect(screen.getByRole('link', { name: /Livro personalizado para casais/i })).toHaveAttribute(
+      'href',
+      '/pt-PT/lp/livro-personalizado-para-casais',
+    );
   });
 });

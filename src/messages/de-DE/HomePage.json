@@ -296,7 +296,23 @@
       "sceneAlt": "Szene aus",
       "tags": "Tags",
       "style": "Stil",
-      "synopsis": "Synopsis"
+      "synopsis": "Zusammenfassung",
+      "storyIntent": "Zweck der Geschichte",
+      "aboutThisBook": "Über dieses Buch",
+      "audioTeaser": "Hörprobe anhören",
+      "openDetails": "Vollständiges Beispiel lesen",
+      "notFoundTitle": "Dieses Beispielbuch ist nicht verfügbar",
+      "backToHomepage": "Zur Startseite",
+      "intent": "Absicht",
+      "audience": "Zielgruppe",
+      "recipient": "Empfänger",
+      "literaryStyle": "Erzählstil",
+      "visualStyle": "Visueller Stil",
+      "language": "Sprache",
+      "fictionalSample": "Fiktives Beispiel",
+      "audioAvailable": "Höre dir die verfügbare Hörprobe an.",
+      "sampleChapter": "Beispielkapitel",
+      "fictionalContext": "Über dieses fiktive Beispiel"
     }
   }
 }

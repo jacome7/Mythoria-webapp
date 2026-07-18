@@ -1,0 +1,15 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "Durante dois anos, a casa delas teve duas portas de embarque. Leonor guardava Lisboa numa mensagem de voz; Matilde respondia com a chuva de Bruxelas. Entre voos adiados e listas para depois, descobriram que casa era o lugar onde deixavam de contar os dias. Numa noite de domingo, abriram o mesmo ficheiro e escreveram uma frase cada uma. Pela primeira vez, o futuro coube numa só página — e numa única morada.",
+  "voiceDirection": "Português de Portugal, sotaque de Lisboa, voz adulta e luminosa, saudade sem tristeza dominante, ritmo contemporâneo.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview-tts",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 40,
+  "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/leonor-e-matilde-dois-paises-uma-casa/assets/audio-teaser.mp3",
+  "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/leonor-e-matilde-dois-paises-uma-casa/assets/audio-teaser.mp3",
+  "generatedAt": "2026-07-17T18:42:38.095Z",
+  "requestModel": "gemini-3.1-flash-tts-preview"
+}

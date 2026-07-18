@@ -1,0 +1,47 @@
+{
+  "id": "romance-book-04",
+  "title": "Leonor & Matilde — Dois Países, Uma Casa",
+  "slug": "leonor-e-matilde-dois-paises-uma-casa",
+  "language": "pt-PT",
+  "targetAudience": "adult_18+",
+  "readerAgeBand": "Adultos",
+  "buyerPersona": "Pessoa num casal à distância ou entre países",
+  "recipientType": "companheira",
+  "storyIntent": "Celebrar os rituais que encurtaram a distância e a construção de uma casa comum",
+  "synopsis": "Leonor vive em Lisboa e Matilde em Bruxelas. Entre áudios, voos atrasados e listas de coisas para fazer juntas, constroem uma definição própria de casa.",
+  "shortExcerpt": "Durante dois anos, a casa delas teve duas portas de embarque.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "Durante dois anos, a casa delas teve duas portas de embarque. Leonor guardava Lisboa numa mensagem de voz; Matilde respondia com a chuva de Bruxelas. Entre voos adiados e listas para depois, descobriram que casa era o lugar onde deixavam de contar os dias. Numa noite de domingo, abriram o mesmo ficheiro e escreveram uma frase cada uma. Pela primeira vez, o futuro coube numa só página — e numa única morada.",
+  "graphicalStyle": "digital_art",
+  "novelStyle": "romance",
+  "fictionalUserContext": "Cenário inteiramente ficcional criado para representar de forma natural um casal adulto à distância; não representa clientes nem acontecimentos reais.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/leonor-e-matilde-dois-paises-uma-casa/assets/cover.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/leonor-e-matilde-dois-paises-uma-casa/assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/leonor-e-matilde-dois-paises-uma-casa/assets/feature.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/leonor-e-matilde-dois-paises-uma-casa/assets/feature.jpeg"
+  },
+  "sampleChapterImage": {
+    "localPath": "assets/chapter-01.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/leonor-e-matilde-dois-paises-uma-casa/assets/chapter-01.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/leonor-e-matilde-dois-paises-uma-casa/assets/chapter-01.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/leonor-e-matilde-dois-paises-uma-casa/assets/audio-teaser.mp3",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/leonor-e-matilde-dois-paises-uma-casa/assets/audio-teaser.mp3",
+    "status": "generated",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview-tts",
+    "voice": "Aoede"
+  },
+  "safetyNotes": [
+    "A história é ficcional e não representa um casal real.",
+    "A inclusão é natural e não usada como testemunho ou alegação publicitária.",
+    "Bilhetes, cidades e detalhes de viagem não identificam pessoas reais."
+  ]
+}

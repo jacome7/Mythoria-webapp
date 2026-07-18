@@ -61,23 +61,30 @@ if (fs.existsSync(languagePromptPath)) {
     ? 'criancas pequenas'
     : book.targetAudience === 'children_7-10' || book.targetAudience === 'children_11-14'
       ? 'criancas'
-      : 'jovens';
+      : book.targetAudience === 'adult_18+'
+        ? 'adultos'
+        : 'jovens';
   systemPrompt = String(promptConfig.systemPrompt ?? systemPrompt).replace(
     '{{story-target-age}}',
     targetAge,
   );
 }
 
+const configuredModel = audio.requestModel || audio.model || process.env.TTS_MODEL || 'gemini-3.1-flash-tts-preview';
+const requestModel = configuredModel.endsWith('-preview-tts')
+  ? configuredModel.slice(0, -4)
+  : configuredModel;
+
 const tts = new GoogleGenAITTSService({
   apiKey: process.env.GOOGLE_GENAI_API_KEY,
-  model: audio.model || process.env.TTS_MODEL || 'gemini-3.1-flash-tts-preview',
+  model: requestModel,
   defaultVoice: audio.voice || process.env.TTS_VOICE || 'Charon',
   defaultSpeed: Number(process.env.TTS_SPEED || '1'),
 });
 
 const result = await tts.synthesize(audio.text, {
   voice: audio.voice,
-  model: audio.model,
+  model: requestModel,
   language: audio.language,
   systemPrompt: `${systemPrompt}\n\n${audio.voiceDirection}`,
 });
@@ -88,6 +95,7 @@ fs.writeFileSync(target, result.buffer);
 
 audio.status = 'generated';
 audio.provider = result.provider;
+audio.requestModel = requestModel;
 audio.model = result.model;
 audio.voice = result.voice;
 audio.generatedAt = new Date().toISOString();

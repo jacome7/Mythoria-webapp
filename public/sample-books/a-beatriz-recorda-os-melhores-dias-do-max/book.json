@@ -1,0 +1,26 @@
+{
+  "id": "support-book-05",
+  "title": "A Beatriz Recorda os Melhores Dias do Max",
+  "slug": "a-beatriz-recorda-os-melhores-dias-do-max",
+  "language": "pt-PT",
+  "targetAudience": "children_7-10",
+  "readerAgeBand": "5–9 anos",
+  "buyerPersona": "Família que quer guardar memórias de um animal de companhia falecido com linguagem clara e sem impor um ritual",
+  "recipientType": "criança que recorda um animal de companhia",
+  "storyIntent": "Reunir memórias, hábitos e objetos num livro familiar sem prometer fecho emocional nem apresentar outro animal como substituto.",
+  "synopsis": "Beatriz reúne passeios, sons e fotografias do cão Max num livro de memórias que não lhe pede para deixar de sentir saudades.",
+  "shortExcerpt": "Max já não corria até à porta, mas as histórias dos seus passos ainda sabiam o caminho.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "A Beatriz escolheu uma caixa azul para guardar a chapa do Max, a bola que quase já não saltava e uma fotografia do caminho comprido. O pai explicou com palavras claras que Max tinha morrido. Depois, página a página, a família reuniu passeios, sons e pequenas manias — sem obrigar a tristeza a terminar e sem substituir Max por outro animal.",
+  "graphicalStyle": "colored_pencil",
+  "novelStyle": "biography",
+  "fictionalUserContext": "Cenário inteiramente ficcional criado para demonstrar uma história Mythoria de memória sobre um animal de companhia.",
+  "coverImage": { "localPath": "assets/cover.jpeg" },
+  "featureImage": { "localPath": "assets/feature.jpeg" },
+  "audioSample": { "localPath": "assets/audio-teaser.mp3", "provider": "google-genai", "model": "gemini-3.1-flash-tts-preview", "voice": "Aoede" },
+  "safetyNotes": [
+    "A história é ficcional e não representa uma criança, família ou animal real.",
+    "A morte é explicada de forma direta e adequada à idade, sem atribuir fala ou factos ao animal depois da morte.",
+    "O ritual é opcional e nenhum novo animal é apresentado como substituto."
+  ]
+}

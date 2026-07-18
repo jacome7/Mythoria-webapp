@@ -1,0 +1,39 @@
+{
+  "audioSamples": [
+    {
+      "bookId": "book-01",
+      "language": "pt-PT",
+      "recommendedDurationSeconds": 40,
+      "voiceDirection": "Voz adulta, calorosa e espirituosa, português europeu de Lisboa.",
+      "text": "A chuva chegou primeiro. Depois vieram o toldo apertado, um livro emprestado e uma conversa que nenhum dos dois quis terminar. Inês ainda acreditava que aquele seria um dia normal. Diogo já desconfiava de que alguns atrasos sabem exatamente onde nos querem levar."
+    },
+    {
+      "bookId": "book-02",
+      "language": "pt-PT",
+      "recommendedDurationSeconds": 40,
+      "voiceDirection": "Voz adulta, terna e cúmplice, com humor leve e pausas naturais.",
+      "text": "Primeiro passou o autocarro. Depois tocou o telefone. Quando finalmente ficaram em silêncio, uma gargalhada estragou o plano perfeito — e salvou o momento. Durante anos discutiram quem se aproximou primeiro. Nenhum deles alguma vez desejou uma versão diferente da história."
+    },
+    {
+      "bookId": "book-03",
+      "language": "pt-PT",
+      "recommendedDurationSeconds": 42,
+      "voiceDirection": "Voz adulta, serena e observacional, sem dramatização excessiva.",
+      "text": "A primeira chávena lascou-se antes de existir uma prateleira para ela. Sobreviveu a três casas, a duas mudanças de emprego e a manhãs em que falar parecia demasiado. A segunda chegou depois. Diferentes, gastas e sempre lado a lado, acabaram por contar a vida inteira."
+    },
+    {
+      "bookId": "book-04",
+      "language": "pt-PT",
+      "recommendedDurationSeconds": 40,
+      "voiceDirection": "Voz adulta e luminosa, português europeu, saudade sem tristeza dominante.",
+      "text": "Durante dois anos, a casa delas teve duas portas de embarque. Leonor guardava Lisboa numa mensagem de voz; Matilde respondia com a chuva de Bruxelas. Entre voos adiados e listas para depois, descobriram que casa era o lugar onde deixavam de contar os dias."
+    },
+    {
+      "bookId": "book-05",
+      "language": "pt-PT",
+      "recommendedDurationSeconds": 45,
+      "voiceDirection": "Voz adulta, divertida no início e emotiva no final, sem revelar explicitamente a surpresa.",
+      "text": "Todas as grandes decisões deles começaram com um plano que nenhum dos dois cumpriu. Rui escreveu sobre estradas erradas, jantares improvisados e a vez em que Tomás ficou quando teria sido mais fácil partir. O último capítulo ficou em branco. Algumas histórias precisam de uma resposta dada fora do livro."
+    }
+  ]
+}

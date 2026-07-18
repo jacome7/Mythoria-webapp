@@ -1,0 +1,44 @@
+{
+  "storiesToCreate": [
+    {
+      "bookId": "book-01",
+      "slug": "ines-e-diogo-um-amor-inesperado",
+      "status": "pending_story_generation",
+      "makePublic": false,
+      "featureInGetInspired": false,
+      "requiresHumanApproval": true
+    },
+    {
+      "bookId": "book-02",
+      "slug": "o-nosso-primeiro-beijo-foi-so-o-principio",
+      "status": "pending_story_generation",
+      "makePublic": false,
+      "featureInGetInspired": false,
+      "requiresHumanApproval": true
+    },
+    {
+      "bookId": "book-03",
+      "slug": "duas-chavenas-uma-vida",
+      "status": "pending_story_generation",
+      "makePublic": false,
+      "featureInGetInspired": false,
+      "requiresHumanApproval": true
+    },
+    {
+      "bookId": "book-04",
+      "slug": "leonor-e-matilde-dois-paises-uma-casa",
+      "status": "pending_story_generation",
+      "makePublic": false,
+      "featureInGetInspired": false,
+      "requiresHumanApproval": true
+    },
+    {
+      "bookId": "book-05",
+      "slug": "rui-e-tomas-o-ultimo-capitulo-antes-do-sim",
+      "status": "pending_story_generation",
+      "makePublic": false,
+      "featureInGetInspired": false,
+      "requiresHumanApproval": true
+    }
+  ]
+}

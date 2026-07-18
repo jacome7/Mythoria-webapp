@@ -1,0 +1,26 @@
+{
+  "id": "support-book-02",
+  "title": "A Leonor Abre Espaço para o Amor",
+  "slug": "a-leonor-abre-espaco-para-o-amor",
+  "language": "pt-PT",
+  "targetAudience": "children_3-6",
+  "readerAgeBand": "3–6 anos",
+  "buyerPersona": "Adulto que quer conversar com uma criança sobre a chegada de um novo bebé sem apagar emoções mistas",
+  "recipientType": "criança que vai ter um novo irmão",
+  "storyIntent": "Mostrar o que muda e o que continua, preservando escolhas e tempo individual sem obrigar a criança a assumir um papel de cuidadora.",
+  "synopsis": "Leonor prepara a chegada do bebé Duarte sem ter de esconder que esperar, ouvir choro e partilhar atenção também pode ser difícil.",
+  "shortExcerpt": "O amor podia crescer. A paciência, descobriu Leonor, precisava de pequenos intervalos.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "A Leonor escolheu uma cadeira junto à janela para o quarto do bebé Duarte. Dali ainda conseguia ver os pardais e pedir colo quando precisava. Quando o choro ocupou a casa inteira, ela disse a verdade: não gostava daquele som. Abrir espaço para o amor, descobriu, também era poder guardar o seu lugar e todas as emoções que vinham com ele.",
+  "graphicalStyle": "hand_drawn",
+  "novelStyle": "contemporary",
+  "fictionalUserContext": "Cenário inteiramente ficcional criado para demonstrar uma história Mythoria sobre a chegada de um novo irmão.",
+  "coverImage": { "localPath": "assets/cover.jpeg" },
+  "featureImage": { "localPath": "assets/feature.jpeg" },
+  "audioSample": { "localPath": "assets/audio-teaser.mp3", "provider": "google-genai", "model": "gemini-3.1-flash-tts-preview", "voice": "Aoede" },
+  "safetyNotes": [
+    "A história é ficcional e não representa uma família real.",
+    "A criança não é obrigada a sentir alegria, ajudar ou cuidar do bebé.",
+    "A narrativa mantém tempo individual e apoio adulto sem prometer ausência de ciúmes ou regressões."
+  ]
+}

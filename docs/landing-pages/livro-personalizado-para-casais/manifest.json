@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "1.0",
+  "status": "draft",
+  "locale": "pt-PT",
+  "slug": "livro-personalizado-para-casais",
+  "title": "Livro personalizado para casais",
+  "primaryIntent": "romance",
+  "mappedExistingIntent": "romance",
+  "targetCountry": "Portugal",
+  "primaryGoal": "first_story_completed",
+  "secondaryGoal": "account_creation",
+  "primaryPersona": "pessoa adulta à procura de uma prenda romântica profundamente pessoal",
+  "secondaryPersonas": [
+    "casais à distância",
+    "pessoas a preparar um pedido de casamento",
+    "casais a celebrar um aniversário",
+    "profissionais de casamento e celebrações"
+  ],
+  "recipientTypes": ["companheiro", "companheira", "marido", "mulher", "namorado", "namorada"],
+  "riskRating": "green",
+  "sensitiveNiche": false,
+  "requiresHumanApproval": true,
+  "requiresExternalExpertReview": false,
+  "createdAt": "2026-07-17",
+  "updatedAt": "2026-07-17"
+}

@@ -1,0 +1,13 @@
+{
+  "status": "generated",
+  "generatedAt": "2026-07-17T16:41:21.044Z",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "Quando a Lua chegou, o Mateus queria mostrar-lhe a casa toda. Mas a primeira regra não era senta nem vem. Era esperar, deixar cheirar e respeitar o cantinho sossegado. Dia após dia, com a mãe por perto e as mesmas palavras, Mateus percebeu que treinar também era aprender a observar, fazer pausas e pedir ajuda.",
+  "voiceDirection": "Português de Portugal, sotaque de Lisboa, voz clara e ligeiramente brincalhona, ritmo moderado, sem transformar o treino num jogo sem supervisão.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 37,
+  "actualDurationSeconds": 27.58
+}

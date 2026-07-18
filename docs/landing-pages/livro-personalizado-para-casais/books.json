@@ -1,0 +1,164 @@
+{
+  "books": [
+    {
+      "id": "book-01",
+      "title": "Inês & Diogo — Um Amor Inesperado",
+      "slug": "ines-e-diogo-um-amor-inesperado",
+      "niche": "romance",
+      "targetAudience": "adult_18+",
+      "readerAgeBand": "Adultos",
+      "buyerPersona": "Pessoa que quer transformar a origem da relação numa prenda",
+      "recipientType": "companheiro ou companheira",
+      "storyIntent": "Celebrar o encontro que iniciou a relação",
+      "synopsis": "Uma chuvada em Lisboa obriga Inês e Diogo a partilhar o único lugar seco de uma esplanada. O atraso transforma-se no primeiro capítulo de uma vida de elétricos perdidos, livros emprestados e domingos demorados.",
+      "shortExcerpt": "A chuva começou três minutos antes de Inês decidir que aquele seria um dia perfeitamente normal.",
+      "emotionalJob": "Mostrar que o primeiro acaso ganhou significado através dos pequenos detalhes",
+      "graphicalStyle": "watercolor",
+      "novelStyle": "romance",
+      "fictionalUserContext": "Cenário inteiramente ficcional criado para demonstrar uma história romântica Mythoria.",
+      "coverImage": { "promptPath": "assets/covers/book-01-cover.prompt.md" },
+      "useCaseImage": { "promptPath": "assets/use-cases/book-01-use-case.prompt.md" },
+      "audioSample": {
+        "text": "A chuva chegou primeiro. Depois vieram o toldo apertado, um livro emprestado e uma conversa que nenhum dos dois quis terminar. Inês ainda acreditava que aquele seria um dia normal. Diogo já desconfiava de que alguns atrasos sabem exatamente onde nos querem levar."
+      },
+      "publicStory": {
+        "status": "pending_story_generation",
+        "makePublic": false,
+        "featureInGetInspired": false
+      },
+      "safetyNotes": [
+        "Exemplo ficcional",
+        "Sem dados de clientes reais",
+        "Pessoas adultas e plenamente vestidas nas imagens"
+      ]
+    },
+    {
+      "id": "book-02",
+      "title": "O Nosso Primeiro Beijo Foi Só o Princípio",
+      "slug": "o-nosso-primeiro-beijo-foi-so-o-principio",
+      "niche": "romance",
+      "targetAudience": "adult_18+",
+      "readerAgeBand": "Adultos",
+      "buyerPersona": "Pessoa que quer guardar um primeiro beijo imperfeito e inesquecível",
+      "recipientType": "namorado ou namorada",
+      "storyIntent": "Celebrar um primeiro beijo e o gesto que veio depois",
+      "synopsis": "Depois de várias tentativas interrompidas por um autocarro, um telefonema e uma gargalhada, o primeiro beijo acontece precisamente quando deixam de tentar torná-lo perfeito.",
+      "shortExcerpt": "Durante muitos anos, os dois discordaram sobre quem se aproximou primeiro.",
+      "emotionalJob": "Transformar a imperfeição do momento numa memória cúmplice",
+      "graphicalStyle": "minimalist",
+      "novelStyle": "romance",
+      "fictionalUserContext": "Cenário inteiramente ficcional criado para uma demonstração romântica Mythoria.",
+      "coverImage": { "promptPath": "assets/covers/book-02-cover.prompt.md" },
+      "useCaseImage": { "promptPath": "assets/use-cases/book-02-use-case.prompt.md" },
+      "audioSample": {
+        "text": "Primeiro passou o autocarro. Depois tocou o telefone. Quando finalmente ficaram em silêncio, uma gargalhada estragou o plano perfeito — e salvou o momento. Durante anos discutiram quem se aproximou primeiro. Nenhum deles alguma vez desejou uma versão diferente da história."
+      },
+      "publicStory": {
+        "status": "pending_story_generation",
+        "makePublic": false,
+        "featureInGetInspired": false
+      },
+      "safetyNotes": [
+        "Exemplo ficcional",
+        "Romance adulto sem erotização",
+        "Sem letras de músicas ou dados reais"
+      ]
+    },
+    {
+      "id": "book-03",
+      "title": "Duas Chávenas, Uma Vida",
+      "slug": "duas-chavenas-uma-vida",
+      "niche": "romance",
+      "targetAudience": "adult_18+",
+      "readerAgeBand": "Adultos",
+      "buyerPersona": "Pessoa que quer celebrar o amor vivido no quotidiano",
+      "recipientType": "marido, mulher ou companheiro",
+      "storyIntent": "Contar uma relação através de objetos e rituais partilhados",
+      "synopsis": "A vida de um casal é contada através das chávenas que acompanharam casas, empregos, manhãs apressadas, escolhas grandes e silêncios confortáveis.",
+      "shortExcerpt": "A primeira chávena lascou-se antes de eles terem uma casa onde a guardar.",
+      "emotionalJob": "Dar valor narrativo aos pequenos rituais de uma vida comum",
+      "graphicalStyle": "oil_painting",
+      "novelStyle": "contemporary",
+      "fictionalUserContext": "Cenário inteiramente ficcional criado para demonstrar uma história contemporânea Mythoria.",
+      "coverImage": { "promptPath": "assets/covers/book-03-cover.prompt.md" },
+      "useCaseImage": { "promptPath": "assets/use-cases/book-03-use-case.prompt.md" },
+      "audioSample": {
+        "text": "A primeira chávena lascou-se antes de existir uma prateleira para ela. Sobreviveu a três casas, a duas mudanças de emprego e a manhãs em que falar parecia demasiado. A segunda chegou depois. Diferentes, gastas e sempre lado a lado, acabaram por contar a vida inteira."
+      },
+      "publicStory": {
+        "status": "pending_story_generation",
+        "makePublic": false,
+        "featureInGetInspired": false
+      },
+      "safetyNotes": [
+        "Exemplo ficcional",
+        "Sem alegações sobre relações",
+        "Sem pessoas identificáveis na feature"
+      ]
+    },
+    {
+      "id": "book-04",
+      "title": "Leonor & Matilde — Dois Países, Uma Casa",
+      "slug": "leonor-e-matilde-dois-paises-uma-casa",
+      "niche": "romance",
+      "targetAudience": "adult_18+",
+      "readerAgeBand": "Adultos",
+      "buyerPersona": "Pessoa num casal à distância ou entre países",
+      "recipientType": "companheira",
+      "storyIntent": "Celebrar a distância atravessada e a construção de uma casa comum",
+      "synopsis": "Leonor vive em Lisboa e Matilde em Bruxelas. Entre áudios, voos atrasados e listas de coisas para fazer juntas, constroem uma definição própria de casa.",
+      "shortExcerpt": "Durante dois anos, a casa delas teve duas portas de embarque.",
+      "emotionalJob": "Transformar distância e saudade numa narrativa luminosa de pertença",
+      "graphicalStyle": "digital_art",
+      "novelStyle": "romance",
+      "fictionalUserContext": "Cenário inteiramente ficcional criado para representar de forma natural um casal adulto à distância.",
+      "coverImage": { "promptPath": "assets/covers/book-04-cover.prompt.md" },
+      "useCaseImage": { "promptPath": "assets/use-cases/book-04-use-case.prompt.md" },
+      "audioSample": {
+        "text": "Durante dois anos, a casa delas teve duas portas de embarque. Leonor guardava Lisboa numa mensagem de voz; Matilde respondia com a chuva de Bruxelas. Entre voos adiados e listas para depois, descobriram que casa era o lugar onde deixavam de contar os dias."
+      },
+      "publicStory": {
+        "status": "pending_story_generation",
+        "makePublic": false,
+        "featureInGetInspired": false
+      },
+      "safetyNotes": [
+        "Exemplo ficcional",
+        "Inclusão natural sem alegação publicitária",
+        "Bilhetes e documentos apenas ficcionais"
+      ]
+    },
+    {
+      "id": "book-05",
+      "title": "Rui & Tomás — O Último Capítulo Antes do Sim",
+      "slug": "rui-e-tomas-o-ultimo-capitulo-antes-do-sim",
+      "niche": "romance",
+      "targetAudience": "adult_18+",
+      "readerAgeBand": "Adultos",
+      "buyerPersona": "Pessoa a preparar um pedido de casamento narrativo",
+      "recipientType": "companheiro",
+      "storyIntent": "Conduzir a uma pergunta preservando a surpresa fora do livro",
+      "synopsis": "Rui reúne os lugares onde ele e Tomás aprenderam a ser uma equipa. O último capítulo parece incompleto porque precisa de uma resposta para poder ser escrito.",
+      "shortExcerpt": "Todas as grandes decisões deles começaram com um plano que nenhum dos dois cumpriu.",
+      "emotionalJob": "Criar expectativa sem denunciar publicamente o pedido",
+      "graphicalStyle": "minimalist",
+      "novelStyle": "romance",
+      "fictionalUserContext": "Cenário inteiramente ficcional criado para demonstrar uma surpresa romântica Mythoria.",
+      "coverImage": { "promptPath": "assets/covers/book-05-cover.prompt.md" },
+      "useCaseImage": { "promptPath": "assets/use-cases/book-05-use-case.prompt.md" },
+      "audioSample": {
+        "text": "Todas as grandes decisões deles começaram com um plano que nenhum dos dois cumpriu. Rui escreveu sobre estradas erradas, jantares improvisados e a vez em que Tomás ficou quando teria sido mais fácil partir. O último capítulo ficou em branco. Algumas histórias precisam de uma resposta dada fora do livro."
+      },
+      "publicStory": {
+        "status": "pending_story_generation",
+        "makePublic": false,
+        "featureInGetInspired": false
+      },
+      "safetyNotes": [
+        "Exemplo ficcional",
+        "Capa, teaser e metadata não revelam o pedido",
+        "Sem dados de localização reais"
+      ]
+    }
+  ]
+}

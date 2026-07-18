@@ -1,0 +1,15 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "A chuva chegou primeiro. Depois vieram o toldo apertado, um livro emprestado e uma conversa que nenhum dos dois quis terminar. Inês ainda acreditava que aquele seria um dia normal. Diogo já desconfiava de que alguns atrasos sabem exatamente onde nos querem levar. Quando o elétrico passou, já quase não chovia. Ficaram mais dez minutos, só porque ainda havia café nas chávenas e muitas perguntas por fazer.",
+  "voiceDirection": "Português de Portugal, sotaque de Lisboa, voz adulta, calorosa e espirituosa, ritmo natural e cinematográfico sem melodrama.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview-tts",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 40,
+  "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/ines-e-diogo-um-amor-inesperado/assets/audio-teaser.mp3",
+  "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/ines-e-diogo-um-amor-inesperado/assets/audio-teaser.mp3",
+  "generatedAt": "2026-07-17T18:41:37.067Z",
+  "requestModel": "gemini-3.1-flash-tts-preview"
+}

@@ -1,0 +1,31 @@
+{
+  "id": "support-book-01",
+  "title": "A Primeira Manhã Corajosa da Sofia",
+  "slug": "a-primeira-manha-corajosa-da-sofia",
+  "language": "pt-PT",
+  "targetAudience": "children_3-6",
+  "readerAgeBand": "3–6 anos",
+  "buyerPersona": "Adulto que quer tornar o primeiro dia de escola mais familiar através de leitura acompanhada",
+  "recipientType": "criança em transição para a escola",
+  "storyIntent": "Mostrar uma sequência concreta de chegada, despedida, apoio e reencontro sem prometer que a criança deixará de sentir receio.",
+  "synopsis": "Sofia percorre cada passo da manhã com o pai Miguel e descobre quem a espera na sala e quem regressa para a buscar.",
+  "shortExcerpt": "A mochila levava lápis, uma maçã e uma pergunta que ainda não sabia sair da boca.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "Na véspera do primeiro dia, a Sofia e o pai Miguel desenharam um mapa: o portão verde, o corredor com janelas, a sala da professora Inês e o lugar onde voltariam a encontrar-se. A mochila levava lápis, uma maçã e um lenço amarelo. Levava também uma pergunta. E, naquela manhã, não era preciso responder a tudo de uma vez.",
+  "graphicalStyle": "digital_art",
+  "novelStyle": "contemporary",
+  "fictionalUserContext": "Cenário inteiramente ficcional criado para demonstrar uma história Mythoria sobre o primeiro dia de escola e leitura acompanhada.",
+  "coverImage": { "localPath": "assets/cover.jpeg" },
+  "featureImage": { "localPath": "assets/feature.jpeg" },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview",
+    "voice": "Aoede"
+  },
+  "safetyNotes": [
+    "A história é ficcional e não representa uma criança, família ou escola real.",
+    "A narrativa permite receio, pausa e pedido de ajuda sem garantir uma adaptação feliz.",
+    "A leitura e a confirmação dos detalhes são conduzidas por um adulto."
+  ]
+}

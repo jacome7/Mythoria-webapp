@@ -1,0 +1,15 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "A primeira chávena lascou-se antes de existir uma prateleira para ela. Sobreviveu a três casas, a duas mudanças de emprego e a manhãs em que falar parecia demasiado. A segunda chegou depois. Diferentes, gastas e sempre lado a lado, acabaram por contar a vida inteira. Havia objetos mais bonitos na cozinha, mas nenhum sabia tanto sobre eles. Todas as manhãs, as duas chávenas regressavam à mesa como quem escolhe ficar.",
+  "voiceDirection": "Português de Portugal, sotaque de Lisboa, voz adulta, serena e observacional, ritmo calmo sem dramatização excessiva.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview-tts",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 42,
+  "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/duas-chavenas-uma-vida/assets/audio-teaser.mp3",
+  "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/duas-chavenas-uma-vida/assets/audio-teaser.mp3",
+  "generatedAt": "2026-07-17T18:42:17.290Z",
+  "requestModel": "gemini-3.1-flash-tts-preview"
+}

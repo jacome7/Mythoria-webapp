@@ -1,0 +1,64 @@
+{
+  "imagePrompts": [
+    {
+      "id": "book-01-cover",
+      "bookId": "book-01",
+      "kind": "cover",
+      "promptPath": "assets/covers/book-01-cover.prompt.md"
+    },
+    {
+      "id": "book-01-use-case",
+      "bookId": "book-01",
+      "kind": "use_case",
+      "promptPath": "assets/use-cases/book-01-use-case.prompt.md"
+    },
+    {
+      "id": "book-02-cover",
+      "bookId": "book-02",
+      "kind": "cover",
+      "promptPath": "assets/covers/book-02-cover.prompt.md"
+    },
+    {
+      "id": "book-02-use-case",
+      "bookId": "book-02",
+      "kind": "use_case",
+      "promptPath": "assets/use-cases/book-02-use-case.prompt.md"
+    },
+    {
+      "id": "book-03-cover",
+      "bookId": "book-03",
+      "kind": "cover",
+      "promptPath": "assets/covers/book-03-cover.prompt.md"
+    },
+    {
+      "id": "book-03-use-case",
+      "bookId": "book-03",
+      "kind": "use_case",
+      "promptPath": "assets/use-cases/book-03-use-case.prompt.md"
+    },
+    {
+      "id": "book-04-cover",
+      "bookId": "book-04",
+      "kind": "cover",
+      "promptPath": "assets/covers/book-04-cover.prompt.md"
+    },
+    {
+      "id": "book-04-use-case",
+      "bookId": "book-04",
+      "kind": "use_case",
+      "promptPath": "assets/use-cases/book-04-use-case.prompt.md"
+    },
+    {
+      "id": "book-05-cover",
+      "bookId": "book-05",
+      "kind": "cover",
+      "promptPath": "assets/covers/book-05-cover.prompt.md"
+    },
+    {
+      "id": "book-05-use-case",
+      "bookId": "book-05",
+      "kind": "use_case",
+      "promptPath": "assets/use-cases/book-05-use-case.prompt.md"
+    }
+  ]
+}

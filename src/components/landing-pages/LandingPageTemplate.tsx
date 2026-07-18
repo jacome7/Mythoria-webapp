@@ -4,19 +4,18 @@ import {
   ArrowRight,
   BookOpen,
   CheckCircle2,
-  Clock,
   Headphones,
   HeartHandshake,
   Printer,
   ShieldCheck,
   Sparkles,
   Star,
-  Zap,
 } from 'lucide-react';
 import type { LandingPageContent, LandingPageTemplateIcon } from '@/content/landing-pages';
 import LandingPageBookShowcase from './LandingPageBookShowcase';
 import LandingPageFloatingNavigation from './LandingPageFloatingNavigation';
 import LandingAnalytics from './LandingAnalytics';
+import LandingPageSupportHub from './LandingPageSupportHub';
 
 interface LandingPageTemplateProps {
   page: LandingPageContent;
@@ -44,7 +43,12 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
       tabIndex={-1}
       className="min-h-screen bg-[#fff8ea] text-base-content focus:outline-none"
     >
-      <LandingAnalytics landingSlug={page.slug} primaryIntent={page.primaryIntent} />
+      <LandingAnalytics
+        landingSlug={page.slug}
+        primaryIntent={page.primaryIntent}
+        locale={page.locale}
+        analytics={page.analytics}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -70,7 +74,7 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
               {page.hero.eyebrow}
             </p>
             <h1 className="font-display text-4xl font-bold leading-tight text-[#33251c] sm:text-5xl lg:text-6xl">
-              {page.title}
+              {page.hero.heading ?? page.title}
             </h1>
             <p className="mt-6 max-w-2xl text-xl font-semibold leading-relaxed text-[#594332]">
               {page.hero.headline}
@@ -96,18 +100,23 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
                 {page.secondaryCta}
               </Link>
             </div>
-            {/* Trust badges bar */}
-            <div className="mt-8 flex flex-wrap items-center gap-3 text-xs font-semibold text-[#594332]">
-              <span className="inline-flex items-center gap-1.5 rounded-xl bg-white/80 px-3 py-2 shadow-sm border border-primary/10">
-                <Clock className="h-4 w-4 text-primary shrink-0" /> Criado em 3 min
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-xl bg-white/80 px-3 py-2 shadow-sm border border-primary/10">
-                <Zap className="h-4 w-4 text-secondary shrink-0" /> Leitura digital imediata
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-xl bg-white/80 px-3 py-2 shadow-sm border border-primary/10">
-                <CheckCircle2 className="h-4 w-4 text-accent shrink-0" /> Livro impresso em 3-5 dias
-              </span>
-            </div>
+            {page.trustBadges?.length ? (
+              <div className="mt-8 flex flex-wrap items-center gap-3 text-xs font-semibold text-[#594332]">
+                {page.trustBadges.map((badge, index) => {
+                  const Icon =
+                    [ShieldCheck, HeartHandshake, CheckCircle2][index % 3] ?? ShieldCheck;
+                  return (
+                    <span
+                      key={badge}
+                      className="inline-flex items-center gap-1.5 rounded-xl border border-primary/10 bg-white/80 px-3 py-2 shadow-sm"
+                    >
+                      <Icon className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                      {badge}
+                    </span>
+                  );
+                })}
+              </div>
+            ) : null}
           </div>
 
           <div className="relative">
@@ -127,18 +136,19 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
       </section>
 
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        {/* Formats highlight section right near the top */}
-        <section
-          className="mb-12"
-          data-analytics-section="pricing_or_offer"
-          data-section-position="4"
-        >
-          <FormatPanel
-            title={page.formats.title}
-            items={page.formats.items}
-            icons={page.templateIcons?.formats}
-          />
-        </section>
+        {page.formats && page.showFormatsNearHero !== false && (
+          <section
+            className="mb-12"
+            data-analytics-section="pricing_or_offer"
+            data-section-position="4"
+          >
+            <FormatPanel
+              title={page.formats.title}
+              items={page.formats.items}
+              icons={page.templateIcons?.formats}
+            />
+          </section>
+        )}
 
         <section className="rounded-2xl border border-primary/15 bg-white p-6 shadow-sm md:p-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-start">
@@ -169,6 +179,14 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
           rightTitle={page.whyThisFits.title}
           rightBody={page.whyThisFits.body}
         />
+
+        {page.supportHub && (
+          <LandingPageSupportHub
+            locale={page.locale}
+            landingSlug={page.slug}
+            content={page.supportHub}
+          />
+        )}
 
         {page.workshop && <WorkshopSections workshop={page.workshop} />}
 
@@ -246,6 +264,15 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
                   key={item.title}
                   className="rounded-2xl border border-primary/10 bg-white p-5 shadow-sm"
                 >
+                  {item.iconSrc ? (
+                    <Image
+                      src={item.iconSrc}
+                      alt={item.iconAlt ?? ''}
+                      width={64}
+                      height={64}
+                      className="mb-4 h-14 w-14 object-contain"
+                    />
+                  ) : null}
                   <h3 className="font-display text-lg font-bold leading-tight text-[#33251c]">
                     {item.title}
                   </h3>
@@ -283,34 +310,47 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
         >
           <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-primary">
-                {booksSection.eyebrow}
-              </p>
-              <h2 className="font-display mt-2 text-3xl font-bold text-[#33251c] md:text-4xl">
+              {booksSection.eyebrow && (
+                <p className="text-sm font-semibold uppercase tracking-wide text-primary">
+                  {booksSection.eyebrow}
+                </p>
+              )}
+              <h2
+                className={`font-display text-3xl font-bold text-[#33251c] md:text-4xl ${
+                  booksSection.eyebrow ? 'mt-2' : ''
+                }`}
+              >
                 {booksSection.title}
               </h2>
             </div>
-            <p className="max-w-2xl text-base-content/70">{booksSection.intro}</p>
+            {booksSection.intro && (
+              <p className="max-w-2xl text-base-content/70">{booksSection.intro}</p>
+            )}
           </div>
 
           <LandingPageBookShowcase
             books={page.books}
+            landingSlug={page.slug}
+            locale={page.locale}
+            primaryIntent={page.primaryIntent}
             audioIcon={page.templateIcons?.audioSample}
             sampleChapterIcon={page.templateIcons?.sampleChapter}
           />
         </section>
 
         <section
-          className="my-16 grid gap-6 lg:grid-cols-2"
+          className={`my-16 ${page.showFormatsNearProcess !== false ? 'grid gap-6 lg:grid-cols-2' : ''}`}
           data-analytics-section="how_it_works"
           data-section-position="3"
         >
           <ProcessPanel title={page.process.title} items={page.process.steps} />
-          <FormatPanel
-            title={page.formats.title}
-            items={page.formats.items}
-            icons={page.templateIcons?.formats}
-          />
+          {page.showFormatsNearProcess !== false && (
+            <FormatPanel
+              title={page.formats.title}
+              items={page.formats.items}
+              icons={page.templateIcons?.formats}
+            />
+          )}
         </section>
 
         {page.forProfessionals && (
@@ -364,6 +404,37 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
                 </div>
               ))}
             </dl>
+          </section>
+        )}
+
+        {page.trustAndPrivacy && (
+          <section className="my-16" data-analytics-section="trust_and_privacy">
+            <div className="mb-8 max-w-3xl">
+              <h2 className="font-display text-3xl font-bold text-[#33251c] md:text-4xl">
+                {page.trustAndPrivacy.title}
+              </h2>
+              <p className="mt-3 text-lg leading-relaxed text-base-content/75">
+                {page.trustAndPrivacy.intro}
+              </p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {page.trustAndPrivacy.items.map((item) => (
+                <article
+                  key={item.title}
+                  className="rounded-2xl border border-primary/10 bg-white p-5 shadow-sm"
+                >
+                  <Image
+                    src={item.iconSrc}
+                    alt={item.iconAlt}
+                    width={64}
+                    height={64}
+                    className="mb-4 h-14 w-14 object-contain"
+                  />
+                  <h3 className="font-display text-lg font-bold text-[#33251c]">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-base-content/70">{item.body}</p>
+                </article>
+              ))}
+            </div>
           </section>
         )}
 
@@ -1189,29 +1260,19 @@ function buildStructuredData(page: LandingPageContent) {
         },
       ],
     },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'Product',
-      name: page.title,
-      description: page.metaDescription,
-      image: imageUrl,
-      brand: {
-        '@type': 'Brand',
-        name: 'Mythoria',
-      },
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: '4.9',
-        reviewCount: '128',
-      },
-      offers: {
-        '@type': 'Offer',
-        priceCurrency: 'EUR',
-        price: '29.90',
-        availability: 'https://schema.org/InStock',
-        url: pageUrl,
-      },
-    },
+    page.structuredData?.includeProduct
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          name: page.title,
+          description: page.metaDescription,
+          image: imageUrl,
+          brand: {
+            '@type': 'Brand',
+            name: 'Mythoria',
+          },
+        }
+      : null,
     {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
@@ -1270,7 +1331,7 @@ function buildStructuredData(page: LandingPageContent) {
         },
       })),
     },
-  ];
+  ].filter(Boolean);
 }
 
 function toAbsoluteUrl(url: string, base: string) {

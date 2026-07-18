@@ -36,6 +36,24 @@
       "oil_painting": "Óleo",
       "colored_pencil": "Lápiz de Color"
     },
+    "novelStyle": {
+      "adventure": "Aventura",
+      "fantasy": "Fantasía",
+      "mystery": "Misterio",
+      "romance": "Romance",
+      "science_fiction": "Ciencia Ficción",
+      "historical": "Histórico",
+      "contemporary": "Contemporáneo",
+      "fairy_tale": "Cuento de Hadas",
+      "comedy": "Comedia",
+      "drama": "Drama",
+      "horror": "Terror",
+      "thriller": "Suspense",
+      "biography": "Biografía",
+      "educational": "Educativo",
+      "poetry": "Poesía",
+      "sports_adventure": "Aventura Deportiva"
+    },
     "storyLanguage": {
       "all": "Todos los Idiomas",
       "en-US": "Inglés",

@@ -1,0 +1,26 @@
+{
+  "id": "support-book-03",
+  "title": "O Mateus e a Lua Aprendem Juntos",
+  "slug": "o-mateus-e-a-lua-aprendem-juntos",
+  "language": "pt-PT",
+  "targetAudience": "children_3-6",
+  "readerAgeBand": "4–8 anos",
+  "buyerPersona": "Família que quer apresentar regras básicas e supervisão na chegada de um novo cão",
+  "recipientType": "criança e novo cão da família",
+  "storyIntent": "Ensaiar aproximação calma, descanso, rotina e comandos consistentes sem substituir treinador ou veterinário.",
+  "synopsis": "Mateus descobre que ensinar a cadela Lua também significa respeitar o descanso, repetir as mesmas palavras e pedir sempre ajuda a um adulto.",
+  "shortExcerpt": "A primeira regra não era senta. Era deixar a Lua chegar ao seu próprio ritmo.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "Quando a Lua chegou, o Mateus queria mostrar-lhe a casa toda. Mas a primeira regra não era senta nem vem. Era esperar, deixar cheirar e respeitar o cantinho sossegado. Dia após dia, com a mãe por perto e as mesmas palavras, Mateus percebeu que treinar também era aprender a observar, fazer pausas e pedir ajuda.",
+  "graphicalStyle": "cartoon",
+  "novelStyle": "educational",
+  "fictionalUserContext": "Cenário inteiramente ficcional criado para demonstrar uma história Mythoria sobre uma criança e um novo cão.",
+  "coverImage": { "localPath": "assets/cover.jpeg" },
+  "featureImage": { "localPath": "assets/feature.jpeg" },
+  "audioSample": { "localPath": "assets/audio-teaser.mp3", "provider": "google-genai", "model": "gemini-3.1-flash-tts-preview", "voice": "Aoede" },
+  "safetyNotes": [
+    "A história é ficcional e não representa uma criança, animal ou família real.",
+    "Todas as interações entre criança e cão são supervisionadas por um adulto.",
+    "A história não substitui aconselhamento veterinário nem treino profissional."
+  ]
+}

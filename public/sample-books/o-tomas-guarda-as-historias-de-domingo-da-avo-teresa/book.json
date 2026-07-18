@@ -1,0 +1,26 @@
+{
+  "id": "support-book-06",
+  "title": "O Tomás Guarda as Histórias de Domingo da Avó Teresa",
+  "slug": "o-tomas-guarda-as-historias-de-domingo-da-avo-teresa",
+  "language": "pt-PT",
+  "targetAudience": "children_7-10",
+  "readerAgeBand": "6–10 anos",
+  "buyerPersona": "Família que quer guardar histórias e receitas de alguém especial sem apresentar crenças como factos",
+  "recipientType": "criança que recorda uma avó falecida",
+  "storyIntent": "Criar um livro de memória familiar que distingue factos, recordações, imaginação e crenças, sem prometer fecho emocional.",
+  "synopsis": "Tomás transforma receitas, frases e domingos na casa da avó Teresa num livro familiar que distingue memória, imaginação e crença.",
+  "shortExcerpt": "A receita tinha medidas. As histórias da avó mediam-se de outra maneira: pelo tempo que ficavam à mesa.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "Ao domingo, a avó Teresa fazia sopa numa panela grande e contava histórias sem olhar para o relógio. Depois de ela morrer, Tomás encontrou metade de uma receita escrita à mão. Na outra metade, começou a guardar o avental azul, as frases da avó e até o dia em que a sopa ficou doce — memórias reais, sem fingir que eram novas mensagens.",
+  "graphicalStyle": "watercolor",
+  "novelStyle": "biography",
+  "fictionalUserContext": "Cenário inteiramente ficcional criado para demonstrar uma história Mythoria de memória sobre uma avó e um neto.",
+  "coverImage": { "localPath": "assets/cover.jpeg" },
+  "featureImage": { "localPath": "assets/feature.jpeg" },
+  "audioSample": { "localPath": "assets/audio-teaser.mp3", "provider": "google-genai", "model": "gemini-3.1-flash-tts-preview", "voice": "Aoede" },
+  "safetyNotes": [
+    "A história é ficcional e não representa uma criança ou família real.",
+    "A morte é nomeada de forma direta e a pessoa falecida aparece apenas em recordações ou cenas explicitamente lembradas.",
+    "As crenças pertencem à família e não são apresentadas como factos universais ou mensagens novas."
+  ]
+}

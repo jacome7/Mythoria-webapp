@@ -1,3 +1,6 @@
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+
 import {
   getIndexableLandingPages,
   getLandingPageIndexItems,
@@ -29,6 +32,10 @@ describe('landing page content registry', () => {
       locale: 'pt-PT',
       slug: 'livro-personalizado-avos-netos',
     });
+    expect(getLandingPageStaticParams()).toContainEqual({
+      locale: 'pt-PT',
+      slug: 'historias-de-apoio',
+    });
     expect(getIndexableLandingPages().map((page) => page.slug)).toContain(
       'livro-personalizado-criancas-autistas',
     );
@@ -36,6 +43,10 @@ describe('landing page content registry', () => {
     expect(getIndexableLandingPages().map((page) => page.slug)).toContain(
       'livro-personalizado-avos-netos',
     );
+    expect(getIndexableLandingPages().map((page) => page.slug)).toContain(
+      'livro-personalizado-para-casais',
+    );
+    expect(getIndexableLandingPages().map((page) => page.slug)).toContain('historias-de-apoio');
   });
 
   it('uses respectful PEA/PHDA terminology in the title and metadata', () => {
@@ -249,5 +260,106 @@ describe('landing page content registry', () => {
       intent: 'grandparents',
     });
     expect(getLandingPageIntentContext('pt-PT', 'workshops-criancas')).toBeNull();
+  });
+
+  it('registers the approved supportive stories hub as an indexable page', () => {
+    const page = getLandingPageBySlug('historias-de-apoio');
+    const serialized = JSON.stringify(page);
+
+    expect(page).toBeDefined();
+    expect(page?.locale).toBe('pt-PT');
+    expect(page?.indexable).toBe(true);
+    expect(page?.riskRating).toBe('yellow');
+    expect(page?.primaryIntent).toBe('kids_transitions');
+    expect(page?.supportHub?.paths).toHaveLength(2);
+    expect(page?.supportHub?.challenges).toHaveLength(12);
+    expect(new Set(page?.supportHub?.challenges.map((challenge) => challenge.id)).size).toBe(12);
+    expect(
+      page?.supportHub?.challenges.every((challenge) =>
+        ['kids_transitions', 'pet_stories', 'remembrance'].includes(challenge.primaryIntent),
+      ),
+    ).toBe(true);
+    expect(page?.books).toHaveLength(6);
+    expect(page?.books.every((book) => !book.fictionalLabel)).toBe(true);
+    expect(page?.books.every((book) => book.sampleChapter?.paragraphs.length === 6)).toBe(true);
+    expect(page?.faq).toHaveLength(12);
+    expect(page?.faq.every((item) => item.answer.length >= 150)).toBe(true);
+    expect(page?.faq.some((item) => item.question.includes('tema difícil'))).toBe(true);
+    expect(page?.showFormatsNearProcess).toBe(false);
+    expect(page?.forProfessionals).toBeUndefined();
+    expect(page?.structuredData?.includeProduct).toBe(false);
+    expect(page?.trustBadges).toEqual([
+      'Conta adulta',
+      'Privado por defeito',
+      'Reveja antes de partilhar',
+    ]);
+    expect(serialized).not.toContain('4.9');
+    expect(serialized).not.toContain('29.90');
+    expect(serialized).not.toContain('Gerar com IA');
+    expect(serialized).not.toContain('garante uma transição feliz');
+    expect(serialized).not.toContain('clinicamente comprovado');
+    expect(serialized).not.toContain('não diagnostica, trata nem garante resultados');
+  });
+
+  it('lists the supportive stories URL in the directory while preserving intent context', () => {
+    expect(getLandingPageIndexItems().map((page) => page.href)).toContain(
+      '/pt-PT/lp/historias-de-apoio',
+    );
+    expect(getLandingPageIntentContext('pt-PT', 'historias-de-apoio')).toEqual({
+      intent: 'kids_transitions',
+    });
+  });
+
+  it('registers the indexable romance landing page with five complete samples', () => {
+    const page = getLandingPageBySlug('livro-personalizado-para-casais');
+    const serialized = JSON.stringify(page);
+
+    expect(page).toBeDefined();
+    expect(page?.locale).toBe('pt-PT');
+    expect(page?.primaryIntent).toBe('romance');
+    expect(page?.riskRating).toBe('green');
+    expect(page?.indexable).toBe(true);
+    expect(page?.showFormatsNearHero).toBe(false);
+    expect(page?.structuredData?.includeProduct).toBe(false);
+    expect(page?.testimonials).toBeUndefined();
+    expect(page?.books.map((book) => book.title)).toEqual([
+      'Inês & Diogo — Um Amor Inesperado',
+      'O Nosso Primeiro Beijo Foi Só o Princípio',
+      'Duas Chávenas, Uma Vida',
+      'Leonor & Matilde — Dois Países, Uma Casa',
+      'Rui & Tomás — O Último Capítulo Antes do Sim',
+    ]);
+    expect(page?.books.every((book) => book.fictionalLabel === undefined)).toBe(true);
+    expect(page?.books.every((book) => book.sampleChapter?.paragraphs.length === 6)).toBe(true);
+    expect(page?.trustBadges).toEqual(['Privado por defeito', 'Reveja antes de oferecer']);
+    expect(page?.trustAndPrivacy?.items).toHaveLength(4);
+    expect(page?.useCases?.items).toHaveLength(6);
+    expect(page?.faq).toHaveLength(13);
+    expect(page?.faq.every((entry) => entry.answer.length >= 120)).toBe(true);
+
+    const localAssets = [
+      page?.hero.imageSrc,
+      page?.ogImageSrc,
+      ...(page?.books.flatMap((book) => [
+        book.imageSrc,
+        book.sampleChapter?.imageSrc,
+        book.audioSampleSrc,
+      ]) ?? []),
+    ].filter((asset): asset is string => Boolean(asset));
+    localAssets.forEach((asset) => {
+      expect(existsSync(join(process.cwd(), 'public', asset.replace(/^\//, '')))).toBe(true);
+    });
+
+    expect(getLandingPageIndexItems().map((item) => item.href)).toContain(
+      '/pt-PT/lp/livro-personalizado-para-casais',
+    );
+    expect(getLandingPageIntentContext('pt-PT', 'livro-personalizado-para-casais')).toEqual({
+      intent: 'romance',
+    });
+    expect(serialized).not.toContain('29.90');
+    expect(serialized).not.toContain('4.9');
+    expect(serialized).not.toContain('garantia de entrega');
+    expect(serialized).not.toContain('clinicamente comprovado');
+    expect(serialized.toLowerCase()).not.toContain('ficcion');
   });
 });

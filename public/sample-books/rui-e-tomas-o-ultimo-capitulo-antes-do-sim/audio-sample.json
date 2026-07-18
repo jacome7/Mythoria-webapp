@@ -1,0 +1,15 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "Todas as grandes decisões deles começaram com um plano que nenhum dos dois cumpriu. Rui escreveu sobre estradas erradas, jantares improvisados e a vez em que Tomás ficou quando teria sido mais fácil partir. O último capítulo ficou em branco. Algumas histórias precisam de uma resposta dada fora do livro. Tomás leu até à última linha e levantou os olhos. Não perguntou porque faltava o fim. Sorriu, como quem finalmente percebia que aquela página ainda era dos dois.",
+  "voiceDirection": "Português de Portugal, sotaque de Lisboa, voz adulta, divertida no início e emotiva no final, sem revelar explicitamente a surpresa.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview-tts",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 45,
+  "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/rui-e-tomas-o-ultimo-capitulo-antes-do-sim/assets/audio-teaser.mp3",
+  "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/rui-e-tomas-o-ultimo-capitulo-antes-do-sim/assets/audio-teaser.mp3",
+  "generatedAt": "2026-07-17T18:43:07.475Z",
+  "requestModel": "gemini-3.1-flash-tts-preview"
+}

@@ -1,6 +1,8 @@
 import { autismStoriesLandingPage } from './autism-stories.pt-PT';
 import { grandparentsStoriesLandingPage } from './grandparents-stories.pt-PT';
+import { romanceGiftsLandingPage } from './romance-gifts.pt-PT';
 import type { LandingPageBook, LandingPageContent, LandingPageTemplateIcon } from './types';
+import { supportiveStoriesLandingPage } from './supportive-stories.pt-PT';
 import { workshopsChildrenLandingPage } from './workshops-criancas.pt-PT';
 import { isValidIntent, normalizeIntent } from '@/constants/intents';
 import type { IntentContext } from '@/types/intent-context';
@@ -8,6 +10,8 @@ import type { IntentContext } from '@/types/intent-context';
 const landingPages = [
   autismStoriesLandingPage,
   grandparentsStoriesLandingPage,
+  romanceGiftsLandingPage,
+  supportiveStoriesLandingPage,
   workshopsChildrenLandingPage,
 ] satisfies LandingPageContent[];
 
@@ -37,15 +41,17 @@ export function getLandingPageStaticParams(): Array<{ locale: string; slug: stri
 }
 
 export function getLandingPageIndexItems() {
-  return getIndexableLandingPages().map((page) => ({
-    title: page.title,
-    metaDescription: page.metaDescription,
-    locale: page.locale,
-    slug: page.slug,
-    indexable: page.indexable,
-    updatedAt: page.updatedAt,
-    href: `/${page.locale}/lp/${page.slug}`,
-  }));
+  return landingPages
+    .filter((page) => page.indexable || page.showInLandingPageIndex)
+    .map((page) => ({
+      title: page.title,
+      metaDescription: page.metaDescription,
+      locale: page.locale,
+      slug: page.slug,
+      indexable: page.indexable,
+      updatedAt: page.updatedAt,
+      href: `/${page.locale}/lp/${page.slug}`,
+    }));
 }
 
 export type { LandingPageBook, LandingPageContent, LandingPageTemplateIcon };

@@ -40,7 +40,7 @@ describe('LandingAnalytics', () => {
     const { getByTestId } = render(
       <>
         <section data-testid="section" data-analytics-section="hero" data-section-position="1" />
-        <LandingAnalytics landingSlug="kids-fantasy" primaryIntent="create_story" />
+        <LandingAnalytics landingSlug="kids-fantasy" primaryIntent="create_story" locale="en-US" />
       </>,
     );
     const section = getByTestId('section');
@@ -72,7 +72,7 @@ describe('LandingAnalytics', () => {
         <Link href="/en-US/sign-up?token=secret" data-cta-placement="hero_primary">
           Start
         </Link>
-        <LandingAnalytics landingSlug="kids-fantasy" primaryIntent="create_story" />
+        <LandingAnalytics landingSlug="kids-fantasy" primaryIntent="create_story" locale="en-US" />
       </>,
     );
 
@@ -82,6 +82,68 @@ describe('LandingAnalytics', () => {
       primary_intent: 'create_story',
       cta_placement: 'hero_primary',
       cta_destination: '/en-US/sign-up',
+    });
+  });
+
+  it('tracks the supportive page view and a safe challenge selection', () => {
+    const { getByRole } = render(
+      <>
+        <Link
+          href="/pt-PT/tell-your-story/step-1?landingSlug=historias-de-apoio&primaryIntent=remembrance"
+          data-cta-placement="challenge_card"
+          data-challenge-id="remember-pet"
+          data-route-tone="remember-and-say-goodbye"
+          data-primary-intent="remembrance"
+        >
+          Recordar um animal
+        </Link>
+        <LandingAnalytics
+          landingSlug="historias-de-apoio"
+          primaryIntent="kids_transitions"
+          locale="pt-PT"
+          analytics={{ pageViewEvent: 'supportive_story_page_view', variant: 'hub-v1' }}
+        />
+      </>,
+    );
+
+    expect(trackEventMock).toHaveBeenCalledWith('supportive_story_page_view', {
+      landing_slug: 'historias-de-apoio',
+      locale: 'pt-PT',
+      variant: 'hub-v1',
+    });
+
+    fireEvent.click(getByRole('link', { name: 'Recordar um animal' }));
+
+    expect(trackEventMock).toHaveBeenCalledWith('challenge_selected', {
+      landing_slug: 'historias-de-apoio',
+      challenge_id: 'remember-pet',
+      route_tone: 'remember-and-say-goodbye',
+      locale: 'pt-PT',
+      variant: 'hub-v1',
+    });
+    expect(trackEventMock).toHaveBeenCalledWith('landing_cta_click', {
+      landing_slug: 'historias-de-apoio',
+      primary_intent: 'remembrance',
+      cta_placement: 'challenge_card',
+      cta_destination: '/pt-PT/tell-your-story/step-1',
+    });
+  });
+
+  it('tracks the generic landing page view with low-cardinality romance context', () => {
+    render(
+      <LandingAnalytics
+        landingSlug="livro-personalizado-para-casais"
+        primaryIntent="romance"
+        locale="pt-PT"
+        analytics={{ pageViewEvent: 'landing_page_view', variant: 'romance-v1' }}
+      />,
+    );
+
+    expect(trackEventMock).toHaveBeenCalledWith('landing_page_view', {
+      landing_slug: 'livro-personalizado-para-casais',
+      locale: 'pt-PT',
+      primary_intent: 'romance',
+      variant: 'romance-v1',
     });
   });
 });

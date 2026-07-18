@@ -32,6 +32,7 @@
     "deploy:fast": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy.ps1 -Fast",
     "docs:serve": "npx serve docs/",
     "homepage:assets": "tsx scripts/check-homepage-assets.ts",
+    "sample-book:validate": "node scripts/validate-sample-book-output.mjs",
     "i18n:parity": "tsx scripts/check-locale-parity.ts",
     "i18n:keys": "tsx scripts/generate-translation-keys.ts",
     "test": "cross-env NODE_OPTIONS=--no-deprecation jest",

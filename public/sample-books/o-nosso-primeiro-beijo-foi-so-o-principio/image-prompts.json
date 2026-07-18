@@ -1,0 +1,22 @@
+{
+  "cover": {
+    "promptPath": "assets/prompts/cover.prompt.md",
+    "targetPath": "assets/cover.jpeg",
+    "status": "generated",
+    "model": "gpt-image-2",
+    "size": "1024x1536",
+    "quality": "high",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-nosso-primeiro-beijo-foi-so-o-principio/assets/cover.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-nosso-primeiro-beijo-foi-so-o-principio/assets/cover.jpeg"
+  },
+  "feature": {
+    "promptPath": "assets/prompts/feature.prompt.md",
+    "targetPath": "assets/feature.jpeg",
+    "status": "generated",
+    "model": "gpt-image-2",
+    "size": "1536x1024",
+    "quality": "high",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-nosso-primeiro-beijo-foi-so-o-principio/assets/feature.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-nosso-primeiro-beijo-foi-so-o-principio/assets/feature.jpeg"
+  }
+}

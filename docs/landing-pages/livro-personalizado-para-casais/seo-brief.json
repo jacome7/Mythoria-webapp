@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "livro-personalizado-para-casais",
+  "locale": "pt-PT",
+  "canonicalUrl": "https://mythoria.pt/pt-PT/lp/livro-personalizado-para-casais",
+  "metaTitle": "Livro Personalizado para Casais | A Vossa História — Mythoria",
+  "metaDescription": "Transforme encontros, mensagens, viagens e memórias num livro personalizado para oferecer a quem viveu esta história consigo.",
+  "primaryKeyword": "livro personalizado para casais",
+  "secondaryKeywords": [
+    "prenda romântica original",
+    "livro da nossa história",
+    "história de amor personalizada",
+    "prenda aniversário de namoro",
+    "prenda aniversário de casamento",
+    "pedido de casamento original",
+    "livro de memórias casamento"
+  ],
+  "searchIntent": "commercial_investigation",
+  "indexableAtDraft": false,
+  "structuredData": ["WebPage", "Service", "BreadcrumbList", "FAQPage"],
+  "forbiddenStructuredData": ["Review", "AggregateRating", "unverified Product offers"],
+  "internalLinks": [
+    "/pt-PT/tell-your-story/step-1",
+    "/pt-PT/pricing",
+    "/pt-PT/privacy-policy",
+    "/pt-PT/faq",
+    "/pt-PT/contactUs?topic=parcerias"
+  ]
+}

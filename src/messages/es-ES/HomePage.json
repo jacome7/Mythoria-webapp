@@ -295,7 +295,23 @@
       "sceneAlt": "Escena de",
       "tags": "Etiquetas",
       "style": "Estilo",
-      "synopsis": "Sinopsis"
+      "synopsis": "Sinopsis",
+      "storyIntent": "Propósito de la historia",
+      "aboutThisBook": "Sobre este libro",
+      "audioTeaser": "Escuchar el avance de audio",
+      "openDetails": "Leer el ejemplo completo",
+      "notFoundTitle": "Este libro de ejemplo no está disponible",
+      "backToHomepage": "Volver a la página de inicio",
+      "intent": "Intención",
+      "audience": "Público",
+      "recipient": "Destinatario",
+      "literaryStyle": "Estilo narrativo",
+      "visualStyle": "Estilo visual",
+      "language": "Idioma",
+      "fictionalSample": "Ejemplo ficticio",
+      "audioAvailable": "Escucha el avance de audio disponible.",
+      "sampleChapter": "Capítulo de ejemplo",
+      "fictionalContext": "Sobre este ejemplo ficticio"
     }
   }
 }

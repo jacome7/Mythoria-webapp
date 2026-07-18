@@ -4,24 +4,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useIntentContext } from '@/hooks/useIntentContext';
 import type { IntentContext } from '@/types/intent-context';
+import type { SampleBook } from '@/types/sample-book';
 import styles from './HomepageBookGallery.module.css';
-
-interface SampleBook {
-  id: string;
-  title: string;
-  synopses: string;
-  locale: string;
-  intent: string;
-  recipients: string[];
-  tags: string;
-  style: string;
-  audioSampleSrc?: string;
-  audioSampleTitle?: string;
-}
 
 interface HomepageBookGalleryProps {
   initialIntentContext?: IntentContext | null;
@@ -65,13 +54,6 @@ function sortBooksByContext(
   });
 }
 
-function parseTags(tags: string): string[] {
-  return tags
-    .split(',')
-    .map((tag) => tag.trim())
-    .filter(Boolean);
-}
-
 export default function HomepageBookGallery({
   initialIntentContext = null,
   intentOverrideActive = false,
@@ -106,7 +88,7 @@ export default function HomepageBookGallery({
 
     const loadBooks = async () => {
       try {
-        const response = await fetch('/SampleBooks/SampleBooks.json');
+        const response = await fetch('/api/sample-books');
         if (!response.ok) throw new Error('Failed to load sample books');
 
         const sampleBooks = (await response.json()) as SampleBook[];
@@ -278,7 +260,7 @@ export default function HomepageBookGallery({
                   <span className={styles.bookCover}>
                     {!coverImageError ? (
                       <Image
-                        src={`/SampleBooks/${book.id}.jpeg`}
+                        src={book.coverSrc}
                         alt={book.title}
                         fill
                         sizes="(max-width: 480px) 36vw, (max-width: 1024px) 24vw, 15vw"
@@ -345,7 +327,7 @@ export default function HomepageBookGallery({
                 <div className={styles.modalImage}>
                   {!imageErrors.has(`${selectedBook.id}-scene`) ? (
                     <Image
-                      src={`/SampleBooks/${selectedBook.id}_scene.jpeg`}
+                      src={selectedBook.featureSrc ?? selectedBook.coverSrc}
                       alt={`${t('sceneAlt')} ${selectedBook.title}`}
                       fill
                       sizes="(max-width: 768px) 100vw, 672px"
@@ -360,7 +342,7 @@ export default function HomepageBookGallery({
                 <div className={styles.modalSection}>
                   <h4>{t('tags')}:</h4>
                   <div className={styles.modalBadges}>
-                    {parseTags(selectedBook.tags).map((tag, index) => (
+                    {selectedBook.tags.map((tag, index) => (
                       <span key={`${tag}-${index}`} className="badge badge-primary badge-outline">
                         {tag}
                       </span>
@@ -373,10 +355,35 @@ export default function HomepageBookGallery({
                   <span className="badge badge-secondary">{selectedBook.style}</span>
                 </div>
 
+                {selectedBook.storyIntent && (
+                  <div className={styles.modalSection}>
+                    <h4>{t('storyIntent')}:</h4>
+                    <p>{selectedBook.storyIntent}</p>
+                  </div>
+                )}
+
+                {(selectedBook.targetAudience || selectedBook.recipientType) && (
+                  <div className={styles.modalSection}>
+                    <h4>{t('aboutThisBook')}:</h4>
+                    <div className={styles.modalBadges}>
+                      {selectedBook.targetAudience && (
+                        <span className="badge badge-primary badge-outline">
+                          {selectedBook.targetAudience}
+                        </span>
+                      )}
+                      {selectedBook.recipientType && (
+                        <span className="badge badge-primary badge-outline">
+                          {selectedBook.recipientType}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {selectedBook.audioSampleSrc && (
                   <div className={styles.modalSection}>
-                    <h4>{selectedBook.audioSampleTitle ?? 'Audio sample'}:</h4>
-                    <audio controls className="w-full">
+                    <h4>{t('audioTeaser')}:</h4>
+                    <audio controls preload="none" className="w-full">
                       <source src={selectedBook.audioSampleSrc} type="audio/mpeg" />
                     </audio>
                   </div>
@@ -384,7 +391,16 @@ export default function HomepageBookGallery({
 
                 <div className={styles.modalSection}>
                   <h4>{t('synopsis')}:</h4>
-                  <p>{selectedBook.synopses}</p>
+                  <p>{selectedBook.synopsis}</p>
+                </div>
+
+                <div className={styles.modalSection}>
+                  <Link
+                    href={`/${currentLocale}/sample-books/${encodeURIComponent(selectedBook.slug)}`}
+                    className="btn btn-primary w-full"
+                  >
+                    {t('openDetails')}
+                  </Link>
                 </div>
               </div>
             </div>

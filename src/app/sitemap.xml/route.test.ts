@@ -88,6 +88,10 @@ describe('sitemap.xml route', () => {
     expect(xml).not.toContain('<priority>');
     expect(xml).not.toContain('<changefreq>');
     expect(xml).toContain('<loc>https://mythoria.pt/pt-PT/p/native-story</loc>');
+    expect(xml).toContain(
+      '<loc>https://mythoria.pt/pt-PT/lp/livro-personalizado-para-casais</loc>',
+    );
+    expect(xml).toContain('<loc>https://mythoria.pt/pt-PT/lp/historias-de-apoio</loc>');
     expect(xml).toContain('<loc>https://mythoria.pt/en-US/blog/fathers-day-2026</loc>');
     expect(xml).toContain('<loc>https://mythoria.pt/pt-PT/blog/dia-do-pai-2026</loc>');
 

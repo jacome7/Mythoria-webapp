@@ -1,25 +1,38 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { BookOpen, ExternalLink, FileText, Headphones, X } from 'lucide-react';
 import type { LandingPageBook, LandingPageTemplateIcon } from '@/content/landing-pages';
+import { trackEvent } from '@/lib/analytics';
 
 interface LandingPageBookShowcaseProps {
   books: LandingPageBook[];
+  landingSlug: string;
+  locale: string;
+  primaryIntent: string;
   audioIcon?: LandingPageTemplateIcon;
   sampleChapterIcon?: LandingPageTemplateIcon;
 }
 
 export default function LandingPageBookShowcase({
   books,
+  landingSlug,
+  locale,
+  primaryIntent,
   audioIcon,
   sampleChapterIcon,
 }: LandingPageBookShowcaseProps) {
   const [selectedBook, setSelectedBook] = useState<LandingPageBook | null>(null);
+  const audioStarted = useRef(new Set<string>());
+  const audioCompleted = useRef(new Set<string>());
   const bookGridClass =
-    books.length <= 3 ? 'grid gap-6 md:grid-cols-3' : 'grid gap-6 md:grid-cols-2 xl:grid-cols-5';
+    books.length <= 3
+      ? 'grid gap-6 md:grid-cols-3'
+      : books.length === 6
+        ? 'grid gap-6 md:grid-cols-2 xl:grid-cols-3'
+        : 'grid gap-6 md:grid-cols-2 xl:grid-cols-5';
   const bookImageClass =
     books.length <= 3
       ? 'relative aspect-[16/11] overflow-hidden'
@@ -45,6 +58,31 @@ export default function LandingPageBookShowcase({
     };
   }, [selectedBook]);
 
+  const getSampleBookSlug = (book: LandingPageBook) => book.slug ?? book.id;
+  const trackSampleEvent = (
+    eventName: 'sample_chapter_open' | 'sample_audio_start' | 'sample_audio_complete',
+    book: LandingPageBook,
+  ) => {
+    trackEvent(eventName, {
+      landing_slug: landingSlug,
+      sample_book_slug: getSampleBookSlug(book),
+      locale,
+      primary_intent: primaryIntent,
+    });
+  };
+  const handleAudioStart = (book: LandingPageBook) => {
+    const slug = getSampleBookSlug(book);
+    if (audioStarted.current.has(slug)) return;
+    audioStarted.current.add(slug);
+    trackSampleEvent('sample_audio_start', book);
+  };
+  const handleAudioComplete = (book: LandingPageBook) => {
+    const slug = getSampleBookSlug(book);
+    if (audioCompleted.current.has(slug)) return;
+    audioCompleted.current.add(slug);
+    trackSampleEvent('sample_audio_complete', book);
+  };
+
   return (
     <>
       <div className={bookGridClass}>
@@ -62,6 +100,11 @@ export default function LandingPageBookShowcase({
                 sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 20vw"
                 className="object-cover transition duration-500 group-hover:scale-105"
               />
+              {book.fictionalLabel && (
+                <span className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-[#33251c] shadow-sm">
+                  {book.fictionalLabel}
+                </span>
+              )}
             </div>
             <div className="space-y-3 p-5">
               <div className="flex flex-wrap gap-2">
@@ -90,7 +133,13 @@ export default function LandingPageBookShowcase({
                     <Headphones className="h-4 w-4" aria-hidden="true" />
                     <span>{book.audio.label}</span>
                   </div>
-                  <audio controls preload="metadata" className="w-full">
+                  <audio
+                    controls
+                    preload="metadata"
+                    className="w-full"
+                    onPlay={() => handleAudioStart(book)}
+                    onEnded={() => handleAudioComplete(book)}
+                  >
                     <source src={book.audio.src} type="audio/wav" />
                   </audio>
                 </div>
@@ -159,7 +208,13 @@ export default function LandingPageBookShowcase({
                     )}
                     <span>{book.audioSampleTitle ?? 'Ouvir excerto áudio'}</span>
                   </div>
-                  <audio controls preload="metadata" className="w-full">
+                  <audio
+                    controls
+                    preload="metadata"
+                    className="w-full"
+                    onPlay={() => handleAudioStart(book)}
+                    onEnded={() => handleAudioComplete(book)}
+                  >
                     <source src={book.audioSampleSrc} type="audio/mpeg" />
                   </audio>
                 </div>
@@ -169,7 +224,10 @@ export default function LandingPageBookShowcase({
                 <button
                   type="button"
                   className="btn btn-primary btn-sm h-auto min-h-11 w-full gap-2 whitespace-normal py-2 text-center leading-tight"
-                  onClick={() => setSelectedBook(book)}
+                  onClick={() => {
+                    trackSampleEvent('sample_chapter_open', book);
+                    setSelectedBook(book);
+                  }}
                 >
                   {sampleChapterIcon ? (
                     <Image
@@ -188,6 +246,7 @@ export default function LandingPageBookShowcase({
                 <Link
                   className="btn btn-primary btn-sm h-auto min-h-11 w-full gap-2 whitespace-normal py-2 text-center leading-tight"
                   href={book.sampleChapterHref}
+                  onClick={() => trackSampleEvent('sample_chapter_open', book)}
                 >
                   <ExternalLink className="h-4 w-4 shrink-0" aria-hidden="true" />
                   <span>Ler capítulo de amostra</span>
@@ -199,14 +258,63 @@ export default function LandingPageBookShowcase({
       </div>
 
       {selectedBook && (
-        <BookSampleModal book={selectedBook} onClose={() => setSelectedBook(null)} />
+        <BookSampleModal
+          book={selectedBook}
+          onClose={() => setSelectedBook(null)}
+          onAudioStart={() => handleAudioStart(selectedBook)}
+          onAudioComplete={() => handleAudioComplete(selectedBook)}
+        />
       )}
     </>
   );
 }
 
-function BookSampleModal({ book, onClose }: { book: LandingPageBook; onClose: () => void }) {
+function BookSampleModal({
+  book,
+  onClose,
+  onAudioStart,
+  onAudioComplete,
+}: {
+  book: LandingPageBook;
+  onClose: () => void;
+  onAudioStart: () => void;
+  onAudioComplete: () => void;
+}) {
   const sample = book.sampleChapter;
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
+
+    const handleTab = (event: KeyboardEvent) => {
+      if (event.key !== 'Tab' || !dialogRef.current) return;
+      const focusable = Array.from(
+        dialogRef.current.querySelectorAll<HTMLElement>(
+          'button, a[href], audio[controls], [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((element) => !element.hasAttribute('disabled'));
+      if (!focusable.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (!first || !last) return;
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleTab);
+    return () => {
+      document.removeEventListener('keydown', handleTab);
+      previouslyFocused?.focus();
+    };
+  }, []);
 
   return (
     <div
@@ -214,6 +322,7 @@ function BookSampleModal({ book, onClose }: { book: LandingPageBook; onClose: ()
       onClick={onClose}
     >
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={`book-sample-${book.id}`}
@@ -233,6 +342,7 @@ function BookSampleModal({ book, onClose }: { book: LandingPageBook; onClose: ()
             </h3>
           </div>
           <button
+            ref={closeButtonRef}
             type="button"
             className="btn btn-circle btn-ghost shrink-0"
             onClick={onClose}
@@ -275,7 +385,13 @@ function BookSampleModal({ book, onClose }: { book: LandingPageBook; onClose: ()
                 <p className="mb-3 text-sm font-bold text-primary">
                   {book.audioSampleTitle ?? 'Ouvir excerto áudio'}
                 </p>
-                <audio controls preload="metadata" className="w-full">
+                <audio
+                  controls
+                  preload="metadata"
+                  className="w-full"
+                  onPlay={onAudioStart}
+                  onEnded={onAudioComplete}
+                >
                   <source src={book.audioSampleSrc} type="audio/mpeg" />
                 </audio>
               </div>

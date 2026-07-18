@@ -1,0 +1,26 @@
+{
+  "id": "support-book-04",
+  "title": "A Semana da Clara Tem Duas Cozinhas",
+  "slug": "a-semana-da-clara-tem-duas-cozinhas",
+  "language": "pt-PT",
+  "targetAudience": "children_3-6",
+  "readerAgeBand": "4–8 anos",
+  "buyerPersona": "Adultos que querem explicar uma separação e um plano de duas casas sem culpa nem conflito de lealdade",
+  "recipientType": "criança que passará a viver entre duas casas",
+  "storyIntent": "Apresentar duas casas com igual dignidade, um calendário confirmado e comunicação entre adultos, sem prometer reconciliação.",
+  "synopsis": "Clara conhece o calendário, as rotinas e os objetos das duas casas sem ter de escolher uma como a casa mais importante.",
+  "shortExcerpt": "As cozinhas eram diferentes. O lugar de Clara em cada uma delas não precisava de ser.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "A semana da Clara passou a ter duas cozinhas, duas escovas de dentes e um calendário com duas cores. Os adultos explicaram o plano e repetiram uma coisa importante: ela não tinha causado a separação e não precisava de a resolver. Em cada casa havia rotinas diferentes, perguntas por responder e um lugar que continuava a ser dela.",
+  "graphicalStyle": "watercolor",
+  "novelStyle": "contemporary",
+  "fictionalUserContext": "Cenário inteiramente ficcional criado para demonstrar uma história Mythoria sobre separação parental e vida em duas casas.",
+  "coverImage": { "localPath": "assets/cover.jpeg" },
+  "featureImage": { "localPath": "assets/feature.jpeg" },
+  "audioSample": { "localPath": "assets/audio-teaser.mp3", "provider": "google-genai", "model": "gemini-3.1-flash-tts-preview", "voice": "Aoede" },
+  "safetyNotes": [
+    "A história é ficcional e não representa uma família ou acordo real.",
+    "Nenhuma casa ou progenitor é apresentado como superior e não existe promessa de reconciliação.",
+    "Casos com violência, abuso, risco ou disputa de guarda não devem usar este fluxo genérico."
+  ]
+}

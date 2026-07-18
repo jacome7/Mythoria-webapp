@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import type { LandingPageAnalyticsConfig } from '@/content/landing-pages/types';
 import { getGoogleAnalyticsContext, trackEvent } from '@/lib/analytics';
 
 const CAMPAIGN_KEYS = [
@@ -18,11 +19,26 @@ const CAMPAIGN_KEYS = [
 export default function LandingAnalytics({
   landingSlug,
   primaryIntent,
+  locale,
+  analytics,
 }: {
   landingSlug: string;
   primaryIntent: string;
+  locale: string;
+  analytics?: LandingPageAnalyticsConfig;
 }) {
   useEffect(() => {
+    if (analytics?.pageViewEvent) {
+      trackEvent(analytics.pageViewEvent, {
+        landing_slug: landingSlug,
+        locale,
+        ...(analytics.pageViewEvent === 'landing_page_view'
+          ? { primary_intent: primaryIntent }
+          : {}),
+        variant: analytics.variant ?? 'default',
+      });
+    }
+
     const seen = new Set<string>();
     const timers = new Map<Element, number>();
     const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-analytics-section]'));
@@ -61,15 +77,28 @@ export default function LandingAnalytics({
       const target = (event.target as Element | null)?.closest<HTMLElement>('[data-cta-placement]');
       if (!target) return;
       const ctaPlacement = target.dataset.ctaPlacement || 'unknown';
+      const selectedIntent = target.dataset.primaryIntent || primaryIntent;
+      const challengeId = target.dataset.challengeId;
+
+      if (challengeId) {
+        trackEvent('challenge_selected', {
+          landing_slug: landingSlug,
+          challenge_id: challengeId,
+          route_tone: target.dataset.routeTone || 'unknown',
+          locale,
+          variant: analytics?.variant ?? 'default',
+        });
+      }
+
       trackEvent('landing_cta_click', {
         landing_slug: landingSlug,
-        primary_intent: primaryIntent,
+        primary_intent: selectedIntent,
         cta_placement: ctaPlacement,
         cta_destination: target.getAttribute('href')?.split('?')[0] || '',
       });
 
       if (target.dataset.captureAttribution === 'true') {
-        void captureAttribution(landingSlug, primaryIntent);
+        void captureAttribution(landingSlug, selectedIntent);
       }
     };
     document.addEventListener('click', clickHandler);
@@ -79,7 +108,7 @@ export default function LandingAnalytics({
       timers.forEach((timer) => window.clearTimeout(timer));
       document.removeEventListener('click', clickHandler);
     };
-  }, [landingSlug, primaryIntent]);
+  }, [analytics, landingSlug, locale, primaryIntent]);
 
   return null;
 }

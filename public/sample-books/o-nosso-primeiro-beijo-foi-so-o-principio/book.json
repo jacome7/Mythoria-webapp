@@ -1,0 +1,47 @@
+{
+  "id": "romance-book-02",
+  "title": "O Nosso Primeiro Beijo Foi Só o Princípio",
+  "slug": "o-nosso-primeiro-beijo-foi-so-o-principio",
+  "language": "pt-PT",
+  "targetAudience": "adult_18+",
+  "readerAgeBand": "Adultos",
+  "buyerPersona": "Pessoa que quer guardar um primeiro beijo imperfeito e inesquecível",
+  "recipientType": "namorado ou namorada",
+  "storyIntent": "Celebrar um primeiro beijo e o pequeno gesto que confirmou a relação",
+  "synopsis": "Depois de várias tentativas interrompidas por um autocarro, um telefonema e uma gargalhada, o primeiro beijo acontece precisamente quando deixam de tentar torná-lo perfeito.",
+  "shortExcerpt": "Durante muitos anos, os dois discordaram sobre quem se aproximou primeiro.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "Primeiro passou o autocarro. Depois tocou o telefone. Quando finalmente ficaram em silêncio, uma gargalhada estragou o plano perfeito — e salvou o momento. Durante anos discutiram quem se aproximou primeiro. Nenhum deles alguma vez desejou uma versão diferente da história. O primeiro beijo chegou tarde e sem música de fundo. Talvez por isso tenha ficado tão nítido: imperfeito, divertido e inteiramente deles.",
+  "graphicalStyle": "minimalist",
+  "novelStyle": "romance",
+  "fictionalUserContext": "Cenário inteiramente ficcional criado para uma demonstração romântica Mythoria; não representa clientes nem acontecimentos reais.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-nosso-primeiro-beijo-foi-so-o-principio/assets/cover.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-nosso-primeiro-beijo-foi-so-o-principio/assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-nosso-primeiro-beijo-foi-so-o-principio/assets/feature.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-nosso-primeiro-beijo-foi-so-o-principio/assets/feature.jpeg"
+  },
+  "sampleChapterImage": {
+    "localPath": "assets/chapter-01.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-nosso-primeiro-beijo-foi-so-o-principio/assets/chapter-01.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-nosso-primeiro-beijo-foi-so-o-principio/assets/chapter-01.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-nosso-primeiro-beijo-foi-so-o-principio/assets/audio-teaser.mp3",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-nosso-primeiro-beijo-foi-so-o-principio/assets/audio-teaser.mp3",
+    "status": "generated",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview-tts",
+    "voice": "Aoede"
+  },
+  "safetyNotes": [
+    "A história é ficcional e não representa um casal real.",
+    "O romance é adulto, consentido e não erotizado.",
+    "Não são reproduzidas letras de músicas nem mensagens reais."
+  ]
+}

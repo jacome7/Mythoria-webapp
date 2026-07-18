@@ -1,0 +1,47 @@
+{
+  "id": "romance-book-05",
+  "title": "Rui & Tomás — O Último Capítulo Antes do Sim",
+  "slug": "rui-e-tomas-o-ultimo-capitulo-antes-do-sim",
+  "language": "pt-PT",
+  "targetAudience": "adult_18+",
+  "readerAgeBand": "Adultos",
+  "buyerPersona": "Pessoa a preparar um pedido de casamento narrativo",
+  "recipientType": "companheiro",
+  "storyIntent": "Conduzir a uma pergunta preservando a surpresa fora do livro",
+  "synopsis": "Rui reúne os lugares onde ele e Tomás aprenderam a ser uma equipa. O último capítulo parece incompleto porque precisa de uma resposta para poder ser escrito.",
+  "shortExcerpt": "Todas as grandes decisões deles começaram com um plano que nenhum dos dois cumpriu.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "Todas as grandes decisões deles começaram com um plano que nenhum dos dois cumpriu. Rui escreveu sobre estradas erradas, jantares improvisados e a vez em que Tomás ficou quando teria sido mais fácil partir. O último capítulo ficou em branco. Algumas histórias precisam de uma resposta dada fora do livro. Tomás leu até à última linha e levantou os olhos. Não perguntou porque faltava o fim. Sorriu, como quem finalmente percebia que aquela página ainda era dos dois.",
+  "graphicalStyle": "minimalist",
+  "novelStyle": "romance",
+  "fictionalUserContext": "Cenário inteiramente ficcional criado para demonstrar uma surpresa romântica Mythoria; não representa clientes nem acontecimentos reais.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/rui-e-tomas-o-ultimo-capitulo-antes-do-sim/assets/cover.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/rui-e-tomas-o-ultimo-capitulo-antes-do-sim/assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/rui-e-tomas-o-ultimo-capitulo-antes-do-sim/assets/feature.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/rui-e-tomas-o-ultimo-capitulo-antes-do-sim/assets/feature.jpeg"
+  },
+  "sampleChapterImage": {
+    "localPath": "assets/chapter-01.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/rui-e-tomas-o-ultimo-capitulo-antes-do-sim/assets/chapter-01.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/rui-e-tomas-o-ultimo-capitulo-antes-do-sim/assets/chapter-01.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/rui-e-tomas-o-ultimo-capitulo-antes-do-sim/assets/audio-teaser.mp3",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/rui-e-tomas-o-ultimo-capitulo-antes-do-sim/assets/audio-teaser.mp3",
+    "status": "generated",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview-tts",
+    "voice": "Aoede"
+  },
+  "safetyNotes": [
+    "A história é ficcional e não representa um casal real.",
+    "Capa, teaser, nome de ficheiro público e imagem de feature não revelam a pergunta.",
+    "A surpresa pressupõe autonomia e uma resposta livre fora do livro."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "Primeiro passou o autocarro. Depois tocou o telefone. Quando finalmente ficaram em silêncio, uma gargalhada estragou o plano perfeito — e salvou o momento. Durante anos discutiram quem se aproximou primeiro. Nenhum deles alguma vez desejou uma versão diferente da história. O primeiro beijo chegou tarde e sem música de fundo. Talvez por isso tenha ficado tão nítido: imperfeito, divertido e inteiramente deles.",
+  "voiceDirection": "Português de Portugal, sotaque de Lisboa, voz adulta, terna e cúmplice, humor leve e pausas naturais.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview-tts",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 40,
+  "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/o-nosso-primeiro-beijo-foi-so-o-principio/assets/audio-teaser.mp3",
+  "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/o-nosso-primeiro-beijo-foi-so-o-principio/assets/audio-teaser.mp3",
+  "generatedAt": "2026-07-17T18:41:56.408Z",
+  "requestModel": "gemini-3.1-flash-tts-preview"
+}
