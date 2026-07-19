@@ -22,7 +22,8 @@ if ($LASTEXITCODE -ne 0) {
     throw "Cloud Logging query failed with exit code $LASTEXITCODE"
 }
 
-$entries = @($raw | ConvertFrom-Json)
+$parsedEntries = ConvertFrom-Json -InputObject ($raw -join [Environment]::NewLine)
+$entries = @($parsedEntries | ForEach-Object { $_ })
 if ($entries.Count -eq 0) {
     Write-Output "No matching crawler requests found in the last $Hours hours."
     exit 0
