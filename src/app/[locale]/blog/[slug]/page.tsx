@@ -19,6 +19,8 @@ import InlineMarkdown from '@/lib/blog/InlineMarkdown';
 import { formatDate } from '@/utils/date';
 import { buildLocalizedPath, buildLocalizedUrl } from '@/lib/seo';
 import { resolveBlogPostRoute, type BlogRouteResolution } from '@/lib/blog-route';
+import { getPortugueseBlogGuideLinks } from '@/lib/blog-guide-links';
+import { getRenderableBlogImageUrl } from '@/lib/blog-image-url';
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -52,6 +54,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
     const { post, translations } = resolution;
     const pageUrl = buildLocalizedUrl(locale, `/blog/${post.slug}`);
+    const heroImageUrl = getRenderableBlogImageUrl(post.heroImageUrl);
     const hreflangLinks = translations.reduce<Record<string, string>>((acc, translation) => {
       acc[translation.locale] = buildLocalizedUrl(translation.locale, `/blog/${translation.slug}`);
       return acc;
@@ -71,13 +74,13 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
         type: 'article',
         publishedTime: post.publishedAt?.toISOString(),
         url: pageUrl,
-        images: post.heroImageUrl ? [{ url: post.heroImageUrl }] : undefined,
+        images: heroImageUrl ? [{ url: heroImageUrl }] : undefined,
       },
       twitter: {
         card: 'summary_large_image',
         title: post.title,
         description: post.summary,
-        images: post.heroImageUrl ? [post.heroImageUrl] : undefined,
+        images: heroImageUrl ? [heroImageUrl] : undefined,
       },
     };
   } catch (error) {
@@ -135,6 +138,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   const readingTime = calculateReadingTimeFromMdx(post.contentMdx);
   const pageUrl = buildLocalizedUrl(locale, `/blog/${post.slug}`);
+  const heroImageUrl = getRenderableBlogImageUrl(post.heroImageUrl);
+  const relatedGuides =
+    locale === 'pt-PT' ? getPortugueseBlogGuideLinks(`${post.title} ${post.summary}`) : [];
 
   return (
     <div className="min-h-screen bg-base-100">
@@ -153,7 +159,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 post.translationUpdatedAt.getTime(),
               ),
             ).toISOString(),
-            image: post.heroImageUrl ? [post.heroImageUrl] : undefined,
+            image: heroImageUrl ? [heroImageUrl] : undefined,
             inLanguage: locale,
             mainEntityOfPage: {
               '@type': 'WebPage',
@@ -209,15 +215,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             {post.title}
           </h1>
 
-          {post.heroImageUrl && (
+          {heroImageUrl && (
             <div className="mb-8">
               <Image
-                src={post.heroImageUrl}
+                src={heroImageUrl}
                 alt={post.title}
                 width={800}
                 height={600}
                 className="w-full h-80 md:h-[28rem] object-cover rounded-lg shadow-lg"
-                unoptimized={post.heroImageUrl.startsWith('http')}
+                unoptimized={heroImageUrl.startsWith('http')}
                 priority
               />
             </div>
@@ -252,6 +258,35 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             }}
           />
         </div>
+
+        {locale === 'pt-PT' ? (
+          <aside className="mb-12 rounded-2xl border border-primary/10 bg-base-200 p-6">
+            <h2 className="text-2xl font-bold text-primary">Guias Mythoria relacionados</h2>
+            <p className="mt-2 text-base-content/75">
+              Continue a explorar ideias e exemplos para criar um livro personalizado.
+            </p>
+            {relatedGuides.length ? (
+              <ul className="mt-5 grid gap-4 md:grid-cols-2">
+                {relatedGuides.map((guide) => (
+                  <li key={guide.href} className="rounded-xl bg-base-100 p-4 shadow-sm">
+                    <Link href={guide.href} className="font-semibold text-primary hover:underline">
+                      {guide.title}
+                    </Link>
+                    <p className="mt-2 text-sm leading-relaxed text-base-content/70">
+                      {guide.description}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            <Link
+              href="/pt-PT/lp"
+              className="mt-5 inline-flex font-semibold text-primary hover:underline"
+            >
+              Ver todos os guias para livros personalizados
+            </Link>
+          </aside>
+        ) : null}
       </article>
 
       {adjacentPosts && (adjacentPosts.previous || adjacentPosts.next) && (

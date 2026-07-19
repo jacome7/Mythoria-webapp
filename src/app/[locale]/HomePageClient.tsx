@@ -20,6 +20,35 @@ interface HomePageClientProps {
   intentOverrideActive?: boolean;
 }
 
+const portugueseLandingPageGuides = [
+  {
+    href: '/pt-PT/lp/livro-personalizado-avos-netos',
+    title: 'Livro personalizado para avós e netos',
+    description: 'Ideias para guardar memórias, tradições e aventuras partilhadas em família.',
+  },
+  {
+    href: '/pt-PT/lp/livro-personalizado-para-casais',
+    title: 'Livro personalizado para casais',
+    description: 'Uma prenda romântica construída com momentos e detalhes que só o casal conhece.',
+  },
+  {
+    href: '/pt-PT/lp/livro-personalizado-criancas-autistas',
+    title: 'Livros para crianças com PEA ou PHDA',
+    description:
+      'Histórias personalizadas, previsíveis e cuidadosas, sempre sob controlo do adulto.',
+  },
+  {
+    href: '/pt-PT/lp/historias-de-apoio',
+    title: 'Histórias de apoio para desafios da vida',
+    description: 'Exemplos ficcionais para conversar sobre mudanças e emoções com segurança.',
+  },
+  {
+    href: '/pt-PT/lp/workshops-criancas',
+    title: 'Workshops criativos para crianças',
+    description: 'Atividades guiadas para transformar ideias de grupo em histórias personalizadas.',
+  },
+] as const;
+
 export default function HomePageClient({
   initialHeroIntentOverride = null,
   initialIntentContext = null,
@@ -227,6 +256,57 @@ export default function HomePageClient({
             </div>
           </section>
         </ScrollFadeIn>
+
+        {locale === 'pt-PT' ? (
+          <>
+            <div className="divider my-16"></div>
+            <ScrollFadeIn threshold={0.1} rootMargin="0px 0px -20px 0px">
+              <section className="my-16" aria-labelledby="homepage-guides-title">
+                <div className="mx-auto max-w-4xl text-center">
+                  <p className="text-sm font-semibold uppercase tracking-wide text-primary">
+                    Guias Mythoria
+                  </p>
+                  <h2
+                    id="homepage-guides-title"
+                    className="font-display mt-2 text-4xl font-bold text-[color:var(--color-primary)]"
+                  >
+                    Encontre a história certa para cada pessoa e ocasião
+                  </h2>
+                  <p className="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-base-content/75">
+                    Explore ideias, exemplos ficcionais e opções de personalização antes de começar
+                    o seu livro.
+                  </p>
+                </div>
+                <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {portugueseLandingPageGuides.map((guide) => (
+                    <article
+                      key={guide.href}
+                      className="rounded-2xl border border-primary/10 bg-white p-5 shadow-sm"
+                    >
+                      <h3 className="font-display text-xl font-bold text-[color:var(--color-primary)]">
+                        {guide.title}
+                      </h3>
+                      <p className="mt-3 leading-relaxed text-base-content/70">
+                        {guide.description}
+                      </p>
+                      <Link
+                        href={guide.href}
+                        className="mt-5 inline-flex font-semibold text-primary hover:underline"
+                      >
+                        Explorar {guide.title.toLocaleLowerCase('pt-PT')}
+                      </Link>
+                    </article>
+                  ))}
+                </div>
+                <div className="mt-8 text-center">
+                  <Link href="/pt-PT/lp" className="btn btn-outline btn-primary">
+                    Ver todos os guias para livros personalizados
+                  </Link>
+                </div>
+              </section>
+            </ScrollFadeIn>
+          </>
+        ) : null}
 
         <div className="divider my-16"></div>
 

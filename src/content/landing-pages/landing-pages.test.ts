@@ -7,6 +7,7 @@ import {
   getLandingPageBySlug,
   getLandingPageIntentContext,
   getLandingPageStaticParams,
+  getRelatedLandingPageItems,
 } from './index';
 
 describe('landing page content registry', () => {
@@ -17,6 +18,24 @@ describe('landing page content registry', () => {
     expect(page?.locale).toBe('pt-PT');
     expect(page?.indexable).toBe(true);
     expect(page?.books).toHaveLength(5);
+  });
+
+  it('provides categorized hub items and three crawlable related pages per landing page', () => {
+    const hubItems = getLandingPageIndexItems();
+    const related = getRelatedLandingPageItems('livro-personalizado-para-casais');
+
+    expect(hubItems.every((item) => item.category.length > 0)).toBe(true);
+    expect(related).toHaveLength(3);
+    expect(related.map((item) => item.href)).toContain('/pt-PT/lp/livro-personalizado-avos-netos');
+    expect(related.every((item) => item.href.startsWith('/pt-PT/lp/'))).toBe(true);
+  });
+
+  it('keeps every indexable landing-page quick answer concise and citation-friendly', () => {
+    for (const page of getIndexableLandingPages()) {
+      const wordCount = page.quickAnswer.body.trim().split(/\s+/).length;
+      expect(wordCount).toBeGreaterThanOrEqual(40);
+      expect(wordCount).toBeLessThanOrEqual(80);
+    }
   });
 
   it('exposes static params and sitemap candidates from the same registry', () => {
@@ -151,7 +170,7 @@ describe('landing page content registry', () => {
     expect(page).toBeDefined();
     expect(page?.locale).toBe('pt-PT');
     expect(page?.indexable).toBe(true);
-    expect(page?.updatedAt).toBe('2026-06-16');
+    expect(page?.updatedAt).toBe('2026-07-19');
     expect(page?.primaryCtaHref).toContain('/pt-PT/contactUs');
     expect(page?.hero.imageSrc).toContain('/landing-pages/workshops-criancas/assets/');
     expect(page?.books[0]?.audioSampleSrc).toBe(

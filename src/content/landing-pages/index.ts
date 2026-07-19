@@ -15,6 +15,42 @@ const landingPages = [
   workshopsChildrenLandingPage,
 ] satisfies LandingPageContent[];
 
+const landingPageCategories: Record<string, string> = {
+  'livro-personalizado-avos-netos': 'Família e relações',
+  'livro-personalizado-para-casais': 'Família e relações',
+  'livro-personalizado-criancas-autistas': 'Crianças e aprendizagem',
+  'workshops-criancas': 'Crianças e aprendizagem',
+  'historias-de-apoio': 'Histórias de apoio',
+};
+
+const relatedLandingPageSlugs: Record<string, string[]> = {
+  'livro-personalizado-avos-netos': [
+    'livro-personalizado-para-casais',
+    'historias-de-apoio',
+    'livro-personalizado-criancas-autistas',
+  ],
+  'livro-personalizado-para-casais': [
+    'livro-personalizado-avos-netos',
+    'historias-de-apoio',
+    'workshops-criancas',
+  ],
+  'livro-personalizado-criancas-autistas': [
+    'historias-de-apoio',
+    'workshops-criancas',
+    'livro-personalizado-avos-netos',
+  ],
+  'historias-de-apoio': [
+    'livro-personalizado-criancas-autistas',
+    'livro-personalizado-avos-netos',
+    'livro-personalizado-para-casais',
+  ],
+  'workshops-criancas': [
+    'livro-personalizado-criancas-autistas',
+    'livro-personalizado-avos-netos',
+    'livro-personalizado-para-casais',
+  ],
+};
+
 export function getLandingPageBySlug(slug: string): LandingPageContent | undefined {
   return landingPages.find((page) => page.slug === slug);
 }
@@ -50,6 +86,20 @@ export function getLandingPageIndexItems() {
       slug: page.slug,
       indexable: page.indexable,
       updatedAt: page.updatedAt,
+      href: `/${page.locale}/lp/${page.slug}`,
+      category: landingPageCategories[page.slug] ?? 'Outros guias',
+    }));
+}
+
+export function getRelatedLandingPageItems(slug: string) {
+  const relatedSlugs = relatedLandingPageSlugs[slug] ?? [];
+
+  return relatedSlugs
+    .map((relatedSlug) => landingPages.find((page) => page.slug === relatedSlug))
+    .filter((page): page is LandingPageContent => Boolean(page?.indexable))
+    .map((page) => ({
+      title: page.title,
+      description: page.metaDescription,
       href: `/${page.locale}/lp/${page.slug}`,
     }));
 }

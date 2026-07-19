@@ -14,7 +14,7 @@ export const romanceGiftsLandingPage: LandingPageContent = {
     'Transforme encontros, mensagens, viagens e memórias num livro personalizado para oferecer a quem viveu esta história consigo.',
   primaryIntent: 'romance',
   riskRating: 'green',
-  updatedAt: '2026-07-18',
+  updatedAt: '2026-07-19',
   indexable: true,
   showFormatsNearHero: false,
   breadcrumbLabel: 'Livro personalizado para casais',
@@ -39,7 +39,7 @@ export const romanceGiftsLandingPage: LandingPageContent = {
       { src: `${iconBase}/openBook.webp`, alt: '' },
       { src: `${iconBase}/fa-microphone-papercut.webp`, alt: '' },
       { src: `${iconBase}/fa-file-upload-papercut.webp`, alt: '' },
-      { src: `${iconBase}/fa-book-open-papercut.png`, alt: '' },
+      { src: `${iconBase}/fa-book-open-papercut.webp`, alt: '' },
     ],
   },
   booksSection: {
@@ -58,7 +58,7 @@ export const romanceGiftsLandingPage: LandingPageContent = {
   },
   quickAnswer: {
     title: 'O que é um livro personalizado para um casal?',
-    body: 'É uma história criada a partir de momentos da relação — nomes, lugares, mensagens, primeiras vezes, viagens e pequenos hábitos — organizada num livro que pode rever antes de oferecer. Só entram os detalhes que decidir contar.',
+    body: 'É uma história criada a partir de momentos da relação — nomes, lugares, mensagens, primeiras vezes, viagens e pequenos hábitos — organizada num livro que pode rever antes de oferecer. Só entram os detalhes que decidir contar. Pode escolher o tom, acompanhar exemplos de histórias e ajustar o resultado antes de o partilhar.',
   },
   intro: {
     title: 'Há coisas que valem pelo que fazem recordar',

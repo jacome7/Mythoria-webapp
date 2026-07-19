@@ -5,6 +5,7 @@ import { MDXComponents } from 'mdx/types';
 import ClientCodeBlock from '@/components/ClientCodeBlock';
 import ClientMermaidChart from '@/components/ClientMermaidChart';
 import MDXAudioPlayer from '@/components/MDXAudioPlayer';
+import { getRenderableBlogImageUrl } from '@/lib/blog-image-url';
 
 // Safe HTML components for blog MDX content
 // Only allowing a curated set of components for security
@@ -16,15 +17,18 @@ const MDXImage: React.FC<{
   height?: number;
   className?: string;
 }> = ({ src, alt, width = 800, height = 400, className = '' }) => {
+  const renderableSrc = getRenderableBlogImageUrl(src);
+  if (!renderableSrc) return null;
+
   return (
     <div className={`my-6 ${className}`}>
       <Image
-        src={src}
+        src={renderableSrc}
         alt={alt}
         width={width}
         height={height}
         className="rounded-lg shadow-md w-full h-auto"
-        unoptimized={src.startsWith('http')} // For external images
+        unoptimized={renderableSrc.startsWith('http')} // For external images
       />
     </div>
   );

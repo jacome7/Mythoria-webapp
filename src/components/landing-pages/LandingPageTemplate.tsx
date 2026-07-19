@@ -11,7 +11,11 @@ import {
   Sparkles,
   Star,
 } from 'lucide-react';
-import type { LandingPageContent, LandingPageTemplateIcon } from '@/content/landing-pages';
+import {
+  getRelatedLandingPageItems,
+  type LandingPageContent,
+  type LandingPageTemplateIcon,
+} from '@/content/landing-pages';
 import LandingPageBookShowcase from './LandingPageBookShowcase';
 import LandingPageFloatingNavigation from './LandingPageFloatingNavigation';
 import LandingAnalytics from './LandingAnalytics';
@@ -36,6 +40,7 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
     intro:
       'Estes conceitos mostram caminhos possíveis. Não são testemunhos reais nem histórias públicas já publicadas.',
   };
+  const relatedPages = getRelatedLandingPageItems(page.slug);
 
   return (
     <main
@@ -165,6 +170,9 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
               </h2>
               <p className="mt-3 text-lg leading-relaxed text-base-content/75">
                 {page.quickAnswer.body}
+              </p>
+              <p className="mt-4 text-sm font-medium text-base-content/60">
+                Conteúdo editorial Mythoria · Revisto em {formatEditorialDate(page.updatedAt)}
               </p>
             </div>
           </div>
@@ -477,6 +485,46 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
             </div>
           </section>
         )}
+
+        <section className="my-16" aria-labelledby="related-guides-title">
+          <div className="mb-8 max-w-3xl">
+            <p className="text-sm font-semibold uppercase tracking-wide text-primary">
+              Explorar mais
+            </p>
+            <h2
+              id="related-guides-title"
+              className="font-display mt-2 text-3xl font-bold text-[#33251c] md:text-4xl"
+            >
+              Também poderá interessar-lhe
+            </h2>
+            <p className="mt-3 text-lg leading-relaxed text-base-content/75">
+              Continue a explorar ideias, ocasiões e formas cuidadosas de transformar memórias em
+              livros personalizados.
+            </p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {relatedPages.map((relatedPage) => (
+              <article
+                key={relatedPage.href}
+                className="rounded-2xl border border-primary/10 bg-white p-5 shadow-sm"
+              >
+                <h3 className="font-display text-xl font-bold text-[#33251c]">
+                  {relatedPage.title}
+                </h3>
+                <p className="mt-3 line-clamp-3 leading-relaxed text-base-content/70">
+                  {relatedPage.description}
+                </p>
+                <Link
+                  href={relatedPage.href}
+                  className="mt-5 inline-flex items-center gap-2 font-semibold text-primary hover:underline"
+                >
+                  Explorar {relatedPage.title.toLocaleLowerCase('pt-PT')}
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+              </article>
+            ))}
+          </div>
+        </section>
 
         <section
           className="my-16 text-center"
@@ -1287,6 +1335,8 @@ function buildStructuredData(page: LandingPageContent) {
         url: base,
       },
       publisher,
+      author: publisher,
+      editor: publisher,
       primaryImageOfPage: {
         '@type': 'ImageObject',
         url: imageUrl,
@@ -1332,6 +1382,18 @@ function buildStructuredData(page: LandingPageContent) {
       })),
     },
   ].filter(Boolean);
+}
+
+function formatEditorialDate(value: string) {
+  const date = new Date(`${value}T12:00:00Z`);
+  if (Number.isNaN(date.getTime())) return value;
+
+  return new Intl.DateTimeFormat('pt-PT', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(date);
 }
 
 function toAbsoluteUrl(url: string, base: string) {

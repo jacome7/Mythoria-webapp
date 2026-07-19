@@ -63,7 +63,7 @@ export const autismStoriesLandingPage: LandingPageContent = {
         alt: '',
       },
       {
-        src: `${iconBase}/fa-book-open-papercut.png`,
+        src: `${iconBase}/fa-book-open-papercut.webp`,
         alt: '',
       },
     ],

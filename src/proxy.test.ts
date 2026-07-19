@@ -18,6 +18,10 @@ describe('proxy canonical redirects', () => {
     ['https://mythoria.pt/en-us/', 'https://mythoria.pt/en-US'],
     ['https://mythoria.pt/pt-PT/lp/', 'https://mythoria.pt/pt-PT/lp'],
     [
+      'https://mythoria.pt/lp/livro-personalizado-para-casais?utm_source=partner',
+      'https://mythoria.pt/pt-PT/lp/livro-personalizado-para-casais?utm_source=partner',
+    ],
+    [
       'https://mythoria.pt/en-US/blog/fathers-day-2026/?ref=test',
       'https://mythoria.pt/en-US/blog/fathers-day-2026?ref=test',
     ],

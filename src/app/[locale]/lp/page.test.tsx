@@ -19,6 +19,23 @@ describe('landing page index metadata', () => {
 
     expect(metadata.robots).toBe('index,follow,max-snippet:-1,max-image-preview:large');
     expect(metadata.alternates?.canonical).toBe('https://mythoria.pt/pt-PT/lp');
+    expect(metadata.title).toBe('Guias para livros personalizados | Mythoria');
+  });
+
+  it('renders an editorial hub grouped by intent with structured data', async () => {
+    const { container } = render(
+      await LandingPageIndexRoute({
+        params: Promise.resolve({ locale: 'pt-PT' }),
+      }),
+    );
+
+    expect(
+      screen.getByRole('heading', { name: 'Guias e ideias para livros personalizados' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Família e relações' })).toBeInTheDocument();
+    expect(container.querySelector('script[type="application/ld+json"]')).toHaveTextContent(
+      'CollectionPage',
+    );
   });
 
   it('keeps duplicate locale landing page indexes out of the index', async () => {

@@ -169,12 +169,25 @@ export function getCanonicalRedirectPath(pathname: string): string | null {
     return '/pt-PT/lp';
   }
 
+  if (/^\/lp\/[^/]+\/?$/.test(rewritten)) {
+    return `/pt-PT${rewritten.replace(/\/+$/, '')}`;
+  }
+
   if (rewritten.length > 1 && rewritten.endsWith('/')) {
     rewritten = rewritten.replace(/\/+$/, '');
     changed = true;
   }
 
   return changed ? rewritten || '/' : null;
+}
+
+export function getTrainingBotDisallowPaths(): string[] {
+  const localizedPrivatePaths = routing.locales.flatMap((locale) => [
+    ...PRIVATE_LOCALIZED_PREFIXES.map((prefix) => `/${locale}${prefix}`),
+    `/${locale}/tell-your-story/step-`,
+  ]);
+
+  return ['/api/', '/portaldegestao/', '/.well-known/', ...localizedPrivatePaths];
 }
 
 function isPathWithin(pathSuffix: string, prefix: string): boolean {

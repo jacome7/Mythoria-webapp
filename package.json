@@ -43,6 +43,8 @@
     "test:e2e:anon": "cross-env SKIP_AUTH_SETUP=1 playwright test tests/playwright/missing-translations_anonymous.spec.ts --workers=1",
     "test:seo": "tsx scripts/seo-smoke.ts --base-url=http://localhost:3000",
     "test:seo:prod": "tsx scripts/seo-smoke.ts --base-url=https://mythoria.pt",
+    "seo:indexnow": "tsx scripts/submit-indexnow.ts",
+    "seo:crawlers": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/seo-crawler-report.ps1",
     "test:mcp:smoke": "tsx scripts/mcp-e2e-smoke.ts --base-url=http://192.168.1.10:3000",
     "test:mcp:smoke:prod": "tsx scripts/mcp-e2e-smoke.ts --base-url=https://mythoria.pt",
     "auth:mcp:token": "tsx scripts/get-mcp-oauth-token.ts",

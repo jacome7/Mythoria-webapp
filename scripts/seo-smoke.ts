@@ -49,6 +49,10 @@ function extractRobots(html: string): string | null {
   return tag?.match(/\bcontent=["']([^"']+)["']/i)?.[1] ?? null;
 }
 
+function extractHrefs(html: string): string[] {
+  return [...html.matchAll(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>/gi)].map((match) => match[1]);
+}
+
 function parseSitemapEntries(xml: string) {
   return [...xml.matchAll(/<url>([\s\S]*?)<\/url>/g)].map((match) => {
     const block = match[1];
@@ -82,6 +86,10 @@ async function main() {
   await assertRedirect('/en-US/', '/en-US');
   await assertRedirect('/en-us/', '/en-US');
   await assertRedirect('/pt-PT/lp/', '/pt-PT/lp');
+  await assertRedirect(
+    '/lp/livro-personalizado-para-casais?utm_source=seo-smoke',
+    '/pt-PT/lp/livro-personalizado-para-casais?utm_source=seo-smoke',
+  );
 
   const sitemapResponse = await fetchNoRedirect(absolute('/sitemap.xml'));
   assert.equal(sitemapResponse.status, 200, 'sitemap is unavailable');
@@ -105,9 +113,54 @@ async function main() {
   }
 
   const robotsText = await (await fetchNoRedirect(absolute('/robots.txt'))).text();
+  for (const userAgent of ['GPTBot', 'ClaudeBot', 'Google-Extended']) {
+    assert(robotsText.includes(`User-Agent: ${userAgent}`), `${userAgent} has no explicit policy`);
+  }
   const disallows = [...robotsText.matchAll(/^Disallow:\s*(.+)$/gim)].map((match) =>
     match[1].trim(),
   );
+  for (const userAgent of [
+    'OAI-SearchBot',
+    'GPTBot',
+    'Claude-SearchBot',
+    'ClaudeBot',
+    'PerplexityBot',
+  ]) {
+    const landingResponse = await fetch(absolute('/pt-PT/lp/livro-personalizado-para-casais'), {
+      redirect: 'manual',
+      headers: { 'user-agent': userAgent },
+    });
+    assert.equal(landingResponse.status, 200, `${userAgent} cannot access the landing pages`);
+  }
+
+  const indexNowKey = 'f14200a38cc04a14b331a8460f7267be';
+  const keyResponse = await fetchNoRedirect(absolute(`/${indexNowKey}.txt`));
+  assert.equal(keyResponse.status, 200, 'IndexNow key is unavailable');
+  assert.equal((await keyResponse.text()).trim(), indexNowKey, 'IndexNow key is invalid');
+
+  const landingLocs = locs.filter((loc) => loc.includes('/pt-PT/lp/'));
+  const [homepageHtml, landingHubHtml] = await Promise.all([
+    fetchNoRedirect(absolute('/pt-PT')).then((response) => response.text()),
+    fetchNoRedirect(absolute('/pt-PT/lp')).then((response) => response.text()),
+  ]);
+  const homepageHrefs = extractHrefs(homepageHtml);
+  const hubHrefs = extractHrefs(landingHubHtml);
+  assert(landingHubHtml.includes('CollectionPage'), 'landing page hub lacks CollectionPage data');
+
+  for (const loc of landingLocs) {
+    const pathname = new URL(loc).pathname;
+    assert(homepageHrefs.includes(pathname), `${pathname} is not linked from the homepage`);
+    assert(hubHrefs.includes(pathname), `${pathname} is not linked from the landing page hub`);
+
+    const html = await fetchNoRedirect(absolute(pathname)).then((response) => response.text());
+    const relatedLandingLinks = new Set(
+      extractHrefs(html).filter((href) => href.startsWith('/pt-PT/lp/') && href !== pathname),
+    );
+    assert(
+      relatedLandingLinks.size >= 2,
+      `${pathname} has fewer than two related landing page links`,
+    );
+  }
 
   await inBatches(locs, 10, async (loc) => {
     const response = await fetchNoRedirect(targetUrl(loc));

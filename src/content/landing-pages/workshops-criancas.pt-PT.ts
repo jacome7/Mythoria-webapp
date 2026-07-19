@@ -14,7 +14,7 @@ export const workshopsChildrenLandingPage: LandingPageContent = {
     'Workshops de escrita criativa, ilustração e livros personalizados para ATL, ateliers, bibliotecas, escolas e campos de férias.',
   primaryIntent: 'children_workshops_atl',
   riskRating: 'green',
-  updatedAt: '2026-06-16',
+  updatedAt: '2026-07-19',
   indexable: true,
   breadcrumbLabel: 'Workshops para crianças',
   ogImageSrc: `${assetBase}/hero/og-cover.jpg`,
@@ -61,7 +61,7 @@ export const workshopsChildrenLandingPage: LandingPageContent = {
         alt: '',
       },
       {
-        src: `${iconBase}/fa-book-open-papercut.png`,
+        src: `${iconBase}/fa-book-open-papercut.webp`,
         alt: '',
       },
     ],
@@ -83,7 +83,7 @@ export const workshopsChildrenLandingPage: LandingPageContent = {
   },
   quickAnswer: {
     title: 'A ideia em poucas palavras',
-    body: 'O Mythoria transforma desenho, texto, fotografia ou voz numa história personalizada. A criança decide, o monitor orienta e a tecnologia ajuda a dar forma ao livro final.',
+    body: 'O Mythoria transforma desenho, texto, fotografia ou voz numa história personalizada. A criança decide, o monitor orienta e a tecnologia ajuda a dar forma ao livro final. O adulto mantém o controlo dos materiais, das escolhas e da revisão antes de qualquer partilha.',
   },
   intro: {
     title: 'Uma atividade completa, simples de preparar',
@@ -120,7 +120,7 @@ export const workshopsChildrenLandingPage: LandingPageContent = {
         {
           title: 'Bibliotecas e livrarias',
           body: 'Liga leitura, escrita e apresentação oral num formato fácil de divulgar às famílias.',
-          iconSrc: `${iconBase}/fa-book-open-papercut.png`,
+          iconSrc: `${iconBase}/fa-book-open-papercut.webp`,
           iconAlt: 'Ícone papercut de livro aberto',
         },
         {
@@ -432,7 +432,7 @@ export const workshopsChildrenLandingPage: LandingPageContent = {
         {
           title: 'Livro físico',
           body: 'Uma opção especial para famílias, quando disponível para a morada.',
-          iconSrc: `${iconBase}/fa-book-open-papercut.png`,
+          iconSrc: `${iconBase}/fa-book-open-papercut.webp`,
           iconAlt: 'Ícone papercut de livro aberto',
         },
       ],

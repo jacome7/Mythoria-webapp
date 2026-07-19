@@ -44,11 +44,30 @@ After deployment, run:
 npm run test:seo:prod
 ```
 
-The smoke suite records the health SHA, follows the canonical redirect contracts with no automatic redirect handling, validates every sitemap URL and reciprocal alternate, confirms representative private routes remain out of the sitemap and `noindex`, and verifies missing and wrong-locale blog behavior.
+The smoke suite records the health SHA, follows the canonical redirect contracts with no automatic redirect handling, validates every sitemap URL and reciprocal alternate, confirms representative private routes remain out of the sitemap and `noindex`, verifies the landing-page internal-link graph and IndexNow key, tests representative AI crawler user-agents, and verifies missing and wrong-locale blog behavior.
 
 ## Search Console and monitoring
 
-Submit only `https://mythoria.pt/sitemap.xml`. Review redirect-error, soft-404, and accidental-noindex groups after Google recrawls the site. Do not expand robots blocking for private HTML routes until their `noindex` directives have been observed.
+Submit only `https://mythoria.pt/sitemap.xml`. After a release that creates or substantially changes landing pages, use URL Inspection's live test and request indexing once for each canonical URL. Never submit redirects, locale duplicates, private routes, or repeated daily requests. Review redirect-error, soft-404, accidental-noindex and Google-selected-canonical groups after Google recrawls the site.
+
+Notify IndexNow participants only for new, substantially updated, or removed registered landing pages:
+
+```powershell
+npm run seo:indexnow -- --dry-run
+npm run seo:indexnow
+```
+
+An HTTP `200` or `202` means the batch was received, not that it was indexed. The public protocol key is served from the root path named in `src/lib/indexnow.ts`; it is intentionally not a secret. IndexNow is not wired to every deployment to avoid resubmitting unchanged URLs.
+
+The wildcard robots policy permits search and citation crawlers. Bot-specific groups allow editorial content while excluding known account, creation, payment, API, and management routes from `GPTBot`, `ClaudeBot`, and `Google-Extended`. Keep Googlebot able to read HTML `noindex` directives.
+
+Cloud Run request logs provide the crawler baseline. Generate the last 72-hour summary with:
+
+```powershell
+npm run seo:crawlers
+```
+
+User-agent strings can be forged. Before treating a request as an authentic crawler visit, compare the logged remote IP with the official provider-published ranges or verification method. Track ChatGPT referrals through the existing analytics attribution, including `utm_source=chatgpt.com`.
 
 For six weeks after release, review weekly:
 
@@ -57,3 +76,6 @@ For six weeks after release, review weekly:
 - Googlebot status-code distribution;
 - submitted versus indexed page counts;
 - canonical and hreflang validation errors.
+- landing-page discovery, last-crawl dates and Google-selected canonicals;
+- verified AI search crawler visits and cited/referral traffic;
+- Bing Webmaster Tools AI Performance citations when available.

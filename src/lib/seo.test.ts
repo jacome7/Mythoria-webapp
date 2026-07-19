@@ -12,6 +12,7 @@ import {
   getCanonicalRedirectPath,
   getSeoRoutePolicy,
   getStaticLocalizedHreflangLinks,
+  getTrainingBotDisallowPaths,
 } from './seo';
 
 describe('seo helpers', () => {
@@ -45,8 +46,24 @@ describe('seo helpers', () => {
     expect(getCanonicalRedirectPath('/pt-PT/get-inspired/')).toBe('/pt-PT/get-inspired');
     expect(getCanonicalRedirectPath('/pt-PT/get-inspired')).toBeNull();
     expect(getCanonicalRedirectPath('/pt-PT/lp/')).toBe('/pt-PT/lp');
+    expect(getCanonicalRedirectPath('/lp/livro-personalizado-para-casais')).toBe(
+      '/pt-PT/lp/livro-personalizado-para-casais',
+    );
+    expect(getCanonicalRedirectPath('/lp/livro-personalizado-para-casais/')).toBe(
+      '/pt-PT/lp/livro-personalizado-para-casais',
+    );
     expect(getCanonicalRedirectPath('/')).toBe('/en-US');
     expect(getCanonicalRedirectPath('//en-us///blog/post//')).toBe('/en-US/blog/post');
+  });
+
+  it('builds bot-specific private route exclusions without blocking editorial pages', () => {
+    const disallows = getTrainingBotDisallowPaths();
+
+    expect(disallows).toContain('/pt-PT/my-stories');
+    expect(disallows).toContain('/pt-PT/tell-your-story/step-');
+    expect(disallows).toContain('/api/');
+    expect(disallows).not.toContain('/pt-PT/lp/');
+    expect(disallows).not.toContain('/pt-PT/blog/');
   });
 
   it('classifies public, entity-backed, and private routes', () => {
