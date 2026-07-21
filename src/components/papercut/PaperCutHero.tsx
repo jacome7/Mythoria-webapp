@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useScroll, useTransform } from 'motion/react';
+import { useAuth } from '@clerk/nextjs';
 import { useLocale, useTranslations } from 'next-intl';
 import { useIntentContext } from '@/hooks/useIntentContext';
 import { useIntentOverride } from '@/hooks/useIntentOverride';
@@ -12,6 +13,7 @@ import PaperCutStage from './PaperCutStage';
 import PersonCarousel from './PersonCarousel';
 import { resolveAsset, resolvePersons, type HeroStyleId } from './heroManifest';
 import { resolveComposition } from './registry';
+import { buildHeroCtaHref } from './cta';
 import type { IntentContext } from '@/types/intent-context';
 import type {
   DecorSlot,
@@ -155,6 +157,7 @@ export default function PaperCutHero({
 }: PaperCutHeroProps) {
   const t = useTranslations('HomePage');
   const locale = useLocale();
+  const { isSignedIn } = useAuth();
   const intentContext = useIntentContext();
   const intentOverride = useIntentOverride();
   // Precedence: ?intent= query param > intent cookie > default composition.
@@ -166,6 +169,11 @@ export default function PaperCutHero({
   );
   const style = composition.id;
   const ns = composition.textNamespace;
+  const ctaHref = buildHeroCtaHref({
+    locale,
+    intent: composition.storyIntent,
+    isSignedIn: Boolean(isSignedIn),
+  });
 
   // Parallax driver. We use the document scroll position (rather than
   // useScroll({ target }), which needs a hydrated ref and can throw during SSR
@@ -248,7 +256,7 @@ export default function PaperCutHero({
             ))}
           </p>
           <Link
-            href={`/${locale}/${composition.ctaPath}`}
+            href={ctaHref}
             className="btn btn-lg pc-cta mt-7 w-full max-w-[24rem] px-8 text-lg shadow-lg"
           >
             {tr('cta')}

@@ -18,5 +18,5 @@ export const kidsFantasy: HeroComposition = {
   person: {
     bottom: { base: 10, md: 8, lg: 7 },
   },
-  ctaPath: 'sign-up',
+  storyIntent: 'kids_adventures',
 };

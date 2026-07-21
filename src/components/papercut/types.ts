@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import type { StoryIntent } from '@/constants/intents';
 import type { HeroStyleId } from './heroManifest';
 
 /**
@@ -205,8 +206,8 @@ export interface HeroComposition {
   person?: PersonPlacement;
   /** How long each person stays centered before rotating, ms. Default 4000. */
   personHoldMs?: number;
-  /** Path appended after the locale, e.g. 'tell-your-story'. */
-  ctaPath: string;
+  /** Canonical story intent carried into the creation journey. */
+  storyIntent: StoryIntent;
 }
 
 /** Minimal translator shape — assignable from next-intl's `useTranslations`. */

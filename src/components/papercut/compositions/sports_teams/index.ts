@@ -28,5 +28,5 @@ export const sportsTeams: HeroComposition = {
       lg: { width: 7 },
     },
   },
-  ctaPath: 'tell-your-story',
+  storyIntent: 'sports_teams',
 };

@@ -25,5 +25,5 @@ export const romance: HeroComposition = {
   // The romance couple cutout is wider (723×1024) than the single-child
   // cutouts (572×1024) — widen the band slightly to keep the same visual height.
   person: { width: { base: 62, md: 40, lg: 30 } },
-  ctaPath: 'tell-your-story',
+  storyIntent: 'romance',
 };

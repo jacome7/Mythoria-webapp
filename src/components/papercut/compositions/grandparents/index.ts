@@ -38,5 +38,5 @@ export const grandparents: HeroComposition = {
     width: { base: 78, md: 48, lg: 34 },
     bottom: { base: 6, md: 5, lg: 4 },
   },
-  ctaPath: 'tell-your-story',
+  storyIntent: 'grandparents',
 };
