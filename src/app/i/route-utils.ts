@@ -12,6 +12,7 @@ import {
   type IntentContext,
 } from '@/types/intent-context';
 
+const PUBLIC_ORIGIN = 'https://mythoria.pt';
 const localeLookup = new Map(
   SUPPORTED_LOCALES.map((locale) => [locale.toLowerCase(), locale as SupportedLocale]),
 );
@@ -54,7 +55,7 @@ export function buildLegacyIntentResponse(
   const recipient =
     normalizedRecipient && isValidRecipient(normalizedRecipient) ? normalizedRecipient : null;
 
-  const destination = new URL(`/${locale}`, request.nextUrl.origin);
+  const destination = new URL(`/${locale}`, PUBLIC_ORIGIN);
   destination.search = buildPublicRedirectSearch(request.nextUrl.searchParams, intent).toString();
   const response = NextResponse.redirect(destination, 308);
 

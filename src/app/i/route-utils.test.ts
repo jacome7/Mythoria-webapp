@@ -35,7 +35,7 @@ describe('legacy intent compatibility route', () => {
   it('returns one 308 with locale, valid intent and safe attribution only', () => {
     const response = buildLegacyIntentResponse(
       new NextRequest(
-        'https://mythoria.pt/i/romance?locale=pt-PT&utm_source=google&gclid=click-1&email=private%40example.com&state=secret',
+        'http://0.0.0.0:3000/i/romance?locale=pt-PT&utm_source=google&gclid=click-1&email=private%40example.com&state=secret',
       ),
       'Romance',
     );

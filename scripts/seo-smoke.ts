@@ -23,6 +23,7 @@ async function assertRedirect(source: string, expectedPath: string) {
   const location = first.headers.get('location');
   assert(location, `${source} did not include Location`);
   const destination = new URL(location, baseUrl);
+  assert.equal(destination.origin, baseUrl.origin, `${source} redirects to a non-public origin`);
   assert.equal(`${destination.pathname}${destination.search}`, expectedPath);
   const final = await fetchNoRedirect(destination.toString());
   assert.equal(final.status, 200, `${source} did not terminate at 200`);
@@ -126,6 +127,12 @@ async function main() {
     assert(
       response.headers.get('set-cookie')?.includes('mythoria_intent_context='),
       `${campaignPath} does not persist its intent`,
+    );
+  }
+  if (baseUrl.hostname === 'mythoria.pt') {
+    await assertRedirect(
+      '/i/romance?locale=pt-PT&utm_campaign=seo-smoke&gclid=legacy-click&email=private@example.com',
+      '/pt-PT?utm_campaign=seo-smoke&gclid=legacy-click&intent=romance',
     );
   }
 
