@@ -14,7 +14,13 @@ function targetUrl(canonicalUrl: string): string {
 }
 
 async function fetchNoRedirect(url: string) {
-  return fetch(url, { redirect: 'manual', headers: { 'user-agent': 'Mythoria-SEO-Smoke/1.0' } });
+  return fetch(url, {
+    redirect: 'manual',
+    headers: {
+      'accept-encoding': 'identity',
+      'user-agent': 'Mythoria-SEO-Smoke/1.0',
+    },
+  });
 }
 
 async function assertRedirect(source: string, expectedPath: string) {
@@ -189,7 +195,7 @@ async function main() {
   ]) {
     const landingResponse = await fetch(absolute('/pt-PT/lp/livro-personalizado-para-casais'), {
       redirect: 'manual',
-      headers: { 'user-agent': userAgent },
+      headers: { 'accept-encoding': 'identity', 'user-agent': userAgent },
     });
     assert.equal(landingResponse.status, 200, `${userAgent} cannot access the landing pages`);
   }
@@ -279,7 +285,7 @@ async function main() {
     '/en-US/buy-credits',
     '/en-US/partners',
   ]) {
-    const response = await fetch(absolute(path));
+    const response = await fetchNoRedirect(absolute(path));
     const html = await response.text();
     assert(extractRobots(html)?.toLowerCase().includes('noindex'), `${path} is missing noindex`);
     assert(!locs.includes(absolute(path)), `${path} appears in the sitemap`);
