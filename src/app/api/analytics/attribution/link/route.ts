@@ -51,9 +51,7 @@ export async function POST(request: NextRequest) {
         .where(eq(analyticsOutbox.dedupeKey, `sign_up:${author.clerkUserId}`));
     });
 
-    const response = NextResponse.json({ linked: true });
-    response.cookies.delete('mythoria_attribution');
-    return response;
+    return NextResponse.json({ linked: true });
   } catch (error) {
     console.error('Failed to link analytics attribution:', error);
     return NextResponse.json({ error: 'Attribution link failed' }, { status: 500 });

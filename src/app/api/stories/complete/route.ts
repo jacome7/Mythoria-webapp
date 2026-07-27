@@ -5,7 +5,8 @@ import { analyticsAttributions } from '@/db/schema';
 import { getCurrentAuthor } from '@/lib/auth';
 import { sanitizeClientAnalyticsContext } from '@/lib/analytics/ecommerce';
 import { startStoryGeneration } from '@/lib/story-generation';
-import { and, eq, gt } from 'drizzle-orm';
+import { and, eq, gt, isNull, or } from 'drizzle-orm';
+import { getValidatedIntent } from '@/lib/campaign-context';
 
 const completeStorySchema = z.object({
   storyId: z.string().uuid(),
@@ -30,17 +31,26 @@ export async function POST(request: NextRequest) {
     const analyticsContext = sanitizeClientAnalyticsContext(input.analyticsContext);
     const attributionCookie = request.cookies.get('mythoria_attribution')?.value;
     let attributionId: string | undefined;
+    let primaryIntent = analyticsContext?.primaryIntent;
     if (attributionCookie) {
       const [attribution] = await db
-        .select({ attributionId: analyticsAttributions.attributionId })
+        .select({
+          attributionId: analyticsAttributions.attributionId,
+          primaryIntent: analyticsAttributions.primaryIntent,
+        })
         .from(analyticsAttributions)
         .where(
           and(
             eq(analyticsAttributions.attributionId, attributionCookie),
             gt(analyticsAttributions.expiresAt, new Date()),
+            or(
+              isNull(analyticsAttributions.authorId),
+              eq(analyticsAttributions.authorId, author.authorId),
+            ),
           ),
         );
       attributionId = attribution?.attributionId;
+      primaryIntent = getValidatedIntent(attribution?.primaryIntent) ?? primaryIntent;
     }
 
     const result = await startStoryGeneration({
@@ -53,6 +63,7 @@ export async function POST(request: NextRequest) {
       dedicationMessage: input.dedicationMessage,
       customAuthor: input.customAuthor,
       attributionId,
+      primaryIntent,
       analyticsContext,
     });
 

@@ -14,7 +14,7 @@ export const romanceGiftsLandingPage: LandingPageContent = {
     'Transforme encontros, mensagens, viagens e memórias num livro personalizado para oferecer a quem viveu esta história consigo.',
   primaryIntent: 'romance',
   riskRating: 'green',
-  updatedAt: '2026-07-19',
+  updatedAt: '2026-07-27',
   indexable: true,
   showFormatsNearHero: false,
   breadcrumbLabel: 'Livro personalizado para casais',
@@ -46,6 +46,14 @@ export const romanceGiftsLandingPage: LandingPageContent = {
     eyebrow: 'Histórias para descobrir',
     title: 'Cinco maneiras de contar uma história a dois',
     intro: 'Abra um capítulo, veja a ilustração e ouça um excerto de cada história.',
+  },
+  relatedGuide: {
+    title: 'Como transformar memórias num livro personalizado para um casal',
+    description:
+      'Escolha os momentos certos, encontre um fio narrativo e reveja nomes, imagens, privacidade e a prova do livro físico antes de oferecer.',
+    href: '/pt-PT/guias/como-transformar-memorias-num-livro-personalizado-para-casal',
+    sampleTitle: 'Duas Chávenas, Uma Vida',
+    sampleHref: '/pt-PT/sample-books/duas-chavenas-uma-vida',
   },
   hero: {
     eyebrow: 'Uma prenda que só podia ser vossa',

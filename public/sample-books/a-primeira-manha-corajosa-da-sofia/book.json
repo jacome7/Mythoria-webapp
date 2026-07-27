@@ -15,10 +15,21 @@
   "graphicalStyle": "digital_art",
   "novelStyle": "contemporary",
   "fictionalUserContext": "Cenário inteiramente ficcional criado para demonstrar uma história Mythoria sobre o primeiro dia de escola e leitura acompanhada.",
-  "coverImage": { "localPath": "assets/cover.jpeg" },
-  "featureImage": { "localPath": "assets/feature.jpeg" },
+  "coverImage": {
+    "localPath": "assets/cover.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/a-primeira-manha-corajosa-da-sofia/assets/cover.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-primeira-manha-corajosa-da-sofia/assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/a-primeira-manha-corajosa-da-sofia/assets/feature.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-primeira-manha-corajosa-da-sofia/assets/feature.jpeg"
+  },
   "audioSample": {
     "localPath": "assets/audio-teaser.mp3",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/a-primeira-manha-corajosa-da-sofia/assets/audio-teaser.mp3",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-primeira-manha-corajosa-da-sofia/assets/audio-teaser.mp3",
+    "status": "generated",
     "provider": "google-genai",
     "model": "gemini-3.1-flash-tts-preview",
     "voice": "Aoede"

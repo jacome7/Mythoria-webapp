@@ -179,3 +179,104 @@ test.describe('Homepage hero — landing page intent handoff', () => {
     expect(hydrationErrors).toEqual([]);
   });
 });
+
+test.describe('Homepage hero — PT-PT campaign URLs', () => {
+  for (const campaign of [
+    {
+      intent: 'romance',
+      headline: 'A vossa história, eternizada.',
+      clickKey: 'gclid',
+      clickValue: 'google-click-1',
+    },
+    {
+      intent: 'grandparents',
+      headline: 'As histórias dos avós, eternizadas.',
+      clickKey: 'wbraid',
+      clickValue: 'google-click-2',
+    },
+  ]) {
+    test(`${campaign.intent} is a direct 200 with persistent context and attribution`, async ({
+      page,
+      context,
+    }) => {
+      const attributionPayloads: Array<Record<string, unknown>> = [];
+      await context.addCookies([
+        {
+          name: 'mythoria_consent',
+          value: encodeURIComponent(
+            JSON.stringify({
+              state: {
+                analytics_storage: 'granted',
+                ad_storage: 'granted',
+                ad_user_data: 'granted',
+                ad_personalization: 'granted',
+              },
+              timestamp: Date.now(),
+            }),
+          ),
+          url: 'http://localhost:3000',
+          sameSite: 'Lax',
+        },
+      ]);
+      await page.addInitScript(() => {
+        window.gtag = (...args: unknown[]) => {
+          if (args[0] !== 'get') return;
+          const callback = args[3] as (value: unknown) => void;
+          callback(args[2] === 'client_id' ? '123.456' : '1712345678');
+        };
+      });
+      await page.route('**/api/analytics/attribution', async (route) => {
+        attributionPayloads.push(route.request().postDataJSON() as Record<string, unknown>);
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ captured: true }),
+        });
+      });
+      await page.route('**/api/analytics/attribution/link', async (route) => {
+        await route.fulfill({
+          status: 401,
+          contentType: 'application/json',
+          body: JSON.stringify({ error: 'Unauthorized' }),
+        });
+      });
+
+      const campaignUrl = `/pt-PT?intent=${campaign.intent}&utm_source=google&utm_medium=cpc&utm_campaign=cluster-test&${campaign.clickKey}=${campaign.clickValue}`;
+      const directResponse = await page.request.get(campaignUrl, { maxRedirects: 0 });
+      expect(directResponse.status()).toBe(200);
+      expect(directResponse.headers().location).toBeUndefined();
+      const response = await page.goto(campaignUrl, { waitUntil: 'domcontentloaded' });
+      expect(response?.status()).toBe(200);
+      const finalUrl = new URL(page.url());
+      expect(finalUrl.pathname).toBe('/pt-PT');
+      expect(Object.fromEntries(finalUrl.searchParams)).toMatchObject({
+        intent: campaign.intent,
+        utm_source: 'google',
+        utm_medium: 'cpc',
+        utm_campaign: 'cluster-test',
+        [campaign.clickKey]: campaign.clickValue,
+      });
+      await expect(page.locator('section.papercut-hero h1')).toContainText(campaign.headline);
+
+      const intentCookie = (await context.cookies()).find(
+        (cookie) => cookie.name === 'mythoria_intent_context',
+      );
+      expect(decodeURIComponent(intentCookie?.value ?? '')).toContain(campaign.intent);
+
+      await expect.poll(() => attributionPayloads.length).toBe(1);
+      expect(attributionPayloads[0]).toMatchObject({
+        landingSlug: 'homepage',
+        primaryIntent: campaign.intent,
+        campaign: {
+          utm_source: 'google',
+          utm_medium: 'cpc',
+          utm_campaign: 'cluster-test',
+          [campaign.clickKey]: campaign.clickValue,
+        },
+      });
+
+      await page.goto('/pt-PT', { waitUntil: 'domcontentloaded' });
+      await expect(page.locator('section.papercut-hero h1')).toContainText(campaign.headline);
+    });
+  }
+});

@@ -53,11 +53,20 @@ function extractHrefs(html: string): string[] {
   return [...html.matchAll(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>/gi)].map((match) => match[1]);
 }
 
+function pathMatchesDisallow(pathname: string, rule: string): boolean {
+  const normalizedRule = rule.replace(/\*.*$/, '');
+  if (normalizedRule.endsWith('/') || normalizedRule.endsWith('-')) {
+    return pathname.startsWith(normalizedRule);
+  }
+  return pathname === normalizedRule || pathname.startsWith(`${normalizedRule}/`);
+}
+
 function parseSitemapEntries(xml: string) {
   return [...xml.matchAll(/<url>([\s\S]*?)<\/url>/g)].map((match) => {
     const block = match[1];
     const locMatch = block.match(/<loc>([^<]+)<\/loc>/);
     assert(locMatch, 'sitemap entry is missing loc');
+    const lastmod = block.match(/<lastmod>([^<]+)<\/lastmod>/)?.[1];
     const alternates = [...block.matchAll(/<xhtml:link\b[^>]*\/>/g)].map((linkMatch) => {
       const tag = linkMatch[0];
       const locale = tag.match(/hreflang="([^"]+)"/)?.[1];
@@ -65,7 +74,11 @@ function parseSitemapEntries(xml: string) {
       assert(locale && href, 'sitemap alternate is malformed');
       return { locale: xmlDecode(locale), href: xmlDecode(href) };
     });
-    return { loc: xmlDecode(locMatch[1]), alternates };
+    return {
+      loc: xmlDecode(locMatch[1]),
+      lastmod: lastmod ? xmlDecode(lastmod) : undefined,
+      alternates,
+    };
   });
 }
 
@@ -85,11 +98,36 @@ async function main() {
   await assertRedirect('/', '/en-US');
   await assertRedirect('/en-US/', '/en-US');
   await assertRedirect('/en-us/', '/en-US');
+  await assertRedirect(
+    '/aboutUs?utm_source=seo-smoke&email=private@example.com',
+    '/en-US/aboutUs?utm_source=seo-smoke',
+  );
   await assertRedirect('/pt-PT/lp/', '/pt-PT/lp');
   await assertRedirect(
     '/lp/livro-personalizado-para-casais?utm_source=seo-smoke',
     '/pt-PT/lp/livro-personalizado-para-casais?utm_source=seo-smoke',
   );
+  await assertRedirect(
+    '/guias/como-transformar-memorias-num-livro-personalizado-para-casal?gclid=click-1&state=secret',
+    '/pt-PT/guias/como-transformar-memorias-num-livro-personalizado-para-casal?gclid=click-1',
+  );
+  await assertRedirect(
+    '/sample-books/a-primeira-manha-corajosa-da-sofia?ref=seo-smoke',
+    '/pt-PT/sample-books/a-primeira-manha-corajosa-da-sofia?ref=seo-smoke',
+  );
+
+  for (const campaignPath of [
+    '/pt-PT?intent=romance&utm_source=seo-smoke&gclid=click-1',
+    '/pt-PT?intent=grandparents&utm_source=seo-smoke&wbraid=click-2',
+  ]) {
+    const response = await fetchNoRedirect(absolute(campaignPath));
+    assert.equal(response.status, 200, `${campaignPath} should be an immediate 200`);
+    assert.equal(response.headers.get('location'), null, `${campaignPath} unexpectedly redirects`);
+    assert(
+      response.headers.get('set-cookie')?.includes('mythoria_intent_context='),
+      `${campaignPath} does not persist its intent`,
+    );
+  }
 
   const sitemapResponse = await fetchNoRedirect(absolute('/sitemap.xml'));
   assert.equal(sitemapResponse.status, 200, 'sitemap is unavailable');
@@ -99,6 +137,22 @@ async function main() {
   assert(locs.length > 0, 'sitemap contains no URLs');
   assert.equal(new Set(locs).size, locs.length, 'sitemap contains duplicate URLs');
   const entryByLoc = new Map(entries.map((entry) => [entry.loc, entry]));
+  const requiredClusterPaths = [
+    '/pt-PT/guias/como-transformar-memorias-num-livro-personalizado-para-casal',
+    '/pt-PT/guias/como-criar-uma-historia-de-apoio-para-uma-mudanca',
+    '/pt-PT/sample-books/duas-chavenas-uma-vida',
+    '/pt-PT/sample-books/a-primeira-manha-corajosa-da-sofia',
+  ];
+  for (const pathname of requiredClusterPaths) {
+    const matches = locs.filter((loc) => new URL(loc).pathname === pathname);
+    assert.equal(matches.length, 1, `${pathname} must occur once in the sitemap`);
+  }
+  const hubEntry = entryByLoc.get('https://mythoria.pt/pt-PT/lp');
+  assert.equal(
+    hubEntry?.lastmod,
+    '2026-07-27T00:00:00.000Z',
+    '/pt-PT/lp has an unstable or incorrect lastmod',
+  );
 
   for (const entry of entries) {
     for (const alternate of entry.alternates) {
@@ -146,6 +200,44 @@ async function main() {
   const homepageHrefs = extractHrefs(homepageHtml);
   const hubHrefs = extractHrefs(landingHubHtml);
   assert(landingHubHtml.includes('CollectionPage'), 'landing page hub lacks CollectionPage data');
+  for (const pathname of requiredClusterPaths) {
+    assert(hubHrefs.includes(pathname), `${pathname} is not linked from the landing page hub`);
+  }
+
+  const clusterPairs = [
+    {
+      guide: requiredClusterPaths[0],
+      sample: requiredClusterPaths[2],
+      landing: '/pt-PT/lp/livro-personalizado-para-casais',
+    },
+    {
+      guide: requiredClusterPaths[1],
+      sample: requiredClusterPaths[3],
+      landing: '/pt-PT/lp/historias-de-apoio',
+    },
+  ];
+  for (const cluster of clusterPairs) {
+    const [guideHtml, sampleHtml, landingHtml] = await Promise.all(
+      [cluster.guide, cluster.sample, cluster.landing].map((pathname) =>
+        fetchNoRedirect(absolute(pathname)).then((response) => {
+          assert.equal(response.status, 200, `${pathname} is not an immediate 200`);
+          return response.text();
+        }),
+      ),
+    );
+    const guideHrefs = extractHrefs(guideHtml);
+    const sampleHrefs = extractHrefs(sampleHtml);
+    const landingHrefs = extractHrefs(landingHtml);
+    assert(guideHrefs.includes(cluster.sample), `${cluster.guide} does not link its sample`);
+    assert(guideHrefs.includes(cluster.landing), `${cluster.guide} does not link its landing`);
+    assert(sampleHrefs.includes(cluster.guide), `${cluster.sample} does not link its guide`);
+    assert(sampleHrefs.includes(cluster.landing), `${cluster.sample} does not link its landing`);
+    assert(landingHrefs.includes(cluster.guide), `${cluster.landing} does not link its guide`);
+    assert(landingHrefs.includes(cluster.sample), `${cluster.landing} does not link its sample`);
+    assert(guideHtml.includes('FAQPage'), `${cluster.guide} lacks visible FAQ structured data`);
+    assert(guideHtml.includes('BreadcrumbList'), `${cluster.guide} lacks breadcrumb data`);
+    assert(guideHtml.includes('"Article"'), `${cluster.guide} lacks Article data`);
+  }
 
   for (const loc of landingLocs) {
     const pathname = new URL(loc).pathname;
@@ -162,7 +254,7 @@ async function main() {
     );
   }
 
-  await inBatches(locs, 10, async (loc) => {
+  await inBatches(locs, 1, async (loc) => {
     const response = await fetchNoRedirect(targetUrl(loc));
     assert.equal(response.status, 200, `${loc} is not an immediate 200`);
     const html = await response.text();
@@ -171,7 +263,7 @@ async function main() {
     const robots = extractRobots(html)?.toLowerCase();
     assert(robots?.includes('index') && !robots.includes('noindex'), `${loc} is not indexable`);
     const pathname = new URL(loc).pathname;
-    assert(!disallows.some((rule) => pathname.startsWith(rule.replace(/\*.*$/, ''))));
+    assert(!disallows.some((rule) => pathMatchesDisallow(pathname, rule)));
   });
 
   for (const path of [

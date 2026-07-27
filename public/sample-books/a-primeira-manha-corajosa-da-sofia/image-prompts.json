@@ -5,7 +5,9 @@
     "status": "generated",
     "model": "gpt-image-2",
     "size": "1024x1536",
-    "quality": "high"
+    "quality": "high",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/a-primeira-manha-corajosa-da-sofia/assets/cover.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-primeira-manha-corajosa-da-sofia/assets/cover.jpeg"
   },
   "feature": {
     "promptPath": "assets/prompts/feature.prompt.md",
@@ -13,6 +15,8 @@
     "status": "generated",
     "model": "gpt-image-2",
     "size": "1536x1024",
-    "quality": "high"
+    "quality": "high",
+    "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/a-primeira-manha-corajosa-da-sofia/assets/feature.jpeg",
+    "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-primeira-manha-corajosa-da-sofia/assets/feature.jpeg"
   }
 }

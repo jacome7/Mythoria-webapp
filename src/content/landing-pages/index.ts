@@ -15,6 +15,8 @@ const landingPages = [
   workshopsChildrenLandingPage,
 ] satisfies LandingPageContent[];
 
+export const LANDING_PAGE_HUB_UPDATED_AT = '2026-07-27';
+
 const landingPageCategories: Record<string, string> = {
   'livro-personalizado-avos-netos': 'Família e relações',
   'livro-personalizado-para-casais': 'Família e relações',
@@ -89,6 +91,15 @@ export function getLandingPageIndexItems() {
       href: `/${page.locale}/lp/${page.slug}`,
       category: landingPageCategories[page.slug] ?? 'Outros guias',
     }));
+}
+
+export function getLandingPageHubUpdatedAt(): string {
+  return landingPages
+    .filter((page) => page.indexable || page.showInLandingPageIndex)
+    .reduce(
+      (latest, page) => (page.updatedAt > latest ? page.updatedAt : latest),
+      LANDING_PAGE_HUB_UPDATED_AT,
+    );
 }
 
 export function getRelatedLandingPageItems(slug: string) {

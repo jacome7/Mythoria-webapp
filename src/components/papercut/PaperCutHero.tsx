@@ -15,6 +15,7 @@ import { resolveAsset, resolvePersons, type HeroStyleId } from './heroManifest';
 import { resolveComposition } from './registry';
 import { buildHeroCtaHref } from './cta';
 import type { IntentContext } from '@/types/intent-context';
+import type { StoryIntent } from '@/constants/intents';
 import type {
   DecorSlot,
   DecorTuning,
@@ -147,7 +148,7 @@ function buildDecorLayer(style: HeroStyleId, slot: DecorSlot, tuning?: DecorTuni
  * < 50 so the sticky frosted header always stays on top.
  */
 interface PaperCutHeroProps {
-  initialIntentOverride?: string | null;
+  initialIntentOverride?: StoryIntent | null;
   initialIntentContext?: IntentContext | null;
 }
 

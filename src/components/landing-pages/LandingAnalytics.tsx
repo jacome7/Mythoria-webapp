@@ -3,18 +3,7 @@
 import { useEffect } from 'react';
 import type { LandingPageAnalyticsConfig } from '@/content/landing-pages/types';
 import { getGoogleAnalyticsContext, trackEvent } from '@/lib/analytics';
-
-const CAMPAIGN_KEYS = [
-  'utm_source',
-  'utm_medium',
-  'utm_campaign',
-  'utm_id',
-  'utm_term',
-  'utm_content',
-  'gclid',
-  'gbraid',
-  'wbraid',
-] as const;
+import { collectCampaignParams } from '@/lib/campaign-context';
 
 export default function LandingAnalytics({
   landingSlug,
@@ -116,17 +105,20 @@ export default function LandingAnalytics({
 async function captureAttribution(landingSlug: string, primaryIntent: string) {
   const analyticsContext = await getGoogleAnalyticsContext();
   if (!analyticsContext) return;
-  const search = new URLSearchParams(window.location.search);
-  const campaign = Object.fromEntries(
-    CAMPAIGN_KEYS.flatMap((key) => {
-      const value = search.get(key);
-      return value && value.length <= 255 ? [[key, value]] : [];
-    }),
-  );
-  await fetch('/api/analytics/attribution', {
+  const response = await fetch('/api/analytics/attribution', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ analyticsContext, landingSlug, primaryIntent, campaign }),
+    body: JSON.stringify({
+      analyticsContext,
+      landingSlug,
+      primaryIntent,
+      campaign: collectCampaignParams(new URLSearchParams(window.location.search)),
+    }),
     keepalive: true,
   });
+  if (response.ok) {
+    void fetch('/api/analytics/attribution/link', { method: 'POST', keepalive: true }).catch(() => {
+      // Signed-out visitors are linked after authentication.
+    });
+  }
 }

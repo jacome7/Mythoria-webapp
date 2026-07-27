@@ -6,6 +6,7 @@ import {
   INTENT_CONTEXT_MAX_AGE,
   type IntentContext,
 } from '@/types/intent-context';
+import { parseIntentContext, serializeIntentContext } from '@/lib/campaign-context';
 
 /**
  * Store intent context in an HTTP-only cookie
@@ -14,7 +15,7 @@ import {
 export async function storeIntentContext(context: IntentContext): Promise<void> {
   const cookieStore = await cookies();
 
-  cookieStore.set(INTENT_CONTEXT_COOKIE, JSON.stringify(context), {
+  cookieStore.set(INTENT_CONTEXT_COOKIE, serializeIntentContext(context), {
     httpOnly: false, // Allow client-side access if needed
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
@@ -35,12 +36,7 @@ export async function getIntentContext(): Promise<IntentContext | null> {
     return null;
   }
 
-  try {
-    return JSON.parse(contextCookie.value) as IntentContext;
-  } catch (error) {
-    console.error('Failed to parse intent context cookie:', error);
-    return null;
-  }
+  return parseIntentContext(contextCookie.value);
 }
 
 /**

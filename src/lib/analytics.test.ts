@@ -30,6 +30,7 @@ describe('canonical analytics event propagation', () => {
     delete (window as Partial<Window>).gtag;
     window.dataLayer = [];
     document.cookie = 'mythoria_consent=; Max-Age=0; path=/';
+    document.cookie = 'mythoria_intent_context=; Max-Age=0; path=/';
   });
 
   it('queues only the supplied canonical parameters', () => {
@@ -46,6 +47,28 @@ describe('canonical analytics event propagation', () => {
     expect(queued[2]).not.toHaveProperty('timestamp');
     expect(queued[2]).not.toHaveProperty('page_location');
     expect(queued[2]).not.toHaveProperty('page_title');
+  });
+
+  it('adds only a validated low-cardinality intent to browser events', () => {
+    document.cookie = `mythoria_intent_context=${encodeURIComponent(
+      JSON.stringify({ intent: 'romance' }),
+    )}; path=/`;
+    trackEvent('page_view', { page_type: 'homepage' });
+    expect(window.dataLayer[0]).toEqual([
+      'event',
+      'page_view',
+      expect.objectContaining({
+        page_type: 'homepage',
+        primary_intent: 'romance',
+      }),
+    ]);
+
+    window.dataLayer = [];
+    document.cookie = `mythoria_intent_context=${encodeURIComponent(
+      JSON.stringify({ intent: 'not-real' }),
+    )}; path=/`;
+    trackEvent('story_creation_started', {});
+    expect((window.dataLayer[0] as unknown[])[2]).not.toHaveProperty('primary_intent');
   });
 
   it('sets User-ID before emitting login', () => {
@@ -97,6 +120,9 @@ describe('canonical analytics event propagation', () => {
         timestamp: Date.now(),
       }),
     )}; path=/`;
+    document.cookie = `mythoria_intent_context=${encodeURIComponent(
+      JSON.stringify({ intent: 'grandparents' }),
+    )}; path=/`;
     window.gtag = jest.fn((...args: unknown[]) => {
       if (args[0] !== 'get') return;
       const callback = args[3] as (value: unknown) => void;
@@ -106,6 +132,7 @@ describe('canonical analytics event propagation', () => {
     await expect(getGoogleAnalyticsContext()).resolves.toEqual({
       clientId: '123.456',
       sessionId: 1712345678,
+      primaryIntent: 'grandparents',
       consent: {
         analyticsStorage: 'granted',
         adUserData: 'denied',

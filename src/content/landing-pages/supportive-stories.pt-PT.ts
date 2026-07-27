@@ -14,7 +14,7 @@ export const supportiveStoriesLandingPage: LandingPageContent = {
     'Crie uma história personalizada para preparar mudanças, conversar sobre desafios ou guardar memórias, sempre com acompanhamento e revisão adulta.',
   primaryIntent: 'kids_transitions',
   riskRating: 'yellow',
-  updatedAt: '2026-07-18',
+  updatedAt: '2026-07-27',
   indexable: true,
   showInLandingPageIndex: true,
   showFormatsNearProcess: false,
@@ -27,6 +27,14 @@ export const supportiveStoriesLandingPage: LandingPageContent = {
   analytics: {
     pageViewEvent: 'supportive_story_page_view',
     variant: 'hub-v1',
+  },
+  relatedGuide: {
+    title: 'Como criar uma história de apoio para uma mudança',
+    description:
+      'Confirme factos, use rotinas familiares, leia com acompanhamento adulto e deixe espaço para reações diferentes, sem promessas de resultado.',
+    href: '/pt-PT/guias/como-criar-uma-historia-de-apoio-para-uma-mudanca',
+    sampleTitle: 'A Primeira Manhã Corajosa da Sofia',
+    sampleHref: '/pt-PT/sample-books/a-primeira-manha-corajosa-da-sofia',
   },
   trustBadges: ['Conta adulta', 'Privado por defeito', 'Reveja antes de partilhar'],
   templateIcons: {

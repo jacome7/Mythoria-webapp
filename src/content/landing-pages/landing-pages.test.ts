@@ -6,11 +6,16 @@ import {
   getLandingPageIndexItems,
   getLandingPageBySlug,
   getLandingPageIntentContext,
+  getLandingPageHubUpdatedAt,
   getLandingPageStaticParams,
   getRelatedLandingPageItems,
 } from './index';
 
 describe('landing page content registry', () => {
+  it('derives a stable hub lastmod from visible editorial dates', () => {
+    expect(getLandingPageHubUpdatedAt()).toBe('2026-07-27');
+  });
+
   it('registers the autism landing page as a pt-PT indexable page', () => {
     const page = getLandingPageBySlug('livro-personalizado-criancas-autistas');
 

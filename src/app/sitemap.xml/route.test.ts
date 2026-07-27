@@ -92,6 +92,18 @@ describe('sitemap.xml route', () => {
       '<loc>https://mythoria.pt/pt-PT/lp/livro-personalizado-para-casais</loc>',
     );
     expect(xml).toContain('<loc>https://mythoria.pt/pt-PT/lp/historias-de-apoio</loc>');
+    expect(xml).toContain(
+      '<loc>https://mythoria.pt/pt-PT/guias/como-transformar-memorias-num-livro-personalizado-para-casal</loc>',
+    );
+    expect(xml).toContain(
+      '<loc>https://mythoria.pt/pt-PT/guias/como-criar-uma-historia-de-apoio-para-uma-mudanca</loc>',
+    );
+    expect(xml).toContain(
+      '<loc>https://mythoria.pt/pt-PT/sample-books/duas-chavenas-uma-vida</loc>',
+    );
+    expect(xml).toContain(
+      '<loc>https://mythoria.pt/pt-PT/sample-books/a-primeira-manha-corajosa-da-sofia</loc>',
+    );
     expect(xml).toContain('<loc>https://mythoria.pt/en-US/blog/fathers-day-2026</loc>');
     expect(xml).toContain('<loc>https://mythoria.pt/pt-PT/blog/dia-do-pai-2026</loc>');
 
@@ -106,6 +118,19 @@ describe('sitemap.xml route', () => {
     )?.[0];
     expect(ptBlogEntry).toContain('<lastmod>2026-03-17T00:00:00.000Z</lastmod>');
     expect(ptBlogEntry).toContain('href="https://mythoria.pt/en-US/blog/fathers-day-2026"');
+
+    const hubEntry = xml.match(
+      /<url>\s*<loc>https:\/\/mythoria\.pt\/pt-PT\/lp<\/loc>[\s\S]*?<\/url>/,
+    )?.[0];
+    expect(hubEntry).toContain('<lastmod>2026-07-27T00:00:00.000Z</lastmod>');
+
+    const approvedSampleMatches = xml.match(
+      /<loc>https:\/\/mythoria\.pt\/pt-PT\/sample-books\/duas-chavenas-uma-vida<\/loc>/g,
+    );
+    expect(approvedSampleMatches).toHaveLength(1);
+    expect(xml).not.toContain(
+      '<loc>https://mythoria.pt/pt-PT/sample-books/ines-e-diogo-um-amor-inesperado</loc>',
+    );
   });
 
   it('rejects duplicate translation locales instead of silently serializing them', async () => {

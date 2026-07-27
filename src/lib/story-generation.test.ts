@@ -114,4 +114,22 @@ describe('startStoryGeneration', () => {
     expect(tx.insert).not.toHaveBeenCalled();
     expect(tx.update).not.toHaveBeenCalled();
   });
+
+  it('adds the validated campaign intent to the authoritative generation event', async () => {
+    const { insertValues } = createTransaction([
+      [],
+      [],
+      [{ storyId: 'story-1' }],
+      [{ totalCredits: 10 }],
+    ]);
+
+    await startStoryGeneration({ ...input, primaryIntent: 'romance' });
+
+    expect(insertValues).toHaveBeenCalledWith(
+      expect.objectContaining({
+        eventName: 'story_generation_requested',
+        params: expect.objectContaining({ primary_intent: 'romance' }),
+      }),
+    );
+  });
 });

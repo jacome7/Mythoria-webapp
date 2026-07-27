@@ -486,6 +486,36 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
           </section>
         )}
 
+        {page.relatedGuide ? (
+          <section className="my-16 rounded-3xl border border-primary/15 bg-white p-7 shadow-sm md:p-9">
+            <p className="text-sm font-semibold uppercase tracking-wide text-primary">
+              Guia aprofundado
+            </p>
+            <h2 className="font-display mt-2 text-3xl font-bold text-[#33251c]">
+              {page.relatedGuide.title}
+            </h2>
+            <p className="mt-4 max-w-3xl text-lg leading-relaxed text-base-content/75">
+              {page.relatedGuide.description}
+            </p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href={page.relatedGuide.href}
+                className="inline-flex items-center gap-2 font-semibold text-primary hover:underline"
+              >
+                Ler o guia completo
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+              <Link
+                href={page.relatedGuide.sampleHref}
+                className="inline-flex items-center gap-2 font-semibold text-primary hover:underline sm:ml-6"
+              >
+                Ler o exemplo ficcional “{page.relatedGuide.sampleTitle}”
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </div>
+          </section>
+        ) : null}
+
         <section className="my-16" aria-labelledby="related-guides-title">
           <div className="mb-8 max-w-3xl">
             <p className="text-sm font-semibold uppercase tracking-wide text-primary">

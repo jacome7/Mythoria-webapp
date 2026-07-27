@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { storyService, blogService } from '@/db/services';
-import { getIndexableLandingPages } from '@/content/landing-pages';
+import { getIndexableLandingPages, getLandingPageHubUpdatedAt } from '@/content/landing-pages';
+import { getGuides } from '@/content/guides';
+import { getSeoSampleBooks } from '@/content/sample-books/seo';
 import { routing } from '@/i18n/routing';
 import { BASE_URL, buildLocalizedUrl, getSeoRoutePolicy, normalizePathname } from '@/lib/seo';
 import { validateMdxSource } from '@/lib/blog/mdx-validate';
@@ -84,12 +86,29 @@ export async function generateSitemap(): Promise<string> {
     }
   }
 
-  addEntry(entries, { loc: buildLocalizedUrl('pt-PT', '/lp') });
+  addEntry(entries, {
+    loc: buildLocalizedUrl('pt-PT', '/lp'),
+    lastmod: toLastmod(getLandingPageHubUpdatedAt()),
+  });
 
   for (const page of getIndexableLandingPages()) {
     addEntry(entries, {
       loc: buildLocalizedUrl(page.locale, `/lp/${page.slug}`),
       lastmod: toLastmod(page.updatedAt),
+    });
+  }
+
+  for (const guide of getGuides()) {
+    addEntry(entries, {
+      loc: buildLocalizedUrl(guide.locale, `/guias/${guide.slug}`),
+      lastmod: toLastmod(guide.updatedAt),
+    });
+  }
+
+  for (const sample of getSeoSampleBooks()) {
+    addEntry(entries, {
+      loc: buildLocalizedUrl(sample.locale, `/sample-books/${sample.slug}`),
+      lastmod: toLastmod(sample.updatedAt),
     });
   }
 

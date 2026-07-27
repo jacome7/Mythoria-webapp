@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { getLandingPageIndexItems } from '@/content/landing-pages';
+import { getGuides } from '@/content/guides';
 import { routing } from '@/i18n/routing';
 import { buildLocalizedUrl } from '@/lib/seo';
 
@@ -73,6 +74,7 @@ export default async function LandingPageIndexRoute({ params }: LandingPageIndex
 
   const t = locale === 'pt-PT' ? copy['pt-PT'] : copy.fallback;
   const pages = getLandingPageIndexItems();
+  const guides = getGuides();
   const categories = [...new Set(pages.map((page) => page.category))];
   const canonicalUrl = buildLocalizedUrl('pt-PT', '/lp');
   const structuredData = [
@@ -188,6 +190,46 @@ export default async function LandingPageIndexRoute({ params }: LandingPageIndex
             {t.empty}
           </p>
         )}
+
+        <section className="mt-16" aria-labelledby="cluster-guides">
+          <p className="text-sm font-semibold uppercase tracking-wide text-primary">
+            Guias aprofundados
+          </p>
+          <h2 id="cluster-guides" className="font-display mt-2 text-3xl font-bold text-[#33251c]">
+            Da primeira ideia à revisão final
+          </h2>
+          <p className="mt-3 max-w-3xl text-lg leading-relaxed text-base-content/75">
+            Leia orientações completas, veja exemplos inteiramente ficcionais e avance para a página
+            do tema quando estiver pronto para comparar formatos e opções.
+          </p>
+          <div className="mt-6 grid gap-5 md:grid-cols-2">
+            {guides.map((guide) => (
+              <article
+                key={guide.slug}
+                className="rounded-2xl border border-primary/10 bg-white p-6 shadow-sm"
+              >
+                <h3 className="font-display text-2xl font-bold leading-tight text-[#33251c]">
+                  {guide.title}
+                </h3>
+                <p className="mt-3 leading-relaxed text-base-content/70">{guide.description}</p>
+                <div className="mt-5 flex flex-col gap-3">
+                  <Link
+                    className="font-semibold text-primary hover:underline"
+                    href={`/${guide.locale}/guias/${guide.slug}`}
+                  >
+                    Ler o guia: {guide.title}
+                  </Link>
+                  <Link
+                    className="font-semibold text-primary hover:underline"
+                    href={guide.featuredSample.href}
+                  >
+                    Ver o exemplo ficcional “{guide.featuredSample.title}”
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
       </div>
     </main>
   );

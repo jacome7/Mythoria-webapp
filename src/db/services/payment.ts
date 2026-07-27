@@ -89,6 +89,7 @@ interface StripeCheckoutMetadata {
     analytics_storage?: 'granted' | 'denied';
     ad_user_data?: 'granted' | 'denied';
     ad_personalization?: 'granted' | 'denied';
+    primary_intent?: string;
   };
   [key: string]: unknown;
 }
@@ -421,6 +422,7 @@ export const paymentService = {
                   analytics_storage: checkoutData.analyticsContext.consent.analyticsStorage,
                   ad_user_data: checkoutData.analyticsContext.consent.adUserData,
                   ad_personalization: checkoutData.analyticsContext.consent.adPersonalization,
+                  primary_intent: checkoutData.analyticsContext.primaryIntent,
                 },
               }
             : {}),
@@ -1010,6 +1012,7 @@ export const paymentService = {
               transaction_id: order.orderId,
               currency: order.currency.toUpperCase(),
               value: authoritativeRefundAmount / 100,
+              ...(analytics.primary_intent ? { primary_intent: analytics.primary_intent } : {}),
               ...(fullRefund ? { items: purchase.items } : {}),
             },
           })
@@ -1161,6 +1164,7 @@ export const paymentService = {
                 updatedOrder,
                 Number(completedCount?.value || 0) <= 1 ? 'new' : 'returning',
               ),
+              ...(analytics.primary_intent ? { primary_intent: analytics.primary_intent } : {}),
             },
           })
           .onConflictDoNothing({ target: analyticsOutbox.dedupeKey });

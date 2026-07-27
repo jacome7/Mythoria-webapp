@@ -23,6 +23,7 @@ export interface SampleBook {
   placement?: string;
   status?: string;
   riskRating?: string;
+  updatedAt?: string;
   coverSrc: string;
   featureSrc?: string;
   chapterImageSrc?: string;

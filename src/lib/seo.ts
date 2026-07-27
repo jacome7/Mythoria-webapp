@@ -1,4 +1,7 @@
 import { routing } from '@/i18n/routing';
+import { getGuideBySlug } from '@/content/guides';
+import { getLandingPageBySlug } from '@/content/landing-pages';
+import { getSeoSampleBook } from '@/content/sample-books/seo';
 
 export const BASE_URL = 'https://mythoria.pt';
 export const DEFAULT_LOCALE = routing.defaultLocale;
@@ -26,6 +29,8 @@ export type SeoRouteKind =
   | 'blog-post'
   | 'landing-index'
   | 'landing-page'
+  | 'guide'
+  | 'sample-book'
   | 'public-story'
   | 'public-low-value'
   | 'private'
@@ -141,9 +146,9 @@ export function shouldIncludeXDefault(pathname: string): boolean {
 }
 
 export function getCanonicalRedirectPath(pathname: string): string | null {
-  if (!pathname || pathname === '/') {
-    return `/${DEFAULT_LOCALE}`;
-  }
+  const fileBackedResolution = resolveFileBackedPublicSeoPath(pathname);
+  if (fileBackedResolution.type === 'redirect') return fileBackedResolution.pathname;
+  if (fileBackedResolution.type === 'notFound') return null;
 
   const normalizedSlashes = pathname.startsWith('/') ? pathname : `/${pathname}`;
   const collapsed = normalizedSlashes.replace(/\/{2,}/g, '/');
@@ -165,20 +170,58 @@ export function getCanonicalRedirectPath(pathname: string): string | null {
 
   let rewritten = segments.join('/');
 
-  if (rewritten === '/lp' || rewritten === '/lp/') {
-    return '/pt-PT/lp';
-  }
-
-  if (/^\/lp\/[^/]+\/?$/.test(rewritten)) {
-    return `/pt-PT${rewritten.replace(/\/+$/, '')}`;
-  }
-
   if (rewritten.length > 1 && rewritten.endsWith('/')) {
     rewritten = rewritten.replace(/\/+$/, '');
     changed = true;
   }
 
   return changed ? rewritten || '/' : null;
+}
+
+export type FileBackedSeoResolution =
+  | { type: 'canonical'; pathname: string }
+  | { type: 'redirect'; pathname: string }
+  | { type: 'notFound' }
+  | { type: 'unmatched' };
+
+export function resolveFileBackedPublicSeoPath(pathname: string): FileBackedSeoResolution {
+  const normalized = canonicalizePathname(pathname);
+  const { locale, pathSuffix } = extractLocalizedPath(normalized);
+  const suffix = pathSuffix || '';
+  let canonical: string | null = null;
+
+  if (STATIC_LOCALIZED_PATH_SUFFIXES.has(suffix)) {
+    canonical = buildLocalizedPath(locale ?? DEFAULT_LOCALE, suffix);
+  } else if (suffix === '/lp') {
+    canonical = buildLocalizedPath('pt-PT', suffix);
+  } else {
+    const landingMatch = suffix.match(/^\/lp\/([^/]+)$/);
+    if (landingMatch) {
+      const page = getLandingPageBySlug(landingMatch[1]!);
+      if (!page) return { type: 'notFound' };
+      canonical = buildLocalizedPath(page.locale, `/lp/${page.slug}`);
+    }
+
+    const guideMatch = suffix.match(/^\/guias\/([^/]+)$/);
+    if (guideMatch) {
+      const guide = getGuideBySlug(guideMatch[1]!);
+      if (!guide) return { type: 'notFound' };
+      canonical = buildLocalizedPath(guide.locale, `/guias/${guide.slug}`);
+    }
+
+    const sampleMatch = suffix.match(/^\/sample-books\/([^/]+)$/);
+    if (sampleMatch) {
+      const sample = getSeoSampleBook(sampleMatch[1]!);
+      if (!sample) return { type: 'unmatched' };
+      canonical = buildLocalizedPath(sample.locale, `/sample-books/${sample.slug}`);
+    }
+  }
+
+  if (!canonical) return { type: 'unmatched' };
+  const rawComparable = pathname.startsWith('/') ? pathname : `/${pathname}`;
+  return rawComparable === canonical
+    ? { type: 'canonical', pathname: canonical }
+    : { type: 'redirect', pathname: canonical };
 }
 
 export function getTrainingBotDisallowPaths(): string[] {
@@ -251,6 +294,34 @@ export function getSeoRoutePolicy(pathname: string): SeoRoutePolicy {
       indexable: true,
       follow: true,
       includeInSitemap: true,
+      entityValidationRequired: true,
+    };
+  }
+
+  if (/^\/guias\/[^/]+$/.test(pathSuffix)) {
+    const slug = pathSuffix.split('/')[2]!;
+    const guide = getGuideBySlug(slug);
+    const indexable = guide?.locale === locale;
+    return {
+      ...base,
+      kind: 'guide',
+      indexable,
+      follow: true,
+      includeInSitemap: indexable,
+      entityValidationRequired: true,
+    };
+  }
+
+  if (/^\/sample-books\/[^/]+$/.test(pathSuffix)) {
+    const slug = pathSuffix.split('/')[2]!;
+    const sample = getSeoSampleBook(slug);
+    const indexable = sample?.locale === locale;
+    return {
+      ...base,
+      kind: 'sample-book',
+      indexable,
+      follow: true,
+      includeInSitemap: indexable,
       entityValidationRequired: true,
     };
   }

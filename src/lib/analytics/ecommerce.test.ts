@@ -108,6 +108,7 @@ describe('GA4 ecommerce payloads', () => {
       sanitizeClientAnalyticsContext({
         clientId: ' 123.456 ',
         sessionId: '1712345678',
+        primaryIntent: 'romance',
         consent: {
           analyticsStorage: 'granted',
           adUserData: 'denied',
@@ -117,6 +118,7 @@ describe('GA4 ecommerce payloads', () => {
     ).toEqual({
       clientId: '123.456',
       sessionId: 1712345678,
+      primaryIntent: 'romance',
       consent: {
         analyticsStorage: 'granted',
         adUserData: 'denied',
@@ -134,5 +136,24 @@ describe('GA4 ecommerce payloads', () => {
         },
       }),
     ).toBeUndefined();
+
+    expect(
+      sanitizeClientAnalyticsContext({
+        clientId: '123.456',
+        primaryIntent: 'not-a-real-intent',
+        consent: {
+          analyticsStorage: 'granted',
+          adUserData: 'denied',
+          adPersonalization: 'denied',
+        },
+      }),
+    ).toEqual({
+      clientId: '123.456',
+      consent: {
+        analyticsStorage: 'granted',
+        adUserData: 'denied',
+        adPersonalization: 'denied',
+      },
+    });
   });
 });

@@ -6,6 +6,8 @@ import type {
   GA4CheckoutPayload,
   GA4EcommerceItem,
 } from './analytics/ecommerce';
+import { readIntentContextFromDocumentCookie } from './campaign-context';
+import { INTENT_CONTEXT_COOKIE } from '@/types/intent-context';
 
 declare global {
   interface Window {
@@ -110,7 +112,14 @@ export function trackEvent(eventName: AnalyticsEvent, parameters?: Record<string
   if (!gtag) return;
 
   try {
+    const primaryIntent = readIntentContextFromDocumentCookie(
+      document.cookie,
+      INTENT_CONTEXT_COOKIE,
+    )?.intent;
     const eventParams = {
+      ...(primaryIntent && parameters?.primary_intent === undefined
+        ? { primary_intent: primaryIntent }
+        : {}),
       ...parameters,
       send_to: getMeasurementId(),
       ...(isDebugModeEnabled ? { debug_mode: true } : {}),
@@ -231,10 +240,15 @@ export async function getGoogleAnalyticsContext(
   const clientId = typeof rawClientId === 'string' ? rawClientId.trim() : '';
   if (!clientId) return undefined;
   const sessionId = Number(rawSessionId);
+  const primaryIntent = readIntentContextFromDocumentCookie(
+    document.cookie,
+    INTENT_CONTEXT_COOKIE,
+  )?.intent;
 
   return {
     clientId,
     ...(Number.isSafeInteger(sessionId) && sessionId > 0 ? { sessionId } : {}),
+    ...(primaryIntent ? { primaryIntent } : {}),
     consent: {
       analyticsStorage: 'granted',
       adUserData: consent.ad_user_data,

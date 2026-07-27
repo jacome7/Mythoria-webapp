@@ -10,4 +10,7 @@
   "voice": "Aoede",
   "recommendedDurationSeconds": 38,
   "actualDurationSeconds": 26.38
+  ,
+  "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/a-primeira-manha-corajosa-da-sofia/assets/audio-teaser.mp3",
+  "publicUrl": "https://storage.googleapis.com/mythoria-public/landing-page-assets/sample-books/a-primeira-manha-corajosa-da-sofia/assets/audio-teaser.mp3"
 }

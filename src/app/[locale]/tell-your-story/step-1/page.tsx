@@ -9,6 +9,7 @@ import ClientAuthWrapper from '@/components/ClientAuthWrapper';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import { trackStoryCreation } from '@/lib/analytics';
 import { setStep1Data, getStep1Data } from '@/lib/story-session';
+import { buildStoryAuthReturnSearch } from '@/lib/campaign-context';
 
 interface AuthorData {
   authorId: string;
@@ -89,13 +90,7 @@ export default function Step1Page() {
     fetchAuthorData();
   }, [fetchAuthorData]);
 
-  const safeQuery = new URLSearchParams();
-  ['landingSlug', 'primaryIntent', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_id'].forEach(
-    (key) => {
-      const value = searchParams.get(key);
-      if (value && value.length <= 255) safeQuery.set(key, value);
-    },
-  );
+  const safeQuery = buildStoryAuthReturnSearch(searchParams);
   const redirectPath = `/${locale}/tell-your-story/step-1${safeQuery.size ? `?${safeQuery}` : ''}`;
   // Function to check if current values differ from original values
   const checkForChanges = (currentCustomAuthor: string, currentDedicationMessage: string) => {

@@ -1,8 +1,11 @@
+import { isValidIntent, type StoryIntent } from '@/constants/intents';
+
 export type AnalyticsConsentStatus = 'granted' | 'denied';
 
 export interface ClientAnalyticsContext {
   clientId: string;
   sessionId?: number;
+  primaryIntent?: StoryIntent;
   consent: {
     analyticsStorage: 'granted';
     adUserData: AnalyticsConsentStatus;
@@ -37,6 +40,7 @@ export function sanitizeClientAnalyticsContext(value: unknown): ClientAnalyticsC
   return {
     clientId,
     ...(Number.isSafeInteger(sessionId) && sessionId > 0 ? { sessionId } : {}),
+    ...(isValidIntent(value.primaryIntent) ? { primaryIntent: value.primaryIntent } : {}),
     consent: {
       analyticsStorage: 'granted',
       adUserData: value.consent.adUserData as AnalyticsConsentStatus,

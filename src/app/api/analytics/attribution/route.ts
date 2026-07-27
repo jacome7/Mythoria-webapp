@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { db } from '@/db';
 import { analyticsAttributions } from '@/db/schema';
 import { sanitizeClientAnalyticsContext } from '@/lib/analytics/ecommerce';
+import { STORY_INTENTS } from '@/constants/intents';
 
 export const runtime = 'nodejs';
 
@@ -10,7 +11,7 @@ const optionalValue = z.string().trim().max(255).optional();
 const attributionSchema = z.object({
   analyticsContext: z.unknown(),
   landingSlug: z.string().trim().max(160).optional(),
-  primaryIntent: z.string().trim().max(120).optional(),
+  primaryIntent: z.enum(STORY_INTENTS).optional(),
   campaign: z
     .object({
       utm_source: optionalValue,

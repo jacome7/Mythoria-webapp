@@ -1,6 +1,6 @@
-import { isValidIntent, normalizeIntent, type StoryIntent } from '@/constants/intents';
 import { getIntentContext } from '@/app/i/actions';
 import type { IntentContext } from '@/types/intent-context';
+import { getFirstQueryValue, getValidatedIntent } from '@/lib/campaign-context';
 import HomePageClient from './HomePageClient';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
@@ -26,29 +26,21 @@ export async function generateMetadata({
   });
 }
 
-function firstSearchParam(value: string | string[] | undefined): string | null {
-  if (Array.isArray(value)) return value[0] ?? null;
-  return value ?? null;
-}
-
 function buildIntentContext(
   cookieContext: IntentContext | null,
-  intentOverride: string | null,
+  intentOverride: IntentContext['intent'] | null,
 ): IntentContext | null {
   if (!intentOverride) return cookieContext;
 
-  if (!isValidIntent(intentOverride)) return null;
-
   return {
     ...cookieContext,
-    intent: intentOverride as StoryIntent,
+    intent: intentOverride,
   };
 }
 
 export default async function Home({ searchParams }: HomePageProps) {
   const [params, cookieIntentContext] = await Promise.all([searchParams, getIntentContext()]);
-  const rawIntentOverride = firstSearchParam(params.intent);
-  const initialHeroIntentOverride = rawIntentOverride ? normalizeIntent(rawIntentOverride) : null;
+  const initialHeroIntentOverride = getValidatedIntent(getFirstQueryValue(params.intent));
   const initialIntentContext = buildIntentContext(cookieIntentContext, initialHeroIntentOverride);
 
   return (

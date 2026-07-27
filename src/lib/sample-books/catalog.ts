@@ -47,6 +47,7 @@ interface PackManifest {
   usageTags?: string[];
   status?: string;
   riskRating?: string;
+  updatedAt?: string;
 }
 
 const PACK_INTENTS: Record<string, StoryIntent> = {
@@ -165,6 +166,7 @@ async function packToSampleBook(folderName: string): Promise<SampleBook> {
     placement: manifest.placement,
     status: manifest.status,
     riskRating: manifest.riskRating,
+    updatedAt: manifest.updatedAt,
     coverSrc: assetPath(book.coverImage) ?? publicPath('Mythoria-logo-white-512x336.jpg'),
     featureSrc: assetPath(book.featureImage),
     chapterImageSrc: assetPath(book.sampleChapterImage),
@@ -193,4 +195,20 @@ export async function getSampleBooksCatalog(): Promise<SampleBook[]> {
     ...legacyBooks.map(legacyToSampleBook).filter((book): book is SampleBook => book !== null),
     ...packs,
   ];
+}
+
+export async function getSampleBookBySlug(slug: string): Promise<SampleBook | undefined> {
+  return (await getSampleBooksCatalog()).find((book) => book.slug === slug);
+}
+
+export async function getSampleBookChapter(book: SampleBook): Promise<string | null> {
+  if (!book.sampleChapterSrc || book.source !== 'sample-pack') return null;
+
+  const chapterPath = path.join(
+    publicDirectory,
+    ...decodeURIComponent(book.sampleChapterSrc).split('/').filter(Boolean),
+  );
+  if (!(await exists(chapterPath))) return null;
+
+  return (await fs.readFile(chapterPath, 'utf8')).replace(/^---[\s\S]*?---\s*/, '').trim();
 }

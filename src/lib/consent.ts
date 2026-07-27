@@ -23,6 +23,7 @@ export interface StoredConsent {
 // Cookie configuration
 export const CONSENT_COOKIE_NAME = 'mythoria_consent';
 export const CONSENT_EXPIRY_DAYS = 365; // 12 months
+export const CONSENT_UPDATED_EVENT = 'mythoria:consent-updated';
 
 /**
  * Get default consent state (denied for all non-essential cookies)
@@ -132,10 +133,12 @@ export function updateGoogleConsent(state: ConsentState): void {
 
   if (window.gtag) {
     window.gtag('consent', 'update', consentPayload);
+    window.dispatchEvent(new Event(CONSENT_UPDATED_EVENT));
     return;
   }
 
   // gtag not ready yet; queue the update so it runs once the script loads
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(['consent', 'update', consentPayload]);
+  window.dispatchEvent(new Event(CONSENT_UPDATED_EVENT));
 }

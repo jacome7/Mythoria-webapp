@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { normalizeIntent } from '@/constants/intents';
+import type { StoryIntent } from '@/constants/intents';
+import { getValidatedIntent } from '@/lib/campaign-context';
 
 /**
  * Reads an `?intent=` query-param override for the homepage hero composition
@@ -15,12 +16,11 @@ import { normalizeIntent } from '@/constants/intents';
  * on pages without the param; invalid values fall back to the default
  * composition inside resolveComposition().
  */
-export function useIntentOverride(): string | null {
-  const [override, setOverride] = useState<string | null>(null);
+export function useIntentOverride(): StoryIntent | null {
+  const [override, setOverride] = useState<StoryIntent | null>(null);
 
   useEffect(() => {
-    const value = new URLSearchParams(window.location.search).get('intent');
-    if (value) setOverride(normalizeIntent(value));
+    setOverride(getValidatedIntent(new URLSearchParams(window.location.search).get('intent')));
   }, []);
 
   return override;

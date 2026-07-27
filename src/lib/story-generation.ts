@@ -10,6 +10,7 @@ import {
 } from '@/db/schema';
 import { pricingService } from '@/db/services/pricing';
 import type { ClientAnalyticsContext } from '@/lib/analytics/ecommerce';
+import type { StoryIntent } from '@/constants/intents';
 
 export interface StartStoryGenerationInput {
   authorId: string;
@@ -21,6 +22,7 @@ export interface StartStoryGenerationInput {
   dedicationMessage?: string | null;
   customAuthor?: string | null;
   attributionId?: string;
+  primaryIntent?: StoryIntent;
   analyticsContext?: ClientAnalyticsContext;
 }
 
@@ -160,6 +162,7 @@ export async function startStoryGeneration(
           story_id: input.storyId,
           run_id: runId,
           credits_spent: pricing.total,
+          ...(input.primaryIntent ? { primary_intent: input.primaryIntent } : {}),
         },
       });
     }

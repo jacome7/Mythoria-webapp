@@ -285,6 +285,13 @@ export interface LandingPageContent {
   analytics?: LandingPageAnalyticsConfig;
   supportHub?: LandingPageSupportHub;
   booksSection?: LandingPageBookSection;
+  relatedGuide?: {
+    title: string;
+    description: string;
+    href: string;
+    sampleTitle: string;
+    sampleHref: string;
+  };
   hero: {
     eyebrow: string;
     heading?: string;
