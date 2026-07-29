@@ -10,9 +10,9 @@ import {
   buildLocalizedUrl,
   canonicalizePathname,
   getCanonicalRedirectPath,
+  getPrivateCrawlerDisallowPaths,
   getSeoRoutePolicy,
   getStaticLocalizedHreflangLinks,
-  getTrainingBotDisallowPaths,
 } from './seo';
 
 describe('seo helpers', () => {
@@ -56,14 +56,19 @@ describe('seo helpers', () => {
     expect(getCanonicalRedirectPath('//en-us///blog/post//')).toBe('/en-US/blog/post');
   });
 
-  it('builds bot-specific private route exclusions without blocking editorial pages', () => {
-    const disallows = getTrainingBotDisallowPaths();
+  it('builds bounded private route exclusions without blocking editorial pages', () => {
+    const disallows = getPrivateCrawlerDisallowPaths();
 
-    expect(disallows).toContain('/pt-PT/my-stories');
+    expect(disallows).toContain('/pt-PT/my-stories$');
+    expect(disallows).toContain('/pt-PT/my-stories/');
+    expect(disallows).toContain('/pt-PT/s$');
+    expect(disallows).toContain('/pt-PT/s/');
     expect(disallows).toContain('/pt-PT/tell-your-story/step-');
     expect(disallows).toContain('/api/');
+    expect(disallows).not.toContain('/pt-PT/s');
     expect(disallows).not.toContain('/pt-PT/lp/');
     expect(disallows).not.toContain('/pt-PT/blog/');
+    expect(disallows).not.toContain('/pt-PT/sample-books/');
   });
 
   it('classifies public, entity-backed, and private routes', () => {

@@ -224,9 +224,12 @@ export function resolveFileBackedPublicSeoPath(pathname: string): FileBackedSeoR
     : { type: 'redirect', pathname: canonical };
 }
 
-export function getTrainingBotDisallowPaths(): string[] {
+export function getPrivateCrawlerDisallowPaths(): string[] {
   const localizedPrivatePaths = routing.locales.flatMap((locale) => [
-    ...PRIVATE_LOCALIZED_PREFIXES.map((prefix) => `/${locale}${prefix}`),
+    ...PRIVATE_LOCALIZED_PREFIXES.flatMap((prefix) => [
+      `/${locale}${prefix}$`,
+      `/${locale}${prefix}/`,
+    ]),
     `/${locale}/tell-your-story/step-`,
   ]);
 

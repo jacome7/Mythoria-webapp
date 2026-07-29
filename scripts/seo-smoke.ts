@@ -3,6 +3,29 @@ import assert from 'node:assert/strict';
 const baseArg = process.argv.find((arg) => arg.startsWith('--base-url='));
 const baseUrl = new URL(baseArg?.slice('--base-url='.length) || 'http://localhost:3000');
 baseUrl.pathname = '';
+const expectedGitShaArg = process.argv.find((arg) => arg.startsWith('--expected-git-sha='));
+const expectedGitSha = expectedGitShaArg?.slice('--expected-git-sha='.length).trim();
+
+type RobotsGroup = {
+  userAgents: string[];
+  allows: string[];
+  disallows: string[];
+};
+
+const crawlerUserAgents = [
+  'Googlebot',
+  'Bingbot',
+  'OAI-SearchBot',
+  'ChatGPT-User',
+  'GPTBot',
+  'Claude-SearchBot',
+  'Claude-User',
+  'ClaudeBot',
+  'Google-Extended',
+  'PerplexityBot',
+  'Applebot',
+  'Applebot-Extended',
+];
 
 function absolute(pathname: string): string {
   return new URL(pathname, baseUrl).toString();
@@ -60,12 +83,87 @@ function extractHrefs(html: string): string[] {
   return [...html.matchAll(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>/gi)].map((match) => match[1]);
 }
 
-function pathMatchesDisallow(pathname: string, rule: string): boolean {
-  const normalizedRule = rule.replace(/\*.*$/, '');
-  if (normalizedRule.endsWith('/') || normalizedRule.endsWith('-')) {
-    return pathname.startsWith(normalizedRule);
+export function pathMatchesRobotsPattern(pathname: string, pattern: string): boolean {
+  if (!pattern) return false;
+  const anchored = pattern.endsWith('$');
+  const patternBody = anchored ? pattern.slice(0, -1) : pattern;
+  const escaped = patternBody
+    .split('*')
+    .map((part) => part.replace(/[.+?^${}()|[\]\\]/g, '\\$&'))
+    .join('.*');
+  return new RegExp(`^${escaped}${anchored ? '$' : ''}`).test(pathname);
+}
+
+export function parseRobotsGroups(robotsText: string): RobotsGroup[] {
+  const groups: RobotsGroup[] = [];
+  let current: RobotsGroup | undefined;
+
+  const finishGroup = () => {
+    if (current?.userAgents.length) groups.push(current);
+    current = undefined;
+  };
+
+  for (const rawLine of robotsText.split(/\r?\n/)) {
+    const line = rawLine.replace(/#.*$/, '').trim();
+    if (!line) {
+      if (current && (current.allows.length > 0 || current.disallows.length > 0)) finishGroup();
+      continue;
+    }
+    const separator = line.indexOf(':');
+    if (separator < 0) continue;
+    const field = line.slice(0, separator).trim().toLowerCase();
+    const value = line.slice(separator + 1).trim();
+
+    if (field === 'user-agent') {
+      if (current && (current.allows.length > 0 || current.disallows.length > 0)) finishGroup();
+      current ??= { userAgents: [], allows: [], disallows: [] };
+      current.userAgents.push(value);
+    } else if (field === 'allow' || field === 'disallow') {
+      current ??= { userAgents: [], allows: [], disallows: [] };
+      if (value) current[field === 'allow' ? 'allows' : 'disallows'].push(value);
+    }
   }
-  return pathname === normalizedRule || pathname.startsWith(`${normalizedRule}/`);
+  finishGroup();
+  return groups;
+}
+
+export function isAllowedByRobots(
+  groups: RobotsGroup[],
+  userAgent: string,
+  pathname: string,
+): boolean {
+  const normalizedUserAgent = userAgent.toLowerCase();
+  const matchingGroups = groups
+    .map((group) => {
+      const specificity = Math.max(
+        ...group.userAgents.map((token) => {
+          const normalizedToken = token.toLowerCase();
+          return normalizedToken === '*' || !normalizedUserAgent.includes(normalizedToken)
+            ? normalizedToken === '*'
+              ? 0
+              : -1
+            : normalizedToken.length;
+        }),
+      );
+      return { group, specificity };
+    })
+    .filter(({ specificity }) => specificity >= 0);
+  if (matchingGroups.length === 0) return true;
+
+  const highestSpecificity = Math.max(...matchingGroups.map(({ specificity }) => specificity));
+  const matches = matchingGroups
+    .filter(({ specificity }) => specificity === highestSpecificity)
+    .flatMap(({ group }) => [
+      ...group.allows.map((pattern) => ({ allow: true, pattern })),
+      ...group.disallows.map((pattern) => ({ allow: false, pattern })),
+    ])
+    .filter(({ pattern }) => pathMatchesRobotsPattern(pathname, pattern));
+  if (matches.length === 0) return true;
+
+  const longest = Math.max(...matches.map(({ pattern }) => pattern.replace(/[*$]/g, '').length));
+  return matches
+    .filter(({ pattern }) => pattern.replace(/[*$]/g, '').length === longest)
+    .some(({ allow }) => allow);
 }
 
 function parseSitemapEntries(xml: string) {
@@ -100,6 +198,13 @@ async function main() {
   assert.equal(healthResponse.status, 200, 'health endpoint is not ready');
   const health = (await healthResponse.json()) as { gitSha?: string };
   assert(health.gitSha && health.gitSha !== 'unknown', 'health endpoint does not expose a Git SHA');
+  if (expectedGitSha) {
+    assert.equal(
+      health.gitSha,
+      expectedGitSha,
+      `health endpoint Git SHA ${health.gitSha} does not match ${expectedGitSha}`,
+    );
+  }
   console.log(`Deployed Git SHA: ${health.gitSha}`);
 
   await assertRedirect('/', '/en-US');
@@ -179,20 +284,62 @@ async function main() {
     }
   }
 
-  const robotsText = await (await fetchNoRedirect(absolute('/robots.txt'))).text();
-  for (const userAgent of ['GPTBot', 'ClaudeBot', 'Google-Extended']) {
-    assert(robotsText.includes(`User-Agent: ${userAgent}`), `${userAgent} has no explicit policy`);
-  }
-  const disallows = [...robotsText.matchAll(/^Disallow:\s*(.+)$/gim)].map((match) =>
-    match[1].trim(),
+  const robotsResponse = await fetchNoRedirect(absolute('/robots.txt'));
+  assert.equal(robotsResponse.status, 200, 'robots.txt is unavailable');
+  const robotsText = await robotsResponse.text();
+  const canonicalOrigin = new URL(locs[0]!).origin;
+  assert(
+    robotsText.includes(`Sitemap: ${canonicalOrigin}/sitemap.xml`),
+    'robots.txt is missing the canonical sitemap',
   );
-  for (const userAgent of [
-    'OAI-SearchBot',
-    'GPTBot',
-    'Claude-SearchBot',
-    'ClaudeBot',
-    'PerplexityBot',
-  ]) {
+  const robotsGroups = parseRobotsGroups(robotsText);
+  assert.equal(robotsGroups.length, 1, 'robots.txt must expose one shared crawler policy');
+  assert.deepEqual(
+    robotsGroups[0]?.userAgents.map((userAgent) => userAgent.toLowerCase()),
+    ['*'],
+    'robots.txt must use one wildcard user-agent group',
+  );
+  const supportedLocales = [
+    ...new Set(
+      locs
+        .map((loc) => new URL(loc).pathname.split('/')[1])
+        .filter((locale): locale is string => Boolean(locale)),
+    ),
+  ];
+  for (const userAgent of crawlerUserAgents) {
+    for (const loc of locs) {
+      const pathname = new URL(loc).pathname;
+      assert(
+        isAllowedByRobots(robotsGroups, userAgent, pathname),
+        `${userAgent} is disallowed from sitemap URL ${loc}`,
+      );
+    }
+    for (const locale of supportedLocales) {
+      for (const privatePath of [
+        `/${locale}/s`,
+        `/${locale}/s/private-story-id`,
+        `/${locale}/sign-in`,
+        `/${locale}/sign-up`,
+        `/${locale}/my-stories`,
+        `/${locale}/profile`,
+        `/${locale}/buy-credits`,
+      ]) {
+        assert(
+          !isAllowedByRobots(robotsGroups, userAgent, privatePath),
+          `${userAgent} is allowed into private path ${privatePath}`,
+        );
+      }
+      for (const publicPath of [
+        `/${locale}/sample-books/example-book`,
+        `/${locale}/lp/example`,
+        `/${locale}/blog/example`,
+      ]) {
+        assert(
+          isAllowedByRobots(robotsGroups, userAgent, publicPath),
+          `${userAgent} is disallowed from public path ${publicPath}`,
+        );
+      }
+    }
     const landingResponse = await fetch(absolute('/pt-PT/lp/livro-personalizado-para-casais'), {
       redirect: 'manual',
       headers: { 'accept-encoding': 'identity', 'user-agent': userAgent },
@@ -275,8 +422,6 @@ async function main() {
     assert.equal(canonical, loc, `${loc} has an incorrect or missing canonical`);
     const robots = extractRobots(html)?.toLowerCase();
     assert(robots?.includes('index') && !robots.includes('noindex'), `${loc} is not indexable`);
-    const pathname = new URL(loc).pathname;
-    assert(!disallows.some((rule) => pathMatchesDisallow(pathname, rule)));
   });
 
   for (const path of [
@@ -327,7 +472,9 @@ async function main() {
   console.log(`SEO smoke passed for ${locs.length} canonical URLs at ${baseUrl.origin}`);
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+if (process.env.NODE_ENV !== 'test') {
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}

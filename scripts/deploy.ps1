@@ -152,6 +152,24 @@ function Test-Deployment {
     }
 }
 
+function Test-ProductionSeo {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$ExpectedGitSha
+    )
+
+    if ($Staging) {
+        return
+    }
+
+    Write-Info "Running mandatory production SEO and crawler smoke for $ExpectedGitSha"
+    & npm run test:seo:prod -- "--expected-git-sha=$ExpectedGitSha"
+    if ($LASTEXITCODE -ne 0) {
+        throw "Production SEO smoke failed for Git SHA $ExpectedGitSha."
+    }
+    Write-Success "Production SEO and crawler smoke passed"
+}
+
 function Main {
     if ($Help) { Show-Help; return }
 
@@ -169,6 +187,7 @@ function Main {
     }
 
     Test-Deployment
+    Test-ProductionSeo -ExpectedGitSha $GIT_SHA
     Write-Success "All done"
 }
 
