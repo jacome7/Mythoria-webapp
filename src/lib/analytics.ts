@@ -56,12 +56,7 @@ export type AnalyticsEvent = GA4EventName;
 
 export interface AnalyticsEventParams {
   [key: string]:
-    | string
-    | number
-    | boolean
-    | undefined
-    | Record<string, unknown>[]
-    | Record<string, unknown>;
+    string | number | boolean | undefined | Record<string, unknown>[] | Record<string, unknown>;
 }
 
 export interface StoryEventParams extends AnalyticsEventParams {

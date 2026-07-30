@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.0",
+  "status": "draft",
+  "slug": "o-dia-em-que-a-quinta-falou",
+  "title": "O Dia em que a Quinta Falou",
+  "language": "pt-PT",
+  "experimentalLanguage": false,
+  "placement": "seo_landing_page",
+  "usageTags": [
+    "seo",
+    "livro-personalizado-ferias",
+    "viagens",
+    "pt-PT"
+  ],
+  "riskRating": "yellow",
+  "sensitiveNiche": true,
+  "requiresHumanApproval": true,
+  "createdAt": "2026-07-29",
+  "updatedAt": "2026-07-29"
+}

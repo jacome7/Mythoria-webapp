@@ -1,0 +1,12 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "A carrinha chamava-se Aurora porque nenhum dos quatro conseguiu concordar noutro nome. Joana conduzia, Luís lia o mapa, Clara distribuía snacks e Vasco documentava cada erro com entusiasmo profissional. A primeira saída passou sem que ninguém a visse. O desvio levou-os a uma praça, a um almoço tardio e ao melhor capítulo de uma viagem que já não obedecia ao plano. A partir daí, decidiram anotar também os enganos: podiam não encurtar a estrada, mas davam sempre boas histórias.",
+  "voiceDirection": "Narradora pt-PT adulta, divertida e cúmplice, ritmo ágil de comédia de viagem sem caricatura excessiva.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 45,
+  "generatedAt": "2026-07-29T22:00:00Z"
+}

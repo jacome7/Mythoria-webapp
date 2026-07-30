@@ -1,0 +1,36 @@
+{
+  "id": "travel-book-07",
+  "title": "A Viagem que os Avós Também Viveram",
+  "slug": "a-viagem-que-os-avos-tambem-viveram",
+  "language": "pt-PT",
+  "targetAudience": "children_7-10",
+  "readerAgeBand": "7–10 anos",
+  "buyerPersona": "Adulto que quer ligar as férias dos netos às memórias dos avós",
+  "recipientType": "avós, netos e família",
+  "storyIntent": "Criar uma história intergeracional a partir de duas viagens ficcionais ao mesmo lugar em épocas diferentes.",
+  "synopsis": "As fotografias das férias dos netos tornam-se uma aventura que os avós podem ler, ouvir e continuar com memórias próprias.",
+  "shortExcerpt": "A avó reconheceu a praça, embora na fotografia dela ainda não existisse a fonte.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "Matilde mostrou aos avós uma fotografia da praça onde tinha comido o melhor pão das férias. A avó Teresa procurou numa caixa e encontrou outra fotografia do mesmo lugar, tirada muitos anos antes. Na imagem antiga não havia fonte. Havia três árvores pequenas e o avô Manuel com um casaco demasiado largo. A mesma praça guardava agora duas viagens.",
+  "graphicalStyle": "watercolor",
+  "novelStyle": "contemporary",
+  "fictionalUserContext": "Cenário inteiramente ficcional sobre uma família inventada e duas viagens imaginárias separadas por várias décadas.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "status": "generated",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview",
+    "voice": "Aoede"
+  },
+  "safetyNotes": [
+    "A história e todas as personagens, lugares e circunstâncias são ficcionais.",
+    "Qualquer criança é apresentada num contexto familiar seguro, acompanhada por adultos.",
+    "Não são usados dados pessoais, logótipos, moradas, documentos ou localizações em tempo real."
+  ]
+}

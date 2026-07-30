@@ -1,0 +1,36 @@
+{
+  "id": "travel-book-01",
+  "title": "A Leonor e o Segredo do Oceanário",
+  "slug": "a-leonor-e-o-segredo-do-oceanario",
+  "language": "pt-PT",
+  "targetAudience": "children_7-10",
+  "readerAgeBand": "7–10 anos",
+  "buyerPersona": "Adulto que quer transformar uma visita familiar a um aquário numa aventura de descoberta",
+  "recipientType": "criança acompanhada pela família",
+  "storyIntent": "Guardar uma visita familiar como um mistério seguro sobre observação, curiosidade e memórias partilhadas.",
+  "synopsis": "Uma visita a um oceanário fictício transforma-se numa caça às pistas para ajudar uma tartaruga a encontrar o caminho de volta ao mar.",
+  "shortExcerpt": "A primeira pista brilhava no vidro, mesmo ao lado da fotografia da tartaruga.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "Leonor tirou a primeira fotografia no túnel azul quando uma tartaruga passou tão devagar que parecia observar toda a família. No ecrã, junto ao vidro, apareceu uma seta feita de bolhas. A mãe não a viu, mas ajudou Leonor a comparar as imagens. A visita acabava de se transformar num mistério — e cada sala guardava uma nova pista.",
+  "graphicalStyle": "watercolor",
+  "novelStyle": "mystery",
+  "fictionalUserContext": "Cenário inteiramente ficcional sobre uma família inventada numa atração marinha sem nome, marca ou localização real.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "status": "generated",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview",
+    "voice": "Aoede"
+  },
+  "safetyNotes": [
+    "A história e todas as personagens, lugares e circunstâncias são ficcionais.",
+    "Qualquer criança é apresentada num contexto familiar seguro, acompanhada por adultos.",
+    "Não são usados dados pessoais, logótipos, moradas, documentos ou localizações em tempo real."
+  ]
+}

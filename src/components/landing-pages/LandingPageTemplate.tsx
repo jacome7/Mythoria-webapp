@@ -171,9 +171,11 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
               <p className="mt-3 text-lg leading-relaxed text-base-content/75">
                 {page.quickAnswer.body}
               </p>
-              <p className="mt-4 text-sm font-medium text-base-content/60">
-                Conteúdo editorial Mythoria · Revisto em {formatEditorialDate(page.updatedAt)}
-              </p>
+              {page.showEditorialReview !== false && (
+                <p className="mt-4 text-sm font-medium text-base-content/60">
+                  Conteúdo editorial Mythoria · Revisto em {formatEditorialDate(page.updatedAt)}
+                </p>
+              )}
             </div>
           </div>
         </section>
@@ -187,6 +189,45 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
           rightTitle={page.whyThisFits.title}
           rightBody={page.whyThisFits.body}
         />
+
+        {page.comparison && (
+          <section
+            className="my-16"
+            data-analytics-section="product_comparison"
+            data-section-position="2"
+          >
+            <div className="mb-8 max-w-3xl">
+              <h2 className="font-display text-3xl font-bold text-[#33251c] md:text-4xl">
+                {page.comparison.title}
+              </h2>
+              {page.comparison.intro && (
+                <p className="mt-3 text-lg leading-relaxed text-base-content/75">
+                  {page.comparison.intro}
+                </p>
+              )}
+            </div>
+            <div className="overflow-hidden rounded-2xl border border-primary/10 bg-white shadow-sm">
+              <div className="overflow-x-auto">
+                <table className="table">
+                  <thead>
+                    <tr className="bg-primary/5 text-base-content/70">
+                      <th className="w-1/2">{page.comparison.leftLabel}</th>
+                      <th className="w-1/2">{page.comparison.rightLabel}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {page.comparison.rows.map((row) => (
+                      <tr key={`${row.left}-${row.right}`}>
+                        <td className="leading-relaxed text-base-content/70">{row.left}</td>
+                        <td className="font-medium leading-relaxed text-[#33251c]">{row.right}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        )}
 
         {page.supportHub && (
           <LandingPageSupportHub
@@ -381,6 +422,30 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
                     <p key={paragraph}>{paragraph}</p>
                   ))}
                 </div>
+                {page.forProfessionals.items && (
+                  <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                    {page.forProfessionals.items.map((item) => (
+                      <article
+                        key={item.title}
+                        className="rounded-2xl border border-secondary/20 bg-white/85 p-4"
+                      >
+                        <Image
+                          src={item.iconSrc}
+                          alt={item.iconAlt}
+                          width={56}
+                          height={56}
+                          className="h-12 w-12 object-contain"
+                        />
+                        <h3 className="font-display mt-3 text-lg font-bold text-[#33251c]">
+                          {item.title}
+                        </h3>
+                        <p className="mt-2 text-sm leading-relaxed text-base-content/70">
+                          {item.body}
+                        </p>
+                      </article>
+                    ))}
+                  </div>
+                )}
                 <div className="mt-6">
                   <Link
                     href={professionalHref}

@@ -1,0 +1,12 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "Leonor tirou a primeira fotografia no túnel azul quando uma tartaruga passou tão devagar que parecia observar toda a família. No ecrã, junto ao vidro, apareceu uma seta feita de bolhas. A mãe não a viu, mas ajudou Leonor a comparar as imagens. A visita acabava de se transformar num mistério — e cada sala guardava uma nova pista. Quando chegaram ao tanque seguinte, uma segunda seta brilhava na fotografia, apontada a uma porta que juravam não ter visto.",
+  "voiceDirection": "Narradora pt-PT, calorosa e curiosa, ritmo claro para crianças dos 7 aos 10 anos, mistério leve sem dramatização.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 45,
+  "generatedAt": "2026-07-29T22:00:00Z"
+}

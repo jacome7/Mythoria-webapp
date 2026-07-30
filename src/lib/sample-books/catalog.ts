@@ -51,6 +51,10 @@ interface PackManifest {
 }
 
 const PACK_INTENTS: Record<string, StoryIntent> = {
+  'a-leonor-e-o-segredo-do-oceanario': 'amusement_parks',
+  'a-road-trip-dos-planos-impossiveis': 'family_travels',
+  'a-viagem-que-os-avos-tambem-viveram': 'grandparents',
+  'antes-que-a-estrada-acabe': 'family_travels',
   'a-beatriz-recorda-os-melhores-dias-do-max': 'remembrance',
   'a-final-do-bairro-das-estrelas': 'sports_teams',
   'a-leonor-abre-espaco-para-o-amor': 'kids_transitions',
@@ -65,11 +69,15 @@ const PACK_INTENTS: Record<string, StoryIntent> = {
   'leonor-e-matilde-dois-paises-uma-casa': 'romance',
   'o-clube-dos-mapas-impossiveis': 'school_projects',
   'o-comboio-dos-domingos-do-avo': 'grandparents',
+  'o-dia-em-que-a-quinta-falou': 'family_travels',
   'o-gato-que-guardava-a-lua': 'pet_stories',
   'o-jardim-das-fotografias-antigas': 'grandparents',
+  'o-mapa-dos-dias-que-eram-so-nossos': 'family_travels',
   'o-mateus-e-a-lua-aprendem-juntos': 'pet_stories',
   'o-nosso-primeiro-beijo-foi-so-o-principio': 'romance',
+  'o-quadro-que-piscou-o-olho': 'learning_and_discovery',
   'o-tomas-guarda-as-historias-de-domingo-da-avo-teresa': 'remembrance',
+  'o-verao-em-que-o-tomas-encontrou-uma-ilha': 'family_travels',
   'rui-e-tomas-o-ultimo-capitulo-antes-do-sim': 'romance',
 };
 

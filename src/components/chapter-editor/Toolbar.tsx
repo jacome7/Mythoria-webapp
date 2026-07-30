@@ -38,8 +38,7 @@ export default function Toolbar({ onImageInsert, onAIEdit }: ToolbarProps) {
           const nodes = selection.getNodes();
           if (nodes.length > 0) {
             const firstTextNode = nodes.find((node) => node instanceof TextNode) as
-              | TextNode
-              | undefined;
+              TextNode | undefined;
             if (firstTextNode) {
               const style = firstTextNode.getStyle();
               const match = style.match(/font-size:\s*([^;]+)/);

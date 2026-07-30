@@ -25,25 +25,14 @@ export type ShadowTier = 'none' | 'sky' | 'mid' | 'front';
 
 /** Idle animation applied to a layer's image (disabled under reduced-motion). */
 export type AnimName =
-  | 'none'
-  | 'bob'
-  | 'balloon'
-  | 'drift'
-  | 'sway'
-  | 'twinkle'
-  | 'breathe'
-  | 'arc';
+  'none' | 'bob' | 'balloon' | 'drift' | 'sway' | 'twinkle' | 'breathe' | 'arc';
 
 /**
  * Easing for the enter animation. A named curve, or a cubic-bezier array
  * [x1, y1, x2, y2] (e.g. [0.16, 1, 0.3, 1] for a soft "back-out").
  */
 export type Easing =
-  | 'linear'
-  | 'easeIn'
-  | 'easeOut'
-  | 'easeInOut'
-  | [number, number, number, number];
+  'linear' | 'easeIn' | 'easeOut' | 'easeInOut' | [number, number, number, number];
 
 /**
  * One-shot ENTER animation — played the first time the layer scrolls into view

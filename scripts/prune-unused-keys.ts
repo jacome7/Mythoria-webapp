@@ -30,9 +30,10 @@ function deleteByPath(obj: JsonObject, pathParts: string[]) {
   const last = pathParts[pathParts.length - 1];
   const parent = pathParts
     .slice(0, -1)
-    .reduce<
-      JsonObject | JsonPrimitive | undefined
-    >((acc, key) => (acc && typeof acc === 'object' ? (acc as JsonObject)[key] : undefined), obj);
+    .reduce<JsonObject | JsonPrimitive | undefined>(
+      (acc, key) => (acc && typeof acc === 'object' ? (acc as JsonObject)[key] : undefined),
+      obj,
+    );
   if (parent && typeof parent === 'object' && last in parent) {
     delete parent[last];
   }

@@ -1,4 +1,5 @@
 import { autismStoriesLandingPage } from './autism-stories.pt-PT';
+import { familyTravelLandingPage } from './family-travel.pt-PT';
 import { grandparentsStoriesLandingPage } from './grandparents-stories.pt-PT';
 import { romanceGiftsLandingPage } from './romance-gifts.pt-PT';
 import type { LandingPageBook, LandingPageContent, LandingPageTemplateIcon } from './types';
@@ -9,6 +10,7 @@ import type { IntentContext } from '@/types/intent-context';
 
 const landingPages = [
   autismStoriesLandingPage,
+  familyTravelLandingPage,
   grandparentsStoriesLandingPage,
   romanceGiftsLandingPage,
   supportiveStoriesLandingPage,
@@ -23,18 +25,19 @@ const landingPageCategories: Record<string, string> = {
   'livro-personalizado-criancas-autistas': 'Crianças e aprendizagem',
   'workshops-criancas': 'Crianças e aprendizagem',
   'historias-de-apoio': 'Histórias de apoio',
+  'livro-personalizado-ferias': 'Viagens e memórias',
 };
 
 const relatedLandingPageSlugs: Record<string, string[]> = {
   'livro-personalizado-avos-netos': [
+    'livro-personalizado-ferias',
     'livro-personalizado-para-casais',
     'historias-de-apoio',
-    'livro-personalizado-criancas-autistas',
   ],
   'livro-personalizado-para-casais': [
+    'livro-personalizado-ferias',
     'livro-personalizado-avos-netos',
     'historias-de-apoio',
-    'workshops-criancas',
   ],
   'livro-personalizado-criancas-autistas': [
     'historias-de-apoio',
@@ -44,12 +47,17 @@ const relatedLandingPageSlugs: Record<string, string[]> = {
   'historias-de-apoio': [
     'livro-personalizado-criancas-autistas',
     'livro-personalizado-avos-netos',
-    'livro-personalizado-para-casais',
+    'livro-personalizado-ferias',
   ],
   'workshops-criancas': [
     'livro-personalizado-criancas-autistas',
     'livro-personalizado-avos-netos',
+    'livro-personalizado-ferias',
+  ],
+  'livro-personalizado-ferias': [
+    'livro-personalizado-avos-netos',
     'livro-personalizado-para-casais',
+    'workshops-criancas',
   ],
 };
 

@@ -1,0 +1,12 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "Matilde mostrou aos avós uma fotografia da praça onde tinha comido o melhor pão das férias. A avó Teresa procurou numa caixa e encontrou outra fotografia do mesmo lugar, tirada muitos anos antes. Na imagem antiga não havia fonte. Havia três árvores pequenas e o avô Manuel com um casaco demasiado largo. A mesma praça guardava agora duas viagens. Matilde colocou as fotografias lado a lado e percebeu que uma memória pode atravessar décadas sem deixar de pertencer ao presente.",
+  "voiceDirection": "Narradora pt-PT, calorosa e intergeracional, ritmo calmo, com leve mudança de tom entre memória antiga e presente.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 45,
+  "generatedAt": "2026-07-29T22:00:00Z"
+}

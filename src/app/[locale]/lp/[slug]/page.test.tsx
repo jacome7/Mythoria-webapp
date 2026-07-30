@@ -53,6 +53,29 @@ describe('romance landing page route', () => {
     ]);
   });
 
+  it('publishes the travel landing with a unique canonical and indexable metadata', async () => {
+    const metadata = await generateMetadata({
+      params: Promise.resolve({
+        locale: 'pt-PT',
+        slug: 'livro-personalizado-ferias',
+      }),
+    });
+
+    expect(metadata.alternates?.canonical).toBe(
+      'https://mythoria.pt/pt-PT/lp/livro-personalizado-ferias',
+    );
+    expect(metadata.robots).toBe('index,follow,max-snippet:-1,max-image-preview:large');
+    expect(metadata.openGraph?.images).toEqual([
+      expect.objectContaining({
+        url: expect.stringContaining(
+          '/landing-pages/livro-personalizado-ferias/assets/hero/og-cover.jpeg',
+        ),
+        width: 1200,
+        height: 630,
+      }),
+    ]);
+  });
+
   it('renders the canonical Portuguese route', async () => {
     const result = await LandingPageRoute({
       params: Promise.resolve({

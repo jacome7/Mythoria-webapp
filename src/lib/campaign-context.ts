@@ -19,8 +19,7 @@ export const PUBLIC_REDIRECT_QUERY_KEYS = [...CAMPAIGN_QUERY_KEYS, 'ref'] as con
 export type CampaignQueryKey = (typeof CAMPAIGN_QUERY_KEYS)[number];
 export type CampaignParams = Partial<Record<CampaignQueryKey, string>>;
 export type CampaignSearchParams =
-  | { get(name: string): string | null }
-  | Record<string, string | string[] | undefined>;
+  { get(name: string): string | null } | Record<string, string | string[] | undefined>;
 
 const MAX_QUERY_VALUE_LENGTH = 255;
 

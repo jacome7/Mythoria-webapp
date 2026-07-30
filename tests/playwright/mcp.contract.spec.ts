@@ -194,8 +194,7 @@ test.describe('MCP contract coverage (anonymous)', () => {
     const overviewBody = (await overview.json()) as JsonRecord;
     expect((overviewBody.result as JsonRecord)?.isError).not.toBe(true);
     const overviewStructured = (overviewBody.result as JsonRecord)?.structuredContent as
-      | JsonRecord
-      | undefined;
+      JsonRecord | undefined;
     expect(overviewStructured?.status).toBe('ok');
     expect((overviewStructured?.story as JsonRecord)?.id).toBe(storyId);
     expect((overviewStructured?.chapters as JsonRecord)?.total).toBeGreaterThan(0);
@@ -208,8 +207,7 @@ test.describe('MCP contract coverage (anonymous)', () => {
     const audioBody = (await audio.json()) as JsonRecord;
     expect((audioBody.result as JsonRecord)?.isError).not.toBe(true);
     const audioStructured = (audioBody.result as JsonRecord)?.structuredContent as
-      | JsonRecord
-      | undefined;
+      JsonRecord | undefined;
     expect((audioStructured?.story as JsonRecord)?.id).toBe(storyId);
     expect((audioStructured?.status as string).startsWith('audio_')).toBeTruthy();
   });

@@ -1,0 +1,36 @@
+{
+  "id": "travel-book-02",
+  "title": "O Verão em que o Tomás Encontrou uma Ilha",
+  "slug": "o-verao-em-que-o-tomas-encontrou-uma-ilha",
+  "language": "pt-PT",
+  "targetAudience": "children_7-10",
+  "readerAgeBand": "7–10 anos",
+  "buyerPersona": "Adulto que quer guardar férias de praia em família numa aventura infantil",
+  "recipientType": "criança e família",
+  "storyIntent": "Transformar pequenos momentos de umas férias de verão numa aventura familiar sobre atenção e memória.",
+  "synopsis": "Entre praias, gelados e fotografias ao pôr do sol, Tomás descobre uma ilha feita dos momentos que viveu com a família.",
+  "shortExcerpt": "A ilha aparecia todos os dias, mas nunca exatamente no mesmo lugar.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "Às cinco da tarde, o sol desenhava uma ilha no mar. Tomás fotografou-a antes que a maré mudasse a forma das pedras. O pai disse que a ilha já estava nos mapas, mas Tomás sabia que os mapas não guardavam o gelado que caiu, a caminhada descalça nem o jantar que começou tarde. Para isso, precisavam de outro mapa.",
+  "graphicalStyle": "digital_art",
+  "novelStyle": "adventure",
+  "fictionalUserContext": "Cenário inteiramente ficcional sobre uma família inventada numa costa atlântica sem localização real.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "status": "generated",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview",
+    "voice": "Aoede"
+  },
+  "safetyNotes": [
+    "A história e todas as personagens, lugares e circunstâncias são ficcionais.",
+    "Qualquer criança é apresentada num contexto familiar seguro, acompanhada por adultos.",
+    "Não são usados dados pessoais, logótipos, moradas, documentos ou localizações em tempo real."
+  ]
+}

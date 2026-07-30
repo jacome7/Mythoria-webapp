@@ -18,7 +18,7 @@ const copy = {
     eyebrow: 'Guias Mythoria',
     title: 'Guias e ideias para livros personalizados',
     intro:
-      'Um livro personalizado pode guardar uma história de família, celebrar uma relação ou ajudar uma criança a compreender uma mudança. Reunimos aqui os guias Mythoria para escolher o ponto de partida certo, conhecer exemplos ficcionais e perceber como cada livro é construído com as pessoas, memórias e detalhes que indicar. Encontrará ideias para avós e netos, casais, crianças com diferentes formas de aprender, workshops criativos e histórias de apoio para momentos exigentes.',
+      'Um livro personalizado pode guardar uma história de família, celebrar uma relação, transformar uma viagem numa memória narrativa ou ajudar uma criança a compreender uma mudança. Reunimos aqui os guias Mythoria para escolher o ponto de partida certo, conhecer exemplos ficcionais e perceber como cada livro é construído com as pessoas, memórias e detalhes que indicar. Encontrará ideias para avós e netos, casais, férias e viagens, crianças com diferentes formas de aprender, workshops criativos e histórias de apoio para momentos exigentes.',
     introSecondary:
       'Cada guia explica o propósito do livro, as opções de personalização, os formatos disponíveis e os cuidados de privacidade. Os exemplos servem apenas de inspiração: as personagens são ficcionais e o conteúdo final permanece sob controlo do adulto. Explore por tema, compare possibilidades e avance para a criação apenas quando encontrar a abordagem que faz sentido para a sua família, escola ou ocasião.',
     updatedLabel: 'Revisto em',
@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: LandingPageIndexRouteProps): 
   return {
     title: 'Guias para livros personalizados | Mythoria',
     description:
-      'Explore guias Mythoria para livros personalizados de família, casais, crianças, histórias de apoio e workshops criativos.',
+      'Explore guias Mythoria para livros personalizados de família, casais, férias, crianças, histórias de apoio e workshops criativos.',
     robots: isCanonicalLocale
       ? 'index,follow,max-snippet:-1,max-image-preview:large'
       : 'noindex,follow',
@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: LandingPageIndexRouteProps): 
     openGraph: {
       title: 'Guias para livros personalizados | Mythoria',
       description:
-        'Explore guias Mythoria para livros personalizados de família, casais, crianças, histórias de apoio e workshops criativos.',
+        'Explore guias Mythoria para livros personalizados de família, casais, férias, crianças, histórias de apoio e workshops criativos.',
       type: 'website',
       url: canonicalUrl,
     },

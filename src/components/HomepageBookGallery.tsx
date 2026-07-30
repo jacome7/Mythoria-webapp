@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useIntentContext } from '@/hooks/useIntentContext';
+import { getGraphicalStyleMessageKey } from '@/lib/sample-books/graphical-style';
 import type { IntentContext } from '@/types/intent-context';
 import type { SampleBook } from '@/types/sample-book';
 import styles from './HomepageBookGallery.module.css';
@@ -59,6 +60,7 @@ export default function HomepageBookGallery({
   intentOverrideActive = false,
 }: HomepageBookGalleryProps) {
   const t = useTranslations('HomePage.gallery');
+  const tGraphicalStyles = useTranslations('GraphicalStyles');
   const currentLocale = useLocale();
   const cookieIntentContext = useIntentContext();
   const intentContext = intentOverrideActive
@@ -202,6 +204,11 @@ export default function HomepageBookGallery({
     setImageErrors((prev) => new Set(prev).add(`${bookId}-${imageType}`));
   }, []);
 
+  const styleLabel = (book: SampleBook) => {
+    const graphicalStyle = getGraphicalStyleMessageKey(book);
+    return graphicalStyle ? tGraphicalStyles(graphicalStyle) : book.style;
+  };
+
   if (books.length === 0) {
     return (
       <section className={styles.section} aria-labelledby="homepage-book-gallery-title">
@@ -272,7 +279,7 @@ export default function HomepageBookGallery({
                     )}
                   </span>
                   <span className={styles.bookTitle}>{book.title}</span>
-                  <span className={styles.bookMeta}>{book.style}</span>
+                  <span className={styles.bookMeta}>{styleLabel(book)}</span>
                 </button>
               );
             })}
@@ -352,7 +359,7 @@ export default function HomepageBookGallery({
 
                 <div className={styles.modalSection}>
                   <h4>{t('style')}:</h4>
-                  <span className="badge badge-secondary">{selectedBook.style}</span>
+                  <span className="badge badge-secondary">{styleLabel(selectedBook)}</span>
                 </div>
 
                 {selectedBook.storyIntent && (

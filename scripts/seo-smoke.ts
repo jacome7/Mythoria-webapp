@@ -268,7 +268,7 @@ async function main() {
   const hubEntry = entryByLoc.get('https://mythoria.pt/pt-PT/lp');
   assert.equal(
     hubEntry?.lastmod,
-    '2026-07-27T00:00:00.000Z',
+    '2026-07-30T00:00:00.000Z',
     '/pt-PT/lp has an unstable or incorrect lastmod',
   );
 

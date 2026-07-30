@@ -109,8 +109,7 @@ test.describe('MCP authenticated flows', () => {
     skipOnInsufficientScope(listBody, 'mythoria.account.story_list');
     expect((listBody.result as JsonRecord)?.isError).not.toBe(true);
     const listStructured = (listBody.result as JsonRecord)?.structuredContent as
-      | { stories?: Array<{ id: string; status: string }> }
-      | undefined;
+      { stories?: Array<{ id: string; status: string }> } | undefined;
     const stories = listStructured?.stories ?? [];
     let storyId: string | undefined =
       stories.find((story) => story.status !== 'temporary')?.id ?? stories[0]?.id;

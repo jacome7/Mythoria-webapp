@@ -99,22 +99,6 @@ const Footer = () => {
           <Link href={`/${locale}/blog`} className={styles.primaryLink}>
             {tCommonFooter('blog')}
           </Link>
-          {locale === 'pt-PT' ? (
-            <>
-              <span className={styles.separator} aria-hidden="true">
-                |
-              </span>
-              <Link href="/pt-PT/lp" className={styles.primaryLink}>
-                {tCommonFooter('guides')}
-              </Link>
-            </>
-          ) : null}
-          <span className={styles.separator} aria-hidden="true">
-            |
-          </span>
-          <Link href={`/${locale}/faqs`} className={styles.primaryLink}>
-            {tCommonFooter('faqs')}
-          </Link>
         </nav>
 
         <div className={styles.divider} aria-hidden="true">

@@ -1,0 +1,12 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "Na sala três, Duarte levantou a máquina fotográfica de brincar e viu o homem do retrato piscar o olho. A avó Rosa não se riu. Perguntou apenas o que tinha mudado. Na fotografia, a mão da figura parecia apontar para uma ponte escondida no fundo da tela. O mistério não pedia pressa: pedia olhos atentos. Avó e neto aproximaram-se da moldura, sem tocar, e descobriram um símbolo minúsculo que parecia repetir-se na sala seguinte.",
+  "voiceDirection": "Narradora pt-PT, curiosa e tranquila, mistério leve, dicção clara para crianças dos 7 aos 10 anos.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 45,
+  "generatedAt": "2026-07-29T22:00:00Z"
+}

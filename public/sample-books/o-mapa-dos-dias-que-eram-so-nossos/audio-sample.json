@@ -1,0 +1,12 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "Marta chegou com uma lista de dez lugares. Tiago chegou com um mapa dobrado e a vontade de se perder sem dramatizar. Ao segundo dia tinham falhado três reservas e encontrado um café que nenhum guia mencionava. No mapa deles, os lugares importantes deixaram de ter estrelas. Passaram a ter chávenas, janelas embaciadas e conversas que só os dois sabiam localizar. Quando regressassem, talvez ninguém entendesse aquele mapa. Era precisamente isso que o tornava tão fiel à viagem que tinham vivido.",
+  "voiceDirection": "Narradora pt-PT adulta, íntima e natural, ritmo sereno de crónica romântica, sem sentimentalismo excessivo.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 45,
+  "generatedAt": "2026-07-29T22:00:00Z"
+}

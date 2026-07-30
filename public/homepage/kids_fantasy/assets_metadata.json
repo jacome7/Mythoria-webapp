@@ -109,6 +109,17 @@
       "status": "placeholder"
     },
     {
+      "file": "person1_en-US.webp",
+      "slot": "person1",
+      "locale": "en-US",
+      "usage": "HeroScene person carousel — real person holding a real Mythoria book (z5, bottom-anchored, centered)",
+      "description": "Smiling child holding a personalized fantasy storybook with an English cover title",
+      "dimensions": { "w": 665, "h": 1024 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
       "file": "person1_es-ES.webp",
       "slot": "person1",
       "locale": "es-ES",
@@ -184,6 +195,39 @@
       "transparentBackground": true,
       "format": "webp",
       "status": "final"
+    },
+    {
+      "file": "person3_pt-PT.webp",
+      "slot": "person3",
+      "locale": "pt-PT",
+      "usage": "HeroScene person carousel — third rotation slide",
+      "description": "Child holding a personalized fantasy storybook with a Portuguese cover title. DRAFT: 540x717 cutout — re-export at 572x1024 to match the carousel siblings.",
+      "dimensions": { "w": 540, "h": 717 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "draft"
+    },
+    {
+      "file": "person3_en-US.webp",
+      "slot": "person3",
+      "locale": "en-US",
+      "usage": "HeroScene person carousel — third rotation slide",
+      "description": "Child and dog holding a personalized fantasy storybook. DRAFT: uploaded artwork has a Spanish cover and is 539x717; replace with an English-cover 572x1024 cutout.",
+      "dimensions": { "w": 539, "h": 717 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "draft"
+    },
+    {
+      "file": "person3_es-ES.webp",
+      "slot": "person3",
+      "locale": "es-ES",
+      "usage": "HeroScene person carousel — third rotation slide",
+      "description": "Child and dog holding a personalized fantasy storybook with a Spanish cover title. DRAFT: 539x717 cutout — re-export at 572x1024 to match the carousel siblings.",
+      "dimensions": { "w": 539, "h": 717 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "draft"
     },
     {
       "file": "icon1.webp",

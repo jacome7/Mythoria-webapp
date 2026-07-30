@@ -13,7 +13,7 @@ import {
 
 describe('landing page content registry', () => {
   it('derives a stable hub lastmod from visible editorial dates', () => {
-    expect(getLandingPageHubUpdatedAt()).toBe('2026-07-27');
+    expect(getLandingPageHubUpdatedAt()).toBe('2026-07-30');
   });
 
   it('registers the autism landing page as a pt-PT indexable page', () => {
@@ -71,6 +71,9 @@ describe('landing page content registry', () => {
       'livro-personalizado-para-casais',
     );
     expect(getIndexableLandingPages().map((page) => page.slug)).toContain('historias-de-apoio');
+    expect(getIndexableLandingPages().map((page) => page.slug)).toContain(
+      'livro-personalizado-ferias',
+    );
   });
 
   it('uses respectful PEA/PHDA terminology in the title and metadata', () => {
@@ -384,6 +387,70 @@ describe('landing page content registry', () => {
     expect(serialized).not.toContain('4.9');
     expect(serialized).not.toContain('garantia de entrega');
     expect(serialized).not.toContain('clinicamente comprovado');
+    expect(serialized.toLowerCase()).not.toContain('ficcion');
+  });
+
+  it('registers the travel landing page with its comparison, B2B route and eight samples', () => {
+    const page = getLandingPageBySlug('livro-personalizado-ferias');
+    const serialized = JSON.stringify(page);
+
+    expect(page).toBeDefined();
+    expect(page?.locale).toBe('pt-PT');
+    expect(page?.primaryIntent).toBe('family_travels');
+    expect(page?.riskRating).toBe('yellow');
+    expect(page?.indexable).toBe(true);
+    expect(page?.comparison?.rows).toHaveLength(4);
+    expect(page?.books).toHaveLength(8);
+    expect(
+      page?.books.every(
+        (book) => book.chapterCountLabel === undefined && book.durationLabel === undefined,
+      ),
+    ).toBe(true);
+    expect(page?.trustBadges).toBeUndefined();
+    expect(page?.showEditorialReview).toBe(false);
+    expect(page?.booksSection?.eyebrow).toBeUndefined();
+    expect(page?.safetyNote).toBeUndefined();
+    expect(page?.formats.items).toHaveLength(4);
+    expect(page?.forProfessionals?.items).toHaveLength(4);
+    expect(page?.forProfessionals?.ctaHref).toBe('/pt-PT/partners');
+    expect(page?.trustAndPrivacy?.items).toHaveLength(4);
+    expect(page?.faq).toHaveLength(7);
+    expect(page?.testimonials).toBeUndefined();
+    expect(page?.structuredData?.includeProduct).toBe(false);
+
+    const localAssets = [
+      page?.hero.imageSrc,
+      page?.ogImageSrc,
+      ...(page?.templateIcons?.formats?.map((icon) => icon.src) ?? []),
+      ...(page?.carefulBenefits.items.flatMap((item) =>
+        typeof item === 'string' ? [] : [item.iconSrc],
+      ) ?? []),
+      ...(page?.useCases?.items.map((item) => item.iconSrc) ?? []),
+      ...(page?.forProfessionals?.items?.map((item) => item.iconSrc) ?? []),
+      ...(page?.books.flatMap((book) => [
+        book.imageSrc,
+        book.sampleChapter?.imageSrc,
+        book.audioSampleSrc,
+      ]) ?? []),
+    ].filter((asset): asset is string => Boolean(asset));
+    localAssets.forEach((asset) => {
+      expect(existsSync(join(process.cwd(), 'public', asset.replace(/^\//, '')))).toBe(true);
+    });
+
+    expect(getLandingPageIndexItems()).toContainEqual(
+      expect.objectContaining({
+        category: 'Viagens e memórias',
+        href: '/pt-PT/lp/livro-personalizado-ferias',
+      }),
+    );
+    expect(getLandingPageIntentContext('pt-PT', 'livro-personalizado-ferias')).toEqual({
+      intent: 'family_travels',
+    });
+    expect(serialized).not.toContain('centenas de fotografias automaticamente');
+    expect(serialized).not.toContain('QR code');
+    expect(serialized).not.toContain('revenue share');
+    expect(serialized).not.toContain('testemunho');
+    expect(serialized).not.toContain('AggregateRating');
     expect(serialized.toLowerCase()).not.toContain('ficcion');
   });
 });

@@ -31,9 +31,7 @@ import { normalizeVatForKeyInvoice } from '@/lib/keyinvoice/vat';
 type FiscalStatus = FiscalDocument['status'];
 type NormalizedVat = NonNullable<ReturnType<typeof normalizeVatForKeyInvoice>>;
 export type KeyInvoiceVatSource =
-  | 'stripe_checkout_tax_id'
-  | 'author_profile_fiscal_number'
-  | 'none';
+  'stripe_checkout_tax_id' | 'author_profile_fiscal_number' | 'none';
 export type FiscalRetrySkipReason = 'insert_document_response_unknown';
 export type AdminFiscalRetryBlockReason =
   | 'document_status_not_retryable'

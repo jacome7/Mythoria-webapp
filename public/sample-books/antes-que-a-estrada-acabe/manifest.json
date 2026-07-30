@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.0",
+  "status": "draft",
+  "slug": "antes-que-a-estrada-acabe",
+  "title": "Antes que a Estrada Acabe",
+  "language": "pt-PT",
+  "experimentalLanguage": false,
+  "placement": "seo_landing_page",
+  "usageTags": [
+    "seo",
+    "livro-personalizado-ferias",
+    "viagens",
+    "pt-PT"
+  ],
+  "riskRating": "green",
+  "sensitiveNiche": false,
+  "requiresHumanApproval": true,
+  "createdAt": "2026-07-29",
+  "updatedAt": "2026-07-29"
+}

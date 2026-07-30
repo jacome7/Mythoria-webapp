@@ -1,0 +1,36 @@
+{
+  "id": "travel-book-04",
+  "title": "A Road Trip dos Planos Impossíveis",
+  "slug": "a-road-trip-dos-planos-impossiveis",
+  "language": "pt-PT",
+  "targetAudience": "adult_18+",
+  "readerAgeBand": "Adultos",
+  "buyerPersona": "Grupo de adultos que quer transformar uma viagem de amigos numa crónica divertida",
+  "recipientType": "grupo de amigos adultos",
+  "storyIntent": "Guardar os desvios, piadas internas e decisões improvisadas de uma viagem entre amigos.",
+  "synopsis": "Quatro amigos, uma carrinha e uma lista de lugares que não corre como planeado — mas fica perfeita para contar.",
+  "shortExcerpt": "O plano tinha quarenta linhas. Ao almoço do primeiro dia já estavam na linha cinquenta e três.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "A carrinha chamava-se Aurora porque nenhum dos quatro conseguiu concordar noutro nome. Joana conduzia, Luís lia o mapa, Clara distribuía snacks e Vasco documentava cada erro com entusiasmo profissional. A primeira saída passou sem que ninguém a visse. O desvio levou-os a uma praça, a um almoço tardio e ao melhor capítulo de uma viagem que já não obedecia ao plano.",
+  "graphicalStyle": "euro_comic_book",
+  "novelStyle": "comedy",
+  "fictionalUserContext": "Cenário inteiramente ficcional sobre quatro amigos adultos inventados numa estrada sem localização real.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "status": "generated",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview",
+    "voice": "Aoede"
+  },
+  "safetyNotes": [
+    "A história e todas as personagens, lugares e circunstâncias são ficcionais.",
+    "O exemplo usa apenas personagens adultas e não representa uma viagem ou testemunho real.",
+    "Não são usados dados pessoais, logótipos, moradas, documentos ou localizações em tempo real."
+  ]
+}

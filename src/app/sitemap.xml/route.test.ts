@@ -92,6 +92,7 @@ describe('sitemap.xml route', () => {
       '<loc>https://mythoria.pt/pt-PT/lp/livro-personalizado-para-casais</loc>',
     );
     expect(xml).toContain('<loc>https://mythoria.pt/pt-PT/lp/historias-de-apoio</loc>');
+    expect(xml).toContain('<loc>https://mythoria.pt/pt-PT/lp/livro-personalizado-ferias</loc>');
     expect(xml).toContain(
       '<loc>https://mythoria.pt/pt-PT/guias/como-transformar-memorias-num-livro-personalizado-para-casal</loc>',
     );
@@ -122,12 +123,27 @@ describe('sitemap.xml route', () => {
     const hubEntry = xml.match(
       /<url>\s*<loc>https:\/\/mythoria\.pt\/pt-PT\/lp<\/loc>[\s\S]*?<\/url>/,
     )?.[0];
-    expect(hubEntry).toContain('<lastmod>2026-07-27T00:00:00.000Z</lastmod>');
+    expect(hubEntry).toContain('<lastmod>2026-07-30T00:00:00.000Z</lastmod>');
 
     const approvedSampleMatches = xml.match(
       /<loc>https:\/\/mythoria\.pt\/pt-PT\/sample-books\/duas-chavenas-uma-vida<\/loc>/g,
     );
     expect(approvedSampleMatches).toHaveLength(1);
+    expect(
+      xml.match(/<loc>https:\/\/mythoria\.pt\/pt-PT\/lp\/livro-personalizado-ferias<\/loc>/g),
+    ).toHaveLength(1);
+    for (const slug of [
+      'a-leonor-e-o-segredo-do-oceanario',
+      'o-verao-em-que-o-tomas-encontrou-uma-ilha',
+      'o-mapa-dos-dias-que-eram-so-nossos',
+      'a-road-trip-dos-planos-impossiveis',
+      'o-quadro-que-piscou-o-olho',
+      'o-dia-em-que-a-quinta-falou',
+      'a-viagem-que-os-avos-tambem-viveram',
+      'antes-que-a-estrada-acabe',
+    ]) {
+      expect(xml).not.toContain(`<loc>https://mythoria.pt/pt-PT/sample-books/${slug}</loc>`);
+    }
     expect(xml).not.toContain(
       '<loc>https://mythoria.pt/pt-PT/sample-books/ines-e-diogo-um-amor-inesperado</loc>',
     );

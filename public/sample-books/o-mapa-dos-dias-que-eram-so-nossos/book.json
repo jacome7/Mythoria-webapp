@@ -1,0 +1,36 @@
+{
+  "id": "travel-book-03",
+  "title": "O Mapa dos Dias que Eram Só Nossos",
+  "slug": "o-mapa-dos-dias-que-eram-so-nossos",
+  "language": "pt-PT",
+  "targetAudience": "adult_18+",
+  "readerAgeBand": "Adultos",
+  "buyerPersona": "Adulto que quer transformar uma viagem a dois num livro íntimo para oferecer",
+  "recipientType": "casal",
+  "storyIntent": "Guardar uma viagem romântica como uma memória de gestos quotidianos, lugares e conversas.",
+  "synopsis": "Uma viagem a dois torna-se um mapa íntimo de cidades, cafés, ruas e pequenas promessas guardadas entre páginas.",
+  "shortExcerpt": "No mapa deles, os lugares importantes não tinham estrelas: tinham chávenas desenhadas.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "Marta chegou com uma lista de dez lugares. Tiago chegou com um mapa dobrado e a vontade de se perder sem dramatizar. Ao segundo dia tinham falhado três reservas e encontrado um café que nenhum guia mencionava. No mapa deles, os lugares importantes deixaram de ter estrelas. Passaram a ter chávenas, janelas embaciadas e conversas que só os dois sabiam localizar.",
+  "graphicalStyle": "minimalist",
+  "novelStyle": "romance",
+  "fictionalUserContext": "Cenário inteiramente ficcional sobre um casal adulto inventado numa cidade europeia sem nome.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "status": "generated",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview",
+    "voice": "Aoede"
+  },
+  "safetyNotes": [
+    "A história e todas as personagens, lugares e circunstâncias são ficcionais.",
+    "O exemplo usa apenas personagens adultas e não representa uma viagem ou testemunho real.",
+    "Não são usados dados pessoais, logótipos, moradas, documentos ou localizações em tempo real."
+  ]
+}

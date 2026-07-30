@@ -1,0 +1,36 @@
+{
+  "id": "travel-book-05",
+  "title": "O Quadro que Piscou o Olho",
+  "slug": "o-quadro-que-piscou-o-olho",
+  "language": "pt-PT",
+  "targetAudience": "children_7-10",
+  "readerAgeBand": "7–10 anos",
+  "buyerPersona": "Adulto que quer prolongar uma visita educativa a um museu através de uma história",
+  "recipientType": "criança acompanhada num museu",
+  "storyIntent": "Transformar observação, luz e perguntas de uma visita a um museu fictício num mistério educativo.",
+  "synopsis": "Num museu fictício, uma criança segue pistas escondidas nas salas e nas fotografias para descobrir porque um retrato parece mexer-se.",
+  "shortExcerpt": "O quadro não voltou a piscar. Mas a figura tinha mudado a mão de lugar.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "Na sala três, Duarte levantou a máquina fotográfica de brincar e viu o homem do retrato piscar o olho. A avó Rosa não se riu. Perguntou apenas o que tinha mudado. Na fotografia, a mão da figura parecia apontar para uma ponte escondida no fundo da tela. O mistério não pedia pressa: pedia olhos atentos.",
+  "graphicalStyle": "colored_pencil",
+  "novelStyle": "mystery",
+  "fictionalUserContext": "Cenário inteiramente ficcional num museu, coleção e cidade inventados, sem reproduzir obras, marcas ou visitantes reais.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "status": "generated",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview",
+    "voice": "Aoede"
+  },
+  "safetyNotes": [
+    "A história e todas as personagens, lugares e circunstâncias são ficcionais.",
+    "Qualquer criança é apresentada num contexto familiar seguro, acompanhada por adultos.",
+    "Não são usados dados pessoais, logótipos, moradas, documentos ou localizações em tempo real."
+  ]
+}

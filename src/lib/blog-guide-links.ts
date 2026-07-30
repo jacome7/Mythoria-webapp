@@ -18,6 +18,12 @@ const guideRules: Array<BlogGuideLink & { terms: string[] }> = [
     terms: ['amor', 'casal', 'casais', 'casamento', 'namorado', 'namorada', 'romance'],
   },
   {
+    href: '/pt-PT/lp/livro-personalizado-ferias',
+    title: 'Livros personalizados de férias e viagens',
+    description: 'Ideias para transformar fotografias e momentos de viagem numa história.',
+    terms: ['ferias', 'viagem', 'viagens', 'turismo', 'hotel', 'museu', 'praia', 'road trip'],
+  },
+  {
     href: '/pt-PT/lp/livro-personalizado-criancas-autistas',
     title: 'Livros para crianças com PEA ou PHDA',
     description: 'Abordagens personalizadas e cuidadosas, sempre sob controlo do adulto.',

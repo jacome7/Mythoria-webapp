@@ -109,8 +109,19 @@ if (!['draft', 'needs_review', 'approved', 'published', 'retired'].includes(mani
   errors.push('manifest.status is invalid');
 }
 if (manifest.language !== 'pt-PT') errors.push('manifest.language must be pt-PT');
-if (manifest.riskRating !== 'yellow') errors.push('manifest.riskRating must be yellow');
-if (manifest.sensitiveNiche !== true) errors.push('manifest.sensitiveNiche must be true');
+if (!['green', 'yellow', 'red'].includes(manifest.riskRating)) {
+  errors.push('manifest.riskRating is invalid');
+}
+const childAudience = String(book.targetAudience ?? '').startsWith('children_');
+if (childAudience && manifest.riskRating !== 'yellow') {
+  errors.push('child sample books must use a yellow risk rating');
+}
+if (manifest.riskRating === 'yellow' && manifest.sensitiveNiche !== true) {
+  errors.push('yellow sample books must set sensitiveNiche to true');
+}
+if (manifest.riskRating === 'green' && manifest.sensitiveNiche !== false) {
+  errors.push('green sample books must set sensitiveNiche to false');
+}
 if (manifest.requiresHumanApproval !== true)
   errors.push('manifest.requiresHumanApproval must be true');
 if (manifest.slug !== book.slug) errors.push('manifest.slug must match book.slug');

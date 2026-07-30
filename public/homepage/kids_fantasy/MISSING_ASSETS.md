@@ -17,15 +17,19 @@ See `assets_metadata.json` for per-asset specs (dimensions, transparency, status
 
 | File | Spec |
 | --- | --- |
-| `person1_en-US.webp` | 572×1024, transparent, real child holding a real Mythoria fantasy book, English cover |
 | `person1_de-DE.webp` | 572×1024, transparent, German cover |
 | `person2_de-DE.webp` | 572×1024, transparent, German cover |
+| `person3_fr-FR.webp` | 572×1024, transparent, French cover |
+| `person3_de-DE.webp` | 572×1024, transparent, German cover |
 
 ## Re-exports
 
 | File | Issue |
 | --- | --- |
 | `person1_pt-PT.webp` | Legacy 461×717 cutout — re-export at 572×1024 with the same bottom anchor as the other person images. |
+| `person3_pt-PT.webp` | Current 540×717 cutout — re-export at 572×1024 with the same bottom anchor as the other person images. |
+| `person3_en-US.webp` | Current 539×717 file is a duplicate of the Spanish asset and has a Spanish cover — replace with an English-cover 572×1024 cutout, bottom-anchored like the other person images. |
+| `person3_es-ES.webp` | Current 539×717 cutout — re-export at 572×1024 with the same bottom anchor as the other person images. |
 
 ## Design guidance
 

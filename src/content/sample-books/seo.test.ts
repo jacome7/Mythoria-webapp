@@ -18,4 +18,19 @@ describe('sample-book SEO admission', () => {
       expect(book.updatedAt).toBe('2026-07-27');
     }
   });
+
+  it('keeps all eight travel samples noindex until separate editorial admission', () => {
+    for (const slug of [
+      'a-leonor-e-o-segredo-do-oceanario',
+      'o-verao-em-que-o-tomas-encontrou-uma-ilha',
+      'o-mapa-dos-dias-que-eram-so-nossos',
+      'a-road-trip-dos-planos-impossiveis',
+      'o-quadro-que-piscou-o-olho',
+      'o-dia-em-que-a-quinta-falou',
+      'a-viagem-que-os-avos-tambem-viveram',
+      'antes-que-a-estrada-acabe',
+    ]) {
+      expect(getSeoSampleBook(slug)).toBeUndefined();
+    }
+  });
 });

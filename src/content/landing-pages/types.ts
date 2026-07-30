@@ -75,6 +75,17 @@ export interface LandingPageBookSection {
   intro?: string;
 }
 
+export interface LandingPageComparison {
+  title: string;
+  intro?: string;
+  leftLabel: string;
+  rightLabel: string;
+  rows: Array<{
+    left: string;
+    right: string;
+  }>;
+}
+
 export interface LandingPageTemplateIcon {
   src: string;
   alt: string;
@@ -272,6 +283,8 @@ export interface LandingPageContent {
   showFormatsNearHero?: boolean;
   /** Repeats the formats panel beside the process panel. Defaults to true. */
   showFormatsNearProcess?: boolean;
+  /** Shows the editorial review line below the quick answer. Defaults to true. */
+  showEditorialReview?: boolean;
   /** Short label for the breadcrumb / structured data (falls back to `title`). */
   breadcrumbLabel?: string;
   /** Dedicated 1200x630 social image (falls back to `hero.imageSrc`). */
@@ -315,6 +328,8 @@ export interface LandingPageContent {
     intro?: string;
     items: LandingPageUseCase[];
   };
+  /** Optional side-by-side explanation for adjacent product categories. */
+  comparison?: LandingPageComparison;
   personalization?: {
     title: string;
     intro: string;
@@ -352,6 +367,7 @@ export interface LandingPageContent {
   forProfessionals?: {
     title: string;
     body: string[];
+    items?: LandingPageIconItem[];
     ctaLabel: string;
     /** Localized path/URL for the CTA (falls back to the contactUs page). */
     ctaHref?: string;

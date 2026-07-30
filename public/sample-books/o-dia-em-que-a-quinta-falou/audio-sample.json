@@ -1,0 +1,12 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "Inês chegou à quinta a fazer perguntas tão depressa que nem as galinhas conseguiam acompanhar. O avô Artur propôs um jogo: ficar um minuto em silêncio junto de cada lugar e depois contar o que tinham ouvido. No curral ouviram palha e passos. No pomar, folhas e uma maçã. Junto do sobreiro, uma voz muito lenta começou a contar. Inês abriu o caderno e escreveu a primeira frase: naquele dia, escutar era outra maneira de fazer perguntas.",
+  "voiceDirection": "Narradora pt-PT, terna e brincalhona, ritmo calmo e pausas claras para crianças dos 3 aos 6 anos.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 45,
+  "generatedAt": "2026-07-29T22:00:00Z"
+}

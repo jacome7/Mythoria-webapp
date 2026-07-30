@@ -1,0 +1,12 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "Eva partiu com um caderno, uma mochila e a decisão de não transformar a viagem numa lista de provas. Fotografou menos do que esperava. Havia paisagens que pediam alguns minutos antes de caberem num enquadramento. Numa estrada sem nome, parou junto a uma árvore inclinada pelo vento e escreveu a primeira frase honesta da viagem. Não precisava de chegar diferente. Bastava regressar com atenção suficiente para reconhecer tudo o que tinha aprendido pelo caminho.",
+  "voiceDirection": "Narradora pt-PT adulta, contemplativa e clara, ritmo pausado de crónica de viagem, sem dramatização.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 45,
+  "generatedAt": "2026-07-29T22:00:00Z"
+}

@@ -1,0 +1,36 @@
+{
+  "id": "travel-book-06",
+  "title": "O Dia em que a Quinta Falou",
+  "slug": "o-dia-em-que-a-quinta-falou",
+  "language": "pt-PT",
+  "targetAudience": "children_3-6",
+  "readerAgeBand": "3–6 anos",
+  "buyerPersona": "Adulto que quer guardar uma estadia de turismo rural numa história familiar",
+  "recipientType": "criança pequena acompanhada pela família",
+  "storyIntent": "Transformar sons, animais e pequenos rituais de uma quinta fictícia numa história de atenção partilhada.",
+  "synopsis": "Numa quinta fictícia, uma família descobre que animais, árvores e pequenos trilhos guardam histórias à espera de serem ouvidas.",
+  "shortExcerpt": "A primeira voz veio do velho sobreiro, mas só depois de todos ficarem em silêncio.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "Inês chegou à quinta a fazer perguntas tão depressa que nem as galinhas conseguiam acompanhar. O avô Artur propôs um jogo: ficar um minuto em silêncio junto de cada lugar e depois contar o que tinham ouvido. No curral ouviram palha e passos. No pomar, folhas e uma maçã. Junto do sobreiro, uma voz muito lenta começou a contar.",
+  "graphicalStyle": "hand_drawn",
+  "novelStyle": "fairy_tale",
+  "fictionalUserContext": "Cenário inteiramente ficcional numa quinta e alojamento inventados, com supervisão adulta em todas as interações.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "status": "generated",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview",
+    "voice": "Aoede"
+  },
+  "safetyNotes": [
+    "A história e todas as personagens, lugares e circunstâncias são ficcionais.",
+    "Qualquer criança é apresentada num contexto familiar seguro, acompanhada por adultos.",
+    "Não são usados dados pessoais, logótipos, moradas, documentos ou localizações em tempo real."
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "Às cinco da tarde, o sol desenhava uma ilha no mar. Tomás fotografou-a antes que a maré mudasse a forma das pedras. O pai disse que a ilha já estava nos mapas, mas Tomás sabia que os mapas não guardavam o gelado que caiu, a caminhada descalça nem o jantar que começou tarde. Para isso, precisavam de outro mapa. Um mapa feito de memórias, onde cada curva podia guardar uma gargalhada e cada onda tinha o nome de quem a atravessou.",
+  "voiceDirection": "Narradora pt-PT, luminosa e aventureira, ritmo descontraído de férias, adequada a crianças dos 7 aos 10 anos.",
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 45,
+  "generatedAt": "2026-07-29T22:00:00Z"
+}
