@@ -14,6 +14,7 @@ import { ga4Service } from './ga4';
 
 const MAX_DELIVERY_ATTEMPTS = 8;
 const BATCH_SIZE = 25;
+const ABANDONED_PUBLISH_CLAIM_MS = 5 * 60 * 1000;
 
 export function signUpOutboxEntry(
   clerkUserId: string,
@@ -81,6 +82,7 @@ export async function deliverAnalytics(): Promise<{
     const result = validation.ok ? await ga4Service.sendEvent(event) : validation;
 
     if (result.ok) {
+      // GA4 2xx acknowledges transport only. End-to-end ingestion is verified by the release probe.
       await db
         .update(analyticsOutbox)
         .set({ deliveredAt: new Date(), attempts: entry.attempts + 1, lastError: null })
@@ -152,6 +154,8 @@ export async function compensateGeneration(runId: string): Promise<void> {
 }
 
 export async function publishGenerations(): Promise<{ published: number; failed: number }> {
+  const now = new Date();
+  const abandonedBefore = new Date(now.getTime() - ABANDONED_PUBLISH_CLAIM_MS);
   const requests = await db
     .select()
     .from(storyGenerationRequests)
@@ -160,8 +164,12 @@ export async function publishGenerations(): Promise<{ published: number; failed:
         or(
           eq(storyGenerationRequests.status, 'queued'),
           eq(storyGenerationRequests.status, 'retrying'),
+          and(
+            eq(storyGenerationRequests.status, 'publishing'),
+            lte(storyGenerationRequests.updatedAt, abandonedBefore),
+          ),
         ),
-        lte(storyGenerationRequests.availableAt, new Date()),
+        lte(storyGenerationRequests.availableAt, now),
         lt(storyGenerationRequests.publishAttempts, MAX_DELIVERY_ATTEMPTS),
       ),
     )
@@ -171,10 +179,32 @@ export async function publishGenerations(): Promise<{ published: number; failed:
   let published = 0;
   let failed = 0;
   for (const request of requests) {
+    const claimTime = new Date();
+    const [claimed] = await db
+      .update(storyGenerationRequests)
+      .set({ status: 'publishing', updatedAt: claimTime })
+      .where(
+        and(
+          eq(storyGenerationRequests.runId, request.runId),
+          or(
+            eq(storyGenerationRequests.status, 'queued'),
+            eq(storyGenerationRequests.status, 'retrying'),
+            and(
+              eq(storyGenerationRequests.status, 'publishing'),
+              lte(storyGenerationRequests.updatedAt, abandonedBefore),
+            ),
+          ),
+          lte(storyGenerationRequests.availableAt, claimTime),
+          lt(storyGenerationRequests.publishAttempts, MAX_DELIVERY_ATTEMPTS),
+        ),
+      )
+      .returning();
+    if (!claimed) continue;
+
     try {
       const messageId = await publishStoryRequest({
-        storyId: request.storyId,
-        runId: request.runId,
+        storyId: claimed.storyId,
+        runId: claimed.runId,
       });
       await db
         .update(storyGenerationRequests)
@@ -182,14 +212,19 @@ export async function publishGenerations(): Promise<{ published: number; failed:
           status: 'published',
           messageId,
           publishedAt: new Date(),
-          publishAttempts: request.publishAttempts + 1,
+          publishAttempts: claimed.publishAttempts + 1,
           lastError: null,
           updatedAt: new Date(),
         })
-        .where(eq(storyGenerationRequests.runId, request.runId));
+        .where(
+          and(
+            eq(storyGenerationRequests.runId, claimed.runId),
+            eq(storyGenerationRequests.status, 'publishing'),
+          ),
+        );
       published += 1;
     } catch (error) {
-      const attempts = request.publishAttempts + 1;
+      const attempts = claimed.publishAttempts + 1;
       await db
         .update(storyGenerationRequests)
         .set({
@@ -199,8 +234,13 @@ export async function publishGenerations(): Promise<{ published: number; failed:
           lastError: (error instanceof Error ? error.message : String(error)).slice(0, 2000),
           updatedAt: new Date(),
         })
-        .where(eq(storyGenerationRequests.runId, request.runId));
-      if (attempts >= MAX_DELIVERY_ATTEMPTS) await compensateGeneration(request.runId);
+        .where(
+          and(
+            eq(storyGenerationRequests.runId, claimed.runId),
+            eq(storyGenerationRequests.status, 'publishing'),
+          ),
+        );
+      if (attempts >= MAX_DELIVERY_ATTEMPTS) await compensateGeneration(claimed.runId);
       failed += 1;
     }
   }

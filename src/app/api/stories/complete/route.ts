@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { db } from '@/db';
-import { analyticsAttributions } from '@/db/schema';
 import { getCurrentAuthor } from '@/lib/auth';
-import { sanitizeClientAnalyticsContext } from '@/lib/analytics/ecommerce';
+import { resolveServerAnalyticsContext } from '@/lib/analytics/server-context';
 import { startStoryGeneration } from '@/lib/story-generation';
-import { and, eq, gt, isNull, or } from 'drizzle-orm';
-import { getValidatedIntent } from '@/lib/campaign-context';
 
 const completeStorySchema = z.object({
   storyId: z.string().uuid(),
@@ -28,29 +24,18 @@ export async function POST(request: NextRequest) {
     if (!author) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const input = completeStorySchema.parse(await request.json());
-    const analyticsContext = sanitizeClientAnalyticsContext(input.analyticsContext);
-    const attributionCookie = request.cookies.get('mythoria_attribution')?.value;
-    let attributionId: string | undefined;
-    let primaryIntent = analyticsContext?.primaryIntent;
-    if (attributionCookie) {
-      const [attribution] = await db
-        .select({
-          attributionId: analyticsAttributions.attributionId,
-          primaryIntent: analyticsAttributions.primaryIntent,
-        })
-        .from(analyticsAttributions)
-        .where(
-          and(
-            eq(analyticsAttributions.attributionId, attributionCookie),
-            gt(analyticsAttributions.expiresAt, new Date()),
-            or(
-              isNull(analyticsAttributions.authorId),
-              eq(analyticsAttributions.authorId, author.authorId),
-            ),
-          ),
-        );
-      attributionId = attribution?.attributionId;
-      primaryIntent = getValidatedIntent(attribution?.primaryIntent) ?? primaryIntent;
+    const {
+      context: analyticsContext,
+      attributionId,
+      primaryIntent,
+    } = await resolveServerAnalyticsContext({
+      browserContext: input.analyticsContext,
+      attributionId: request.cookies.get('mythoria_attribution')?.value,
+      authorId: author.authorId,
+      storedConsentValue: request.cookies.get('mythoria_consent')?.value,
+    });
+    if (!analyticsContext) {
+      console.warn('[Analytics] Story completion has no consented GA4 context');
     }
 
     const result = await startStoryGeneration({

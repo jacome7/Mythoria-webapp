@@ -12,7 +12,6 @@ import HomepageCta from '@/components/HomepageCta';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
 import PaperCutHero from '@/components/papercut/PaperCutHero';
 import HomepageBookGallery from '@/components/HomepageBookGallery';
-import HomepageCampaignAttribution from '@/components/HomepageCampaignAttribution';
 import type { IntentContext } from '@/types/intent-context';
 import type { StoryIntent } from '@/constants/intents';
 
@@ -66,7 +65,6 @@ export default function HomePageClient({
 
   return (
     <div className="homepage-paper-bg min-h-screen text-base-content">
-      <HomepageCampaignAttribution primaryIntent={initialIntentContext?.intent ?? null} />
       <PaperCutHero
         initialIntentOverride={initialHeroIntentOverride}
         initialIntentContext={initialIntentContext}

@@ -9,15 +9,15 @@ jest.mock('next/server', () => ({
 
 const getCurrentAuthorMock = jest.fn();
 const startStoryGenerationMock = jest.fn();
-const whereMock = jest.fn();
-const fromMock = jest.fn(() => ({ where: whereMock }));
-const selectMock = jest.fn(() => ({ from: fromMock }));
+const resolveServerAnalyticsContextMock = jest.fn();
 
 jest.mock('@/lib/auth', () => ({ getCurrentAuthor: () => getCurrentAuthorMock() }));
 jest.mock('@/lib/story-generation', () => ({
   startStoryGeneration: (...args: unknown[]) => startStoryGenerationMock(...args),
 }));
-jest.mock('@/db', () => ({ db: { select: () => selectMock() } }));
+jest.mock('@/lib/analytics/server-context', () => ({
+  resolveServerAnalyticsContext: (...args: unknown[]) => resolveServerAnalyticsContextMock(...args),
+}));
 
 import type { NextRequest } from 'next/server';
 import { POST } from './route';
@@ -44,7 +44,7 @@ describe('POST /api/stories/complete', () => {
       authorId: 'author-1',
       clerkUserId: 'user-1',
     });
-    whereMock.mockResolvedValue([]);
+    resolveServerAnalyticsContextMock.mockResolvedValue({});
   });
 
   it('returns 400 for a request without an idempotency key', async () => {
@@ -86,9 +86,10 @@ describe('POST /api/stories/complete', () => {
   });
 
   it('binds a current-author attribution and its validated intent to story generation', async () => {
-    whereMock.mockResolvedValue([
-      { attributionId: 'attribution-1', primaryIntent: 'grandparents' },
-    ]);
+    resolveServerAnalyticsContextMock.mockResolvedValue({
+      attributionId: 'attribution-1',
+      primaryIntent: 'grandparents',
+    });
     startStoryGenerationMock.mockResolvedValue({
       storyId: validBody.storyId,
       runId: '33333333-3333-4333-8333-333333333333',
@@ -109,7 +110,7 @@ describe('POST /api/stories/complete', () => {
   });
 
   it('never forwards an invalid stored intent', async () => {
-    whereMock.mockResolvedValue([{ attributionId: 'attribution-1', primaryIntent: 'unknown' }]);
+    resolveServerAnalyticsContextMock.mockResolvedValue({ attributionId: 'attribution-1' });
     startStoryGenerationMock.mockResolvedValue({
       storyId: validBody.storyId,
       status: 'queued',

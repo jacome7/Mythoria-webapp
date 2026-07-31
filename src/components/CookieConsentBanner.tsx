@@ -1,104 +1,231 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+import { useEffect, useRef, useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { useLocale } from 'next-intl';
 import {
+  CONSENT_CHOICE_REQUIRED_EVENT,
+  consentStateFromPreferences,
+  getGrantedConsent,
+  getStoredConsent,
   hasConsentChoice,
   saveConsent,
-  getGrantedConsent,
-  getDefaultConsent,
   updateGoogleConsent,
+  type ConsentPreferences,
+  type ConsentState,
 } from '@/lib/consent';
 
-/**
- * Cookie Consent Banner
- *
- * A simple, non-intrusive banner that appears at the bottom of the screen
- * for users who haven't made a cookie consent choice yet.
- *
- * Features:
- * - Accept All / Reject All buttons (equal prominence per EDPB guidelines)
- * - Link to Privacy Policy
- * - Persists choice for 12 months
- * - Updates Google Consent Mode v2 on interaction
- */
+type BannerMode = 'passive' | 'gate';
+type ChoiceRequest = CustomEvent<{ resolve: (state: ConsentState) => void }>;
+
 export default function CookieConsentBanner() {
   const [showBanner, setShowBanner] = useState(false);
+  const [mode, setMode] = useState<BannerMode>('passive');
+  const [customizing, setCustomizing] = useState(false);
+  const [preferences, setPreferences] = useState<ConsentPreferences>({
+    analytics: false,
+    advertising: false,
+  });
+  const resolvers = useRef<Array<(state: ConsentState) => void>>([]);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const firstActionRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
   const t = useTranslations('CookieConsent');
   const locale = useLocale();
 
   useEffect(() => {
-    // Only show banner if user hasn't made a choice yet
-    // Small delay to prevent flash on page load
-    const timer = setTimeout(() => {
-      if (!hasConsentChoice()) {
-        setShowBanner(true);
-      }
+    const timer = window.setTimeout(() => {
+      if (!hasConsentChoice()) setShowBanner(true);
     }, 500);
 
-    return () => clearTimeout(timer);
+    const requireChoice = (event: Event) => {
+      const request = event as ChoiceRequest;
+      const existing = getStoredConsent()?.state;
+      if (existing) {
+        request.detail.resolve(existing);
+        return;
+      }
+      previousFocusRef.current = document.activeElement as HTMLElement | null;
+      resolvers.current.push(request.detail.resolve);
+      setMode('gate');
+      setCustomizing(false);
+      setShowBanner(true);
+    };
+
+    window.addEventListener(CONSENT_CHOICE_REQUIRED_EVENT, requireChoice);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener(CONSENT_CHOICE_REQUIRED_EVENT, requireChoice);
+    };
   }, []);
 
-  const handleAcceptAll = () => {
-    const consent = getGrantedConsent();
-    saveConsent(consent);
-    updateGoogleConsent(consent);
+  useEffect(() => {
+    if (showBanner && mode === 'gate') firstActionRef.current?.focus();
+  }, [mode, showBanner, customizing]);
+
+  const applyChoice = (state: ConsentState, selected: ConsentPreferences) => {
+    saveConsent(state, selected);
+    updateGoogleConsent(state);
     setShowBanner(false);
+    setCustomizing(false);
+    const pending = resolvers.current.splice(0);
+    pending.forEach((resolve) => resolve(state));
+    window.setTimeout(() => previousFocusRef.current?.focus(), 0);
   };
 
-  const handleRejectAll = () => {
-    const consent = getDefaultConsent();
-    saveConsent(consent);
-    updateGoogleConsent(consent);
-    setShowBanner(false);
-  };
+  useEffect(() => {
+    if (!showBanner || mode !== 'gate') return;
 
-  if (!showBanner) {
-    return null;
-  }
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        const denied = consentStateFromPreferences({ analytics: false, advertising: false });
+        applyChoice(denied, { analytics: false, advertising: false });
+        return;
+      }
+      if (event.key !== 'Tab' || !panelRef.current) return;
+      const focusable = Array.from(
+        panelRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), a[href], input:not([disabled])',
+        ),
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  });
+
+  if (!showBanner) return null;
+
+  const acceptAll = () => applyChoice(getGrantedConsent(), { analytics: true, advertising: true });
+  const rejectAll = () => {
+    const selected = { analytics: false, advertising: false };
+    applyChoice(consentStateFromPreferences(selected), selected);
+  };
+  const saveCustom = () => applyChoice(consentStateFromPreferences(preferences), preferences);
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-base-100 border-t border-base-300 shadow-lg"
-      role="dialog"
-      aria-labelledby="cookie-consent-title"
-      aria-describedby="cookie-consent-description"
+      className={
+        mode === 'gate'
+          ? 'fixed inset-0 z-[100] flex items-end justify-center bg-black/45 p-0 sm:items-center sm:p-6'
+          : 'fixed inset-x-0 bottom-0 z-[100] flex justify-center p-0 sm:p-5'
+      }
     >
-      <div className="container mx-auto max-w-4xl">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          {/* Message */}
-          <div className="flex-1 text-center sm:text-left">
-            <p id="cookie-consent-description" className="text-sm text-base-content">
-              {t('message')}{' '}
-              <Link
-                href={`/${locale}/privacy-policy`}
-                className="link link-primary hover:link-hover"
-              >
-                {t('privacyLink')}
-              </Link>
-            </p>
-          </div>
+      <div
+        ref={panelRef}
+        className="w-full rounded-t-3xl border border-base-300 bg-base-100 p-5 shadow-2xl sm:max-w-2xl sm:rounded-3xl sm:p-7"
+        role="dialog"
+        aria-modal={mode === 'gate'}
+        aria-labelledby="cookie-consent-title"
+        aria-describedby="cookie-consent-description"
+      >
+        <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-base-300 sm:hidden" />
+        <h2 id="cookie-consent-title" className="text-xl font-bold text-base-content sm:text-2xl">
+          {t('title')}
+        </h2>
+        <p id="cookie-consent-description" className="mt-2 text-sm leading-6 text-base-content/80">
+          {t('message')}{' '}
+          <Link href={`/${locale}/privacy-policy`} className="link link-primary font-medium">
+            {t('privacyLink')}
+          </Link>
+        </p>
 
-          {/* Buttons - equal prominence */}
-          <div className="flex gap-3 flex-shrink-0">
-            <button
-              onClick={handleRejectAll}
-              className="btn btn-outline btn-sm"
-              aria-label={t('rejectAll')}
-            >
-              {t('rejectAll')}
-            </button>
-            <button
-              onClick={handleAcceptAll}
-              className="btn btn-primary btn-sm"
-              aria-label={t('acceptAll')}
-            >
-              {t('acceptAll')}
-            </button>
+        {customizing && (
+          <div className="mt-5 space-y-3" aria-label={t('customize')}>
+            <label className="flex min-h-14 cursor-pointer items-start justify-between gap-4 rounded-2xl border border-base-300 p-4">
+              <span>
+                <span className="block font-semibold">{t('analyticsTitle')}</span>
+                <span className="mt-1 block text-sm text-base-content/70">
+                  {t('analyticsDescription')}
+                </span>
+              </span>
+              <input
+                type="checkbox"
+                className="toggle toggle-primary mt-1"
+                checked={preferences.analytics}
+                onChange={(event) =>
+                  setPreferences((current) => ({ ...current, analytics: event.target.checked }))
+                }
+              />
+            </label>
+            <label className="flex min-h-14 cursor-pointer items-start justify-between gap-4 rounded-2xl border border-base-300 p-4">
+              <span>
+                <span className="block font-semibold">{t('advertisingTitle')}</span>
+                <span className="mt-1 block text-sm text-base-content/70">
+                  {t('advertisingDescription')}
+                </span>
+              </span>
+              <input
+                type="checkbox"
+                className="toggle toggle-primary mt-1"
+                checked={preferences.advertising}
+                onChange={(event) =>
+                  setPreferences((current) => ({ ...current, advertising: event.target.checked }))
+                }
+              />
+            </label>
           </div>
+        )}
+
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          {customizing ? (
+            <>
+              <button
+                ref={firstActionRef}
+                type="button"
+                className="btn min-h-11 border-2 border-primary bg-transparent text-primary hover:bg-primary/10"
+                onClick={() => setCustomizing(false)}
+              >
+                {t('back')}
+              </button>
+              <button
+                type="button"
+                className="btn min-h-11 border-2 border-primary bg-transparent text-primary hover:bg-primary/10"
+                onClick={saveCustom}
+              >
+                {t('savePreferences')}
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                ref={firstActionRef}
+                type="button"
+                className="btn min-h-11 border-2 border-primary bg-transparent text-primary hover:bg-primary/10"
+                onClick={rejectAll}
+              >
+                {t('rejectAll')}
+              </button>
+              <button
+                type="button"
+                className="btn min-h-11 border-2 border-primary bg-transparent text-primary hover:bg-primary/10"
+                onClick={acceptAll}
+              >
+                {t('acceptAll')}
+              </button>
+            </>
+          )}
         </div>
+        {!customizing && (
+          <button
+            type="button"
+            className="mt-3 min-h-11 w-full rounded-xl text-sm font-semibold text-primary underline-offset-4 hover:underline"
+            onClick={() => setCustomizing(true)}
+          >
+            {t('customize')}
+          </button>
+        )}
       </div>
     </div>
   );

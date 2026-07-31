@@ -38,8 +38,10 @@ function mockPendingRows(rows: unknown[]) {
   });
 }
 
-function mockUpdate() {
-  const set = jest.fn(() => ({ where: jest.fn().mockResolvedValue(undefined) }));
+function mockUpdate(claimRows: unknown[] = []) {
+  const set = jest.fn(() => ({
+    where: jest.fn(() => ({ returning: jest.fn().mockResolvedValue(claimRows) })),
+  }));
   updateMock.mockReturnValue({ set });
   return set;
 }
@@ -87,7 +89,14 @@ describe('durable outbox drains', () => {
         createdAt: new Date('2026-07-17T00:00:00Z'),
       },
     ]);
-    mockUpdate();
+    mockUpdate([
+      {
+        runId: 'run-1',
+        storyId: 'story-1',
+        publishAttempts: 0,
+        createdAt: new Date('2026-07-17T00:00:00Z'),
+      },
+    ]);
     publishStoryRequestMock.mockResolvedValue('message-1');
 
     await expect(publishGenerations()).resolves.toEqual({ published: 1, failed: 0 });
@@ -103,7 +112,14 @@ describe('durable outbox drains', () => {
         createdAt: new Date('2026-07-17T00:00:00Z'),
       },
     ]);
-    mockUpdate();
+    mockUpdate([
+      {
+        runId: 'run-1',
+        storyId: 'story-1',
+        publishAttempts: 7,
+        createdAt: new Date('2026-07-17T00:00:00Z'),
+      },
+    ]);
     publishStoryRequestMock.mockRejectedValue(new Error('Pub/Sub unavailable'));
     const returning = jest
       .fn()
@@ -147,5 +163,13 @@ describe('durable outbox drains', () => {
     );
     expect(insertValues).toHaveBeenCalledTimes(2);
     expect(tx.update).toHaveBeenCalledTimes(5);
+  });
+
+  it('does not publish when another drain already owns the atomic claim', async () => {
+    mockPendingRows([{ runId: 'run-1', storyId: 'story-1', publishAttempts: 0 }]);
+    mockUpdate([]);
+
+    await expect(publishGenerations()).resolves.toEqual({ published: 0, failed: 0 });
+    expect(publishStoryRequestMock).not.toHaveBeenCalled();
   });
 });

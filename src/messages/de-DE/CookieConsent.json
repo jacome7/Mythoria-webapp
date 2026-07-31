@@ -1,8 +1,16 @@
 {
+  "title": "Deine Datenschutzauswahl",
   "message": "Wir verwenden Cookies, um dein Erlebnis zu verbessern. Einige helfen der Seite zu funktionieren, andere helfen uns zu verstehen, wie du sie nutzt.",
   "privacyLink": "Mehr erfahren",
-  "acceptAll": "Alle Akzeptieren",
-  "rejectAll": "Alle Ablehnen",
+  "acceptAll": "Alle akzeptieren",
+  "rejectAll": "Ohne optionale Cookies fortfahren",
+  "customize": "Anpassen",
+  "analyticsTitle": "Analyse",
+  "analyticsDescription": "Hilft uns zu verstehen, wie die Website genutzt wird, und sie zu verbessern.",
+  "advertisingTitle": "Werbung",
+  "advertisingDescription": "Hilft uns, Kampagnen zu messen und relevantere Werbung anzuzeigen.",
+  "back": "Zurück",
+  "savePreferences": "Einstellungen speichern",
   "manageCookies": "Cookie-Einstellungen verwalten",
   "manageCookiesDescription": "Du kannst deine Cookie-Präferenzen jederzeit ändern, indem du auf den Button unten klickst."
 }

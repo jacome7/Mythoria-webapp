@@ -14,6 +14,9 @@ const SAFE_QUERY_KEYS = new Set([
   'gclid',
   'gbraid',
   'wbraid',
+  'dclid',
+  'gclsrc',
+  '_gl',
 ]);
 
 export function sanitizeAnalyticsPath(pathname: string, params: URLSearchParams): string {
@@ -37,7 +40,7 @@ export function useGoogleAnalytics() {
 
       trackEvent('page_view', {
         page_location: pageLocation,
-        page_path: url,
+        page_path: path,
         page_title: document.title,
       });
     }

@@ -13,6 +13,7 @@ import PromotionCodeRedeemer from '@/components/PromotionCodeRedeemer';
 import ScrollFadeIn from '@/components/ScrollFadeIn';
 import { useCart } from '@/hooks/useCart';
 import { getGoogleAnalyticsContext, trackCommerce } from '@/lib/analytics';
+import { ensureConsentChoice } from '@/lib/consent';
 import type { GA4CheckoutPayload, GA4EcommerceItem } from '@/lib/analytics/ecommerce';
 import type { CreditPackage } from '@/types/cart';
 
@@ -261,11 +262,15 @@ function BuyCreditsContent() {
     setPaymentMessage(tBuyCreditsPage('payment.stripeRedirecting'));
 
     try {
+      await ensureConsentChoice();
       const creditPackages = cart.map((item) => ({
         packageId: item.packageId,
         quantity: item.quantity,
       }));
       const analyticsContext = await getGoogleAnalyticsContext();
+      if (!analyticsContext) {
+        console.warn('[Analytics] Checkout is continuing without GA4 context');
+      }
 
       const response = await fetch('/api/payments/stripe/checkout', {
         method: 'POST',

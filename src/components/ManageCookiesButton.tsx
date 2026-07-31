@@ -2,7 +2,7 @@
 
 import { Cookie } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { clearConsent } from '@/lib/consent';
+import { clearConsent, getDefaultConsent, updateGoogleConsent } from '@/lib/consent';
 
 /**
  * ManageCookiesButton
@@ -14,10 +14,10 @@ import { clearConsent } from '@/lib/consent';
 export default function ManageCookiesButton() {
   const t = useTranslations('CookieConsent');
 
-  const handleManageCookies = () => {
-    // Clear the stored consent
+  const handleManageCookies = async () => {
+    updateGoogleConsent(getDefaultConsent());
     clearConsent();
-    // Reload the page to show the consent banner again
+    await fetch('/api/analytics/attribution/revoke', { method: 'POST' }).catch(() => undefined);
     window.location.reload();
   };
 

@@ -8,6 +8,7 @@ import StepNavigation from '@/components/StepNavigation';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import StoryGenerationProgress from '@/components/StoryGenerationProgress';
 import { getGoogleAnalyticsContext, trackStoryCreation } from '@/lib/analytics';
+import { ensureConsentChoice } from '@/lib/consent';
 import { getStep1Data } from '@/lib/story-session';
 import { fetchStoryData } from '@/lib/story';
 import { useStorySessionGuard } from '@/hooks/useStorySessionGuard';
@@ -160,11 +161,15 @@ function Step5Page() {
     setError(null);
 
     try {
+      await ensureConsentChoice();
       // Get step 1 data from session
       const step1Data = getStep1Data();
       const dedicationMessage = step1Data?.dedicationMessage || '';
       const customAuthor = step1Data?.customAuthor || '';
       const analyticsContext = await getGoogleAnalyticsContext();
+      if (!analyticsContext) {
+        console.warn('[Analytics] Story generation is continuing without GA4 context');
+      }
       generationIdempotencyKey.current ||= crypto.randomUUID();
 
       const response = await fetch('/api/stories/complete', {

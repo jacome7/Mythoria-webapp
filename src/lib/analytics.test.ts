@@ -1,4 +1,5 @@
 import {
+  clearGoogleAnalyticsContextCache,
   getGoogleAnalyticsContext,
   trackAuth,
   trackCommerce,
@@ -31,6 +32,7 @@ describe('canonical analytics event propagation', () => {
     window.dataLayer = [];
     document.cookie = 'mythoria_consent=; Max-Age=0; path=/';
     document.cookie = 'mythoria_intent_context=; Max-Age=0; path=/';
+    clearGoogleAnalyticsContextCache();
   });
 
   it('queues only the supplied canonical parameters', () => {
@@ -139,5 +141,60 @@ describe('canonical analytics event propagation', () => {
         adPersonalization: 'denied',
       },
     });
+  });
+
+  it('retries for more than one second while Google Tag initializes', async () => {
+    jest.useFakeTimers();
+    document.cookie = `mythoria_consent=${encodeURIComponent(
+      JSON.stringify({
+        state: {
+          analytics_storage: 'granted',
+          ad_storage: 'denied',
+          ad_user_data: 'denied',
+          ad_personalization: 'denied',
+        },
+        timestamp: Date.now(),
+      }),
+    )}; path=/`;
+    let clientAttempts = 0;
+    window.gtag = jest.fn((...args: unknown[]) => {
+      if (args[0] !== 'get') return;
+      const field = args[2];
+      const callback = args[3] as (value: unknown) => void;
+      if (field === 'client_id') clientAttempts += 1;
+      callback(clientAttempts >= 5 ? (field === 'client_id' ? '987.654' : 1712345000) : undefined);
+    });
+
+    const context = getGoogleAnalyticsContext({ timeoutMs: 5_000 });
+    await jest.advanceTimersByTimeAsync(3_000);
+    await expect(context).resolves.toMatchObject({ clientId: '987.654' });
+    expect(clientAttempts).toBeGreaterThanOrEqual(5);
+    jest.useRealTimers();
+  });
+
+  it('shares one context resolution between concurrent callers', async () => {
+    document.cookie = `mythoria_consent=${encodeURIComponent(
+      JSON.stringify({
+        state: {
+          analytics_storage: 'granted',
+          ad_storage: 'denied',
+          ad_user_data: 'denied',
+          ad_personalization: 'denied',
+        },
+        timestamp: Date.now(),
+      }),
+    )}; path=/`;
+    window.gtag = jest.fn((...args: unknown[]) => {
+      if (args[0] !== 'get') return;
+      const callback = args[3] as (value: unknown) => void;
+      callback(args[2] === 'client_id' ? '123.456' : 1712345678);
+    });
+
+    const [left, right] = await Promise.all([
+      getGoogleAnalyticsContext(),
+      getGoogleAnalyticsContext(),
+    ]);
+    expect(left).toEqual(right);
+    expect(window.gtag).toHaveBeenCalledTimes(2);
   });
 });

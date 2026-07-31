@@ -12,6 +12,9 @@ export const CAMPAIGN_QUERY_KEYS = [
   'gclid',
   'gbraid',
   'wbraid',
+  'dclid',
+  'gclsrc',
+  '_gl',
 ] as const;
 
 export const PUBLIC_REDIRECT_QUERY_KEYS = [...CAMPAIGN_QUERY_KEYS, 'ref'] as const;

@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { paymentService } from '@/db/services';
 import { getCurrentAuthor } from '@/lib/auth';
-import { sanitizeClientAnalyticsContext } from '@/lib/analytics/ecommerce';
+import { resolveServerAnalyticsContext } from '@/lib/analytics/server-context';
 import { normalizeLocale } from '@/utils/locale-utils';
 
 export const runtime = 'nodejs';
@@ -74,7 +74,15 @@ export async function POST(request: NextRequest) {
     const origin = getRequestOrigin(request);
     const successUrl = `${origin}/${locale}/buy-credits?payment=stripe_success&session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = `${origin}/${locale}/buy-credits?payment=cancel`;
-    const analyticsContext = sanitizeClientAnalyticsContext(body.analyticsContext);
+    const { context: analyticsContext } = await resolveServerAnalyticsContext({
+      browserContext: body.analyticsContext,
+      attributionId: request.cookies.get('mythoria_attribution')?.value,
+      authorId: author.authorId,
+      storedConsentValue: request.cookies.get('mythoria_consent')?.value,
+    });
+    if (!analyticsContext) {
+      console.warn('[Analytics] Stripe checkout has no consented GA4 context');
+    }
 
     const { order, checkoutSession, ecommerce } = await paymentService.createStripeCheckoutSession({
       userId: author.authorId,

@@ -3,6 +3,7 @@
 import { Suspense } from 'react';
 import { useGoogleAnalytics } from '../lib/useGoogleAnalytics';
 import { useAuthTracking } from '../hooks/useAuthTracking';
+import AnalyticsAttributionCoordinator from './AnalyticsAttributionCoordinator';
 
 interface AnalyticsProviderProps {
   children: React.ReactNode;
@@ -11,7 +12,7 @@ interface AnalyticsProviderProps {
 function AnalyticsTracker() {
   useGoogleAnalytics();
   useAuthTracking();
-  return null;
+  return <AnalyticsAttributionCoordinator />;
 }
 
 export default function AnalyticsProvider({ children }: AnalyticsProviderProps) {

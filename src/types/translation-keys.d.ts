@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE. Run: npm run i18n:keys
-// Total keys: 2566
+// Total keys: 2573
 export type TranslationKey =
   | 'AIEditModal.buttons.applyChanges'
   | 'AIEditModal.buttons.cancel'
@@ -2431,8 +2431,13 @@ export type TranslationKey =
   | 'actions.printNotAvailable'
   | 'actions.read'
   | 'actions.share'
+  | 'advertisingDescription'
+  | 'advertisingTitle'
   | 'alreadyUnsubscribed.message'
   | 'alreadyUnsubscribed.title'
+  | 'analyticsDescription'
+  | 'analyticsTitle'
+  | 'back'
   | 'buyCredits'
   | 'checkPricing'
   | 'closing.subtitle'
@@ -2443,6 +2448,7 @@ export type TranslationKey =
   | 'credits'
   | 'creditsAvailable'
   | 'currentBalance'
+  | 'customize'
   | 'defaults.authorName'
   | 'deleteConfirm.cancel'
   | 'deleteConfirm.confirm'
@@ -2514,6 +2520,7 @@ export type TranslationKey =
   | 'privacyLink'
   | 'rejectAll'
   | 'returnHome'
+  | 'savePreferences'
   | 'sharing.nowPrivate'
   | 'sharing.publicAccessible'
   | 'signedOut.createAccount'

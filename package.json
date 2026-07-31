@@ -16,6 +16,7 @@
     "revenue:sentinel": "tsx scripts/reconcile-stripe-admin-orders.ts",
     "keyinvoice:discover": "tsx scripts/keyinvoice-discover.ts",
     "keyinvoice:smoke": "tsx scripts/keyinvoice-smoke-test.ts",
+    "ga4:smoke": "tsx scripts/ga4-delivery-smoke.ts",
     "keyinvoice:retry": "tsx scripts/keyinvoice-retry-fiscal-documents.ts",
     "i18n:prune:pt-PT:common": "tsx scripts/prune-unused-keys.ts pt-PT common.json",
     "db:generate": "drizzle-kit generate",

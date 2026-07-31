@@ -207,47 +207,111 @@ export function setUserProperties(properties: Record<string, string | number | b
   }
 }
 
-const getGtagValue = (fieldName: 'client_id' | 'session_id'): Promise<unknown> =>
+const getGtagValue = (fieldName: 'client_id' | 'session_id', timeoutMs: number): Promise<unknown> =>
   new Promise((resolve) => {
     const gtag = ensureGtag();
     if (!gtag) {
       resolve(undefined);
       return;
     }
-    gtag('get', getMeasurementId(), fieldName, resolve);
+    let settled = false;
+    const finish = (value: unknown) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      resolve(value);
+    };
+    const timer = window.setTimeout(() => finish(undefined), timeoutMs);
+    gtag('get', getMeasurementId(), fieldName, finish);
   });
+
+const CONTEXT_CACHE_MS = 5 * 60 * 1000;
+const RETRY_DELAYS_MS = [0, 100, 250, 500, 1_000, 2_000] as const;
+let cachedAnalyticsContext: { value: ClientAnalyticsContext; expiresAt: number } | undefined;
+let analyticsContextResolution: Promise<ClientAnalyticsContext | undefined> | undefined;
+
+export function clearGoogleAnalyticsContextCache(): void {
+  cachedAnalyticsContext = undefined;
+  analyticsContextResolution = undefined;
+}
+
+async function resolveGoogleAnalyticsContext(
+  deadline: number,
+): Promise<ClientAnalyticsContext | undefined> {
+  for (const delayMs of RETRY_DELAYS_MS) {
+    if (delayMs > 0) {
+      const remainingBeforeDelay = deadline - Date.now();
+      if (remainingBeforeDelay <= 0) break;
+      await new Promise((resolve) =>
+        window.setTimeout(resolve, Math.min(delayMs, remainingBeforeDelay)),
+      );
+    }
+
+    const remaining = deadline - Date.now();
+    if (remaining <= 0) break;
+    const attemptBudget = Math.min(500, remaining);
+    const [rawClientId, rawSessionId] = await Promise.all([
+      getGtagValue('client_id', attemptBudget),
+      getGtagValue('session_id', attemptBudget),
+    ]);
+    const clientId = typeof rawClientId === 'string' ? rawClientId.trim() : '';
+    if (!clientId) continue;
+
+    const consent = getStoredConsent()?.state;
+    if (consent?.analytics_storage !== 'granted') return undefined;
+    const sessionId = Number(rawSessionId);
+    const primaryIntent = readIntentContextFromDocumentCookie(
+      document.cookie,
+      INTENT_CONTEXT_COOKIE,
+    )?.intent;
+    return {
+      clientId,
+      ...(Number.isSafeInteger(sessionId) && sessionId > 0 ? { sessionId } : {}),
+      ...(primaryIntent ? { primaryIntent } : {}),
+      consent: {
+        analyticsStorage: 'granted',
+        adUserData: consent.ad_user_data,
+        adPersonalization: consent.ad_personalization,
+      },
+    };
+  }
+  return undefined;
+}
 
 /** Return consent-gated GA identifiers for server-side Measurement Protocol delivery. */
 export async function getGoogleAnalyticsContext(
-  timeoutMs = 1000,
+  timeoutOrOptions: number | { timeoutMs?: number; forceRefresh?: boolean } = 5_000,
 ): Promise<ClientAnalyticsContext | undefined> {
   const consent = getStoredConsent()?.state;
-  if (consent?.analytics_storage !== 'granted') return undefined;
+  if (consent?.analytics_storage !== 'granted') {
+    clearGoogleAnalyticsContextCache();
+    return undefined;
+  }
 
-  const timeout = new Promise<undefined>((resolve) => {
-    window.setTimeout(() => resolve(undefined), timeoutMs);
+  const options =
+    typeof timeoutOrOptions === 'number'
+      ? { timeoutMs: timeoutOrOptions, forceRefresh: false }
+      : {
+          timeoutMs: timeoutOrOptions.timeoutMs ?? 5_000,
+          forceRefresh: false,
+          ...timeoutOrOptions,
+        };
+  if (
+    !options.forceRefresh &&
+    cachedAnalyticsContext &&
+    cachedAnalyticsContext.expiresAt > Date.now()
+  ) {
+    return cachedAnalyticsContext.value;
+  }
+
+  analyticsContextResolution ??= resolveGoogleAnalyticsContext(
+    Date.now() + Math.max(0, options.timeoutMs),
+  ).then((context) => {
+    if (context) {
+      cachedAnalyticsContext = { value: context, expiresAt: Date.now() + CONTEXT_CACHE_MS };
+    }
+    analyticsContextResolution = undefined;
+    return context;
   });
-  const identifiers = Promise.all([getGtagValue('client_id'), getGtagValue('session_id')]);
-  const result = await Promise.race([identifiers, timeout]);
-  if (!result) return undefined;
-
-  const [rawClientId, rawSessionId] = result;
-  const clientId = typeof rawClientId === 'string' ? rawClientId.trim() : '';
-  if (!clientId) return undefined;
-  const sessionId = Number(rawSessionId);
-  const primaryIntent = readIntentContextFromDocumentCookie(
-    document.cookie,
-    INTENT_CONTEXT_COOKIE,
-  )?.intent;
-
-  return {
-    clientId,
-    ...(Number.isSafeInteger(sessionId) && sessionId > 0 ? { sessionId } : {}),
-    ...(primaryIntent ? { primaryIntent } : {}),
-    consent: {
-      analyticsStorage: 'granted',
-      adUserData: consent.ad_user_data,
-      adPersonalization: consent.ad_personalization,
-    },
-  };
+  return analyticsContextResolution;
 }

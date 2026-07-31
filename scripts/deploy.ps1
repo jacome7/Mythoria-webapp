@@ -170,6 +170,25 @@ function Test-ProductionSeo {
     Write-Success "Production SEO and crawler smoke passed"
 }
 
+function Test-GA4Delivery {
+    if ($Staging) { return }
+
+    Write-Info "Confirming Measurement Protocol ingestion through GA4 Realtime"
+    try {
+        $env:GOOGLE_ANALYTICS_API_SECRET = (& $GCLOUD secrets versions access latest --secret=GOOGLE_ANALYTICS_API_SECRET).Trim()
+        $env:GA4_ACCESS_TOKEN = (& $GCLOUD auth print-access-token).Trim()
+        & npm run ga4:smoke
+        if ($LASTEXITCODE -ne 0) {
+            throw 'GA4 Realtime delivery probe failed.'
+        }
+    }
+    finally {
+        Remove-Item Env:GOOGLE_ANALYTICS_API_SECRET -ErrorAction SilentlyContinue
+        Remove-Item Env:GA4_ACCESS_TOKEN -ErrorAction SilentlyContinue
+    }
+    Write-Success "GA4 Realtime delivery probe passed"
+}
+
 function Main {
     if ($Help) { Show-Help; return }
 
@@ -188,6 +207,7 @@ function Main {
 
     Test-Deployment
     Test-ProductionSeo -ExpectedGitSha $GIT_SHA
+    Test-GA4Delivery
     Write-Success "All done"
 }
 

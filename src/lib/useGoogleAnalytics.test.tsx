@@ -46,7 +46,8 @@ describe('useGoogleAnalytics', () => {
     expect(mockTrackEvent).toHaveBeenLastCalledWith(
       'page_view',
       expect.objectContaining({
-        page_path: '/en-US/pricing?utm_source=google&utm_campaign=summer',
+        page_path: '/en-US/pricing',
+        page_location: 'http://localhost/en-US/pricing?utm_source=google&utm_campaign=summer',
       }),
     );
   });
