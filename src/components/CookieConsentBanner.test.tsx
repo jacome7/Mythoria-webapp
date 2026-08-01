@@ -51,6 +51,21 @@ describe('CookieConsentBanner', () => {
     });
   });
 
+  it('accepts analytics without advertising from the first layer', async () => {
+    await showBanner();
+    fireEvent.click(screen.getByRole('button', { name: 'analyticsOnly noAdvertising' }));
+
+    expect(getStoredConsent()).toMatchObject({
+      preferences: { analytics: true, advertising: false },
+      state: {
+        analytics_storage: 'granted',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+      },
+    });
+  });
+
   it('supports independent analytics and advertising choices', async () => {
     await showBanner();
     fireEvent.click(screen.getByRole('button', { name: 'customize' }));

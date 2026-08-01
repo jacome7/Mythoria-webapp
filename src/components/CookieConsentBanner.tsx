@@ -108,6 +108,10 @@ export default function CookieConsentBanner() {
   if (!showBanner) return null;
 
   const acceptAll = () => applyChoice(getGrantedConsent(), { analytics: true, advertising: true });
+  const acceptAnalyticsOnly = () => {
+    const selected = { analytics: true, advertising: false };
+    applyChoice(consentStateFromPreferences(selected), selected);
+  };
   const rejectAll = () => {
     const selected = { analytics: false, advertising: false };
     applyChoice(consentStateFromPreferences(selected), selected);
@@ -202,29 +206,41 @@ export default function CookieConsentBanner() {
               <button
                 ref={firstActionRef}
                 type="button"
-                className="btn min-h-11 border-2 border-primary bg-transparent text-primary hover:bg-primary/10"
-                onClick={rejectAll}
-              >
-                {t('rejectAll')}
-              </button>
-              <button
-                type="button"
-                className="btn min-h-11 border-2 border-primary bg-transparent text-primary hover:bg-primary/10"
+                className="btn min-h-14 border-2 border-primary bg-primary text-primary-content shadow-md hover:border-primary/90 hover:bg-primary/90"
                 onClick={acceptAll}
               >
                 {t('acceptAll')}
+              </button>
+              <button
+                type="button"
+                className="btn min-h-14 border-2 border-primary bg-primary/10 text-primary hover:bg-primary/20"
+                onClick={acceptAnalyticsOnly}
+              >
+                <span className="flex flex-col leading-tight">
+                  <span>{t('analyticsOnly')}</span>
+                  <span className="text-xs font-medium opacity-75">{t('noAdvertising')}</span>
+                </span>
               </button>
             </>
           )}
         </div>
         {!customizing && (
-          <button
-            type="button"
-            className="mt-3 min-h-11 w-full rounded-xl text-sm font-semibold text-primary underline-offset-4 hover:underline"
-            onClick={() => setCustomizing(true)}
-          >
-            {t('customize')}
-          </button>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              className="min-h-11 rounded-xl text-sm font-semibold text-base-content/75 underline-offset-4 hover:bg-base-200 hover:text-base-content"
+              onClick={rejectAll}
+            >
+              {t('rejectAll')}
+            </button>
+            <button
+              type="button"
+              className="min-h-11 rounded-xl text-sm font-semibold text-primary underline-offset-4 hover:bg-primary/10"
+              onClick={() => setCustomizing(true)}
+            >
+              {t('customize')}
+            </button>
+          </div>
         )}
       </div>
     </div>
