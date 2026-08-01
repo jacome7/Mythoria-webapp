@@ -1,7 +1,7 @@
-import { and, eq, gt, or, isNull } from 'drizzle-orm';
+import { and, eq, gt, or, isNull, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { analyticsAttributions, analyticsOutbox } from '@/db/schema';
+import { analyticsAttributions, analyticsOutbox, storyGenerationRequests } from '@/db/schema';
 import { getCurrentAuthor } from '@/lib/auth';
 
 export const runtime = 'nodejs';
@@ -29,26 +29,95 @@ export async function POST(request: NextRequest) {
       );
     if (!attribution) return NextResponse.json({ linked: false });
 
-    await db.transaction(async (tx) => {
+    const repaired = await db.transaction(async (tx) => {
       await tx
         .update(analyticsAttributions)
         .set({ authorId: author.authorId, linkedAt: new Date() })
         .where(eq(analyticsAttributions.attributionId, attributionId));
 
+      const attributionParams = {
+        ...(attribution.landingSlug ? { landing_slug: attribution.landingSlug } : {}),
+        ...(attribution.primaryIntent ? { primary_intent: attribution.primaryIntent } : {}),
+      };
+      const attributionCutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
       await tx
+        .insert(analyticsOutbox)
+        .values({
+          dedupeKey: `sign_up:${author.clerkUserId}`,
+          eventName: 'sign_up',
+          authorId: author.authorId,
+          clientId: attribution.clientId,
+          userId: author.clerkUserId,
+          sessionId: attribution.sessionId,
+          consent: attribution.consent,
+          availableAt: new Date(),
+          params: { method: 'unknown', ...attributionParams },
+        })
+        .onConflictDoUpdate({
+          target: analyticsOutbox.dedupeKey,
+          set: {
+            authorId: author.authorId,
+            clientId: attribution.clientId,
+            sessionId: attribution.sessionId,
+            consent: attribution.consent,
+            availableAt: new Date(),
+            claimToken: null,
+            claimedAt: null,
+            skippedAt: null,
+            lastError: null,
+            params: sql`${analyticsOutbox.params} || ${JSON.stringify(attributionParams)}::jsonb`,
+          },
+        })
+        .returning({ outboxId: analyticsOutbox.outboxId });
+
+      const enrichedOutbox = await tx
         .update(analyticsOutbox)
         .set({
           clientId: attribution.clientId,
           sessionId: attribution.sessionId,
           consent: attribution.consent,
           availableAt: new Date(),
-          params: {
-            method: 'unknown',
-            ...(attribution.landingSlug ? { landing_slug: attribution.landingSlug } : {}),
-            ...(attribution.primaryIntent ? { primary_intent: attribution.primaryIntent } : {}),
-          },
+          claimToken: null,
+          claimedAt: null,
+          lastError: null,
         })
-        .where(eq(analyticsOutbox.dedupeKey, `sign_up:${author.clerkUserId}`));
+        .where(
+          and(
+            eq(analyticsOutbox.authorId, author.authorId),
+            isNull(analyticsOutbox.clientId),
+            isNull(analyticsOutbox.deliveredAt),
+            isNull(analyticsOutbox.skippedAt),
+            gt(analyticsOutbox.occurredAt, attributionCutoff),
+          ),
+        )
+        .returning({ outboxId: analyticsOutbox.outboxId });
+
+      const enrichedRequests = await tx
+        .update(storyGenerationRequests)
+        .set({
+          attributionId: attribution.attributionId,
+          clientId: attribution.clientId,
+          sessionId: attribution.sessionId,
+          consent: attribution.consent,
+          updatedAt: new Date(),
+        })
+        .where(
+          and(
+            eq(storyGenerationRequests.authorId, author.authorId),
+            isNull(storyGenerationRequests.clientId),
+            isNull(storyGenerationRequests.terminalAt),
+            gt(storyGenerationRequests.createdAt, attributionCutoff),
+          ),
+        )
+        .returning({ runId: storyGenerationRequests.runId });
+
+      return { outbox: enrichedOutbox.length, requests: enrichedRequests.length };
+    });
+
+    console.info('[AnalyticsAttributionLink]', {
+      linked: true,
+      enrichedOutbox: repaired.outbox,
+      enrichedRequests: repaired.requests,
     });
 
     return NextResponse.json({ linked: true });

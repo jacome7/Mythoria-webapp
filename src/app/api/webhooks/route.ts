@@ -8,12 +8,18 @@ import { eq, and, sql } from 'drizzle-orm';
 import { detectUserLocaleFromEmail } from '@/utils/locale-utils';
 import { authorService } from '@/db/services';
 
-async function ensureSignUpOutbox(clerkUserId: string, occurredAt = new Date(), method = 'email') {
+async function ensureSignUpOutbox(
+  clerkUserId: string,
+  authorId: string,
+  occurredAt = new Date(),
+  method = 'email',
+) {
   await db
     .insert(analyticsOutbox)
     .values({
       dedupeKey: `sign_up:${clerkUserId}`,
       eventName: 'sign_up',
+      authorId,
       userId: clerkUserId,
       params: { method },
       occurredAt,
@@ -21,7 +27,10 @@ async function ensureSignUpOutbox(clerkUserId: string, occurredAt = new Date(), 
     })
     .onConflictDoUpdate({
       target: analyticsOutbox.dedupeKey,
-      set: { params: sql`${analyticsOutbox.params} || ${JSON.stringify({ method })}::jsonb` },
+      set: {
+        authorId,
+        params: sql`${analyticsOutbox.params} || ${JSON.stringify({ method })}::jsonb`,
+      },
     });
 }
 
@@ -155,7 +164,7 @@ async function handleUserCreated(evt: WebhookEvent) {
 
     // Ensure initial credits exist (race-safe check)
     await ensureInitialCredits(existing[0].authorId);
-    await ensureSignUpOutbox(id, new Date(), signUpMethod);
+    await ensureSignUpOutbox(id, existing[0].authorId, new Date(), signUpMethod);
     console.log('Webhook user already existed, ensured initial credits:', id);
     return;
   }
@@ -178,7 +187,7 @@ async function handleUserCreated(evt: WebhookEvent) {
     });
 
     const author = await authorService.createAuthor(authorData);
-    await ensureSignUpOutbox(id, new Date(), signUpMethod);
+    await ensureSignUpOutbox(id, author.authorId, new Date(), signUpMethod);
     console.log(
       'User created in database via webhook service logic:',
       id,
@@ -215,8 +224,10 @@ async function handleUserCreated(evt: WebhookEvent) {
         .select({ authorId: authors.authorId })
         .from(authors)
         .where(eq(authors.clerkUserId, id));
-      if (updated) await ensureInitialCredits(updated.authorId);
-      await ensureSignUpOutbox(id, new Date(), signUpMethod);
+      if (updated) {
+        await ensureInitialCredits(updated.authorId);
+        await ensureSignUpOutbox(id, updated.authorId, new Date(), signUpMethod);
+      }
       console.log(
         'Duplicate email on webhook, updated existing author and ensured credits for:',
         primaryEmail.email_address,

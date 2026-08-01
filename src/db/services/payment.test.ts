@@ -1,6 +1,7 @@
 import {
   buildStripeCheckoutLineItems,
   buildPaymentOrderPurchasePayload,
+  buildPurchaseAnalyticsOutboxEntry,
   getStripeRefundAmountCents,
   mapToStripeCheckoutLocale,
   paymentService,
@@ -232,6 +233,56 @@ describe('buildPaymentOrderPurchasePayload', () => {
       items: [{ item_id: 'credit_package_legacy_100', quantity: 1, price: 9.99 }],
     });
     expect(buildPaymentOrderPurchasePayload(order)).not.toHaveProperty('gross_value');
+  });
+});
+
+describe('buildPurchaseAnalyticsOutboxEntry', () => {
+  it('keeps a consented purchase durable while the GA client id is unavailable', () => {
+    const order = {
+      orderId: 'order-123',
+      authorId: 'author-123',
+      amount: 500,
+      currency: 'EUR',
+      creditBundle: { credits: 5, price: 5 },
+      metadata: {
+        analytics: {
+          analytics_storage: 'granted',
+          ad_user_data: 'denied',
+          ad_personalization: 'denied',
+        },
+      },
+    } as unknown as Parameters<typeof buildPurchaseAnalyticsOutboxEntry>[0];
+
+    expect(buildPurchaseAnalyticsOutboxEntry(order, 'new')).toMatchObject({
+      dedupeKey: 'purchase:order-123',
+      eventName: 'purchase',
+      authorId: 'author-123',
+      clientId: undefined,
+      consent: {
+        analyticsStorage: 'granted',
+        adUserData: 'denied',
+        adPersonalization: 'denied',
+      },
+      params: {
+        transaction_id: 'order-123',
+        currency: 'EUR',
+        value: 5,
+        credits_purchased: 5,
+      },
+    });
+  });
+
+  it('does not create an analytics event without granted consent', () => {
+    const order = {
+      orderId: 'order-123',
+      authorId: 'author-123',
+      amount: 500,
+      currency: 'EUR',
+      creditBundle: { credits: 5, price: 5 },
+      metadata: null,
+    } as unknown as Parameters<typeof buildPurchaseAnalyticsOutboxEntry>[0];
+
+    expect(buildPurchaseAnalyticsOutboxEntry(order, 'new')).toBeUndefined();
   });
 });
 

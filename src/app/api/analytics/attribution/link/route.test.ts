@@ -2,6 +2,7 @@ const getCurrentAuthorMock = jest.fn();
 const selectWhereMock = jest.fn();
 const updateWhereMock = jest.fn();
 const updateSetMock = jest.fn();
+const insertValuesMock = jest.fn();
 const transactionMock = jest.fn();
 
 jest.mock('@/lib/auth', () => ({ getCurrentAuthor: () => getCurrentAuthorMock() }));
@@ -42,11 +43,26 @@ describe('POST /api/analytics/attribution/link', () => {
     ]);
     transactionMock.mockImplementation(async (callback) =>
       callback({
+        insert: () => ({
+          values: (...args: unknown[]) => {
+            insertValuesMock(...args);
+            return {
+              onConflictDoUpdate: () => ({
+                returning: jest.fn().mockResolvedValue([{ outboxId: 'outbox-1' }]),
+              }),
+            };
+          },
+        }),
         update: () => ({
           set: (...args: unknown[]) => {
             updateSetMock(...args);
             return {
-              where: (...args: unknown[]) => updateWhereMock(...args),
+              where: (...args: unknown[]) => {
+                updateWhereMock(...args);
+                return {
+                  returning: jest.fn().mockResolvedValue([]),
+                };
+              },
             };
           },
         }),
@@ -66,9 +82,11 @@ describe('POST /api/analytics/attribution/link', () => {
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({ linked: true });
-    expect(updateWhereMock).toHaveBeenCalledTimes(2);
-    expect(updateSetMock).toHaveBeenCalledWith(
+    expect(updateWhereMock).toHaveBeenCalledTimes(3);
+    expect(insertValuesMock).toHaveBeenCalledWith(
       expect.objectContaining({
+        authorId: 'author-1',
+        clientId: '123.456',
         params: expect.objectContaining({
           landing_slug: 'homepage',
           primary_intent: 'romance',

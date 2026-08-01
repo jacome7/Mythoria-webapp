@@ -11,6 +11,8 @@ import {
   analyticsOutbox,
   authorCreditBalances,
   creditLedger,
+  type AnalyticsConsent,
+  type NewAnalyticsOutboxEntry,
   type PaymentOrder,
 } from '../schema';
 import {
@@ -56,6 +58,7 @@ export interface CreateStripeCheckoutRequest extends CreateOrderRequest {
   successUrl: string;
   cancelUrl: string;
   analyticsContext?: StoredAnalyticsContext;
+  analyticsConsent?: AnalyticsConsent;
 }
 
 export type CalculatedOrderTotals = CreditOrderTotals;
@@ -202,6 +205,34 @@ export function buildPaymentOrderPurchasePayload(
     customerType,
     orderTotals,
   });
+}
+
+export function buildPurchaseAnalyticsOutboxEntry(
+  order: PaymentOrder,
+  customerType: 'new' | 'returning',
+): NewAnalyticsOutboxEntry | undefined {
+  const metadata = order.metadata as StripeCheckoutMetadata | null;
+  const analytics = metadata?.analytics;
+  if (analytics?.analytics_storage !== 'granted') return undefined;
+
+  const sessionId = Number(analytics.session_id);
+  return {
+    dedupeKey: `purchase:${order.orderId}`,
+    eventName: 'purchase',
+    authorId: order.authorId,
+    clientId: analytics.client_id,
+    userId: analytics.user_id,
+    sessionId: Number.isSafeInteger(sessionId) && sessionId > 0 ? sessionId : undefined,
+    consent: {
+      analyticsStorage: 'granted',
+      adUserData: analytics.ad_user_data === 'granted' ? 'granted' : 'denied',
+      adPersonalization: analytics.ad_personalization === 'granted' ? 'granted' : 'denied',
+    },
+    params: {
+      ...buildPaymentOrderPurchasePayload(order, customerType),
+      ...(analytics.primary_intent ? { primary_intent: analytics.primary_intent } : {}),
+    },
+  };
 }
 
 export function getStripeRefundAmountCents(event: Stripe.Event, charge: Stripe.Charge): number {
@@ -413,16 +444,22 @@ export const paymentService = {
         metadata: {
           orderTotals,
           creditPackages: checkoutData.creditPackages,
-          ...(checkoutData.analyticsContext
+          ...(checkoutData.analyticsContext || checkoutData.analyticsConsent
             ? {
                 analytics: {
-                  client_id: checkoutData.analyticsContext.clientId,
-                  session_id: checkoutData.analyticsContext.sessionId,
-                  user_id: checkoutData.analyticsContext.userId,
-                  analytics_storage: checkoutData.analyticsContext.consent.analyticsStorage,
-                  ad_user_data: checkoutData.analyticsContext.consent.adUserData,
-                  ad_personalization: checkoutData.analyticsContext.consent.adPersonalization,
-                  primary_intent: checkoutData.analyticsContext.primaryIntent,
+                  client_id: checkoutData.analyticsContext?.clientId,
+                  session_id: checkoutData.analyticsContext?.sessionId,
+                  user_id: checkoutData.analyticsContext?.userId,
+                  analytics_storage: (
+                    checkoutData.analyticsContext?.consent || checkoutData.analyticsConsent
+                  )?.analyticsStorage,
+                  ad_user_data: (
+                    checkoutData.analyticsContext?.consent || checkoutData.analyticsConsent
+                  )?.adUserData,
+                  ad_personalization: (
+                    checkoutData.analyticsContext?.consent || checkoutData.analyticsConsent
+                  )?.adPersonalization,
+                  primary_intent: checkoutData.analyticsContext?.primaryIntent,
                 },
               }
             : {}),
@@ -1134,7 +1171,7 @@ export const paymentService = {
 
       const metadata = updatedOrder.metadata as StripeCheckoutMetadata | null;
       const analytics = metadata?.analytics;
-      if (analytics?.analytics_storage === 'granted' && analytics.client_id) {
+      if (analytics?.analytics_storage === 'granted') {
         const [completedCount] = await tx
           .select({ value: count() })
           .from(paymentOrders)
@@ -1144,30 +1181,16 @@ export const paymentService = {
               eq(paymentOrders.status, 'completed'),
             ),
           );
-        await tx
-          .insert(analyticsOutbox)
-          .values({
-            dedupeKey: `purchase:${updatedOrder.orderId}`,
-            eventName: 'purchase',
-            clientId: analytics.client_id,
-            userId: analytics.user_id,
-            sessionId: Number.isSafeInteger(Number(analytics.session_id))
-              ? Number(analytics.session_id)
-              : undefined,
-            consent: {
-              analyticsStorage: 'granted',
-              adUserData: analytics.ad_user_data === 'granted' ? 'granted' : 'denied',
-              adPersonalization: analytics.ad_personalization === 'granted' ? 'granted' : 'denied',
-            },
-            params: {
-              ...buildPaymentOrderPurchasePayload(
-                updatedOrder,
-                Number(completedCount?.value || 0) <= 1 ? 'new' : 'returning',
-              ),
-              ...(analytics.primary_intent ? { primary_intent: analytics.primary_intent } : {}),
-            },
-          })
-          .onConflictDoNothing({ target: analyticsOutbox.dedupeKey });
+        const outboxEntry = buildPurchaseAnalyticsOutboxEntry(
+          updatedOrder,
+          Number(completedCount?.value || 0) <= 1 ? 'new' : 'returning',
+        );
+        if (outboxEntry) {
+          await tx
+            .insert(analyticsOutbox)
+            .values(outboxEntry)
+            .onConflictDoNothing({ target: analyticsOutbox.dedupeKey });
+        }
       }
 
       console.log(

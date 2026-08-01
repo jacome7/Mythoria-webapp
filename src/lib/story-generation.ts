@@ -7,6 +7,7 @@ import {
   creditLedger,
   stories,
   storyGenerationRequests,
+  type AnalyticsConsent,
 } from '@/db/schema';
 import { pricingService } from '@/db/services/pricing';
 import type { ClientAnalyticsContext } from '@/lib/analytics/ecommerce';
@@ -24,6 +25,7 @@ export interface StartStoryGenerationInput {
   attributionId?: string;
   primaryIntent?: StoryIntent;
   analyticsContext?: ClientAnalyticsContext;
+  analyticsConsent?: AnalyticsConsent;
 }
 
 export interface StartStoryGenerationResult {
@@ -138,6 +140,8 @@ export async function startStoryGeneration(
       })
       .where(eq(stories.storyId, input.storyId));
 
+    const analyticsConsent = input.analyticsContext?.consent || input.analyticsConsent;
+
     await tx.insert(storyGenerationRequests).values({
       runId,
       storyId: input.storyId,
@@ -147,17 +151,18 @@ export async function startStoryGeneration(
       attributionId: input.attributionId,
       clientId: input.analyticsContext?.clientId,
       sessionId: input.analyticsContext?.sessionId,
-      consent: input.analyticsContext?.consent,
+      consent: analyticsConsent,
     });
 
-    if (input.analyticsContext) {
+    if (analyticsConsent) {
       await tx.insert(analyticsOutbox).values({
         dedupeKey: `story:${runId}:requested`,
         eventName: 'story_generation_requested',
-        clientId: input.analyticsContext.clientId,
+        authorId: input.authorId,
+        clientId: input.analyticsContext?.clientId,
         userId: input.clerkUserId,
-        sessionId: input.analyticsContext.sessionId,
-        consent: input.analyticsContext.consent,
+        sessionId: input.analyticsContext?.sessionId,
+        consent: analyticsConsent,
         params: {
           story_id: input.storyId,
           run_id: runId,

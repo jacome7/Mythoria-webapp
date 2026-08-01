@@ -132,4 +132,28 @@ describe('startStoryGeneration', () => {
       }),
     );
   });
+
+  it('creates a recoverable event when consent exists before the GA client id is available', async () => {
+    const { insertValues } = createTransaction([
+      [],
+      [],
+      [{ storyId: 'story-1' }],
+      [{ totalCredits: 10 }],
+    ]);
+
+    await startStoryGeneration({
+      ...input,
+      analyticsContext: undefined,
+      analyticsConsent: input.analyticsContext.consent,
+    });
+
+    expect(insertValues).toHaveBeenCalledWith(
+      expect.objectContaining({
+        eventName: 'story_generation_requested',
+        authorId: 'author-1',
+        clientId: undefined,
+        consent: input.analyticsContext.consent,
+      }),
+    );
+  });
 });

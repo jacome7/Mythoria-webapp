@@ -49,6 +49,11 @@ describe('resolveServerAnalyticsContext', () => {
       }),
     ).resolves.toMatchObject({
       attributionId: 'attribution-1',
+      consent: {
+        analyticsStorage: 'granted',
+        adUserData: 'denied',
+        adPersonalization: 'denied',
+      },
       context: { clientId: '123.456', sessionId: 1712345678 },
     });
   });
@@ -65,5 +70,42 @@ describe('resolveServerAnalyticsContext', () => {
       }),
     ).resolves.toEqual({});
     expect(selectMock).not.toHaveBeenCalled();
+  });
+
+  it('does not accept a stale browser context after analytics consent is denied', async () => {
+    await expect(
+      resolveServerAnalyticsContext({
+        authorId: 'author-1',
+        browserContext: {
+          clientId: '123.456',
+          consent: {
+            analyticsStorage: 'granted',
+            adUserData: 'granted',
+            adPersonalization: 'granted',
+          },
+        },
+        storedConsentValue: encodeURIComponent(
+          JSON.stringify({ state: { analytics_storage: 'denied' }, timestamp: Date.now() }),
+        ),
+      }),
+    ).resolves.toEqual({});
+    expect(selectMock).not.toHaveBeenCalled();
+  });
+
+  it('preserves granted consent while attribution context is still unavailable', async () => {
+    mockAttributions([]);
+
+    await expect(
+      resolveServerAnalyticsContext({
+        authorId: 'author-1',
+        storedConsentValue: grantedCookie,
+      }),
+    ).resolves.toEqual({
+      consent: {
+        analyticsStorage: 'granted',
+        adUserData: 'denied',
+        adPersonalization: 'denied',
+      },
+    });
   });
 });

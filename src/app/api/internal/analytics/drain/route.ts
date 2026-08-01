@@ -11,7 +11,9 @@ export async function POST(request: Request) {
   }
 
   try {
-    return NextResponse.json({ success: true, ...(await drainDurableOutboxes()) });
+    const result = await drainDurableOutboxes();
+    console.info('[AnalyticsDrain]', result);
+    return NextResponse.json({ success: true, ...result });
   } catch (error) {
     console.error('Analytics outbox drain failed:', error);
     return NextResponse.json({ error: 'Outbox drain failed' }, { status: 500 });

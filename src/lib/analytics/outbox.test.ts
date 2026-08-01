@@ -28,19 +28,35 @@ jest.mock('./ga4', () => ({
 
 import { deliverAnalytics, publishGenerations } from './outbox';
 
-function mockPendingRows(rows: unknown[]) {
-  selectMock.mockReturnValue({
+function selectionFor(rows: unknown[]) {
+  const limit = jest.fn().mockResolvedValue(rows);
+  return {
     from: jest.fn(() => ({
       where: jest.fn(() => ({
-        orderBy: jest.fn(() => ({ limit: jest.fn().mockResolvedValue(rows) })),
+        limit,
+        orderBy: jest.fn(() => ({ limit })),
       })),
     })),
-  });
+  };
+}
+
+function mockPendingRows(rows: unknown[]) {
+  selectMock.mockReturnValue(selectionFor(rows));
 }
 
 function mockUpdate(claimRows: unknown[] = []) {
   const set = jest.fn(() => ({
     where: jest.fn(() => ({ returning: jest.fn().mockResolvedValue(claimRows) })),
+  }));
+  updateMock.mockReturnValue({ set });
+  return set;
+}
+
+function mockUpdateSequence(returningRows: unknown[][]) {
+  const returning = jest.fn();
+  for (const rows of returningRows) returning.mockResolvedValueOnce(rows);
+  const set = jest.fn(() => ({
+    where: jest.fn(() => ({ returning })),
   }));
   updateMock.mockReturnValue({ set });
   return set;
@@ -52,32 +68,150 @@ describe('durable outbox drains', () => {
   });
 
   it('validates analytics before delivery and retries a rejected payload', async () => {
-    mockPendingRows([
-      {
-        outboxId: 'outbox-1',
-        eventName: 'purchase',
-        clientId: '123.456',
-        userId: null,
-        sessionId: 123,
-        consent: {
-          analyticsStorage: 'granted',
-          adUserData: 'denied',
-          adPersonalization: 'denied',
-        },
-        params: { transaction_id: 'order-1', value: 10, currency: 'EUR', items: [] },
-        occurredAt: new Date('2026-07-17T00:00:00Z'),
-        attempts: 0,
+    const entry = {
+      outboxId: 'outbox-1',
+      dedupeKey: 'purchase:order-1',
+      eventName: 'purchase',
+      authorId: 'author-1',
+      clientId: '123.456',
+      userId: null,
+      sessionId: 123,
+      consent: {
+        analyticsStorage: 'granted',
+        adUserData: 'denied',
+        adPersonalization: 'denied',
       },
-    ]);
-    const set = mockUpdate();
+      params: { transaction_id: 'order-1', value: 10, currency: 'EUR', items: [] },
+      occurredAt: new Date('2026-07-17T00:00:00Z'),
+      attempts: 0,
+    };
+    mockPendingRows([entry]);
+    const set = mockUpdate([entry]);
     validateEventMock.mockResolvedValue({ ok: false, errors: ['invalid value'] });
 
-    await expect(deliverAnalytics()).resolves.toEqual({ delivered: 0, failed: 1, skipped: 0 });
+    await expect(deliverAnalytics()).resolves.toEqual({
+      delivered: 0,
+      failed: 1,
+      skipped: 0,
+      deferred: 0,
+    });
     expect(validateEventMock).toHaveBeenCalledTimes(1);
     expect(sendEventMock).not.toHaveBeenCalled();
     expect(set).toHaveBeenCalledWith(
       expect.objectContaining({ attempts: 1, lastError: 'invalid value' }),
     );
+  });
+
+  it('does not deliver analytics when another worker owns the atomic claim', async () => {
+    mockPendingRows([
+      {
+        outboxId: 'outbox-1',
+        dedupeKey: 'purchase:order-1',
+        eventName: 'purchase',
+        occurredAt: new Date('2026-07-17T00:00:00Z'),
+        attempts: 0,
+      },
+    ]);
+    mockUpdate([]);
+
+    await expect(deliverAnalytics()).resolves.toEqual({
+      delivered: 0,
+      failed: 0,
+      skipped: 0,
+      deferred: 0,
+    });
+    expect(validateEventMock).not.toHaveBeenCalled();
+    expect(sendEventMock).not.toHaveBeenCalled();
+  });
+
+  it('enriches a consented event from the linked author attribution before delivery', async () => {
+    const pending = {
+      outboxId: 'outbox-1',
+      dedupeKey: 'purchase:order-1',
+      eventName: 'purchase',
+      authorId: 'author-1',
+      clientId: null,
+      userId: 'clerk-1',
+      sessionId: null,
+      consent: {
+        analyticsStorage: 'granted',
+        adUserData: 'denied',
+        adPersonalization: 'denied',
+      },
+      params: { transaction_id: 'order-1', value: 5, currency: 'EUR', items: [] },
+      occurredAt: new Date(),
+      attempts: 0,
+    };
+    const enriched = {
+      ...pending,
+      clientId: '123.456',
+      sessionId: 1712345678,
+      params: { ...pending.params, primary_intent: 'romance' },
+    };
+    selectMock.mockReturnValueOnce(selectionFor([pending])).mockReturnValueOnce(
+      selectionFor([
+        {
+          clientId: '123.456',
+          sessionId: 1712345678,
+          primaryIntent: 'romance',
+        },
+      ]),
+    );
+    mockUpdateSequence([[pending], [enriched]]);
+    validateEventMock.mockResolvedValue({ ok: true, errors: [] });
+    sendEventMock.mockResolvedValue({ ok: true, errors: [] });
+
+    await expect(deliverAnalytics()).resolves.toEqual({
+      delivered: 1,
+      failed: 0,
+      skipped: 0,
+      deferred: 0,
+    });
+    expect(sendEventMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        clientId: '123.456',
+        sessionId: 1712345678,
+        params: expect.objectContaining({ primary_intent: 'romance' }),
+      }),
+    );
+  });
+
+  it('defers a recent consented event without consuming a GA delivery attempt', async () => {
+    const pending = {
+      outboxId: 'outbox-1',
+      dedupeKey: 'story_generation_completed:run-1',
+      eventName: 'story_generation_completed',
+      authorId: 'author-1',
+      clientId: null,
+      userId: 'clerk-1',
+      sessionId: null,
+      consent: {
+        analyticsStorage: 'granted',
+        adUserData: 'denied',
+        adPersonalization: 'denied',
+      },
+      params: { story_id: 'story-1' },
+      occurredAt: new Date(),
+      attempts: 0,
+    };
+    selectMock.mockReturnValueOnce(selectionFor([pending])).mockReturnValueOnce(selectionFor([]));
+    const set = mockUpdateSequence([[pending]]);
+
+    await expect(deliverAnalytics()).resolves.toEqual({
+      delivered: 0,
+      failed: 0,
+      skipped: 0,
+      deferred: 1,
+    });
+    expect(set).toHaveBeenCalledWith(
+      expect.objectContaining({
+        claimToken: null,
+        claimedAt: null,
+        lastError: 'Awaiting consented analytics attribution',
+      }),
+    );
+    expect(set).not.toHaveBeenCalledWith(expect.objectContaining({ attempts: 1 }));
+    expect(validateEventMock).not.toHaveBeenCalled();
   });
 
   it('publishes only the stable story and run contract', async () => {

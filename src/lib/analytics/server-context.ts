@@ -6,6 +6,7 @@ import {
   sanitizeClientAnalyticsContext,
   type ClientAnalyticsContext,
 } from '@/lib/analytics/ecommerce';
+import type { AnalyticsConsent } from '@/db/schema';
 
 interface ResolveServerAnalyticsContextInput {
   browserContext?: unknown;
@@ -16,6 +17,7 @@ interface ResolveServerAnalyticsContextInput {
 
 export interface ResolvedServerAnalyticsContext {
   context?: ClientAnalyticsContext;
+  consent?: AnalyticsConsent;
   attributionId?: string;
   primaryIntent?: ClientAnalyticsContext['primaryIntent'];
 }
@@ -32,6 +34,26 @@ function contextFromAttribution(row: AttributionRow): ClientAnalyticsContext {
   };
 }
 
+function consentFromStoredValue(storedConsentValue?: string): AnalyticsConsent | undefined {
+  try {
+    const stored = JSON.parse(decodeURIComponent(storedConsentValue || '')) as {
+      state?: {
+        analytics_storage?: string;
+        ad_user_data?: string;
+        ad_personalization?: string;
+      };
+    };
+    if (stored.state?.analytics_storage !== 'granted') return undefined;
+    return {
+      analyticsStorage: 'granted',
+      adUserData: stored.state.ad_user_data === 'granted' ? 'granted' : 'denied',
+      adPersonalization: stored.state.ad_personalization === 'granted' ? 'granted' : 'denied',
+    };
+  } catch {
+    return undefined;
+  }
+}
+
 /** Resolve consented GA4 identity consistently across server-side funnel endpoints. */
 export async function resolveServerAnalyticsContext({
   browserContext,
@@ -40,16 +62,8 @@ export async function resolveServerAnalyticsContext({
   storedConsentValue,
 }: ResolveServerAnalyticsContextInput): Promise<ResolvedServerAnalyticsContext> {
   const incoming = sanitizeClientAnalyticsContext(browserContext);
-  let storedAnalyticsGranted = false;
-  try {
-    const stored = JSON.parse(decodeURIComponent(storedConsentValue || '')) as {
-      state?: { analytics_storage?: string };
-    };
-    storedAnalyticsGranted = stored.state?.analytics_storage === 'granted';
-  } catch {
-    storedAnalyticsGranted = false;
-  }
-  if (!incoming && !storedAnalyticsGranted) return {};
+  const consent = consentFromStoredValue(storedConsentValue);
+  if (!consent) return {};
   let attribution: AttributionRow | undefined;
 
   if (attributionId) {
@@ -81,9 +95,11 @@ export async function resolveServerAnalyticsContext({
   }
 
   const storedContext = attribution ? contextFromAttribution(attribution) : undefined;
-  const context = incoming || storedContext;
+  const candidateContext = incoming || storedContext;
+  const context = candidateContext ? { ...candidateContext, consent } : undefined;
   const primaryIntent = incoming?.primaryIntent || storedContext?.primaryIntent;
   return {
+    consent,
     ...(context ? { context: { ...context, ...(primaryIntent ? { primaryIntent } : {}) } } : {}),
     ...(attribution ? { attributionId: attribution.attributionId } : {}),
     ...(primaryIntent ? { primaryIntent } : {}),

@@ -1,7 +1,9 @@
-import { and, asc, eq, isNull, lt, lte, or, sql } from 'drizzle-orm';
+import { createHash, randomUUID } from 'crypto';
+import { and, asc, desc, eq, gt, isNull, lt, lte, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import {
   analyticsOutbox,
+  analyticsAttributions,
   authorCreditBalances,
   creditLedger,
   stories,
@@ -15,6 +17,9 @@ import { ga4Service } from './ga4';
 const MAX_DELIVERY_ATTEMPTS = 8;
 const BATCH_SIZE = 25;
 const ABANDONED_PUBLISH_CLAIM_MS = 5 * 60 * 1000;
+const ABANDONED_ANALYTICS_CLAIM_MS = 5 * 60 * 1000;
+const ATTRIBUTION_GRACE_MS = 24 * 60 * 60 * 1000;
+const ATTRIBUTION_RETRY_MS = 5 * 60 * 1000;
 
 export function signUpOutboxEntry(
   clerkUserId: string,
@@ -35,12 +40,30 @@ const retryAt = (attempts: number): Date => {
   return new Date(Date.now() + delayMinutes * 60_000);
 };
 
+const eventReference = (dedupeKey: string): string =>
+  createHash('sha256').update(dedupeKey).digest('hex').slice(0, 12);
+
+function logAnalyticsOutcome(
+  entry: { dedupeKey: string; eventName: string },
+  outcome: string,
+  details: Record<string, unknown> = {},
+): void {
+  console.info('[AnalyticsOutbox]', {
+    eventName: entry.eventName,
+    eventRef: eventReference(entry.dedupeKey),
+    outcome,
+    ...details,
+  });
+}
+
 export async function deliverAnalytics(): Promise<{
   delivered: number;
   failed: number;
   skipped: number;
+  deferred: number;
 }> {
   const now = new Date();
+  const abandonedBefore = new Date(now.getTime() - ABANDONED_ANALYTICS_CLAIM_MS);
   const entries = await db
     .select()
     .from(analyticsOutbox)
@@ -50,6 +73,7 @@ export async function deliverAnalytics(): Promise<{
         isNull(analyticsOutbox.skippedAt),
         lte(analyticsOutbox.availableAt, now),
         lt(analyticsOutbox.attempts, MAX_DELIVERY_ATTEMPTS),
+        or(isNull(analyticsOutbox.claimedAt), lte(analyticsOutbox.claimedAt, abandonedBefore)),
       ),
     )
     .orderBy(asc(analyticsOutbox.occurredAt))
@@ -58,25 +82,124 @@ export async function deliverAnalytics(): Promise<{
   let delivered = 0;
   let failed = 0;
   let skipped = 0;
+  let deferred = 0;
 
   for (const entry of entries) {
-    if (!entry.clientId || entry.consent?.analyticsStorage !== 'granted') {
+    const claimTime = new Date();
+    const claimToken = randomUUID();
+    const [claimed] = await db
+      .update(analyticsOutbox)
+      .set({ claimToken, claimedAt: claimTime })
+      .where(
+        and(
+          eq(analyticsOutbox.outboxId, entry.outboxId),
+          isNull(analyticsOutbox.deliveredAt),
+          isNull(analyticsOutbox.skippedAt),
+          lte(analyticsOutbox.availableAt, claimTime),
+          lt(analyticsOutbox.attempts, MAX_DELIVERY_ATTEMPTS),
+          or(isNull(analyticsOutbox.claimedAt), lte(analyticsOutbox.claimedAt, abandonedBefore)),
+        ),
+      )
+      .returning();
+    if (!claimed) continue;
+
+    logAnalyticsOutcome(claimed, 'claimed', { attempts: claimed.attempts });
+    const claimWhere = and(
+      eq(analyticsOutbox.outboxId, claimed.outboxId),
+      eq(analyticsOutbox.claimToken, claimToken),
+    );
+
+    if (claimed.consent?.analyticsStorage !== 'granted') {
       await db
         .update(analyticsOutbox)
-        .set({ skippedAt: now, lastError: 'Missing consented analytics attribution' })
-        .where(eq(analyticsOutbox.outboxId, entry.outboxId));
+        .set({
+          skippedAt: new Date(),
+          claimToken: null,
+          claimedAt: null,
+          lastError: 'Analytics storage was not granted',
+        })
+        .where(claimWhere);
+      logAnalyticsOutcome(claimed, 'skipped', { reason: 'analytics_storage_not_granted' });
+      skipped += 1;
+      continue;
+    }
+    const analyticsConsent = claimed.consent;
+
+    let effectiveEntry = claimed;
+    if (!effectiveEntry.clientId && effectiveEntry.authorId) {
+      const [attribution] = await db
+        .select()
+        .from(analyticsAttributions)
+        .where(
+          and(
+            eq(analyticsAttributions.authorId, effectiveEntry.authorId),
+            gt(analyticsAttributions.expiresAt, new Date()),
+          ),
+        )
+        .orderBy(desc(analyticsAttributions.createdAt))
+        .limit(1);
+      if (attribution) {
+        const params = {
+          ...effectiveEntry.params,
+          ...(attribution.primaryIntent && typeof effectiveEntry.params.primary_intent !== 'string'
+            ? { primary_intent: attribution.primaryIntent }
+            : {}),
+        };
+        const [enriched] = await db
+          .update(analyticsOutbox)
+          .set({
+            clientId: attribution.clientId,
+            sessionId: attribution.sessionId,
+            params,
+            lastError: null,
+          })
+          .where(claimWhere)
+          .returning();
+        if (!enriched) continue;
+        effectiveEntry = enriched;
+        logAnalyticsOutcome(effectiveEntry, 'context_enriched');
+      }
+    }
+
+    if (!effectiveEntry.clientId) {
+      const graceExpired = Date.now() - effectiveEntry.occurredAt.getTime() >= ATTRIBUTION_GRACE_MS;
+      if (!graceExpired && effectiveEntry.authorId) {
+        await db
+          .update(analyticsOutbox)
+          .set({
+            availableAt: new Date(Date.now() + ATTRIBUTION_RETRY_MS),
+            claimToken: null,
+            claimedAt: null,
+            lastError: 'Awaiting consented analytics attribution',
+          })
+          .where(claimWhere);
+        logAnalyticsOutcome(effectiveEntry, 'deferred_context');
+        deferred += 1;
+        continue;
+      }
+
+      await db
+        .update(analyticsOutbox)
+        .set({
+          skippedAt: new Date(),
+          claimToken: null,
+          claimedAt: null,
+          lastError: 'Consented analytics attribution was unavailable after the grace period',
+        })
+        .where(claimWhere);
+      logAnalyticsOutcome(effectiveEntry, 'skipped', { reason: 'attribution_unavailable' });
       skipped += 1;
       continue;
     }
 
     const event = {
-      eventName: entry.eventName,
-      clientId: entry.clientId,
-      ...(entry.userId ? { userId: entry.userId } : {}),
-      ...(entry.sessionId ? { sessionId: entry.sessionId } : {}),
-      consent: entry.consent,
-      occurredAt: entry.occurredAt,
-      params: entry.params,
+      eventName: effectiveEntry.eventName,
+      clientId: effectiveEntry.clientId,
+      ...(effectiveEntry.userId ? { userId: effectiveEntry.userId } : {}),
+      ...(effectiveEntry.sessionId ? { sessionId: effectiveEntry.sessionId } : {}),
+      consent: analyticsConsent,
+      occurredAt: effectiveEntry.occurredAt,
+      params: effectiveEntry.params,
     };
     const validation = await ga4Service.validateEvent(event);
     const result = validation.ok ? await ga4Service.sendEvent(event) : validation;
@@ -85,25 +208,40 @@ export async function deliverAnalytics(): Promise<{
       // GA4 2xx acknowledges transport only. End-to-end ingestion is verified by the release probe.
       await db
         .update(analyticsOutbox)
-        .set({ deliveredAt: new Date(), attempts: entry.attempts + 1, lastError: null })
-        .where(eq(analyticsOutbox.outboxId, entry.outboxId));
+        .set({
+          deliveredAt: new Date(),
+          attempts: effectiveEntry.attempts + 1,
+          claimToken: null,
+          claimedAt: null,
+          lastError: null,
+        })
+        .where(claimWhere);
+      logAnalyticsOutcome(effectiveEntry, 'transport_delivered', {
+        attempts: effectiveEntry.attempts + 1,
+      });
       delivered += 1;
     } else {
-      const attempts = entry.attempts + 1;
+      const attempts = effectiveEntry.attempts + 1;
       await db
         .update(analyticsOutbox)
         .set({
           attempts,
           availableAt: retryAt(attempts),
+          claimToken: null,
+          claimedAt: null,
           lastError: result.errors.join('; ').slice(0, 2000),
           ...(attempts >= MAX_DELIVERY_ATTEMPTS ? { skippedAt: new Date() } : {}),
         })
-        .where(eq(analyticsOutbox.outboxId, entry.outboxId));
+        .where(claimWhere);
+      logAnalyticsOutcome(effectiveEntry, 'failed', {
+        attempts,
+        validationErrors: result.errors.length,
+      });
       failed += 1;
     }
   }
 
-  return { delivered, failed, skipped };
+  return { delivered, failed, skipped, deferred };
 }
 
 export async function compensateGeneration(runId: string): Promise<void> {

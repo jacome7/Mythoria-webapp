@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
     const input = completeStorySchema.parse(await request.json());
     const {
       context: analyticsContext,
+      consent: analyticsConsent,
       attributionId,
       primaryIntent,
     } = await resolveServerAnalyticsContext({
@@ -50,6 +51,7 @@ export async function POST(request: NextRequest) {
       attributionId,
       primaryIntent,
       analyticsContext,
+      analyticsConsent,
     });
 
     return NextResponse.json(
