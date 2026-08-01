@@ -27,7 +27,7 @@ interface SignUpClientProps {
 
 const featureIcons = {
   free: '/Papercut_icons/fa-gift-papercut.webp',
-  character: '/Papercut_icons/fa-user-papercut-simple.webp',
+  character: '/Papercut_icons/fa-user-papercut.webp',
   quality: '/Papercut_icons/openBook.webp',
   creativity: '/Papercut_icons/fa-rocket-papercut.webp',
 } as const;
