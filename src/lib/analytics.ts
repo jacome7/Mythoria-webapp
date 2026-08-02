@@ -132,6 +132,7 @@ export function trackEvent(eventName: AnalyticsEvent, parameters?: Record<string
 export function setUserId(userId: string | null): void {
   const gtag = ensureGtag();
   if (!gtag) return;
+  if (userId && getStoredConsent()?.state.analytics_storage !== 'granted') return;
   try {
     gtag('set', { user_id: userId });
   } catch (error) {
@@ -200,10 +201,27 @@ export const trackPaidAction = (params: PaidActionEventParams): void => {
 export function setUserProperties(properties: Record<string, string | number | boolean>): void {
   const gtag = ensureGtag();
   if (!gtag) return;
+  if (getStoredConsent()?.state.analytics_storage !== 'granted') return;
   try {
     gtag('set', 'user_properties', properties);
   } catch (error) {
     console.error('Error setting user properties:', error);
+  }
+}
+
+/** Remove consent-gated identity data after logout or consent withdrawal. */
+export function clearUserAnalyticsContext(): void {
+  const gtag = ensureGtag();
+  if (!gtag) return;
+  try {
+    gtag('set', { user_id: null });
+    gtag('set', 'user_properties', {
+      email_verified: null,
+      profile_complete: null,
+      signup_date: null,
+    });
+  } catch (error) {
+    console.error('Error clearing analytics user context:', error);
   }
 }
 

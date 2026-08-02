@@ -3,7 +3,7 @@
 import { SignUp } from '@clerk/nextjs';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import type { LeadSessionData } from '@/types/lead';
 import { formatPhoneNumberForClerk } from '@/utils/phone-number';
 import { trackAuth } from '@/lib/analytics';
@@ -48,8 +48,10 @@ function FeatureRow({ icon, text }: { icon: string; text: string }) {
 
 export default function SignUpClient({ locale, translations, leadSession }: SignUpClientProps) {
   const search = useSearchParams();
-
-  useEffect(() => {
+  const hasTrackedSignUpStartRef = useRef(false);
+  const trackSignUpInteraction = useCallback(() => {
+    if (hasTrackedSignUpStartRef.current) return;
+    hasTrackedSignUpStartRef.current = true;
     trackAuth.signUpStarted({
       sign_up_method: leadSession?.email ? 'lead_session' : 'unknown',
     });
@@ -109,7 +111,11 @@ export default function SignUpClient({ locale, translations, leadSession }: Sign
       {/* Right side - Sign-up form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-2 sm:p-4 lg:p-8">
         <div className="w-full max-w-md">
-          <div className="bg-white rounded-2xl shadow-2xl p-2 sm:p-4 lg:p-8 border border-amber-100">
+          <div
+            className="bg-white rounded-2xl shadow-2xl p-2 sm:p-4 lg:p-8 border border-amber-100"
+            onPointerDownCapture={trackSignUpInteraction}
+            onKeyDownCapture={trackSignUpInteraction}
+          >
             {/* Mobile logo */}
             <div className="lg:hidden flex justify-center mb-6">
               <Image src="/images/logo/papercut.jpg" alt="Mythoria Logo" width={128} height={84} />

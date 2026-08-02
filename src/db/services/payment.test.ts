@@ -211,9 +211,9 @@ describe('buildPaymentOrderPurchasePayload', () => {
       transaction_id: 'order-123',
       value: 34.91,
       tax: 2.09,
+      payment_method: 'card',
     });
     expect(webhookPayload).not.toHaveProperty('gross_value');
-    expect(webhookPayload).not.toHaveProperty('payment_type');
     expect(webhookPayload.items).toHaveLength(2);
   });
 

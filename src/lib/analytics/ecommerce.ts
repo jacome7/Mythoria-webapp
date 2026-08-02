@@ -88,6 +88,7 @@ export interface GA4PurchasePayload extends GA4CheckoutPayload {
   shipping?: number;
   coupon?: string;
   customer_type?: 'new' | 'returning';
+  payment_method?: string;
 }
 
 interface PurchasePayloadInput {

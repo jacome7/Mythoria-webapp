@@ -196,7 +196,7 @@ export function buildPaymentOrderPurchasePayload(
         ],
       };
 
-  return buildPurchasePayload({
+  const payload = buildPurchasePayload({
     transactionId: order.orderId,
     currency: order.currency || 'EUR',
     grossAmountCents,
@@ -205,6 +205,14 @@ export function buildPaymentOrderPurchasePayload(
     customerType,
     orderTotals,
   });
+  const paymentMethod = metadata?.stripe?.paymentMethodType?.trim().toLowerCase();
+  return {
+    ...payload,
+    ...(paymentMethod &&
+    ['card', 'mb_way', 'revolut_pay', 'apple_pay', 'google_pay'].includes(paymentMethod)
+      ? { payment_method: paymentMethod }
+      : {}),
+  };
 }
 
 export function buildPurchaseAnalyticsOutboxEntry(

@@ -1,5 +1,5 @@
 import Script from 'next/script';
-import { getDefaultConsent, CONSENT_COOKIE_NAME } from '@/lib/consent';
+import { CONSENT_COOKIE_NAME } from '@/lib/consent';
 
 const isDebugModeEnabled = process.env.NEXT_PUBLIC_GA_DEBUG === 'true';
 
@@ -36,19 +36,30 @@ export default function GoogleAnalytics({
       }
     } catch (e) {}
 
-    // 2. Determine consent state (stored or default)
-    var consentState = storedConsent ? storedConsent.state : ${JSON.stringify(getDefaultConsent())};
-
-    // 3. Set consent defaults BEFORE any config
-    // We use wait_for_update: 500 to give the consent banner a chance to load and update consent
-    // if this is the first visit, although we default to denied anyway.
+    // 2. Always establish privacy-safe defaults before any Google tag configuration.
     window.gtag('consent', 'default', {
-      ad_storage: consentState.ad_storage,
-      ad_user_data: consentState.ad_user_data,
-      ad_personalization: consentState.ad_personalization,
-      analytics_storage: consentState.analytics_storage,
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'denied',
       wait_for_update: 500
     });
+
+    // 3. A returning visitor's stored choice is an explicit update, not a default.
+    var storedState = storedConsent && storedConsent.state;
+    var validStoredState = storedState &&
+      ['granted', 'denied'].indexOf(storedState.ad_storage) !== -1 &&
+      ['granted', 'denied'].indexOf(storedState.ad_user_data) !== -1 &&
+      ['granted', 'denied'].indexOf(storedState.ad_personalization) !== -1 &&
+      ['granted', 'denied'].indexOf(storedState.analytics_storage) !== -1;
+    if (validStoredState) {
+      window.gtag('consent', 'update', {
+        ad_storage: storedState.ad_storage,
+        ad_user_data: storedState.ad_user_data,
+        ad_personalization: storedState.ad_personalization,
+        analytics_storage: storedState.analytics_storage
+      });
+    }
 
     // 4. Set other flags
     window.gtag('set', 'ads_data_redaction', true);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { trackEvent } from './analytics';
 
@@ -31,13 +31,19 @@ export function sanitizeAnalyticsPath(pathname: string, params: URLSearchParams)
 export function useGoogleAnalytics() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const lastTrackedPathRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const path = pathname || window.location.pathname;
+      // Query cleanup and attribution redirects can update search params without a real page
+      // navigation. GA4 should receive exactly one page_view for that canonical path.
+      if (lastTrackedPathRef.current === path) return;
+
       const url = sanitizeAnalyticsPath(path, new URLSearchParams(searchParams?.toString() || ''));
       const pageLocation = window.location.origin + url;
 
+      lastTrackedPathRef.current = path;
       trackEvent('page_view', {
         page_location: pageLocation,
         page_path: path,

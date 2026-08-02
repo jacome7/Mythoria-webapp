@@ -116,9 +116,5 @@ async function captureAttribution(landingSlug: string, primaryIntent: string) {
     }),
     keepalive: true,
   });
-  if (response.ok) {
-    void fetch('/api/analytics/attribution/link', { method: 'POST', keepalive: true }).catch(() => {
-      // Signed-out visitors are linked after authentication.
-    });
-  }
+  await response.json().catch(() => null);
 }

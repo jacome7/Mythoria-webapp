@@ -27,7 +27,7 @@ describe('useGoogleAnalytics', () => {
     mockSearchParams = new URLSearchParams();
   });
 
-  it('sends one manual page_view for initial render and one per SPA URL change', () => {
+  it('sends one page_view per canonical path and ignores query-only cleanup', () => {
     const { rerender } = render(<AnalyticsHarness />);
 
     expect(mockTrackEvent).toHaveBeenCalledTimes(1);
@@ -35,6 +35,11 @@ describe('useGoogleAnalytics', () => {
       'page_view',
       expect.objectContaining({ page_path: '/en-US' }),
     );
+
+    mockSearchParams = new URLSearchParams('utm_source=google&gclid=click-1');
+    rerender(<AnalyticsHarness />);
+
+    expect(mockTrackEvent).toHaveBeenCalledTimes(1);
 
     mockPathname = '/en-US/pricing';
     mockSearchParams = new URLSearchParams(

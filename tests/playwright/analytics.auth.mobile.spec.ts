@@ -114,6 +114,7 @@ test('authenticated mobile step emits one sanitized start and view', async ({ pa
 
   expect(starts).toHaveLength(1);
   expect(views).toHaveLength(1);
+  expect(pageViews).toHaveLength(1);
   expect(views[0][2]).toMatchObject({ step_number: 1 });
   expect(JSON.stringify([...starts, ...views, ...pageViews])).not.toMatch(
     /secret|child@example\.com|token=/i,

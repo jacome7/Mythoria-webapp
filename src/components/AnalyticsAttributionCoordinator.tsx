@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
+import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { clearGoogleAnalyticsContextCache, getGoogleAnalyticsContext } from '@/lib/analytics';
 import {
@@ -29,8 +30,11 @@ const PERSISTED_CAMPAIGN_KEYS = [
 ] as const;
 
 let transientCampaign: CampaignParams = {};
-let captureInFlight: Promise<void> | undefined;
+let captureInFlight: Promise<boolean> | undefined;
+let linkInFlight: Promise<void> | undefined;
 let lastCaptureSignature: string | undefined;
+let linkedUserId: string | undefined;
+const LINK_RETRY_DELAYS_MS = [0, 250, 500, 1_000, 2_000] as const;
 
 function mergeCampaignFromLocation(): void {
   transientCampaign = {
@@ -51,10 +55,41 @@ function stripCampaignFromCurrentUrl(): void {
   window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
 }
 
-async function captureConsentedAttribution(pathname: string): Promise<void> {
+async function linkAuthenticatedAttribution(userId: string): Promise<void> {
+  if (getStoredConsent()?.state.analytics_storage !== 'granted') return;
+  if (linkedUserId === userId) return;
+  if (linkInFlight) return linkInFlight;
+
+  linkInFlight = (async () => {
+    for (const delayMs of LINK_RETRY_DELAYS_MS) {
+      if (delayMs) await new Promise((resolve) => window.setTimeout(resolve, delayMs));
+      try {
+        const response = await fetch('/api/analytics/attribution/link', {
+          method: 'POST',
+          keepalive: true,
+        });
+        if (response.status === 401 || response.status >= 500) continue;
+        if (!response.ok) return;
+        const result = (await response.json().catch(() => null)) as { linked?: boolean } | null;
+        if (result?.linked) linkedUserId = userId;
+        return;
+      } catch {
+        // Retry short authentication/network races without interrupting the user journey.
+      }
+    }
+  })().finally(() => {
+    linkInFlight = undefined;
+  });
+
+  return linkInFlight;
+}
+
+async function captureConsentedAttribution(
+  pathname: string,
+  authenticatedUserId?: string,
+): Promise<void> {
   const consent = getStoredConsent()?.state;
   if (consent?.analytics_storage !== 'granted') return;
-  if (captureInFlight) return captureInFlight;
 
   const campaign = Object.fromEntries(
     PERSISTED_CAMPAIGN_KEYS.flatMap((key) =>
@@ -64,13 +99,21 @@ async function captureConsentedAttribution(pathname: string): Promise<void> {
   const search = new URLSearchParams(window.location.search);
   const primaryIntent = getValidatedIntent(search.get('primaryIntent') || search.get('intent'));
   const signature = JSON.stringify({ pathname, primaryIntent, campaign });
-  if (signature === lastCaptureSignature) return;
+  if (signature === lastCaptureSignature) {
+    if (authenticatedUserId) await linkAuthenticatedAttribution(authenticatedUserId);
+    return;
+  }
+
+  if (captureInFlight) {
+    await captureInFlight;
+    return captureConsentedAttribution(pathname, authenticatedUserId);
+  }
 
   captureInFlight = (async () => {
     const analyticsContext = await getGoogleAnalyticsContext({ timeoutMs: 5_000 });
     if (!analyticsContext) {
       console.warn('[Analytics] GA4 context was unavailable after consent');
-      return;
+      return false;
     }
 
     const response = await fetch('/api/analytics/attribution', {
@@ -85,30 +128,35 @@ async function captureConsentedAttribution(pathname: string): Promise<void> {
       keepalive: true,
     });
     const result = (await response.json().catch(() => null)) as { captured?: boolean } | null;
-    if (!response.ok || !result?.captured) return;
+    if (!response.ok || !result?.captured) return false;
 
     lastCaptureSignature = signature;
-    await fetch('/api/analytics/attribution/link', {
-      method: 'POST',
-      keepalive: true,
-    }).catch(() => undefined);
+    linkedUserId = undefined;
     transientCampaign = {};
     stripCampaignFromCurrentUrl();
+    return true;
   })().finally(() => {
     captureInFlight = undefined;
   });
 
-  return captureInFlight;
+  const captured = await captureInFlight;
+  if (captured && authenticatedUserId) {
+    await linkAuthenticatedAttribution(authenticatedUserId);
+  }
 }
 
 export default function AnalyticsAttributionCoordinator() {
   const pathname = usePathname();
+  const { isLoaded, isSignedIn, user } = useUser();
+  const authenticatedUserId = isLoaded && isSignedIn ? user?.id : undefined;
+  const authenticatedUserIdRef = useRef(authenticatedUserId);
+  authenticatedUserIdRef.current = authenticatedUserId;
 
   useEffect(() => {
     const consent = getStoredConsent()?.state;
     if (consent?.analytics_storage === 'granted') {
       mergeCampaignFromLocation();
-      void captureConsentedAttribution(pathname);
+      void captureConsentedAttribution(pathname, authenticatedUserId);
     } else if (!consent) {
       mergeCampaignFromLocation();
     } else {
@@ -118,7 +166,13 @@ export default function AnalyticsAttributionCoordinator() {
     if (/\/(sign-up)(?:\/|$)/.test(pathname) && !consent) {
       void ensureConsentChoice();
     }
-  }, [pathname]);
+  }, [authenticatedUserId, pathname]);
+
+  useEffect(() => {
+    if (authenticatedUserId && getStoredConsent()?.state.analytics_storage === 'granted') {
+      void linkAuthenticatedAttribution(authenticatedUserId);
+    }
+  }, [authenticatedUserId]);
 
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
@@ -137,11 +191,12 @@ export default function AnalyticsAttributionCoordinator() {
       if (detail.state.analytics_storage !== 'granted') {
         transientCampaign = {};
         lastCaptureSignature = undefined;
+        linkedUserId = undefined;
         stripCampaignFromCurrentUrl();
         return;
       }
       mergeCampaignFromLocation();
-      void captureConsentedAttribution(window.location.pathname);
+      void captureConsentedAttribution(window.location.pathname, authenticatedUserIdRef.current);
     };
 
     document.addEventListener('click', handleClick, true);

@@ -1,6 +1,9 @@
 import {
   clearGoogleAnalyticsContextCache,
+  clearUserAnalyticsContext,
   getGoogleAnalyticsContext,
+  setUserId,
+  setUserProperties,
   trackAuth,
   trackCommerce,
   trackEvent,
@@ -24,6 +27,20 @@ const checkout: GA4CheckoutPayload = {
     },
   ],
 };
+
+function grantAnalyticsConsent(): void {
+  document.cookie = `mythoria_consent=${encodeURIComponent(
+    JSON.stringify({
+      state: {
+        analytics_storage: 'granted',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+      },
+      timestamp: Date.now(),
+    }),
+  )}; path=/`;
+}
 
 describe('canonical analytics event propagation', () => {
   beforeEach(() => {
@@ -75,6 +92,7 @@ describe('canonical analytics event propagation', () => {
 
   it('sets User-ID before emitting login', () => {
     const gtag = jest.fn();
+    grantAnalyticsConsent();
     window.gtag = gtag;
     trackAuth.login({ user_id: 'user_clerk_1', method: 'google' });
     expect(gtag).toHaveBeenNthCalledWith(1, 'set', { user_id: 'user_clerk_1' });
@@ -83,6 +101,32 @@ describe('canonical analytics event propagation', () => {
       'event',
       'login',
       expect.objectContaining({ method: 'google' }),
+    );
+  });
+
+  it('gates User-ID and user properties until analytics consent is granted', () => {
+    const gtag = jest.fn();
+    window.gtag = gtag;
+
+    setUserId('user_clerk_1');
+    setUserProperties({ profile_complete: true });
+    expect(gtag).not.toHaveBeenCalled();
+
+    grantAnalyticsConsent();
+    setUserId('user_clerk_1');
+    setUserProperties({ profile_complete: true });
+    expect(gtag).toHaveBeenNthCalledWith(1, 'set', { user_id: 'user_clerk_1' });
+    expect(gtag).toHaveBeenNthCalledWith(2, 'set', 'user_properties', {
+      profile_complete: true,
+    });
+
+    clearUserAnalyticsContext();
+    expect(gtag).toHaveBeenNthCalledWith(3, 'set', { user_id: null });
+    expect(gtag).toHaveBeenNthCalledWith(
+      4,
+      'set',
+      'user_properties',
+      expect.objectContaining({ profile_complete: null }),
     );
   });
 

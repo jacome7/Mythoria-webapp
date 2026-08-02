@@ -36,9 +36,17 @@ describe('GoogleAnalytics bootstrap', () => {
     expect(source.indexOf("window.gtag('consent', 'default'")).toBeLessThan(
       source.indexOf('window.gtag(\'config\', "G-TEST123"'),
     );
+    expect(source.indexOf("window.gtag('consent', 'update'")).toBeLessThan(
+      source.indexOf('window.gtag(\'config\', "G-TEST123"'),
+    );
     expect(source).toContain('window.gtag = window.gtag || function()');
+    expect(source).toContain("ad_storage: 'denied'");
+    expect(source).toContain("analytics_storage: 'denied'");
+    expect(source).toContain('ad_storage: storedState.ad_storage');
+    expect(source).not.toContain('ad_storage: consentState.ad_storage');
     expect(source).toContain('window.gtag(\'config\', "G-TEST123", { send_page_view: false');
     expect(source).toContain('window.gtag(\'config\', "AW-TEST", { send_page_view: false });');
+    expect(source).toContain('window.gtag(\'config\', "GT-TEST", { send_page_view: false });');
     expect(getByTestId('external-tag')).toHaveAttribute(
       'data-src',
       'https://www.googletagmanager.com/gtag/js?id=GT-TEST',
