@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Extrait du livre fictif «La recette d’étoiles de Grand-mère». Chapitre d’exemple : «La première étoile à la cannelle». Grand-mère disait que les recettes commençaient par les mains qui appelaient la famille à table. Hugo tenait la cuillère en bois à deux mains pendant que Grand-mère Claire lisait l’ancienne recette. « Dis un mot qui te rappelle la maison », proposa-t-elle. Lorsqu’il murmura « câlin », une petite étoile dorée sortit du saladier et ajouta une ligne à la recette qu’ils garderaient ensemble. Dans une cuisine provençale aux carreaux bleus, Grand-mère Claire apprend à Hugo que chaque recette familiale commence par un mot qui rappelle la maison.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 43.04,
+  "generatedAt": "2026-08-02T21:53:49.048Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.6241,
+    "rmsRatio": 0.0853,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

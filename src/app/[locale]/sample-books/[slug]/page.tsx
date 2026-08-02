@@ -22,15 +22,16 @@ export async function generateMetadata({ params }: SampleBookRouteProps): Promis
   const canonicalLocale = seo?.locale ?? book.locale;
   const canonical = buildLocalizedUrl(canonicalLocale, `/sample-books/${book.slug}`);
   const indexable = Boolean(seo && locale === canonicalLocale);
+  const isFictionalBook = Boolean(book.fictionalUserContext);
 
   return {
-    title: `${book.title} — exemplo ficcional | Mythoria`,
+    title: `${book.title}${isFictionalBook ? ' — exemplo ficcional' : ''} | Mythoria`,
     description: book.synopsis,
     robots: indexable ? 'index,follow,max-snippet:-1,max-image-preview:large' : 'noindex,follow',
     alternates: { canonical },
     openGraph: {
       type: 'article',
-      title: `${book.title} — exemplo ficcional`,
+      title: `${book.title}${isFictionalBook ? ' — exemplo ficcional' : ''}`,
       description: book.synopsis,
       url: canonical,
       locale: canonicalLocale.replace('-', '_'),
@@ -55,6 +56,7 @@ export default async function SampleBookPage({ params, searchParams }: SampleBoo
 
   const chapter = await getSampleBookChapter(book);
   const canonical = buildLocalizedUrl(canonicalLocale, `/sample-books/${book.slug}`);
+  const isFictionalBook = Boolean(book.fictionalUserContext);
   const structuredData = [
     {
       '@context': 'https://schema.org',
@@ -67,7 +69,9 @@ export default async function SampleBookPage({ params, searchParams }: SampleBoo
       image: [book.coverSrc, book.featureSrc, book.chapterImageSrc]
         .filter((src): src is string => Boolean(src))
         .map(buildAbsoluteUrl),
-      isBasedOn: 'Fictional editorial demonstration created by Mythoria',
+      isBasedOn: isFictionalBook
+        ? 'Fictional editorial demonstration created by Mythoria'
+        : 'Printed personalized book created with Mythoria',
       publisher: { '@type': 'Organization', name: 'Mythoria' },
     },
     {

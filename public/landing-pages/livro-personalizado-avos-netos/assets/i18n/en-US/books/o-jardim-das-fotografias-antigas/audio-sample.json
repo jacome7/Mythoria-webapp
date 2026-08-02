@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "From the fictional book “The Garden of Old Photographs”. Sample chapter: “The Photograph Beneath the Lemon Tree”. The photographs did not bloom in the sun; they bloomed when Grandpa began to speak. Lily found a photograph beneath the apple tree and asked why Grandpa was wearing a hat much too large for him. His answer opened a summer afternoon, a borrowed bicycle and a joke that had waited fifty years to make a grandchild laugh. A grandchild discovers that every old family photograph can grow into a new story when Grandpa explains what happened outside the frame.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 52.4,
+  "generatedAt": "2026-08-02T18:33:10.355Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.6407,
+    "rmsRatio": 0.072,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

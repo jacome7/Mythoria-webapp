@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Del libro ficticio «El viaje por carretera de los planes imposibles». Capítulo de muestra: «La salida 27 no estaba en el plan». Su plan tenía doce paradas y ningún espacio para la historia que ocurrió de verdad. El navegador decía que diesen la vuelta. Los cuatro votaron seguir, sobre todo porque la carretera parecía el comienzo de una película. La salida 27 los llevó a un pequeño mesón de Castilla, una pared de postales y la primera historia que jamás habrían podido programar. Cuatro amigos descubren que las salidas equivocadas, los bares inesperados y los planes de última hora crean los mejores capítulos.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 50.2,
+  "generatedAt": "2026-08-02T18:18:22.549Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.8038,
+    "rmsRatio": 0.0762,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

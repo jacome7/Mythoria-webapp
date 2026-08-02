@@ -5,7 +5,6 @@ language: "pt-PT"
 targetAudience: "adult_18+"
 novelStyle: "contemporary"
 graphicalStyle: "oil_painting"
-fictional: true
 ---
 
 # A Prateleira Mais Alta

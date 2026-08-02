@@ -40,6 +40,14 @@ describe('LandingPageBookShowcase analytics', () => {
         landingSlug="livro-personalizado-para-casais"
         locale="pt-PT"
         primaryIntent="romance"
+        labels={{
+          chapters: 'Capítulos',
+          listen: 'Ouvir excerto áudio',
+          readWithImage: 'Ler capítulo e ver imagem',
+          readSample: 'Ler capítulo de amostra',
+          sampleChapter: 'Capítulo de amostra',
+          closeSample: 'Fechar capítulo de amostra',
+        }}
       />,
     );
 

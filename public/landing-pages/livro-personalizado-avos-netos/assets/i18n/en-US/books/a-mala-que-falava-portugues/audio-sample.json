@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "From the fictional book “The Suitcase That Spoke Portuguese”. Sample chapter: “The Word Hidden in the Pocket”. Every time the suitcase opened, one family word found its way back home. Mia opened the smallest pocket and found a card with one Portuguese word in Grandma’s handwriting. She called across the ocean to hear it spoken aloud. Soon the suitcase was full of two languages, familiar voices and stories that made every Sunday call feel a little closer. A suitcase filled with recipes, sayings and photographs helps a multilingual family connect children with their grandparents’ language.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 52.88,
+  "generatedAt": "2026-08-02T15:33:15.884Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.4399,
+    "rmsRatio": 0.0466,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

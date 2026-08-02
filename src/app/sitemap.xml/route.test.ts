@@ -93,6 +93,26 @@ describe('sitemap.xml route', () => {
     );
     expect(xml).toContain('<loc>https://mythoria.pt/pt-PT/lp/historias-de-apoio</loc>');
     expect(xml).toContain('<loc>https://mythoria.pt/pt-PT/lp/livro-personalizado-ferias</loc>');
+    for (const url of [
+      'https://mythoria.pt/en-US/lp/personalized-vacation-book',
+      'https://mythoria.pt/es-ES/lp/libro-personalizado-vacaciones',
+      'https://mythoria.pt/fr-FR/lp/livre-personnalise-vacances',
+      'https://mythoria.pt/en-US/lp/personalized-book-for-couples',
+      'https://mythoria.pt/es-ES/lp/libro-personalizado-para-parejas',
+      'https://mythoria.pt/fr-FR/lp/livre-personnalise-pour-couples',
+      'https://mythoria.pt/en-US/lp/personalized-book-for-grandparents-and-grandchildren',
+      'https://mythoria.pt/es-ES/lp/libro-personalizado-para-abuelos-y-nietos',
+      'https://mythoria.pt/fr-FR/lp/livre-personnalise-pour-grands-parents-et-petits-enfants',
+    ]) {
+      expect(xml).toContain(`<loc>${url}</loc>`);
+    }
+    const localizedLandingEntry = xml.match(
+      /<url>\s*<loc>https:\/\/mythoria\.pt\/en-US\/lp\/personalized-vacation-book<\/loc>[\s\S]*?<\/url>/,
+    )?.[0];
+    expect(localizedLandingEntry).toContain('hreflang="pt-pt"');
+    expect(localizedLandingEntry).toContain('hreflang="es-es"');
+    expect(localizedLandingEntry).toContain('hreflang="fr-fr"');
+    expect(localizedLandingEntry).not.toContain('hreflang="de-de"');
     expect(xml).toContain(
       '<loc>https://mythoria.pt/pt-PT/guias/como-transformar-memorias-num-livro-personalizado-para-casal</loc>',
     );

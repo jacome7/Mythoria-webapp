@@ -193,6 +193,12 @@
         "step6": "Step 6"
       }
     },
+    "landingGuides": {
+      "eyebrow": "Mythoria Guides",
+      "title": "Find the right story for every person and occasion",
+      "intro": "Explore ideas and personalization options before starting your book.",
+      "explore": "Explore {title}"
+    },
     "community": {
       "title": "Join Our Growing Community of Storytellers!"
     },

@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 import {
   ArrowRight,
   BookOpen,
@@ -27,7 +28,8 @@ interface LandingPageTemplateProps {
 
 const formatIcons = [BookOpen, Headphones, Printer, Sparkles];
 
-export default function LandingPageTemplate({ page }: LandingPageTemplateProps) {
+export default async function LandingPageTemplate({ page }: LandingPageTemplateProps) {
+  const t = await getTranslations({ locale: page.locale, namespace: 'LandingPages' });
   const createHref = `/${page.locale}/tell-your-story/step-1?landingSlug=${page.slug}&primaryIntent=${page.primaryIntent}`;
   const primaryHref = page.primaryCtaHref ?? createHref;
   const secondaryHref = page.secondaryCtaHref ?? '#exemplos';
@@ -35,12 +37,23 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
     page.forProfessionals?.ctaHref ??
     `/${page.locale}/contactUs?topic=parcerias&landingSlug=${page.slug}`;
   const booksSection = page.booksSection ?? {
-    eyebrow: 'Exemplos ficcionais',
-    title: 'Cinco ideias de livros para começar',
-    intro:
-      'Estes conceitos mostram caminhos possíveis. Não são testemunhos reais nem histórias públicas já publicadas.',
+    eyebrow: t('defaults.booksEyebrow'),
+    title: t('defaults.booksTitle'),
+    intro: t('defaults.booksIntro'),
   };
-  const relatedPages = getRelatedLandingPageItems(page.slug);
+  const relatedPages = getRelatedLandingPageItems(page.locale, page.slug);
+  const sectionLabels = {
+    createInPortuguese: t('createInPortuguese'),
+    languageOption: t('tables.languageOption'),
+    exampleExcerpt: t('tables.exampleExcerpt'),
+    whenToUse: t('tables.whenToUse'),
+    activity: t('tables.activity'),
+    idealFor: t('tables.idealFor'),
+    result: t('tables.result'),
+    baseIdea: t('tables.baseIdea'),
+    literaryPersona: t('tables.literaryPersona'),
+    conceptsWorked: t('tables.conceptsWorked'),
+  };
 
   return (
     <main
@@ -173,7 +186,9 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
               </p>
               {page.showEditorialReview !== false && (
                 <p className="mt-4 text-sm font-medium text-base-content/60">
-                  Conteúdo editorial Mythoria · Revisto em {formatEditorialDate(page.updatedAt)}
+                  {t('editorialReviewed', {
+                    date: formatEditorialDate(page.updatedAt, page.locale),
+                  })}
                 </p>
               )}
             </div>
@@ -237,7 +252,7 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
           />
         )}
 
-        {page.workshop && <WorkshopSections workshop={page.workshop} />}
+        {page.workshop && <WorkshopSections workshop={page.workshop} labels={sectionLabels} />}
 
         {page.socialStoryExplainer && (
           <section className="my-16">
@@ -347,6 +362,7 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
             diaspora={page.diaspora}
             ctaHref={primaryHref}
             ctaIcon={page.templateIcons?.ctaArrow}
+            labels={sectionLabels}
           />
         )}
 
@@ -384,6 +400,14 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
             primaryIntent={page.primaryIntent}
             audioIcon={page.templateIcons?.audioSample}
             sampleChapterIcon={page.templateIcons?.sampleChapter}
+            labels={{
+              chapters: t('book.chapters'),
+              listen: t('book.listen'),
+              readWithImage: t('book.readWithImage'),
+              readSample: t('book.readSample'),
+              sampleChapter: t('book.sampleChapter'),
+              closeSample: t('book.closeSample'),
+            }}
           />
         </section>
 
@@ -513,7 +537,7 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
 
         <section className="my-16" data-analytics-section="faq" data-section-position="5">
           <h2 className="font-display mb-8 text-3xl font-bold text-[#33251c] md:text-4xl">
-            Perguntas frequentes
+            {t('faqTitle')}
           </h2>
           <div className="space-y-4">
             {page.faq.map((item) => (
@@ -554,7 +578,7 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
         {page.relatedGuide ? (
           <section className="my-16 rounded-3xl border border-primary/15 bg-white p-7 shadow-sm md:p-9">
             <p className="text-sm font-semibold uppercase tracking-wide text-primary">
-              Guia aprofundado
+              {t('related.guideEyebrow')}
             </p>
             <h2 className="font-display mt-2 text-3xl font-bold text-[#33251c]">
               {page.relatedGuide.title}
@@ -567,14 +591,14 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
                 href={page.relatedGuide.href}
                 className="inline-flex items-center gap-2 font-semibold text-primary hover:underline"
               >
-                Ler o guia completo
+                {t('related.guide')}
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>
               <Link
                 href={page.relatedGuide.sampleHref}
                 className="inline-flex items-center gap-2 font-semibold text-primary hover:underline sm:ml-6"
               >
-                Ler o exemplo ficcional “{page.relatedGuide.sampleTitle}”
+                {t('related.sample', { title: page.relatedGuide.sampleTitle })}
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>
             </div>
@@ -584,17 +608,16 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
         <section className="my-16" aria-labelledby="related-guides-title">
           <div className="mb-8 max-w-3xl">
             <p className="text-sm font-semibold uppercase tracking-wide text-primary">
-              Explorar mais
+              {t('related.eyebrow')}
             </p>
             <h2
               id="related-guides-title"
               className="font-display mt-2 text-3xl font-bold text-[#33251c] md:text-4xl"
             >
-              Também poderá interessar-lhe
+              {t('related.title')}
             </h2>
             <p className="mt-3 text-lg leading-relaxed text-base-content/75">
-              Continue a explorar ideias, ocasiões e formas cuidadosas de transformar memórias em
-              livros personalizados.
+              {t('related.intro')}
             </p>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
@@ -613,7 +636,7 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
                   href={relatedPage.href}
                   className="mt-5 inline-flex items-center gap-2 font-semibold text-primary hover:underline"
                 >
-                  Explorar {relatedPage.title.toLocaleLowerCase('pt-PT')}
+                  {t('related.explore', { title: relatedPage.title })}
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
               </article>
@@ -645,7 +668,14 @@ export default function LandingPageTemplate({ page }: LandingPageTemplateProps) 
           </div>
         </section>
       </div>
-      <LandingPageFloatingNavigation />
+      <LandingPageFloatingNavigation
+        labels={{
+          examplesAria: t('floating.examplesAria'),
+          examples: t('floating.examples'),
+          topAria: t('floating.topAria'),
+          top: t('floating.top'),
+        }}
+      />
     </main>
   );
 }
@@ -776,10 +806,12 @@ function DiasporaSection({
   diaspora,
   ctaHref,
   ctaIcon,
+  labels,
 }: {
   diaspora: NonNullable<LandingPageContent['diaspora']>;
   ctaHref: string;
   ctaIcon?: LandingPageTemplateIcon;
+  labels: LandingPageSectionLabels;
 }) {
   return (
     <section id="diaspora" className="my-16 scroll-mt-24 rounded-[1.5rem] bg-[#f8ead2] p-6 md:p-8">
@@ -795,7 +827,7 @@ function DiasporaSection({
           </div>
           <div className="mt-6">
             <Link href={ctaHref} className="btn btn-secondary gap-2">
-              Criar história em português
+              {labels.createInPortuguese}
               <CtaArrow icon={ctaIcon} />
             </Link>
           </div>
@@ -823,9 +855,9 @@ function DiasporaSection({
           <table className="table">
             <thead>
               <tr className="text-base-content/60">
-                <th>Opção de língua</th>
-                <th>Excerto exemplo</th>
-                <th>Quando usar</th>
+                <th>{labels.languageOption}</th>
+                <th>{labels.exampleExcerpt}</th>
+                <th>{labels.whenToUse}</th>
               </tr>
             </thead>
             <tbody>
@@ -844,7 +876,26 @@ function DiasporaSection({
   );
 }
 
-function WorkshopSections({ workshop }: { workshop: NonNullable<LandingPageContent['workshop']> }) {
+interface LandingPageSectionLabels {
+  createInPortuguese: string;
+  languageOption: string;
+  exampleExcerpt: string;
+  whenToUse: string;
+  activity: string;
+  idealFor: string;
+  result: string;
+  baseIdea: string;
+  literaryPersona: string;
+  conceptsWorked: string;
+}
+
+function WorkshopSections({
+  workshop,
+  labels,
+}: {
+  workshop: NonNullable<LandingPageContent['workshop']>;
+  labels: LandingPageSectionLabels;
+}) {
   return (
     <>
       <section className="my-16">
@@ -962,7 +1013,9 @@ function WorkshopSections({ workshop }: { workshop: NonNullable<LandingPageConte
                   </p>
                 </div>
                 <div>
-                  <h4 className="font-display text-base font-bold text-[#33251c]">Atividade</h4>
+                  <h4 className="font-display text-base font-bold text-[#33251c]">
+                    {labels.activity}
+                  </h4>
                   <ol className="mt-2 space-y-2">
                     {activity.activitySteps.map((step, index) => (
                       <li key={step} className="flex gap-3 text-sm leading-relaxed">
@@ -974,7 +1027,7 @@ function WorkshopSections({ workshop }: { workshop: NonNullable<LandingPageConte
                 </div>
                 <div>
                   <h4 className="font-display text-base font-bold text-[#33251c]">
-                    Conceitos trabalhados
+                    {labels.conceptsWorked}
                   </h4>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {activity.concepts.map((concept) => (
@@ -1058,11 +1111,11 @@ function WorkshopSections({ workshop }: { workshop: NonNullable<LandingPageConte
                 {format.title}
               </h3>
               <p className="mt-3 text-sm leading-relaxed text-base-content/65">
-                <strong className="text-base-content">Ideal para: </strong>
+                <strong className="text-base-content">{labels.idealFor} </strong>
                 {format.idealFor}
               </p>
               <p className="mt-3 text-sm leading-relaxed text-base-content/65">
-                <strong className="text-base-content">Resultado: </strong>
+                <strong className="text-base-content">{labels.result} </strong>
                 {format.result}
               </p>
             </article>
@@ -1091,9 +1144,9 @@ function WorkshopSections({ workshop }: { workshop: NonNullable<LandingPageConte
               <table className="table">
                 <thead>
                   <tr className="text-base-content/60">
-                    <th>Ideia base</th>
-                    <th>Persona literária</th>
-                    <th>Resultado</th>
+                    <th>{labels.baseIdea}</th>
+                    <th>{labels.literaryPersona}</th>
+                    <th>{labels.result}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1449,7 +1502,7 @@ function buildStructuredData(page: LandingPageContent) {
         name: 'Mythoria',
         url: base,
       },
-      areaServed: 'PT',
+      areaServed: page.structuredData?.areaServed ?? page.locale.split('-')[1] ?? 'PT',
       inLanguage: page.locale,
       url: pageUrl,
     },
@@ -1479,11 +1532,11 @@ function buildStructuredData(page: LandingPageContent) {
   ].filter(Boolean);
 }
 
-function formatEditorialDate(value: string) {
+function formatEditorialDate(value: string, locale: string) {
   const date = new Date(`${value}T12:00:00Z`);
   if (Number.isNaN(date.getTime())) return value;
 
-  return new Intl.DateTimeFormat('pt-PT', {
+  return new Intl.DateTimeFormat(locale, {
     day: 'numeric',
     month: 'long',
     year: 'numeric',

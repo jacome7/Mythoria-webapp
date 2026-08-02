@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "From the fictional book “The Summer Thomas Found an Island”. Sample chapter: “An island made of memories”. The island appeared only when the family placed their favorite photos side by side. Thomas spread the Cape Cod vacation photos across the table: a red umbrella, a melting ice cream and four sandy pairs of feet. When he put them in the right order, their coastlines joined into a new island—one that existed only in the story his family could tell together. Cape Cod beaches, ice cream and sunset pictures lead Thomas to an island built from the moments his family shared.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 45.84,
+  "generatedAt": "2026-08-02T18:22:35.910Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.7356,
+    "rmsRatio": 0.0791,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

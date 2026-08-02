@@ -19,46 +19,18 @@ interface HomePageClientProps {
   initialHeroIntentOverride?: StoryIntent | null;
   initialIntentContext?: IntentContext | null;
   intentOverrideActive?: boolean;
+  homepageGuides?: Array<{
+    href: string;
+    title: string;
+    description: string;
+  }>;
 }
-
-const portugueseLandingPageGuides = [
-  {
-    href: '/pt-PT/lp/livro-personalizado-avos-netos',
-    title: 'Livro personalizado para avós e netos',
-    description: 'Ideias para guardar memórias, tradições e aventuras partilhadas em família.',
-  },
-  {
-    href: '/pt-PT/lp/livro-personalizado-para-casais',
-    title: 'Livro personalizado para casais',
-    description: 'Uma prenda romântica construída com momentos e detalhes que só o casal conhece.',
-  },
-  {
-    href: '/pt-PT/lp/livro-personalizado-ferias',
-    title: 'Livro personalizado de férias',
-    description: 'Transforme fotografias, lugares e pequenos episódios numa história de viagem.',
-  },
-  {
-    href: '/pt-PT/lp/livro-personalizado-criancas-autistas',
-    title: 'Livros para crianças com PEA ou PHDA',
-    description:
-      'Histórias personalizadas, previsíveis e cuidadosas, sempre sob controlo do adulto.',
-  },
-  {
-    href: '/pt-PT/lp/historias-de-apoio',
-    title: 'Histórias de apoio para desafios da vida',
-    description: 'Histórias para conversar sobre mudanças e emoções com segurança.',
-  },
-  {
-    href: '/pt-PT/lp/workshops-criancas',
-    title: 'Workshops criativos para crianças',
-    description: 'Atividades guiadas para transformar ideias de grupo em histórias personalizadas.',
-  },
-] as const;
 
 export default function HomePageClient({
   initialHeroIntentOverride = null,
   initialIntentContext = null,
   intentOverrideActive = false,
+  homepageGuides = [],
 }: HomePageClientProps) {
   const tHomePage = useTranslations('HomePage');
   const locale = useLocale();
@@ -316,27 +288,27 @@ export default function HomePageClient({
           <HowItWorks />
         </ScrollFadeIn>
 
-        {locale === 'pt-PT' ? (
+        {homepageGuides.length > 0 ? (
           <>
             <div className="divider my-16"></div>
             <ScrollFadeIn threshold={0.1} rootMargin="0px 0px -20px 0px">
               <section className="my-16" aria-labelledby="homepage-guides-title">
                 <div className="mx-auto max-w-4xl text-center">
                   <p className="text-sm font-semibold uppercase tracking-wide text-primary">
-                    Guias Mythoria
+                    {tHomePage('landingGuides.eyebrow')}
                   </p>
                   <h2
                     id="homepage-guides-title"
                     className="font-display mt-2 text-4xl font-bold text-[color:var(--color-primary)]"
                   >
-                    Encontre a história certa para cada pessoa e ocasião
+                    {tHomePage('landingGuides.title')}
                   </h2>
                   <p className="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-base-content/75">
-                    Explore ideias e opções de personalização antes de começar o seu livro.
+                    {tHomePage('landingGuides.intro')}
                   </p>
                 </div>
                 <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {portugueseLandingPageGuides.map((guide) => (
+                  {homepageGuides.map((guide) => (
                     <article
                       key={guide.href}
                       className="rounded-2xl border border-primary/10 bg-white p-5 shadow-sm"
@@ -351,7 +323,7 @@ export default function HomePageClient({
                         href={guide.href}
                         className="mt-5 inline-flex font-semibold text-primary hover:underline"
                       >
-                        Explorar {guide.title.toLocaleLowerCase('pt-PT')}
+                        {tHomePage('landingGuides.explore', { title: guide.title })}
                       </Link>
                     </article>
                   ))}

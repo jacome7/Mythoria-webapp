@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Extrait du livre fictif «Léonie et le secret de l’aquarium». Chapitre d’exemple : «L’indice près de la vitre bleue». Le premier indice brillait sur la vitre, juste à côté de la tortue photographiée. Léonie prit la première photo dans le tunnel bleu de l’Aquarium de Paris au moment où une tortue passait si lentement qu’elle semblait observer toute la famille. Une petite flèche faite de bulles apparut sur l’écran. Sa mère ne la voyait pas sur la vitre : elles comparèrent les images et suivirent le parcours jusqu’au prochain indice. Une visite familiale à l’Aquarium de Paris devient une piste aux indices lorsque Léonie remarque une tortue mystérieuse sur les photos.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 45.32,
+  "generatedAt": "2026-08-02T18:20:52.040Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.7404,
+    "rmsRatio": 0.0885,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

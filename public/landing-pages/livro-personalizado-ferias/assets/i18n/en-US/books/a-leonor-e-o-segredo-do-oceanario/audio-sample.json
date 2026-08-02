@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "From the fictional book “Eleanor and the Aquarium Secret”. Sample chapter: “The clue by the blue glass”. The first clue shimmered on the glass beside the turtle in the photograph. Eleanor took the first photo in the blue tunnel at the New York Aquarium just as a turtle drifted past, slowly enough to seem curious about the whole family. A tiny arrow made of bubbles appeared on the screen. Her mother could not see it on the glass, so they compared the photos and followed the safe visitor route to the next clue. A family visit to the New York Aquarium becomes a trail of clues when Eleanor spots a mysterious turtle in the vacation photos.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 36.84,
+  "generatedAt": "2026-08-02T18:22:01.850Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.4687,
+    "rmsRatio": 0.0563,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Del libro ficticio «Leonor y el secreto del acuario». Capítulo de muestra: «La pista junto al cristal azul». La primera pista brillaba en el cristal, junto a la tortuga de la fotografía. Leonor hizo la primera foto en el túnel azul del Oceanogràfic justo cuando una tortuga pasó tan despacio que parecía observar a toda la familia. En la pantalla apareció una flecha diminuta hecha de burbujas. Su madre no la veía en el cristal, así que compararon las fotos y siguieron el recorrido seguro hasta la siguiente pista. Una visita familiar al Oceanogràfic de Valencia se convierte en una ruta de pistas cuando Leonor descubre una tortuga misteriosa en las fotos.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 54.24,
+  "generatedAt": "2026-08-02T18:16:47.083Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.7971,
+    "rmsRatio": 0.101,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

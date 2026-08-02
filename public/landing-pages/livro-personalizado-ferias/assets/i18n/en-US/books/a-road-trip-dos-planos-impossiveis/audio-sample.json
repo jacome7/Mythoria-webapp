@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "From the fictional book “The Road Trip of Impossible Plans”. Sample chapter: “Exit 27 was not on the plan”. Their plan had twelve stops and no room at all for the story that actually happened. The navigation app said to turn around. The four friends voted to continue, mostly because the road ahead looked like the beginning of a film. Exit 27 led to a tiny Catskills diner, a wall of postcards and the first story they all agreed would have been impossible to schedule. Four friends discover that missed exits, unusual diners and last-minute plans make the best chapters.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 46.64,
+  "generatedAt": "2026-08-02T18:23:33.925Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.5952,
+    "rmsRatio": 0.0733,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

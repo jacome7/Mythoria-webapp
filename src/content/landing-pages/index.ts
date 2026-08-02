@@ -1,9 +1,15 @@
 import { autismStoriesLandingPage } from './autism-stories.pt-PT';
 import { familyTravelLandingPage } from './family-travel.pt-PT';
 import { grandparentsStoriesLandingPage } from './grandparents-stories.pt-PT';
+import { localizedLandingPages } from './localized';
 import { romanceGiftsLandingPage } from './romance-gifts.pt-PT';
-import type { LandingPageBook, LandingPageContent, LandingPageTemplateIcon } from './types';
 import { supportiveStoriesLandingPage } from './supportive-stories.pt-PT';
+import type {
+  LandingPageBook,
+  LandingPageContent,
+  LandingPageTemplateIcon,
+  LandingPageTranslationKey,
+} from './types';
 import { workshopsChildrenLandingPage } from './workshops-criancas.pt-PT';
 import { isValidIntent, normalizeIntent } from '@/constants/intents';
 import type { IntentContext } from '@/types/intent-context';
@@ -15,58 +21,46 @@ const landingPages = [
   romanceGiftsLandingPage,
   supportiveStoriesLandingPage,
   workshopsChildrenLandingPage,
+  ...localizedLandingPages,
 ] satisfies LandingPageContent[];
 
 export const LANDING_PAGE_HUB_UPDATED_AT = '2026-07-27';
 
-const landingPageCategories: Record<string, string> = {
-  'livro-personalizado-avos-netos': 'Família e relações',
-  'livro-personalizado-para-casais': 'Família e relações',
-  'livro-personalizado-criancas-autistas': 'Crianças e aprendizagem',
-  'workshops-criancas': 'Crianças e aprendizagem',
-  'historias-de-apoio': 'Histórias de apoio',
-  'livro-personalizado-ferias': 'Viagens e memórias',
+const landingPageCategories: Record<LandingPageTranslationKey, string> = {
+  'grandparents-stories': 'Família e relações',
+  'romance-gifts': 'Família e relações',
+  'autism-stories': 'Crianças e aprendizagem',
+  'workshops-children': 'Crianças e aprendizagem',
+  'supportive-stories': 'Histórias de apoio',
+  'family-travel': 'Viagens e memórias',
 };
 
-const relatedLandingPageSlugs: Record<string, string[]> = {
-  'livro-personalizado-avos-netos': [
-    'livro-personalizado-ferias',
-    'livro-personalizado-para-casais',
-    'historias-de-apoio',
-  ],
-  'livro-personalizado-para-casais': [
-    'livro-personalizado-ferias',
-    'livro-personalizado-avos-netos',
-    'historias-de-apoio',
-  ],
-  'livro-personalizado-criancas-autistas': [
-    'historias-de-apoio',
-    'workshops-criancas',
-    'livro-personalizado-avos-netos',
-  ],
-  'historias-de-apoio': [
-    'livro-personalizado-criancas-autistas',
-    'livro-personalizado-avos-netos',
-    'livro-personalizado-ferias',
-  ],
-  'workshops-criancas': [
-    'livro-personalizado-criancas-autistas',
-    'livro-personalizado-avos-netos',
-    'livro-personalizado-ferias',
-  ],
-  'livro-personalizado-ferias': [
-    'livro-personalizado-avos-netos',
-    'livro-personalizado-para-casais',
-    'workshops-criancas',
-  ],
+const relatedLandingPageKeys: Record<LandingPageTranslationKey, LandingPageTranslationKey[]> = {
+  'grandparents-stories': ['family-travel', 'romance-gifts', 'supportive-stories'],
+  'romance-gifts': ['family-travel', 'grandparents-stories', 'supportive-stories'],
+  'autism-stories': ['supportive-stories', 'workshops-children', 'grandparents-stories'],
+  'supportive-stories': ['autism-stories', 'grandparents-stories', 'family-travel'],
+  'workshops-children': ['autism-stories', 'grandparents-stories', 'family-travel'],
+  'family-travel': ['grandparents-stories', 'romance-gifts', 'workshops-children'],
 };
 
+export function getLandingPage(locale: string, slug: string): LandingPageContent | undefined {
+  return landingPages.find((page) => page.locale === locale && page.slug === slug);
+}
+
+/** Resolves legacy or wrong-locale URLs whose slug is globally unique. */
 export function getLandingPageBySlug(slug: string): LandingPageContent | undefined {
   return landingPages.find((page) => page.slug === slug);
 }
 
+export function getLandingPageTranslations(
+  translationKey: LandingPageTranslationKey,
+): LandingPageContent[] {
+  return landingPages.filter((page) => page.translationKey === translationKey);
+}
+
 export function getLandingPageIntentContext(locale: string, slug: string): IntentContext | null {
-  const page = landingPages.find((item) => item.locale === locale && item.slug === slug);
+  const page = getLandingPage(locale, slug);
   if (!page) return null;
 
   const intent = normalizeIntent(page.primaryIntent);
@@ -86,9 +80,9 @@ export function getLandingPageStaticParams(): Array<{ locale: string; slug: stri
   }));
 }
 
-export function getLandingPageIndexItems() {
+export function getLandingPageIndexItems(locale = 'pt-PT') {
   return landingPages
-    .filter((page) => page.indexable || page.showInLandingPageIndex)
+    .filter((page) => page.locale === locale && (page.indexable || page.showInLandingPageIndex))
     .map((page) => ({
       title: page.title,
       metaDescription: page.metaDescription,
@@ -97,30 +91,53 @@ export function getLandingPageIndexItems() {
       indexable: page.indexable,
       updatedAt: page.updatedAt,
       href: `/${page.locale}/lp/${page.slug}`,
-      category: landingPageCategories[page.slug] ?? 'Outros guias',
+      category: landingPageCategories[page.translationKey],
+    }));
+}
+
+export function getHomepageLandingPageGuides(locale: string) {
+  return landingPages
+    .filter((page) => page.locale === locale && page.indexable && page.homepageCard)
+    .map((page) => ({
+      href: `/${page.locale}/lp/${page.slug}`,
+      title: page.homepageCard!.title,
+      description: page.homepageCard!.description,
     }));
 }
 
 export function getLandingPageHubUpdatedAt(): string {
   return landingPages
-    .filter((page) => page.indexable || page.showInLandingPageIndex)
+    .filter((page) => page.locale === 'pt-PT' && (page.indexable || page.showInLandingPageIndex))
     .reduce(
       (latest, page) => (page.updatedAt > latest ? page.updatedAt : latest),
       LANDING_PAGE_HUB_UPDATED_AT,
     );
 }
 
-export function getRelatedLandingPageItems(slug: string) {
-  const relatedSlugs = relatedLandingPageSlugs[slug] ?? [];
+export function getRelatedLandingPageItems(locale: string, slug: string) {
+  const page = getLandingPage(locale, slug);
+  if (!page) return [];
 
-  return relatedSlugs
-    .map((relatedSlug) => landingPages.find((page) => page.slug === relatedSlug))
-    .filter((page): page is LandingPageContent => Boolean(page?.indexable))
-    .map((page) => ({
-      title: page.title,
-      description: page.metaDescription,
-      href: `/${page.locale}/lp/${page.slug}`,
+  return relatedLandingPageKeys[page.translationKey]
+    .map((translationKey) =>
+      landingPages.find(
+        (candidate) =>
+          candidate.translationKey === translationKey &&
+          candidate.locale === locale &&
+          candidate.indexable,
+      ),
+    )
+    .filter((candidate): candidate is LandingPageContent => Boolean(candidate))
+    .map((candidate) => ({
+      title: candidate.title,
+      description: candidate.metaDescription,
+      href: `/${candidate.locale}/lp/${candidate.slug}`,
     }));
 }
 
-export type { LandingPageBook, LandingPageContent, LandingPageTemplateIcon };
+export type {
+  LandingPageBook,
+  LandingPageContent,
+  LandingPageTemplateIcon,
+  LandingPageTranslationKey,
+};

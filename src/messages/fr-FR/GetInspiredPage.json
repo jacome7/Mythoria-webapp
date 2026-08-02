@@ -34,7 +34,9 @@
       "disney_style": "Style Disney",
       "sketch": "Esquisser",
       "oil_painting": "Peinture à l'huile",
-      "colored_pencil": "Crayon de couleur"
+      "colored_pencil": "Crayon de couleur",
+      "claymation": "Claymation",
+      "papercut": "PaperCut"
     },
     "novelStyle": {
       "adventure": "Aventure",

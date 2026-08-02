@@ -6,6 +6,7 @@ const assetBase = `/landing-pages/${slug}/assets`;
 const sampleBookBase = `${assetBase}/books`;
 
 export const romanceGiftsLandingPage: LandingPageContent = {
+  translationKey: 'romance-gifts',
   slug,
   locale: 'pt-PT',
   title: 'Livro personalizado para casais',
@@ -26,6 +27,10 @@ export const romanceGiftsLandingPage: LandingPageContent = {
   analytics: {
     pageViewEvent: 'landing_page_view',
     variant: 'romance-v1',
+  },
+  homepageCard: {
+    title: 'Livro personalizado para casais',
+    description: 'Uma prenda romântica construída com momentos e detalhes que só o casal conhece.',
   },
   trustBadges: ['Privado por defeito', 'Reveja antes de oferecer'],
   templateIcons: {
@@ -217,8 +222,6 @@ export const romanceGiftsLandingPage: LandingPageContent = {
       styleLabel: 'Aguarela',
       contextLabel: 'Primeiro encontro',
       ageLabel: 'Adultos',
-      chapterCountLabel: 'Capítulo de amostra',
-      durationLabel: 'Áudio 33 s',
       audioSampleSrc: `${sampleBookBase}/ines-e-diogo-um-amor-inesperado/audio-teaser.mp3`,
       audioSampleTitle: 'Ouvir excerto narrado',
       sampleChapter: {
@@ -247,8 +250,6 @@ export const romanceGiftsLandingPage: LandingPageContent = {
       styleLabel: 'Minimalista',
       contextLabel: 'Primeiro beijo',
       ageLabel: 'Adultos',
-      chapterCountLabel: 'Capítulo de amostra',
-      durationLabel: 'Áudio 33 s',
       audioSampleSrc: `${sampleBookBase}/o-nosso-primeiro-beijo-foi-so-o-principio/audio-teaser.mp3`,
       audioSampleTitle: 'Ouvir excerto narrado',
       sampleChapter: {
@@ -277,8 +278,6 @@ export const romanceGiftsLandingPage: LandingPageContent = {
       styleLabel: 'Pintura a óleo',
       contextLabel: 'Vida partilhada',
       ageLabel: 'Adultos',
-      chapterCountLabel: 'Capítulo de amostra',
-      durationLabel: 'Áudio 35 s',
       audioSampleSrc: `${sampleBookBase}/duas-chavenas-uma-vida/audio-teaser.mp3`,
       audioSampleTitle: 'Ouvir excerto narrado',
       sampleChapter: {
@@ -307,8 +306,6 @@ export const romanceGiftsLandingPage: LandingPageContent = {
       styleLabel: 'Arte digital',
       contextLabel: 'Amor à distância',
       ageLabel: 'Adultos',
-      chapterCountLabel: 'Capítulo de amostra',
-      durationLabel: 'Áudio 35 s',
       audioSampleSrc: `${sampleBookBase}/leonor-e-matilde-dois-paises-uma-casa/audio-teaser.mp3`,
       audioSampleTitle: 'Ouvir excerto narrado',
       sampleChapter: {
@@ -339,8 +336,6 @@ export const romanceGiftsLandingPage: LandingPageContent = {
       styleLabel: 'Minimalista',
       contextLabel: 'Próximo capítulo',
       ageLabel: 'Adultos',
-      chapterCountLabel: 'Capítulo de amostra',
-      durationLabel: 'Áudio 37 s',
       audioSampleSrc: `${sampleBookBase}/rui-e-tomas-o-ultimo-capitulo-antes-do-sim/audio-teaser.mp3`,
       audioSampleTitle: 'Ouvir excerto narrado',
       sampleChapter: {
@@ -371,10 +366,10 @@ export const romanceGiftsLandingPage: LandingPageContent = {
   formats: {
     title: 'Formatos disponíveis no percurso',
     items: [
-      'Leitura digital privada.',
-      'Áudio quando disponível para a história.',
-      'PDF para autoimpressão quando disponível.',
-      'Livro impresso conforme disponibilidade e destino.',
+      'Leitura digital privada',
+      'Áudio quando disponível',
+      'PDF pronto para impressão local',
+      'Livro impresso e enviado por correio',
     ],
   },
   trustAndPrivacy: {
@@ -475,10 +470,6 @@ export const romanceGiftsLandingPage: LandingPageContent = {
         'Sim, pode escolher uma das línguas suportadas pela Mythoria e, quando disponível, traduzir uma história já criada. É especialmente útil para casais de países diferentes, relações à distância ou prendas destinadas a uma família bilingue.',
     },
   ],
-  safetyNote: {
-    title: 'Proteja os detalhes que pertencem aos dois',
-    body: 'Evite moradas, contactos, documentos, dados íntimos e informação de terceiros sem autorização. Conteúdo privado não deve ser reutilizado como exemplo público ou marketing sem uma ação e base legítima próprias.',
-  },
   finalCta: {
     title: 'O próximo capítulo pode começar com as memórias que já têm.',
     body: 'Escolha um momento. Acrescente os detalhes que só vocês reconhecem. A Mythoria ajuda a transformá-los num livro para oferecer, reler e guardar.',

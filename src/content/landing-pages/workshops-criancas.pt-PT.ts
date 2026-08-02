@@ -6,6 +6,7 @@ const sampleBookBase = `${assetBase}/sample-books`;
 const iconBase = '/Papercut_icons';
 
 export const workshopsChildrenLandingPage: LandingPageContent = {
+  translationKey: 'workshops-children',
   slug,
   locale: 'pt-PT',
   title: 'Workshops Mythoria para crianças',
@@ -22,6 +23,10 @@ export const workshopsChildrenLandingPage: LandingPageContent = {
   primaryCtaHref: `/pt-PT/contactUs?topic=workshops&landingSlug=${slug}`,
   secondaryCta: 'Ver atividades por idade',
   secondaryCtaHref: '#atividades-idade',
+  homepageCard: {
+    title: 'Workshops criativos para crianças',
+    description: 'Atividades guiadas para transformar ideias de grupo em histórias personalizadas.',
+  },
   templateIcons: {
     heroEyebrow: {
       src: `${iconBase}/sparkles.webp`,
@@ -486,8 +491,6 @@ export const workshopsChildrenLandingPage: LandingPageContent = {
         'Livro físico O Gato que Guardava a Lua numa mesa de workshop, ao lado de desenho infantil e lápis de cor',
       styleLabel: 'Lápis de cor',
       contextLabel: '5-7 anos',
-      chapterCountLabel: '4 capítulos',
-      durationLabel: 'Áudio 34 s',
       audioSampleSrc: `${sampleBookBase}/o-gato-que-guardava-a-lua/audio-teaser.mp3`,
       audioSampleTitle: 'Ouvir excerto narrado',
       sampleChapter: {
@@ -539,8 +542,6 @@ export const workshopsChildrenLandingPage: LandingPageContent = {
         'Livro físico A Final do Bairro das Estrelas numa mesa de workshop, junto a bola e desenho de táticas',
       styleLabel: 'Banda desenhada',
       contextLabel: '8-10 anos',
-      chapterCountLabel: '5 capítulos',
-      durationLabel: 'Áudio 25 s',
       audioSampleSrc: `${sampleBookBase}/a-final-do-bairro-das-estrelas/audio-teaser.mp3`,
       audioSampleTitle: 'Ouvir excerto narrado',
       sampleChapter: {
@@ -595,8 +596,6 @@ export const workshopsChildrenLandingPage: LandingPageContent = {
         'Livro físico O Clube dos Mapas Impossíveis numa mesa de workshop, junto a mapas desenhados e notas coloridas',
       styleLabel: 'Aguarela',
       contextLabel: '10-12 anos',
-      chapterCountLabel: '6 capítulos',
-      durationLabel: 'Áudio 36 s',
       audioSampleSrc: `${sampleBookBase}/o-clube-dos-mapas-impossiveis/audio-teaser.mp3`,
       audioSampleTitle: 'Ouvir excerto narrado',
       sampleChapter: {

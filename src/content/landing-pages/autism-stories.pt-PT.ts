@@ -6,6 +6,7 @@ const publicAudioBase = `https://storage.googleapis.com/mythoria-public/landing-
 const iconBase = '/Papercut_icons';
 
 export const autismStoriesLandingPage: LandingPageContent = {
+  translationKey: 'autism-stories',
   slug,
   locale: 'pt-PT',
   title: 'Livros personalizados para crianças com PEA e PHDA',
@@ -20,6 +21,11 @@ export const autismStoriesLandingPage: LandingPageContent = {
   ogImageSrc: `${assetBase}/hero/og-cover.jpeg`,
   primaryCta: 'Começar a minha história',
   secondaryCta: 'Ver exemplos',
+  homepageCard: {
+    title: 'Livros para crianças com PEA ou PHDA',
+    description:
+      'Histórias personalizadas, previsíveis e cuidadosas, sempre sob controlo do adulto.',
+  },
   templateIcons: {
     heroEyebrow: {
       src: `${iconBase}/sparkles.webp`,

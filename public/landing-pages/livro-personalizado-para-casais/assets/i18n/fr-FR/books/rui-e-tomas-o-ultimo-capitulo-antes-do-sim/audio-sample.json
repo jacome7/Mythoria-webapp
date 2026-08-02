@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Extrait du livre fictif «Louis & Thomas — Le dernier chapitre avant oui». Chapitre d’exemple : «Un chapitre sans fin pour le moment». Toutes leurs grandes décisions avaient commencé par un projet qu’aucun des deux n’avait suivi. Louis nota la boulangerie du quartier, le parc sous la pluie et le sol de la cuisine où leurs plus grandes décisions avaient commencé. Il laissa la dernière page presque vide. Cette fin appartenait à une question que le livre pouvait préparer, mais jamais résoudre à leur place. Louis rassemble les lieux où Thomas et lui sont devenus une équipe, puis laisse le dernier chapitre ouvert pour une réponse hors du livre.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 45.04,
+  "generatedAt": "2026-08-02T18:31:29.399Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.6998,
+    "rmsRatio": 0.0965,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

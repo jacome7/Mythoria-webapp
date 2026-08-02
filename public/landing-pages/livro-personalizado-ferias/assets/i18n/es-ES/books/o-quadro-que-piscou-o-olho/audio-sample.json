@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Del libro ficticio «El cuadro que guiñó un ojo». Capítulo de muestra: «El retrato de la tercera fotografía». En la tercera fotografía, el explorador pintado sonreía sin ninguna duda. Eva revisó las fotos en un banco del Prado mientras los adultos consultaban el plano del museo. El explorador parecía serio en la primera y divertido en la segunda. En la tercera guiñaba un ojo. Eva siguió la brújula pintada en su mano y convirtió la visita a Madrid en un misterio tranquilo para toda la familia. Durante una visita al museo, una niña descubre que un retrato cambia de expresión en cada foto familiar.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 40.96,
+  "generatedAt": "2026-08-02T18:18:47.716Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.7491,
+    "rmsRatio": 0.1018,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

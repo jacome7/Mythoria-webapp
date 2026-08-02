@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "From the fictional book “Grandma’s Recipe for Stars”. Sample chapter: “The First Cinnamon Star”. Grandma said recipes did not begin with ingredients, but with the hands that called everyone to the table. Noah held the wooden spoon with both hands while Grandma Claire read the old recipe. “Say a word that reminds you of home,” she told him. When he whispered “hug,” a tiny golden star rose from the bowl and added a new line to the recipe they would remember together. In a New England kitchen, Grandma Claire teaches Noah that every family recipe begins with a word that feels like home.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 48.76,
+  "generatedAt": "2026-08-02T18:32:02.318Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.6969,
+    "rmsRatio": 0.0786,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

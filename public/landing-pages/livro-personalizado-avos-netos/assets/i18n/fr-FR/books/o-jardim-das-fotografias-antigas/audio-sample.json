@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Extrait du livre fictif «Le jardin des anciennes photographies». Chapitre d’exemple : «La photo sous le citronnier». Les photos ne fleurissaient pas au soleil, mais lorsque Grand-père commençait à parler. Léa trouva une photo sous le cerisier et demanda pourquoi Grand-père portait un chapeau beaucoup trop grand. Sa réponse ouvrit un après-midi d’été, un vélo emprunté et une plaisanterie qui avait attendu cinquante ans pour faire rire une petite-fille. Une petite-fille découvre que chaque photo familiale devient une nouvelle histoire lorsque Grand-père raconte ce qui se passait hors champ.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 45.56,
+  "generatedAt": "2026-08-02T21:54:42.609Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.7644,
+    "rmsRatio": 0.0893,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Extrait du livre fictif «Le jour où la ferme parla». Chapitre d’exemple : «Bonjour depuis la grange rouge». La chèvre parla la première, même si seule Sophie comprit ce qu’elle voulait dire. Sophie se réveilla dans une ferme normande lorsqu’une chèvre frappa exactement trois fois contre la clôture. Elle décida que c’était un salut et répondit de la même façon. À midi, les poules, le poney et même le vieux tracteur participaient à la conversation et ajoutaient une scène aux vacances familiales. Un séjour familial à la ferme devient une histoire amusante lorsque chaque animal semble avoir un message.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 48.32,
+  "generatedAt": "2026-08-02T18:23:09.085Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.6992,
+    "rmsRatio": 0.0723,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "From the fictional book “Two Cups, One Life”. Sample chapter: “The Cup with the Blue Line”. The first cup chipped before they had a home in which to keep it. One cup came from a tiny apartment; the other from the kitchen they chose together years later. Neither matched, but both remembered everything. Each scratch marked a morning, a decision or a silence that felt less empty because they shared it. A shared life is told through the cups that followed new homes, jobs, rushed mornings and comfortable silences.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 41.88,
+  "generatedAt": "2026-08-02T18:26:54.778Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.7188,
+    "rmsRatio": 0.0655,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

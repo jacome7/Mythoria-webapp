@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Extrait du livre fictif «Deux tasses, une vie». Chapitre d’exemple : «La tasse au trait bleu». La première tasse s’ébrécha avant qu’ils aient une maison où la ranger. Une tasse venait d’un minuscule appartement ; l’autre, de la cuisine choisie ensemble des années plus tard. Elles n’étaient pas assorties, mais se souvenaient de tout. Chaque marque racontait un matin, une décision ou un silence devenu plus léger parce qu’il était partagé. Une vie à deux se raconte à travers les tasses qui ont connu nouveaux logements, emplois, matins pressés et silences confortables.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 44.64,
+  "generatedAt": "2026-08-02T15:30:57.758Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.7967,
+    "rmsRatio": 0.0958,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

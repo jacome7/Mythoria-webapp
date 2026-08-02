@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "From the fictional book “The Painting That Winked”. Sample chapter: “The portrait in the third photograph”. In the third photograph, the painted explorer was definitely smiling. Eva reviewed the pictures on a bench at the Met while the adults checked the museum map. The explorer in the portrait looked serious in the first photo and amused in the second. In the third, he winked. Eva followed the painted compass in his hand and turned their New York visit into a gentle mystery for the whole family. During a museum visit, a child notices that one portrait changes expression in every family photo.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 48.08,
+  "generatedAt": "2026-08-02T18:24:02.565Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.5747,
+    "rmsRatio": 0.082,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

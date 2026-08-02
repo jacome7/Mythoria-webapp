@@ -475,6 +475,7 @@ def build_gemini_suggestion_prompt(
         - Keep synopses to 2-4 sentences.
         - tags must be a comma-separated string with 4-7 compact tags.
         - style should be a compact existing-style-like token such as watercolor, colored_pencil,
+          claymation, or papercut,
           digital_art, sketch, cartoon, minimalist, anime, comic_book, hand_drawn, disney_style, or pixar.
 
         Schema for each item:

@@ -145,6 +145,9 @@ A draft can be revisited by appending `?edit={storyId}` to steps 3–5. When in 
 - **Step 3:** `src/app/[locale]/tell-your-story/step-3/page.tsx`
   - `CharacterCard` UI component for edit/create
 - **Step 4:** `src/app/[locale]/tell-your-story/step-4/page.tsx`
+  - The graphical-style modal derives its cards from the canonical `GraphicalStyle` enum and localizes names through the `GraphicalStyles` namespace.
+  - Each style needs one 2:3 gallery preview per target audience under `public/images/GraphicTemplates/{targetAudience}/{style}.jpg`.
+  - Generate and audit previews with `scripts/graphicTemplateGenerator/graphic_template_generator.py`; its contract check requires parity between the WebApp enum and the SGW `imageStyles.json` catalogue.
 - **Step 5:** `src/app/[locale]/tell-your-story/step-5/page.tsx`
 - **Progress UI:** `src/components/StoryGenerationProgress.tsx`
 - **Navigation & progress UI:** `src/components/StepNavigation.tsx`, `src/components/ProgressIndicator.tsx`
@@ -262,7 +265,8 @@ Step 3 (characters) → Step 4 (settings) → Step 5 (generate)
 ### Enumerations & Options
 
 - `TargetAudience`, `NovelStyle`, `GraphicalStyle`, and `LiteraryPersona` enums live in `src/types/story-enums.ts`.
-- Graphical styles include `euro_comic_book` (labeled “Humorous Adventure”).
+- Graphical styles include `euro_comic_book` (labeled “Humorous Adventure”), `claymation`, and
+  `papercut` (labeled “PaperCut”).
 - Literary personas provide metadata that powers the narrator persona picker.
 
 ### Analytics Hooks

@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Extrait du livre fictif «Le voyage que les grands-parents avaient aussi vécu». Chapitre d’exemple : «Deux étés sur une seule place». La fontaine avait changé, mais Grand-père se tenait exactement au même endroit. Léa plaça son téléphone près de la photo décolorée sur une place de Provence. La place paraissait plus lumineuse, mais la fontaine et le sourire de Grand-père avaient peu changé. La famille associa chaque ancienne image à une nouvelle et réunit deux vacances dans une seule histoire entre générations. Des photos anciennes et nouvelles montrent comment deux générations ont visité les mêmes lieux durant des étés très différents.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 46.24,
+  "generatedAt": "2026-08-02T18:23:37.970Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.6183,
+    "rmsRatio": 0.0899,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

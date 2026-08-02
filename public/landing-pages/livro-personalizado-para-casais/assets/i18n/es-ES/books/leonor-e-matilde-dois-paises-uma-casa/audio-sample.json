@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Del libro ficticio «Leonor y Matilde — Dos países, un hogar». Capítulo de muestra: «Un domingo entre dos husos horarios». Durante dos años, su hogar tuvo dos puertas de embarque. Cada domingo empezaba con un móvil cargándose en Madrid y otro sonando en París. Cocinaban lo mismo y comparaban el tiempo. La distancia seguía siendo real, pero sus rituales le daban puertas, ventanas y una mesa que ya podían imaginar juntas. Entre Madrid y París, audios, vuelos retrasados y listas compartidas ayudan a Leonor y Matilde a construir su propia idea de hogar.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 53.56,
+  "generatedAt": "2026-08-02T18:29:38.745Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.8244,
+    "rmsRatio": 0.0906,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

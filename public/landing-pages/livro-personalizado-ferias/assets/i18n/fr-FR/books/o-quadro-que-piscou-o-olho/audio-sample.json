@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Extrait du livre fictif «Le tableau qui fit un clin d’œil». Chapitre d’exemple : «Le portrait de la troisième photo». Sur la troisième photo, l’explorateur peint souriait, c’était certain. Éva regarda les images sur un banc du Louvre pendant que les adultes consultaient le plan du musée. L’explorateur semblait sérieux sur la première et amusé sur la deuxième. Sur la troisième, il lui faisait un clin d’œil. Éva suivit la boussole peinte dans sa main et transforma la visite à Paris en un doux mystère familial. Pendant une visite au musée, une enfant remarque qu’un portrait change d’expression sur chaque photo familiale.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 46.4,
+  "generatedAt": "2026-08-02T18:22:45.626Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.7865,
+    "rmsRatio": 0.0884,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

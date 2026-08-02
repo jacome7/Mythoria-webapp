@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "From the fictional book “The Day the Farm Spoke”. Sample chapter: “Good morning from the red barn”. The goat spoke first, although only Sophia understood what it meant. Sophia woke at the Hudson Valley farm to a goat tapping the fence exactly three times. She decided it was a greeting and answered with three careful taps of her own. By lunchtime, the hens, the pony and even the old tractor had joined the conversation, each adding a new scene to the family vacation story. A family farm stay becomes a playful story when every animal seems to have a message for the visitors.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 48.36,
+  "generatedAt": "2026-08-02T18:24:31.392Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.6023,
+    "rmsRatio": 0.057,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

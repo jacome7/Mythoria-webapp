@@ -6,6 +6,7 @@ const assetBase = `/landing-pages/${slug}/assets`;
 const sampleBookBase = `${assetBase}/books`;
 
 export const grandparentsStoriesLandingPage: LandingPageContent = {
+  translationKey: 'grandparents-stories',
   slug,
   locale: 'pt-PT',
   title: 'Livro personalizado para avós e netos',
@@ -22,6 +23,10 @@ export const grandparentsStoriesLandingPage: LandingPageContent = {
   primaryCtaHref: `/pt-PT/tell-your-story/step-1?landingSlug=${slug}&primaryIntent=grandparents`,
   secondaryCta: 'Ver exemplos por dentro',
   secondaryCtaHref: '#exemplos',
+  homepageCard: {
+    title: 'Livro personalizado para avós e netos',
+    description: 'Ideias para guardar memórias, tradições e aventuras partilhadas em família.',
+  },
   testimonials: {
     title: 'O que dizem as famílias que já ofereceram Mythoria',
     intro: 'Histórias reais de avós, pais e netos que se emocionaram juntos.',

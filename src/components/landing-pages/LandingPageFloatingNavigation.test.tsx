@@ -4,6 +4,12 @@ import LandingPageFloatingNavigation from './LandingPageFloatingNavigation';
 const originalScrollY = Object.getOwnPropertyDescriptor(window, 'scrollY');
 const scrollIntoViewMock = jest.fn();
 const scrollToMock = jest.fn();
+const labels = {
+  examplesAria: 'Ver exemplos de livros',
+  examples: 'Ver exemplos',
+  topAria: 'Voltar ao topo da página',
+  top: 'Topo',
+};
 
 function setScrollY(value: number) {
   Object.defineProperty(window, 'scrollY', {
@@ -101,7 +107,7 @@ describe('LandingPageFloatingNavigation', () => {
   it('renders accessible quick navigation controls', () => {
     buildLandingPageTargets();
 
-    render(<LandingPageFloatingNavigation />);
+    render(<LandingPageFloatingNavigation labels={labels} />);
 
     expect(getExamplesJump()).toHaveTextContent('Ver exemplos');
     expect(getBackToTopButton()).toHaveTextContent('Topo');
@@ -112,7 +118,7 @@ describe('LandingPageFloatingNavigation', () => {
     hero.getBoundingClientRect = jest.fn(() => rect(0, 900));
     examples.getBoundingClientRect = jest.fn(() => rect(1300, 2200));
 
-    render(<LandingPageFloatingNavigation />);
+    render(<LandingPageFloatingNavigation labels={labels} />);
 
     const examplesLink = getExamplesJump();
     const topButton = getBackToTopButton();
@@ -139,7 +145,7 @@ describe('LandingPageFloatingNavigation', () => {
     examples.getBoundingClientRect = jest.fn(() => rect(1300, 2200));
     setScrollY(900);
 
-    render(<LandingPageFloatingNavigation />);
+    render(<LandingPageFloatingNavigation labels={labels} />);
 
     const examplesLink = screen.getByRole('link', { name: /ver exemplos de livros/i });
     await waitFor(() => expect(examplesLink).toHaveAttribute('aria-hidden', 'false'));
@@ -158,7 +164,7 @@ describe('LandingPageFloatingNavigation', () => {
     setScrollY(900);
     window.history.replaceState(null, '', '/pt-PT/lp/livro-personalizado-avos-netos#exemplos');
 
-    render(<LandingPageFloatingNavigation />);
+    render(<LandingPageFloatingNavigation labels={labels} />);
 
     const topButton = screen.getByRole('button', { name: /voltar ao topo da página/i });
     await waitFor(() => expect(topButton).toHaveAttribute('aria-hidden', 'false'));

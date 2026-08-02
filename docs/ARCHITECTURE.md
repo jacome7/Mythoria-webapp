@@ -67,7 +67,7 @@ mythoria-webapp/
 
 ### Backend Technologies
 
-- **Runtime**: Node.js 24.15.0 LTS
+- **Runtime**: Node.js 24.18.1 LTS
 - **API Framework**: Next.js API Routes with TypeScript
 - **Database**: PostgreSQL with connection pooling
 - **ORM**: Drizzle ORM for type-safe database operations

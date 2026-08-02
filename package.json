@@ -34,6 +34,8 @@
     "docs:serve": "npx serve docs/",
     "homepage:assets": "tsx scripts/check-homepage-assets.ts",
     "sample-book:validate": "node scripts/validate-sample-book-output.mjs",
+    "landing-assets:generate-audio": "tsx scripts/generate-localized-landing-audio.ts",
+    "landing-assets:validate": "tsx scripts/validate-localized-landing-assets.ts",
     "i18n:parity": "tsx scripts/check-locale-parity.ts",
     "i18n:keys": "tsx scripts/generate-translation-keys.ts",
     "test": "cross-env NODE_OPTIONS=--no-deprecation jest",
@@ -128,7 +130,7 @@
     "typescript": "^6"
   },
   "engines": {
-    "node": "24.16.0"
+    "node": "24.18.1"
   },
   "overrides": {
     "rimraf": "^6.0.1",

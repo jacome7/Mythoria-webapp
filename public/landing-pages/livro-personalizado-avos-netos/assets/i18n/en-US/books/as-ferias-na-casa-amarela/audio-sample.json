@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "From the fictional book “Summer at the Yellow House”. Sample chapter: “The Key Under the Blue Pot”. The yellow house was smaller than they remembered and somehow held even more stories. Grandma lifted the blue flowerpot at the yellow Lake Michigan cottage and found the same brass key she had used every summer. The grandchildren counted the marks beside the door. Each mark became a chapter about long lunches, improvised games and evenings when the whole family stayed outside until the stars appeared. Grandchildren revisit the yellow house where their family vacations were shaped by simple games, shared meals and stories after sunset.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 51.4,
+  "generatedAt": "2026-08-02T21:49:19.734Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.8591,
+    "rmsRatio": 0.0868,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "From the fictional book “Eleanor & Matilda — Two Countries, One Home”. Sample chapter: “Sunday Between Two Time Zones”. For two years, their home had two departure gates. Every Sunday began with one phone charging in New York and another ringing in Toronto. They cooked the same meal and compared the weather. The distance stayed real, but their rituals gave it doors, windows and a table they could already imagine sharing. Between New York and Toronto, voice notes, delayed flights and shared lists help Eleanor and Matilda build their own meaning of home.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 48.88,
+  "generatedAt": "2026-08-02T18:25:56.857Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.6265,
+    "rmsRatio": 0.0711,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

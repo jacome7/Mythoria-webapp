@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Del libro ficticio «La maleta que hablaba portugués». Capítulo de muestra: «La palabra escondida en el bolsillo». Cada vez que la maleta se abría, una palabra familiar encontraba el camino de vuelta a casa. Mia abrió el bolsillo más pequeño y encontró una tarjeta con una palabra portuguesa escrita por la abuela. La llamó para escuchar cómo sonaba. Pronto la maleta se llenó de dos idiomas, voces conocidas e historias que hacían que cada llamada del domingo pareciera más cercana. Una maleta llena de recetas, expresiones y fotos ayuda a una familia multilingüe a acercar a los niños a la lengua de sus abuelos.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 50.08,
+  "generatedAt": "2026-08-02T15:35:36.219Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.8383,
+    "rmsRatio": 0.0906,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

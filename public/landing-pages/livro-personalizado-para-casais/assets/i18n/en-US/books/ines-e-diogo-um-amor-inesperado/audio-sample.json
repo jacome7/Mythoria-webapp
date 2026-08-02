@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "From the fictional book “Emma & Daniel — An Unexpected Love”. Sample chapter: “Three Minutes of Rain”. The rain began three minutes before Emma decided this would be a perfectly ordinary day. Emma reached the Brooklyn café awning with a book under her arm and no time to save it from the rain. Daniel moved his paper bag and offered the only dry chair. They spoke about books, cafés and the last sentences people read too soon. The rain eased, but neither of them stood up. A Brooklyn downpour brings Emma and Daniel under the same café awning, turning a delay into the first chapter of their life together.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 55.08,
+  "generatedAt": "2026-08-02T18:26:05.201Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.808,
+    "rmsRatio": 0.0947,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

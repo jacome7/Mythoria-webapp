@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "From the fictional book “Ryan & Thomas — The Last Chapter Before Yes”. Sample chapter: “A Chapter with No Ending Yet”. Every important decision they made began with a plan neither of them followed. Ryan wrote down the neighborhood bakery, the rain-soaked park and the kitchen floor where their biggest decisions had begun. He left the final page almost empty. That ending belonged to a question the book could prepare, but never answer for them. Ryan gathers the places where he and Thomas became a team, leaving the final chapter open for an answer outside the book.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 49.72,
+  "generatedAt": "2026-08-02T18:26:26.305Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.6283,
+    "rmsRatio": 0.0769,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

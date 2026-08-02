@@ -2,7 +2,12 @@ import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { notFound, permanentRedirect } from 'next/navigation';
 import LandingPageTemplate from '@/components/landing-pages/LandingPageTemplate';
-import { getLandingPageBySlug, getLandingPageStaticParams } from '@/content/landing-pages';
+import {
+  getLandingPage,
+  getLandingPageBySlug,
+  getLandingPageStaticParams,
+  getLandingPageTranslations,
+} from '@/content/landing-pages';
 import { routing } from '@/i18n/routing';
 import { buildAbsoluteUrl, buildLocalizedPath, buildLocalizedUrl } from '@/lib/seo';
 
@@ -18,8 +23,8 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: LandingPageRouteProps): Promise<Metadata> {
-  const { slug } = await params;
-  const page = getLandingPageBySlug(slug);
+  const { locale, slug } = await params;
+  const page = getLandingPage(locale, slug) ?? getLandingPageBySlug(slug);
 
   if (!page) {
     return {
@@ -39,6 +44,14 @@ export async function generateMetadata({ params }: LandingPageRouteProps): Promi
       : 'noindex,nofollow',
     alternates: {
       canonical: canonicalUrl,
+      languages: Object.fromEntries(
+        getLandingPageTranslations(page.translationKey)
+          .filter((translation) => translation.indexable)
+          .map((translation) => [
+            translation.locale,
+            buildLocalizedUrl(translation.locale, `/lp/${translation.slug}`),
+          ]),
+      ),
     },
     openGraph: {
       title: page.metaTitle,
@@ -73,14 +86,14 @@ export default async function LandingPageRoute({ params }: LandingPageRouteProps
 
   setRequestLocale(locale);
 
-  const page = getLandingPageBySlug(slug);
+  const page = getLandingPage(locale, slug);
 
   if (!page) {
+    const canonicalPage = getLandingPageBySlug(slug);
+    if (canonicalPage) {
+      permanentRedirect(buildLocalizedPath(canonicalPage.locale, `/lp/${canonicalPage.slug}`));
+    }
     notFound();
-  }
-
-  if (page.locale !== locale) {
-    permanentRedirect(buildLocalizedPath(page.locale, `/lp/${page.slug}`));
   }
 
   return <LandingPageTemplate page={page} />;

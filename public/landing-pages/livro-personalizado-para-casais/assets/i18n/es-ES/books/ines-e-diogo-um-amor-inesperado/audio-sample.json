@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Del libro ficticio «Inés y Diego — Un amor inesperado». Capítulo de muestra: «Tres minutos de lluvia». La lluvia empezó tres minutos antes de que Inés decidiera que aquel sería un día normal. Inés llegó al toldo de una cafetería de Madrid con un libro bajo el brazo y sin tiempo para protegerlo. Diego apartó su bolsa de papel y ofreció la única silla seca. Hablaron de libros, cafés y finales que algunas personas leen demasiado pronto. La lluvia disminuyó, pero ninguno se levantó. Un aguacero en Madrid reúne a Inés y Diego bajo el mismo toldo y convierte un retraso en el primer capítulo de su vida en común.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 55.16,
+  "generatedAt": "2026-08-02T18:29:07.876Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.8483,
+    "rmsRatio": 0.0775,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

@@ -44,6 +44,10 @@ describe('normalizeGraphicalStyle', () => {
     expect(normalizeGraphicalStyle('watercolour')).toBe(GraphicalStyle.WATERCOLOR);
     expect(normalizeGraphicalStyle('hand-drawn')).toBe(GraphicalStyle.HAND_DRAWN);
     expect(normalizeGraphicalStyle('ligne claire')).toBe(GraphicalStyle.EURO_COMIC_BOOK);
+    expect(normalizeGraphicalStyle('clay stop-motion')).toBe(GraphicalStyle.CLAYMATION);
+    expect(normalizeGraphicalStyle('plasticine figures')).toBe(GraphicalStyle.CLAYMATION);
+    expect(normalizeGraphicalStyle('paper cut collage')).toBe(GraphicalStyle.PAPERCUT);
+    expect(normalizeGraphicalStyle('layered paper artwork')).toBe(GraphicalStyle.PAPERCUT);
   });
 
   it('defaults to cartoon when unknown', () => {

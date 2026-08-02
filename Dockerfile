@@ -1,5 +1,6 @@
-# Use the official Node.js 24.16.0 Alpine image (latest LTS)
-FROM node:24.16.0-alpine AS builder
+# Use the official Node.js 24.18.1 Alpine image (LTS)
+ARG NODE_VERSION=24.18.1
+FROM node:${NODE_VERSION}-alpine AS builder
 
 ARG APP_GIT_SHA=unknown
 
@@ -67,7 +68,7 @@ RUN npm run build \
                  && echo "self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',()=>self.clients.claim());" > public/sw.js; fi
 
 # Production stage - use same Node.js version as builder
-FROM node:24.16.0-alpine AS runner
+FROM node:${NODE_VERSION}-alpine AS runner
 
 ARG APP_GIT_SHA=unknown
 

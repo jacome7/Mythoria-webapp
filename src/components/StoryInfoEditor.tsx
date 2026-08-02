@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { formatDate } from '@/utils/date';
 import { toAbsoluteImageUrl } from '../utils/image-url';
+import { GraphicalStyle } from '@/types/story-enums';
 
 interface Story {
   storyId: string;
@@ -48,6 +49,13 @@ export default function StoryInfoEditor({
   onTranslateClick,
 }: StoryInfoEditorProps) {
   const tStoryInfoEditor = useTranslations('StoryInfoEditor');
+  const tGraphicalStyles = useTranslations('GraphicalStyles');
+
+  const graphicalStyleLabel =
+    story.graphicalStyle &&
+    Object.values(GraphicalStyle).includes(story.graphicalStyle as GraphicalStyle)
+      ? tGraphicalStyles(story.graphicalStyle as GraphicalStyle)
+      : story.graphicalStyle?.replaceAll('_', ' ');
 
   const [formData, setFormData] = useState(() => getStoryFormData(story));
 
@@ -290,9 +298,7 @@ export default function StoryInfoEditor({
               <span className="text-base-content/70">
                 {tStoryInfoEditor('graphicalStyleLabel')}
               </span>
-              <span>
-                {story.graphicalStyle?.replace('_', ' ') || tStoryInfoEditor('notSpecified')}
-              </span>
+              <span>{graphicalStyleLabel || tStoryInfoEditor('notSpecified')}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-base-content/70">{tStoryInfoEditor('created')}</span>

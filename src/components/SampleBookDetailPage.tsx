@@ -16,6 +16,7 @@ export default function SampleBookDetailPage({
   locale,
   seo,
 }: SampleBookDetailPageProps) {
+  const isFictionalBook = Boolean(book.fictionalUserContext);
   const facts = [
     ['Intenção', book.intent],
     ['Público', book.readerAgeBand ?? book.targetAudience],
@@ -49,7 +50,11 @@ export default function SampleBookDetailPage({
             <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-base-200 shadow-lg">
               <Image
                 src={book.coverSrc}
-                alt={`Capa do exemplo ficcional “${book.title}”`}
+                alt={
+                  isFictionalBook
+                    ? `Capa do exemplo ficcional “${book.title}”`
+                    : `Capa de “${book.title}”`
+                }
                 fill
                 priority
                 sizes="(max-width: 768px) 100vw, 40vw"
@@ -58,10 +63,14 @@ export default function SampleBookDetailPage({
             </div>
 
             <header>
-              <p className="text-sm font-semibold uppercase tracking-wide text-primary/70">
-                Exemplo de livro inteiramente ficcional
-              </p>
-              <h1 className="mt-2 font-display text-4xl leading-tight text-primary">
+              {isFictionalBook ? (
+                <p className="text-sm font-semibold uppercase tracking-wide text-primary/70">
+                  Exemplo de livro inteiramente ficcional
+                </p>
+              ) : null}
+              <h1
+                className={`${isFictionalBook ? 'mt-2' : ''} font-display text-4xl leading-tight text-primary`}
+              >
                 {book.title}
               </h1>
               <p className="mt-5 text-lg leading-relaxed text-base-content/80">{book.synopsis}</p>
@@ -85,7 +94,7 @@ export default function SampleBookDetailPage({
 
               {book.tags.length > 0 ? (
                 <div className="mt-6">
-                  <h2 className="font-semibold">Temas deste exemplo</h2>
+                  <h2 className="font-semibold">Temas deste livro</h2>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {book.tags.map((tag) => (
                       <span key={tag} className="badge badge-primary badge-outline">
@@ -100,7 +109,8 @@ export default function SampleBookDetailPage({
                 <section className="mt-7 rounded-2xl bg-primary/10 p-4">
                   <h2 className="font-display text-xl text-primary">Excerto em áudio</h2>
                   <p className="mt-1 text-sm text-base-content/70">
-                    Ouça um breve trecho narrado deste exemplo ficcional.
+                    Ouça um breve trecho narrado deste
+                    {isFictionalBook ? ' exemplo ficcional' : ' livro'}.
                   </p>
                   <audio controls preload="metadata" className="mt-3 w-full">
                     <source src={book.audioSampleSrc} type="audio/mpeg" />
@@ -112,7 +122,7 @@ export default function SampleBookDetailPage({
 
           {book.featureSrc || book.chapterImageSrc ? (
             <section
-              aria-label="Ilustrações do livro de exemplo"
+              aria-label="Ilustrações do livro"
               className="grid gap-5 border-t border-base-300 p-5 sm:p-8 md:grid-cols-2"
             >
               {[book.featureSrc, book.chapterImageSrc]
@@ -126,7 +136,9 @@ export default function SampleBookDetailPage({
                       src={src}
                       alt={
                         index === 0
-                          ? `Cena ilustrada do exemplo ficcional “${book.title}”`
+                          ? isFictionalBook
+                            ? `Cena ilustrada do exemplo ficcional “${book.title}”`
+                            : `Cena ilustrada de “${book.title}”`
                           : `Ilustração do capítulo de amostra de “${book.title}”`
                       }
                       fill
@@ -191,7 +203,9 @@ export default function SampleBookDetailPage({
             <aside className="border-t border-base-300 p-5 sm:p-8">
               <h2 className="font-display text-2xl text-primary">Continue a explorar este tema</h2>
               <p className="mt-3 max-w-3xl leading-relaxed text-base-content/75">
-                Este exemplo mostra uma possibilidade narrativa, não uma história de cliente.
+                {isFictionalBook
+                  ? 'Este exemplo mostra uma possibilidade narrativa, não uma história de cliente.'
+                  : 'Este livro mostra uma possibilidade narrativa criada com Mythoria.'}{' '}
                 Consulte o guia para preparar o conteúdo e a página do tema para conhecer formas de
                 personalização.
               </p>

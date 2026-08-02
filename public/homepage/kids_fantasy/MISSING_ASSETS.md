@@ -22,6 +22,12 @@ See `assets_metadata.json` for per-asset specs (dimensions, transparency, status
 | `person3_fr-FR.webp` | 572×1024, transparent, French cover |
 | `person3_de-DE.webp` | 572×1024, transparent, German cover |
 
+## Intentional locale fallback
+
+| Requested locale | Slot | Asset used |
+| --- | --- | --- |
+| `de-DE` | `person4` | `person4_en-US.webp` |
+
 ## Re-exports
 
 | File | Issue |

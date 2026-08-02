@@ -114,7 +114,8 @@ flowchart LR
 
 ### UI behavior details
 
-- The page defines **fixed option lists** for filters (`targetAudienceOptions`, `graphicalStyleOptions`, `storyLanguageOptions`). These options must stay aligned with:
+- Target-audience and language filters use explicit option lists. Graphical-style options are derived from the canonical `GraphicalStyle` enum so additions such as `claymation` and `papercut` cannot be omitted from this gallery.
+- The canonical values must stay aligned with:
   - database enums in `src/db/schema/enums.ts`
   - translation keys in `src/messages/*/GetInspiredPage.json`
 - Rating stars render only when both `averageRating` and `ratingCount > 0` are present.
@@ -135,7 +136,7 @@ flowchart LR
 
 ## Extension & Maintenance Notes
 
-- **Adding a new filter**: update the UI option array, API query parameter handling (if needed), translation keys, and the underlying enum/database values.
+- **Adding a new filter**: update the API query parameter handling (if needed), translation keys, and the underlying enum/database values. Graphical styles should be added to the canonical enum rather than a page-local option array.
 - **Changing available languages**: update `storyLanguageOptions` and the `storyLanguage` translation labels.
 - **New card metadata**: ensure the field is exposed from `storyService.getFeaturedPublicStories()` and added to the API response, then render it in the UI.
 - **Scaling the gallery**: move filtering to the API (query params already exist) and paginate results to avoid large client payloads.

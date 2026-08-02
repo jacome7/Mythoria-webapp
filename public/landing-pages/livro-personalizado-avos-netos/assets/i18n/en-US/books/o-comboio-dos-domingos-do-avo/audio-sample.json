@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "From the fictional book “Grandpa’s Sunday Train”. Sample chapter: “Tickets for the Living Room Express”. The train never left the living room, yet every Sunday it reached somewhere new. Grandpa Robert punched two paper tickets and announced that the sofa was now Track One. His grandson chose the first destination from an old photograph. The cardboard train crossed a small town, a summer on the Jersey Shore and a snowy morning, carrying family stories into one more Sunday. Every Sunday, Grandpa Robert and his grandson build a cardboard train that travels through memories from different years.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 50.36,
+  "generatedAt": "2026-08-02T18:32:33.900Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.6039,
+    "rmsRatio": 0.0752,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

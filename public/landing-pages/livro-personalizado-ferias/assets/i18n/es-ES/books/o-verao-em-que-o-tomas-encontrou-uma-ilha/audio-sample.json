@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Del libro ficticio «El verano en que Tomás encontró una isla». Capítulo de muestra: «Una isla hecha de recuerdos». La isla solo apareció cuando colocaron sus fotos favoritas una junto a otra. Tomás extendió las fotos de la Costa Brava sobre la mesa: una sombrilla roja, un helado derritiéndose y cuatro pares de pies llenos de arena. Al colocarlas en el orden correcto, sus costas se unieron y formaron una isla nueva, una que solo existía en la historia que la familia podía contar junta. Las calas de la Costa Brava, los helados y las fotos al atardecer conducen a Tomás hasta una isla formada por los momentos compartidos en familia.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 52.2,
+  "generatedAt": "2026-08-02T18:17:20.274Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.8198,
+    "rmsRatio": 0.086,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

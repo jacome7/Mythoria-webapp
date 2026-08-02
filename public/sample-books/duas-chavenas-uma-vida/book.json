@@ -8,13 +8,13 @@
   "buyerPersona": "Pessoa que quer celebrar uma relação construída no quotidiano",
   "recipientType": "marido, mulher ou companheiro",
   "storyIntent": "Contar uma vida partilhada através de chávenas, casas e pequenos rituais",
+  "fictionalUserContext": "Contexto de utilizador inteiramente ficcional, criado apenas para demonstrar uma história romântica personalizada.",
   "synopsis": "A vida de um casal é contada através das chávenas que acompanharam casas, empregos, manhãs apressadas, escolhas grandes e silêncios confortáveis.",
   "shortExcerpt": "A primeira chávena lascou-se antes de eles terem uma casa onde a guardar.",
   "sampleChapterPath": "sample-chapter.md",
   "audioTeaserText": "A primeira chávena lascou-se antes de existir uma prateleira para ela. Sobreviveu a três casas, a duas mudanças de emprego e a manhãs em que falar parecia demasiado. A segunda chegou depois. Diferentes, gastas e sempre lado a lado, acabaram por contar a vida inteira. Havia objetos mais bonitos na cozinha, mas nenhum sabia tanto sobre eles. Todas as manhãs, as duas chávenas regressavam à mesa como quem escolhe ficar.",
   "graphicalStyle": "oil_painting",
   "novelStyle": "contemporary",
-  "fictionalUserContext": "Cenário inteiramente ficcional criado para demonstrar uma história contemporânea Mythoria; não representa clientes nem acontecimentos reais.",
   "coverImage": {
     "localPath": "assets/cover.jpeg",
     "gcsUri": "gs://mythoria-public/landing-page-assets/sample-books/duas-chavenas-uma-vida/assets/cover.jpeg",
@@ -40,8 +40,8 @@
     "voice": "Aoede"
   },
   "safetyNotes": [
-    "A história é ficcional e não representa um casal real.",
     "A fase difícil é descrita sem diagnóstico, intimidade indevida ou promessa de resultado.",
-    "A feature evita pessoas identificáveis e documentos privados."
+    "A feature evita pessoas identificáveis e documentos privados.",
+    "Os nomes, acontecimentos e detalhes pessoais apresentados são ficcionais."
   ]
 }

@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Extrait du livre fictif «Inès & Hugo — Un amour inattendu». Chapitre d’exemple : «Trois minutes de pluie». La pluie commença trois minutes avant qu’Inès décide que cette journée serait parfaitement ordinaire. Inès atteignit l’auvent d’un café parisien, un livre sous le bras, sans avoir le temps de le protéger. Hugo déplaça son sac en papier et lui proposa la seule chaise sèche. Ils parlèrent de livres, de cafés et des dernières phrases que certains lisent trop tôt. La pluie faiblit, mais aucun ne se leva. Une averse à Paris réunit Inès et Hugo sous le même auvent et transforme un retard en premier chapitre de leur vie commune.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 47.4,
+  "generatedAt": "2026-08-02T18:30:38.472Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.6543,
+    "rmsRatio": 0.1036,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

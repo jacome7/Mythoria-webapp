@@ -26,3 +26,18 @@ export function swapLocaleInPath(
 
   return segments.join('/');
 }
+
+export function getLocaleSwitchPath(
+  pathname: string,
+  newLocale: string,
+  supportedLocales: readonly string[],
+  alternateHref?: string | null,
+): string {
+  const alternatePath = getAlternateLocalePath(alternateHref);
+  if (alternatePath) return alternatePath;
+
+  const segments = pathname.split('/');
+  const isLandingPage = supportedLocales.includes(segments[1]) && segments[2] === 'lp';
+
+  return isLandingPage ? `/${newLocale}` : swapLocaleInPath(pathname, newLocale, supportedLocales);
+}

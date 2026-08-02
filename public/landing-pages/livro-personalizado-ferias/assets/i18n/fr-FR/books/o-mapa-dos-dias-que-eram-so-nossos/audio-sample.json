@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Extrait du livre fictif «La carte des jours qui n’appartenaient qu’à nous». Chapitre d’exemple : «Le chemin entre deux cafés». Certaines cartes montrent des routes ; la leur montrait les instants qu’ils refusaient de perdre. Manon conserva le ticket d’un café de la gare de Lyon, car il marquait le matin précis où leur itinéraire vers la Provence avait déraillé. Noé traça une ligne entre ce ticket et chaque photo suivante, dessinant une carte de détours, de plaisanteries et de paysages provençaux. Un couple transforme billets de train, serviettes de café et photos en une carte de leur voyage à deux.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 46.68,
+  "generatedAt": "2026-08-02T18:21:50.843Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.8073,
+    "rmsRatio": 0.0948,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

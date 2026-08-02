@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Del libro ficticio «La receta de estrellas de la abuela». Capítulo de muestra: «La primera estrella de canela». La abuela decía que las recetas no empezaban con ingredientes, sino con las manos que llamaban a la familia a la mesa. Nico sujetó la cuchara de madera con las dos manos mientras la abuela Celia leía la vieja receta. «Di una palabra que te recuerde a casa», le pidió. Cuando susurró «abrazo», una pequeña estrella dorada salió del cuenco y añadió una nueva línea a la receta que recordarían juntos. En una cocina valenciana con azulejos azules, la abuela Celia enseña a Nico que cada receta familiar empieza con una palabra que recuerda al hogar.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 59.52,
+  "generatedAt": "2026-08-02T21:49:52.840Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.7862,
+    "rmsRatio": 0.0911,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

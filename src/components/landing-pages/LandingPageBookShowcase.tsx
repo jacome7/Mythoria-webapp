@@ -14,6 +14,14 @@ interface LandingPageBookShowcaseProps {
   primaryIntent: string;
   audioIcon?: LandingPageTemplateIcon;
   sampleChapterIcon?: LandingPageTemplateIcon;
+  labels: {
+    chapters: string;
+    listen: string;
+    readWithImage: string;
+    readSample: string;
+    sampleChapter: string;
+    closeSample: string;
+  };
 }
 
 export default function LandingPageBookShowcase({
@@ -23,6 +31,7 @@ export default function LandingPageBookShowcase({
   primaryIntent,
   audioIcon,
   sampleChapterIcon,
+  labels,
 }: LandingPageBookShowcaseProps) {
   const [selectedBook, setSelectedBook] = useState<LandingPageBook | null>(null);
   const audioStarted = useRef(new Set<string>());
@@ -159,7 +168,7 @@ export default function LandingPageBookShowcase({
                     ) : (
                       <BookOpen className="h-4 w-4" aria-hidden="true" />
                     )}
-                    <span>Capítulos</span>
+                    <span>{labels.chapters}</span>
                   </div>
                   <ol className="space-y-2 text-sm leading-relaxed text-base-content/70">
                     {book.chapters.map((chapter, chapterIndex) => (
@@ -206,7 +215,7 @@ export default function LandingPageBookShowcase({
                     ) : (
                       <Headphones className="h-4 w-4" aria-hidden="true" />
                     )}
-                    <span>{book.audioSampleTitle ?? 'Ouvir excerto áudio'}</span>
+                    <span>{book.audioSampleTitle ?? labels.listen}</span>
                   </div>
                   <audio
                     controls
@@ -240,7 +249,7 @@ export default function LandingPageBookShowcase({
                   ) : (
                     <FileText className="h-4 w-4 shrink-0" aria-hidden="true" />
                   )}
-                  <span>Ler capítulo e ver imagem</span>
+                  <span>{labels.readWithImage}</span>
                 </button>
               ) : book.sampleChapterHref ? (
                 <Link
@@ -249,7 +258,7 @@ export default function LandingPageBookShowcase({
                   onClick={() => trackSampleEvent('sample_chapter_open', book)}
                 >
                   <ExternalLink className="h-4 w-4 shrink-0" aria-hidden="true" />
-                  <span>Ler capítulo de amostra</span>
+                  <span>{labels.readSample}</span>
                 </Link>
               ) : null}
             </div>
@@ -263,6 +272,7 @@ export default function LandingPageBookShowcase({
           onClose={() => setSelectedBook(null)}
           onAudioStart={() => handleAudioStart(selectedBook)}
           onAudioComplete={() => handleAudioComplete(selectedBook)}
+          labels={labels}
         />
       )}
     </>
@@ -274,11 +284,13 @@ function BookSampleModal({
   onClose,
   onAudioStart,
   onAudioComplete,
+  labels,
 }: {
   book: LandingPageBook;
   onClose: () => void;
   onAudioStart: () => void;
   onAudioComplete: () => void;
+  labels: LandingPageBookShowcaseProps['labels'];
 }) {
   const sample = book.sampleChapter;
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -332,7 +344,7 @@ function BookSampleModal({
         <div className="flex items-start justify-between gap-4 border-b border-primary/10 bg-white p-5">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-primary">
-              Capítulo de amostra
+              {labels.sampleChapter}
             </p>
             <h3
               id={`book-sample-${book.id}`}
@@ -346,7 +358,7 @@ function BookSampleModal({
             type="button"
             className="btn btn-circle btn-ghost shrink-0"
             onClick={onClose}
-            aria-label="Fechar capítulo de amostra"
+            aria-label={labels.closeSample}
           >
             <X className="h-5 w-5" aria-hidden="true" />
           </button>
@@ -383,7 +395,7 @@ function BookSampleModal({
             {book.audioSampleSrc && (
               <div className="rounded-xl border border-primary/10 bg-white p-4">
                 <p className="mb-3 text-sm font-bold text-primary">
-                  {book.audioSampleTitle ?? 'Ouvir excerto áudio'}
+                  {book.audioSampleTitle ?? labels.listen}
                 </p>
                 <audio
                   controls
@@ -400,7 +412,7 @@ function BookSampleModal({
 
           <div className="max-h-[70vh] overflow-y-auto rounded-xl bg-white p-5 shadow-sm">
             <h4 className="font-display text-xl font-bold leading-tight text-[#33251c]">
-              {sample?.title ?? 'Capítulo de amostra'}
+              {sample?.title ?? labels.sampleChapter}
             </h4>
             <div className="mt-4 space-y-4 text-base leading-relaxed text-base-content/75">
               {sample?.paragraphs.map((paragraph) => (

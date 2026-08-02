@@ -43,6 +43,14 @@ Generate or refresh all samples:
 python scripts\graphicTemplateGenerator\graphic_template_generator.py generate --force
 ```
 
+Generate only one style across every target audience (the command skips
+existing files unless `--force` is supplied):
+
+```powershell
+python scripts\graphicTemplateGenerator\graphic_template_generator.py generate --style claymation
+python scripts\graphicTemplateGenerator\graphic_template_generator.py generate --style papercut
+```
+
 Audit generated JPG coverage and dimensions:
 
 ```powershell

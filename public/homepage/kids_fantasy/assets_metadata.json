@@ -10,7 +10,7 @@
     "gold": "#f4c542"
   },
   "heroSlots": {
-    "_doc": "Canonical hero slot grammar shared by every style folder. Filenames are lowercase: {slot}.webp, {slot}_{device}.webp, {slot}_{device}_{locale}.webp, person{n}_{locale}.webp. Locale fallback chain at build time: exact locale -> en-US -> unsuffixed -> first available.",
+    "_doc": "Canonical hero slot grammar shared by every style folder. Filenames are lowercase: {slot}.webp, {slot}_{device}.webp, {slot}_{device}_{locale}.webp, person{n}_{locale}.webp. Locale fallback chain at build time: exact locale -> en-US -> pt-PT -> unsuffixed -> first available.",
     "required": ["cloud_left", "cloud_right", "sky_left", "sky_right", "sparkles", "background", "foreground", "person1", "icon1", "icon2", "icon3"]
   },
   "assets": [
@@ -228,6 +228,50 @@
       "transparentBackground": true,
       "format": "webp",
       "status": "draft"
+    },
+    {
+      "file": "person4_en-US.webp",
+      "slot": "person4",
+      "locale": "en-US",
+      "usage": "HeroScene person carousel — fourth rotation slide",
+      "description": "Family holding a personalized Rome adventure storybook with an English cover title",
+      "dimensions": { "w": 607, "h": 750 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "person4_es-ES.webp",
+      "slot": "person4",
+      "locale": "es-ES",
+      "usage": "HeroScene person carousel — fourth rotation slide",
+      "description": "Family holding a personalized Rome adventure storybook with a Spanish cover title",
+      "dimensions": { "w": 606, "h": 750 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "person4_fr-FR.webp",
+      "slot": "person4",
+      "locale": "fr-FR",
+      "usage": "HeroScene person carousel — fourth rotation slide",
+      "description": "Family holding a personalized Rome adventure storybook with a French cover title",
+      "dimensions": { "w": 606, "h": 750 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
+    },
+    {
+      "file": "person4_pt-PT.webp",
+      "slot": "person4",
+      "locale": "pt-PT",
+      "usage": "HeroScene person carousel — fourth rotation slide",
+      "description": "Family holding a personalized Rome adventure storybook with a Portuguese cover title",
+      "dimensions": { "w": 606, "h": 750 },
+      "transparentBackground": true,
+      "format": "webp",
+      "status": "final"
     },
     {
       "file": "icon1.webp",

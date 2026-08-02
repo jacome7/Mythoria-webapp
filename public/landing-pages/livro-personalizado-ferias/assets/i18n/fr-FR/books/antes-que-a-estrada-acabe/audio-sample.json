@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Extrait du livre fictif «Avant que la route ne s’arrête». Chapitre d’exemple : «Le dernier belvédère». La route n’avait pas besoin de mener vers un lieu important pour changer son retour. Au dernier belvédère des Cévennes, Élise enregistra le vent, la circulation lointaine et une phrase qu’elle évitait depuis le début du voyage. Ces sons et ces photos devinrent ensuite un chapitre sur le fait de ralentir, de mieux observer et de rentrer avec une idée plus claire de chez soi. Un voyage en solitaire transforme paysages, notes vocales et haltes paisibles en chronique personnelle.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 44.32,
+  "generatedAt": "2026-08-02T18:24:03.775Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.6616,
+    "rmsRatio": 0.0691,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

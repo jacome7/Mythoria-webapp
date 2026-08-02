@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Del libro ficticio «El día en que habló la granja». Capítulo de muestra: «Buenos días desde el granero rojo». La cabra habló primero, aunque solo Sofía entendió lo que quería decir. Sofía se despertó en una granja asturiana con una cabra que golpeaba la valla exactamente tres veces. Decidió que era un saludo y respondió con otros tres golpes. A la hora de comer, las gallinas, el poni y hasta el viejo tractor se habían unido a la conversación y a la historia de las vacaciones. Una estancia familiar en una granja se convierte en un relato divertido cuando cada animal parece tener un mensaje.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 51.44,
+  "generatedAt": "2026-08-02T18:19:18.091Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.7963,
+    "rmsRatio": 0.0811,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

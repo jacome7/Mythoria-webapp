@@ -43,6 +43,14 @@ export const envManifest: EnvVarDescriptor[] = [
     note: 'Framework provided; build scope not enforced.',
   },
   {
+    name: 'NODE_VERSION',
+    required: false,
+    scopes: ['build'],
+    default: '24.18.1',
+    source: 'substitution',
+    note: 'Pinned Docker build argument; not exposed to the application runtime.',
+  },
+  {
     name: 'APP_GIT_SHA',
     required: true,
     scopes: ['prod', 'build', 'runtime'],

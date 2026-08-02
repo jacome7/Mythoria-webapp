@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Extrait du livre fictif «L’été où Thomas découvrit une île». Chapitre d’exemple : «Une île faite de souvenirs». L’île n’apparut que lorsque la famille plaça ses photos préférées côte à côte. Thomas étala les photos de l’île de Ré sur la table : un parasol rouge, une glace qui fondait et quatre paires de pieds couverts de sable. Lorsqu’il les plaça dans le bon ordre, leurs côtes formèrent une île nouvelle, née de l’histoire que la famille pouvait raconter ensemble. Les plages de l’île de Ré, les glaces et les photos au coucher du soleil conduisent Thomas vers une île faite des moments partagés en famille.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 47.88,
+  "generatedAt": "2026-08-02T18:21:21.026Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.7053,
+    "rmsRatio": 0.092,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

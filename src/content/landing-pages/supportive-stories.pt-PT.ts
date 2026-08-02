@@ -6,6 +6,7 @@ const assetBase = `/landing-pages/${slug}/assets`;
 const bookBase = `${assetBase}/books`;
 
 export const supportiveStoriesLandingPage: LandingPageContent = {
+  translationKey: 'supportive-stories',
   slug,
   locale: 'pt-PT',
   title: 'Histórias personalizadas para as mudanças pequenas e muito grandes da infância',
@@ -27,6 +28,10 @@ export const supportiveStoriesLandingPage: LandingPageContent = {
   analytics: {
     pageViewEvent: 'supportive_story_page_view',
     variant: 'hub-v1',
+  },
+  homepageCard: {
+    title: 'Histórias de apoio para desafios da vida',
+    description: 'Histórias para conversar sobre mudanças e emoções com segurança.',
   },
   relatedGuide: {
     title: 'Como criar uma história de apoio para uma mudança',

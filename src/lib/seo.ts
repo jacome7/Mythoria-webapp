@@ -1,6 +1,6 @@
 import { routing } from '@/i18n/routing';
 import { getGuideBySlug } from '@/content/guides';
-import { getLandingPageBySlug } from '@/content/landing-pages';
+import { getLandingPage, getLandingPageBySlug } from '@/content/landing-pages';
 import { getSeoSampleBook } from '@/content/sample-books/seo';
 
 export const BASE_URL = 'https://mythoria.pt';
@@ -197,7 +197,9 @@ export function resolveFileBackedPublicSeoPath(pathname: string): FileBackedSeoR
   } else {
     const landingMatch = suffix.match(/^\/lp\/([^/]+)$/);
     if (landingMatch) {
-      const page = getLandingPageBySlug(landingMatch[1]!);
+      const slug = landingMatch[1]!;
+      const page =
+        (locale ? getLandingPage(locale, slug) : undefined) ?? getLandingPageBySlug(slug);
       if (!page) return { type: 'notFound' };
       canonical = buildLocalizedPath(page.locale, `/lp/${page.slug}`);
     }

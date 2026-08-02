@@ -4,7 +4,7 @@ import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { SUPPORTED_LOCALES } from '@/config/locales';
 import { useTransition } from 'react';
-import { getAlternateLocalePath, swapLocaleInPath } from '@/lib/language-switcher';
+import { getLocaleSwitchPath } from '@/lib/language-switcher';
 
 const LanguageSwitcher = () => {
   const locale = useLocale();
@@ -24,9 +24,7 @@ const LanguageSwitcher = () => {
             .querySelector(`link[rel="alternate"][hreflang="${newLocale}"]`)
             ?.getAttribute('href')
         : null;
-    const newPath =
-      getAlternateLocalePath(alternateHref) ||
-      swapLocaleInPath(safePathname, newLocale, SUPPORTED_LOCALES);
+    const newPath = getLocaleSwitchPath(safePathname, newLocale, SUPPORTED_LOCALES, alternateHref);
 
     // Use Next.js router for navigation with full page reload for locale change
     startTransition(() => {

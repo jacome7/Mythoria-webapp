@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Del libro ficticio «Vacaciones en la casa amarilla». Capítulo de muestra: «La llave bajo la maceta azul». La casa amarilla era más pequeña de lo que recordaban y, aun así, guardaba más historias. La abuela levantó la maceta azul de la casa amarilla en la costa de Cantabria y encontró la misma llave de latón de todos los veranos. Los nietos contaron las marcas junto a la puerta. Cada marca se convirtió en un capítulo sobre comidas largas, juegos inventados y tardes que terminaban cuando aparecían las estrellas. Los nietos vuelven a la casa amarilla donde las vacaciones familiares se llenaban de juegos sencillos, comidas compartidas y cuentos al anochecer.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 53.72,
+  "generatedAt": "2026-08-02T21:53:19.214Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.5354,
+    "rmsRatio": 0.0563,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

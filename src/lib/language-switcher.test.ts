@@ -1,4 +1,4 @@
-import { getAlternateLocalePath, swapLocaleInPath } from './language-switcher';
+import { getAlternateLocalePath, getLocaleSwitchPath, swapLocaleInPath } from './language-switcher';
 
 describe('language switcher helpers', () => {
   it('uses the exact alternate locale path when available', () => {
@@ -17,5 +17,26 @@ describe('language switcher helpers', () => {
     expect(
       swapLocaleInPath('/pt-PT/blog/fabrication-dun-livre', 'de-DE', ['en-US', 'pt-PT', 'de-DE']),
     ).toBe('/de-DE/blog/fabrication-dun-livre');
+  });
+
+  it('uses a translated landing slug from hreflang when available', () => {
+    expect(
+      getLocaleSwitchPath(
+        '/pt-PT/lp/livro-personalizado-ferias',
+        'fr-FR',
+        ['en-US', 'pt-PT', 'fr-FR', 'de-DE'],
+        'https://mythoria.pt/fr-FR/lp/livre-personnalise-vacances',
+      ),
+    ).toBe('/fr-FR/lp/livre-personnalise-vacances');
+  });
+
+  it('falls back to the locale homepage for a landing without that translation', () => {
+    expect(
+      getLocaleSwitchPath('/pt-PT/lp/livro-personalizado-ferias', 'de-DE', [
+        'en-US',
+        'pt-PT',
+        'de-DE',
+      ]),
+    ).toBe('/de-DE');
   });
 });

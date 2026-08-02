@@ -1,0 +1,46 @@
+{
+  "LandingPages": {
+    "defaults": {
+      "booksEyebrow": "Fictional examples",
+      "booksTitle": "Five book ideas to get started",
+      "booksIntro": "These concepts show possible directions. They are fictional examples, not customer testimonials or public stories."
+    },
+    "editorialReviewed": "Mythoria editorial content · Reviewed {date}",
+    "faqTitle": "Frequently asked questions",
+    "related": {
+      "guideEyebrow": "In-depth guide",
+      "guide": "Read the complete guide",
+      "sample": "Read the fictional example “{title}”",
+      "eyebrow": "Explore more",
+      "title": "You may also be interested in",
+      "intro": "Keep exploring ideas, occasions and thoughtful ways to turn memories into personalized books.",
+      "explore": "Explore {title}"
+    },
+    "book": {
+      "chapters": "Chapters",
+      "listen": "Listen to the audio excerpt",
+      "readWithImage": "Read the chapter and view the image",
+      "readSample": "Read the sample chapter",
+      "sampleChapter": "Sample chapter",
+      "closeSample": "Close sample chapter"
+    },
+    "floating": {
+      "examplesAria": "View book examples",
+      "examples": "View examples",
+      "topAria": "Back to the top of the page",
+      "top": "Top"
+    },
+    "tables": {
+      "languageOption": "Language option",
+      "exampleExcerpt": "Example excerpt",
+      "whenToUse": "When to use",
+      "activity": "Activity",
+      "idealFor": "Ideal for:",
+      "result": "Result:",
+      "baseIdea": "Core idea",
+      "literaryPersona": "Literary persona",
+      "conceptsWorked": "Concepts explored"
+    },
+    "createInPortuguese": "Create the story in Portuguese"
+  }
+}

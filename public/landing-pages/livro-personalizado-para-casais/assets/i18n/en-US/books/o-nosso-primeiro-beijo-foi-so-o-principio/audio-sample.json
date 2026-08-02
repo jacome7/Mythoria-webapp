@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "From the fictional book “Our First Kiss Was Only the Beginning”. Sample chapter: “The Kiss That Refused a Plan”. For years, they disagreed about who leaned in first. The bus arrived at the wrong moment, then the phone rang, then both of them laughed too hard to say anything useful. When they finally stopped arranging the moment, it arrived quietly—and became the story they would retell differently for years. After a bus, a phone call and nervous laughter interrupt every attempt, the first kiss happens when they stop trying to make it perfect.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 35.48,
+  "generatedAt": "2026-08-02T18:26:25.803Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.6047,
+    "rmsRatio": 0.0671,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

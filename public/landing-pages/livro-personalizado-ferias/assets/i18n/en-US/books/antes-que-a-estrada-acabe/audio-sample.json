@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "From the fictional book “Before the Road Ends”. Sample chapter: “The last overlook”. The road did not need to lead somewhere important to change the way she returned. At the final overlook on the Pacific Coast, Emily recorded the wind, the distant traffic and one sentence she had been avoiding since the trip began. Later, those sounds and photographs became a chapter about slowing down, noticing more and returning with a clearer sense of home. A reflective solo journey turns small landscapes, voice notes and quiet stops into a personal travel chronicle.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 52.92,
+  "generatedAt": "2026-08-02T18:25:33.163Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.7317,
+    "rmsRatio": 0.055,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

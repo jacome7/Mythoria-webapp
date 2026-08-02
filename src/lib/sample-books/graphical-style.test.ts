@@ -6,6 +6,7 @@ describe('getGraphicalStyleMessageKey', () => {
     expect(getGraphicalStyleMessageKey({ style: 'REALISTIC' })).toBe(GraphicalStyle.REALISTIC);
     expect(getGraphicalStyleMessageKey({ style: 'digital_art' })).toBe(GraphicalStyle.DIGITAL_ART);
     expect(getGraphicalStyleMessageKey({ style: 'pixar' })).toBe(GraphicalStyle.PIXAR_STYLE);
+    expect(getGraphicalStyleMessageKey({ style: 'PaperCut' })).toBe(GraphicalStyle.PAPERCUT);
   });
 
   it('keeps free-form labels available for direct display', () => {

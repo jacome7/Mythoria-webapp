@@ -9,8 +9,8 @@ This guide covers setting up a local development environment for the Mythoria We
 ### System Requirements
 
 - **Operating System**: Windows 10/11, macOS, or Linux
-- **Node.js**: Version 24.15.0 LTS
-- **npm**: Use the npm version bundled with Node.js 24.15.0
+- **Node.js**: Version 24.18.1 LTS
+- **npm**: Use the npm version bundled with Node.js 24.18.1
 - **Git**: Latest version for version control
 - **Visual Studio Code**: Recommended IDE with extensions
 

@@ -232,6 +232,13 @@
       "when": 1785618007661,
       "tag": "0032_lush_omega_red",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1785685460465,
+      "tag": "0033_easy_diamondback",
+      "breakpoints": true
     }
   ]
 }

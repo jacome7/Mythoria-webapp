@@ -460,12 +460,38 @@ export function normalizeGraphicalStyle(style: string | undefined): GraphicalSty
     'colored pencils': GraphicalStyle.COLORED_PENCIL,
     'coloured pencil': GraphicalStyle.COLORED_PENCIL,
     'pencil art': GraphicalStyle.COLORED_PENCIL,
+
+    // Claymation
+    claymation: GraphicalStyle.CLAYMATION,
+    'clay animation': GraphicalStyle.CLAYMATION,
+    'clay stop motion': GraphicalStyle.CLAYMATION,
+    'clay stop-motion': GraphicalStyle.CLAYMATION,
+    plasticine: GraphicalStyle.CLAYMATION,
+    'modelling clay': GraphicalStyle.CLAYMATION,
+
+    // Layered paper cut
+    papercut: GraphicalStyle.PAPERCUT,
+    'paper cut': GraphicalStyle.PAPERCUT,
+    'paper-cut': GraphicalStyle.PAPERCUT,
+    'cut paper': GraphicalStyle.PAPERCUT,
+    'layered paper': GraphicalStyle.PAPERCUT,
+    'paper collage': GraphicalStyle.PAPERCUT,
   };
 
   const normalized = styleMap[trimmed];
   if (normalized) return normalized;
 
   // Keyword-based detection
+  if (trimmed.includes('clay') || trimmed.includes('plasticine')) {
+    return GraphicalStyle.CLAYMATION;
+  }
+  if (
+    trimmed.includes('papercut') ||
+    (trimmed.includes('paper') &&
+      (trimmed.includes('cut') || trimmed.includes('layer') || trimmed.includes('collage')))
+  ) {
+    return GraphicalStyle.PAPERCUT;
+  }
   if (trimmed.includes('cartoon') || trimmed.includes('animated')) {
     return GraphicalStyle.CARTOON;
   }

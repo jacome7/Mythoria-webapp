@@ -4,9 +4,10 @@
 
 The landing-page engine renders focused, SEO- and GenAI-optimized marketing pages under
 `/{locale}/lp/{slug}` (e.g. `/pt-PT/lp/livro-personalizado-criancas-autistas`). Each page targets a
-specific intent or niche (a topic, audience, or use case), is written directly in one locale, and is
-assembled from a single **typed content object** rendered by one shared template. There is no CMS —
-content is version-controlled TypeScript.
+specific intent or niche (a topic, audience, or use case), is written directly in its locale, and is
+assembled from a **typed content object** rendered by one shared template. Translations share a
+stable `translationKey` while keeping locale-specific public slugs. There is no CMS — content is
+version-controlled TypeScript.
 
 The engine is built so a new page is **content-first**: author a typed content file, keep editorial/source artifacts in docs, and place only public runtime assets under the page's `public/landing-pages/{slug}/assets/` folder. The template, metadata, structured data, and sitemap inclusion are handled for you.
 
@@ -38,8 +39,10 @@ An "Atualizado em …" freshness line is shown at the top of the content area, d
 ## Routing & Navigation
 
 - **Route:** `src/app/[locale]/lp/[slug]/page.tsx` (dynamic, statically generated).
-- **URL:** `/{locale}/lp/{slug}` — the canonical locale must match the content's `locale`; a mismatch
-  triggers a `permanentRedirect` to the correct locale.
+- **URL:** `/{locale}/lp/{slug}` — resolution requires the exact `locale + slug`. A globally unique
+  slug under the wrong locale permanently redirects to its canonical locale.
+- **Language switching:** reciprocal hreflang links provide translated slugs. If a landing has no
+  translation for the selected locale, navigation falls back to that locale's homepage.
 - **Static generation:** `generateStaticParams()` returns `{ locale, slug }` for every registered page
   via `getLandingPageStaticParams()`.
 - **Unknown locale or slug:** `notFound()`.
@@ -53,7 +56,7 @@ src/content/landing-pages/<name>.<locale>.ts   ← the typed content object
         │
         ▼
 src/content/landing-pages/index.ts             ← registry + lookup helpers
-        │   getLandingPageBySlug() / getIndexableLandingPages() / getLandingPageStaticParams()
+        │   getLandingPage(locale, slug) / getLandingPageTranslations(translationKey)
         ▼
 src/app/[locale]/lp/[slug]/page.tsx            ← route: generateMetadata + render
         │
@@ -81,6 +84,8 @@ Key files:
 | ----------------------------- | -------- | --------------------------------------------------------------------------------------------- |
 | `slug`                        | yes      | URL slug under `/lp/`. Keep stable once indexed (changing it costs SEO / needs a redirect).   |
 | `locale`                      | yes      | Page locale (e.g. `pt-PT`). Must match the URL locale.                                        |
+| `translationKey`              | yes      | Stable family key shared by all translated variants.                                          |
+| `homepageCard`                | no       | Locale-specific title and description for the homepage landing Hub.                           |
 | `title`                       | yes      | The visible H1.                                                                               |
 | `metaTitle`                   | yes      | `<title>` + OG/Twitter title.                                                                 |
 | `metaDescription`             | yes      | Meta description + OG/Twitter description (keep ≤ ~155 chars).                                |
@@ -116,6 +121,7 @@ Optional sections render **only when present**, so the template stays reusable a
 - `title`, `description`.
 - `robots`: `index,follow,max-snippet:-1,max-image-preview:large` when `indexable`, else `noindex,nofollow`.
 - Canonical via `buildLocalizedUrl(locale, '/lp/' + slug)`.
+- Reciprocal hreflang links for every indexable member of the same `translationKey` family.
 - OpenGraph + Twitter (`summary_large_image`) using `ogImageSrc ?? hero.imageSrc` at **1200×630**.
 
 `buildStructuredData()` in the template injects one `<script type="application/ld+json">` with an array of:
@@ -157,18 +163,40 @@ public/landing-pages/{slug}/assets/                 # only files that must be pu
     └── <book-slug>.*                               # optional sample audio files
 ```
 
+Translated media lives under
+`public/landing-pages/{pt-source-slug}/assets/i18n/{locale}/`. Generate 30–60 second localized TTS
+samples with `npm run landing-assets:generate-audio` (optional filters: `-- --locale en-US` and
+`--translation-key family-travel`) and validate all expected images, MP3 files and manifests with
+`npm run landing-assets:validate`. Credentials are read from `.env.local` and are never written to
+manifests.
+
 Do **not** create or reference `public/landing-page-assets/`; that folder is deprecated.
 
 > The cover images carry **printed titles** when using rendered cover artwork. The content `title`
 > and `imageAlt` for each book MUST match the title represented by the asset — otherwise the card
 > text contradicts the visual. (`landing-pages.test.ts` asserts `imageAlt` contains the book `title`.)
 
+### Localization rules for stories and artwork
+
+- Localize fictional character names for the target market, not only the surrounding prose. Use
+  names that feel natural in the target locale and keep the chosen names consistent in the title,
+  synopsis, excerpt, sample chapter, audio script, alt text, cover and feature artwork.
+- Adapt the setting when it is relevant: cities, public spaces, travel routes, food, seasons and
+  cultural references should belong naturally to the target country. A neutral setting may remain
+  neutral when no regional detail improves the story.
+- Keep a Portuguese name or setting only when Portuguese identity, heritage or diaspora is an
+  intentional part of the story. Document that choice editorially so it cannot be mistaken for an
+  untranslated residue.
+- Before approving localized artwork, compare every printed name and place with the canonical
+  localized content. Regenerate the audio whenever a name, setting or title changes.
+
 ---
 
 ## How to Add a New Landing Page
 
 1. **Create the content file:** `src/content/landing-pages/<name>.<locale>.ts` exporting a
-   `LandingPageContent` object. If the page has static assets, use `assetBase = /landing-pages/${slug}/assets`.
+   `LandingPageContent` object. Reuse the family's `translationKey`; keep `primaryIntent` stable
+   across translations.
 2. **Add public runtime assets** under `public/landing-pages/{slug}/assets/{hero,books,audio}/`, including a 1200×630
    `og-cover.*` when social sharing needs a dedicated image.
 3. **Move editorial/source artifacts** (briefs, prompts, draft JSON, checklists, research notes) to
@@ -188,6 +216,9 @@ Do **not** create or reference `public/landing-page-assets/`; that folder is dep
 - **Never claim clinical, medical, therapeutic, or diagnostic value.** Always include the safety note
   and frame the product as a **complementary** creative tool.
 - **Examples are fictional concepts**, not testimonials — keep the "Exemplos ficcionais" framing honest.
+- **Localization is editorial adaptation, not word replacement.** Localize character names and,
+  where relevant, the setting and cultural context. Apply those choices to every textual, audio and
+  visual occurrence before marking the locale indexable.
 
 ---
 

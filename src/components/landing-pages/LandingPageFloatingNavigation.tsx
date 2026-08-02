@@ -46,7 +46,18 @@ function isSectionInView(target: HTMLElement | null) {
   return rect.top < viewportHeight * 0.72 && rect.bottom > viewportHeight * 0.18;
 }
 
-export default function LandingPageFloatingNavigation() {
+interface LandingPageFloatingNavigationProps {
+  labels: {
+    examplesAria: string;
+    examples: string;
+    topAria: string;
+    top: string;
+  };
+}
+
+export default function LandingPageFloatingNavigation({
+  labels,
+}: LandingPageFloatingNavigationProps) {
   const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
   const [showExamplesJump, setShowExamplesJump] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -113,7 +124,7 @@ export default function LandingPageFloatingNavigation() {
     <>
       <a
         href={`#${EXAMPLES_TARGET_ID}`}
-        aria-label="Ver exemplos de livros"
+        aria-label={labels.examplesAria}
         aria-hidden={!showExamplesJump}
         tabIndex={showExamplesJump ? undefined : -1}
         onClick={handleExamplesClick}
@@ -124,12 +135,12 @@ export default function LandingPageFloatingNavigation() {
         }`}
       >
         <BookOpen className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-        <span>Ver exemplos</span>
+        <span>{labels.examples}</span>
       </a>
 
       <button
         type="button"
-        aria-label="Voltar ao topo da página"
+        aria-label={labels.topAria}
         aria-hidden={!showBackToTop}
         tabIndex={showBackToTop ? undefined : -1}
         onClick={handleBackToTopClick}
@@ -140,7 +151,7 @@ export default function LandingPageFloatingNavigation() {
         }`}
       >
         <ArrowUp className="h-4 w-4 shrink-0" aria-hidden="true" />
-        <span>Topo</span>
+        <span>{labels.top}</span>
       </button>
     </>
   );

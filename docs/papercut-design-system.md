@@ -146,7 +146,7 @@ metadata ↔ filesystem in CI.
 time and resolves every slot through a deterministic chain:
 
 ```
-exact locale → en-US → unsuffixed default → first available
+exact locale → en-US → pt-PT → unsuffixed default → first available
 ```
 
 so a missing `foreground_laptop_de-DE.webp` silently serves

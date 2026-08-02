@@ -2,6 +2,10 @@ jest.mock('@clerk/nextjs/server', () => ({ clerkMiddleware: (handler: unknown) =
 jest.mock('next-intl/middleware', () => ({ __esModule: true, default: () => jest.fn() }));
 jest.mock('@/content/landing-pages', () => ({
   getLandingPageIntentContext: jest.fn(),
+  getLandingPage: (locale: string, slug: string) =>
+    locale === 'pt-PT' && ['livro-personalizado-para-casais', 'historias-de-apoio'].includes(slug)
+      ? { locale, slug }
+      : undefined,
   getLandingPageBySlug: (slug: string) =>
     slug === 'livro-personalizado-para-casais'
       ? { locale: 'pt-PT', slug }

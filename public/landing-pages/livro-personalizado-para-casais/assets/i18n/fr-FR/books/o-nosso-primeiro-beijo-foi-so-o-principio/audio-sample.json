@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Extrait du livre fictif «Notre premier baiser n’était que le début». Chapitre d’exemple : «Le baiser qui refusa le programme». Pendant des années, ils ne furent pas d’accord sur la personne qui s’était approchée la première. Le bus arriva au mauvais moment, puis le téléphone sonna, et tous deux rirent trop pour prononcer une phrase utile. Lorsqu’ils cessèrent d’organiser l’instant, il arriva doucement et devint une histoire qu’ils raconteraient chacun à leur façon. Après un bus, un appel et plusieurs éclats de rire, le premier baiser arrive lorsqu’ils cessent de vouloir le rendre parfait.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 43.76,
+  "generatedAt": "2026-08-02T15:30:29.796Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.835,
+    "rmsRatio": 0.112,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

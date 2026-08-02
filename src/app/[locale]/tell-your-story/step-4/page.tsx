@@ -2,14 +2,7 @@
 
 import { Show, RedirectToSignIn, useAuth } from '@clerk/nextjs';
 import Image from 'next/image';
-import {
-  Suspense,
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { Suspense, type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams, useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -27,7 +20,6 @@ import {
   GraphicalStyle,
   TargetAudienceLabels,
   NovelStyleLabels,
-  GraphicalStyleLabels,
   getAllTargetAudiences,
   getAllNovelStyles,
   getAllGraphicalStyles,
@@ -96,6 +88,7 @@ function Step4Page() {
   const editStoryId = searchParams?.get('edit');
   const tStoryStepsStep4 = useTranslations('StorySteps.step4');
   const tWritingPersonas = useTranslations('WritingPersonas');
+  const tGraphicalStyles = useTranslations('GraphicalStyles');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -290,7 +283,7 @@ function Step4Page() {
     const personaName = getSelectedPersonaName();
     if (personaName) parts.push(personaName);
     if (novelStyle) parts.push(NovelStyleLabels[novelStyle]);
-    if (graphicalStyle) parts.push(GraphicalStyleLabels[graphicalStyle]);
+    if (graphicalStyle) parts.push(tGraphicalStyles(graphicalStyle));
     if (place.trim()) parts.push(place.trim());
     if (imageGenerationInstructions.trim())
       parts.push(tStoryStepsStep4('previews.customImageInstructions'));
@@ -841,7 +834,7 @@ function Step4Page() {
                                 }}
                               >
                                 {graphicalStyle
-                                  ? GraphicalStyleLabels[graphicalStyle]
+                                  ? tGraphicalStyles(graphicalStyle)
                                   : tStoryStepsStep4('placeholders.selectGraphicStyle')}
                                 <svg
                                   className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none"
@@ -1328,7 +1321,7 @@ function Step4Page() {
                                 <Image
                                   src={getGraphicTemplateImageSrc(targetAudience, style)}
                                   alt={tStoryStepsStep4('modal.altText', {
-                                    style: GraphicalStyleLabels[style],
+                                    style: tGraphicalStyles(style),
                                   })}
                                   width={256}
                                   height={384}
@@ -1341,9 +1334,7 @@ function Step4Page() {
                                 />
                               </figure>
                               <div className="card-body items-center text-center p-4">
-                                <h2 className="card-title text-base">
-                                  {GraphicalStyleLabels[style]}
-                                </h2>
+                                <h2 className="card-title text-base">{tGraphicalStyles(style)}</h2>
                                 {graphicalStyle === style && (
                                   <div className="badge badge-primary">
                                     {tStoryStepsStep4('modal.selected')}

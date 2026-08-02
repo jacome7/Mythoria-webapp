@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Extrait du livre fictif «Le train du dimanche de Grand-père». Chapitre d’exemple : «Des billets pour l’Express du Salon». Le train ne quittait jamais le salon, mais atteignait chaque dimanche une nouvelle destination. Grand-père Luc poinçonna deux billets en papier et annonça que le canapé devenait le quai numéro un. Son petit-fils choisit la destination sur une vieille photo. Le train traversa un village bourguignon, un été sur la côte atlantique et un matin enneigé, emportant les histoires familiales vers un autre dimanche. Chaque dimanche, Grand-père Luc et son petit-fils construisent un train en carton qui traverse des souvenirs de différentes années.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 49.56,
+  "generatedAt": "2026-08-02T21:54:16.713Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.6175,
+    "rmsRatio": 0.0773,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

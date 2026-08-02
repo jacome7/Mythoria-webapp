@@ -98,6 +98,8 @@ const graphicalStyleMap: Record<string, GraphicalStyle> = {
   sketch: GraphicalStyle.SKETCH,
   oil_painting: GraphicalStyle.OIL_PAINTING,
   colored_pencil: GraphicalStyle.COLORED_PENCIL,
+  claymation: GraphicalStyle.CLAYMATION,
+  papercut: GraphicalStyle.PAPERCUT,
 
   // Legacy UI values and variations
   'colored book': GraphicalStyle.COLORED_PENCIL,
@@ -121,6 +123,15 @@ const graphicalStyleMap: Record<string, GraphicalStyle> = {
   europeancomic: GraphicalStyle.EURO_COMIC_BOOK,
   'ligne claire': GraphicalStyle.EURO_COMIC_BOOK,
   humorous_adventure: GraphicalStyle.EURO_COMIC_BOOK,
+  clayanimation: GraphicalStyle.CLAYMATION,
+  'claystop-motion': GraphicalStyle.CLAYMATION,
+  claystopmotion: GraphicalStyle.CLAYMATION,
+  plasticine: GraphicalStyle.CLAYMATION,
+  modellingclay: GraphicalStyle.CLAYMATION,
+  'paper-cut': GraphicalStyle.PAPERCUT,
+  cutpaper: GraphicalStyle.PAPERCUT,
+  layeredpaper: GraphicalStyle.PAPERCUT,
+  papercollage: GraphicalStyle.PAPERCUT,
 };
 
 // Mapping from common AI outputs to CharacterAge enum

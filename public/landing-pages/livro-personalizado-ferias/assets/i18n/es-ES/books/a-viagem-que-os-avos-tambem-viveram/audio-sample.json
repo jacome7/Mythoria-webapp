@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Del libro ficticio «El viaje que también hicieron los abuelos». Capítulo de muestra: «Dos veranos en una sola plaza». La fuente había cambiado, pero el abuelo seguía en el mismo lugar. Lucía sostuvo el móvil junto a la fotografía descolorida en Salamanca. La plaza parecía más luminosa, pero la fuente y la sonrisa del abuelo apenas habían cambiado. La familia unió cada imagen antigua con una nueva y convirtió dos vacaciones en una historia compartida entre generaciones. Fotos antiguas y nuevas revelan cómo dos generaciones visitaron los mismos lugares en veranos muy distintos.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 51.4,
+  "generatedAt": "2026-08-02T18:19:50.426Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.9022,
+    "rmsRatio": 0.096,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

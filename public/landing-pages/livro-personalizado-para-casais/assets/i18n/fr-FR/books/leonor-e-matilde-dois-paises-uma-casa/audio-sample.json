@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Extrait du livre fictif «Léonie & Mathilde — Deux pays, un foyer». Chapitre d’exemple : «Un dimanche entre deux fuseaux horaires». Pendant deux ans, leur maison eut deux portes d’embarquement. Chaque dimanche commençait avec un téléphone en charge à Paris et un autre qui sonnait à Bruxelles. Elles préparaient le même plat et comparaient la météo. La distance restait réelle, mais leurs rituels lui donnaient des portes, des fenêtres et une table qu’elles imaginaient déjà partager. Entre Paris et Bruxelles, messages vocaux, vols retardés et listes partagées aident Léonie et Mathilde à construire leur idée du foyer.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 45,
+  "generatedAt": "2026-08-02T18:31:04.089Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.6702,
+    "rmsRatio": 0.0896,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

@@ -76,6 +76,31 @@ describe('romance landing page route', () => {
     ]);
   });
 
+  it('publishes reciprocal localized hreflang without a German alternate', async () => {
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ locale: 'en-US', slug: 'personalized-vacation-book' }),
+    });
+
+    expect(metadata.alternates?.canonical).toBe(
+      'https://mythoria.pt/en-US/lp/personalized-vacation-book',
+    );
+    expect(metadata.alternates?.languages).toEqual({
+      'pt-PT': 'https://mythoria.pt/pt-PT/lp/livro-personalizado-ferias',
+      'en-US': 'https://mythoria.pt/en-US/lp/personalized-vacation-book',
+      'es-ES': 'https://mythoria.pt/es-ES/lp/libro-personalizado-vacaciones',
+      'fr-FR': 'https://mythoria.pt/fr-FR/lp/livre-personnalise-vacances',
+    });
+    expect(metadata.openGraph?.locale).toBe('en-US');
+  });
+
+  it('renders an existing localized route', async () => {
+    const result = await LandingPageRoute({
+      params: Promise.resolve({ locale: 'es-ES', slug: 'libro-personalizado-para-parejas' }),
+    });
+    render(result);
+    expect(screen.getByTestId('landing')).toHaveTextContent('libro-personalizado-para-parejas');
+  });
+
   it('renders the canonical Portuguese route', async () => {
     const result = await LandingPageRoute({
       params: Promise.resolve({

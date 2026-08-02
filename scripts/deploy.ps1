@@ -25,6 +25,7 @@ $REGION = 'europe-west9'
 $IMAGE_NAME = "gcr.io/$PROJECT_ID/$SERVICE_NAME"
 $GIT_SHA = $null
 $GCLOUD = if ($IsWindows -or $env:OS -eq 'Windows_NT') { 'gcloud.cmd' } else { 'gcloud' }
+$NODE_VERSION = (Get-Content -Raw (Join-Path $PSScriptRoot '..\\.node-version')).Trim()
 $GA4_VERIFIER_SERVICE_ACCOUNT = "analytics-scheduler@$PROJECT_ID.iam.gserviceaccount.com"
 # -----------------------------------------------------------------------------
 
@@ -47,6 +48,20 @@ function Write-Warn { param([string]$Msg) Write-Host "[WARN] $Msg" -ForegroundCo
 function Write-Err { param([string]$Msg) Write-Host "[ERROR] $Msg" -ForegroundColor Red }
 # -----------------------------------------------------------------------------
 
+function Assert-PinnedNodeVersion {
+    $nodeCommand = Get-Command node -ErrorAction SilentlyContinue
+    if (-not $nodeCommand) {
+        throw "Node.js $NODE_VERSION is required. Install it and run 'nvm use $NODE_VERSION'."
+    }
+
+    $actualNodeVersion = (& node --version).Trim().TrimStart('v')
+    if ($actualNodeVersion -ne $NODE_VERSION) {
+        throw "Node.js $NODE_VERSION is required; found $actualNodeVersion. Run 'nvm use $NODE_VERSION' before deploying."
+    }
+
+    Write-Success "Using Node.js $NODE_VERSION"
+}
+
 # Helper function to get a value from .env.production file
 function Get-EnvVariable {
     param (
@@ -68,6 +83,8 @@ function Get-EnvVariable {
 
 function Test-Prerequisites {
     Write-Info "Checking prerequisites..."
+
+    Assert-PinnedNodeVersion
 
     try {
         & $GCLOUD --version  | Out-Null

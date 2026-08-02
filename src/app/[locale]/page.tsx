@@ -5,9 +5,11 @@ import HomePageClient from './HomePageClient';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { buildStaticPageMetadata } from '@/lib/static-page-metadata';
+import { getHomepageLandingPageGuides } from '@/content/landing-pages';
 
 interface HomePageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
+  params: Promise<{ locale: string }>;
 }
 
 export async function generateMetadata({
@@ -38,16 +40,22 @@ function buildIntentContext(
   };
 }
 
-export default async function Home({ searchParams }: HomePageProps) {
-  const [params, cookieIntentContext] = await Promise.all([searchParams, getIntentContext()]);
-  const initialHeroIntentOverride = getValidatedIntent(getFirstQueryValue(params.intent));
+export default async function Home({ searchParams, params }: HomePageProps) {
+  const [query, routeParams, cookieIntentContext] = await Promise.all([
+    searchParams,
+    params,
+    getIntentContext(),
+  ]);
+  const initialHeroIntentOverride = getValidatedIntent(getFirstQueryValue(query.intent));
   const initialIntentContext = buildIntentContext(cookieIntentContext, initialHeroIntentOverride);
+  const homepageGuides = getHomepageLandingPageGuides(routeParams.locale);
 
   return (
     <HomePageClient
       initialHeroIntentOverride={initialHeroIntentOverride}
       initialIntentContext={initialIntentContext}
       intentOverrideActive={initialHeroIntentOverride !== null}
+      homepageGuides={homepageGuides}
     />
   );
 }

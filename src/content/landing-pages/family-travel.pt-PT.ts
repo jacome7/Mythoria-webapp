@@ -6,6 +6,7 @@ const assetBase = `/landing-pages/${slug}/assets`;
 const bookBase = `${assetBase}/books`;
 
 export const familyTravelLandingPage: LandingPageContent = {
+  translationKey: 'family-travel',
   slug,
   locale: 'pt-PT',
   title: 'Livros personalizados para guardar a história das suas férias',
@@ -28,6 +29,10 @@ export const familyTravelLandingPage: LandingPageContent = {
   analytics: {
     pageViewEvent: 'landing_page_view',
     variant: 'family-travel-v1',
+  },
+  homepageCard: {
+    title: 'Livro personalizado de férias',
+    description: 'Transforme fotografias, lugares e pequenos episódios numa história de viagem.',
   },
   templateIcons: {
     heroEyebrow: { src: `${iconBase}/fa-plane-departure-travel-papercut.webp`, alt: '' },

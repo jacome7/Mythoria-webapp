@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Del libro ficticio «El tren de los domingos del abuelo». Capítulo de muestra: «Billetes para el Expreso del Salón». El tren nunca salió del salón, pero cada domingo llegaba a un lugar nuevo. El abuelo Raúl picó dos billetes de papel y anunció que el sofá era el andén uno. Su nieto eligió el primer destino en una fotografía antigua. El tren de cartón cruzó un pueblo de Castilla, un verano en la costa mediterránea y una mañana de nieve, llevando las historias familiares hasta otro domingo. Cada domingo, el abuelo Raúl y su nieto construyen un tren de cartón que viaja por recuerdos de años distintos.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 52.44,
+  "generatedAt": "2026-08-02T21:52:43.807Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.7473,
+    "rmsRatio": 0.0887,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

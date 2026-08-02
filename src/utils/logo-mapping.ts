@@ -2,22 +2,7 @@
  * Utility functions for mapping story graphical styles to logo images
  */
 
-export type GraphicalStyle =
-  | 'cartoon'
-  | 'realistic'
-  | 'watercolor'
-  | 'digital_art'
-  | 'hand_drawn'
-  | 'minimalist'
-  | 'vintage'
-  | 'comic_book'
-  | 'euro_comic_book'
-  | 'anime'
-  | 'pixar_style'
-  | 'disney_style'
-  | 'sketch'
-  | 'oil_painting'
-  | 'colored_pencil';
+import { GraphicalStyle } from '@/types/story-enums';
 
 /**
  * Maps graphical styles to their corresponding logo filenames
@@ -38,6 +23,8 @@ const GRAPHICAL_STYLE_TO_LOGO: Record<GraphicalStyle, string> = {
   sketch: 'sketch.jpg',
   oil_painting: 'oil-painting.jpg',
   colored_pencil: 'colored_pencil.jpg',
+  claymation: 'claymation.jpg',
+  papercut: 'papercut.jpg',
 };
 
 /**

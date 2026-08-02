@@ -64,6 +64,8 @@ const graphicalStyles = new Set([
   'sketch',
   'oil_painting',
   'colored_pencil',
+  'claymation',
+  'papercut',
 ]);
 const forbiddenClaims = [
   'trata o autismo',

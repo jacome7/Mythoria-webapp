@@ -3,24 +3,14 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import { getAllGraphicalStyles } from '@/types/story-enums';
+import { getLogoFilename } from '@/utils/logo-mapping';
 
 // Define the available graphical styles with their corresponding file names
-const GRAPHICAL_STYLES = [
-  { key: 'cartoon', fileName: 'cartoon.jpg' },
-  { key: 'realistic', fileName: 'realistic.jpg' },
-  { key: 'watercolor', fileName: 'watercolor.jpg' },
-  { key: 'digital_art', fileName: 'digital_art.jpg' },
-  { key: 'hand_drawn', fileName: 'hand_drawn.jpg' },
-  { key: 'minimalist', fileName: 'minimalist.jpg' },
-  { key: 'vintage', fileName: 'vintage.jpg' },
-  { key: 'comic_book', fileName: 'comic_book.jpg' },
-  { key: 'anime', fileName: 'anime.jpg' },
-  { key: 'pixar_style', fileName: 'pixar.jpg' },
-  { key: 'disney_style', fileName: 'disney.jpg' },
-  { key: 'sketch', fileName: 'sketch.jpg' },
-  { key: 'oil_painting', fileName: 'oil-painting.jpg' },
-  { key: 'colored_pencil', fileName: 'colored_pencil.jpg' },
-] as const;
+const GRAPHICAL_STYLES = getAllGraphicalStyles().map((key) => ({
+  key,
+  fileName: getLogoFilename(key),
+}));
 
 interface AnimatedLogoProps {
   className?: string;

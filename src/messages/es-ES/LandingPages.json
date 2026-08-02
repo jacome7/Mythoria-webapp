@@ -1,0 +1,46 @@
+{
+  "LandingPages": {
+    "defaults": {
+      "booksEyebrow": "Ejemplos ficticios",
+      "booksTitle": "Cinco ideas de libros para empezar",
+      "booksIntro": "Estos conceptos muestran caminos posibles. Son ejemplos ficticios, no testimonios de clientes ni historias públicas."
+    },
+    "editorialReviewed": "Contenido editorial de Mythoria · Revisado el {date}",
+    "faqTitle": "Preguntas frecuentes",
+    "related": {
+      "guideEyebrow": "Guía detallada",
+      "guide": "Leer la guía completa",
+      "sample": "Leer el ejemplo ficticio «{title}»",
+      "eyebrow": "Explorar más",
+      "title": "También te puede interesar",
+      "intro": "Sigue explorando ideas, ocasiones y formas cuidadas de convertir recuerdos en libros personalizados.",
+      "explore": "Explorar {title}"
+    },
+    "book": {
+      "chapters": "Capítulos",
+      "listen": "Escuchar el fragmento de audio",
+      "readWithImage": "Leer el capítulo y ver la imagen",
+      "readSample": "Leer el capítulo de muestra",
+      "sampleChapter": "Capítulo de muestra",
+      "closeSample": "Cerrar el capítulo de muestra"
+    },
+    "floating": {
+      "examplesAria": "Ver ejemplos de libros",
+      "examples": "Ver ejemplos",
+      "topAria": "Volver al principio de la página",
+      "top": "Arriba"
+    },
+    "tables": {
+      "languageOption": "Opción de idioma",
+      "exampleExcerpt": "Fragmento de ejemplo",
+      "whenToUse": "Cuándo utilizarlo",
+      "activity": "Actividad",
+      "idealFor": "Ideal para:",
+      "result": "Resultado:",
+      "baseIdea": "Idea base",
+      "literaryPersona": "Persona literaria",
+      "conceptsWorked": "Conceptos trabajados"
+    },
+    "createInPortuguese": "Crear la historia en portugués"
+  }
+}

@@ -14,7 +14,7 @@
   },
   "notes": "Runtime hero assets are complete for the five supported locales. Background locale variants are intentionally identical because they contain no embedded text.",
   "heroSlots": {
-    "_doc": "Canonical hero slot grammar shared by every style folder. Filenames are lowercase: {slot}.webp, {slot}_{device}.webp, {slot}_{device}_{locale}.webp, person{n}_{locale}.webp. Locale fallback chain at build time: exact locale -> en-US -> unsuffixed -> first available.",
+    "_doc": "Canonical hero slot grammar shared by every style folder. Filenames are lowercase: {slot}.webp, {slot}_{device}.webp, {slot}_{device}_{locale}.webp, person{n}_{locale}.webp. Locale fallback chain at build time: exact locale -> en-US -> pt-PT -> unsuffixed -> first available.",
     "required": [
       "cloud_left",
       "cloud_right",

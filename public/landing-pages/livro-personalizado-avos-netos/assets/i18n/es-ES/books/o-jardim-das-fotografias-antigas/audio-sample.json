@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Del libro ficticio «El jardín de las fotografías antiguas». Capítulo de muestra: «La foto bajo el limonero». Las fotografías no florecían con el sol, sino cuando el abuelo empezaba a hablar. Lara encontró una fotografía bajo el limonero y preguntó por qué el abuelo llevaba un sombrero demasiado grande. La respuesta abrió una tarde de verano, una bicicleta prestada y una broma que había esperado cincuenta años para hacer reír a una nieta. Una nieta descubre que cada foto familiar puede convertirse en una historia nueva cuando el abuelo cuenta lo que ocurrió fuera del encuadre.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 49.96,
+  "generatedAt": "2026-08-02T15:36:01.523Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.7321,
+    "rmsRatio": 0.0929,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

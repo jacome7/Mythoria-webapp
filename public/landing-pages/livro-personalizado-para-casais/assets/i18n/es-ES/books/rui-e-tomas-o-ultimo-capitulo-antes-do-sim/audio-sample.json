@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Del libro ficticio «Raúl y Tomás — El último capítulo antes del sí». Capítulo de muestra: «Un capítulo que todavía no tiene final». Todas sus decisiones importantes empezaron con un plan que ninguno cumplió. Raúl apuntó la panadería del barrio, el parque bajo la lluvia y el suelo de la cocina donde habían empezado sus decisiones más grandes. Dejó casi vacía la última página. Aquel final pertenecía a una pregunta que el libro podía preparar, pero nunca responder por ellos. Raúl reúne los lugares donde él y Tomás se convirtieron en equipo y deja el capítulo final abierto para una respuesta fuera del libro.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 52.24,
+  "generatedAt": "2026-08-02T18:30:09.341Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.8348,
+    "rmsRatio": 0.0917,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

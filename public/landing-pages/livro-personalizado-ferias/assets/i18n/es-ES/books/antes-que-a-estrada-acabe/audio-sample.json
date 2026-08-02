@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Del libro ficticio «Antes de que termine la carretera». Capítulo de muestra: «El último mirador». La carretera no tenía que llevar a un lugar importante para cambiar su regreso. En el último mirador de la sierra de Guadarrama, Elena grabó el viento, el tráfico lejano y una frase que había evitado desde el comienzo del viaje. Después, aquellos sonidos y fotografías se transformaron en un capítulo sobre avanzar despacio, observar más y volver a casa con claridad. Un viaje en solitario convierte paisajes, notas de voz y paradas tranquilas en una crónica personal.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 51.6,
+  "generatedAt": "2026-08-02T18:20:19.991Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.8217,
+    "rmsRatio": 0.0776,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

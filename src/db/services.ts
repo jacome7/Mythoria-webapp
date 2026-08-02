@@ -24,6 +24,7 @@ import { toAbsoluteImageUrl, toRelativeImagePath } from '../utils/image-url';
 import { normalizeLocale, detectUserLocaleFromEmail } from '@/utils/locale-utils';
 import { generateSlug, ensureUniqueSlug } from '@/lib/slug';
 import { isSearchIndexableStory } from '@/lib/story-seo';
+import { GraphicalStyle } from '@/types/story-enums';
 
 // Export payment service
 export { paymentService } from './services/payment';
@@ -392,26 +393,7 @@ export const storyService = {
         );
       }
       if (filters.graphicalStyle) {
-        conditions.push(
-          eq(
-            stories.graphicalStyle,
-            filters.graphicalStyle as
-              | 'cartoon'
-              | 'realistic'
-              | 'watercolor'
-              | 'digital_art'
-              | 'hand_drawn'
-              | 'minimalist'
-              | 'vintage'
-              | 'comic_book'
-              | 'anime'
-              | 'pixar_style'
-              | 'disney_style'
-              | 'sketch'
-              | 'oil_painting'
-              | 'colored_pencil',
-          ),
-        );
+        conditions.push(eq(stories.graphicalStyle, filters.graphicalStyle as GraphicalStyle));
       }
       if (filters.storyLanguage) {
         conditions.push(eq(stories.storyLanguage, filters.storyLanguage));

@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "From the fictional book “The Trip the Grandparents Took Too”. Sample chapter: “Two summers in one square”. The fountain had changed, but Grandpa still stood in exactly the same spot. Lily held her phone beside the faded photograph in Savannah. The square looked brighter now, but the fountain and Grandpa’s crooked smile had hardly changed. The family paired every old image with a new one, weaving two vacations into a single story across generations. Old and new photographs reveal how two generations visited the same places in very different summers.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 48.88,
+  "generatedAt": "2026-08-02T18:25:02.333Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.7746,
+    "rmsRatio": 0.0963,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

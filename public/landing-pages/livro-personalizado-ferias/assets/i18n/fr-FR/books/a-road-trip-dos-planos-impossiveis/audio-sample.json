@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Extrait du livre fictif «Le road trip des projets impossibles». Chapitre d’exemple : «La sortie 27 n’était pas prévue». Leur programme comptait douze étapes et aucune place pour l’histoire qui arriva vraiment. Le GPS leur ordonnait de faire demi-tour. Les quatre amis votèrent pour continuer, surtout parce que la route ressemblait au début d’un film. La sortie 27 les mena vers une petite auberge normande, un mur de cartes postales et une histoire qu’aucun planning n’aurait pu prévoir. Quatre amis découvrent que les sorties manquées, les petits restaurants et les idées de dernière minute font les meilleurs chapitres.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 41.8,
+  "generatedAt": "2026-08-02T18:22:16.446Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.6741,
+    "rmsRatio": 0.0859,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

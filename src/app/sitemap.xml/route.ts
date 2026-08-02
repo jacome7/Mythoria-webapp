@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { storyService, blogService } from '@/db/services';
-import { getIndexableLandingPages, getLandingPageHubUpdatedAt } from '@/content/landing-pages';
+import {
+  getIndexableLandingPages,
+  getLandingPageHubUpdatedAt,
+  getLandingPageTranslations,
+} from '@/content/landing-pages';
 import { getGuides } from '@/content/guides';
 import { getSeoSampleBooks } from '@/content/sample-books/seo';
 import { routing } from '@/i18n/routing';
@@ -92,9 +96,16 @@ export async function generateSitemap(): Promise<string> {
   });
 
   for (const page of getIndexableLandingPages()) {
+    const alternates = getLandingPageTranslations(page.translationKey)
+      .filter((translation) => translation.indexable)
+      .map((translation) => ({
+        hreflang: translation.locale.toLowerCase(),
+        href: buildLocalizedUrl(translation.locale, `/lp/${translation.slug}`),
+      }));
     addEntry(entries, {
       loc: buildLocalizedUrl(page.locale, `/lp/${page.slug}`),
       lastmod: toLastmod(page.updatedAt),
+      alternates: alternates.length > 1 ? alternates : undefined,
     });
   }
 

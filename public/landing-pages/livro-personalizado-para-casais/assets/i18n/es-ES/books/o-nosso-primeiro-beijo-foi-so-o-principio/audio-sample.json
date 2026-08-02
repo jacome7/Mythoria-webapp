@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Del libro ficticio «Nuestro primer beso solo fue el principio». Capítulo de muestra: «El beso que no quiso seguir el plan». Durante años discutieron sobre quién se acercó primero. El autobús llegó en el peor momento, después sonó el teléfono y luego ambos se rieron demasiado para decir algo sensato. Cuando dejaron de organizar el instante, ocurrió en silencio y se convirtió en una historia que cada uno recordaría de forma distinta. Después de que un autobús, una llamada y varias risas interrumpan cada intento, el primer beso llega cuando dejan de buscar la perfección.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 54.8,
+  "generatedAt": "2026-08-02T15:27:30.480Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.7656,
+    "rmsRatio": 0.0975,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

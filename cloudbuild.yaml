@@ -21,6 +21,7 @@ steps:
 
         # Build with secrets as build args
         docker build \
+          --build-arg NODE_VERSION="${_NODE_VERSION}" \
           -t gcr.io/$PROJECT_ID/$_SERVICE_NAME:$_GIT_SHA \
           -t gcr.io/$PROJECT_ID/$_SERVICE_NAME:latest \
           --build-arg APP_GIT_SHA="${_GIT_SHA}" \
@@ -90,6 +91,7 @@ images:
 # Remove sensitive data from substitutions - all secrets now in Secret Manager
 substitutions:
   _GIT_SHA: 'unknown'
+  _NODE_VERSION: '24.18.1'
   _SERVICE_NAME: 'mythoria-webapp'
   _REGION: 'europe-west9'
   _DB_PORT: '5432'

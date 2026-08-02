@@ -12,7 +12,7 @@
   },
   "notes": "Assets marked 'placeholder' are copies of kids_fantasy assets and must be replaced with romance-themed art (pink clouds, heart sparkles).",
   "heroSlots": {
-    "_doc": "Canonical hero slot grammar shared by every style folder. Filenames are lowercase: {slot}.webp, {slot}_{device}.webp, {slot}_{device}_{locale}.webp, person{n}_{locale}.webp. Locale fallback chain at build time: exact locale -> en-US -> unsuffixed -> first available.",
+    "_doc": "Canonical hero slot grammar shared by every style folder. Filenames are lowercase: {slot}.webp, {slot}_{device}.webp, {slot}_{device}_{locale}.webp, person{n}_{locale}.webp. Locale fallback chain at build time: exact locale -> en-US -> pt-PT -> unsuffixed -> first available.",
     "required": ["cloud_left", "cloud_right", "sky_left", "sky_right", "sparkles", "background", "foreground", "person1", "icon1", "icon2", "icon3"]
   },
   "assets": [

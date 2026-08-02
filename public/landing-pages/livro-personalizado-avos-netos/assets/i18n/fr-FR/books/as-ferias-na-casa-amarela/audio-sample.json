@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Extrait du livre fictif «Les vacances dans la maison jaune». Chapitre d’exemple : «La clé sous le pot bleu». La maison jaune semblait plus petite que dans leurs souvenirs et contenait pourtant davantage d’histoires. Grand-mère souleva le pot bleu de la maison jaune en Bretagne et retrouva la même clé en laiton que chaque été. Les petits-enfants comptèrent les marques près de la porte. Chaque marque devint un chapitre sur les longs repas, les jeux inventés et les soirées qui se terminaient avec l’apparition des étoiles. Les petits-enfants retrouvent la maison jaune où les vacances familiales étaient faites de jeux simples, de repas partagés et d’histoires au crépuscule.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 48.68,
+  "generatedAt": "2026-08-02T21:55:11.948Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.8031,
+    "rmsRatio": 0.0765,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

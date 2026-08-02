@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Extrait du livre fictif «La valise qui parlait portugais». Chapitre d’exemple : «Le mot caché dans la poche». À chaque ouverture de la valise, un mot familial retrouvait le chemin de la maison. Mia ouvrit la plus petite poche et trouva une carte portant un mot portugais écrit par Grand-mère. Elle l’appela pour l’entendre prononcer. Bientôt, la valise réunit deux langues, des voix familières et des histoires qui rapprochaient chaque appel du dimanche. Une valise remplie de recettes, d’expressions et de photos aide une famille multilingue à rapprocher les enfants de la langue de leurs grands-parents.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 42.72,
+  "generatedAt": "2026-08-02T15:37:59.227Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.8164,
+    "rmsRatio": 0.099,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

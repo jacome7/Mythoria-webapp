@@ -139,6 +139,19 @@ export interface LandingPageAnalyticsConfig {
   variant?: string;
 }
 
+export type LandingPageTranslationKey =
+  | 'family-travel'
+  | 'romance-gifts'
+  | 'grandparents-stories'
+  | 'autism-stories'
+  | 'supportive-stories'
+  | 'workshops-children';
+
+export interface LandingPageHomepageCard {
+  title: string;
+  description: string;
+}
+
 export interface LandingPageWorkshopStep extends LandingPageIconItem {}
 
 export interface LandingPageAgeActivity {
@@ -268,6 +281,8 @@ export interface LandingPageWorkshopContent {
 }
 
 export interface LandingPageContent {
+  /** Stable identifier shared by every localized version of the same landing page. */
+  translationKey: LandingPageTranslationKey;
   slug: string;
   locale: string;
   title: string;
@@ -296,6 +311,7 @@ export interface LandingPageContent {
   secondaryCta: string;
   templateIcons?: LandingPageTemplateIcons;
   analytics?: LandingPageAnalyticsConfig;
+  homepageCard?: LandingPageHomepageCard;
   supportHub?: LandingPageSupportHub;
   booksSection?: LandingPageBookSection;
   relatedGuide?: {
@@ -402,6 +418,7 @@ export interface LandingPageContent {
     about: string[];
     serviceName: string;
     serviceType: string;
+    areaServed?: string;
     includeProduct?: boolean;
   };
 }

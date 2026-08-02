@@ -140,6 +140,7 @@ docs/deployment/hosting.md
 # Local configuration
 config/local.js
 config/local.json
+.claude/settings.local.json
 
 # Backup files
 *.backup

@@ -193,6 +193,12 @@
         "step6": "Étape 6"
       }
     },
+    "landingGuides": {
+      "eyebrow": "Guides Mythoria",
+      "title": "Trouvez l’histoire qui convient à chaque personne et à chaque occasion",
+      "intro": "Découvrez des idées et des options de personnalisation avant de commencer votre livre.",
+      "explore": "Découvrir {title}"
+    },
     "community": {
       "title": "Rejoignez notre communauté croissante de conteurs!"
     },

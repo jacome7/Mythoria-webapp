@@ -5,7 +5,10 @@ import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { normalizeLocale } from '@/utils/locale-utils';
+import { getAllGraphicalStyles } from '@/types/story-enums';
 import styles from './GetInspiredPage.module.css';
+
+const GRAPHICAL_STYLE_OPTIONS = getAllGraphicalStyles();
 
 // StarRating component
 const StarRating = ({ rating, count }: { rating: number | null; count: number | null }) => {
@@ -110,23 +113,6 @@ export default function GetInspiredPageClient({
     'young_adult_15-17',
     'adult_18+',
     'all_ages',
-  ];
-
-  const graphicalStyleOptions = [
-    'cartoon',
-    'realistic',
-    'watercolor',
-    'digital_art',
-    'hand_drawn',
-    'minimalist',
-    'vintage',
-    'comic_book',
-    'anime',
-    'pixar_style',
-    'disney_style',
-    'sketch',
-    'oil_painting',
-    'colored_pencil',
   ];
 
   const storyLanguageOptions = ['en-US', 'pt-PT', 'es-ES', 'fr-FR', 'de-DE'];
@@ -291,7 +277,7 @@ export default function GetInspiredPageClient({
                 tabIndex={0}
                 className={`${styles.dropdownMenu} dropdown-content menu !absolute !left-0 !top-full z-[90] mt-2 max-h-64 w-full overflow-y-auto rounded-lg border p-2 opacity-100`}
               >
-                {graphicalStyleOptions.map((option) => (
+                {GRAPHICAL_STYLE_OPTIONS.map((option) => (
                   <li key={option} className="w-full">
                     <label
                       className={`${styles.filterOption} cursor-pointer label justify-start gap-3 w-full`}

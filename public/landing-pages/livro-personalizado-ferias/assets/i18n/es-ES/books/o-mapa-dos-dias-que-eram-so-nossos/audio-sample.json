@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Del libro ficticio «El mapa de los días que eran solo nuestros». Capítulo de muestra: «La ruta entre dos cafés». Algunos mapas muestran carreteras; el suyo mostraba momentos que no querían perder. Maya guardó el recibo de una cafetería de Atocha porque marcaba la mañana exacta en que su itinerario hacia Toledo dejó de funcionar. Noé trazó una línea desde aquel papel hasta cada foto posterior y creó un mapa de desvíos, bromas y paisajes castellanos. Una pareja convierte billetes de tren, servilletas y fotos en el mapa de un viaje que solo les pertenece a ellos.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 49.92,
+  "generatedAt": "2026-08-02T18:17:52.257Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.8311,
+    "rmsRatio": 0.0939,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

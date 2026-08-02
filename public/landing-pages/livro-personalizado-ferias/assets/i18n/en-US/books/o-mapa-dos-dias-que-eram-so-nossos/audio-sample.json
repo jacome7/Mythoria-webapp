@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "From the fictional book “The Map of the Days That Were Ours”. Sample chapter: “The route between two cups of coffee”. Some maps show roads; theirs showed the moments they did not want to lose. Maya kept the receipt from the café at Grand Central because it marked the exact morning their careful Hudson Valley itinerary fell apart. Noah drew a line from that receipt to every photo that followed, creating a map of detours, jokes and quiet river views that no guidebook could contain. A couple turns train tickets, café napkins and snapshots into a map of a trip that belongs only to them.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 48.28,
+  "generatedAt": "2026-08-02T18:23:04.337Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.556,
+    "rmsRatio": 0.0598,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

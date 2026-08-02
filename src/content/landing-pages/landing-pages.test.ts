@@ -4,14 +4,93 @@ import { join } from 'node:path';
 import {
   getIndexableLandingPages,
   getLandingPageIndexItems,
+  getLandingPage,
   getLandingPageBySlug,
+  getLandingPageTranslations,
   getLandingPageIntentContext,
   getLandingPageHubUpdatedAt,
+  getHomepageLandingPageGuides,
   getLandingPageStaticParams,
   getRelatedLandingPageItems,
 } from './index';
 
 describe('landing page content registry', () => {
+  it('registers exactly twelve variants in the three translated families without German pages', () => {
+    const translationKeys = ['family-travel', 'romance-gifts', 'grandparents-stories'] as const;
+    const variants = translationKeys.flatMap((key) => getLandingPageTranslations(key));
+
+    expect(variants).toHaveLength(12);
+    expect(new Set(variants.map((page) => `${page.locale}:${page.slug}`)).size).toBe(12);
+    expect(variants.map((page) => page.locale)).not.toContain('de-DE');
+    for (const key of translationKeys) {
+      expect(
+        getLandingPageTranslations(key)
+          .map((page) => page.locale)
+          .sort(),
+      ).toEqual(['en-US', 'es-ES', 'fr-FR', 'pt-PT']);
+    }
+  });
+
+  it('resolves localized slugs and preserves stable attribution intents', () => {
+    expect(getLandingPage('en-US', 'personalized-vacation-book')?.primaryIntent).toBe(
+      'family_travels',
+    );
+    expect(getLandingPage('es-ES', 'libro-personalizado-para-parejas')?.primaryIntent).toBe(
+      'romance',
+    );
+    expect(
+      getLandingPage('fr-FR', 'livre-personnalise-pour-grands-parents-et-petits-enfants')
+        ?.primaryIntent,
+    ).toBe('grandparents');
+    expect(getLandingPage('de-DE', 'personalized-vacation-book')).toBeUndefined();
+    expect(getLandingPage('es-ES', 'personalized-vacation-book')).toBeUndefined();
+  });
+
+  it('derives homepage cards from the locale-aware registry', () => {
+    expect(getHomepageLandingPageGuides('pt-PT')).toHaveLength(6);
+    expect(getHomepageLandingPageGuides('en-US')).toHaveLength(3);
+    expect(getHomepageLandingPageGuides('es-ES')).toHaveLength(3);
+    expect(getHomepageLandingPageGuides('fr-FR')).toHaveLength(3);
+    expect(getHomepageLandingPageGuides('de-DE')).toHaveLength(0);
+  });
+
+  it('localizes fictional character names and relevant settings in every translated market', () => {
+    const visibleBookCopy = (locale: string) =>
+      (['family-travel', 'romance-gifts', 'grandparents-stories'] as const)
+        .flatMap((key) => getLandingPageTranslations(key))
+        .filter((page) => page.locale === locale)
+        .flatMap((page) => page.books)
+        .map((book) =>
+          [
+            book.title,
+            book.synopsis,
+            book.excerpt,
+            book.imageAlt,
+            book.sampleChapter?.title,
+            ...(book.sampleChapter?.paragraphs ?? []),
+          ].join(' '),
+        )
+        .join(' ');
+
+    const english = visibleBookCopy('en-US');
+    expect(english).toContain('Eleanor');
+    expect(english).toContain('Brooklyn');
+    expect(english).toContain('New York Aquarium');
+    expect(english).not.toMatch(/Leonor|Tomás|Inês|Diogo|Matilde|Rui/);
+
+    const spanish = visibleBookCopy('es-ES');
+    expect(spanish).toContain('Inés y Diego');
+    expect(spanish).toContain('Madrid');
+    expect(spanish).toContain('Oceanogràfic');
+    expect(spanish).not.toMatch(/Inês|Diogo|Rui/);
+
+    const french = visibleBookCopy('fr-FR');
+    expect(french).toContain('Léonie');
+    expect(french).toContain('Inès & Hugo');
+    expect(french).toContain('Aquarium de Paris');
+    expect(french).not.toMatch(/Leonor|Tomás|Inês|Diogo|Matilde|Rui/);
+  });
+
   it('derives a stable hub lastmod from visible editorial dates', () => {
     expect(getLandingPageHubUpdatedAt()).toBe('2026-07-30');
   });
@@ -27,12 +106,19 @@ describe('landing page content registry', () => {
 
   it('provides categorized hub items and three crawlable related pages per landing page', () => {
     const hubItems = getLandingPageIndexItems();
-    const related = getRelatedLandingPageItems('livro-personalizado-para-casais');
+    const related = getRelatedLandingPageItems('pt-PT', 'livro-personalizado-para-casais');
 
     expect(hubItems.every((item) => item.category.length > 0)).toBe(true);
     expect(related).toHaveLength(3);
     expect(related.map((item) => item.href)).toContain('/pt-PT/lp/livro-personalizado-avos-netos');
     expect(related.every((item) => item.href.startsWith('/pt-PT/lp/'))).toBe(true);
+  });
+
+  it('only returns related pages that exist in the same locale', () => {
+    const related = getRelatedLandingPageItems('fr-FR', 'livre-personnalise-pour-couples');
+    expect(related).toHaveLength(2);
+    expect(related.every((item) => item.href.startsWith('/fr-FR/lp/'))).toBe(true);
+    expect(JSON.stringify(related)).not.toContain('/pt-PT/');
   });
 
   it('keeps every indexable landing-page quick answer concise and citation-friendly', () => {
