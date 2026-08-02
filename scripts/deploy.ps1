@@ -1,4 +1,4 @@
-<#
+﻿<#
 PowerShell deployment script for Mythoria webapp to Google Cloud Run
 Usage: .\deploy.ps1 [-Staging] [-Fast] [-Help]
 
