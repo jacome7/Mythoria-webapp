@@ -1,4 +1,4 @@
-﻿<#
+<#
 PowerShell deployment script for Mythoria webapp to Google Cloud Run
 Usage: .\deploy.ps1 [-Staging] [-Fast] [-Help]
 
@@ -25,6 +25,7 @@ $REGION = 'europe-west9'
 $IMAGE_NAME = "gcr.io/$PROJECT_ID/$SERVICE_NAME"
 $GIT_SHA = $null
 $GCLOUD = if ($IsWindows -or $env:OS -eq 'Windows_NT') { 'gcloud.cmd' } else { 'gcloud' }
+$GA4_VERIFIER_SERVICE_ACCOUNT = "analytics-scheduler@$PROJECT_ID.iam.gserviceaccount.com"
 # -----------------------------------------------------------------------------
 
 function Show-Help {
@@ -175,8 +176,14 @@ function Test-GA4Delivery {
 
     Write-Info "Confirming Measurement Protocol ingestion through GA4 Realtime"
     try {
-        $env:GOOGLE_ANALYTICS_API_SECRET = (& $GCLOUD secrets versions access latest --secret=GOOGLE_ANALYTICS_API_SECRET).Trim()
-        $env:GA4_ACCESS_TOKEN = (& $GCLOUD auth print-access-token).Trim()
+        $env:GOOGLE_ANALYTICS_API_SECRET = (& $GCLOUD secrets versions access latest --secret=GOOGLE_ANALYTICS_API_SECRET --project=$PROJECT_ID 2>$null).Trim()
+        $env:GA4_ACCESS_TOKEN = (& $GCLOUD auth print-access-token `
+            --project=$PROJECT_ID `
+            --impersonate-service-account=$GA4_VERIFIER_SERVICE_ACCOUNT `
+            --scopes=https://www.googleapis.com/auth/analytics.readonly 2>$null).Trim()
+        if (-not $env:GOOGLE_ANALYTICS_API_SECRET -or -not $env:GA4_ACCESS_TOKEN) {
+            throw 'GA4 delivery probe credentials are unavailable.'
+        }
         & npm run ga4:smoke
         if ($LASTEXITCODE -ne 0) {
             throw 'GA4 Realtime delivery probe failed.'

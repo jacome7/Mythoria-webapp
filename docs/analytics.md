@@ -28,6 +28,8 @@ Legacy dual-send events and direct browser Google Ads conversions are disabled. 
 
 An HTTP `2xx` from Measurement Protocol means only that Google received the transport request. The debug endpoint validates the payload but does not validate the API secret. Consequently, `delivered_at` means “submitted to transport”, not “confirmed in GA4”. Every production release must run `npm run ga4:smoke`, which sends `analytics_delivery_probe` and polls the Realtime Data API until ingestion is independently confirmed.
 
+The deployment script obtains the Realtime read token by impersonating `analytics-scheduler@oceanic-beach-460916-n5.iam.gserviceaccount.com` with the `analytics.readonly` OAuth scope. That service account must remain a GA4 property Viewer, and the human or CI identity running the deployment needs `roles/iam.serviceAccountTokenCreator` only on that service account. No service-account key is required or permitted for this smoke.
+
 `story_generation_requests` is the durable generation queue. The story-completion API debits credits and inserts the request atomically under a per-author advisory lock. Duplicate idempotency keys return the stable run. A permanent publish failure issues one idempotent compensating credit.
 
 The workflow service records terminal events only after its authoritative terminal transition. It copies the consented `user_id` and `primary_intent` from the durable requested-event row, and uses `story_generation_completed:<run_id>` as the completion idempotency key. Its scheduled reconciler repairs missed outbox writes without changing the Pub/Sub `{storyId, runId}` message contract.
