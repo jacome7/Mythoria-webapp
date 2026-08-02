@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
@@ -136,67 +137,48 @@ export default function StoryGenerationProgress({
   // Show completion state when story is published
   if (isCompleted) {
     return (
-      <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-8 text-center">
-        {/* Completion Header */}
-        <div className="mb-6">
-          <div className="text-6xl mb-4">🎉</div>{' '}
-          <h2 className="text-3xl font-bold text-green-800 mb-2">
+      <div className="relative overflow-hidden rounded-2xl border border-[#d9b86c]/50 bg-[#fff9ec] p-5 text-center shadow-lg sm:p-8">
+        <div
+          aria-hidden="true"
+          className="absolute -left-14 -top-14 h-36 w-36 rounded-full bg-[#e9cb82]/25"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute -bottom-16 -right-12 h-40 w-40 rounded-full bg-[#72aaa6]/15"
+        />
+
+        <div className="relative">
+          <div className="mx-auto mb-5 w-fit rounded-[2rem] border border-primary/15 bg-white p-2 shadow-sm">
+            <Image
+              src="/Papercut_icons/fa-wand-magic-sparkles.webp"
+              alt=""
+              width={144}
+              height={144}
+              className="h-28 w-28 rounded-3xl object-contain sm:h-32 sm:w-32"
+              priority
+            />
+          </div>
+
+          <h2 className="mb-2 text-3xl font-bold text-primary">
             {tCommonStoryGenerationProgress('completion.title')}
           </h2>
-          <p className="text-green-600 text-lg">
+          <p className="mx-auto max-w-xl text-base-content/70 sm:text-lg">
             {tCommonStoryGenerationProgress('completion.description')}
           </p>
-        </div>
 
-        {/* Success Animation */}
-        <div className="mb-6">
-          <div className="w-full bg-green-200 rounded-full h-4 relative overflow-hidden">
-            <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-4 rounded-full w-full">
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-40 animate-pulse"></div>
-            </div>
-          </div>
-          <p className="text-green-800 font-bold text-lg mt-2">
-            {tCommonStoryGenerationProgress('completion.progress')}
-          </p>
-        </div>
-
-        {/* Call to Action */}
-        <div className="mb-6">
-          {' '}
-          <button
-            onClick={() => router.push(`/${locale}/stories/read/${storyId}`)}
-            className="btn btn-primary btn-lg bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 border-none text-white shadow-lg"
-          >
-            {tCommonStoryGenerationProgress('completion.buttons.readStory')}
-          </button>
-        </div>
-
-        {/* Additional Options */}
-        <div className="p-4 bg-white/60 rounded-lg border border-green-200">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            {' '}
+          <div className="mt-7 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+            <button
+              onClick={() => router.push(`/${locale}/stories/read/${storyId}`)}
+              className="btn btn-primary btn-lg min-h-12 whitespace-nowrap border-none shadow-md sm:min-w-48"
+            >
+              {tCommonStoryGenerationProgress('completion.buttons.readStory')}
+            </button>
             <button
               onClick={() => router.push(`/${locale}/stories`)}
-              className="btn btn-outline btn-sm border-green-500 text-green-700 hover:bg-green-500 hover:text-white"
+              className="btn btn-outline min-h-12 whitespace-nowrap border-primary/40 text-primary hover:border-primary hover:bg-primary hover:text-primary-content"
             >
               {tCommonStoryGenerationProgress('completion.buttons.myStories')}
             </button>
-          </div>
-        </div>
-
-        {/* Celebration Message */}
-        <div className="mt-6 p-4 bg-green-100 rounded-lg border border-green-300">
-          <div className="flex items-center justify-center space-x-2">
-            <span className="text-2xl">✨</span>
-            <div>
-              {' '}
-              <p className="text-green-800 font-medium text-sm">
-                {tCommonStoryGenerationProgress('completion.celebration.title')}
-              </p>
-              <p className="text-green-700 text-sm">
-                {tCommonStoryGenerationProgress('completion.celebration.description')}
-              </p>
-            </div>
           </div>
         </div>
       </div>

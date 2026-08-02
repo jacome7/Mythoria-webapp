@@ -494,22 +494,26 @@ function BuyCreditsContent() {
                     )}
 
                     {cart.length > 0 && paymentStatus !== 'success' && (
-                      <button
-                        disabled={isCreatingOrder}
-                        onClick={handlePlaceOrder}
-                        className="btn btn-primary btn-lg w-full"
-                      >
-                        {isCreatingOrder ? (
-                          <>
-                            <span className="loading loading-spinner loading-sm"></span>
-                            {tBuyCreditsPage('actions.creatingOrder')}
-                          </>
-                        ) : (
-                          <>
-                            {tBuyCreditsPage('actions.proceedToPayment')} - €{total.toFixed(2)}
-                          </>
-                        )}
-                      </button>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between px-1 font-semibold">
+                          <span>{tBuyCreditsPage('summary.total')}</span>
+                          <span className="text-primary">€{total.toFixed(2)}</span>
+                        </div>
+                        <button
+                          disabled={isCreatingOrder}
+                          onClick={handlePlaceOrder}
+                          className="btn btn-primary btn-lg h-auto min-h-14 w-full whitespace-normal px-4 py-3 text-center leading-tight"
+                        >
+                          {isCreatingOrder ? (
+                            <>
+                              <span className="loading loading-spinner loading-sm"></span>
+                              {tBuyCreditsPage('actions.creatingOrder')}
+                            </>
+                          ) : (
+                            tBuyCreditsPage('actions.proceedToPayment')
+                          )}
+                        </button>
+                      </div>
                     )}
 
                     <div className="mt-6 text-center">

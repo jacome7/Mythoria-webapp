@@ -3,14 +3,9 @@
     "completion": {
       "title": "Votre histoire est prête !",
       "description": "Félicitations ! Votre histoire magique a été créée et est prête à être lue.",
-      "progress": "100 % terminé !",
       "buttons": {
-        "readStory": "📖 Lire votre histoire maintenant",
-        "myStories": "📚 Mes histoires"
-      },
-      "celebration": {
-        "title": "Votre histoire fait désormais partie de la collection Mythoria !",
-        "description": "Partagez‑la avec des amis ou créez une nouvelle aventure magique."
+        "readStory": "Lire l’histoire",
+        "myStories": "Mes histoires"
       }
     },
     "progress": {

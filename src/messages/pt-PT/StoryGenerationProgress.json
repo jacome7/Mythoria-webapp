@@ -3,14 +3,9 @@
     "completion": {
       "title": "A sua História Está Pronta!",
       "description": "Parabéns! A sua história mágica foi criada e está pronta para ser lida.",
-      "progress": "100% Completo!",
       "buttons": {
-        "readStory": "📖 Ler a sua História Agora",
-        "myStories": "📚 As minhas Histórias"
-      },
-      "celebration": {
-        "title": "A sua história agora faz parte da coleção Mythoria!",
-        "description": "Partilhe-a com amigos ou crie outra aventura mágica."
+        "readStory": "Ler história",
+        "myStories": "As minhas histórias"
       }
     },
     "progress": {

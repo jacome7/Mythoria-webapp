@@ -2,13 +2,22 @@
 
 import { Show, RedirectToSignIn, useAuth } from '@clerk/nextjs';
 import Image from 'next/image';
-import { useState, useEffect, useCallback, Suspense, useRef } from 'react';
+import {
+  Suspense,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { createPortal } from 'react-dom';
 import { useSearchParams, useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/routing';
 import StepNavigation from '@/components/StepNavigation';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import WritingPersonaForm from '@/components/WritingPersonaForm';
+import { papercutScopeClassName } from '@/components/papercut';
 import { trackStoryCreation } from '@/lib/analytics';
 import { useStorySessionGuard } from '@/hooks/useStorySessionGuard';
 import { fetchStoryData } from '@/lib/story';
@@ -30,6 +39,34 @@ import type { StoryData } from '@/types/story';
 import type { SavedWritingPersona, WritingPersonaSettings } from '@/types/writing-persona';
 
 const DEFAULT_GRAPHIC_TEMPLATE_AUDIENCE = TargetAudience.CHILDREN_3_6;
+
+function Step4ModalPortal({
+  children,
+  labelledBy,
+  layerClassName = '!z-[10000]',
+}: {
+  children: ReactNode;
+  labelledBy: string;
+  layerClassName?: string;
+}) {
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
+    <div
+      className={papercutScopeClassName(
+        'modal modal-open !fixed !inset-0 p-2 sm:p-4',
+        layerClassName,
+      )}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={labelledBy}
+      style={{ background: 'rgba(38, 27, 13, 0.32)', backdropFilter: 'blur(3px)' }}
+    >
+      {children}
+    </div>,
+    document.body,
+  );
+}
 
 const getGraphicTemplateImageSrc = (
   audience: TargetAudience | '',
@@ -315,21 +352,44 @@ function Step4Page() {
     }
   }, [targetAudience, isChapterCountManual, getChapterCountForAudience]);
 
-  // Close dropdown on Escape key
+  // Keep open modals above the page and prevent the background from scrolling.
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (showGraphicalStyleDropdown) setShowGraphicalStyleDropdown(false);
-        if (showLiteraryPersonaDropdown) setShowLiteraryPersonaDropdown(false);
-        if (showCustomPersonaModal) setShowCustomPersonaModal(false);
+        if (showPersonaMetaInfo) {
+          setShowPersonaMetaInfo(false);
+        } else if (showCustomPersonaModal) {
+          setShowCustomPersonaModal(false);
+        } else if (showGraphicalStyleDropdown) {
+          setShowGraphicalStyleDropdown(false);
+        } else if (showLiteraryPersonaDropdown) {
+          setShowLiteraryPersonaDropdown(false);
+        }
       }
     };
 
-    if (showGraphicalStyleDropdown || showLiteraryPersonaDropdown || showCustomPersonaModal) {
-      document.addEventListener('keydown', handleEscape);
-      return () => document.removeEventListener('keydown', handleEscape);
-    }
-  }, [showGraphicalStyleDropdown, showLiteraryPersonaDropdown, showCustomPersonaModal]);
+    const isModalOpen =
+      showGraphicalStyleDropdown ||
+      showLiteraryPersonaDropdown ||
+      showCustomPersonaModal ||
+      showPersonaMetaInfo;
+
+    if (!isModalOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [
+    showGraphicalStyleDropdown,
+    showLiteraryPersonaDropdown,
+    showCustomPersonaModal,
+    showPersonaMetaInfo,
+  ]);
 
   useEffect(() => {
     const loadWritingPersonas = async () => {
@@ -904,16 +964,19 @@ function Step4Page() {
 
                 {/* Literary Persona Selector */}
                 {showLiteraryPersonaDropdown && (
-                  <div className="modal modal-open !fixed !inset-0 !z-[10000] p-0 sm:p-4">
-                    <div className="modal-box flex h-[100dvh] max-h-[100dvh] w-full flex-col rounded-none px-4 sm:h-[90dvh] sm:max-h-[90dvh] sm:w-auto sm:max-w-4xl sm:rounded-box sm:px-6">
+                  <Step4ModalPortal labelledBy="literary-persona-modal-title">
+                    <div className="modal-box flex h-[calc(100dvh-1rem)] max-h-[calc(100dvh-1rem)] w-full flex-col overflow-hidden rounded-xl px-4 py-4 sm:h-[90dvh] sm:max-h-[90dvh] sm:w-auto sm:max-w-4xl sm:rounded-box sm:px-6">
                       <div className="mb-4 flex flex-shrink-0 items-center justify-between">
-                        <h3 className="font-bold text-lg">
+                        <h3 id="literary-persona-modal-title" className="font-bold text-lg">
                           {literaryPersonaMessages?.label ||
                             tStoryStepsStep4('fields.literaryPersona')}
                         </h3>
                         <button
+                          type="button"
                           className="btn btn-sm btn-circle btn-ghost"
                           onClick={() => setShowLiteraryPersonaDropdown(false)}
+                          aria-label={tStoryStepsStep4('modal.close')}
+                          autoFocus
                           onKeyDown={(e) => {
                             if (e.key === 'Escape') {
                               setShowLiteraryPersonaDropdown(false);
@@ -1114,15 +1177,15 @@ function Step4Page() {
                       className="modal-backdrop"
                       onClick={() => setShowLiteraryPersonaDropdown(false)}
                     ></div>
-                  </div>
+                  </Step4ModalPortal>
                 )}
 
                 {showCustomPersonaModal && (
-                  <div className="modal modal-open">
-                    <div className="modal-box w-[calc(100%-0.75rem)] sm:max-w-4xl sm:w-auto max-h-[90vh] overflow-y-auto px-4 sm:px-6">
+                  <Step4ModalPortal labelledBy="custom-persona-modal-title">
+                    <div className="modal-box h-[calc(100dvh-1rem)] max-h-[calc(100dvh-1rem)] w-full overflow-y-auto rounded-xl px-4 sm:h-auto sm:max-h-[90dvh] sm:w-auto sm:max-w-4xl sm:px-6">
                       <div className="mb-5 flex items-start justify-between gap-3">
                         <div>
-                          <h3 className="font-bold text-lg">
+                          <h3 id="custom-persona-modal-title" className="font-bold text-lg">
                             {tWritingPersonas('story.modalTitle')}
                           </h3>
                           <p className="mt-1 text-sm text-base-content/70">
@@ -1130,8 +1193,10 @@ function Step4Page() {
                           </p>
                         </div>
                         <button
+                          type="button"
                           className="btn btn-sm btn-circle btn-ghost"
                           onClick={() => setShowCustomPersonaModal(false)}
+                          aria-label={tStoryStepsStep4('modal.close')}
                         >
                           ×
                         </button>
@@ -1153,15 +1218,18 @@ function Step4Page() {
                       className="modal-backdrop"
                       onClick={() => setShowCustomPersonaModal(false)}
                     ></div>
-                  </div>
+                  </Step4ModalPortal>
                 )}
 
                 {showPersonaMetaInfo && (
-                  <div className="modal modal-open">
-                    <div className="modal-box w-[calc(100%-0.75rem)] sm:max-w-2xl sm:w-auto px-4 sm:px-6">
+                  <Step4ModalPortal
+                    labelledBy="persona-meta-modal-title"
+                    layerClassName="!z-[10010]"
+                  >
+                    <div className="modal-box max-h-[calc(100dvh-1rem)] w-full overflow-y-auto rounded-xl px-4 sm:w-auto sm:max-w-2xl sm:px-6">
                       <div className="flex justify-between items-start gap-3">
                         <div>
-                          <h3 className="font-bold text-lg">
+                          <h3 id="persona-meta-modal-title" className="font-bold text-lg">
                             {personaMetaInfo?.title || 'Narrator signals explained'}
                           </h3>
                           <p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">
@@ -1170,8 +1238,10 @@ function Step4Page() {
                           </p>
                         </div>
                         <button
+                          type="button"
                           className="btn btn-sm btn-circle btn-ghost"
                           onClick={() => setShowPersonaMetaInfo(false)}
+                          aria-label={tStoryStepsStep4('modal.close')}
                           onKeyDown={(e) => {
                             if (e.key === 'Escape') setShowPersonaMetaInfo(false);
                           }}
@@ -1208,20 +1278,23 @@ function Step4Page() {
                       className="modal-backdrop"
                       onClick={() => setShowPersonaMetaInfo(false)}
                     ></div>
-                  </div>
+                  </Step4ModalPortal>
                 )}
 
                 {/* Graphical Style Custom Dropdown Gallery */}
                 {showGraphicalStyleDropdown && (
-                  <div className="modal modal-open !fixed !inset-0 !z-[10000] p-0 sm:p-4">
-                    <div className="modal-box flex h-[100dvh] max-h-[100dvh] w-full flex-col rounded-none px-4 sm:h-[90dvh] sm:max-h-[90dvh] sm:w-auto sm:max-w-4xl sm:rounded-box sm:px-6">
+                  <Step4ModalPortal labelledBy="graphic-style-modal-title">
+                    <div className="modal-box flex h-[calc(100dvh-1rem)] max-h-[calc(100dvh-1rem)] w-full flex-col overflow-hidden rounded-xl px-4 py-4 sm:h-[90dvh] sm:max-h-[90dvh] sm:w-auto sm:max-w-4xl sm:rounded-box sm:px-6">
                       <div className="mb-4 flex flex-shrink-0 items-center justify-between">
-                        <h3 className="font-bold text-lg">
+                        <h3 id="graphic-style-modal-title" className="font-bold text-lg">
                           {tStoryStepsStep4('fields.graphicStyle')}
                         </h3>
                         <button
+                          type="button"
                           className="btn btn-sm btn-circle btn-ghost"
                           onClick={() => setShowGraphicalStyleDropdown(false)}
+                          aria-label={tStoryStepsStep4('modal.close')}
+                          autoFocus
                           onKeyDown={(e) => {
                             if (e.key === 'Escape') {
                               setShowGraphicalStyleDropdown(false);
@@ -1295,7 +1368,7 @@ function Step4Page() {
                       className="modal-backdrop"
                       onClick={() => setShowGraphicalStyleDropdown(false)}
                     ></div>
-                  </div>
+                  </Step4ModalPortal>
                 )}
 
                 <StepNavigation
