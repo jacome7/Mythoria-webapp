@@ -16,7 +16,21 @@ async function installGtagCapture(page: Page): Promise<void> {
       for (const item of items) commands.push(Array.from(item as ArrayLike<unknown>));
       return nativePush.apply(dataLayer, items);
     };
-    Object.assign(window, { dataLayer, __gtagCommands: commands });
+    const gtag = (...args: unknown[]) => {
+      commands.push(args);
+      nativePush.call(dataLayer, args);
+      if (args[0] === 'get') {
+        const callback = args[3] as ((value: unknown) => void) | undefined;
+        if (callback) {
+          callback(args[2] === 'client_id' ? '123.456' : 1712345678);
+        }
+      }
+    };
+    Object.assign(window, {
+      dataLayer,
+      gtag,
+      __gtagCommands: commands,
+    });
   });
 }
 
@@ -79,6 +93,11 @@ test('stored consent is replayed as update after a denied default on reload', as
   await page.goto('/pt-PT', { waitUntil: 'domcontentloaded' });
   await page.getByRole('button', { name: /aceitar tudo|accept all/i }).click();
   await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.waitForFunction(() =>
+    (window as unknown as { __gtagCommands: GtagCommand[] }).__gtagCommands.some(
+      (command) => command[0] === 'event' && command[1] === 'page_view',
+    ),
+  );
 
   const commands = await readCommands(page);
   const deniedDefault = consentCommands(commands, 'default')[0];
@@ -101,7 +120,7 @@ test('stored consent is replayed as update after a denied default on reload', as
 
 test('reject all leaves every optional storage signal denied', async ({ page }) => {
   await page.goto('/pt-PT', { waitUntil: 'domcontentloaded' });
-  await page.getByRole('button', { name: /rejeitar tudo|reject all/i }).click();
+  await page.getByRole('button', { name: /recusar opcionais|reject optional/i }).click();
 
   const updates = consentCommands(await readCommands(page), 'update');
   expect(updates).toContainEqual([
