@@ -393,7 +393,7 @@ describe('landing page content registry', () => {
       ),
     ).toBe(true);
     expect(page?.books).toHaveLength(6);
-    expect(page?.books.every((book) => !book.fictionalLabel)).toBe(true);
+    expect(JSON.stringify(page?.books)).not.toMatch(/fictional|ficcional/i);
     expect(page?.books.every((book) => book.sampleChapter?.paragraphs.length === 6)).toBe(true);
     expect(page?.faq).toHaveLength(12);
     expect(page?.faq.every((item) => item.answer.length >= 150)).toBe(true);
@@ -442,7 +442,7 @@ describe('landing page content registry', () => {
       'Leonor & Matilde — Dois Países, Uma Casa',
       'Rui & Tomás — O Último Capítulo Antes do Sim',
     ]);
-    expect(page?.books.every((book) => book.fictionalLabel === undefined)).toBe(true);
+    expect(JSON.stringify(page?.books)).not.toMatch(/fictional|ficcional/i);
     expect(page?.books.every((book) => book.sampleChapter?.paragraphs.length === 6)).toBe(true);
     expect(page?.trustBadges).toEqual(['Privado por defeito', 'Reveja antes de oferecer']);
     expect(page?.trustAndPrivacy?.items).toHaveLength(4);

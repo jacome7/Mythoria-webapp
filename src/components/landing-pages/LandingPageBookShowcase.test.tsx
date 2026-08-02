@@ -20,7 +20,6 @@ const book: LandingPageBook = {
   imageAlt: 'Livro de exemplo',
   styleLabel: 'Aguarela',
   contextLabel: 'Primeiro encontro',
-  fictionalLabel: 'Exemplo ficcional',
   audioSampleSrc: '/test/audio.mp3',
   sampleChapter: {
     title: 'Três Minutos de Chuva',

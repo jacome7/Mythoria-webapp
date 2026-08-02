@@ -34,7 +34,6 @@ export interface LandingPageBook {
   sampleChapter?: LandingPageBookSampleChapter;
   audioSampleSrc?: string;
   audioSampleTitle?: string;
-  fictionalLabel?: string;
 }
 
 export interface LandingPageFaq {

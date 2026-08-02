@@ -109,11 +109,6 @@ export default function LandingPageBookShowcase({
                 sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 20vw"
                 className="object-cover transition duration-500 group-hover:scale-105"
               />
-              {book.fictionalLabel && (
-                <span className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-[#33251c] shadow-sm">
-                  {book.fictionalLabel}
-                </span>
-              )}
             </div>
             <div className="space-y-3 p-5">
               <div className="flex flex-wrap gap-2">

@@ -14,7 +14,6 @@ export interface LocalizedBookCopy {
   contextLabel: string;
   ageLabel: string;
   audioSampleTitle: string;
-  fictionalLabel: string;
 }
 
 const iconBase = '/Papercut_icons';
@@ -69,7 +68,6 @@ export function buildLocalizedBooks({
       ageLabel: book.ageLabel,
       audioSampleSrc: `${assetBase}/audio-teaser.mp3`,
       audioSampleTitle: book.audioSampleTitle,
-      fictionalLabel: book.fictionalLabel,
       sampleChapter: {
         title: book.sampleTitle,
         imageSrc: `${assetBase}/cover.jpeg`,
