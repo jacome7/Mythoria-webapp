@@ -26,7 +26,7 @@ jest.mock('./ga4', () => ({
   },
 }));
 
-import { deliverAnalytics, publishGenerations } from './outbox';
+import { compensateGeneration, deliverAnalytics, publishGenerations } from './outbox';
 
 function selectionFor(rows: unknown[]) {
   const limit = jest.fn().mockResolvedValue(rows);
@@ -305,5 +305,39 @@ describe('durable outbox drains', () => {
 
     await expect(publishGenerations()).resolves.toEqual({ published: 0, failed: 0 });
     expect(publishStoryRequestMock).not.toHaveBeenCalled();
+  });
+
+  it('preserves a published story when a zero-credit Admin restart cannot be delivered', async () => {
+    const set = jest.fn((_values: Record<string, unknown>) => ({
+      where: jest.fn().mockResolvedValue(undefined),
+    }));
+    const tx = {
+      select: jest.fn(() => ({
+        from: jest.fn(() => ({
+          where: jest.fn().mockResolvedValue([
+            {
+              runId: 'admin-run-1',
+              authorId: 'author-1',
+              storyId: 'story-1',
+              creditsSpent: 0,
+              compensatedAt: null,
+            },
+          ]),
+        })),
+      })),
+      insert: jest.fn(),
+      update: jest.fn(() => ({ set })),
+    };
+    transactionMock.mockImplementation(async (callback) => callback(tx));
+
+    await compensateGeneration('admin-run-1');
+
+    expect(tx.insert).not.toHaveBeenCalled();
+    expect(set).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ storyGenerationStatus: 'failed' }),
+    );
+    expect(set.mock.calls[0]?.[0]).not.toHaveProperty('status');
+    expect(set).toHaveBeenNthCalledWith(2, expect.objectContaining({ status: 'delivery_failed' }));
   });
 });

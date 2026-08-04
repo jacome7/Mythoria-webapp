@@ -252,37 +252,47 @@ export async function compensateGeneration(runId: string): Promise<void> {
       .where(eq(storyGenerationRequests.runId, runId));
     if (!request || request.compensatedAt) return;
 
-    const refundKey = `story_generation_refund:${runId}`;
-    const [refund] = await tx
-      .insert(creditLedger)
-      .values({
-        authorId: request.authorId,
-        amount: request.creditsSpent,
-        creditEventType: 'refund',
-        storyId: request.storyId,
-        idempotencyKey: refundKey,
-      })
-      .onConflictDoNothing({ target: creditLedger.idempotencyKey })
-      .returning();
-
-    if (refund) {
-      await tx
-        .update(authorCreditBalances)
-        .set({
-          totalCredits: sql`${authorCreditBalances.totalCredits} + ${request.creditsSpent}`,
-          lastUpdated: new Date(),
+    if (request.creditsSpent > 0) {
+      const refundKey = `story_generation_refund:${runId}`;
+      const [refund] = await tx
+        .insert(creditLedger)
+        .values({
+          authorId: request.authorId,
+          amount: request.creditsSpent,
+          creditEventType: 'refund',
+          storyId: request.storyId,
+          idempotencyKey: refundKey,
         })
-        .where(eq(authorCreditBalances.authorId, request.authorId));
+        .onConflictDoNothing({ target: creditLedger.idempotencyKey })
+        .returning();
+
+      if (refund) {
+        await tx
+          .update(authorCreditBalances)
+          .set({
+            totalCredits: sql`${authorCreditBalances.totalCredits} + ${request.creditsSpent}`,
+            lastUpdated: new Date(),
+          })
+          .where(eq(authorCreditBalances.authorId, request.authorId));
+      }
+
+      await tx
+        .update(stories)
+        .set({ status: 'draft', storyGenerationStatus: 'failed', updatedAt: new Date() })
+        .where(eq(stories.storyId, request.storyId));
+    } else {
+      // Admin/MCP restarts spend no credits. Preserve the last published story
+      // while exposing the failed regeneration attempt.
+      await tx
+        .update(stories)
+        .set({ storyGenerationStatus: 'failed', updatedAt: new Date() })
+        .where(eq(stories.storyId, request.storyId));
     }
 
     await tx
-      .update(stories)
-      .set({ status: 'draft', storyGenerationStatus: 'failed', updatedAt: new Date() })
-      .where(eq(stories.storyId, request.storyId));
-    await tx
       .update(storyGenerationRequests)
       .set({
-        status: 'failed',
+        status: 'delivery_failed',
         compensatedAt: new Date(),
         terminalAt: new Date(),
         updatedAt: new Date(),

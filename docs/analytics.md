@@ -32,6 +32,8 @@ The deployment script obtains the Realtime read token by impersonating `analytic
 
 `story_generation_requests` is the durable generation queue. The story-completion API debits credits and inserts the request atomically under a per-author advisory lock. Duplicate idempotency keys return the stable run. A permanent publish failure issues one idempotent compensating credit.
 
+Admin UI/MCP corrective restarts reuse this queue with `credits_spent = 0`. They never create a debit or refund ledger entry. If their publish retry budget is exhausted, the request becomes `delivery_failed` and `story_generation_status` becomes `failed`, while an already published story remains published and readable.
+
 The workflow service records terminal events only after its authoritative terminal transition. It copies the consented `user_id` and `primary_intent` from the durable requested-event row, and uses `story_generation_completed:<run_id>` as the completion idempotency key. Its scheduled reconciler repairs missed outbox writes without changing the Pub/Sub `{storyId, runId}` message contract.
 
 ## Ecommerce values
