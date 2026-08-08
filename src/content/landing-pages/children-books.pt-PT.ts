@@ -16,9 +16,10 @@ export const childrenBooksLandingPage: LandingPageContent = {
   ogImageSrc: `${landingBase}/hero/og-cover.jpeg`,
   primaryIntent: 'kids_adventures',
   riskRating: 'yellow',
-  updatedAt: '2026-08-06',
+  updatedAt: '2026-08-08',
   editorialReviewDaysAgo: 17,
-  indexable: false,
+  indexable: true,
+  showInLandingPageIndex: true,
   showFormatsNearHero: false,
   showFormatsNearProcess: true,
   primaryCtaHref:
@@ -26,6 +27,11 @@ export const childrenBooksLandingPage: LandingPageContent = {
   secondaryCtaHref: '#exemplos',
   primaryCta: 'Criar um livro para uma criança',
   secondaryCta: 'Ver livros criados',
+  homepageCard: {
+    title: 'Livro personalizado para crianças',
+    description:
+      'Transforme interesses, memórias e desenhos numa aventura criada à medida da criança.',
+  },
   templateIcons: {
     heroEyebrow: { src: `${iconBase}/sparkles.webp`, alt: '' },
     ctaArrow: { src: `${iconBase}/fa-chevron-right-papercut.webp`, alt: '' },

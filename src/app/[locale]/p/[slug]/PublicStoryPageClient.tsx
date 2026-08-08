@@ -18,6 +18,7 @@ import {
   Volume2,
 } from 'lucide-react';
 import { SelfPrintModal } from '@/components/self-print/SelfPrintModal';
+import { FeaturedStoryPdfDownloadModal } from '@/components/public-story/FeaturedStoryPdfDownloadModal';
 import PublicStoryRating from '@/components/PublicStoryRating';
 import StoryReader from '@/components/StoryReader';
 import { formatDate } from '@/utils/date';
@@ -62,6 +63,7 @@ export interface PublicStoryData {
     backcoverUri?: string;
     slug?: string;
     hasAudio?: boolean;
+    hasFreePdfDownloads: boolean;
   };
   chapters: PublicStoryChapter[];
   accessLevel: 'public';
@@ -82,6 +84,7 @@ export default function PublicStoryPageClient({ initialData }: { initialData: Pu
   const [data, setData] = useState<PublicStoryData | null>(initialData);
   const [error, setError] = useState<string | null>(null);
   const [showSelfPrintModal, setShowSelfPrintModal] = useState(false);
+  const [showFeaturedPdfModal, setShowFeaturedPdfModal] = useState(false);
   const [isSynopsisOpen, setIsSynopsisOpen] = useState(false);
 
   useEffect(() => {
@@ -164,6 +167,7 @@ export default function PublicStoryPageClient({ initialData }: { initialData: Pu
 
   const { story } = data;
   const openSelfPrintModal = () => setShowSelfPrintModal(true);
+  const openFeaturedPdfModal = () => setShowFeaturedPdfModal(true);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -189,24 +193,36 @@ export default function PublicStoryPageClient({ initialData }: { initialData: Pu
                     </span>
                     <span className="min-[480px]:hidden">{tPublicStoryPage('actions.print')}</span>
                   </a>
-                  <Show when="signed-in">
+                  {story.hasFreePdfDownloads ? (
                     <button
                       className="btn btn-outline btn-sm flex items-center gap-2 text-xs sm:text-sm"
-                      onClick={openSelfPrintModal}
+                      onClick={openFeaturedPdfModal}
                     >
                       <Download className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span>{tPublicStoryPage('actions.downloadPdf')}</span>
                     </button>
-                  </Show>
-                  <Show when="signed-out">
-                    <a
-                      href={`/${locale}/sign-in?redirectUrl=${encodeURIComponent(`/${locale}/p/${slug}`)}`}
-                      className="btn btn-outline btn-sm flex items-center gap-2 text-xs sm:text-sm"
-                    >
-                      <Download className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span>{tPublicStoryPage('actions.downloadPdf')}</span>
-                    </a>
-                  </Show>
+                  ) : (
+                    <>
+                      <Show when="signed-in">
+                        <button
+                          className="btn btn-outline btn-sm flex items-center gap-2 text-xs sm:text-sm"
+                          onClick={openSelfPrintModal}
+                        >
+                          <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+                          <span>{tPublicStoryPage('actions.downloadPdf')}</span>
+                        </button>
+                      </Show>
+                      <Show when="signed-out">
+                        <a
+                          href={`/${locale}/sign-in?redirectUrl=${encodeURIComponent(`/${locale}/p/${slug}`)}`}
+                          className="btn btn-outline btn-sm flex items-center gap-2 text-xs sm:text-sm"
+                        >
+                          <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+                          <span>{tPublicStoryPage('actions.downloadPdf')}</span>
+                        </a>
+                      </Show>
+                    </>
+                  )}
                   {story.hasAudio && (
                     <a
                       href={`/${locale}/p/${slug}/listen`}
@@ -360,24 +376,36 @@ export default function PublicStoryPageClient({ initialData }: { initialData: Pu
                   {tPublicStoryPage('actions.orderPrintedBook')}
                 </a>
 
-                <Show when="signed-in">
+                {story.hasFreePdfDownloads ? (
                   <button
                     className="btn btn-outline flex items-center gap-2"
-                    onClick={openSelfPrintModal}
+                    onClick={openFeaturedPdfModal}
                   >
                     <Download className="w-4 h-4" />
                     {tPublicStoryPage('actions.downloadPdf')}
                   </button>
-                </Show>
-                <Show when="signed-out">
-                  <a
-                    href={`/${locale}/sign-in?redirectUrl=${encodeURIComponent(`/${locale}/p/${slug}`)}`}
-                    className="btn btn-outline flex items-center gap-2"
-                  >
-                    <Download className="w-4 h-4" />
-                    {tPublicStoryPage('actions.downloadPdf')}
-                  </a>
-                </Show>
+                ) : (
+                  <>
+                    <Show when="signed-in">
+                      <button
+                        className="btn btn-outline flex items-center gap-2"
+                        onClick={openSelfPrintModal}
+                      >
+                        <Download className="w-4 h-4" />
+                        {tPublicStoryPage('actions.downloadPdf')}
+                      </button>
+                    </Show>
+                    <Show when="signed-out">
+                      <a
+                        href={`/${locale}/sign-in?redirectUrl=${encodeURIComponent(`/${locale}/p/${slug}`)}`}
+                        className="btn btn-outline flex items-center gap-2"
+                      >
+                        <Download className="w-4 h-4" />
+                        {tPublicStoryPage('actions.downloadPdf')}
+                      </a>
+                    </Show>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -403,6 +431,12 @@ export default function PublicStoryPageClient({ initialData }: { initialData: Pu
             onClose={() => setShowSelfPrintModal(false)}
           />
         </Show>
+        <FeaturedStoryPdfDownloadModal
+          isOpen={showFeaturedPdfModal}
+          slug={slug}
+          storyTitle={story.title}
+          onClose={() => setShowFeaturedPdfModal(false)}
+        />
       </div>
 
       {/* Custom CSS for responsive design */}

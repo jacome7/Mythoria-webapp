@@ -20,6 +20,19 @@
       "createOwnStory": "Créez votre propre histoire",
       "orderPrintedBook": "Commandez le livre imprimé"
     },
+    "pdfDownloads": {
+      "title": "Voir les fichiers finaux en PDF",
+      "description": "Téléchargez les fichiers d’impression de « {title} » pour voir la mise en pages du livre final.",
+      "cover": {
+        "label": "PDF de couverture",
+        "description": "Couverture complète avec quatrième de couverture et dos."
+      },
+      "interior": {
+        "label": "PDF du livre",
+        "description": "Intérieur du livre déjà mis en pages pour l’impression."
+      },
+      "close": "Fermer"
+    },
     "labels": {
       "by": "par",
       "synopsis": "Synopsis",

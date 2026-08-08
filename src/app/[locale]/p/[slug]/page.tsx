@@ -6,6 +6,7 @@ import { authorService, chapterService, storyService } from '@/db/services';
 import { normalizeLocale } from '@/utils/locale-utils';
 import { buildLocalizedPath, buildLocalizedUrl } from '@/lib/seo';
 import { isSearchIndexableStory } from '@/lib/story-seo';
+import { hasFeaturedStoryPdfDownloads } from '@/lib/public-story-pdf';
 
 const toAbsoluteOgUrl = (url: string | null | undefined): string | undefined => {
   if (!url) return undefined;
@@ -140,6 +141,7 @@ export default async function PublicStoryPage({
       backcoverUri: fullStory.backcoverUri ?? undefined,
       slug: fullStory.slug ?? undefined,
       hasAudio: chapters.some((chapter) => Boolean(chapter.audioUri)),
+      hasFreePdfDownloads: hasFeaturedStoryPdfDownloads(fullStory),
     },
     chapters,
     accessLevel: 'public',

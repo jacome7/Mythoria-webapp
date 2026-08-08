@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE. Run: npm run i18n:keys
-// Total keys: 2616
+// Total keys: 2623
 export type TranslationKey =
   | 'AIEditModal.buttons.applyChanges'
   | 'AIEditModal.buttons.cancel'
@@ -1743,6 +1743,13 @@ export type TranslationKey =
   | 'PublicStoryPage.metadata.coverImageAlt'
   | 'PublicStoryPage.metadata.defaultDescription'
   | 'PublicStoryPage.metadata.listenPageTitle'
+  | 'PublicStoryPage.pdfDownloads.close'
+  | 'PublicStoryPage.pdfDownloads.cover.description'
+  | 'PublicStoryPage.pdfDownloads.cover.label'
+  | 'PublicStoryPage.pdfDownloads.description'
+  | 'PublicStoryPage.pdfDownloads.interior.description'
+  | 'PublicStoryPage.pdfDownloads.interior.label'
+  | 'PublicStoryPage.pdfDownloads.title'
   | 'PublicStoryPage.storyComplete.enjoyedDesc'
   | 'PublicStoryPage.storyComplete.enjoyedTitle'
   | 'ReadingToolbar.chapterLabel'

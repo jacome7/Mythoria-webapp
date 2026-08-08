@@ -36,6 +36,7 @@ describe('landing page index metadata', () => {
     expect(container.querySelector('script[type="application/ld+json"]')).toHaveTextContent(
       'CollectionPage',
     );
+    expect(screen.queryByText(/Revisto em/i)).not.toBeInTheDocument();
   });
 
   it('keeps duplicate locale landing page indexes out of the index', async () => {
@@ -58,5 +59,18 @@ describe('landing page index metadata', () => {
       'href',
       '/pt-PT/lp/livro-personalizado-para-casais',
     );
+  });
+
+  it('links to the approved children landing page from the Portuguese index', async () => {
+    render(
+      await LandingPageIndexRoute({
+        params: Promise.resolve({ locale: 'pt-PT' }),
+      }),
+    );
+
+    const cardLink = screen.getByRole('link', { name: /Livro personalizado para crianças/i });
+
+    expect(cardLink).toHaveAttribute('href', '/pt-PT/lp/livro-personalizado-crianca');
+    expect(cardLink.closest('article')).toHaveTextContent('Transforme o nome, os interesses');
   });
 });

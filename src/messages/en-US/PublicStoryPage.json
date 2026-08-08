@@ -20,6 +20,19 @@
       "createOwnStory": "Create Your Own Story",
       "orderPrintedBook": "Order Printed Book"
     },
+    "pdfDownloads": {
+      "title": "View final PDF artwork",
+      "description": "Download the print files for “{title}” to see how the finished book is paginated.",
+      "cover": {
+        "label": "Cover PDF",
+        "description": "Complete cover with back cover and spine."
+      },
+      "interior": {
+        "label": "Book PDF",
+        "description": "Book interior already paginated for printing."
+      },
+      "close": "Close"
+    },
     "labels": {
       "by": "by",
       "synopsis": "Synopsis",

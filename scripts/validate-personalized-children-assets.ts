@@ -41,7 +41,7 @@ async function main() {
   const errors: string[] = [];
   const page = getLandingPageBySlug(landingSlug);
   if (!page) throw new Error(`Missing landing ${landingSlug}`);
-  if (page.indexable) errors.push('landing must remain non-indexable during QA');
+  if (!page.indexable) errors.push('approved landing must remain indexable');
   if (page.books.length !== 5) errors.push(`expected 5 books, found ${page.books.length}`);
 
   await assertImage(errors, join(landingAssetRoot, 'hero', 'hero.jpeg'), 1500, 1200);

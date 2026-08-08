@@ -47,7 +47,7 @@ describe('landing page content registry', () => {
   });
 
   it('derives homepage cards from the locale-aware registry', () => {
-    expect(getHomepageLandingPageGuides('pt-PT')).toHaveLength(6);
+    expect(getHomepageLandingPageGuides('pt-PT')).toHaveLength(7);
     expect(getHomepageLandingPageGuides('en-US')).toHaveLength(3);
     expect(getHomepageLandingPageGuides('es-ES')).toHaveLength(3);
     expect(getHomepageLandingPageGuides('fr-FR')).toHaveLength(3);
@@ -92,7 +92,7 @@ describe('landing page content registry', () => {
   });
 
   it('derives a stable hub lastmod from visible editorial dates', () => {
-    expect(getLandingPageHubUpdatedAt()).toBe('2026-08-04');
+    expect(getLandingPageHubUpdatedAt()).toBe('2026-08-08');
   });
 
   it('gives every indexable landing page complete examples with playable audio', () => {
@@ -550,7 +550,7 @@ describe('landing page content registry', () => {
     expect(serialized.toLowerCase()).not.toContain('ficcion');
   });
 
-  it('registers the non-indexable personalized children landing with five complete books', () => {
+  it('registers the indexable personalized children landing with five complete books', () => {
     const page = getLandingPageBySlug('livro-personalizado-crianca');
     const serialized = JSON.stringify(page);
 
@@ -558,9 +558,14 @@ describe('landing page content registry', () => {
     expect(page?.locale).toBe('pt-PT');
     expect(page?.primaryIntent).toBe('kids_adventures');
     expect(page?.riskRating).toBe('yellow');
-    expect(page?.indexable).toBe(false);
+    expect(page?.indexable).toBe(true);
     expect(page?.editorialReviewDaysAgo).toBe(17);
-    expect(page?.showInLandingPageIndex).not.toBe(true);
+    expect(page?.showInLandingPageIndex).toBe(true);
+    expect(page?.homepageCard).toEqual({
+      title: 'Livro personalizado para crianças',
+      description:
+        'Transforme interesses, memórias e desenhos numa aventura criada à medida da criança.',
+    });
     expect(page?.testimonials).toBeUndefined();
     expect(page?.structuredData?.includeProduct).toBe(false);
     expect(page?.primaryCtaHref).toBe(
@@ -597,12 +602,18 @@ describe('landing page content registry', () => {
       locale: 'pt-PT',
       slug: 'livro-personalizado-crianca',
     });
-    expect(getIndexableLandingPages().map((candidate) => candidate.slug)).not.toContain(
+    expect(getIndexableLandingPages().map((candidate) => candidate.slug)).toContain(
       'livro-personalizado-crianca',
     );
-    expect(getLandingPageIndexItems().map((candidate) => candidate.slug)).not.toContain(
+    expect(getLandingPageIndexItems().map((candidate) => candidate.slug)).toContain(
       'livro-personalizado-crianca',
     );
+    expect(getHomepageLandingPageGuides('pt-PT')).toContainEqual({
+      href: '/pt-PT/lp/livro-personalizado-crianca',
+      title: 'Livro personalizado para crianças',
+      description:
+        'Transforme interesses, memórias e desenhos numa aventura criada à medida da criança.',
+    });
 
     const localAssets = [
       page?.hero.imageSrc,

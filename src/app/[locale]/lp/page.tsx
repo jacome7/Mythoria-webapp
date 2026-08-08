@@ -21,7 +21,6 @@ const copy = {
       'Um livro personalizado pode guardar uma história de família, celebrar uma relação, transformar uma viagem numa memória narrativa ou ajudar uma criança a compreender uma mudança. Reunimos aqui os guias Mythoria para escolher o ponto de partida certo, conhecer exemplos ficcionais e perceber como cada livro é construído com as pessoas, memórias e detalhes que indicar. Encontrará ideias para avós e netos, casais, férias e viagens, crianças com diferentes formas de aprender, workshops criativos e histórias de apoio para momentos exigentes.',
     introSecondary:
       'Cada guia explica o propósito do livro, as opções de personalização, os formatos disponíveis e os cuidados de privacidade. Os exemplos servem apenas de inspiração: as personagens são ficcionais e o conteúdo final permanece sob controlo do adulto. Explore por tema, compare possibilidades e avance para a criação apenas quando encontrar a abordagem que faz sentido para a sua família, escola ou ocasião.',
-    updatedLabel: 'Revisto em',
     empty: 'Ainda não existem guias indexáveis.',
   },
   fallback: {
@@ -29,7 +28,6 @@ const copy = {
     title: 'Landing pages',
     intro: 'Simple list of registered Mythoria landing pages for quick navigation and review.',
     introSecondary: '',
-    updatedLabel: 'Updated',
     empty: 'There are no indexable landing pages yet.',
   },
 } as const;
@@ -160,24 +158,20 @@ export default async function LandingPageIndexRoute({ params }: LandingPageIndex
                   {pages
                     .filter((page) => page.category === category)
                     .map((page) => (
-                      <article
-                        key={`${page.locale}-${page.slug}`}
-                        className="rounded-2xl border border-primary/10 bg-white p-6 shadow-sm"
-                      >
-                        <h3 className="font-display text-2xl font-bold leading-tight text-[#33251c]">
-                          {page.title}
-                        </h3>
-                        <p className="mt-3 leading-relaxed text-base-content/70">
-                          {page.metaDescription}
-                        </p>
-                        <p className="mt-4 text-sm text-base-content/55">
-                          {t.updatedLabel} {formatDate(page.updatedAt, locale)}
-                        </p>
+                      <article key={`${page.locale}-${page.slug}`}>
                         <Link
                           href={page.href}
-                          className="mt-5 inline-flex font-semibold text-primary hover:underline"
+                          className="group block h-full rounded-2xl border border-primary/10 bg-white p-6 shadow-sm transition-shadow hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                         >
-                          Explorar {page.title.toLocaleLowerCase('pt-PT')}
+                          <h3 className="font-display text-2xl font-bold leading-tight text-[#33251c]">
+                            {page.title}
+                          </h3>
+                          <p className="mt-3 leading-relaxed text-base-content/70">
+                            {page.metaDescription}
+                          </p>
+                          <span className="mt-5 inline-flex font-semibold text-primary group-hover:underline">
+                            Explorar {page.title.toLocaleLowerCase('pt-PT')}
+                          </span>
                         </Link>
                       </article>
                     ))}
@@ -242,18 +236,4 @@ function slugify(value: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
-}
-
-function formatDate(value: string, locale: string): string {
-  const date = new Date(`${value}T12:00:00`);
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return new Intl.DateTimeFormat(locale, {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  }).format(date);
 }

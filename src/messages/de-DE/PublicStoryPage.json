@@ -20,6 +20,19 @@
       "createOwnStory": "Eigene Geschichte erstellen",
       "orderPrintedBook": "Gedrucktes Buch bestellen"
     },
+    "pdfDownloads": {
+      "title": "Finale PDF-Druckdaten ansehen",
+      "description": "Lade die Druckdateien für „{title}“ herunter und sieh dir die finale Buchgestaltung an.",
+      "cover": {
+        "label": "Cover-PDF",
+        "description": "Komplettes Cover mit Rückseite und Buchrücken."
+      },
+      "interior": {
+        "label": "Buch-PDF",
+        "description": "Bereits für den Druck paginierter Buchblock."
+      },
+      "close": "Schließen"
+    },
     "labels": {
       "by": "von",
       "synopsis": "Zusammenfassung",

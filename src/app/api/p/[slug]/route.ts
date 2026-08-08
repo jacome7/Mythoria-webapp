@@ -4,6 +4,7 @@ import { chapterService, authorService } from '@/db/services';
 import { eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { authors, stories } from '@/db/schema';
+import { hasFeaturedStoryPdfDownloads } from '@/lib/public-story-pdf';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
@@ -68,6 +69,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       hasAudio: hasAudio,
       audiobookUri: story.audiobookUri,
       canGenerateAudio,
+      hasFreePdfDownloads: hasFeaturedStoryPdfDownloads(story),
     };
 
     return NextResponse.json({

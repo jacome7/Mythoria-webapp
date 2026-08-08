@@ -228,3 +228,12 @@ Each successful run uploads:
 - `interior.html` / `cover.html` – Debug HTML snapshots.
 
 Always review the assets in Cloud Storage after template or caliper updates.
+
+### Public featured-story PDF downloads
+
+When a story is both public and featured in `/get-inspired`, and both `coverPdfUri` and
+`interiorPdfUri` are present, anonymous visitors can download the final cover and interior PDFs
+from the public story page. The WebApp revalidates those conditions per download request and
+streams the selected PDF without exposing the stored URI, requiring an account, or deducting
+credits. The Story Generation Workflow already stores the preferred CMYK outputs in these fields
+when available; no separate public-print artifact is generated.

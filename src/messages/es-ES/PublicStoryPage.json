@@ -20,6 +20,19 @@
       "createOwnStory": "Crea tu propia historia",
       "orderPrintedBook": "Pedir libro impreso"
     },
+    "pdfDownloads": {
+      "title": "Ver artes finales en PDF",
+      "description": "Descarga los archivos de impresión de “{title}” para ver cómo queda paginado el libro final.",
+      "cover": {
+        "label": "PDF de la portada",
+        "description": "Portada completa, con contraportada y lomo."
+      },
+      "interior": {
+        "label": "PDF del libro",
+        "description": "Interior del libro ya paginado para impresión."
+      },
+      "close": "Cerrar"
+    },
     "labels": {
       "by": "de",
       "synopsis": "Sinopsis",

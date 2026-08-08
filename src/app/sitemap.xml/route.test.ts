@@ -143,7 +143,7 @@ describe('sitemap.xml route', () => {
     const hubEntry = xml.match(
       /<url>\s*<loc>https:\/\/mythoria\.pt\/pt-PT\/lp<\/loc>[\s\S]*?<\/url>/,
     )?.[0];
-    expect(hubEntry).toContain('<lastmod>2026-08-04T00:00:00.000Z</lastmod>');
+    expect(hubEntry).toContain('<lastmod>2026-08-08T00:00:00.000Z</lastmod>');
 
     const approvedSampleMatches = xml.match(
       /<loc>https:\/\/mythoria\.pt\/pt-PT\/sample-books\/duas-chavenas-uma-vida<\/loc>/g,
@@ -167,9 +167,9 @@ describe('sitemap.xml route', () => {
     expect(xml).not.toContain(
       '<loc>https://mythoria.pt/pt-PT/sample-books/ines-e-diogo-um-amor-inesperado</loc>',
     );
-    expect(xml).not.toContain(
-      '<loc>https://mythoria.pt/pt-PT/lp/livro-personalizado-crianca</loc>',
-    );
+    expect(
+      xml.match(/<loc>https:\/\/mythoria\.pt\/pt-PT\/lp\/livro-personalizado-crianca<\/loc>/g),
+    ).toHaveLength(1);
     for (const slug of [
       'mia-e-a-pastelaria-da-lua',
       'tomas-e-o-mapa-das-portas-escondidas',

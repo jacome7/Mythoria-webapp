@@ -3,7 +3,7 @@
 ## Decisões registadas
 
 - Reutilizar o motor partilhado de landing pages; não criar rota ou template paralelo.
-- Manter `indexable: false`, sem cartão no hub, homepage ou sitemap.
+- Manter a página indexável, com cartão no hub, homepage e sitemap após aprovação explícita.
 - Usar `kids_adventures` e destinatário `child` no contexto permitido pela rota.
 - Usar os tokens canónicos `claymation` e `papercut`, já presentes no enum e nos prompts do workflow; não é necessária migração.
 - Reutilizar seis ícones Paper Cut existentes e já legíveis a 128 px; não gerar substitutos.
@@ -31,4 +31,4 @@ Formatos além de leitura digital são descritos como condicionais à oferta atu
 
 ## Verificações antes de lançamento
 
-O percurso anónimo pode validar CTA e preservação de atribuição até ao ecrã controlado por autenticação. Concluir uma história e uma compra requer validação posterior numa sessão autorizada pelo utilizador. A audição editorial integral por revisor pt-PT e a mudança para `indexable: true` permanecem gates humanos.
+O percurso anónimo pode validar CTA e preservação de atribuição até ao ecrã controlado por autenticação. Concluir uma história e uma compra requer validação posterior numa sessão autorizada pelo utilizador. A audição editorial integral por revisor pt-PT foi concluída e a aprovação explícita para `indexable: true` foi recebida em 2026-08-08; publicação e verificação em produção permanecem gates separados.

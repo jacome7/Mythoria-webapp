@@ -34,6 +34,7 @@ jest.mock('next/navigation', () => ({
 }));
 
 import PublicStoryPage from './page';
+import { Children, isValidElement, type ReactElement, type ReactNode } from 'react';
 
 describe('public story page', () => {
   beforeEach(() => {
@@ -86,13 +87,27 @@ describe('public story page', () => {
       storyLanguage: 'en-US',
       createdAt: new Date('2026-01-01T00:00:00.000Z'),
       isPublic: true,
+      isFeatured: true,
       slug: 'native-story',
+      coverPdfUri:
+        'https://storage.googleapis.com/mythoria-generated-stories/story/print/cover.pdf',
+      interiorPdfUri:
+        'https://storage.googleapis.com/mythoria-generated-stories/story/print/interior.pdf',
     });
 
-    await expect(
-      PublicStoryPage({
-        params: Promise.resolve({ locale: 'en-US', slug: 'native-story' }),
-      }),
-    ).resolves.toBeTruthy();
+    const page = (await PublicStoryPage({
+      params: Promise.resolve({ locale: 'en-US', slug: 'native-story' }),
+    })) as ReactElement<{ children: ReactNode }>;
+    const clientElement = Children.toArray(page.props.children).find(
+      (
+        child,
+      ): child is ReactElement<{ initialData: { story: { hasFreePdfDownloads: boolean } } }> =>
+        isValidElement(child) &&
+        typeof child.props === 'object' &&
+        child.props !== null &&
+        'initialData' in child.props,
+    );
+
+    expect(clientElement?.props.initialData.story.hasFreePdfDownloads).toBe(true);
   });
 });

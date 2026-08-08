@@ -76,7 +76,7 @@ describe('romance landing page route', () => {
     ]);
   });
 
-  it('keeps the personalized children landing canonical but non-indexable during QA', async () => {
+  it('indexes the approved personalized children landing with its canonical URL', async () => {
     const metadata = await generateMetadata({
       params: Promise.resolve({
         locale: 'pt-PT',
@@ -87,8 +87,10 @@ describe('romance landing page route', () => {
     expect(metadata.alternates?.canonical).toBe(
       'https://mythoria.pt/pt-PT/lp/livro-personalizado-crianca',
     );
-    expect(metadata.alternates?.languages).toEqual({});
-    expect(metadata.robots).toBe('noindex,nofollow');
+    expect(metadata.alternates?.languages).toEqual({
+      'pt-PT': 'https://mythoria.pt/pt-PT/lp/livro-personalizado-crianca',
+    });
+    expect(metadata.robots).toBe('index,follow,max-snippet:-1,max-image-preview:large');
     expect(metadata.openGraph?.images).toEqual([
       expect.objectContaining({
         url: expect.stringContaining(

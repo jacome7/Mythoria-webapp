@@ -18,7 +18,7 @@
 
 - [x] Uma rota canónica e cluster amplo, sem páginas doorway.
 - [x] Links contextuais para intenções mais estreitas.
-- [x] `indexable: false`; sem sitemap até aprovação explícita.
+- [x] `indexable: true`; incluída no sitemap, hub e homepage após aprovação explícita.
 - [x] Sem Product, Review ou AggregateRating.
 
 ## Media
@@ -33,4 +33,4 @@
 
 - [ ] Revisão final de Produto, Growth, Engenharia, Privacidade, QA e editorial pt-PT.
 - [ ] Percurso autenticado até conclusão e compra verificado numa sessão autorizada.
-- [ ] Aprovação explícita de publicação, deploy e indexação.
+- [ ] Aprovação explícita de publicação e deploy; indexação em código aprovada em 2026-08-08.
