@@ -561,7 +561,7 @@ function createGrandparentsLandingPage(locale: LocalizedLandingLocale): LandingP
     metaDescription: c.metaDescription,
     primaryIntent: 'grandparents',
     riskRating: 'yellow',
-    updatedAt: '2026-08-02',
+    updatedAt: '2026-08-04',
     indexable: true,
     breadcrumbLabel: c.breadcrumb,
     ogImageSrc: `${assetBase}/hero/og-cover.jpeg`,

@@ -1,0 +1,3 @@
+# Cover — Tomás e o Mapa das Portas Escondidas
+
+Use case: illustration-story. Portrait children's cover art only, 1024x1536. Tomás, a fictional 8-year-old Portuguese boy with short wavy black hair and glasses, unfolds a layered paper map in a small library; cut-paper doors rise into an imaginative city of teal roofs, orange bridges and cream streets. Authentic layered papercut diorama, visible paper fibres and cut edges, dimensional but readable shadows, strong foreground/midground/background. Reserve a clean cream upper panel and render no letters; exact title is added deterministically. No physical book, logo, watermark, real address, protected character, or extra text.

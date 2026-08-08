@@ -1,0 +1,3 @@
+# Feature background source — Tomás e o Mapa das Portas Escondidas
+
+Use case: product-mockup. Photorealistic top-down real product photograph, 1536x1024. Dark wooden library reading table with an exact unobstructed portrait book-shaped matte rectangle centered at x=488, y=112, width=560, height=800, viewed perfectly from above with no perspective. Surround it with one folded unmarked paper map, a wooden pencil and soft teal lamp light; no institutional marks. The rectangle is neutral cream for deterministic cover compositing. Real paper fibres and wood grain, editorial lighting. No readable text, people, hands, logos, watermark, competing books or object over the rectangle.

@@ -1,0 +1,27 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "Quando a Lua abriu a sua pequena pastelaria, Mia foi a primeira a sentir o cheiro a estrelas quentes. Ao lado dela, Pingo levantou as orelhas. Dentro da loja, pães redondos dormiam em tabuleiros de prata e uma massa muito pequena suspirava por baixo de uma manta amarela. Antes do amanhecer, Mia teria de descobrir para quem era aquele último sonho. Do outro lado da janela, uma escada de luz começou a aparecer, degrau a degrau, como bolachas iluminadas.",
+  "voiceDirection": "Narradora adulta pt-PT quente e tranquila, com ritmo de adormecer e dicção muito clara; sem imitação de voz infantil.",
+  "pronunciationNotes": [
+    "Mia: Mi-a",
+    "Pingo: pronúncia portuguesa natural"
+  ],
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 42,
+  "humanListeningReview": "pending_pt_pt_reviewer",
+  "generatedAt": "2026-08-06T15:32:33.997Z",
+  "durationSeconds": 37.68,
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.6051,
+    "rmsRatio": 0.052,
+    "clippingRatio": 0,
+    "loudnessTargetLufs": -18
+  }
+}

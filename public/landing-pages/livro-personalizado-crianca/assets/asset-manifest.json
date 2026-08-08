@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.0",
+  "source": "public/sample-books",
+  "generationModel": "gpt-image-2",
+  "audioIncluded": true,
+  "deterministicComposition": {
+    "coverTitles": true,
+    "featureCoverPlacement": {
+      "left": 488,
+      "top": 112,
+      "width": 560,
+      "height": 800
+    },
+    "heroSource": "mia-e-a-pastelaria-da-lua/assets/feature.jpeg"
+  },
+  "books": [
+    {
+      "slug": "mia-e-a-pastelaria-da-lua",
+      "title": "Mia e a Pastelaria da Lua",
+      "files": [
+        "books\\mia-e-a-pastelaria-da-lua\\audio-teaser.mp3",
+        "books\\mia-e-a-pastelaria-da-lua\\chapter-01.jpeg",
+        "books\\mia-e-a-pastelaria-da-lua\\cover.jpeg",
+        "books\\mia-e-a-pastelaria-da-lua\\feature.jpeg"
+      ]
+    },
+    {
+      "slug": "tomas-e-o-mapa-das-portas-escondidas",
+      "title": "Tomás e o Mapa das Portas Escondidas",
+      "files": [
+        "books\\tomas-e-o-mapa-das-portas-escondidas\\audio-teaser.mp3",
+        "books\\tomas-e-o-mapa-das-portas-escondidas\\chapter-01.jpeg",
+        "books\\tomas-e-o-mapa-das-portas-escondidas\\cover.jpeg",
+        "books\\tomas-e-o-mapa-das-portas-escondidas\\feature.jpeg"
+      ]
+    },
+    {
+      "slug": "lia-e-o-jardim-das-palavras-perdidas",
+      "title": "Lia e o Jardim das Palavras Perdidas",
+      "files": [
+        "books\\lia-e-o-jardim-das-palavras-perdidas\\audio-teaser.mp3",
+        "books\\lia-e-o-jardim-das-palavras-perdidas\\chapter-01.jpeg",
+        "books\\lia-e-o-jardim-das-palavras-perdidas\\cover.jpeg",
+        "books\\lia-e-o-jardim-das-palavras-perdidas\\feature.jpeg"
+      ]
+    },
+    {
+      "slug": "a-equipa-que-marcou-um-golo-nas-estrelas",
+      "title": "A Equipa que Marcou um Golo nas Estrelas",
+      "files": [
+        "books\\a-equipa-que-marcou-um-golo-nas-estrelas\\audio-teaser.mp3",
+        "books\\a-equipa-que-marcou-um-golo-nas-estrelas\\chapter-01.jpeg",
+        "books\\a-equipa-que-marcou-um-golo-nas-estrelas\\cover.jpeg",
+        "books\\a-equipa-que-marcou-um-golo-nas-estrelas\\feature.jpeg"
+      ]
+    },
+    {
+      "slug": "ines-e-o-robo-feito-de-desenhos",
+      "title": "Inês e o Robô Feito de Desenhos",
+      "files": [
+        "books\\ines-e-o-robo-feito-de-desenhos\\audio-teaser.mp3",
+        "books\\ines-e-o-robo-feito-de-desenhos\\chapter-01.jpeg",
+        "books\\ines-e-o-robo-feito-de-desenhos\\cover.jpeg",
+        "books\\ines-e-o-robo-feito-de-desenhos\\feature.jpeg"
+      ]
+    }
+  ]
+}

@@ -17,7 +17,8 @@ Legacy dual-send events and direct browser Google Ads conversions are disabled. 
 ## Identity, attribution, and privacy
 
 - Consent Mode defaults to denied. No server event is delivered without analytics consent and a genuine GA client ID.
-- Attribution records contain only allowlisted campaign parameters and sanitized internal paths, expire after 24 hours, and contain no PII or raw URLs.
+- Attribution records contain only allowlisted campaign parameters and sanitized internal paths, expire after 24 hours, and contain no PII or raw URLs. The first touch is immutable; later captures update only the latest path, referrer, session, consent, and expiry.
+- Durable events carry the attribution row ID plus sanitized same-origin `page_location`/`page_referrer`. Query strings, UUID path segments, private share tokens, raw click IDs, email addresses, prompts, and story/chapter content are excluded from Measurement Protocol parameters.
 - Manual `page_view` events retain only `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`, `gclid`, `gbraid`, and `wbraid`.
 - Authentication, payment, token, session, code, and state parameters are removed.
 - IDs used for deduplication remain operational fields and are not registered as GA4 custom definitions.
@@ -34,7 +35,7 @@ The deployment script obtains the Realtime read token by impersonating `analytic
 
 Admin UI/MCP corrective restarts reuse this queue with `credits_spent = 0`. They never create a debit or refund ledger entry. If their publish retry budget is exhausted, the request becomes `delivery_failed` and `story_generation_status` becomes `failed`, while an already published story remains published and readable.
 
-The workflow service records terminal events only after its authoritative terminal transition. It copies the consented `user_id` and `primary_intent` from the durable requested-event row, and uses `story_generation_completed:<run_id>` as the completion idempotency key. Its scheduled reconciler repairs missed outbox writes without changing the Pub/Sub `{storyId, runId}` message contract.
+The workflow service records terminal events only after its authoritative terminal transition. It copies the consented `user_id`, immutable first-touch attribution, and sanitized page context from the durable requested-event row, and uses `story_generation_completed:<run_id>` as the completion idempotency key. GA4 receives a 12-character `run_ref`, never the raw run ID. Its scheduled reconciler repairs missed outbox writes without changing the Pub/Sub `{storyId, runId}` message contract.
 
 ## Ecommerce values
 

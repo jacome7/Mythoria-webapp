@@ -1,0 +1,3 @@
+# Cover art source — Lia e o Jardim das Palavras Perdidas
+
+Use case: illustration-story. Portrait cover art only, 1024x1536. Lia, a fictional 7-year-old girl with auburn braids, freckles, green dungarees and coral shirt, enters a quiet garden where abstract ribbon shapes bloom among rosemary, nasturtiums and blue flowers; fictional tia Amélia, an older woman with short silver curls and blue cardigan, waits nearby. Translucent watercolor on cotton paper, soft edges, calm green, coral and blue, generous negative space. Leave the upper 30% pale and uncluttered for deterministic title overlay. Absolutely no words, symbols, logo or watermark. No physical book, protected imagery or unsafe scene.

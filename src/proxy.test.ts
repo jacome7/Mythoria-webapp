@@ -110,4 +110,17 @@ describe('proxy canonical redirects', () => {
     );
     expect(response?.status).toBe(404);
   });
+
+  it('redirects the retired dashboard and directly rejects malformed story placeholders', async () => {
+    const dashboard = await getPublicSeoResponse(
+      new NextRequest('https://mythoria.pt/pt-PT/dashboard'),
+    );
+    expect(dashboard?.status).toBe(308);
+    expect(dashboard?.headers.get('location')).toBe('https://mythoria.pt/pt-PT/my-stories');
+
+    const malformedStory = await getPublicSeoResponse(
+      new NextRequest('https://mythoria.pt/undefined/p/undefined'),
+    );
+    expect(malformedStory?.status).toBe(404);
+  });
 });

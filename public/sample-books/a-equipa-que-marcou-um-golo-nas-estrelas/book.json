@@ -1,0 +1,40 @@
+{
+  "id": "children-book-04",
+  "title": "A Equipa que Marcou um Golo nas Estrelas",
+  "slug": "a-equipa-que-marcou-um-golo-nas-estrelas",
+  "language": "pt-PT",
+  "targetAudience": "children_7-10",
+  "readerAgeBand": "8–11 anos",
+  "buyerPersona": "Adulto que quer transformar um desporto favorito numa aventura de equipa",
+  "recipientType": "criança acompanhada por um adulto",
+  "storyIntent": "Celebrar observação, passe e contributos diferentes numa aventura desportiva personalizada.",
+  "synopsis": "Uma equipa de bairro descobre que o campo só se ilumina quando todos contribuem com uma capacidade diferente. O jogo decisivo resolve-se com observação, passe e trabalho de equipa.",
+  "shortExcerpt": "A bola brilhou pela primeira vez quando o passe chegou a quem ninguém estava a ver.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "A bola brilhou pela primeira vez quando o passe chegou a quem ninguém estava a ver. No Campo da Aurora, cada linha acendeu-se como uma constelação. Uma jogadora encontrou espaço, outra ouviu o aviso do guarda-redes e a mais nova fez o passe simples. Não havia uma estrela sozinha: o céu inteiro parecia desenhado pelos movimentos da equipa. A treinadora sorriu sem dar instruções; queria que descobrissem como ouvir o jogo antes de correr atrás da bola.",
+  "graphicalStyle": "euro_comic_book",
+  "novelStyle": "sports_adventure",
+  "publicProvenance": "mythoria_created_example",
+  "fictionalUserContext": "Demonstração com input inteiramente ficcional e sintético: equipa, jogadores, equipamentos, campo e jogo foram inventados e não correspondem a um clube ou criança real.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg"
+  },
+  "sampleChapterImage": {
+    "localPath": "assets/chapter-01.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "status": "generated",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview",
+    "voice": "Aoede"
+  },
+  "safetyNotes": [
+    "A equipa, jogadores, equipamento e campo são inteiramente ficcionais e sem marcas.",
+    "A ação desportiva é segura, não violenta e valoriza contributos coletivos.",
+    "Não são usados dados pessoais, fotografias ou vozes de crianças reais."
+  ]
+}

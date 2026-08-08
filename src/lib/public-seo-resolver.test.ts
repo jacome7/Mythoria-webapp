@@ -60,6 +60,25 @@ describe('dynamic public SEO resolver', () => {
     });
   });
 
+  it.each(['lerne-das-mythoria-ki-team-kennen', 'rencontrez-l-equipe-ia-de-mythoria'])(
+    'redirects retired blog slug %s to the current translation cluster',
+    async (legacySlug) => {
+      getPublishedMatchesByAnySlugMock.mockResolvedValue([
+        { slugBase: 'meet-mythoria-ai-team', slug: 'meet-mythoria-ai-team', locale: 'en-US' },
+      ]);
+      getPublishedTranslationsBySlugBaseMock.mockResolvedValue([
+        { slug: 'meet-mythoria-ai-team', locale: 'en-US' },
+        { slug: 'conhece-a-equipa-de-ia-da-mythoria', locale: 'pt-PT' },
+      ]);
+
+      await expect(resolveDynamicPublicSeoPath(`/pt-PT/blog/${legacySlug}`)).resolves.toEqual({
+        type: 'redirect',
+        pathname: '/pt-PT/blog/conhece-a-equipa-de-ia-da-mythoria',
+      });
+      expect(getPublishedMatchesByAnySlugMock).toHaveBeenCalledWith('meet-mythoria-ai-team');
+    },
+  );
+
   it('does not guess when a blog slug is missing or ambiguous', async () => {
     await expect(resolveDynamicPublicSeoPath('/blog/missing')).resolves.toEqual({
       type: 'notFound',

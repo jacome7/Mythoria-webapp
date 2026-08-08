@@ -13,6 +13,7 @@ import {
 } from '@/db/schema';
 import { publishStoryRequest } from '@/lib/pubsub';
 import { ga4Service } from './ga4';
+import { ANALYTICS_BASE_URL, sanitizeAnalyticsPageUrl } from './page-context';
 
 const MAX_DELIVERY_ATTEMPTS = 8;
 const BATCH_SIZE = 25;
@@ -126,30 +127,68 @@ export async function deliverAnalytics(): Promise<{
     const analyticsConsent = claimed.consent;
 
     let effectiveEntry = claimed;
-    if (!effectiveEntry.clientId && effectiveEntry.authorId) {
-      const [attribution] = await db
-        .select()
-        .from(analyticsAttributions)
-        .where(
-          and(
-            eq(analyticsAttributions.authorId, effectiveEntry.authorId),
-            gt(analyticsAttributions.expiresAt, new Date()),
-          ),
-        )
-        .orderBy(desc(analyticsAttributions.createdAt))
-        .limit(1);
+    if (effectiveEntry.authorId && (!effectiveEntry.clientId || !effectiveEntry.attributionId)) {
+      const eventTimeConditions = [
+        lte(analyticsAttributions.createdAt, effectiveEntry.occurredAt),
+        gt(analyticsAttributions.expiresAt, effectiveEntry.occurredAt),
+        or(
+          isNull(analyticsAttributions.latestAttributionAt),
+          lte(analyticsAttributions.latestAttributionAt, effectiveEntry.occurredAt),
+        ),
+        or(
+          isNull(analyticsAttributions.authorId),
+          eq(analyticsAttributions.authorId, effectiveEntry.authorId),
+        ),
+      ];
+      const [attribution] = effectiveEntry.attributionId
+        ? await db
+            .select()
+            .from(analyticsAttributions)
+            .where(
+              and(
+                eq(analyticsAttributions.attributionId, effectiveEntry.attributionId),
+                ...eventTimeConditions,
+              ),
+            )
+            .limit(1)
+        : await db
+            .select()
+            .from(analyticsAttributions)
+            .where(
+              and(
+                eq(analyticsAttributions.authorId, effectiveEntry.authorId),
+                ...eventTimeConditions,
+                ...(effectiveEntry.sessionId
+                  ? [eq(analyticsAttributions.sessionId, effectiveEntry.sessionId)]
+                  : []),
+              ),
+            )
+            .orderBy(desc(analyticsAttributions.createdAt))
+            .limit(1);
       if (attribution) {
+        const primaryIntent = attribution.firstPrimaryIntent || attribution.primaryIntent;
+        const pageLocation = attribution.latestPath
+          ? sanitizeAnalyticsPageUrl(`${ANALYTICS_BASE_URL}${attribution.latestPath}`)
+          : undefined;
+        const pageReferrer = attribution.latestReferrerPath
+          ? sanitizeAnalyticsPageUrl(`${ANALYTICS_BASE_URL}${attribution.latestReferrerPath}`)
+          : undefined;
         const params = {
           ...effectiveEntry.params,
-          ...(attribution.primaryIntent && typeof effectiveEntry.params.primary_intent !== 'string'
-            ? { primary_intent: attribution.primaryIntent }
+          ...(primaryIntent && typeof effectiveEntry.params.primary_intent !== 'string'
+            ? { primary_intent: primaryIntent }
             : {}),
         };
         const [enriched] = await db
           .update(analyticsOutbox)
           .set({
+            attributionId: attribution.attributionId,
             clientId: attribution.clientId,
             sessionId: attribution.sessionId,
+            consent: attribution.consent,
+            pageLocation: effectiveEntry.pageLocation || pageLocation,
+            pageReferrer: effectiveEntry.pageReferrer || pageReferrer,
+            engagementTimeMsec: effectiveEntry.engagementTimeMsec || 100,
             params,
             lastError: null,
           })
@@ -197,6 +236,11 @@ export async function deliverAnalytics(): Promise<{
       clientId: effectiveEntry.clientId,
       ...(effectiveEntry.userId ? { userId: effectiveEntry.userId } : {}),
       ...(effectiveEntry.sessionId ? { sessionId: effectiveEntry.sessionId } : {}),
+      ...(effectiveEntry.pageLocation ? { pageLocation: effectiveEntry.pageLocation } : {}),
+      ...(effectiveEntry.pageReferrer ? { pageReferrer: effectiveEntry.pageReferrer } : {}),
+      ...(effectiveEntry.engagementTimeMsec
+        ? { engagementTimeMsec: effectiveEntry.engagementTimeMsec }
+        : {}),
       consent: analyticsConsent,
       occurredAt: effectiveEntry.occurredAt,
       params: effectiveEntry.params,

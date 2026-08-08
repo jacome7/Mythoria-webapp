@@ -15,7 +15,7 @@ export const familyTravelLandingPage: LandingPageContent = {
     'Transforme fotografias, lugares e pequenas memórias das férias numa história personalizada para ler, ouvir, imprimir ou oferecer.',
   primaryIntent: 'family_travels',
   riskRating: 'yellow',
-  updatedAt: '2026-07-30',
+  updatedAt: '2026-08-04',
   indexable: true,
   showInLandingPageIndex: true,
   showFormatsNearHero: false,

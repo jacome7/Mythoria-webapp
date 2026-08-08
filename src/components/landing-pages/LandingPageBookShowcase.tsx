@@ -34,6 +34,7 @@ export default function LandingPageBookShowcase({
   labels,
 }: LandingPageBookShowcaseProps) {
   const [selectedBook, setSelectedBook] = useState<LandingPageBook | null>(null);
+  const booksOpened = useRef(new Set<string>());
   const audioStarted = useRef(new Set<string>());
   const audioCompleted = useRef(new Set<string>());
   const bookGridClass =
@@ -69,7 +70,8 @@ export default function LandingPageBookShowcase({
 
   const getSampleBookSlug = (book: LandingPageBook) => book.slug ?? book.id;
   const trackSampleEvent = (
-    eventName: 'sample_chapter_open' | 'sample_audio_start' | 'sample_audio_complete',
+    eventName:
+      'sample_book_open' | 'sample_chapter_open' | 'sample_audio_start' | 'sample_audio_complete',
     book: LandingPageBook,
   ) => {
     trackEvent(eventName, {
@@ -77,9 +79,17 @@ export default function LandingPageBookShowcase({
       sample_book_slug: getSampleBookSlug(book),
       locale,
       primary_intent: primaryIntent,
+      sample_style_label: book.styleLabel,
     });
   };
+  const handleBookOpen = (book: LandingPageBook) => {
+    const slug = getSampleBookSlug(book);
+    if (booksOpened.current.has(slug)) return;
+    booksOpened.current.add(slug);
+    trackSampleEvent('sample_book_open', book);
+  };
   const handleAudioStart = (book: LandingPageBook) => {
+    handleBookOpen(book);
     const slug = getSampleBookSlug(book);
     if (audioStarted.current.has(slug)) return;
     audioStarted.current.add(slug);
@@ -105,7 +115,7 @@ export default function LandingPageBookShowcase({
                 src={book.imageSrc}
                 alt={book.imageAlt}
                 fill
-                loading="eager"
+                loading="lazy"
                 sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 20vw"
                 className="object-cover transition duration-500 group-hover:scale-105"
               />
@@ -221,6 +231,14 @@ export default function LandingPageBookShowcase({
                   >
                     <source src={book.audioSampleSrc} type="audio/mpeg" />
                   </audio>
+                  {book.audioSampleTranscript ? (
+                    <details className="mt-3 rounded-lg bg-white/80 p-3 text-sm text-base-content/75">
+                      <summary className="cursor-pointer font-semibold text-primary">
+                        {book.audioTranscriptLabel ?? 'Transcrição'}
+                      </summary>
+                      <p className="mt-2 leading-relaxed">{book.audioSampleTranscript}</p>
+                    </details>
+                  ) : null}
                 </div>
               )}
 
@@ -229,6 +247,7 @@ export default function LandingPageBookShowcase({
                   type="button"
                   className="btn btn-primary btn-sm h-auto min-h-11 w-full gap-2 whitespace-normal py-2 text-center leading-tight"
                   onClick={() => {
+                    handleBookOpen(book);
                     trackSampleEvent('sample_chapter_open', book);
                     setSelectedBook(book);
                   }}
@@ -250,7 +269,10 @@ export default function LandingPageBookShowcase({
                 <Link
                   className="btn btn-primary btn-sm h-auto min-h-11 w-full gap-2 whitespace-normal py-2 text-center leading-tight"
                   href={book.sampleChapterHref}
-                  onClick={() => trackSampleEvent('sample_chapter_open', book)}
+                  onClick={() => {
+                    handleBookOpen(book);
+                    trackSampleEvent('sample_chapter_open', book);
+                  }}
                 >
                   <ExternalLink className="h-4 w-4 shrink-0" aria-hidden="true" />
                   <span>{labels.readSample}</span>
@@ -401,8 +423,25 @@ function BookSampleModal({
                 >
                   <source src={book.audioSampleSrc} type="audio/mpeg" />
                 </audio>
+                {book.audioSampleTranscript ? (
+                  <details className="mt-3 rounded-lg bg-[#fff8ea] p-3 text-sm text-base-content/75">
+                    <summary className="cursor-pointer font-semibold text-primary">
+                      {book.audioTranscriptLabel ?? 'Transcrição'}
+                    </summary>
+                    <p className="mt-2 leading-relaxed">{book.audioSampleTranscript}</p>
+                  </details>
+                ) : null}
               </div>
             )}
+            {book.sampleChapterHref ? (
+              <Link
+                href={book.sampleChapterHref}
+                className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 font-semibold text-primary hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                <ExternalLink className="h-4 w-4 shrink-0" aria-hidden="true" />
+                {labels.readSample}
+              </Link>
+            ) : null}
           </aside>
 
           <div className="max-h-[70vh] overflow-y-auto rounded-xl bg-white p-5 shadow-sm">

@@ -16,7 +16,8 @@ export default function SampleBookDetailPage({
   locale,
   seo,
 }: SampleBookDetailPageProps) {
-  const isFictionalBook = Boolean(book.fictionalUserContext);
+  const isMythoriaCreatedExample = book.publicProvenance === 'mythoria_created_example';
+  const isFictionalBook = Boolean(book.fictionalUserContext) && !isMythoriaCreatedExample;
   const facts = [
     ['Intenção', book.intent],
     ['Público', book.readerAgeBand ?? book.targetAudience],
@@ -51,25 +52,31 @@ export default function SampleBookDetailPage({
               <Image
                 src={book.coverSrc}
                 alt={
-                  isFictionalBook
-                    ? `Capa do exemplo ficcional “${book.title}”`
-                    : `Capa de “${book.title}”`
+                  isMythoriaCreatedExample
+                    ? `Capa do livro de demonstração “${book.title}”, criado com a Mythoria`
+                    : isFictionalBook
+                      ? `Capa do exemplo ficcional “${book.title}”`
+                      : `Capa de “${book.title}”`
                 }
                 fill
                 priority
                 sizes="(max-width: 768px) 100vw, 40vw"
-                className="object-cover"
+                className={isMythoriaCreatedExample ? 'object-contain' : 'object-cover'}
               />
             </div>
 
             <header>
-              {isFictionalBook ? (
+              {isMythoriaCreatedExample ? (
+                <p className="text-sm font-semibold uppercase tracking-wide text-primary/70">
+                  Livro criado com a Mythoria
+                </p>
+              ) : isFictionalBook ? (
                 <p className="text-sm font-semibold uppercase tracking-wide text-primary/70">
                   Exemplo de livro inteiramente ficcional
                 </p>
               ) : null}
               <h1
-                className={`${isFictionalBook ? 'mt-2' : ''} font-display text-4xl leading-tight text-primary`}
+                className={`${isFictionalBook || isMythoriaCreatedExample ? 'mt-2' : ''} font-display text-4xl leading-tight text-primary`}
               >
                 {book.title}
               </h1>
@@ -109,8 +116,13 @@ export default function SampleBookDetailPage({
                 <section className="mt-7 rounded-2xl bg-primary/10 p-4">
                   <h2 className="font-display text-xl text-primary">Excerto em áudio</h2>
                   <p className="mt-1 text-sm text-base-content/70">
-                    Ouça um breve trecho narrado deste
-                    {isFictionalBook ? ' exemplo ficcional' : ' livro'}.
+                    Ouça um breve trecho narrado deste{' '}
+                    {isMythoriaCreatedExample
+                      ? 'livro de demonstração criado com a Mythoria'
+                      : isFictionalBook
+                        ? 'exemplo ficcional'
+                        : 'livro'}
+                    .
                   </p>
                   <audio controls preload="metadata" className="mt-3 w-full">
                     <source src={book.audioSampleSrc} type="audio/mpeg" />
@@ -136,9 +148,11 @@ export default function SampleBookDetailPage({
                       src={src}
                       alt={
                         index === 0
-                          ? isFictionalBook
-                            ? `Cena ilustrada do exemplo ficcional “${book.title}”`
-                            : `Cena ilustrada de “${book.title}”`
+                          ? isMythoriaCreatedExample
+                            ? `Cena do livro de demonstração “${book.title}”, criado com a Mythoria`
+                            : isFictionalBook
+                              ? `Cena ilustrada do exemplo ficcional “${book.title}”`
+                              : `Cena ilustrada de “${book.title}”`
                           : `Ilustração do capítulo de amostra de “${book.title}”`
                       }
                       fill
@@ -176,7 +190,8 @@ export default function SampleBookDetailPage({
             </section>
           ) : null}
 
-          {book.fictionalUserContext || (book.safetyNotes?.length ?? 0) > 0 ? (
+          {!isMythoriaCreatedExample &&
+          (book.fictionalUserContext || (book.safetyNotes?.length ?? 0) > 0) ? (
             <section className="border-t border-base-300 bg-base-200/60 p-5 sm:p-8">
               {book.fictionalUserContext ? (
                 <>
@@ -203,9 +218,11 @@ export default function SampleBookDetailPage({
             <aside className="border-t border-base-300 p-5 sm:p-8">
               <h2 className="font-display text-2xl text-primary">Continue a explorar este tema</h2>
               <p className="mt-3 max-w-3xl leading-relaxed text-base-content/75">
-                {isFictionalBook
-                  ? 'Este exemplo mostra uma possibilidade narrativa, não uma história de cliente.'
-                  : 'Este livro mostra uma possibilidade narrativa criada com Mythoria.'}{' '}
+                {isMythoriaCreatedExample
+                  ? 'Este livro foi criado pela equipa Mythoria como demonstração e não é apresentado como história de cliente.'
+                  : isFictionalBook
+                    ? 'Este exemplo mostra uma possibilidade narrativa, não uma história de cliente.'
+                    : 'Este livro mostra uma possibilidade narrativa criada com Mythoria.'}{' '}
                 Consulte o guia para preparar o conteúdo e a página do tema para conhecer formas de
                 personalização.
               </p>

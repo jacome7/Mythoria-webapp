@@ -1,0 +1,40 @@
+{
+  "id": "children-book-01",
+  "title": "Mia e a Pastelaria da Lua",
+  "slug": "mia-e-a-pastelaria-da-lua",
+  "language": "pt-PT",
+  "targetAudience": "children_3-6",
+  "readerAgeBand": "4–7 anos",
+  "buyerPersona": "Adulto que quer criar uma história de adormecer personalizada",
+  "recipientType": "criança acompanhada por um adulto",
+  "storyIntent": "Transformar interesses, um animal e um ritual familiar numa aventura de adormecer calorosa.",
+  "synopsis": "Mia e o seu pequeno cão descobrem uma pastelaria lunar onde os sonhos são amassados em pão. Antes do amanhecer, têm de preparar um último pão para alguém que se esqueceu de sonhar.",
+  "shortExcerpt": "Quando a Lua abriu a sua pequena pastelaria, Mia foi a primeira a sentir o cheiro a estrelas quentes.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "Quando a Lua abriu a sua pequena pastelaria, Mia foi a primeira a sentir o cheiro a estrelas quentes. Ao lado dela, Pingo levantou as orelhas. Dentro da loja, pães redondos dormiam em tabuleiros de prata e uma massa muito pequena suspirava por baixo de uma manta amarela. Antes do amanhecer, Mia teria de descobrir para quem era aquele último sonho. Do outro lado da janela, uma escada de luz começou a aparecer, degrau a degrau, como bolachas iluminadas.",
+  "graphicalStyle": "claymation",
+  "novelStyle": "fairy_tale",
+  "publicProvenance": "mythoria_created_example",
+  "fictionalUserContext": "Demonstração com input inteiramente ficcional e sintético: Mia, Pingo, a família e todos os detalhes foram inventados e não correspondem a uma criança real.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg"
+  },
+  "sampleChapterImage": {
+    "localPath": "assets/chapter-01.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "status": "generated",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview",
+    "voice": "Aoede"
+  },
+  "safetyNotes": [
+    "A história, personagens, animal e circunstâncias são inteiramente ficcionais.",
+    "A criança aparece num contexto imaginativo seguro e com um adulto familiar acessível.",
+    "Não são usados dados pessoais, fotografias, vozes ou desenhos de crianças reais."
+  ]
+}

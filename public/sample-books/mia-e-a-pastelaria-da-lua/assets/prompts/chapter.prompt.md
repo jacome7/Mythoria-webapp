@@ -1,0 +1,3 @@
+# Chapter illustration — Mia e a Pastelaria da Lua
+
+Use case: illustration-story. Wide 1536x1024 chapter illustration in the same handcrafted claymation world and with the exact same Mia and Pingo design as the cover prompt. Mia carefully carries a small silver tray with a glowing round loaf while Pingo follows through the miniature moon bakery; Dona Aurora, a kind fictional older woman with silver clay hair and a plum apron, opens a crescent window toward a quiet sleeping town. Tactile clay fingerprints, rounded original characters, warm moonlight, gentle bedtime mood, safe fully clothed characters. No title, words, logos, watermark, protected franchise resemblance, frightening imagery or extra limbs.

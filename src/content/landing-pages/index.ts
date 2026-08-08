@@ -1,4 +1,5 @@
 import { autismStoriesLandingPage } from './autism-stories.pt-PT';
+import { childrenBooksLandingPage } from './children-books.pt-PT';
 import { familyTravelLandingPage } from './family-travel.pt-PT';
 import { grandparentsStoriesLandingPage } from './grandparents-stories.pt-PT';
 import { localizedLandingPages } from './localized';
@@ -15,6 +16,7 @@ import { isValidIntent, normalizeIntent } from '@/constants/intents';
 import type { IntentContext } from '@/types/intent-context';
 
 const landingPages = [
+  childrenBooksLandingPage,
   autismStoriesLandingPage,
   familyTravelLandingPage,
   grandparentsStoriesLandingPage,
@@ -27,6 +29,7 @@ const landingPages = [
 export const LANDING_PAGE_HUB_UPDATED_AT = '2026-07-27';
 
 const landingPageCategories: Record<LandingPageTranslationKey, string> = {
+  'personalized-children-books': 'Crianças e aprendizagem',
   'grandparents-stories': 'Família e relações',
   'romance-gifts': 'Família e relações',
   'autism-stories': 'Crianças e aprendizagem',
@@ -36,6 +39,7 @@ const landingPageCategories: Record<LandingPageTranslationKey, string> = {
 };
 
 const relatedLandingPageKeys: Record<LandingPageTranslationKey, LandingPageTranslationKey[]> = {
+  'personalized-children-books': ['supportive-stories', 'autism-stories', 'grandparents-stories'],
   'grandparents-stories': ['family-travel', 'romance-gifts', 'supportive-stories'],
   'romance-gifts': ['family-travel', 'grandparents-stories', 'supportive-stories'],
   'autism-stories': ['supportive-stories', 'workshops-children', 'grandparents-stories'],

@@ -1,0 +1,50 @@
+{
+  "status": "manual_review_required",
+  "storiesToCreate": [
+    {
+      "id": "book-01",
+      "slug": "mia-e-a-pastelaria-da-lua",
+      "title": "Mia e a Pastelaria da Lua",
+      "intent": "kids_bedtime",
+      "makePublic": true,
+      "featureInGetInspired": false,
+      "status": "pending_story_generation"
+    },
+    {
+      "id": "book-02",
+      "slug": "tomas-e-o-mapa-das-portas-escondidas",
+      "title": "Tomás e o Mapa das Portas Escondidas",
+      "intent": "kids_adventures",
+      "makePublic": true,
+      "featureInGetInspired": false,
+      "status": "pending_story_generation"
+    },
+    {
+      "id": "book-03",
+      "slug": "lia-e-o-jardim-das-palavras-perdidas",
+      "title": "Lia e o Jardim das Palavras Perdidas",
+      "intent": "learning_and_discovery",
+      "makePublic": true,
+      "featureInGetInspired": false,
+      "status": "pending_story_generation"
+    },
+    {
+      "id": "book-04",
+      "slug": "a-equipa-que-marcou-um-golo-nas-estrelas",
+      "title": "A Equipa que Marcou um Golo nas Estrelas",
+      "intent": "sports_teams",
+      "makePublic": true,
+      "featureInGetInspired": false,
+      "status": "pending_story_generation"
+    },
+    {
+      "id": "book-05",
+      "slug": "ines-e-o-robo-feito-de-desenhos",
+      "title": "Inês e o Robô Feito de Desenhos",
+      "intent": "kids_adventures",
+      "makePublic": true,
+      "featureInGetInspired": false,
+      "status": "pending_story_generation"
+    }
+  ]
+}

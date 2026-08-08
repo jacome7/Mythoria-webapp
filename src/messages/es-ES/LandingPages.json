@@ -1,16 +1,22 @@
 {
   "LandingPages": {
     "defaults": {
-      "booksEyebrow": "Ejemplos ficticios",
-      "booksTitle": "Cinco ideas de libros para empezar",
-      "booksIntro": "Estos conceptos muestran caminos posibles. Son ejemplos ficticios, no testimonios de clientes ni historias públicas."
+      "booksEyebrow": "Ejemplos completos de libros",
+      "booksTitle": "Ejemplos reales creados para Mythoria",
+      "booksIntro": "Son libros de ejemplo completos creados para Mythoria. Sus personajes y situaciones pueden ser inventados; no son testimonios de clientes."
     },
     "editorialReviewed": "Contenido editorial de Mythoria · Revisado el {date}",
     "faqTitle": "Preguntas frecuentes",
+    "pricing": {
+      "eyebrow": "Precios transparentes",
+      "title": "Consulta el coste antes de crear",
+      "body": "Cada cuenta nueva incluye 5 créditos gratuitos. La tabla completa muestra los créditos necesarios para crear el ebook, generar el audiolibro, descargar el PDF y encargar la impresión. El coste aplicable aparece antes de cada confirmación.",
+      "cta": "Ver precios y créditos"
+    },
     "related": {
       "guideEyebrow": "Guía detallada",
       "guide": "Leer la guía completa",
-      "sample": "Leer el ejemplo ficticio «{title}»",
+      "sample": "Leer el ejemplo completo «{title}»",
       "eyebrow": "Explorar más",
       "title": "También te puede interesar",
       "intro": "Sigue explorando ideas, ocasiones y formas cuidadas de convertir recuerdos en libros personalizados.",

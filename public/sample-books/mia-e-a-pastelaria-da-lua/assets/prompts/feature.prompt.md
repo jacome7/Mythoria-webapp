@@ -1,0 +1,3 @@
+# Feature background source — Mia e a Pastelaria da Lua
+
+Use case: product-mockup. Photorealistic top-down real product photograph, 1536x1024. Warm bedside tabletop with an exact unobstructed portrait book-shaped matte rectangle centered at x=488, y=112, width=560, height=800, viewed perfectly from above with no perspective. Surround it sparingly with an amber lamp glow, folded mustard blanket, small wooden moon ornament and a few flour-star motifs; realistic wood, paper and fabric texture, gentle natural shadows. The rectangle is a neutral cream placeholder because the approved cover will be composited there. No readable text, people, hands, logos, watermark, extra book, screen or object crossing the rectangle.

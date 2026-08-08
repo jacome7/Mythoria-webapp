@@ -1,0 +1,27 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "O robô de Inês tinha três rodas, duas asas de papel e uma pergunta desenhada no peito. À meia-noite, saiu da folha com um ruído de lápis a riscar. Conseguia rolar, voar baixinho e encontrar parafusos perdidos, mas não sabia para que tinha sido inventado. Inês pegou no caderno e decidiu que aquela resposta não viria de um manual. Risco inclinou a cabeça de papel, abriu as asas e apontou para uma estrela desenhada no canto da página.",
+  "voiceDirection": "Narradora adulta pt-PT calorosa e inventiva, ritmo moderado e dicção nítida; sem voz infantil ou efeitos mecânicos invasivos.",
+  "pronunciationNotes": [
+    "Inês: acento aberto no ê",
+    "robô: acento claro na última sílaba"
+  ],
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 37,
+  "humanListeningReview": "pending_pt_pt_reviewer",
+  "generatedAt": "2026-08-06T15:33:57.286Z",
+  "durationSeconds": 36.36,
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.6655,
+    "rmsRatio": 0.0844,
+    "clippingRatio": 0,
+    "loudnessTargetLufs": -18
+  }
+}

@@ -1,0 +1,3 @@
+# Cover — Inês e o Robô Feito de Desenhos
+
+Use case: illustration-story. Portrait children's cover art only, 1024x1536. Inês, a fictional 9-year-old Portuguese girl with straight dark hair in a bob, sits at a desk while her original hand-drawn robot steps out of a sketchbook. The robot has three wheels, two paper wings, mismatched geometric parts and a blank heart-shaped question panel. Rich colored-pencil grain, layered turquoise, tomato red, mustard and graphite, visible hand-drawn imperfections, safe cosy room. Reserve a light upper panel and render no letters; exact title is added deterministically. No physical book, logo, watermark, protected robot or extra text.

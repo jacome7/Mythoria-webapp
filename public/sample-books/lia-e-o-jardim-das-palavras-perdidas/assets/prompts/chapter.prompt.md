@@ -1,0 +1,3 @@
+# Chapter illustration — Lia e o Jardim das Palavras Perdidas
+
+Use case: illustration-story. Wide 1536x1024 watercolor chapter illustration using the exact same Lia and tia Amélia designs as the cover prompt. They sit together beside rosemary while Lia holds a coral flower whose stem forms a gentle abstract ribbon; other flowers remain rooted around them, suggesting that every word keeps its story. Translucent watercolor, cotton paper texture, soft edges, calm expressive palette and generous negative space. Safe warm interaction, no legible words, logo, watermark, protected imagery or exaggerated emotion.

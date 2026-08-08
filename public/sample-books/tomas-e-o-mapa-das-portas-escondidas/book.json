@@ -1,0 +1,40 @@
+{
+  "id": "children-book-02",
+  "title": "Tomás e o Mapa das Portas Escondidas",
+  "slug": "tomas-e-o-mapa-das-portas-escondidas",
+  "language": "pt-PT",
+  "targetAudience": "children_7-10",
+  "readerAgeBand": "6–9 anos",
+  "buyerPersona": "Adulto que quer criar uma aventura personalizada com pistas",
+  "recipientType": "criança acompanhada por um adulto",
+  "storyIntent": "Transformar lugares, objetos e frases familiares num mistério sobre curiosidade e cooperação.",
+  "synopsis": "Tomás encontra um mapa dentro de um livro antigo. Cada porta de papel abre uma camada diferente da cidade, mas a última só aparece quando ele pede ajuda.",
+  "shortExcerpt": "O mapa parecia feito de papel normal, até a primeira porta se levantar da página.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "O mapa parecia feito de papel normal, até a primeira porta se levantar da página. Tomás tocou-lhe com a ponta do lápis e ouviu a cidade respirar do outro lado. No bolso levava uma bússola de brincar; na cabeça, a frase que a avó repetia sempre: uma pista só fica completa quando é partilhada. Então a porta dobrou-se outra vez e revelou um caminho azul. Sara aproximou-se da mesa, e os dois perceberam que aquela porta só se abriria com duas mãos.",
+  "graphicalStyle": "papercut",
+  "novelStyle": "mystery",
+  "publicProvenance": "mythoria_created_example",
+  "fictionalUserContext": "Demonstração com input inteiramente ficcional e sintético: Tomás, Sara, a biblioteca e a cidade foram inventados e não identificam pessoas ou locais reais.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg"
+  },
+  "sampleChapterImage": {
+    "localPath": "assets/chapter-01.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "status": "generated",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview",
+    "voice": "Aoede"
+  },
+  "safetyNotes": [
+    "A história, personagens, biblioteca e cidade são inteiramente ficcionais.",
+    "A exploração ocorre em espaços públicos imaginários seguros e sem moradas reais.",
+    "Não são usados dados pessoais, fotografias ou vozes de crianças reais."
+  ]
+}

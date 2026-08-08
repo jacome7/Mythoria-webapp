@@ -15,7 +15,7 @@ export const grandparentsStoriesLandingPage: LandingPageContent = {
     'Crie um livro personalizado único para o Dia dos Avós com memórias da família, fotografias e audiolivro. Entrega rápida e versão digital imediata.',
   primaryIntent: 'grandparents',
   riskRating: 'yellow',
-  updatedAt: '2026-06-28',
+  updatedAt: '2026-08-04',
   indexable: true,
   breadcrumbLabel: 'Livro para avós e netos',
   ogImageSrc: `${sampleBookBase}/a-receita-das-estrelas-da-avo/feature.jpeg`,
@@ -106,7 +106,7 @@ export const grandparentsStoriesLandingPage: LandingPageContent = {
     ],
   },
   booksSection: {
-    eyebrow: 'Exemplos ficcionais de demonstração',
+    eyebrow: 'Livros-exemplo completos',
     title: 'Ideias de livros para avós, netos e famílias longe',
     intro:
       'Cada exemplo mostra um ponto de partida diferente: memória, receita, aldeia, chamadas de domingo ou primeira viagem a Portugal.',

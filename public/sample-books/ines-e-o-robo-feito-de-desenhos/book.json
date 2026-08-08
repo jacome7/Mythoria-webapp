@@ -1,0 +1,40 @@
+{
+  "id": "children-book-05",
+  "title": "Inês e o Robô Feito de Desenhos",
+  "slug": "ines-e-o-robo-feito-de-desenhos",
+  "language": "pt-PT",
+  "targetAudience": "children_7-10",
+  "readerAgeBand": "7–10 anos",
+  "buyerPersona": "Adulto que quer transformar um desenho numa história de invenção",
+  "recipientType": "criança acompanhada por um adulto",
+  "storyIntent": "Transformar um desenho original numa aventura segura sobre invenção, escolhas e propósito.",
+  "synopsis": "Inês desenha um robô com peças desencontradas. Durante a noite, ele sai da página e pede-lhe ajuda para descobrir a única parte que nenhum manual consegue definir: o seu propósito.",
+  "shortExcerpt": "O robô de Inês tinha três rodas, duas asas de papel e uma pergunta desenhada no peito.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "O robô de Inês tinha três rodas, duas asas de papel e uma pergunta desenhada no peito. À meia-noite, saiu da folha com um ruído de lápis a riscar. Conseguia rolar, voar baixinho e encontrar parafusos perdidos, mas não sabia para que tinha sido inventado. Inês pegou no caderno e decidiu que aquela resposta não viria de um manual. Risco inclinou a cabeça de papel, abriu as asas e apontou para uma estrela desenhada no canto da página.",
+  "graphicalStyle": "colored_pencil",
+  "novelStyle": "science_fiction",
+  "publicProvenance": "mythoria_created_example",
+  "fictionalUserContext": "Demonstração com contexto ficcional, input e desenho inteiramente sintéticos: Inês, o robô Risco, o quarto e a família foram inventados e não usam media de uma criança real.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg"
+  },
+  "sampleChapterImage": {
+    "localPath": "assets/chapter-01.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "status": "generated",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview",
+    "voice": "Aoede"
+  },
+  "safetyNotes": [
+    "A criança, a família, o desenho e o robô são inteiramente ficcionais e originais.",
+    "A invenção é imaginativa e não inclui instruções técnicas ou comportamentos perigosos.",
+    "Não são usados dados pessoais, desenhos, fotografias ou vozes de crianças reais."
+  ]
+}

@@ -1,0 +1,3 @@
+# Chapter illustration — A Equipa que Marcou um Golo nas Estrelas
+
+Use case: illustration-story. Wide 1536x1024 European comic chapter illustration preserving the exact five child designs, numbers and unbranded teal-and-orange kits from the cover prompt. Lara passes rather than shoots; Mei moves into space, Rui points from goal, Simão watches the far side and Noa prepares to receive. Luminous pitch markings join them like a constellation over the safe neighbourhood field. Crisp ink, flat vibrant colours, readable original background, playful motion, cooperation and no collision. No words, scoreboard, logo, crest, watermark, brand or protected team colourway.

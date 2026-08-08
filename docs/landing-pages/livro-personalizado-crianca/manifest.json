@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "status": "draft",
+  "locale": "pt-PT",
+  "slug": "livro-personalizado-crianca",
+  "title": "Livro Personalizado para Crianças",
+  "primaryIntent": "kids_adventures",
+  "mappedExistingIntent": "kids_adventures",
+  "targetCountry": "Portugal",
+  "primaryGoal": "first_story_completed",
+  "secondaryGoal": "account_creation",
+  "primaryPersona": "Adulto que quer criar um livro terminado para uma criança",
+  "secondaryPersonas": [
+    "Pais e encarregados de educação",
+    "Avós e familiares",
+    "Adultos à procura de uma prenda personalizada"
+  ],
+  "recipientTypes": ["child"],
+  "riskRating": "yellow",
+  "sensitiveNiche": true,
+  "requiresHumanApproval": true,
+  "requiresExternalExpertReview": false,
+  "createdAt": "2026-08-06",
+  "updatedAt": "2026-08-06"
+}

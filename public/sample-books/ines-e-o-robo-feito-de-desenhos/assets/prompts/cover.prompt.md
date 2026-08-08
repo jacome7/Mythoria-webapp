@@ -1,0 +1,3 @@
+# Cover art source — Inês e o Robô Feito de Desenhos
+
+Use case: illustration-story. Portrait cover art only, 1024x1536. Inês, a fictional 9-year-old Portuguese girl with straight dark bob hair, round red glasses, mustard jumper and teal trousers, sits at a desk while Risco, her original hand-drawn robot, steps out of a sketchbook. Risco has three red wheels, two turquoise paper wings, mismatched geometric graphite parts and a blank heart-shaped panel on the chest. Rich colored-pencil grain, layered turquoise, tomato red, mustard and graphite, visible hand-drawn imperfections, safe cosy room. Leave upper 30% light and uncluttered for deterministic title overlay. No letters, logo, watermark, protected robot, physical book or unsafe tool.

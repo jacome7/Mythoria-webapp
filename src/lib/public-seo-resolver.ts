@@ -8,6 +8,11 @@ export type DynamicSeoResolution =
   | { type: 'notFound' }
   | { type: 'unmatched' };
 
+const LEGACY_BLOG_SLUG_ALIASES = new Map([
+  ['lerne-das-mythoria-ki-team-kennen', 'meet-mythoria-ai-team'],
+  ['rencontrez-l-equipe-ia-de-mythoria', 'meet-mythoria-ai-team'],
+]);
+
 export async function resolveDynamicPublicSeoPath(pathname: string): Promise<DynamicSeoResolution> {
   const normalized = normalizePathname(pathname);
   const { locale, pathSuffix } = extractLocalizedPath(normalized);
@@ -15,12 +20,13 @@ export async function resolveDynamicPublicSeoPath(pathname: string): Promise<Dyn
   const blogMatch = pathSuffix.match(/^\/blog\/([^/]+)$/);
   if (blogMatch) {
     const requestedSlug = blogMatch[1]!;
-    const matches = await blogService.getPublishedMatchesByAnySlug(requestedSlug);
+    const lookupSlug = LEGACY_BLOG_SLUG_ALIASES.get(requestedSlug) ?? requestedSlug;
+    const matches = await blogService.getPublishedMatchesByAnySlug(lookupSlug);
     const slugBases = new Set(matches.map((match) => match.slugBase));
     if (slugBases.size !== 1) return { type: 'notFound' };
 
     const translations = await blogService.getPublishedTranslationsBySlugBase(matches[0]!.slugBase);
-    const directMatch = matches.find((match) => match.slug === requestedSlug);
+    const directMatch = matches.find((match) => match.slug === lookupSlug);
     const target =
       (locale && translations.find((translation) => translation.locale === locale)) ??
       directMatch ??

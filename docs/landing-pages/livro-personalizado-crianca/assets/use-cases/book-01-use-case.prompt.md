@@ -1,0 +1,3 @@
+# Feature — Mia e a Pastelaria da Lua
+
+Use case: product-mockup. Photorealistic real product photograph, 1536x1024. A premium matte children's book lies closed on a warm bedside table beside a small amber lamp, folded yellow blanket, wooden moon ornament and subtle flour-star motif. Safe calm bedtime setting, no visible people, natural paper and fabric texture, gentle shadows, 50mm editorial product photography. The front cover will be composited from the approved cover asset; keep it front-facing, flat and unobstructed. No readable text generated, logos, watermark, stock-photo gloss, extra book or digital device.

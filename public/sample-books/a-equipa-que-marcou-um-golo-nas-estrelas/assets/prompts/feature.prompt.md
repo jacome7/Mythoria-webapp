@@ -1,0 +1,3 @@
+# Feature background source — A Equipa que Marcou um Golo nas Estrelas
+
+Use case: product-mockup. Photorealistic top-down real product photograph, 1536x1024. Clean wooden changing-room bench with an exact unobstructed portrait book-shaped matte rectangle centered at x=488, y=112, width=560, height=800, viewed perfectly from above with no perspective. Around it: one unbranded football, a folded teal-and-orange scarf and a plain water bottle, with twilight pitch light softly entering. Neutral cream rectangle for deterministic cover compositing. Real paper, fabric and ball texture. No readable text, people, hands, brands, crest, watermark, competing book or object crossing the rectangle.

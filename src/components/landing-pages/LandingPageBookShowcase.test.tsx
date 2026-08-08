@@ -21,6 +21,8 @@ const book: LandingPageBook = {
   styleLabel: 'Aguarela',
   contextLabel: 'Primeiro encontro',
   audioSampleSrc: '/test/audio.mp3',
+  audioSampleTranscript: 'A chuva chegou primeiro e os dois ficaram debaixo do toldo.',
+  audioTranscriptLabel: 'Ler transcrição',
   sampleChapter: {
     title: 'Três Minutos de Chuva',
     imageSrc: '/test/chapter.jpeg',
@@ -64,13 +66,19 @@ describe('LandingPageBookShowcase analytics', () => {
       sample_book_slug: 'ines-e-diogo-um-amor-inesperado',
       locale: 'pt-PT',
       primary_intent: 'romance',
+      sample_style_label: 'Aguarela',
     };
+    expect(trackEventMock).toHaveBeenCalledWith('sample_book_open', safeContext);
     expect(trackEventMock).toHaveBeenCalledWith('sample_audio_start', safeContext);
     expect(trackEventMock).toHaveBeenCalledWith('sample_audio_complete', safeContext);
     expect(trackEventMock).toHaveBeenCalledWith('sample_chapter_open', safeContext);
     expect(
       trackEventMock.mock.calls.filter(([event]) => event === 'sample_audio_start'),
     ).toHaveLength(1);
+    expect(
+      trackEventMock.mock.calls.filter(([event]) => event === 'sample_book_open'),
+    ).toHaveLength(1);
+    expect(screen.getAllByText('Ler transcrição')).not.toHaveLength(0);
     expect(JSON.stringify(trackEventMock.mock.calls)).not.toContain(book.title);
   });
 });

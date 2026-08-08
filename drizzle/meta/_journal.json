@@ -239,6 +239,13 @@
       "when": 1785685460465,
       "tag": "0033_easy_diamondback",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1786195421095,
+      "tag": "0034_windy_vulcan",
+      "breakpoints": true
     }
   ]
 }

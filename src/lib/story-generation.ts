@@ -12,6 +12,7 @@ import {
 import { pricingService } from '@/db/services/pricing';
 import type { ClientAnalyticsContext } from '@/lib/analytics/ecommerce';
 import type { StoryIntent } from '@/constants/intents';
+import { analyticsReference } from '@/lib/analytics/reference';
 
 export interface StartStoryGenerationInput {
   authorId: string;
@@ -159,13 +160,17 @@ export async function startStoryGeneration(
         dedupeKey: `story:${runId}:requested`,
         eventName: 'story_generation_requested',
         authorId: input.authorId,
+        attributionId: input.attributionId,
         clientId: input.analyticsContext?.clientId,
         userId: input.clerkUserId,
         sessionId: input.analyticsContext?.sessionId,
         consent: analyticsConsent,
+        pageLocation: input.analyticsContext?.pageLocation,
+        pageReferrer: input.analyticsContext?.pageReferrer,
+        engagementTimeMsec: input.analyticsContext?.engagementTimeMsec,
         params: {
           story_id: input.storyId,
-          run_id: runId,
+          run_ref: analyticsReference(runId),
           credits_spent: pricing.total,
           ...(input.primaryIntent ? { primary_intent: input.primaryIntent } : {}),
         },

@@ -58,6 +58,44 @@ describe('resolveServerAnalyticsContext', () => {
     });
   });
 
+  it('keeps immutable first-touch intent when browser context reports a later intent', async () => {
+    mockAttributions([
+      {
+        attributionId: 'attribution-1',
+        clientId: '123.456',
+        sessionId: 1712345678,
+        firstPrimaryIntent: 'grandparents',
+        primaryIntent: 'romance',
+        consent: {
+          analyticsStorage: 'granted',
+          adUserData: 'denied',
+          adPersonalization: 'denied',
+        },
+      },
+    ]);
+
+    await expect(
+      resolveServerAnalyticsContext({
+        attributionId: 'attribution-1',
+        authorId: 'author-1',
+        storedConsentValue: grantedCookie,
+        browserContext: {
+          clientId: '123.456',
+          sessionId: 1712345678,
+          primaryIntent: 'romance',
+          consent: {
+            analyticsStorage: 'granted',
+            adUserData: 'denied',
+            adPersonalization: 'denied',
+          },
+        },
+      }),
+    ).resolves.toMatchObject({
+      primaryIntent: 'grandparents',
+      context: { primaryIntent: 'grandparents' },
+    });
+  });
+
   it('does not reuse stored attribution after analytics consent is denied', async () => {
     mockAttributions([{ attributionId: 'attribution-1', clientId: '123.456' }]);
 

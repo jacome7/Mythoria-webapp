@@ -76,6 +76,30 @@ describe('romance landing page route', () => {
     ]);
   });
 
+  it('keeps the personalized children landing canonical but non-indexable during QA', async () => {
+    const metadata = await generateMetadata({
+      params: Promise.resolve({
+        locale: 'pt-PT',
+        slug: 'livro-personalizado-crianca',
+      }),
+    });
+
+    expect(metadata.alternates?.canonical).toBe(
+      'https://mythoria.pt/pt-PT/lp/livro-personalizado-crianca',
+    );
+    expect(metadata.alternates?.languages).toEqual({});
+    expect(metadata.robots).toBe('noindex,nofollow');
+    expect(metadata.openGraph?.images).toEqual([
+      expect.objectContaining({
+        url: expect.stringContaining(
+          '/landing-pages/livro-personalizado-crianca/assets/hero/og-cover.jpeg',
+        ),
+        width: 1200,
+        height: 630,
+      }),
+    ]);
+  });
+
   it('publishes reciprocal localized hreflang without a German alternate', async () => {
     const metadata = await generateMetadata({
       params: Promise.resolve({ locale: 'en-US', slug: 'personalized-vacation-book' }),

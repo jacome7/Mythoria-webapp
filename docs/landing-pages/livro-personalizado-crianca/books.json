@@ -1,0 +1,164 @@
+{
+  "books": [
+    {
+      "id": "book-01",
+      "title": "Mia e a Pastelaria da Lua",
+      "slug": "mia-e-a-pastelaria-da-lua",
+      "niche": "história personalizada de adormecer",
+      "targetAudience": "children_3-6",
+      "readerAgeBand": "4–7 anos",
+      "buyerPersona": "Adulto que quer uma aventura de adormecer calorosa e reconhecível",
+      "recipientType": "child",
+      "storyIntent": "kids_bedtime",
+      "synopsis": "Mia e o seu cão descobrem uma pastelaria lunar onde os sonhos são amassados antes do amanhecer.",
+      "shortExcerpt": "Quando a Lua abriu a sua pequena pastelaria, Mia foi a primeira a sentir o cheiro a estrelas quentes.",
+      "emotionalJob": "Transformar objetos e rituais familiares numa leitura tranquila partilhada.",
+      "graphicalStyle": "claymation",
+      "novelStyle": "fairy_tale",
+      "fictionalUserContext": "Input inteiramente ficcional e sintético, sem dados de uma criança real.",
+      "coverImage": { "promptPath": "assets/covers/book-01-cover.prompt.md" },
+      "useCaseImage": { "promptPath": "assets/use-cases/book-01-use-case.prompt.md" },
+      "audioSample": {
+        "text": "Quando a Lua abriu a sua pequena pastelaria, Mia foi a primeira a sentir o cheiro a estrelas quentes. Ao lado dela, Pingo levantou as orelhas. Dentro da loja, pães redondos dormiam em tabuleiros de prata e uma massa muito pequena suspirava por baixo de uma manta amarela. Antes do amanhecer, Mia teria de descobrir para quem era aquele último sonho. Do outro lado da janela, uma escada de luz começou a aparecer, degrau a degrau, como bolachas iluminadas."
+      },
+      "publicStory": {
+        "status": "pending_story_generation",
+        "makePublic": true,
+        "featureInGetInspired": false
+      },
+      "safetyNotes": [
+        "Conta adulta e revisão humana.",
+        "Sem dados reais de crianças.",
+        "Contexto de fantasia seguro e não clínico."
+      ]
+    },
+    {
+      "id": "book-02",
+      "title": "Tomás e o Mapa das Portas Escondidas",
+      "slug": "tomas-e-o-mapa-das-portas-escondidas",
+      "niche": "aventura e mistério personalizados",
+      "targetAudience": "children_7-10",
+      "readerAgeBand": "6–9 anos",
+      "buyerPersona": "Adulto que procura uma aventura com pistas e cooperação",
+      "recipientType": "child",
+      "storyIntent": "kids_adventures",
+      "synopsis": "Um mapa encontrado num livro antigo abre portas de papel por uma cidade em camadas.",
+      "shortExcerpt": "O mapa parecia feito de papel normal, até a primeira porta se levantar da página.",
+      "emotionalJob": "Fazer a criança reconhecer lugares e frases familiares dentro de um mistério partilhado.",
+      "graphicalStyle": "papercut",
+      "novelStyle": "mystery",
+      "fictionalUserContext": "Input inteiramente ficcional e sintético, sem dados de uma criança real.",
+      "coverImage": { "promptPath": "assets/covers/book-02-cover.prompt.md" },
+      "useCaseImage": { "promptPath": "assets/use-cases/book-02-use-case.prompt.md" },
+      "audioSample": {
+        "text": "O mapa parecia feito de papel normal, até a primeira porta se levantar da página. Tomás tocou-lhe com a ponta do lápis e ouviu a cidade respirar do outro lado. No bolso levava uma bússola de brincar; na cabeça, a frase que a avó repetia sempre: uma pista só fica completa quando é partilhada. Então a porta dobrou-se outra vez e revelou um caminho azul. Sara aproximou-se da mesa, e os dois perceberam que aquela porta só se abriria com duas mãos."
+      },
+      "publicStory": {
+        "status": "pending_story_generation",
+        "makePublic": true,
+        "featureInGetInspired": false
+      },
+      "safetyNotes": [
+        "Conta adulta e revisão humana.",
+        "Sem moradas ou locais precisos.",
+        "Exploração urbana imaginativa e segura."
+      ]
+    },
+    {
+      "id": "book-03",
+      "title": "Lia e o Jardim das Palavras Perdidas",
+      "slug": "lia-e-o-jardim-das-palavras-perdidas",
+      "niche": "descoberta poética personalizada",
+      "targetAudience": "children_7-10",
+      "readerAgeBand": "5–8 anos",
+      "buyerPersona": "Adulto que quer guardar expressões e rituais de família",
+      "recipientType": "child",
+      "storyIntent": "learning_and_discovery",
+      "synopsis": "Lia entra num jardim onde as palavras de família crescem como flores e só podem ser colhidas depois de se conhecer a sua história.",
+      "shortExcerpt": "No jardim de Lia, as palavras não estavam escritas: cresciam devagar entre as folhas.",
+      "emotionalJob": "Guardar linguagem familiar num objeto de leitura partilhada.",
+      "graphicalStyle": "watercolor",
+      "novelStyle": "poetry",
+      "fictionalUserContext": "Input inteiramente ficcional e sintético, sem dados de uma criança real.",
+      "coverImage": { "promptPath": "assets/covers/book-03-cover.prompt.md" },
+      "useCaseImage": { "promptPath": "assets/use-cases/book-03-use-case.prompt.md" },
+      "audioSample": {
+        "text": "No jardim de Lia, as palavras não estavam escritas: cresciam devagar entre as folhas. Havia uma flor que dizia aconchego e outra que só sabia repetir já vou. Lia quis levar todas, mas a tia explicou que cada palavra precisava da sua história. Por isso sentaram-se junto ao alecrim e começaram pela expressão que fazia toda a família sorrir. Quando o vento passou, novas sílabas acordaram no canteiro, cada uma com uma cor, um perfume e uma memória diferente."
+      },
+      "publicStory": {
+        "status": "pending_story_generation",
+        "makePublic": true,
+        "featureInGetInspired": false
+      },
+      "safetyNotes": [
+        "Conta adulta e revisão humana.",
+        "Expressões e pessoas são inventadas.",
+        "Sem alegações de aprendizagem garantida."
+      ]
+    },
+    {
+      "id": "book-04",
+      "title": "A Equipa que Marcou um Golo nas Estrelas",
+      "slug": "a-equipa-que-marcou-um-golo-nas-estrelas",
+      "niche": "aventura desportiva e trabalho de equipa",
+      "targetAudience": "children_7-10",
+      "readerAgeBand": "8–11 anos",
+      "buyerPersona": "Adulto que quer transformar um desporto favorito numa aventura de equipa",
+      "recipientType": "child",
+      "storyIntent": "sports_teams",
+      "synopsis": "Um campo de bairro ilumina-se quando cada jogador contribui com uma capacidade diferente.",
+      "shortExcerpt": "A bola brilhou pela primeira vez quando o passe chegou a quem ninguém estava a ver.",
+      "emotionalJob": "Celebrar observação, passe e contribuição coletiva sem transformar um jogador em salvador perfeito.",
+      "graphicalStyle": "euro_comic_book",
+      "novelStyle": "sports_adventure",
+      "fictionalUserContext": "Input inteiramente ficcional e sintético, sem dados de uma criança real ou equipa existente.",
+      "coverImage": { "promptPath": "assets/covers/book-04-cover.prompt.md" },
+      "useCaseImage": { "promptPath": "assets/use-cases/book-04-use-case.prompt.md" },
+      "audioSample": {
+        "text": "A bola brilhou pela primeira vez quando o passe chegou a quem ninguém estava a ver. No Campo da Aurora, cada linha acendeu-se como uma constelação. Uma jogadora encontrou espaço, outra ouviu o aviso do guarda-redes e a mais nova fez o passe simples. Não havia uma estrela sozinha: o céu inteiro parecia desenhado pelos movimentos da equipa. A treinadora sorriu sem dar instruções; queria que descobrissem como ouvir o jogo antes de correr atrás da bola."
+      },
+      "publicStory": {
+        "status": "pending_story_generation",
+        "makePublic": true,
+        "featureInGetInspired": false
+      },
+      "safetyNotes": [
+        "Conta adulta e revisão humana.",
+        "Equipa, equipamento e campo originais, sem marcas.",
+        "Ação desportiva segura e não violenta."
+      ]
+    },
+    {
+      "id": "book-05",
+      "title": "Inês e o Robô Feito de Desenhos",
+      "slug": "ines-e-o-robo-feito-de-desenhos",
+      "niche": "desenho transformado em aventura",
+      "targetAudience": "children_7-10",
+      "readerAgeBand": "7–10 anos",
+      "buyerPersona": "Adulto que quer transformar um desenho numa história de invenção",
+      "recipientType": "child",
+      "storyIntent": "kids_adventures",
+      "synopsis": "O robô desenhado por Inês sai da página e pede ajuda para descobrir o seu propósito.",
+      "shortExcerpt": "O robô de Inês tinha três rodas, duas asas de papel e uma pergunta desenhada no peito.",
+      "emotionalJob": "Mostrar que uma ideia imperfeita pode ganhar coerência e significado numa história acabada.",
+      "graphicalStyle": "colored_pencil",
+      "novelStyle": "science_fiction",
+      "fictionalUserContext": "Input e desenho inteiramente ficcionais e sintéticos, sem media de uma criança real.",
+      "coverImage": { "promptPath": "assets/covers/book-05-cover.prompt.md" },
+      "useCaseImage": { "promptPath": "assets/use-cases/book-05-use-case.prompt.md" },
+      "audioSample": {
+        "text": "O robô de Inês tinha três rodas, duas asas de papel e uma pergunta desenhada no peito. À meia-noite, saiu da folha com um ruído de lápis a riscar. Conseguia rolar, voar baixinho e encontrar parafusos perdidos, mas não sabia para que tinha sido inventado. Inês pegou no caderno e decidiu que aquela resposta não viria de um manual. Risco inclinou a cabeça de papel, abriu as asas e apontou para uma estrela desenhada no canto da página."
+      },
+      "publicStory": {
+        "status": "pending_story_generation",
+        "makePublic": true,
+        "featureInGetInspired": false
+      },
+      "safetyNotes": [
+        "Conta adulta e revisão humana.",
+        "Desenho original e sintético, sem personagens protegidas.",
+        "Invenção segura, sem instruções perigosas."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+# Cover — A Equipa que Marcou um Golo nas Estrelas
+
+Use case: illustration-story. Portrait children's cover art only, 1024x1536. Five fictional children aged 8–11, varied genders and appearances, play football together on an original neighbourhood pitch at twilight; a pass connects luminous pitch lines into a constellation. European comic album aesthetic, crisp original ink outlines, flat vibrant navy, orange, teal and yellow, readable background, dynamic non-violent teamwork. Kits have no brand, crest or protected colourway. Reserve a clean navy upper panel and render no letters; exact title is added deterministically. No physical book, logo, watermark or star-player worship.

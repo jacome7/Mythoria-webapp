@@ -12,7 +12,21 @@ export type SearchIndexableStory = {
   hasMeaningfulContent: boolean;
 };
 
-export function isSearchIndexableStory(story: SearchIndexableStory): boolean {
+export type SearchIndexableStoryResult = SearchIndexableStory & {
+  isPublic: true;
+  isFeatured: true;
+  status: 'published';
+  slug: string;
+  title: string;
+  synopsis: string;
+  coverUri: string;
+  storyLanguage: string;
+  hasMeaningfulContent: true;
+};
+
+export function isSearchIndexableStory(
+  story: SearchIndexableStory,
+): story is SearchIndexableStoryResult {
   return Boolean(
     story.isPublic &&
     story.isFeatured &&

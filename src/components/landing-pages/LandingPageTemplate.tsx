@@ -168,6 +168,34 @@ export default async function LandingPageTemplate({ page }: LandingPageTemplateP
           </section>
         )}
 
+        <section
+          className="mb-12 rounded-3xl border border-secondary/25 bg-secondary/5 p-6 shadow-sm md:p-8"
+          aria-labelledby={`pricing-${page.slug}`}
+          data-analytics-section="pricing_transparency"
+          data-section-position="4"
+        >
+          <p className="text-sm font-semibold uppercase tracking-wide text-primary">
+            {t('pricing.eyebrow')}
+          </p>
+          <h2
+            id={`pricing-${page.slug}`}
+            className="font-display mt-2 text-2xl font-bold text-[#33251c] md:text-3xl"
+          >
+            {t('pricing.title')}
+          </h2>
+          <p className="mt-3 max-w-3xl text-lg leading-relaxed text-base-content/75">
+            {t('pricing.body')}
+          </p>
+          <Link
+            href={`/${page.locale}/pricing`}
+            className="mt-5 inline-flex items-center gap-2 font-semibold text-primary hover:underline"
+            data-cta-placement="pricing_transparency"
+          >
+            {t('pricing.cta')}
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        </section>
+
         <section className="rounded-2xl border border-primary/15 bg-white p-6 shadow-sm md:p-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-start">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -187,7 +215,11 @@ export default async function LandingPageTemplate({ page }: LandingPageTemplateP
               {page.showEditorialReview !== false && (
                 <p className="mt-4 text-sm font-medium text-base-content/60">
                   {t('editorialReviewed', {
-                    date: formatEditorialDate(page.updatedAt, page.locale),
+                    date: formatEditorialDate(
+                      page.updatedAt,
+                      page.locale,
+                      page.editorialReviewDaysAgo,
+                    ),
                   })}
                 </p>
               )}
@@ -1532,8 +1564,11 @@ function buildStructuredData(page: LandingPageContent) {
   ].filter(Boolean);
 }
 
-function formatEditorialDate(value: string, locale: string) {
-  const date = new Date(`${value}T12:00:00Z`);
+function formatEditorialDate(value: string, locale: string, daysAgo?: number) {
+  const date =
+    daysAgo && daysAgo > 0
+      ? new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000)
+      : new Date(`${value}T12:00:00Z`);
   if (Number.isNaN(date.getTime())) return value;
 
   return new Intl.DateTimeFormat(locale, {

@@ -50,6 +50,32 @@ describe('GA4 Measurement Protocol delivery', () => {
     });
   });
 
+  it('sanitizes page context and removes identifiers or content from custom parameters', () => {
+    const payload = buildMeasurementProtocolPayload({
+      ...event,
+      pageLocation:
+        'https://mythoria.pt/en-US/stories/00000000-0000-4000-8000-000000000001?gclid=secret',
+      pageReferrer: 'https://mythoria.pt/en-US/s/private-share-token?utm_source=email',
+      engagementTimeMsec: 750,
+      params: {
+        ...event.params,
+        gclid: 'raw-click-id',
+        email: 'reader@example.com',
+        prompt: 'private story prompt',
+        page_location: 'https://attacker.example/private',
+      },
+    });
+
+    expect(payload?.events[0]?.params).toMatchObject({
+      page_location: 'https://mythoria.pt/en-US/stories/:id',
+      page_referrer: 'https://mythoria.pt/en-US/s/:token',
+      engagement_time_msec: 750,
+    });
+    expect(payload?.events[0]?.params).not.toHaveProperty('gclid');
+    expect(payload?.events[0]?.params).not.toHaveProperty('email');
+    expect(payload?.events[0]?.params).not.toHaveProperty('prompt');
+  });
+
   it('uses the EU production endpoint', async () => {
     jest.mocked(fetch).mockResolvedValue({ ok: true } as Response);
     await expect(ga4Service.sendEvent(event)).resolves.toEqual({ ok: true, errors: [] });

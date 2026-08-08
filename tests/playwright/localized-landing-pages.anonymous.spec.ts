@@ -113,6 +113,11 @@ for (const landing of localizedLandings) {
       await expect(page.locator('#exemplos article')).toHaveCount(landing.samples);
       await expect(page.locator('#exemplos audio')).toHaveCount(landing.samples);
       await expect(page.locator('a[data-cta-placement="hero_secondary"]')).toBeVisible();
+      await expect(
+        page.locator(
+          `a[data-cta-placement="pricing_transparency"][href="/${landing.locale}/pricing"]`,
+        ),
+      ).toBeVisible();
 
       const primaryCta = page
         .locator(`a[href^="/${landing.locale}/tell-your-story/step-1?landingSlug="]`)

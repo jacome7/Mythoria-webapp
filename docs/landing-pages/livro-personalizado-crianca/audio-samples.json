@@ -1,0 +1,43 @@
+{
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "language": "pt-PT",
+  "audioSamples": [
+    {
+      "id": "book-01",
+      "slug": "mia-e-a-pastelaria-da-lua",
+      "recommendedDurationSeconds": 42,
+      "voiceDirection": "Voz adulta pt-PT quente, lenta e tranquila; ritmo de adormecer.",
+      "text": "Quando a Lua abriu a sua pequena pastelaria, Mia foi a primeira a sentir o cheiro a estrelas quentes. Ao lado dela, Pingo levantou as orelhas. Dentro da loja, pães redondos dormiam em tabuleiros de prata e uma massa muito pequena suspirava por baixo de uma manta amarela. Antes do amanhecer, Mia teria de descobrir para quem era aquele último sonho. Do outro lado da janela, uma escada de luz começou a aparecer, degrau a degrau, como bolachas iluminadas."
+    },
+    {
+      "id": "book-02",
+      "slug": "tomas-e-o-mapa-das-portas-escondidas",
+      "recommendedDurationSeconds": 38,
+      "voiceDirection": "Voz adulta pt-PT curiosa e enérgica, com pausas claras nas pistas.",
+      "text": "O mapa parecia feito de papel normal, até a primeira porta se levantar da página. Tomás tocou-lhe com a ponta do lápis e ouviu a cidade respirar do outro lado. No bolso levava uma bússola de brincar; na cabeça, a frase que a avó repetia sempre: uma pista só fica completa quando é partilhada. Então a porta dobrou-se outra vez e revelou um caminho azul. Sara aproximou-se da mesa, e os dois perceberam que aquela porta só se abriria com duas mãos."
+    },
+    {
+      "id": "book-03",
+      "slug": "lia-e-o-jardim-das-palavras-perdidas",
+      "recommendedDurationSeconds": 41,
+      "voiceDirection": "Voz adulta pt-PT lírica, íntima e clara, sem sentimentalismo exagerado.",
+      "text": "No jardim de Lia, as palavras não estavam escritas: cresciam devagar entre as folhas. Havia uma flor que dizia aconchego e outra que só sabia repetir já vou. Lia quis levar todas, mas a tia explicou que cada palavra precisava da sua história. Por isso sentaram-se junto ao alecrim e começaram pela expressão que fazia toda a família sorrir. Quando o vento passou, novas sílabas acordaram no canteiro, cada uma com uma cor, um perfume e uma memória diferente."
+    },
+    {
+      "id": "book-04",
+      "slug": "a-equipa-que-marcou-um-golo-nas-estrelas",
+      "recommendedDurationSeconds": 36,
+      "voiceDirection": "Voz adulta pt-PT viva e divertida, ritmo de relato sem gritos ou multidão invasiva.",
+      "text": "A bola brilhou pela primeira vez quando o passe chegou a quem ninguém estava a ver. No Campo da Aurora, cada linha acendeu-se como uma constelação. Uma jogadora encontrou espaço, outra ouviu o aviso do guarda-redes e a mais nova fez o passe simples. Não havia uma estrela sozinha: o céu inteiro parecia desenhado pelos movimentos da equipa. A treinadora sorriu sem dar instruções; queria que descobrissem como ouvir o jogo antes de correr atrás da bola."
+    },
+    {
+      "id": "book-05",
+      "slug": "ines-e-o-robo-feito-de-desenhos",
+      "recommendedDurationSeconds": 37,
+      "voiceDirection": "Voz adulta pt-PT calorosa e inventiva, andamento moderado e dicção nítida.",
+      "text": "O robô de Inês tinha três rodas, duas asas de papel e uma pergunta desenhada no peito. À meia-noite, saiu da folha com um ruído de lápis a riscar. Conseguia rolar, voar baixinho e encontrar parafusos perdidos, mas não sabia para que tinha sido inventado. Inês pegou no caderno e decidiu que aquela resposta não viria de um manual. Risco inclinou a cabeça de papel, abriu as asas e apontou para uma estrela desenhada no canto da página."
+    }
+  ]
+}

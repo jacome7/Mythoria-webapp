@@ -15,7 +15,7 @@ export const romanceGiftsLandingPage: LandingPageContent = {
     'Transforme encontros, mensagens, viagens e memórias num livro personalizado para oferecer a quem viveu esta história consigo.',
   primaryIntent: 'romance',
   riskRating: 'green',
-  updatedAt: '2026-07-27',
+  updatedAt: '2026-08-04',
   indexable: true,
   showFormatsNearHero: false,
   breadcrumbLabel: 'Livro personalizado para casais',

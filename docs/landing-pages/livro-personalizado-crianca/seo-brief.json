@@ -1,0 +1,36 @@
+{
+  "locale": "pt-PT",
+  "country": "Portugal",
+  "slug": "livro-personalizado-crianca",
+  "canonicalPath": "/pt-PT/lp/livro-personalizado-crianca",
+  "indexable": false,
+  "metaTitle": "Livro Personalizado para Crianças | Mythoria",
+  "metaDescription": "Transforme o nome, os interesses, as memórias ou um desenho da criança numa história ilustrada para ler, ouvir, imprimir ou oferecer.",
+  "primaryKeywords": [
+    "livro personalizado para criança",
+    "livro infantil personalizado",
+    "livros personalizados para crianças"
+  ],
+  "secondaryKeywords": [
+    "história infantil personalizada",
+    "criar livro infantil personalizado",
+    "livro infantil personalizado com foto",
+    "história personalizada para criança",
+    "livro com o nome da criança",
+    "livro onde a criança é a personagem",
+    "transformar desenho da criança em história",
+    "presente personalizado para criança"
+  ],
+  "avoidOwning": [
+    "PEA e PHDA",
+    "histórias de apoio",
+    "workshops infantis",
+    "avós e netos",
+    "viagens",
+    "ocasiões com landing própria"
+  ],
+  "structuredData": ["BreadcrumbList", "WebPage", "Service", "HowTo", "FAQPage"],
+  "forbiddenStructuredData": ["Review", "AggregateRating", "Product"],
+  "ogImage": "/landing-pages/livro-personalizado-crianca/assets/hero/og-cover.jpeg",
+  "launchGate": "Só alterar indexable para true após aprovação explícita e QA de produção."
+}

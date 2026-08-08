@@ -1,0 +1,27 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "No jardim de Lia, as palavras não estavam escritas: cresciam devagar entre as folhas. Havia uma flor que dizia aconchego e outra que só sabia repetir já vou. Lia quis levar todas, mas a tia explicou que cada palavra precisava da sua história. Por isso sentaram-se junto ao alecrim e começaram pela expressão que fazia toda a família sorrir. Quando o vento passou, novas sílabas acordaram no canteiro, cada uma com uma cor, um perfume e uma memória diferente.",
+  "voiceDirection": "Narradora adulta pt-PT lírica, íntima e clara; pausas leves, sem sentimentalismo exagerado.",
+  "pronunciationNotes": [
+    "Lia: Li-a",
+    "alecrim: pronúncia pt-PT natural"
+  ],
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 41,
+  "humanListeningReview": "pending_pt_pt_reviewer",
+  "generatedAt": "2026-08-06T15:33:14.068Z",
+  "durationSeconds": 35.76,
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.5808,
+    "rmsRatio": 0.0611,
+    "clippingRatio": 0,
+    "loudnessTargetLufs": -18
+  }
+}

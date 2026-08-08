@@ -1,4 +1,4 @@
-import { and, desc, eq, gt, isNull, or } from 'drizzle-orm';
+import { and, desc, eq, gt, isNull, lte, or } from 'drizzle-orm';
 import { db } from '@/db';
 import { analyticsAttributions } from '@/db/schema';
 import { getValidatedIntent } from '@/lib/campaign-context';
@@ -7,12 +7,14 @@ import {
   type ClientAnalyticsContext,
 } from '@/lib/analytics/ecommerce';
 import type { AnalyticsConsent } from '@/db/schema';
+import { ANALYTICS_BASE_URL, sanitizeAnalyticsPageUrl } from './page-context';
 
 interface ResolveServerAnalyticsContextInput {
   browserContext?: unknown;
   attributionId?: string;
   authorId: string;
   storedConsentValue?: string;
+  occurredAt?: Date;
 }
 
 export interface ResolvedServerAnalyticsContext {
@@ -25,11 +27,20 @@ export interface ResolvedServerAnalyticsContext {
 type AttributionRow = typeof analyticsAttributions.$inferSelect;
 
 function contextFromAttribution(row: AttributionRow): ClientAnalyticsContext {
-  const primaryIntent = getValidatedIntent(row.primaryIntent);
+  const primaryIntent = getValidatedIntent(row.firstPrimaryIntent || row.primaryIntent);
+  const pageLocation = row.latestPath
+    ? sanitizeAnalyticsPageUrl(`${ANALYTICS_BASE_URL}${row.latestPath}`)
+    : undefined;
+  const pageReferrer = row.latestReferrerPath
+    ? sanitizeAnalyticsPageUrl(`${ANALYTICS_BASE_URL}${row.latestReferrerPath}`)
+    : undefined;
   return {
     clientId: row.clientId,
     ...(row.sessionId ? { sessionId: row.sessionId } : {}),
     ...(primaryIntent ? { primaryIntent } : {}),
+    ...(pageLocation ? { pageLocation } : {}),
+    ...(pageReferrer ? { pageReferrer } : {}),
+    engagementTimeMsec: 100,
     consent: row.consent,
   };
 }
@@ -60,6 +71,7 @@ export async function resolveServerAnalyticsContext({
   attributionId,
   authorId,
   storedConsentValue,
+  occurredAt = new Date(),
 }: ResolveServerAnalyticsContextInput): Promise<ResolvedServerAnalyticsContext> {
   const incoming = sanitizeClientAnalyticsContext(browserContext);
   const consent = consentFromStoredValue(storedConsentValue);
@@ -73,7 +85,12 @@ export async function resolveServerAnalyticsContext({
       .where(
         and(
           eq(analyticsAttributions.attributionId, attributionId),
-          gt(analyticsAttributions.expiresAt, new Date()),
+          lte(analyticsAttributions.createdAt, occurredAt),
+          gt(analyticsAttributions.expiresAt, occurredAt),
+          or(
+            isNull(analyticsAttributions.latestAttributionAt),
+            lte(analyticsAttributions.latestAttributionAt, occurredAt),
+          ),
           or(isNull(analyticsAttributions.authorId), eq(analyticsAttributions.authorId, authorId)),
         ),
       )
@@ -87,7 +104,13 @@ export async function resolveServerAnalyticsContext({
       .where(
         and(
           eq(analyticsAttributions.authorId, authorId),
-          gt(analyticsAttributions.expiresAt, new Date()),
+          lte(analyticsAttributions.createdAt, occurredAt),
+          gt(analyticsAttributions.expiresAt, occurredAt),
+          or(
+            isNull(analyticsAttributions.latestAttributionAt),
+            lte(analyticsAttributions.latestAttributionAt, occurredAt),
+          ),
+          ...(incoming?.sessionId ? [eq(analyticsAttributions.sessionId, incoming.sessionId)] : []),
         ),
       )
       .orderBy(desc(analyticsAttributions.createdAt))
@@ -95,9 +118,28 @@ export async function resolveServerAnalyticsContext({
   }
 
   const storedContext = attribution ? contextFromAttribution(attribution) : undefined;
-  const candidateContext = incoming || storedContext;
+  if (
+    attribution &&
+    incoming &&
+    (incoming.clientId !== attribution.clientId ||
+      (incoming.sessionId && attribution.sessionId && incoming.sessionId !== attribution.sessionId))
+  ) {
+    console.warn('[Analytics] Incoming GA identity did not match explicit attribution', {
+      attributionId: attribution.attributionId,
+    });
+  }
+  const candidateContext = storedContext
+    ? {
+        ...storedContext,
+        ...(incoming?.pageLocation ? { pageLocation: incoming.pageLocation } : {}),
+        ...(incoming?.pageReferrer ? { pageReferrer: incoming.pageReferrer } : {}),
+        ...(incoming?.engagementTimeMsec
+          ? { engagementTimeMsec: incoming.engagementTimeMsec }
+          : {}),
+      }
+    : incoming;
   const context = candidateContext ? { ...candidateContext, consent } : undefined;
-  const primaryIntent = incoming?.primaryIntent || storedContext?.primaryIntent;
+  const primaryIntent = storedContext?.primaryIntent || incoming?.primaryIntent;
   return {
     consent,
     ...(context ? { context: { ...context, ...(primaryIntent ? { primaryIntent } : {}) } } : {}),

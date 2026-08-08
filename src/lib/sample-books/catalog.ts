@@ -35,6 +35,7 @@ interface PackBook {
   graphicalStyle?: string;
   novelStyle?: string;
   fictionalUserContext?: string;
+  publicProvenance?: 'mythoria_created_example';
   coverImage?: AssetMetadata;
   featureImage?: AssetMetadata;
   sampleChapterImage?: AssetMetadata;
@@ -51,6 +52,7 @@ interface PackManifest {
 }
 
 const PACK_INTENTS: Record<string, StoryIntent> = {
+  'a-equipa-que-marcou-um-golo-nas-estrelas': 'sports_teams',
   'a-leonor-e-o-segredo-do-oceanario': 'amusement_parks',
   'a-road-trip-dos-planos-impossiveis': 'family_travels',
   'a-viagem-que-os-avos-tambem-viveram': 'grandparents',
@@ -65,6 +67,9 @@ const PACK_INTENTS: Record<string, StoryIntent> = {
   'as-cartas-da-avo-rosa': 'grandparents',
   'as-ferias-na-casa-amarela': 'grandparents',
   'duas-chavenas-uma-vida': 'romance',
+  'ines-e-o-robo-feito-de-desenhos': 'kids_adventures',
+  'lia-e-o-jardim-das-palavras-perdidas': 'learning_and_discovery',
+  'mia-e-a-pastelaria-da-lua': 'kids_bedtime',
   'ines-e-diogo-um-amor-inesperado': 'romance',
   'leonor-e-matilde-dois-paises-uma-casa': 'romance',
   'o-clube-dos-mapas-impossiveis': 'school_projects',
@@ -79,6 +84,7 @@ const PACK_INTENTS: Record<string, StoryIntent> = {
   'o-tomas-guarda-as-historias-de-domingo-da-avo-teresa': 'remembrance',
   'o-verao-em-que-o-tomas-encontrou-uma-ilha': 'family_travels',
   'rui-e-tomas-o-ultimo-capitulo-antes-do-sim': 'romance',
+  'tomas-e-o-mapa-das-portas-escondidas': 'kids_adventures',
 };
 
 const publicDirectory = path.join(process.cwd(), 'public');
@@ -170,6 +176,7 @@ async function packToSampleBook(folderName: string): Promise<SampleBook> {
     recipientType: book.recipientType,
     storyIntent: book.storyIntent,
     fictionalUserContext: book.fictionalUserContext,
+    publicProvenance: book.publicProvenance,
     safetyNotes: book.safetyNotes,
     placement: manifest.placement,
     status: manifest.status,

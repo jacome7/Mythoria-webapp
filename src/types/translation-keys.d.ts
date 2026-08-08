@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE. Run: npm run i18n:keys
-// Total keys: 2612
+// Total keys: 2616
 export type TranslationKey =
   | 'AIEditModal.buttons.applyChanges'
   | 'AIEditModal.buttons.cancel'
@@ -1075,6 +1075,10 @@ export type TranslationKey =
   | 'LandingPages.floating.examplesAria'
   | 'LandingPages.floating.top'
   | 'LandingPages.floating.topAria'
+  | 'LandingPages.pricing.body'
+  | 'LandingPages.pricing.cta'
+  | 'LandingPages.pricing.eyebrow'
+  | 'LandingPages.pricing.title'
   | 'LandingPages.related.explore'
   | 'LandingPages.related.eyebrow'
   | 'LandingPages.related.guide'

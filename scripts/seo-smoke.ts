@@ -73,6 +73,16 @@ function extractCanonical(html: string): string | null {
   return tag?.match(/\bhref=["']([^"']+)["']/i)?.[1] ?? null;
 }
 
+export function extractHreflangLinks(html: string): Array<{ locale: string; href: string }> {
+  const tags = html.match(/<link\b[^>]*>/gi) ?? [];
+  return tags.flatMap((tag) => {
+    if (!/\brel=["']alternate["']/i.test(tag)) return [];
+    const locale = tag.match(/\bhreflang=["']([^"']+)["']/i)?.[1];
+    const href = tag.match(/\bhref=["']([^"']+)["']/i)?.[1];
+    return locale && href ? [{ locale: locale.toLowerCase(), href }] : [];
+  });
+}
+
 function extractRobots(html: string): string | null {
   const tags = html.match(/<meta\b[^>]*>/gi) ?? [];
   const tag = tags.find((candidate) => /\bname=["']robots["']/i.test(candidate));
@@ -227,6 +237,17 @@ async function main() {
     '/sample-books/a-primeira-manha-corajosa-da-sofia?ref=seo-smoke',
     '/pt-PT/sample-books/a-primeira-manha-corajosa-da-sofia?ref=seo-smoke',
   );
+  await assertRedirect('/pt-PT/dashboard', '/pt-PT/my-stories');
+  await assertRedirect(
+    '/en-US/blog/rencontrez-l-equipe-ia-de-mythoria',
+    '/en-US/blog/meet-mythoria-ai-team',
+  );
+  const malformedStory = await fetchNoRedirect(absolute('/undefined/p/undefined'));
+  assert.equal(
+    malformedStory.status,
+    404,
+    'malformed undefined story URL must return 404 directly',
+  );
 
   for (const campaignPath of [
     '/pt-PT?intent=romance&utm_source=seo-smoke&gclid=click-1',
@@ -268,7 +289,7 @@ async function main() {
   const hubEntry = entryByLoc.get('https://mythoria.pt/pt-PT/lp');
   assert.equal(
     hubEntry?.lastmod,
-    '2026-07-30T00:00:00.000Z',
+    '2026-08-04T00:00:00.000Z',
     '/pt-PT/lp has an unstable or incorrect lastmod',
   );
 
@@ -412,6 +433,11 @@ async function main() {
       relatedLandingLinks.size >= 2,
       `${pathname} has fewer than two related landing page links`,
     );
+    assert(
+      extractHrefs(html).includes('/pt-PT/pricing'),
+      `${pathname} does not link to transparent pricing`,
+    );
+    assert(/<audio\b/i.test(html), `${pathname} does not expose an audio sample`);
   }
 
   await inBatches(locs, 1, async (loc) => {
@@ -422,6 +448,18 @@ async function main() {
     assert.equal(canonical, loc, `${loc} has an incorrect or missing canonical`);
     const robots = extractRobots(html)?.toLowerCase();
     assert(robots?.includes('index') && !robots.includes('noindex'), `${loc} is not indexable`);
+    const htmlAlternates = new Map(
+      extractHreflangLinks(html).map((alternate) => [alternate.locale, alternate.href]),
+    );
+    const sitemapEntry = entryByLoc.get(loc);
+    assert(sitemapEntry, `${loc} is missing its sitemap entry`);
+    for (const alternate of sitemapEntry.alternates) {
+      assert.equal(
+        htmlAlternates.get(alternate.locale.toLowerCase()),
+        alternate.href,
+        `${loc} is missing HTML hreflang ${alternate.locale} -> ${alternate.href}`,
+      );
+    }
   });
 
   for (const path of [

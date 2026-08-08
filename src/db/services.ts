@@ -73,6 +73,7 @@ export const authorService = {
         .values({
           dedupeKey: `sign_up:${authorData.clerkUserId}`,
           eventName: 'sign_up',
+          authorId: author.authorId,
           userId: authorData.clerkUserId,
           params: { method: authorData.signUpMethod || 'unknown' },
           availableAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
@@ -165,6 +166,7 @@ export const authorService = {
             .values({
               dedupeKey: `sign_up:${clerkUser.id}`,
               eventName: 'sign_up',
+              authorId: created.authorId,
               userId: clerkUser.id,
               params: { method: 'unknown' },
               occurredAt: currentTime,

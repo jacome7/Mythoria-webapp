@@ -22,7 +22,8 @@ export async function generateMetadata({ params }: SampleBookRouteProps): Promis
   const canonicalLocale = seo?.locale ?? book.locale;
   const canonical = buildLocalizedUrl(canonicalLocale, `/sample-books/${book.slug}`);
   const indexable = Boolean(seo && locale === canonicalLocale);
-  const isFictionalBook = Boolean(book.fictionalUserContext);
+  const isMythoriaCreatedExample = book.publicProvenance === 'mythoria_created_example';
+  const isFictionalBook = Boolean(book.fictionalUserContext) && !isMythoriaCreatedExample;
 
   return {
     title: `${book.title}${isFictionalBook ? ' — exemplo ficcional' : ''} | Mythoria`,
@@ -56,7 +57,8 @@ export default async function SampleBookPage({ params, searchParams }: SampleBoo
 
   const chapter = await getSampleBookChapter(book);
   const canonical = buildLocalizedUrl(canonicalLocale, `/sample-books/${book.slug}`);
-  const isFictionalBook = Boolean(book.fictionalUserContext);
+  const isMythoriaCreatedExample = book.publicProvenance === 'mythoria_created_example';
+  const isFictionalBook = Boolean(book.fictionalUserContext) && !isMythoriaCreatedExample;
   const structuredData = [
     {
       '@context': 'https://schema.org',
@@ -69,9 +71,11 @@ export default async function SampleBookPage({ params, searchParams }: SampleBoo
       image: [book.coverSrc, book.featureSrc, book.chapterImageSrc]
         .filter((src): src is string => Boolean(src))
         .map(buildAbsoluteUrl),
-      isBasedOn: isFictionalBook
-        ? 'Fictional editorial demonstration created by Mythoria'
-        : 'Printed personalized book created with Mythoria',
+      isBasedOn: isMythoriaCreatedExample
+        ? 'Demonstration book created by Mythoria with synthetic source inputs'
+        : isFictionalBook
+          ? 'Fictional editorial demonstration created by Mythoria'
+          : 'Printed personalized book created with Mythoria',
       publisher: { '@type': 'Organization', name: 'Mythoria' },
     },
     {

@@ -1,0 +1,75 @@
+{
+  "model": "gpt-image-2",
+  "imagePrompts": [
+    {
+      "id": "book-01-cover",
+      "bookId": "book-01",
+      "kind": "cover",
+      "promptPath": "assets/covers/book-01-cover.prompt.md",
+      "targetSize": "1024x1536"
+    },
+    {
+      "id": "book-01-feature",
+      "bookId": "book-01",
+      "kind": "feature",
+      "promptPath": "assets/use-cases/book-01-use-case.prompt.md",
+      "targetSize": "1536x1024"
+    },
+    {
+      "id": "book-02-cover",
+      "bookId": "book-02",
+      "kind": "cover",
+      "promptPath": "assets/covers/book-02-cover.prompt.md",
+      "targetSize": "1024x1536"
+    },
+    {
+      "id": "book-02-feature",
+      "bookId": "book-02",
+      "kind": "feature",
+      "promptPath": "assets/use-cases/book-02-use-case.prompt.md",
+      "targetSize": "1536x1024"
+    },
+    {
+      "id": "book-03-cover",
+      "bookId": "book-03",
+      "kind": "cover",
+      "promptPath": "assets/covers/book-03-cover.prompt.md",
+      "targetSize": "1024x1536"
+    },
+    {
+      "id": "book-03-feature",
+      "bookId": "book-03",
+      "kind": "feature",
+      "promptPath": "assets/use-cases/book-03-use-case.prompt.md",
+      "targetSize": "1536x1024"
+    },
+    {
+      "id": "book-04-cover",
+      "bookId": "book-04",
+      "kind": "cover",
+      "promptPath": "assets/covers/book-04-cover.prompt.md",
+      "targetSize": "1024x1536"
+    },
+    {
+      "id": "book-04-feature",
+      "bookId": "book-04",
+      "kind": "feature",
+      "promptPath": "assets/use-cases/book-04-use-case.prompt.md",
+      "targetSize": "1536x1024"
+    },
+    {
+      "id": "book-05-cover",
+      "bookId": "book-05",
+      "kind": "cover",
+      "promptPath": "assets/covers/book-05-cover.prompt.md",
+      "targetSize": "1024x1536"
+    },
+    {
+      "id": "book-05-feature",
+      "bookId": "book-05",
+      "kind": "feature",
+      "promptPath": "assets/use-cases/book-05-use-case.prompt.md",
+      "targetSize": "1536x1024"
+    }
+  ]
+}

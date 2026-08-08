@@ -1,8 +1,14 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { trackEvent } from './analytics';
+import {
+  CONSENT_UPDATED_EVENT,
+  getStoredConsent,
+  type ConsentStatus,
+  type ConsentUpdatedDetail,
+} from './consent';
 
 const SAFE_QUERY_KEYS = new Set([
   'utm_source',
@@ -31,24 +37,37 @@ export function sanitizeAnalyticsPath(pathname: string, params: URLSearchParams)
 export function useGoogleAnalytics() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const lastTrackedPathRef = useRef<string | null>(null);
+  const sentPageViewsRef = useRef(new Set<string>());
+  const [analyticsConsent, setAnalyticsConsent] = useState<ConsentStatus>(() =>
+    getStoredConsent()?.state.analytics_storage === 'granted' ? 'granted' : 'denied',
+  );
+
+  useEffect(() => {
+    const handleConsentUpdated = (event: Event) => {
+      const detail = (event as CustomEvent<ConsentUpdatedDetail>).detail;
+      setAnalyticsConsent(detail.state.analytics_storage);
+    };
+    window.addEventListener(CONSENT_UPDATED_EVENT, handleConsentUpdated);
+    return () => window.removeEventListener(CONSENT_UPDATED_EVENT, handleConsentUpdated);
+  }, []);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const path = pathname || window.location.pathname;
       // Query cleanup and attribution redirects can update search params without a real page
       // navigation. GA4 should receive exactly one page_view for that canonical path.
-      if (lastTrackedPathRef.current === path) return;
+      const pageViewKey = `${path}:${analyticsConsent}`;
+      if (sentPageViewsRef.current.has(pageViewKey)) return;
 
       const url = sanitizeAnalyticsPath(path, new URLSearchParams(searchParams?.toString() || ''));
       const pageLocation = window.location.origin + url;
 
-      lastTrackedPathRef.current = path;
+      sentPageViewsRef.current.add(pageViewKey);
       trackEvent('page_view', {
         page_location: pageLocation,
         page_path: path,
         page_title: document.title,
       });
     }
-  }, [pathname, searchParams]);
+  }, [analyticsConsent, pathname, searchParams]);
 }

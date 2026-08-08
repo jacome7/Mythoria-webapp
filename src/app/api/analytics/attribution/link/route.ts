@@ -1,8 +1,9 @@
-import { and, eq, gt, or, isNull, sql } from 'drizzle-orm';
+import { and, eq, gt, gte, lt, or, isNull, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { analyticsAttributions, analyticsOutbox, storyGenerationRequests } from '@/db/schema';
 import { getCurrentAuthor } from '@/lib/auth';
+import { ANALYTICS_BASE_URL, sanitizeAnalyticsPageUrl } from '@/lib/analytics/page-context';
 
 export const runtime = 'nodejs';
 
@@ -36,20 +37,33 @@ export async function POST(request: NextRequest) {
         .where(eq(analyticsAttributions.attributionId, attributionId));
 
       const attributionParams = {
-        ...(attribution.landingSlug ? { landing_slug: attribution.landingSlug } : {}),
-        ...(attribution.primaryIntent ? { primary_intent: attribution.primaryIntent } : {}),
+        ...(attribution.firstLandingPath || attribution.landingSlug
+          ? { landing_slug: attribution.firstLandingPath || attribution.landingSlug }
+          : {}),
+        ...(attribution.firstPrimaryIntent || attribution.primaryIntent
+          ? { primary_intent: attribution.firstPrimaryIntent || attribution.primaryIntent }
+          : {}),
       };
-      const attributionCutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const pageLocation = attribution.latestPath
+        ? sanitizeAnalyticsPageUrl(`${ANALYTICS_BASE_URL}${attribution.latestPath}`)
+        : undefined;
+      const pageReferrer = attribution.latestReferrerPath
+        ? sanitizeAnalyticsPageUrl(`${ANALYTICS_BASE_URL}${attribution.latestReferrerPath}`)
+        : undefined;
       await tx
         .insert(analyticsOutbox)
         .values({
           dedupeKey: `sign_up:${author.clerkUserId}`,
           eventName: 'sign_up',
           authorId: author.authorId,
+          attributionId: attribution.attributionId,
           clientId: attribution.clientId,
           userId: author.clerkUserId,
           sessionId: attribution.sessionId,
           consent: attribution.consent,
+          pageLocation,
+          pageReferrer,
+          engagementTimeMsec: 100,
           availableAt: new Date(),
           params: { method: 'unknown', ...attributionParams },
         })
@@ -57,9 +71,13 @@ export async function POST(request: NextRequest) {
           target: analyticsOutbox.dedupeKey,
           set: {
             authorId: author.authorId,
+            attributionId: attribution.attributionId,
             clientId: attribution.clientId,
             sessionId: attribution.sessionId,
             consent: attribution.consent,
+            pageLocation,
+            pageReferrer,
+            engagementTimeMsec: 100,
             availableAt: new Date(),
             claimToken: null,
             claimedAt: null,
@@ -74,20 +92,37 @@ export async function POST(request: NextRequest) {
         .update(analyticsOutbox)
         .set({
           clientId: attribution.clientId,
+          attributionId: attribution.attributionId,
           sessionId: attribution.sessionId,
           consent: attribution.consent,
           availableAt: new Date(),
           claimToken: null,
           claimedAt: null,
           lastError: null,
+          pageLocation,
+          pageReferrer,
+          engagementTimeMsec: 100,
         })
         .where(
           and(
             eq(analyticsOutbox.authorId, author.authorId),
+            isNull(analyticsOutbox.attributionId),
             isNull(analyticsOutbox.clientId),
             isNull(analyticsOutbox.deliveredAt),
             isNull(analyticsOutbox.skippedAt),
-            gt(analyticsOutbox.occurredAt, attributionCutoff),
+            gte(analyticsOutbox.occurredAt, attribution.createdAt),
+            lt(analyticsOutbox.occurredAt, attribution.expiresAt),
+            ...(attribution.latestAttributionAt
+              ? [gte(analyticsOutbox.occurredAt, attribution.latestAttributionAt)]
+              : []),
+            ...(attribution.sessionId
+              ? [
+                  or(
+                    isNull(analyticsOutbox.sessionId),
+                    eq(analyticsOutbox.sessionId, attribution.sessionId),
+                  ),
+                ]
+              : []),
           ),
         )
         .returning({ outboxId: analyticsOutbox.outboxId });
@@ -106,7 +141,19 @@ export async function POST(request: NextRequest) {
             eq(storyGenerationRequests.authorId, author.authorId),
             isNull(storyGenerationRequests.clientId),
             isNull(storyGenerationRequests.terminalAt),
-            gt(storyGenerationRequests.createdAt, attributionCutoff),
+            gte(storyGenerationRequests.createdAt, attribution.createdAt),
+            lt(storyGenerationRequests.createdAt, attribution.expiresAt),
+            ...(attribution.latestAttributionAt
+              ? [gte(storyGenerationRequests.createdAt, attribution.latestAttributionAt)]
+              : []),
+            ...(attribution.sessionId
+              ? [
+                  or(
+                    isNull(storyGenerationRequests.sessionId),
+                    eq(storyGenerationRequests.sessionId, attribution.sessionId),
+                  ),
+                ]
+              : []),
           ),
         )
         .returning({ runId: storyGenerationRequests.runId });

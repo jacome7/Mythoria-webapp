@@ -15,7 +15,7 @@ export const supportiveStoriesLandingPage: LandingPageContent = {
     'Crie uma história personalizada para preparar mudanças, conversar sobre desafios ou guardar memórias, sempre com acompanhamento e revisão adulta.',
   primaryIntent: 'kids_transitions',
   riskRating: 'yellow',
-  updatedAt: '2026-07-27',
+  updatedAt: '2026-08-04',
   indexable: true,
   showInLandingPageIndex: true,
   showFormatsNearProcess: false,
@@ -65,7 +65,7 @@ export const supportiveStoriesLandingPage: LandingPageContent = {
     subheadline:
       'Escolha uma situação, acrescente apenas os detalhes que fazem sentido e reveja tudo com calma antes de ler, ouvir, partilhar ou imprimir.',
     imageSrc: `${assetBase}/hero/hero.jpeg`,
-    imageAlt: 'Adulto e criança a lerem juntos o livro fictício A Primeira Manhã Corajosa da Sofia',
+    imageAlt: 'Adulto e criança a lerem juntos o livro-exemplo A Primeira Manhã Corajosa da Sofia',
   },
   quickAnswer: {
     title: 'O que é uma História de Apoio?',
@@ -82,7 +82,7 @@ export const supportiveStoriesLandingPage: LandingPageContent = {
     title: 'Uma ferramenta criativa para ler em conjunto',
     body: [
       'A leitura partilhada cria um momento de baixa pressão em que a criança pode observar, perguntar ou simplesmente ouvir. A personalização ajuda a ligar a história ao seu quotidiano sem prometer um resultado emocional.',
-      'Cada exemplo desta página é totalmente fictício. Serve para mostrar possibilidades de tom, idade e personalização, não para representar uma família ou experiência real.',
+      'Cada livro desta página é um exemplo completo criado para a Mythoria. As personagens e situações são inventadas para proteger famílias reais; não são testemunhos de clientes.',
     ],
   },
   supportHub: {

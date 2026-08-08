@@ -542,7 +542,7 @@ function createRomanceLandingPage(locale: LocalizedLandingLocale): LandingPageCo
     metaDescription: c.metaDescription,
     primaryIntent: 'romance',
     riskRating: 'green',
-    updatedAt: '2026-08-02',
+    updatedAt: '2026-08-04',
     indexable: true,
     showFormatsNearHero: false,
     breadcrumbLabel: c.breadcrumb,

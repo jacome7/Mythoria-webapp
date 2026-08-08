@@ -14,13 +14,21 @@ const travelSlugs = [
   'antes-que-a-estrada-acabe',
 ] as const;
 
+const childrenSlugs = [
+  'mia-e-a-pastelaria-da-lua',
+  'tomas-e-o-mapa-das-portas-escondidas',
+  'lia-e-o-jardim-das-palavras-perdidas',
+  'a-equipa-que-marcou-um-golo-nas-estrelas',
+  'ines-e-o-robo-feito-de-desenhos',
+] as const;
+
 describe('sample book catalog', () => {
   it('includes every legacy book and complete sample-book pack', async () => {
     const books = await getSampleBooksCatalog();
 
-    expect(books).toHaveLength(87);
+    expect(books).toHaveLength(92);
     expect(books.filter((book) => book.source === 'legacy')).toHaveLength(59);
-    expect(books.filter((book) => book.source === 'sample-pack')).toHaveLength(28);
+    expect(books.filter((book) => book.source === 'sample-pack')).toHaveLength(33);
   });
 
   it('maps each Romance landing-page pack to the romance intent and exposes its audio', async () => {
@@ -75,6 +83,41 @@ describe('sample book catalog', () => {
 
   it('keeps every travel chapter within 600–900 words', async () => {
     for (const slug of travelSlugs) {
+      const chapter = await readFile(
+        join(process.cwd(), 'public', 'sample-books', slug, 'sample-chapter.md'),
+        'utf8',
+      );
+      const body = chapter.replace(/^---[\s\S]*?---/, '').trim();
+      const wordCount = body.split(/\s+/).length;
+
+      expect(wordCount).toBeGreaterThanOrEqual(600);
+      expect(wordCount).toBeLessThanOrEqual(900);
+    }
+  });
+
+  it('exposes five complete Mythoria-created children books with their intended styles', async () => {
+    const books = await getSampleBooksCatalog();
+    const childrenBooks = books.filter((book) =>
+      childrenSlugs.includes(book.slug as (typeof childrenSlugs)[number]),
+    );
+
+    expect(childrenBooks).toHaveLength(5);
+    expect(childrenBooks.map((book) => book.graphicalStyle)).toEqual([
+      'euro_comic_book',
+      'colored_pencil',
+      'watercolor',
+      'claymation',
+      'papercut',
+    ]);
+    expect(
+      childrenBooks.every((book) => book.publicProvenance === 'mythoria_created_example'),
+    ).toBe(true);
+    expect(childrenBooks.every((book) => book.chapterImageSrc)).toBe(true);
+    expect(childrenBooks.every((book) => book.audioSampleSrc)).toBe(true);
+  });
+
+  it('keeps every personalized-children chapter within 600–900 words', async () => {
+    for (const slug of childrenSlugs) {
       const chapter = await readFile(
         join(process.cwd(), 'public', 'sample-books', slug, 'sample-chapter.md'),
         'utf8',

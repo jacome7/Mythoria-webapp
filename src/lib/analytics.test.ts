@@ -179,6 +179,8 @@ describe('canonical analytics event propagation', () => {
       clientId: '123.456',
       sessionId: 1712345678,
       primaryIntent: 'grandparents',
+      pageLocation: 'http://localhost/',
+      engagementTimeMsec: 100,
       consent: {
         analyticsStorage: 'granted',
         adUserData: 'denied',

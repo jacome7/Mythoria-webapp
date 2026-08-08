@@ -1,4 +1,5 @@
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
+import { CONSENT_UPDATED_EVENT, getGrantedConsent } from './consent';
 
 const mockTrackEvent = jest.fn();
 let mockPathname = '/en-US';
@@ -25,6 +26,7 @@ describe('useGoogleAnalytics', () => {
     mockTrackEvent.mockClear();
     mockPathname = '/en-US';
     mockSearchParams = new URLSearchParams();
+    document.cookie = 'mythoria_consent=; Max-Age=0; path=/';
   });
 
   it('sends one page_view per canonical path and ignores query-only cleanup', () => {
@@ -55,5 +57,29 @@ describe('useGoogleAnalytics', () => {
         page_location: 'http://localhost/en-US/pricing?utm_source=google&utm_campaign=summer',
       }),
     );
+  });
+
+  it('retries the current canonical page exactly once when analytics consent becomes granted', () => {
+    const { rerender } = render(<AnalyticsHarness />);
+    expect(mockTrackEvent).toHaveBeenCalledTimes(1);
+
+    act(() => {
+      window.dispatchEvent(
+        new CustomEvent(CONSENT_UPDATED_EVENT, {
+          detail: {
+            state: getGrantedConsent(),
+            preferences: { analytics: true, advertising: true },
+          },
+        }),
+      );
+    });
+    expect(mockTrackEvent).toHaveBeenCalledTimes(2);
+
+    rerender(<AnalyticsHarness />);
+    expect(mockTrackEvent).toHaveBeenCalledTimes(2);
+
+    mockPathname = '/en-US/pricing';
+    rerender(<AnalyticsHarness />);
+    expect(mockTrackEvent).toHaveBeenCalledTimes(3);
   });
 });

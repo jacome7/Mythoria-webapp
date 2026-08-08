@@ -5,6 +5,7 @@ import { and, eq, gt } from 'drizzle-orm';
 import { analyticsAttributions } from '@/db/schema';
 import { sanitizeClientAnalyticsContext } from '@/lib/analytics/ecommerce';
 import { STORY_INTENTS } from '@/constants/intents';
+import { sanitizeAnalyticsPathname } from '@/lib/analytics/page-context';
 
 export const runtime = 'nodejs';
 
@@ -37,12 +38,28 @@ export async function POST(request: NextRequest) {
     }
 
     const campaign = body.campaign || {};
+    const now = new Date();
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    const values = {
+    const pageFromContext = analytics.pageLocation
+      ? sanitizeAnalyticsPathname(new URL(analytics.pageLocation).pathname)
+      : undefined;
+    const landingPath = sanitizeAnalyticsPathname(body.landingSlug || '') || pageFromContext;
+    const referrerPath = analytics.pageReferrer
+      ? sanitizeAnalyticsPathname(new URL(analytics.pageReferrer).pathname)
+      : undefined;
+    const clickIdentifier = campaign.gclid || campaign.gbraid || campaign.wbraid;
+    const clickIdentifierKind = campaign.gclid
+      ? 'gclid'
+      : campaign.gbraid
+        ? 'gbraid'
+        : campaign.wbraid
+          ? 'wbraid'
+          : undefined;
+    const insertValues = {
       clientId: analytics.clientId,
       sessionId: analytics.sessionId,
       consent: analytics.consent,
-      landingSlug: body.landingSlug,
+      landingSlug: landingPath,
       primaryIntent: body.primaryIntent,
       utmSource: campaign.utm_source,
       utmMedium: campaign.utm_medium,
@@ -53,26 +70,83 @@ export async function POST(request: NextRequest) {
       gclid: campaign.gclid,
       gbraid: campaign.gbraid,
       wbraid: campaign.wbraid,
+      firstLandingPath: landingPath,
+      firstPrimaryIntent: body.primaryIntent,
+      firstUtmSource: campaign.utm_source,
+      firstUtmMedium: campaign.utm_medium,
+      firstUtmCampaign: campaign.utm_campaign,
+      firstUtmId: campaign.utm_id,
+      firstUtmTerm: campaign.utm_term,
+      firstUtmContent: campaign.utm_content,
+      firstClickIdentifier: clickIdentifier,
+      firstClickIdentifierKind: clickIdentifierKind,
+      latestPath: landingPath,
+      latestReferrerPath: referrerPath,
+      latestAttributionAt: now,
       expiresAt,
     };
     const existingAttributionId = request.cookies.get('mythoria_attribution')?.value;
-    const [existing] = existingAttributionId
+    const validExistingId = z.string().uuid().safeParse(existingAttributionId);
+    const [existingRow] = validExistingId.success
       ? await db
-          .update(analyticsAttributions)
-          .set(values)
+          .select()
+          .from(analyticsAttributions)
           .where(
             and(
-              eq(analyticsAttributions.attributionId, existingAttributionId),
-              gt(analyticsAttributions.expiresAt, new Date()),
+              eq(analyticsAttributions.attributionId, validExistingId.data),
+              eq(analyticsAttributions.clientId, analytics.clientId),
+              gt(analyticsAttributions.expiresAt, now),
             ),
           )
+      : [];
+    const [existing] = existingRow
+      ? await db
+          .update(analyticsAttributions)
+          .set({
+            sessionId: analytics.sessionId,
+            consent: analytics.consent,
+            latestPath: landingPath,
+            latestReferrerPath: referrerPath,
+            latestAttributionAt: now,
+            expiresAt,
+            firstLandingPath:
+              existingRow.firstLandingPath || existingRow.landingSlug || landingPath,
+            firstPrimaryIntent:
+              existingRow.firstPrimaryIntent || existingRow.primaryIntent || body.primaryIntent,
+            firstUtmSource:
+              existingRow.firstUtmSource || existingRow.utmSource || campaign.utm_source,
+            firstUtmMedium:
+              existingRow.firstUtmMedium || existingRow.utmMedium || campaign.utm_medium,
+            firstUtmCampaign:
+              existingRow.firstUtmCampaign || existingRow.utmCampaign || campaign.utm_campaign,
+            firstUtmId: existingRow.firstUtmId || existingRow.utmId || campaign.utm_id,
+            firstUtmTerm: existingRow.firstUtmTerm || existingRow.utmTerm || campaign.utm_term,
+            firstUtmContent:
+              existingRow.firstUtmContent || existingRow.utmContent || campaign.utm_content,
+            firstClickIdentifier:
+              existingRow.firstClickIdentifier ||
+              existingRow.gclid ||
+              existingRow.gbraid ||
+              existingRow.wbraid ||
+              clickIdentifier,
+            firstClickIdentifierKind:
+              existingRow.firstClickIdentifierKind ||
+              (existingRow.gclid
+                ? 'gclid'
+                : existingRow.gbraid
+                  ? 'gbraid'
+                  : existingRow.wbraid
+                    ? 'wbraid'
+                    : clickIdentifierKind),
+          })
+          .where(eq(analyticsAttributions.attributionId, existingRow.attributionId))
           .returning({ attributionId: analyticsAttributions.attributionId })
       : [];
     const [inserted] = existing
       ? []
       : await db
           .insert(analyticsAttributions)
-          .values(values)
+          .values(insertValues)
           .returning({ attributionId: analyticsAttributions.attributionId });
     const attribution = existing || inserted;
 

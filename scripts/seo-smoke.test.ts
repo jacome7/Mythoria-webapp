@@ -1,6 +1,11 @@
 /** @jest-environment node */
 
-import { isAllowedByRobots, parseRobotsGroups, pathMatchesRobotsPattern } from './seo-smoke';
+import {
+  extractHreflangLinks,
+  isAllowedByRobots,
+  parseRobotsGroups,
+  pathMatchesRobotsPattern,
+} from './seo-smoke';
 
 describe('SEO smoke robots parser', () => {
   const groups = parseRobotsGroups(`
@@ -37,5 +42,17 @@ Disallow: /pt-PT/s$
     expect(isAllowedByRobots(groups, userAgent, '/pt-PT/blog/example')).toBe(true);
     expect(isAllowedByRobots(groups, userAgent, '/pt-PT/s')).toBe(false);
     expect(isAllowedByRobots(groups, userAgent, '/pt-PT/s/private-story-id')).toBe(false);
+  });
+
+  it('extracts absolute HTML hreflang annotations regardless of attribute order', () => {
+    expect(
+      extractHreflangLinks(`
+        <link rel="alternate" href="https://mythoria.pt/pt-PT/pricing" hreflang="pt-PT">
+        <link hreflang="en-US" rel="alternate" href="https://mythoria.pt/en-US/pricing">
+      `),
+    ).toEqual([
+      { locale: 'pt-pt', href: 'https://mythoria.pt/pt-PT/pricing' },
+      { locale: 'en-us', href: 'https://mythoria.pt/en-US/pricing' },
+    ]);
   });
 });

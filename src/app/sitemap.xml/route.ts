@@ -8,7 +8,13 @@ import {
 import { getGuides } from '@/content/guides';
 import { getSeoSampleBooks } from '@/content/sample-books/seo';
 import { routing } from '@/i18n/routing';
-import { BASE_URL, buildLocalizedUrl, getSeoRoutePolicy, normalizePathname } from '@/lib/seo';
+import {
+  BASE_URL,
+  buildLocalizedUrl,
+  getSeoRoutePolicy,
+  normalizePathname,
+  resolveFileBackedPublicSeoPath,
+} from '@/lib/seo';
 import { validateMdxSource } from '@/lib/blog/mdx-validate';
 import { normalizeLocale } from '@/utils/locale-utils';
 
@@ -193,6 +199,10 @@ function addEntry(entries: Map<string, SitemapEntry>, entry: SitemapEntry): void
   const policy = getSeoRoutePolicy(url.pathname);
   if (!policy.indexable || !policy.includeInSitemap) {
     throw new Error(`Route is not sitemap eligible: ${entry.loc}`);
+  }
+  const resolution = resolveFileBackedPublicSeoPath(url.pathname);
+  if (resolution.type === 'redirect' || resolution.type === 'notFound') {
+    throw new Error(`Redirected or missing route is not sitemap eligible: ${entry.loc}`);
   }
   if (entries.has(entry.loc)) {
     throw new Error(`Duplicate sitemap URL: ${entry.loc}`);

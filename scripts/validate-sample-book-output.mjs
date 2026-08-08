@@ -150,6 +150,27 @@ for (const key of ['cover', 'feature']) {
   if (prompt?.model !== 'gpt-image-2') errors.push(`${key} image model must be gpt-image-2`);
 }
 
+if (book.sampleChapterImage?.localPath) {
+  const chapterImagePath = resolve(folder, book.sampleChapterImage.localPath);
+  if (!existsSync(chapterImagePath)) {
+    errors.push(`Missing ${book.sampleChapterImage.localPath}`);
+  } else if (statSync(chapterImagePath).size === 0) {
+    errors.push(`Empty ${book.sampleChapterImage.localPath}`);
+  }
+
+  const chapterPrompt = imagePrompts.chapter;
+  if (!chapterPrompt) errors.push('image-prompts.json is missing chapter');
+  if (chapterPrompt?.status !== 'generated') errors.push('chapter image status must be generated');
+  if (chapterPrompt?.model !== 'gpt-image-2')
+    errors.push('chapter image model must be gpt-image-2');
+  if (!chapterPrompt?.promptPath || !existsSync(resolve(folder, chapterPrompt.promptPath))) {
+    errors.push('chapter image promptPath is missing or does not exist');
+  }
+  if (chapterPrompt?.targetPath !== book.sampleChapterImage.localPath) {
+    errors.push('chapter image targetPath must match book.sampleChapterImage.localPath');
+  }
+}
+
 if (audio.status !== 'generated') errors.push('audio status must be generated');
 if (audio.language !== 'pt-PT') errors.push('audio language must be pt-PT');
 if (audio.provider !== 'google-genai') errors.push('audio provider must be google-genai');

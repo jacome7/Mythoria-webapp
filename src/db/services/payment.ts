@@ -59,6 +59,7 @@ export interface CreateStripeCheckoutRequest extends CreateOrderRequest {
   cancelUrl: string;
   analyticsContext?: StoredAnalyticsContext;
   analyticsConsent?: AnalyticsConsent;
+  attributionId?: string;
 }
 
 export type CalculatedOrderTotals = CreditOrderTotals;
@@ -93,6 +94,10 @@ interface StripeCheckoutMetadata {
     ad_user_data?: 'granted' | 'denied';
     ad_personalization?: 'granted' | 'denied';
     primary_intent?: string;
+    attribution_id?: string;
+    page_location?: string;
+    page_referrer?: string;
+    engagement_time_msec?: number;
   };
   [key: string]: unknown;
 }
@@ -228,6 +233,7 @@ export function buildPurchaseAnalyticsOutboxEntry(
     dedupeKey: `purchase:${order.orderId}`,
     eventName: 'purchase',
     authorId: order.authorId,
+    attributionId: analytics.attribution_id,
     clientId: analytics.client_id,
     userId: analytics.user_id,
     sessionId: Number.isSafeInteger(sessionId) && sessionId > 0 ? sessionId : undefined,
@@ -236,6 +242,9 @@ export function buildPurchaseAnalyticsOutboxEntry(
       adUserData: analytics.ad_user_data === 'granted' ? 'granted' : 'denied',
       adPersonalization: analytics.ad_personalization === 'granted' ? 'granted' : 'denied',
     },
+    pageLocation: analytics.page_location,
+    pageReferrer: analytics.page_referrer,
+    engagementTimeMsec: analytics.engagement_time_msec,
     params: {
       ...buildPaymentOrderPurchasePayload(order, customerType),
       ...(analytics.primary_intent ? { primary_intent: analytics.primary_intent } : {}),
@@ -468,6 +477,10 @@ export const paymentService = {
                     checkoutData.analyticsContext?.consent || checkoutData.analyticsConsent
                   )?.adPersonalization,
                   primary_intent: checkoutData.analyticsContext?.primaryIntent,
+                  attribution_id: checkoutData.attributionId,
+                  page_location: checkoutData.analyticsContext?.pageLocation,
+                  page_referrer: checkoutData.analyticsContext?.pageReferrer,
+                  engagement_time_msec: checkoutData.analyticsContext?.engagementTimeMsec,
                 },
               }
             : {}),
@@ -1043,6 +1056,8 @@ export const paymentService = {
           .values({
             dedupeKey: `refund:${stripeEventId || `${charge.id}:${charge.amount_refunded}`}`,
             eventName: 'refund',
+            authorId: order.authorId,
+            attributionId: analytics.attribution_id,
             clientId: analytics.client_id,
             userId: analytics.user_id,
             sessionId: Number.isSafeInteger(Number(analytics.session_id))
@@ -1053,6 +1068,9 @@ export const paymentService = {
               adUserData: analytics.ad_user_data === 'granted' ? 'granted' : 'denied',
               adPersonalization: analytics.ad_personalization === 'granted' ? 'granted' : 'denied',
             },
+            pageLocation: analytics.page_location,
+            pageReferrer: analytics.page_referrer,
+            engagementTimeMsec: analytics.engagement_time_msec,
             params: {
               transaction_id: order.orderId,
               currency: order.currency.toUpperCase(),

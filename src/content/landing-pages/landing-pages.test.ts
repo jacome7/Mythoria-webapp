@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import {
@@ -92,7 +92,17 @@ describe('landing page content registry', () => {
   });
 
   it('derives a stable hub lastmod from visible editorial dates', () => {
-    expect(getLandingPageHubUpdatedAt()).toBe('2026-07-30');
+    expect(getLandingPageHubUpdatedAt()).toBe('2026-08-04');
+  });
+
+  it('gives every indexable landing page complete examples with playable audio', () => {
+    for (const page of getIndexableLandingPages()) {
+      expect(page.books.length).toBeGreaterThan(0);
+      expect(page.books.every((book) => Boolean(book.audioSampleSrc))).toBe(true);
+      expect(page.books.every((book) => Boolean(book.title && book.synopsis && book.excerpt))).toBe(
+        true,
+      );
+    }
   });
 
   it('registers the autism landing page as a pt-PT indexable page', () => {
@@ -189,7 +199,7 @@ describe('landing page content registry', () => {
       '/landing-pages/livro-personalizado-criancas-autistas/assets/hero/og-cover.jpeg',
     );
     expect(page?.breadcrumbLabel).toBeTruthy();
-    expect(page?.updatedAt).toBe('2026-06-15');
+    expect(page?.updatedAt).toBe('2026-08-04');
   });
 
   it('uses the live PEA/PHDA sample books with audio samples', () => {
@@ -264,7 +274,7 @@ describe('landing page content registry', () => {
     expect(page).toBeDefined();
     expect(page?.locale).toBe('pt-PT');
     expect(page?.indexable).toBe(true);
-    expect(page?.updatedAt).toBe('2026-07-19');
+    expect(page?.updatedAt).toBe('2026-08-04');
     expect(page?.primaryCtaHref).toContain('/pt-PT/contactUs');
     expect(page?.hero.imageSrc).toContain('/landing-pages/workshops-criancas/assets/');
     expect(page?.books[0]?.audioSampleSrc).toBe(
@@ -323,7 +333,7 @@ describe('landing page content registry', () => {
     expect(page?.locale).toBe('pt-PT');
     expect(page?.indexable).toBe(true);
     expect(page?.riskRating).toBe('yellow');
-    expect(page?.updatedAt).toBe('2026-06-28');
+    expect(page?.updatedAt).toBe('2026-08-04');
     expect(page?.primaryIntent).toBe('grandparents');
     expect(page?.books).toHaveLength(5);
     expect(page?.books.map((book) => book.title)).toEqual([
@@ -538,5 +548,98 @@ describe('landing page content registry', () => {
     expect(serialized).not.toContain('testemunho');
     expect(serialized).not.toContain('AggregateRating');
     expect(serialized.toLowerCase()).not.toContain('ficcion');
+  });
+
+  it('registers the non-indexable personalized children landing with five complete books', () => {
+    const page = getLandingPageBySlug('livro-personalizado-crianca');
+    const serialized = JSON.stringify(page);
+
+    expect(page).toBeDefined();
+    expect(page?.locale).toBe('pt-PT');
+    expect(page?.primaryIntent).toBe('kids_adventures');
+    expect(page?.riskRating).toBe('yellow');
+    expect(page?.indexable).toBe(false);
+    expect(page?.editorialReviewDaysAgo).toBe(17);
+    expect(page?.showInLandingPageIndex).not.toBe(true);
+    expect(page?.testimonials).toBeUndefined();
+    expect(page?.structuredData?.includeProduct).toBe(false);
+    expect(page?.primaryCtaHref).toBe(
+      '/pt-PT/tell-your-story/step-1?landingSlug=livro-personalizado-crianca&primaryIntent=kids_adventures',
+    );
+    expect(page?.books.map((book) => book.title)).toEqual([
+      'Mia e a Pastelaria da Lua',
+      'Tomás e o Mapa das Portas Escondidas',
+      'Lia e o Jardim das Palavras Perdidas',
+      'A Equipa que Marcou um Golo nas Estrelas',
+      'Inês e o Robô Feito de Desenhos',
+    ]);
+    expect(page?.books.map((book) => book.styleLabel)).toEqual([
+      'Claymation',
+      'Papercut',
+      'Aguarela',
+      'Banda desenhada europeia',
+      'Lápis de cor',
+    ]);
+    expect(page?.books.every((book) => Boolean(book.audioSampleTranscript))).toBe(true);
+    expect(page?.books.every((book) => Boolean(book.sampleChapterHref))).toBe(true);
+    expect(
+      page?.books.every((book) => book.sampleChapter?.imageSrc.endsWith('/chapter-01.jpeg')),
+    ).toBe(true);
+    expect(page?.faq).toHaveLength(15);
+    expect(page?.useCases?.items).toHaveLength(6);
+    expect(page?.personalization?.groups).toHaveLength(5);
+    expect(page?.trustBadges).toEqual([
+      'Conta adulta',
+      'Privado por defeito',
+      'Reveja antes de partilhar',
+    ]);
+    expect(getLandingPageStaticParams()).toContainEqual({
+      locale: 'pt-PT',
+      slug: 'livro-personalizado-crianca',
+    });
+    expect(getIndexableLandingPages().map((candidate) => candidate.slug)).not.toContain(
+      'livro-personalizado-crianca',
+    );
+    expect(getLandingPageIndexItems().map((candidate) => candidate.slug)).not.toContain(
+      'livro-personalizado-crianca',
+    );
+
+    const localAssets = [
+      page?.hero.imageSrc,
+      page?.ogImageSrc,
+      ...(page?.useCases?.items.map((item) => item.iconSrc) ?? []),
+      ...(page?.books.flatMap((book) => [
+        book.imageSrc,
+        book.sampleChapter?.imageSrc,
+        book.audioSampleSrc,
+      ]) ?? []),
+    ].filter((asset): asset is string => Boolean(asset));
+    localAssets.forEach((asset) => {
+      expect(existsSync(join(process.cwd(), 'public', asset.replace(/^\//, '')))).toBe(true);
+    });
+
+    const assetManifest = JSON.parse(
+      readFileSync(
+        join(
+          process.cwd(),
+          'public',
+          'landing-pages',
+          'livro-personalizado-crianca',
+          'assets',
+          'asset-manifest.json',
+        ),
+        'utf8',
+      ),
+    ) as { books: Array<{ title: string }> };
+    expect(assetManifest.books.map((book) => book.title)).toEqual(
+      page?.books.map((book) => book.title),
+    );
+
+    expect(serialized.toLowerCase()).not.toMatch(/ficcional|exemplo ficcional/);
+    expect(serialized).not.toContain('Limites');
+    expect(serialized.toLowerCase()).not.toMatch(/família real|cliente|testemunho/);
+    expect(serialized).not.toContain('29.90');
+    expect(serialized).not.toContain('48 horas');
+    expect(serialized).not.toContain('AggregateRating');
   });
 });

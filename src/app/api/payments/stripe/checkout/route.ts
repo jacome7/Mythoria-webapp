@@ -74,13 +74,16 @@ export async function POST(request: NextRequest) {
     const origin = getRequestOrigin(request);
     const successUrl = `${origin}/${locale}/buy-credits?payment=stripe_success&session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = `${origin}/${locale}/buy-credits?payment=cancel`;
-    const { context: analyticsContext, consent: analyticsConsent } =
-      await resolveServerAnalyticsContext({
-        browserContext: body.analyticsContext,
-        attributionId: request.cookies.get('mythoria_attribution')?.value,
-        authorId: author.authorId,
-        storedConsentValue: request.cookies.get('mythoria_consent')?.value,
-      });
+    const {
+      context: analyticsContext,
+      consent: analyticsConsent,
+      attributionId,
+    } = await resolveServerAnalyticsContext({
+      browserContext: body.analyticsContext,
+      attributionId: request.cookies.get('mythoria_attribution')?.value,
+      authorId: author.authorId,
+      storedConsentValue: request.cookies.get('mythoria_consent')?.value,
+    });
     if (analyticsConsent && !analyticsContext) {
       console.warn('[Analytics] Stripe checkout has no consented GA4 context');
     }
@@ -99,6 +102,7 @@ export async function POST(request: NextRequest) {
         ? { analyticsContext: { ...analyticsContext, userId: author.clerkUserId } }
         : {}),
       analyticsConsent,
+      attributionId,
     });
 
     if (!checkoutSession.url) {

@@ -1,0 +1,5 @@
+{
+  "cover": {"promptPath":"assets/prompts/cover.prompt.md","targetPath":"assets/cover.jpeg","status":"generated","model":"gpt-image-2","size":"1024x1536","quality":"high","deterministicTitleOverlay":true},
+  "feature": {"promptPath":"assets/prompts/feature.prompt.md","targetPath":"assets/feature.jpeg","status":"generated","model":"gpt-image-2","size":"1536x1024","quality":"high","coverComposite":true},
+  "chapter": {"promptPath":"assets/prompts/chapter.prompt.md","targetPath":"assets/chapter-01.jpeg","status":"generated","model":"gpt-image-2","size":"1536x1024","quality":"high"}
+}

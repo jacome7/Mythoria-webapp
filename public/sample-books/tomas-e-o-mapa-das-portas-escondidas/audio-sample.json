@@ -1,0 +1,27 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "O mapa parecia feito de papel normal, até a primeira porta se levantar da página. Tomás tocou-lhe com a ponta do lápis e ouviu a cidade respirar do outro lado. No bolso levava uma bússola de brincar; na cabeça, a frase que a avó repetia sempre: uma pista só fica completa quando é partilhada. Então a porta dobrou-se outra vez e revelou um caminho azul. Sara aproximou-se da mesa, e os dois perceberam que aquela porta só se abriria com duas mãos.",
+  "voiceDirection": "Narradora adulta pt-PT curiosa e enérgica, com pausas claras nas pistas e sem efeitos agressivos.",
+  "pronunciationNotes": [
+    "Tomás: acento claro na segunda sílaba",
+    "bússola: pronúncia pt-PT"
+  ],
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 38,
+  "humanListeningReview": "pending_pt_pt_reviewer",
+  "generatedAt": "2026-08-06T15:32:56.063Z",
+  "durationSeconds": 35.88,
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.6824,
+    "rmsRatio": 0.0965,
+    "clippingRatio": 0,
+    "loudnessTargetLufs": -18
+  }
+}

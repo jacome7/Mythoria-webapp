@@ -1,0 +1,3 @@
+# Chapter illustration — Inês e o Robô Feito de Desenhos
+
+Use case: illustration-story. Wide 1536x1024 colored-pencil chapter illustration using the exact same Inês and Risco designs as the cover prompt. Inês kneels beside a low desk while Risco rolls carefully through the cosy room collecting a dropped pencil and returning it to a cup; his two paper wings remain folded and his heart-shaped panel glows softly. Visible pencil grain, layered original colours and gentle hand-drawn imperfections. Safe, warm, inventive mood. No legible words, logo, watermark, electrical hazard, dangerous tools, extra limbs or protected robot resemblance.

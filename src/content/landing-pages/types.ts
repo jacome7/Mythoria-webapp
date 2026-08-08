@@ -34,6 +34,8 @@ export interface LandingPageBook {
   sampleChapter?: LandingPageBookSampleChapter;
   audioSampleSrc?: string;
   audioSampleTitle?: string;
+  audioSampleTranscript?: string;
+  audioTranscriptLabel?: string;
 }
 
 export interface LandingPageFaq {
@@ -139,6 +141,7 @@ export interface LandingPageAnalyticsConfig {
 }
 
 export type LandingPageTranslationKey =
+  | 'personalized-children-books'
   | 'family-travel'
   | 'romance-gifts'
   | 'grandparents-stories'
@@ -299,6 +302,8 @@ export interface LandingPageContent {
   showFormatsNearProcess?: boolean;
   /** Shows the editorial review line below the quick answer. Defaults to true. */
   showEditorialReview?: boolean;
+  /** Renders the review line relative to the current date when set. */
+  editorialReviewDaysAgo?: number;
   /** Short label for the breadcrumb / structured data (falls back to `title`). */
   breadcrumbLabel?: string;
   /** Dedicated 1200x630 social image (falls back to `hero.imageSrc`). */

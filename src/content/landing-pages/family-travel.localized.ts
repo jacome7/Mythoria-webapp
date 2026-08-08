@@ -702,7 +702,7 @@ function createFamilyTravelLandingPage(locale: LocalizedLandingLocale): LandingP
     metaDescription: copy.metaDescription,
     primaryIntent: 'family_travels',
     riskRating: 'yellow',
-    updatedAt: '2026-08-02',
+    updatedAt: '2026-08-04',
     indexable: true,
     showFormatsNearHero: false,
     showEditorialReview: true,

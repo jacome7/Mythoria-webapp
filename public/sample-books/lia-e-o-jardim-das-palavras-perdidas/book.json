@@ -1,0 +1,40 @@
+{
+  "id": "children-book-03",
+  "title": "Lia e o Jardim das Palavras Perdidas",
+  "slug": "lia-e-o-jardim-das-palavras-perdidas",
+  "language": "pt-PT",
+  "targetAudience": "children_7-10",
+  "readerAgeBand": "5–8 anos",
+  "buyerPersona": "Adulto que quer guardar expressões e pequenos rituais de família",
+  "recipientType": "criança acompanhada por um adulto",
+  "storyIntent": "Transformar palavras e rituais familiares numa descoberta poética para leitura partilhada.",
+  "synopsis": "Lia entra num jardim onde palavras esquecidas crescem como flores. Só pode levar as palavras cujas histórias aprendeu a ouvir.",
+  "shortExcerpt": "No jardim de Lia, as palavras não estavam escritas: cresciam devagar entre as folhas.",
+  "sampleChapterPath": "sample-chapter.md",
+  "audioTeaserText": "No jardim de Lia, as palavras não estavam escritas: cresciam devagar entre as folhas. Havia uma flor que dizia aconchego e outra que só sabia repetir já vou. Lia quis levar todas, mas a tia explicou que cada palavra precisava da sua história. Por isso sentaram-se junto ao alecrim e começaram pela expressão que fazia toda a família sorrir. Quando o vento passou, novas sílabas acordaram no canteiro, cada uma com uma cor, um perfume e uma memória diferente.",
+  "graphicalStyle": "watercolor",
+  "novelStyle": "poetry",
+  "publicProvenance": "mythoria_created_example",
+  "fictionalUserContext": "Demonstração com input inteiramente ficcional e sintético: Lia, tia Amélia, as expressões e o jardim foram inventados e não correspondem a uma família real.",
+  "coverImage": {
+    "localPath": "assets/cover.jpeg"
+  },
+  "featureImage": {
+    "localPath": "assets/feature.jpeg"
+  },
+  "sampleChapterImage": {
+    "localPath": "assets/chapter-01.jpeg"
+  },
+  "audioSample": {
+    "localPath": "assets/audio-teaser.mp3",
+    "status": "generated",
+    "provider": "google-genai",
+    "model": "gemini-3.1-flash-tts-preview",
+    "voice": "Aoede"
+  },
+  "safetyNotes": [
+    "A história, as expressões familiares e todas as personagens são inteiramente ficcionais.",
+    "A leitura partilhada é apresentada como experiência criativa, sem prometer resultados de aprendizagem.",
+    "Não são usados dados pessoais, fotografias ou vozes de crianças reais."
+  ]
+}

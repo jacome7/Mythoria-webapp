@@ -1,0 +1,27 @@
+{
+  "status": "generated",
+  "targetPath": "assets/audio-teaser.mp3",
+  "text": "A bola brilhou pela primeira vez quando o passe chegou a quem ninguém estava a ver. No Campo da Aurora, cada linha acendeu-se como uma constelação. Uma jogadora encontrou espaço, outra ouviu o aviso do guarda-redes e a mais nova fez o passe simples. Não havia uma estrela sozinha: o céu inteiro parecia desenhado pelos movimentos da equipa. A treinadora sorriu sem dar instruções; queria que descobrissem como ouvir o jogo antes de correr atrás da bola.",
+  "voiceDirection": "Narradora adulta pt-PT viva e divertida, ritmo de relato controlado, dicção nítida e sem gritos.",
+  "pronunciationNotes": [
+    "Aurora: pronúncia portuguesa natural",
+    "constelação: sílabas bem articuladas"
+  ],
+  "language": "pt-PT",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "recommendedDurationSeconds": 36,
+  "humanListeningReview": "pending_pt_pt_reviewer",
+  "generatedAt": "2026-08-06T15:33:35.286Z",
+  "durationSeconds": 32.2,
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.7902,
+    "rmsRatio": 0.1071,
+    "clippingRatio": 0,
+    "loudnessTargetLufs": -18
+  }
+}

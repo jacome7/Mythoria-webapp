@@ -1,0 +1,3 @@
+# Feature background source — Inês e o Robô Feito de Desenhos
+
+Use case: product-mockup. Photorealistic top-down real product photograph, 1536x1024. Creative light-wood desk with an exact unobstructed portrait book-shaped matte rectangle centered at x=488, y=112, width=560, height=800, viewed perfectly from above with no perspective. Surround it sparingly with unbranded colored pencils, simple geometric paper shapes and a blank closed sketchbook; warm window daylight and realistic paper dust. Neutral cream rectangle for deterministic cover compositing. No readable text, child, hands, private drawing, logo, watermark, screen, competing book or object crossing the rectangle.

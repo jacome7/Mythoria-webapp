@@ -1,0 +1,3 @@
+# Cover art source — Mia e a Pastelaria da Lua
+
+Use case: illustration-story. Portrait children's book cover art only, 1024x1536. Mia, a fictional 6-year-old Portuguese girl with dark curly hair, warm brown skin, turquoise pyjamas and a mustard-yellow blanket, stands with Pingo, a tiny cream dog with one caramel ear, inside a miniature moonlit bakery. Handcrafted stop-motion clay aesthetic, tactile fingerprints, sculpted rounded original characters, flour like stardust, crescent oven, warm gold and midnight blue. Leave the upper 30% dark blue, calm and uncluttered for a deterministic title overlay. Absolutely no letters, symbols, logo or watermark. No physical book mockup, protected character, unsafe scene or malformed hands.

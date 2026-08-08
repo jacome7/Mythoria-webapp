@@ -47,6 +47,7 @@ function ensureDir(p: string) {
 setup('authenticate (manual social or magic link only)', async ({ page }) => {
   const email = process.env.CLERK_E2E_EMAIL; // optional prefill for magic link
   const manualTimeout = Number(process.env.MANUAL_AUTH_TIMEOUT_MS || 180000);
+  setup.setTimeout(manualTimeout + 30_000);
 
   ensureDir(authFile);
 

@@ -1,0 +1,3 @@
+# Feature — Tomás e o Mapa das Portas Escondidas
+
+Use case: product-mockup. Photorealistic real product photograph, 1536x1024. A premium matte children's book displayed on a library reading table with a folded paper map, wooden pencil and soft teal reading lamp; original anonymous library, no institutional marks. Natural paper fibres, real wood, subtle window light, close eye-level product photography. The approved cover will be composited onto the unobstructed front-facing book. No model-generated readable text, logos, watermark, people, distorted geometry or other books competing for attention.

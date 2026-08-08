@@ -13,6 +13,7 @@ import {
   getPrivateCrawlerDisallowPaths,
   getSeoRoutePolicy,
   getStaticLocalizedHreflangLinks,
+  resolveFileBackedPublicSeoPath,
 } from './seo';
 
 describe('seo helpers', () => {
@@ -54,6 +55,20 @@ describe('seo helpers', () => {
     );
     expect(getCanonicalRedirectPath('/')).toBe('/en-US');
     expect(getCanonicalRedirectPath('//en-us///blog/post//')).toBe('/en-US/blog/post');
+  });
+
+  it('redirects the legacy dashboard and rejects malformed placeholder story URLs', () => {
+    expect(resolveFileBackedPublicSeoPath('/pt-PT/dashboard')).toEqual({
+      type: 'redirect',
+      pathname: '/pt-PT/my-stories',
+    });
+    expect(resolveFileBackedPublicSeoPath('/dashboard')).toEqual({
+      type: 'redirect',
+      pathname: '/en-US/my-stories',
+    });
+    expect(resolveFileBackedPublicSeoPath('/undefined/p/undefined')).toEqual({
+      type: 'notFound',
+    });
   });
 
   it('builds bounded private route exclusions without blocking editorial pages', () => {

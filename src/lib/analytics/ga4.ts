@@ -1,4 +1,5 @@
 import type { AnalyticsConsent } from '@/db/schema';
+import { sanitizeAnalyticsPageUrl } from './page-context';
 
 export interface MeasurementProtocolEventParams {
   eventName: string;
@@ -7,6 +8,8 @@ export interface MeasurementProtocolEventParams {
   sessionId?: number;
   occurredAt?: Date;
   engagementTimeMsec?: number;
+  pageLocation?: string;
+  pageReferrer?: string;
   consent: AnalyticsConsent;
   params: Record<string, unknown>;
 }
@@ -29,6 +32,30 @@ export interface MeasurementProtocolPayload {
   }>;
 }
 
+const BLOCKED_CUSTOM_PARAMS = new Set([
+  'gclid',
+  'gbraid',
+  'wbraid',
+  'dclid',
+  'gclsrc',
+  '_gl',
+  'email',
+  'email_address',
+  'story_content',
+  'chapter_content',
+  'prompt',
+  'page_location',
+  'page_referrer',
+  'session_id',
+  'engagement_time_msec',
+]);
+
+function sanitizeCustomParams(params: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(params).filter(([key]) => !BLOCKED_CUSTOM_PARAMS.has(key.toLowerCase())),
+  );
+}
+
 const toProtocolConsent = (value: 'granted' | 'denied'): 'GRANTED' | 'DENIED' =>
   value === 'granted' ? 'GRANTED' : 'DENIED';
 
@@ -44,6 +71,8 @@ export function buildMeasurementProtocolPayload(
   ) {
     return null;
   }
+  const pageLocation = sanitizeAnalyticsPageUrl(event.pageLocation);
+  const pageReferrer = sanitizeAnalyticsPageUrl(event.pageReferrer);
 
   return {
     client_id: clientId,
@@ -58,7 +87,9 @@ export function buildMeasurementProtocolPayload(
       {
         name: event.eventName,
         params: {
-          ...event.params,
+          ...sanitizeCustomParams(event.params),
+          ...(pageLocation ? { page_location: pageLocation } : {}),
+          ...(pageReferrer ? { page_referrer: pageReferrer } : {}),
           ...(event.sessionId ? { session_id: event.sessionId } : {}),
           engagement_time_msec: event.engagementTimeMsec || 100,
         },

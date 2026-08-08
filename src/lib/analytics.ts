@@ -8,6 +8,7 @@ import type {
 } from './analytics/ecommerce';
 import { readIntentContextFromDocumentCookie } from './campaign-context';
 import { INTENT_CONTEXT_COOKIE } from '@/types/intent-context';
+import { currentBrowserPageContext } from './analytics/page-context';
 
 declare global {
   interface Window {
@@ -29,6 +30,7 @@ export const GA4_EVENT_NAMES = [
   'supportive_story_page_view',
   'challenge_selected',
   'sample_chapter_open',
+  'sample_book_open',
   'sample_audio_start',
   'sample_audio_complete',
   'story_creation_started',
@@ -286,6 +288,8 @@ async function resolveGoogleAnalyticsContext(
       clientId,
       ...(Number.isSafeInteger(sessionId) && sessionId > 0 ? { sessionId } : {}),
       ...(primaryIntent ? { primaryIntent } : {}),
+      ...currentBrowserPageContext(),
+      engagementTimeMsec: 100,
       consent: {
         analyticsStorage: 'granted',
         adUserData: consent.ad_user_data,
@@ -319,7 +323,11 @@ export async function getGoogleAnalyticsContext(
     cachedAnalyticsContext &&
     cachedAnalyticsContext.expiresAt > Date.now()
   ) {
-    return cachedAnalyticsContext.value;
+    return {
+      ...cachedAnalyticsContext.value,
+      ...currentBrowserPageContext(),
+      engagementTimeMsec: 100,
+    };
   }
 
   analyticsContextResolution ??= resolveGoogleAnalyticsContext(
@@ -331,5 +339,8 @@ export async function getGoogleAnalyticsContext(
     analyticsContextResolution = undefined;
     return context;
   });
-  return analyticsContextResolution;
+  const context = await analyticsContextResolution;
+  return context
+    ? { ...context, ...currentBrowserPageContext(), engagementTimeMsec: 100 }
+    : undefined;
 }

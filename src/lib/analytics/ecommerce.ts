@@ -1,4 +1,5 @@
 import { isValidIntent, type StoryIntent } from '@/constants/intents';
+import { sanitizeAnalyticsPageUrl } from './page-context';
 
 export type AnalyticsConsentStatus = 'granted' | 'denied';
 
@@ -6,6 +7,9 @@ export interface ClientAnalyticsContext {
   clientId: string;
   sessionId?: number;
   primaryIntent?: StoryIntent;
+  pageLocation?: string;
+  pageReferrer?: string;
+  engagementTimeMsec?: number;
   consent: {
     analyticsStorage: 'granted';
     adUserData: AnalyticsConsentStatus;
@@ -36,11 +40,23 @@ export function sanitizeClientAnalyticsContext(value: unknown): ClientAnalyticsC
   }
 
   const sessionId = Number(value.sessionId);
+  const engagementTimeMsec = Number(value.engagementTimeMsec);
+  const pageLocation = sanitizeAnalyticsPageUrl(
+    typeof value.pageLocation === 'string' ? value.pageLocation : undefined,
+  );
+  const pageReferrer = sanitizeAnalyticsPageUrl(
+    typeof value.pageReferrer === 'string' ? value.pageReferrer : undefined,
+  );
 
   return {
     clientId,
     ...(Number.isSafeInteger(sessionId) && sessionId > 0 ? { sessionId } : {}),
     ...(isValidIntent(value.primaryIntent) ? { primaryIntent: value.primaryIntent } : {}),
+    ...(pageLocation ? { pageLocation } : {}),
+    ...(pageReferrer ? { pageReferrer } : {}),
+    ...(Number.isSafeInteger(engagementTimeMsec) && engagementTimeMsec > 0
+      ? { engagementTimeMsec: Math.min(engagementTimeMsec, 3_600_000) }
+      : {}),
     consent: {
       analyticsStorage: 'granted',
       adUserData: value.consent.adUserData as AnalyticsConsentStatus,

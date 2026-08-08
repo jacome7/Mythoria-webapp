@@ -19,6 +19,7 @@ export interface SampleBook {
   recipientType?: string;
   storyIntent?: string;
   fictionalUserContext?: string;
+  publicProvenance?: 'mythoria_created_example';
   safetyNotes?: string[];
   placement?: string;
   status?: string;

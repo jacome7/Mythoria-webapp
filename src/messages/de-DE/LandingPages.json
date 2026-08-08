@@ -1,20 +1,26 @@
 {
   "LandingPages": {
     "defaults": {
-      "booksEyebrow": "Fictional examples",
-      "booksTitle": "Five book ideas to get started",
-      "booksIntro": "These concepts show possible directions. They are fictional examples, not customer testimonials or public stories."
+      "booksEyebrow": "Vollständige Buchbeispiele",
+      "booksTitle": "Echte Beispiele, die für Mythoria erstellt wurden",
+      "booksIntro": "Dies sind vollständige Beispielbücher, die für Mythoria erstellt wurden. Figuren und Situationen können erfunden sein; es sind keine Kundenstimmen."
     },
-    "editorialReviewed": "Mythoria editorial content · Reviewed {date}",
-    "faqTitle": "Frequently asked questions",
+    "editorialReviewed": "Mythoria-Redaktion · Geprüft am {date}",
+    "faqTitle": "Häufig gestellte Fragen",
+    "pricing": {
+      "eyebrow": "Transparente Preise",
+      "title": "Kosten vor der Erstellung prüfen",
+      "body": "Jedes neue Konto enthält 5 kostenlose Credits. Die vollständige Preistabelle zeigt die Credits für E-Book, Hörbuch, PDF-Download und Druckbestellung. Die jeweiligen Kosten werden vor jeder Bestätigung angezeigt.",
+      "cta": "Preise und Credits ansehen"
+    },
     "related": {
       "guideEyebrow": "In-depth guide",
       "guide": "Read the complete guide",
-      "sample": "Read the fictional example “{title}”",
-      "eyebrow": "Explore more",
-      "title": "You may also be interested in",
-      "intro": "Keep exploring ideas, occasions and thoughtful ways to turn memories into personalized books.",
-      "explore": "Explore {title}"
+      "sample": "Vollständiges Beispiel „{title}“ lesen",
+      "eyebrow": "Mehr entdecken",
+      "title": "Das könnte Sie auch interessieren",
+      "intro": "Entdecken Sie weitere Ideen, Anlässe und sorgfältige Wege, Erinnerungen in personalisierte Bücher zu verwandeln.",
+      "explore": "{title} entdecken"
     },
     "book": {
       "chapters": "Chapters",

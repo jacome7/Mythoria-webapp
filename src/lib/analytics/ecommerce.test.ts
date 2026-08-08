@@ -156,4 +156,28 @@ describe('GA4 ecommerce payloads', () => {
       },
     });
   });
+
+  it('keeps only sanitized same-origin page context', () => {
+    const consent = {
+      analyticsStorage: 'granted' as const,
+      adUserData: 'denied' as const,
+      adPersonalization: 'denied' as const,
+    };
+
+    expect(
+      sanitizeClientAnalyticsContext({
+        clientId: '123.456',
+        consent,
+        pageLocation:
+          'https://mythoria.pt/en-US/stories/00000000-0000-4000-8000-000000000001?token=secret',
+        pageReferrer: 'https://external.example/campaign?email=reader@example.com',
+        engagementTimeMsec: 450,
+      }),
+    ).toEqual({
+      clientId: '123.456',
+      consent,
+      pageLocation: 'https://mythoria.pt/en-US/stories/:id',
+      engagementTimeMsec: 450,
+    });
+  });
 });

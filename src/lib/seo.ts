@@ -190,8 +190,14 @@ export function resolveFileBackedPublicSeoPath(pathname: string): FileBackedSeoR
   const suffix = pathSuffix || '';
   let canonical: string | null = null;
 
+  if (suffix === '/undefined/p/undefined') {
+    return { type: 'notFound' };
+  }
+
   if (STATIC_LOCALIZED_PATH_SUFFIXES.has(suffix)) {
     canonical = buildLocalizedPath(locale ?? DEFAULT_LOCALE, suffix);
+  } else if (suffix === '/dashboard') {
+    canonical = buildLocalizedPath(locale ?? DEFAULT_LOCALE, '/my-stories');
   } else if (suffix === '/lp') {
     canonical = buildLocalizedPath('pt-PT', suffix);
   } else {

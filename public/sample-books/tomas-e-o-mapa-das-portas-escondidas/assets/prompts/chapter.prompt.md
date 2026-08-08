@@ -1,0 +1,3 @@
+# Chapter illustration — Tomás e o Mapa das Portas Escondidas
+
+Use case: illustration-story. Wide 1536x1024 papercut chapter illustration using the exact same Tomás design as the cover prompt. Tomás and Sara, a fictional 8-year-old girl with dark skin, two puff ponytails and a mustard cardigan, stand together in an original layered paper city plaza. They each hold one half of a folded map as a final blue paper door rises between a library, a fountain and a small clock tower. Visible cut edges, paper fibres, clear depth, strong mobile readability, cooperative mood. No words, real place, logo, watermark, dangerous road action or protected imagery.

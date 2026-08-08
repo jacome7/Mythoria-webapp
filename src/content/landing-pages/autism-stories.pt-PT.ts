@@ -15,7 +15,7 @@ export const autismStoriesLandingPage: LandingPageContent = {
     'Histórias personalizadas para crianças com PEA ou PHDA: use interesses e rotinas para antecipar situações novas, como o dentista ou a escola. Ler, ouvir ou imprimir.',
   primaryIntent: 'personalised_autism_stories',
   riskRating: 'yellow',
-  updatedAt: '2026-06-15',
+  updatedAt: '2026-08-04',
   indexable: true,
   breadcrumbLabel: 'Livros para crianças com PEA e PHDA',
   ogImageSrc: `${assetBase}/hero/og-cover.jpeg`,

@@ -508,7 +508,7 @@ export default function GetInspiredPageClient({
                   {tGetInspiredPage('filters.clearAll')}
                 </button>
               ) : (
-                <Link href={`/${locale}/dashboard`} className="btn btn-primary">
+                <Link href={`/${locale}/my-stories`} className="btn btn-primary">
                   {tGetInspiredPage('gallery.createStory')}
                 </Link>
               )}

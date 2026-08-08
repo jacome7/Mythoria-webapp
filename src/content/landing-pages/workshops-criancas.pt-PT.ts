@@ -15,7 +15,7 @@ export const workshopsChildrenLandingPage: LandingPageContent = {
     'Workshops de escrita criativa, ilustração e livros personalizados para ATL, ateliers, bibliotecas, escolas e campos de férias.',
   primaryIntent: 'children_workshops_atl',
   riskRating: 'green',
-  updatedAt: '2026-07-19',
+  updatedAt: '2026-08-04',
   indexable: true,
   breadcrumbLabel: 'Workshops para crianças',
   ogImageSrc: `${assetBase}/hero/og-cover.jpg`,
@@ -700,7 +700,7 @@ export const workshopsChildrenLandingPage: LandingPageContent = {
     {
       question: 'Os exemplos desta página são histórias reais?',
       answer:
-        'Não. São exemplos ficcionais de demonstração, criados para mostrar formatos possíveis sem expor crianças, famílias ou clientes reais.',
+        'Não. São livros-exemplo completos, criados para mostrar formatos possíveis sem expor crianças, famílias ou clientes reais.',
     },
   ],
   finalCta: {
