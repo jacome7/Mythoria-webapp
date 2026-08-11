@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "El balón brilló por primera vez cuando el pase llegó a quien nadie estaba mirando. El balón brilló por primera vez cuando el pase llegó a quien nadie estaba mirando. Una línea plateada cruzó el campo del barrio y unió a los Cometas como una constelación. Hugo vio el espacio, Mateo retrocedió, Lucía dio el pase sencillo, Mei eligió el momento y Noa siguió corriendo. El gol no pertenecía a una sola estrella: todo el cielo lo había dibujado el equipo.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 44.04,
+  "generatedAt": "2026-08-11T02:55:42.685Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.7478,
+    "rmsRatio": 0.0782,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

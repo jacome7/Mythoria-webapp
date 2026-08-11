@@ -114,14 +114,15 @@ Both flows use Mythoria credits, require a **published** story, and are availabl
 1. Authenticates the author and validates the story is published and accessible.
 2. Validates recipient emails and ensures an account email exists.
 3. Verifies self-print pricing and credit balance.
-4. Deducts credits, then calls SGW `/print/self-service` with metadata.
-5. Refunds credits if SGW fails, and returns a localized error.
-6. Returns workflow identifiers and updated credit balance on success.
+4. Atomically creates a durable product request and deducts credits with an idempotency key.
+5. Calls SGW `/print/self-service` with the stable workflow ID and records `self_print_requested` only after queue success.
+6. Compensates once if queueing fails and returns workflow identifiers and updated credit balance on success.
 
 ### Pub/Sub integration
 
 - `src/lib/print-pubsub.ts` publishes print-generation messages to the topic `mythoria-print-requests` with `{ storyId, runId }`.
 - Print generation is intentionally **non-blocking**; order success does not depend on the Pub/Sub trigger.
+- An accepted physical-book order records the server-authoritative `print_order_requested` event using the existing print request ID as its deduplication source.
 
 ### Credit events and pricing seeds
 

@@ -1,16 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import { getTranslations } from 'next-intl/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { creditService, pricingService, storyService } from '@/db/services';
 import { sgwFetch } from '@/lib/sgw-client';
 import { SELF_PRINTING_SERVICE_CODE } from '@/constants/pricing';
+import { resolveServerAnalyticsContext } from '@/lib/analytics/server-context';
+import { analyticsReference } from '@/lib/analytics/reference';
+import {
+  compensateProductGeneration,
+  InsufficientProductCreditsError,
+  markProductGenerationQueued,
+  startProductGeneration,
+} from '@/lib/product-generation';
 
 interface SelfPrintRequestBody {
   email?: string;
   emails?: string[];
   ccAccountEmail?: boolean;
   generateCMYK?: boolean;
+  analyticsContext?: unknown;
 }
 
 interface SelfPrintWorkflowSuccessResponse {
@@ -124,22 +133,47 @@ export async function POST(
     }
 
     const currentBalance = await creditService.getAuthorCreditBalance(author.authorId);
-    if (currentBalance < pricing.credits) {
+    const analytics = await resolveServerAnalyticsContext({
+      browserContext: body.analyticsContext,
+      attributionId: request.cookies.get('mythoria_attribution')?.value,
+      authorId: author.authorId,
+      storedConsentValue: request.cookies.get('mythoria_consent')?.value,
+    });
+    const started = await startProductGeneration({
+      actionType: 'self_print',
+      authorId: author.authorId,
+      userId: author.clerkUserId,
+      storyId,
+      idempotencyKey: request.headers.get('idempotency-key')?.trim() || randomUUID(),
+      creditsSpent: pricing.credits,
+      creditEventType: 'selfPrinting',
+      attributionId: analytics.attributionId,
+      analyticsContext: analytics.context,
+      analyticsConsent: analytics.consent,
+      primaryIntent: analytics.primaryIntent,
+      landingSlug: analytics.landingSlug,
+    });
+    const workflowId = started.request.runId;
+
+    if (started.request.status === 'failed') {
       return NextResponse.json(
-        {
-          success: false,
-          error: 'Insufficient credits',
-          required: pricing.credits,
-          available: currentBalance,
-          shortfall: pricing.credits - currentBalance,
-        },
-        { status: 402 },
+        { success: false, error: 'Previous self-print request failed; retry the request' },
+        { status: 409 },
       );
     }
+    if (started.request.status !== 'pending') {
+      return NextResponse.json({
+        success: true,
+        storyId,
+        workflowId,
+        executionId: started.request.queueReference || '',
+        message: 'Self-print workflow already started',
+        recipients: normalizedRequestedEmails,
+        creditsDeducted: pricing.credits,
+        balance: { previous: currentBalance, current: started.remainingCredits },
+      });
+    }
 
-    await creditService.deductCredits(author.authorId, pricing.credits, 'selfPrinting', storyId);
-
-    const workflowId = uuidv4();
     const recipientPayload = normalizedRequestedEmails.map((email) => ({ email }));
     let workflowResult: SelfPrintWorkflowSuccessResponse;
     try {
@@ -156,7 +190,6 @@ export async function POST(
             requestSource: 'webapp',
             requestedByAuthorId: author.authorId,
             requestedByEmail: author.email,
-            storyTitle: story.title,
           },
         }),
       });
@@ -170,8 +203,7 @@ export async function POST(
           response: parsed,
         });
 
-        // Refund credits
-        await creditService.addCredits(author.authorId, pricing.credits, 'refund');
+        await compensateProductGeneration(workflowId, 'queue', 'workflow_enqueue_failed');
 
         const t = await getTranslations({
           locale: author.preferredLocale || 'en-US',
@@ -192,8 +224,7 @@ export async function POST(
     } catch (error) {
       console.error('Self-print workflow threw', { storyId, error });
 
-      // Refund credits
-      await creditService.addCredits(author.authorId, pricing.credits, 'refund');
+      await compensateProductGeneration(workflowId, 'queue', 'workflow_enqueue_failed');
 
       const t = await getTranslations({
         locale: author.preferredLocale || 'en-US',
@@ -210,13 +241,11 @@ export async function POST(
       );
     }
 
-    const newBalance = await creditService.getAuthorCreditBalance(author.authorId);
+    await markProductGenerationQueued(workflowId, workflowResult.executionId);
 
     console.info('[SelfPrint] Workflow queued', {
-      storyId,
-      workflowId: workflowResult.workflowId ?? workflowId,
-      executionId: workflowResult.executionId,
-      recipients: workflowResult.recipients,
+      workflowRef: analyticsReference(workflowId),
+      recipientCount: workflowResult.recipients.length,
     });
 
     return NextResponse.json({
@@ -229,10 +258,24 @@ export async function POST(
       creditsDeducted: pricing.credits,
       balance: {
         previous: currentBalance,
-        current: newBalance,
+        current: started.remainingCredits,
       },
     });
   } catch (error) {
+    if (error instanceof InsufficientProductCreditsError) {
+      const pricing = await pricingService.getPricingByServiceCode(SELF_PRINTING_SERVICE_CODE);
+      const required = pricing?.credits ?? 0;
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Insufficient credits',
+          required,
+          available: error.available,
+          shortfall: Math.max(0, required - error.available),
+        },
+        { status: 402 },
+      );
+    }
     console.error('Error handling self-print request', error);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }

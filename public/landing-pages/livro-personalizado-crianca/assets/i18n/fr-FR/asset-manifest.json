@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0",
+  "locale": "fr-FR",
+  "source": "public/sample-books",
+  "deterministicComposition": {
+    "localizedCoverTitles": true
+  },
+  "books": [
+    {
+      "slug": "mia-e-a-pastelaria-da-lua",
+      "title": "Mia et la Boulangerie de la Lune",
+      "files": [
+        "cover.jpeg",
+        "feature.jpeg",
+        "chapter-01.jpeg"
+      ]
+    },
+    {
+      "slug": "tomas-e-o-mapa-das-portas-escondidas",
+      "title": "Théo et la Carte des Portes Cachées",
+      "files": [
+        "cover.jpeg",
+        "feature.jpeg",
+        "chapter-01.jpeg"
+      ]
+    },
+    {
+      "slug": "lia-e-o-jardim-das-palavras-perdidas",
+      "title": "Léa et le Jardin des Mots Perdus",
+      "files": [
+        "cover.jpeg",
+        "feature.jpeg",
+        "chapter-01.jpeg"
+      ]
+    },
+    {
+      "slug": "a-equipa-que-marcou-um-golo-nas-estrelas",
+      "title": "L’Équipe qui a Marqué un But dans les Étoiles",
+      "files": [
+        "cover.jpeg",
+        "feature.jpeg",
+        "chapter-01.jpeg"
+      ]
+    },
+    {
+      "slug": "ines-e-o-robo-feito-de-desenhos",
+      "title": "Inès et le Robot Fait de Dessins",
+      "files": [
+        "cover.jpeg",
+        "feature.jpeg",
+        "chapter-01.jpeg"
+      ]
+    }
+  ]
+}

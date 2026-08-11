@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "En el jardín de Lucía, las palabras no estaban escritas: crecían despacio entre las hojas. En el jardín de Lucía, las palabras no estaban escritas: crecían despacio entre las hojas. Una flor azul se abrió junto al romero y dijo «cobijo»; otra solo sabía repetir «ahora voy». La tía Amelia explicó que una palabra sin su historia pesa tan poco que desaparece. En vez de arrancar la flor, Lucía la dibujó y escuchó el recuerdo familiar que guardaba. Durante la cena, todos revisaron juntos la nueva página.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 51.64,
+  "generatedAt": "2026-08-11T02:55:17.985Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.8746,
+    "rmsRatio": 0.085,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

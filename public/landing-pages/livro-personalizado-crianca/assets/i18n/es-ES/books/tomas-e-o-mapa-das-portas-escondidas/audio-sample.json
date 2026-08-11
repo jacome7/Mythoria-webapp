@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "El mapa parecía de papel normal hasta que la primera puerta se levantó de la página. El mapa parecía normal hasta que la primera puerta se levantó de la página. Tomás lo encontró dentro de un libro sin título en la biblioteca y lo tocó con la punta del lápiz. Él y Sara cruzaron una ciudad de papel donde los árboles eran abanicos y los pájaros tenían alas de sobre. La última puerta no tenía pomo, sino dos marcas con forma de mano. Al apoyarlas a la vez, se abrió como una flor azul.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 44.4,
+  "generatedAt": "2026-08-11T02:54:47.424Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.7808,
+    "rmsRatio": 0.0856,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

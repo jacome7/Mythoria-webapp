@@ -94,6 +94,9 @@ describe('sitemap.xml route', () => {
     expect(xml).toContain('<loc>https://mythoria.pt/pt-PT/lp/historias-de-apoio</loc>');
     expect(xml).toContain('<loc>https://mythoria.pt/pt-PT/lp/livro-personalizado-ferias</loc>');
     for (const url of [
+      'https://mythoria.pt/en-US/lp/personalized-childrens-book',
+      'https://mythoria.pt/es-ES/lp/libro-personalizado-para-ninos',
+      'https://mythoria.pt/fr-FR/lp/livre-personnalise-pour-enfants',
       'https://mythoria.pt/en-US/lp/personalized-vacation-book',
       'https://mythoria.pt/es-ES/lp/libro-personalizado-vacaciones',
       'https://mythoria.pt/fr-FR/lp/livre-personnalise-vacances',

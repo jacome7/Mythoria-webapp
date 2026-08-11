@@ -89,6 +89,9 @@ describe('romance landing page route', () => {
     );
     expect(metadata.alternates?.languages).toEqual({
       'pt-PT': 'https://mythoria.pt/pt-PT/lp/livro-personalizado-crianca',
+      'en-US': 'https://mythoria.pt/en-US/lp/personalized-childrens-book',
+      'es-ES': 'https://mythoria.pt/es-ES/lp/libro-personalizado-para-ninos',
+      'fr-FR': 'https://mythoria.pt/fr-FR/lp/livre-personnalise-pour-enfants',
     });
     expect(metadata.robots).toBe('index,follow,max-snippet:-1,max-image-preview:large');
     expect(metadata.openGraph?.images).toEqual([

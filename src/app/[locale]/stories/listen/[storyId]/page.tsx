@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import {
   ArrowLeft,
@@ -29,6 +29,7 @@ import { SelfPrintModal } from '../../../../../components/self-print/SelfPrintMo
 import VoiceSamplePlayer from '@/components/VoiceSamplePlayer';
 import { getAvailableVoices, getDefaultVoice } from '@/lib/voice-options';
 import { TargetAudience } from '@/types/story-enums';
+import { getGoogleAnalyticsContext } from '@/lib/analytics';
 
 interface Story {
   storyId: string;
@@ -147,6 +148,7 @@ export default function ListenStoryPage() {
   const [audioGenerationProgress, setAudioGenerationProgress] = useState<string>('');
   const [selectedVoice, setSelectedVoice] = useState<string>(getDefaultVoice());
   const [includeBackgroundMusic, setIncludeBackgroundMusic] = useState(true);
+  const audiobookIdempotencyKeyRef = useRef<string | null>(null);
   const { toasts, removeToast, successWithAction, error: toastError, info: toastInfo } = useToast();
 
   // Initialize audio player hook
@@ -322,14 +324,18 @@ export default function ListenStoryPage() {
       setIsGeneratingAudio(true);
       setAudioGenerationProgress(tListenStory('startingGeneration'));
 
+      audiobookIdempotencyKeyRef.current ||= crypto.randomUUID();
+      const analyticsContext = await getGoogleAnalyticsContext();
       const response = await fetch(`/api/stories/${storyId}/generate-audiobook`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Idempotency-Key': audiobookIdempotencyKeyRef.current,
         },
         body: JSON.stringify({
           voice: selectedVoice,
           includeBackgroundMusic,
+          analyticsContext,
         }),
       });
 
@@ -345,6 +351,7 @@ export default function ListenStoryPage() {
         // Start polling for updates
       } else {
         const errorData = await response.json();
+        audiobookIdempotencyKeyRef.current = null;
         if (response.status === 402) {
           // Insufficient credits
           throw new Error(

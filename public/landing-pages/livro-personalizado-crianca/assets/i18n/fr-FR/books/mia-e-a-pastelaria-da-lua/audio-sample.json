@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Lorsque la Lune ouvrit sa petite boulangerie, Mia fut la première à sentir les étoiles chaudes. Mia était blottie sous sa couverture jaune lorsque le parfum des étoiles chaudes entra par la fenêtre. Au bout d’un escalier de lumière, des pétrins en cuivre tournaient lentement et des pains ronds dormaient sous des linges brodés. Madame Aurore expliqua qu’il manquait le dernier pain de la nuit : il fallait un souvenir réconfortant, une petite dose de courage et quelqu’un avec qui partager. Mia pensa à la tarte du dimanche et partagea la pâte en deux.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 41.12,
+  "generatedAt": "2026-08-11T02:56:27.597Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.4837,
+    "rmsRatio": 0.0651,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

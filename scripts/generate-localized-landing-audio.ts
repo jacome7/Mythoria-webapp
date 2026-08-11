@@ -187,12 +187,14 @@ async function main() {
       if (!book.audioSampleSrc || !book.sampleChapter) continue;
       const outputPath = join(process.cwd(), 'public', book.audioSampleSrc.replace(/^\//, ''));
       const manifestPath = join(dirname(outputPath), 'audio-sample.json');
-      const text = [
-        sampleIntroductions[page.locale](book.title, book.sampleChapter.title),
-        book.excerpt,
-        ...book.sampleChapter.paragraphs,
-        book.synopsis,
-      ].join(' ');
+      const text =
+        book.audioSampleTranscript ??
+        [
+          sampleIntroductions[page.locale](book.title, book.sampleChapter.title),
+          book.excerpt,
+          ...book.sampleChapter.paragraphs,
+          book.synopsis,
+        ].join(' ');
       const voiceDirection = directions[page.locale];
       if (
         !options.overwrite &&

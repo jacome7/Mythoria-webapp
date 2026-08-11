@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { printRequests, printProviders, stories, addresses, authors } from '@/db/schema';
+import {
+  analyticsOutbox,
+  printRequests,
+  printProviders,
+  stories,
+  addresses,
+  authors,
+} from '@/db/schema';
 import { eq, and, desc, or } from 'drizzle-orm';
 import { getCurrentAuthor } from '@/lib/auth';
 import { creditService } from '@/db/services';
@@ -8,6 +15,9 @@ import { getEnvironmentConfig } from '@/config/environment';
 import { PrintPubSubService } from '@/lib/print-pubsub';
 import { v4 as uuidv4 } from 'uuid';
 import { normalizeLocale } from '@/utils/locale-utils';
+import { resolveServerAnalyticsContext } from '@/lib/analytics/server-context';
+import { analyticsReference } from '@/lib/analytics/reference';
+import { printOrderRequestedOutboxEntry } from '@/lib/product-generation';
 
 export async function GET(request: NextRequest) {
   try {
@@ -324,6 +334,40 @@ export async function POST(request: NextRequest) {
         },
         { status: 500 },
       );
+    }
+
+    try {
+      const analytics = await resolveServerAnalyticsContext({
+        browserContext: body.analyticsContext,
+        attributionId: request.cookies.get('mythoria_attribution')?.value,
+        authorId: author.authorId,
+        storedConsentValue: request.cookies.get('mythoria_consent')?.value,
+      });
+      const outboxEntry = printOrderRequestedOutboxEntry({
+        printRequestId: newRequest[0].id,
+        storyId: body.storyId,
+        authorId: author.authorId,
+        userId: author.clerkUserId,
+        creditsSpent: totalCost,
+        numberOfCopies,
+        occurredAt: newRequest[0].requestedAt,
+        attributionId: analytics.attributionId,
+        analyticsContext: analytics.context,
+        analyticsConsent: analytics.consent,
+        primaryIntent: analytics.primaryIntent,
+        landingSlug: analytics.landingSlug,
+      });
+      if (outboxEntry) {
+        await db
+          .insert(analyticsOutbox)
+          .values(outboxEntry)
+          .onConflictDoNothing({ target: analyticsOutbox.dedupeKey });
+      }
+    } catch (analyticsError) {
+      console.error('[PrintOrder] Failed to persist requested analytics event', {
+        requestRef: analyticsReference(newRequest[0].id),
+        error: analyticsError instanceof Error ? analyticsError.message : String(analyticsError),
+      });
     }
 
     // ---------------------------------------------------------------

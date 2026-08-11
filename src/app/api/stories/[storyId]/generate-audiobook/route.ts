@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
-import { creditService, pricingService, storyService } from '@/db/services';
+import { pricingService, storyService } from '@/db/services';
 import { publishAudiobookRequest } from '@/lib/pubsub';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
+import { resolveServerAnalyticsContext } from '@/lib/analytics/server-context';
+import { analyticsReference } from '@/lib/analytics/reference';
+import {
+  compensateProductGeneration,
+  InsufficientProductCreditsError,
+  markProductGenerationQueued,
+  startProductGeneration,
+} from '@/lib/product-generation';
 
 export async function POST(
   request: NextRequest,
@@ -17,7 +25,7 @@ export async function POST(
 
     const { storyId } = await params;
     const body = await request.json();
-    const { voice = 'coral', includeBackgroundMusic = true } = body;
+    const { voice = 'coral', includeBackgroundMusic = true, analyticsContext } = body;
 
     // Validate that the story belongs to the user and get story data
     const story = await storyService.getStoryById(storyId);
@@ -39,35 +47,49 @@ export async function POST(
       return NextResponse.json({ error: 'Audiobook pricing not configured' }, { status: 500 });
     }
 
-    // Check if user has sufficient credits
-    const currentBalance = await creditService.getAuthorCreditBalance(author.authorId);
-    if (currentBalance < audiobookPricing.credits) {
+    const analytics = await resolveServerAnalyticsContext({
+      browserContext: analyticsContext,
+      attributionId: request.cookies.get('mythoria_attribution')?.value,
+      authorId: author.authorId,
+      storedConsentValue: request.cookies.get('mythoria_consent')?.value,
+    });
+    const started = await startProductGeneration({
+      actionType: 'audiobook_generation',
+      authorId: author.authorId,
+      userId: author.clerkUserId,
+      storyId,
+      idempotencyKey: request.headers.get('idempotency-key')?.trim() || randomUUID(),
+      creditsSpent: audiobookPricing.credits,
+      creditEventType: 'audioBookGeneration',
+      attributionId: analytics.attributionId,
+      analyticsContext: analytics.context,
+      analyticsConsent: analytics.consent,
+      primaryIntent: analytics.primaryIntent,
+      landingSlug: analytics.landingSlug,
+    });
+    const runId = started.request.runId;
+
+    if (started.request.status === 'failed') {
+      return NextResponse.json(
+        { error: 'Previous audiobook generation request failed; retry with a new request' },
+        { status: 409 },
+      );
+    }
+    if (started.request.status !== 'pending') {
       return NextResponse.json(
         {
-          error: 'Insufficient credits',
-          required: audiobookPricing.credits,
-          available: currentBalance,
-          shortfall: audiobookPricing.credits - currentBalance,
+          success: true,
+          message: 'Audiobook generation already started',
+          storyId,
+          runId,
+          voice,
+          status: started.request.status,
+          creditsDeducted: audiobookPricing.credits,
+          newBalance: started.remainingCredits,
         },
-        { status: 402 },
-      ); // Payment Required
-    }
-
-    // Deduct credits first (before calling the service)
-    try {
-      await creditService.deductCredits(
-        author.authorId,
-        audiobookPricing.credits,
-        'audioBookGeneration',
-        storyId,
+        { status: 202 },
       );
-    } catch (error) {
-      console.error('Error deducting credits:', error);
-      return NextResponse.json({ error: 'Failed to deduct credits' }, { status: 500 });
     }
-
-    // Generate a unique run ID for this audiobook generation
-    const runId = uuidv4();
 
     // Update story status to indicate audiobook generation is in progress
     await storyService.updateStory(storyId, {
@@ -75,16 +97,17 @@ export async function POST(
     });
 
     // Publish the Pub/Sub message to trigger the audiobook generation workflow
+    let messageId: string;
     try {
-      await publishAudiobookRequest({
-        storyId: storyId,
-        runId: runId,
-        voice: voice,
-        includeBackgroundMusic: includeBackgroundMusic,
-        timestamp: new Date().toISOString(),
-      });
-
-      console.log(`Audiobook generation request published for story ${storyId}, run ${runId}`);
+      messageId = String(
+        await publishAudiobookRequest({
+          storyId: storyId,
+          runId: runId,
+          voice: voice,
+          includeBackgroundMusic: includeBackgroundMusic,
+          timestamp: new Date().toISOString(),
+        }),
+      );
     } catch (pubsubError) {
       console.error('Failed to publish audiobook request:', pubsubError);
 
@@ -93,16 +116,17 @@ export async function POST(
         audiobookStatus: null,
       });
 
-      await creditService.addCredits(author.authorId, audiobookPricing.credits, 'refund');
+      await compensateProductGeneration(runId, 'queue', 'pubsub_publish_failed');
 
       return NextResponse.json(
         { error: 'Failed to start audiobook generation workflow' },
         { status: 500 },
       );
     }
-
-    // Get updated balance
-    const newBalance = await creditService.getAuthorCreditBalance(author.authorId);
+    await markProductGenerationQueued(runId, messageId);
+    console.info('[Audiobook] Generation request queued', {
+      runRef: analyticsReference(runId),
+    });
 
     // Return 202 Accepted to indicate async processing
     return NextResponse.json(
@@ -114,11 +138,24 @@ export async function POST(
         voice: voice,
         status: 'queued',
         creditsDeducted: audiobookPricing.credits,
-        newBalance,
+        newBalance: started.remainingCredits,
       },
       { status: 202 },
     );
   } catch (error) {
+    if (error instanceof InsufficientProductCreditsError) {
+      const pricing = await pricingService.getPricingByServiceCode('audioBookGeneration');
+      const required = pricing?.credits ?? 0;
+      return NextResponse.json(
+        {
+          error: 'Insufficient credits',
+          required,
+          available: error.available,
+          shortfall: Math.max(0, required - error.available),
+        },
+        { status: 402 },
+      );
+    }
     console.error('Error generating audiobook:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

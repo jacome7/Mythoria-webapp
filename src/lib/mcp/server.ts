@@ -20,6 +20,11 @@ import {
 import { publishAudiobookRequest } from '@/lib/pubsub';
 import { startStoryGeneration } from '@/lib/story-generation';
 import {
+  compensateProductGeneration,
+  markProductGenerationQueued,
+  startProductGeneration,
+} from '@/lib/product-generation';
+import {
   getAvailableVoices,
   getDefaultVoice,
   getTTSProvider,
@@ -5640,41 +5645,50 @@ function registerFulfillmentTools(server: McpServer, authContext: McpAuthContext
           );
         }
 
-        await creditService.deductCredits(
-          author.authorId,
-          requiredCredits,
-          'audioBookGeneration',
-          story.storyId,
-        );
-
-        const runId = crypto.randomUUID();
-        await storyService.updateStory(story.storyId, {
-          audiobookStatus: 'generating',
+        const started = await startProductGeneration({
+          actionType: 'audiobook_generation',
+          authorId: author.authorId,
+          userId: author.clerkUserId,
+          storyId: story.storyId,
+          idempotencyKey: `mcp:audiobook:${author.authorId}:${story.storyId}:${crypto.randomUUID()}`,
+          creditsSpent: requiredCredits,
+          creditEventType: 'audioBookGeneration',
         });
+        const runId = started.request.runId;
 
-        try {
-          await publishAudiobookRequest({
-            storyId: story.storyId,
-            runId,
-            voice: selectedVoice,
-            includeBackgroundMusic,
-            language: input.language ?? story.storyLanguage,
-            timestamp: new Date().toISOString(),
-          });
-        } catch (error) {
-          console.error('Failed to publish audiobook request from MCP tool:', error);
+        if (started.request.status === 'pending') {
           await storyService.updateStory(story.storyId, {
-            audiobookStatus: null,
+            audiobookStatus: 'generating',
           });
-          await creditService.addCredits(author.authorId, requiredCredits, 'refund');
-          throw new McpToolUserError('Failed to queue audiobook generation workflow.');
+
+          let messageId: string;
+          try {
+            messageId = String(
+              await publishAudiobookRequest({
+                storyId: story.storyId,
+                runId,
+                voice: selectedVoice,
+                includeBackgroundMusic,
+                language: input.language ?? story.storyLanguage,
+                timestamp: new Date().toISOString(),
+              }),
+            );
+          } catch (error) {
+            console.error('Failed to publish audiobook request from MCP tool:', error);
+            await storyService.updateStory(story.storyId, {
+              audiobookStatus: null,
+            });
+            await compensateProductGeneration(runId, 'queue', 'pubsub_publish_failed');
+            throw new McpToolUserError('Failed to queue audiobook generation workflow.');
+          }
+          await markProductGenerationQueued(runId, messageId);
         }
 
         const refreshedStory = ensureStoryOwnership(
           await storyService.getStoryById(story.storyId),
           author.authorId,
         );
-        const newBalance = Math.max(0, currentBalance - requiredCredits);
+        const newBalance = started.remainingCredits;
         const job = createTrackedJobDescriptor('audiobook_generation', story.storyId, { runId });
 
         return toStructuredToolResult(copy.generationQueued, {

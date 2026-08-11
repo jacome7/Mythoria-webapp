@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Le robot d’Inès avait trois roues, deux ailes en papier et une question dessinée sur la poitrine. Le robot d’Inès avait trois roues, deux ailes en papier et une question dessinée sur la poitrine. À minuit, il sortit du carnet dans le léger crissement d’un crayon de couleur. Gribouille trouvait les petits objets et triait les formes, mais aucune tâche n’expliquait sa raison d’être. Inès dessina trois cercles : « je peux », « j’aime » et « j’aide ». Lorsqu’il compara les idées sans choisir pour elle, la question se mit à briller.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 41.28,
+  "generatedAt": "2026-08-11T02:57:57.017Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.8427,
+    "rmsRatio": 0.0754,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

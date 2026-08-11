@@ -246,6 +246,13 @@
       "when": 1786195421095,
       "tag": "0034_windy_vulcan",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1786416354336,
+      "tag": "0035_mighty_luke_cage",
+      "breakpoints": true
     }
   ]
 }

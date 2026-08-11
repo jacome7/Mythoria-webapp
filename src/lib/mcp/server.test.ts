@@ -18,6 +18,9 @@ import {
 const publishStoryRequestMock = jest.fn();
 const publishAudiobookRequestMock = jest.fn();
 const startStoryGenerationMock = jest.fn();
+const startProductGenerationMock = jest.fn();
+const markProductGenerationQueuedMock = jest.fn();
+const compensateProductGenerationMock = jest.fn();
 
 jest.mock('@/lib/pubsub', () => ({
   publishStoryRequest: (...args: unknown[]) => publishStoryRequestMock(...args),
@@ -26,6 +29,12 @@ jest.mock('@/lib/pubsub', () => ({
 
 jest.mock('@/lib/story-generation', () => ({
   startStoryGeneration: (...args: unknown[]) => startStoryGenerationMock(...args),
+}));
+
+jest.mock('@/lib/product-generation', () => ({
+  startProductGeneration: (...args: unknown[]) => startProductGenerationMock(...args),
+  markProductGenerationQueued: (...args: unknown[]) => markProductGenerationQueuedMock(...args),
+  compensateProductGeneration: (...args: unknown[]) => compensateProductGenerationMock(...args),
 }));
 
 jest.mock('@/db/services', () => ({
@@ -698,6 +707,11 @@ describe('story listening tools', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    startProductGenerationMock.mockResolvedValue({
+      request: { runId: 'audio-run-1', status: 'pending' },
+      remainingCredits: 8,
+      duplicate: false,
+    });
   });
 
   it('returns listening status with chapter entries for an owner story', async () => {
@@ -847,7 +861,6 @@ describe('story listening tools', () => {
       credits: 4,
     } as any);
     mockedCreditService.getAuthorCreditBalance.mockResolvedValue(12);
-    mockedCreditService.deductCredits.mockResolvedValue({ id: 'ledger-audio-1' } as any);
     mockedStoryService.updateStory.mockResolvedValue({
       storyId: 'story-narrate-queue',
       authorId: 'author-1',
@@ -870,13 +883,16 @@ describe('story listening tools', () => {
     });
     const payload = result.structuredContent as Record<string, any>;
 
-    expect(mockedCreditService.deductCredits).toHaveBeenCalledWith(
-      'author-1',
-      4,
-      'audioBookGeneration',
-      'story-narrate-queue',
+    expect(startProductGenerationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        actionType: 'audiobook_generation',
+        authorId: 'author-1',
+        creditsSpent: 4,
+        storyId: 'story-narrate-queue',
+      }),
     );
     expect(publishAudiobookRequestMock).toHaveBeenCalled();
+    expect(markProductGenerationQueuedMock).toHaveBeenCalledWith('audio-run-1', 'audio-msg-1');
     expect(payload.status).toBe('queued');
     expect(payload.job.type).toBe('audiobook_generation');
     expect(typeof payload.job.jobId).toBe('string');

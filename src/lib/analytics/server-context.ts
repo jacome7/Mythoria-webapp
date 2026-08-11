@@ -22,6 +22,7 @@ export interface ResolvedServerAnalyticsContext {
   consent?: AnalyticsConsent;
   attributionId?: string;
   primaryIntent?: ClientAnalyticsContext['primaryIntent'];
+  landingSlug?: string;
 }
 
 type AttributionRow = typeof analyticsAttributions.$inferSelect;
@@ -140,10 +141,12 @@ export async function resolveServerAnalyticsContext({
     : incoming;
   const context = candidateContext ? { ...candidateContext, consent } : undefined;
   const primaryIntent = storedContext?.primaryIntent || incoming?.primaryIntent;
+  const landingSlug = attribution?.firstLandingPath || attribution?.landingSlug || undefined;
   return {
     consent,
     ...(context ? { context: { ...context, ...(primaryIntent ? { primaryIntent } : {}) } } : {}),
     ...(attribution ? { attributionId: attribution.attributionId } : {}),
     ...(primaryIntent ? { primaryIntent } : {}),
+    ...(landingSlug ? { landingSlug } : {}),
   };
 }

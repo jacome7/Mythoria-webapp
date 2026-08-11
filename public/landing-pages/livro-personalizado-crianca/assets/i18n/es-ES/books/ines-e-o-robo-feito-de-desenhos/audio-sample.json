@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "El robot de Inés tenía tres ruedas, dos alas de papel y una pregunta dibujada en el pecho. El robot de Inés tenía tres ruedas, dos alas de papel y una pregunta dibujada en el pecho. A medianoche salió del cuaderno con el suave rasguño de un lápiz de color. Garabato encontraba objetos pequeños y ordenaba formas, pero ninguna tarea explicaba su propósito. Inés dibujó tres círculos: «puedo», «me gusta» y «ayuda». Cuando comparó ideas sin decidir por ella, la pregunta comenzó a brillar.",
+  "voiceDirection": "Español de España como se habla en Madrid, narradora adulta cálida, dicción natural, ritmo de audiolibro pausado a 0,85x con pausas naturales, expresivo sin caricaturizar el acento.",
+  "language": "es-ES",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 46.08,
+  "generatedAt": "2026-08-11T02:56:05.160Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.7719,
+    "rmsRatio": 0.0807,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

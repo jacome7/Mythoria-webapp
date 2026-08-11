@@ -15,12 +15,17 @@ import {
 } from './index';
 
 describe('landing page content registry', () => {
-  it('registers exactly twelve variants in the three translated families without German pages', () => {
-    const translationKeys = ['family-travel', 'romance-gifts', 'grandparents-stories'] as const;
+  it('registers exactly sixteen variants in the four translated families without German pages', () => {
+    const translationKeys = [
+      'personalized-children-books',
+      'family-travel',
+      'romance-gifts',
+      'grandparents-stories',
+    ] as const;
     const variants = translationKeys.flatMap((key) => getLandingPageTranslations(key));
 
-    expect(variants).toHaveLength(12);
-    expect(new Set(variants.map((page) => `${page.locale}:${page.slug}`)).size).toBe(12);
+    expect(variants).toHaveLength(16);
+    expect(new Set(variants.map((page) => `${page.locale}:${page.slug}`)).size).toBe(16);
     expect(variants.map((page) => page.locale)).not.toContain('de-DE');
     for (const key of translationKeys) {
       expect(
@@ -48,15 +53,22 @@ describe('landing page content registry', () => {
 
   it('derives homepage cards from the locale-aware registry', () => {
     expect(getHomepageLandingPageGuides('pt-PT')).toHaveLength(7);
-    expect(getHomepageLandingPageGuides('en-US')).toHaveLength(3);
-    expect(getHomepageLandingPageGuides('es-ES')).toHaveLength(3);
-    expect(getHomepageLandingPageGuides('fr-FR')).toHaveLength(3);
+    expect(getHomepageLandingPageGuides('en-US')).toHaveLength(4);
+    expect(getHomepageLandingPageGuides('es-ES')).toHaveLength(4);
+    expect(getHomepageLandingPageGuides('fr-FR')).toHaveLength(4);
     expect(getHomepageLandingPageGuides('de-DE')).toHaveLength(0);
   });
 
   it('localizes fictional character names and relevant settings in every translated market', () => {
     const visibleBookCopy = (locale: string) =>
-      (['family-travel', 'romance-gifts', 'grandparents-stories'] as const)
+      (
+        [
+          'personalized-children-books',
+          'family-travel',
+          'romance-gifts',
+          'grandparents-stories',
+        ] as const
+      )
         .flatMap((key) => getLandingPageTranslations(key))
         .filter((page) => page.locale === locale)
         .flatMap((page) => page.books)
@@ -74,18 +86,22 @@ describe('landing page content registry', () => {
 
     const english = visibleBookCopy('en-US');
     expect(english).toContain('Eleanor');
+    expect(english).toContain('Maya and the Moonlight Bakery');
+    expect(english).toContain('Brooklyn Public Library');
     expect(english).toContain('Brooklyn');
     expect(english).toContain('New York Aquarium');
     expect(english).not.toMatch(/Leonor|Tomás|Inês|Diogo|Matilde|Rui/);
 
     const spanish = visibleBookCopy('es-ES');
     expect(spanish).toContain('Inés y Diego');
+    expect(spanish).toContain('Lucía y el Jardín');
     expect(spanish).toContain('Madrid');
     expect(spanish).toContain('Oceanogràfic');
     expect(spanish).not.toMatch(/Inês|Diogo|Rui/);
 
     const french = visibleBookCopy('fr-FR');
     expect(french).toContain('Léonie');
+    expect(french).toContain('Théo et la Carte');
     expect(french).toContain('Inès & Hugo');
     expect(french).toContain('Aquarium de Paris');
     expect(french).not.toMatch(/Leonor|Tomás|Inês|Diogo|Matilde|Rui/);

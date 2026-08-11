@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0",
+  "locale": "en-US",
+  "source": "public/sample-books",
+  "deterministicComposition": {
+    "localizedCoverTitles": true
+  },
+  "books": [
+    {
+      "slug": "mia-e-a-pastelaria-da-lua",
+      "title": "Maya and the Moonlight Bakery",
+      "files": [
+        "cover.jpeg",
+        "feature.jpeg",
+        "chapter-01.jpeg"
+      ]
+    },
+    {
+      "slug": "tomas-e-o-mapa-das-portas-escondidas",
+      "title": "Theo and the Map of Hidden Doors",
+      "files": [
+        "cover.jpeg",
+        "feature.jpeg",
+        "chapter-01.jpeg"
+      ]
+    },
+    {
+      "slug": "lia-e-o-jardim-das-palavras-perdidas",
+      "title": "Lily and the Garden of Lost Words",
+      "files": [
+        "cover.jpeg",
+        "feature.jpeg",
+        "chapter-01.jpeg"
+      ]
+    },
+    {
+      "slug": "a-equipa-que-marcou-um-golo-nas-estrelas",
+      "title": "The Team That Scored Among the Stars",
+      "files": [
+        "cover.jpeg",
+        "feature.jpeg",
+        "chapter-01.jpeg"
+      ]
+    },
+    {
+      "slug": "ines-e-o-robo-feito-de-desenhos",
+      "title": "Ivy and the Robot Made of Drawings",
+      "files": [
+        "cover.jpeg",
+        "feature.jpeg",
+        "chapter-01.jpeg"
+      ]
+    }
+  ]
+}

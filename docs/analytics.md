@@ -4,13 +4,14 @@
 
 Mythoria sends one canonical event for each product outcome. Browser events cover interaction; authoritative account, generation, purchase, and refund outcomes are written to `analytics_outbox` in the same database transaction as the outcome that they describe.
 
-| Area              | Events                                                                                                                                                                                                              |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Landing           | `landing_cta_click`, `landing_section_view`                                                                                                                                                                         |
-| Authentication    | server `sign_up`, client `login`                                                                                                                                                                                    |
-| Story             | `story_creation_started`, `story_step_viewed`, `story_step_completed`, `story_generation_attempted`, server `story_generation_requested`, workflow `story_generation_completed`, workflow `story_generation_failed` |
-| Ecommerce         | `view_item_list`, `select_item`, `add_to_cart`, `remove_from_cart`, `begin_checkout`, server `purchase`, server `refund`                                                                                            |
-| Secondary actions | `share`, `earn_virtual_currency`, `audiobook_interaction`, `paid_action`                                                                                                                                            |
+| Area               | Events                                                                                                                                                                                                                               |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Landing            | `landing_cta_click`, `landing_section_view`                                                                                                                                                                                          |
+| Authentication     | server `sign_up`, client `login`                                                                                                                                                                                                     |
+| Story              | `story_creation_started`, `story_step_viewed`, `story_step_completed`, `story_generation_attempted`, server `story_generation_requested`, workflow `story_generation_completed`, workflow `story_generation_failed`                  |
+| Ecommerce          | `view_item_list`, `select_item`, `add_to_cart`, `remove_from_cart`, `begin_checkout`, server `purchase`, server `refund`                                                                                                             |
+| Product generation | server `audiobook_generation_requested`, workflow `audiobook_generation_completed`/`audiobook_generation_failed`, server `self_print_requested`, workflow `self_print_completed`/`self_print_failed`, server `print_order_requested` |
+| Secondary actions  | `share`, `earn_virtual_currency`, `audiobook_interaction`, client-only `paid_action`                                                                                                                                                 |
 
 Legacy dual-send events and direct browser Google Ads conversions are disabled. The only GA4 key events are `sign_up`, `story_generation_completed`, and `purchase`.
 
@@ -19,6 +20,8 @@ Legacy dual-send events and direct browser Google Ads conversions are disabled. 
 - Consent Mode defaults to denied. No server event is delivered without analytics consent and a genuine GA client ID.
 - Attribution records contain only allowlisted campaign parameters and sanitized internal paths, expire after 24 hours, and contain no PII or raw URLs. The first touch is immutable; later captures update only the latest path, referrer, session, consent, and expiry.
 - Durable events carry the attribution row ID plus sanitized same-origin `page_location`/`page_referrer`. Query strings, UUID path segments, private share tokens, raw click IDs, email addresses, prompts, and story/chapter content are excluded from Measurement Protocol parameters.
+- Audiobook and self-print requests persist a shared `product_generation_requests` row before queueing. The requested event is written only after the queue accepts the stable run ID; SGW writes the terminal event through the existing reconciler. `paid_action` is interaction telemetry, not proof of a product outcome.
+- A physical print order uses the existing `print_requests.id` as the deduplication source for `print_order_requested`; GA4 receives only its hashed `print_request_ref`.
 - Manual `page_view` events retain only `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`, `gclid`, `gbraid`, and `wbraid`.
 - Authentication, payment, token, session, code, and state parameters are removed.
 - IDs used for deduplication remain operational fields and are not registered as GA4 custom definitions.

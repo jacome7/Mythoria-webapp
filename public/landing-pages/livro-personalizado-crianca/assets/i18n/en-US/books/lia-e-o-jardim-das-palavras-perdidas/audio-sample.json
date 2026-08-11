@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "In Lily’s garden, words were not written down; they grew slowly among the leaves. In Lily’s garden, words were not written down; they grew slowly among the leaves. A blue flower opened beside the rosemary and whispered “cozy,” while another kept repeating “be right there.” Aunt Amelia explained that a word without its story becomes too light and disappears. Instead of picking the flower, Lily drew it and listened to the family memory behind it. At dinner, everyone reviewed the new page together.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 46,
+  "generatedAt": "2026-08-11T02:53:18.248Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.8154,
+    "rmsRatio": 0.1012,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "La carte semblait ordinaire, jusqu’à ce que la première porte se soulève de la page. La carte semblait ordinaire, jusqu’à ce que la première porte se soulève de la page. Théo l’avait trouvée dans un livre sans titre à la bibliothèque et la toucha du bout de son crayon. Avec Zoé, il traversa une ville de papier où les arbres étaient des éventails et les oiseaux avaient des ailes d’enveloppe. La dernière porte n’avait pas de poignée, seulement deux empreintes. Ensemble, ils la déplièrent comme une fleur bleue.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 40,
+  "generatedAt": "2026-08-11T02:56:51.062Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.765,
+    "rmsRatio": 0.0704,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

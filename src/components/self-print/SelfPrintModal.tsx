@@ -1,11 +1,11 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AlertTriangle, CheckCircle, Download, Info, Mail, Shield, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { fetchSelfPrintPricing } from '@/lib/pricing/fetch-self-print-pricing';
-import { trackPaidAction } from '@/lib/analytics';
+import { getGoogleAnalyticsContext, trackPaidAction } from '@/lib/analytics';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -81,6 +81,7 @@ export function SelfPrintModal({
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState<SelfPrintSuccessPayload | null>(null);
+  const idempotencyKeyRef = useRef<string | null>(null);
 
   const resetState = useCallback(() => {
     setLoadState('idle');
@@ -92,6 +93,7 @@ export function SelfPrintModal({
     setSubmitError(null);
     setIsSubmitting(false);
     setResult(null);
+    idempotencyKeyRef.current = null;
   }, []);
 
   useEffect(() => {
@@ -175,19 +177,24 @@ export function SelfPrintModal({
         return;
       }
 
+      idempotencyKeyRef.current ||= crypto.randomUUID();
+      const analyticsContext = await getGoogleAnalyticsContext();
       const response = await fetch(`/api/stories/${storyId}/self-print`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Idempotency-Key': idempotencyKeyRef.current,
         },
         body: JSON.stringify({
           emails: parsedEmails,
+          analyticsContext,
         }),
       });
 
       const data = (await response.json()) as SelfPrintResponse;
 
       if (!response.ok || !('success' in data && data.success)) {
+        idempotencyKeyRef.current = null;
         if (response.status === 402 && 'shortfall' in data) {
           setSubmitError(
             t('errors.insufficientCredits', {

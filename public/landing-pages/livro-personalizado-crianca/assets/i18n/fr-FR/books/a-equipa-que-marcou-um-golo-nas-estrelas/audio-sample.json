@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Le ballon brilla pour la première fois lorsque la passe atteignit la personne que personne n’avait remarquée. Le ballon brilla pour la première fois lorsque la passe atteignit la personne que personne n’avait remarquée. Une ligne argentée traversa le terrain du quartier et relia les Comètes comme une constellation. Jules vit l’espace, Sami recula, Léa fit la passe simple, Mei choisit le moment et Noé poursuivit sa course. Le but n’appartenait pas à une seule étoile : toute l’équipe avait dessiné le ciel.",
+  "voiceDirection": "Français de France comme parlé à Paris, narratrice adulte chaleureuse, diction naturelle, rythme de livre audio posé à 0,85x avec des pauses naturelles, expressif sans caricaturer l’accent.",
+  "language": "fr-FR",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 35,
+  "generatedAt": "2026-08-11T02:57:36.449Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.8115,
+    "rmsRatio": 0.1117,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

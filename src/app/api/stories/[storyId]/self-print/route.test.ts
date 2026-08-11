@@ -11,10 +11,12 @@ const getCurrentAuthorMock = jest.fn();
 const getStoryByIdMock = jest.fn();
 const getPricingByServiceCodeMock = jest.fn();
 const getAuthorCreditBalanceMock = jest.fn();
-const deductCreditsMock = jest.fn();
-const addCreditsMock = jest.fn();
 const sgwFetchMock = jest.fn();
 const getTranslationsMock = jest.fn();
+const startProductGenerationMock = jest.fn();
+const markProductGenerationQueuedMock = jest.fn();
+const compensateProductGenerationMock = jest.fn();
+const resolveServerAnalyticsContextMock = jest.fn();
 
 jest.mock('@/lib/auth', () => ({
   getCurrentAuthor: () => getCurrentAuthorMock(),
@@ -29,8 +31,6 @@ jest.mock('@/db/services', () => ({
   },
   creditService: {
     getAuthorCreditBalance: (...args: unknown[]) => getAuthorCreditBalanceMock(...args),
-    deductCredits: (...args: unknown[]) => deductCreditsMock(...args),
-    addCredits: (...args: unknown[]) => addCreditsMock(...args),
   },
 }));
 
@@ -42,9 +42,23 @@ jest.mock('next-intl/server', () => ({
   getTranslations: (...args: unknown[]) => getTranslationsMock(...args),
 }));
 
-jest.mock('uuid', () => ({ v4: () => 'workflow-id-fixed' }));
+jest.mock('@/lib/analytics/server-context', () => ({
+  resolveServerAnalyticsContext: (...args: unknown[]) => resolveServerAnalyticsContextMock(...args),
+}));
+
+jest.mock('@/lib/product-generation', () => ({
+  InsufficientProductCreditsError: class InsufficientProductCreditsError extends Error {
+    constructor(readonly available: number) {
+      super('Insufficient credits');
+    }
+  },
+  startProductGeneration: (...args: unknown[]) => startProductGenerationMock(...args),
+  markProductGenerationQueued: (...args: unknown[]) => markProductGenerationQueuedMock(...args),
+  compensateProductGeneration: (...args: unknown[]) => compensateProductGenerationMock(...args),
+}));
 
 import type { NextRequest } from 'next/server';
+import { InsufficientProductCreditsError } from '@/lib/product-generation';
 import { POST } from './route';
 
 describe('POST /api/stories/[storyId]/self-print', () => {
@@ -52,6 +66,7 @@ describe('POST /api/stories/[storyId]/self-print', () => {
     jest.clearAllMocks();
     getCurrentAuthorMock.mockResolvedValue({
       authorId: 'author-1',
+      clerkUserId: 'clerk-1',
       email: 'author@example.com',
       preferredLocale: 'pt-PT',
     });
@@ -67,15 +82,23 @@ describe('POST /api/stories/[storyId]/self-print', () => {
     getTranslationsMock.mockResolvedValue((key: string) =>
       key === 'errors.workflowQueueFailed' ? 'Não foi possível iniciar a impressão.' : key,
     );
+    resolveServerAnalyticsContextMock.mockResolvedValue({});
   });
+
+  const request = (body: Record<string, unknown> = {}) =>
+    ({
+      json: async () => body,
+      headers: { get: () => 'request-1' },
+      cookies: { get: () => undefined },
+    }) as unknown as NextRequest;
 
   it('returns 402 with balance payload when credits are insufficient', async () => {
     getAuthorCreditBalanceMock.mockResolvedValue(1);
+    startProductGenerationMock.mockRejectedValue(new InsufficientProductCreditsError(1));
 
-    const response = (await POST(
-      { json: async () => ({ email: 'reader@example.com' }) } as unknown as NextRequest,
-      { params: Promise.resolve({ storyId: 'story-1' }) },
-    )) as { status: number; json: () => Promise<unknown> };
+    const response = (await POST(request({ email: 'reader@example.com' }), {
+      params: Promise.resolve({ storyId: 'story-1' }),
+    })) as { status: number; json: () => Promise<unknown> };
 
     expect(response.status).toBe(402);
     await expect(response.json()).resolves.toEqual({
@@ -85,18 +108,21 @@ describe('POST /api/stories/[storyId]/self-print', () => {
       available: 1,
       shortfall: 3,
     });
-    expect(deductCreditsMock).not.toHaveBeenCalled();
+    expect(sgwFetchMock).not.toHaveBeenCalled();
   });
 
-  it('deducts credits and refunds with localized error payload when enqueue fails', async () => {
+  it('compensates the durable request with a localized error when enqueue fails', async () => {
     getAuthorCreditBalanceMock.mockResolvedValue(10);
-    deductCreditsMock.mockResolvedValue({});
+    startProductGenerationMock.mockResolvedValue({
+      request: { runId: 'workflow-id-fixed', status: 'pending' },
+      remainingCredits: 6,
+      duplicate: false,
+    });
     sgwFetchMock.mockRejectedValue(new Error('queue down'));
 
-    const response = (await POST(
-      { json: async () => ({ emails: ['reader@example.com'] }) } as unknown as NextRequest,
-      { params: Promise.resolve({ storyId: 'story-1' }) },
-    )) as { status: number; json: () => Promise<unknown> };
+    const response = (await POST(request({ emails: ['reader@example.com'] }), {
+      params: Promise.resolve({ storyId: 'story-1' }),
+    })) as { status: number; json: () => Promise<unknown> };
 
     expect(response.status).toBe(502);
     await expect(response.json()).resolves.toEqual({
@@ -105,7 +131,17 @@ describe('POST /api/stories/[storyId]/self-print', () => {
       creditsDeducted: 0,
     });
 
-    expect(deductCreditsMock).toHaveBeenCalledWith('author-1', 4, 'selfPrinting', 'story-1');
-    expect(addCreditsMock).toHaveBeenCalledWith('author-1', 4, 'refund');
+    expect(startProductGenerationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        actionType: 'self_print',
+        idempotencyKey: 'request-1',
+        creditsSpent: 4,
+      }),
+    );
+    expect(compensateProductGenerationMock).toHaveBeenCalledWith(
+      'workflow-id-fixed',
+      'queue',
+      'workflow_enqueue_failed',
+    );
   });
 });

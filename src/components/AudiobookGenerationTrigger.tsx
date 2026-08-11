@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import AudiobookGenerationProgress from '@/components/AudiobookGenerationProgress';
 import { getAvailableVoices, getDefaultVoice } from '@/lib/voice-options';
+import { getGoogleAnalyticsContext } from '@/lib/analytics';
 
 interface AudiobookGenerationTriggerProps {
   storyId: string;
@@ -26,6 +27,7 @@ export default function AudiobookGenerationTrigger({
   const [error, setError] = useState<string | null>(null);
   const [selectedVoice, setSelectedVoice] = useState(getDefaultVoice());
   const [includeBackgroundMusic, setIncludeBackgroundMusic] = useState(true);
+  const idempotencyKeyRef = useRef<string | null>(null);
 
   const handleGenerateAudiobook = async () => {
     setIsGeneratingLocal(true);
@@ -36,19 +38,24 @@ export default function AudiobookGenerationTrigger({
     }
 
     try {
+      idempotencyKeyRef.current ||= crypto.randomUUID();
+      const analyticsContext = await getGoogleAnalyticsContext();
       const response = await fetch(`/api/stories/${storyId}/generate-audiobook`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Idempotency-Key': idempotencyKeyRef.current,
         },
         body: JSON.stringify({
           voice: selectedVoice,
           includeBackgroundMusic,
+          analyticsContext,
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
+        idempotencyKeyRef.current = null;
         throw new Error(errorData.error || tAudiobookGenerationTrigger('errors.failedToStart'));
       }
 

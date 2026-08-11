@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "The map looked ordinary until its first little door lifted off the page. The map looked ordinary until its first little door lifted off the page. Theo found it inside an untitled book at the Brooklyn Public Library and touched it with the tip of his pencil. He and Zoe crossed a layered paper city where trees folded into fans and birds had envelope wings. The last door had no handle—only two hand-shaped marks. When they pressed them together, it unfolded like a blue flower.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 36.92,
+  "generatedAt": "2026-08-11T02:52:51.899Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.6956,
+    "rmsRatio": 0.0783,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}

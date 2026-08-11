@@ -5,6 +5,30 @@ test.describe.configure({ mode: 'serial' });
 const localizedLandings = [
   {
     locale: 'en-US',
+    slug: 'personalized-childrens-book',
+    title: 'Personalized children’s book',
+    intent: 'kids_adventures',
+    samples: 5,
+    readLabel: 'Read the chapter and view the image',
+  },
+  {
+    locale: 'es-ES',
+    slug: 'libro-personalizado-para-ninos',
+    title: 'Libro personalizado para niños',
+    intent: 'kids_adventures',
+    samples: 5,
+    readLabel: 'Leer el capítulo y ver la imagen',
+  },
+  {
+    locale: 'fr-FR',
+    slug: 'livre-personnalise-pour-enfants',
+    title: 'Livre personnalisé pour enfants',
+    intent: 'kids_adventures',
+    samples: 5,
+    readLabel: 'Lire le chapitre et voir l’image',
+  },
+  {
+    locale: 'en-US',
     slug: 'personalized-vacation-book',
     title: 'Personalized vacation books that preserve the story behind your photos',
     intent: 'family_travels',

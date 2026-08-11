@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0",
+  "locale": "es-ES",
+  "source": "public/sample-books",
+  "deterministicComposition": {
+    "localizedCoverTitles": true
+  },
+  "books": [
+    {
+      "slug": "mia-e-a-pastelaria-da-lua",
+      "title": "Mía y la Panadería de la Luna",
+      "files": [
+        "cover.jpeg",
+        "feature.jpeg",
+        "chapter-01.jpeg"
+      ]
+    },
+    {
+      "slug": "tomas-e-o-mapa-das-portas-escondidas",
+      "title": "Tomás y el Mapa de las Puertas Ocultas",
+      "files": [
+        "cover.jpeg",
+        "feature.jpeg",
+        "chapter-01.jpeg"
+      ]
+    },
+    {
+      "slug": "lia-e-o-jardim-das-palavras-perdidas",
+      "title": "Lucía y el Jardín de las Palabras Perdidas",
+      "files": [
+        "cover.jpeg",
+        "feature.jpeg",
+        "chapter-01.jpeg"
+      ]
+    },
+    {
+      "slug": "a-equipa-que-marcou-um-golo-nas-estrelas",
+      "title": "El Equipo que Marcó un Gol en las Estrellas",
+      "files": [
+        "cover.jpeg",
+        "feature.jpeg",
+        "chapter-01.jpeg"
+      ]
+    },
+    {
+      "slug": "ines-e-o-robo-feito-de-desenhos",
+      "title": "Inés y el Robot Hecho de Dibujos",
+      "files": [
+        "cover.jpeg",
+        "feature.jpeg",
+        "chapter-01.jpeg"
+      ]
+    }
+  ]
+}

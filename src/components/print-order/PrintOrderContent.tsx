@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { type Address as AddressType } from '@/components/AddressCard';
-import { trackPaidAction } from '@/lib/analytics';
+import { getGoogleAnalyticsContext, trackPaidAction } from '@/lib/analytics';
 import type { PaymentOrderDetails } from '@/components/print-order/steps/PaymentStep';
 
 // Lazy load step components
@@ -132,6 +132,7 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
 
     try {
       setOrderLoading(true);
+      const analyticsContext = await getGoogleAnalyticsContext();
 
       const response = await fetch('/api/print-requests', {
         method: 'POST',
@@ -149,6 +150,7 @@ export default function PrintOrderContent({ storyId }: PrintOrderContentProps) {
           chapterCount: story.chapterCount,
           totalCost: totalCost,
           numberOfCopies: numberOfCopies,
+          analyticsContext,
         }),
       });
 

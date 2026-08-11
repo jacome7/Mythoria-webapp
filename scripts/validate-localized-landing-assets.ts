@@ -14,7 +14,7 @@ async function main() {
   let images = 0;
   let audio = 0;
 
-  if (pages.length !== 9) errors.push(`expected 9 localized pages, found ${pages.length}`);
+  if (pages.length !== 12) errors.push(`expected 12 localized pages, found ${pages.length}`);
   for (const page of pages) {
     for (const source of [page.hero.imageSrc, page.ogImageSrc]) {
       if (!source) continue;
@@ -65,13 +65,15 @@ async function main() {
         errors.push(`invalid manifest ${book.audioSampleSrc}`);
       }
       const manifestText = String(manifest.text ?? '');
-      const expectedStoryText = [
-        book.title,
-        book.excerpt,
-        book.synopsis,
-        book.sampleChapter?.title,
-        ...(book.sampleChapter?.paragraphs ?? []),
-      ].filter((value): value is string => Boolean(value));
+      const expectedStoryText = book.audioSampleTranscript
+        ? [book.audioSampleTranscript]
+        : [
+            book.title,
+            book.excerpt,
+            book.synopsis,
+            book.sampleChapter?.title,
+            ...(book.sampleChapter?.paragraphs ?? []),
+          ].filter((value): value is string => Boolean(value));
       if (expectedStoryText.some((value) => !manifestText.includes(value))) {
         errors.push(`stale audio manifest ${book.audioSampleSrc}`);
       }
@@ -79,8 +81,8 @@ async function main() {
     }
   }
 
-  if (images !== 108) errors.push(`expected 108 localized book images, found ${images}`);
-  if (audio !== 54) errors.push(`expected 54 localized audio samples, found ${audio}`);
+  if (images !== 138) errors.push(`expected 138 localized book images, found ${images}`);
+  if (audio !== 69) errors.push(`expected 69 localized audio samples, found ${audio}`);
   if (errors.length) throw new Error(errors.join('\n'));
   console.log(
     `Localized landing assets valid: ${pages.length} pages, ${images} images, ${audio} audio samples.`,

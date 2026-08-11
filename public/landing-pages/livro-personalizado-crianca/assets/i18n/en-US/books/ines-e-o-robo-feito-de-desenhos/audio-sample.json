@@ -1,0 +1,21 @@
+{
+  "status": "generated",
+  "targetPath": "audio-teaser.mp3",
+  "text": "Ivy’s robot had three wheels, two paper wings and a question drawn on its chest. Ivy’s robot had three wheels, two paper wings and a question drawn on its chest. At midnight it rolled out of the sketchbook with the soft scratch of a colored pencil. Scribble could find tiny objects and sort shapes, but no task explained its purpose. Ivy drew three circles—“I can,” “I enjoy” and “I help.” When the robot compared ideas without choosing for her, the question mark began to glow.",
+  "voiceDirection": "American English as spoken in New York, warm clear adult storyteller, unhurried 0.85x audiobook pacing with natural pauses, emotionally expressive without melodrama.",
+  "language": "en-US",
+  "provider": "google-genai",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Aoede",
+  "durationSeconds": 45.68,
+  "generatedAt": "2026-08-11T02:54:02.258Z",
+  "validation": {
+    "decoded": true,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peakRatio": 0.698,
+    "rmsRatio": 0.0722,
+    "clippingRatio": 0,
+    "accentReview": "pending-human-review"
+  }
+}
