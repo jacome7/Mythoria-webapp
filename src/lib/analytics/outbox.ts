@@ -14,6 +14,7 @@ import {
 import { publishStoryRequest } from '@/lib/pubsub';
 import { ga4Service } from './ga4';
 import { ANALYTICS_BASE_URL, sanitizeAnalyticsPageUrl } from './page-context';
+import { storyShareEventParams, storyShareFromCampaign } from './story-share';
 
 const MAX_DELIVERY_ATTEMPTS = 8;
 const BATCH_SIZE = 25;
@@ -55,6 +56,37 @@ function logAnalyticsOutcome(
     outcome,
     ...details,
   });
+}
+
+function storyShareParamsForEvent(
+  attribution: typeof analyticsAttributions.$inferSelect | undefined,
+  occurredAt: Date,
+): Record<string, string> {
+  if (
+    !attribution?.storyShareExpiresAt ||
+    attribution.storyShareExpiresAt <= occurredAt ||
+    !attribution.storyShareItemId ||
+    !attribution.storyShareMethod ||
+    !attribution.storyShareScope
+  ) {
+    return {};
+  }
+  const medium =
+    attribution.storyShareMethod === 'whatsapp' || attribution.storyShareMethod === 'facebook'
+      ? 'social'
+      : attribution.storyShareMethod === 'email'
+        ? 'email'
+        : 'referral';
+  const context = storyShareFromCampaign({
+    utm_source: attribution.storyShareMethod,
+    utm_medium: medium,
+    utm_campaign: 'story_share',
+    utm_id: attribution.storyShareItemId,
+    utm_content: attribution.storyShareScope,
+  });
+  return context
+    ? { story_share_attribution: 'within_30d', ...storyShareEventParams(context) }
+    : {};
 }
 
 export async function deliverAnalytics(): Promise<{
@@ -186,6 +218,7 @@ export async function deliverAnalytics(): Promise<{
           ...(primaryIntent && typeof effectiveEntry.params.primary_intent !== 'string'
             ? { primary_intent: primaryIntent }
             : {}),
+          ...storyShareParamsForEvent(attribution, effectiveEntry.occurredAt),
         };
         const [enriched] = await db
           .update(analyticsOutbox)
@@ -205,6 +238,38 @@ export async function deliverAnalytics(): Promise<{
         if (!enriched) continue;
         effectiveEntry = enriched;
         logAnalyticsOutcome(effectiveEntry, 'context_enriched');
+      }
+    }
+
+    if (!effectiveAttribution && effectiveEntry.attributionId && effectiveEntry.authorId) {
+      const [storyShareAttribution] = await db
+        .select()
+        .from(analyticsAttributions)
+        .where(
+          and(
+            eq(analyticsAttributions.attributionId, effectiveEntry.attributionId),
+            lte(analyticsAttributions.createdAt, effectiveEntry.occurredAt),
+            gt(analyticsAttributions.storyShareExpiresAt, effectiveEntry.occurredAt),
+            or(
+              isNull(analyticsAttributions.authorId),
+              eq(analyticsAttributions.authorId, effectiveEntry.authorId),
+            ),
+          ),
+        )
+        .limit(1);
+      const shareParams = storyShareParamsForEvent(
+        storyShareAttribution,
+        effectiveEntry.occurredAt,
+      );
+      if (Object.keys(shareParams).length) {
+        const [enriched] = await db
+          .update(analyticsOutbox)
+          .set({ params: { ...effectiveEntry.params, ...shareParams }, lastError: null })
+          .where(claimWhere)
+          .returning();
+        if (!enriched) continue;
+        effectiveEntry = enriched;
+        logAnalyticsOutcome(effectiveEntry, 'share_context_enriched');
       }
     }
 

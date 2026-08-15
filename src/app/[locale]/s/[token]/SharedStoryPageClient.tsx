@@ -3,11 +3,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { AlertCircle, Loader2 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { toAbsoluteImageUrl } from '@/utils/image-url';
 import { getLogoForGraphicalStyle } from '@/utils/logo-mapping';
 import { buildAuthEntryPath } from '@/lib/auth-return';
+import { buildStoryAuthReturnSearch } from '@/lib/campaign-context';
 
 interface StoryPreview {
   title: string;
@@ -30,6 +31,7 @@ interface ApiResponse {
 export default function SharedStoryPageClient() {
   const params = useParams<{ token?: string }>();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const locale = useLocale();
   const tSharedStoryPage = useTranslations('SharedStoryPage');
   const tStoryReader = useTranslations('StoryReader');
@@ -43,7 +45,14 @@ export default function SharedStoryPageClient() {
   const [requiresAuth, setRequiresAuth] = useState(false);
   const [accessLevel, setAccessLevel] = useState<string>('');
 
-  const sharedStoryPath = useMemo(() => `/${locale}/s/${token}`, [locale, token]);
+  const preservedSearch = useMemo(
+    () => buildStoryAuthReturnSearch(searchParams).toString(),
+    [searchParams],
+  );
+  const sharedStoryPath = useMemo(
+    () => `/${locale}/s/${token}${preservedSearch ? `?${preservedSearch}` : ''}`,
+    [locale, preservedSearch, token],
+  );
 
   useEffect(() => {
     if (!token) return;
@@ -62,7 +71,9 @@ export default function SharedStoryPageClient() {
             const suffix = legacyMatch[2] || '';
             target = `/stories/read/${id}${suffix}`;
           }
-          router.push(`/${locale}${target}`);
+          router.push(
+            `/${locale}${target}${preservedSearch ? `${target.includes('?') ? '&' : '?'}${preservedSearch}` : ''}`,
+          );
         } else if (result.requiresAuth && result.storyPreview) {
           // Show preview for unauthenticated users
           setStoryPreview(result.storyPreview);
@@ -80,7 +91,7 @@ export default function SharedStoryPageClient() {
     };
 
     accessSharedStory();
-  }, [token, router, locale, tSharedStoryPage]);
+  }, [token, router, locale, preservedSearch, tSharedStoryPage]);
 
   if (loading) {
     return (

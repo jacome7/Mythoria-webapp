@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { analyticsReference } from '@/lib/analytics/reference';
 
 const mockSelect = jest.fn();
 const mockUpdate = jest.fn();
@@ -38,8 +39,23 @@ function request(body: Record<string, unknown>, withCookie = false): NextRequest
   });
 }
 
+function selectRows(rows: unknown[]) {
+  const result = {
+    limit: jest.fn().mockResolvedValue(rows),
+    then: (resolve: (value: unknown[]) => unknown, reject?: (reason: unknown) => unknown) =>
+      Promise.resolve(rows).then(resolve, reject),
+  };
+  return {
+    from: jest.fn(() => ({ where: jest.fn(() => result) })),
+  };
+}
+
 describe('POST /api/analytics/attribution', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    mockSelect.mockReset();
+    mockUpdate.mockReset();
+    mockInsert.mockReset();
+  });
 
   it('captures immutable first-touch and mutable latest-touch fields on first visit', async () => {
     mockInsert.mockReturnValue({
@@ -71,7 +87,7 @@ describe('POST /api/analytics/attribution', () => {
     });
   });
 
-  it('preserves an existing first touch while updating only latest visit context', async () => {
+  it('preserves an existing first touch while updating the mutable latest campaign context', async () => {
     const existing = {
       attributionId,
       clientId: '123.456',
@@ -118,10 +134,150 @@ describe('POST /api/analytics/attribution', () => {
         firstClickIdentifier: 'original-click',
         firstClickIdentifierKind: 'gclid',
         latestPath: '/en-US/create',
+        utmSource: 'google',
+        utmCampaign: 'retarget',
+        gbraid: 'new-click',
       }),
     );
-    expect(set.mock.calls[0]?.[0]).not.toHaveProperty('utmSource');
-    expect(set.mock.calls[0]?.[0]).not.toHaveProperty('gclid');
     expect(mockInsert).not.toHaveBeenCalled();
+  });
+
+  it('accepts a share touch only when the public destination resolves to the opaque story reference', async () => {
+    const storyId = '00000000-0000-4000-8000-000000000099';
+    mockSelect
+      .mockReturnValueOnce(selectRows([{ storyId }]))
+      .mockReturnValueOnce(selectRows([]));
+    mockInsert.mockReturnValue({
+      values: jest.fn((values) => ({
+        returning: jest.fn().mockResolvedValue([{ attributionId }]),
+        values,
+      })),
+    });
+
+    const response = await POST(
+      request({
+        analyticsContext: {
+          ...analyticsContext,
+          pageLocation: 'https://mythoria.pt/en-US/p/summer-story',
+        },
+        landingPath: '/en-US/p/summer-story',
+        campaign: {
+          utm_source: 'copy_link',
+          utm_medium: 'referral',
+          utm_campaign: 'story_share',
+          utm_id: analyticsReference(storyId),
+          utm_content: 'public',
+        },
+      }),
+    );
+
+    expect(await response.json()).toEqual({
+      captured: true,
+      storyShare: {
+        itemId: analyticsReference(storyId),
+        method: 'copy_link',
+        scope: 'public',
+      },
+    });
+    const insertValues = mockInsert.mock.results[0]?.value.values.mock.calls[0]?.[0];
+    expect(insertValues).toMatchObject({
+      storyShareItemId: analyticsReference(storyId),
+      storyShareMethod: 'copy_link',
+      storyShareScope: 'public',
+    });
+    expect(JSON.stringify(insertValues)).not.toContain(storyId);
+  });
+
+  it.each([
+    ['/en-US/s/00000000-0000-4000-8000-000000000099', 'private_view'],
+    ['/en-US/s/00000000-0000-4000-8000-000000000099/edit', 'private_edit'],
+  ])('validates %s as a %s share destination', async (landingPath, scope) => {
+    const storyId = '00000000-0000-4000-8000-000000000099';
+    mockSelect.mockReturnValueOnce(selectRows([{ storyId }]));
+    mockInsert.mockReturnValue({
+      values: jest.fn((values) => ({
+        returning: jest.fn().mockResolvedValue([{ attributionId }]),
+        values,
+      })),
+    });
+
+    const response = await POST(
+      request({
+        analyticsContext,
+        landingPath,
+        campaign: {
+          utm_source: 'native_share',
+          utm_medium: 'referral',
+          utm_campaign: 'story_share',
+          utm_id: analyticsReference(storyId),
+          utm_content: scope,
+        },
+      }),
+    );
+
+    expect(await response.json()).toMatchObject({
+      captured: true,
+      storyShare: { itemId: analyticsReference(storyId), scope },
+    });
+  });
+
+  it('carries a day-29 share context into a fresh GA session without extending its expiry', async () => {
+    const storyShareExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const storyShareTouchedAt = new Date(Date.now() - 29 * 24 * 60 * 60 * 1000);
+    const carryover = {
+      attributionId,
+      clientId: '123.456',
+      storyShareItemId: 'a1b2c3d4e5f6',
+      storyShareMethod: 'copy_link',
+      storyShareScope: 'public',
+      storyShareTouchedAt,
+      storyShareExpiresAt,
+    };
+    mockSelect
+      .mockReturnValueOnce(selectRows([]))
+      .mockReturnValueOnce(selectRows([carryover]));
+    mockInsert.mockReturnValue({
+      values: jest.fn((values) => ({
+        returning: jest.fn().mockResolvedValue([{ attributionId }]),
+        values,
+      })),
+    });
+
+    const response = await POST(request({ analyticsContext }, true));
+    const insertValues = mockInsert.mock.results[0]?.value.values.mock.calls[0]?.[0];
+    expect(await response.json()).toMatchObject({
+      captured: true,
+      storyShare: { itemId: 'a1b2c3d4e5f6', method: 'copy_link', scope: 'public' },
+    });
+    expect(insertValues).toMatchObject({
+      storyShareTouchedAt,
+      storyShareExpiresAt,
+    });
+  });
+
+  it('does not carry an expired day-31 share context into a fresh GA session', async () => {
+    const expired = {
+      attributionId,
+      clientId: '123.456',
+      storyShareItemId: 'a1b2c3d4e5f6',
+      storyShareMethod: 'copy_link',
+      storyShareScope: 'public',
+      storyShareTouchedAt: new Date(Date.now() - 31 * 24 * 60 * 60 * 1000),
+      storyShareExpiresAt: new Date(Date.now() - 1),
+    };
+    mockSelect
+      .mockReturnValueOnce(selectRows([]))
+      .mockReturnValueOnce(selectRows([expired]));
+    mockInsert.mockReturnValue({
+      values: jest.fn((values) => ({
+        returning: jest.fn().mockResolvedValue([{ attributionId }]),
+        values,
+      })),
+    });
+
+    const response = await POST(request({ analyticsContext }, true));
+    const insertValues = mockInsert.mock.results[0]?.value.values.mock.calls[0]?.[0];
+    expect(await response.json()).toEqual({ captured: true });
+    expect(insertValues).not.toHaveProperty('storyShareItemId');
   });
 });

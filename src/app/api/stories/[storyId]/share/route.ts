@@ -5,6 +5,7 @@ import { stories, shareLinks, storyCollaborators, authors } from '@/db/schema';
 import { eq, and, or, gt } from 'drizzle-orm';
 import { routing, isValidLocale } from '@/i18n/routing';
 import { authorService, PublicStoryValidationError, storyService } from '@/db/services';
+import { analyticsReference } from '@/lib/analytics/reference';
 
 // Helper function to get locale and translations
 async function getTranslations(request: Request) {
@@ -128,6 +129,7 @@ export async function POST(request: Request, context: { params: Promise<{ storyI
         success: true,
         linkType: 'public',
         url: `/p/${published.slug}`,
+        storyRef: analyticsReference(storyId),
         message: t('sharing.publicAccessible'),
       });
     }
@@ -146,6 +148,7 @@ export async function POST(request: Request, context: { params: Promise<{ storyI
         success: true,
         linkType: 'private',
         url: '',
+        storyRef: analyticsReference(storyId),
         message: t('sharing.nowPrivate'),
       });
     } // Handle private sharing
@@ -168,6 +171,7 @@ export async function POST(request: Request, context: { params: Promise<{ storyI
       success: true,
       linkType: 'private',
       url: shareUrl,
+      storyRef: analyticsReference(storyId),
       token: shareToken,
       accessLevel,
       expiresAt: expiresAt.toISOString(),
@@ -251,6 +255,7 @@ export async function GET(request: Request, context: { params: Promise<{ storyId
     return NextResponse.json({
       success: true,
       shareLinks: links,
+      storyRef: analyticsReference(storyId),
     });
   } catch (error) {
     console.error('Error fetching share links:', error);

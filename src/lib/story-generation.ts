@@ -169,7 +169,7 @@ export async function startStoryGeneration(
         pageReferrer: input.analyticsContext?.pageReferrer,
         engagementTimeMsec: input.analyticsContext?.engagementTimeMsec,
         params: {
-          story_id: input.storyId,
+          item_id: analyticsReference(input.storyId),
           run_ref: analyticsReference(runId),
           credits_spent: pricing.total,
           ...(input.primaryIntent ? { primary_intent: input.primaryIntent } : {}),

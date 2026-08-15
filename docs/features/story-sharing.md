@@ -228,7 +228,7 @@ interface ShareModalProps {
 **Key behaviors**:
 
 1. Validates `storyId` is not undefined/null before API calls
-2. Tracks sharing analytics via `trackStoryManagement.shared()`
+2. Tracks only completed share handoffs via the GA4-recommended `share` event
 3. Provides social sharing integrations (WhatsApp, Facebook, Email)
 4. Falls back to clipboard copy when native share API unavailable
 5. Resets form state on modal close
@@ -746,21 +746,26 @@ _Valid token, authenticated user_:
 
 #### Analytics Tracking
 
-**Location**: `ShareModal.tsx` line ~107-113
+**Location**: `ShareModal.tsx`
 
-**Event**: `trackStoryManagement.shared()`
+**Event**: `trackEvent('share')`
 
 **Payload**:
 
 ```typescript
 {
-  story_id: string,
-  story_title: string,
-  share_type: 'public' | 'private',
-  allow_edit: boolean,
-  expires_in_days: number
+  method: 'whatsapp' | 'facebook' | 'email' | 'copy_link' | 'native_share',
+  content_type: 'story',
+  item_id: 'twelve-character opaque story reference',
+  story_share_method: string,
+  story_share_scope: 'public' | 'private_view' | 'private_edit'
 }
 ```
+
+The event is emitted only after a successful clipboard/native handoff or an explicit provider
+launch, never when a link is merely created. A consented, server-validated inbound URL emits
+`story_share_open`; private tokens, raw story UUIDs, titles, and author data are excluded from
+GA4. See `docs/google_analytics_configuration.md` for the 30-day assist rule and reporting setup.
 
 #### Social Media Integration
 

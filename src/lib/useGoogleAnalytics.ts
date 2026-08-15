@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { trackEvent } from './analytics';
+import { sanitizeAnalyticsPathname } from './analytics/page-context';
 import {
   CONSENT_UPDATED_EVENT,
   getStoredConsent,
@@ -31,7 +32,7 @@ export function sanitizeAnalyticsPath(pathname: string, params: URLSearchParams)
     if (SAFE_QUERY_KEYS.has(key) && value.length <= 255) safe.append(key, value);
   });
   const query = safe.toString();
-  return `${pathname}${query ? `?${query}` : ''}`;
+  return `${sanitizeAnalyticsPathname(pathname)}${query ? `?${query}` : ''}`;
 }
 
 export function useGoogleAnalytics() {
@@ -53,7 +54,7 @@ export function useGoogleAnalytics() {
 
   useEffect(() => {
     if (typeof window !== 'undefined' && analyticsConsent === 'granted') {
-      const path = pathname || window.location.pathname;
+      const path = sanitizeAnalyticsPathname(pathname || window.location.pathname) || '/';
       // Query cleanup and attribution redirects can update search params without a real page
       // navigation. GA4 should receive exactly one page_view for that canonical path.
       const pageViewKey = path;

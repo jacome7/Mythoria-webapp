@@ -3,7 +3,12 @@
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
-import { clearGoogleAnalyticsContextCache, getGoogleAnalyticsContext } from '@/lib/analytics';
+import {
+  clearGoogleAnalyticsContextCache,
+  getGoogleAnalyticsContext,
+  trackEvent,
+} from '@/lib/analytics';
+import { storyShareEventParams, type StoryShareContext } from '@/lib/analytics/story-share';
 import {
   CAMPAIGN_QUERY_KEYS,
   collectCampaignParams,
@@ -171,8 +176,19 @@ async function captureConsentedAttribution(
       }),
       keepalive: true,
     });
-    const result = (await response.json().catch(() => null)) as { captured?: boolean } | null;
+    const result = (await response.json().catch(() => null)) as {
+      captured?: boolean;
+      storyShare?: StoryShareContext;
+    } | null;
     if (!response.ok || !result?.captured) return false;
+
+    if (result.storyShare) {
+      trackEvent('story_share_open', {
+        content_type: 'story',
+        item_id: result.storyShare.itemId,
+        ...storyShareEventParams(result.storyShare),
+      });
+    }
 
     lastCaptureSignature = signature;
     linkedUserId = undefined;

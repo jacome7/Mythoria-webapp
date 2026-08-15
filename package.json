@@ -29,6 +29,7 @@
     "db:seed": "tsx -r dotenv/config ./src/db/seed.ts",
     "db:seo-preflight": "tsx scripts/seo-db-preflight.ts",
     "db:seo-postflight": "tsx scripts/seo-db-preflight.ts --postflight",
+    "db:story-share-preflight": "tsx scripts/verify-story-share-attribution-migration.ts",
     "seo:audit-public-stories": "tsx scripts/audit-public-story-seo.ts",
     "deploy:production": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy.ps1",
     "deploy": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy.ps1",

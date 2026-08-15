@@ -162,7 +162,7 @@ describe('product generation requests', () => {
         dedupeKey: 'audiobook_generation_requested:run-1',
         eventName: 'audiobook_generation_requested',
         params: expect.objectContaining({
-          story_id: 'story-1',
+          item_id: expect.stringMatching(/^[a-f0-9]{12}$/),
           action_type: 'audiobook_generation',
           run_ref: expect.stringMatching(/^[a-f0-9]{12}$/),
         }),
@@ -211,7 +211,7 @@ describe('product generation requests', () => {
       dedupeKey: 'print_order_requested:print-1',
       eventName: 'print_order_requested',
       params: {
-        story_id: 'story-1',
+        item_id: expect.stringMatching(/^[a-f0-9]{12}$/),
         action_type: 'print_order',
         print_request_ref: expect.stringMatching(/^[a-f0-9]{12}$/),
         credits_spent: 12,

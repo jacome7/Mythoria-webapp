@@ -34,6 +34,7 @@ export const GA4_EVENT_NAMES = [
   'purchase',
   'refund',
   'share',
+  'story_share_open',
   'earn_virtual_currency',
   'audiobook_interaction',
   'paid_action',
@@ -48,6 +49,7 @@ const BLOCKED_PARAM_NAMES = new Set([
   'phone',
   'phone_number',
   'name',
+  'story_id',
   'story_content',
   'chapter_content',
   'plot_description',
@@ -79,6 +81,14 @@ export function sanitizeAnalyticsEventParams(
   if ((eventName === 'sign_up' || eventName === 'login') && !hasString(safe.method)) return null;
   if (eventName === 'begin_checkout' && !hasCommerceContext(safe)) return null;
   if (eventName === 'purchase' && (!hasCommerceContext(safe) || !hasString(safe.transaction_id))) {
+    return null;
+  }
+  if (
+    eventName === 'story_share_open' &&
+    (!hasString(safe.story_share_method) ||
+      !hasString(safe.story_share_scope) ||
+      !hasString(safe.story_share_item_id))
+  ) {
     return null;
   }
   if (hasString(safe.landing_slug) && safe.landing_slug.includes('/')) return null;

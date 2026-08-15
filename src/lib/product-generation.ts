@@ -77,7 +77,7 @@ export function printOrderRequestedOutboxEntry(
     pageReferrer: input.analyticsContext?.pageReferrer,
     engagementTimeMsec: input.analyticsContext?.engagementTimeMsec,
     params: {
-      story_id: input.storyId,
+      item_id: analyticsReference(input.storyId),
       action_type: 'print_order',
       print_request_ref: analyticsReference(input.printRequestId),
       credits_spent: input.creditsSpent,
@@ -101,7 +101,7 @@ const referenceParams = (request: ProductGenerationRequest) =>
     : { run_ref: analyticsReference(request.runId) };
 
 const eventParams = (request: ProductGenerationRequest): Record<string, unknown> => ({
-  story_id: request.storyId,
+  item_id: analyticsReference(request.storyId),
   action_type: request.actionType,
   credits_spent: request.creditsSpent,
   ...referenceParams(request),

@@ -149,9 +149,10 @@ describe('canonical analytics event propagation', () => {
     expect(gtag).toHaveBeenCalledWith(
       'event',
       'story_step_completed',
-      expect.objectContaining({ step_number: 3, story_id: 'story-1' }),
+      expect.objectContaining({ step_number: 3 }),
     );
     expect(gtag.mock.calls[0][2]).not.toHaveProperty('step');
+    expect(gtag.mock.calls[0][2]).not.toHaveProperty('story_id');
   });
 
   it('captures genuine GA identifiers only with analytics consent', async () => {

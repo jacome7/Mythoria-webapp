@@ -4,6 +4,7 @@ import { db } from '@/db';
 import { analyticsAttributions, analyticsOutbox, storyGenerationRequests } from '@/db/schema';
 import { getCurrentAuthor } from '@/lib/auth';
 import { ANALYTICS_BASE_URL, sanitizeAnalyticsPageUrl } from '@/lib/analytics/page-context';
+import { storyShareEventParams } from '@/lib/analytics/story-share';
 
 export const runtime = 'nodejs';
 
@@ -43,6 +44,19 @@ export async function POST(request: NextRequest) {
           ? { primary_intent: attribution.firstPrimaryIntent || attribution.primaryIntent }
           : {}),
       };
+      const storyShare =
+        attribution.storyShareExpiresAt &&
+        attribution.storyShareExpiresAt > new Date() &&
+        attribution.storyShareItemId &&
+        attribution.storyShareMethod &&
+        attribution.storyShareScope
+          ? storyShareEventParams({
+              itemId: attribution.storyShareItemId,
+              method: attribution.storyShareMethod as
+                'whatsapp' | 'facebook' | 'email' | 'copy_link' | 'native_share',
+              scope: attribution.storyShareScope as 'public' | 'private_view' | 'private_edit',
+            })
+          : {};
       const pageLocation = attribution.latestPath
         ? sanitizeAnalyticsPageUrl(`${ANALYTICS_BASE_URL}${attribution.latestPath}`)
         : undefined;
@@ -64,7 +78,12 @@ export async function POST(request: NextRequest) {
           pageReferrer,
           engagementTimeMsec: attribution.engagementTimeMsec,
           availableAt: new Date(),
-          params: { method: 'unknown', ...attributionParams },
+          params: {
+            method: 'unknown',
+            ...attributionParams,
+            ...(Object.keys(storyShare).length ? { story_share_attribution: 'within_30d' } : {}),
+            ...storyShare,
+          },
         })
         .onConflictDoUpdate({
           target: analyticsOutbox.dedupeKey,
@@ -82,7 +101,11 @@ export async function POST(request: NextRequest) {
             claimedAt: null,
             skippedAt: null,
             lastError: null,
-            params: sql`${analyticsOutbox.params} || ${JSON.stringify(attributionParams)}::jsonb`,
+            params: sql`${analyticsOutbox.params} || ${JSON.stringify({
+              ...attributionParams,
+              ...(Object.keys(storyShare).length ? { story_share_attribution: 'within_30d' } : {}),
+              ...storyShare,
+            })}::jsonb`,
           },
         })
         .returning({ outboxId: analyticsOutbox.outboxId });

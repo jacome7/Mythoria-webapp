@@ -26,6 +26,24 @@ describe('GA4 runtime event contract', () => {
         gclid: 'raw-click-id',
         firstLandingPath: '/wrong-name',
       }),
-    ).toEqual({ story_id: 'story-1', landing_path: '/pt-PT/lp/example' });
+    ).toEqual({ landing_path: '/pt-PT/lp/example' });
+  });
+
+  it('requires a valid story-share open contract', () => {
+    expect(sanitizeAnalyticsEventParams('story_share_open', { content_type: 'story' })).toBeNull();
+    expect(
+      sanitizeAnalyticsEventParams('story_share_open', {
+        content_type: 'story',
+        story_share_method: 'copy_link',
+        story_share_scope: 'public',
+        story_share_item_id: 'a1b2c3d4e5f6',
+        story_id: 'raw-story-id',
+      }),
+    ).toEqual({
+      content_type: 'story',
+      story_share_method: 'copy_link',
+      story_share_scope: 'public',
+      story_share_item_id: 'a1b2c3d4e5f6',
+    });
   });
 });

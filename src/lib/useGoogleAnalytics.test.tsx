@@ -90,4 +90,31 @@ describe('useGoogleAnalytics', () => {
     rerender(<AnalyticsHarness />);
     expect(mockTrackEvent).toHaveBeenCalledTimes(2);
   });
+
+  it('normalizes UUIDs and private share tokens before a manual page view reaches GA4', () => {
+    const { rerender } = render(<AnalyticsHarness />);
+    act(() => {
+      window.dispatchEvent(
+        new CustomEvent(CONSENT_UPDATED_EVENT, {
+          detail: {
+            state: getGrantedConsent(),
+            preferences: { analytics: true, advertising: true },
+          },
+        }),
+      );
+    });
+    mockTrackEvent.mockClear();
+
+    mockPathname = '/en-US/s/00000000-0000-4000-8000-000000000001/edit';
+    mockSearchParams = new URLSearchParams('utm_source=copy_link&token=never-send');
+    rerender(<AnalyticsHarness />);
+
+    expect(mockTrackEvent).toHaveBeenLastCalledWith(
+      'page_view',
+      expect.objectContaining({
+        page_path: '/en-US/s/:token/edit',
+        page_location: 'http://localhost/en-US/s/:token/edit?utm_source=copy_link',
+      }),
+    );
+  });
 });
