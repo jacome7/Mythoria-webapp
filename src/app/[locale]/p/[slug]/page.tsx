@@ -7,6 +7,7 @@ import { normalizeLocale } from '@/utils/locale-utils';
 import { buildLocalizedPath, buildLocalizedUrl } from '@/lib/seo';
 import { isSearchIndexableStory } from '@/lib/story-seo';
 import { hasFeaturedStoryPdfDownloads } from '@/lib/public-story-pdf';
+import { buildPublicRedirectSearch } from '@/lib/campaign-context';
 
 const toAbsoluteOgUrl = (url: string | null | undefined): string | undefined => {
   if (!url) return undefined;
@@ -98,10 +99,15 @@ export async function generateMetadata({
 
 export default async function PublicStoryPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string; slug: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { locale, slug } = await params;
+  const [{ locale, slug }, requestSearchParams] = await Promise.all([
+    params,
+    searchParams ?? Promise.resolve({}),
+  ]);
   const story = await storyService.getPublicStorySeoData(slug);
 
   if (!story || !isSearchIndexableStory(story)) {
@@ -110,7 +116,9 @@ export default async function PublicStoryPage({
 
   const canonicalLocale = normalizeLocale(story.storyLanguage);
   if (canonicalLocale !== locale) {
-    permanentRedirect(buildLocalizedPath(canonicalLocale, `/p/${story.slug}`));
+    const redirectSearch = buildPublicRedirectSearch(requestSearchParams);
+    const redirectPath = buildLocalizedPath(canonicalLocale, `/p/${story.slug}`);
+    permanentRedirect(`${redirectPath}${redirectSearch.size ? `?${redirectSearch}` : ''}`);
   }
 
   const [fullStory, chapters] = await Promise.all([

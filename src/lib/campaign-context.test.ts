@@ -95,6 +95,24 @@ describe('campaign context', () => {
     );
   });
 
+  it('keeps complete valid story-share tags through a canonical public-story redirect', () => {
+    const safe = buildPublicRedirectSearch(
+      new URLSearchParams({
+        utm_source: 'copy_link',
+        utm_medium: 'referral',
+        utm_campaign: 'story_share',
+        utm_id: '5346dfa5d333',
+        utm_content: 'public',
+        private_token: 'must-not-survive',
+      }),
+    );
+
+    expect(safe.toString()).toBe(
+      'utm_source=copy_link&utm_medium=referral&utm_campaign=story_share&utm_id=5346dfa5d333&utm_content=public',
+    );
+    expect(safe.has('private_token')).toBe(false);
+  });
+
   it('keeps the complete campaign and canonical intent through authentication', () => {
     const safe = buildStoryAuthReturnSearch(
       new URLSearchParams({

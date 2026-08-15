@@ -144,9 +144,7 @@ describe('POST /api/analytics/attribution', () => {
 
   it('accepts a share touch only when the public destination resolves to the opaque story reference', async () => {
     const storyId = '00000000-0000-4000-8000-000000000099';
-    mockSelect
-      .mockReturnValueOnce(selectRows([{ storyId }]))
-      .mockReturnValueOnce(selectRows([]));
+    mockSelect.mockReturnValueOnce(selectRows([{ storyId }])).mockReturnValueOnce(selectRows([]));
     mockInsert.mockReturnValue({
       values: jest.fn((values) => ({
         returning: jest.fn().mockResolvedValue([{ attributionId }]),
@@ -233,9 +231,7 @@ describe('POST /api/analytics/attribution', () => {
       storyShareTouchedAt,
       storyShareExpiresAt,
     };
-    mockSelect
-      .mockReturnValueOnce(selectRows([]))
-      .mockReturnValueOnce(selectRows([carryover]));
+    mockSelect.mockReturnValueOnce(selectRows([])).mockReturnValueOnce(selectRows([carryover]));
     mockInsert.mockReturnValue({
       values: jest.fn((values) => ({
         returning: jest.fn().mockResolvedValue([{ attributionId }]),
@@ -265,9 +261,7 @@ describe('POST /api/analytics/attribution', () => {
       storyShareTouchedAt: new Date(Date.now() - 31 * 24 * 60 * 60 * 1000),
       storyShareExpiresAt: new Date(Date.now() - 1),
     };
-    mockSelect
-      .mockReturnValueOnce(selectRows([]))
-      .mockReturnValueOnce(selectRows([expired]));
+    mockSelect.mockReturnValueOnce(selectRows([])).mockReturnValueOnce(selectRows([expired]));
     mockInsert.mockReturnValue({
       values: jest.fn((values) => ({
         returning: jest.fn().mockResolvedValue([{ attributionId }]),
