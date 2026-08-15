@@ -3,9 +3,8 @@ import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db';
 import { stories, shareLinks, storyCollaborators, authors } from '@/db/schema';
 import { eq, and, or, gt } from 'drizzle-orm';
-import { generateSlug, ensureUniqueSlug } from '@/lib/slug';
 import { routing, isValidLocale } from '@/i18n/routing';
-import { authorService } from '@/db/services';
+import { authorService, PublicStoryValidationError, storyService } from '@/db/services';
 
 // Helper function to get locale and translations
 async function getTranslations(request: Request) {
@@ -120,36 +119,15 @@ export async function POST(request: Request, context: { params: Promise<{ storyI
 
     // Handle public sharing
     if (makePublic) {
-      let slug = storyData.slug;
-      // Generate slug if it doesn't exist
-      if (!slug) {
-        const baseSlug = generateSlug(storyData.title);
-
-        // Ensure slug is unique
-        slug = await ensureUniqueSlug(baseSlug, async (testSlug) => {
-          const existingSlug = await db
-            .select()
-            .from(stories)
-            .where(eq(stories.slug, testSlug))
-            .limit(1);
-          return existingSlug.length > 0;
-        });
+      const published = await storyService.setPublicVisibility(storyId, author.authorId, true);
+      if (!published?.slug) {
+        return NextResponse.json({ error: 'Story not found or access denied' }, { status: 404 });
       }
-
-      // Update story to be public
-      await db
-        .update(stories)
-        .set({
-          isPublic: true,
-          slug,
-          updatedAt: new Date(),
-        })
-        .where(eq(stories.storyId, storyId));
 
       return NextResponse.json({
         success: true,
         linkType: 'public',
-        url: `/p/${slug}`,
+        url: `/p/${published.slug}`,
         message: t('sharing.publicAccessible'),
       });
     }
@@ -196,6 +174,12 @@ export async function POST(request: Request, context: { params: Promise<{ storyI
       message: `Private ${accessLevel} link created`,
     });
   } catch (error) {
+    if (error instanceof PublicStoryValidationError) {
+      return NextResponse.json(
+        { error: error.code, missing: error.missing, message: error.message },
+        { status: 422 },
+      );
+    }
     console.error('Error creating share link:', error);
     return NextResponse.json({ error: 'Failed to create share link' }, { status: 500 });
   }

@@ -13,7 +13,14 @@ async function installGtagCapture(page: Page): Promise<void> {
     const dataLayer: unknown[] = [];
     const nativePush = Array.prototype.push;
     dataLayer.push = (...items: unknown[]) => {
-      for (const item of items) commands.push(Array.from(item as ArrayLike<unknown>));
+      for (const item of items) {
+        const args = Array.from(item as ArrayLike<unknown>);
+        commands.push(args);
+        if (args[0] === 'get') {
+          const callback = args[3] as ((value: unknown) => void) | undefined;
+          if (callback) callback(args[2] === 'client_id' ? '123.456' : 1712345678);
+        }
+      }
       return nativePush.apply(dataLayer, items);
     };
     const gtag = (...args: unknown[]) => {
@@ -46,6 +53,10 @@ function consentCommands(commands: GtagCommand[], operation: 'default' | 'update
 
 function pageViewCommands(commands: GtagCommand[]) {
   return commands.filter((command) => command[0] === 'event' && command[1] === 'page_view');
+}
+
+function eventCommands(commands: GtagCommand[], eventName: string) {
+  return commands.filter((command) => command[0] === 'event' && command[1] === eventName);
 }
 
 test.beforeEach(async ({ context, page }) => {
@@ -133,4 +144,33 @@ test('reject all leaves every optional storage signal denied', async ({ page }) 
       ad_personalization: 'denied',
     }),
   ]);
+});
+
+test('grandparents landing replays exactly one landing_page_view after delayed consent', async ({
+  page,
+}) => {
+  await page.goto(
+    '/pt-PT/lp/livro-personalizado-avos-netos?utm_source=google&utm_campaign=grandparents-e2e&gclid=redacted-test-id',
+    { waitUntil: 'domcontentloaded' },
+  );
+  expect(eventCommands(await readCommands(page), 'landing_page_view')).toHaveLength(0);
+
+  await page.getByRole('button', { name: /só análise|analytics only/i }).click();
+  await expect(page).not.toHaveURL(/gclid|utm_campaign/);
+  await page.waitForFunction(() =>
+    (
+      window as unknown as {
+        __gtagCommands: GtagCommand[];
+      }
+    ).__gtagCommands.some(
+      (command) => command[0] === 'event' && command[1] === 'landing_page_view',
+    ),
+  );
+
+  const landingViews = eventCommands(await readCommands(page), 'landing_page_view');
+  expect(landingViews).toHaveLength(1);
+  expect(landingViews[0]?.[2]).toMatchObject({
+    landing_slug: 'livro-personalizado-avos-netos',
+    primary_intent: 'grandparents',
+  });
 });

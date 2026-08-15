@@ -1,11 +1,13 @@
 import type { AnalyticsConsent } from '@/db/schema';
 import { sanitizeAnalyticsPageUrl } from './page-context';
+import { sanitizeAnalyticsEventParams } from './events';
 
 export interface MeasurementProtocolEventParams {
   eventName: string;
   clientId: string;
   userId?: string;
   sessionId?: number;
+  requireSessionAttribution?: boolean;
   occurredAt?: Date;
   engagementTimeMsec?: number;
   pageLocation?: string;
@@ -50,12 +52,6 @@ const BLOCKED_CUSTOM_PARAMS = new Set([
   'engagement_time_msec',
 ]);
 
-function sanitizeCustomParams(params: Record<string, unknown>): Record<string, unknown> {
-  return Object.fromEntries(
-    Object.entries(params).filter(([key]) => !BLOCKED_CUSTOM_PARAMS.has(key.toLowerCase())),
-  );
-}
-
 const toProtocolConsent = (value: 'granted' | 'denied'): 'GRANTED' | 'DENIED' =>
   value === 'granted' ? 'GRANTED' : 'DENIED';
 
@@ -71,8 +67,19 @@ export function buildMeasurementProtocolPayload(
   ) {
     return null;
   }
+  if (event.requireSessionAttribution && !event.sessionId) return null;
+  if (!Number.isSafeInteger(event.engagementTimeMsec) || (event.engagementTimeMsec ?? 0) <= 0) {
+    return null;
+  }
   const pageLocation = sanitizeAnalyticsPageUrl(event.pageLocation);
   const pageReferrer = sanitizeAnalyticsPageUrl(event.pageReferrer);
+  const contractedParams = sanitizeAnalyticsEventParams(event.eventName, event.params);
+  if (!contractedParams) return null;
+  const customParams = Object.fromEntries(
+    Object.entries(contractedParams).filter(
+      ([key]) => !BLOCKED_CUSTOM_PARAMS.has(key.toLowerCase()),
+    ),
+  );
 
   return {
     client_id: clientId,
@@ -87,11 +94,11 @@ export function buildMeasurementProtocolPayload(
       {
         name: event.eventName,
         params: {
-          ...sanitizeCustomParams(event.params),
+          ...customParams,
           ...(pageLocation ? { page_location: pageLocation } : {}),
           ...(pageReferrer ? { page_referrer: pageReferrer } : {}),
           ...(event.sessionId ? { session_id: event.sessionId } : {}),
-          engagement_time_msec: event.engagementTimeMsec || 100,
+          engagement_time_msec: event.engagementTimeMsec!,
         },
       },
     ],

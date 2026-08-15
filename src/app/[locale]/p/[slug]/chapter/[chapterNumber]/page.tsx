@@ -8,6 +8,7 @@ import { useParams } from 'next/navigation';
 import StoryReader from '@/components/StoryReader';
 import PublicStoryRating from '@/components/PublicStoryRating';
 import { SelfPrintModal } from '@/components/self-print/SelfPrintModal';
+import { buildAuthEntryPath } from '@/lib/auth-return';
 
 interface Chapter {
   id: string;
@@ -201,7 +202,11 @@ export default function PublicChapterPage() {
               </Show>
               <Show when="signed-out">
                 <a
-                  href={`/${locale}/sign-in?redirectUrl=${encodeURIComponent(`/${locale}/p/${slug}/chapter/${chapterNumber}`)}`}
+                  href={buildAuthEntryPath(
+                    locale,
+                    'sign-in',
+                    `/${locale}/p/${slug}/chapter/${chapterNumber}`,
+                  )}
                   className="btn btn-outline flex items-center gap-2"
                 >
                   <Download className="w-4 h-4" />

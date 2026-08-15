@@ -75,6 +75,14 @@
       "storyCoverAlt": "Couverture de l'histoire",
       "filterResults": "{count} sur {total} histoires affichées"
     },
+    "archive": {
+      "title": "Plus d'histoires publiques",
+      "subtitle": "Découvrez toutes les histoires publiques complètes disponibles sur Mythoria.",
+      "createdBy": "Créée par {author}",
+      "paginationLabel": "Pages des archives d'histoires publiques",
+      "previous": "Précédent",
+      "next": "Suivant"
+    },
     "emptyState": {
       "noStoriesMatch": "Aucune histoire ne correspond à vos filtres",
       "tryAdjustingFilters": "Essayez d'ajuster vos filtres ou de parcourir toutes les histoires pour découvrir de nouvelles aventures.",

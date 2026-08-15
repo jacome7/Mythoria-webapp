@@ -9,6 +9,8 @@ const event: MeasurementProtocolEventParams = {
   clientId: '123456789.1712345678',
   userId: 'user_clerk_1',
   sessionId: 1712345678,
+  requireSessionAttribution: true,
+  engagementTimeMsec: 100,
   occurredAt: new Date('2026-07-17T12:00:00.000Z'),
   consent: {
     analyticsStorage: 'granted',
@@ -21,6 +23,7 @@ const event: MeasurementProtocolEventParams = {
     value: 35.85,
     tax: 2.15,
     credits_purchased: 400,
+    items: [{ item_id: 'credits-400', item_name: '400 Mythoria Credits' }],
   },
 };
 
@@ -107,5 +110,10 @@ describe('GA4 Measurement Protocol delivery', () => {
       errors: ['Invalid Measurement Protocol payload'],
     });
     expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('rejects missing session-linked context and missing explicit engagement', () => {
+    expect(buildMeasurementProtocolPayload({ ...event, sessionId: undefined })).toBeNull();
+    expect(buildMeasurementProtocolPayload({ ...event, engagementTimeMsec: undefined })).toBeNull();
   });
 });

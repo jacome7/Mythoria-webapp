@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { writingPersonaStorySchema } from '@/lib/writing-persona-validation';
-import { storyService } from '@/db/services';
+import { PublicStoryValidationError, storyService } from '@/db/services';
 import { db } from '@/db';
 import { stories, chapters } from '@/db/schema';
 import { and, asc, eq, max } from 'drizzle-orm';
@@ -226,6 +226,13 @@ export async function PUT(
       return NextResponse.json(
         { error: 'Invalid writing persona data', details: error.issues },
         { status: 400 },
+      );
+    }
+
+    if (error instanceof PublicStoryValidationError) {
+      return NextResponse.json(
+        { error: error.code, missing: error.missing, message: error.message },
+        { status: 422 },
       );
     }
 

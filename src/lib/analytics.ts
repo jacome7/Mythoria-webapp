@@ -9,6 +9,14 @@ import type {
 import { readIntentContextFromDocumentCookie } from './campaign-context';
 import { INTENT_CONTEXT_COOKIE } from '@/types/intent-context';
 import { currentBrowserPageContext } from './analytics/page-context';
+import {
+  GA4_EVENT_NAMES,
+  sanitizeAnalyticsEventParams,
+  type GA4EventName,
+} from './analytics/events';
+
+export { GA4_EVENT_NAMES } from './analytics/events';
+export type { GA4EventName } from './analytics/events';
 
 declare global {
   interface Window {
@@ -20,47 +28,6 @@ declare global {
 const DEFAULT_MEASUREMENT_ID = 'G-86D0QFW197';
 const isDebugModeEnabled = process.env.NEXT_PUBLIC_GA_DEBUG === 'true';
 
-export const GA4_EVENT_NAMES = [
-  'page_view',
-  'sign_up_started',
-  'login',
-  'landing_cta_click',
-  'landing_page_view',
-  'landing_section_view',
-  'supportive_story_page_view',
-  'challenge_selected',
-  'sample_chapter_open',
-  'sample_book_open',
-  'sample_audio_start',
-  'sample_audio_complete',
-  'story_creation_started',
-  'story_step_viewed',
-  'story_step_completed',
-  'story_generation_attempted',
-  'story_generation_requested',
-  'story_generation_completed',
-  'story_generation_failed',
-  'self_print_requested',
-  'self_print_completed',
-  'self_print_failed',
-  'audiobook_generation_requested',
-  'audiobook_generation_completed',
-  'audiobook_generation_failed',
-  'print_order_requested',
-  'view_item_list',
-  'select_item',
-  'add_to_cart',
-  'remove_from_cart',
-  'begin_checkout',
-  'purchase',
-  'refund',
-  'share',
-  'earn_virtual_currency',
-  'audiobook_interaction',
-  'paid_action',
-] as const;
-
-export type GA4EventName = (typeof GA4_EVENT_NAMES)[number];
 export type AnalyticsEvent = GA4EventName;
 
 export interface AnalyticsEventParams {
@@ -82,8 +49,6 @@ export interface StoryEventParams extends AnalyticsEventParams {
 export interface AuthEventParams extends AnalyticsEventParams {
   user_id?: string;
   method?: string;
-  sign_up_method?: string;
-  login_method?: string;
 }
 
 export type PaidActionType = 'ebook' | 'audiobook' | 'print' | 'self_print' | 'ai_edit';
@@ -120,11 +85,16 @@ export function trackEvent(eventName: AnalyticsEvent, parameters?: Record<string
       document.cookie,
       INTENT_CONTEXT_COOKIE,
     )?.intent;
+    const safeParameters = sanitizeAnalyticsEventParams(eventName, parameters || {});
+    if (!safeParameters) {
+      console.warn('[Analytics] Event rejected by runtime contract', { eventName });
+      return;
+    }
     const eventParams = {
       ...(primaryIntent && parameters?.primary_intent === undefined
         ? { primary_intent: primaryIntent }
         : {}),
-      ...parameters,
+      ...safeParameters,
       send_to: getMeasurementId(),
       ...(isDebugModeEnabled ? { debug_mode: true } : {}),
     };
@@ -151,9 +121,9 @@ export function setUserId(userId: string | null): void {
 
 export const trackAuth = {
   signUpStarted: (params: AuthEventParams = {}) => trackEvent('sign_up_started', params),
-  login: ({ user_id: userId, method, login_method: legacyMethod }: AuthEventParams = {}) => {
+  login: ({ user_id: userId, method }: AuthEventParams = {}) => {
     if (userId) setUserId(userId);
-    trackEvent('login', { method: method || legacyMethod || 'email' });
+    trackEvent('login', { method: method || 'email' });
   },
 };
 

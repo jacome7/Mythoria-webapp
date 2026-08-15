@@ -37,9 +37,8 @@ export async function POST(request: NextRequest) {
         .where(eq(analyticsAttributions.attributionId, attributionId));
 
       const attributionParams = {
-        ...(attribution.firstLandingPath || attribution.landingSlug
-          ? { landing_slug: attribution.firstLandingPath || attribution.landingSlug }
-          : {}),
+        ...(attribution.firstLandingPath ? { landing_path: attribution.firstLandingPath } : {}),
+        ...(attribution.landingSlug ? { landing_slug: attribution.landingSlug } : {}),
         ...(attribution.firstPrimaryIntent || attribution.primaryIntent
           ? { primary_intent: attribution.firstPrimaryIntent || attribution.primaryIntent }
           : {}),
@@ -63,7 +62,7 @@ export async function POST(request: NextRequest) {
           consent: attribution.consent,
           pageLocation,
           pageReferrer,
-          engagementTimeMsec: 100,
+          engagementTimeMsec: attribution.engagementTimeMsec,
           availableAt: new Date(),
           params: { method: 'unknown', ...attributionParams },
         })
@@ -77,7 +76,7 @@ export async function POST(request: NextRequest) {
             consent: attribution.consent,
             pageLocation,
             pageReferrer,
-            engagementTimeMsec: 100,
+            engagementTimeMsec: attribution.engagementTimeMsec,
             availableAt: new Date(),
             claimToken: null,
             claimedAt: null,
@@ -101,7 +100,7 @@ export async function POST(request: NextRequest) {
           lastError: null,
           pageLocation,
           pageReferrer,
-          engagementTimeMsec: 100,
+          engagementTimeMsec: attribution.engagementTimeMsec,
         })
         .where(
           and(

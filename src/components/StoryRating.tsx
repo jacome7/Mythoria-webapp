@@ -7,6 +7,7 @@ import { MessageSquare, Star } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { getAnonymousRating, setAnonymousRating, areCookiesSupported } from '@/utils/cookieUtils';
 import { formatDate } from '@/utils/date';
+import { buildAuthEntryPath } from '@/lib/auth-return';
 
 interface StoryRatingProps {
   storyId: string;
@@ -180,7 +181,7 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
   const handleAuthorFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isSignedIn) {
-      router.push(`/${locale}/sign-in?redirect=${encodeURIComponent(redirectPath)}`);
+      router.push(buildAuthEntryPath(locale, 'sign-in', redirectPath));
       return;
     }
 
@@ -432,9 +433,7 @@ export default function StoryRating({ storyId, onRatingSubmitted }: StoryRatingP
               <button
                 type="button"
                 className="btn btn-outline btn-primary mt-4"
-                onClick={() =>
-                  router.push(`/${locale}/sign-in?redirect=${encodeURIComponent(redirectPath)}`)
-                }
+                onClick={() => router.push(buildAuthEntryPath(locale, 'sign-in', redirectPath))}
               >
                 {tCommonStoryRating('feedbackToAuthor.signInButton')}
               </button>

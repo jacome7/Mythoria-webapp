@@ -7,6 +7,7 @@ import { useCallback, useMemo, useRef } from 'react';
 import type { LeadSessionData } from '@/types/lead';
 import { formatPhoneNumberForClerk } from '@/utils/phone-number';
 import { trackAuth } from '@/lib/analytics';
+import { buildAuthReturnPath } from '@/lib/auth-return';
 
 interface SignUpClientProps {
   locale: string;
@@ -53,13 +54,11 @@ export default function SignUpClient({ locale, translations, leadSession }: Sign
     if (hasTrackedSignUpStartRef.current) return;
     hasTrackedSignUpStartRef.current = true;
     trackAuth.signUpStarted({
-      sign_up_method: leadSession?.email ? 'lead_session' : 'unknown',
+      method: leadSession?.email ? 'lead_session' : 'unknown',
     });
   }, [leadSession?.email]);
-  const redirectParam = search?.get('redirect');
   const defaultRedirect = `/${locale}/profile/onboarding`;
-  const safeRedirect =
-    redirectParam && redirectParam.startsWith('/') ? redirectParam : defaultRedirect;
+  const safeRedirect = search ? buildAuthReturnPath(search, defaultRedirect) : defaultRedirect;
 
   // Prepare initial values for Clerk form (using the proper Clerk API)
   const initialValues = useMemo(() => {

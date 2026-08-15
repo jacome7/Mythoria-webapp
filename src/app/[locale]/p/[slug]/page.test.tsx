@@ -33,7 +33,7 @@ jest.mock('next/navigation', () => ({
   },
 }));
 
-import PublicStoryPage from './page';
+import PublicStoryPage, { generateMetadata } from './page';
 import { Children, isValidElement, type ReactElement, type ReactNode } from 'react';
 
 describe('public story page', () => {
@@ -55,8 +55,17 @@ describe('public story page', () => {
 
   it('redirects non-native locales to the canonical public story locale', async () => {
     getPublicStorySeoDataMock.mockResolvedValue({
+      storyId: 'story-id',
       storyLanguage: 'pt-PT',
       title: 'Native Story',
+      updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+      isPublic: true,
+      isFeatured: false,
+      status: 'published',
+      slug: 'native-story',
+      synopsis: 'Synopsis',
+      coverUri: '/cover.webp',
+      hasMeaningfulContent: true,
     });
 
     await expect(
@@ -109,5 +118,30 @@ describe('public story page', () => {
     );
 
     expect(clientElement?.props.initialData.story.hasFreePdfDownloads).toBe(true);
+  });
+
+  it('indexes an unfeatured complete public story with its stored canonical slug', async () => {
+    getPublicStorySeoDataMock.mockResolvedValue({
+      storyId: 'story-id',
+      storyLanguage: 'pt-PT',
+      title: 'História pública',
+      updatedAt: new Date('2026-08-15T00:00:00.000Z'),
+      isPublic: true,
+      isFeatured: false,
+      status: 'published',
+      slug: 'historia-publica',
+      synopsis: 'Uma sinopse completa.',
+      coverUri: '/cover.webp',
+      hasMeaningfulContent: true,
+    });
+
+    await expect(
+      generateMetadata({
+        params: Promise.resolve({ locale: 'pt-PT', slug: 'historia-publica' }),
+      }),
+    ).resolves.toMatchObject({
+      robots: 'index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1',
+      alternates: { canonical: 'https://mythoria.pt/pt-PT/p/historia-publica' },
+    });
   });
 });

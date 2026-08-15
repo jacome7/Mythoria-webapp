@@ -76,6 +76,7 @@ describe('durable outbox drains', () => {
       clientId: '123.456',
       userId: null,
       sessionId: 123,
+      engagementTimeMsec: 100,
       consent: {
         analyticsStorage: 'granted',
         adUserData: 'denied',
@@ -146,6 +147,7 @@ describe('durable outbox drains', () => {
       ...pending,
       clientId: '123.456',
       sessionId: 1712345678,
+      engagementTimeMsec: 100,
       params: { ...pending.params, primary_intent: 'romance' },
     };
     selectMock.mockReturnValueOnce(selectionFor([pending])).mockReturnValueOnce(
@@ -153,6 +155,7 @@ describe('durable outbox drains', () => {
         {
           clientId: '123.456',
           sessionId: 1712345678,
+          engagementTimeMsec: 100,
           primaryIntent: 'romance',
         },
       ]),
@@ -207,7 +210,7 @@ describe('durable outbox drains', () => {
       expect.objectContaining({
         claimToken: null,
         claimedAt: null,
-        lastError: 'Awaiting consented analytics attribution',
+        lastError: 'Awaiting explicit session-linked analytics context',
       }),
     );
     expect(set).not.toHaveBeenCalledWith(expect.objectContaining({ attempts: 1 }));

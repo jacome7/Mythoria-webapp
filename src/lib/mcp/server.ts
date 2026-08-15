@@ -14,6 +14,7 @@ import {
   paymentService,
   printRequestService,
   pricingService,
+  PublicStoryValidationError,
   storyCharacterService,
   storyService,
 } from '@/db/services';
@@ -4691,11 +4692,19 @@ function registerSharingTools(server: McpServer, authContext: McpAuthContext) {
             });
           }
 
-          const updatedStory = await storyService.setPublicVisibility(
-            input.storyId,
-            author.authorId,
-            true,
-          );
+          let updatedStory;
+          try {
+            updatedStory = await storyService.setPublicVisibility(
+              input.storyId,
+              author.authorId,
+              true,
+            );
+          } catch (error) {
+            if (error instanceof PublicStoryValidationError) {
+              throw new McpToolUserError(error.message);
+            }
+            throw error;
+          }
           if (!updatedStory || !updatedStory.slug) {
             throw new McpToolUserError('Unable to enable public sharing for this story.');
           }

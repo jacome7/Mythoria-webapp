@@ -10,8 +10,17 @@ import { sanitizeAnalyticsPathname } from '@/lib/analytics/page-context';
 export const runtime = 'nodejs';
 
 const optionalValue = z.string().trim().max(255).optional();
+const landingSlugValue = z
+  .string()
+  .trim()
+  .min(1)
+  .max(160)
+  .regex(/^[^\\/?#\u0000-\u001f\u007f]+$/)
+  .optional();
 const attributionSchema = z.object({
   analyticsContext: z.unknown(),
+  landingPath: z.string().trim().max(160).optional(),
+  latestPath: z.string().trim().max(160).optional(),
   landingSlug: z.string().trim().max(160).optional(),
   primaryIntent: z.enum(STORY_INTENTS).optional(),
   campaign: z
@@ -43,7 +52,15 @@ export async function POST(request: NextRequest) {
     const pageFromContext = analytics.pageLocation
       ? sanitizeAnalyticsPathname(new URL(analytics.pageLocation).pathname)
       : undefined;
-    const landingPath = sanitizeAnalyticsPathname(body.landingSlug || '') || pageFromContext;
+    const legacyLandingPath = body.landingSlug?.startsWith('/') ? body.landingSlug : undefined;
+    const parsedLandingSlug = landingSlugValue.safeParse(
+      body.landingSlug?.startsWith('/') ? undefined : body.landingSlug,
+    );
+    const landingSlug = parsedLandingSlug.success ? parsedLandingSlug.data : undefined;
+    const landingPath =
+      sanitizeAnalyticsPathname(body.landingPath || legacyLandingPath || '') || pageFromContext;
+    const latestPath =
+      sanitizeAnalyticsPathname(body.latestPath || '') || pageFromContext || landingPath;
     const referrerPath = analytics.pageReferrer
       ? sanitizeAnalyticsPathname(new URL(analytics.pageReferrer).pathname)
       : undefined;
@@ -58,8 +75,9 @@ export async function POST(request: NextRequest) {
     const insertValues = {
       clientId: analytics.clientId,
       sessionId: analytics.sessionId,
+      engagementTimeMsec: analytics.engagementTimeMsec,
       consent: analytics.consent,
-      landingSlug: landingPath,
+      landingSlug,
       primaryIntent: body.primaryIntent,
       utmSource: campaign.utm_source,
       utmMedium: campaign.utm_medium,
@@ -80,7 +98,7 @@ export async function POST(request: NextRequest) {
       firstUtmContent: campaign.utm_content,
       firstClickIdentifier: clickIdentifier,
       firstClickIdentifierKind: clickIdentifierKind,
-      latestPath: landingPath,
+      latestPath,
       latestReferrerPath: referrerPath,
       latestAttributionAt: now,
       expiresAt,
@@ -104,8 +122,9 @@ export async function POST(request: NextRequest) {
           .update(analyticsAttributions)
           .set({
             sessionId: analytics.sessionId,
+            engagementTimeMsec: analytics.engagementTimeMsec,
             consent: analytics.consent,
-            latestPath: landingPath,
+            latestPath,
             latestReferrerPath: referrerPath,
             latestAttributionAt: now,
             expiresAt,

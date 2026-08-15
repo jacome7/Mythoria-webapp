@@ -23,6 +23,7 @@ import PublicStoryRating from '@/components/PublicStoryRating';
 import StoryReader from '@/components/StoryReader';
 import { formatDate } from '@/utils/date';
 import styles from './PublicStoryPageClient.module.css';
+import { buildAuthEntryPath } from '@/lib/auth-return';
 
 export interface PublicStoryChapter {
   id: string;
@@ -214,7 +215,7 @@ export default function PublicStoryPageClient({ initialData }: { initialData: Pu
                       </Show>
                       <Show when="signed-out">
                         <a
-                          href={`/${locale}/sign-in?redirectUrl=${encodeURIComponent(`/${locale}/p/${slug}`)}`}
+                          href={buildAuthEntryPath(locale, 'sign-in', `/${locale}/p/${slug}`)}
                           className="btn btn-outline btn-sm flex items-center gap-2 text-xs sm:text-sm"
                         >
                           <Download className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -397,7 +398,7 @@ export default function PublicStoryPageClient({ initialData }: { initialData: Pu
                     </Show>
                     <Show when="signed-out">
                       <a
-                        href={`/${locale}/sign-in?redirectUrl=${encodeURIComponent(`/${locale}/p/${slug}`)}`}
+                        href={buildAuthEntryPath(locale, 'sign-in', `/${locale}/p/${slug}`)}
                         className="btn btn-outline flex items-center gap-2"
                       >
                         <Download className="w-4 h-4" />

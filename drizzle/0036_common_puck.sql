@@ -1,0 +1,1 @@
+ALTER TABLE "analytics_attributions" ADD COLUMN "engagement_time_msec" integer;

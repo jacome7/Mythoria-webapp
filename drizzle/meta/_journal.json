@@ -253,6 +253,13 @@
       "when": 1786416354336,
       "tag": "0035_mighty_luke_cage",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1786817021282,
+      "tag": "0036_common_puck",
+      "breakpoints": true
     }
   ]
 }

@@ -75,6 +75,14 @@
       "storyCoverAlt": "Story cover",
       "filterResults": "{count} of {total} stories shown"
     },
+    "archive": {
+      "title": "More public stories",
+      "subtitle": "Browse every complete public story available to read on Mythoria.",
+      "createdBy": "Created by {author}",
+      "paginationLabel": "Public story archive pages",
+      "previous": "Previous",
+      "next": "Next"
+    },
     "emptyState": {
       "noStoriesMatch": "No stories match your filters",
       "tryAdjustingFilters": "Try adjusting your filters or browse all stories to discover new adventures.",

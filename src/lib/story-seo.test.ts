@@ -1,4 +1,8 @@
-import { isSearchIndexableStory, type SearchIndexableStory } from './story-seo';
+import {
+  isSearchIndexableStory,
+  validatePublicStoryIndexability,
+  type SearchIndexableStory,
+} from './story-seo';
 
 const eligible: SearchIndexableStory = {
   isPublic: true,
@@ -15,13 +19,29 @@ const eligible: SearchIndexableStory = {
 describe('isSearchIndexableStory', () => {
   it('requires every public search-quality invariant', () => {
     expect(isSearchIndexableStory(eligible)).toBe(true);
-    for (const key of Object.keys(eligible) as Array<keyof SearchIndexableStory>) {
+    for (const key of Object.keys(eligible).filter(
+      (candidate) => candidate !== 'isFeatured',
+    ) as Array<keyof SearchIndexableStory>) {
       expect(isSearchIndexableStory({ ...eligible, [key]: null })).toBe(false);
     }
   });
 
-  it('rejects unsupported locales and unfeatured public stories', () => {
+  it('rejects unsupported locales without coupling SEO to merchandising', () => {
     expect(isSearchIndexableStory({ ...eligible, storyLanguage: 'it-IT' })).toBe(false);
-    expect(isSearchIndexableStory({ ...eligible, isFeatured: false })).toBe(false);
+    expect(isSearchIndexableStory({ ...eligible, isFeatured: false })).toBe(true);
+  });
+
+  it('returns typed validation codes for incomplete public stories', () => {
+    expect(
+      validatePublicStoryIndexability({
+        ...eligible,
+        status: 'draft',
+        synopsis: ' ',
+        hasMeaningfulContent: false,
+      }),
+    ).toEqual({
+      valid: false,
+      missing: ['not_published', 'missing_synopsis', 'missing_meaningful_chapter'],
+    });
   });
 });

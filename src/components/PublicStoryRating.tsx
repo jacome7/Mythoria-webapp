@@ -7,6 +7,7 @@ import { ChevronDown, MessageSquare, Star } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { formatDate } from '@/utils/date';
 import styles from './PublicStoryRating.module.css';
+import { buildAuthEntryPath } from '@/lib/auth-return';
 
 interface PublicStoryRatingProps {
   storyId: string;
@@ -175,7 +176,7 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
   const handleAuthorFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isSignedIn) {
-      router.push(`/${locale}/sign-in?redirect=${encodeURIComponent(redirectPath)}`);
+      router.push(buildAuthEntryPath(locale, 'sign-in', redirectPath));
       return;
     }
 
@@ -453,9 +454,7 @@ export default function PublicStoryRating({ storyId, onRatingSubmitted }: Public
                   <button
                     type="button"
                     className="btn btn-outline btn-primary mt-4"
-                    onClick={() =>
-                      router.push(`/${locale}/sign-in?redirect=${encodeURIComponent(redirectPath)}`)
-                    }
+                    onClick={() => router.push(buildAuthEntryPath(locale, 'sign-in', redirectPath))}
                   >
                     {tCommonStoryRating('feedbackToAuthor.signInButton')}
                   </button>

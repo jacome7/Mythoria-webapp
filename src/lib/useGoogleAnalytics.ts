@@ -52,11 +52,11 @@ export function useGoogleAnalytics() {
   }, []);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && analyticsConsent === 'granted') {
       const path = pathname || window.location.pathname;
       // Query cleanup and attribution redirects can update search params without a real page
       // navigation. GA4 should receive exactly one page_view for that canonical path.
-      const pageViewKey = `${path}:${analyticsConsent}`;
+      const pageViewKey = path;
       if (sentPageViewsRef.current.has(pageViewKey)) return;
 
       const url = sanitizeAnalyticsPath(path, new URLSearchParams(searchParams?.toString() || ''));

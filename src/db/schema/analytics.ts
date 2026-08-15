@@ -26,6 +26,7 @@ export const analyticsAttributions = pgTable(
     authorId: uuid('author_id').references(() => authors.authorId, { onDelete: 'set null' }),
     clientId: varchar('client_id', { length: 100 }).notNull(),
     sessionId: bigint('session_id', { mode: 'number' }),
+    engagementTimeMsec: integer('engagement_time_msec'),
     consent: jsonb('consent').$type<AnalyticsConsent>().notNull(),
     landingSlug: varchar('landing_slug', { length: 160 }),
     primaryIntent: varchar('primary_intent', { length: 120 }),

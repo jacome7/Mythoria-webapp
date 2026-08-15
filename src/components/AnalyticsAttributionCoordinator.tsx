@@ -16,6 +16,7 @@ import {
   getStoredConsent,
   type ConsentUpdatedDetail,
 } from '@/lib/consent';
+import { extractLandingSlug, sanitizeInternalReturnPath } from '@/lib/auth-return';
 
 const PERSISTED_CAMPAIGN_KEYS = [
   'utm_source',
@@ -30,6 +31,9 @@ const PERSISTED_CAMPAIGN_KEYS = [
 ] as const;
 
 let transientCampaign: CampaignParams = {};
+let transientLandingPath: string | undefined;
+let transientLandingSlug: string | undefined;
+let transientPrimaryIntent: ReturnType<typeof getValidatedIntent> = null;
 let captureInFlight: Promise<boolean> | undefined;
 let linkInFlight: Promise<void> | undefined;
 let lastCaptureSignature: string | undefined;
@@ -37,21 +41,58 @@ let linkedUserId: string | undefined;
 const LINK_RETRY_DELAYS_MS = [0, 250, 500, 1_000, 2_000] as const;
 
 function mergeCampaignFromLocation(): void {
+  const search = new URLSearchParams(window.location.search);
   transientCampaign = {
     ...transientCampaign,
-    ...collectCampaignParams(new URLSearchParams(window.location.search)),
+    ...collectCampaignParams(search),
   };
+  const isAuthPage = /\/(sign-in|sign-up)(?:\/|$)/.test(window.location.pathname);
+  const requestedLandingPath = search.get('landing_path') || search.get('landingPath');
+  if (requestedLandingPath) {
+    transientLandingPath = sanitizeInternalReturnPath(
+      requestedLandingPath,
+      window.location.pathname,
+    );
+  } else if (!transientLandingPath && !isAuthPage) {
+    transientLandingPath = window.location.pathname;
+  }
+  transientLandingSlug ||=
+    search.get('landing_slug') ||
+    search.get('landingSlug') ||
+    extractLandingSlug(transientLandingPath || window.location.pathname);
+  transientPrimaryIntent ||= getValidatedIntent(
+    search.get('primary_intent') || search.get('primaryIntent') || search.get('intent'),
+  );
 }
 
-function appendTransientCampaign(url: URL): void {
+function appendTransientReturnContext(url: URL): void {
   for (const [key, value] of Object.entries(transientCampaign)) {
     if (value && !url.searchParams.has(key)) url.searchParams.set(key, value);
+  }
+  if (transientLandingPath && !url.searchParams.has('landing_path')) {
+    url.searchParams.set('landing_path', transientLandingPath);
+  }
+  if (transientLandingSlug && !url.searchParams.has('landing_slug')) {
+    url.searchParams.set('landing_slug', transientLandingSlug);
+  }
+  if (transientPrimaryIntent && !url.searchParams.has('primary_intent')) {
+    url.searchParams.set('primary_intent', transientPrimaryIntent);
   }
 }
 
 function stripCampaignFromCurrentUrl(): void {
   const url = new URL(window.location.href);
   for (const key of CAMPAIGN_QUERY_KEYS) url.searchParams.delete(key);
+  for (const key of [
+    'landing_path',
+    'landingPath',
+    'landing_slug',
+    'landingSlug',
+    'primary_intent',
+    'primaryIntent',
+  ]) {
+    url.searchParams.delete(key);
+  }
   window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
 }
 
@@ -96,9 +137,10 @@ async function captureConsentedAttribution(
       transientCampaign[key] ? [[key, transientCampaign[key]]] : [],
     ),
   );
-  const search = new URLSearchParams(window.location.search);
-  const primaryIntent = getValidatedIntent(search.get('primaryIntent') || search.get('intent'));
-  const signature = JSON.stringify({ pathname, primaryIntent, campaign });
+  const primaryIntent = transientPrimaryIntent;
+  const landingPath = transientLandingPath || pathname;
+  const landingSlug = transientLandingSlug || extractLandingSlug(landingPath);
+  const signature = JSON.stringify({ pathname, landingPath, landingSlug, primaryIntent, campaign });
   if (signature === lastCaptureSignature) {
     if (authenticatedUserId) await linkAuthenticatedAttribution(authenticatedUserId);
     return;
@@ -121,7 +163,9 @@ async function captureConsentedAttribution(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         analyticsContext,
-        landingSlug: pathname,
+        landingPath,
+        latestPath: pathname,
+        ...(landingSlug ? { landingSlug } : {}),
         ...(primaryIntent ? { primaryIntent } : {}),
         campaign,
       }),
@@ -133,6 +177,9 @@ async function captureConsentedAttribution(
     lastCaptureSignature = signature;
     linkedUserId = undefined;
     transientCampaign = {};
+    transientLandingPath = undefined;
+    transientLandingSlug = undefined;
+    transientPrimaryIntent = null;
     stripCampaignFromCurrentUrl();
     return true;
   })().finally(() => {
@@ -161,6 +208,9 @@ export default function AnalyticsAttributionCoordinator() {
       mergeCampaignFromLocation();
     } else {
       transientCampaign = {};
+      transientLandingPath = undefined;
+      transientLandingSlug = undefined;
+      transientPrimaryIntent = null;
       stripCampaignFromCurrentUrl();
     }
     if (/\/(sign-up)(?:\/|$)/.test(pathname) && !consent) {
@@ -181,7 +231,7 @@ export default function AnalyticsAttributionCoordinator() {
       if (!anchor || anchor.target === '_blank' || anchor.hasAttribute('download')) return;
       const url = new URL(anchor.href, window.location.href);
       if (url.origin !== window.location.origin) return;
-      appendTransientCampaign(url);
+      appendTransientReturnContext(url);
       anchor.href = url.toString();
     };
 
@@ -190,6 +240,9 @@ export default function AnalyticsAttributionCoordinator() {
       const detail = (event as CustomEvent<ConsentUpdatedDetail>).detail;
       if (detail.state.analytics_storage !== 'granted') {
         transientCampaign = {};
+        transientLandingPath = undefined;
+        transientLandingSlug = undefined;
+        transientPrimaryIntent = null;
         lastCaptureSignature = undefined;
         linkedUserId = undefined;
         stripCampaignFromCurrentUrl();

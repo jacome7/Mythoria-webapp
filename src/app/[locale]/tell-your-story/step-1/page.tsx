@@ -10,6 +10,7 @@ import ProgressIndicator from '@/components/ProgressIndicator';
 import { trackStoryCreation } from '@/lib/analytics';
 import { setStep1Data, getStep1Data } from '@/lib/story-session';
 import { buildStoryAuthReturnSearch } from '@/lib/campaign-context';
+import { buildAuthEntryPath } from '@/lib/auth-return';
 
 interface AuthorData {
   authorId: string;
@@ -154,13 +155,13 @@ export default function Step1Page() {
             </p>
             <div className="space-y-4 sm:space-y-0 sm:space-x-4">
               <Link
-                href={`/${locale}/sign-in?redirect=${encodeURIComponent(redirectPath)}`}
+                href={buildAuthEntryPath(locale, 'sign-in', redirectPath)}
                 className="btn btn-primary btn-lg"
               >
                 {tStoryStepsStep1('unauthenticated.signIn')}
               </Link>
               <Link
-                href={`/${locale}/sign-up?redirect=${encodeURIComponent(redirectPath)}`}
+                href={buildAuthEntryPath(locale, 'sign-up', redirectPath)}
                 className="btn btn-outline btn-lg"
               >
                 {tStoryStepsStep1('unauthenticated.signUp')}

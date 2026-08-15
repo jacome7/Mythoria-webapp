@@ -74,6 +74,23 @@ async function authenticateWithTestUser(page: import('@playwright/test').Page) {
   }, ticket.token);
 }
 
+async function grantAnalyticsConsent(page: import('@playwright/test').Page) {
+  await page.evaluate(() => {
+    const consent = {
+      version: 2,
+      state: {
+        analytics_storage: 'granted',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+      },
+      timestamp: Date.now(),
+      preferences: { analytics: true, advertising: false },
+    };
+    document.cookie = `mythoria_consent=${encodeURIComponent(JSON.stringify(consent))}; path=/; SameSite=Lax`;
+  });
+}
+
 test('signed-out auth gate emits no story start', async ({ page }) => {
   await page.context().clearCookies();
   await installAnalyticsCapture(page);
@@ -89,6 +106,7 @@ test('signed-out auth gate emits no story start', async ({ page }) => {
 test('authenticated mobile step emits one sanitized start and view', async ({ page }) => {
   await installAnalyticsCapture(page);
   await authenticateWithTestUser(page);
+  await grantAnalyticsConsent(page);
 
   const authResponse = page.waitForResponse(
     (response) => response.url().endsWith('/api/auth/me') && response.status() === 200,

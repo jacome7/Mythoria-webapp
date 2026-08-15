@@ -32,7 +32,7 @@ export function signUpOutboxEntry(
     userId: clerkUserId,
     params: { method: 'unknown' },
     occurredAt,
-    availableAt: new Date(occurredAt.getTime() + 24 * 60 * 60 * 1000),
+    availableAt: new Date(occurredAt.getTime() + ATTRIBUTION_RETRY_MS),
   };
 }
 
@@ -127,7 +127,14 @@ export async function deliverAnalytics(): Promise<{
     const analyticsConsent = claimed.consent;
 
     let effectiveEntry = claimed;
-    if (effectiveEntry.authorId && (!effectiveEntry.clientId || !effectiveEntry.attributionId)) {
+    let effectiveAttribution: typeof analyticsAttributions.$inferSelect | undefined;
+    if (
+      effectiveEntry.authorId &&
+      (effectiveEntry.attributionId ||
+        !effectiveEntry.clientId ||
+        !effectiveEntry.sessionId ||
+        !effectiveEntry.engagementTimeMsec)
+    ) {
       const eventTimeConditions = [
         lte(analyticsAttributions.createdAt, effectiveEntry.occurredAt),
         gt(analyticsAttributions.expiresAt, effectiveEntry.occurredAt),
@@ -166,6 +173,7 @@ export async function deliverAnalytics(): Promise<{
             .orderBy(desc(analyticsAttributions.createdAt))
             .limit(1);
       if (attribution) {
+        effectiveAttribution = attribution;
         const primaryIntent = attribution.firstPrimaryIntent || attribution.primaryIntent;
         const pageLocation = attribution.latestPath
           ? sanitizeAnalyticsPageUrl(`${ANALYTICS_BASE_URL}${attribution.latestPath}`)
@@ -188,7 +196,7 @@ export async function deliverAnalytics(): Promise<{
             consent: attribution.consent,
             pageLocation: effectiveEntry.pageLocation || pageLocation,
             pageReferrer: effectiveEntry.pageReferrer || pageReferrer,
-            engagementTimeMsec: effectiveEntry.engagementTimeMsec || 100,
+            engagementTimeMsec: effectiveEntry.engagementTimeMsec || attribution.engagementTimeMsec,
             params,
             lastError: null,
           })
@@ -200,16 +208,28 @@ export async function deliverAnalytics(): Promise<{
       }
     }
 
-    if (!effectiveEntry.clientId) {
-      const graceExpired = Date.now() - effectiveEntry.occurredAt.getTime() >= ATTRIBUTION_GRACE_MS;
+    const requiresSessionAttribution = Boolean(effectiveEntry.attributionId);
+    const missingDeliveryContext =
+      !effectiveEntry.clientId ||
+      !effectiveEntry.engagementTimeMsec ||
+      (requiresSessionAttribution && !effectiveEntry.sessionId);
+    if (missingDeliveryContext) {
+      const attributionDeadline = new Date(
+        (effectiveAttribution?.createdAt || effectiveEntry.occurredAt).getTime() +
+          ATTRIBUTION_GRACE_MS,
+      );
+      const graceExpired = Date.now() >= attributionDeadline.getTime();
       if (!graceExpired && effectiveEntry.authorId) {
+        const availableAt = new Date(
+          Math.min(Date.now() + ATTRIBUTION_RETRY_MS, attributionDeadline.getTime()),
+        );
         await db
           .update(analyticsOutbox)
           .set({
-            availableAt: new Date(Date.now() + ATTRIBUTION_RETRY_MS),
+            availableAt,
             claimToken: null,
             claimedAt: null,
-            lastError: 'Awaiting consented analytics attribution',
+            lastError: 'Awaiting explicit session-linked analytics context',
           })
           .where(claimWhere);
         logAnalyticsOutcome(effectiveEntry, 'deferred_context');
@@ -223,7 +243,7 @@ export async function deliverAnalytics(): Promise<{
           skippedAt: new Date(),
           claimToken: null,
           claimedAt: null,
-          lastError: 'Consented analytics attribution was unavailable after the grace period',
+          lastError: 'Explicit session-linked analytics context was unavailable before deadline',
         })
         .where(claimWhere);
       logAnalyticsOutcome(effectiveEntry, 'skipped', { reason: 'attribution_unavailable' });
@@ -233,14 +253,13 @@ export async function deliverAnalytics(): Promise<{
 
     const event = {
       eventName: effectiveEntry.eventName,
-      clientId: effectiveEntry.clientId,
+      clientId: effectiveEntry.clientId!,
       ...(effectiveEntry.userId ? { userId: effectiveEntry.userId } : {}),
       ...(effectiveEntry.sessionId ? { sessionId: effectiveEntry.sessionId } : {}),
+      requireSessionAttribution: requiresSessionAttribution,
       ...(effectiveEntry.pageLocation ? { pageLocation: effectiveEntry.pageLocation } : {}),
       ...(effectiveEntry.pageReferrer ? { pageReferrer: effectiveEntry.pageReferrer } : {}),
-      ...(effectiveEntry.engagementTimeMsec
-        ? { engagementTimeMsec: effectiveEntry.engagementTimeMsec }
-        : {}),
+      engagementTimeMsec: effectiveEntry.engagementTimeMsec!,
       consent: analyticsConsent,
       occurredAt: effectiveEntry.occurredAt,
       params: effectiveEntry.params,

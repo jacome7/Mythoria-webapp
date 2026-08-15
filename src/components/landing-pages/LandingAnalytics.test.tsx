@@ -1,14 +1,33 @@
 /** @jest-environment jsdom */
 
-import { act, fireEvent, render } from '@testing-library/react';
+import { StrictMode } from 'react';
+import { act, fireEvent, render, waitFor } from '@testing-library/react';
 import Link from 'next/link';
-import LandingAnalytics from './LandingAnalytics';
+import LandingAnalytics, { resetLandingAnalyticsDedupeForTests } from './LandingAnalytics';
+import { CONSENT_UPDATED_EVENT } from '@/lib/consent';
 
 const trackEventMock = jest.fn();
+const getGoogleAnalyticsContextMock = jest.fn();
+let consentStatus: 'granted' | 'denied' | null;
 
 jest.mock('@/lib/analytics', () => ({
   trackEvent: (...args: unknown[]) => trackEventMock(...args),
-  getGoogleAnalyticsContext: jest.fn().mockResolvedValue(undefined),
+  getGoogleAnalyticsContext: (...args: unknown[]) => getGoogleAnalyticsContextMock(...args),
+}));
+
+jest.mock('@/lib/consent', () => ({
+  CONSENT_UPDATED_EVENT: 'mythoria:consent-updated',
+  getStoredConsent: () =>
+    consentStatus
+      ? {
+          state: {
+            analytics_storage: consentStatus,
+            ad_storage: 'denied',
+            ad_user_data: 'denied',
+            ad_personalization: 'denied',
+          },
+        }
+      : null,
 }));
 
 describe('LandingAnalytics', () => {
@@ -17,6 +36,10 @@ describe('LandingAnalytics', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     trackEventMock.mockClear();
+    getGoogleAnalyticsContextMock.mockReset().mockResolvedValue({ sessionId: 1001 });
+    consentStatus = 'granted';
+    resetLandingAnalyticsDedupeForTests();
+    window.history.replaceState({}, '', '/en-US/lp/kids-fantasy');
     global.IntersectionObserver = jest.fn((callback: IntersectionObserverCallback) => {
       intersectionCallback = callback;
       return {
@@ -85,7 +108,7 @@ describe('LandingAnalytics', () => {
     });
   });
 
-  it('tracks the supportive page view and a safe challenge selection', () => {
+  it('tracks the supportive page view and a safe challenge selection', async () => {
     const { getByRole } = render(
       <>
         <Link
@@ -106,11 +129,13 @@ describe('LandingAnalytics', () => {
       </>,
     );
 
-    expect(trackEventMock).toHaveBeenCalledWith('supportive_story_page_view', {
-      landing_slug: 'historias-de-apoio',
-      locale: 'pt-PT',
-      variant: 'hub-v1',
-    });
+    await waitFor(() =>
+      expect(trackEventMock).toHaveBeenCalledWith('supportive_story_page_view', {
+        landing_slug: 'historias-de-apoio',
+        locale: 'pt-PT',
+        variant: 'hub-v1',
+      }),
+    );
 
     fireEvent.click(getByRole('link', { name: 'Recordar um animal' }));
 
@@ -129,7 +154,7 @@ describe('LandingAnalytics', () => {
     });
   });
 
-  it('tracks the generic landing page view with low-cardinality romance context', () => {
+  it('tracks the generic landing page view immediately when consent is granted', async () => {
     render(
       <LandingAnalytics
         landingSlug="livro-personalizado-para-casais"
@@ -139,11 +164,104 @@ describe('LandingAnalytics', () => {
       />,
     );
 
-    expect(trackEventMock).toHaveBeenCalledWith('landing_page_view', {
-      landing_slug: 'livro-personalizado-para-casais',
-      locale: 'pt-PT',
-      primary_intent: 'romance',
-      variant: 'romance-v1',
+    await waitFor(() =>
+      expect(trackEventMock).toHaveBeenCalledWith('landing_page_view', {
+        landing_slug: 'livro-personalizado-para-casais',
+        locale: 'pt-PT',
+        primary_intent: 'romance',
+        variant: 'romance-v1',
+      }),
+    );
+  });
+
+  it.each([null, 'denied'] as const)(
+    'replays once when %s consent is later granted',
+    async (initialConsent) => {
+      consentStatus = initialConsent;
+      render(
+        <LandingAnalytics
+          landingSlug="grandparents"
+          primaryIntent="grandparents"
+          locale="en-US"
+          analytics={{ pageViewEvent: 'landing_page_view', variant: 'grandparents-v1' }}
+        />,
+      );
+      expect(trackEventMock).not.toHaveBeenCalledWith('landing_page_view', expect.anything());
+
+      consentStatus = 'granted';
+      act(() => {
+        window.dispatchEvent(
+          new CustomEvent(CONSENT_UPDATED_EVENT, {
+            detail: {
+              state: { analytics_storage: 'granted' },
+              preferences: { analytics: true, advertising: false },
+            },
+          }),
+        );
+      });
+
+      await waitFor(() =>
+        expect(trackEventMock).toHaveBeenCalledWith(
+          'landing_page_view',
+          expect.objectContaining({ landing_slug: 'grandparents' }),
+        ),
+      );
+      expect(
+        trackEventMock.mock.calls.filter(([eventName]) => eventName === 'landing_page_view'),
+      ).toHaveLength(1);
+    },
+  );
+
+  it('suppresses Strict Mode, rerender, and same-session duplicates', async () => {
+    const view = (
+      <StrictMode>
+        <LandingAnalytics
+          landingSlug="kids-fantasy"
+          primaryIntent="kids_adventures"
+          locale="en-US"
+          analytics={{ pageViewEvent: 'landing_page_view', variant: 'v1' }}
+        />
+      </StrictMode>
+    );
+    const { rerender } = render(view);
+    await waitFor(() => expect(trackEventMock).toHaveBeenCalled());
+    rerender(view);
+    await act(async () => Promise.resolve());
+    expect(
+      trackEventMock.mock.calls.filter(([eventName]) => eventName === 'landing_page_view'),
+    ).toHaveLength(1);
+  });
+
+  it('permits SPA navigation and a genuinely new GA4 session', async () => {
+    const props = {
+      landingSlug: 'kids-fantasy',
+      primaryIntent: 'kids_adventures',
+      locale: 'en-US',
+      analytics: { pageViewEvent: 'landing_page_view' as const, variant: 'v1' },
+    };
+    const { rerender } = render(<LandingAnalytics {...props} />);
+    await waitFor(() => expect(trackEventMock).toHaveBeenCalled());
+
+    window.history.pushState({}, '', '/en-US/lp/another-landing');
+    rerender(<LandingAnalytics {...props} landingSlug="another-landing" />);
+    await waitFor(() =>
+      expect(
+        trackEventMock.mock.calls.filter(([eventName]) => eventName === 'landing_page_view'),
+      ).toHaveLength(2),
+    );
+
+    getGoogleAnalyticsContextMock.mockResolvedValue({ sessionId: 2002 });
+    act(() => {
+      window.dispatchEvent(
+        new CustomEvent(CONSENT_UPDATED_EVENT, {
+          detail: { state: { analytics_storage: 'granted' } },
+        }),
+      );
     });
+    await waitFor(() =>
+      expect(
+        trackEventMock.mock.calls.filter(([eventName]) => eventName === 'landing_page_view'),
+      ).toHaveLength(3),
+    );
   });
 });

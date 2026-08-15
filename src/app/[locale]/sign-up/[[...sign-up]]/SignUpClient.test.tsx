@@ -52,7 +52,7 @@ describe('SignUpClient analytics', () => {
 
     expect(mockSignUpStarted).toHaveBeenCalledTimes(1);
     expect(mockSignUpStarted).toHaveBeenCalledWith({
-      sign_up_method: 'unknown',
+      method: 'unknown',
     });
   });
 });

@@ -23,7 +23,12 @@ import { CharacterRole, CharacterAge, isValidCharacterAge } from '../types/chara
 import { toAbsoluteImageUrl, toRelativeImagePath } from '../utils/image-url';
 import { normalizeLocale, detectUserLocaleFromEmail } from '@/utils/locale-utils';
 import { generateSlug, ensureUniqueSlug } from '@/lib/slug';
-import { isSearchIndexableStory } from '@/lib/story-seo';
+import {
+  isSearchIndexableStory,
+  validatePublicStoryIndexability,
+  type PublicStoryValidationCode,
+  type SearchIndexableStory,
+} from '@/lib/story-seo';
 import { GraphicalStyle } from '@/types/story-enums';
 
 // Export payment service
@@ -32,6 +37,55 @@ export { fiscalDocumentService } from './services/fiscal-documents';
 export { creditPackagesService } from './services/credit-packages';
 export { blogService } from './services/blog';
 export { faqService } from './services/faq';
+
+const meaningfulStoryContent = sql<boolean>`exists (
+  select 1 from "chapters" as "seo_chapters"
+  where "seo_chapters"."story_id" = "stories"."story_id"
+    and length(trim(regexp_replace("seo_chapters"."html_content", '<[^>]+>', ' ', 'g'))) >= 200
+)`;
+
+const publicStorySeoSelection = {
+  storyId: stories.storyId,
+  title: stories.title,
+  synopsis: stories.synopsis,
+  coverUri: stories.coverUri,
+  storyLanguage: stories.storyLanguage,
+  slug: stories.slug,
+  isPublic: stories.isPublic,
+  isFeatured: stories.isFeatured,
+  status: stories.status,
+  createdAt: stories.createdAt,
+  updatedAt: stories.updatedAt,
+  hasMeaningfulContent: meaningfulStoryContent,
+};
+
+export class PublicStoryValidationError extends Error {
+  readonly code = 'PUBLIC_STORY_NOT_INDEXABLE';
+
+  constructor(readonly missing: PublicStoryValidationCode[]) {
+    super(`Public story is missing required publishing fields: ${missing.join(', ')}`);
+    this.name = 'PublicStoryValidationError';
+  }
+}
+
+async function loadStoryIndexabilityData(storyId: string): Promise<SearchIndexableStory | null> {
+  const [story] = await db
+    .select(publicStorySeoSelection)
+    .from(stories)
+    .where(eq(stories.storyId, storyId))
+    .limit(1);
+  return story ?? null;
+}
+
+async function assertPublicStoryIndexability(
+  storyId: string,
+  overrides: Partial<SearchIndexableStory> = {},
+): Promise<void> {
+  const current = await loadStoryIndexabilityData(storyId);
+  if (!current) throw new PublicStoryValidationError(['not_public']);
+  const validation = validatePublicStoryIndexability({ ...current, ...overrides });
+  if (!validation.valid) throw new PublicStoryValidationError(validation.missing);
+}
 
 // Author operations
 export const authorService = {
@@ -76,7 +130,7 @@ export const authorService = {
           authorId: author.authorId,
           userId: authorData.clerkUserId,
           params: { method: authorData.signUpMethod || 'unknown' },
-          availableAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+          availableAt: new Date(Date.now() + 5 * 60 * 1000),
         })
         .onConflictDoNothing({ target: analyticsOutbox.dedupeKey });
 
@@ -170,7 +224,7 @@ export const authorService = {
               userId: clerkUser.id,
               params: { method: 'unknown' },
               occurredAt: currentTime,
-              availableAt: new Date(currentTime.getTime() + 24 * 60 * 60 * 1000),
+              availableAt: new Date(currentTime.getTime() + 5 * 60 * 1000),
             })
             .onConflictDoNothing({ target: analyticsOutbox.dedupeKey });
           return created;
@@ -333,23 +387,8 @@ export const storyService = {
   async getPublicStorySeoData(slug: string) {
     const [story] = await db
       .select({
-        storyId: stories.storyId,
-        title: stories.title,
-        synopsis: stories.synopsis,
+        ...publicStorySeoSelection,
         plotDescription: stories.plotDescription,
-        coverUri: stories.coverUri,
-        storyLanguage: stories.storyLanguage,
-        slug: stories.slug,
-        isPublic: stories.isPublic,
-        isFeatured: stories.isFeatured,
-        status: stories.status,
-        createdAt: stories.createdAt,
-        updatedAt: stories.updatedAt,
-        hasMeaningfulContent: sql<boolean>`exists (
-          select 1 from ${chapters}
-          where ${chapters.storyId} = ${stories.storyId}
-            and length(${chapters.htmlContent}) > 200
-        )`,
         authorName: authors.displayName,
       })
       .from(stories)
@@ -431,11 +470,7 @@ export const storyService = {
         isPublic: stories.isPublic,
         isFeatured: stories.isFeatured,
         updatedAt: stories.updatedAt,
-        hasMeaningfulContent: sql<boolean>`exists (
-          select 1 from ${chapters}
-          where ${chapters.storyId} = ${stories.storyId}
-            and length(${chapters.htmlContent}) > 200
-        )`,
+        hasMeaningfulContent: meaningfulStoryContent,
         averageRating: ratingsSubquery.averageRating,
         ratingCount: ratingsSubquery.ratingCount,
       })
@@ -454,11 +489,55 @@ export const storyService = {
     }));
   },
 
+  async getIndexablePublicStoriesForSitemap() {
+    const result = await db
+      .select({
+        ...publicStorySeoSelection,
+        author: authors.displayName,
+        featureImageUri: stories.featureImageUri,
+      })
+      .from(stories)
+      .leftJoin(authors, eq(stories.authorId, authors.authorId))
+      .where(eq(stories.isPublic, true))
+      .orderBy(desc(stories.updatedAt));
+
+    return result.filter(isSearchIndexableStory).map((story) => ({
+      ...story,
+      featureImageUri: toAbsoluteImageUrl(story.featureImageUri),
+    }));
+  },
+
+  async auditPublicStoryIndexability() {
+    const publicStories = await db
+      .select(publicStorySeoSelection)
+      .from(stories)
+      .where(eq(stories.isPublic, true))
+      .orderBy(asc(stories.createdAt));
+
+    return publicStories.flatMap((story) => {
+      const validation = validatePublicStoryIndexability(story);
+      return validation.valid
+        ? []
+        : [{ storyId: story.storyId, slug: story.slug, missing: validation.missing }];
+    });
+  },
+
   async getTotalStoriesCount() {
     const result = await db.select({ value: count() }).from(stories);
     return result[0]?.value || 0;
   },
   async updateStory(storyId: string, updates: Partial<typeof stories.$inferInsert>) {
+    if (updates.isPublic === true) {
+      await assertPublicStoryIndexability(storyId, {
+        isPublic: true,
+        ...(updates.status !== undefined ? { status: updates.status } : {}),
+        ...(updates.slug !== undefined ? { slug: updates.slug } : {}),
+        ...(updates.title !== undefined ? { title: updates.title } : {}),
+        ...(updates.synopsis !== undefined ? { synopsis: updates.synopsis } : {}),
+        ...(updates.coverUri !== undefined ? { coverUri: updates.coverUri } : {}),
+        ...(updates.storyLanguage !== undefined ? { storyLanguage: updates.storyLanguage } : {}),
+      });
+    }
     // Convert any image URLs to relative paths for storage
     const processedUpdates = {
       ...updates,
@@ -602,6 +681,10 @@ export const storyService = {
         const existing = await db.select().from(stories).where(eq(stories.slug, testSlug)).limit(1);
         return existing.length > 0;
       });
+    }
+
+    if (isPublic) {
+      await assertPublicStoryIndexability(storyId, { isPublic: true, slug });
     }
 
     const [story] = await db

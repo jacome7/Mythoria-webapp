@@ -23,12 +23,13 @@ jest.mock('@/i18n/routing', () => ({
   },
 }));
 
-const getFeaturedPublicStoriesMock = jest.fn();
+const getIndexablePublicStoriesForSitemapMock = jest.fn();
 const getPublishedSitemapTranslationsMock = jest.fn();
 
 jest.mock('@/db/services', () => ({
   storyService: {
-    getFeaturedPublicStories: (...args: unknown[]) => getFeaturedPublicStoriesMock(...args),
+    getIndexablePublicStoriesForSitemap: (...args: unknown[]) =>
+      getIndexablePublicStoriesForSitemapMock(...args),
   },
   blogService: {
     getPublishedSitemapTranslations: (...args: unknown[]) =>
@@ -66,12 +67,12 @@ const blogRows = [
 describe('sitemap.xml route', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    getFeaturedPublicStoriesMock.mockResolvedValue([]);
+    getIndexablePublicStoriesForSitemapMock.mockResolvedValue([]);
     getPublishedSitemapTranslationsMock.mockResolvedValue([]);
   });
 
   it('emits unique canonical entries with meaningful alternates and timestamps', async () => {
-    getFeaturedPublicStoriesMock.mockResolvedValue([
+    getIndexablePublicStoriesForSitemapMock.mockResolvedValue([
       {
         slug: 'native-story',
         storyLanguage: 'pt-PT',
@@ -190,7 +191,7 @@ describe('sitemap.xml route', () => {
   });
 
   it('returns 503 with retry guidance when any source fails', async () => {
-    getFeaturedPublicStoriesMock.mockRejectedValue(new Error('database unavailable'));
+    getIndexablePublicStoriesForSitemapMock.mockRejectedValue(new Error('database unavailable'));
     const response = await GET();
     expect(response.status).toBe(503);
     expect(response.headers.get('retry-after')).toBe('300');

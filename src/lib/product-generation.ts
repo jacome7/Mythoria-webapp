@@ -75,7 +75,7 @@ export function printOrderRequestedOutboxEntry(
     consent,
     pageLocation: input.analyticsContext?.pageLocation,
     pageReferrer: input.analyticsContext?.pageReferrer,
-    engagementTimeMsec: input.analyticsContext?.engagementTimeMsec || 100,
+    engagementTimeMsec: input.analyticsContext?.engagementTimeMsec,
     params: {
       story_id: input.storyId,
       action_type: 'print_order',
@@ -264,7 +264,7 @@ export async function markProductGenerationQueued(
           consent: effective.consent,
           pageLocation: effective.pageLocation,
           pageReferrer: effective.pageReferrer,
-          engagementTimeMsec: effective.engagementTimeMsec || 100,
+          engagementTimeMsec: effective.engagementTimeMsec,
           params: eventParams(effective),
           occurredAt: queuedAt,
         })
@@ -335,7 +335,7 @@ export async function compensateProductGeneration(
           consent: request.consent,
           pageLocation: request.pageLocation,
           pageReferrer: request.pageReferrer,
-          engagementTimeMsec: request.engagementTimeMsec || 100,
+          engagementTimeMsec: request.engagementTimeMsec,
           params: {
             ...eventParams(request),
             duration_seconds: 0,

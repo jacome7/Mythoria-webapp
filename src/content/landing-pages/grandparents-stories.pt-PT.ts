@@ -14,6 +14,7 @@ export const grandparentsStoriesLandingPage: LandingPageContent = {
   metaDescription:
     'Crie um livro personalizado único para o Dia dos Avós com memórias da família, fotografias e audiolivro. Entrega rápida e versão digital imediata.',
   primaryIntent: 'grandparents',
+  analytics: { pageViewEvent: 'landing_page_view', variant: 'grandparents-pt-PT' },
   riskRating: 'yellow',
   updatedAt: '2026-08-04',
   indexable: true,

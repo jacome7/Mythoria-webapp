@@ -23,7 +23,7 @@ async function ensureSignUpOutbox(
       userId: clerkUserId,
       params: { method },
       occurredAt,
-      availableAt: new Date(occurredAt.getTime() + 24 * 60 * 60 * 1000),
+      availableAt: new Date(occurredAt.getTime() + 5 * 60 * 1000),
     })
     .onConflictDoUpdate({
       target: analyticsOutbox.dedupeKey,

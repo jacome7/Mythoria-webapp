@@ -23,6 +23,7 @@ export interface ResolvedServerAnalyticsContext {
   attributionId?: string;
   primaryIntent?: ClientAnalyticsContext['primaryIntent'];
   landingSlug?: string;
+  landingPath?: string;
 }
 
 type AttributionRow = typeof analyticsAttributions.$inferSelect;
@@ -41,7 +42,7 @@ function contextFromAttribution(row: AttributionRow): ClientAnalyticsContext {
     ...(primaryIntent ? { primaryIntent } : {}),
     ...(pageLocation ? { pageLocation } : {}),
     ...(pageReferrer ? { pageReferrer } : {}),
-    engagementTimeMsec: 100,
+    ...(row.engagementTimeMsec ? { engagementTimeMsec: row.engagementTimeMsec } : {}),
     consent: row.consent,
   };
 }
@@ -141,12 +142,14 @@ export async function resolveServerAnalyticsContext({
     : incoming;
   const context = candidateContext ? { ...candidateContext, consent } : undefined;
   const primaryIntent = storedContext?.primaryIntent || incoming?.primaryIntent;
-  const landingSlug = attribution?.firstLandingPath || attribution?.landingSlug || undefined;
+  const landingSlug = attribution?.landingSlug || undefined;
+  const landingPath = attribution?.firstLandingPath || undefined;
   return {
     consent,
     ...(context ? { context: { ...context, ...(primaryIntent ? { primaryIntent } : {}) } } : {}),
     ...(attribution ? { attributionId: attribution.attributionId } : {}),
     ...(primaryIntent ? { primaryIntent } : {}),
     ...(landingSlug ? { landingSlug } : {}),
+    ...(landingPath ? { landingPath } : {}),
   };
 }

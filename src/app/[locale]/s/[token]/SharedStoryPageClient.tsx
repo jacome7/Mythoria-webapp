@@ -7,6 +7,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { toAbsoluteImageUrl } from '@/utils/image-url';
 import { getLogoForGraphicalStyle } from '@/utils/logo-mapping';
+import { buildAuthEntryPath } from '@/lib/auth-return';
 
 interface StoryPreview {
   title: string;
@@ -95,8 +96,8 @@ export default function SharedStoryPageClient() {
 
   if (requiresAuth && storyPreview) {
     // Build a safe redirect param so that after sign-in/up user returns to this shared story
-    const signInUrl = `/${locale}/sign-in?redirect=${encodeURIComponent(sharedStoryPath)}`;
-    const signUpUrl = `/${locale}/sign-up?redirect=${encodeURIComponent(sharedStoryPath)}`;
+    const signInUrl = buildAuthEntryPath(locale, 'sign-in', sharedStoryPath);
+    const signUpUrl = buildAuthEntryPath(locale, 'sign-up', sharedStoryPath);
     const logoUrl = getLogoForGraphicalStyle(storyPreview.graphicalStyle);
 
     return (

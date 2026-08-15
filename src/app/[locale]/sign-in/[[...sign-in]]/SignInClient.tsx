@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { buildAuthEntryPath, buildAuthReturnPath } from '@/lib/auth-return';
 
 interface SignInClientProps {
   locale: string;
@@ -33,10 +34,10 @@ function FeatureRow({ icon, text }: { icon: string; text: string }) {
 export default function SignInClient({ locale }: SignInClientProps) {
   const tSignInPage = useTranslations('SignInPage');
   const search = useSearchParams();
-  const redirectParam = search?.get('redirect');
-  // Allow only internal redirects: must start with '/'
-  const safeRedirect =
-    redirectParam && redirectParam.startsWith('/') ? redirectParam : `/${locale}/my-stories`;
+  const safeRedirect = search
+    ? buildAuthReturnPath(search, `/${locale}/my-stories`)
+    : `/${locale}/my-stories`;
+  const signUpUrl = buildAuthEntryPath(locale, 'sign-up', safeRedirect);
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex">
       {/* Left side - Logo and branding (only on desktop) */}
@@ -56,7 +57,7 @@ export default function SignInClient({ locale }: SignInClientProps) {
             <p className="text-lg text-gray-600 max-w-md mx-auto">{tSignInPage('subtitle')}</p>
             <p className="text-lg text-gray-600 max-w-md mx-auto">
               {tSignInPage('firstTimeText')}{' '}
-              <Link href={`/${locale}/sign-up`} className="font-medium underline text-primary">
+              <Link href={signUpUrl} className="font-medium underline text-primary">
                 {tSignInPage('createAccountLink')}
               </Link>{' '}
               {tSignInPage('createAccountText')}
@@ -82,12 +83,12 @@ export default function SignInClient({ locale }: SignInClientProps) {
             <div className="lg:hidden text-center mb-6 p-4 bg-orange-50 rounded-lg border border-orange-100">
               <p className="text-sm text-gray-600 mb-3">
                 {tSignInPage('firstTimeText')}{' '}
-                <Link href={`/${locale}/sign-up`} className="font-medium underline text-primary">
+                <Link href={signUpUrl} className="font-medium underline text-primary">
                   {tSignInPage('createAccountLink')}
                 </Link>{' '}
                 {tSignInPage('createAccountText')}
               </p>
-              <Link href={`/${locale}/sign-up`} className="btn btn-sm btn-outline btn-primary">
+              <Link href={signUpUrl} className="btn btn-sm btn-outline btn-primary">
                 {tSignInPage('createAccountLink')}
               </Link>
             </div>

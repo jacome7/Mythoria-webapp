@@ -29,14 +29,22 @@ describe('useGoogleAnalytics', () => {
     document.cookie = 'mythoria_consent=; Max-Age=0; path=/';
   });
 
-  it('sends one page_view per canonical path and ignores query-only cleanup', () => {
+  it('waits for consent, then sends one page_view per canonical path and ignores query cleanup', () => {
     const { rerender } = render(<AnalyticsHarness />);
 
+    expect(mockTrackEvent).not.toHaveBeenCalled();
+
+    act(() => {
+      window.dispatchEvent(
+        new CustomEvent(CONSENT_UPDATED_EVENT, {
+          detail: {
+            state: getGrantedConsent(),
+            preferences: { analytics: true, advertising: true },
+          },
+        }),
+      );
+    });
     expect(mockTrackEvent).toHaveBeenCalledTimes(1);
-    expect(mockTrackEvent).toHaveBeenLastCalledWith(
-      'page_view',
-      expect.objectContaining({ page_path: '/en-US' }),
-    );
 
     mockSearchParams = new URLSearchParams('utm_source=google&gclid=click-1');
     rerender(<AnalyticsHarness />);
@@ -61,7 +69,7 @@ describe('useGoogleAnalytics', () => {
 
   it('retries the current canonical page exactly once when analytics consent becomes granted', () => {
     const { rerender } = render(<AnalyticsHarness />);
-    expect(mockTrackEvent).toHaveBeenCalledTimes(1);
+    expect(mockTrackEvent).not.toHaveBeenCalled();
 
     act(() => {
       window.dispatchEvent(
@@ -73,13 +81,13 @@ describe('useGoogleAnalytics', () => {
         }),
       );
     });
-    expect(mockTrackEvent).toHaveBeenCalledTimes(2);
+    expect(mockTrackEvent).toHaveBeenCalledTimes(1);
 
     rerender(<AnalyticsHarness />);
-    expect(mockTrackEvent).toHaveBeenCalledTimes(2);
+    expect(mockTrackEvent).toHaveBeenCalledTimes(1);
 
     mockPathname = '/en-US/pricing';
     rerender(<AnalyticsHarness />);
-    expect(mockTrackEvent).toHaveBeenCalledTimes(3);
+    expect(mockTrackEvent).toHaveBeenCalledTimes(2);
   });
 });

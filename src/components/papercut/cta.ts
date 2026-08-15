@@ -1,4 +1,5 @@
 import type { StoryIntent } from '@/constants/intents';
+import { buildAuthEntryPath } from '@/lib/auth-return';
 
 interface BuildHeroCtaHrefInput {
   locale: string;
@@ -16,5 +17,5 @@ export function buildHeroCtaHref({ locale, intent, isSignedIn }: BuildHeroCtaHre
 
   if (isSignedIn) return storyPath;
 
-  return `/${locale}/sign-up?redirect=${encodeURIComponent(storyPath)}`;
+  return buildAuthEntryPath(locale, 'sign-up', storyPath);
 }

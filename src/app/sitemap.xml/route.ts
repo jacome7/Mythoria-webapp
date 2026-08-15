@@ -75,7 +75,7 @@ export async function GET() {
 export async function generateSitemap(): Promise<string> {
   const entries = new Map<string, SitemapEntry>();
   const [stories, blogTranslations] = await Promise.all([
-    storyService.getFeaturedPublicStories(),
+    storyService.getIndexablePublicStoriesForSitemap(),
     blogService.getPublishedSitemapTranslations(),
   ]);
 

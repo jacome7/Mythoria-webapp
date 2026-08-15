@@ -276,15 +276,47 @@ async function main() {
   assert(locs.length > 0, 'sitemap contains no URLs');
   assert.equal(new Set(locs).size, locs.length, 'sitemap contains duplicate URLs');
   const entryByLoc = new Map(entries.map((entry) => [entry.loc, entry]));
+  const requiredPublicStoryPaths = [
+    '/pt-PT/p/how-i-met-your-mother',
+    '/pt-PT/p/juventude-de-gaia-no-mundial-de-clubes',
+    '/pt-PT/p/joo-e-a-sua-imaginao',
+  ];
   const requiredClusterPaths = [
     '/pt-PT/guias/como-transformar-memorias-num-livro-personalizado-para-casal',
     '/pt-PT/guias/como-criar-uma-historia-de-apoio-para-uma-mudanca',
     '/pt-PT/sample-books/duas-chavenas-uma-vida',
     '/pt-PT/sample-books/a-primeira-manha-corajosa-da-sofia',
   ];
-  for (const pathname of requiredClusterPaths) {
+  for (const pathname of [...requiredClusterPaths, ...requiredPublicStoryPaths]) {
     const matches = locs.filter((loc) => new URL(loc).pathname === pathname);
     assert.equal(matches.length, 1, `${pathname} must occur once in the sitemap`);
+  }
+
+  for (const pathname of requiredPublicStoryPaths) {
+    const slug = pathname.split('/').at(-1);
+    await assertRedirect(`/en-US/p/${slug}`, pathname);
+  }
+
+  for (const duplicatePath of [
+    `${requiredPublicStoryPaths[0]}/chapter/1`,
+    `${requiredPublicStoryPaths[0]}/listen`,
+  ]) {
+    const response = await fetchNoRedirect(absolute(duplicatePath));
+    assert.equal(response.status, 200, `${duplicatePath} is unavailable`);
+    const html = await response.text();
+    assert(
+      extractRobots(html)?.toLowerCase().includes('noindex'),
+      `${duplicatePath} is missing noindex`,
+    );
+    assert.equal(
+      extractCanonical(html),
+      `https://mythoria.pt${requiredPublicStoryPaths[0]}`,
+      `${duplicatePath} does not canonicalize to the main story`,
+    );
+    assert(
+      !locs.some((loc) => new URL(loc).pathname === duplicatePath),
+      `${duplicatePath} appears in the sitemap`,
+    );
   }
   const hubEntry = entryByLoc.get('https://mythoria.pt/pt-PT/lp');
   assert.equal(

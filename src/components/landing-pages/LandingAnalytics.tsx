@@ -4,6 +4,13 @@ import { useEffect } from 'react';
 import type { LandingPageAnalyticsConfig } from '@/content/landing-pages/types';
 import { getGoogleAnalyticsContext, trackEvent } from '@/lib/analytics';
 import { collectCampaignParams } from '@/lib/campaign-context';
+import { CONSENT_UPDATED_EVENT, getStoredConsent, type ConsentUpdatedDetail } from '@/lib/consent';
+
+const landingViewDedupe = new Set<string>();
+
+export function resetLandingAnalyticsDedupeForTests(): void {
+  landingViewDedupe.clear();
+}
 
 export default function LandingAnalytics({
   landingSlug,
@@ -17,16 +24,34 @@ export default function LandingAnalytics({
   analytics?: LandingPageAnalyticsConfig;
 }) {
   useEffect(() => {
-    if (analytics?.pageViewEvent) {
-      trackEvent(analytics.pageViewEvent, {
+    const pageViewEvent = analytics?.pageViewEvent;
+    const variant = analytics?.variant ?? 'default';
+    let disposed = false;
+
+    const emitLandingView = async () => {
+      if (!pageViewEvent || getStoredConsent()?.state.analytics_storage !== 'granted') return;
+      const context = await getGoogleAnalyticsContext({ forceRefresh: true });
+      if (disposed || !context?.sessionId) return;
+      const signature = [context.sessionId, window.location.pathname, pageViewEvent, variant].join(
+        ':',
+      );
+      if (landingViewDedupe.has(signature)) return;
+      landingViewDedupe.add(signature);
+      trackEvent(pageViewEvent, {
         landing_slug: landingSlug,
         locale,
-        ...(analytics.pageViewEvent === 'landing_page_view'
-          ? { primary_intent: primaryIntent }
-          : {}),
-        variant: analytics.variant ?? 'default',
+        ...(pageViewEvent === 'landing_page_view' ? { primary_intent: primaryIntent } : {}),
+        variant,
       });
-    }
+    };
+
+    const handleConsentUpdated = (event: Event) => {
+      const detail = (event as CustomEvent<ConsentUpdatedDetail>).detail;
+      if (detail.state.analytics_storage === 'granted') void emitLandingView();
+    };
+
+    void emitLandingView();
+    window.addEventListener(CONSENT_UPDATED_EVENT, handleConsentUpdated);
 
     const seen = new Set<string>();
     const timers = new Map<Element, number>();
@@ -93,6 +118,8 @@ export default function LandingAnalytics({
     document.addEventListener('click', clickHandler);
 
     return () => {
+      disposed = true;
+      window.removeEventListener(CONSENT_UPDATED_EVENT, handleConsentUpdated);
       observer.disconnect();
       timers.forEach((timer) => window.clearTimeout(timer));
       document.removeEventListener('click', clickHandler);
