@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE. Run: npm run i18n:keys
-// Total keys: 2629
+// Total keys: 2633
 export type TranslationKey =
   | 'AIEditModal.buttons.applyChanges'
   | 'AIEditModal.buttons.cancel'
@@ -1625,6 +1625,10 @@ export type TranslationKey =
   | 'PrivacyPolicy.section7.table.rows.consent.cookie'
   | 'PrivacyPolicy.section7.table.rows.consent.expiry'
   | 'PrivacyPolicy.section7.table.rows.consent.purpose'
+  | 'PrivacyPolicy.section7.table.rows.emailCampaign.consent'
+  | 'PrivacyPolicy.section7.table.rows.emailCampaign.cookie'
+  | 'PrivacyPolicy.section7.table.rows.emailCampaign.expiry'
+  | 'PrivacyPolicy.section7.table.rows.emailCampaign.purpose'
   | 'PrivacyPolicy.section7.table.rows.session.consent'
   | 'PrivacyPolicy.section7.table.rows.session.cookie'
   | 'PrivacyPolicy.section7.table.rows.session.expiry'

@@ -228,6 +228,12 @@ export default async function PrivacyPolicyPage({ params }: PrivacyPolicyPagePro
                       <td>{tPrivacyPolicy('section7.table.rows.consent.expiry')}</td>
                       <td>{tPrivacyPolicy('section7.table.rows.consent.consent')}</td>
                     </tr>
+                    <tr>
+                      <td>{tPrivacyPolicy('section7.table.rows.emailCampaign.cookie')}</td>
+                      <td>{tPrivacyPolicy('section7.table.rows.emailCampaign.purpose')}</td>
+                      <td>{tPrivacyPolicy('section7.table.rows.emailCampaign.expiry')}</td>
+                      <td>{tPrivacyPolicy('section7.table.rows.emailCampaign.consent')}</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>

@@ -30,6 +30,8 @@
     "db:seo-preflight": "tsx scripts/seo-db-preflight.ts",
     "db:seo-postflight": "tsx scripts/seo-db-preflight.ts --postflight",
     "db:story-share-preflight": "tsx scripts/verify-story-share-attribution-migration.ts",
+    "db:email-campaign-preflight": "tsx scripts/verify-email-campaign-attribution-migration.ts",
+    "db:email-campaign-postflight": "tsx scripts/verify-email-campaign-attribution-migration.ts --postflight",
     "seo:audit-public-stories": "tsx scripts/audit-public-story-seo.ts",
     "deploy:production": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy.ps1",
     "deploy": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy.ps1",

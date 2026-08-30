@@ -5,6 +5,7 @@ import { paymentService } from '@/db/services';
 import { getCurrentAuthor } from '@/lib/auth';
 import { resolveServerAnalyticsContext } from '@/lib/analytics/server-context';
 import { normalizeLocale } from '@/utils/locale-utils';
+import { readEmailCampaignAttribution } from '@/lib/email-campaign-attribution';
 
 export const runtime = 'nodejs';
 
@@ -103,6 +104,7 @@ export async function POST(request: NextRequest) {
         : {}),
       analyticsConsent,
       attributionId,
+      emailCampaignRecipientId: readEmailCampaignAttribution(request),
     });
 
     if (!checkoutSession.url) {

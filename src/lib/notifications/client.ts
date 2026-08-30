@@ -12,6 +12,16 @@ export interface NotificationResponse {
   error?: string;
 }
 
+export interface CampaignAttributionRecipient {
+  id: string;
+  campaignId: string;
+  recipientType: 'user' | 'lead';
+  recipientId: string;
+  email: string;
+  language: string;
+  clickedAt: string | null;
+}
+
 class NotificationClient {
   private baseUrl: string;
   private apiKey: string;
@@ -19,6 +29,56 @@ class NotificationClient {
   constructor() {
     this.baseUrl = process.env.NOTIFICATION_ENGINE_URL || 'http://localhost:3002';
     this.apiKey = process.env.NOTIFICATION_ENGINE_API_KEY || '';
+  }
+
+  private async campaignRequest<T>(path: string, init: RequestInit): Promise<T | null> {
+    try {
+      const response = await fetch(`${this.baseUrl}${path}`, {
+        ...init,
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': this.apiKey,
+          ...(init.headers || {}),
+        },
+        cache: 'no-store',
+      });
+      if (!response.ok) return null;
+      return (await response.json()) as T;
+    } catch (error) {
+      console.error('[EmailCampaignAttribution] Notification Engine request failed:', error);
+      return null;
+    }
+  }
+
+  async recordCampaignOpen(recipientRecordId: string): Promise<void> {
+    await this.campaignRequest(`/internal/campaigns/recipients/${recipientRecordId}/open`, {
+      method: 'POST',
+      body: '{}',
+    });
+  }
+
+  async recordCampaignClick(
+    recipientRecordId: string,
+    linkId: string,
+  ): Promise<CampaignAttributionRecipient | null> {
+    const result = await this.campaignRequest<{
+      recipient: CampaignAttributionRecipient | null;
+    }>(`/internal/campaigns/recipients/${recipientRecordId}/click`, {
+      method: 'POST',
+      body: JSON.stringify({ linkId }),
+    });
+    return result?.recipient ?? null;
+  }
+
+  async resolveCampaignAttribution(
+    recipientRecordId: string,
+  ): Promise<CampaignAttributionRecipient | null> {
+    const result = await this.campaignRequest<{
+      recipient: CampaignAttributionRecipient | null;
+    }>(`/internal/campaigns/recipients/${recipientRecordId}/attribution`, {
+      method: 'GET',
+    });
+    return result?.recipient ?? null;
   }
 
   /**

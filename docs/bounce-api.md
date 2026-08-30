@@ -371,4 +371,10 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 
 ---
 
-**Last Updated**: 2025-10-30
+## Admin MCP integration
+
+Mythoria Ops should use the Admin MCP tool `mark_email_bounced` for incoming delivery notices. It matches the supplied email case-insensitively and updates both leads and registered users. Permanent SMTP 5.x failures are hard; temporary 4.x failures are soft. Ambiguous recipient extraction must be escalated rather than guessed.
+
+Campaign opens and clicks use recipient-specific WebApp routes under `/api/e/o/campaign/*` and `/api/e/c/campaign/*`. They are independent from this legacy lead-status endpoint.
+
+**Last Updated**: 2026-08-30

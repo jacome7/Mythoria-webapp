@@ -60,6 +60,7 @@ export interface CreateStripeCheckoutRequest extends CreateOrderRequest {
   analyticsContext?: StoredAnalyticsContext;
   analyticsConsent?: AnalyticsConsent;
   attributionId?: string;
+  emailCampaignRecipientId?: string;
 }
 
 export type CalculatedOrderTotals = CreditOrderTotals;
@@ -454,6 +455,7 @@ export const paymentService = {
         currency: 'EUR',
         status: 'pending',
         provider: 'stripe',
+        emailCampaignRecipientId: checkoutData.emailCampaignRecipientId,
         creditBundle: {
           credits: orderTotals.totalCredits,
           price: orderTotals.totalAmount,

@@ -43,7 +43,35 @@ let captureInFlight: Promise<boolean> | undefined;
 let linkInFlight: Promise<void> | undefined;
 let lastCaptureSignature: string | undefined;
 let linkedUserId: string | undefined;
+let linkedCampaignUserId: string | undefined;
+let campaignLinkInFlight: Promise<void> | undefined;
 const LINK_RETRY_DELAYS_MS = [0, 250, 500, 1_000, 2_000] as const;
+
+async function linkAuthenticatedEmailCampaign(userId: string): Promise<void> {
+  if (linkedCampaignUserId === userId) return;
+  if (campaignLinkInFlight) return campaignLinkInFlight;
+
+  campaignLinkInFlight = (async () => {
+    for (const delayMs of LINK_RETRY_DELAYS_MS) {
+      if (delayMs) await new Promise((resolve) => window.setTimeout(resolve, delayMs));
+      try {
+        const response = await fetch('/api/email-campaign-attribution/link', {
+          method: 'POST',
+          keepalive: true,
+        });
+        if (response.status === 401 || response.status >= 500) continue;
+        if (response.ok) linkedCampaignUserId = userId;
+        return;
+      } catch {
+        // Retry short authentication/network races without interrupting the user journey.
+      }
+    }
+  })().finally(() => {
+    campaignLinkInFlight = undefined;
+  });
+
+  return campaignLinkInFlight;
+}
 
 function mergeCampaignFromLocation(): void {
   const search = new URLSearchParams(window.location.search);
@@ -235,6 +263,9 @@ export default function AnalyticsAttributionCoordinator() {
   }, [authenticatedUserId, pathname]);
 
   useEffect(() => {
+    if (authenticatedUserId) {
+      void linkAuthenticatedEmailCampaign(authenticatedUserId);
+    }
     if (authenticatedUserId && getStoredConsent()?.state.analytics_storage === 'granted') {
       void linkAuthenticatedAttribution(authenticatedUserId);
     }

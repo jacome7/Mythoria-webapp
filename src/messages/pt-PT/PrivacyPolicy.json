@@ -159,6 +159,12 @@
             "purpose": "Guardar preferências de cookies",
             "expiry": "12 meses",
             "consent": "Não"
+          },
+          "emailCampaign": {
+            "cookie": "Pixel de imagem no e-mail / mythoria_email_campaign_attribution",
+            "purpose": "Medir aberturas e cliques únicos e atribuir a criação de conta ou compra de créditos durante 30 dias. Não conservamos IP, dispositivo ou localização para esta finalidade.",
+            "expiry": "Pedido / 30 dias",
+            "consent": "Abrangido pelo consentimento de marketing por e-mail autorizado"
           }
         }
       },
@@ -223,6 +229,6 @@
     "links": {
       "deleteAccount": "Delete Account / Eliminar Conta"
     },
-    "lastUpdated": "Última atualização: 12 de maio de 2026"
+    "lastUpdated": "Última atualização: 30 de agosto de 2026"
   }
 }
