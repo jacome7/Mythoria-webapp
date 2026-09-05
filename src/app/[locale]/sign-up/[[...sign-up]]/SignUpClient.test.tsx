@@ -1,13 +1,18 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 
 const mockSignUpStarted = jest.fn();
+const mockClerkSignUp = jest.fn();
+let mockSearch = new URLSearchParams();
 
 jest.mock('@clerk/nextjs', () => ({
-  SignUp: () => <button type="button">Clerk sign up</button>,
+  SignUp: (props: Record<string, unknown>) => {
+    mockClerkSignUp(props);
+    return <button type="button">Clerk sign up</button>;
+  },
 }));
 
 jest.mock('next/navigation', () => ({
-  useSearchParams: () => new URLSearchParams(),
+  useSearchParams: () => mockSearch,
 }));
 
 jest.mock('next/image', () => ({
@@ -39,6 +44,8 @@ const translations = {
 describe('SignUpClient analytics', () => {
   beforeEach(() => {
     mockSignUpStarted.mockClear();
+    mockSearch = new URLSearchParams();
+    mockClerkSignUp.mockClear();
   });
 
   it('emits sign_up_started only after the first genuine form interaction', () => {
@@ -55,4 +62,15 @@ describe('SignUpClient analytics', () => {
       method: 'unknown',
     });
   });
+});
+
+it('keeps the selected package when an existing user switches from signup to login', () => {
+  mockSearch = new URLSearchParams({ redirect: '/pt-PT/buy-credits?package=2' });
+  render(<SignUpClient locale="pt-PT" translations={translations} leadSession={null} />);
+  const props = mockClerkSignUp.mock.calls.at(-1)![0];
+  const entry = new URL(props.signInUrl, 'https://mythoria.pt');
+  expect(entry.pathname).toBe('/pt-PT/sign-in');
+  expect(entry.searchParams.get('auth_mode')).toBe('sign-in');
+  expect(entry.searchParams.get('redirect')).toContain('/pt-PT/buy-credits?package=2');
+  expect(props.forceRedirectUrl).toContain('/pt-PT/buy-credits?package=2');
 });

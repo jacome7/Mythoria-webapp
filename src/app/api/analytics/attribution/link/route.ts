@@ -1,5 +1,11 @@
 import { and, eq, gt, gte, lt, or, isNull, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
+import { currentUser } from '@clerk/nextjs/server';
+import {
+  clerkCreationTime,
+  canRecoverSignUp,
+  signUpAttributionMatchesCreation,
+} from '@/lib/analytics/signup';
 import { db } from '@/db';
 import { analyticsAttributions, analyticsOutbox, storyGenerationRequests } from '@/db/schema';
 import { getCurrentAuthor } from '@/lib/auth';
@@ -31,6 +37,15 @@ export async function POST(request: NextRequest) {
       );
     if (!attribution) return NextResponse.json({ linked: false });
 
+    const now = new Date();
+    const clerkUser = await currentUser();
+    const occurredAt =
+      clerkUser?.id === author.clerkUserId
+        ? clerkCreationTime(clerkUser.createdAt, now)
+        : undefined;
+    const recoverSignUp =
+      canRecoverSignUp(occurredAt, now) &&
+      signUpAttributionMatchesCreation(occurredAt, attribution);
     const repaired = await db.transaction(async (tx) => {
       await tx
         .update(analyticsAttributions)
@@ -63,52 +78,97 @@ export async function POST(request: NextRequest) {
       const pageReferrer = attribution.latestReferrerPath
         ? sanitizeAnalyticsPageUrl(`${ANALYTICS_BASE_URL}${attribution.latestReferrerPath}`)
         : undefined;
-      await tx
-        .insert(analyticsOutbox)
-        .values({
-          dedupeKey: `sign_up:${author.clerkUserId}`,
-          eventName: 'sign_up',
-          authorId: author.authorId,
-          attributionId: attribution.attributionId,
-          clientId: attribution.clientId,
-          userId: author.clerkUserId,
-          sessionId: attribution.sessionId,
-          consent: attribution.consent,
-          pageLocation,
-          pageReferrer,
-          engagementTimeMsec: attribution.engagementTimeMsec,
-          availableAt: new Date(),
-          params: {
-            method: 'unknown',
-            ...attributionParams,
-            ...(Object.keys(storyShare).length ? { story_share_attribution: 'within_30d' } : {}),
-            ...storyShare,
-          },
-        })
-        .onConflictDoUpdate({
-          target: analyticsOutbox.dedupeKey,
-          set: {
+      let signUpPending = false;
+      if (recoverSignUp && occurredAt) {
+        const signUpEligibility = and(
+          isNull(analyticsOutbox.deliveredAt),
+          eq(analyticsOutbox.occurredAt, occurredAt),
+          or(
+            isNull(analyticsOutbox.skippedAt),
+            eq(analyticsOutbox.lastError, 'Analytics storage was not granted'),
+          ),
+          or(
+            isNull(analyticsOutbox.attributionId),
+            eq(analyticsOutbox.attributionId, attribution.attributionId),
+          ),
+          or(isNull(analyticsOutbox.clientId), eq(analyticsOutbox.clientId, attribution.clientId)),
+          ...(attribution.sessionId
+            ? [
+                or(
+                  isNull(analyticsOutbox.sessionId),
+                  eq(analyticsOutbox.sessionId, attribution.sessionId),
+                ),
+              ]
+            : [isNull(analyticsOutbox.sessionId)]),
+        );
+        const signUpUpdates = await tx
+          .insert(analyticsOutbox)
+          .values({
+            dedupeKey: `sign_up:${author.clerkUserId}`,
+            eventName: 'sign_up',
+            occurredAt,
             authorId: author.authorId,
             attributionId: attribution.attributionId,
             clientId: attribution.clientId,
+            userId: author.clerkUserId,
             sessionId: attribution.sessionId,
             consent: attribution.consent,
             pageLocation,
             pageReferrer,
             engagementTimeMsec: attribution.engagementTimeMsec,
             availableAt: new Date(),
-            claimToken: null,
-            claimedAt: null,
-            skippedAt: null,
-            lastError: null,
-            params: sql`${analyticsOutbox.params} || ${JSON.stringify({
+            params: {
+              method: 'unknown',
               ...attributionParams,
               ...(Object.keys(storyShare).length ? { story_share_attribution: 'within_30d' } : {}),
               ...storyShare,
-            })}::jsonb`,
-          },
-        })
-        .returning({ outboxId: analyticsOutbox.outboxId });
+            },
+          })
+          .onConflictDoUpdate({
+            target: analyticsOutbox.dedupeKey,
+            setWhere: and(
+              signUpEligibility,
+              isNull(analyticsOutbox.claimToken),
+              isNull(analyticsOutbox.claimedAt),
+            ),
+            set: {
+              authorId: author.authorId,
+              attributionId: attribution.attributionId,
+              clientId: attribution.clientId,
+              sessionId: attribution.sessionId,
+              consent: attribution.consent,
+              pageLocation,
+              pageReferrer,
+              engagementTimeMsec: attribution.engagementTimeMsec,
+              availableAt: new Date(),
+              skippedAt: null,
+              lastError: null,
+              params: sql`${analyticsOutbox.params} || ${JSON.stringify({
+                ...attributionParams,
+                ...(Object.keys(storyShare).length
+                  ? { story_share_attribution: 'within_30d' }
+                  : {}),
+                ...storyShare,
+              })}::jsonb`,
+            },
+          })
+          .returning({ outboxId: analyticsOutbox.outboxId });
+        if (!signUpUpdates.length) {
+          // A delivery claim may finish between the upsert and this read. Retry if the
+          // original signup is still eligible, including a just-released no-consent skip.
+          const [pending] = await tx
+            .select({ outboxId: analyticsOutbox.outboxId })
+            .from(analyticsOutbox)
+            .where(
+              and(
+                eq(analyticsOutbox.dedupeKey, `sign_up:${author.clerkUserId}`),
+                signUpEligibility,
+              ),
+            )
+            .limit(1);
+          signUpPending = Boolean(pending);
+        }
+      }
 
       const enrichedOutbox = await tx
         .update(analyticsOutbox)
@@ -118,8 +178,6 @@ export async function POST(request: NextRequest) {
           sessionId: attribution.sessionId,
           consent: attribution.consent,
           availableAt: new Date(),
-          claimToken: null,
-          claimedAt: null,
           lastError: null,
           pageLocation,
           pageReferrer,
@@ -131,6 +189,9 @@ export async function POST(request: NextRequest) {
             isNull(analyticsOutbox.attributionId),
             isNull(analyticsOutbox.clientId),
             isNull(analyticsOutbox.deliveredAt),
+            isNull(analyticsOutbox.claimToken),
+            isNull(analyticsOutbox.claimedAt),
+            sql`${analyticsOutbox.eventName} <> ${'sign_up'}`,
             isNull(analyticsOutbox.skippedAt),
             gte(analyticsOutbox.occurredAt, attribution.createdAt),
             lt(analyticsOutbox.occurredAt, attribution.expiresAt),
@@ -180,7 +241,7 @@ export async function POST(request: NextRequest) {
         )
         .returning({ runId: storyGenerationRequests.runId });
 
-      return { outbox: enrichedOutbox.length, requests: enrichedRequests.length };
+      return { outbox: enrichedOutbox.length, requests: enrichedRequests.length, signUpPending };
     });
 
     console.info('[AnalyticsAttributionLink]', {
@@ -189,7 +250,10 @@ export async function POST(request: NextRequest) {
       enrichedRequests: repaired.requests,
     });
 
-    return NextResponse.json({ linked: true });
+    return NextResponse.json({
+      linked: true,
+      ...(repaired.signUpPending ? { signUpPending: true } : {}),
+    });
   } catch (error) {
     console.error('Failed to link analytics attribution:', error);
     return NextResponse.json({ error: 'Attribution link failed' }, { status: 500 });

@@ -11,6 +11,7 @@ export interface ClerkPhoneNumber {
 }
 
 export interface ClerkUserForSync {
+  createdAt?: number | Date;
   id: string;
   emailAddresses?: ClerkEmailAddress[];
   phoneNumbers?: ClerkPhoneNumber[];

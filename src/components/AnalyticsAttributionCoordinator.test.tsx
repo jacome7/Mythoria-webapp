@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Link from 'next/link';
 import { clearConsent, consentStateFromPreferences, saveConsent } from '@/lib/consent';
 import AnalyticsAttributionCoordinator from './AnalyticsAttributionCoordinator';
@@ -18,6 +18,7 @@ jest.mock('next/navigation', () => ({
 describe('AnalyticsAttributionCoordinator', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
+    jest.useRealTimers();
     mockUseUserValue = { isLoaded: true, isSignedIn: false, user: null };
     clearConsent();
     window.localStorage.clear();
@@ -98,5 +99,104 @@ describe('AnalyticsAttributionCoordinator', () => {
         String(input).endsWith('/api/analytics/attribution/link'),
       ),
     ).toHaveLength(2);
+  });
+
+  function prepareSignedInRetry(userId: string, pendingAttempts: number) {
+    saveConsent(consentStateFromPreferences({ analytics: true, advertising: false }), {
+      analytics: true,
+      advertising: false,
+    });
+    mockUseUserValue = { isLoaded: true, isSignedIn: true, user: { id: userId } };
+    window.gtag = jest.fn((...args: unknown[]) => {
+      if (args[0] === 'get')
+        (args[3] as (value: unknown) => void)(args[2] === 'client_id' ? '123.456' : 1712345678);
+    });
+    let attempts = 0;
+    global.fetch = jest.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.endsWith('/api/analytics/attribution/link')) {
+        attempts += 1;
+        return new Response(
+          JSON.stringify({
+            linked: true,
+            ...(attempts <= pendingAttempts ? { signUpPending: true } : {}),
+          }),
+          { status: 200 },
+        );
+      }
+      return new Response(
+        JSON.stringify(
+          url.endsWith('/api/analytics/attribution') ? { captured: true } : { linked: true },
+        ),
+        { status: 200 },
+      );
+    });
+    return () => attempts;
+  }
+
+  const useRetryClock = () =>
+    jest.useFakeTimers({ doNotFake: ['nextTick', 'queueMicrotask', 'setImmediate'] });
+  afterEach(() => jest.useRealTimers());
+
+  it('retries a signup delivery claim after general association succeeds', async () => {
+    useRetryClock();
+    const attempts = prepareSignedInRetry('claim-released-user', 1);
+    render(<AnalyticsAttributionCoordinator />);
+    await act(async () => {
+      await jest.advanceTimersByTimeAsync(1000);
+    });
+    expect(attempts()).toBe(2);
+    await act(async () => {
+      await jest.advanceTimersByTimeAsync(310000);
+    });
+    expect(attempts()).toBe(2);
+  });
+
+  it('stops after twelve attempts covering the five-minute claim lease', async () => {
+    useRetryClock();
+    const attempts = prepareSignedInRetry('claim-still-pending-user', Infinity);
+    render(<AnalyticsAttributionCoordinator />);
+    await act(async () => {
+      await jest.advanceTimersByTimeAsync(305000);
+    });
+    expect(attempts()).toBe(12);
+    await act(async () => {
+      await jest.advanceTimersByTimeAsync(600000);
+    });
+    expect(attempts()).toBe(12);
+  });
+
+  it('stops pending retries when analytics consent is revoked', async () => {
+    useRetryClock();
+    const attempts = prepareSignedInRetry('claim-revoked-user', Infinity);
+    render(<AnalyticsAttributionCoordinator />);
+    await act(async () => {
+      await jest.advanceTimersByTimeAsync(100);
+    });
+    expect(attempts()).toBe(1);
+    saveConsent(consentStateFromPreferences({ analytics: false, advertising: false }), {
+      analytics: false,
+      advertising: false,
+    });
+    await act(async () => {
+      await jest.advanceTimersByTimeAsync(305000);
+    });
+    expect(attempts()).toBe(1);
+  });
+
+  it('stops pending retries when the authenticated user signs out', async () => {
+    useRetryClock();
+    const attempts = prepareSignedInRetry('claim-signout-user', Infinity);
+    const { rerender } = render(<AnalyticsAttributionCoordinator />);
+    await act(async () => {
+      await jest.advanceTimersByTimeAsync(100);
+    });
+    expect(attempts()).toBe(1);
+    mockUseUserValue = { isLoaded: true, isSignedIn: false, user: null };
+    rerender(<AnalyticsAttributionCoordinator />);
+    await act(async () => {
+      await jest.advanceTimersByTimeAsync(305000);
+    });
+    expect(attempts()).toBe(1);
   });
 });

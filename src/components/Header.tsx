@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import LandingCreationLink from './landing-pages/LandingCreationLink';
 import Image from 'next/image';
 import { UserButton, useUser } from '@clerk/nextjs';
 import { useTranslations } from 'next-intl';
@@ -67,13 +68,14 @@ const Header = () => {
                 </Link>
               </li>
               <li>
-                <Link
+                <LandingCreationLink
+                  onlyOnLanding
                   href={`/${locale}/tell-your-story`}
                   className={styles.mobileMenuLink}
                   onClick={() => (document.activeElement as HTMLElement)?.blur()}
                 >
                   {tCommonHeader('navigation.tellYourStory')}
-                </Link>
+                </LandingCreationLink>
               </li>
               <li>
                 <Link
@@ -125,9 +127,13 @@ const Header = () => {
               </Link>
             </li>
             <li>
-              <Link href={`/${locale}/tell-your-story`} className={styles.desktopMenuLink}>
+              <LandingCreationLink
+                onlyOnLanding
+                href={`/${locale}/tell-your-story`}
+                className={styles.desktopMenuLink}
+              >
                 {tCommonHeader('navigation.tellYourStory')}
-              </Link>
+              </LandingCreationLink>
             </li>
             <li>
               <Link href={`/${locale}/pricing`} className={styles.desktopMenuLink}>
@@ -187,13 +193,14 @@ const Header = () => {
               </Link>
             </li>
             <li>
-              <Link
+              <LandingCreationLink
+                onlyOnLanding
                 href={`/${locale}/tell-your-story`}
                 className={styles.mobileMenuLink}
                 onClick={() => (document.activeElement as HTMLElement)?.blur()}
               >
                 {tCommonHeader('navigation.tellYourStory')}
-              </Link>
+              </LandingCreationLink>
             </li>
             <li>
               <Link
@@ -254,9 +261,13 @@ const Header = () => {
             </Link>
           </li>
           <li>
-            <Link href={`/${locale}/tell-your-story`} className={styles.desktopMenuLink}>
+            <LandingCreationLink
+              onlyOnLanding
+              href={`/${locale}/tell-your-story`}
+              className={styles.desktopMenuLink}
+            >
               {tCommonHeader('navigation.tellYourStory')}
-            </Link>
+            </LandingCreationLink>
           </li>
           <li>
             <Link href={`/${locale}/blog`} className={styles.desktopMenuLink}>

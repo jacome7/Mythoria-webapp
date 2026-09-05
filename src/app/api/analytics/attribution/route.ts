@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { and, eq, gt } from 'drizzle-orm';
+import { and, eq, gt, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import { analyticsAttributions, shareLinks, stories } from '@/db/schema';
 import { STORY_INTENTS } from '@/constants/intents';
@@ -248,6 +248,40 @@ export async function POST(request: NextRequest) {
         ? shareFields
         : storyShareFieldsFromRow(existingRow || shareCarryoverRow, now)),
     };
+    // Compare the row at UPDATE time, not the earlier SELECT snapshot: parallel
+    // captures must not retain an old boundary after a real acquisition change.
+    const temporalContext = {
+      sessionId: analytics.sessionId,
+      consent: analytics.consent,
+      landingSlug,
+      primaryIntent: body.primaryIntent,
+      utmSource: campaign.utm_source,
+      utmMedium: campaign.utm_medium,
+      utmCampaign: campaign.utm_campaign,
+      utmId: campaign.utm_id,
+      utmTerm: campaign.utm_term,
+      utmContent: campaign.utm_content,
+      gclid: campaign.gclid,
+      gbraid: campaign.gbraid,
+      wbraid: campaign.wbraid,
+      ...(incomingStoryShare
+        ? {
+            storyShareItemId: shareFields.storyShareItemId,
+            storyShareMethod: shareFields.storyShareMethod,
+            storyShareScope: shareFields.storyShareScope,
+          }
+        : {}),
+    };
+    const unchangedContext = and(
+      ...(Object.keys(temporalContext) as Array<keyof typeof temporalContext>).flatMap((key) => {
+        const value = temporalContext[key];
+        // Drizzle omits undefined SET values, retaining the existing column.
+        if (value === undefined) return [];
+        return [
+          sql`${analyticsAttributions[key]} is not distinct from ${key === 'consent' ? JSON.stringify(value) : value}`,
+        ];
+      }),
+    );
     const [existing] = existingRow
       ? await db
           .update(analyticsAttributions)
@@ -268,7 +302,9 @@ export async function POST(request: NextRequest) {
             wbraid: campaign.wbraid,
             latestPath,
             latestReferrerPath: referrerPath,
-            latestAttributionAt: now,
+            latestAttributionAt: sql`case when ${unchangedContext}
+              then coalesce(${analyticsAttributions.latestAttributionAt}, ${analyticsAttributions.createdAt})
+              else ${now.toISOString()}::timestamptz end`,
             expiresAt,
             ...(incomingStoryShare ? shareFields : {}),
             firstLandingPath:

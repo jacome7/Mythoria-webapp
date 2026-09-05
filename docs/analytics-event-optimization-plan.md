@@ -1,5 +1,7 @@
 # Analytics Event Optimization Plan
 
+> Update 2026-09-05: the acquisition-first Google Ads recommendation in this historical plan is superseded. Purchase remains the sole Primary conversion; sign_up and story_generation_completed remain Secondary diagnostics. See analytics.md for the current operating contract.
+
 **Locale:** `en-US`
 **Status:** Proposed
 **Date:** 2026-07-17

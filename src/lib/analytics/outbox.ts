@@ -9,7 +9,6 @@ import {
   stories,
   storyGenerationRequests,
   type AnalyticsConsent,
-  type NewAnalyticsOutboxEntry,
 } from '@/db/schema';
 import { publishStoryRequest } from '@/lib/pubsub';
 import { ga4Service } from './ga4';
@@ -23,19 +22,7 @@ const ABANDONED_ANALYTICS_CLAIM_MS = 5 * 60 * 1000;
 const ATTRIBUTION_GRACE_MS = 24 * 60 * 60 * 1000;
 const ATTRIBUTION_RETRY_MS = 5 * 60 * 1000;
 
-export function signUpOutboxEntry(
-  clerkUserId: string,
-  occurredAt = new Date(),
-): NewAnalyticsOutboxEntry {
-  return {
-    dedupeKey: `sign_up:${clerkUserId}`,
-    eventName: 'sign_up',
-    userId: clerkUserId,
-    params: { method: 'unknown' },
-    occurredAt,
-    availableAt: new Date(occurredAt.getTime() + ATTRIBUTION_RETRY_MS),
-  };
-}
+export { signUpOutboxEntry } from './signup';
 
 const retryAt = (attempts: number): Date => {
   const delayMinutes = Math.min(60, 2 ** Math.max(0, attempts));

@@ -4,6 +4,12 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import LandingPageSupportHub from './LandingPageSupportHub';
 import type { LandingPageSupportHub as LandingPageSupportHubContent } from '@/content/landing-pages/types';
 
+jest.mock('@clerk/nextjs', () => ({ useAuth: () => ({ isLoaded: true, isSignedIn: true }) }));
+jest.mock('next/navigation', () => ({
+  usePathname: () => '/pt-PT/lp/historias-de-apoio',
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 const content: LandingPageSupportHubContent = {
   title: 'Que história faz sentido?',
   intro: 'Escolha uma entrada.',
@@ -62,7 +68,7 @@ describe('LandingPageSupportHub', () => {
 
     expect(screen.getByRole('link', { name: /Primeiro dia/ })).toHaveAttribute(
       'href',
-      '/pt-PT/tell-your-story/step-1?landingSlug=historias-de-apoio&primaryIntent=kids_transitions',
+      '/pt-PT/tell-your-story/step-1?landingSlug=historias-de-apoio&primaryIntent=kids_transitions&landing_path=%2Fpt-PT%2Flp%2Fhistorias-de-apoio',
     );
     expect(screen.queryByRole('link', { name: /Recordar um animal/ })).not.toBeInTheDocument();
 

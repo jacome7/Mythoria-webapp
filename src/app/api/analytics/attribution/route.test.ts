@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { PgDialect } from 'drizzle-orm/pg-core';
 import { analyticsReference } from '@/lib/analytics/reference';
 
 const mockSelect = jest.fn();
@@ -274,4 +275,72 @@ describe('POST /api/analytics/attribution', () => {
     expect(await response.json()).toEqual({ captured: true });
     expect(insertValues).not.toHaveProperty('storyShareItemId');
   });
+
+  it.each([
+    ['OAuth refresh', {}, {}, ['session_id', 'consent']],
+    ['campaign change', { campaign: { utm_campaign: 'new-campaign' } }, {}, ['utm_campaign']],
+    ['session change', {}, { sessionId: 1712345999 }, ['session_id']],
+    [
+      'ad consent change',
+      {},
+      { consent: { ...analyticsContext.consent, adUserData: 'granted' } },
+      ['consent'],
+    ],
+  ])(
+    'uses the actual persisted acquisition context for the timestamp boundary on %s',
+    async (_name, body, context, expectedColumns) => {
+      const originalTime = new Date('2026-09-05T10:59:00Z');
+      const existing = {
+        attributionId,
+        clientId: '123.456',
+        sessionId: analyticsContext.sessionId,
+        createdAt: originalTime,
+        latestAttributionAt: originalTime,
+        utmCampaign: 'original-campaign',
+        consent: analyticsContext.consent,
+      };
+      mockSelect.mockReturnValue(selectRows([existing]));
+      const set = jest.fn((_values: Record<string, unknown>) => ({
+        where: () => ({ returning: async () => [{ attributionId }] }),
+      }));
+      mockUpdate.mockReturnValue({ set });
+      const response = await POST(
+        request(
+          {
+            ...body,
+            analyticsContext: {
+              ...analyticsContext,
+              ...context,
+              pageLocation: 'https://mythoria.pt/en-US/sign-up',
+              pageReferrer: 'https://mythoria.pt/en-US/lp/casais',
+              engagementTimeMsec: 900,
+            },
+          },
+          true,
+        ),
+      );
+      expect(response.status).toBe(200);
+      const update = set.mock.calls[0][0] as unknown as Record<string, unknown>;
+      const query = new PgDialect().sqlToQuery(
+        update.latestAttributionAt as import('drizzle-orm').SQL,
+      );
+      expect(query.sql).toContain('case when');
+      expect(query.sql).toContain(
+        'then coalesce("analytics_attributions"."latest_attribution_at", "analytics_attributions"."created_at")',
+      );
+      expect(query.sql).toContain('::timestamptz end');
+      for (const field of expectedColumns)
+        expect(query.sql).toContain(`"${field}" is not distinct from`);
+      for (const field of ['latest_path', 'latest_referrer_path', 'engagement_time_msec'])
+        expect(query.sql).not.toContain(`"${field}"`);
+      // Omitted OAuth query fields are not overwritten and cannot create a false boundary.
+      if (_name === 'OAuth refresh') expect(query.sql).not.toContain('"utm_campaign"');
+      if (_name === 'campaign change') expect(query.params).toContain('new-campaign');
+      if (_name === 'session change') expect(query.params).toContain(1712345999);
+      if (_name === 'ad consent change')
+        expect(query.params).toContain(
+          JSON.stringify({ ...analyticsContext.consent, adUserData: 'granted' }),
+        );
+    },
+  );
 });

@@ -15,6 +15,8 @@ Mythoria sends one canonical event for each product outcome. Browser events cove
 
 Legacy dual-send events and direct browser Google Ads conversions are disabled. The only GA4 key events are `sign_up`, `story_generation_completed`, and `purchase`.
 
+Google Ads uses `purchase` as its sole Primary conversion objective. `sign_up`, `story_generation_completed`, and checkout interactions remain Secondary diagnostics. Do not change bidding or increase spend until consented purchases, test traffic, and attribution have been reconciled. GA4 key-event status is separate from the Google Ads Primary/Secondary setting.
+
 ## Identity, attribution, and privacy
 
 - Consent Mode defaults to denied. No server event is delivered without analytics consent and a genuine GA client ID.

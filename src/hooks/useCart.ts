@@ -1,8 +1,15 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import type { CartItem } from '@/types/cart';
 
-export const useCart = () => {
+// undefined means the catalogue has not loaded; null means no valid URL selection.
+export const useCart = (initialPackageId?: number | null) => {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const hasInitialized = useRef(false);
+  useEffect(() => {
+    if (hasInitialized.current || initialPackageId === undefined) return;
+    hasInitialized.current = true;
+    if (initialPackageId !== null) setCart([{ packageId: initialPackageId, quantity: 1 }]);
+  }, [initialPackageId]);
 
   const removeFromCart = useCallback((packageId: number) => {
     setCart((prev) => prev.filter((item) => item.packageId !== packageId));

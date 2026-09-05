@@ -7,7 +7,7 @@ import { useCallback, useMemo, useRef } from 'react';
 import type { LeadSessionData } from '@/types/lead';
 import { formatPhoneNumberForClerk } from '@/utils/phone-number';
 import { trackAuth } from '@/lib/analytics';
-import { buildAuthReturnPath } from '@/lib/auth-return';
+import { buildAuthEntryPath, buildAuthReturnPath } from '@/lib/auth-return';
 
 interface SignUpClientProps {
   locale: string;
@@ -90,8 +90,8 @@ export default function SignUpClient({ locale, translations, leadSession }: Sign
               src="/images/logo/papercut.jpg"
               alt="Mythoria Logo"
               width={256}
-              height={168}
-              className="drop-shadow-lg"
+              height={256}
+              className="h-auto drop-shadow-lg"
             />
           </div>
           <div className="space-y-4">
@@ -117,7 +117,13 @@ export default function SignUpClient({ locale, translations, leadSession }: Sign
           >
             {/* Mobile logo */}
             <div className="lg:hidden flex justify-center mb-6">
-              <Image src="/images/logo/papercut.jpg" alt="Mythoria Logo" width={128} height={84} />
+              <Image
+                src="/images/logo/papercut.jpg"
+                alt="Mythoria Logo"
+                width={128}
+                height={128}
+                className="h-auto"
+              />
             </div>
 
             <div className="text-center mb-8">
@@ -126,6 +132,7 @@ export default function SignUpClient({ locale, translations, leadSession }: Sign
             </div>
             <SignUp
               routing="hash"
+              signInUrl={`${buildAuthEntryPath(locale, 'sign-in', safeRedirect)}&auth_mode=sign-in`}
               signInForceRedirectUrl={safeRedirect}
               forceRedirectUrl={safeRedirect}
               fallbackRedirectUrl={defaultRedirect}

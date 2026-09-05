@@ -1,4 +1,8 @@
-import { CAMPAIGN_QUERY_KEYS, getValidatedIntent } from '@/lib/campaign-context';
+import {
+  PUBLIC_REDIRECT_QUERY_KEYS,
+  getValidatedIntent,
+  buildStoryAuthReturnSearch,
+} from '@/lib/campaign-context';
 
 export const AUTH_RETURN_PARAM = 'redirect';
 export const LEGACY_AUTH_RETURN_PARAM = 'redirectUrl';
@@ -76,7 +80,7 @@ export function buildAuthReturnPath(search: SearchParamsReader, fallback: string
     result.searchParams.set('primary_intent', primaryIntent);
   }
 
-  for (const key of CAMPAIGN_QUERY_KEYS) {
+  for (const key of PUBLIC_REDIRECT_QUERY_KEYS) {
     const value = search.get(key)?.trim();
     if (value && value.length <= MAX_CONTEXT_VALUE_LENGTH && !result.searchParams.has(key)) {
       result.searchParams.set(key, value);
@@ -93,4 +97,30 @@ export function buildAuthEntryPath(
 ): string {
   const safeReturn = sanitizeInternalReturnPath(returnPath, `/${locale}`);
   return `/${locale}/${action}?${AUTH_RETURN_PARAM}=${encodeURIComponent(safeReturn)}`;
+}
+
+/** Keep only public campaign/context fields when bypassing the story auth interstitial. */
+export function buildLandingCreationReturnPath(
+  href: string,
+  pathname: string,
+  search: SearchParamsReader,
+  landingIntent?: string,
+): string {
+  const destination = new URL(href, 'https://mythoria.pt');
+  const context = new URLSearchParams();
+  for (const key of PUBLIC_REDIRECT_QUERY_KEYS) {
+    const value = search.get(key);
+    if (value) context.set(key, value);
+  }
+  const slug = extractLandingSlug(pathname);
+  if (slug) context.set('landingSlug', slug);
+  if (landingIntent) context.set('primaryIntent', landingIntent);
+  destination.searchParams.forEach((value, key) => context.set(key, value));
+  const safe = buildStoryAuthReturnSearch(context);
+  if (slug) safe.set('landing_path', pathname);
+  const storyPath = destination.pathname.replace(
+    /\/tell-your-story\/?$/,
+    '/tell-your-story/step-1',
+  );
+  return `${storyPath}${safe.size ? `?${safe}` : ''}`;
 }

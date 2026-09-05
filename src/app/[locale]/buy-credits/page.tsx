@@ -4,7 +4,9 @@ import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { AlertTriangle, CheckCircle, ShoppingCart } from 'lucide-react';
 import { Show } from '@clerk/nextjs';
-import { Link } from '@/i18n/routing';
+import Link from 'next/link';
+import { buildAuthEntryPath } from '@/lib/auth-return';
+import { getSelectedCreditPackageId } from '@/lib/credit-package-selection';
 
 import { useSearchParams } from 'next/navigation';
 import CartView from '@/components/CartView';
@@ -42,7 +44,6 @@ function BuyCreditsContent() {
   const tMyStoriesPage = useTranslations('MyStoriesPage');
   const tVoucher = useTranslations('Voucher');
   const locale = useLocale();
-  const { cart, addToCart, updateQuantity, removeFromCart, clearCart } = useCart();
   const [isMounted, setIsMounted] = useState(false);
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>(
@@ -52,6 +53,14 @@ function BuyCreditsContent() {
   const [creditPackages, setCreditPackages] = useState<CreditPackage[]>([]);
   const [packagesLoading, setPackagesLoading] = useState(true);
   const [packagesError, setPackagesError] = useState<string | null>(null);
+  const selectedPackageId = getSelectedCreditPackageId(
+    searchParams?.get('package') ?? null,
+    creditPackages,
+  );
+  const { cart, addToCart, updateQuantity, removeFromCart, clearCart } = useCart(
+    packagesLoading || packagesError ? undefined : selectedPackageId,
+  );
+  const purchaseReturnPath = `/${locale}/buy-credits${selectedPackageId !== null ? `?package=${selectedPackageId}` : ''}`;
   const cartItemsRef = useRef<HTMLDivElement>(null);
   const hasProcessedPayment = useRef(false);
 
@@ -155,6 +164,8 @@ function BuyCreditsContent() {
   }, [isMounted, searchParams, tBuyCreditsPage, locale]);
 
   const fetchCreditPackages = useCallback(async () => {
+    setPackagesLoading(true);
+    setPackagesError(null);
     try {
       const response = await fetch('/api/pricing/credit-packages');
       if (!response.ok) {
@@ -181,17 +192,6 @@ function BuyCreditsContent() {
   useEffect(() => {
     fetchCreditPackages();
   }, [fetchCreditPackages]);
-
-  useEffect(() => {
-    const packageId = searchParams?.get('package') ?? null;
-    if (packageId) {
-      const id = parseInt(packageId);
-      if (creditPackages.find((pkg) => pkg.id === id)) {
-        clearCart();
-        addToCart(id);
-      }
-    }
-  }, [searchParams, creditPackages, addToCart, clearCart]);
 
   const scrollToCartItems = () => {
     if (window.innerWidth >= 1024) return;
@@ -337,14 +337,31 @@ function BuyCreditsContent() {
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                   {tMyStoriesPage('signedOut.needSignIn')}
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link href="/sign-in" className="btn btn-primary">
-                    {tMyStoriesPage('signedOut.signIn')}
-                  </Link>
-                  <Link href="/sign-up" className="btn btn-outline">
-                    {tMyStoriesPage('signedOut.createAccount')}
-                  </Link>
-                </div>
+                {packagesLoading ? (
+                  <span className="loading loading-spinner loading-lg" />
+                ) : packagesError ? (
+                  <div role="alert">
+                    <p>{packagesError}</p>
+                    <button type="button" className="btn btn-outline" onClick={fetchCreditPackages}>
+                      {tBuyCreditsPage('actions.tryAgain')}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Link
+                      href={buildAuthEntryPath(locale, 'sign-in', purchaseReturnPath)}
+                      className="btn btn-primary"
+                    >
+                      {tMyStoriesPage('signedOut.signIn')}
+                    </Link>
+                    <Link
+                      href={buildAuthEntryPath(locale, 'sign-up', purchaseReturnPath)}
+                      className="btn btn-outline"
+                    >
+                      {tMyStoriesPage('signedOut.createAccount')}
+                    </Link>
+                  </div>
+                )}
               </div>
             </Show>
 
@@ -517,7 +534,7 @@ function BuyCreditsContent() {
                     )}
 
                     <div className="mt-6 text-center">
-                      <Link href="/pricing" className="btn btn-outline">
+                      <Link href={`/${locale}/pricing`} className="btn btn-outline">
                         {tBuyCreditsPage('actions.backToPricing')}
                       </Link>
                     </div>

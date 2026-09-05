@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import LandingCreationLink from './LandingCreationLink';
 import { getTranslations } from 'next-intl/server';
 import {
   ArrowRight,
@@ -58,6 +59,7 @@ export default async function LandingPageTemplate({ page }: LandingPageTemplateP
   return (
     <main
       id="landing-page-top"
+      data-primary-intent={page.primaryIntent}
       tabIndex={-1}
       className="min-h-screen bg-[#fff8ea] text-base-content focus:outline-none"
     >
@@ -101,7 +103,7 @@ export default async function LandingPageTemplate({ page }: LandingPageTemplateP
               {page.hero.subheadline}
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link
+              <LandingCreationLink
                 href={primaryHref}
                 data-cta-placement="hero_primary"
                 data-capture-attribution="true"
@@ -109,7 +111,7 @@ export default async function LandingPageTemplate({ page }: LandingPageTemplateP
               >
                 <span>{page.primaryCta}</span>
                 <CtaArrow icon={page.templateIcons?.ctaArrow} />
-              </Link>
+              </LandingCreationLink>
               <Link
                 href={secondaryHref}
                 data-cta-placement="hero_secondary"
@@ -688,7 +690,7 @@ export default async function LandingPageTemplate({ page }: LandingPageTemplateP
             {page.finalCta.body}
           </p>
           <div className="mt-8">
-            <Link
+            <LandingCreationLink
               href={primaryHref}
               data-cta-placement="final_primary"
               data-capture-attribution="true"
@@ -696,7 +698,7 @@ export default async function LandingPageTemplate({ page }: LandingPageTemplateP
             >
               <span>{page.primaryCta}</span>
               <CtaArrow icon={page.templateIcons?.ctaArrow} />
-            </Link>
+            </LandingCreationLink>
           </div>
         </section>
       </div>
@@ -771,10 +773,13 @@ function PersonalizationSection({
         ))}
       </div>
       <div className="mt-8">
-        <Link href={ctaHref} className="btn btn-primary btn-lg h-auto min-h-14 gap-2 py-3">
+        <LandingCreationLink
+          href={ctaHref}
+          className="btn btn-primary btn-lg h-auto min-h-14 gap-2 py-3"
+        >
           <span>{personalization.ctaLabel}</span>
           <CtaArrow icon={ctaIcon} />
-        </Link>
+        </LandingCreationLink>
       </div>
     </section>
   );
@@ -858,10 +863,10 @@ function DiasporaSection({
             ))}
           </div>
           <div className="mt-6">
-            <Link href={ctaHref} className="btn btn-secondary gap-2">
+            <LandingCreationLink href={ctaHref} className="btn btn-secondary gap-2">
               {labels.createInPortuguese}
               <CtaArrow icon={ctaIcon} />
-            </Link>
+            </LandingCreationLink>
           </div>
         </div>
         <div className="grid gap-4 md:grid-cols-2">

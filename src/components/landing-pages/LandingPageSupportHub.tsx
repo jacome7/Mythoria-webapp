@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import LandingCreationLink from './LandingCreationLink';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import type { LandingPageSupportHub as LandingPageSupportHubContent } from '@/content/landing-pages/types';
 
@@ -79,7 +79,7 @@ export default function LandingPageSupportHub({
                 {challenges.map((challenge) => {
                   const href = `/${locale}/tell-your-story/step-1?landingSlug=${landingSlug}&primaryIntent=${challenge.primaryIntent}`;
                   return (
-                    <Link
+                    <LandingCreationLink
                       key={challenge.id}
                       href={href}
                       data-cta-placement="challenge_card"
@@ -107,7 +107,7 @@ export default function LandingPageSupportHub({
                           {challenge.body}
                         </span>
                       </span>
-                    </Link>
+                    </LandingCreationLink>
                   );
                 })}
               </div>

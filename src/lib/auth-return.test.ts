@@ -1,4 +1,9 @@
-import { buildAuthEntryPath, buildAuthReturnPath, sanitizeInternalReturnPath } from './auth-return';
+import {
+  buildLandingCreationReturnPath,
+  buildAuthEntryPath,
+  buildAuthReturnPath,
+  sanitizeInternalReturnPath,
+} from './auth-return';
 
 describe('auth return paths', () => {
   it.each(['https://evil.example', '//evil.example/path', '/\\evil.example', 'javascript:x'])(
@@ -35,5 +40,44 @@ describe('auth return paths', () => {
     expect(buildAuthEntryPath('en-US', 'sign-in', '/en-US/p/moon')).toBe(
       '/en-US/sign-in?redirect=%2Fen-US%2Fp%2Fmoon',
     );
+  });
+});
+
+describe('landing creation returns', () => {
+  it('carries campaign and referral fields but drops free text and invalid intent', () => {
+    const result = new URL(
+      buildLandingCreationReturnPath(
+        '/pt-PT/tell-your-story/step-1?primaryIntent=not-valid&prompt=private',
+        '/pt-PT/lp/casais',
+        new URLSearchParams(
+          'utm_source=google&gclid=click&ref=partner&prompt=secret&redirect=https://evil.example',
+        ),
+        'romance',
+      ),
+      'https://mythoria.pt',
+    );
+    expect(result.pathname).toBe('/pt-PT/tell-your-story/step-1');
+    expect(Object.fromEntries(result.searchParams)).toEqual({
+      landingSlug: 'casais',
+      ref: 'partner',
+      utm_source: 'google',
+      gclid: 'click',
+      landing_path: '/pt-PT/lp/casais',
+    });
+  });
+  it('keeps package and referral when switching auth entry points', () => {
+    const entry = new URL(
+      buildAuthEntryPath('pt-PT', 'sign-up', '/pt-PT/buy-credits?package=2&ref=partner'),
+      'https://mythoria.pt',
+    );
+    const returned = buildAuthReturnPath(entry.searchParams, '/pt-PT/my-stories');
+    const signIn = new URL(buildAuthEntryPath('pt-PT', 'sign-in', returned), 'https://mythoria.pt');
+    const target = new URL(
+      buildAuthReturnPath(signIn.searchParams, '/pt-PT/my-stories'),
+      'https://mythoria.pt',
+    );
+    expect(target.pathname).toBe('/pt-PT/buy-credits');
+    expect(target.searchParams.get('package')).toBe('2');
+    expect(target.searchParams.get('ref')).toBe('partner');
   });
 });

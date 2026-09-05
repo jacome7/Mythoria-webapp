@@ -43,9 +43,15 @@ let captureInFlight: Promise<boolean> | undefined;
 let linkInFlight: Promise<void> | undefined;
 let lastCaptureSignature: string | undefined;
 let linkedUserId: string | undefined;
+let currentAuthenticatedUserId: string | undefined;
 let linkedCampaignUserId: string | undefined;
 let campaignLinkInFlight: Promise<void> | undefined;
 const LINK_RETRY_DELAYS_MS = [0, 250, 500, 1_000, 2_000] as const;
+// Twelve attempts over 5m04s cover the worker's five-minute claim lease.
+// After exhaustion there is no timer loop; a later navigation/capture can try again.
+const SIGN_UP_LINK_RETRY_DELAYS_MS = [
+  0, 250, 500, 1_000, 2_000, 5_000, 15_000, 30_000, 60_000, 60_000, 60_000, 70_000,
+] as const;
 
 async function linkAuthenticatedEmailCampaign(userId: string): Promise<void> {
   if (linkedCampaignUserId === userId) return;
@@ -135,8 +141,14 @@ async function linkAuthenticatedAttribution(userId: string): Promise<void> {
   if (linkInFlight) return linkInFlight;
 
   linkInFlight = (async () => {
-    for (const delayMs of LINK_RETRY_DELAYS_MS) {
+    let retryDelays: readonly number[] = LINK_RETRY_DELAYS_MS;
+    const canLink = () =>
+      currentAuthenticatedUserId === userId &&
+      getStoredConsent()?.state.analytics_storage === 'granted';
+    for (let attempt = 0; attempt < retryDelays.length; attempt += 1) {
+      const delayMs = retryDelays[attempt];
       if (delayMs) await new Promise((resolve) => window.setTimeout(resolve, delayMs));
+      if (!canLink()) return;
       try {
         const response = await fetch('/api/analytics/attribution/link', {
           method: 'POST',
@@ -144,7 +156,16 @@ async function linkAuthenticatedAttribution(userId: string): Promise<void> {
         });
         if (response.status === 401 || response.status >= 500) continue;
         if (!response.ok) return;
-        const result = (await response.json().catch(() => null)) as { linked?: boolean } | null;
+        const result = (await response.json().catch(() => null)) as {
+          linked?: boolean;
+          signUpPending?: boolean;
+        } | null;
+        if (!canLink()) return;
+        // General association succeeded; only a recoverable signup extends the budget.
+        if (result?.linked && result.signUpPending) {
+          retryDelays = SIGN_UP_LINK_RETRY_DELAYS_MS;
+          continue;
+        }
         if (result?.linked) linkedUserId = userId;
         return;
       } catch {
@@ -244,6 +265,7 @@ export default function AnalyticsAttributionCoordinator() {
   authenticatedUserIdRef.current = authenticatedUserId;
 
   useEffect(() => {
+    currentAuthenticatedUserId = authenticatedUserId;
     const consent = getStoredConsent()?.state;
     if (consent?.analytics_storage === 'granted') {
       mergeCampaignFromLocation();
@@ -260,6 +282,10 @@ export default function AnalyticsAttributionCoordinator() {
     if (/\/(sign-up)(?:\/|$)/.test(pathname) && !consent) {
       void ensureConsentChoice();
     }
+    return () => {
+      if (currentAuthenticatedUserId === authenticatedUserId)
+        currentAuthenticatedUserId = undefined;
+    };
   }, [authenticatedUserId, pathname]);
 
   useEffect(() => {

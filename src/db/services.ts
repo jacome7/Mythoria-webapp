@@ -18,6 +18,7 @@ import {
 } from './schema';
 import { eq, and, or, count, desc, sql, asc, max } from 'drizzle-orm';
 import { ClerkUserForSync } from '@/types/clerk';
+import { clerkCreationTime, canRecoverSignUp, signUpOutboxEntry } from '@/lib/analytics/signup';
 import { pricingService } from './services/pricing';
 import { CharacterRole, CharacterAge, isValidCharacterAge } from '../types/character-enums';
 import { toAbsoluteImageUrl, toRelativeImagePath } from '../utils/image-url';
@@ -96,6 +97,7 @@ export const authorService = {
     preferredLocale?: string;
     mobilePhone?: string;
     signUpMethod?: string;
+    clerkCreatedAt?: number | Date;
   }) {
     const normalizedLocale = normalizeLocale(authorData.preferredLocale);
     const initialCredits = await pricingService.getInitialAuthorCredits();
@@ -122,17 +124,17 @@ export const authorService = {
         totalCredits: initialCredits,
         lastUpdated: new Date(),
       });
-      await tx
-        .insert(analyticsOutbox)
-        .values({
-          dedupeKey: `sign_up:${authorData.clerkUserId}`,
-          eventName: 'sign_up',
-          authorId: author.authorId,
-          userId: authorData.clerkUserId,
-          params: { method: authorData.signUpMethod || 'unknown' },
-          availableAt: new Date(Date.now() + 5 * 60 * 1000),
-        })
-        .onConflictDoNothing({ target: analyticsOutbox.dedupeKey });
+      const occurredAt = clerkCreationTime(authorData.clerkCreatedAt);
+      if (canRecoverSignUp(occurredAt)) {
+        await tx
+          .insert(analyticsOutbox)
+          .values({
+            ...signUpOutboxEntry(authorData.clerkUserId, occurredAt),
+            authorId: author.authorId,
+            params: { method: authorData.signUpMethod || 'unknown' },
+          })
+          .onConflictDoNothing({ target: analyticsOutbox.dedupeKey });
+      }
 
       return author;
     });
@@ -215,18 +217,16 @@ export const authorService = {
             totalCredits: initialCredits,
             lastUpdated: new Date(),
           });
-          await tx
-            .insert(analyticsOutbox)
-            .values({
-              dedupeKey: `sign_up:${clerkUser.id}`,
-              eventName: 'sign_up',
-              authorId: created.authorId,
-              userId: clerkUser.id,
-              params: { method: 'unknown' },
-              occurredAt: currentTime,
-              availableAt: new Date(currentTime.getTime() + 5 * 60 * 1000),
-            })
-            .onConflictDoNothing({ target: analyticsOutbox.dedupeKey });
+          const occurredAt = clerkCreationTime(clerkUser.createdAt, currentTime);
+          if (canRecoverSignUp(occurredAt, currentTime)) {
+            await tx
+              .insert(analyticsOutbox)
+              .values({
+                ...signUpOutboxEntry(clerkUser.id, occurredAt),
+                authorId: created.authorId,
+              })
+              .onConflictDoNothing({ target: analyticsOutbox.dedupeKey });
+          }
           return created;
         });
         console.log(
@@ -325,7 +325,7 @@ export const authorService = {
     return author;
   },
 
-  async getAuthorByClerkId(clerkUserId: string) {
+  async getAuthorByClerkId(clerkUserId: string): Promise<typeof authors.$inferSelect | undefined> {
     const [author] = await db.select().from(authors).where(eq(authors.clerkUserId, clerkUserId));
     return author;
   },
