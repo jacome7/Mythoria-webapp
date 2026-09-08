@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { AlertCircle, ImageIcon, Trash2, Upload, X, Zap } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -43,12 +43,14 @@ export default function AIImageEditor({
 }: AIImageEditorProps) {
   const tAIImageEditor = useTranslations('AIImageEditor');
   const tGraphicalStyles = useTranslations('GraphicalStyles');
+  const tActions = useTranslations('Actions');
   const [userRequest, setUserRequest] = useState('');
   // mode: 'edit' = Option A (edit current image via prompt); 'upload' = Option B (user supplies photo)
   const [mode, setMode] = useState<'edit' | 'upload'>('edit');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [newImageGenerated, setNewImageGenerated] = useState<string | null>(null);
+  const [newImagePreviewNonce, setNewImagePreviewNonce] = useState(0);
   const [isReplacing, setIsReplacing] = useState(false);
   // Phase B: user supplied image handling
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -59,6 +61,7 @@ export default function AIImageEditor({
   // Removed unused directReplacementPossible state (was only being assigned, never read)
   const [userImageUri, setUserImageUri] = useState<string | null>(null); // gs:// path after upload
   const [showCropper, setShowCropper] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
   const TARGET_WIDTH = 1024;
   const TARGET_HEIGHT = 1536;
   const RATIO_TOLERANCE = 0.15; // ±15%
@@ -69,6 +72,7 @@ export default function AIImageEditor({
       setUserRequest('');
       setError(null);
       setNewImageGenerated(null);
+      setNewImagePreviewNonce(0);
       setIsReplacing(false);
       setMode('edit'); // default to Option A as requested
     }
@@ -105,6 +109,7 @@ export default function AIImageEditor({
     console.log('✅ Image edit job completed:', result);
     if (result && result.newImageUrl) {
       setNewImageGenerated(result.newImageUrl);
+      setNewImagePreviewNonce(Date.now());
       setError(null);
     } else {
       setError('Job completed but no image was generated');
@@ -415,264 +420,277 @@ export default function AIImageEditor({
     }
   };
 
+  useEffect(() => {
+    if (!newImageGenerated) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      previewRef.current?.scrollIntoView?.({
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+        block: 'start',
+      });
+      previewRef.current?.focus({ preventScroll: true });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [newImageGenerated]);
+
   if (!isOpen) return null;
 
+  const currentImageUrl = toAbsoluteImageUrl(imageData.imageUri) || '';
+  const generatedImageUrl = newImageGenerated ? toAbsoluteImageUrl(newImageGenerated) || '' : '';
+  const generatedPreviewUrl =
+    generatedImageUrl && newImagePreviewNonce
+      ? `${generatedImageUrl}${generatedImageUrl.includes('?') ? '&' : '?'}preview=${newImagePreviewNonce}`
+      : generatedImageUrl;
+  const displayedImageUrl = newImageGenerated ? generatedPreviewUrl : currentImageUrl;
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-2 sm:p-4">
+      <div
+        className="flex max-h-[calc(100dvh-1rem)] w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-white sm:max-h-[90vh]"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ai-image-editor-title"
+      >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-              <ImageIcon className="w-5 h-5 text-primary" />
+        <div className="flex items-center justify-between gap-3 border-b border-gray-200 px-3 py-3 sm:p-5">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 sm:h-10 sm:w-10">
+              <ImageIcon className="h-4 w-4 text-primary sm:h-5 sm:w-5" />
             </div>
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">
-                {tAIImageEditor('title', { imageType: getImageTitle() })}
-              </h2>
-              <p className="text-sm text-gray-600">{story.title}</p>
-            </div>
+            <h2
+              id="ai-image-editor-title"
+              className="min-w-0 text-base font-semibold leading-tight text-gray-900 sm:text-xl"
+            >
+              {tAIImageEditor('title', { imageType: getImageTitle() })}
+            </h2>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-200 transition-colors hover:bg-gray-50 sm:h-10 sm:w-10"
+            aria-label={tActions('close')}
           >
             <X className="w-5 h-5 text-gray-600" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="space-y-6">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Mode Toggle */}
             {/* Current Image */}
-            <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700">
-                {tAIImageEditor('currentImage')}
-              </label>
-              <div className="bg-gray-50 rounded-lg p-4">
+            <div
+              ref={previewRef}
+              className="scroll-mt-3 space-y-2 outline-none sm:space-y-3"
+              tabIndex={newImageGenerated ? -1 : undefined}
+            >
+              <p className="text-sm font-medium text-gray-700" aria-live="polite">
+                {newImageGenerated
+                  ? tAIImageEditor('newImageLabel')
+                  : tAIImageEditor('currentImage')}
+              </p>
+              <div
+                className={`rounded-lg border p-2 sm:p-4 ${
+                  newImageGenerated
+                    ? 'border-green-200 bg-green-50'
+                    : 'border-transparent bg-gray-50'
+                }`}
+              >
                 <div className="relative mx-auto max-w-sm">
                   <Image
-                    src={toAbsoluteImageUrl(imageData.imageUri) || ''}
-                    alt={getImageTitle()}
-                    width={400}
-                    height={500}
+                    key={displayedImageUrl}
+                    src={displayedImageUrl}
+                    alt={newImageGenerated ? tAIImageEditor('generatedImageAlt') : getImageTitle()}
+                    width={1024}
+                    height={1536}
+                    sizes="(max-width: 640px) calc(100vw - 3rem), 384px"
                     className="w-full h-auto rounded-lg object-cover"
                   />
                 </div>
+                {newImageGenerated && (
+                  <p className="mt-3 text-center text-sm text-green-700" role="status">
+                    {tAIImageEditor('newImageSuccess')}
+                  </p>
+                )}
               </div>
             </div>
 
-            {/* Mode Toggle (now placed below image) */}
-            <div className="flex gap-2" role="tablist">
-              <button
-                type="button"
-                role="tab"
-                onClick={() => setMode('edit')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${mode === 'edit' ? 'bg-primary text-white border-primary' : 'bg-base-100 text-base-content border-base-300 hover:bg-base-200'}`}
-                aria-selected={mode === 'edit'}
-                aria-controls="ai-image-editor-edit-panel"
-                id="ai-image-editor-edit-tab"
-              >
-                {tAIImageEditor('modes.edit')}
-              </button>
-              <button
-                type="button"
-                role="tab"
-                onClick={handleSelectUploadMode}
-                className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${mode === 'upload' ? 'bg-primary text-white border-primary' : 'bg-base-100 text-base-content border-base-300 hover:bg-base-200'}`}
-                aria-selected={mode === 'upload'}
-                aria-controls="ai-image-editor-upload-panel"
-                id="ai-image-editor-upload-tab"
-              >
-                {tAIImageEditor('modes.upload')}
-              </button>
-            </div>
+            {!newImageGenerated && (
+              <>
+                {/* Mode Toggle (now placed below image) */}
+                <div className="flex gap-2" role="tablist">
+                  <button
+                    type="button"
+                    role="tab"
+                    onClick={() => setMode('edit')}
+                    className={`min-h-11 min-w-0 flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors sm:flex-none sm:px-4 ${mode === 'edit' ? 'bg-primary text-white border-primary' : 'bg-base-100 text-base-content border-base-300 hover:bg-base-200'}`}
+                    aria-selected={mode === 'edit'}
+                    aria-controls="ai-image-editor-edit-panel"
+                    id="ai-image-editor-edit-tab"
+                  >
+                    {tAIImageEditor('modes.edit')}
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    onClick={handleSelectUploadMode}
+                    className={`min-h-11 min-w-0 flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors sm:flex-none sm:px-4 ${mode === 'upload' ? 'bg-primary text-white border-primary' : 'bg-base-100 text-base-content border-base-300 hover:bg-base-200'}`}
+                    aria-selected={mode === 'upload'}
+                    aria-controls="ai-image-editor-upload-panel"
+                    id="ai-image-editor-upload-tab"
+                  >
+                    {tAIImageEditor('modes.upload')}
+                  </button>
+                </div>
 
-            {/* Helper / Upload Section (Option B) */}
-            {mode === 'upload' && (
-              <div className="space-y-3">
-                <label className="block text-sm font-medium text-gray-700">
-                  {tAIImageEditor('labels.addYourOwnPhoto')}
-                </label>
-                {!selectedFile && (
-                  <div className="border-2 border-dashed rounded-lg p-6 text-center flex flex-col items-center justify-center space-y-3">
-                    <Upload className="w-8 h-8 text-gray-400" />
-                    <p className="text-sm text-gray-600">
-                      {tAIImageEditor('helper.dragDropOrClick')}
-                    </p>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      className="hidden"
-                      id="user-image-input"
-                    />
-                    <label
-                      htmlFor="user-image-input"
-                      className="px-4 py-2 bg-base-100 border border-base-300 rounded-md text-sm cursor-pointer hover:bg-base-200"
-                    >
-                      {tAIImageEditor('helper.selectImage')}
+                {/* Helper / Upload Section (Option B) */}
+                {mode === 'upload' && (
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-gray-700">
+                      {tAIImageEditor('labels.addYourOwnPhoto')}
                     </label>
-                    {userImageError && <p className="text-xs text-red-600">{userImageError}</p>}
-                  </div>
-                )}
-                {selectedFile && (
-                  <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-700 truncate max-w-[60%]">
-                        {selectedFile.name}
-                      </span>
-                      <div className="flex items-center space-x-2">
-                        {processingUserImage && (
-                          <span className="text-xs text-primary">
-                            {tAIImageEditor('helper.processing')}
-                          </span>
-                        )}
-                        {/* Removed legacy replacement/reference pill */}
-                        <button
-                          onClick={resetUserImage}
-                          className="p-1 rounded hover:bg-gray-200"
-                          aria-label="Remove"
-                        >
-                          <Trash2 className="w-4 h-4 text-gray-600" />
-                        </button>
-                      </div>
-                    </div>
-                    {selectedFilePreview && (
-                      <div className="relative w-40 h-60 overflow-hidden rounded border bg-white">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={selectedFilePreview}
-                          alt="Uploaded preview"
-                          className="object-cover w-full h-full"
+                    {!selectedFile && (
+                      <div className="border-2 border-dashed rounded-lg p-6 text-center flex flex-col items-center justify-center space-y-3">
+                        <Upload className="w-8 h-8 text-gray-400" />
+                        <p className="text-sm text-gray-600">
+                          {tAIImageEditor('helper.dragDropOrClick')}
+                        </p>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                          className="hidden"
+                          id="user-image-input"
                         />
+                        <label
+                          htmlFor="user-image-input"
+                          className="px-4 py-2 bg-base-100 border border-base-300 rounded-md text-sm cursor-pointer hover:bg-base-200"
+                        >
+                          {tAIImageEditor('helper.selectImage')}
+                        </label>
+                        {userImageError && <p className="text-xs text-red-600">{userImageError}</p>}
                       </div>
                     )}
-                    {userImageError && <p className="text-xs text-red-600">{userImageError}</p>}
-                    {/* Removed status badges for as-is and style conversion per request */}
-                    {userImageUri && (
-                      <fieldset className="pt-2 space-y-2">
-                        <legend className="text-xs font-medium text-gray-600">
-                          {tAIImageEditor('radio.legend')}
-                        </legend>
-                        <div className="flex flex-col gap-2">
-                          <label className="flex items-start gap-2 cursor-pointer">
-                            <input
-                              type="radio"
-                              name="use-photo-mode"
-                              className="radio radio-primary mt-0.5"
-                              checked={!convertToStyle}
-                              onChange={() => setConvertToStyle(false)}
-                            />
-                            <span className="text-xs text-gray-700 leading-snug">
-                              {tAIImageEditor('radio.asIs')}
-                            </span>
-                          </label>
-                          <label className="flex items-start gap-2 cursor-pointer">
-                            <input
-                              type="radio"
-                              name="use-photo-mode"
-                              className="radio radio-primary mt-0.5"
-                              checked={convertToStyle}
-                              onChange={() => setConvertToStyle(true)}
-                            />
-                            <span className="text-xs text-gray-700 leading-snug">
-                              {tAIImageEditor('radio.convert', {
-                                style: story.graphicalStyle
-                                  ? tGraphicalStyles(story.graphicalStyle)
-                                  : tAIImageEditor('radio.defaultStyle'),
-                              })}
-                            </span>
-                          </label>
+                    {selectedFile && (
+                      <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-gray-700 truncate max-w-[60%]">
+                            {selectedFile.name}
+                          </span>
+                          <div className="flex items-center space-x-2">
+                            {processingUserImage && (
+                              <span className="text-xs text-primary">
+                                {tAIImageEditor('helper.processing')}
+                              </span>
+                            )}
+                            {/* Removed legacy replacement/reference pill */}
+                            <button
+                              onClick={resetUserImage}
+                              className="p-1 rounded hover:bg-gray-200"
+                              aria-label="Remove"
+                            >
+                              <Trash2 className="w-4 h-4 text-gray-600" />
+                            </button>
+                          </div>
                         </div>
-                      </fieldset>
+                        {selectedFilePreview && (
+                          <div className="relative w-40 h-60 overflow-hidden rounded border bg-white">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={selectedFilePreview}
+                              alt="Uploaded preview"
+                              className="object-cover w-full h-full"
+                            />
+                          </div>
+                        )}
+                        {userImageError && <p className="text-xs text-red-600">{userImageError}</p>}
+                        {/* Removed status badges for as-is and style conversion per request */}
+                        {userImageUri && (
+                          <fieldset className="pt-2 space-y-2">
+                            <legend className="text-xs font-medium text-gray-600">
+                              {tAIImageEditor('radio.legend')}
+                            </legend>
+                            <div className="flex flex-col gap-2">
+                              <label className="flex items-start gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="use-photo-mode"
+                                  className="radio radio-primary mt-0.5"
+                                  checked={!convertToStyle}
+                                  onChange={() => setConvertToStyle(false)}
+                                />
+                                <span className="text-xs text-gray-700 leading-snug">
+                                  {tAIImageEditor('radio.asIs')}
+                                </span>
+                              </label>
+                              <label className="flex items-start gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="use-photo-mode"
+                                  className="radio radio-primary mt-0.5"
+                                  checked={convertToStyle}
+                                  onChange={() => setConvertToStyle(true)}
+                                />
+                                <span className="text-xs text-gray-700 leading-snug">
+                                  {tAIImageEditor('radio.convert', {
+                                    style: story.graphicalStyle
+                                      ? tGraphicalStyles(story.graphicalStyle)
+                                      : tAIImageEditor('radio.defaultStyle'),
+                                  })}
+                                </span>
+                              </label>
+                            </div>
+                          </fieldset>
+                        )}
+                      </div>
                     )}
                   </div>
                 )}
-              </div>
-            )}
 
-            {/* User Request / Prompt Section */}
-            {mode === 'edit' && (
-              <div className="space-y-3">
-                <label className="block text-sm font-medium text-gray-700">
-                  {tAIImageEditor('labels.describeChanges')}
-                </label>
-                <textarea
-                  value={userRequest}
-                  onChange={(e) => setUserRequest(e.target.value)}
-                  placeholder={tAIImageEditor('requestPlaceholder')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none"
-                  rows={4}
-                  maxLength={1000}
-                />
-                <div className="flex justify-between text-xs text-gray-500">
-                  <span>
-                    {tAIImageEditor('characterCount', { count: userRequest.length, max: 1000 })}
-                  </span>
-                  <span className="text-primary">{tAIImageEditor('helper.editUsesCredit')}</span>
-                </div>
-              </div>
-            )}
-            {mode === 'upload' && (
-              <div className="space-y-3">
-                <textarea
-                  value={userRequest}
-                  onChange={(e) => setUserRequest(e.target.value)}
-                  placeholder={
-                    convertToStyle
-                      ? tAIImageEditor('requestPlaceholder')
-                      : tAIImageEditor('placeholders.addNotesStyleDisabled')
-                  }
-                  className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none ${!convertToStyle ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
-                  rows={4}
-                  maxLength={1000}
-                  disabled={!convertToStyle}
-                />
-              </div>
-            )}
-
-            {/* New Image Preview */}
-            {newImageGenerated && (
-              <div className="space-y-3">
-                <label className="block text-sm font-medium text-gray-700">
-                  {tAIImageEditor('newImageLabel')}
-                </label>
-                <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                  <div className="relative mx-auto max-w-sm">
-                    <Image
-                      src={toAbsoluteImageUrl(newImageGenerated) || ''}
-                      alt={tAIImageEditor('generatedImageAlt')}
-                      width={400}
-                      height={500}
-                      className="w-full h-auto rounded-lg object-cover"
+                {/* User Request / Prompt Section */}
+                {mode === 'edit' && (
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-gray-700">
+                      {tAIImageEditor('labels.describeChanges')}
+                    </label>
+                    <textarea
+                      value={userRequest}
+                      onChange={(e) => setUserRequest(e.target.value)}
+                      placeholder={tAIImageEditor('requestPlaceholder')}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none"
+                      rows={4}
+                      maxLength={1000}
+                    />
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <span>
+                        {tAIImageEditor('characterCount', { count: userRequest.length, max: 1000 })}
+                      </span>
+                      <span className="text-primary">
+                        {tAIImageEditor('helper.editUsesCredit')}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                {mode === 'upload' && (
+                  <div className="space-y-3">
+                    <textarea
+                      value={userRequest}
+                      onChange={(e) => setUserRequest(e.target.value)}
+                      placeholder={
+                        convertToStyle
+                          ? tAIImageEditor('requestPlaceholder')
+                          : tAIImageEditor('placeholders.addNotesStyleDisabled')
+                      }
+                      className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none ${!convertToStyle ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
+                      rows={4}
+                      maxLength={1000}
+                      disabled={!convertToStyle}
                     />
                   </div>
-                  <div className="mt-4 text-center">
-                    <p className="text-sm text-green-600 mb-3">
-                      {tAIImageEditor('newImageSuccess')}
-                    </p>
-                    <button
-                      onClick={handleReplaceImage}
-                      disabled={isReplacing}
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center space-x-2 mx-auto transition-colors"
-                    >
-                      {isReplacing ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          <span>{tAIImageEditor('loading')}</span>
-                        </>
-                      ) : (
-                        <>
-                          <ImageIcon className="w-4 h-4" />
-                          <span>{tAIImageEditor('replaceButton')}</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
+                )}
+              </>
             )}
 
             {/* Error Display */}
@@ -686,15 +704,36 @@ export default function AIImageEditor({
             )}
 
             {/* Actions */}
-            <div className="flex justify-end space-x-3">
+            <div className="flex items-center justify-end gap-2 sm:gap-3">
               <button
+                type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                className="min-h-11 shrink-0 px-3 py-2 text-gray-600 transition-colors hover:text-gray-800 sm:px-4"
               >
                 {tAIImageEditor('cancelButton')}
               </button>
-              {!newImageGenerated && (
+              {newImageGenerated ? (
                 <button
+                  type="button"
+                  onClick={handleReplaceImage}
+                  disabled={isReplacing}
+                  className="btn min-h-11 min-w-0 flex-1 gap-2 bg-green-600 px-3 text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-gray-300 sm:flex-none sm:px-4"
+                >
+                  {isReplacing ? (
+                    <>
+                      <div className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      <span>{tAIImageEditor('loading')}</span>
+                    </>
+                  ) : (
+                    <>
+                      <ImageIcon className="h-4 w-4 shrink-0" />
+                      <span>{tAIImageEditor('replaceButton')}</span>
+                    </>
+                  )}
+                </button>
+              ) : (
+                <button
+                  type="button"
                   onClick={handleImageEdit}
                   disabled={
                     isLoading ||
@@ -704,7 +743,7 @@ export default function AIImageEditor({
                         (convertToStyle && !userImageUri))) ||
                     (mode === 'edit' && !userRequest.trim())
                   }
-                  className="px-6 py-2 btn btn-primary disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center space-x-2 transition-colors"
+                  className="btn btn-primary min-h-11 min-w-0 flex-1 gap-2 px-3 transition-colors disabled:cursor-not-allowed disabled:bg-gray-300 sm:flex-none sm:px-6"
                 >
                   {isLoading ? (
                     <>

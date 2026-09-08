@@ -4,7 +4,7 @@
     "currentImage": "Imagen actual:",
     "requestPlaceholder": "Describe cómo quieres modificar esta imagen...",
     "characterCount": "{count}/{max} caracteres",
-    "generateButton": "Generar nueva imagen",
+    "generateButton": "Generar",
     "replaceButton": "Reemplazar original",
     "cancelButton": "Cancelar",
     "loading": "Generando...",
