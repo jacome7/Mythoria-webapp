@@ -1,0 +1,126 @@
+{
+  "title": "Portal de colaboradores",
+  "activeCode": "Tu código de recomendación",
+  "none": "Sin código activo",
+  "change": "Cambiar código",
+  "customerTitle": "Tu recomendación",
+  "code": "Código de recomendación",
+  "confirmChange": "Confirmo que el cambio solo se aplica a la actividad futura.",
+  "saved": "Recomendación actualizada.",
+  "error": "No se ha podido completar la solicitud. Revisa los datos e inténtalo de nuevo.",
+  "candidate": "Enlace de recomendación: {code}",
+  "consentExplanation": "Permite la atribución de recomendaciones durante {days} días. Esta preferencia es independiente de la analítica y la publicidad.",
+  "allowReferral": "Permitir recomendaciones",
+  "signIn": "Iniciar sesión",
+  "faqTitle": "Preguntas frecuentes",
+  "support": "Contactar con Mythoria",
+  "privacy": "Política de privacidad",
+  "howItWorks": "Cómo funcionan las recomendaciones",
+  "copyLink": "Copiar enlace",
+  "copied": "Enlace copiado",
+  "email": "Correo electrónico",
+  "otp": "Código por correo",
+  "sendCode": "Enviar código",
+  "verify": "Verificar código",
+  "createAccount": "Crear cuenta invitada",
+  "continue": "Continuar",
+  "loading": "Cargando…",
+  "inviteRequired": "Tu correo necesita una invitación activa para acceder al portal.",
+  "summary": "Resumen",
+  "transactions": "Transacciones",
+  "settlements": "Liquidaciones",
+  "from": "Desde",
+  "to": "Hasta",
+  "commissionStatus": "Estado de la comisión",
+  "all": "Todos",
+  "customer": "Cliente",
+  "date": "Fecha",
+  "amount": "Importe pagado",
+  "rate": "Porcentaje",
+  "commission": "Comisión",
+  "status": "Estado",
+  "previous": "Anterior",
+  "next": "Siguiente",
+  "print": "Imprimir extracto",
+  "visits": "Visitas",
+  "visitors": "Visitantes únicos",
+  "pending": "Pendiente",
+  "approved": "Aprobada",
+  "payable": "Por pagar",
+  "paid": "Pagada",
+  "reversed": "Revertida",
+  "blocked": "Bloqueada",
+  "cancelled": "Cancelada",
+  "held": "Retenida",
+  "first": "Primera compra",
+  "repeat": "Compra recurrente",
+  "purchaseType": "Tipo de compra",
+  "language": "Idioma",
+  "country": "País",
+  "generated": "Historias generadas",
+  "published": "Historias publicadas",
+  "registration": "Recomendaciones registradas",
+  "started": "Clientes que iniciaron una historia",
+  "revenue": "Facturación",
+  "yourRate": "Tu porcentaje",
+  "empty": "No hay registros en este periodo.",
+  "refresh": "Actualizar",
+  "faq": {
+    "share": {
+      "q": "¿Cómo comparto mi enlace y código?",
+      "a": "Copia el enlace de esta página y compártelo en tus contenidos, mensajes o perfil. Los clientes también pueden introducir el código en Perfil y preferencias."
+    },
+    "attribution": {
+      "q": "¿Cuándo se me asigna un cliente?",
+      "a": "Una visita válida y consentida puede vincularse al registrarse o iniciar sesión. Prevalece el último enlace anónimo válido. Una asociación existente solo cambia con confirmación expresa."
+    },
+    "consent": {
+      "q": "¿Cómo funcionan el consentimiento y el plazo de {days} días?",
+      "a": "La atribución anónima dura {days} días desde el último enlace válido y consentido. Al vincularse a la cuenta funciona entre dispositivos y no caduca automáticamente. El consentimiento analítico es independiente."
+    },
+    "purchases": {
+      "q": "¿Cuentan los clientes existentes y las compras recurrentes?",
+      "a": "Sí. Cuentan las compras elegibles de paquetes de créditos en EUR posteriores a la asociación, incluidas las recurrentes. Las compras anteriores y el uso posterior de créditos no generan comisiones."
+    },
+    "rate": {
+      "q": "¿Cuál es mi porcentaje y cómo se calcula?",
+      "a": "Tu porcentaje actual es {rate}. Se aplica al importe final pagado, incluido el IVA y los posibles gastos de envío, sin deducir comisiones de pago. Cada Checkout conserva el porcentaje de su creación."
+    },
+    "discount": {
+      "q": "¿Mi código da un descuento?",
+      "a": "El código de recomendación te atribuye compras. No concede descuentos ni créditos gratuitos automáticamente. Los códigos promocionales son independientes."
+    },
+    "change": {
+      "q": "¿Qué pasa si el cliente cambia de código?",
+      "a": "El cambio confirmado se aplica a la actividad futura. Las historias existentes y los Checkouts abiertos mantienen su atribución original."
+    },
+    "status": {
+      "q": "¿Qué significan los estados?",
+      "a": "Pendiente indica el periodo de retención. Aprobada significa que pasó las comprobaciones. Por pagar indica que está incluida en una liquidación. Pagada significa que Mythoria registró la transferencia. Las retenciones y reversiones identifican revisiones o reducciones por reembolsos."
+    },
+    "payment": {
+      "q": "¿Cuándo cobraré?",
+      "a": "La retención es de {hold} días. El cierre mensual se realiza el día 1 a las 03:00 de Lisboa. Los saldos netos elegibles de al menos {minimum} se liquidan; los inferiores se acumulan. Las transferencias son manuales y el cierre no garantiza una fecha de pago."
+    },
+    "refund": {
+      "q": "¿Cómo afectan los reembolsos y las disputas?",
+      "a": "Los reembolsos revierten la comisión proporcionalmente. Las disputas abiertas retienen la comisión afectada. Las pérdidas tras el pago crean un saldo negativo descontado de futuras liquidaciones; la v1 no solicita devolución bancaria directa."
+    },
+    "self": {
+      "q": "¿Puedo usar mi código? ¿Y si hay una suspensión?",
+      "a": "Los colaboradores no pueden recomendarse a sí mismos ni a otros colaboradores. La suspensión bloquea el portal y las comisiones de nuevos Checkouts, conservando las asociaciones y los anteriores. La reactivación restablece la elegibilidad futura."
+    },
+    "privacy": {
+      "q": "¿Qué información del cliente puedo ver?",
+      "a": "Referencias seudónimas, fechas, etapas, importes y comisiones. No se comparten nombres, correos, direcciones, datos fiscales o de pago ni contenido privado de las historias."
+    },
+    "details": {
+      "q": "¿Puedo cambiar el código o los datos bancarios?",
+      "a": "Pide a Mythoria que cambie el código antes de su primera visita. Después solo puede activarse o desactivarse. Mythoria gestiona los datos bancarios y fiscales mediante el proceso financiero externo."
+    },
+    "support": {
+      "q": "¿Cómo notifico una comisión que falta?",
+      "a": "Comprueba las fechas, el estado y si el cliente aplicó el código antes del Checkout. Contacta con Mythoria indicando la fecha y referencia del cliente. Nunca envíes contraseñas, códigos OTP o datos de pago de clientes."
+    }
+  }
+}

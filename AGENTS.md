@@ -105,3 +105,7 @@ Only run the localization, env, or database commands when you touch the correspo
 - Follow Conventional Commit messages (e.g., `feat: add X`, `fix: handle Y`).
 - Include updated tests and documentation for any user-facing or behavioral change.
 - Keep the working tree clean: run the commands above, stage intentional changes only, and ensure `git status` is clean before finishing.
+
+## Referral platform v1 (2026-09-09)
+
+See the [referral implementation and operations guide](docs/referrals.md) for this service's responsibilities, updated contracts, configuration, schema ownership and validation. The feature is implemented locally; production migration, deployment and pilot activation require their separate rollout checkpoints.

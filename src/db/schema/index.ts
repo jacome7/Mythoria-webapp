@@ -25,6 +25,7 @@ export * from './leads';
 export * from './faq';
 export * from './partners';
 export * from './analytics';
+export * from './referrals';
 
 // Relations
 export * from './relations';

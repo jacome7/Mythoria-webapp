@@ -2,6 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
+import ReferralCustomer from '@/components/referrals/ReferralCustomer';
 import { AlertTriangle, CheckCircle, ShoppingCart } from 'lucide-react';
 import { Show } from '@clerk/nextjs';
 import Link from 'next/link';
@@ -63,6 +64,7 @@ function BuyCreditsContent() {
   const purchaseReturnPath = `/${locale}/buy-credits${selectedPackageId !== null ? `?package=${selectedPackageId}` : ''}`;
   const cartItemsRef = useRef<HTMLDivElement>(null);
   const hasProcessedPayment = useRef(false);
+  const checkoutAttempt = useRef<{ key: string; id: string } | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -268,6 +270,9 @@ function BuyCreditsContent() {
         quantity: item.quantity,
       }));
       const analyticsContext = await getGoogleAnalyticsContext();
+      const attemptKey = JSON.stringify({ creditPackages, locale });
+      if (checkoutAttempt.current?.key !== attemptKey)
+        checkoutAttempt.current = { key: attemptKey, id: crypto.randomUUID() };
       if (!analyticsContext) {
         console.warn('[Analytics] Checkout is continuing without GA4 context');
       }
@@ -278,6 +283,7 @@ function BuyCreditsContent() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          checkoutAttemptId: checkoutAttempt.current.id,
           creditPackages,
           locale,
           analyticsContext,
@@ -287,6 +293,7 @@ function BuyCreditsContent() {
       const data = await response.json();
 
       if (!response.ok) {
+        if (data.error === 'checkout_attempt_expired') checkoutAttempt.current = null;
         throw new Error(data.error || tBuyCreditsPage('errors.orderCreationFailed'));
       }
 
@@ -382,6 +389,7 @@ function BuyCreditsContent() {
                     {tVoucher('sectionSubheading')}
                   </p>
                   <div className="max-w-xl">
+                    <ReferralCustomer compact />
                     <PromotionCodeRedeemer />
                   </div>
                 </section>

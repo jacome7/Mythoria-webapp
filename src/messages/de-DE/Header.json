@@ -10,7 +10,8 @@
       "myPersonas": "Schreib-Personas",
       "creditsAndPayments": "Guthaben und Zahlungen",
       "pricing": "Preise",
-      "partners": "Partner"
+      "partners": "Partner",
+      "referrals": "Partnerportal"
     },
     "auth": {
       "signIn": "Anmelden"

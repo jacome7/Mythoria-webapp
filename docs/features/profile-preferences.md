@@ -2,7 +2,9 @@
 
 ## Overview
 
-The Profile & Preferences page lets signed-in authors manage the personal details used across Mythoria (preferred name, locale, contact details, billing VAT, and notification cadence) while also surfacing account context like credits and story counts. All edits autosave without a manual “Save” action. This document describes the feature from both the end-user and developer perspectives, with explicit storage details and API flows.
+The Profile & Preferences page lets signed-in authors manage the personal details used across Mythoria (preferred name, locale, contact details, billing VAT, and notification cadence) while also surfacing account context like credits and story counts. Personal-detail edits autosave. Referral-code changes require explicit confirmation and submission because they affect future attribution.
+
+The referral card displays the active association and accepts a valid code through `POST /api/referrals/me/change` with `{ code, confirmed: true }`. Existing stories and open Checkouts keep their original snapshots. Automatic anonymous attribution requires the separate referral consent preference; confirmed account associations persist across devices. Partner members cannot be referred customers. See [referrals](../referrals.md) for the complete contract and privacy rules.
 
 ## End-User Experience
 

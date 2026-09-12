@@ -19,7 +19,6 @@
     "createAccount": "Criar Conta",
     "goBack": "Voltar",
     "duplicate": "Duplicar",
-    "open": "Abrir",
-    "duplicateTitleSuffix": " - cópia"
+    "open": "Abrir"
   }
 }

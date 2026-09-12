@@ -1,0 +1,1 @@
+ALTER TABLE "referral_owners" ADD COLUMN "legal_hold_until" timestamp with time zone;

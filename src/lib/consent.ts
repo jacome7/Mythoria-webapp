@@ -25,10 +25,11 @@ export interface StoredConsent {
 export interface ConsentPreferences {
   analytics: boolean;
   advertising: boolean;
+  referrals?: boolean;
 }
 
 export interface VersionedStoredConsent extends StoredConsent {
-  version: 2;
+  version: 3;
   preferences: ConsentPreferences;
 }
 
@@ -42,7 +43,7 @@ export const CONSENT_COOKIE_NAME = 'mythoria_consent';
 export const CONSENT_EXPIRY_DAYS = 365; // 12 months
 export const CONSENT_UPDATED_EVENT = 'mythoria:consent-updated';
 export const CONSENT_CHOICE_REQUIRED_EVENT = 'mythoria:consent-choice-required';
-export const CONSENT_COOKIE_VERSION = 2;
+export const CONSENT_COOKIE_VERSION = 3;
 
 /**
  * Get default consent state (denied for all non-essential cookies)
@@ -123,6 +124,8 @@ export function getStoredConsent(): StoredConsent | null {
     const parsed = JSON.parse(decoded) as Partial<StoredConsent>;
     if (!isConsentState(parsed.state) || typeof parsed.timestamp !== 'number') return null;
     const preferences = consentPreferencesFromState(parsed.state);
+    if (parsed.version === CONSENT_COOKIE_VERSION)
+      preferences.referrals = parsed.preferences?.referrals === true;
     return parsed.version === CONSENT_COOKIE_VERSION
       ? {
           version: CONSENT_COOKIE_VERSION,
@@ -147,6 +150,8 @@ export function saveConsent(
     return;
   }
 
+  const revokeReferral =
+    getStoredConsent()?.preferences?.referrals === true && preferences.referrals !== true;
   const stored: VersionedStoredConsent = {
     version: CONSENT_COOKIE_VERSION,
     state,
@@ -161,6 +166,8 @@ export function saveConsent(
 
   // Set cookie with SameSite=Lax for security, Secure for HTTPS
   document.cookie = `${CONSENT_COOKIE_NAME}=${cookieValue}; expires=${expires.toUTCString()}; path=/; SameSite=Lax${window.location.protocol === 'https:' ? '; Secure' : ''}`;
+  if (revokeReferral && typeof fetch === 'function')
+    void fetch('/api/referrals/clear', { method: 'POST' }).catch(() => undefined);
 }
 
 /**
@@ -192,7 +199,10 @@ export function updateGoogleConsent(state: ConsentState): void {
   const dispatchUpdate = () =>
     window.dispatchEvent(
       new CustomEvent<ConsentUpdatedDetail>(CONSENT_UPDATED_EVENT, {
-        detail: { state, preferences: consentPreferencesFromState(state) },
+        detail: {
+          state,
+          preferences: getStoredConsent()?.preferences || consentPreferencesFromState(state),
+        },
       }),
     );
 

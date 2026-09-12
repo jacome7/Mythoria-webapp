@@ -1,0 +1,126 @@
+{
+  "title": "Portail partenaires",
+  "activeCode": "Ton code de parrainage",
+  "none": "Aucun code actif",
+  "change": "Changer de code",
+  "customerTitle": "Ton parrainage",
+  "code": "Code de parrainage",
+  "confirmChange": "Je confirme que ce changement concerne uniquement les activités futures.",
+  "saved": "Parrainage mis à jour.",
+  "error": "La demande a échoué. Vérifie les informations et réessaie.",
+  "candidate": "Lien de parrainage : {code}",
+  "consentExplanation": "Autorise l’attribution du parrainage pendant {days} jours. Ce choix est indépendant des statistiques et de la publicité.",
+  "allowReferral": "Autoriser le parrainage",
+  "signIn": "Se connecter",
+  "faqTitle": "Questions fréquentes",
+  "support": "Contacter Mythoria",
+  "privacy": "Politique de confidentialité",
+  "howItWorks": "Comment fonctionne le parrainage",
+  "copyLink": "Copier le lien",
+  "copied": "Lien copié",
+  "email": "E-mail",
+  "otp": "Code reçu par e-mail",
+  "sendCode": "Envoyer le code",
+  "verify": "Vérifier le code",
+  "createAccount": "Créer un compte invité",
+  "continue": "Continuer",
+  "loading": "Chargement…",
+  "inviteRequired": "Ton e-mail doit disposer d’une invitation active pour accéder au portail.",
+  "summary": "Résumé",
+  "transactions": "Transactions",
+  "settlements": "Règlements",
+  "from": "Du",
+  "to": "Au",
+  "commissionStatus": "État de la commission",
+  "all": "Tous",
+  "customer": "Client",
+  "date": "Date",
+  "amount": "Montant payé",
+  "rate": "Taux",
+  "commission": "Commission",
+  "status": "État",
+  "previous": "Précédent",
+  "next": "Suivant",
+  "print": "Imprimer le relevé",
+  "visits": "Visites",
+  "visitors": "Visiteurs uniques",
+  "pending": "En attente",
+  "approved": "Approuvée",
+  "payable": "À payer",
+  "paid": "Payée",
+  "reversed": "Annulée par remboursement",
+  "blocked": "Bloquée",
+  "cancelled": "Annulée",
+  "held": "En retenue",
+  "first": "Premier achat",
+  "repeat": "Achat répété",
+  "purchaseType": "Type d’achat",
+  "language": "Langue",
+  "country": "Pays",
+  "generated": "Histoires générées",
+  "published": "Histoires publiées",
+  "registration": "Parrainages enregistrés",
+  "started": "Clients ayant commencé une histoire",
+  "revenue": "Chiffre d’affaires",
+  "yourRate": "Ton taux",
+  "empty": "Aucun résultat pour cette période.",
+  "refresh": "Actualiser",
+  "faq": {
+    "share": {
+      "q": "Comment partager mon lien et mon code ?",
+      "a": "Copie le lien sur cette page et partage-le dans tes contenus, messages ou profil. Les clients peuvent aussi saisir le code dans Profil et préférences."
+    },
+    "attribution": {
+      "q": "Quand un client m’est-il associé ?",
+      "a": "Une visite valide avec consentement peut être associée lors de l’inscription ou de la connexion. Le dernier lien anonyme valide prévaut. Une association existante exige une confirmation explicite pour changer."
+    },
+    "consent": {
+      "q": "Comment fonctionnent le consentement et les {days} jours ?",
+      "a": "L’attribution anonyme dure {days} jours après le dernier lien valide accepté. Une fois liée au compte, elle fonctionne entre appareils sans expiration automatique. Le consentement statistique est indépendant."
+    },
+    "purchases": {
+      "q": "Les clients existants et les achats répétés comptent-ils ?",
+      "a": "Oui. Les achats éligibles de packs de crédits en EUR après l’association comptent, y compris les achats répétés. Les achats antérieurs et l’utilisation ultérieure des crédits ne créent pas de commissions."
+    },
+    "rate": {
+      "q": "Quel est mon taux et comment est calculée la commission ?",
+      "a": "Ton taux actuel est de {rate}. Il s’applique au montant final payé, TVA et éventuels frais de livraison inclus, sans déduire les frais de paiement. Chaque Checkout conserve le taux enregistré à sa création."
+    },
+    "discount": {
+      "q": "Mon code offre-t-il une réduction ?",
+      "a": "Un code de parrainage t’attribue les achats. Il n’offre pas automatiquement de réduction ou de crédits gratuits. Les codes promotionnels sont distincts."
+    },
+    "change": {
+      "q": "Que se passe-t-il si le client change de code ?",
+      "a": "Le changement confirmé concerne les activités futures. Les histoires existantes et les Checkouts déjà ouverts conservent leur attribution."
+    },
+    "status": {
+      "q": "Que signifient les états des commissions ?",
+      "a": "En attente correspond à la retenue. Approuvée signifie que les vérifications ont réussi. À payer indique une inclusion dans un règlement. Payée signifie que Mythoria a enregistré le virement. Les retenues et annulations signalent les examens ou remboursements."
+    },
+    "payment": {
+      "q": "Quand serai-je payé ?",
+      "a": "La retenue dure {hold} jours. La clôture mensuelle a lieu le 1er à 03 h 00, heure de Lisbonne. Les soldes nets éligibles d’au moins {minimum} sont inclus dans un règlement ; les autres sont reportés. Les virements sont manuels : la clôture ne garantit pas de date de paiement."
+    },
+    "refund": {
+      "q": "Quel est l’effet des remboursements et litiges ?",
+      "a": "Les remboursements réduisent proportionnellement la commission. Les litiges ouverts bloquent la commission concernée. Les pertes après paiement créent un solde négatif déduit des règlements futurs ; la v1 ne demande pas de remboursement bancaire direct."
+    },
+    "self": {
+      "q": "Puis-je utiliser mon code ? Et en cas de suspension ?",
+      "a": "Les partenaires ne peuvent se parrainer eux-mêmes ni parrainer d’autres partenaires. La suspension bloque le portail et les commissions des nouveaux Checkouts, en conservant les associations et les précédents. La réactivation rétablit l’éligibilité future."
+    },
+    "privacy": {
+      "q": "Quelles données client puis-je voir ?",
+      "a": "Des références pseudonymes, dates, étapes, montants et commissions. Les noms, e-mails, adresses, identifiants fiscaux, données de paiement et contenus privés des histoires ne sont pas partagés."
+    },
+    "details": {
+      "q": "Puis-je modifier mon code ou mes coordonnées bancaires ?",
+      "a": "Demande à Mythoria de modifier le code avant sa première visite. Ensuite, il peut uniquement être activé ou désactivé. Les coordonnées bancaires et fiscales sont gérées par Mythoria dans le processus financier externe."
+    },
+    "support": {
+      "q": "Comment signaler une commission manquante ?",
+      "a": "Vérifie les dates, l’état et l’application du code avant le Checkout. Contacte Mythoria avec la date et la référence client affichée. N’envoie jamais de mots de passe, de codes OTP ou de données de paiement de clients."
+    }
+  }
+}

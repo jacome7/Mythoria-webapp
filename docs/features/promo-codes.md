@@ -2,6 +2,8 @@
 
 ## Overview
 
+Referral codes belong to a separate platform: they attribute eligible purchases to a partner and do not grant discounts or credits. Promo and referral codes share a normalized, database-enforced namespace, so Admin creation or rename cannot reuse a code belonging to the other platform. See [referrals](../referrals.md).
+
 Promo codes (sometimes called vouchers) grant one-time or limited credit bonuses to signed-in users. Users enter a short code (for example, `PARTNER10`), and the system validates it, grants credits immediately, and records a redemption entry for auditing and reporting. Promo codes are created, updated, and deleted in the **`mythoria_admin`** administration portal (this application only redeems them).
 
 ## End‑User Experience

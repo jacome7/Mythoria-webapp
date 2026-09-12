@@ -22,12 +22,12 @@ describe('versioned consent', () => {
     });
   });
 
-  it('stores independent analytics and advertising preferences in version 2', () => {
+  it('stores independent analytics and advertising preferences in version 3', () => {
     const state = consentStateFromPreferences({ analytics: true, advertising: false });
     saveConsent(state, { analytics: true, advertising: false });
 
     expect(getStoredConsent()).toMatchObject({
-      version: 2,
+      version: 3,
       state,
       preferences: { analytics: true, advertising: false },
     });

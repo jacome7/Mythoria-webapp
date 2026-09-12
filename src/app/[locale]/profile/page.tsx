@@ -1,5 +1,6 @@
 'use client';
 import { useLocale, useTranslations } from 'next-intl';
+import ReferralCustomer from '@/components/referrals/ReferralCustomer';
 import { GENDER_OPTIONS, LITERARY_AGE_OPTIONS } from '@/constants/profileOptions';
 import {
   Book,
@@ -265,6 +266,7 @@ export default function AccountProfilePage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
+            <ReferralCustomer />
             {/* Profile Details */}
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">

@@ -8,6 +8,13 @@ jest.mock('next/server', () => ({
 }));
 
 const createStoryMock = jest.fn();
+const getCurrentAuthorMock = jest.fn().mockResolvedValue({ authorId: 'author-1' });
+jest.mock('@/lib/auth', () => ({
+  getCurrentAuthor: (...args: unknown[]) => getCurrentAuthorMock(...args),
+}));
+jest.mock('@/lib/referrals/http', () => ({
+  linkReferralFromRequest: jest.fn().mockResolvedValue(undefined),
+}));
 
 jest.mock('@/db/services', () => ({
   storyService: {
@@ -29,7 +36,7 @@ describe('POST /api/stories', () => {
     } as unknown as NextRequest)) as { status: number; json: () => Promise<unknown> };
 
     expect(response.status).toBe(400);
-    await expect(response.json()).resolves.toEqual({ error: 'Title and authorId are required' });
+    await expect(response.json()).resolves.toEqual({ error: 'Title is required' });
     expect(createStoryMock).not.toHaveBeenCalled();
   });
 
@@ -37,7 +44,7 @@ describe('POST /api/stories', () => {
     createStoryMock.mockResolvedValue({ storyId: 'story-1', status: 'temporary' });
 
     const response = (await POST({
-      json: async () => ({ title: 'Quest', authorId: 'author-1', status: 'something-else' }),
+      json: async () => ({ title: 'Quest', authorId: 'forged-author', status: 'something-else' }),
     } as unknown as NextRequest)) as { status: number; json: () => Promise<unknown> };
 
     expect(response.status).toBe(201);

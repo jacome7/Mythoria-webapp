@@ -169,7 +169,8 @@
         }
       },
       "note": "Nuestro banner de consentimiento sigue las Directrices 05/2020 del CEPD: sin casillas premarcadas, y el botón Rechazar es tan fácil de pulsar como el de Aceptar.",
-      "changePreferences": "Puedes cambiar tus preferencias de cookies en cualquier momento a través de nuestra página de Términos y Condiciones."
+      "changePreferences": "Puedes cambiar tus preferencias de cookies en cualquier momento a través de nuestra página de Términos y Condiciones.",
+      "referrals": "La atribución de recomendaciones es opcional y tiene una preferencia de cookies propia, separada de la analítica y la publicidad. Las cookies mythoria_referral_visitor y mythoria_referral_attribution contienen identificadores opacos y caducan a los 90 días. Con tu consentimiento, el último enlace válido puede asociarse a tu cuenta. Puedes cambiar expresamente esa asociación para la actividad futura desde tu perfil. Borrar estas cookies detiene la atribución anónima, sin modificar pedidos anteriores ni la asociación guardada en tu cuenta. Los colaboradores ven actividad agregada y referencias anónimas de clientes; no ven tu nombre, correo, títulos ni contenido de las historias. Los registros de pagos y comisiones permanecen en el archivo financiero conforme a nuestra política de conservación tras eliminar la cuenta."
     },
     "section8": {
       "title": "8. Cuánto tiempo conservamos tus datos",

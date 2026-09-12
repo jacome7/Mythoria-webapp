@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { storyService } from '@/db/services';
+import { getCurrentAuthor } from '@/lib/auth';
+import { linkReferralFromRequest } from '@/lib/referrals/http';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -27,9 +29,11 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const author = await getCurrentAuthor();
+    if (!author) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    await linkReferralFromRequest(request, author.authorId);
     const {
       title,
-      authorId,
       plotDescription,
       storyLanguage,
       synopsis,
@@ -38,8 +42,8 @@ export async function POST(request: NextRequest) {
       status,
     } = await request.json();
 
-    if (!title || !authorId) {
-      return NextResponse.json({ error: 'Title and authorId are required' }, { status: 400 });
+    if (!title) {
+      return NextResponse.json({ error: 'Title is required' }, { status: 400 });
     }
 
     // Force newly created stories without real content to start as 'temporary' unless explicitly overridden.
@@ -48,7 +52,7 @@ export async function POST(request: NextRequest) {
 
     const story = await storyService.createStory({
       title,
-      authorId,
+      authorId: author.authorId,
       plotDescription,
       storyLanguage,
       synopsis,

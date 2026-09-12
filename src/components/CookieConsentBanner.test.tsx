@@ -37,7 +37,7 @@ describe('CookieConsentBanner', () => {
     fireEvent.click(screen.getByRole('button', { name: 'rejectAll' }));
 
     expect(getStoredConsent()).toMatchObject({
-      version: 2,
+      version: 3,
       preferences: { analytics: false, advertising: false },
     });
   });
@@ -81,8 +81,7 @@ describe('CookieConsentBanner', () => {
   it('supports independent analytics and advertising choices', async () => {
     await showBanner();
     fireEvent.click(screen.getByRole('button', { name: 'customize' }));
-    const toggles = screen.getAllByRole('checkbox');
-    fireEvent.click(toggles[0]);
+    fireEvent.click(screen.getByRole('checkbox', { name: /analytics/ }));
     fireEvent.click(screen.getByRole('button', { name: 'savePreferences' }));
 
     expect(getStoredConsent()).toMatchObject({

@@ -169,7 +169,8 @@
         }
       },
       "note": "Unser Einwilligungsbanner folgt den EDPB Consent Guidelines 05/2020: keine vorausgewählten Kästchen, und der Ablehnen-Button ist genauso leicht zu klicken wie der Akzeptieren-Button.",
-      "changePreferences": "Du kannst deine Cookie-Präferenzen jederzeit über unsere Seite mit den Allgemeinen Geschäftsbedingungen ändern."
+      "changePreferences": "Du kannst deine Cookie-Präferenzen jederzeit über unsere Seite mit den Allgemeinen Geschäftsbedingungen ändern.",
+      "referrals": "Die Zuordnung von Empfehlungen ist freiwillig und hat eine eigene Cookie-Einstellung, getrennt von Analyse und Werbung. Die Cookies mythoria_referral_visitor und mythoria_referral_attribution enthalten nicht sprechende Kennungen und laufen nach 90 Tagen ab. Mit deiner Einwilligung kann der letzte gültige Empfehlungslink deinem Konto zugeordnet werden. Du kannst diese Zuordnung im Profil ausdrücklich für zukünftige Aktivitäten ändern. Das Löschen dieser Cookies beendet die anonyme Zuordnung, ohne frühere Bestellungen oder die gespeicherte Kontozuordnung zu ändern. Partner sehen zusammengefasste Aktivitäten und anonyme Kundenreferenzen, jedoch weder deinen Namen, deine E-Mail-Adresse noch Titel oder Inhalte deiner Geschichten. Zahlungs- und Provisionsdaten bleiben nach der Kontolöschung gemäß unserer Aufbewahrungsrichtlinie im Finanzarchiv."
     },
     "section8": {
       "title": "8. Wie lange wir Ihre Daten speichern",

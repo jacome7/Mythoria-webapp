@@ -1,4 +1,4 @@
-﻿<#
+<#
 PowerShell deployment script for Mythoria webapp to Google Cloud Run
 Usage: .\deploy.ps1 [-Staging] [-Fast] [-Help]
 
@@ -135,6 +135,9 @@ function Run-PreDeploymentChecks {
 }
 
 function Deploy-With-CloudBuild {
+    # cloudbuild.yaml supplies every referral flag and trusted OIDC identity.
+    # Defaults enable referral capture and portal access; rollout overrides belong
+    # in Cloud Build substitutions, never in the local .env.local file.
     Write-Info "Starting Cloud Build submission"
     # Pass service name and region as substitutions
     & $GCLOUD builds submit --config cloudbuild.yaml --substitutions "_SERVICE_NAME=$SERVICE_NAME,_REGION=$REGION,_GIT_SHA=$GIT_SHA"

@@ -9,6 +9,7 @@ import StructuredData from '@/components/StructuredData';
 import LanguageAttribute from '@/components/LanguageAttribute';
 import LocaleSync from '@/components/LocaleSync';
 import CookieConsentBanner from '@/components/CookieConsentBanner';
+import ReferralCustomer from '@/components/referrals/ReferralCustomer';
 import { papercutScopeClassName, papercutStyles } from '@/components/papercut';
 import { readdir, readFile } from 'fs/promises';
 import path from 'path';
@@ -264,7 +265,10 @@ export default async function LocaleLayout({
       <LocaleSync />
       <div className="flex flex-col min-h-screen">
         <StickyHeader />
-        <main className={mainClassName}>{children}</main>
+        <main className={mainClassName}>
+          <ReferralCustomer captureOnly />
+          {children}
+        </main>
         <Footer />
       </div>
       <CookieConsentBanner />

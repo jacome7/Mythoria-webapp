@@ -17,9 +17,25 @@ const mobileMenuClassName = `dropdown dropdown-bottom ${styles.mobileMenu}`;
 
 const Header = () => {
   const tCommonHeader = useTranslations('Header');
-  const { isLoaded, isSignedIn } = useUser();
+  const { isLoaded, isSignedIn, user } = useUser();
+  const [referralUserId, setReferralUserId] = useState<string | null>(null);
+  const userId = user?.id;
   const [isClient, setIsClient] = useState(false);
   const locale = useLocale();
+
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn || !userId) return;
+    const controller = new AbortController();
+    fetch('/api/referral-portal/access', { cache: 'no-store', signal: controller.signal })
+      .then(async (response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        if (!controller.signal.aborted) setReferralUserId(data?.hasAccess === true ? userId : null);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setReferralUserId(null);
+      });
+    return () => controller.abort();
+  }, [isLoaded, isSignedIn, userId]);
 
   // This effect is necessary to prevent hydration mismatches with Clerk's auth state
   useEffect(() => {
@@ -328,6 +344,13 @@ const Header = () => {
                 href={`/${locale}/credits-and-payments`}
                 labelIcon={<WalletCards className="w-4 h-4" />}
               />
+              {referralUserId === userId && (
+                <UserButton.Link
+                  label={tCommonHeader('navigation.referrals')}
+                  href={`/${locale}/referrals`}
+                  labelIcon={<Users className="w-4 h-4" />}
+                />
+              )}
               <UserButton.Action label="manageAccount" />
               <UserButton.Action label="signOut" />
             </UserButton.MenuItems>

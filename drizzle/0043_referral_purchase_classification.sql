@@ -1,0 +1,1 @@
+ALTER TABLE "referral_commissions" ADD COLUMN "purchase_kind" varchar(10) DEFAULT 'first' NOT NULL;

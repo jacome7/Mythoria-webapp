@@ -152,6 +152,7 @@ export const proxy = clerkMiddleware(
     // Also allow /i/ intent detection routes to bypass both i18n and auth
     if (
       pathname === '/offline' ||
+      pathname.startsWith('/r/') ||
       pathname.startsWith('/SampleBooks/') ||
       pathname.startsWith('/sample-books/') ||
       pathname.startsWith('/i/')

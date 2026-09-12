@@ -23,7 +23,7 @@ export const creditLedger = pgTable(
     id: uuid('id').primaryKey().defaultRandom(),
     authorId: uuid('author_id')
       .notNull()
-      .references(() => authors.authorId, { onDelete: 'cascade' }),
+      .references(() => authors.authorId, { onDelete: 'restrict' }),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     amount: integer('amount').notNull(), // Can be positive or negative
     creditEventType: creditEventTypeEnum('credit_event_type').notNull(),
@@ -55,7 +55,7 @@ export const creditLedger = pgTable(
 export const authorCreditBalances = pgTable('author_credit_balances', {
   authorId: uuid('author_id')
     .primaryKey()
-    .references(() => authors.authorId, { onDelete: 'cascade' }),
+    .references(() => authors.authorId, { onDelete: 'restrict' }),
   totalCredits: integer('total_credits').notNull().default(0),
   lastUpdated: timestamp('last_updated', { withTimezone: true }).defaultNow().notNull(),
 });

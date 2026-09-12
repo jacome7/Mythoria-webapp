@@ -1,0 +1,126 @@
+{
+  "title": "Referral partner portal",
+  "activeCode": "Your referral code",
+  "none": "No active code",
+  "change": "Change code",
+  "customerTitle": "Your referral",
+  "code": "Referral code",
+  "confirmChange": "I confirm this change applies only to future activity.",
+  "saved": "Referral updated.",
+  "error": "We could not complete this request. Check your details and try again.",
+  "candidate": "Referral link: {code}",
+  "consentExplanation": "Allow referral attribution for {days} days. This preference is separate from analytics and advertising.",
+  "allowReferral": "Allow referrals",
+  "signIn": "Sign in",
+  "faqTitle": "Frequently asked questions",
+  "support": "Contact Mythoria",
+  "privacy": "Privacy policy",
+  "howItWorks": "How referrals work",
+  "copyLink": "Copy link",
+  "copied": "Link copied",
+  "email": "Email",
+  "otp": "Email code",
+  "sendCode": "Send code",
+  "verify": "Verify code",
+  "createAccount": "Create invited account",
+  "continue": "Continue",
+  "loading": "Loading…",
+  "inviteRequired": "Your email must have an active invitation to this portal.",
+  "summary": "Summary",
+  "transactions": "Transactions",
+  "settlements": "Settlements",
+  "from": "From",
+  "to": "To",
+  "commissionStatus": "Commission status",
+  "all": "All",
+  "customer": "Customer",
+  "date": "Date",
+  "amount": "Amount paid",
+  "rate": "Rate",
+  "commission": "Commission",
+  "status": "Status",
+  "previous": "Previous",
+  "next": "Next",
+  "print": "Print statement",
+  "visits": "Visits",
+  "visitors": "Unique visitors",
+  "pending": "Pending",
+  "approved": "Approved",
+  "payable": "Payable",
+  "paid": "Paid",
+  "reversed": "Reversed",
+  "blocked": "Blocked",
+  "cancelled": "Cancelled",
+  "held": "On hold",
+  "first": "First purchase",
+  "repeat": "Repeat purchase",
+  "purchaseType": "Purchase type",
+  "language": "Language",
+  "country": "Country",
+  "generated": "Generated stories",
+  "published": "Published stories",
+  "registration": "Registered referrals",
+  "started": "Customers starting a story",
+  "revenue": "Revenue",
+  "yourRate": "Your rate",
+  "empty": "No records for this period.",
+  "refresh": "Refresh",
+  "faq": {
+    "share": {
+      "q": "How do I share my link and code?",
+      "a": "Copy your link from this page and share it in your content, messages, or profile. Customers can also enter your code in Profile & Preferences."
+    },
+    "attribution": {
+      "q": "When is a customer associated with me?",
+      "a": "A valid, consented visit can be linked when the customer registers or signs in. The latest valid anonymous link wins. An existing account association changes only after explicit confirmation."
+    },
+    "consent": {
+      "q": "How do consent and the {days}-day window work?",
+      "a": "Anonymous attribution lasts {days} days after the latest valid consented link. Once linked to an account, it works across devices without automatic expiry. Analytics consent is separate."
+    },
+    "purchases": {
+      "q": "Do existing customers and repeat purchases count?",
+      "a": "Yes. Eligible EUR credit-pack purchases made after association count, including repeat purchases. Earlier purchases and later spending of credits do not create commissions."
+    },
+    "rate": {
+      "q": "What is my rate and how is commission calculated?",
+      "a": "Your current rate is {rate}. Commission uses the final amount actually paid, including VAT and any shipping, without deducting payment fees. Each Checkout keeps the rate captured when it was created."
+    },
+    "discount": {
+      "q": "Does my code give the customer a discount?",
+      "a": "A referral code attributes purchases to you. It does not automatically give discounts or free credits. Promotional codes are separate."
+    },
+    "change": {
+      "q": "What if a customer changes referral code?",
+      "a": "A confirmed change applies to future activity. Existing stories and open Checkouts keep their original attribution."
+    },
+    "status": {
+      "q": "What do the commission statuses mean?",
+      "a": "Pending commissions are in their holding period. Approved commissions passed review and checks. Payable commissions are in a settlement. Paid means Mythoria recorded the transfer. Holds and reversals explain amounts awaiting review or reduced by refunds."
+    },
+    "payment": {
+      "q": "When will I be paid?",
+      "a": "Commissions have a {hold}-day hold. Monthly close runs on the first day at 03:00 Lisbon time. Eligible net balances of at least {minimum} enter a settlement; smaller balances carry forward. Bank transfers are made manually, so close is not a guaranteed payment date."
+    },
+    "refund": {
+      "q": "How do refunds and disputes affect my balance?",
+      "a": "Refunds reverse commission proportionally. Open disputes put affected commission on hold. Losses after payment create a negative balance deducted from future settlements; v1 does not request a direct bank repayment."
+    },
+    "self": {
+      "q": "Can I use my own code? What happens during suspension?",
+      "a": "Partners cannot refer themselves or other partners. Suspension blocks portal access and new Checkout commissions while preserving customer associations and earlier Checkout snapshots. Reactivation resumes future eligibility."
+    },
+    "privacy": {
+      "q": "What customer information can I see?",
+      "a": "You can see pseudonymous customer references, dates, funnel stages, amounts, and commissions. Names, emails, addresses, tax IDs, payment details, and private story content are not shared."
+    },
+    "details": {
+      "q": "Can I change my code or bank details?",
+      "a": "Ask Mythoria to change a code before its first visit. After that it can only be enabled or disabled. Bank and tax details are managed by Mythoria through the external finance process."
+    },
+    "support": {
+      "q": "How do I report a missing commission?",
+      "a": "Check the date range, transaction status, and whether the customer applied your code before Checkout. Contact Mythoria using the date and the customer reference shown here. Never send customer passwords, OTPs, or payment details."
+    }
+  }
+}

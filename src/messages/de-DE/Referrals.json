@@ -1,0 +1,126 @@
+{
+  "title": "Partnerportal",
+  "activeCode": "Dein Empfehlungscode",
+  "none": "Kein aktiver Code",
+  "change": "Code ändern",
+  "customerTitle": "Deine Empfehlung",
+  "code": "Empfehlungscode",
+  "confirmChange": "Ich bestätige, dass diese Änderung nur für künftige Aktivitäten gilt.",
+  "saved": "Empfehlung aktualisiert.",
+  "error": "Die Anfrage konnte nicht abgeschlossen werden. Prüfe deine Angaben und versuche es erneut.",
+  "candidate": "Empfehlungslink: {code}",
+  "consentExplanation": "Erlaube die Zuordnung von Empfehlungen für {days} Tage. Diese Einstellung ist unabhängig von Analyse und Werbung.",
+  "allowReferral": "Empfehlungen erlauben",
+  "signIn": "Anmelden",
+  "faqTitle": "Häufige Fragen",
+  "support": "Mythoria kontaktieren",
+  "privacy": "Datenschutzerklärung",
+  "howItWorks": "So funktionieren Empfehlungen",
+  "copyLink": "Link kopieren",
+  "copied": "Link kopiert",
+  "email": "E-Mail",
+  "otp": "E-Mail-Code",
+  "sendCode": "Code senden",
+  "verify": "Code bestätigen",
+  "createAccount": "Eingeladenes Konto erstellen",
+  "continue": "Weiter",
+  "loading": "Wird geladen…",
+  "inviteRequired": "Deine E-Mail-Adresse benötigt eine aktive Einladung für dieses Portal.",
+  "summary": "Übersicht",
+  "transactions": "Transaktionen",
+  "settlements": "Abrechnungen",
+  "from": "Von",
+  "to": "Bis",
+  "commissionStatus": "Provisionsstatus",
+  "all": "Alle",
+  "customer": "Kunde",
+  "date": "Datum",
+  "amount": "Gezahlter Betrag",
+  "rate": "Provisionssatz",
+  "commission": "Provision",
+  "status": "Status",
+  "previous": "Zurück",
+  "next": "Weiter",
+  "print": "Abrechnung drucken",
+  "visits": "Besuche",
+  "visitors": "Eindeutige Besucher",
+  "pending": "Ausstehend",
+  "approved": "Genehmigt",
+  "payable": "Auszahlbar",
+  "paid": "Ausgezahlt",
+  "reversed": "Rückgebucht",
+  "blocked": "Gesperrt",
+  "cancelled": "Storniert",
+  "held": "Zurückgehalten",
+  "first": "Erster Kauf",
+  "repeat": "Wiederholter Kauf",
+  "purchaseType": "Kaufart",
+  "language": "Sprache",
+  "country": "Land",
+  "generated": "Erstellte Geschichten",
+  "published": "Veröffentlichte Geschichten",
+  "registration": "Registrierte Empfehlungen",
+  "started": "Kunden mit begonnener Geschichte",
+  "revenue": "Umsatz",
+  "yourRate": "Dein Provisionssatz",
+  "empty": "Keine Einträge in diesem Zeitraum.",
+  "refresh": "Aktualisieren",
+  "faq": {
+    "share": {
+      "q": "Wie teile ich meinen Link und Code?",
+      "a": "Kopiere den Link auf dieser Seite und teile ihn in deinen Inhalten, Nachrichten oder deinem Profil. Kunden können den Code auch unter Profil und Einstellungen eingeben."
+    },
+    "attribution": {
+      "q": "Wann wird mir ein Kunde zugeordnet?",
+      "a": "Ein gültiger Besuch mit Einwilligung kann bei Registrierung oder Anmeldung zugeordnet werden. Der letzte gültige anonyme Link gilt. Eine bestehende Kontozuordnung ändert sich nur mit ausdrücklicher Bestätigung."
+    },
+    "consent": {
+      "q": "Wie funktionieren Einwilligung und die Frist von {days} Tagen?",
+      "a": "Die anonyme Zuordnung gilt {days} Tage ab dem letzten gültigen Link mit Einwilligung. Nach der Verknüpfung mit dem Konto gilt sie geräteübergreifend ohne automatischen Ablauf. Analyse-Einwilligung ist davon unabhängig."
+    },
+    "purchases": {
+      "q": "Zählen bestehende Kunden und wiederholte Käufe?",
+      "a": "Ja. Berechtigte Käufe von Guthabenpaketen in EUR nach der Zuordnung zählen, auch wiederholte Käufe. Frühere Käufe und die spätere Nutzung des Guthabens erzeugen keine Provision."
+    },
+    "rate": {
+      "q": "Wie hoch ist mein Satz und wie wird die Provision berechnet?",
+      "a": "Dein aktueller Satz beträgt {rate}. Grundlage ist der tatsächlich gezahlte Endbetrag einschließlich Mehrwertsteuer und etwaiger Versandkosten, ohne Abzug von Zahlungsgebühren. Jeder Checkout behält den bei seiner Erstellung gespeicherten Satz."
+    },
+    "discount": {
+      "q": "Erhalten Kunden durch meinen Code einen Rabatt?",
+      "a": "Ein Empfehlungscode ordnet dir Käufe zu. Er gewährt nicht automatisch Rabatte oder kostenloses Guthaben. Aktionscodes sind davon getrennt."
+    },
+    "change": {
+      "q": "Was passiert, wenn ein Kunde den Code ändert?",
+      "a": "Die bestätigte Änderung gilt für künftige Aktivitäten. Bestehende Geschichten und bereits geöffnete Checkouts behalten ihre ursprüngliche Zuordnung."
+    },
+    "status": {
+      "q": "Was bedeuten die Provisionsstatus?",
+      "a": "Ausstehend bezeichnet die Wartefrist. Genehmigt bedeutet, dass die Prüfungen bestanden wurden. Auszahlbar bedeutet Aufnahme in eine Abrechnung. Ausgezahlt heißt, dass Mythoria die Überweisung erfasst hat. Sperren und Rückbuchungen zeigen Prüfungen oder Erstattungen an."
+    },
+    "payment": {
+      "q": "Wann werde ich ausgezahlt?",
+      "a": "Die Wartefrist beträgt {hold} Tage. Der Monatsabschluss erfolgt am 1. um 03:00 Uhr Lissabonner Zeit. Berechtigte Nettoguthaben ab {minimum} werden abgerechnet; kleinere Beträge werden übertragen. Überweisungen erfolgen manuell, der Abschluss garantiert kein Zahlungsdatum."
+    },
+    "refund": {
+      "q": "Wie wirken sich Erstattungen und Zahlungsstreitfälle aus?",
+      "a": "Erstattungen buchen Provision anteilig zurück. Offene Streitfälle halten die betroffene Provision zurück. Verluste nach Auszahlung erzeugen einen negativen Saldo für spätere Abrechnungen; v1 verlangt keine direkte Bankrückzahlung."
+    },
+    "self": {
+      "q": "Darf ich meinen eigenen Code verwenden? Was gilt bei Sperrung?",
+      "a": "Partner dürfen weder sich selbst noch andere Partner empfehlen. Eine Sperrung blockiert Portalzugang und Provisionen neuer Checkouts, erhält aber Zuordnungen und frühere Checkouts. Reaktivierung stellt künftige Berechtigung wieder her."
+    },
+    "privacy": {
+      "q": "Welche Kundendaten sehe ich?",
+      "a": "Pseudonyme Kundenreferenzen, Daten, Prozessschritte, Beträge und Provisionen. Namen, E-Mails, Adressen, Steuer- und Zahlungsdaten sowie private Geschichteninhalte werden nicht geteilt."
+    },
+    "details": {
+      "q": "Kann ich Code oder Bankdaten ändern?",
+      "a": "Bitte Mythoria vor dem ersten Besuch um eine Codeänderung. Danach kann der Code nur aktiviert oder deaktiviert werden. Bank- und Steuerdaten verwaltet Mythoria über den externen Finanzprozess."
+    },
+    "support": {
+      "q": "Wie melde ich eine fehlende Provision?",
+      "a": "Prüfe Zeitraum, Status und ob der Code vor dem Checkout angewendet wurde. Kontaktiere Mythoria mit Datum und angezeigter Kundenreferenz. Sende niemals Kundenpasswörter, OTP-Codes oder Zahlungsdaten."
+    }
+  }
+}

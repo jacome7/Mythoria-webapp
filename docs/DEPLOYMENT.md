@@ -339,3 +339,7 @@ gcloud run services update mythoria-webapp \
 **Last Updated**: June 27, 2025  
 **Deployment Version**: 1.0.0  
 **Component Version**: 0.1.1
+
+## Referral platform v1 (2026-09-09)
+
+See the [referral implementation and operations guide](referrals.md) for this service's responsibilities, updated contracts, configuration, schema ownership and validation. The feature is implemented locally; production migration, deployment and pilot activation require their separate rollout checkpoints.

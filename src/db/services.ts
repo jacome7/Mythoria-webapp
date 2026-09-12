@@ -1,4 +1,6 @@
 import { db } from './index';
+import { getActiveReferral, referralLock } from './services/referrals';
+import { referralFlags } from '@/lib/referrals/policy';
 import {
   authors,
   stories,
@@ -360,8 +362,24 @@ export const storyService = {
     dedicationMessage?: string;
     status?: 'temporary' | 'draft' | 'writing' | 'published';
   }) {
-    const [story] = await db.insert(stories).values(storyData).returning();
-    return story;
+    return db.transaction(async (tx) => {
+      let snapshot = {};
+      if (referralFlags().program) {
+        await referralLock(tx, `customer:${storyData.authorId}`);
+        const active = await getActiveReferral(storyData.authorId, tx);
+        if (active?.owner.status === 'active')
+          snapshot = {
+            referralAssignmentId: active.assignment.assignmentId,
+            referralOwnerId: active.owner.referralOwnerId,
+            referralCodeSnapshot: active.code.code,
+          };
+      }
+      const [story] = await tx
+        .insert(stories)
+        .values({ ...storyData, ...snapshot })
+        .returning();
+      return story;
+    });
   },
 
   async getStoryById(storyId: string) {
@@ -692,6 +710,7 @@ export const storyService = {
       .set({
         isPublic,
         ...(isPublic ? { slug } : {}),
+        ...(isPublic ? { publishedAt: sql`coalesce(${stories.publishedAt}, now())` } : {}),
         updatedAt: new Date(),
       })
       .where(eq(stories.storyId, storyId))

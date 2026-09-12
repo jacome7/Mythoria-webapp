@@ -52,3 +52,7 @@ This documentation is structured for both human and AI agent consumption:
 **Documentation Version**: 1.0.0  
 **Last Updated**: June 27, 2025  
 **Service**: Mythoria WebApp v0.1.1+
+
+## Referral platform v1 (2026-09-09)
+
+See the [referral implementation and operations guide](referrals.md) for this service's responsibilities, updated contracts, configuration, schema ownership and validation. The feature is implemented locally; production migration, deployment and pilot activation require their separate rollout checkpoints.

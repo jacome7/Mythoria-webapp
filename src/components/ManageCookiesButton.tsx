@@ -17,6 +17,7 @@ export default function ManageCookiesButton() {
   const handleManageCookies = async () => {
     updateGoogleConsent(getDefaultConsent());
     clearConsent();
+    await fetch('/api/referrals/clear', { method: 'POST' }).catch(() => undefined);
     await fetch('/api/analytics/attribution/revoke', { method: 'POST' }).catch(() => undefined);
     window.location.reload();
   };

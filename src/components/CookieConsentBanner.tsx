@@ -107,7 +107,8 @@ export default function CookieConsentBanner() {
 
   if (!showBanner) return null;
 
-  const acceptAll = () => applyChoice(getGrantedConsent(), { analytics: true, advertising: true });
+  const acceptAll = () =>
+    applyChoice(getGrantedConsent(), { analytics: true, advertising: true, referrals: true });
   const acceptAnalyticsOnly = () => {
     const selected = { analytics: true, advertising: false };
     applyChoice(consentStateFromPreferences(selected), selected);
@@ -147,6 +148,22 @@ export default function CookieConsentBanner() {
 
         {customizing && (
           <div className="mt-5 space-y-3" aria-label={t('customize')}>
+            <label className="flex min-h-14 cursor-pointer items-start justify-between gap-4 rounded-2xl border border-base-300 p-4">
+              <span>
+                <span className="block font-semibold">{t('referralsTitle')}</span>
+                <span className="mt-1 block text-sm text-base-content/70">
+                  {t('referralsDescription')}
+                </span>
+              </span>
+              <input
+                type="checkbox"
+                className="toggle toggle-primary mt-1"
+                checked={preferences.referrals === true}
+                onChange={(event) =>
+                  setPreferences((current) => ({ ...current, referrals: event.target.checked }))
+                }
+              />
+            </label>
             <label className="flex min-h-14 cursor-pointer items-start justify-between gap-4 rounded-2xl border border-base-300 p-4">
               <span>
                 <span className="block font-semibold">{t('analyticsTitle')}</span>

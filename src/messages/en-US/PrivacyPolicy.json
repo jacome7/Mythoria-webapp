@@ -169,7 +169,8 @@
         }
       },
       "note": "Our consent banner follows EDPB Consent Guidelines 05/2020: no pre-ticked boxes, and the Reject button is just as easy to click as Accept.",
-      "changePreferences": "You can change your cookie preferences at any time through our Terms & Conditions page."
+      "changePreferences": "You can change your cookie preferences at any time through our Terms & Conditions page.",
+      "referrals": "Referral attribution is optional and has its own cookie preference, separate from analytics and advertising. The mythoria_referral_visitor and mythoria_referral_attribution cookies contain opaque identifiers and expire after 90 days. With your consent, the latest valid referral link can be associated with your account. You may explicitly change that association for future activity in your profile. Clearing referral cookies stops anonymous attribution and does not rewrite past orders or your saved account association. Partners see aggregate activity and anonymous customer references; they cannot see your name, email, story titles, or story content. Payment and commission records remain in the financial archive under our retention policy after account deletion."
     },
     "section8": {
       "title": "8. How long we keep your data",

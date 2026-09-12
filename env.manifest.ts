@@ -34,6 +34,60 @@ export interface EnvVarDescriptor {
 // function p(name: string): string { return name.startsWith('NEXT_PUBLIC_') ? name : `NEXT_PUBLIC_${name}`; }
 
 export const envManifest: EnvVarDescriptor[] = [
+  {
+    name: 'REFERRAL_PROGRAM_ENABLED',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    note: 'Referral v1; see docs/referrals.md. Feature flags default to false.',
+  },
+  {
+    name: 'REFERRAL_CAPTURE_ENABLED',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    note: 'Referral v1; see docs/referrals.md. Feature flags default to false.',
+  },
+  {
+    name: 'REFERRAL_COMMISSION_ENABLED',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    note: 'Referral v1; see docs/referrals.md. Feature flags default to false.',
+  },
+  {
+    name: 'REFERRAL_PORTAL_ENABLED',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    note: 'Referral v1; see docs/referrals.md. Feature flags default to false.',
+  },
+  {
+    name: 'REFERRAL_MODE',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    note: 'Referral v1; see docs/referrals.md. Feature flags default to false.',
+  },
+  {
+    name: 'REFERRAL_PILOT_OWNER_IDS',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    note: 'Referral v1; see docs/referrals.md. Feature flags default to false.',
+  },
+  {
+    name: 'REFERRAL_INTERNAL_AUDIENCE',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    note: 'Referral v1; see docs/referrals.md. Feature flags default to false.',
+  },
+  {
+    name: 'REFERRAL_ADMIN_SERVICE_ACCOUNT',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    note: 'Referral v1; see docs/referrals.md. Feature flags default to false.',
+  },
+  {
+    name: 'REFERRAL_SCHEDULER_SERVICE_ACCOUNT',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    note: 'Referral v1; see docs/referrals.md. Feature flags default to false.',
+  },
   // Core runtime environment
   {
     name: 'NODE_ENV',

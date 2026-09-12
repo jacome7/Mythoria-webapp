@@ -1,0 +1,126 @@
+{
+  "title": "Portal de parceiros",
+  "activeCode": "O teu código de referência",
+  "none": "Sem código ativo",
+  "change": "Alterar código",
+  "customerTitle": "A tua referência",
+  "code": "Código de referência",
+  "confirmChange": "Confirmo que esta alteração se aplica apenas à atividade futura.",
+  "saved": "Referência atualizada.",
+  "error": "Não foi possível concluir o pedido. Confirma os dados e tenta novamente.",
+  "candidate": "Ligação de referência: {code}",
+  "consentExplanation": "Permite a atribuição de referências durante {days} dias. Esta preferência é independente da análise e da publicidade.",
+  "allowReferral": "Permitir referências",
+  "signIn": "Entrar",
+  "faqTitle": "Perguntas frequentes",
+  "support": "Contactar a Mythoria",
+  "privacy": "Política de privacidade",
+  "howItWorks": "Como funcionam as referências",
+  "copyLink": "Copiar ligação",
+  "copied": "Ligação copiada",
+  "email": "Email",
+  "otp": "Código recebido por email",
+  "sendCode": "Enviar código",
+  "verify": "Verificar código",
+  "createAccount": "Criar conta convidada",
+  "continue": "Continuar",
+  "loading": "A carregar…",
+  "inviteRequired": "O teu email precisa de um convite ativo para aceder a este portal.",
+  "summary": "Resumo",
+  "transactions": "Transações",
+  "settlements": "Liquidações",
+  "from": "De",
+  "to": "Até",
+  "commissionStatus": "Estado da comissão",
+  "all": "Todos",
+  "customer": "Cliente",
+  "date": "Data",
+  "amount": "Valor pago",
+  "rate": "Taxa",
+  "commission": "Comissão",
+  "status": "Estado",
+  "previous": "Anterior",
+  "next": "Seguinte",
+  "print": "Imprimir extrato",
+  "visits": "Visitas",
+  "visitors": "Visitantes únicos",
+  "pending": "Pendente",
+  "approved": "Aprovada",
+  "payable": "A pagar",
+  "paid": "Paga",
+  "reversed": "Revertida",
+  "blocked": "Bloqueada",
+  "cancelled": "Cancelada",
+  "held": "Em retenção",
+  "first": "Primeira compra",
+  "repeat": "Compra repetida",
+  "purchaseType": "Tipo de compra",
+  "language": "Idioma",
+  "country": "País",
+  "generated": "Histórias geradas",
+  "published": "Histórias publicadas",
+  "registration": "Referências registadas",
+  "started": "Clientes que iniciaram uma história",
+  "revenue": "Faturação",
+  "yourRate": "A tua taxa",
+  "empty": "Sem registos neste período.",
+  "refresh": "Atualizar",
+  "faq": {
+    "share": {
+      "q": "Como partilho a ligação e o código?",
+      "a": "Copia a ligação nesta página e partilha-a nos teus conteúdos, mensagens ou perfil. Os clientes também podem introduzir o código em Perfil e Preferências."
+    },
+    "attribution": {
+      "q": "Quando fica um cliente associado a mim?",
+      "a": "Uma visita válida e consentida pode ser associada quando o cliente se regista ou entra. Prevalece a última ligação anónima válida. Uma associação já existente na conta só muda com confirmação explícita."
+    },
+    "consent": {
+      "q": "Como funcionam o consentimento e a janela de {days} dias?",
+      "a": "A atribuição anónima dura {days} dias após a última ligação válida e consentida. Depois de associada à conta, funciona noutros dispositivos e não expira automaticamente. O consentimento analítico é independente."
+    },
+    "purchases": {
+      "q": "Contam clientes existentes e compras repetidas?",
+      "a": "Sim. Contam as compras elegíveis de pacotes de créditos em EUR após a associação, incluindo compras repetidas. Compras anteriores e o consumo posterior dos créditos não geram comissões."
+    },
+    "rate": {
+      "q": "Qual é a minha taxa e como se calcula a comissão?",
+      "a": "A tua taxa atual é {rate}. A comissão incide sobre o valor final efetivamente pago, incluindo IVA e eventuais portes, sem deduzir taxas de pagamento. Cada Checkout mantém a taxa registada quando foi criado."
+    },
+    "discount": {
+      "q": "O código dá um desconto ao cliente?",
+      "a": "Um código de referência atribui-te as compras. Não oferece descontos nem créditos gratuitos automaticamente. Os códigos promocionais são independentes."
+    },
+    "change": {
+      "q": "E se o cliente mudar de código?",
+      "a": "Uma alteração confirmada aplica-se à atividade futura. As histórias existentes e os Checkouts já abertos mantêm a atribuição original."
+    },
+    "status": {
+      "q": "O que significam os estados das comissões?",
+      "a": "As pendentes estão no período de retenção. As aprovadas passaram a revisão e as verificações. As comissões a pagar fazem parte de uma liquidação. Paga significa que a Mythoria registou a transferência. Retenções e reversões identificam valores em revisão ou reduzidos por reembolsos."
+    },
+    "payment": {
+      "q": "Quando recebo o pagamento?",
+      "a": "As comissões têm uma retenção de {hold} dias. O fecho mensal decorre no dia 1 às 03:00, hora de Lisboa. Saldos líquidos elegíveis de pelo menos {minimum} entram numa liquidação; os restantes transitam. As transferências são manuais, pelo que o fecho não garante uma data de pagamento."
+    },
+    "refund": {
+      "q": "Como afetam os reembolsos e as disputas o saldo?",
+      "a": "Os reembolsos revertem a comissão proporcionalmente. Disputas abertas colocam a comissão afetada em retenção. Perdas após o pagamento criam saldo negativo, descontado em liquidações futuras; a v1 não pede devolução bancária direta."
+    },
+    "self": {
+      "q": "Posso usar o meu código? E se houver suspensão?",
+      "a": "Os parceiros não podem referir-se a si próprios nem a outros parceiros. A suspensão bloqueia o portal e comissões de novos Checkouts, preservando associações e snapshots anteriores. A reativação recupera a elegibilidade futura."
+    },
+    "privacy": {
+      "q": "Que dados dos clientes posso consultar?",
+      "a": "Podes consultar referências pseudónimas, datas, fases do percurso, valores e comissões. Não são partilhados nomes, emails, moradas, NIF, dados de pagamento ou conteúdo privado das histórias."
+    },
+    "details": {
+      "q": "Posso alterar o código ou os dados bancários?",
+      "a": "Pede à Mythoria a alteração do código antes da primeira visita. Depois, apenas pode ser ativado ou desativado. Os dados bancários e fiscais são geridos pela Mythoria no processo financeiro externo."
+    },
+    "support": {
+      "q": "Como comunico uma comissão em falta?",
+      "a": "Confirma o intervalo de datas, o estado da transação e se o cliente aplicou o código antes do Checkout. Contacta a Mythoria com a data e a referência de cliente apresentada. Nunca envies palavras-passe, OTP ou dados de pagamento de clientes."
+    }
+  }
+}

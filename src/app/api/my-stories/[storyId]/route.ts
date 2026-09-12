@@ -8,40 +8,6 @@ import { and, asc, eq, max } from 'drizzle-orm';
 import { Storage } from '@google-cloud/storage';
 import { ZodError } from 'zod';
 
-// Load suffix from i18n messages at runtime based on locale
-type ActionsMessages = {
-  Actions?: { duplicateTitleSuffix?: string };
-  duplicateTitleSuffix?: string;
-};
-
-async function getDuplicateTitleSuffix(locale?: string): Promise<string> {
-  const loc = locale || 'en-US';
-  try {
-    const actions = (await import(`@/messages/${loc}/Actions.json`).then(
-      (m) => m.default,
-    )) as ActionsMessages;
-    const ns =
-      actions && Object.prototype.hasOwnProperty.call(actions, 'Actions') && actions.Actions
-        ? actions.Actions
-        : actions;
-    return ns?.duplicateTitleSuffix || ' - copy';
-  } catch {
-    // Fallback to English if locale file is missing
-    try {
-      const actions = (await import(`@/messages/en-US/Actions.json`).then(
-        (m) => m.default,
-      )) as ActionsMessages;
-      const ns =
-        actions && Object.prototype.hasOwnProperty.call(actions, 'Actions') && actions.Actions
-          ? actions.Actions
-          : actions;
-      return ns?.duplicateTitleSuffix || ' - copy';
-    } catch {
-      return ' - copy';
-    }
-  }
-}
-
 const storage = new Storage();
 const bucketName = process.env.STORAGE_BUCKET_NAME || 'mythoria-generated-stories';
 
@@ -281,13 +247,6 @@ export async function POST(
 
     const body = await request.json().catch(() => ({}));
     const action = body?.action as string | undefined;
-    // We previously accepted a `locale` here and applied it immediately to the duplicated
-    // story's storyLanguage. This caused a downstream conflict when initiating a full
-    // translation job (target locale equaled current storyLanguage). Requirement update:
-    // When duplicating, ALWAYS retain the original storyLanguage; language is only changed
-    // after translation completes. We still allow locale for title suffix lookup only.
-    const locale = body?.locale as string | undefined;
-
     if (action !== 'duplicate') {
       return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
@@ -306,8 +265,7 @@ export async function POST(
       );
     }
 
-    const suffix = await getDuplicateTitleSuffix(locale);
-    const newTitle = `${original.title}${suffix}`;
+    const newTitle = original.title;
 
     // Begin transaction – create new story id, copy images, duplicate chapters
     const result = await db.transaction(async (tx) => {

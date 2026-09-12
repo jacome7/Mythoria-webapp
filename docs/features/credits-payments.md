@@ -37,7 +37,8 @@ Mythoria uses a credit-based economy for paid services such as e-books, printed 
 - `src/components/CartView.tsx` and `useCart` maintain cart state, subtotal, VAT, and total calculations.
 - `src/components/PromotionCodeRedeemer.tsx` posts to `/api/codes/redeem` to validate promo codes and apply bonuses.
 - `src/components/PaymentSelector.tsx` presents the single Stripe Checkout path with card, wallet, and MB WAY affordances.
-- `POST /api/payments/stripe/checkout` validates credit packages server-side, creates a pending `payment_orders` row, creates or reuses a Stripe Customer, and returns a hosted Checkout URL.
+- `POST /api/payments/stripe/checkout` requires a stable UUID `checkoutAttemptId` alongside `creditPackages` and optional `locale`/`analyticsContext`. It validates packages server-side and creates or reuses the same order and Stripe session for retries of that attempt. Reusing an attempt with a different cart returns a conflict. A new intentional checkout uses a new UUID.
+- Referral association and the applicable rate are snapshotted before Stripe session creation. Changing an existing account association requires explicit prospective confirmation. Referral codes grant no customer discount or credit bonus.
 - Stripe Checkout Sessions use automatic billing address collection, phone collection, tax ID collection, `automatic_tax`, and tax-inclusive EUR line items. Stripe only asks for address fields when needed for tax, payment method, or risk checks. Stripe invoice creation is disabled so KeyInvoice is the customer-facing fiscal document system.
 - Stripe Checkout receives a locale mapped from the current Mythoria route locale, such as `fr-FR` to Stripe `fr`.
 - `POST /api/payments/stripe/webhook` verifies Stripe signatures and fulfills completed Checkout Sessions. Credits are granted only from verified Stripe webhooks.
@@ -47,12 +48,13 @@ Mythoria uses a credit-based economy for paid services such as e-books, printed 
 
 - Credit balances are fetched from `/api/my-credits` and displayed through `src/components/CreditsDisplay.tsx`.
 - Billable events verify pricing or route-level cost logic, check balances with `creditService.getAuthorCreditBalance`, and deduct credits with `creditService.deductCredits`.
-- Stripe order creation stores pending `payment_orders`. Credit fulfillment is idempotent and only transitions an order to completed once.
+- Stripe order creation stores pending `payment_orders`. Credit fulfillment, one referral commission per eligible order, and durable fiscal/email work commit in the same transaction. Commission uses Stripe's authoritative final `amount_total`; missing totals remain blocked. Verified provider events have a retryable inbox, and refunds/disputes append signed ledger adjustments.
 - Stripe order metadata stores payment intent IDs, payment method type, Stripe tax totals, and customer details when Stripe provides them.
 - `fiscal_documents`, `keyinvoice_customers`, and `fiscal_document_events` store KeyInvoice document identity, customer mapping, PDF storage path, retry state, and request/response audit events.
 - `fiscalDocumentService.issueForCompletedStripeOrder` runs after credit fulfillment. In draft-only mode it records `draft_document_prepared` and marks the row `draft`. Otherwise KeyInvoice failures do not roll back completed payments or granted credits; the fiscal document is marked `failed` with `nextRetryAt` for `npm run keyinvoice:retry`. If the remote document was already created, retries resume readback/PDF storage without calling `insertDocument` again.
 - KeyInvoice tax mapping uses Stripe's reported tax amount when it matches configured `KEYINVOICE_TAX_ID_BY_RATE_JSON`. If no mapping matches, the service uses the configured fallback tax id for 6%, per the current Mythoria v1 decision.
 - Issued PDFs are stored in the private storage bucket and exposed through an authenticated download route, not a public object URL.
+- Account deletion anonymizes the author and removes personal content while retaining financial records and the fiscal audit trail. See [referrals](../referrals.md) for retention, settlement and payout controls.
 
 ### Relevant API Endpoints
 

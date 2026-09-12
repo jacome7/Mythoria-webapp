@@ -274,6 +274,41 @@
       "when": 1788128619418,
       "tag": "0038_lethal_baron_zemo",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1788910369384,
+      "tag": "0039_referral_platform_v1",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1788910733163,
+      "tag": "0040_referral_financial_retention",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1788910755737,
+      "tag": "0041_referral_invariants",
+      "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1788911549625,
+      "tag": "0042_referral_legal_hold",
+      "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1788911824259,
+      "tag": "0043_referral_purchase_classification",
+      "breakpoints": true
     }
   ]
 }

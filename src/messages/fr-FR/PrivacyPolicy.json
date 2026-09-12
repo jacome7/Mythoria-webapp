@@ -169,7 +169,8 @@
         }
       },
       "note": "Notre bannière de consentement suit les Lignes directrices EDPB 05/2020 : pas de cases pré-cochées, et le bouton Refuser est aussi facile à cliquer que le bouton Accepter.",
-      "changePreferences": "Vous pouvez modifier vos préférences de cookies à tout moment via notre page Conditions Générales."
+      "changePreferences": "Vous pouvez modifier vos préférences de cookies à tout moment via notre page Conditions Générales.",
+      "referrals": "L’attribution des parrainages est facultative et dispose de son propre choix de cookies, distinct de l’analyse et de la publicité. Les cookies mythoria_referral_visitor et mythoria_referral_attribution contiennent des identifiants opaques et expirent après 90 jours. Avec ton consentement, le dernier lien valide peut être associé à ton compte. Tu peux modifier explicitement cette association pour les activités futures dans ton profil. Effacer ces cookies arrête l’attribution anonyme sans modifier les commandes passées ni l’association enregistrée sur ton compte. Les partenaires voient des données agrégées et des références anonymes de clients ; ils ne voient ni ton nom, ni ton e-mail, ni les titres ou le contenu de tes histoires. Les paiements et commissions restent dans les archives financières selon notre politique de conservation après la suppression du compte."
     },
     "section8": {
       "title": "8. Combien de temps nous gardons vos données",

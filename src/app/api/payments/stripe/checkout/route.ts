@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { v4 as uuidv4 } from 'uuid';
+import { z } from 'zod';
+import { linkReferralFromRequest, referralHttpError } from '@/lib/referrals/http';
+import { ReferralError } from '@/lib/referrals/policy';
 
 import { paymentService } from '@/db/services';
 import { getCurrentAuthor } from '@/lib/auth';
@@ -10,6 +12,7 @@ import { readEmailCampaignAttribution } from '@/lib/email-campaign-attribution';
 export const runtime = 'nodejs';
 
 interface StripeCheckoutRequest {
+  checkoutAttemptId: string;
   creditPackages: Array<{
     packageId: number;
     quantity: number;
@@ -66,6 +69,9 @@ export async function POST(request: NextRequest) {
     }
 
     const body: StripeCheckoutRequest = await request.json();
+    if (!z.uuid().safeParse(body.checkoutAttemptId).success)
+      return NextResponse.json({ error: 'checkout_attempt_required' }, { status: 400 });
+    await linkReferralFromRequest(request, author.authorId);
     const validationError = await validateCreditPackages(body.creditPackages);
     if (validationError) {
       return validationError;
@@ -98,7 +104,7 @@ export async function POST(request: NextRequest) {
       locale,
       successUrl,
       cancelUrl,
-      idempotencyKey: uuidv4(),
+      idempotencyKey: body.checkoutAttemptId,
       ...(analyticsContext
         ? { analyticsContext: { ...analyticsContext, userId: author.clerkUserId } }
         : {}),
@@ -122,6 +128,7 @@ export async function POST(request: NextRequest) {
       ecommerce,
     });
   } catch (error) {
+    if (error instanceof ReferralError) return referralHttpError(error);
     console.error('Error creating Stripe checkout session:', error);
 
     if (error instanceof Error && error.message.includes('STRIPE_SECRET_KEY')) {

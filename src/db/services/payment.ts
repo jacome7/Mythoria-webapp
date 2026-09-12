@@ -1,4 +1,14 @@
 import Stripe from 'stripe';
+import { createHash, randomUUID } from 'node:crypto';
+import {
+  accrueOrderCommission,
+  captureOrderReferral,
+  referralLock,
+  adjustProviderCommission,
+} from './referrals';
+import { referralFlags, ReferralError } from '@/lib/referrals/policy';
+import { claimPaymentEvent, finishPaymentEvent } from '@/lib/referrals/inbox';
+import { referralOutbox } from '@/db/schema/referrals';
 import { and, count, desc, eq, ne, sql } from 'drizzle-orm';
 
 import { db } from '../index';
@@ -105,7 +115,7 @@ interface StripeCheckoutMetadata {
 
 let stripeClient: Stripe | null = null;
 
-function getStripeClient(): Stripe {
+export function getStripeClient(): Stripe {
   const secretKey = process.env.STRIPE_SECRET_KEY;
   if (!secretKey) {
     throw new Error('STRIPE_SECRET_KEY environment variable is not set');
@@ -438,71 +448,119 @@ export const paymentService = {
     ecommerce: GA4CheckoutPayload;
   }> {
     const stripe = getStripeClient();
-    const orderTotals = await this.calculateOrderTotal(checkoutData.creditPackages);
+    let orderTotals = await this.calculateOrderTotal(checkoutData.creditPackages);
     const amountInCents = Math.round(orderTotals.totalAmount * 100);
-    const customerId = await this.findOrCreateStripeCustomer(stripe, {
+    let customerId = await this.findOrCreateStripeCustomer(stripe, {
       authorId: checkoutData.userId,
       email: checkoutData.email,
       displayName: checkoutData.displayName,
       phone: checkoutData.phone,
     });
 
-    const [order] = await db
-      .insert(paymentOrders)
-      .values({
-        authorId: checkoutData.userId,
-        amount: amountInCents,
-        currency: 'EUR',
-        status: 'pending',
-        provider: 'stripe',
-        emailCampaignRecipientId: checkoutData.emailCampaignRecipientId,
-        creditBundle: {
-          credits: orderTotals.totalCredits,
-          price: orderTotals.totalAmount,
-        },
-        metadata: {
+    const attemptId = checkoutData.idempotencyKey || randomUUID();
+    const requestHash = createHash('sha256')
+      .update(
+        JSON.stringify({
+          packages: checkoutData.creditPackages,
+          locale: checkoutData.locale,
+          successUrl: checkoutData.successUrl,
+          cancelUrl: checkoutData.cancelUrl,
+        }),
+      )
+      .digest('hex');
+    const order = await db.transaction(async (tx) => {
+      await referralLock(tx, `checkout:${checkoutData.userId}:${attemptId}`);
+      const [existing] = await tx
+        .select()
+        .from(paymentOrders)
+        .where(
+          and(
+            eq(paymentOrders.authorId, checkoutData.userId),
+            eq(paymentOrders.checkoutAttemptId, attemptId),
+          ),
+        );
+      if (existing) {
+        if (existing.checkoutRequestHash !== requestHash)
+          throw new ReferralError('checkout_attempt_conflict', 409);
+        return existing;
+      }
+      const [created] = await tx
+        .insert(paymentOrders)
+        .values({
+          checkoutAttemptId: attemptId,
+          checkoutRequestHash: requestHash,
+          authorId: checkoutData.userId,
+          amount: amountInCents,
+          currency: 'EUR',
+          status: 'pending',
+          provider: 'stripe',
+          emailCampaignRecipientId: checkoutData.emailCampaignRecipientId,
+          creditBundle: {
+            credits: orderTotals.totalCredits,
+            price: orderTotals.totalAmount,
+          },
+          metadata: {
+            orderTotals,
+            creditPackages: checkoutData.creditPackages,
+            ...(checkoutData.analyticsContext || checkoutData.analyticsConsent
+              ? {
+                  analytics: {
+                    client_id: checkoutData.analyticsContext?.clientId,
+                    session_id: checkoutData.analyticsContext?.sessionId,
+                    user_id: checkoutData.analyticsContext?.userId,
+                    analytics_storage: (
+                      checkoutData.analyticsContext?.consent || checkoutData.analyticsConsent
+                    )?.analyticsStorage,
+                    ad_user_data: (
+                      checkoutData.analyticsContext?.consent || checkoutData.analyticsConsent
+                    )?.adUserData,
+                    ad_personalization: (
+                      checkoutData.analyticsContext?.consent || checkoutData.analyticsConsent
+                    )?.adPersonalization,
+                    primary_intent: checkoutData.analyticsContext?.primaryIntent,
+                    attribution_id: checkoutData.attributionId,
+                    page_location: checkoutData.analyticsContext?.pageLocation,
+                    page_referrer: checkoutData.analyticsContext?.pageReferrer,
+                    engagement_time_msec: checkoutData.analyticsContext?.engagementTimeMsec,
+                  },
+                }
+              : {}),
+            stripe: {
+              customerId,
+            },
+          },
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        })
+        .returning();
+
+      await tx.insert(paymentEvents).values({
+        orderId: created.orderId,
+        eventType: 'order_created',
+        data: {
+          provider: 'stripe',
           orderTotals,
           creditPackages: checkoutData.creditPackages,
-          ...(checkoutData.analyticsContext || checkoutData.analyticsConsent
-            ? {
-                analytics: {
-                  client_id: checkoutData.analyticsContext?.clientId,
-                  session_id: checkoutData.analyticsContext?.sessionId,
-                  user_id: checkoutData.analyticsContext?.userId,
-                  analytics_storage: (
-                    checkoutData.analyticsContext?.consent || checkoutData.analyticsConsent
-                  )?.analyticsStorage,
-                  ad_user_data: (
-                    checkoutData.analyticsContext?.consent || checkoutData.analyticsConsent
-                  )?.adUserData,
-                  ad_personalization: (
-                    checkoutData.analyticsContext?.consent || checkoutData.analyticsConsent
-                  )?.adPersonalization,
-                  primary_intent: checkoutData.analyticsContext?.primaryIntent,
-                  attribution_id: checkoutData.attributionId,
-                  page_location: checkoutData.analyticsContext?.pageLocation,
-                  page_referrer: checkoutData.analyticsContext?.pageReferrer,
-                  engagement_time_msec: checkoutData.analyticsContext?.engagementTimeMsec,
-                },
-              }
-            : {}),
-          stripe: {
-            customerId,
-          },
         },
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-      })
-      .returning();
-
-    await db.insert(paymentEvents).values({
-      orderId: order.orderId,
-      eventType: 'order_created',
-      data: {
-        provider: 'stripe',
-        orderTotals,
-        creditPackages: checkoutData.creditPackages,
-      },
+      });
+      if (referralFlags().program) await captureOrderReferral(tx, created);
+      return created;
     });
+    const stored = order.metadata as {
+      orderTotals?: CalculatedOrderTotals;
+      stripe?: { customerId?: string };
+    };
+    orderTotals = stored.orderTotals || orderTotals;
+    customerId = stored.stripe?.customerId || customerId;
+    if (order.providerOrderId) {
+      const checkoutSession = await stripe.checkout.sessions.retrieve(order.providerOrderId);
+      return {
+        order,
+        checkoutSession,
+        ecommerce: buildCheckoutPayload(orderTotals, order.currency),
+      };
+    }
+    if (order.createdAt.getTime() < Date.now() - 23 * 3600000)
+      throw new ReferralError('checkout_attempt_expired', 409);
 
     try {
       const checkoutSession = await stripe.checkout.sessions.create(
@@ -542,7 +600,7 @@ export const paymentService = {
           },
         },
         {
-          idempotencyKey: checkoutData.idempotencyKey || `mythoria-checkout-${order.orderId}`,
+          idempotencyKey: `mythoria-checkout-${order.orderId}`,
         },
       );
 
@@ -666,6 +724,17 @@ export const paymentService = {
 
   async processStripeWebhook(event: Stripe.Event): Promise<{ success: boolean; message: string }> {
     try {
+      if (!(await claimPaymentEvent(event))) return { success: true, message: 'Already processed' };
+      const result = await this.dispatchStripeWebhook(event);
+      await finishPaymentEvent(event.id, result.success);
+      return result;
+    } catch {
+      return { success: false, message: 'Payment event processing failed' };
+    }
+  },
+
+  async dispatchStripeWebhook(event: Stripe.Event): Promise<{ success: boolean; message: string }> {
+    try {
       switch (event.type) {
         case 'checkout.session.completed':
           await this.handleStripeCheckoutCompleted(
@@ -711,6 +780,7 @@ export const paymentService = {
           return { success: true, message: 'Stripe payment intent failed' };
 
         case 'charge.refunded':
+          await this.reconcileReferralCharge((event.data.object as Stripe.Charge).id, event.id);
           await this.recordStripeChargeEvent(
             event.data.object as Stripe.Charge,
             'refund_completed',
@@ -720,8 +790,19 @@ export const paymentService = {
           return { success: true, message: 'Stripe charge refund recorded' };
 
         case 'charge.dispute.created':
+          await this.reconcileReferralCharge(
+            getStripeId((event.data.object as Stripe.Dispute).charge)!,
+            event.id,
+          );
           await this.recordStripeDisputeEvent(event.data.object as Stripe.Dispute, event.id);
           return { success: true, message: 'Stripe charge dispute recorded' };
+
+        case 'charge.dispute.closed':
+          await this.reconcileReferralCharge(
+            getStripeId((event.data.object as Stripe.Dispute).charge)!,
+            event.id,
+          );
+          return { success: true, message: 'Stripe charge dispute resolved' };
 
         default:
           console.log(`Unhandled Stripe webhook event: ${event.type}`);
@@ -731,6 +812,33 @@ export const paymentService = {
       console.error('Stripe webhook processing error:', error);
       return { success: false, message: error instanceof Error ? error.message : 'Unknown error' };
     }
+  },
+
+  async reconcileReferralCharge(chargeId: string, eventId: string) {
+    // Serialize provider reads as well as ledger writes so a stale response cannot
+    // overwrite a newer dispute result from another webhook worker.
+    return db.transaction(async (guard) => {
+      await referralLock(guard, `provider-charge:${chargeId}`);
+      const stripe = getStripeClient();
+      const charge = await stripe.charges.retrieve(chargeId);
+      const intentId = getStripeId(charge.payment_intent);
+      if (!intentId) return;
+      const order = await this.getOrderByStripePaymentIntentId(intentId);
+      if (!order) throw new ReferralError('order_not_found_for_provider_event', 409);
+      const disputes = await stripe.disputes.list({ charge: chargeId, limit: 100 });
+      await adjustProviderCommission({
+        orderId: order.orderId,
+        eventId,
+        objectId: chargeId,
+        refundedGross: charge.amount_refunded,
+        lostDisputeGross: disputes.data
+          .filter((d) => d.status === 'lost')
+          .reduce((sum, d) => sum + d.amount, 0),
+        disputeOpen: disputes.data.some(
+          (d) => !['won', 'lost', 'warning_closed'].includes(d.status),
+        ),
+      });
+    });
   },
 
   async handleStripeCheckoutCompleted(
@@ -755,11 +863,8 @@ export const paymentService = {
       createdAt: new Date(),
     });
 
-    if (session.amount_total !== order.amount) {
-      throw new Error(
-        `Stripe amount mismatch for order ${order.orderId}: expected ${order.amount}, got ${session.amount_total}`,
-      );
-    }
+    // Stripe's authoritative final total includes tax, shipping and discounts.
+    // Order ownership and session identity are checked above; never estimate commission.
 
     const paymentIntentId = getStripeId(session.payment_intent);
     const invoiceId = getStripeId(session.invoice);
@@ -1139,12 +1244,15 @@ export const paymentService = {
     }
 
     let completedOrder: PaymentOrder | undefined;
+    const completedAt = new Date();
 
     await db.transaction(async (tx) => {
+      await referralLock(tx, `customer:${order.authorId}`);
       const [updatedOrder] = await tx
         .update(paymentOrders)
         .set({
           status: 'completed',
+          completedAt,
           updatedAt: new Date(),
         })
         .where(and(eq(paymentOrders.orderId, order.orderId), ne(paymentOrders.status, 'completed')))
@@ -1155,6 +1263,30 @@ export const paymentService = {
       }
 
       completedOrder = updatedOrder;
+      await tx
+        .insert(referralOutbox)
+        .values([
+          {
+            kind: 'payment-credit-notification',
+            dedupeKey: `payment-email:${updatedOrder.orderId}`,
+            payload: { orderId: updatedOrder.orderId },
+          },
+          {
+            kind: 'payment-fiscal-document',
+            dedupeKey: `payment-fiscal:${updatedOrder.orderId}`,
+            payload: { orderId: updatedOrder.orderId },
+          },
+        ])
+        .onConflictDoNothing();
+      const finalStripeAmount = (updatedOrder.metadata as StripeCheckoutMetadata | null)?.stripe
+        ?.amountTotal;
+      await accrueOrderCommission(
+        tx,
+        updatedOrder.orderId,
+        completedAt,
+        typeof finalStripeAmount === 'number' ? finalStripeAmount : null,
+        updatedOrder.currency,
+      );
 
       const creditBundle = updatedOrder.creditBundle as { credits: number; price: number };
       await tx.insert(creditLedger).values({
@@ -1237,7 +1369,7 @@ export const paymentService = {
         .from(authors)
         .where(eq(authors.authorId, completedOrder.authorId));
 
-      if (author) {
+      if (author && !author.accountClosedAt) {
         const creditBundle = completedOrder.creditBundle as { credits: number; price: number };
         await notificationClient.sendCreditsAddedNotification({
           email: author.email,

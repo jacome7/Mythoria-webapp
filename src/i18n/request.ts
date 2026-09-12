@@ -132,6 +132,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
   return {
     locale: locale as string,
     messages: {
+      Referrals: (await import(`../messages/${locale}/Referrals.json`)).default,
       ...ns(headerMessages, 'Header'),
       ...ns(footerMessages, 'Footer'),
       ...ns(stepNavigationMessages, 'StepNavigation'),

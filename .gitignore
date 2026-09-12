@@ -198,3 +198,6 @@ secrets/
 tests/playwright/.auth/
 playwright/.auth/
 _mockups/
+
+# Local reference attachments (not application assets)
+.codex-remote-attachments/
