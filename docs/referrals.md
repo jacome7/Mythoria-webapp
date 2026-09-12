@@ -319,6 +319,7 @@ To stop new activity, disable program/capture/commission flags and optionally hi
 
 Related records:
 
+- [Production release and remaining operations](referrals-release-2026-09-12.md)
 - [Cross-service contracts and original rollout runbook](referrals-records/REFERRALS.md)
 - [Implementation and validation record](referrals-records/REFERRALS_IMPLEMENTATION.md)
 - [Database backup/migration record](referrals-records/REFERRALS_DATABASE_MIGRATION_2026-09-11.md)
