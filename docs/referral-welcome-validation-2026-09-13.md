@@ -1,6 +1,6 @@
 # Referral welcome email: local validation, 2026-09-13
 
-Implementation is local and uncommitted. No production deployment, Cloud Scheduler changes, shared database migrations, real email delivery or historical-owner mailing was performed.
+This records the initial local implementation checkpoint. No production deployment, Cloud Scheduler changes, shared database migrations or real email delivery was performed at that checkpoint. The subsequent authorized deployment, formatting fixes, scheduler activation and approved invitation delivery are recorded in the [production release record](referral-welcome-release-2026-09-13.md).
 
 ## Results
 
