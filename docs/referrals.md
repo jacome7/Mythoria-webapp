@@ -237,6 +237,22 @@ Use OIDC with the configured WebApp audience and `REFERRAL_SCHEDULER_SERVICE_ACC
 
 Notification Engine renders `referral-invitation`, `referral-statement` and `referral-payment-confirmation` in en-US, pt-PT, es-ES, fr-FR and de-DE. Outbox IDs and membership IDs provide delivery identity; retries must not create duplicate notifications. Inspect pending attempts and `nextAttemptAt` when email is delayed. Notification acceptance is not evidence of a bank transfer or inbox delivery.
 
+### Referral owner welcome email (2026-09-13)
+
+Saving a new owner through Admin UI or MCP atomically creates its code, terms, memberships and one `referral-invitation` outbox item per distinct normalized invited email. Contact-only addresses are not recipients. A rolled-back creation sends nothing. The expanded invitation is the welcome email: first sign-in does not send a second welcome. Additional member invitations and explicit resends use the same template; repeating a resend request ID is idempotent.
+
+The five-language HTML/plain-text email contains the referral link/code, assigned percentage, a €100 example, dashboard access/reporting instructions and eight FAQ topics. Commission is based on the full payment including VAT and charged costs without deductions. The small margin note describes the calculation basis; it does not claim commission exceeds Mythoria's gross margin. The email reports credit-pack purchase counts and monetary amounts, not a new purchased-credit quantity metric.
+
+Delivery reads the current code and currently effective terms (not a future scheduled rate), formats the negotiated rate with up to two fractional percentage digits, and derives policy values from `REFERRAL_POLICY`. Links use `NEXT_PUBLIC_BASE_URL`'s origin: `/r/{code}`, `/{locale}/referrals` and its `#referral-faq` anchor. No new environment variables or migrations are required.
+
+Creation queues the email immediately. Sending requires an active owner, eligible membership, active code and current terms, but deliberately does **not** wait for first sign-in, the live allowlist or program/capture/commission/portal flags. Sending a welcome therefore does not prove that live commission earning is operational; complete the activation checklist separately.
+
+The drain retains suspended owners/members and inactive codes in `retry` with a five-minute delay and no completion timestamp. Closed owners and deleted memberships cancel the invitation (`cancelled`); the current membership schema has no separate revoked status. Missing owner/code/terms and provider failures remain retries with a structured error code and existing backoff. Successful invitations are `completed`; completed historical invitations are never automatically requeued. Delivery identity remains `{outboxId}:{membershipId}`.
+
+Deploy Notification Engine before WebApp so older callers remain supported while new payloads roll out. The optional `welcome` object enables the extended content; absent objects render the basic account invitation without inventing a rate. Partial new objects are rejected. During a separately authorized rollout, verify/provision the existing five-minute OIDC drain schedule, then approve a single test recipient and confirm inbox receipt. This implementation does not deploy services or send real email.
+
+Validation: `src/lib/referrals/invitation.test.ts` covers localization, terms and delivery decisions. `npx.cmd tsx scripts/referral-welcome-integration.ts` requires a disposable prepared `referral_test*` database on loopback port 55439 via `REFERRAL_TEST_DATABASE_URL`. It uses mock delivery, blocks outbound HTTP, creates a test rollback trigger, and marks prior fixture outbox rows complete to isolate drain tests. Use a disposable clone, not a shared fixture database or production. The fixture role must own `referral_audit_events` for trigger cleanup. Tests cover atomic rollback, Admin/MCP parity, future rates, resend dedupe and real outbox retry/completion/cancellation transitions.
+
 The partner FAQ contains 14 localized answers covering sharing, consent, the 90-day window, existing/repeat customers, rates, discounts, prospective changes, status/holds, payment timing/minimum, refunds/disputes, self-referrals, privacy, details and support. Its questions and answers interpolate policy values and the owner's negotiated rate. No extra contact/privacy links appear below the FAQ.
 
 ## Test the complete journey

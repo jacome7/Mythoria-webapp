@@ -1,4 +1,5 @@
 import { referralMonthPeriod } from './calendar';
+import { sendReferralInvitation } from './invitation';
 import { referralLogger } from './logger';
 import { and, eq, lte, or, isNull, sql } from 'drizzle-orm';
 import { clerkClient } from '@clerk/nextjs/server';
@@ -258,6 +259,20 @@ export async function drainReferralOutbox() {
   let processed = 0;
   for (const row of rows)
     try {
+      if (row.kind === 'referral-invitation') {
+        const result = await sendReferralInvitation(String(row.payload.membershipId), row.outboxId);
+        await db
+          .update(referralOutbox)
+          .set({
+            status: result === 'deferred' ? 'retry' : result,
+            leaseUntil: null,
+            completedAt: result === 'deferred' ? null : new Date(),
+            ...(result === 'deferred' ? { nextAttemptAt: new Date(Date.now() + 300000) } : {}),
+          })
+          .where(eq(referralOutbox.outboxId, row.outboxId));
+        if (result !== 'deferred') processed++;
+        continue;
+      }
       if (row.kind === 'account-deletion') {
         try {
           await (await clerkClient()).users.deleteUser(String(row.payload.clerkUserId));
@@ -299,25 +314,12 @@ export async function drainReferralOutbox() {
           }
         }
       } else {
-        let ownerId: string;
-        let memberId: string | undefined;
-        let settlement: typeof referralSettlements.$inferSelect | undefined;
-        if (row.kind === 'referral-invitation') {
-          memberId = String(row.payload.membershipId);
-          const [member] = await db
-            .select()
-            .from(referralMemberships)
-            .where(eq(referralMemberships.membershipId, memberId));
-          if (!member) throw new Error('missing_member');
-          ownerId = member.referralOwnerId;
-        } else {
-          [settlement] = await db
-            .select()
-            .from(referralSettlements)
-            .where(eq(referralSettlements.settlementId, String(row.payload.settlementId)));
-          if (!settlement) throw new Error('missing_settlement');
-          ownerId = settlement.referralOwnerId;
-        }
+        const [settlement] = await db
+          .select()
+          .from(referralSettlements)
+          .where(eq(referralSettlements.settlementId, String(row.payload.settlementId)));
+        if (!settlement) throw new Error('missing_settlement');
+        const ownerId = settlement.referralOwnerId;
         const [owner] = await db
           .select()
           .from(referralOwners)
@@ -328,9 +330,7 @@ export async function drainReferralOutbox() {
           .where(
             and(
               eq(referralMemberships.referralOwnerId, ownerId),
-              memberId
-                ? eq(referralMemberships.membershipId, memberId)
-                : eq(referralMemberships.status, 'active'),
+              eq(referralMemberships.status, 'active'),
             ),
           );
         for (const member of members) {
@@ -369,7 +369,7 @@ export async function drainReferralOutbox() {
         })
         .where(eq(referralOutbox.outboxId, row.outboxId));
       processed++;
-    } catch {
+    } catch (error) {
       await db
         .update(referralOutbox)
         .set({
@@ -380,7 +380,18 @@ export async function drainReferralOutbox() {
           ),
         })
         .where(eq(referralOutbox.outboxId, row.outboxId));
-      referralLogger.error('outbox_retry', { errorCode: 'delivery_failed' });
+      const knownErrors = [
+        'missing_owner',
+        'missing_referral_code',
+        'missing_referral_terms',
+        'notification_failed',
+      ];
+      referralLogger.error('outbox_retry', {
+        errorCode:
+          error instanceof Error && knownErrors.includes(error.message)
+            ? error.message
+            : 'delivery_failed',
+      });
     }
   return { processed, total: rows.length };
 }

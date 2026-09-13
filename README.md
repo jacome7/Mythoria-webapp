@@ -52,6 +52,6 @@
 
 ## Referral platform
 
-Read the [Referral platform: operation and implementation guide](docs/referrals.md) to onboard owners, configure local and production environments, manage permissions, understand consent and attribution, review visits/registrations/revenue, operate commissions and settlements, configure background jobs, test the full journey, and troubleshoot errors.
+Read the [Referral platform: operation and implementation guide](docs/referrals.md) to onboard owners and operate their automatic welcome emails, configure local and production environments, manage permissions, understand consent and attribution, review visits/registrations/revenue, operate commissions and settlements, configure background jobs, test the full journey, and troubleshoot errors.
 
 The repository's next-deployment defaults enable the program, capture, commissions and portal in live mode. Live commissions require an explicit owner UUID allowlist. These defaults do not establish what is currently deployed; the guide separates configuration, recorded migration results and production verification steps.
