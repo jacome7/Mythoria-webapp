@@ -1,6 +1,7 @@
 import { isValidIntent, normalizeIntent, type StoryIntent } from '@/constants/intents';
 import { isValidRecipient } from '@/constants/recipients';
 import type { IntentContext } from '@/types/intent-context';
+import { isStoryTemplateId } from '@/lib/story-templates/ids';
 
 export const CAMPAIGN_QUERY_KEYS = [
   'utm_source',
@@ -116,6 +117,9 @@ export function buildStoryAuthReturnSearch(searchParams: CampaignSearchParams): 
 
   const primaryIntent = getValidatedIntent(readSearchParam(searchParams, 'primaryIntent'));
   if (primaryIntent) safe.set('primaryIntent', primaryIntent);
+
+  const templateId = readSearchParam(searchParams, 'templateId');
+  if (isStoryTemplateId(templateId)) safe.set('templateId', templateId);
 
   return safe;
 }

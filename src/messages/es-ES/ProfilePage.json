@@ -83,6 +83,14 @@
           "description": "Todo lo anterior más noticias del producto y promociones especiales — como un pregonero amistoso."
         }
       }
+    },
+    "experimentalFeatures": {
+      "title": "Nuevas funciones experimentales",
+      "description": "Prueba nuevas funciones antes de que estén disponibles para todos.",
+      "saving": "Guardando…",
+      "saved": "Guardado",
+      "saveFailed": "No se ha podido guardar tu preferencia. Inténtalo de nuevo.",
+      "loadFailed": "No se ha podido cargar tu preferencia. Actualiza la página."
     }
   }
 }

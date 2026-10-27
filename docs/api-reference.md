@@ -392,20 +392,26 @@ GET /api/export/{export_id}/status
 #### Generate Audiobook
 
 ```http
-POST /api/export/audiobook
+POST /api/stories/{storyId}/generate-audiobook
 ```
+
+Requires an authenticated author who owns a published story. Optional `Idempotency-Key` header.
 
 **Request Body:**
 
 ```json
 {
-  "story_id": "story_123",
-  "voice": "natural_female",
-  "speed": "normal",
-  "format": "mp3",
-  "chapters": ["chapter_1", "chapter_2"]
+  "voice": "Sulafat",
+  "includeBackgroundMusic": true,
+  "analyticsContext": {}
 }
 ```
+
+- `voice` (optional): a voice valid for the configured TTS provider (`NEXT_PUBLIC_TTS_PROVIDER`, default `google-genai`: Charon, Aoede, Puck, Kore, Fenrir, Orus, Zephyr, Sulafat; OpenAI: alloy, ash, ballad, coral, echo, fable, nova, onyx, sage, shimmer, verse). When missing or empty, the recommended voice for the story's target audience is used. An invalid voice returns `400`.
+- `includeBackgroundMusic` (optional, default `true`).
+- `analyticsContext` (optional): browser analytics context.
+
+**Response (202):** `{ success, message, storyId, runId, voice, status, creditsDeducted, newBalance }`. Other errors: `401`, `402` (insufficient credits), `404`, `409` (previous request failed).
 
 ### Analytics
 

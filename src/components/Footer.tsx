@@ -50,6 +50,7 @@ const Footer = () => {
         width={1920}
         height={373}
         sizes="100vw"
+        loading="eager"
         className={styles.backdrop}
         aria-hidden="true"
       />

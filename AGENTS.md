@@ -6,8 +6,8 @@ This document is the single source of truth for agents working on the Mythoria w
 
 ## Technology Snapshot
 
-- **Framework**: Next.js 15 (App Router, standalone output)
-- **Language**: TypeScript 5 with strict compiler settings
+- **Framework**: Next.js 16 (App Router, standalone output)
+- **Language**: TypeScript 6 with strict compiler settings
 - **Runtime**: Node.js 24.18.1 LTS (enforced through `package.json` engines, `.nvmrc`, `.node-version`, `.npmrc`, Dockerfile, and Cloud Build)
 - **UI**: React 19, Tailwind CSS + DaisyUI, Next PWA integration
 - **Internationalization**: `next-intl` with locale-specific route segments and JSON message bundles
@@ -113,3 +113,17 @@ See the [referral implementation and operations guide](docs/referrals.md) for th
 ## Referral welcome email (2026-09-13)
 
 The expanded owner welcome is implemented in `src/lib/referrals/invitation.ts` and the existing outbox drain. Keep initial invitation enqueue transactional and preserve recipient/delivery identity. Do not gate sending on live commission flags or first sign-in. See `docs/referrals.md` for retry/cancellation and isolated welcome integration test requirements.
+
+## Story templates and optional guidance
+
+See [the local contract](docs/story-templates.md) and [cross-service runbook](../docs/STORY_TEMPLATES.md). Both service flags default off. Keep draft/structure retries idempotent, private job polling owner-scoped, and existing pending jobs recoverable during rollback. SGW workflows migrations 0008 and 0009 were applied with authorization on 2026-09-19 after backup; see the [operation record](../docs/STORY_TEMPLATES_LOCAL_TEST_2026-09-19.md). Template entry and new guided requests also require the author’s `experimentalFeaturesEnabled` opt-in; preserve stored journeys and accepted job recovery when either gate is off. WebApp core migration 0044 was applied with authorization on 2026-10-27 after full backup; all existing authors were verified opted out. See the [opt-in migration record](../docs/EXPERIMENTAL_FEATURES_MIGRATION_2026-10-27.md). Future migrations need explicit authorization; never run integration fixtures against the production-shared development database.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

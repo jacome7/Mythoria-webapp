@@ -26,10 +26,29 @@ const book: SampleBook = {
 };
 
 describe('SampleBookDetailPage Mythoria-created provenance', () => {
+  it('renders an optional server-approved creation link without sample story text in the URL', () => {
+    render(
+      <SampleBookDetailPage
+        book={book}
+        chapter={null}
+        locale="pt-PT"
+        createSimilar={{
+          href: '/pt-PT/tell-your-story/step-1?templateId=moonlight-adventure',
+          label: 'Create a similar story',
+        }}
+      />,
+    );
+    expect(screen.getByRole('link', { name: 'Create a similar story' })).toHaveAttribute(
+      'href',
+      '/pt-PT/tell-your-story/step-1?templateId=moonlight-adventure',
+    );
+  });
+
   it('keeps the Mythoria-created label without rendering the creation-provenance section', () => {
     render(<SampleBookDetailPage book={book} chapter="O primeiro parágrafo." locale="pt-PT" />);
 
     expect(screen.getByText('Livro criado com a Mythoria')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Create a similar story' })).not.toBeInTheDocument();
     expect(screen.queryByText('Como este livro foi criado')).not.toBeInTheDocument();
     expect(screen.queryByText(/não é uma história de cliente/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/contexto ficcional interno/i)).not.toBeInTheDocument();

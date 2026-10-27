@@ -5,6 +5,7 @@ import { Handshake, Send } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import NextImage from 'next/image';
 import { useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/routing';
 
 interface PartnershipFormProps {
   className?: string;
@@ -19,6 +20,7 @@ const MAX_LOGO_DIMENSION = 2048;
 const ALLOWED_LOGO_TYPES = ['image/png', 'image/jpeg', 'image/svg+xml'];
 
 const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
+  const router = useRouter();
   const { user, isSignedIn } = useUser();
   const t = useTranslations('Partners.form');
   const [formData, setFormData] = useState({
@@ -250,7 +252,7 @@ const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
 
         // Redirect to homepage after 5 seconds
         setTimeout(() => {
-          window.location.href = '/';
+          router.push('/');
         }, 5000);
       } else {
         setResponseMessage(t('errorMessage'));
@@ -525,7 +527,7 @@ const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
                   </button>
                 )}
                 {isSuccess && (
-                  <button className="btn btn-primary" onClick={() => (window.location.href = '/')}>
+                  <button className="btn btn-primary" onClick={() => router.push('/')}>
                     {t('goToHomepage')}
                   </button>
                 )}

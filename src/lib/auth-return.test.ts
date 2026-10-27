@@ -44,6 +44,23 @@ describe('auth return paths', () => {
 });
 
 describe('landing creation returns', () => {
+  it('keeps an editorial template through a campaign link and authentication round trip', () => {
+    const path = buildLandingCreationReturnPath(
+      '/en-US/tell-your-story/step-1?templateId=pet-mission',
+      '/en-US',
+      new URLSearchParams({ utm_source: 'newsletter', ref: 'partner', prompt: 'private' }),
+    );
+    const auth = new URL(buildAuthEntryPath('en-US', 'sign-up', path), 'https://mythoria.pt');
+    const returned = new URL(
+      buildAuthReturnPath(auth.searchParams, '/en-US'),
+      'https://mythoria.pt',
+    );
+    expect(returned.pathname).toBe('/en-US/tell-your-story/step-1');
+    expect(returned.searchParams.get('templateId')).toBe('pet-mission');
+    expect(returned.searchParams.get('ref')).toBe('partner');
+    expect(returned.searchParams.get('utm_source')).toBe('newsletter');
+    expect(returned.searchParams.has('prompt')).toBe(false);
+  });
   it('carries campaign and referral fields but drops free text and invalid intent', () => {
     const result = new URL(
       buildLandingCreationReturnPath(

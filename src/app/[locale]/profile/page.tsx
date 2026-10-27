@@ -21,6 +21,7 @@ import CreditsDisplay from '@/components/CreditsDisplay';
 import Link from 'next/link';
 import { getCountryOptions } from '@/utils/countries';
 import StoryCounter from '@/components/StoryCounter';
+import ExperimentalFeaturesSettings from '@/components/profile/ExperimentalFeaturesSettings';
 
 interface ProfileDetails {
   displayName: string;
@@ -45,6 +46,9 @@ export default function AccountProfilePage() {
   const [storyCount, setStoryCount] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [experimentalFeaturesEnabled, setExperimentalFeaturesEnabled] = useState<boolean | null>(
+    null,
+  );
   const [profile, setProfile] = useState<ProfileDetails | null>(null);
   // Field level status map: idle | pending (debounce) | saving | saved | error
   const [fieldStatus, setFieldStatus] = useState<Record<keyof ProfileDetails, string>>({
@@ -64,6 +68,7 @@ export default function AccountProfilePage() {
     if (!isLoaded || !isSignedIn) return;
     try {
       setLoading(true);
+      setExperimentalFeaturesEnabled(null);
       const [creditsRes, storyCountRes, profileRes] = await Promise.all([
         fetch('/api/my-credits'),
         fetch('/api/stories/count'),
@@ -76,6 +81,11 @@ export default function AccountProfilePage() {
 
       if (profileRes.ok) {
         const pr = await profileRes.json();
+        setExperimentalFeaturesEnabled(
+          typeof pr.author.experimentalFeaturesEnabled === 'boolean'
+            ? pr.author.experimentalFeaturesEnabled
+            : null,
+        );
         setProfile({
           displayName: pr.author.displayName || fullName,
           gender: pr.author.gender,
@@ -244,11 +254,19 @@ export default function AccountProfilePage() {
     };
   }, [flushFieldSave]);
 
-  if (!isSignedIn) {
+  if (isLoaded && !isSignedIn) {
     return <div className="p-8 text-center">{t('signInPrompt')}</div>;
   }
 
-  if (loading || !profile) {
+  if (isLoaded && !loading && !profile && error) {
+    return (
+      <div role="alert" className="p-8 text-center text-error">
+        {error}
+      </div>
+    );
+  }
+
+  if (!isLoaded || loading || !profile) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
         <span className="loading loading-spinner loading-lg" />
@@ -566,6 +584,13 @@ export default function AccountProfilePage() {
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="mt-8">
+          <ExperimentalFeaturesSettings
+            key={String(experimentalFeaturesEnabled)}
+            initialValue={experimentalFeaturesEnabled}
+          />
         </div>
 
         {(error || success) && (

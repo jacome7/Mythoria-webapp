@@ -1,0 +1,162 @@
+{
+  "selectorTitle": "Wo beginnt deine Geschichte?",
+  "selectorDescription": "Wähle eine Idee oder bring deine eigene mit. Du kannst jedes Detail ändern.",
+  "browse": "Ideen entdecken",
+  "mine": "Mit meiner eigenen Idee starten",
+  "summary": "Deine Geschichte bisher",
+  "continue": "Mit dieser Geschichte fortfahren",
+  "personalize": "Persönlicher gestalten",
+  "skip": "Diese Frage überspringen",
+  "customAnswer": "Meine eigene Antwort",
+  "customAnswerPlaceholder": "Ein paar Worte reichen",
+  "more": "Noch etwas ergänzen",
+  "end": "Personalisierung abschließen",
+  "round": "Runde {current}",
+  "loading": "Die nächsten Fragen werden vorbereitet…",
+  "fallback": "Hier sind ein paar einfache Fragen für den Anfang.",
+  "memoryContributionRequired": "Ergänze mindestens ein echtes Detail, bevor du mit einer Erinnerungsgeschichte fortfährst.",
+  "memoryContributionLabel": "Eine echte Erinnerung oder ein Detail",
+  "memoryContributionPlaceholder": "Erzähle etwas, das wirklich passiert ist, oder ergänze es per Sprache oder Bild.",
+  "modeLabel": "Welche Art von Geschichte?",
+  "fiction": "Eine erfundene Geschichte",
+  "memory": "Echte Erinnerungen",
+  "modeHelp": "Fantasie kann eine erfundene Welt ergänzen. Eine Erinnerungsgeschichte verwendet nur Fakten, die du teilst.",
+  "changeTitle": "Die Ausgangsidee ändern?",
+  "changeDescription": "Das ersetzt die aktuelle Vorlage und die geführten Antworten. Dein ursprünglicher Beitrag bleibt verfügbar.",
+  "confirmChange": "Idee ändern",
+  "cancel": "Weiterarbeiten",
+  "resume": "Meine Geschichte fortsetzen",
+  "newStory": "Eine neue Geschichte beginnen",
+  "back": "Zurück",
+  "choose": "Diese Idee wählen",
+  "selected": "Ausgewählt",
+  "recommended": "Für dich vorgeschlagen",
+  "showAll": "Alle Ideen ansehen",
+  "clear": "Leeren",
+  "save": "Speichern",
+  "questionProgress": "Frage {current} von {total}",
+  "error": "Etwas ist schiefgegangen. Deine Antworten sind noch da.",
+  "retry": "Erneut versuchen",
+  "createSimilar": "Eine ähnliche Geschichte erstellen",
+  "optional": "Optional",
+  "addDetails": "Details ergänzen",
+  "preferences": "Einstellungen zur Geschichte",
+  "audience": "Für wen ist sie?",
+  "tone": "Ton",
+  "artStyle": "Illustrationsstil",
+  "writingStyle": "Schreibstil",
+  "questionNext": "Diese Antwort verwenden",
+  "resetDescription": "Auf diesem Gerät neu anfangen? Deine aktuellen Eingaben und Auswahlen zur Geschichte werden gelöscht. Gespeicherte Geschichten bleiben in deiner Bibliothek.",
+  "confirmReset": "Neu anfangen",
+  "editAnswer": "Antwort bearbeiten",
+  "removeAnswer": "Antwort entfernen",
+  "roundComplete": "Diese Runde ist abgeschlossen",
+  "guideComplete": "Deine Geschichte ist bereit für den nächsten Schritt",
+  "contributionHelp": "Teile nur, was enthalten sein soll. Wir erfinden keine persönlichen Fakten.",
+  "restructureTitle": "Den Geschichtenentwurf aktualisieren?",
+  "restructureDescription": "Den Entwurf aus diesen Details neu erstellen? Dabei können Details ersetzt werden, die du in späteren Schritten bearbeitet hast.",
+  "confirmRestructure": "Diese Version verwenden",
+  "structureError": "Der Entwurf konnte nicht fertiggestellt werden. Deine Eingaben sind gespeichert; versuche es erneut.",
+  "continueWithoutGuide": "Ohne Anleitung fortfahren",
+  "templateUnavailable": "Diese Idee ist nicht verfügbar. Wähle eine andere oder nutze deine eigene.",
+  "previewReplacement": "Die vorgeschlagene Version prüfen",
+  "characters": "Figuren",
+  "templates": {
+    "drawing-adventure": {
+      "title": "Eine Zeichnung wird lebendig",
+      "premise": "Eine neugierige Erfinderfigur entdeckt, dass eine Zeichnung das Papier verlassen und sie auf ein freundliches Abenteuer begleiten kann.",
+      "description": "Mach aus einer erfundenen Zeichnung einen neuen Freund."
+    },
+    "moonlight-adventure": {
+      "title": "Ein kleines Mondscheinabenteuer",
+      "premise": "Eine neugierige Hauptfigur und eine freundliche Begleitung reisen sanft durch den Mondschein und kehren an einen gemütlichen Ort zum Ausruhen zurück.",
+      "description": "Ein ruhiges Abenteuer zum Ausklang des Tages."
+    },
+    "pet-mission": {
+      "title": "Ein Haustier auf geheimer Mission",
+      "premise": "Ein einfallsreiches Haustier entdeckt ein kleines Rätsel und hilft seinen Freunden, es mit Neugier und Freundlichkeit zu lösen.",
+      "description": "Schenke einem erfundenen Haustier ein überraschendes Abenteuer."
+    },
+    "magic-doorway": {
+      "title": "Die verborgene Tür",
+      "premise": "Eine neugierige Entdeckerfigur findet eine unerwartete Tür und folgt Hinweisen in eine einladende magische Welt.",
+      "description": "Öffne eine Tür zu einer Welt voller Möglichkeiten."
+    },
+    "little-love": {
+      "title": "Liebe in den kleinen Dingen",
+      "premise": "Die Geschichte zweier Menschen, erzählt durch die kleinen Gesten und Alltagsgegenstände, die ihnen wichtig sind.",
+      "description": "Feiere die Liebe in alltäglichen Details."
+    },
+    "travel-memories": {
+      "title": "Eine Reise zum Aufbewahren",
+      "premise": "Eine Reise, erzählt durch Entdeckungen, Umwege und Momente, die bleiben.",
+      "description": "Mach aus einer echten oder erfundenen Reise eine Geschichte."
+    },
+    "grandparent-memory": {
+      "title": "Geschichten zum Weitergeben",
+      "premise": "Eine Familiengeschichte aus den Erinnerungen, Redewendungen und Details, die du über einen Großelternteil teilst.",
+      "description": "Beginne mit einer echten Erinnerung, Redewendung oder Einzelheit."
+    },
+    "teamwork-day": {
+      "title": "Alle tragen etwas bei",
+      "premise": "Ein Team stellt sich einer spielerischen Herausforderung und entdeckt, wie unterschiedliche Stärken allen einen Beitrag ermöglichen.",
+      "description": "Ein Abenteuer über Zusammenarbeit und Zugehörigkeit."
+    }
+  },
+  "questions": {
+    "tone": {
+      "text": "Wie soll sich die Geschichte anfühlen?",
+      "first": "Warm und sanft",
+      "second": "Verspielt und lustig",
+      "third": "Lebendig und abenteuerlich"
+    },
+    "pace": {
+      "text": "Welches Tempo möchtest du?",
+      "first": "Kurze, klare Szenen",
+      "second": "Eine langsame, anschauliche Reise",
+      "third": "Eine lebendige Folge von Momenten"
+    },
+    "presentation": {
+      "text": "Wie soll sie erzählt werden?",
+      "first": "Als durchgehende Geschichte",
+      "second": "In kurzen Kapiteln",
+      "third": "Als Sammlung von Momenten"
+    },
+    "focus": {
+      "text": "Was soll der Text hervorheben?",
+      "first": "Die Details, die du teilst",
+      "second": "Die Atmosphäre jedes Moments",
+      "third": "Die Bedeutung alltäglicher Gesten"
+    },
+    "drawing": {
+      "text": "Was könnte vom Papier springen?",
+      "first": "Ein freundlicher Roboter",
+      "second": "Ein winziger Drache",
+      "third": "Ein sprechender Baum"
+    },
+    "moon": {
+      "text": "Wohin führt der Mondscheinweg?",
+      "first": "Zu einer Bäckerei auf dem Mond",
+      "second": "Zu einem Garten schläfriger Sterne",
+      "third": "Zu einer ruhigen schwebenden Insel"
+    },
+    "pet": {
+      "text": "Was ist die Mission des Haustiers?",
+      "first": "Ein verschwundenes Spielzeug finden",
+      "second": "Einem neuen Freund helfen",
+      "third": "Eine kleine Überraschung überbringen"
+    },
+    "door": {
+      "text": "Was liegt hinter der Tür?",
+      "first": "Eine Bibliothek lebendiger Karten",
+      "second": "Ein Garten in den Wolken",
+      "third": "Eine Stadt in einem Baum"
+    },
+    "team": {
+      "text": "Welche Aufgabe bringt das Team zusammen?",
+      "first": "Ein Freundschaftsspiel",
+      "second": "Ein lustiger Hindernisparcours",
+      "third": "Eine Schatzsuche"
+    }
+  }
+}

@@ -83,6 +83,14 @@
           "description": "Alles oben plus Produktupdates und besondere Promo-Schriftrollen – wie ein freundlicher Stadtausrufer."
         }
       }
+    },
+    "experimentalFeatures": {
+      "title": "Neue experimentelle Funktionen",
+      "description": "Probiere neue Funktionen aus, bevor sie allgemein verfügbar sind.",
+      "saving": "Wird gespeichert…",
+      "saved": "Gespeichert",
+      "saveFailed": "Deine Einstellung konnte nicht gespeichert werden. Bitte versuche es erneut.",
+      "loadFailed": "Deine Einstellung konnte nicht geladen werden. Bitte lade die Seite neu."
     }
   }
 }

@@ -28,6 +28,8 @@ export default function DeleteAccountPage() {
 
       if (response.ok) {
         // Redirect to homepage or logout page
+        // Intentional full page load so all client-side session state is discarded.
+        // eslint-disable-next-line @next/next/no-location-assign-relative-destination
         window.location.href = '/';
       } else {
         throw new Error('Failed to delete account');

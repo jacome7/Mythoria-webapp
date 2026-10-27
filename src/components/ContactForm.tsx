@@ -5,6 +5,7 @@ import { Ticket } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
+import { useRouter } from '@/i18n/routing';
 
 interface ContactFormProps {
   className?: string;
@@ -13,6 +14,7 @@ interface ContactFormProps {
 // Separate component for search params to handle suspense
 function ContactFormContent({ className = '' }: ContactFormProps) {
   const tContactForm = useTranslations('ContactForm');
+  const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isSignedIn } = useUser();
   const [formData, setFormData] = useState({
@@ -117,7 +119,7 @@ function ContactFormContent({ className = '' }: ContactFormProps) {
 
         // Redirect to homepage after 4 seconds
         setTimeout(() => {
-          window.location.href = '/';
+          router.push('/');
         }, 4000);
       } else {
         setResponseMessage(result.error || tContactForm('errors.createFailed'));
@@ -262,7 +264,7 @@ function ContactFormContent({ className = '' }: ContactFormProps) {
                   </button>
                 )}
                 {isSuccess && (
-                  <button className="btn btn-primary" onClick={() => (window.location.href = '/')}>
+                  <button className="btn btn-primary" onClick={() => router.push('/')}>
                     {tContactForm('modal.goToHomepage')}
                   </button>
                 )}

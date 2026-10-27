@@ -102,6 +102,7 @@ EXPOSE 3000
 # Set the environment variable for the port.
 ENV PORT=3000
 ENV NODE_ENV=production
+ENV STORY_TEMPLATES_ENABLED=false
 ENV HOSTNAME="0.0.0.0"
 ENV APP_GIT_SHA=$APP_GIT_SHA
 

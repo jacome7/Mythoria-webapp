@@ -131,6 +131,8 @@ function BuyCreditsContent() {
 
             setTimeout(() => {
               hasProcessedPayment.current = false;
+              // Intentional full page load so the refreshed credit balance is picked up everywhere.
+              // eslint-disable-next-line @next/next/no-location-assign-relative-destination
               window.location.href = `/${locale}/my-stories`;
             }, 3000);
             return;

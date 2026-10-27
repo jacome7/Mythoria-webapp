@@ -2,9 +2,14 @@ import type { Metadata } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
 import SampleBookDetailPage from '@/components/SampleBookDetailPage';
 import { getSeoSampleBook } from '@/content/sample-books/seo';
-import { buildPublicRedirectSearch } from '@/lib/campaign-context';
+import { buildPublicRedirectSearch, buildStoryAuthReturnSearch } from '@/lib/campaign-context';
+import { getTranslations } from 'next-intl/server';
+import { getTemplateForSample } from '@/lib/story-templates/catalog';
+import { getStoryTemplateAccess } from '@/lib/story-templates/access';
 import { getSampleBookBySlug, getSampleBookChapter } from '@/lib/sample-books/catalog';
 import { buildAbsoluteUrl, buildLocalizedUrl } from '@/lib/seo';
+
+export const dynamic = 'force-dynamic';
 
 interface SampleBookRouteProps {
   params: Promise<{ locale: string; slug: string }>;
@@ -50,12 +55,26 @@ export default async function SampleBookPage({ params, searchParams }: SampleBoo
   const seo = getSeoSampleBook(slug);
   const canonicalLocale = seo?.locale ?? book.locale;
   if (locale !== canonicalLocale) {
+    const safeQuery = buildPublicRedirectSearch(query);
     permanentRedirect(
-      `/${canonicalLocale}/sample-books/${book.slug}${buildPublicRedirectSearch(query)}`,
+      `/${canonicalLocale}/sample-books/${book.slug}${safeQuery.size ? `?${safeQuery}` : ''}`,
     );
   }
 
   const chapter = await getSampleBookChapter(book);
+  const template = (await getStoryTemplateAccess())
+    ? getTemplateForSample(book.slug, locale)
+    : null;
+  let createSimilar: { href: string; label: string } | undefined;
+  if (template) {
+    const safeQuery = buildStoryAuthReturnSearch(query);
+    safeQuery.set('templateId', template.id);
+    const t = await getTranslations({ locale, namespace: 'StoryTemplates' });
+    createSimilar = {
+      href: `/${locale}/tell-your-story/step-1?${safeQuery}`,
+      label: t('createSimilar'),
+    };
+  }
   const canonical = buildLocalizedUrl(canonicalLocale, `/sample-books/${book.slug}`);
   const isMythoriaCreatedExample = book.publicProvenance === 'mythoria_created_example';
   const isFictionalBook = Boolean(book.fictionalUserContext) && !isMythoriaCreatedExample;
@@ -114,7 +133,13 @@ export default async function SampleBookPage({ params, searchParams }: SampleBoo
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <SampleBookDetailPage book={book} chapter={chapter} locale={locale} seo={seo} />
+      <SampleBookDetailPage
+        book={book}
+        chapter={chapter}
+        locale={locale}
+        seo={seo}
+        createSimilar={createSimilar}
+      />
     </>
   );
 }

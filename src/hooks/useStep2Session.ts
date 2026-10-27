@@ -51,16 +51,18 @@ interface SessionData {
   images: PersistedImage[];
   audio: { objectPath?: string; status: AnalysisStatus } | null;
   lastSaved: number;
+  selectedCharacterIds?: string[];
 }
 
 function readSession(): SessionData | null {
   if (typeof window === 'undefined') return null;
-  const saved = sessionStorage.getItem('step2Data');
-  if (!saved) return null;
   try {
-    return JSON.parse(saved) as SessionData;
-  } catch (error) {
-    console.error('Error loading saved step-2 data:', error);
+    const saved = sessionStorage.getItem('step2Data');
+    if (!saved) return null;
+    const data = JSON.parse(saved) as SessionData;
+    if (typeof data.text !== 'string' || !Array.isArray(data.images)) return null;
+    return data;
+  } catch {
     return null;
   }
 }
@@ -110,6 +112,9 @@ export function useStep2Session() {
   const relocated = readRelocatedInputs();
 
   const [storyText, setStoryText] = useState<string>(initial?.text || '');
+  const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>(
+    initial?.selectedCharacterIds ?? [],
+  );
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>(() =>
     (initial?.images || [])
       .filter((img) => !!img.objectPath) // only restore images that finished uploading
@@ -140,7 +145,7 @@ export function useStep2Session() {
     return null;
   });
   const [isSaving, setIsSaving] = useState(false);
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const savedIndicatorRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const saveToSession = useCallback(() => {
     setIsSaving(true);
@@ -157,23 +162,28 @@ export function useStep2Session() {
         ? { objectPath: uploadedAudio.objectPath, status: uploadedAudio.status }
         : null,
       lastSaved: Date.now(),
+      selectedCharacterIds,
     };
     try {
       sessionStorage.setItem('step2Data', JSON.stringify(data));
-    } catch (e) {
-      console.warn('Failed to persist step-2 session', e);
+    } catch {
+      // Keep the in-memory inputs usable if browser storage is unavailable.
     }
-    setTimeout(() => setIsSaving(false), 500);
-  }, [storyText, uploadedImages, uploadedAudio]);
+    if (savedIndicatorRef.current) clearTimeout(savedIndicatorRef.current);
+    savedIndicatorRef.current = setTimeout(() => setIsSaving(false), 500);
+  }, [storyText, uploadedImages, uploadedAudio, selectedCharacterIds]);
 
-  // Debounced save on text change
+  // Persist every committed edit, including media completion and character choices.
+  // A navigation or refresh within the old ten-second window must not discard inputs.
   useEffect(() => {
-    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
-    saveTimeoutRef.current = setTimeout(() => saveToSession(), 10000);
-    return () => {
-      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
-    };
-  }, [storyText, saveToSession]);
+    saveToSession();
+  }, [saveToSession]);
+  useEffect(
+    () => () => {
+      if (savedIndicatorRef.current) clearTimeout(savedIndicatorRef.current);
+    },
+    [],
+  );
 
   return {
     storyText,
@@ -184,5 +194,7 @@ export function useStep2Session() {
     setUploadedAudio,
     isSaving,
     saveToSession,
+    selectedCharacterIds,
+    setSelectedCharacterIds,
   };
 }

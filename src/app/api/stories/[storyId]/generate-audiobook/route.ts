@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { pricingService, storyService } from '@/db/services';
 import { publishAudiobookRequest } from '@/lib/pubsub';
+import { getRecommendedVoice, getTTSProvider, isValidVoice } from '@/lib/voice-options';
 import { randomUUID } from 'crypto';
 import { resolveServerAnalyticsContext } from '@/lib/analytics/server-context';
 import { analyticsReference } from '@/lib/analytics/reference';
@@ -25,7 +26,7 @@ export async function POST(
 
     const { storyId } = await params;
     const body = await request.json();
-    const { voice = 'coral', includeBackgroundMusic = true, analyticsContext } = body;
+    const { voice: requestedVoice, includeBackgroundMusic = true, analyticsContext } = body;
 
     // Validate that the story belongs to the user and get story data
     const story = await storyService.getStoryById(storyId);
@@ -40,6 +41,21 @@ export async function POST(
         { status: 400 },
       );
     }
+
+    const ttsProvider = getTTSProvider();
+    const hasRequestedVoice = typeof requestedVoice === 'string' && requestedVoice.trim() !== '';
+    if (requestedVoice != null && requestedVoice !== '' && !hasRequestedVoice) {
+      return NextResponse.json({ error: 'Invalid voice' }, { status: 400 });
+    }
+    if (hasRequestedVoice && !isValidVoice(requestedVoice.trim(), ttsProvider)) {
+      return NextResponse.json(
+        { error: `Invalid voice "${requestedVoice}" for TTS provider ${ttsProvider}` },
+        { status: 400 },
+      );
+    }
+    const voice = hasRequestedVoice
+      ? requestedVoice.trim()
+      : getRecommendedVoice(ttsProvider, story.targetAudience);
 
     // Get audiobook pricing
     const audiobookPricing = await pricingService.getPricingByServiceCode('audioBookGeneration');

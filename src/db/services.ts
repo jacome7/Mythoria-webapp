@@ -351,8 +351,16 @@ export const authorService = {
 };
 
 // Story operations
+export class StoryDraftOwnershipError extends Error {
+  constructor() {
+    super('Story not found');
+    this.name = 'StoryDraftOwnershipError';
+  }
+}
+
 export const storyService = {
   async createStory(storyData: {
+    storyId?: string;
     title: string;
     authorId: string;
     plotDescription?: string;
@@ -374,10 +382,21 @@ export const storyService = {
             referralCodeSnapshot: active.code.code,
           };
       }
-      const [story] = await tx
-        .insert(stories)
-        .values({ ...storyData, ...snapshot })
-        .returning();
+      const insert = tx.insert(stories).values({ ...storyData, ...snapshot });
+      const [story] = await (
+        storyData.storyId ? insert.onConflictDoNothing({ target: stories.storyId }) : insert
+      ).returning();
+      if (!story && storyData.storyId) {
+        const [existing] = await tx
+          .select()
+          .from(stories)
+          .where(
+            and(eq(stories.storyId, storyData.storyId), eq(stories.authorId, storyData.authorId)),
+          );
+        if (!existing || existing.authorId !== storyData.authorId)
+          throw new StoryDraftOwnershipError();
+        return existing;
+      }
       return story;
     });
   },
@@ -912,8 +931,16 @@ export const storyCharacterService = {
         characterId,
         role,
       })
+      .onConflictDoNothing({ target: [storyCharacters.storyId, storyCharacters.characterId] })
       .returning();
-    return relation;
+    if (relation) return relation;
+    const [existing] = await db
+      .select()
+      .from(storyCharacters)
+      .where(
+        and(eq(storyCharacters.storyId, storyId), eq(storyCharacters.characterId, characterId)),
+      );
+    return existing;
   },
 
   async getCharactersByStory(storyId: string) {

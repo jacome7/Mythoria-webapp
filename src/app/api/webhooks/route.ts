@@ -57,11 +57,13 @@ export async function POST(req: Request) {
   const wh = new Webhook(WEBHOOK_SECRET);
   let evt: WebhookEvent;
   try {
-    evt = wh.verify(payload, {
+    // svix v2: verify() throws on failure and returns nothing, so parse the verified payload.
+    wh.verify(payload, {
       'svix-id': svix_id,
       'svix-timestamp': svix_timestamp,
       'svix-signature': svix_signature,
-    }) as WebhookEvent;
+    });
+    evt = JSON.parse(payload) as WebhookEvent;
   } catch (err) {
     console.error('Error verifying webhook:', err);
     return new Response('Error occurred', { status: 400 });

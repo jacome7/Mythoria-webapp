@@ -1,19 +1,23 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import ClientAuthWrapper from '../../../components/ClientAuthWrapper';
 import { useLocale, useTranslations } from 'next-intl';
 import { useEffect } from 'react';
+import { buildStoryAuthReturnSearch } from '@/lib/campaign-context';
+import { buildAuthEntryPath } from '@/lib/auth-return';
 
 function SignedInContent() {
   const locale = useLocale();
   const router = useRouter();
   const tLoading = useTranslations('Loading');
+  const search = useSearchParams();
+  const safeQuery = buildStoryAuthReturnSearch(search).toString();
 
   useEffect(() => {
-    router.push(`/${locale}/tell-your-story/step-1`);
-  }, [locale, router]);
+    router.push(`/${locale}/tell-your-story/step-1${safeQuery ? `?${safeQuery}` : ''}`);
+  }, [locale, router, safeQuery]);
 
   return (
     <div className="text-center py-12">
@@ -27,6 +31,9 @@ export default function TellYourStoryPage() {
   const locale = useLocale();
   const tTellYourStoryPage = useTranslations('TellYourStoryPage');
   const tAuth = useTranslations('Auth');
+  const search = useSearchParams();
+  const safeQuery = buildStoryAuthReturnSearch(search);
+  const returnPath = `/${locale}/tell-your-story/step-1${safeQuery.size ? `?${safeQuery}` : ''}`;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -36,10 +43,16 @@ export default function TellYourStoryPage() {
             <h1 className="text-4xl font-bold">{tTellYourStoryPage('signedOut.title')}</h1>
             <p className="text-lg text-gray-600">{tTellYourStoryPage('signedOut.subtitle')}</p>
             <div className="space-x-4">
-              <Link href={`/${locale}/sign-up`} className="btn btn-primary">
+              <Link
+                href={buildAuthEntryPath(locale, 'sign-up', returnPath)}
+                className="btn btn-primary"
+              >
                 {tTellYourStoryPage('signedOut.getStarted')}
               </Link>
-              <Link href={`/${locale}/sign-in`} className="btn btn-outline">
+              <Link
+                href={buildAuthEntryPath(locale, 'sign-in', returnPath)}
+                className="btn btn-outline"
+              >
                 {tAuth('signIn')}
               </Link>
             </div>

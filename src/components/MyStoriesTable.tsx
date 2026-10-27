@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
@@ -16,6 +17,7 @@ export default function MyStoriesTable() {
   const tMyStoriesPage = useTranslations('MyStoriesPage');
   const tCommonActions = useTranslations('Actions');
   const locale = useLocale();
+  const router = useRouter();
 
   const { paginatedStories, loading, fetchStories, setStories } = useStoriesTable();
 
@@ -64,7 +66,7 @@ export default function MyStoriesTable() {
   };
 
   const handlePrint = (story: Story) => {
-    window.location.href = `/${locale}/stories/print/${story.storyId}`;
+    router.push(`/${locale}/stories/print/${story.storyId}`);
   };
 
   const handleDownload = (story: Story) => {

@@ -83,6 +83,14 @@
           "description": "Tout cela plus nouveautés produit et promos spéciales — tel un héraut bienveillant."
         }
       }
+    },
+    "experimentalFeatures": {
+      "title": "Nouvelles fonctionnalités expérimentales",
+      "description": "Essayez les nouvelles fonctionnalités avant leur mise à disposition générale.",
+      "saving": "Enregistrement…",
+      "saved": "Enregistré",
+      "saveFailed": "Impossible d’enregistrer votre préférence. Réessayez.",
+      "loadFailed": "Impossible de charger votre préférence. Actualisez la page."
     }
   }
 }

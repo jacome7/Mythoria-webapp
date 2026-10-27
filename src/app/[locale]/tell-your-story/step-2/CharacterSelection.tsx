@@ -15,6 +15,7 @@ interface Character {
 }
 
 interface Props {
+  initialSelectedIds?: string[];
   onChange?: (ids: string[]) => void;
   characters?: Character[];
   isLoading?: boolean;
@@ -53,6 +54,7 @@ const getCharacterIconPath = (type: string | undefined): string => {
 };
 
 export default function CharacterSelection({
+  initialSelectedIds = [],
   onChange,
   characters,
   isLoading: controlledIsLoading,
@@ -65,7 +67,7 @@ export default function CharacterSelection({
 }: Props) {
   const t = useTranslations('StorySteps.step2');
   const [existingCharacters, setExistingCharacters] = useState<Character[]>([]);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>(initialSelectedIds);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);

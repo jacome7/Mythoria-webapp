@@ -28,6 +28,8 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chart, id }) => {
           // Initialize mermaid with configuration
           mermaid.initialize({
             startOnLoad: false,
+            layout: 'dagre',
+            look: 'classic',
             theme: 'default',
             securityLevel: 'loose',
             fontFamily: 'inherit',

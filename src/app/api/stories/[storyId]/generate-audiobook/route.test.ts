@@ -100,6 +100,47 @@ describe('POST /api/stories/[storyId]/generate-audiobook', () => {
     expect(startProductGenerationMock).not.toHaveBeenCalled();
   });
 
+  it('rejects an invalid voice with 400 before charging credits', async () => {
+    getStoryByIdMock.mockResolvedValue({
+      storyId: 'story-1',
+      authorId: 'author-1',
+      status: 'published',
+      targetAudience: 'children_3-6',
+    });
+
+    const response = (await POST(request({ voice: 'natural_female' }), {
+      params: Promise.resolve({ storyId: 'story-1' }),
+    })) as { status: number; json: () => Promise<{ error: string }> };
+
+    expect(response.status).toBe(400);
+    expect((await response.json()).error).toContain('Invalid voice');
+    expect(startProductGenerationMock).not.toHaveBeenCalled();
+  });
+
+  it('falls back to the recommended voice for the story audience when voice is missing', async () => {
+    getStoryByIdMock.mockResolvedValue({
+      storyId: 'story-1',
+      authorId: 'author-1',
+      status: 'published',
+      targetAudience: 'adult_18+',
+    });
+    getPricingByServiceCodeMock.mockResolvedValue({ credits: 5 });
+    startProductGenerationMock.mockResolvedValue({
+      request: { runId: 'run-1', status: 'pending' },
+      remainingCredits: 10,
+    });
+    publishAudiobookRequestMock.mockResolvedValue('message-1');
+
+    const response = (await POST(request({}), {
+      params: Promise.resolve({ storyId: 'story-1' }),
+    })) as { status: number };
+
+    expect(response.status).toBe(202);
+    expect(publishAudiobookRequestMock).toHaveBeenCalledWith(
+      expect.objectContaining({ voice: 'Charon' }),
+    );
+  });
+
   it('creates one durable request before publishing and records the queued event', async () => {
     getStoryByIdMock.mockResolvedValue({
       storyId: 'story-1',
@@ -116,7 +157,7 @@ describe('POST /api/stories/[storyId]/generate-audiobook', () => {
     updateStoryMock.mockResolvedValue({});
     publishAudiobookRequestMock.mockResolvedValue('message-1');
 
-    const response = (await POST(request({ voice: 'coral', includeBackgroundMusic: true }), {
+    const response = (await POST(request({ voice: 'Sulafat', includeBackgroundMusic: true }), {
       params: Promise.resolve({ storyId: 'story-1' }),
     })) as { status: number; json: () => Promise<unknown> };
 
@@ -155,7 +196,7 @@ describe('POST /api/stories/[storyId]/generate-audiobook', () => {
     updateStoryMock.mockResolvedValue({});
     publishAudiobookRequestMock.mockRejectedValue(new Error('pubsub down'));
 
-    const response = (await POST(request({ voice: 'coral', includeBackgroundMusic: true }), {
+    const response = (await POST(request({ voice: 'Sulafat', includeBackgroundMusic: true }), {
       params: Promise.resolve({ storyId: 'story-1' }),
     })) as { status: number; json: () => Promise<unknown> };
 

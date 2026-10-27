@@ -8,6 +8,7 @@ interface SampleBookDetailPageProps {
   chapter: string | null;
   locale: string;
   seo?: SeoSampleBook;
+  createSimilar?: { href: string; label: string };
 }
 
 export default function SampleBookDetailPage({
@@ -15,6 +16,7 @@ export default function SampleBookDetailPage({
   chapter,
   locale,
   seo,
+  createSimilar,
 }: SampleBookDetailPageProps) {
   const isMythoriaCreatedExample = book.publicProvenance === 'mythoria_created_example';
   const isFictionalBook = Boolean(book.fictionalUserContext) && !isMythoriaCreatedExample;
@@ -81,6 +83,11 @@ export default function SampleBookDetailPage({
                 {book.title}
               </h1>
               <p className="mt-5 text-lg leading-relaxed text-base-content/80">{book.synopsis}</p>
+              {createSimilar ? (
+                <Link href={createSimilar.href} className="btn btn-primary mt-5">
+                  {createSimilar.label}
+                </Link>
+              ) : null}
 
               {book.shortExcerpt ? (
                 <blockquote className="mt-6 border-l-4 border-secondary pl-4 text-lg italic text-base-content/80">

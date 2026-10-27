@@ -25,7 +25,14 @@ function withoutLeadingEmoji(text: string) {
 function FeatureRow({ icon, text }: { icon: string; text: string }) {
   return (
     <p className="flex items-center justify-center gap-2">
-      <Image src={icon} alt="" width={24} height={24} aria-hidden="true" className="shrink-0" />
+      <Image
+        src={icon}
+        alt=""
+        width={24}
+        height={24}
+        aria-hidden="true"
+        className="size-6 shrink-0 object-contain"
+      />
       <span>{withoutLeadingEmoji(text)}</span>
     </p>
   );
@@ -48,7 +55,7 @@ export default function SignInClient({ locale }: SignInClientProps) {
               src="/images/logo/papercut.jpg"
               alt="Mythoria Logo"
               width={256}
-              height={168}
+              height={256}
               className="drop-shadow-lg"
             />
           </div>
@@ -76,13 +83,14 @@ export default function SignInClient({ locale }: SignInClientProps) {
         <div className="w-full max-w-md">
           <div className="bg-white rounded-2xl shadow-2xl p-2 sm:p-4 lg:p-8 border border-orange-100">
             <div className="lg:hidden flex justify-center mb-6">
-              <Image src="/images/logo/papercut.jpg" alt="Mythoria Logo" width={128} height={84} />
+              <Image src="/images/logo/papercut.jpg" alt="Mythoria Logo" width={128} height={128} />
             </div>
 
             {/* Mobile-only first-time user message */}
             <div className="lg:hidden text-center mb-6 p-4 bg-orange-50 rounded-lg border border-orange-100">
               <p className="text-sm text-gray-600 mb-3">
-                {tSignInPage('firstTimeText')}{' '}
+                {tSignInPage('firstTimeText')}
+                <br />
                 <Link href={signUpUrl} className="font-medium underline text-primary">
                   {tSignInPage('createAccountLink')}
                 </Link>{' '}
@@ -95,7 +103,7 @@ export default function SignInClient({ locale }: SignInClientProps) {
 
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-2">{tSignInPage('pageTitle')}</h2>
-              <p className="text-gray-600">{tSignInPage('pageSubtitle')}</p>
+              <p className="text-gray-600 whitespace-pre-line">{tSignInPage('pageSubtitle')}</p>
             </div>
             <SignIn
               routing="hash"

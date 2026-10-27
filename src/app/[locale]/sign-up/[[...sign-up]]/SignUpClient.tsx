@@ -41,7 +41,14 @@ function withoutLeadingEmoji(text: string) {
 function FeatureRow({ icon, text }: { icon: string; text: string }) {
   return (
     <p className="flex items-center justify-center gap-2">
-      <Image src={icon} alt="" width={24} height={24} aria-hidden="true" className="shrink-0" />
+      <Image
+        src={icon}
+        alt=""
+        width={24}
+        height={24}
+        aria-hidden="true"
+        className="size-6 shrink-0 object-contain"
+      />
       <span>{withoutLeadingEmoji(text)}</span>
     </p>
   );

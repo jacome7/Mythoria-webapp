@@ -27,7 +27,7 @@ import {
 } from '@/components/AudioPlayer';
 import { SelfPrintModal } from '../../../../../components/self-print/SelfPrintModal';
 import VoiceSamplePlayer from '@/components/VoiceSamplePlayer';
-import { getAvailableVoices, getDefaultVoice } from '@/lib/voice-options';
+import { getAvailableVoices, getRecommendedVoice, getTTSProvider } from '@/lib/voice-options';
 import { TargetAudience } from '@/types/story-enums';
 import { getGoogleAnalyticsContext } from '@/lib/analytics';
 
@@ -146,7 +146,24 @@ export default function ListenStoryPage() {
   const [audiobookCost, setAudiobookCost] = useState<AudiobookCost | null>(null);
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
   const [audioGenerationProgress, setAudioGenerationProgress] = useState<string>('');
-  const [selectedVoice, setSelectedVoice] = useState<string>(getDefaultVoice());
+  const [selectedVoice, setSelectedVoice] = useState<string>(getRecommendedVoice(getTTSProvider()));
+  const voiceTouchedRef = useRef(false);
+  const recommendedVoice = useMemo(
+    () => getRecommendedVoice(getTTSProvider(), story?.targetAudience),
+    [story?.targetAudience],
+  );
+
+  // Preselect the recommended voice once the story is known, unless the user already chose one
+  useEffect(() => {
+    if (!voiceTouchedRef.current) {
+      setSelectedVoice(recommendedVoice);
+    }
+  }, [recommendedVoice]);
+
+  const handleVoiceChange = useCallback((voice: string) => {
+    voiceTouchedRef.current = true;
+    setSelectedVoice(voice);
+  }, []);
   const [includeBackgroundMusic, setIncludeBackgroundMusic] = useState(true);
   const audiobookIdempotencyKeyRef = useRef<string | null>(null);
   const { toasts, removeToast, successWithAction, error: toastError, info: toastInfo } = useToast();
@@ -208,9 +225,11 @@ export default function ListenStoryPage() {
     const voices = getAvailableVoices();
     return voices.map((voice) => ({
       value: voice.value,
-      label: `${tVoices(voice.labelKey)} — ${tVoices(`shorts.${voice.value.toLowerCase()}`)}`,
+      label: `${tVoices(voice.labelKey)} — ${tVoices(`shorts.${voice.value.toLowerCase()}`)}${
+        voice.value === recommendedVoice ? ` (${tVoices('recommended')})` : ''
+      }`,
     }));
-  }, [tVoices]);
+  }, [tVoices, recommendedVoice]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -562,7 +581,7 @@ export default function ListenStoryPage() {
                                   {/* Voice Selection */}
                                   <VoiceSelector
                                     selectedVoice={selectedVoice}
-                                    onVoiceChange={setSelectedVoice}
+                                    onVoiceChange={handleVoiceChange}
                                     voiceOptions={voiceOptions}
                                     tVoices={tVoices}
                                     sampleUrl={voiceSampleUrl}
@@ -707,7 +726,7 @@ export default function ListenStoryPage() {
                             {/* Voice Selection */}
                             <VoiceSelector
                               selectedVoice={selectedVoice}
-                              onVoiceChange={setSelectedVoice}
+                              onVoiceChange={handleVoiceChange}
                               voiceOptions={voiceOptions}
                               tVoices={tVoices}
                               sampleUrl={voiceSampleUrl}

@@ -83,6 +83,14 @@
           "description": "Tudo isso mais novidades da plataforma e promoções especiais — como um arauto simpático."
         }
       }
+    },
+    "experimentalFeatures": {
+      "title": "Novas funcionalidades experimentais",
+      "description": "Experimenta novas funcionalidades antes de estarem disponíveis para todos.",
+      "saving": "A guardar…",
+      "saved": "Guardado",
+      "saveFailed": "Não foi possível guardar a tua preferência. Tenta novamente.",
+      "loadFailed": "Não foi possível carregar a tua preferência. Atualiza a página."
     }
   }
 }

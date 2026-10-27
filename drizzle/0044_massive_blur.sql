@@ -1,0 +1,1 @@
+ALTER TABLE "authors" ADD COLUMN "experimental_features_enabled" boolean DEFAULT false NOT NULL;

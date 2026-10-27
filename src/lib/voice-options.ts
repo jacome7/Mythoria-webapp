@@ -59,7 +59,44 @@ export function getTTSProvider(): TTSProvider {
   if (provider === 'google-genai') {
     return 'google-genai';
   }
-  return 'openai'; // Default to OpenAI
+  if (provider === 'openai') {
+    return 'openai';
+  }
+  return 'google-genai'; // Default to Gemini TTS
+}
+
+/**
+ * Recommended Gemini voice per audience group.
+ * Mirrors SGW `voice-registry` `resolveDefaultVoice` and must be kept in sync.
+ * Groups follow SGW `extractTargetAge` (src/shared/utils.ts):
+ * toddlers (children_0-2), children (children_3-6, 7-10, 11-14),
+ * young adults (young_adult_15-17), adults (adult_18+), all_ages / unknown.
+ */
+export const GEMINI_RECOMMENDED_VOICE_BY_AUDIENCE: Record<string, string> = {
+  'children_0-2': 'Sulafat',
+  'children_3-6': 'Puck',
+  'children_7-10': 'Puck',
+  'children_11-14': 'Puck',
+  'young_adult_15-17': 'Zephyr',
+  'adult_18+': 'Charon',
+  all_ages: 'Sulafat',
+};
+
+/**
+ * Get the recommended voice for a provider and story target audience
+ */
+export function getRecommendedVoice(
+  provider?: TTSProvider,
+  targetAudience?: string | null,
+): string {
+  const activeProvider = provider ?? getTTSProvider();
+  if (activeProvider !== 'google-genai') {
+    return DEFAULT_VOICES[activeProvider] ?? DEFAULT_VOICES['openai'];
+  }
+  return (
+    (targetAudience && GEMINI_RECOMMENDED_VOICE_BY_AUDIENCE[targetAudience]) ||
+    DEFAULT_VOICES['google-genai']
+  );
 }
 
 /**

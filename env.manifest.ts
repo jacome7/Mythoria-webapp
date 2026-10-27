@@ -35,6 +35,14 @@ export interface EnvVarDescriptor {
 
 export const envManifest: EnvVarDescriptor[] = [
   {
+    name: 'STORY_TEMPLATES_ENABLED',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    default: 'false',
+    source: 'substitution',
+    note: 'Enables editorial story templates and mapped sample creation links. Default off.',
+  },
+  {
     name: 'REFERRAL_PROGRAM_ENABLED',
     required: false,
     scopes: ['runtime', 'dev', 'prod'],
@@ -637,7 +645,7 @@ export const envManifest: EnvVarDescriptor[] = [
     scopes: ['prod', 'build', 'public', 'dev'],
     default: 'google-genai',
     source: 'substitution',
-    note: 'TTS provider for audiobooks: openai or google-genai.',
+    note: 'TTS provider for audiobooks: google-genai (default, gemini-3.8-flash-tts) or openai.',
   },
   {
     name: 'NEXT_PUBLIC_DEFAULT_CURRENCY',

@@ -52,7 +52,6 @@ describe('Clerk signup producer', () => {
     jest.clearAllMocks();
     jest.useFakeTimers().setSystemTime(now);
     process.env.CLERK_WEBHOOK_SECRET = 'test-secret';
-    verifyMock.mockReturnValue(event(created.getTime()));
     selectMock.mockReturnValue(rows([{ authorId: 'author-1', id: 'credit-1' }]));
     createAuthorMock.mockResolvedValue({ authorId: 'author-1' });
   });
@@ -60,8 +59,11 @@ describe('Clerk signup producer', () => {
     jest.useRealTimers();
     delete process.env.CLERK_WEBHOOK_SECRET;
   });
-  const request = () =>
-    new Request('https://mythoria.pt/api/webhooks', { method: 'POST', body: '{}' });
+  const request = (...createdAt: [unknown?]) =>
+    new Request('https://mythoria.pt/api/webhooks', {
+      method: 'POST',
+      body: JSON.stringify(event(createdAt.length ? createdAt[0] : created.getTime())),
+    });
   it('uses the actual creation time even when the author was synchronized before the webhook', async () => {
     await POST(request());
     await POST(request());
@@ -91,8 +93,7 @@ describe('Clerk signup producer', () => {
   it.each([undefined, null, NaN, now.getTime() + 1, now.getTime() - 86400000])(
     'never manufactures a new event time from invalid or stale creation %p',
     async (value) => {
-      verifyMock.mockReturnValue(event(value));
-      expect((await POST(request())).status).toBe(200);
+      expect((await POST(request(value))).status).toBe(200);
       expect(valuesMock).not.toHaveBeenCalled();
     },
   );

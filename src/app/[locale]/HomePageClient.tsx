@@ -16,6 +16,7 @@ import type { IntentContext } from '@/types/intent-context';
 import type { StoryIntent } from '@/constants/intents';
 
 interface HomePageClientProps {
+  storyTemplatesEnabled?: boolean;
   initialHeroIntentOverride?: StoryIntent | null;
   initialIntentContext?: IntentContext | null;
   intentOverrideActive?: boolean;
@@ -31,6 +32,7 @@ export default function HomePageClient({
   initialIntentContext = null,
   intentOverrideActive = false,
   homepageGuides = [],
+  storyTemplatesEnabled = false,
 }: HomePageClientProps) {
   const tHomePage = useTranslations('HomePage');
   const locale = useLocale();
@@ -42,6 +44,7 @@ export default function HomePageClient({
         initialIntentContext={initialIntentContext}
       />
       <HomepageBookGallery
+        storyTemplatesEnabled={storyTemplatesEnabled}
         initialIntentContext={initialIntentContext}
         intentOverrideActive={intentOverrideActive}
       />

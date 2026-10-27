@@ -12,8 +12,11 @@ import { getGraphicalStyleMessageKey } from '@/lib/sample-books/graphical-style'
 import type { IntentContext } from '@/types/intent-context';
 import type { SampleBook } from '@/types/sample-book';
 import styles from './HomepageBookGallery.module.css';
+import LandingCreationLink from '@/components/landing-pages/LandingCreationLink';
+import { getTemplateForSample } from '@/lib/story-templates/catalog';
 
 interface HomepageBookGalleryProps {
+  storyTemplatesEnabled?: boolean;
   initialIntentContext?: IntentContext | null;
   intentOverrideActive?: boolean;
 }
@@ -58,8 +61,10 @@ function sortBooksByContext(
 export default function HomepageBookGallery({
   initialIntentContext = null,
   intentOverrideActive = false,
+  storyTemplatesEnabled = false,
 }: HomepageBookGalleryProps) {
   const t = useTranslations('HomePage.gallery');
+  const tTemplates = useTranslations('StoryTemplates');
   const tGraphicalStyles = useTranslations('GraphicalStyles');
   const currentLocale = useLocale();
   const cookieIntentContext = useIntentContext();
@@ -69,6 +74,10 @@ export default function HomepageBookGallery({
 
   const [books, setBooks] = useState<SampleBook[]>([]);
   const [selectedBook, setSelectedBook] = useState<SampleBook | null>(null);
+  const selectedTemplate =
+    storyTemplatesEnabled && selectedBook
+      ? getTemplateForSample(selectedBook.slug, currentLocale)
+      : null;
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
   const [isPaused, setIsPaused] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -408,6 +417,14 @@ export default function HomepageBookGallery({
                   >
                     {t('openDetails')}
                   </Link>
+                  {selectedTemplate ? (
+                    <LandingCreationLink
+                      href={`/${currentLocale}/tell-your-story/step-1?templateId=${encodeURIComponent(selectedTemplate.id)}`}
+                      className="btn btn-secondary mt-3 w-full"
+                    >
+                      {tTemplates('createSimilar')}
+                    </LandingCreationLink>
+                  ) : null}
                 </div>
               </div>
             </div>

@@ -1,0 +1,162 @@
+{
+  "selectorTitle": "Où commence ton histoire ?",
+  "selectorDescription": "Choisis une idée ou apporte la tienne. Tu peux changer chaque détail.",
+  "browse": "Explorer les idées",
+  "mine": "Partir de mon idée",
+  "summary": "Ton histoire jusqu’ici",
+  "continue": "Continuer avec cette histoire",
+  "personalize": "La rendre plus personnelle",
+  "skip": "Passer cette question",
+  "customAnswer": "Ma propre réponse",
+  "customAnswerPlaceholder": "Quelques mots suffisent",
+  "more": "Ajouter encore un peu",
+  "end": "Terminer la personnalisation",
+  "round": "Série {current}",
+  "loading": "Préparation des prochaines questions…",
+  "fallback": "Voici quelques questions simples pour commencer.",
+  "memoryContributionRequired": "Ajoute au moins un détail réel avant de continuer une histoire de souvenirs.",
+  "memoryContributionLabel": "Un souvenir ou un détail réel",
+  "memoryContributionPlaceholder": "Raconte un fait vécu, ou ajoute-le par la voix ou une image.",
+  "modeLabel": "Quel type d’histoire ?",
+  "fiction": "Une histoire imaginaire",
+  "memory": "Des souvenirs réels",
+  "modeHelp": "L’imagination peut compléter un monde fictif. Une histoire de souvenirs utilise uniquement les faits que tu partages.",
+  "changeTitle": "Changer d’idée de départ ?",
+  "changeDescription": "Cela remplacera le modèle actuel et les réponses guidées. Ta contribution initiale restera disponible.",
+  "confirmChange": "Changer d’idée",
+  "cancel": "Continuer à écrire",
+  "resume": "Reprendre mon histoire",
+  "newStory": "Commencer une nouvelle histoire",
+  "back": "Retour",
+  "choose": "Choisir cette idée",
+  "selected": "Sélectionné",
+  "recommended": "Suggestion pour toi",
+  "showAll": "Voir toutes les idées",
+  "clear": "Effacer",
+  "save": "Enregistrer",
+  "questionProgress": "Question {current} sur {total}",
+  "error": "Une erreur s’est produite. Tes réponses sont toujours là.",
+  "retry": "Réessayer",
+  "createSimilar": "Créer une histoire comme celle-ci",
+  "optional": "Facultatif",
+  "addDetails": "Ajouter des détails",
+  "preferences": "Préférences de l’histoire",
+  "audience": "Pour qui ?",
+  "tone": "Ton",
+  "artStyle": "Style d’illustration",
+  "writingStyle": "Style d’écriture",
+  "questionNext": "Utiliser cette réponse",
+  "resetDescription": "Repartir de zéro sur cet appareil ? Les informations et les choix de l’histoire en cours seront effacés. Les histoires enregistrées resteront dans ta bibliothèque.",
+  "confirmReset": "Repartir de zéro",
+  "editAnswer": "Modifier la réponse",
+  "removeAnswer": "Supprimer la réponse",
+  "roundComplete": "Cette série est terminée",
+  "guideComplete": "Ton histoire est prête pour la suite",
+  "contributionHelp": "Partage seulement ce que tu veux inclure. Nous n’inventerons pas de faits personnels.",
+  "restructureTitle": "Actualiser le plan de l’histoire ?",
+  "restructureDescription": "Reconstruire le plan à partir de ces détails ? Cela peut remplacer des détails modifiés dans les étapes suivantes.",
+  "confirmRestructure": "Utiliser cette version",
+  "structureError": "Impossible de terminer le plan. Tes informations sont enregistrées ; réessaie.",
+  "continueWithoutGuide": "Continuer sans le guide",
+  "templateUnavailable": "Cette idée n’est pas disponible. Choisis-en une autre ou utilise la tienne.",
+  "previewReplacement": "Relire la version proposée",
+  "characters": "Personnages",
+  "templates": {
+    "drawing-adventure": {
+      "title": "Un dessin prend vie",
+      "premise": "Un personnage curieux qui adore inventer découvre qu’un dessin peut sortir de la page et l’accompagner dans une aventure pleine d’amitié.",
+      "description": "Transforme un dessin imaginaire en nouvel ami."
+    },
+    "moonlight-adventure": {
+      "title": "Une petite aventure au clair de lune",
+      "premise": "Un personnage curieux et un compagnon amical voyagent paisiblement sous la lune, puis rentrent dans un endroit douillet pour se reposer.",
+      "description": "Une douce aventure pour ralentir en fin de journée."
+    },
+    "pet-mission": {
+      "title": "Un animal en mission secrète",
+      "premise": "Un animal plein de ressources découvre un petit mystère et aide ses amis à le résoudre avec curiosité et gentillesse.",
+      "description": "Offre une aventure inattendue à un animal fictif."
+    },
+    "magic-doorway": {
+      "title": "La porte cachée",
+      "premise": "Un personnage explorateur trouve une porte inattendue et suit des indices vers un monde magique et accueillant.",
+      "description": "Ouvre une porte sur un monde de possibilités."
+    },
+    "little-love": {
+      "title": "L’amour dans les petites choses",
+      "premise": "L’histoire de deux personnes, racontée à travers les petits gestes et les objets du quotidien qui comptent pour elles.",
+      "description": "Célèbre l’amour dans les détails du quotidien."
+    },
+    "travel-memories": {
+      "title": "Un voyage à garder",
+      "premise": "Un voyage raconté à travers des découvertes, des détours et des moments à garder.",
+      "description": "Transforme un voyage réel ou imaginaire en histoire."
+    },
+    "grandparent-memory": {
+      "title": "Des histoires à transmettre",
+      "premise": "Une histoire familiale tissée à partir des souvenirs, expressions et détails que tu partages sur un grand-parent.",
+      "description": "Commence par un souvenir, une expression ou un détail réel."
+    },
+    "teamwork-day": {
+      "title": "Chacun apporte quelque chose",
+      "premise": "Une équipe relève un défi amusant et découvre comment des talents différents permettent à chacun de contribuer.",
+      "description": "Une aventure sur la coopération et la place de chacun."
+    }
+  },
+  "questions": {
+    "tone": {
+      "text": "Quelle ambiance souhaites-tu ?",
+      "first": "Chaleureuse et douce",
+      "second": "Amusante et pleine d’humour",
+      "third": "Vivante et aventureuse"
+    },
+    "pace": {
+      "text": "Quel rythme préfères-tu ?",
+      "first": "Des scènes courtes et claires",
+      "second": "Un parcours lent et descriptif",
+      "third": "Une succession de moments animés"
+    },
+    "presentation": {
+      "text": "Comment aimerais-tu la raconter ?",
+      "first": "Comme un récit continu",
+      "second": "En chapitres courts",
+      "third": "Comme une collection de moments"
+    },
+    "focus": {
+      "text": "Que doit mettre en valeur l’écriture ?",
+      "first": "Les détails que tu partages",
+      "second": "L’atmosphère de chaque moment",
+      "third": "Le sens des gestes du quotidien"
+    },
+    "drawing": {
+      "text": "Qu’est-ce qui pourrait sortir de la page ?",
+      "first": "Un robot amical",
+      "second": "Un tout petit dragon",
+      "third": "Un arbre qui parle"
+    },
+    "moon": {
+      "text": "Où mène le chemin au clair de lune ?",
+      "first": "Une pâtisserie sur la lune",
+      "second": "Un jardin d’étoiles endormies",
+      "third": "Une île flottante paisible"
+    },
+    "pet": {
+      "text": "Quelle est la mission de l’animal ?",
+      "first": "Retrouver un jouet perdu",
+      "second": "Aider un nouvel ami",
+      "third": "Livrer une petite surprise"
+    },
+    "door": {
+      "text": "Que trouve-t-on derrière la porte ?",
+      "first": "Une bibliothèque de cartes vivantes",
+      "second": "Un jardin dans les nuages",
+      "third": "Une ville dans un arbre"
+    },
+    "team": {
+      "text": "Quel défi rassemble l’équipe ?",
+      "first": "Un match amical",
+      "second": "Un parcours d’obstacles amusant",
+      "third": "Une chasse au trésor"
+    }
+  }
+}

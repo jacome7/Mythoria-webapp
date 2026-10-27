@@ -1,0 +1,162 @@
+{
+  "selectorTitle": "Por onde começa a tua história?",
+  "selectorDescription": "Escolhe uma ideia ou traz a tua. Podes mudar todos os detalhes.",
+  "browse": "Explorar ideias",
+  "mine": "Começar com a minha ideia",
+  "summary": "A tua história até agora",
+  "continue": "Continuar",
+  "personalize": "Tornar mais pessoal",
+  "skip": "Saltar esta pergunta",
+  "customAnswer": "A minha resposta",
+  "customAnswerPlaceholder": "Bastam algumas palavras",
+  "more": "Acrescentar mais um pouco",
+  "end": "Terminar a personalização",
+  "round": "Ronda {current}",
+  "loading": "A preparar as próximas perguntas…",
+  "fallback": "Aqui ficam algumas perguntas simples para começar.",
+  "memoryContributionRequired": "Acrescenta pelo menos um detalhe real antes de continuar com uma história de memórias.",
+  "memoryContributionLabel": "Uma memória ou um detalhe real",
+  "memoryContributionPlaceholder": "Conta algo que aconteceu mesmo, ou acrescenta-o por voz ou imagem.",
+  "modeLabel": "Que tipo de história?",
+  "fiction": "Uma história imaginada",
+  "memory": "Memórias reais",
+  "modeHelp": "A imaginação pode preencher um mundo de ficção. Uma história de memórias usa apenas os factos que partilhas.",
+  "changeTitle": "Mudar de ideia inicial?",
+  "changeDescription": "Isto substitui o modelo atual e as respostas guiadas. O teu contributo original continua disponível.",
+  "confirmChange": "Mudar de ideia",
+  "cancel": "Continuar a trabalhar",
+  "resume": "Retomar a minha história",
+  "newStory": "Começar uma nova história",
+  "back": "Voltar",
+  "choose": "Escolher esta ideia",
+  "selected": "Selecionado",
+  "recommended": "Sugestão para ti",
+  "showAll": "Ver todas as ideias",
+  "clear": "Limpar",
+  "save": "Guardar",
+  "questionProgress": "Pergunta {current} de {total}",
+  "error": "Algo correu mal. As tuas respostas continuam aqui.",
+  "retry": "Tentar novamente",
+  "createSimilar": "Criar uma história assim",
+  "optional": "Opcional",
+  "addDetails": "Acrescentar detalhes",
+  "preferences": "Preferências da história",
+  "audience": "Para quem é?",
+  "tone": "Tom",
+  "artStyle": "Estilo de ilustração",
+  "writingStyle": "Estilo de escrita",
+  "questionNext": "Usar esta resposta",
+  "resetDescription": "Começar de novo neste dispositivo? Isto limpa os dados e as escolhas da história atual. As histórias guardadas continuam na tua biblioteca.",
+  "confirmReset": "Começar de novo",
+  "editAnswer": "Editar resposta",
+  "removeAnswer": "Remover resposta",
+  "roundComplete": "Esta ronda está concluída",
+  "guideComplete": "A tua história está pronta para continuar",
+  "contributionHelp": "Partilha apenas o que queres incluir. Não vamos inventar factos pessoais.",
+  "restructureTitle": "Atualizar o resumo da história?",
+  "restructureDescription": "Reconstruir o resumo com estes detalhes? Isto pode substituir detalhes que editaste nos passos seguintes.",
+  "confirmRestructure": "Usar esta versão",
+  "structureError": "Não foi possível concluir o resumo. Os teus dados estão guardados; tenta novamente.",
+  "continueWithoutGuide": "Continuar sem o guia",
+  "templateUnavailable": "Esta ideia não está disponível. Escolhe outra ou usa a tua.",
+  "previewReplacement": "Rever a versão proposta",
+  "characters": "Personagens",
+  "templates": {
+    "drawing-adventure": {
+      "title": "Um desenho ganha vida",
+      "premise": "Uma pessoa curiosa, que adora inventar, descobre que um desenho pode sair do papel e acompanhá-la numa aventura cheia de amizade.",
+      "description": "Transforma um desenho imaginário num novo amigo."
+    },
+    "moonlight-adventure": {
+      "title": "Uma pequena aventura ao luar",
+      "premise": "Uma personagem curiosa e uma companhia amiga viajam calmamente sob a lua e regressam a um lugar acolhedor para descansar.",
+      "description": "Uma aventura tranquila para abrandar o dia."
+    },
+    "pet-mission": {
+      "title": "Um animal numa missão secreta",
+      "premise": "Um animal cheio de recursos descobre um pequeno mistério e ajuda os amigos a resolvê-lo com curiosidade e carinho.",
+      "description": "Dá a um animal de ficção uma aventura inesperada."
+    },
+    "magic-doorway": {
+      "title": "A porta escondida",
+      "premise": "Uma personagem exploradora encontra uma porta inesperada e segue pistas até um mundo mágico e acolhedor.",
+      "description": "Abre uma porta para um mundo de possibilidades."
+    },
+    "little-love": {
+      "title": "O amor nas pequenas coisas",
+      "premise": "A história de duas pessoas, contada através dos pequenos gestos e objetos do quotidiano que lhes são queridos.",
+      "description": "Celebra o amor nos detalhes de todos os dias."
+    },
+    "travel-memories": {
+      "title": "Uma viagem para guardar",
+      "premise": "Uma viagem contada através de descobertas, desvios e momentos que vale a pena guardar.",
+      "description": "Transforma uma viagem real ou imaginada numa história."
+    },
+    "grandparent-memory": {
+      "title": "Histórias para passar adiante",
+      "premise": "Uma história familiar tecida com as memórias, expressões e detalhes que partilhas sobre uma avó ou um avô.",
+      "description": "Começa com uma memória, expressão ou detalhe real."
+    },
+    "teamwork-day": {
+      "title": "Cada pessoa conta",
+      "premise": "Uma equipa enfrenta um desafio divertido e descobre como os talentos diferentes ajudam todos a contribuir.",
+      "description": "Uma aventura sobre cooperação e pertença."
+    }
+  },
+  "questions": {
+    "tone": {
+      "text": "Que ambiente queres para a história?",
+      "first": "Caloroso e tranquilo",
+      "second": "Divertido e bem-humorado",
+      "third": "Vivo e aventureiro"
+    },
+    "pace": {
+      "text": "Que ritmo preferes?",
+      "first": "Cenas curtas e claras",
+      "second": "Um percurso calmo e descritivo",
+      "third": "Uma sequência animada de momentos"
+    },
+    "presentation": {
+      "text": "Como gostavas que fosse contada?",
+      "first": "Como uma narrativa contínua",
+      "second": "Em capítulos curtos",
+      "third": "Como uma coleção de momentos"
+    },
+    "focus": {
+      "text": "O que deve a escrita destacar?",
+      "first": "Os detalhes que partilhares",
+      "second": "O ambiente de cada momento",
+      "third": "O significado dos gestos quotidianos"
+    },
+    "drawing": {
+      "text": "O que poderia sair do papel?",
+      "first": "Um robô amigo",
+      "second": "Um dragão pequenino",
+      "third": "Uma árvore que fala"
+    },
+    "moon": {
+      "text": "Onde leva o caminho ao luar?",
+      "first": "Uma pastelaria na lua",
+      "second": "Um jardim de estrelas sonolentas",
+      "third": "Uma ilha flutuante tranquila"
+    },
+    "pet": {
+      "text": "Qual é a missão do animal?",
+      "first": "Encontrar um brinquedo perdido",
+      "second": "Ajudar um novo amigo",
+      "third": "Entregar uma pequena surpresa"
+    },
+    "door": {
+      "text": "O que há para lá da porta?",
+      "first": "Uma biblioteca de mapas vivos",
+      "second": "Um jardim nas nuvens",
+      "third": "Uma cidade dentro de uma árvore"
+    },
+    "team": {
+      "text": "Que desafio junta a equipa?",
+      "first": "Um jogo amigável",
+      "second": "Um percurso de obstáculos divertido",
+      "third": "Uma caça ao tesouro"
+    }
+  }
+}

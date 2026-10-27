@@ -1,0 +1,162 @@
+{
+  "selectorTitle": "Where shall your story begin?",
+  "selectorDescription": "Choose a starting idea or bring your own. Every detail can change.",
+  "browse": "Explore story ideas",
+  "mine": "Start with my own idea",
+  "summary": "Your story so far",
+  "continue": "Continue with this story",
+  "personalize": "Make it more personal",
+  "skip": "Skip this question",
+  "customAnswer": "My own answer",
+  "customAnswerPlaceholder": "A few words are enough",
+  "more": "Add a little more",
+  "end": "Finish personalizing",
+  "round": "Round {current}",
+  "loading": "Finding your next questions…",
+  "fallback": "Here are a few simple questions to get you going.",
+  "memoryContributionRequired": "Add at least one real detail before continuing with a memory story.",
+  "memoryContributionLabel": "A real memory or detail",
+  "memoryContributionPlaceholder": "Tell us one thing that really happened, or add it by voice or image.",
+  "modeLabel": "What kind of story?",
+  "fiction": "An imagined story",
+  "memory": "Real memories",
+  "modeHelp": "Imagination can fill a fictional world. A memory story uses only the facts you share.",
+  "changeTitle": "Change your starting idea?",
+  "changeDescription": "This will replace your current template and guided answers. Your original contribution stays available.",
+  "confirmChange": "Change idea",
+  "cancel": "Keep working",
+  "resume": "Resume my story",
+  "newStory": "Start a new story",
+  "back": "Back",
+  "choose": "Choose this idea",
+  "selected": "Selected",
+  "recommended": "Suggested for you",
+  "showAll": "See all ideas",
+  "clear": "Clear",
+  "save": "Save",
+  "questionProgress": "Question {current} of {total}",
+  "error": "Something went wrong. Your answers are still here.",
+  "retry": "Try again",
+  "createSimilar": "Create a story like this",
+  "optional": "Optional",
+  "addDetails": "Add details",
+  "preferences": "Story preferences",
+  "audience": "Who is it for?",
+  "tone": "Tone",
+  "artStyle": "Illustration style",
+  "writingStyle": "Writing style",
+  "questionNext": "Use this answer",
+  "resetDescription": "Start fresh on this device? This clears your current story inputs and selections. Saved stories stay in your library.",
+  "confirmReset": "Start fresh",
+  "editAnswer": "Edit answer",
+  "removeAnswer": "Remove answer",
+  "roundComplete": "This round is complete",
+  "guideComplete": "Your story is ready to continue",
+  "contributionHelp": "Share only what you want included. We will not invent personal facts.",
+  "restructureTitle": "Update the story outline?",
+  "restructureDescription": "Rebuild the outline from these details? This can replace details you edited in later steps.",
+  "confirmRestructure": "Use this version",
+  "structureError": "We could not finish the outline. Your inputs are saved; try again.",
+  "continueWithoutGuide": "Continue without the guide",
+  "templateUnavailable": "This story idea is unavailable. Choose another or use your own.",
+  "previewReplacement": "Review the proposed version",
+  "characters": "Characters",
+  "templates": {
+    "drawing-adventure": {
+      "title": "A drawing comes alive",
+      "premise": "A curious inventor discovers that a drawing can step off the page and join a friendly adventure.",
+      "description": "Turn an imaginary drawing into a new friend."
+    },
+    "moonlight-adventure": {
+      "title": "A little moonlight adventure",
+      "premise": "A curious hero and a friendly companion take a gentle journey beneath the moon, returning to a cosy place to rest.",
+      "description": "A gentle adventure for winding down."
+    },
+    "pet-mission": {
+      "title": "A pet on a secret mission",
+      "premise": "A resourceful pet discovers a small mystery and helps its friends solve it through curiosity and kindness.",
+      "description": "Give a fictional pet a surprising adventure."
+    },
+    "magic-doorway": {
+      "title": "The hidden doorway",
+      "premise": "A curious explorer finds an unexpected doorway and follows clues into a welcoming magical world.",
+      "description": "Open a door to a world of possibilities."
+    },
+    "little-love": {
+      "title": "Love in the little things",
+      "premise": "A story of two people, told through the little gestures and everyday objects that matter to them.",
+      "description": "Celebrate love through everyday details."
+    },
+    "travel-memories": {
+      "title": "A journey worth keeping",
+      "premise": "A journey told through discoveries, detours and moments worth keeping.",
+      "description": "Turn a real or imagined trip into a story."
+    },
+    "grandparent-memory": {
+      "title": "Stories to pass on",
+      "premise": "A family story woven from the memories, sayings and details you share about a grandparent.",
+      "description": "Begin with one real memory, saying or detail."
+    },
+    "teamwork-day": {
+      "title": "Everyone brings something",
+      "premise": "A team tackles a playful challenge and discovers how different strengths help everyone contribute.",
+      "description": "An adventure about cooperation and belonging."
+    }
+  },
+  "questions": {
+    "tone": {
+      "text": "How should the story feel?",
+      "first": "Warm and gentle",
+      "second": "Playful and funny",
+      "third": "Lively and adventurous"
+    },
+    "pace": {
+      "text": "What rhythm would you like?",
+      "first": "Short, clear scenes",
+      "second": "A slow, descriptive journey",
+      "third": "A lively sequence of moments"
+    },
+    "presentation": {
+      "text": "How would you like it told?",
+      "first": "As a flowing story",
+      "second": "As short chapters",
+      "third": "As a collection of moments"
+    },
+    "focus": {
+      "text": "What should the writing highlight?",
+      "first": "The details you share",
+      "second": "The atmosphere of each moment",
+      "third": "The meaning of everyday gestures"
+    },
+    "drawing": {
+      "text": "What could come off the page?",
+      "first": "A friendly robot",
+      "second": "A tiny dragon",
+      "third": "A talking tree"
+    },
+    "moon": {
+      "text": "Where does the moonlit path lead?",
+      "first": "A bakery on the moon",
+      "second": "A garden of sleepy stars",
+      "third": "A quiet floating island"
+    },
+    "pet": {
+      "text": "What is the pet’s mission?",
+      "first": "Find a missing toy",
+      "second": "Help a new friend",
+      "third": "Deliver a tiny surprise"
+    },
+    "door": {
+      "text": "What lies beyond the doorway?",
+      "first": "A library of living maps",
+      "second": "A garden in the clouds",
+      "third": "A city inside a tree"
+    },
+    "team": {
+      "text": "What challenge brings the team together?",
+      "first": "A friendly match",
+      "second": "A playful obstacle course",
+      "third": "A treasure hunt"
+    }
+  }
+}

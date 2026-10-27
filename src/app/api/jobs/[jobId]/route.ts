@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { sgwFetch } from '@/lib/sgw-client';
-import { aiEditService, authorService, chapterService } from '@/db/services';
+import { aiEditService, authorService, chapterService, storyService } from '@/db/services';
 import { db } from '@/db';
 import { getPendingImageJob, deletePendingImageJob } from '../image-edit-store';
 import { aiEdits } from '@/db/schema';
@@ -31,6 +31,19 @@ export async function GET(
         { success: false, error: data.error || 'Failed to get job status' },
         { status: response.status },
       );
+    }
+
+    // Durable structure jobs contain private story input/results. Possession of a
+    // job UUID is not authorization to read another author's outline.
+    if (data?.job?.type === 'story_structure') {
+      const { userId } = await auth();
+      if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      const author = await authorService.getAuthorByClerkId(userId);
+      const storyId = data.job.metadata?.storyId;
+      const story = typeof storyId === 'string' ? await storyService.getStoryById(storyId) : null;
+      if (!author || !story || story.authorId !== author.authorId) {
+        return NextResponse.json({ error: 'Job not found' }, { status: 404 });
+      }
     }
 
     // Persist completed text edits (full-story or single-chapter) and then record credits

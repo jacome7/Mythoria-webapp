@@ -174,6 +174,12 @@ export function clearStorySession(): void {
   localStorage.removeItem('currentStoryId');
   localStorage.removeItem('step1Data');
   localStorage.removeItem('step2Data');
+  sessionStorage.removeItem('step2Data');
+  sessionStorage.removeItem('storyTemplateJourney');
+  sessionStorage.removeItem('step2Submission');
+  sessionStorage.removeItem('experimentalStep2Submission');
+  localStorage.removeItem('step2RelocatedInputs');
+  localStorage.removeItem('genaiResults');
   localStorage.removeItem('step3Data');
   localStorage.removeItem('isEditMode');
 }

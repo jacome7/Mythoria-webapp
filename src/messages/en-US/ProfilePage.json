@@ -83,6 +83,14 @@
           "description": "All the above plus product updates and special promo scrolls—like a friendly town crier."
         }
       }
+    },
+    "experimentalFeatures": {
+      "title": "New Experimental Features",
+      "description": "Try new features before they are widely available.",
+      "saving": "Saving…",
+      "saved": "Saved",
+      "saveFailed": "Could not save your preference. Please try again.",
+      "loadFailed": "Could not load your preference. Please refresh the page."
     }
   }
 }

@@ -9,6 +9,34 @@ import {
 } from './campaign-context';
 
 describe('campaign context', () => {
+  it('preserves only registered template IDs alongside acquisition context', () => {
+    const safe = buildStoryAuthReturnSearch(
+      new URLSearchParams({
+        templateId: 'drawing-adventure',
+        primaryIntent: 'kids_bedtime',
+        utm_source: 'google',
+        ref: 'partner',
+        prompt: 'Private family details',
+      }),
+    );
+    expect(Object.fromEntries(safe)).toEqual({
+      templateId: 'drawing-adventure',
+      primaryIntent: 'kids_bedtime',
+      utm_source: 'google',
+      ref: 'partner',
+    });
+    for (const templateId of [
+      'unknown',
+      '../drawing-adventure',
+      'Drawing-Adventure',
+      'x'.repeat(300),
+    ]) {
+      expect(buildStoryAuthReturnSearch({ templateId }).has('templateId')).toBe(false);
+    }
+    expect(
+      buildStoryAuthReturnSearch({ templateId: ['pet-mission', 'unknown'] }).get('templateId'),
+    ).toBe('pet-mission');
+  });
   it('normalizes supported intents and rejects unknown values', () => {
     expect(getValidatedIntent(' Romance ')).toBe('romance');
     expect(getValidatedIntent('kids-transitions')).toBe('kids_transitions');

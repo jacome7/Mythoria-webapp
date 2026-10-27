@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useAuth } from '@clerk/nextjs';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
@@ -24,6 +25,7 @@ interface AuthorData {
 }
 
 export default function Step1Page() {
+  const { isLoaded, isSignedIn, userId } = useAuth();
   const locale = useLocale();
   const tStoryStepsStep1 = useTranslations('StorySteps.step1');
   const searchParams = useSearchParams();
@@ -45,51 +47,59 @@ export default function Step1Page() {
   // Flag to track if any field has been edited
   const [hasChanges, setHasChanges] = useState(false);
 
-  const fetchAuthorData = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  const fetchAuthorData = useCallback(
+    async (signal: AbortSignal) => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      const response = await fetch('/api/auth/me');
+        const response = await fetch('/api/auth/me', { signal });
 
-      if (!response.ok) {
-        throw new Error(tStoryStepsStep1('messages.fetchFailed'));
+        if (!response.ok) {
+          throw new Error(tStoryStepsStep1('messages.fetchFailed'));
+        }
+
+        const data: AuthorData = await response.json();
+        if (signal.aborted) return;
+        setAuthorData(data);
+        if (!hasTrackedStart.current) {
+          hasTrackedStart.current = true;
+          trackStoryCreation.started({ step_number: 1, user_profile_exists: true });
+          trackStoryCreation.stepViewed({ step: 1 });
+        }
+
+        // Load existing step 1 data from session storage
+        const step1Data = getStep1Data();
+        const initialCustomAuthor = step1Data?.customAuthor || data.displayName || '';
+        const initialDedicationMessage = step1Data?.dedicationMessage || '';
+
+        setCustomAuthor(initialCustomAuthor);
+        setDedicationMessage(initialDedicationMessage);
+
+        // Store original values for change tracking
+        setOriginalValues({
+          customAuthor: initialCustomAuthor,
+          dedicationMessage: initialDedicationMessage,
+        });
+
+        // Reset changes flag
+        setHasChanges(false);
+      } catch (error) {
+        if (signal.aborted) return;
+        console.error('Error fetching author data:', error);
+        setError(tStoryStepsStep1('messages.loadFailed'));
+      } finally {
+        if (!signal.aborted) setLoading(false);
       }
-
-      const data: AuthorData = await response.json();
-      setAuthorData(data);
-      if (!hasTrackedStart.current) {
-        hasTrackedStart.current = true;
-        trackStoryCreation.started({ step_number: 1, user_profile_exists: true });
-        trackStoryCreation.stepViewed({ step: 1 });
-      }
-
-      // Load existing step 1 data from session storage
-      const step1Data = getStep1Data();
-      const initialCustomAuthor = step1Data?.customAuthor || data.displayName || '';
-      const initialDedicationMessage = step1Data?.dedicationMessage || '';
-
-      setCustomAuthor(initialCustomAuthor);
-      setDedicationMessage(initialDedicationMessage);
-
-      // Store original values for change tracking
-      setOriginalValues({
-        customAuthor: initialCustomAuthor,
-        dedicationMessage: initialDedicationMessage,
-      });
-
-      // Reset changes flag
-      setHasChanges(false);
-    } catch (error) {
-      console.error('Error fetching author data:', error);
-      setError(tStoryStepsStep1('messages.loadFailed'));
-    } finally {
-      setLoading(false);
-    }
-  }, [tStoryStepsStep1]);
+    },
+    [tStoryStepsStep1],
+  );
   useEffect(() => {
-    fetchAuthorData();
-  }, [fetchAuthorData]);
+    if (!isLoaded || !isSignedIn) return;
+    const controller = new AbortController();
+    void fetchAuthorData(controller.signal);
+    return () => controller.abort();
+  }, [isLoaded, isSignedIn, userId, fetchAuthorData]);
 
   const safeQuery = buildStoryAuthReturnSearch(searchParams);
   const redirectPath = `/${locale}/tell-your-story/step-1${safeQuery.size ? `?${safeQuery}` : ''}`;
@@ -145,7 +155,7 @@ export default function Step1Page() {
     }
   };
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-2 sm:px-4 py-8">
       <ClientAuthWrapper
         signedOutFallback={
           <div className="text-center space-y-6 max-w-2xl mx-auto">
@@ -268,7 +278,7 @@ export default function Step1Page() {
               <StepNavigation
                 currentStep={1}
                 totalSteps={5}
-                nextHref="/tell-your-story/step-2"
+                nextHref={`/tell-your-story/step-2${safeQuery.size ? `?${safeQuery}` : ''}`}
                 prevHref={null}
                 onNext={handleNext}
                 nextDisabled={loading || !customAuthor}

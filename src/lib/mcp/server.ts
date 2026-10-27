@@ -28,6 +28,7 @@ import {
 import {
   getAvailableVoices,
   getDefaultVoice,
+  getRecommendedVoice,
   getTTSProvider,
   isValidVoice,
 } from '@/lib/voice-options';
@@ -5579,7 +5580,7 @@ function registerFulfillmentTools(server: McpServer, authContext: McpAuthContext
         }
 
         const provider = getTTSProvider();
-        const defaultVoice = getDefaultVoice(provider);
+        const defaultVoice = getRecommendedVoice(provider, story.targetAudience);
         const selectedVoice = input.voiceId?.trim() || defaultVoice;
         if (!isValidVoice(selectedVoice, provider)) {
           throw new McpToolUserError(

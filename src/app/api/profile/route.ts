@@ -30,6 +30,7 @@ type ProfilePatchPayload = Partial<{
   preferredLocale: string | null;
   notificationPreference: Author['notificationPreference'];
   countryOfOrigin: string | null;
+  experimentalFeaturesEnabled: boolean;
 }>;
 
 function sanitizeInterests(interests: unknown): string[] | undefined {
@@ -63,6 +64,7 @@ export async function GET() {
       notificationPreference: author.notificationPreference,
       email: author.email,
       welcomeEmailSentAt: author.welcomeEmailSentAt,
+      experimentalFeaturesEnabled: author.experimentalFeaturesEnabled,
     },
   });
 }
@@ -92,8 +94,19 @@ export async function PATCH(req: NextRequest) {
         | 'preferredLocale'
         | 'notificationPreference'
         | 'countryOfOrigin'
+        | 'experimentalFeaturesEnabled'
       >
     > = {};
+
+    if ('experimentalFeaturesEnabled' in body) {
+      if (typeof body.experimentalFeaturesEnabled !== 'boolean') {
+        return NextResponse.json(
+          { error: 'experimentalFeaturesEnabled must be a boolean' },
+          { status: 400 },
+        );
+      }
+      updates.experimentalFeaturesEnabled = body.experimentalFeaturesEnabled;
+    }
 
     if (body.displayName !== undefined) {
       const name = body.displayName.trim();
@@ -308,26 +321,31 @@ export async function PATCH(req: NextRequest) {
       }
     }
 
+    // Experimental preference updates do not change Clerk profile metadata.
+    const experimentalOnly =
+      Object.keys(updates).length === 1 && 'experimentalFeaturesEnabled' in updates;
     // Sync Clerk metadata: full profile only in private; public only displayName
     try {
-      const clerk = await clerkClient();
-      await clerk.users.updateUser(updated.clerkUserId, {
-        privateMetadata: {
-          ...((author as unknown as { privateMetadata?: unknown }).privateMetadata || {}),
-          profile: {
-            preferredName: updated.displayName,
-            gender: updated.gender || null,
-            literaryAge: updated.literaryAge || null,
-            primaryGoals: updated.primaryGoals || [],
-            primaryGoalOther: updated.primaryGoalOther || null,
-            audiences: updated.audiences || [],
-            interests: updated.interests || [],
+      if (!experimentalOnly) {
+        const clerk = await clerkClient();
+        await clerk.users.updateUser(updated.clerkUserId, {
+          privateMetadata: {
+            ...((author as unknown as { privateMetadata?: unknown }).privateMetadata || {}),
+            profile: {
+              preferredName: updated.displayName,
+              gender: updated.gender || null,
+              literaryAge: updated.literaryAge || null,
+              primaryGoals: updated.primaryGoals || [],
+              primaryGoalOther: updated.primaryGoalOther || null,
+              audiences: updated.audiences || [],
+              interests: updated.interests || [],
+            },
           },
-        },
-        publicMetadata: {
-          displayName: updated.displayName,
-        },
-      });
+          publicMetadata: {
+            displayName: updated.displayName,
+          },
+        });
+      }
     } catch (e) {
       console.warn('Failed to sync Clerk metadata (non-fatal):', e);
     }
@@ -350,6 +368,7 @@ export async function PATCH(req: NextRequest) {
         notificationPreference: updated.notificationPreference,
         email: updated.email,
         welcomeEmailSentAt: updated.welcomeEmailSentAt,
+        experimentalFeaturesEnabled: updated.experimentalFeaturesEnabled,
       },
     });
   } catch (err) {

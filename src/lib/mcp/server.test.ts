@@ -825,7 +825,7 @@ describe('story listening tools', () => {
     mockedCreditService.getAuthorCreditBalance.mockResolvedValue(10);
 
     const handler = getToolHandler('mythoria.story.narration_request', authenticatedContext);
-    const result = await handler({ storyId: 'story-narrate-preview', voiceId: 'coral' });
+    const result = await handler({ storyId: 'story-narrate-preview', voiceId: 'Sulafat' });
     const payload = result.structuredContent as Record<string, any>;
 
     expect(payload.status).toBe('confirmation_required');
@@ -877,7 +877,7 @@ describe('story listening tools', () => {
     const handler = getToolHandler('mythoria.story.narration_request', authenticatedContext);
     const result = await handler({
       storyId: 'story-narrate-queue',
-      voiceId: 'coral',
+      voiceId: 'Sulafat',
       confirmStart: true,
       includeBackgroundMusic: true,
     });

@@ -3,12 +3,13 @@
 import { useState, useMemo, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import AudiobookGenerationProgress from '@/components/AudiobookGenerationProgress';
-import { getAvailableVoices, getDefaultVoice } from '@/lib/voice-options';
+import { getAvailableVoices, getRecommendedVoice, getTTSProvider } from '@/lib/voice-options';
 import { getGoogleAnalyticsContext } from '@/lib/analytics';
 
 interface AudiobookGenerationTriggerProps {
   storyId: string;
   hasAudiobook: boolean;
+  targetAudience?: string | null;
   isGenerating?: boolean;
   onGenerationStart?: () => void;
   onGenerationComplete?: () => void;
@@ -17,6 +18,7 @@ interface AudiobookGenerationTriggerProps {
 export default function AudiobookGenerationTrigger({
   storyId,
   hasAudiobook,
+  targetAudience,
   isGenerating = false,
   onGenerationStart,
   onGenerationComplete,
@@ -25,7 +27,9 @@ export default function AudiobookGenerationTrigger({
   const tVoices = useTranslations('Voices');
   const [isGeneratingLocal, setIsGeneratingLocal] = useState(isGenerating);
   const [error, setError] = useState<string | null>(null);
-  const [selectedVoice, setSelectedVoice] = useState(getDefaultVoice());
+  const [selectedVoice, setSelectedVoice] = useState(() =>
+    getRecommendedVoice(getTTSProvider(), targetAudience),
+  );
   const [includeBackgroundMusic, setIncludeBackgroundMusic] = useState(true);
   const idempotencyKeyRef = useRef<string | null>(null);
 
@@ -83,14 +87,16 @@ export default function AudiobookGenerationTrigger({
   };
 
   // Get voice options based on the configured TTS provider
+  const recommendedVoice = getRecommendedVoice(getTTSProvider(), targetAudience);
   const voiceOptions = useMemo(() => {
     const voices = getAvailableVoices();
     return voices.map((voice) => ({
       value: voice.value,
       label: tVoices(voice.labelKey),
       description: tVoices(voice.descriptionKey),
+      recommended: voice.value === recommendedVoice,
     }));
-  }, [tVoices]);
+  }, [tVoices, recommendedVoice]);
 
   if (hasAudiobook) {
     return null; // Don't show if audiobook already exists
@@ -131,6 +137,7 @@ export default function AudiobookGenerationTrigger({
             {voiceOptions.map((voice) => (
               <option key={voice.value} value={voice.value}>
                 {voice.label} - {voice.description}
+                {voice.recommended ? ` (${tVoices('recommended')})` : ''}
               </option>
             ))}
           </select>
