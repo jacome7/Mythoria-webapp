@@ -99,7 +99,7 @@ function Test-Prerequisites {
     try {
         $account = (& $GCLOUD auth list --filter=status:ACTIVE --format="value(account)") | Select-Object -First 1
         if (-not $account) {
-            Write-Err "Not authenticated with Google Cloud — run 'gcloud auth login' first."
+            Write-Err "Not authenticated with Google Cloud - run 'gcloud auth login' first."
             throw "Unauthenticated"
         }
         Write-Success "Authenticated as $account"
