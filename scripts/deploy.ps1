@@ -48,6 +48,18 @@ function Write-Warn { param([string]$Msg) Write-Host "[WARN] $Msg" -ForegroundCo
 function Write-Err { param([string]$Msg) Write-Host "[ERROR] $Msg" -ForegroundColor Red }
 # -----------------------------------------------------------------------------
 
+# Native commands (npm, gcloud) report failure only through their exit code.
+function Assert-CommandSucceeded {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Operation
+    )
+
+    if ($LASTEXITCODE -ne 0) {
+        throw "$Operation failed with exit code $LASTEXITCODE."
+    }
+}
+
 function Assert-PinnedNodeVersion {
     $nodeCommand = Get-Command node -ErrorAction SilentlyContinue
     if (-not $nodeCommand) {
@@ -109,6 +121,7 @@ function Test-Prerequisites {
     }
 
     & $GCLOUD config set project $PROJECT_ID | Out-Null
+    Assert-CommandSucceeded 'gcloud config set project'
     Write-Success "Using project $PROJECT_ID"
 
     $branch = (& git branch --show-current).Trim()
@@ -127,10 +140,13 @@ function Test-Prerequisites {
 function Run-PreDeploymentChecks {
     Write-Info "Linting (npm run lint)"
     & npm run lint
+    Assert-CommandSucceeded 'Lint'
     Write-Info "Typecheck (npm run typecheck)"
     & npm run typecheck
+    Assert-CommandSucceeded 'Typecheck'
     Write-Info "Running tests (npm test)"
     & npm test
+    Assert-CommandSucceeded 'Tests'
     Write-Success "Pre-deployment checks passed"
 }
 
@@ -141,6 +157,7 @@ function Deploy-With-CloudBuild {
     Write-Info "Starting Cloud Build submission"
     # Pass service name and region as substitutions
     & $GCLOUD builds submit --config cloudbuild.yaml --substitutions "_SERVICE_NAME=$SERVICE_NAME,_REGION=$REGION,_GIT_SHA=$GIT_SHA"
+    Assert-CommandSucceeded 'Cloud Build'
     Write-Success "Cloud Build finished"
 }
 
@@ -195,6 +212,9 @@ function Test-GA4Delivery {
     if ($Staging) { return }
 
     Write-Info "Confirming Measurement Protocol ingestion through GA4 Realtime"
+    # Windows PowerShell 5.1 turns redirected native stderr into a terminating error under 'Stop',
+    # and gcloud always warns on stderr when impersonating. Rely on the explicit checks below instead.
+    $ErrorActionPreference = 'Continue'
     try {
         $env:GOOGLE_ANALYTICS_API_SECRET = (& $GCLOUD secrets versions access latest --secret=GOOGLE_ANALYTICS_API_SECRET --project=$PROJECT_ID 2>$null).Trim()
         $env:GA4_ACCESS_TOKEN = (& $GCLOUD auth print-access-token `
