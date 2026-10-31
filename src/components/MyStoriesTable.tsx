@@ -1,5 +1,6 @@
 'use client';
 
+import ModalPortal from '@/components/ModalPortal';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -162,20 +163,22 @@ export default function MyStoriesTable() {
       )}
 
       {deleteModalOpen && (
-        <div className="modal modal-open">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg">{tMyStoriesPage('deleteConfirm.title')}</h3>
-            <p className="py-4">{tMyStoriesPage('deleteConfirm.message')}</p>
-            <div className="modal-action">
-              <button className="btn btn-ghost" onClick={() => setDeleteModalOpen(false)}>
-                {tMyStoriesPage('deleteConfirm.cancel')}
-              </button>
-              <button className="btn btn-error" onClick={handleDeleteConfirm}>
-                {tMyStoriesPage('deleteConfirm.confirm')}
-              </button>
+        <ModalPortal>
+          <div className="modal modal-open">
+            <div className="modal-box">
+              <h3 className="font-bold text-lg">{tMyStoriesPage('deleteConfirm.title')}</h3>
+              <p className="py-4">{tMyStoriesPage('deleteConfirm.message')}</p>
+              <div className="modal-action">
+                <button className="btn btn-ghost" onClick={() => setDeleteModalOpen(false)}>
+                  {tMyStoriesPage('deleteConfirm.cancel')}
+                </button>
+                <button className="btn btn-error" onClick={handleDeleteConfirm}>
+                  {tMyStoriesPage('deleteConfirm.confirm')}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </ModalPortal>
       )}
 
       <ToastContainer toasts={toasts} onRemove={removeToast} />

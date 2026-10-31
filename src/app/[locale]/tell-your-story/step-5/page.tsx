@@ -4,6 +4,7 @@ import { Show, RedirectToSignIn, useAuth } from '@clerk/nextjs';
 import { useState, useEffect, Suspense, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
+import Image from 'next/image';
 import StepNavigation from '@/components/StepNavigation';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import StoryGenerationProgress from '@/components/StoryGenerationProgress';
@@ -227,7 +228,7 @@ function Step5Page() {
       </Show>
 
       <Show when="signed-in">
-        <div className="container mx-auto px-2 sm:px-4 py-8">
+        <div data-wizard-step="5" className="container mx-auto px-2 sm:px-4 py-8">
           <div className="max-w-4xl mx-auto">
             {/* Show progress component if story generation has started */}
             {storyGenerationStarted ? (
@@ -256,9 +257,19 @@ function Step5Page() {
                             {tStoryStepsStep5('readyToGenerate')}
                           </h2>
                           <p className="text-lg text-gray-600 mb-6">
-                            {tStoryStepsStep5('aboutToStart')}{' '}
-                            <strong className="text-gray-800">{storyData.title}</strong>
+                            {tStoryStepsStep5('aboutToStart')}
+                            <strong className="block mt-2 text-xl font-bold text-primary">
+                              {storyData.title}
+                            </strong>
                           </p>
+
+                          <Image
+                            src="/Papercut_icons/open-book-with-stars.webp"
+                            alt=""
+                            width={512}
+                            height={256}
+                            className="mx-auto mb-6 h-auto w-44 max-w-full"
+                          />
 
                           {/* Credits Information */}
                           <div className="space-y-4 mb-6">
@@ -304,7 +315,7 @@ function Step5Page() {
                                     })}
                                   </span>
                                   <a
-                                    href={`/${locale}/pricing`}
+                                    href={`/${locale}/pricing#buy-credits`}
                                     className="btn btn-outline btn-sm mt-2"
                                   >
                                     {tStoryStepsStep5('getMoreCredits')}
@@ -313,15 +324,6 @@ function Step5Page() {
                               </div>
                             )}
                           </div>
-                          <button
-                            className={`btn btn-primary btn-lg ${submitting ? 'loading' : ''}`}
-                            onClick={handleCompleteStory}
-                            disabled={submitting || hasInsufficientCredits()}
-                          >
-                            {submitting
-                              ? tStoryStepsStep5('startingGeneration')
-                              : tStoryStepsStep5('generateMyStory')}
-                          </button>
                         </div>
                       </div>
                     ) : (
@@ -340,7 +342,14 @@ function Step5Page() {
                           ? `/tell-your-story/step-4?edit=${editStoryId}`
                           : '/tell-your-story/step-4'
                       }
-                      nextDisabled={true}
+                      nextDisabled={!storyData || submitting || hasInsufficientCredits()}
+                      busy={submitting}
+                      onNext={storyData ? handleCompleteStory : undefined}
+                      nextLabel={
+                        submitting
+                          ? tStoryStepsStep5('startingGeneration')
+                          : tStoryStepsStep5('generateMyStory')
+                      }
                     />
                   </div>
                 </div>

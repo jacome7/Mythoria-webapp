@@ -3,16 +3,10 @@ import { randomUUID } from 'crypto';
 import { getTranslations } from 'next-intl/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { creditService, pricingService, storyService } from '@/db/services';
-import { sgwFetch } from '@/lib/sgw-client';
 import { SELF_PRINTING_SERVICE_CODE } from '@/constants/pricing';
 import { resolveServerAnalyticsContext } from '@/lib/analytics/server-context';
-import { analyticsReference } from '@/lib/analytics/reference';
-import {
-  compensateProductGeneration,
-  InsufficientProductCreditsError,
-  markProductGenerationQueued,
-  startProductGeneration,
-} from '@/lib/product-generation';
+import { InsufficientProductCreditsError, startProductGeneration } from '@/lib/product-generation';
+import { launchSelfPrintWorkflow } from '@/lib/product-launch';
 
 interface SelfPrintRequestBody {
   email?: string;
@@ -21,23 +15,6 @@ interface SelfPrintRequestBody {
   generateCMYK?: boolean;
   analyticsContext?: unknown;
 }
-
-interface SelfPrintWorkflowSuccessResponse {
-  success: true;
-  storyId: string;
-  workflowId: string;
-  executionId: string;
-  recipients: string[];
-  message?: string;
-}
-
-interface SelfPrintWorkflowErrorResponse {
-  success: false;
-  error?: string;
-  message?: string;
-}
-
-type SelfPrintWorkflowResponse = SelfPrintWorkflowSuccessResponse | SelfPrintWorkflowErrorResponse;
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -174,58 +151,16 @@ export async function POST(
       });
     }
 
-    const recipientPayload = normalizedRequestedEmails.map((email) => ({ email }));
-    let workflowResult: SelfPrintWorkflowSuccessResponse;
-    try {
-      const workflowResponse = await sgwFetch('/print/self-service', {
-        method: 'POST',
-        body: JSON.stringify({
-          storyId,
-          workflowId,
-          recipients: recipientPayload.length ? recipientPayload : undefined,
-          includeAuthorEmail: true,
-          locale: story.storyLanguage || 'en-US',
-          generateCMYK: body.generateCMYK !== false,
-          metadata: {
-            requestSource: 'webapp',
-            requestedByAuthorId: author.authorId,
-            requestedByEmail: author.email,
-          },
-        }),
-      });
-
-      const parsed = (await workflowResponse.json()) as SelfPrintWorkflowResponse;
-
-      if (!workflowResponse.ok || !parsed.success) {
-        console.error('Self-print workflow enqueue failed', {
-          storyId,
-          status: workflowResponse.status,
-          response: parsed,
-        });
-
-        await compensateProductGeneration(workflowId, 'queue', 'workflow_enqueue_failed');
-
-        const t = await getTranslations({
-          locale: author.preferredLocale || 'en-US',
-          namespace: 'SelfPrintModal',
-        });
-
-        return NextResponse.json(
-          {
-            success: false,
-            error: t('errors.workflowQueueFailed'),
-            creditsDeducted: 0,
-          },
-          { status: 502 },
-        );
-      }
-
-      workflowResult = parsed;
-    } catch (error) {
-      console.error('Self-print workflow threw', { storyId, error });
-
-      await compensateProductGeneration(workflowId, 'queue', 'workflow_enqueue_failed');
-
+    const launched = await launchSelfPrintWorkflow({
+      storyId,
+      workflowId,
+      locale: story.storyLanguage || 'en-US',
+      recipients: normalizedRequestedEmails.map((email) => ({ email })),
+      generateCMYK: body.generateCMYK !== false,
+      requestedByAuthorId: author.authorId,
+      requestedByEmail: author.email,
+    });
+    if (!launched.ok) {
       const t = await getTranslations({
         locale: author.preferredLocale || 'en-US',
         namespace: 'SelfPrintModal',
@@ -240,13 +175,7 @@ export async function POST(
         { status: 502 },
       );
     }
-
-    await markProductGenerationQueued(workflowId, workflowResult.executionId);
-
-    console.info('[SelfPrint] Workflow queued', {
-      workflowRef: analyticsReference(workflowId),
-      recipientCount: workflowResult.recipients.length,
-    });
+    const workflowResult = launched.result;
 
     return NextResponse.json({
       success: true,

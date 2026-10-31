@@ -1,5 +1,6 @@
 'use client';
 
+import ModalPortal from '@/components/ModalPortal';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AlertTriangle, CheckCircle, Download, Info, Mail, Shield, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -411,33 +412,35 @@ export function SelfPrintModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-      <div className="bg-base-100 rounded-xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-start justify-between border-b border-base-200 p-5">
-          <div className="flex-1 min-w-0 mr-4">
-            <div className="flex items-center gap-2">
-              <Download className="text-primary shrink-0" />
-              <h2 className="text-lg font-semibold">{t('title')}</h2>
+    <ModalPortal>
+      <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+        <div className="bg-base-100 rounded-xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto">
+          <div className="flex items-start justify-between border-b border-base-200 p-5">
+            <div className="flex-1 min-w-0 mr-4">
+              <div className="flex items-center gap-2">
+                <Download className="text-primary shrink-0" />
+                <h2 className="text-lg font-semibold">{t('title')}</h2>
+              </div>
+              {storyTitle && (
+                <p className="text-sm text-base-content/70 mt-1 break-words">
+                  {t('subtitle', { title: storyTitle })}
+                </p>
+              )}
             </div>
-            {storyTitle && (
-              <p className="text-sm text-base-content/70 mt-1 break-words">
-                {t('subtitle', { title: storyTitle })}
-              </p>
-            )}
+            <button className="btn btn-ghost btn-sm shrink-0" onClick={handleClose}>
+              <X className="w-4 h-4" />
+            </button>
           </div>
-          <button className="btn btn-ghost btn-sm shrink-0" onClick={handleClose}>
-            <X className="w-4 h-4" />
-          </button>
-        </div>
 
-        <div className="p-5">
-          {loadState === 'loading' && renderLoading()}
-          {loadState === 'error' && renderError()}
-          {loadState === 'ready' && !result && renderForm()}
-          {result && renderSuccess()}
+          <div className="p-5">
+            {loadState === 'loading' && renderLoading()}
+            {loadState === 'error' && renderError()}
+            {loadState === 'ready' && !result && renderForm()}
+            {result && renderSuccess()}
+          </div>
         </div>
       </div>
-    </div>
+    </ModalPortal>
   );
 }
 

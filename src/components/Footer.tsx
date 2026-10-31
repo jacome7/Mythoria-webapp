@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import styles from './Footer.module.css';
 import { homepageAsset } from '@/constants/homepageAssets';
@@ -41,6 +42,12 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   const tCommonFooter = useTranslations('Footer');
   const locale = useLocale();
+  const pathname = usePathname();
+
+  // Keep the creation steps focused while retaining the footer on the entry page.
+  if (/^\/(?:[^/]+\/)?tell-your-story\/step-[1-5]\/?$/.test(pathname ?? '')) {
+    return null;
+  }
 
   return (
     <footer className={styles.footer}>

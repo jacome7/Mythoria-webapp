@@ -1,5 +1,6 @@
 'use client';
 
+import ModalPortal from '@/components/ModalPortal';
 import { useEffect, useState } from 'react';
 import { Volume2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -381,44 +382,46 @@ export default function StoryReader({
   // Table of Contents Modal
   const renderTableOfContentsModal = () =>
     showTableOfContents && (
-      <div className="modal modal-open">
-        <div className="modal-box">
-          <h3 className="font-bold text-lg mb-4">{tStoryReader('tableOfContents')}</h3>
-          <ul className="space-y-2">
-            <li>
-              <button
-                onClick={() => {
-                  navigateToChapter(0);
-                  setShowTableOfContents(false);
-                }}
-                className="btn btn-ghost btn-sm w-full justify-start"
-              >
-                {tStoryReader('coverAndIntroduction')}
-              </button>
-            </li>
-            {chapters.map((chapter) => (
-              <li key={chapter.id}>
+      <ModalPortal>
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg mb-4">{tStoryReader('tableOfContents')}</h3>
+            <ul className="space-y-2">
+              <li>
                 <button
                   onClick={() => {
-                    navigateToChapter(chapter.chapterNumber);
+                    navigateToChapter(0);
                     setShowTableOfContents(false);
                   }}
-                  className={`btn btn-ghost btn-sm w-full justify-start ${
-                    currentChapter === chapter.chapterNumber ? 'bg-primary/20' : ''
-                  }`}
+                  className="btn btn-ghost btn-sm w-full justify-start"
                 >
-                  {chapter.chapterNumber}. {chapter.title}
+                  {tStoryReader('coverAndIntroduction')}
                 </button>
               </li>
-            ))}
-          </ul>
-          <div className="modal-action">
-            <button onClick={() => setShowTableOfContents(false)} className="btn btn-sm">
-              {tActions('close')}
-            </button>
+              {chapters.map((chapter) => (
+                <li key={chapter.id}>
+                  <button
+                    onClick={() => {
+                      navigateToChapter(chapter.chapterNumber);
+                      setShowTableOfContents(false);
+                    }}
+                    className={`btn btn-ghost btn-sm w-full justify-start ${
+                      currentChapter === chapter.chapterNumber ? 'bg-primary/20' : ''
+                    }`}
+                  >
+                    {chapter.chapterNumber}. {chapter.title}
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <div className="modal-action">
+              <button onClick={() => setShowTableOfContents(false)} className="btn btn-sm">
+                {tActions('close')}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </ModalPortal>
     );
 
   return (

@@ -111,7 +111,7 @@ export default function Toolbar({ onImageInsert, onAIEdit }: ToolbarProps) {
   return (
     <div className="bg-base-200 border-b border-base-300 px-4 py-2 md:p-2 sticky top-0 z-50 shadow-md">
       <div className="flex items-left gap-1 justify-between">
-        <div className="flex items-left gap-0">
+        <div className="flex items-left gap-1">
           <button
             onClick={() => formatText('bold')}
             className={`btn btn-sm ${isBold ? 'btn-primary' : 'btn-ghost'}`}

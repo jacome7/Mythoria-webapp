@@ -3,6 +3,7 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   moduleNameMapper: {
+    '\\.module\\.css$': '<rootDir>/src/test-utils/style-mock.cjs',
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   // Silence haste map collision between root package.json and .next/standalone/package.json

@@ -158,5 +158,108 @@
       "second": "Un circuito de obstáculos divertido",
       "third": "Una búsqueda del tesoro"
     }
+  },
+  "selectedModel": "Plantilla elegida",
+  "summaryHelp": "Revisa esta idea. Puedes ajustarla o añadir detalles abajo.",
+  "personalization": "Personalizar la historia",
+  "answerQuestions": "Responder algunas preguntas",
+  "questionsHelp": "Te ayudamos a desarrollar esta idea.",
+  "combineInputsHelp": "Puedes combinar las respuestas con texto, imágenes y voz.",
+  "answeredQuestions": "Revisar tus respuestas",
+  "fictionContinueHint": "Puedes continuar sin personalizar o darle tu toque a la historia.",
+  "memoryContinueHint": "Los detalles reales que compartiste se usarán en tu historia.",
+  "photoAnswerLabel": "Añadir foto",
+  "photoReferenceHelp": "La foto servirá de referencia para que el protagonista de las ilustraciones se parezca a la persona o al animal elegido.",
+  "photoCaption": "Nombre o detalle (opcional)",
+  "characterAnswerPlaceholder": "Escribe el nombre del personaje y, si quieres, algunos detalles sobre él.",
+  "memoryCharacterPlaceholder": "Escribe el nombre del personaje y comparte un detalle real sobre él.",
+  "photoPreparing": "Preparando la foto…",
+  "photoError": "No hemos podido preparar la foto.",
+  "photoNoSubject": "No hemos encontrado una persona o un animal en la foto.",
+  "photoChooseSubject": "Elige la persona o el animal que quieres incluir.",
+  "photoRemove": "Quitar foto",
+  "photoRetry": "Intentar de nuevo",
+  "photoLimit": "Puedes usar una foto de referencia para el protagonista y hasta tres imágenes en total.",
+  "photoConfirm": "Confirmar foto",
+  "photoPreview": "Foto de referencia del protagonista",
+  "photoSubject": "Persona o animal",
+  "photoReplace": "Cambiar foto",
+  "photoConfirmed": "Foto de referencia confirmada",
+  "customPhotoAnswer": "Texto o foto",
+  "preview": {
+    "photoOnlyAnswer": "Usa a la persona o al animal seleccionado en la foto como referencia visual del protagonista. La foto no confirma datos personales.",
+    "questions": {
+      "drawing-adventure": {
+        "fiction": {
+          "text": "¿Quién es el personaje principal que ve cómo sus dibujos cobran vida?",
+          "choices": [
+            "Una niña a la que le encanta dibujar",
+            "Un joven inventor",
+            "Una artista curiosa"
+          ]
+        },
+        "memory": "¿De quién es el recuerdo ligado a los dibujos? Cuenta al menos un detalle real sobre esa persona."
+      },
+      "moonlight-adventure": {
+        "fiction": {
+          "text": "¿Quién es el personaje principal de esta aventura a la luz de la luna?",
+          "choices": ["Una niña soñadora", "Un pequeño conejo curioso", "Una joven pastelera"]
+        },
+        "memory": "¿De quién es este recuerdo de una noche especial? Cuenta al menos un detalle real sobre esa persona o animal."
+      },
+      "pet-mission": {
+        "fiction": {
+          "text": "¿Qué animal protagoniza esta misión inesperada?",
+          "choices": ["Un gato aventurero", "Un perro valiente", "Un conejo explorador"]
+        },
+        "memory": "¿De qué animal es este recuerdo? Cuenta al menos un detalle real sobre él."
+      },
+      "magic-doorway": {
+        "fiction": {
+          "text": "¿Quién es el personaje principal que descubre las puertas mágicas?",
+          "choices": ["Una niña exploradora", "Un joven aprendiz de magia", "Una chica curiosa"]
+        },
+        "memory": "¿De quién es este recuerdo de descubrimiento? Cuenta al menos un detalle real sobre esa persona."
+      },
+      "little-love": {
+        "fiction": {
+          "text": "¿Quién es el personaje principal de esta historia de amor?",
+          "choices": ["Una florista soñadora", "Un músico viajero", "Una cocinera creativa"]
+        },
+        "memory": "¿De quién es este recuerdo de amor? Cuenta al menos un detalle real sobre esa persona."
+      },
+      "travel-memories": {
+        "fiction": {
+          "text": "¿Quién es el personaje principal de este viaje imaginario?",
+          "choices": ["Una niña aventurera", "Una fotógrafa curiosa", "Un viajero soñador"]
+        },
+        "memory": "¿De quién es este recuerdo de viaje? Cuenta al menos un detalle real sobre esa persona o animal."
+      },
+      "grandparent-memory": {
+        "fiction": {
+          "text": "¿Quién es el personaje principal de esta historia imaginaria?",
+          "choices": ["Una abuela cuentacuentos", "Un abuelo aventurero", "Una niña curiosa"]
+        },
+        "memory": "¿De qué abuela o abuelo es este recuerdo? Cuenta al menos un detalle real sobre esa persona."
+      },
+      "teamwork-day": {
+        "fiction": {
+          "text": "¿Quién es el personaje principal del equipo?",
+          "choices": [
+            "Una capitana constante",
+            "Un portero creativo",
+            "Una jugadora llena de ideas"
+          ]
+        },
+        "memory": "¿De quién es este recuerdo de equipo? Cuenta al menos un detalle real sobre esa persona."
+      },
+      "default": {
+        "fiction": {
+          "text": "¿Quién es el personaje principal de esta historia?",
+          "choices": ["Una persona curiosa", "Una niña aventurera", "Un animal explorador"]
+        },
+        "memory": "¿De quién es este recuerdo? Cuenta al menos un detalle real sobre esa persona o animal."
+      }
+    }
   }
 }

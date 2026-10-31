@@ -34,6 +34,9 @@
     "placeholders": {
       "addNotesStyleDisabled": "Notizen hinzufügen (Stilumwandlung aktivieren, um sie zu verwenden)"
     },
+    "warnings": {
+      "coverTitleNotPrinted": "Kleiner Hinweis: Dein Foto kommt genau so aufs gedruckte Cover, der Titel der Geschichte erscheint dort also nicht. Soll der Titel mit aufs Bild? Wähle \"Foto in den Stil {style} umwandeln und bearbeiten\" und wir weben ihn ins Kunstwerk ein."
+    },
     "buttons": {
       "applyPhoto": "Foto übernehmen"
     },
@@ -54,6 +57,8 @@
       "cancel": "Abbrechen",
       "crop": "Zuschneiden",
       "processing": "Wird verarbeitet..."
-    }
+    },
+    "removeUploadedImage": "Bild entfernen",
+    "uploadedImagePreviewAlt": "Vorschau des hochgeladenen Bildes"
   }
 }

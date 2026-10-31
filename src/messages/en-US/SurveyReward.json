@@ -1,0 +1,86 @@
+{
+  "title": "Your thank-you gift",
+  "intro": "Thanks for sharing what you really think. Pick one gift and one of your published stories, and we'll take it from there.",
+  "deadline": "Claim it by {date}.",
+  "loading": "Fetching your gift...",
+  "stepGift": "1. Choose your gift",
+  "stepStory": "2. Choose the story",
+  "options": {
+    "pdf": {
+      "title": "Print-at-home PDF",
+      "description": "A print-ready PDF of one of your stories, sent to the email on your account. Print it, staple it, read it at bedtime."
+    },
+    "audiobook": {
+      "title": "Audiobook",
+      "description": "A narrated version of one of your stories. It shows up on the story's listen page when it's ready, usually within a few minutes."
+    }
+  },
+  "stories": {
+    "audiobookExists": "Already has an audiobook",
+    "audiobookGenerating": "Audiobook in progress",
+    "pdfAlreadyRedeemed": "You already got the PDF for this one",
+    "audiobookHint": "Stories that already have an audiobook can't be picked for this gift.",
+    "none": "You don't have a published story yet. Once you publish one, this gift is ready to claim."
+  },
+  "honesty": "This gift is on us: it costs no credits and doesn't touch your balance. You get one gift per survey, and once it's on its way it can't be swapped.",
+  "retryNote": "Last time something went wrong on our side. Nothing was lost, so give it another go.",
+  "confirm": "Claim my gift",
+  "working": "Working on it...",
+  "retry": "Try again",
+  "started": {
+    "pdfTitle": "Your PDF is on its way",
+    "pdfBody": "We're preparing your print-ready PDF and will send it to the email on your account. It usually takes a few minutes. Peek in your spam folder if it plays hide and seek.",
+    "audiobookTitle": "Your audiobook is being recorded",
+    "audiobookBody": "The narrator is warming up. When it's done, you'll find it on the story's listen page, and we'll email you too."
+  },
+  "processing": {
+    "title": "Your gift is being made",
+    "body": "It's already in the works, so there's nothing else to do. Check back in a few minutes."
+  },
+  "delivered": {
+    "title": "Your gift has been delivered",
+    "pdfBody": "The print-ready PDF was sent to the email on your account. Happy printing!",
+    "audiobookBody": "Your audiobook is ready and waiting on the story's listen page."
+  },
+  "actions": {
+    "listen": "Listen to the story",
+    "myStories": "Go to my stories",
+    "createStory": "Write a story",
+    "refresh": "Check again"
+  },
+  "pending": {
+    "title": "Your gift is waiting for a story",
+    "body": "A gift needs a story to wrap. Publish your first story and it unlocks right away. We'll email you when it does.",
+    "cta": "Write my first story"
+  },
+  "expired": {
+    "title": "This gift has expired",
+    "body": "The claim window has closed, and we're sorry you missed it. Thank you for sharing your thoughts with us anyway. It really helped."
+  },
+  "notFound": {
+    "title": "We can't find this gift",
+    "body": "This link doesn't match your account. Gifts can only be claimed by the person who received the invitation, so check that you're signed in with the same email."
+  },
+  "errors": {
+    "generic": "Something went wrong and we couldn't start your gift. Nothing was used, so please try again in a moment.",
+    "loadFailed": "We couldn't load your gift. Please try again.",
+    "expired": "This gift has expired.",
+    "audiobook_exists": "That story already has an audiobook. Pick another story.",
+    "story_not_found": "We couldn't find that story among your published stories.",
+    "story_not_published": "Only published stories can be used for this gift.",
+    "reward_type_not_allowed": "That gift isn't available in this survey.",
+    "already_redeemed": "This gift has already been claimed.",
+    "pending_story": "Publish a story first and this gift will unlock.",
+    "product_in_progress": "This story already has one of these in the works. Pick another story or check back soon.",
+    "launch_failed": "We couldn't start the job just now. Nothing was used. Please try again.",
+    "previous_attempt_failed": "The previous attempt didn't go through. Please try again."
+  },
+  "banner": {
+    "eligibleTitle": "A thank-you gift is waiting for you",
+    "eligibleBody": "Pick an audiobook or a print-at-home PDF for one of your stories. It's on us.",
+    "retryTitle": "Your gift needs one more step",
+    "retryBody": "Something hiccupped last time. Give it another go, nothing was used.",
+    "cta": "Choose my gift",
+    "dismiss": "Dismiss"
+  }
+}

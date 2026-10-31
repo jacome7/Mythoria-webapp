@@ -1,5 +1,6 @@
 'use client';
 
+import ModalPortal from '@/components/ModalPortal';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { AlertCircle, CheckCircle, Clock, Loader2, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -197,99 +198,103 @@ export default function JobProgressModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-md w-full overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <div className="flex items-center space-x-3">
-            {getStatusIcon()}
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">{tJobProgressModal('title')}</h2>
-              <p className="text-sm text-gray-600">{getStatusText()}</p>
+    <ModalPortal>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-xl max-w-md w-full overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 border-b border-gray-200">
+            <div className="flex items-center space-x-3">
+              {getStatusIcon()}
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  {tJobProgressModal('title')}
+                </h2>
+                <p className="text-sm text-gray-600">{getStatusText()}</p>
+              </div>
             </div>
+            {canClose() && (
+              <button
+                onClick={onClose}
+                className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
+              >
+                <X className="w-4 h-4 text-gray-600" />
+              </button>
+            )}
           </div>
+
+          {/* Content */}
+          <div className="p-6">
+            {/* Progress Bar */}
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>{tJobProgressModal('labels.progress')}</span>
+                <span>{Math.round(jobStatus?.progress || 0)}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    jobStatus?.status === 'completed'
+                      ? 'bg-green-500'
+                      : jobStatus?.status === 'failed'
+                        ? 'bg-red-500'
+                        : 'bg-blue-500'
+                  }`}
+                  style={{ width: `${Math.min(100, jobStatus?.progress || 0)}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Time Information */}
+            {jobStatus && jobStatus.status === 'processing' && (
+              <div className="mt-4 space-y-2">
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>
+                    {tJobProgressModal('labels.elapsed')}: {formatTime(jobStatus.elapsedTime)}
+                  </span>
+                  <span>
+                    {tJobProgressModal('labels.remaining')}: ~
+                    {formatTime(Math.max(0, jobStatus.remainingTime))}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Error Message */}
+            {jobStatus?.status === 'failed' && jobStatus.error && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+                  <span className="text-sm text-red-600">{jobStatus.error}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Success Message */}
+            {jobStatus?.status === 'completed' && (
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                  <span className="text-sm text-green-600">
+                    {tJobProgressModal('status.completed')}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
           {canClose() && (
-            <button
-              onClick={onClose}
-              className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
-            >
-              <X className="w-4 h-4 text-gray-600" />
-            </button>
-          )}
-        </div>
-
-        {/* Content */}
-        <div className="p-6">
-          {/* Progress Bar */}
-          <div className="space-y-3">
-            <div className="flex justify-between text-sm text-gray-600">
-              <span>{tJobProgressModal('labels.progress')}</span>
-              <span>{Math.round(jobStatus?.progress || 0)}%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  jobStatus?.status === 'completed'
-                    ? 'bg-green-500'
-                    : jobStatus?.status === 'failed'
-                      ? 'bg-red-500'
-                      : 'bg-blue-500'
-                }`}
-                style={{ width: `${Math.min(100, jobStatus?.progress || 0)}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Time Information */}
-          {jobStatus && jobStatus.status === 'processing' && (
-            <div className="mt-4 space-y-2">
-              <div className="flex justify-between text-xs text-gray-500">
-                <span>
-                  {tJobProgressModal('labels.elapsed')}: {formatTime(jobStatus.elapsedTime)}
-                </span>
-                <span>
-                  {tJobProgressModal('labels.remaining')}: ~
-                  {formatTime(Math.max(0, jobStatus.remainingTime))}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* Error Message */}
-          {jobStatus?.status === 'failed' && jobStatus.error && (
-            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <div className="flex items-center space-x-2">
-                <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
-                <span className="text-sm text-red-600">{jobStatus.error}</span>
-              </div>
-            </div>
-          )}
-
-          {/* Success Message */}
-          {jobStatus?.status === 'completed' && (
-            <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
-                <span className="text-sm text-green-600">
-                  {tJobProgressModal('status.completed')}
-                </span>
-              </div>
+            <div className="p-4 border-tJobProgressModal border-gray-200 flex justify-end">
+              <button
+                onClick={onClose}
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                {tJobProgressModal('closeButton')}
+              </button>
             </div>
           )}
         </div>
-
-        {/* Footer */}
-        {canClose() && (
-          <div className="p-4 border-tJobProgressModal border-gray-200 flex justify-end">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-            >
-              {tJobProgressModal('closeButton')}
-            </button>
-          </div>
-        )}
       </div>
-    </div>
+    </ModalPortal>
   );
 }

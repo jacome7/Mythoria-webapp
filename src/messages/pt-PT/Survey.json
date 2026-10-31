@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "title": "Questionário Mythoria",
+    "description": "Um questionário curto para nos ajudar a moldar a Mythoria."
+  },
+  "intro": {
+    "estimatedMinutes": "Menos de {minutes} {minutes, plural, one {minuto} other {minutos}} do seu tempo",
+    "start": "Vamos começar",
+    "resume": "Continue de onde ficou",
+    "restored": "Guardámos as suas respostas anteriores, por isso pode continuar de onde parou.",
+    "privacy": "Saiba como tratamos os seus dados na nossa <link>Política de Privacidade</link>.",
+    "privacyOpensNewTab": "(abre num novo separador)",
+    "rewardTitle": "Conclua e receba uma oferta",
+    "rewardBody": "Ao concluir este questionário, pode escolher uma oferta para uma das suas histórias publicadas: um PDF pronto a imprimir ou um audiolivro, por nossa conta."
+  },
+  "nav": {
+    "back": "Voltar",
+    "next": "Seguinte",
+    "submit": "Enviar as minhas respostas",
+    "submitting": "A enviar…",
+    "stepProgress": "Passo {current} de {total}",
+    "progressLabel": "Progresso do questionário"
+  },
+  "question": {
+    "optional": "Opcional",
+    "clear": "Limpar a minha resposta",
+    "chooseMany": "Escolha todas as que se aplicam",
+    "pickAtLeast": "Escolha pelo menos {min}",
+    "pickUpTo": "Escolha até {max}",
+    "pickBetween": "Escolha entre {min} e {max}",
+    "selectPlaceholder": "Escolha uma opção",
+    "otherLabel": "Conte-nos mais (opcional)",
+    "otherPlaceholder": "Escreva aqui",
+    "charCount": "{count} / {max} carateres",
+    "errorPrefix": "Erro:"
+  },
+  "slider": {
+    "noValue": "Ainda nada selecionado",
+    "currentValue": "Selecionado: {value}",
+    "numericLabel": "Ou escreva um número de {min} a {max}",
+    "otherAnswers": "Ou escolha",
+    "selectedAnswer": "Selecionado: {answer}"
+  },
+  "rating": {
+    "selected": "Selecionado: {label}",
+    "otherAnswers": "Ou escolha"
+  },
+  "errors": {
+    "required": "Responda a esta pergunta antes de avançar.",
+    "invalid_kind": "Esta resposta não parece correta. Tente novamente.",
+    "unknown_option": "Escolha uma das opções apresentadas.",
+    "too_many_options": "Escolha apenas uma opção.",
+    "min_selected": "Escolha pelo menos {min}.",
+    "max_selected": "Escolha no máximo {max}.",
+    "exclusive_conflict": "Esta opção não pode ser combinada com as outras.",
+    "other_text_not_allowed": "Este texto extra não pertence à opção escolhida.",
+    "too_long": "Está um pouco longo. Use no máximo {max} carateres.",
+    "too_short": "Está um pouco curto. Escreva pelo menos {min} carateres.",
+    "below_min": "Indique {min} ou mais.",
+    "above_max": "Indique {max} ou menos.",
+    "not_integer": "Indique um número inteiro.",
+    "step_mismatch": "Indique um valor em intervalos de {step}.",
+    "duplicate_option": "Cada opção só pode ser escolhida uma vez.",
+    "fixAnswers": "Quase lá. Algumas respostas precisam de mais uma vista de olhos.",
+    "submitFailed": "Não conseguimos enviar as suas respostas agora. Não se perdeu nada, por isso tente novamente.",
+    "closed": "Este questionário acabou de fechar e já não aceita novas respostas. Obrigado pela visita!"
+  },
+  "completion": {
+    "title": "Obrigado!",
+    "rewardTitle": "Um pequeno agradecimento da nossa parte",
+    "rewardEligible": "Escolha uma oferta para uma das suas histórias publicadas. Terá de iniciar sessão na sua conta Mythoria para a escolher.",
+    "rewardPending": "A sua oferta está à espera. Assim que publicar a sua primeira história, inicie sessão e reclame-a.",
+    "rewardCta": "Escolher a minha oferta",
+    "rewardCtaPending": "Ver a minha oferta",
+    "backHome": "Voltar à Mythoria"
+  },
+  "status": {
+    "invalid": {
+      "title": "Esta ligação não abre nenhum questionário",
+      "body": "A ligação pode estar incompleta ou ter um erro. Experimente abri-la de novo a partir do seu email."
+    },
+    "closed": {
+      "title": "Este questionário já fechou",
+      "body": "Já não estamos a recolher respostas, mas agradecemos a visita. Toda a história merece um bom final, e esta já o teve."
+    },
+    "submitted": {
+      "title": "Já respondeu a este questionário",
+      "body": "Obrigado, as suas respostas já chegaram em segurança. Cada convite só pode ser respondido uma vez."
+    },
+    "submittedReward": "A sua oferta de agradecimento continua à espera. Terá de iniciar sessão para a escolher.",
+    "backHome": "Voltar à Mythoria"
+  }
+}

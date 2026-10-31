@@ -26,6 +26,31 @@
   z-index: 1;
 }
 
+@media (max-width: 768px) {
+  .header.compactWizard {
+    min-height: 52px;
+    height: 52px;
+    padding: 4px 8px;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .compactWizard .headerEnd {
+    grid-column: 2;
+    gap: 0;
+  }
+  .compactWizard .headerStart {
+    gap: 0;
+  }
+  .compactWizard .mobileMenuButton,
+  .compactWizard .logoLink,
+  .compactWizard .headerEnd button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .compactWizard .logoImage {
+    width: 120px;
+  }
+}
+
 .headerStart {
   display: flex;
   min-width: 0;

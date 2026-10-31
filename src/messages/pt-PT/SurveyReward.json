@@ -1,0 +1,86 @@
+{
+  "title": "O seu presente de agradecimento",
+  "intro": "Agradecemos que tenha partilhado o que realmente pensa. Escolha um presente e uma das suas histórias publicadas, e nós tratamos do resto.",
+  "deadline": "Pode reclamá-lo até {date}.",
+  "loading": "A buscar o seu presente...",
+  "stepGift": "1. Escolha o presente",
+  "stepStory": "2. Escolha a história",
+  "options": {
+    "pdf": {
+      "title": "PDF para imprimir em casa",
+      "description": "Um PDF pronto a imprimir de uma das suas histórias, enviado para o email da sua conta. Imprima, agrafe e leia à hora de deitar."
+    },
+    "audiobook": {
+      "title": "Audiolivro",
+      "description": "Uma versão narrada de uma das suas histórias. Aparece na página de audição da história quando estiver pronta, normalmente em poucos minutos."
+    }
+  },
+  "stories": {
+    "audiobookExists": "Já tem audiolivro",
+    "audiobookGenerating": "Audiolivro em preparação",
+    "pdfAlreadyRedeemed": "Já recebeu o PDF desta história",
+    "audiobookHint": "As histórias que já têm audiolivro não podem ser escolhidas para este presente.",
+    "none": "Ainda não tem nenhuma história publicada. Assim que publicar uma, o presente fica pronto a reclamar."
+  },
+  "honesty": "Este presente é por nossa conta: não gasta créditos nem mexe no seu saldo. Há um presente por inquérito e, depois de a preparação começar, não é possível trocá-lo.",
+  "retryNote": "Da última vez, algo correu mal do nosso lado. Não se perdeu nada, por isso volte a tentar.",
+  "confirm": "Reclamar o meu presente",
+  "working": "A tratar disso...",
+  "retry": "Tentar novamente",
+  "started": {
+    "pdfTitle": "O seu PDF está a caminho",
+    "pdfBody": "Estamos a preparar o PDF pronto a imprimir e vamos enviá-lo para o email da sua conta. Normalmente demora alguns minutos. Espreite a pasta de spam se ele jogar às escondidas.",
+    "audiobookTitle": "O seu audiolivro está a ser gravado",
+    "audiobookBody": "O narrador está a aquecer a voz. Quando terminar, encontra-o na página de audição da história e também lhe enviamos um email."
+  },
+  "processing": {
+    "title": "O seu presente está a ser preparado",
+    "body": "Já está em andamento, por isso não precisa de fazer mais nada. Volte daqui a alguns minutos."
+  },
+  "delivered": {
+    "title": "O seu presente foi entregue",
+    "pdfBody": "O PDF pronto a imprimir foi enviado para o email da sua conta. Boas impressões!",
+    "audiobookBody": "O seu audiolivro está pronto e à espera na página de audição da história."
+  },
+  "actions": {
+    "listen": "Ouvir a história",
+    "myStories": "Ir para as minhas histórias",
+    "createStory": "Escrever uma história",
+    "refresh": "Verificar novamente"
+  },
+  "pending": {
+    "title": "O seu presente está à espera de uma história",
+    "body": "Um presente precisa de uma história para embrulhar. Publique a sua primeira história e ele desbloqueia de imediato. Avisamos por email quando acontecer.",
+    "cta": "Escrever a minha primeira história"
+  },
+  "expired": {
+    "title": "Este presente expirou",
+    "body": "O prazo para o reclamar terminou e lamentamos que o tenha perdido. Agradecemos, ainda assim, que tenha partilhado a sua opinião. Ajudou-nos muito."
+  },
+  "notFound": {
+    "title": "Não encontramos este presente",
+    "body": "Esta ligação não corresponde à sua conta. Os presentes só podem ser reclamados por quem recebeu o convite, por isso confirme que iniciou sessão com o mesmo email."
+  },
+  "errors": {
+    "generic": "Algo correu mal e não conseguimos iniciar o seu presente. Não foi gasto nada, por isso tente novamente daqui a pouco.",
+    "loadFailed": "Não conseguimos carregar o seu presente. Tente novamente.",
+    "expired": "Este presente expirou.",
+    "audiobook_exists": "Essa história já tem audiolivro. Escolha outra história.",
+    "story_not_found": "Não encontramos essa história entre as suas histórias publicadas.",
+    "story_not_published": "Só as histórias publicadas podem ser usadas neste presente.",
+    "reward_type_not_allowed": "Esse presente não está disponível neste inquérito.",
+    "already_redeemed": "Este presente já foi reclamado.",
+    "pending_story": "Publique primeiro uma história e este presente desbloqueia.",
+    "product_in_progress": "Esta história já tem um destes em preparação. Escolha outra história ou volte daqui a pouco.",
+    "launch_failed": "Não conseguimos iniciar o trabalho agora. Não foi gasto nada. Tente novamente.",
+    "previous_attempt_failed": "A tentativa anterior não correu bem. Tente novamente."
+  },
+  "banner": {
+    "eligibleTitle": "Tem um presente de agradecimento à sua espera",
+    "eligibleBody": "Escolha um audiolivro ou um PDF para imprimir em casa de uma das suas histórias. É por nossa conta.",
+    "retryTitle": "O seu presente precisa de mais um passo",
+    "retryBody": "Da última vez houve um soluço. Volte a tentar, não foi gasto nada.",
+    "cta": "Escolher o meu presente",
+    "dismiss": "Dispensar"
+  }
+}

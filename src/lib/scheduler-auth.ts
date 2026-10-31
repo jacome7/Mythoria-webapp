@@ -17,8 +17,15 @@ export function getSchedulerAudience(request: Request): string {
     : new URL(request.url).origin;
 }
 
-export async function verifySchedulerRequest(request: Request): Promise<boolean> {
-  const expectedEmail = process.env.ANALYTICS_SCHEDULER_SERVICE_ACCOUNT?.trim();
+/**
+ * Verifies a Cloud Scheduler OIDC call. `serviceAccountEnv` names the env var holding the
+ * expected scheduler service account (defaults to the analytics scheduler).
+ */
+export async function verifySchedulerRequest(
+  request: Request,
+  serviceAccountEnv = 'ANALYTICS_SCHEDULER_SERVICE_ACCOUNT',
+): Promise<boolean> {
+  const expectedEmail = process.env[serviceAccountEnv]?.trim();
   if (!expectedEmail) return false;
 
   const authorization = request.headers.get('authorization') || '';

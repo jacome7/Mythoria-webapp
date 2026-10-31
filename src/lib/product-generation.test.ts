@@ -11,6 +11,7 @@ import {
   markProductGenerationQueued,
   printOrderRequestedOutboxEntry,
   startProductGeneration,
+  SurveyRewardFundingError,
 } from './product-generation';
 
 const consent = {
@@ -175,9 +176,10 @@ describe('product generation requests', () => {
     const tx = {
       select: jest.fn(() => ({
         from: jest.fn(() => ({
-          where: jest
-            .fn()
-            .mockResolvedValue([{ runId: 'run-1', status: 'failed', compensatedAt: new Date() }]),
+          where: jest.fn(() => ({
+            for: () =>
+              Promise.resolve([{ runId: 'run-1', status: 'failed', compensatedAt: new Date() }]),
+          })),
         })),
       })),
       insert: jest.fn(),
@@ -185,8 +187,30 @@ describe('product generation requests', () => {
     };
     transactionMock.mockImplementation(async (callback) => callback(tx));
 
-    await compensateProductGeneration('run-1', 'queue', 'pubsub_publish_failed');
+    await expect(
+      compensateProductGeneration('run-1', 'queue', 'pubsub_publish_failed'),
+    ).resolves.toBe(false);
     expect(tx.insert).not.toHaveBeenCalled();
+    expect(tx.update).not.toHaveBeenCalled();
+  });
+
+  it('leaves a request that a concurrent launcher already queued untouched', async () => {
+    const tx = {
+      select: jest.fn(() => ({
+        from: jest.fn(() => ({
+          where: jest.fn(() => ({
+            for: () => Promise.resolve([{ runId: 'run-1', status: 'queued', compensatedAt: null }]),
+          })),
+        })),
+      })),
+      insert: jest.fn(),
+      update: jest.fn(),
+    };
+    transactionMock.mockImplementation(async (callback) => callback(tx));
+
+    await expect(
+      compensateProductGeneration('run-1', 'queue', 'pubsub_publish_failed'),
+    ).resolves.toBe(false);
     expect(tx.update).not.toHaveBeenCalled();
   });
 
@@ -220,5 +244,192 @@ describe('product generation requests', () => {
       },
     });
     expect(JSON.stringify(entry)).not.toContain('@');
+  });
+});
+
+describe('survey reward funded product generation', () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  const rewardInput = {
+    actionType: 'audiobook_generation' as const,
+    authorId: 'author-1',
+    userId: 'clerk-1',
+    storyId: 'story-1',
+    idempotencyKey: 'survey_reward:ent-1',
+    creditsSpent: 0,
+    creditEventType: 'audioBookGeneration' as const,
+    funding: { type: 'survey_reward' as const, entitlementId: 'ent-1' },
+  };
+
+  const entitlement = (overrides: Record<string, unknown> = {}) => ({
+    entitlementId: 'ent-1',
+    authorId: 'author-1',
+    rewardType: 'audiobook',
+    storyId: 'story-1',
+    status: 'selected',
+    attempts: 0,
+    productRunId: null,
+    expiresAt: null,
+    ...overrides,
+  });
+
+  /** Each `where()` resolves to the next queued row set; `.for('update')` resolves to the same. */
+  function makeTx(selectRows: unknown[][]) {
+    const insertValues = jest.fn((values: Record<string, unknown>) => ({
+      returning: jest.fn().mockResolvedValue([{ runId: 'run-1', status: 'pending', ...values }]),
+    }));
+    const updateSet = jest.fn(() => ({ where: jest.fn().mockResolvedValue(undefined) }));
+    const tx = {
+      execute: jest.fn().mockResolvedValue(undefined),
+      select: jest.fn(() => ({
+        from: jest.fn(() => ({
+          where: jest.fn(() => {
+            const rows = selectRows.shift() || [];
+            return Object.assign(Promise.resolve(rows), { for: () => Promise.resolve(rows) });
+          }),
+        })),
+      })),
+      insert: jest.fn(() => ({ values: insertValues })),
+      update: jest.fn(() => ({ set: updateSet })),
+    };
+    transactionMock.mockImplementation(async (callback) => callback(tx));
+    return { tx, insertValues, updateSet };
+  }
+
+  it('creates a zero-credit request and marks the entitlement processing without ledger writes', async () => {
+    const { tx, insertValues, updateSet } = makeTx([
+      [entitlement()],
+      [],
+      [],
+      [{ totalCredits: 3 }],
+    ]);
+
+    await expect(startProductGeneration(rewardInput)).resolves.toMatchObject({
+      request: { runId: expect.any(String) },
+      remainingCredits: 3,
+      duplicate: false,
+    });
+
+    expect(tx.insert).toHaveBeenCalledTimes(1);
+    expect(insertValues).toHaveBeenCalledWith(
+      expect.objectContaining({
+        creditsSpent: 0,
+        fundingSource: 'survey_reward',
+        rewardEntitlementId: 'ent-1',
+        idempotencyKey: 'survey_reward:ent-1:1',
+      }),
+    );
+    expect(insertValues).not.toHaveBeenCalledWith(
+      expect.objectContaining({ amount: expect.anything() }),
+    );
+    expect(tx.update).toHaveBeenCalledTimes(1);
+    expect(updateSet).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 'processing',
+        attempts: 1,
+        productRunId: expect.any(String),
+        redeemedAt: expect.any(Date),
+      }),
+    );
+  });
+
+  it('uses the next attempt number for the idempotency key on a retry after failure', async () => {
+    const { insertValues } = makeTx([
+      [entitlement({ status: 'failed', attempts: 1 })],
+      [],
+      [],
+      [{ totalCredits: 0 }],
+    ]);
+    await startProductGeneration(rewardInput);
+    expect(insertValues).toHaveBeenCalledWith(
+      expect.objectContaining({ idempotencyKey: 'survey_reward:ent-1:2' }),
+    );
+  });
+
+  it('returns the existing active run for a retried request while processing', async () => {
+    const linked = {
+      runId: 'run-live',
+      status: 'queued',
+      authorId: 'author-1',
+      storyId: 'story-1',
+      actionType: 'audiobook_generation',
+    };
+    const { tx } = makeTx([
+      [entitlement({ status: 'processing', attempts: 1, productRunId: 'run-live' })],
+      [linked],
+      [{ totalCredits: 0 }],
+    ]);
+
+    await expect(startProductGeneration(rewardInput)).resolves.toMatchObject({
+      request: { runId: 'run-live' },
+      duplicate: true,
+    });
+    expect(tx.insert).not.toHaveBeenCalled();
+    expect(tx.update).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['another author', { authorId: 'author-2' }, 'entitlement_forbidden'],
+    ['a delivered gift', { status: 'delivered' }, 'entitlement_status'],
+    ['an unselected gift', { status: 'eligible' }, 'entitlement_status'],
+    ['an expired gift', { expiresAt: new Date(Date.now() - 1000) }, 'entitlement_expired'],
+    ['another story', { storyId: 'story-2' }, 'entitlement_mismatch'],
+    ['another reward type', { rewardType: 'pdf' }, 'entitlement_mismatch'],
+  ])('rejects %s', async (_label, overrides, code) => {
+    const { tx } = makeTx([[entitlement(overrides)]]);
+    await expect(startProductGeneration(rewardInput)).rejects.toMatchObject({ code });
+    await expect(startProductGeneration(rewardInput)).rejects.toBeInstanceOf(
+      SurveyRewardFundingError,
+    );
+    expect(tx.insert).not.toHaveBeenCalled();
+  });
+
+  it('rejects a missing entitlement and refuses to start beside an active request', async () => {
+    makeTx([[]]);
+    await expect(startProductGeneration(rewardInput)).rejects.toMatchObject({
+      code: 'entitlement_not_found',
+    });
+
+    const { tx } = makeTx([[entitlement()], [], [{ runId: 'run-paid', status: 'queued' }]]);
+    await expect(startProductGeneration(rewardInput)).rejects.toMatchObject({
+      code: 'product_in_progress',
+    });
+    expect(tx.insert).not.toHaveBeenCalled();
+  });
+
+  it('refuses a reward start that tries to spend credits', async () => {
+    await expect(startProductGeneration({ ...rewardInput, creditsSpent: 5 })).rejects.toThrow(
+      'cannot spend credits',
+    );
+  });
+
+  it('compensates a reward-funded request by failing the entitlement, not by refunding', async () => {
+    const request = {
+      runId: 'run-1',
+      status: 'pending',
+      compensatedAt: null,
+      authorId: 'author-1',
+      storyId: 'story-1',
+      actionType: 'audiobook_generation',
+      creditsSpent: 0,
+      fundingSource: 'survey_reward',
+      rewardEntitlementId: 'ent-1',
+      consent: null,
+    };
+    const { tx, updateSet } = makeTx([[request]]);
+
+    await compensateProductGeneration('run-1', 'queue', 'pubsub_publish_failed');
+
+    expect(tx.insert).not.toHaveBeenCalled();
+    expect(updateSet).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 'failed',
+        failedAt: expect.any(Date),
+        lastError: 'queue:pubsub_publish_failed',
+      }),
+    );
+    expect(updateSet).toHaveBeenCalledWith(
+      expect.objectContaining({ status: 'failed', compensatedAt: expect.any(Date) }),
+    );
   });
 });

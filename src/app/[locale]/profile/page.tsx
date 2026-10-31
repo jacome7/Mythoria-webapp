@@ -554,7 +554,7 @@ export default function AccountProfilePage() {
                 <div className="text-center">
                   <CreditsDisplay credits={credits} />
                   <p className="text-xs opacity-70 mt-2">{t('billing.historyHint')}</p>
-                  <Link href={`/${locale}/buy-credits`} className="btn btn-primary mt-4">
+                  <Link href={`/${locale}/pricing#buy-credits`} className="btn btn-primary mt-4">
                     <CirclePlus className="mr-2" /> {t('billing.addCredits')}
                   </Link>
                 </div>

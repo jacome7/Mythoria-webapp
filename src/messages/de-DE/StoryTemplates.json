@@ -158,5 +158,120 @@
       "second": "Ein lustiger Hindernisparcours",
       "third": "Eine Schatzsuche"
     }
+  },
+  "selectedModel": "Gewählte Vorlage",
+  "summaryHelp": "Sieh dir diese Idee an. Du kannst sie anpassen oder unten Details ergänzen.",
+  "personalization": "Geschichte personalisieren",
+  "answerQuestions": "Ein paar Fragen beantworten",
+  "questionsHelp": "Wir helfen dir, diese Idee auszubauen.",
+  "combineInputsHelp": "Du kannst deine Antworten mit Text, Bildern und Sprache kombinieren.",
+  "answeredQuestions": "Deine Antworten ansehen",
+  "fictionContinueHint": "Du kannst ohne Personalisierung weitermachen oder der Geschichte deine eigene Note geben.",
+  "memoryContinueHint": "Die echten Details, die du geteilt hast, fließen in deine Geschichte ein.",
+  "photoAnswerLabel": "Foto hinzufügen",
+  "photoReferenceHelp": "Das Foto dient als Vorlage, damit die Hauptfigur in den Illustrationen der gewählten Person oder dem Tier ähnelt.",
+  "photoCaption": "Name oder Detail (optional)",
+  "characterAnswerPlaceholder": "Schreib den Namen der Figur und, wenn du möchtest, ein paar Details zu ihr.",
+  "memoryCharacterPlaceholder": "Schreib den Namen der Figur und teile ein echtes Detail über sie.",
+  "photoPreparing": "Foto wird vorbereitet…",
+  "photoError": "Wir konnten das Foto nicht vorbereiten.",
+  "photoNoSubject": "Wir konnten auf dem Foto keine Person und kein Tier erkennen.",
+  "photoChooseSubject": "Wähle die Person oder das Tier, das du einbeziehen möchtest.",
+  "photoRemove": "Foto entfernen",
+  "photoRetry": "Erneut versuchen",
+  "photoLimit": "Du kannst ein Referenzfoto für die Hauptfigur und insgesamt bis zu drei Bilder verwenden.",
+  "photoConfirm": "Foto bestätigen",
+  "photoPreview": "Referenzfoto der Hauptfigur",
+  "photoSubject": "Person oder Tier",
+  "photoReplace": "Foto ersetzen",
+  "photoConfirmed": "Referenzfoto bestätigt",
+  "customPhotoAnswer": "Text oder Foto",
+  "preview": {
+    "photoOnlyAnswer": "Nutze die auf dem Foto ausgewählte Person oder das Tier als visuelle Vorlage für die Hauptfigur. Das Foto bestätigt keine persönlichen Fakten.",
+    "questions": {
+      "drawing-adventure": {
+        "fiction": {
+          "text": "Wer ist die Hauptfigur, deren Zeichnungen lebendig werden?",
+          "choices": [
+            "Ein Kind, das gern zeichnet",
+            "Ein junger Erfinder",
+            "Eine neugierige Künstlerin"
+          ]
+        },
+        "memory": "Wessen Erinnerung ist mit den Zeichnungen verbunden? Teile mindestens ein echtes Detail über diese Person."
+      },
+      "moonlight-adventure": {
+        "fiction": {
+          "text": "Wer ist die Hauptfigur dieses Mondscheinabenteuers?",
+          "choices": [
+            "Ein verträumtes Kind",
+            "Ein neugieriges kleines Kaninchen",
+            "Eine junge Konditorin"
+          ]
+        },
+        "memory": "Wessen Erinnerung an eine besondere Nacht ist das? Teile mindestens ein echtes Detail über diese Person oder dieses Tier."
+      },
+      "pet-mission": {
+        "fiction": {
+          "text": "Welches Tier spielt die Hauptrolle in dieser unerwarteten Mission?",
+          "choices": ["Eine abenteuerlustige Katze", "Ein mutiger Hund", "Ein Entdecker-Kaninchen"]
+        },
+        "memory": "Um welches Tier geht es in dieser Erinnerung? Teile mindestens ein echtes Detail darüber."
+      },
+      "magic-doorway": {
+        "fiction": {
+          "text": "Wer ist die Hauptfigur, die die magischen Türen entdeckt?",
+          "choices": ["Ein Entdeckerkind", "Ein junger Zauberlehrling", "Ein neugieriges Mädchen"]
+        },
+        "memory": "Wessen Entdeckungserinnerung ist das? Teile mindestens ein echtes Detail über diese Person."
+      },
+      "little-love": {
+        "fiction": {
+          "text": "Wer ist die Hauptfigur dieser Liebesgeschichte?",
+          "choices": ["Eine verträumte Floristin", "Ein reisender Musiker", "Eine kreative Köchin"]
+        },
+        "memory": "Wessen Liebeserinnerung ist das? Teile mindestens ein echtes Detail über diese Person."
+      },
+      "travel-memories": {
+        "fiction": {
+          "text": "Wer ist die Hauptfigur dieser erfundenen Reise?",
+          "choices": [
+            "Ein abenteuerlustiges Kind",
+            "Eine neugierige Fotografin",
+            "Ein verträumter Reisender"
+          ]
+        },
+        "memory": "Wessen Reiseerinnerung ist das? Teile mindestens ein echtes Detail über diese Person oder dieses Tier."
+      },
+      "grandparent-memory": {
+        "fiction": {
+          "text": "Wer ist die Hauptfigur dieser erfundenen Geschichte?",
+          "choices": [
+            "Eine Großmutter, die Geschichten erzählt",
+            "Ein abenteuerlustiger Großvater",
+            "Ein neugieriges Kind"
+          ]
+        },
+        "memory": "Um welche Großmutter oder welchen Großvater geht es in dieser Erinnerung? Teile mindestens ein echtes Detail über diese Person."
+      },
+      "teamwork-day": {
+        "fiction": {
+          "text": "Wer ist die Hauptfigur des Teams?",
+          "choices": [
+            "Eine ausdauernde Kapitänin",
+            "Ein kreativer Torwart",
+            "Eine Spielerin voller Ideen"
+          ]
+        },
+        "memory": "Wessen Teamerinnerung ist das? Teile mindestens ein echtes Detail über diese Person."
+      },
+      "default": {
+        "fiction": {
+          "text": "Wer ist die Hauptfigur dieser Geschichte?",
+          "choices": ["Eine neugierige Person", "Ein abenteuerlustiges Kind", "Ein Entdeckertier"]
+        },
+        "memory": "Wessen Erinnerung ist das? Teile mindestens ein echtes Detail über diese Person oder dieses Tier."
+      }
+    }
   }
 }

@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "title": "Encuesta de Mythoria",
+    "description": "Una encuesta corta para ayudarnos a dar forma a Mythoria."
+  },
+  "intro": {
+    "estimatedMinutes": "Menos de {minutes} {minutes, plural, one {minuto} other {minutos}} de tu tiempo",
+    "start": "Empecemos",
+    "resume": "Sigue donde lo dejaste",
+    "restored": "Hemos guardado tus respuestas anteriores, así que puedes continuar donde lo dejaste.",
+    "privacy": "¿Curiosidad? Descubre cómo tratamos tus datos en nuestra <link>Política de privacidad</link>.",
+    "privacyOpensNewTab": "(se abre en una pestaña nueva)",
+    "rewardTitle": "Termina y recibe un regalo",
+    "rewardBody": "Al completar esta encuesta podrás elegir un regalo para una de tus historias publicadas: un PDF listo para imprimir o un audiolibro, de parte nuestra."
+  },
+  "nav": {
+    "back": "Atrás",
+    "next": "Siguiente",
+    "submit": "Enviar mis respuestas",
+    "submitting": "Enviando…",
+    "stepProgress": "Paso {current} de {total}",
+    "progressLabel": "Progreso de la encuesta"
+  },
+  "question": {
+    "optional": "Opcional",
+    "clear": "Borrar mi respuesta",
+    "chooseMany": "Elige todas las que correspondan",
+    "pickAtLeast": "Elige al menos {min}",
+    "pickUpTo": "Elige hasta {max}",
+    "pickBetween": "Elige entre {min} y {max}",
+    "selectPlaceholder": "Elige una opción",
+    "otherLabel": "Cuéntanos más (opcional)",
+    "otherPlaceholder": "Escribe aquí",
+    "charCount": "{count} / {max} caracteres",
+    "errorPrefix": "Error:"
+  },
+  "slider": {
+    "noValue": "Todavía no has elegido nada",
+    "currentValue": "Elegido: {value}",
+    "numericLabel": "O escribe un número del {min} al {max}",
+    "otherAnswers": "O elige",
+    "selectedAnswer": "Elegido: {answer}"
+  },
+  "rating": {
+    "selected": "Elegido: {label}",
+    "otherAnswers": "O elige"
+  },
+  "errors": {
+    "required": "Responde a esta pregunta antes de continuar.",
+    "invalid_kind": "Esa respuesta no parece correcta. Inténtalo de nuevo.",
+    "unknown_option": "Elige una de las opciones de la lista.",
+    "too_many_options": "Elige solo una opción.",
+    "min_selected": "Elige al menos {min}.",
+    "max_selected": "Elige como máximo {max}.",
+    "exclusive_conflict": "Esa opción no se puede combinar con las demás.",
+    "other_text_not_allowed": "Ese texto adicional no corresponde a la opción elegida.",
+    "too_long": "Es un poco largo. Usa como máximo {max} caracteres.",
+    "too_short": "Es un poco corto. Escribe al menos {min} caracteres.",
+    "below_min": "Introduce {min} o más.",
+    "above_max": "Introduce {max} o menos.",
+    "not_integer": "Introduce un número entero.",
+    "step_mismatch": "Introduce un valor en pasos de {step}.",
+    "duplicate_option": "Cada opción solo se puede elegir una vez.",
+    "fixAnswers": "Casi lo tienes. Hay respuestas que necesitan otra mirada.",
+    "submitFailed": "No hemos podido enviar tus respuestas ahora mismo. No se ha perdido nada, así que inténtalo de nuevo.",
+    "closed": "Esta encuesta acaba de cerrarse y ya no admite respuestas. ¡Gracias por pasarte por aquí!"
+  },
+  "completion": {
+    "title": "¡Gracias!",
+    "rewardTitle": "Un pequeño detalle de nuestra parte",
+    "rewardEligible": "Elige un regalo para una de tus historias publicadas. Tendrás que iniciar sesión en tu cuenta de Mythoria para elegirlo.",
+    "rewardPending": "Tu regalo te está esperando. Cuando publiques tu primera historia, inicia sesión y reclámalo.",
+    "rewardCta": "Elegir mi regalo",
+    "rewardCtaPending": "Ver mi regalo",
+    "backHome": "Volver a Mythoria"
+  },
+  "status": {
+    "invalid": {
+      "title": "Este enlace no abre ninguna encuesta",
+      "body": "Puede que el enlace esté incompleto o tenga un error. Prueba a abrirlo de nuevo desde tu correo."
+    },
+    "closed": {
+      "title": "Esta encuesta ha terminado",
+      "body": "Ya no recogemos respuestas, pero te agradecemos que hayas pasado por aquí. Toda historia merece un buen final, y esta ya lo ha tenido."
+    },
+    "submitted": {
+      "title": "Ya has respondido",
+      "body": "Gracias, tus respuestas ya están a salvo. Cada invitación solo se puede responder una vez."
+    },
+    "submittedReward": "Tu regalo de agradecimiento sigue esperándote. Tendrás que iniciar sesión para elegirlo.",
+    "backHome": "Volver a Mythoria"
+  }
+}

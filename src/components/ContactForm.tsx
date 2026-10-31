@@ -1,5 +1,6 @@
 'use client';
 
+import ModalPortal from '@/components/ModalPortal';
 import { Suspense, useEffect, useState } from 'react';
 import { Ticket } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -239,38 +240,40 @@ function ContactFormContent({ className = '' }: ContactFormProps) {
 
         {/* Success/Error Modal */}
         {showModal && (
-          <div className="modal modal-open">
-            <div className="modal-box">
-              <div className="flex items-center justify-center mb-4">
-                {isSuccess ? (
-                  <div className="text-6xl">🚀</div>
-                ) : (
-                  <div className="text-6xl">❌</div>
-                )}
-              </div>
-              <h3 className="font-bold text-lg text-center mb-4">
-                {isSuccess ? tContactForm('modal.ticketCreated') : tContactForm('modal.oops')}
-              </h3>
-              <p className="text-center text-base-content/80">{responseMessage}</p>
-              {isSuccess && (
-                <p className="text-center text-sm text-base-content/60 mt-2">
-                  {tContactForm('modal.redirectingMessage')}
-                </p>
-              )}
-              <div className="modal-action">
-                {!isSuccess && (
-                  <button className="btn btn-primary" onClick={() => setShowModal(false)}>
-                    {tContactForm('modal.tryAgain')}
-                  </button>
-                )}
+          <ModalPortal>
+            <div className="modal modal-open">
+              <div className="modal-box">
+                <div className="flex items-center justify-center mb-4">
+                  {isSuccess ? (
+                    <div className="text-6xl">🚀</div>
+                  ) : (
+                    <div className="text-6xl">❌</div>
+                  )}
+                </div>
+                <h3 className="font-bold text-lg text-center mb-4">
+                  {isSuccess ? tContactForm('modal.ticketCreated') : tContactForm('modal.oops')}
+                </h3>
+                <p className="text-center text-base-content/80">{responseMessage}</p>
                 {isSuccess && (
-                  <button className="btn btn-primary" onClick={() => router.push('/')}>
-                    {tContactForm('modal.goToHomepage')}
-                  </button>
+                  <p className="text-center text-sm text-base-content/60 mt-2">
+                    {tContactForm('modal.redirectingMessage')}
+                  </p>
                 )}
+                <div className="modal-action">
+                  {!isSuccess && (
+                    <button className="btn btn-primary" onClick={() => setShowModal(false)}>
+                      {tContactForm('modal.tryAgain')}
+                    </button>
+                  )}
+                  {isSuccess && (
+                    <button className="btn btn-primary" onClick={() => router.push('/')}>
+                      {tContactForm('modal.goToHomepage')}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          </ModalPortal>
         )}
       </div>
     </div>

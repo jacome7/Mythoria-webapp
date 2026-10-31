@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "title": "Mythoria-Umfrage",
+    "description": "Eine kurze Umfrage, die uns hilft, Mythoria weiterzuentwickeln."
+  },
+  "intro": {
+    "estimatedMinutes": "Weniger als {minutes} {minutes, plural, one {Minute} other {Minuten}} deiner Zeit",
+    "start": "Los geht's",
+    "resume": "Mach da weiter, wo du aufgehört hast",
+    "restored": "Wir haben deine bisherigen Antworten gespeichert, du kannst also genau dort weitermachen, wo du aufgehört hast.",
+    "privacy": "Neugierig? In unserer <link>Datenschutzerklärung</link> erfährst du, wie wir mit deinen Daten umgehen.",
+    "privacyOpensNewTab": "(öffnet in einem neuen Tab)",
+    "rewardTitle": "Mach mit und erhalte ein Geschenk",
+    "rewardBody": "Wenn du diese Umfrage abschließt, kannst du dir für eine deiner veröffentlichten Geschichten ein Geschenk aussuchen: ein druckfertiges PDF oder ein Hörbuch, auf unsere Kosten."
+  },
+  "nav": {
+    "back": "Zurück",
+    "next": "Weiter",
+    "submit": "Antworten senden",
+    "submitting": "Wird gesendet…",
+    "stepProgress": "Schritt {current} von {total}",
+    "progressLabel": "Fortschritt der Umfrage"
+  },
+  "question": {
+    "optional": "Optional",
+    "clear": "Meine Antwort löschen",
+    "chooseMany": "Wähle alles Zutreffende aus",
+    "pickAtLeast": "Wähle mindestens {min}",
+    "pickUpTo": "Wähle bis zu {max}",
+    "pickBetween": "Wähle zwischen {min} und {max}",
+    "selectPlaceholder": "Wähle eine Option",
+    "otherLabel": "Erzähl uns mehr (optional)",
+    "otherPlaceholder": "Hier schreiben",
+    "charCount": "{count} / {max} Zeichen",
+    "errorPrefix": "Fehler:"
+  },
+  "slider": {
+    "noValue": "Noch nichts ausgewählt",
+    "currentValue": "Ausgewählt: {value}",
+    "numericLabel": "Oder gib eine Zahl von {min} bis {max} ein",
+    "otherAnswers": "Oder wähle",
+    "selectedAnswer": "Ausgewählt: {answer}"
+  },
+  "rating": {
+    "selected": "Ausgewählt: {label}",
+    "otherAnswers": "Oder wähle"
+  },
+  "errors": {
+    "required": "Bitte beantworte diese Frage, bevor du weitergehst.",
+    "invalid_kind": "Diese Antwort passt nicht ganz. Bitte versuche es noch einmal.",
+    "unknown_option": "Bitte wähle eine der angezeigten Optionen.",
+    "too_many_options": "Bitte wähle nur eine Option.",
+    "min_selected": "Wähle mindestens {min}.",
+    "max_selected": "Wähle höchstens {max}.",
+    "exclusive_conflict": "Diese Option lässt sich nicht mit den anderen kombinieren.",
+    "other_text_not_allowed": "Dieser zusätzliche Text gehört nicht zur gewählten Option.",
+    "too_long": "Das ist etwas zu lang. Bitte halte dich an höchstens {max} Zeichen.",
+    "too_short": "Das ist etwas zu kurz. Bitte schreibe mindestens {min} Zeichen.",
+    "below_min": "Bitte gib {min} oder mehr ein.",
+    "above_max": "Bitte gib {max} oder weniger ein.",
+    "not_integer": "Bitte gib eine ganze Zahl ein.",
+    "step_mismatch": "Bitte gib einen Wert in Schritten von {step} ein.",
+    "duplicate_option": "Jede Option kann nur einmal gewählt werden.",
+    "fixAnswers": "Fast geschafft. Ein paar Antworten brauchen noch einen zweiten Blick.",
+    "submitFailed": "Wir konnten deine Antworten gerade nicht senden. Es ist nichts verloren, bitte versuche es noch einmal.",
+    "closed": "Diese Umfrage wurde gerade geschlossen und nimmt keine neuen Antworten mehr an. Danke fürs Vorbeischauen!"
+  },
+  "completion": {
+    "title": "Danke!",
+    "rewardTitle": "Ein kleines Dankeschön von uns",
+    "rewardEligible": "Such dir ein Geschenk für eine deiner veröffentlichten Geschichten aus. Dafür musst du dich in deinem Mythoria-Konto anmelden.",
+    "rewardPending": "Dein Geschenk wartet auf dich. Sobald du deine erste Geschichte veröffentlicht hast, melde dich an und hol es dir ab.",
+    "rewardCta": "Mein Geschenk auswählen",
+    "rewardCtaPending": "Mein Geschenk ansehen",
+    "backHome": "Zurück zu Mythoria"
+  },
+  "status": {
+    "invalid": {
+      "title": "Dieser Link öffnet keine Umfrage",
+      "body": "Der Link ist vielleicht unvollständig oder enthält einen Tippfehler. Versuche ihn noch einmal aus deiner E-Mail zu öffnen."
+    },
+    "closed": {
+      "title": "Diese Umfrage ist beendet",
+      "body": "Wir sammeln keine Antworten mehr, freuen uns aber, dass du vorbeigeschaut hast. Jede Geschichte braucht ein gutes Ende, und diese hat es gefunden."
+    },
+    "submitted": {
+      "title": "Du hast schon geantwortet",
+      "body": "Danke, deine Antworten sind sicher angekommen. Jede Einladung kann nur einmal beantwortet werden."
+    },
+    "submittedReward": "Dein Dankeschön-Geschenk wartet noch auf dich. Zum Auswählen musst du dich anmelden.",
+    "backHome": "Zurück zu Mythoria"
+  }
+}

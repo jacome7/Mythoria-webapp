@@ -1,0 +1,86 @@
+{
+  "title": "Tu regalo de agradecimiento",
+  "intro": "Gracias por contarnos lo que piensas de verdad. Elige un regalo y una de tus historias publicadas, y nosotros nos encargamos del resto.",
+  "deadline": "Puedes reclamarlo hasta el {date}.",
+  "loading": "Buscando tu regalo...",
+  "stepGift": "1. Elige tu regalo",
+  "stepStory": "2. Elige la historia",
+  "options": {
+    "pdf": {
+      "title": "PDF para imprimir en casa",
+      "description": "Un PDF listo para imprimir de una de tus historias, enviado al correo de tu cuenta. Imprímelo, grápalo y léelo antes de dormir."
+    },
+    "audiobook": {
+      "title": "Audiolibro",
+      "description": "Una versión narrada de una de tus historias. Aparece en la página de escucha de la historia cuando esté lista, normalmente en pocos minutos."
+    }
+  },
+  "stories": {
+    "audiobookExists": "Ya tiene audiolibro",
+    "audiobookGenerating": "Audiolibro en preparación",
+    "pdfAlreadyRedeemed": "Ya recibiste el PDF de esta historia",
+    "audiobookHint": "Las historias que ya tienen audiolibro no se pueden elegir para este regalo.",
+    "none": "Todavía no tienes ninguna historia publicada. En cuanto publiques una, el regalo estará listo para reclamar."
+  },
+  "honesty": "Este regalo corre de nuestra cuenta: no gasta créditos ni toca tu saldo. Hay un regalo por encuesta y, cuando empieza a prepararse, ya no se puede cambiar.",
+  "retryNote": "La última vez algo falló por nuestra parte. No se perdió nada, así que inténtalo de nuevo.",
+  "confirm": "Reclamar mi regalo",
+  "working": "Trabajando en ello...",
+  "retry": "Intentarlo de nuevo",
+  "started": {
+    "pdfTitle": "Tu PDF está en camino",
+    "pdfBody": "Estamos preparando tu PDF listo para imprimir y lo enviaremos al correo de tu cuenta. Suele tardar unos minutos. Echa un vistazo a la carpeta de spam por si se esconde.",
+    "audiobookTitle": "Tu audiolibro se está grabando",
+    "audiobookBody": "El narrador está calentando la voz. Cuando termine, lo encontrarás en la página de escucha de la historia y además te avisaremos por correo."
+  },
+  "processing": {
+    "title": "Tu regalo se está preparando",
+    "body": "Ya está en marcha, así que no tienes que hacer nada más. Vuelve dentro de unos minutos."
+  },
+  "delivered": {
+    "title": "Tu regalo ya está entregado",
+    "pdfBody": "El PDF listo para imprimir se envió al correo de tu cuenta. ¡Felices impresiones!",
+    "audiobookBody": "Tu audiolibro está listo y te espera en la página de escucha de la historia."
+  },
+  "actions": {
+    "listen": "Escuchar la historia",
+    "myStories": "Ir a mis historias",
+    "createStory": "Escribir una historia",
+    "refresh": "Comprobar de nuevo"
+  },
+  "pending": {
+    "title": "Tu regalo espera una historia",
+    "body": "Un regalo necesita una historia que envolver. Publica tu primera historia y se desbloquea al instante. Te avisaremos por correo cuando ocurra.",
+    "cta": "Escribir mi primera historia"
+  },
+  "expired": {
+    "title": "Este regalo ha caducado",
+    "body": "El plazo para reclamarlo ha terminado y sentimos que se te haya pasado. Gracias igualmente por compartir tu opinión. Nos ayudó muchísimo."
+  },
+  "notFound": {
+    "title": "No encontramos este regalo",
+    "body": "Este enlace no corresponde a tu cuenta. Los regalos solo los puede reclamar quien recibió la invitación, así que comprueba que has iniciado sesión con el mismo correo."
+  },
+  "errors": {
+    "generic": "Algo salió mal y no pudimos iniciar tu regalo. No se ha gastado nada, así que inténtalo de nuevo en un momento.",
+    "loadFailed": "No pudimos cargar tu regalo. Inténtalo de nuevo.",
+    "expired": "Este regalo ha caducado.",
+    "audiobook_exists": "Esa historia ya tiene audiolibro. Elige otra historia.",
+    "story_not_found": "No encontramos esa historia entre tus historias publicadas.",
+    "story_not_published": "Solo las historias publicadas se pueden usar para este regalo.",
+    "reward_type_not_allowed": "Ese regalo no está disponible en esta encuesta.",
+    "already_redeemed": "Este regalo ya se ha reclamado.",
+    "pending_story": "Publica primero una historia y este regalo se desbloqueará.",
+    "product_in_progress": "Esta historia ya tiene uno de estos en preparación. Elige otra historia o vuelve en un rato.",
+    "launch_failed": "No pudimos iniciar el trabajo ahora mismo. No se ha gastado nada. Inténtalo de nuevo.",
+    "previous_attempt_failed": "El intento anterior no salió bien. Inténtalo de nuevo."
+  },
+  "banner": {
+    "eligibleTitle": "Tienes un regalo de agradecimiento esperándote",
+    "eligibleBody": "Elige un audiolibro o un PDF para imprimir en casa de una de tus historias. Corre de nuestra cuenta.",
+    "retryTitle": "Tu regalo necesita un paso más",
+    "retryBody": "La última vez hubo un contratiempo. Inténtalo de nuevo, no se ha gastado nada.",
+    "cta": "Elegir mi regalo",
+    "dismiss": "Descartar"
+  }
+}

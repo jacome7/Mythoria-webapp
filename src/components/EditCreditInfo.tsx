@@ -53,7 +53,7 @@ export default function EditCreditInfo({
             <div className="flex items-center justify-between text-xs">
               <span>{tEditCreditInfo('balanceLabel', { credits: currentBalance })}</span>
               <Link
-                href={`/${locale}/buy-credits`}
+                href={`/${locale}/pricing#buy-credits`}
                 className="text-red-600 hover:text-red-800 underline font-medium"
               >
                 {tEditCreditInfo('buyCreditsButton')}

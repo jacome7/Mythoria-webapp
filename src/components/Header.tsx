@@ -15,7 +15,7 @@ import { homepageAsset } from '@/constants/homepageAssets';
 const dropdownMenuClassName = `dropdown-content ${styles.dropdownMenu}`;
 const mobileMenuClassName = `dropdown dropdown-bottom ${styles.mobileMenu}`;
 
-const Header = () => {
+const Header = ({ compactWizard = false }: { compactWizard?: boolean }) => {
   const tCommonHeader = useTranslations('Header');
   const { isLoaded, isSignedIn, user } = useUser();
   const [referralUserId, setReferralUserId] = useState<string | null>(null);
@@ -45,7 +45,7 @@ const Header = () => {
   // Prevent hydration mismatch by not rendering auth-dependent content until client-side
   if (!isClient || !isLoaded) {
     return (
-      <header className={styles.header}>
+      <header className={`${styles.header} ${compactWizard ? styles.compactWizard : ''}`}>
         <div className={styles.headerStart}>
           <div className={mobileMenuClassName}>
             <label tabIndex={0} className={styles.mobileMenuButton}>
@@ -170,7 +170,7 @@ const Header = () => {
     );
   }
   return (
-    <header className={styles.header}>
+    <header className={`${styles.header} ${compactWizard ? styles.compactWizard : ''}`}>
       <div className={styles.headerStart}>
         <div className={mobileMenuClassName}>
           <label tabIndex={0} className={styles.mobileMenuButton}>

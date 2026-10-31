@@ -441,6 +441,7 @@ export default async function LandingPageTemplate({ page }: LandingPageTemplateP
               readSample: t('book.readSample'),
               sampleChapter: t('book.sampleChapter'),
               closeSample: t('book.closeSample'),
+              transcript: t('book.transcript'),
             }}
           />
         </section>

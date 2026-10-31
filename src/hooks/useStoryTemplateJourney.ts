@@ -37,7 +37,25 @@ export function useStoryTemplateJourney(owner: string | null | undefined) {
     try {
       const raw = sessionStorage.getItem(TEMPLATE_SESSION_KEY);
       const data = raw ? JSON.parse(raw) : null;
-      if (data?.owner === owner) restored = parseTemplateJourney(data.journey);
+      if (data?.owner === owner) {
+        restored = parseTemplateJourney(data.journey);
+        const relocatedRaw = localStorage.getItem('step2RelocatedInputs');
+        const relocated = relocatedRaw ? JSON.parse(relocatedRaw) : null;
+        if (
+          restored &&
+          relocated?.completed === true &&
+          typeof relocated?.storyId === 'string' &&
+          Array.isArray(relocated.paths)
+        ) {
+          for (const answer of restored.answers) {
+            const photo = answer.photo;
+            if (photo && relocated.paths.includes(photo.objectPath)) {
+              const nextPath = `${relocated.storyId}/inputs/${photo.objectPath.split('/').pop()}`;
+              photo.publicUrl = photo.publicUrl?.replace(photo.objectPath, nextPath);
+            }
+          }
+        }
+      }
     } catch {
       /* Ignore incompatible or damaged saved data. */
     }

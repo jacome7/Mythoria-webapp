@@ -54,6 +54,39 @@ describe('next story guide question API', () => {
     );
   });
 
+  it.each(['en-US', 'pt-PT', 'es-ES', 'fr-FR', 'de-DE'])(
+    'forwards opted-in photo guidance and returns its photo target for %s',
+    async (locale) => {
+      provider({ revision: 7, question: { ...question, photoTarget: 'protagonist' } });
+      const response = await POST(request({ ...body, locale, photoAnswers: true }));
+      expect(response.status).toBe(200);
+      expect((await response.json()).question.photoTarget).toBe('protagonist');
+      expect(JSON.parse(String(jest.mocked(sgwFetch).mock.calls[0][1]?.body))).toEqual(
+        expect.objectContaining({ locale, photoAnswers: true }),
+      );
+    },
+  );
+
+  it.each([undefined, false])(
+    'strips unsolicited photo targets for legacy requests (%s)',
+    async (photoAnswers) => {
+      provider({ revision: 7, question: { ...question, photoTarget: 'protagonist' } });
+      const response = await POST(request({ ...body, photoAnswers }));
+      expect(response.status).toBe(200);
+      expect((await response.json()).question.photoTarget).toBeUndefined();
+      expect(
+        JSON.parse(String(jest.mocked(sgwFetch).mock.calls[0][1]?.body)).photoAnswers,
+      ).toBeUndefined();
+    },
+  );
+
+  it('rejects non-boolean photo guidance opt-in', async () => {
+    expect((await POST(request({ ...body, locale: 'pt-PT', photoAnswers: 'true' }))).status).toBe(
+      400,
+    );
+    expect(sgwFetch).not.toHaveBeenCalled();
+  });
+
   it('is hidden behind the feature flag and requires authentication', async () => {
     jest.mocked(isStoryTemplatesEnabledForAuthor).mockReturnValue(false);
     expect((await POST(request())).status).toBe(404);

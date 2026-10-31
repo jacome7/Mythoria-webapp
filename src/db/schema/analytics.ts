@@ -151,6 +151,7 @@ export const storyGenerationRequests = pgTable(
 );
 
 export type ProductGenerationAction = 'audiobook_generation' | 'self_print';
+export type ProductGenerationFundingSource = 'credits' | 'survey_reward';
 export type ProductGenerationStatus = 'pending' | 'queued' | 'running' | 'completed' | 'failed';
 
 /**
@@ -193,6 +194,12 @@ export const productGenerationRequests = pgTable(
     failureStage: varchar('failure_stage', { length: 80 }),
     failureCode: varchar('failure_code', { length: 80 }),
     deliveryStatus: varchar('delivery_status', { length: 24 }),
+    fundingSource: varchar('funding_source', { length: 24 })
+      .$type<ProductGenerationFundingSource>()
+      .default('credits')
+      .notNull(),
+    // Logical reference to survey_reward_entitlements (no FK: avoids a circular schema import).
+    rewardEntitlementId: uuid('reward_entitlement_id'),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
   },
@@ -206,6 +213,9 @@ export const productGenerationRequests = pgTable(
       table.terminalAt,
     ),
     storyIdx: index('product_generation_requests_story_id_idx').on(table.storyId),
+    rewardEntitlementIdx: index('product_generation_requests_reward_entitlement_id_idx').on(
+      table.rewardEntitlementId,
+    ),
   }),
 );
 

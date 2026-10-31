@@ -1,7 +1,7 @@
 {
   "StorySteps": {
     "common": {
-      "stepProgress": "Step {currentStep} of {totalSteps}",
+      "stepProgress": "Step <current>{currentStep}</current> of {totalSteps}",
       "saving": "Saving..."
     },
     "step1": {
@@ -19,7 +19,6 @@
         "authorNamePlaceholder": "e.g., André and Matilde",
         "dedication": "Dedication Message",
         "dedicationPlaceholder": "Write a personalized dedication message for the first page of your book...",
-        "dedicationHelp": "This message will appear on the first page of your story",
         "optional": "Optional"
       },
       "messages": {
@@ -34,8 +33,33 @@
       "heading": "The Story",
       "intro": "Tell your story with words, images, audio, or any mix you like.",
       "tellYourStoryLabel": "Tell your story...",
-      "textPlaceholder": "Once upon a time... Let your imagination run wild! Share your adventure, your dreams, or any story that's close to your heart.",
-      "textHelp": "Write as much or as little as you'd like. You can always edit this later!",
+      "documentImport": {
+        "title": "Already have a written text?",
+        "button": "Import document",
+        "formats": "TXT, DOCX or PDF · up to 5 MB",
+        "formatHelp": "Text is extracted on your device. Formatting and images are not imported.",
+        "loading": "Reading document…",
+        "cancel": "Cancel",
+        "tooLarge": "Document is too large. Export a smaller excerpt.",
+        "unsupported": "Choose a TXT, DOCX or PDF file.",
+        "timeout": "Reading took too long. Try a smaller file.",
+        "empty": "No text found. Scanned PDFs require text recognition.",
+        "password": "This PDF is password-protected. Export an unprotected copy.",
+        "unreadable": "Could not read the file. Check its format and try again.",
+        "review": "Review text",
+        "words": "{count} words",
+        "pdfWarning": "Text in images is not recognized. Review the text and page order.",
+        "overLimit": "Text exceeds the limit. Shorten it before continuing.",
+        "appendLimit": "Combined text exceeds the limit. Shorten it before adding.",
+        "append": "Add to text",
+        "replace": "Replace text",
+        "use": "Use this text",
+        "undo": "Undo import",
+        "allowance": "{words} words · {remaining} characters available",
+        "saveError": "Could not save in this session. Keep this page open and copy your text."
+      },
+      "textPlaceholder": "Write or paste your story, idea or memory here.",
+      "textHelp": "You can edit the text before continuing.",
       "tabWrite": "Write",
       "tabImage": "Image",
       "tabRecord": "Record",
@@ -162,6 +186,109 @@
         "selectedCount": "{count, plural, =1 {# character selected} other {# characters selected}}",
         "selectAll": "Select all ({count} characters)",
         "loading": "Loading characters..."
+      },
+      "guided": {
+        "headings": {
+          "chooseTemplate": "Choose a template",
+          "personalize": "Personalize your story",
+          "howToStart": "How do you want to start?"
+        },
+        "cards": {
+          "write": "Write",
+          "addPhotos": "Add photos",
+          "dictate": "Dictate"
+        },
+        "status": {
+          "audioSeconds": "{seconds} sec of audio",
+          "audioAdded": "Audio added",
+          "uploadFailed": "Upload failed",
+          "retryOrRemove": "Try again or remove",
+          "uploadingAudio": "Uploading audio…",
+          "listenOrEdit": "Listen or edit",
+          "audioEmpty": "Tell your idea or add details out loud.",
+          "imagesError": "Some photos have errors",
+          "preparingImages": "Preparing photos…",
+          "imagesCount": "{count, plural, one {# image} other {# images}}",
+          "viewOrEdit": "View or edit",
+          "imagesEmpty": "Add one or more photos or drawings.",
+          "textEmpty": "Write your idea, memories or details.",
+          "textShort": "Short idea",
+          "addDetails": "You can add details",
+          "textDeveloped": "Developed idea",
+          "textDetailed": "Detailed idea",
+          "edit": "Edit"
+        },
+        "ownIdea": {
+          "title": "Start with my idea",
+          "body": "Combine text, photos, drawings and voice. Everything you share will be used to create your story.",
+          "divider": "Prefer a starting point?",
+          "templateTitle": "Start with a template",
+          "templateBody": "Get inspired by a story designed by our team and make it yours."
+        },
+        "existing": {
+          "summary": "Contributions already added",
+          "body": "Review, edit or remove the contributions you already added."
+        },
+        "confirmTemplate": {
+          "title": "Use this template?",
+          "body": "To start with this template, we will delete the text, images, audio and character selection from this step.",
+          "note": "The characters saved in your account will be kept.",
+          "confirm": "Delete and start"
+        },
+        "confirmOwnIdea": {
+          "title": "Back to the start?",
+          "body": "The template, guided answers, photos from those answers and preferences will be removed. The text, photos, audio and characters you added outside the questions will be kept.",
+          "confirm": "Back to the start"
+        },
+        "pendingAnswer": {
+          "title": "You have an unconfirmed answer",
+          "body": "The text or photo for this question is only used after you confirm the answer.",
+          "back": "Back to the answer",
+          "continue": "Continue without this answer"
+        },
+        "nav": {
+          "previous": "‹ Previous",
+          "continue": "Continue ›"
+        },
+        "cancel": "Cancel",
+        "close": "Close",
+        "needInspiration": "Need inspiration?"
+      },
+      "resume": {
+        "loading": "Recovering your story…",
+        "title": "You already have a story in progress",
+        "body": "Do you want to continue the story you left in progress or start a new one?",
+        "template": "Template: {title}",
+        "templateFallback": "Chosen template",
+        "ownIdea": "Your idea",
+        "textSaved": "Text saved",
+        "imagesCount": "{count, plural, one {# image} other {# images}}",
+        "audioSaved": "Audio saved",
+        "answersCount": "{count, plural, one {# answer} other {# answers}}",
+        "charactersSelected": "Characters selected",
+        "pendingAnswer": "Answer to confirm",
+        "fallback": "Your starting point is saved.",
+        "continue": "Continue my story",
+        "startNew": "Start a new story",
+        "confirmTitle": "Start a new story?",
+        "confirmBody": "The template, answers, text, images, audio and character selection for this creation will be removed, including the details from later steps.",
+        "confirmNote": "The author and dedication will be kept. Stories and characters saved in your account will also be kept.",
+        "checking": "Checking…",
+        "confirm": "Delete and start",
+        "pendingJobError": "There is a preparation request still pending. Choose “Continue my story” and resume it before starting a new story."
+      },
+      "mediaPrep": {
+        "dialogLabel": "Preparing your files",
+        "reviewTitle": "Review your files",
+        "preparingTitle": "Preparing your files",
+        "imagesFailed": "We could not prepare one or more images. Review them to continue.",
+        "audioFailed": "We could not prepare the audio. Review it to continue.",
+        "preparingBoth": "We are preparing your images and audio…",
+        "preparingImages": "We are preparing your images…",
+        "preparingAudio": "We are preparing your audio…",
+        "reviewImages": "Review images",
+        "reviewAudio": "Review audio",
+        "backToEdit": "Back to editing"
       }
     },
     "step3": {
@@ -193,6 +320,7 @@
     "step4": {
       "heading": "The Plot",
       "intro": "Now let's define the core elements of your story. Tell us about the world you want to create, who you're writing for, and how you envision your story looking.",
+      "templateIntro": "Review your story details and make any changes before continuing.",
       "fields": {
         "title": "Book Title *",
         "titleHelp": "Choose a captivating title for your story",
@@ -412,7 +540,7 @@
       "close": "Close",
       "loadingStoryData": "Loading story data...",
       "readyToGenerate": "Ready to Generate Your Story!",
-      "aboutToStart": "We're about to start creating your personalized story:",
+      "aboutToStart": "Ready to create your story:",
       "ebookGeneration": "📖 eBook Generation",
       "cost": "Cost:",
       "yourCredits": "Your Credits:",

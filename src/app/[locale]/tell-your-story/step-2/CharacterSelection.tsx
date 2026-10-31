@@ -15,6 +15,7 @@ interface Character {
 }
 
 interface Props {
+  onModalChange?: (open: boolean) => void;
   initialSelectedIds?: string[];
   onChange?: (ids: string[]) => void;
   characters?: Character[];
@@ -54,6 +55,7 @@ const getCharacterIconPath = (type: string | undefined): string => {
 };
 
 export default function CharacterSelection({
+  onModalChange,
   initialSelectedIds = [],
   onChange,
   characters,
@@ -68,8 +70,18 @@ export default function CharacterSelection({
   const t = useTranslations('StorySteps.step2');
   const [existingCharacters, setExistingCharacters] = useState<Character[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>(initialSelectedIds);
+  const selectionKey = JSON.stringify(initialSelectedIds);
+  useEffect(() => {
+    setSelectedIds((previous) =>
+      JSON.stringify(previous) === selectionKey ? previous : JSON.parse(selectionKey),
+    );
+  }, [selectionKey]);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  useEffect(() => {
+    onModalChange?.(isModalOpen);
+    return () => onModalChange?.(false);
+  }, [isModalOpen, onModalChange]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const suppressNextOpenRef = useRef(false);
   const displayCharacters = characters ?? existingCharacters;

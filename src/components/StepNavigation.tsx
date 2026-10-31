@@ -1,5 +1,7 @@
 'use client';
 
+import { useRef, useState } from 'react';
+import WizardActionBar from './WizardActionBar';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/routing';
 
@@ -13,6 +15,7 @@ interface StepNavigationProps {
   nextDisabled?: boolean;
   nextLabel?: string;
   prevLabel?: string;
+  busy?: boolean;
 }
 
 const StepNavigation = ({
@@ -25,8 +28,11 @@ const StepNavigation = ({
   nextDisabled = false,
   nextLabel,
   prevLabel,
+  busy = false,
 }: StepNavigationProps) => {
   const router = useRouter();
+  const pending = useRef(false);
+  const [running, setRunning] = useState(false);
   const tCommonStepNavigation = useTranslations('StepNavigation');
 
   const resolvedNextLabel =
@@ -36,16 +42,15 @@ const StepNavigation = ({
       : tCommonStepNavigation('next'));
   const resolvedPrevLabel = prevLabel ?? tCommonStepNavigation('prev');
   const handleNext = async () => {
-    if (onNext) {
-      const result = await onNext();
-      // If onNext returns a boolean and it's false, don't navigate
-      // If onNext returns void or true, and nextHref exists, navigate
-      // If no nextHref, the onNext function should handle navigation itself
-      if (result !== false && nextHref) {
-        router.push(nextHref);
-      }
-    } else if (nextHref) {
-      router.push(nextHref);
+    if (pending.current || nextDisabled || busy) return;
+    pending.current = true;
+    setRunning(true);
+    try {
+      const result = onNext ? await onNext() : true;
+      if (result !== false && nextHref) router.push(nextHref);
+    } finally {
+      pending.current = false;
+      setRunning(false);
     }
   };
 
@@ -56,13 +61,18 @@ const StepNavigation = ({
   };
 
   return (
-    <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
+    <WizardActionBar>
       <div>
         {prevHref ? (
           <Link
+            aria-disabled={busy || running}
+            tabIndex={busy || running ? -1 : undefined}
             href={prevHref}
             className="btn btn-outline btn-md md:btn-lg" // Responsive button size
-            onClick={handlePrev}
+            onClick={(event) => {
+              if (busy || running) event.preventDefault();
+              else handlePrev();
+            }}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -91,7 +101,7 @@ const StepNavigation = ({
         {nextHref && onNext ? (
           <button
             onClick={handleNext}
-            disabled={nextDisabled}
+            disabled={nextDisabled || busy || running}
             className={`btn btn-primary btn-md md:btn-lg ${nextDisabled ? 'btn-disabled' : ''}`} // Responsive button size
           >
             {resolvedNextLabel}{' '}
@@ -111,7 +121,11 @@ const StepNavigation = ({
           <Link
             href={nextHref}
             className={`btn btn-primary btn-md md:btn-lg ${nextDisabled ? 'btn-disabled' : ''}`} // Responsive button size
-            onClick={handleNext}
+            onClick={(event) => {
+              if (nextDisabled || busy || running) event.preventDefault();
+            }}
+            aria-disabled={nextDisabled || busy || running}
+            tabIndex={nextDisabled || busy || running ? -1 : undefined}
           >
             {resolvedNextLabel}{' '}
             <svg
@@ -129,7 +143,7 @@ const StepNavigation = ({
         ) : onNext ? (
           <button
             onClick={handleNext}
-            disabled={nextDisabled}
+            disabled={nextDisabled || busy || running}
             className={`btn btn-primary btn-md md:btn-lg ${nextDisabled ? 'btn-disabled' : ''}`} // Responsive button size
           >
             {resolvedNextLabel}{' '}
@@ -149,7 +163,7 @@ const StepNavigation = ({
           <div></div> // Empty div to maintain flex layout
         )}
       </div>
-    </div>
+    </WizardActionBar>
   );
 };
 

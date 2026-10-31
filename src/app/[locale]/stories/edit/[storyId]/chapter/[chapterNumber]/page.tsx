@@ -46,6 +46,7 @@ export default function EditChapterPage() {
   }>();
   const router = useRouter();
   const { user } = useUser();
+  const userId = user?.id;
   const tLoading = useTranslations('Loading');
   const tErrors = useTranslations('Errors');
   const tActions = useTranslations('Actions');
@@ -78,7 +79,7 @@ export default function EditChapterPage() {
 
   // Load story data
   const loadStoryData = useCallback(async () => {
-    if (!storyId || !user) return;
+    if (!storyId || !userId) return;
 
     try {
       setLoading(true);
@@ -105,7 +106,7 @@ export default function EditChapterPage() {
     } finally {
       setLoading(false);
     }
-  }, [storyId, user, addToast, chapterNumber, tChapterEditor, tEditor]);
+  }, [storyId, userId, addToast, chapterNumber, tChapterEditor, tEditor]);
 
   // Save chapter content and create new version
   const saveChapterContent = async (content: string, title: string) => {
@@ -405,8 +406,9 @@ export default function EditChapterPage() {
     loadStoryData();
   }, [loadStoryData]);
 
-  // Loading state
-  if (loading) {
+  // Full-page spinner only for the initial load; background refreshes must not unmount open
+  // modals (e.g. AIImageEditor while an image job is running).
+  if (loading && !storyData) {
     return (
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <div className="text-center">

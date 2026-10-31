@@ -1,7 +1,7 @@
 {
   "StorySteps": {
     "common": {
-      "stepProgress": "Schritt {currentStep} von {totalSteps}",
+      "stepProgress": "Schritt <current>{currentStep}</current> von {totalSteps}",
       "saving": "Wird gespeichert..."
     },
     "step1": {
@@ -19,7 +19,6 @@
         "authorNamePlaceholder": "z. B. André und Matilde",
         "dedication": "Widmungstext",
         "dedicationPlaceholder": "Schreibe eine persönliche Widmung für die erste Seite deines Buchs...",
-        "dedicationHelp": "Dieser Text erscheint auf der ersten Seite deiner Geschichte",
         "optional": "Optional"
       },
       "messages": {
@@ -34,8 +33,33 @@
       "heading": "Die Geschichte",
       "intro": "Erzähle deine Geschichte mit Worten, Bildern, Audio oder einer Kombination deiner Wahl.",
       "tellYourStoryLabel": "Erzähl deine Geschichte...",
-      "textPlaceholder": "Es war einmal ... Lass deiner Fantasie freien Lauf! Teile dein Abenteuer, deine Träume oder jede Geschichte, die dir am Herzen liegt.",
-      "textHelp": "Schreib so viel oder so wenig du möchtest. Du kannst alles später noch bearbeiten!",
+      "documentImport": {
+        "title": "Haben Sie bereits einen Text?",
+        "button": "Dokument importieren",
+        "formats": "TXT, DOCX oder PDF · bis 5 MB",
+        "formatHelp": "Der Text wird auf Ihrem Gerät ausgelesen. Formatierungen und Bilder werden nicht importiert.",
+        "loading": "Dokument wird gelesen…",
+        "cancel": "Abbrechen",
+        "tooLarge": "Das Dokument ist zu groß. Exportieren Sie einen kürzeren Auszug.",
+        "unsupported": "Wählen Sie eine TXT-, DOCX- oder PDF-Datei.",
+        "timeout": "Das Lesen dauerte zu lange. Versuchen Sie eine kleinere Datei.",
+        "empty": "Kein Text gefunden. Gescannte PDFs benötigen Texterkennung.",
+        "password": "Dieses PDF ist passwortgeschützt. Exportieren Sie eine ungeschützte Kopie.",
+        "unreadable": "Die Datei konnte nicht gelesen werden. Prüfen Sie das Format und versuchen Sie es erneut.",
+        "review": "Text prüfen",
+        "words": "{count} Wörter",
+        "pdfWarning": "Text in Bildern wird nicht erkannt. Prüfen Sie Text und Seitenreihenfolge.",
+        "overLimit": "Der Text überschreitet das Limit. Kürzen Sie ihn vor dem Fortfahren.",
+        "appendLimit": "Der kombinierte Text überschreitet das Limit. Kürzen Sie ihn vor dem Hinzufügen.",
+        "append": "Zum Text hinzufügen",
+        "replace": "Text ersetzen",
+        "use": "Diesen Text verwenden",
+        "undo": "Import rückgängig machen",
+        "allowance": "{words} Wörter · {remaining} Zeichen verfügbar",
+        "saveError": "Speichern in dieser Sitzung fehlgeschlagen. Lassen Sie die Seite offen und kopieren Sie Ihren Text."
+      },
+      "textPlaceholder": "Schreiben Sie Ihre Geschichte, Idee oder Erinnerung hier oder fügen Sie sie ein.",
+      "textHelp": "Sie können den Text vor dem Fortfahren bearbeiten.",
       "tabWrite": "Schreiben",
       "tabImage": "Bild",
       "tabRecord": "Aufnehmen",
@@ -162,6 +186,109 @@
         "selectedCount": "{count, plural, =1 {# Figur ausgewählt} other {# Figuren ausgewählt}}",
         "selectAll": "Alle auswählen ({count} Figuren)",
         "loading": "Figuren werden geladen..."
+      },
+      "guided": {
+        "headings": {
+          "chooseTemplate": "Wähle eine Vorlage",
+          "personalize": "Personalisiere deine Geschichte",
+          "howToStart": "Wie möchtest du beginnen?"
+        },
+        "cards": {
+          "write": "Schreiben",
+          "addPhotos": "Fotos hinzufügen",
+          "dictate": "Diktieren"
+        },
+        "status": {
+          "audioSeconds": "{seconds} Sek. Audio",
+          "audioAdded": "Audio hinzugefügt",
+          "uploadFailed": "Upload fehlgeschlagen",
+          "retryOrRemove": "Versuch es erneut oder entferne es",
+          "uploadingAudio": "Audio wird hochgeladen…",
+          "listenOrEdit": "Anhören oder bearbeiten",
+          "audioEmpty": "Erzähl deine Idee oder füge Details laut hinzu.",
+          "imagesError": "Einige Fotos haben Fehler",
+          "preparingImages": "Fotos werden vorbereitet…",
+          "imagesCount": "{count, plural, one {# Bild} other {# Bilder}}",
+          "viewOrEdit": "Ansehen oder bearbeiten",
+          "imagesEmpty": "Füge ein oder mehrere Fotos oder Zeichnungen hinzu.",
+          "textEmpty": "Schreib deine Idee, Erinnerungen oder Details auf.",
+          "textShort": "Kurze Idee",
+          "addDetails": "Du kannst Details ergänzen",
+          "textDeveloped": "Ausgearbeitete Idee",
+          "textDetailed": "Detaillierte Idee",
+          "edit": "Bearbeiten"
+        },
+        "ownIdea": {
+          "title": "Mit meiner Idee beginnen",
+          "body": "Du kannst Text, Fotos, Zeichnungen und Sprache kombinieren. Alles, was du teilst, fließt in deine Geschichte ein.",
+          "divider": "Lieber mit einem Ausgangspunkt?",
+          "templateTitle": "Mit einer Vorlage beginnen",
+          "templateBody": "Lass dich von einer Geschichte unseres Teams inspirieren und mach sie zu deiner."
+        },
+        "existing": {
+          "summary": "Bereits hinzugefügte Beiträge",
+          "body": "Du kannst die Beiträge, die du schon hinzugefügt hast, ansehen, bearbeiten oder entfernen."
+        },
+        "confirmTemplate": {
+          "title": "Diese Vorlage verwenden?",
+          "body": "Um mit dieser Vorlage zu beginnen, löschen wir den Text, die Bilder, das Audio und die Figurenauswahl dieses Schritts.",
+          "note": "Die in deinem Konto gespeicherten Figuren bleiben erhalten.",
+          "confirm": "Löschen und beginnen"
+        },
+        "confirmOwnIdea": {
+          "title": "Zurück zum Anfang?",
+          "body": "Die Vorlage, die geführten Antworten, die Fotos dieser Antworten und die Vorlieben werden entfernt. Text, Fotos, Audio und Figuren, die du außerhalb der Fragen hinzugefügt hast, bleiben erhalten.",
+          "confirm": "Zurück zum Anfang"
+        },
+        "pendingAnswer": {
+          "title": "Eine Antwort ist noch nicht bestätigt",
+          "body": "Der Text oder das Foto zu dieser Frage wird erst verwendet, wenn du die Antwort bestätigst.",
+          "back": "Zurück zur Antwort",
+          "continue": "Ohne diese Antwort weiter"
+        },
+        "nav": {
+          "previous": "‹ Zurück",
+          "continue": "Weiter ›"
+        },
+        "cancel": "Abbrechen",
+        "close": "Schließen",
+        "needInspiration": "Brauchst du Inspiration?"
+      },
+      "resume": {
+        "loading": "Deine Geschichte wird wiederhergestellt…",
+        "title": "Du hast schon eine Geschichte in Vorbereitung",
+        "body": "Möchtest du die Geschichte fortsetzen, die du in Vorbereitung gelassen hast, oder eine neue beginnen?",
+        "template": "Vorlage: {title}",
+        "templateFallback": "Gewählte Vorlage",
+        "ownIdea": "Deine Idee",
+        "textSaved": "Text gespeichert",
+        "imagesCount": "{count, plural, one {# Bild} other {# Bilder}}",
+        "audioSaved": "Audio gespeichert",
+        "answersCount": "{count, plural, one {# Antwort} other {# Antworten}}",
+        "charactersSelected": "Figuren ausgewählt",
+        "pendingAnswer": "Antwort zu bestätigen",
+        "fallback": "Dein Ausgangspunkt ist gespeichert.",
+        "continue": "Meine Geschichte fortsetzen",
+        "startNew": "Neue Geschichte beginnen",
+        "confirmTitle": "Neue Geschichte beginnen?",
+        "confirmBody": "Vorlage, Antworten, Text, Bilder, Audio und Figurenauswahl dieser Erstellung werden entfernt, einschließlich der Details aus den folgenden Schritten.",
+        "confirmNote": "Autor und Widmung bleiben erhalten. Die in deinem Konto gespeicherten Geschichten und Figuren bleiben ebenfalls erhalten.",
+        "checking": "Wird geprüft…",
+        "confirm": "Löschen und beginnen",
+        "pendingJobError": "Eine Vorbereitungsanfrage ist noch offen. Wähle „Meine Geschichte fortsetzen“ und schließe sie ab, bevor du eine neue Geschichte beginnst."
+      },
+      "mediaPrep": {
+        "dialogLabel": "Deine Dateien werden vorbereitet",
+        "reviewTitle": "Überprüfe deine Dateien",
+        "preparingTitle": "Deine Dateien werden vorbereitet",
+        "imagesFailed": "Wir konnten ein oder mehrere Bilder nicht vorbereiten. Überprüfe sie, um fortzufahren.",
+        "audioFailed": "Wir konnten das Audio nicht vorbereiten. Überprüfe es, um fortzufahren.",
+        "preparingBoth": "Wir bereiten deine Bilder und dein Audio vor…",
+        "preparingImages": "Wir bereiten deine Bilder vor…",
+        "preparingAudio": "Wir bereiten dein Audio vor…",
+        "reviewImages": "Bilder überprüfen",
+        "reviewAudio": "Audio überprüfen",
+        "backToEdit": "Zurück zur Bearbeitung"
       }
     },
     "step3": {
@@ -193,6 +320,7 @@
     "step4": {
       "heading": "Die Handlung",
       "intro": "Jetzt legen wir die Kernelemente deiner Geschichte fest. Erzähl uns, welche Welt du erschaffen willst, für wen du schreibst und wie deine Geschichte aussehen soll.",
+      "templateIntro": "Prüfen Sie die Details Ihrer Geschichte und passen Sie sie vor dem Fortfahren nach Wunsch an.",
       "fields": {
         "title": "Buchtitel *",
         "titleHelp": "Wähle einen fesselnden Titel für deine Geschichte",
@@ -412,7 +540,7 @@
       "close": "Schließen",
       "loadingStoryData": "Geschichtsdaten werden geladen...",
       "readyToGenerate": "Bereit, deine Geschichte zu erstellen!",
-      "aboutToStart": "Gleich geht es los – wir erstellen deine persönliche Geschichte:",
+      "aboutToStart": "Deine Geschichte kann jetzt entstehen:",
       "ebookGeneration": "📖 E-Book-Erstellung",
       "cost": "Kosten:",
       "yourCredits": "Deine Credits:",

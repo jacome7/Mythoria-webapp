@@ -9,10 +9,12 @@ import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/routing';
 import StepNavigation from '@/components/StepNavigation';
 import ProgressIndicator from '@/components/ProgressIndicator';
+import styles from './Step4Page.module.css';
 import WritingPersonaForm from '@/components/WritingPersonaForm';
 import { papercutScopeClassName } from '@/components/papercut';
 import { trackStoryCreation } from '@/lib/analytics';
 import { useStorySessionGuard } from '@/hooks/useStorySessionGuard';
+import { useStoryTemplateJourney } from '@/hooks/useStoryTemplateJourney';
 import { fetchStoryData } from '@/lib/story';
 import {
   TargetAudience,
@@ -77,7 +79,8 @@ export default function Step4PageWrapper() {
 }
 
 function Step4Page() {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, userId } = useAuth();
+  const { journey: templateJourney } = useStoryTemplateJourney(userId);
   const hasTrackedStepView = useRef(false);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -87,6 +90,7 @@ function Step4Page() {
   const defaultPersona = LiteraryPersona.CLASSIC_NOVELIST;
   const editStoryId = searchParams?.get('edit');
   const tStoryStepsStep4 = useTranslations('StorySteps.step4');
+  const tStoryLoading = useTranslations('StorySteps.step5');
   const tWritingPersonas = useTranslations('WritingPersonas');
   const tGraphicalStyles = useTranslations('GraphicalStyles');
   const [loading, setLoading] = useState(true);
@@ -543,7 +547,7 @@ function Step4Page() {
       </Show>
 
       <Show when="signed-in">
-        <div className="container mx-auto px-2 sm:px-3 md:px-5 py-8">
+        <div data-wizard-step="4" className="container mx-auto px-2 sm:px-3 md:px-5 py-8">
           <div className="max-w-4xl mx-auto">
             <ProgressIndicator currentStep={4} totalSteps={5} />
 
@@ -553,14 +557,20 @@ function Step4Page() {
                 <h1 className="card-title text-3xl mb-6">{tStoryStepsStep4('heading')}</h1>
 
                 {loading ? (
-                  <div className="text-center py-12">
-                    <span className="loading loading-spinner loading-lg"></span>
-                    <p className="text-lg text-gray-600 mt-4">{tStoryStepsStep4('saving')}</p>
+                  <div className={styles.loadingState} role="status" aria-live="polite">
+                    <span className={styles.loadingIcon} aria-hidden="true">
+                      <span className="loading loading-spinner loading-lg" />
+                    </span>
+                    <p className={styles.loadingMessage}>{tStoryLoading('loadingStoryData')}</p>
                   </div>
                 ) : (
                   <div className="space-y-6">
                     <div className="prose max-w-none mb-6">
-                      <p className="text-gray-600">{tStoryStepsStep4('intro')}</p>
+                      <p className="text-gray-600">
+                        {tStoryStepsStep4(
+                          !editStoryId && templateJourney?.templateId ? 'templateIntro' : 'intro',
+                        )}
+                      </p>
                     </div>
 
                     {error && (
@@ -1362,28 +1372,37 @@ function Step4Page() {
                   </Step4ModalPortal>
                 )}
 
-                <StepNavigation
-                  currentStep={4}
-                  totalSteps={5}
-                  nextHref={
-                    editStoryId
-                      ? `/tell-your-story/step-5?edit=${editStoryId}`
-                      : '/tell-your-story/step-5'
-                  }
-                  prevHref={
-                    editStoryId
-                      ? `/tell-your-story/step-3?edit=${editStoryId}`
-                      : '/tell-your-story/step-3'
-                  }
-                  onNext={handleNext}
-                  nextDisabled={
-                    saving || !title.trim() || !targetAudience || !novelStyle || !graphicalStyle
-                  }
-                  nextLabel={saving ? tStoryStepsStep4('saving') : tStoryStepsStep4('next')}
-                />
-                <p className="mt-3 text-right text-sm text-gray-600">
-                  {tStoryStepsStep4('generationReviewHint')}
-                </p>
+                <div className="[&>div]:mt-2">
+                  {!loading && (
+                    <p className="mt-3 text-center min-[769px]:text-right text-sm text-gray-600">
+                      {tStoryStepsStep4('generationReviewHint')}
+                    </p>
+                  )}
+                  <StepNavigation
+                    currentStep={4}
+                    totalSteps={5}
+                    nextHref={
+                      editStoryId
+                        ? `/tell-your-story/step-5?edit=${editStoryId}`
+                        : '/tell-your-story/step-5'
+                    }
+                    prevHref={
+                      editStoryId
+                        ? `/tell-your-story/step-3?edit=${editStoryId}`
+                        : '/tell-your-story/step-3'
+                    }
+                    onNext={handleNext}
+                    nextDisabled={
+                      loading ||
+                      saving ||
+                      !title.trim() ||
+                      !targetAudience ||
+                      !novelStyle ||
+                      !graphicalStyle
+                    }
+                    nextLabel={saving ? tStoryStepsStep4('saving') : tStoryStepsStep4('next')}
+                  />
+                </div>
               </div>
             </div>
           </div>

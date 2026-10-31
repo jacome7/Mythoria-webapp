@@ -1,5 +1,12 @@
 {
   "AudiobookGenerationProgress": {
+    "estimatedProgress": "Estimated progress",
+    "takingLonger": "Taking longer than expected—we’re still working on it.",
+    "lessThanMinute": "Less than a minute remaining",
+    "minutesRemaining": "About {minutes} {minutes, plural, one {minute} other {minutes}} remaining",
+    "preparing": "Preparing your audiobook…",
+    "leaveAndReturn": "You can leave this page and return later.",
+    "checkAgain": "Check again",
     "title": "Audiobook Generation Progress",
     "generatingAudiobook": "Generating Your Audiobook",
     "processingMessage": "Please keep this page open while we narrate your story.",

@@ -6,6 +6,8 @@ export interface StoryGuideQuestion {
   text: string;
   choices: { id: string; label: string; value: string }[];
   suggestedChoiceId: string | null;
+  photoTarget?: 'protagonist' | null;
+  customOnly?: boolean;
 }
 
 export interface StoryGuideAnswer {

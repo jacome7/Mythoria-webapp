@@ -1,5 +1,6 @@
 'use client';
 
+import ModalPortal from '@/components/ModalPortal';
 import { useTranslations } from 'next-intl';
 import { CreditCard } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
@@ -387,7 +388,10 @@ export default function PaymentStep({
                         count: calculateTotalCost() - userCredits,
                       })}
                     </span>
-                    <a href={`/${locale}/pricing`} className="btn btn-outline btn-sm mt-2">
+                    <a
+                      href={`/${locale}/pricing#buy-credits`}
+                      className="btn btn-outline btn-sm mt-2"
+                    >
                       {tPrintOrder('payment.getMoreCredits')}
                     </a>
                   </div>
@@ -416,22 +420,24 @@ export default function PaymentStep({
       </div>
       {/* Confirmation Modal */}
       {showConfirmModal && (
-        <div className="modal modal-open">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg mb-4">{tPrintOrder('payment.confirmOrder')}</h3>
-            <p className="text-sm text-base-content/70 mb-6">
-              {tPrintOrder('payment.confirmOrderDescription')}
-            </p>
-            <div className="modal-action">
-              <button className="btn btn-primary" onClick={handleConfirmOrder}>
-                {tPrintOrder('buttons.confirm')}
-              </button>
-              <button className="btn btn-ghost" onClick={() => setShowConfirmModal(false)}>
-                {tPrintOrder('buttons.cancel')}
-              </button>
+        <ModalPortal>
+          <div className="modal modal-open">
+            <div className="modal-box">
+              <h3 className="font-bold text-lg mb-4">{tPrintOrder('payment.confirmOrder')}</h3>
+              <p className="text-sm text-base-content/70 mb-6">
+                {tPrintOrder('payment.confirmOrderDescription')}
+              </p>
+              <div className="modal-action">
+                <button className="btn btn-primary" onClick={handleConfirmOrder}>
+                  {tPrintOrder('buttons.confirm')}
+                </button>
+                <button className="btn btn-ghost" onClick={() => setShowConfirmModal(false)}>
+                  {tPrintOrder('buttons.cancel')}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </ModalPortal>
       )}
     </div>
   );

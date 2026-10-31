@@ -7,6 +7,7 @@ import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import MyStoriesTable from '@/components/MyStoriesTable';
 import CreditsDisplay from '@/components/CreditsDisplay';
+import SurveyRewardBanner from '@/components/surveys/reward/SurveyRewardBanner';
 
 export default function MyStoriesPage() {
   const tMyStoriesPage = useTranslations('MyStoriesPage');
@@ -74,6 +75,7 @@ export default function MyStoriesPage() {
               </Link>
             </div>
           </div>
+          <SurveyRewardBanner />
           <MyStoriesTable />
         </div>
       </Show>

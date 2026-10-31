@@ -34,6 +34,9 @@
     "placeholders": {
       "addNotesStyleDisabled": "Añade notas (activa la conversión para usar)"
     },
+    "warnings": {
+      "coverTitleNotPrinted": "Ojo: tu foto va a la portada impresa tal cual, así que el título de la historia no aparecerá. ¿Quieres el título rotulado? Elige \"Convertir y editar la foto al estilo {style}\" y lo entretejemos en la ilustración."
+    },
     "buttons": {
       "applyPhoto": "Aplicar Foto"
     },
@@ -54,6 +57,8 @@
       "cancel": "Cancelar",
       "crop": "Recortar",
       "processing": "Procesando..."
-    }
+    },
+    "removeUploadedImage": "Quitar imagen",
+    "uploadedImagePreviewAlt": "Vista previa de la imagen subida"
   }
 }

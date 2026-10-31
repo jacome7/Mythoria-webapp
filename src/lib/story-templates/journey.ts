@@ -3,6 +3,46 @@ import { GraphicalStyle, NovelStyle, TargetAudience } from '@/types/story-enums'
 import type { StoryTemplate, StoryGuideQuestion } from '@/types/story-template';
 
 export const STORY_GUIDE_LIMIT = 9;
+export const questionPhotoSchema = z.object({
+  id: z.string().uuid(),
+  status: z.enum(['uploading', 'analyzing', 'done', 'error']),
+  attempts: z.number().int().min(0).max(3).optional(),
+  objectPath: z.string().min(1).max(1024).optional(),
+  publicUrl: z.string().max(2048).optional(),
+  sourceCharacterIndex: z.number().int().min(0).max(49).optional(),
+  metadata: z
+    .object({
+      overallImageContent: z.enum(['photo', 'drawing', 'text']).optional(),
+      characters: z
+        .array(
+          z.object({
+            label: z.string().max(300).optional(),
+            type: z.string().max(100).optional(),
+            age: z.string().max(100).optional(),
+            physicalDescription: z.string().max(4000).optional(),
+          }),
+        )
+        .max(50)
+        .optional(),
+    })
+    .optional(),
+});
+export type QuestionPhoto = z.infer<typeof questionPhotoSchema>;
+export const confirmedQuestionPhotoSchema = questionPhotoSchema.extend({
+  status: z.literal('done'),
+  objectPath: z.string().min(1).max(1024),
+  sourceCharacterIndex: z.number().int().min(0).max(49),
+});
+export const characterReferenceSchema = z
+  .object({
+    questionId: z.string().trim().min(1).max(100),
+    question: z.string().trim().min(1).max(300),
+    answer: z.string().trim().min(1).max(1500),
+    imageObjectPath: z.string().min(1).max(1024),
+    sourceCharacterIndex: z.number().int().min(0).max(49),
+    targetRole: z.literal('protagonist'),
+  })
+  .strict();
 export const storyPreferencesSchema = z
   .object({
     targetAudience: z.nativeEnum(TargetAudience).optional(),
@@ -30,12 +70,15 @@ export const guideQuestionSchema = z
           value: z.string().min(1).max(500),
         }),
       )
-      .min(3)
+      .min(0)
       .max(4),
     suggestedChoiceId: z.string().nullable(),
+    photoTarget: z.literal('protagonist').nullable().optional(),
+    customOnly: z.boolean().optional(),
   })
   .refine(
     (q) =>
+      (q.customOnly ? q.choices.length === 0 : q.choices.length >= 3) &&
       new Set(q.choices.map((c) => c.id)).size === q.choices.length &&
       (q.suggestedChoiceId === null || q.choices.some((c) => c.id === q.suggestedChoiceId)),
   );
@@ -53,6 +96,7 @@ export const guideRequestSchema = z
     preferences: storyPreferencesSchema.optional(),
     premise: z.string().max(4000).optional(),
     contribution: z.string().max(8000).optional(),
+    photoAnswers: z.boolean().optional(),
   })
   .strict();
 
@@ -70,6 +114,7 @@ const journeySchema = z.object({
         answer: z.string().max(1500),
         // Persisted UI provenance only; guideAnswerSchema strips it at the API boundary.
         isAuthorContribution: z.boolean().optional(),
+        photo: confirmedQuestionPhotoSchema.optional(),
       }),
     )
     .max(STORY_GUIDE_LIMIT),
@@ -78,6 +123,13 @@ const journeySchema = z.object({
   question: guideQuestionSchema.nullable(),
   roundEnd: z.number().int().min(3).max(STORY_GUIDE_LIMIT),
   exhausted: z.boolean(),
+  answerDraft: z
+    .object({
+      questionId: z.string().min(1).max(100),
+      text: z.string().max(1500),
+      photo: questionPhotoSchema.optional(),
+    })
+    .optional(),
 });
 
 export type StoryTemplateJourney = z.infer<typeof journeySchema>;
@@ -109,7 +161,31 @@ export function createTemplateJourney(template?: StoryTemplate): StoryTemplateJo
 
 export function parseTemplateJourney(value: unknown): StoryTemplateJourney | null {
   const result = journeySchema.safeParse(value);
-  return result.success ? result.data : null;
+  if (!result.success) return null;
+  const restored = result.data;
+  const photo = restored.answerDraft?.photo;
+  if (photo && (photo.status === 'uploading' || photo.status === 'analyzing'))
+    photo.status = 'error';
+  return restored;
+}
+
+export function confirmedCharacterReferences(journey: StoryTemplateJourney | null) {
+  return (journey?.answers ?? []).flatMap((answer) =>
+    answer.photo
+      ? [
+          {
+            questionId: answer.questionId,
+            question: answer.question,
+            answer:
+              answer.answer.trim() ||
+              'Use a fotografia selecionada como referência visual do protagonista, sem inferir factos pessoais.',
+            imageObjectPath: answer.photo.objectPath,
+            sourceCharacterIndex: answer.photo.sourceCharacterIndex,
+            targetRole: 'protagonist' as const,
+          },
+        ]
+      : [],
+  );
 }
 
 /** Only confirmed answers join the generation brief. Pending suggestions never do. */
@@ -125,8 +201,14 @@ export function compileStoryBrief(
     );
   }
   if (journey.preferences.tone) sections.push(`Tone: ${journey.preferences.tone}`);
-  for (const answer of journey.answers)
-    if (answer.answer.trim()) sections.push(`${answer.question}\n${answer.answer.trim()}`);
+  for (const answer of journey.answers) {
+    const text =
+      answer.answer.trim() ||
+      (answer.photo
+        ? 'Use a fotografia selecionada como referência visual do protagonista, sem inferir factos pessoais.'
+        : '');
+    if (text) sections.push(`${answer.question}\n${text}`);
+  }
   if (contribution.trim()) sections.push(`Author contribution:\n${contribution.trim()}`);
   return sections.filter(Boolean).join('\n\n');
 }

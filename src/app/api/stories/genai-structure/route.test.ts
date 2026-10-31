@@ -15,6 +15,20 @@ jest.mock('@/lib/story-templates/feature', () => ({ isStoryTemplatesEnabledForAu
 
 const storyId = '2042e134-7f04-43f3-99de-a043139ee4ee';
 const body = { storyId, userDescription: 'A child discovers a magical doorway.', locale: 'en-US' };
+const reference = {
+  questionId: 'protagonist',
+  question: 'Quem é a personagem principal?',
+  answer: 'A Ana',
+  imageObjectPath: 'inputs/ana.jpg',
+  sourceCharacterIndex: 0,
+  targetRole: 'protagonist',
+};
+const photoBody = {
+  ...body,
+  locale: 'pt-PT',
+  imageObjectPaths: [reference.imageObjectPath],
+  characterReferences: [reference],
+};
 const request = (value: unknown = body) =>
   new NextRequest('https://mythoria.pt/api/stories/genai-structure', {
     method: 'POST',
@@ -52,6 +66,68 @@ describe('story structure API template extension', () => {
     expect(isStoryTemplatesEnabledForAuthor).toHaveBeenCalledWith(
       expect.objectContaining({ authorId: 'trusted-author' }),
     );
+  });
+
+  it.each(['en-US', 'pt-PT', 'es-ES', 'fr-FR', 'de-DE'])(
+    'forwards a validated photo reference in %s',
+    async (locale) => {
+      expect((await POST(request({ ...photoBody, locale }))).status).toBe(200);
+      const payload = JSON.parse(String(jest.mocked(sgwFetch).mock.calls[0][1]?.body));
+      expect(payload.characterReferences).toEqual([reference]);
+      expect(payload.imageObjectPaths).toEqual([reference.imageObjectPath]);
+    },
+  );
+
+  it.each([
+    { imageObjectPaths: ['inputs/other.jpg'] },
+    { imageObjectPaths: [] },
+    { characterReferences: [reference, reference] },
+    { characterReferences: [{ ...reference, sourceCharacterIndex: -1 }] },
+    { characterReferences: [{ ...reference, sourceCharacterIndex: 50 }] },
+    { characterReferences: [{ ...reference, sourceCharacterIndex: 0.5 }] },
+    { characterReferences: [{ ...reference, targetRole: 'supporting' }] },
+    { characterReferences: [{ ...reference, extra: 'unexpected' }] },
+  ])('rejects invalid photo references %j', async (invalid) => {
+    expect((await POST(request({ ...photoBody, ...invalid }))).status).toBe(400);
+    expect(sgwFetch).not.toHaveBeenCalled();
+  });
+
+  it('gates references for ineligible authors and checks story ownership', async () => {
+    jest.mocked(isStoryTemplatesEnabledForAuthor).mockReturnValue(false);
+    expect((await POST(request(photoBody))).status).toBe(404);
+    expect(isStoryTemplatesEnabledForAuthor).toHaveBeenCalledWith(
+      expect.objectContaining({ authorId: 'trusted-author' }),
+    );
+    expect(sgwFetch).not.toHaveBeenCalled();
+    jest.mocked(isStoryTemplatesEnabledForAuthor).mockReturnValue(true);
+    jest.mocked(storyService.getStoryById).mockResolvedValue({ ...draft, authorId: 'other' });
+    expect((await POST(request(photoBody))).status).toBe(404);
+    expect(sgwFetch).not.toHaveBeenCalled();
+  });
+
+  it('recovers an accepted owned photo structure request during rollback', async () => {
+    const structureRequestId = '096c4dc2-1b2a-42c5-9e92-c05cd4f76c93';
+    jest.mocked(isStoryTemplatesEnabledForAuthor).mockReturnValue(false);
+    jest.mocked(sgwFetch).mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          success: true,
+          job: {
+            id: structureRequestId,
+            type: 'story_structure',
+            status: 'processing',
+            metadata: { storyId },
+          },
+        }),
+      ),
+    );
+    const response = await POST(request({ ...photoBody, structureRequestId }));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual(
+      expect.objectContaining({ jobId: structureRequestId, duplicate: true }),
+    );
+    expect(sgwFetch).toHaveBeenCalledTimes(1);
+    expect(jest.mocked(sgwFetch).mock.calls[0][1]?.method).toBe('GET');
   });
 
   it('requires authentication before any story or upstream request', async () => {

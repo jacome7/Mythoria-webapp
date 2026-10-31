@@ -41,6 +41,13 @@ export const GA4_EVENT_NAMES = [
   'earn_virtual_currency',
   'audiobook_interaction',
   'paid_action',
+  'survey_opened',
+  'survey_started',
+  'survey_question_answered',
+  'survey_submitted',
+  'survey_reward_selected',
+  'survey_reward_redeemed',
+  'survey_reward_failed',
 ] as const;
 
 export type GA4EventName = (typeof GA4_EVENT_NAMES)[number];

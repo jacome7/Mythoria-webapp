@@ -34,6 +34,9 @@
     "placeholders": {
       "addNotesStyleDisabled": "Ajouter des notes (activer la conversion pour utiliser)"
     },
+    "warnings": {
+      "coverTitleNotPrinted": "Petite précision : ta photo est imprimée sur la couverture telle quelle, donc le titre de l'histoire n'y figurera pas. Tu veux le titre calligraphié ? Choisis \"Convertir et éditer la photo en style {style}\" et on le glisse dans l'illustration."
+    },
     "buttons": {
       "applyPhoto": "Appliquer la Photo"
     },
@@ -54,6 +57,8 @@
       "cancel": "Annuler",
       "crop": "Rogner",
       "processing": "Traitement..."
-    }
+    },
+    "removeUploadedImage": "Retirer l’image",
+    "uploadedImagePreviewAlt": "Aperçu de l’image importée"
   }
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import ModalPortal from '@/components/ModalPortal';
 import { useState, useEffect, useCallback } from 'react';
 import { AlertCircle, Edit3, X, Zap } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -278,271 +279,273 @@ export default function AITextStoryEditor({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Edit3 className="w-5 h-5 text-blue-600" />
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">
-                {tAITextStoryEditor('title', { storyTitle: story.title })}
-              </h2>
-              <p className="text-sm text-gray-600">
-                {currentChapter
-                  ? tAITextStoryEditor('chapterOption', {
-                      number: currentChapter.chapterNumber,
-                      title: currentChapter.title,
-                    })
-                  : tAITextStoryEditor('fullStoryTitle')}
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
-          >
-            <X className="w-5 h-5 text-gray-600" />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="space-y-6">
-            {/* Scope Selection */}
-            <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700">
-                {tAITextStoryEditor('editScopeLabel')}
-              </label>
-              <div className="flex space-x-4">
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    value="chapter"
-                    checked={editScope === 'chapter'}
-                    onChange={(e) => setEditScope(e.target.value as EditScope)}
-                    disabled={!currentChapter && chapters.length === 0}
-                    className="mr-2"
-                  />
-                  {tAITextStoryEditor('currentChapterOnly')}
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    value="story"
-                    checked={editScope === 'story'}
-                    onChange={(e) => setEditScope(e.target.value as EditScope)}
-                    className="mr-2"
-                  />
-                  {tAITextStoryEditor('allChapters')}
-                </label>
+    <ModalPortal>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 border-b border-gray-200">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Edit3 className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  {tAITextStoryEditor('title', { storyTitle: story.title })}
+                </h2>
+                <p className="text-sm text-gray-600">
+                  {currentChapter
+                    ? tAITextStoryEditor('chapterOption', {
+                        number: currentChapter.chapterNumber,
+                        title: currentChapter.title,
+                      })
+                    : tAITextStoryEditor('fullStoryTitle')}
+                </p>
               </div>
             </div>
+            <button
+              onClick={onClose}
+              className="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
+            >
+              <X className="w-5 h-5 text-gray-600" />
+            </button>
+          </div>
 
-            {/* Chapter Selection (when scope is chapter) */}
-            {editScope === 'chapter' && chapters.length > 1 && (
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto p-6">
+            <div className="space-y-6">
+              {/* Scope Selection */}
               <div className="space-y-3">
                 <label className="block text-sm font-medium text-gray-700">
-                  {tAITextStoryEditor('selectChapterLabel')}
+                  {tAITextStoryEditor('editScopeLabel')}
                 </label>
-                <select
-                  value={selectedChapter || ''}
-                  onChange={(e) => setSelectedChapter(parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  {chapters.map((chapter) => (
-                    <option key={chapter.id} value={chapter.chapterNumber}>
-                      {tAITextStoryEditor('chapterOption', {
-                        number: chapter.chapterNumber,
-                        title: chapter.title,
-                      })}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            {/* User Request */}
-            <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700">
-                {tAITextStoryEditor('editRequestLabel')}
-              </label>
-              <textarea
-                value={userRequest}
-                onChange={(e) => setUserRequest(e.target.value)}
-                placeholder={tAITextStoryEditor('requestPlaceholder')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-                rows={8}
-                maxLength={2000}
-              />
-              <div className="flex justify-between text-xs text-gray-500">
-                <span>
-                  {tAITextStoryEditor('characterCount', { count: userRequest.length, max: 2000 })}
-                </span>
-              </div>
-            </div>
-
-            {/* Full Story Edit Explanation */}
-            {editScope === 'story' && (
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Edit3 className="w-4 h-4 text-gray-600" />
-                  <span className="text-sm font-medium text-gray-900">
-                    {tAITextStoryEditor('fullStoryExplanation.title')}
-                  </span>
-                </div>
-                <div className="text-sm text-gray-700 space-y-1">
-                  <p>{tAITextStoryEditor('fullStoryExplanation.item1')}</p>
-                  <p>{tAITextStoryEditor('fullStoryExplanation.item2')}</p>
-                  <p>{tAITextStoryEditor('fullStoryExplanation.item3')}</p>
-                  <p>{tAITextStoryEditor('fullStoryExplanation.item4')}</p>
-                  <p>{tAITextStoryEditor('fullStoryExplanation.item5')}</p>
+                <div className="flex space-x-4">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      value="chapter"
+                      checked={editScope === 'chapter'}
+                      onChange={(e) => setEditScope(e.target.value as EditScope)}
+                      disabled={!currentChapter && chapters.length === 0}
+                      className="mr-2"
+                    />
+                    {tAITextStoryEditor('currentChapterOnly')}
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      value="story"
+                      checked={editScope === 'story'}
+                      onChange={(e) => setEditScope(e.target.value as EditScope)}
+                      className="mr-2"
+                    />
+                    {tAITextStoryEditor('allChapters')}
+                  </label>
                 </div>
               </div>
-            )}
 
-            {/* Cost Estimation */}
-            {creditInfo && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <div className="flex items-center space-x-2 mb-2">
-                  <AlertCircle className="w-4 h-4 text-blue-600" />
-                  <span className="text-sm font-medium text-blue-900">
-                    {tAITextStoryEditor('costEstimation.title')}
-                  </span>
-                </div>
-                <div className="text-sm text-blue-800">
-                  {editScope === 'story' ? (
-                    // Full story edit cost info
-                    <>
-                      <p className="mb-1">{creditInfo.message}</p>
-                      {creditInfo.freeEdits && creditInfo.freeEdits > 0 && (
-                        <p className="text-blue-600">
-                          {tAITextStoryEditor('costEstimation.freeChapterEdits', {
-                            count: creditInfo.freeEdits,
-                          })}
-                        </p>
-                      )}
-                      {creditInfo.paidEdits && creditInfo.paidEdits > 0 && (
-                        <p className="text-blue-600">
-                          {tAITextStoryEditor('costEstimation.paidChapterEdits', {
-                            count: creditInfo.paidEdits,
-                          })}
-                        </p>
-                      )}
-                      <p className="text-blue-600">
-                        {tAITextStoryEditor('costEstimation.currentBalance', {
-                          credits: creditInfo.currentBalance,
+              {/* Chapter Selection (when scope is chapter) */}
+              {editScope === 'chapter' && chapters.length > 1 && (
+                <div className="space-y-3">
+                  <label className="block text-sm font-medium text-gray-700">
+                    {tAITextStoryEditor('selectChapterLabel')}
+                  </label>
+                  <select
+                    value={selectedChapter || ''}
+                    onChange={(e) => setSelectedChapter(parseInt(e.target.value))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    {chapters.map((chapter) => (
+                      <option key={chapter.id} value={chapter.chapterNumber}>
+                        {tAITextStoryEditor('chapterOption', {
+                          number: chapter.chapterNumber,
+                          title: chapter.title,
                         })}
-                      </p>
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* User Request */}
+              <div className="space-y-3">
+                <label className="block text-sm font-medium text-gray-700">
+                  {tAITextStoryEditor('editRequestLabel')}
+                </label>
+                <textarea
+                  value={userRequest}
+                  onChange={(e) => setUserRequest(e.target.value)}
+                  placeholder={tAITextStoryEditor('requestPlaceholder')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                  rows={8}
+                  maxLength={2000}
+                />
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>
+                    {tAITextStoryEditor('characterCount', { count: userRequest.length, max: 2000 })}
+                  </span>
+                </div>
+              </div>
+
+              {/* Full Story Edit Explanation */}
+              {editScope === 'story' && (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Edit3 className="w-4 h-4 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-900">
+                      {tAITextStoryEditor('fullStoryExplanation.title')}
+                    </span>
+                  </div>
+                  <div className="text-sm text-gray-700 space-y-1">
+                    <p>{tAITextStoryEditor('fullStoryExplanation.item1')}</p>
+                    <p>{tAITextStoryEditor('fullStoryExplanation.item2')}</p>
+                    <p>{tAITextStoryEditor('fullStoryExplanation.item3')}</p>
+                    <p>{tAITextStoryEditor('fullStoryExplanation.item4')}</p>
+                    <p>{tAITextStoryEditor('fullStoryExplanation.item5')}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Cost Estimation */}
+              {creditInfo && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <AlertCircle className="w-4 h-4 text-blue-600" />
+                    <span className="text-sm font-medium text-blue-900">
+                      {tAITextStoryEditor('costEstimation.title')}
+                    </span>
+                  </div>
+                  <div className="text-sm text-blue-800">
+                    {editScope === 'story' ? (
+                      // Full story edit cost info
+                      <>
+                        <p className="mb-1">{creditInfo.message}</p>
+                        {creditInfo.freeEdits && creditInfo.freeEdits > 0 && (
+                          <p className="text-blue-600">
+                            {tAITextStoryEditor('costEstimation.freeChapterEdits', {
+                              count: creditInfo.freeEdits,
+                            })}
+                          </p>
+                        )}
+                        {creditInfo.paidEdits && creditInfo.paidEdits > 0 && (
+                          <p className="text-blue-600">
+                            {tAITextStoryEditor('costEstimation.paidChapterEdits', {
+                              count: creditInfo.paidEdits,
+                            })}
+                          </p>
+                        )}
+                        <p className="text-blue-600">
+                          {tAITextStoryEditor('costEstimation.currentBalance', {
+                            credits: creditInfo.currentBalance,
+                          })}
+                        </p>
+                      </>
+                    ) : (
+                      // Single chapter edit cost info
+                      <>
+                        <p className="mb-1">
+                          {creditInfo.isFree
+                            ? tAITextStoryEditor('costEstimation.freeEdit')
+                            : tAITextStoryEditor('costEstimation.costEdit', {
+                                credits: creditInfo.requiredCredits,
+                                plural: creditInfo.requiredCredits === 1 ? '' : 's',
+                              })}
+                        </p>
+                        <p className="text-blue-600">
+                          {tAITextStoryEditor('costEstimation.currentBalance', {
+                            credits: creditInfo.currentBalance,
+                          })}
+                        </p>
+                        {!creditInfo.isFree && (
+                          <p className="text-blue-600">
+                            {tAITextStoryEditor('costEstimation.editCount', {
+                              count: creditInfo.editCount,
+                              threshold: creditInfo.nextThreshold,
+                            })}
+                          </p>
+                        )}
+                        {creditInfo.message && (
+                          <p className="text-blue-600 mt-1">
+                            {tAITextStoryEditor('costEstimation.message', {
+                              message: creditInfo.message,
+                            })}
+                          </p>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Error Display */}
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <div className="flex items-center space-x-2">
+                    <AlertCircle className="w-4 h-4 text-red-600" />
+                    <span className="text-sm text-red-600">{error}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={onClose}
+                  className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                >
+                  {tAITextStoryEditor('cancelButton')}
+                </button>
+                <button
+                  onClick={handleTextEdit}
+                  disabled={isLoading || !userRequest.trim()}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center space-x-2 transition-colors"
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-tAITextStoryEditor-transparent rounded-full animate-spin" />
+                      <span>{tAITextStoryEditor('loading')}</span>
                     </>
                   ) : (
-                    // Single chapter edit cost info
                     <>
-                      <p className="mb-1">
-                        {creditInfo.isFree
-                          ? tAITextStoryEditor('costEstimation.freeEdit')
-                          : tAITextStoryEditor('costEstimation.costEdit', {
-                              credits: creditInfo.requiredCredits,
-                              plural: creditInfo.requiredCredits === 1 ? '' : 's',
-                            })}
-                      </p>
-                      <p className="text-blue-600">
-                        {tAITextStoryEditor('costEstimation.currentBalance', {
-                          credits: creditInfo.currentBalance,
-                        })}
-                      </p>
-                      {!creditInfo.isFree && (
-                        <p className="text-blue-600">
-                          {tAITextStoryEditor('costEstimation.editCount', {
-                            count: creditInfo.editCount,
-                            threshold: creditInfo.nextThreshold,
-                          })}
-                        </p>
-                      )}
-                      {creditInfo.message && (
-                        <p className="text-blue-600 mt-1">
-                          {tAITextStoryEditor('costEstimation.message', {
-                            message: creditInfo.message,
-                          })}
-                        </p>
-                      )}
+                      <Zap className="w-4 h-4" />
+                      <span>{tAITextStoryEditor('editButton')}</span>
                     </>
                   )}
-                </div>
+                </button>
               </div>
-            )}
-
-            {/* Error Display */}
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <div className="flex items-center space-x-2">
-                  <AlertCircle className="w-4 h-4 text-red-600" />
-                  <span className="text-sm text-red-600">{error}</span>
-                </div>
-              </div>
-            )}
-
-            {/* Actions */}
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={onClose}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-              >
-                {tAITextStoryEditor('cancelButton')}
-              </button>
-              <button
-                onClick={handleTextEdit}
-                disabled={isLoading || !userRequest.trim()}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center space-x-2 transition-colors"
-              >
-                {isLoading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-tAITextStoryEditor-transparent rounded-full animate-spin" />
-                    <span>{tAITextStoryEditor('loading')}</span>
-                  </>
-                ) : (
-                  <>
-                    <Zap className="w-4 h-4" />
-                    <span>{tAITextStoryEditor('editButton')}</span>
-                  </>
-                )}
-              </button>
             </div>
           </div>
         </div>
+
+        {/* Credit Confirmation Modal */}
+        {showCreditConfirmation && creditInfo && (
+          <CreditConfirmationModal
+            isOpen={showCreditConfirmation}
+            onClose={() => setShowCreditConfirmation(false)}
+            onConfirm={performTextEdit}
+            action="textEdit"
+            requiredCredits={creditInfo.requiredCredits}
+            currentBalance={creditInfo.currentBalance}
+            editCount={creditInfo.editCount}
+            isFree={creditInfo.isFree}
+            // Full story edit specific props
+            isFullStory={editScope === 'story'}
+            chapterCount={creditInfo.chapterCount}
+            message={creditInfo.message}
+          />
+        )}
+
+        {/* Job Progress Modal */}
+        {showJobProgress && (
+          <JobProgressModal
+            isOpen={showJobProgress}
+            onClose={handleJobProgressClose}
+            jobId={currentJobId}
+            jobType="text_edit"
+            onComplete={handleJobComplete}
+            onError={handleJobError}
+          />
+        )}
       </div>
-
-      {/* Credit Confirmation Modal */}
-      {showCreditConfirmation && creditInfo && (
-        <CreditConfirmationModal
-          isOpen={showCreditConfirmation}
-          onClose={() => setShowCreditConfirmation(false)}
-          onConfirm={performTextEdit}
-          action="textEdit"
-          requiredCredits={creditInfo.requiredCredits}
-          currentBalance={creditInfo.currentBalance}
-          editCount={creditInfo.editCount}
-          isFree={creditInfo.isFree}
-          // Full story edit specific props
-          isFullStory={editScope === 'story'}
-          chapterCount={creditInfo.chapterCount}
-          message={creditInfo.message}
-        />
-      )}
-
-      {/* Job Progress Modal */}
-      {showJobProgress && (
-        <JobProgressModal
-          isOpen={showJobProgress}
-          onClose={handleJobProgressClose}
-          jobId={currentJobId}
-          jobType="text_edit"
-          onComplete={handleJobComplete}
-          onError={handleJobError}
-        />
-      )}
-    </div>
+    </ModalPortal>
   );
 }

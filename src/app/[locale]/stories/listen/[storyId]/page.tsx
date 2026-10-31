@@ -2,16 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import {
-  ArrowLeft,
-  BookOpen,
-  Copy,
-  CreditCard,
-  Edit3,
-  Loader2,
-  Share2,
-  Volume2,
-} from 'lucide-react';
+import { ArrowLeft, BookOpen, Copy, CreditCard, Edit3, Share2, Volume2 } from 'lucide-react';
 import { Show } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
@@ -27,6 +18,8 @@ import {
 } from '@/components/AudioPlayer';
 import { SelfPrintModal } from '../../../../../components/self-print/SelfPrintModal';
 import VoiceSamplePlayer from '@/components/VoiceSamplePlayer';
+import { AudiobookProgressPanel } from '@/components/AudiobookGenerationProgress';
+import { useAudiobookProgress } from '@/hooks/useAudiobookProgress';
 import { getAvailableVoices, getRecommendedVoice, getTTSProvider } from '@/lib/voice-options';
 import { TargetAudience } from '@/types/story-enums';
 import { getGoogleAnalyticsContext } from '@/lib/analytics';
@@ -132,6 +125,7 @@ export default function ListenStoryPage() {
   const tVoices = useTranslations('Voices');
   const tErrors = useTranslations('Errors');
   const tListenStory = useTranslations('ListenStory');
+  const tProgress = useTranslations('AudiobookGenerationProgress');
   const tPublicStoryPage = useTranslations('PublicStoryPage');
   const tActions = useTranslations('Actions');
   const tCreditsDisplay = useTranslations('CreditsDisplay');
@@ -145,7 +139,12 @@ export default function ListenStoryPage() {
   const [userCredits, setUserCredits] = useState<UserCredits | null>(null);
   const [audiobookCost, setAudiobookCost] = useState<AudiobookCost | null>(null);
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
-  const [audioGenerationProgress, setAudioGenerationProgress] = useState<string>('');
+  const {
+    progress: audiobookProgress,
+    error: progressError,
+    refresh: refreshProgress,
+  } = useAudiobookProgress(storyId);
+  const previousProgress = useRef<string | null>(null);
   const [selectedVoice, setSelectedVoice] = useState<string>(getRecommendedVoice(getTTSProvider()));
   const voiceTouchedRef = useRef(false);
   const recommendedVoice = useMemo(
@@ -225,11 +224,9 @@ export default function ListenStoryPage() {
     const voices = getAvailableVoices();
     return voices.map((voice) => ({
       value: voice.value,
-      label: `${tVoices(voice.labelKey)} — ${tVoices(`shorts.${voice.value.toLowerCase()}`)}${
-        voice.value === recommendedVoice ? ` (${tVoices('recommended')})` : ''
-      }`,
+      label: `${tVoices(voice.labelKey)} — ${tVoices(`shorts.${voice.value.toLowerCase()}`)}`,
     }));
-  }, [tVoices, recommendedVoice]);
+  }, [tVoices]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -295,53 +292,31 @@ export default function ListenStoryPage() {
     }
   }, [storyId, tErrors]);
 
-  // Poll for audiobook updates when generating
   useEffect(() => {
-    if (!isGeneratingAudio) return;
-
-    const pollInterval = setInterval(async () => {
-      try {
-        const response = await fetch(`/api/stories/${storyId}`);
-        if (response.ok) {
-          const data = await response.json();
-          if (data.story.audiobookUri) {
-            // Check if we now have audiobook
-            const tempStory = data.story;
-            if (Array.isArray(tempStory.audiobookUri) && tempStory.audiobookUri.length > 0) {
-              setStory(tempStory);
-              // Update chapters if available
-              if (data.chapters) {
-                setChapters(data.chapters);
-              }
-              setIsGeneratingAudio(false);
-              setAudioGenerationProgress(tListenStory('generationCompleted'));
-              clearInterval(pollInterval);
-            } else if (
-              typeof tempStory.audiobookUri === 'object' &&
-              Object.keys(tempStory.audiobookUri).length > 0
-            ) {
-              setStory(tempStory);
-              // Update chapters if available
-              if (data.chapters) {
-                setChapters(data.chapters);
-              }
-              setIsGeneratingAudio(false);
-              setAudioGenerationProgress(tListenStory('generationCompleted'));
-              clearInterval(pollInterval);
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error polling for audiobook updates:', error);
+    const status = audiobookProgress?.audiobookGenerationStatus;
+    if (!status) return;
+    if (status === 'generating') setIsGeneratingAudio(true);
+    if (
+      (status === 'completed' || status === 'failed') &&
+      previousProgress.current === 'generating'
+    ) {
+      setIsGeneratingAudio(false);
+      audiobookIdempotencyKeyRef.current = null;
+      if (status === 'completed') {
+        void fetch(`/api/stories/${storyId}`, { cache: 'no-store' })
+          .then((response) => (response.ok ? response.json() : null))
+          .then((data) => {
+            if (data?.story) setStory(data.story);
+            if (data?.chapters) setChapters(data.chapters);
+          })
+          .catch(console.error);
       }
-    }, 15000); // Poll every 15 seconds
-
-    return () => clearInterval(pollInterval);
-  }, [isGeneratingAudio, storyId, tListenStory]);
+    }
+    previousProgress.current = status;
+  }, [audiobookProgress, storyId]);
   const handleGenerateAudiobook = async () => {
     try {
       setIsGeneratingAudio(true);
-      setAudioGenerationProgress(tListenStory('startingGeneration'));
 
       audiobookIdempotencyKeyRef.current ||= crypto.randomUUID();
       const analyticsContext = await getGoogleAnalyticsContext();
@@ -360,7 +335,8 @@ export default function ListenStoryPage() {
 
       if (response.ok) {
         const result = await response.json();
-        setAudioGenerationProgress(tListenStory('generationStarted'));
+        previousProgress.current = 'generating';
+        await refreshProgress();
 
         // Update user credits if provided
         if (result.newBalance !== undefined && userCredits) {
@@ -383,7 +359,6 @@ export default function ListenStoryPage() {
     } catch (error) {
       console.error('Error generating audiobook:', error);
       setIsGeneratingAudio(false);
-      setAudioGenerationProgress('');
 
       if (error instanceof Error) {
         toastError(tErrors('failedToStartAudiobook') + ': ' + error.message);
@@ -411,7 +386,7 @@ export default function ListenStoryPage() {
   };
 
   const navigateToPricing = () => {
-    router.push(`/${locale}/pricing`);
+    router.push(`/${locale}/pricing#buy-credits`);
   };
 
   const handleDownload = () => {
@@ -563,6 +538,28 @@ export default function ListenStoryPage() {
                           castControls={cast}
                         />
 
+                        {progressError && !isGeneratingAudio && (
+                          <div role="alert" className="text-center">
+                            <p>{tProgress('errors.failedToLoad')}</p>
+                            <button
+                              type="button"
+                              className="btn btn-sm"
+                              onClick={() => void refreshProgress()}
+                            >
+                              {tProgress('checkAgain')}
+                            </button>
+                          </div>
+                        )}
+                        {isGeneratingAudio && (
+                          <AudiobookProgressPanel
+                            progress={audiobookProgress}
+                            error={progressError}
+                            refresh={refreshProgress}
+                          />
+                        )}
+                        {audiobookProgress?.audiobookGenerationStatus === 'failed' && (
+                          <p role="alert">{tListenStory('generationFailed')}</p>
+                        )}
                         {/* Re-narrate Section */}
                         <div className="divider"></div>
                         <div className="card bg-base-200 shadow-md">
@@ -576,7 +573,7 @@ export default function ListenStoryPage() {
                                 {tListenStory('newNarrationDescription')}
                               </p>
 
-                              {audiobookCost && userCredits && (
+                              {!isGeneratingAudio && audiobookCost && userCredits && (
                                 <div className="space-y-6 max-w-md mx-auto">
                                   {/* Voice Selection */}
                                   <VoiceSelector
@@ -607,18 +604,20 @@ export default function ListenStoryPage() {
                                     </p>
                                   </div>
 
-                                  <div className="stats stats-horizontal shadow">
-                                    <div className="stat">
-                                      <div className="stat-title">{tListenStory('cost')}</div>
-                                      <div className="stat-value text-lg">
+                                  <div className="grid grid-cols-2 gap-3 text-center">
+                                    <div>
+                                      <div className="text-sm text-base-content/70">
+                                        {tListenStory('cost')}
+                                      </div>
+                                      <div className="text-base font-bold">
                                         {audiobookCost.credits} {tCreditsDisplay('credits')}
                                       </div>
                                     </div>
-                                    <div className="stat">
-                                      <div className="stat-title">
+                                    <div>
+                                      <div className="text-sm text-base-content/70">
                                         {tListenStory('yourBalance')}
                                       </div>
-                                      <div className="stat-value text-lg">
+                                      <div className="text-base font-bold">
                                         {userCredits.currentBalance} {tCreditsDisplay('credits')}
                                       </div>
                                     </div>
@@ -629,7 +628,9 @@ export default function ListenStoryPage() {
                                       <button
                                         onClick={handleGenerateAudiobook}
                                         className="btn btn-secondary btn-wide"
-                                        disabled={isGeneratingAudio}
+                                        disabled={
+                                          isGeneratingAudio || !audiobookProgress || progressError
+                                        }
                                       >
                                         <Volume2 className="w-4 h-4 mr-2" />
                                         {tListenStory('narrateStoryAgain')}
@@ -685,33 +686,23 @@ export default function ListenStoryPage() {
                         </div>
                       </div>
                     ) : isGeneratingAudio ? (
-                      <div className="text-center py-16">
-                        <Loader2 className="w-16 h-16 mx-auto mb-4 text-primary animate-spin" />
-                        <h3 className="text-xl font-semibold mb-2">
-                          {tListenStory('generatingAudiobook')}
-                        </h3>
-                        <p className="text-base-content/70 mb-4">{audioGenerationProgress}</p>
-                        <div className="max-w-md mx-auto">
-                          <div className="alert alert-info">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              className="stroke-current shrink-0 w-6 h-6"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                              ></path>
-                            </svg>
-                            <span className="text-sm">{tListenStory('checkingUpdates')}</span>
-                          </div>
-                        </div>
-                      </div>
+                      <AudiobookProgressPanel
+                        progress={audiobookProgress}
+                        error={progressError}
+                        refresh={refreshProgress}
+                      />
                     ) : (
                       <div className="text-center py-8">
+                        {audiobookProgress?.audiobookGenerationStatus === 'failed' && (
+                          <p role="alert">{tListenStory('generationFailed')}</p>
+                        )}
+                        {progressError && (
+                          <AudiobookProgressPanel
+                            progress={audiobookProgress}
+                            error={progressError}
+                            refresh={refreshProgress}
+                          />
+                        )}
                         <Volume2 className="w-10 h-10 mx-auto mb-3 text-base-content/30" />
                         <h3 className="text-xl font-semibold mb-2">
                           {tListenStory('convertYourStory')}
@@ -750,24 +741,36 @@ export default function ListenStoryPage() {
                               </p>
                             </div>
 
-                            <p className="text-sm text-base-content/70">
-                              {tListenStory('priceLine', {
-                                cost: audiobookCost.credits,
-                                balance: userCredits.currentBalance,
-                              })}
-                            </p>
+                            <div className="grid grid-cols-2 gap-3 text-center">
+                              <div>
+                                <div className="text-sm text-base-content/70">
+                                  {tListenStory('cost')}
+                                </div>
+                                <div className="text-base font-bold">
+                                  {audiobookCost.credits} {tCreditsDisplay('credits')}
+                                </div>
+                              </div>
+                              <div>
+                                <div className="text-sm text-base-content/70">
+                                  {tListenStory('yourBalance')}
+                                </div>
+                                <div className="text-base font-bold">
+                                  {userCredits.currentBalance} {tCreditsDisplay('credits')}
+                                </div>
+                              </div>
+                            </div>
 
                             {userCredits.currentBalance >= audiobookCost.credits ? (
                               <div className="space-y-2">
                                 <button
                                   onClick={handleGenerateAudiobook}
                                   className="btn btn-primary btn-lg w-full"
-                                  disabled={isGeneratingAudio}
+                                  disabled={
+                                    isGeneratingAudio || !audiobookProgress || progressError
+                                  }
                                 >
                                   <Volume2 className="w-5 h-5 mr-2" />
-                                  {tListenStory('createAudiobook', {
-                                    credits: audiobookCost.credits,
-                                  })}
+                                  {tListenStory('createAudiobook')}
                                 </button>
                                 <p className="text-sm text-base-content/60">
                                   {tListenStory('narrationTime')} {tListenStory('reNarrateLater')}

@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "title": "Mythoria survey",
+    "description": "A short survey to help us shape Mythoria."
+  },
+  "intro": {
+    "estimatedMinutes": "Less than {minutes} {minutes, plural, one {minute} other {minutes}} of your time",
+    "start": "Let's begin",
+    "resume": "Pick up where you left off",
+    "restored": "We kept your earlier answers, so you can carry on where you stopped.",
+    "privacy": "Curious? You can learn how we handle your data in our <link>Privacy Policy</link>.",
+    "privacyOpensNewTab": "(opens in a new tab)",
+    "rewardTitle": "Finish and get a gift",
+    "rewardBody": "Complete this survey and you can choose a free gift for one of your published stories: a print-ready PDF or an audiobook, on us."
+  },
+  "nav": {
+    "back": "Back",
+    "next": "Next",
+    "submit": "Send my answers",
+    "submitting": "Sending…",
+    "stepProgress": "Step {current} of {total}",
+    "progressLabel": "Survey progress"
+  },
+  "question": {
+    "optional": "Optional",
+    "clear": "Clear my answer",
+    "chooseMany": "Choose all that apply",
+    "pickAtLeast": "Pick at least {min}",
+    "pickUpTo": "Pick up to {max}",
+    "pickBetween": "Pick between {min} and {max}",
+    "selectPlaceholder": "Choose an option",
+    "otherLabel": "Tell us more (optional)",
+    "otherPlaceholder": "Type here",
+    "charCount": "{count} / {max} characters",
+    "errorPrefix": "Error:"
+  },
+  "slider": {
+    "noValue": "Nothing selected yet",
+    "currentValue": "Selected: {value}",
+    "numericLabel": "Or type a number from {min} to {max}",
+    "otherAnswers": "Or choose",
+    "selectedAnswer": "Selected: {answer}"
+  },
+  "rating": {
+    "selected": "Selected: {label}",
+    "otherAnswers": "Or choose"
+  },
+  "errors": {
+    "required": "Please answer this question before moving on.",
+    "invalid_kind": "That answer doesn't look right. Please try again.",
+    "unknown_option": "Please pick one of the options listed.",
+    "too_many_options": "Please pick only one option.",
+    "min_selected": "Pick at least {min}.",
+    "max_selected": "Pick no more than {max}.",
+    "exclusive_conflict": "That option can't be combined with the others.",
+    "other_text_not_allowed": "That extra text doesn't belong to the option you picked.",
+    "too_long": "That's a bit long. Please keep it under {max} characters.",
+    "too_short": "That's a bit short. Please write at least {min} characters.",
+    "below_min": "Please enter {min} or more.",
+    "above_max": "Please enter {max} or less.",
+    "not_integer": "Please enter a whole number.",
+    "step_mismatch": "Please enter a value in steps of {step}.",
+    "duplicate_option": "Each option can only be picked once.",
+    "fixAnswers": "Almost there. A few answers need another look.",
+    "submitFailed": "We couldn't send your answers just now. Nothing is lost, so please try again.",
+    "closed": "This survey has just closed, so we can't take new answers. Thank you for stopping by!"
+  },
+  "completion": {
+    "title": "Thank you!",
+    "rewardTitle": "A little thank-you from us",
+    "rewardEligible": "Pick a free gift for one of your published stories. You'll need to sign in to your Mythoria account to choose it.",
+    "rewardPending": "Your gift is waiting for you. Once you publish your first story, you can sign in and claim it.",
+    "rewardCta": "Choose my gift",
+    "rewardCtaPending": "See my gift",
+    "backHome": "Back to Mythoria"
+  },
+  "status": {
+    "invalid": {
+      "title": "This link doesn't open a survey",
+      "body": "The link may be incomplete or mistyped. Try opening it again from your email."
+    },
+    "closed": {
+      "title": "This survey has closed",
+      "body": "We're not collecting answers any more, but we're grateful you stopped by. Every story needs a good ending, and this one's done."
+    },
+    "submitted": {
+      "title": "You've already answered",
+      "body": "Thank you, your answers are safely in. Each invitation can be answered once."
+    },
+    "submittedReward": "Your thank-you gift is still waiting. You'll need to sign in to choose it.",
+    "backHome": "Back to Mythoria"
+  }
+}

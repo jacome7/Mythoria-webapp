@@ -1,5 +1,6 @@
 'use client';
 
+import ModalPortal from '@/components/ModalPortal';
 import { useCallback, useEffect, useState } from 'react';
 import {
   BookOpen,
@@ -400,22 +401,24 @@ export default function PricingPage() {
 
       {/* Info Modal */}
       {selectedInfo && (
-        <div className="modal modal-open">
-          <div className="modal-box w-10/12 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-4">
-            <div className="flex items-start gap-3">
-              <Info className="text-info text-2xl mt-1 flex-shrink-0" />
-              <p className="text-base leading-relaxed flex-1">
-                {infoTexts[selectedInfo as keyof typeof infoTexts]}
-              </p>
+        <ModalPortal>
+          <div className="modal modal-open">
+            <div className="modal-box w-10/12 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-4">
+              <div className="flex items-start gap-3">
+                <Info className="text-info text-2xl mt-1 flex-shrink-0" />
+                <p className="text-base leading-relaxed flex-1">
+                  {infoTexts[selectedInfo as keyof typeof infoTexts]}
+                </p>
+              </div>
+              <div className="modal-action">
+                <button className="btn btn-sm" onClick={closeModal}>
+                  {tPricingPage('infoModal.close')}
+                </button>
+              </div>
             </div>
-            <div className="modal-action">
-              <button className="btn btn-sm" onClick={closeModal}>
-                {tPricingPage('infoModal.close')}
-              </button>
-            </div>
+            <div className="modal-backdrop" onClick={closeModal}></div>
           </div>
-          <div className="modal-backdrop" onClick={closeModal}></div>
-        </div>
+        </ModalPortal>
       )}
     </div>
   );

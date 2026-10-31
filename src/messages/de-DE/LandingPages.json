@@ -28,7 +28,8 @@
       "readWithImage": "Read the chapter and view the image",
       "readSample": "Read the sample chapter",
       "sampleChapter": "Sample chapter",
-      "closeSample": "Close sample chapter"
+      "closeSample": "Close sample chapter",
+      "transcript": "Transkript"
     },
     "floating": {
       "examplesAria": "View book examples",

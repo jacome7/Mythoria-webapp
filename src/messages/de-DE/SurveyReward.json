@@ -1,0 +1,86 @@
+{
+  "title": "Dein Dankeschön-Geschenk",
+  "intro": "Danke, dass du uns ehrlich gesagt hast, was du denkst. Such dir ein Geschenk und eine deiner veröffentlichten Geschichten aus, den Rest übernehmen wir.",
+  "deadline": "Du kannst es bis zum {date} abholen.",
+  "loading": "Dein Geschenk wird geholt...",
+  "stepGift": "1. Wähle dein Geschenk",
+  "stepStory": "2. Wähle die Geschichte",
+  "options": {
+    "pdf": {
+      "title": "PDF zum Drucken für zu Hause",
+      "description": "Ein druckfertiges PDF einer deiner Geschichten, per E-Mail an die Adresse deines Kontos geschickt. Ausdrucken, heften, vor dem Schlafengehen lesen."
+    },
+    "audiobook": {
+      "title": "Hörbuch",
+      "description": "Eine vorgelesene Version einer deiner Geschichten. Sie erscheint auf der Hörseite der Geschichte, sobald sie fertig ist, meist nach wenigen Minuten."
+    }
+  },
+  "stories": {
+    "audiobookExists": "Hat schon ein Hörbuch",
+    "audiobookGenerating": "Hörbuch wird vorbereitet",
+    "pdfAlreadyRedeemed": "Das PDF zu dieser Geschichte hast du schon bekommen",
+    "audiobookHint": "Geschichten, die schon ein Hörbuch haben, können für dieses Geschenk nicht ausgewählt werden.",
+    "none": "Du hast noch keine veröffentlichte Geschichte. Sobald du eine veröffentlichst, kannst du dir dein Geschenk abholen."
+  },
+  "honesty": "Dieses Geschenk geht auf uns: Es kostet keine Credits und berührt dein Guthaben nicht. Es gibt ein Geschenk pro Umfrage, und sobald die Erstellung läuft, lässt es sich nicht mehr tauschen.",
+  "retryNote": "Beim letzten Mal ist auf unserer Seite etwas schiefgelaufen. Es ist nichts verloren gegangen, versuch es also noch einmal.",
+  "confirm": "Mein Geschenk abholen",
+  "working": "Wir kümmern uns darum...",
+  "retry": "Erneut versuchen",
+  "started": {
+    "pdfTitle": "Dein PDF ist unterwegs",
+    "pdfBody": "Wir bereiten dein druckfertiges PDF vor und schicken es an die E-Mail-Adresse deines Kontos. Das dauert meist ein paar Minuten. Wirf einen Blick in den Spam-Ordner, falls es Verstecken spielt.",
+    "audiobookTitle": "Dein Hörbuch wird aufgenommen",
+    "audiobookBody": "Der Sprecher wärmt gerade die Stimme auf. Wenn es fertig ist, findest du es auf der Hörseite der Geschichte, und wir schreiben dir auch eine E-Mail."
+  },
+  "processing": {
+    "title": "Dein Geschenk wird gerade gemacht",
+    "body": "Es ist schon in Arbeit, du musst nichts weiter tun. Schau in ein paar Minuten wieder vorbei."
+  },
+  "delivered": {
+    "title": "Dein Geschenk ist angekommen",
+    "pdfBody": "Das druckfertige PDF wurde an die E-Mail-Adresse deines Kontos geschickt. Viel Spaß beim Drucken!",
+    "audiobookBody": "Dein Hörbuch ist fertig und wartet auf der Hörseite der Geschichte auf dich."
+  },
+  "actions": {
+    "listen": "Geschichte anhören",
+    "myStories": "Zu meinen Geschichten",
+    "createStory": "Eine Geschichte schreiben",
+    "refresh": "Erneut prüfen"
+  },
+  "pending": {
+    "title": "Dein Geschenk wartet auf eine Geschichte",
+    "body": "Ein Geschenk braucht eine Geschichte, die man einpacken kann. Veröffentliche deine erste Geschichte, und es wird sofort freigeschaltet. Wir schreiben dir, sobald es so weit ist.",
+    "cta": "Meine erste Geschichte schreiben"
+  },
+  "expired": {
+    "title": "Dieses Geschenk ist abgelaufen",
+    "body": "Die Frist zum Abholen ist vorbei, und es tut uns leid, dass du sie verpasst hast. Danke trotzdem, dass du deine Meinung mit uns geteilt hast. Sie hat uns sehr geholfen."
+  },
+  "notFound": {
+    "title": "Wir finden dieses Geschenk nicht",
+    "body": "Dieser Link passt nicht zu deinem Konto. Geschenke kann nur abholen, wer die Einladung bekommen hat. Prüf also, ob du mit derselben E-Mail-Adresse angemeldet bist."
+  },
+  "errors": {
+    "generic": "Etwas ist schiefgelaufen und wir konnten dein Geschenk nicht starten. Es wurde nichts verbraucht, versuch es gleich noch einmal.",
+    "loadFailed": "Wir konnten dein Geschenk nicht laden. Bitte versuch es noch einmal.",
+    "expired": "Dieses Geschenk ist abgelaufen.",
+    "audiobook_exists": "Diese Geschichte hat schon ein Hörbuch. Wähle eine andere Geschichte.",
+    "story_not_found": "Wir finden diese Geschichte nicht unter deinen veröffentlichten Geschichten.",
+    "story_not_published": "Nur veröffentlichte Geschichten können für dieses Geschenk verwendet werden.",
+    "reward_type_not_allowed": "Dieses Geschenk gibt es in dieser Umfrage nicht.",
+    "already_redeemed": "Dieses Geschenk wurde schon abgeholt.",
+    "pending_story": "Veröffentliche zuerst eine Geschichte, dann wird dieses Geschenk freigeschaltet.",
+    "product_in_progress": "Für diese Geschichte wird gerade schon eins davon erstellt. Wähle eine andere Geschichte oder schau bald wieder vorbei.",
+    "launch_failed": "Wir konnten den Auftrag gerade nicht starten. Es wurde nichts verbraucht. Bitte versuch es noch einmal.",
+    "previous_attempt_failed": "Der vorherige Versuch hat nicht geklappt. Bitte versuch es noch einmal."
+  },
+  "banner": {
+    "eligibleTitle": "Ein Dankeschön-Geschenk wartet auf dich",
+    "eligibleBody": "Such dir ein Hörbuch oder ein PDF zum Drucken für zu Hause zu einer deiner Geschichten aus. Geht auf uns.",
+    "retryTitle": "Dein Geschenk braucht noch einen Schritt",
+    "retryBody": "Beim letzten Mal hat es gehakt. Versuch es noch einmal, es wurde nichts verbraucht.",
+    "cta": "Mein Geschenk auswählen",
+    "dismiss": "Schließen"
+  }
+}

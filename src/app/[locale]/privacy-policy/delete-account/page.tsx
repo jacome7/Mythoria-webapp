@@ -1,5 +1,6 @@
 'use client';
 
+import ModalPortal from '@/components/ModalPortal';
 import { AlertTriangle, Lock, Settings, Trash2, User } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useUser } from '@clerk/nextjs';
@@ -147,67 +148,71 @@ export default function DeleteAccountPage() {
 
             {/* Modal Dialog */}
             {isDialogOpen && (
-              <div className="modal modal-open">
-                <div className="modal-box">
-                  <h3 className="font-bold text-lg text-error mb-4">
-                    {tDeleteAccount('confirmation.title')}
-                  </h3>
-                  <p className="text-gray-700 mb-6">{tDeleteAccount('confirmation.description')}</p>
+              <ModalPortal>
+                <div className="modal modal-open">
+                  <div className="modal-box">
+                    <h3 className="font-bold text-lg text-error mb-4">
+                      {tDeleteAccount('confirmation.title')}
+                    </h3>
+                    <p className="text-gray-700 mb-6">
+                      {tDeleteAccount('confirmation.description')}
+                    </p>
 
-                  <div className="form-control mb-6">
-                    <label className="label">
-                      <span className="label-text font-medium">
-                        {tDeleteAccount('confirmation.emailLabel')}
-                      </span>
-                    </label>
-                    <input
-                      type="email"
-                      value={emailConfirmation}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setEmailConfirmation(e.target.value)
-                      }
-                      placeholder={user.primaryEmailAddress?.emailAddress}
-                      className="input input-bordered w-full"
-                    />
-                    {emailConfirmation && !isEmailValid && (
+                    <div className="form-control mb-6">
                       <label className="label">
-                        <span className="label-text-alt text-error break-words">
-                          {tDeleteAccount('confirmation.emailMismatch')}
+                        <span className="label-text font-medium">
+                          {tDeleteAccount('confirmation.emailLabel')}
                         </span>
                       </label>
-                    )}
-                  </div>
-
-                  <div className="modal-action">
-                    <button
-                      onClick={() => {
-                        setIsDialogOpen(false);
-                        setEmailConfirmation('');
-                      }}
-                      className="btn btn-ghost"
-                    >
-                      {tDeleteAccount('confirmation.cancel')}
-                    </button>
-                    <button
-                      onClick={handleDeleteAccount}
-                      disabled={!isEmailValid || isDeleting}
-                      className="btn btn-error"
-                    >
-                      {isDeleting ? (
-                        <>
-                          <span className="loading loading-spinner loading-sm"></span>
-                          {tDeleteAccount('confirmation.deleting')}
-                        </>
-                      ) : (
-                        <>
-                          <Trash2 className="h-4 w-4" />
-                          {tDeleteAccount('confirmation.confirmDelete')}
-                        </>
+                      <input
+                        type="email"
+                        value={emailConfirmation}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setEmailConfirmation(e.target.value)
+                        }
+                        placeholder={user.primaryEmailAddress?.emailAddress}
+                        className="input input-bordered w-full"
+                      />
+                      {emailConfirmation && !isEmailValid && (
+                        <label className="label">
+                          <span className="label-text-alt text-error break-words">
+                            {tDeleteAccount('confirmation.emailMismatch')}
+                          </span>
+                        </label>
                       )}
-                    </button>
+                    </div>
+
+                    <div className="modal-action">
+                      <button
+                        onClick={() => {
+                          setIsDialogOpen(false);
+                          setEmailConfirmation('');
+                        }}
+                        className="btn btn-ghost"
+                      >
+                        {tDeleteAccount('confirmation.cancel')}
+                      </button>
+                      <button
+                        onClick={handleDeleteAccount}
+                        disabled={!isEmailValid || isDeleting}
+                        className="btn btn-error"
+                      >
+                        {isDeleting ? (
+                          <>
+                            <span className="loading loading-spinner loading-sm"></span>
+                            {tDeleteAccount('confirmation.deleting')}
+                          </>
+                        ) : (
+                          <>
+                            <Trash2 className="h-4 w-4" />
+                            {tDeleteAccount('confirmation.confirmDelete')}
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </ModalPortal>
             )}
           </div>
         )}

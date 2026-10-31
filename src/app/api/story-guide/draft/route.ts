@@ -1,3 +1,4 @@
+import { STORY_BRIEF_MAX_LENGTH } from '@/lib/story-templates/story-input-limit';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { storyService, StoryDraftOwnershipError } from '@/db/services';
@@ -9,7 +10,7 @@ const draftSchema = z
   .object({
     draftId: z.string().uuid(),
     title: z.string().trim().min(1).max(300),
-    plotDescription: z.string().max(40_000),
+    plotDescription: z.string().max(STORY_BRIEF_MAX_LENGTH),
     storyLanguage: z.enum(['en-US', 'pt-PT', 'es-ES', 'fr-FR', 'de-DE']),
   })
   .strict();

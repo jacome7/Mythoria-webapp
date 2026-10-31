@@ -1,0 +1,3 @@
+.tile::before {
+  content: none !important;
+}

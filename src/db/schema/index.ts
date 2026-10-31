@@ -26,6 +26,7 @@ export * from './faq';
 export * from './partners';
 export * from './analytics';
 export * from './referrals';
+export * from './surveys';
 
 // Relations
 export * from './relations';

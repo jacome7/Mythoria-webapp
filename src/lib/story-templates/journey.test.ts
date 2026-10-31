@@ -7,6 +7,8 @@ import {
   guideQuestionSchema,
   guideAnswerSchema,
   parseTemplateJourney,
+  confirmedCharacterReferences,
+  characterReferenceSchema,
 } from './journey';
 import { GraphicalStyle, NovelStyle, TargetAudience } from '@/types/story-enums';
 
@@ -20,6 +22,101 @@ beforeAll(() => {
 });
 
 describe('template journey boundaries', () => {
+  const photo = {
+    id: 'e9428e21-4f9c-4d3e-8c3b-e49f9a528c21',
+    status: 'done' as const,
+    objectPath: 'author/inputs/protagonist.jpg',
+    publicUrl: 'https://example.test/protagonist.jpg',
+    sourceCharacterIndex: 1,
+    metadata: {
+      overallImageContent: 'photo' as const,
+      characters: [
+        { physicalDescription: 'OTHER_SUBJECT_OBSERVATION' },
+        { physicalDescription: 'UNCONFIRMED_VISUAL_OBSERVATION' },
+      ],
+    },
+  };
+  const photoQuestion = {
+    questionId: 'hero',
+    question: 'Quem é o protagonista?',
+    answer: '',
+    photo,
+    isAuthorContribution: true,
+  };
+
+  it.each(['', '   '])(
+    'normalizes an emptied confirmed photo caption into a valid photo-only brief (%j)',
+    (answer) => {
+      const journey = createTemplateJourney(getStoryTemplate('pet-mission', 'pt-PT'));
+      journey.answers = [{ ...photoQuestion, answer }];
+      const references = confirmedCharacterReferences(journey);
+      expect(references).toHaveLength(1);
+      expect(characterReferenceSchema.safeParse(references[0]).success).toBe(true);
+      expect(references[0]).toMatchObject({
+        questionId: photoQuestion.questionId,
+        question: photoQuestion.question,
+        imageObjectPath: photo.objectPath,
+        sourceCharacterIndex: photo.sourceCharacterIndex,
+        targetRole: 'protagonist',
+      });
+      expect(references[0].answer).toContain('referência visual');
+      expect(references[0].answer).toContain('sem inferir factos pessoais');
+      const brief = compileStoryBrief(journey, '');
+      expect(brief).toContain(`${photoQuestion.question}\n${references[0].answer}`);
+      expect(brief).not.toContain('UNCONFIRMED_VISUAL_OBSERVATION');
+      expect(brief).not.toContain(photo.objectPath);
+    },
+  );
+
+  it('keeps an authored photo caption and excludes pending text and photos from generation inputs', () => {
+    const journey = createTemplateJourney(getStoryTemplate('pet-mission', 'pt-PT'));
+    journey.answers = [{ ...photoQuestion, answer: '  O cão chama-se Bento.  ' }];
+    journey.answerDraft = {
+      questionId: 'pending',
+      text: 'PENDING_AUTHOR_FACT',
+      photo: {
+        ...photo,
+        id: 'e9428e21-4f9c-4d3e-8c3b-e49f9a528c22',
+        objectPath: 'author/inputs/pending.jpg',
+      },
+    };
+    expect(confirmedCharacterReferences(journey)).toEqual([
+      {
+        questionId: photoQuestion.questionId,
+        question: photoQuestion.question,
+        answer: 'O cão chama-se Bento.',
+        imageObjectPath: photo.objectPath,
+        sourceCharacterIndex: photo.sourceCharacterIndex,
+        targetRole: 'protagonist',
+      },
+    ]);
+    expect(compileStoryBrief(journey, '')).toContain('O cão chama-se Bento.');
+    expect(compileStoryBrief(journey, '')).not.toContain('PENDING_AUTHOR_FACT');
+    expect(compileStoryBrief(journey, '')).not.toContain('pending.jpg');
+    journey.answers = [];
+    expect(confirmedCharacterReferences(journey)).toEqual([]);
+    expect(confirmedCharacterReferences(null)).toEqual([]);
+  });
+
+  it.each(['uploading', 'analyzing'] as const)(
+    'marks interrupted %s draft photos as errors without changing confirmed references',
+    (status) => {
+      const journey = createTemplateJourney(getStoryTemplate('pet-mission', 'pt-PT'));
+      journey.answers = [{ ...photoQuestion, answer: 'Bento' }];
+      journey.answerDraft = {
+        questionId: 'pending',
+        text: 'Keep text',
+        photo: { ...photo, status },
+      };
+      const restored = parseTemplateJourney(journey);
+      expect(restored?.answerDraft?.photo?.status).toBe('error');
+      expect(restored?.answerDraft?.text).toBe('Keep text');
+      expect(restored?.answers[0].photo?.status).toBe('done');
+      expect(confirmedCharacterReferences(restored)).toEqual(confirmedCharacterReferences(journey));
+      expect(journey.answerDraft.photo?.status).toBe(status);
+    },
+  );
+
   it('counts only confirmed authored answers as memory input and keeps provenance client-side', () => {
     const memory = createTemplateJourney(getStoryTemplate('grandparent-memory', 'en-US'));
     const answer = {

@@ -1,14 +1,15 @@
+import { STORY_BRIEF_MAX_LENGTH } from '@/lib/story-templates/story-input-limit';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getCurrentAuthor } from '@/lib/auth';
 import { storyService } from '@/db/services';
 import { sgwFetch } from '@/lib/sgw-client';
-import { storyPreferencesSchema } from '@/lib/story-templates/journey';
+import { storyPreferencesSchema, characterReferenceSchema } from '@/lib/story-templates/journey';
 import { isStoryTemplatesEnabledForAuthor } from '@/lib/story-templates/feature';
 
 const inputSchema = z.object({
   storyId: z.string().uuid(),
-  userDescription: z.string().max(40_000).nullish(),
+  userDescription: z.string().max(STORY_BRIEF_MAX_LENGTH).nullish(),
   imageObjectPaths: z.array(z.string().min(1).max(1024)).max(3).nullish(),
   audioObjectPath: z.string().min(1).max(1024).nullish(),
   characterIds: z.array(z.string().uuid()).max(50).nullish(),
@@ -16,6 +17,7 @@ const inputSchema = z.object({
   storyPreferences: storyPreferencesSchema.optional(),
   factuality: z.literal('memory').optional(),
   structureRequestId: z.string().uuid().optional(),
+  characterReferences: z.array(characterReferenceSchema).max(1).optional(),
 });
 
 /**
@@ -53,6 +55,7 @@ export async function POST(request: NextRequest) {
       storyPreferences,
       factuality,
       structureRequestId,
+      characterReferences,
     } = parsed.data;
 
     if (!storyId) {
@@ -60,6 +63,13 @@ export async function POST(request: NextRequest) {
     }
 
     const hasImages = Array.isArray(imageObjectPaths) && imageObjectPaths.length > 0;
+    if (
+      characterReferences?.length &&
+      characterReferences.some(
+        (reference) => !imageObjectPaths?.includes(reference.imageObjectPath),
+      )
+    )
+      return NextResponse.json({ error: 'Invalid character reference' }, { status: 400 });
     if (!userDescription?.trim() && !hasImages && !audioObjectPath) {
       return NextResponse.json(
         { error: 'Story description, images, or audio is required' },
@@ -85,7 +95,8 @@ export async function POST(request: NextRequest) {
     if (
       (storyPreferences !== undefined ||
         factuality !== undefined ||
-        structureRequestId !== undefined) &&
+        structureRequestId !== undefined ||
+        characterReferences !== undefined) &&
       !isStoryTemplatesEnabledForAuthor(currentAuthor)
     ) {
       // Rollback stops new template work, but a lost response must not strand
@@ -127,6 +138,7 @@ export async function POST(request: NextRequest) {
       storyPreferences,
       structureRequestId,
       factuality,
+      ...(characterReferences ? { characterReferences } : {}),
     };
     // Strip null/undefined fields to avoid schema errors downstream
     Object.keys(payload).forEach((k) => {

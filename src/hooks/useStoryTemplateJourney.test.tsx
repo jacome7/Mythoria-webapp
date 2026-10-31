@@ -10,10 +10,120 @@ beforeAll(() => {
       value: () => '00000000-0000-4000-8000-000000000001',
     });
 });
-beforeEach(() => sessionStorage.clear());
+beforeEach(() => {
+  sessionStorage.clear();
+  localStorage.clear();
+});
 afterEach(() => jest.restoreAllMocks());
 
 describe('useStoryTemplateJourney', () => {
+  const photo = {
+    id: 'e9428e21-4f9c-4d3e-8c3b-e49f9a528c21',
+    status: 'done' as const,
+    objectPath: 'author-one/inputs/protagonist.jpg',
+    publicUrl: 'https://example.test/author-one/inputs/protagonist.jpg',
+    sourceCharacterIndex: 1,
+  };
+  const journeyWithPhoto = () => ({
+    ...createTemplateJourney(getStoryTemplate('pet-mission', 'pt-PT')),
+    answers: [
+      {
+        questionId: 'hero',
+        question: 'Quem é o protagonista?',
+        answer: 'O meu cão',
+        photo: { ...photo },
+        isAuthorContribution: true,
+      },
+    ],
+  });
+
+  it.each([undefined, false])(
+    'keeps staged photo paths and previews when relocation is unconfirmed (%s)',
+    (completed) => {
+      const journey = journeyWithPhoto();
+      sessionStorage.setItem(
+        TEMPLATE_SESSION_KEY,
+        JSON.stringify({ owner: 'author-one', journey }),
+      );
+      localStorage.setItem(
+        'step2RelocatedInputs',
+        JSON.stringify({
+          storyId: 'story-id',
+          paths: [photo.objectPath],
+          ...(completed !== undefined ? { completed } : {}),
+        }),
+      );
+      const { result } = renderHook(() => useStoryTemplateJourney('author-one'));
+      expect(result.current.journey?.answers[0].photo).toEqual(photo);
+    },
+  );
+
+  it('remaps only a confirmed completed photo preview while preserving the original retry source', () => {
+    const journey = journeyWithPhoto();
+    sessionStorage.setItem(TEMPLATE_SESSION_KEY, JSON.stringify({ owner: 'author-one', journey }));
+    localStorage.setItem(
+      'step2RelocatedInputs',
+      JSON.stringify({
+        storyId: 'story-id',
+        paths: [photo.objectPath],
+        completed: true,
+      }),
+    );
+    const { result } = renderHook(() => useStoryTemplateJourney('author-one'));
+    expect(result.current.journey?.answers[0].photo).toEqual({
+      ...photo,
+      publicUrl: 'https://example.test/story-id/inputs/protagonist.jpg',
+    });
+    act(() => result.current.save(result.current.journey));
+    const persisted = JSON.parse(sessionStorage.getItem(TEMPLATE_SESSION_KEY)!);
+    expect(persisted.journey.answers[0].photo.objectPath).toBe(photo.objectPath);
+    expect(persisted.journey.answers[0].photo.sourceCharacterIndex).toBe(1);
+  });
+
+  it('does not remap an unrelated photo or expose a prior author photo after account change', () => {
+    const journey = journeyWithPhoto();
+    sessionStorage.setItem(TEMPLATE_SESSION_KEY, JSON.stringify({ owner: 'author-one', journey }));
+    localStorage.setItem(
+      'step2RelocatedInputs',
+      JSON.stringify({
+        storyId: 'story-id',
+        paths: ['author-one/inputs/unrelated.jpg'],
+        completed: true,
+      }),
+    );
+    const { result, rerender } = renderHook(({ owner }) => useStoryTemplateJourney(owner), {
+      initialProps: { owner: 'author-one' },
+    });
+    expect(result.current.journey?.answers[0].photo).toEqual(photo);
+    rerender({ owner: 'author-two' });
+    expect(result.current.journey).toBeNull();
+    expect(result.current.latest.current).toBeNull();
+  });
+
+  it.each(['uploading', 'analyzing'] as const)(
+    'restores interrupted %s photos as recoverable drafts',
+    (status) => {
+      const journey = {
+        ...journeyWithPhoto(),
+        answerDraft: {
+          questionId: 'pending',
+          text: 'Keep this draft',
+          photo: { ...photo, status },
+        },
+      };
+      sessionStorage.setItem(
+        TEMPLATE_SESSION_KEY,
+        JSON.stringify({ owner: 'author-one', journey }),
+      );
+      const { result } = renderHook(() => useStoryTemplateJourney('author-one'));
+      expect(result.current.journey?.answerDraft).toEqual({
+        ...journey.answerDraft,
+        photo: { ...photo, status: 'error' },
+      });
+      expect(result.current.journey?.answers).toEqual(journey.answers);
+    },
+  );
+
   it('restores only a valid journey belonging to the signed-in author', () => {
     const journey = createTemplateJourney(getStoryTemplate('pet-mission', 'en-US'));
     sessionStorage.setItem(TEMPLATE_SESSION_KEY, JSON.stringify({ owner: 'author-one', journey }));

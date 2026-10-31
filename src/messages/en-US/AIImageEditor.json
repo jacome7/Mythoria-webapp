@@ -34,6 +34,9 @@
     "placeholders": {
       "addNotesStyleDisabled": "Add notes (enable style conversion to use)"
     },
+    "warnings": {
+      "coverTitleNotPrinted": "Heads up: your photo goes on the printed cover exactly as it is, so the story title won't appear on it. Want the title lettered in? Pick \"Convert and edit photo to the {style} style\" and we'll weave it into the art."
+    },
     "buttons": {
       "applyPhoto": "Apply Photo"
     },
@@ -54,6 +57,8 @@
       "cancel": "Cancel",
       "crop": "Crop",
       "processing": "Processing..."
-    }
+    },
+    "removeUploadedImage": "Remove image",
+    "uploadedImagePreviewAlt": "Uploaded image preview"
   }
 }

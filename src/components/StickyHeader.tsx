@@ -23,14 +23,15 @@ function isExcluded(pathname: string): boolean {
 export default function StickyHeader() {
   const pathname = usePathname() || '/';
   const excluded = isExcluded(pathname);
+  const compactWizard = /^\/[^/]+\/tell-your-story(?:\/|$)/.test(pathname);
 
   if (excluded) {
-    return <Header />;
+    return <Header compactWizard={compactWizard} />;
   }
 
   return (
     <div className="sticky top-0 z-50">
-      <Header />
+      <Header compactWizard={compactWizard} />
     </div>
   );
 }

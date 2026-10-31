@@ -42,7 +42,7 @@ export default function CartView({
   return (
     <div>
       <h2 className="text-2xl font-bold mb-6">{tBuyCreditsPage('cart.title')}</h2>
-      <div ref={cartItemsRef} className="bg-base-200 rounded-lg p-6 mb-6">
+      <div ref={cartItemsRef} className="bg-base-200 rounded-lg p-3 sm:p-6 mb-6">
         {cart.length === 0 ? (
           <p className="text-center text-gray-500 py-8">{tBuyCreditsPage('cart.empty')}</p>
         ) : (
@@ -53,40 +53,42 @@ export default function CartView({
               return (
                 <div
                   key={item.packageId}
-                  className="flex items-center justify-between border-b border-base-300 pb-4"
+                  className="flex items-center justify-between gap-2 border-b border-base-300 pb-4"
                 >
-                  <div className="flex items-center space-x-3">
-                    <div className="text-2xl text-primary">{getIconComponent(pkg.icon)}</div>
+                  <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
+                    <div className="text-2xl text-primary shrink-0">
+                      {getIconComponent(pkg.icon)}
+                    </div>
                     <div>
-                      <h4 className="font-semibold">
+                      <h4 className="font-semibold whitespace-nowrap">
                         {pkg.credits} {tPricingPage('creditPackages.credits')}
                       </h4>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-600 whitespace-nowrap">
                         €{pkg.price.toFixed(2)} {tBuyCreditsPage('cart.each')}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-1 sm:space-x-3 shrink-0">
+                    <div className="flex items-center space-x-1 sm:space-x-2">
                       <button
                         onClick={() => updateQuantity(item.packageId, item.quantity - 1)}
-                        className="btn btn-sm btn-outline"
+                        className="btn btn-xs sm:btn-sm btn-outline px-1.5 sm:px-3"
                       >
-                        <Minus />
+                        <Minus className="h-4 w-4" />
                       </button>
-                      <span className="w-8 text-center font-semibold">{item.quantity}</span>
+                      <span className="w-6 sm:w-8 text-center font-semibold">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item.packageId, item.quantity + 1)}
-                        className="btn btn-sm btn-outline"
+                        className="btn btn-xs sm:btn-sm btn-outline px-1.5 sm:px-3"
                       >
-                        <Plus />
+                        <Plus className="h-4 w-4" />
                       </button>
                     </div>
                     <button
                       onClick={() => removeFromCart(item.packageId)}
-                      className="btn btn-sm btn-error"
+                      className="btn btn-xs sm:btn-sm btn-error px-1.5 sm:px-3"
                     >
-                      <Trash2 />
+                      <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
                 </div>
@@ -96,7 +98,7 @@ export default function CartView({
         )}
       </div>
       {cart.length > 0 && (
-        <div className="bg-base-200 rounded-lg p-6 mb-6">
+        <div className="bg-base-200 rounded-lg p-3 sm:p-6 mb-6">
           <h3 className="text-lg font-bold mb-4">{tBuyCreditsPage('summary.title')}</h3>
           <div className="space-y-2">
             <div className="flex justify-between">

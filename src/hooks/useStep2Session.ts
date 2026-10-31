@@ -31,6 +31,7 @@ export interface UploadedImage {
 }
 
 export interface UploadedAudio {
+  durationSeconds?: number;
   file?: File;
   preview: string;
   status: AnalysisStatus; // audio is only uploaded (not analysed): 'uploading' | 'done' | 'error'
@@ -49,7 +50,7 @@ interface PersistedImage {
 interface SessionData {
   text: string;
   images: PersistedImage[];
-  audio: { objectPath?: string; status: AnalysisStatus } | null;
+  audio: { objectPath?: string; status: AnalysisStatus; durationSeconds?: number } | null;
   lastSaved: number;
   selectedCharacterIds?: string[];
 }
@@ -139,12 +140,14 @@ export function useStep2Session() {
       return {
         preview: '',
         status: a.status === 'done' ? 'done' : 'error',
+        durationSeconds: a.durationSeconds,
         objectPath,
       };
     }
     return null;
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState(false);
   const savedIndicatorRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const saveToSession = useCallback(() => {
@@ -159,15 +162,20 @@ export function useStep2Session() {
         metadata: img.metadata,
       })),
       audio: uploadedAudio
-        ? { objectPath: uploadedAudio.objectPath, status: uploadedAudio.status }
+        ? {
+            objectPath: uploadedAudio.objectPath,
+            status: uploadedAudio.status,
+            durationSeconds: uploadedAudio.durationSeconds,
+          }
         : null,
       lastSaved: Date.now(),
       selectedCharacterIds,
     };
     try {
       sessionStorage.setItem('step2Data', JSON.stringify(data));
+      setSaveError(false);
     } catch {
-      // Keep the in-memory inputs usable if browser storage is unavailable.
+      setSaveError(true);
     }
     if (savedIndicatorRef.current) clearTimeout(savedIndicatorRef.current);
     savedIndicatorRef.current = setTimeout(() => setIsSaving(false), 500);
@@ -185,7 +193,29 @@ export function useStep2Session() {
     [],
   );
 
+  const resetInputs = useCallback(() => {
+    setStoryText('');
+    setUploadedImages([]);
+    setUploadedAudio(null);
+    setSelectedCharacterIds([]);
+    try {
+      sessionStorage.setItem(
+        'step2Data',
+        JSON.stringify({
+          text: '',
+          images: [],
+          audio: null,
+          selectedCharacterIds: [],
+          lastSaved: Date.now(),
+        }),
+      );
+    } catch {
+      /* In-memory reset remains usable. */
+    }
+  }, []);
+
   return {
+    resetInputs,
     storyText,
     setStoryText,
     uploadedImages,
@@ -193,6 +223,7 @@ export function useStep2Session() {
     uploadedAudio,
     setUploadedAudio,
     isSaving,
+    saveError,
     saveToSession,
     selectedCharacterIds,
     setSelectedCharacterIds,

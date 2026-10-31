@@ -1,11 +1,16 @@
 'use client';
 
+import { STORY_BRIEF_MAX_LENGTH } from '@/lib/story-templates/story-input-limit';
+import DocumentImport from './DocumentImport';
+
 import { Show, RedirectToSignIn, useAuth } from '@clerk/nextjs';
 import Image from 'next/image';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import { useTranslations, useLocale } from 'next-intl';
+import Step2Preview, { ConfirmDialog } from './Step2Preview';
+import { usePreviousWizardPath } from '@/components/WizardNavigation';
 import { useRouter } from '@/i18n/routing';
 import StepNavigation from '@/components/StepNavigation';
 import ProgressIndicator from '@/components/ProgressIndicator';
@@ -24,6 +29,7 @@ import {
   canContinueTemplate,
   compileStoryBrief,
   createTemplateJourney,
+  confirmedCharacterReferences,
 } from '@/lib/story-templates/journey';
 import { isValidIntent } from '@/constants/intents';
 import { clearStorySession } from '@/lib/story-session';
@@ -83,7 +89,7 @@ function StoryModeCard({
   );
 }
 
-export default function Step2Client({
+function Step2Content({
   templatesEnabled = false,
   templates = [],
 }: {
@@ -100,8 +106,21 @@ export default function Step2Client({
   const intentContext = useIntentContext();
   const templateState = useStoryTemplateJourney(userId);
   const journey = templatesEnabled ? templateState.journey : null;
+  const locale = useLocale();
+  const preview = templatesEnabled;
+  const previousWizardPath = usePreviousWizardPath();
+  const [entryScreen, setEntryScreen] = useState<'loading' | 'resume' | 'edit'>('loading');
+  const entryChecked = useRef(false);
+  const [confirmNewStory, setConfirmNewStory] = useState(false);
+  const [checkingPreviousJob, setCheckingPreviousJob] = useState(false);
+  const [restartError, setRestartError] = useState<string | null>(null);
+  const [catalogOpen, setCatalogOpen] = useState(false);
+  const [pendingTemplate, setPendingTemplate] = useState<StoryTemplate | null>(null);
+  const [confirmFreeform, setConfirmFreeform] = useState(false);
+  const [mediaEpoch, setMediaEpoch] = useState(0);
   const entryApplied = useRef(false);
   const submitting = useRef(false);
+  const continueAfterMedia = useRef<() => void>(() => {});
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [confirmRebuild, setConfirmRebuild] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
@@ -129,6 +148,7 @@ export default function Step2Client({
   // UI states
   const [isCreatingStory, setIsCreatingStory] = useState(false);
   const [showLoadingModal, setShowLoadingModal] = useState(false);
+  const [waitingForMedia, setWaitingForMedia] = useState(false);
 
   // Character states
   const {
@@ -139,25 +159,114 @@ export default function Step2Client({
     uploadedAudio,
     setUploadedAudio,
     isSaving,
+    saveError,
     saveToSession,
+    resetInputs,
     selectedCharacterIds,
     setSelectedCharacterIds,
   } = useStep2Session();
 
   const { pollJob } = useJobPolling();
-  const locale = useLocale();
 
   useEffect(() => {
-    if (!templatesEnabled || !templateState.ready || entryApplied.current) return;
+    if (!preview || !templateState.ready || entryChecked.current) return;
+    entryChecked.current = true;
+    const hasSavedContent = !!(
+      journey?.templateId ||
+      journey?.answers.length ||
+      journey?.answerDraft?.text.trim() ||
+      journey?.answerDraft?.photo ||
+      storyText.trim() ||
+      uploadedImages.length ||
+      uploadedAudio ||
+      selectedCharacterIds.length ||
+      (userId && readStep2Submission(userId, true))
+    );
+    const returningFromLaterStep = /\/tell-your-story\/step-[3-5]$/.test(previousWizardPath ?? '');
+    setEntryScreen(hasSavedContent && !returningFromLaterStep ? 'resume' : 'edit');
+  }, [
+    preview,
+    templateState.ready,
+    journey,
+    storyText,
+    uploadedImages.length,
+    uploadedAudio,
+    selectedCharacterIds.length,
+    userId,
+    previousWizardPath,
+  ]);
+
+  useEffect(() => {
+    if (
+      !templatesEnabled ||
+      !templateState.ready ||
+      entryApplied.current ||
+      (preview && entryScreen !== 'edit')
+    )
+      return;
     entryApplied.current = true;
     const selected = templates.find((item) => item.id === searchParams.get('templateId'));
-    if (selected && !templateState.journey) templateState.save(createTemplateJourney(selected));
-  }, [templatesEnabled, templateState, templates, searchParams]);
+    if (
+      preview &&
+      selected &&
+      templateState.journey &&
+      templateState.journey.templateId !== selected.id
+    ) {
+      setCatalogOpen(true);
+      setPendingTemplate(selected);
+    } else if (selected && !templateState.journey) {
+      if (
+        preview &&
+        (storyText.trim() || uploadedImages.length || uploadedAudio || selectedCharacterIds.length)
+      ) {
+        setCatalogOpen(true);
+        setPendingTemplate(selected);
+      } else templateState.save(createTemplateJourney(selected));
+    }
+  }, [
+    templatesEnabled,
+    templateState,
+    templates,
+    searchParams,
+    preview,
+    storyText,
+    uploadedImages.length,
+    uploadedAudio,
+    selectedCharacterIds.length,
+    entryScreen,
+  ]);
 
+  useEffect(() => {
+    if (
+      preview &&
+      entryScreen === 'edit' &&
+      templateState.ready &&
+      !journey &&
+      !searchParams.get('templateId') &&
+      (storyText.trim() || uploadedImages.length || uploadedAudio)
+    )
+      templateState.save(createTemplateJourney());
+  }, [
+    preview,
+    templateState,
+    journey,
+    searchParams,
+    storyText,
+    uploadedImages.length,
+    uploadedAudio,
+    entryScreen,
+  ]);
+
+  const questionReferences = preview ? confirmedCharacterReferences(journey) : [];
   const hasMedia =
+    questionReferences.length > 0 ||
     uploadedImages.some((image) => image.status === 'done' && image.objectPath) ||
     !!(uploadedAudio?.status === 'done' && uploadedAudio.objectPath);
-  const canContinue = canContinueTemplate(journey, storyText, hasMedia);
+  const fitsBrief = (text: string) =>
+    compileStoryBrief(journey, text).length <= STORY_BRIEF_MAX_LENGTH;
+  const remainingCharacters = STORY_BRIEF_MAX_LENGTH - compileStoryBrief(journey, storyText).length;
+  const wordCount = storyText.trim() ? storyText.trim().split(/\s+/u).length : 0;
+  const canContinue = fitsBrief(storyText) && canContinueTemplate(journey, storyText, hasMedia);
   const guideContribution = [
     storyText,
     ...uploadedImages
@@ -176,12 +285,21 @@ export default function Step2Client({
     trackStoryCreation.stepViewed({ step: 2 });
   }, [isSignedIn]);
 
-  // Block navigation while any uploaded media is still uploading/analysing.
+  // The preview lets authors edit while media is prepared in the background.
   const imagesAnalyzing = uploadedImages.some(
     (img) => img.status === 'uploading' || img.status === 'analyzing',
   );
   const audioUploading = uploadedAudio?.status === 'uploading';
   const mediaBusy = imagesAnalyzing || audioUploading;
+  const imageError = uploadedImages.some((image) => image.status === 'error');
+  const mediaError = imageError || uploadedAudio?.status === 'error';
+  const canRequestContinue =
+    fitsBrief(storyText) &&
+    canContinueTemplate(
+      journey,
+      storyText,
+      hasMedia || uploadedImages.length > 0 || !!uploadedAudio,
+    );
 
   const storyModeCards = [
     {
@@ -217,8 +335,144 @@ export default function Step2Client({
     },
   ];
 
+  useEffect(() => {
+    if (!preview || (!activeModal && !waitingForMedia && !showLoadingModal)) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const timer = window.setTimeout(() => {
+      const dialog = document.querySelector<HTMLElement>('[role="dialog"]');
+      (dialog?.querySelector<HTMLElement>('button') ?? dialog)?.focus();
+    }, 0);
+    const key = (event: KeyboardEvent) => {
+      const dialog = document.querySelector<HTMLElement>('[role="dialog"]');
+      if (event.key === 'Escape') {
+        if (waitingForMedia) setWaitingForMedia(false);
+        else if (activeModal === 'text') setActiveModal(null);
+        else dialog?.querySelector<HTMLButtonElement>('[data-close]')?.click();
+      }
+      if (event.key !== 'Tab' || !dialog) return;
+      const elements = Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'button:not(:disabled),textarea,input,select,[tabindex="0"]',
+        ),
+      ).filter((element) => element.getClientRects().length);
+      const first = elements[0],
+        last = elements[elements.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    };
+    const resize = () => {
+      document
+        .querySelector<HTMLElement>('[role="dialog"]')
+        ?.style.setProperty(
+          '--visible-height',
+          `${window.visualViewport?.height ?? window.innerHeight}px`,
+        );
+    };
+    window.visualViewport?.addEventListener('resize', resize);
+    resize();
+    document.addEventListener('keydown', key);
+    return () => {
+      window.visualViewport?.removeEventListener('resize', resize);
+      window.clearTimeout(timer);
+      document.removeEventListener('keydown', key);
+      document.body.style.overflow = previousOverflow;
+      previous?.focus();
+    };
+  }, [activeModal, preview, waitingForMedia, showLoadingModal]);
+
+  const resetToTemplate = (template: StoryTemplate) => {
+    setMediaEpoch((value) => value + 1);
+    resetInputs();
+    templateState.save(createTemplateJourney(template));
+    setPendingTemplate(null);
+    setCatalogOpen(false);
+  };
+  const chooseTemplate = (
+    next: import('@/lib/story-templates/journey').StoryTemplateJourney | null,
+  ) => {
+    if (!next || next.templateId === journey?.templateId) {
+      setCatalogOpen(false);
+      return;
+    }
+    const template = templates.find((item) => item.id === next.templateId);
+    if (!template) return;
+    if (
+      storyText.trim() ||
+      uploadedImages.length ||
+      uploadedAudio ||
+      selectedCharacterIds.length ||
+      journey?.templateId
+    )
+      setPendingTemplate(template);
+    else resetToTemplate(template);
+  };
+  const switchToOwnIdea = () => {
+    templateState.save(createTemplateJourney());
+    setCatalogOpen(false);
+    setConfirmFreeform(false);
+  };
+  const startNewStory = async () => {
+    if (checkingPreviousJob || !userId) return;
+    setCheckingPreviousJob(true);
+    setRestartError(null);
+    try {
+      const saved = readStep2Submission(userId, true);
+      if (saved && !saved.completed && (saved.jobId || saved.structurePayload)) {
+        // Read status only. A lost POST response must be recovered through the existing
+        // idempotent continuation flow before its request identity can be discarded.
+        if (!saved.jobId) throw new Error('pending');
+        const response = await fetch(`/api/jobs/${saved.jobId}`);
+        if (!response.ok) throw new Error('pending');
+        const { job } = await response.json();
+        if (job?.status !== 'completed' && job?.status !== 'failed') throw new Error('pending');
+      }
+      entryApplied.current = true;
+      setMediaEpoch((value) => value + 1);
+      resetInputs();
+      templateState.save(null);
+      sessionStorage.removeItem('experimentalStep2Submission');
+      for (const key of [
+        'currentStoryId',
+        'step2Data',
+        'step2RelocatedInputs',
+        'genaiResults',
+        'step3Data',
+        'isEditMode',
+      ])
+        localStorage.removeItem(key);
+      setCatalogOpen(false);
+      setPendingTemplate(null);
+      setConfirmFreeform(false);
+      setConfirmRebuild(false);
+      setSubmissionError(null);
+      setShowExtraDetails(false);
+      setConfirmNewStory(false);
+      setEntryScreen('edit');
+      if (searchParams.has('templateId')) {
+        const params = new URLSearchParams(searchParams.toString());
+        params.delete('templateId');
+        router.replace(`/tell-your-story/step-2${params.size ? `?${params}` : ''}`);
+      }
+    } catch {
+      setRestartError(tStoryStepsStep2('resume.pendingJobError'));
+    } finally {
+      setCheckingPreviousJob(false);
+    }
+  };
   const handleNextStep = async (confirmed = false) => {
-    if (submitting.current || !canContinue) return;
+    if (submitting.current) return;
+    if (preview && (mediaBusy || mediaError)) {
+      setWaitingForMedia(true);
+      return;
+    }
+    if (!canContinue) return;
     submitting.current = true;
     setSubmissionError(null);
     try {
@@ -227,6 +481,10 @@ export default function Step2Client({
       const imageObjectPaths = uploadedImages
         .filter((img) => img.status === 'done' && img.objectPath)
         .map((img) => img.objectPath!);
+      for (const reference of questionReferences) {
+        if (!imageObjectPaths.includes(reference.imageObjectPath))
+          imageObjectPaths.push(reference.imageObjectPath);
+      }
       const audioObjectPath =
         uploadedAudio?.status === 'done' ? uploadedAudio.objectPath : undefined;
       const fingerprint = await storyInputFingerprint({
@@ -236,6 +494,17 @@ export default function Step2Client({
         characters: [...selectedCharacterIds].sort(),
         locale,
         preferences: journey?.preferences,
+        ...(questionReferences.length
+          ? {
+              characterReferences: journey?.answers
+                .filter((answer) => answer.photo)
+                .map((answer) => ({
+                  questionId: answer.questionId,
+                  imageId: answer.photo!.id,
+                  sourceCharacterIndex: answer.photo!.sourceCharacterIndex,
+                })),
+            }
+          : {}),
       });
       let saved = userId ? readStep2Submission(userId, templatesEnabled) : null;
       // Finish or observe the previous request before submitting changed input. A lost
@@ -286,7 +555,9 @@ export default function Step2Client({
         saveStep2Submission(saved, templatesEnabled);
       }
       let storyId = saved?.storyId;
-      if (templatesEnabled && saved) {
+      const resumingStructure =
+        saved?.fingerprint === fingerprint && !!(saved.jobId || saved.structurePayload);
+      if (templatesEnabled && saved && !resumingStructure) {
         const response = await fetch('/api/story-guide/draft', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -331,7 +602,21 @@ export default function Step2Client({
               structurePayload: undefined,
             };
       saveStep2Submission(submission, templatesEnabled);
-      for (const characterId of selectedCharacterIds) {
+      if (preview && !resumingStructure) {
+        const response = await fetch(`/api/stories/${storyId}/characters`);
+        if (!response.ok) throw new Error(tTemplates('structureError'));
+        const result = await response.json();
+        for (const character of result.characters ?? []) {
+          if (character.characterId && !selectedCharacterIds.includes(character.characterId)) {
+            const removed = await fetch(
+              `/api/stories/${storyId}/characters/${character.characterId}`,
+              { method: 'DELETE' },
+            );
+            if (!removed.ok) throw new Error(tTemplates('structureError'));
+          }
+        }
+      }
+      for (const characterId of resumingStructure ? [] : selectedCharacterIds) {
         const linked = await fetch(`/api/stories/${storyId}/characters`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -360,6 +645,7 @@ export default function Step2Client({
                 storyPreferences: journey?.preferences,
                 factuality: journey?.mode === 'memory' ? 'memory' : undefined,
                 structureRequestId,
+                ...(questionReferences.length ? { characterReferences: questionReferences } : {}),
               }),
             };
             saveStep2Submission(submission, templatesEnabled);
@@ -404,6 +690,16 @@ export default function Step2Client({
         );
       }
       saveStep2Submission({ ...submission, completed: true }, templatesEnabled);
+      if (imageObjectPaths.length || audioObjectPath)
+        localStorage.setItem(
+          'step2RelocatedInputs',
+          JSON.stringify({
+            storyId,
+            paths: imageObjectPaths,
+            audioPath: audioObjectPath ?? null,
+            completed: true,
+          }),
+        );
       trackStoryCreation.stepCompleted({
         step: 2,
         story_id: storyId,
@@ -432,6 +728,19 @@ export default function Step2Client({
     }
   };
 
+  useEffect(() => {
+    continueAfterMedia.current = () => void handleNextStep();
+  });
+
+  // Re-enter with the latest committed media and text, never the click-time snapshot.
+  useEffect(() => {
+    if (!waitingForMedia || mediaBusy || mediaError || !canContinue) return;
+    setWaitingForMedia(false);
+    setShowLoadingModal(true);
+    setIsCreatingStory(true);
+    continueAfterMedia.current();
+  }, [waitingForMedia, mediaBusy, mediaError, canContinue]);
+
   return (
     <>
       <Show when="signed-out">
@@ -442,18 +751,19 @@ export default function Step2Client({
         <div className="container mx-auto px-2 sm:px-4 py-8">
           <div className="max-w-4xl mx-auto">
             <ProgressIndicator currentStep={2} totalSteps={5} />
-
             {/* Step content */}
-            <div className="card bg-base-100 shadow-xl">
-              <div className="card-body">
-                <h1 className="card-title text-3xl mb-6">{tStoryStepsStep2('heading')}</h1>
+            <div className={preview ? styles.previewSurface : 'card bg-base-100 shadow-xl'}>
+              <div className={preview ? styles.previewBody : 'card-body'}>
+                {!preview && (
+                  <h1 className="card-title text-3xl mb-6">{tStoryStepsStep2('heading')}</h1>
+                )}
                 {!templatesEnabled && (
                   <div className="prose max-w-none mb-6">
                     <p className="text-gray-600 text-lg">{tStoryStepsStep2('intro')}</p>
                   </div>
                 )}
 
-                {templatesEnabled && (
+                {templatesEnabled && !preview && (
                   <>
                     {(journey || storyText || hasMedia) && (
                       <div className="flex justify-end">
@@ -550,12 +860,22 @@ export default function Step2Client({
                               </span>
                               <textarea
                                 className="textarea textarea-bordered w-full min-h-24 text-base"
-                                maxLength={8000}
                                 value={storyText}
                                 onChange={(e) => setStoryText(e.target.value)}
                                 placeholder={tTemplates('memoryContributionPlaceholder')}
                               />
                             </label>
+                            <p className="text-sm" aria-live="polite">
+                              {tStoryStepsStep2('documentImport.allowance', {
+                                words: wordCount,
+                                remaining: remainingCharacters,
+                              })}
+                            </p>
+                            {remainingCharacters < 0 && (
+                              <p role="alert" className="text-error">
+                                {tStoryStepsStep2('documentImport.overLimit')}
+                              </p>
+                            )}
                             <p className="text-sm text-base-content/70">
                               {tTemplates('contributionHelp')}
                             </p>
@@ -592,6 +912,144 @@ export default function Step2Client({
                   </>
                 )}
 
+                {preview && entryScreen === 'loading' && (
+                  <p role="status">{tStoryStepsStep2('resume.loading')}</p>
+                )}
+                {preview && entryScreen === 'resume' && (
+                  <section
+                    className={`${styles.preview} space-y-5`}
+                    aria-labelledby="resume-story-title"
+                  >
+                    <h1 id="resume-story-title">{tStoryStepsStep2('resume.title')}</h1>
+                    <p>{tStoryStepsStep2('resume.body')}</p>
+                    <div className="rounded-xl border border-[#073967]/20 p-4 space-y-2">
+                      <h2>
+                        {journey?.templateId
+                          ? tStoryStepsStep2('resume.template', {
+                              title:
+                                templates.find((item) => item.id === journey.templateId)?.title ??
+                                tStoryStepsStep2('resume.templateFallback'),
+                            })
+                          : tStoryStepsStep2('resume.ownIdea')}
+                      </h2>
+                      <p className="text-sm">
+                        {[
+                          storyText.trim() && tStoryStepsStep2('resume.textSaved'),
+                          uploadedImages.length > 0 &&
+                            tStoryStepsStep2('resume.imagesCount', {
+                              count: uploadedImages.length,
+                            }),
+                          uploadedAudio && tStoryStepsStep2('resume.audioSaved'),
+                          !!journey?.answers.length &&
+                            tStoryStepsStep2('resume.answersCount', {
+                              count: journey.answers.length,
+                            }),
+                          !!selectedCharacterIds.length &&
+                            tStoryStepsStep2('resume.charactersSelected'),
+                          (journey?.answerDraft?.text.trim() || journey?.answerDraft?.photo) &&
+                            tStoryStepsStep2('resume.pendingAnswer'),
+                        ]
+                          .filter(Boolean)
+                          .join(' · ') || tStoryStepsStep2('resume.fallback')}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={() => setEntryScreen('edit')}
+                      >
+                        {tStoryStepsStep2('resume.continue')}
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-outline"
+                        onClick={() => {
+                          setRestartError(null);
+                          setConfirmNewStory(true);
+                        }}
+                      >
+                        {tStoryStepsStep2('resume.startNew')}
+                      </button>
+                    </div>
+                    {confirmNewStory && (
+                      <ConfirmDialog
+                        label={tStoryStepsStep2('resume.confirmTitle')}
+                        onCancel={() => {
+                          if (!checkingPreviousJob) setConfirmNewStory(false);
+                        }}
+                      >
+                        <h2>{tStoryStepsStep2('resume.confirmTitle')}</h2>
+                        <p>{tStoryStepsStep2('resume.confirmBody')}</p>
+                        <p>{tStoryStepsStep2('resume.confirmNote')}</p>
+                        {restartError && (
+                          <p role="alert" className="mt-3">
+                            {restartError}
+                          </p>
+                        )}
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          <button
+                            type="button"
+                            className="btn btn-outline"
+                            disabled={checkingPreviousJob}
+                            onClick={() => setConfirmNewStory(false)}
+                          >
+                            {tStoryStepsStep2('guided.cancel')}
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-primary"
+                            disabled={checkingPreviousJob}
+                            onClick={() => void startNewStory()}
+                          >
+                            {checkingPreviousJob
+                              ? tStoryStepsStep2('resume.checking')
+                              : tStoryStepsStep2('resume.confirm')}
+                          </button>
+                        </div>
+                      </ConfirmDialog>
+                    )}
+                  </section>
+                )}
+                {preview && entryScreen === 'edit' && (
+                  <Step2Preview
+                    journey={journey}
+                    templates={templatesForIntent}
+                    catalogOpen={catalogOpen}
+                    pendingTemplate={pendingTemplate}
+                    confirmFreeform={confirmFreeform}
+                    storyText={storyText}
+                    contribution={guideContribution}
+                    images={uploadedImages}
+                    audio={uploadedAudio}
+                    selectedCharacterIds={selectedCharacterIds}
+                    onCharacters={setSelectedCharacterIds}
+                    disabled={isCreatingStory || !templateState.ready}
+                    modalOpen={
+                      activeModal !== null || waitingForMedia || showLoadingModal || confirmRebuild
+                    }
+                    onOpen={(type) => {
+                      if (!journey) templateState.save(createTemplateJourney());
+                      setActiveModal(type);
+                    }}
+                    onCatalog={() => setCatalogOpen(true)}
+                    onBackCatalog={() => {
+                      setCatalogOpen(false);
+                      if (!journey) templateState.save(createTemplateJourney());
+                    }}
+                    onChange={chooseTemplate}
+                    onPatch={templateState.save}
+                    onOwnIdea={() => setConfirmFreeform(true)}
+                    onConfirm={() => pendingTemplate && resetToTemplate(pendingTemplate)}
+                    onCancel={() => setPendingTemplate(null)}
+                    onConfirmOwn={switchToOwnIdea}
+                    onCancelOwn={() => setConfirmFreeform(false)}
+                    onContinue={() => void handleNextStep()}
+                    onPrevious={saveToSession}
+                    canContinue={!!journey && canRequestContinue && !isCreatingStory}
+                  />
+                )}
+
                 {!templatesEnabled && (
                   <div className={styles.modeStack}>
                     {storyModeCards.map((card) => (
@@ -621,10 +1079,9 @@ export default function Step2Client({
                   </p>
                 )}
                 {confirmRebuild && (
-                  <section
-                    role="region"
-                    aria-label={tTemplates('restructureTitle')}
-                    className="rounded-xl border border-primary/30 p-4 space-y-3"
+                  <ConfirmDialog
+                    label={tTemplates('restructureTitle')}
+                    onCancel={() => setConfirmRebuild(false)}
                   >
                     <h2 className="font-bold">{tTemplates('restructureTitle')}</h2>
                     <p>{tTemplates('restructureDescription')}</p>
@@ -644,9 +1101,19 @@ export default function Step2Client({
                         {tTemplates('cancel')}
                       </button>
                     </div>
-                  </section>
+                  </ConfirmDialog>
                 )}
 
+                {remainingCharacters < 0 && (
+                  <p role="alert" className="text-error">
+                    {tStoryStepsStep2('documentImport.overLimit')}
+                  </p>
+                )}
+                {saveError && (
+                  <p role="alert" className="text-error">
+                    {tStoryStepsStep2('documentImport.saveError')}
+                  </p>
+                )}
                 {/* Auto-save indicator */}
                 {isSaving && (
                   <div className="text-center text-sm text-gray-500 mt-2">
@@ -655,30 +1122,32 @@ export default function Step2Client({
                   </div>
                 )}
 
-                {mediaBusy && (
+                {!preview && mediaBusy && (
                   <div className="text-center text-sm text-warning mt-2">
                     {tStoryStepsStep2('imageAnalysis.waitingHint')}
                   </div>
                 )}
 
-                <StepNavigation
-                  currentStep={2}
-                  totalSteps={5}
-                  nextHref={null}
-                  prevHref="/tell-your-story/step-1"
-                  nextDisabled={
-                    isCreatingStory || mediaBusy || !canContinue || (templatesEnabled && !journey)
-                  }
-                  onPrev={saveToSession}
-                  onNext={() => handleNextStep()}
-                  nextLabel={
-                    isCreatingStory
-                      ? tStoryStepsStep2('processing')
-                      : templatesEnabled
-                        ? tTemplates('continue')
-                        : tStoryStepsStep2('next')
-                  }
-                />
+                {!preview && (
+                  <StepNavigation
+                    currentStep={2}
+                    totalSteps={5}
+                    nextHref={null}
+                    prevHref="/tell-your-story/step-1"
+                    nextDisabled={
+                      isCreatingStory || mediaBusy || !canContinue || (templatesEnabled && !journey)
+                    }
+                    onPrev={saveToSession}
+                    onNext={() => handleNextStep()}
+                    nextLabel={
+                      isCreatingStory
+                        ? tStoryStepsStep2('processing')
+                        : templatesEnabled
+                          ? tTemplates('continue')
+                          : tStoryStepsStep2('next')
+                    }
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -687,9 +1156,14 @@ export default function Step2Client({
         {/* Text Modal - Improved with better text area */}
         {activeModal === 'text' &&
           createPortal(
-            <div className={`modal modal-open ${styles.step2Modal}`}>
+            <div
+              className={`modal modal-open ${styles.step2Modal} ${preview ? styles.previewModal : ''}`}
+            >
               <div
-                className={`${modalSurfaceClass} ${styles.step2ModalBox} max-w-5xl w-11/12 flex flex-col p-0`}
+                role="dialog"
+                aria-modal="true"
+                aria-label={tStoryStepsStep2('tabWrite')}
+                className={`${modalSurfaceClass} ${styles.step2ModalBox} ${preview ? styles.previewModalBox : ''} max-w-5xl w-11/12 flex flex-col p-0`}
               >
                 <div className="modal-header flex justify-between items-center p-6 pb-4 border-b">
                   <h3 className={styles.modalTitle}>
@@ -703,6 +1177,9 @@ export default function Step2Client({
                     {tStoryStepsStep2('tabWrite')}
                   </h3>
                   <button
+                    aria-label={
+                      preview ? tStoryStepsStep2('guided.close') : tStoryStepsStep2('actions.done')
+                    }
                     className="btn btn-sm btn-circle btn-ghost"
                     onClick={() => setActiveModal(null)}
                   >
@@ -710,8 +1187,9 @@ export default function Step2Client({
                   </button>
                 </div>
 
-                <div className="flex-1 flex flex-col overflow-hidden">
-                  <div className="flex-1 flex flex-col px-6 py-4">
+                <div className="flex-1 flex flex-col overflow-y-auto min-h-0">
+                  <div className="flex-1 flex flex-col min-h-64 px-6 py-4">
+                    <DocumentImport value={storyText} onChange={setStoryText} fits={fitsBrief} />
                     {/* Enhanced text area with better scrolling */}
                     <div className="flex-1 relative rounded-lg border border-base-300 overflow-hidden">
                       <style
@@ -777,6 +1255,7 @@ export default function Step2Client({
                       />
                       <textarea
                         className="enhanced-textarea w-full h-full p-4 resize-none text-base leading-relaxed border-0 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset"
+                        aria-label={tStoryStepsStep2('tabWrite')}
                         placeholder={tStoryStepsStep2('textPlaceholder')}
                         value={storyText}
                         onChange={(e) => setStoryText(e.target.value)}
@@ -785,14 +1264,34 @@ export default function Step2Client({
 
                     <label className="label px-0 pt-2">
                       <span className="label-text-alt break-words max-w-full whitespace-normal">
-                        {tStoryStepsStep2('textHelp')}
+                        {tStoryStepsStep2('documentImport.allowance', {
+                          words: wordCount,
+                          remaining: remainingCharacters,
+                        })}
                       </span>
                     </label>
                   </div>
 
+                  {remainingCharacters < 0 && (
+                    <p role="alert" className="px-6 text-error">
+                      {tStoryStepsStep2('documentImport.overLimit')}
+                    </p>
+                  )}
+                  {saveError && (
+                    <p role="alert" className="px-6 text-error">
+                      {tStoryStepsStep2('documentImport.saveError')}
+                    </p>
+                  )}
                   {/* Writing Tips */}
                   <div className="px-6 pb-4">
-                    <WritingTips />
+                    {preview ? (
+                      <details>
+                        <summary>{tStoryStepsStep2('guided.needInspiration')}</summary>
+                        <WritingTips />
+                      </details>
+                    ) : (
+                      <WritingTips />
+                    )}
                   </div>
                 </div>
 
@@ -813,6 +1312,9 @@ export default function Step2Client({
           )}
 
         <MediaCapture
+          imageLimit={3 - questionReferences.length}
+          key={mediaEpoch}
+          preview={preview}
           activeModal={activeModal === 'images' || activeModal === 'audio' ? activeModal : null}
           setActiveModal={setActiveModal}
           uploadedImages={uploadedImages}
@@ -823,52 +1325,121 @@ export default function Step2Client({
         />
 
         {/* Loading Modal */}
-        {showLoadingModal && (
-          <div className="modal modal-open">
-            <div className={`${modalSurfaceClass} max-w-md`}>
-              <div className="text-center space-y-6">
-                <h3 className="font-bold text-xl flex items-center justify-center gap-2">
-                  <Image
-                    src="/Papercut_icons/fa-magic-papercut.webp"
-                    alt=""
-                    width={28}
-                    height={28}
-                    aria-hidden="true"
-                  />
-                  {stripMagicIcon(tStoryStepsStep2('loadingModal.title'))}
-                </h3>
+        {(showLoadingModal || waitingForMedia) &&
+          createPortal(
+            <div className={`modal modal-open ${styles.step2Modal}`}>
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-label={
+                  waitingForMedia
+                    ? tStoryStepsStep2('mediaPrep.dialogLabel')
+                    : stripMagicIcon(tStoryStepsStep2('loadingModal.title'))
+                }
+                tabIndex={-1}
+                className={`${modalSurfaceClass} max-w-md`}
+              >
+                {waitingForMedia ? (
+                  <div className="text-center space-y-6">
+                    <h3 className="font-bold text-xl">
+                      {mediaError
+                        ? tStoryStepsStep2('mediaPrep.reviewTitle')
+                        : tStoryStepsStep2('mediaPrep.preparingTitle')}
+                    </h3>
+                    {!mediaError && (
+                      <span
+                        className="loading loading-spinner loading-lg text-primary"
+                        aria-hidden="true"
+                      />
+                    )}
+                    <p role={mediaError ? 'alert' : 'status'}>
+                      {mediaError
+                        ? imageError
+                          ? tStoryStepsStep2('mediaPrep.imagesFailed')
+                          : tStoryStepsStep2('mediaPrep.audioFailed')
+                        : imagesAnalyzing && audioUploading
+                          ? tStoryStepsStep2('mediaPrep.preparingBoth')
+                          : imagesAnalyzing
+                            ? tStoryStepsStep2('mediaPrep.preparingImages')
+                            : tStoryStepsStep2('mediaPrep.preparingAudio')}
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-3">
+                      {mediaError && (
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          onClick={() => {
+                            setWaitingForMedia(false);
+                            setActiveModal(imageError ? 'images' : 'audio');
+                          }}
+                        >
+                          {imageError
+                            ? tStoryStepsStep2('mediaPrep.reviewImages')
+                            : tStoryStepsStep2('mediaPrep.reviewAudio')}
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={() => setWaitingForMedia(false)}
+                      >
+                        {tStoryStepsStep2('mediaPrep.backToEdit')}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center space-y-6">
+                    <h3 className="font-bold text-xl flex items-center justify-center gap-2">
+                      <Image
+                        src="/Papercut_icons/fa-magic-papercut.webp"
+                        alt=""
+                        width={28}
+                        height={28}
+                        aria-hidden="true"
+                      />
+                      {stripMagicIcon(tStoryStepsStep2('loadingModal.title'))}
+                    </h3>
 
-                <div className="flex justify-center">
-                  <span className="loading loading-spinner loading-lg text-primary"></span>
-                </div>
+                    <div className="flex justify-center">
+                      <span className="loading loading-spinner loading-lg text-primary"></span>
+                    </div>
 
-                <div className="space-y-3">
-                  <p className="text-base">{tStoryStepsStep2('loadingModal.message')}</p>
-                  <p className="text-sm font-medium text-primary flex items-center justify-center gap-1">
-                    {stripMagicIcon(tStoryStepsStep2('loadingModal.pleaseWait'))}
+                    <div className="space-y-3">
+                      <p className="text-base">{tStoryStepsStep2('loadingModal.message')}</p>
+                      <p className="text-sm font-medium text-primary flex items-center justify-center gap-1">
+                        {stripMagicIcon(tStoryStepsStep2('loadingModal.pleaseWait'))}
+                        <Image
+                          src="/Papercut_icons/fa-magic-papercut.webp"
+                          alt=""
+                          width={18}
+                          height={18}
+                          aria-hidden="true"
+                        />
+                      </p>
+                    </div>
+
                     <Image
-                      src="/Papercut_icons/fa-magic-papercut.webp"
+                      src="/Papercut_icons/gi-chocolate-bar-papercut.webp"
                       alt=""
-                      width={18}
-                      height={18}
+                      width={96}
+                      height={96}
+                      className="mx-auto animate-bounce"
                       aria-hidden="true"
                     />
-                  </p>
-                </div>
-
-                <Image
-                  src="/Papercut_icons/gi-chocolate-bar-papercut.webp"
-                  alt=""
-                  width={96}
-                  height={96}
-                  className="mx-auto animate-bounce"
-                  aria-hidden="true"
-                />
+                  </div>
+                )}
               </div>
-            </div>
-          </div>
-        )}
+            </div>,
+            document.body,
+          )}
       </Show>
     </>
   );
+}
+
+export default function Step2Client(props: {
+  templatesEnabled?: boolean;
+  templates?: StoryTemplate[];
+}) {
+  return <Step2Content {...props} />;
 }

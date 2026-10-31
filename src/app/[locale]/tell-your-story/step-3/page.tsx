@@ -1,5 +1,6 @@
 'use client';
 
+import ModalPortal from '@/components/ModalPortal';
 import { Show, RedirectToSignIn, useAuth } from '@clerk/nextjs';
 import { useState, useEffect, useCallback, Suspense, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -469,7 +470,7 @@ function Step3Page() {
                   currentStep={3}
                   totalSteps={5}
                   nextHref={null} // We'll handle navigation programmatically
-                  prevHref={isInEditMode ? '/my-stories' : null} // In edit mode, allow going back to my-stories
+                  prevHref={isInEditMode ? '/my-stories' : '/tell-your-story/step-2'} // In edit mode, allow going back to my-stories
                   nextDisabled={isNavigating}
                   onNext={handleNextStep}
                   nextLabel={
@@ -483,33 +484,35 @@ function Step3Page() {
         </div>
 
         {deleteModalOpen && (
-          <div className="modal modal-open">
-            <div className="modal-box mythoria-popup-surface">
-              <h3 className="font-bold text-lg">
-                {tMyCharactersPage('deleteConfirm.title') || 'Delete Character'}
-              </h3>
-              <p className="py-4">
-                {tMyCharactersPage('deleteConfirm.message') ||
-                  'Are you sure you want to delete this character? This action cannot be undone.'}
-              </p>
-              <div className="modal-action">
-                <button
-                  className="btn btn-ghost"
-                  onClick={handleDeleteCancel}
-                  disabled={confirmingDelete}
-                >
-                  {tMyCharactersPage('deleteConfirm.cancel') || 'Cancel'}
-                </button>
-                <button
-                  className={`btn btn-error ${confirmingDelete ? 'loading' : ''}`}
-                  onClick={handleDeleteConfirm}
-                  disabled={confirmingDelete}
-                >
-                  {confirmingDelete ? '' : tMyCharactersPage('deleteConfirm.confirm') || 'Delete'}
-                </button>
+          <ModalPortal>
+            <div className="modal modal-open">
+              <div className="modal-box mythoria-popup-surface">
+                <h3 className="font-bold text-lg">
+                  {tMyCharactersPage('deleteConfirm.title') || 'Delete Character'}
+                </h3>
+                <p className="py-4">
+                  {tMyCharactersPage('deleteConfirm.message') ||
+                    'Are you sure you want to delete this character? This action cannot be undone.'}
+                </p>
+                <div className="modal-action">
+                  <button
+                    className="btn btn-ghost"
+                    onClick={handleDeleteCancel}
+                    disabled={confirmingDelete}
+                  >
+                    {tMyCharactersPage('deleteConfirm.cancel') || 'Cancel'}
+                  </button>
+                  <button
+                    className={`btn btn-error ${confirmingDelete ? 'loading' : ''}`}
+                    onClick={handleDeleteConfirm}
+                    disabled={confirmingDelete}
+                  >
+                    {confirmingDelete ? '' : tMyCharactersPage('deleteConfirm.confirm') || 'Delete'}
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          </ModalPortal>
         )}
       </Show>
     </>

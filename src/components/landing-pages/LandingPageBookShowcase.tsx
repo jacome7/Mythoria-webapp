@@ -1,5 +1,6 @@
 'use client';
 
+import ModalPortal from '@/components/ModalPortal';
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -21,6 +22,7 @@ interface LandingPageBookShowcaseProps {
     readSample: string;
     sampleChapter: string;
     closeSample: string;
+    transcript?: string;
   };
 }
 
@@ -234,7 +236,7 @@ export default function LandingPageBookShowcase({
                   {book.audioSampleTranscript ? (
                     <details className="mt-3 rounded-lg bg-white/80 p-3 text-sm text-base-content/75">
                       <summary className="cursor-pointer font-semibold text-primary">
-                        {book.audioTranscriptLabel ?? 'Transcrição'}
+                        {book.audioTranscriptLabel ?? labels.transcript}
                       </summary>
                       <p className="mt-2 leading-relaxed">{book.audioSampleTranscript}</p>
                     </details>
@@ -346,116 +348,120 @@ function BookSampleModal({
   }, []);
 
   return (
-    <div
-      className="fixed inset-0 z-50 overflow-y-auto bg-[#17120e]/75 p-4 backdrop-blur-sm"
-      onClick={onClose}
-    >
+    <ModalPortal>
       <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={`book-sample-${book.id}`}
-        className="mx-auto my-6 max-w-5xl overflow-hidden rounded-2xl bg-[#fff8ea] shadow-2xl"
-        onClick={(event) => event.stopPropagation()}
+        className="fixed inset-0 z-50 overflow-y-auto bg-[#17120e]/75 p-4 backdrop-blur-sm"
+        onClick={onClose}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-primary/10 bg-white p-5">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-primary">
-              {labels.sampleChapter}
-            </p>
-            <h3
-              id={`book-sample-${book.id}`}
-              className="font-display mt-1 text-2xl font-bold leading-tight text-[#33251c] md:text-3xl"
+        <div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={`book-sample-${book.id}`}
+          className="mx-auto my-6 max-w-5xl overflow-hidden rounded-2xl bg-[#fff8ea] shadow-2xl"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <div className="flex items-start justify-between gap-4 border-b border-primary/10 bg-white p-5">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wide text-primary">
+                {labels.sampleChapter}
+              </p>
+              <h3
+                id={`book-sample-${book.id}`}
+                className="font-display mt-1 text-2xl font-bold leading-tight text-[#33251c] md:text-3xl"
+              >
+                {book.title}
+              </h3>
+            </div>
+            <button
+              ref={closeButtonRef}
+              type="button"
+              className="btn btn-circle btn-ghost shrink-0"
+              onClick={onClose}
+              aria-label={labels.closeSample}
             >
-              {book.title}
-            </h3>
+              <X className="h-5 w-5" aria-hidden="true" />
+            </button>
           </div>
-          <button
-            ref={closeButtonRef}
-            type="button"
-            className="btn btn-circle btn-ghost shrink-0"
-            onClick={onClose}
-            aria-label={labels.closeSample}
-          >
-            <X className="h-5 w-5" aria-hidden="true" />
-          </button>
-        </div>
 
-        <div className="grid gap-6 p-5 lg:grid-cols-[0.9fr_1.1fr] lg:p-6">
-          <aside className="space-y-4">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-white bg-white shadow-sm">
-              {sample ? (
-                <Image
-                  src={sample.imageSrc}
-                  alt={sample.imageAlt}
-                  fill
-                  loading="eager"
-                  sizes="(max-width: 1024px) 100vw, 40vw"
-                  className="object-cover"
-                />
-              ) : (
-                <div className="flex h-full items-center justify-center text-base-content/60">
-                  <BookOpen className="h-8 w-8" aria-hidden="true" />
+          <div className="grid gap-6 p-5 lg:grid-cols-[0.9fr_1.1fr] lg:p-6">
+            <aside className="space-y-4">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-white bg-white shadow-sm">
+                {sample ? (
+                  <Image
+                    src={sample.imageSrc}
+                    alt={sample.imageAlt}
+                    fill
+                    loading="eager"
+                    sizes="(max-width: 1024px) 100vw, 40vw"
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center text-base-content/60">
+                    <BookOpen className="h-8 w-8" aria-hidden="true" />
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {[book.contextLabel, book.styleLabel, book.ageLabel]
+                  .filter(Boolean)
+                  .map((label) => (
+                    <span
+                      key={label}
+                      className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
+                    >
+                      {label}
+                    </span>
+                  ))}
+              </div>
+              {book.audioSampleSrc && (
+                <div className="rounded-xl border border-primary/10 bg-white p-4">
+                  <p className="mb-3 text-sm font-bold text-primary">
+                    {book.audioSampleTitle ?? labels.listen}
+                  </p>
+                  <audio
+                    controls
+                    preload="metadata"
+                    className="w-full"
+                    onPlay={onAudioStart}
+                    onEnded={onAudioComplete}
+                  >
+                    <source src={book.audioSampleSrc} type="audio/mpeg" />
+                  </audio>
+                  {book.audioSampleTranscript ? (
+                    <details className="mt-3 rounded-lg bg-[#fff8ea] p-3 text-sm text-base-content/75">
+                      <summary className="cursor-pointer font-semibold text-primary">
+                        {book.audioTranscriptLabel ?? labels.transcript}
+                      </summary>
+                      <p className="mt-2 leading-relaxed">{book.audioSampleTranscript}</p>
+                    </details>
+                  ) : null}
                 </div>
               )}
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {[book.contextLabel, book.styleLabel, book.ageLabel].filter(Boolean).map((label) => (
-                <span
-                  key={label}
-                  className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
+              {book.sampleChapterHref ? (
+                <Link
+                  href={book.sampleChapterHref}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 font-semibold text-primary hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
-                  {label}
-                </span>
-              ))}
-            </div>
-            {book.audioSampleSrc && (
-              <div className="rounded-xl border border-primary/10 bg-white p-4">
-                <p className="mb-3 text-sm font-bold text-primary">
-                  {book.audioSampleTitle ?? labels.listen}
-                </p>
-                <audio
-                  controls
-                  preload="metadata"
-                  className="w-full"
-                  onPlay={onAudioStart}
-                  onEnded={onAudioComplete}
-                >
-                  <source src={book.audioSampleSrc} type="audio/mpeg" />
-                </audio>
-                {book.audioSampleTranscript ? (
-                  <details className="mt-3 rounded-lg bg-[#fff8ea] p-3 text-sm text-base-content/75">
-                    <summary className="cursor-pointer font-semibold text-primary">
-                      {book.audioTranscriptLabel ?? 'Transcrição'}
-                    </summary>
-                    <p className="mt-2 leading-relaxed">{book.audioSampleTranscript}</p>
-                  </details>
-                ) : null}
-              </div>
-            )}
-            {book.sampleChapterHref ? (
-              <Link
-                href={book.sampleChapterHref}
-                className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 font-semibold text-primary hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-              >
-                <ExternalLink className="h-4 w-4 shrink-0" aria-hidden="true" />
-                {labels.readSample}
-              </Link>
-            ) : null}
-          </aside>
+                  <ExternalLink className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  {labels.readSample}
+                </Link>
+              ) : null}
+            </aside>
 
-          <div className="max-h-[70vh] overflow-y-auto rounded-xl bg-white p-5 shadow-sm">
-            <h4 className="font-display text-xl font-bold leading-tight text-[#33251c]">
-              {sample?.title ?? labels.sampleChapter}
-            </h4>
-            <div className="mt-4 space-y-4 text-base leading-relaxed text-base-content/75">
-              {sample?.paragraphs.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
+            <div className="max-h-[70vh] overflow-y-auto rounded-xl bg-white p-5 shadow-sm">
+              <h4 className="font-display text-xl font-bold leading-tight text-[#33251c]">
+                {sample?.title ?? labels.sampleChapter}
+              </h4>
+              <div className="mt-4 space-y-4 text-base leading-relaxed text-base-content/75">
+                {sample?.paragraphs.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </ModalPortal>
   );
 }

@@ -1,0 +1,86 @@
+{
+  "title": "Votre cadeau de remerciement",
+  "intro": "Merci de nous avoir dit ce que vous pensez vraiment. Choisissez un cadeau et l'une de vos histoires publiées, nous nous occupons du reste.",
+  "deadline": "Vous pouvez le réclamer jusqu'au {date}.",
+  "loading": "Nous allons chercher votre cadeau...",
+  "stepGift": "1. Choisissez votre cadeau",
+  "stepStory": "2. Choisissez l'histoire",
+  "options": {
+    "pdf": {
+      "title": "PDF à imprimer chez vous",
+      "description": "Un PDF prêt à imprimer de l'une de vos histoires, envoyé à l'adresse e-mail de votre compte. Imprimez-le, agrafez-le, lisez-le au coucher."
+    },
+    "audiobook": {
+      "title": "Livre audio",
+      "description": "Une version racontée de l'une de vos histoires. Elle apparaît sur la page d'écoute de l'histoire lorsqu'elle est prête, en général en quelques minutes."
+    }
+  },
+  "stories": {
+    "audiobookExists": "Possède déjà un livre audio",
+    "audiobookGenerating": "Livre audio en préparation",
+    "pdfAlreadyRedeemed": "Vous avez déjà reçu le PDF de cette histoire",
+    "audiobookHint": "Les histoires qui ont déjà un livre audio ne peuvent pas être choisies pour ce cadeau.",
+    "none": "Vous n'avez pas encore d'histoire publiée. Dès que vous en publiez une, le cadeau est prêt à être réclamé."
+  },
+  "honesty": "Ce cadeau est offert par la maison : il ne coûte aucun crédit et ne touche pas à votre solde. Il y a un cadeau par enquête et, une fois la préparation lancée, il ne peut plus être échangé.",
+  "retryNote": "La dernière fois, quelque chose a coincé de notre côté. Rien n'a été perdu, alors réessayez.",
+  "confirm": "Réclamer mon cadeau",
+  "working": "On s'en occupe...",
+  "retry": "Réessayer",
+  "started": {
+    "pdfTitle": "Votre PDF est en route",
+    "pdfBody": "Nous préparons votre PDF prêt à imprimer et nous l'enverrons à l'adresse e-mail de votre compte. Cela prend généralement quelques minutes. Jetez un œil à vos courriers indésirables s'il joue à cache-cache.",
+    "audiobookTitle": "Votre livre audio est en cours d'enregistrement",
+    "audiobookBody": "Le narrateur s'échauffe la voix. Quand ce sera terminé, vous le trouverez sur la page d'écoute de l'histoire, et nous vous écrirons aussi."
+  },
+  "processing": {
+    "title": "Votre cadeau est en préparation",
+    "body": "C'est déjà en cours, vous n'avez rien d'autre à faire. Revenez dans quelques minutes."
+  },
+  "delivered": {
+    "title": "Votre cadeau a été livré",
+    "pdfBody": "Le PDF prêt à imprimer a été envoyé à l'adresse e-mail de votre compte. Bonne impression !",
+    "audiobookBody": "Votre livre audio est prêt et vous attend sur la page d'écoute de l'histoire."
+  },
+  "actions": {
+    "listen": "Écouter l'histoire",
+    "myStories": "Aller à mes histoires",
+    "createStory": "Écrire une histoire",
+    "refresh": "Vérifier à nouveau"
+  },
+  "pending": {
+    "title": "Votre cadeau attend une histoire",
+    "body": "Un cadeau a besoin d'une histoire à emballer. Publiez votre première histoire et il se débloque aussitôt. Nous vous écrirons quand ce sera fait.",
+    "cta": "Écrire ma première histoire"
+  },
+  "expired": {
+    "title": "Ce cadeau a expiré",
+    "body": "Le délai pour le réclamer est terminé et nous sommes désolés que vous l'ayez manqué. Merci quand même d'avoir partagé votre avis. Cela nous a beaucoup aidés."
+  },
+  "notFound": {
+    "title": "Nous ne trouvons pas ce cadeau",
+    "body": "Ce lien ne correspond pas à votre compte. Les cadeaux ne peuvent être réclamés que par la personne qui a reçu l'invitation, vérifiez donc que vous êtes connecté avec la même adresse e-mail."
+  },
+  "errors": {
+    "generic": "Un problème est survenu et nous n'avons pas pu lancer votre cadeau. Rien n'a été utilisé, réessayez dans un instant.",
+    "loadFailed": "Nous n'avons pas pu charger votre cadeau. Veuillez réessayer.",
+    "expired": "Ce cadeau a expiré.",
+    "audiobook_exists": "Cette histoire a déjà un livre audio. Choisissez une autre histoire.",
+    "story_not_found": "Nous ne trouvons pas cette histoire parmi vos histoires publiées.",
+    "story_not_published": "Seules les histoires publiées peuvent être utilisées pour ce cadeau.",
+    "reward_type_not_allowed": "Ce cadeau n'est pas disponible dans cette enquête.",
+    "already_redeemed": "Ce cadeau a déjà été réclamé.",
+    "pending_story": "Publiez d'abord une histoire et ce cadeau se débloquera.",
+    "product_in_progress": "Cette histoire a déjà l'un de ces éléments en préparation. Choisissez une autre histoire ou revenez bientôt.",
+    "launch_failed": "Nous n'avons pas pu lancer le travail pour le moment. Rien n'a été utilisé. Veuillez réessayer.",
+    "previous_attempt_failed": "La tentative précédente n'a pas abouti. Veuillez réessayer."
+  },
+  "banner": {
+    "eligibleTitle": "Un cadeau de remerciement vous attend",
+    "eligibleBody": "Choisissez un livre audio ou un PDF à imprimer chez vous pour l'une de vos histoires. C'est offert.",
+    "retryTitle": "Votre cadeau a besoin d'une dernière étape",
+    "retryBody": "Il y a eu un accroc la dernière fois. Réessayez, rien n'a été utilisé.",
+    "cta": "Choisir mon cadeau",
+    "dismiss": "Fermer"
+  }
+}

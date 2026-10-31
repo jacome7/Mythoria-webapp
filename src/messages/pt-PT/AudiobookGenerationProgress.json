@@ -1,5 +1,12 @@
 {
   "AudiobookGenerationProgress": {
+    "estimatedProgress": "Progresso estimado",
+    "takingLonger": "Está a demorar mais do que o previsto. Continuamos a trabalhar no seu audiolivro.",
+    "lessThanMinute": "Falta menos de um minuto",
+    "minutesRemaining": "Faltam cerca de {minutes} {minutes, plural, one {minuto} other {minutos}}",
+    "preparing": "A preparar o seu audiolivro…",
+    "leaveAndReturn": "Pode sair desta página e regressar mais tarde.",
+    "checkAgain": "Verificar novamente",
     "title": "Progresso da Geração do Audiolivro",
     "generatingAudiobook": "A gerar o seu audiolivro",
     "processingMessage": "Por favor mantenha esta página aberta enquanto narramos a sua história.",

@@ -158,5 +158,100 @@
       "second": "A playful obstacle course",
       "third": "A treasure hunt"
     }
+  },
+  "selectedModel": "Chosen template",
+  "summaryHelp": "Review this idea. You can adjust it or add details below.",
+  "personalization": "Personalize the story",
+  "answerQuestions": "Answer a few questions",
+  "questionsHelp": "We will help you develop this idea.",
+  "combineInputsHelp": "You can combine your answers with text, images and voice.",
+  "answeredQuestions": "Review your answers",
+  "fictionContinueHint": "You can continue without personalizing, or add your own touch to the story.",
+  "memoryContinueHint": "The real details you shared will be used in your story.",
+  "photoAnswerLabel": "Add photo",
+  "photoReferenceHelp": "The photo will be used as a reference so the protagonist in the illustrations looks like the chosen person or animal.",
+  "photoCaption": "Name or detail (optional)",
+  "characterAnswerPlaceholder": "Write the character’s name and, if you like, a few details about them.",
+  "memoryCharacterPlaceholder": "Write the character’s name and share one real detail about them.",
+  "photoPreparing": "Preparing photo…",
+  "photoError": "We could not prepare the photo.",
+  "photoNoSubject": "We could not find a person or animal in the photo.",
+  "photoChooseSubject": "Choose the person or animal you want to include.",
+  "photoRemove": "Remove photo",
+  "photoRetry": "Try again",
+  "photoLimit": "You can use one reference photo for the protagonist and up to three images in total.",
+  "photoConfirm": "Confirm photo",
+  "photoPreview": "Protagonist reference photo",
+  "photoSubject": "Person or animal",
+  "photoReplace": "Replace photo",
+  "photoConfirmed": "Reference photo confirmed",
+  "customPhotoAnswer": "Text or photo",
+  "preview": {
+    "photoOnlyAnswer": "Use the person or animal selected in the photo as the protagonist’s visual reference. The photo does not confirm personal facts.",
+    "questions": {
+      "drawing-adventure": {
+        "fiction": {
+          "text": "Who is the main character who sees their drawings come to life?",
+          "choices": ["A child who loves to draw", "A young inventor", "A curious artist"]
+        },
+        "memory": "Whose memory is linked to the drawings? Share at least one real detail about that person."
+      },
+      "moonlight-adventure": {
+        "fiction": {
+          "text": "Who is the main character of this moonlight adventure?",
+          "choices": ["A dreamy child", "A curious little rabbit", "A young baker"]
+        },
+        "memory": "Whose memory of a special night is this? Share at least one real detail about that person or animal."
+      },
+      "pet-mission": {
+        "fiction": {
+          "text": "Which animal stars in this unexpected mission?",
+          "choices": ["An adventurous cat", "A brave dog", "An explorer rabbit"]
+        },
+        "memory": "Which animal is this memory about? Share at least one real detail about them."
+      },
+      "magic-doorway": {
+        "fiction": {
+          "text": "Who is the main character who discovers the magic doors?",
+          "choices": ["An explorer child", "A young magic apprentice", "A curious girl"]
+        },
+        "memory": "Whose memory of discovery is this? Share at least one real detail about that person."
+      },
+      "little-love": {
+        "fiction": {
+          "text": "Who is the main character of this love story?",
+          "choices": ["A dreamy florist", "A travelling musician", "A creative cook"]
+        },
+        "memory": "Whose love memory is this? Share at least one real detail about that person."
+      },
+      "travel-memories": {
+        "fiction": {
+          "text": "Who is the main character of this imaginary journey?",
+          "choices": ["An adventurous child", "A curious photographer", "A dreamy traveller"]
+        },
+        "memory": "Whose travel memory is this? Share at least one real detail about that person or animal."
+      },
+      "grandparent-memory": {
+        "fiction": {
+          "text": "Who is the main character of this imaginary story?",
+          "choices": ["A storytelling grandmother", "An adventurous grandfather", "A curious child"]
+        },
+        "memory": "Which grandparent is this memory about? Share at least one real detail about them."
+      },
+      "teamwork-day": {
+        "fiction": {
+          "text": "Who is the main character of the team?",
+          "choices": ["A determined captain", "A creative goalkeeper", "A player full of ideas"]
+        },
+        "memory": "Whose team memory is this? Share at least one real detail about that person."
+      },
+      "default": {
+        "fiction": {
+          "text": "Who is the main character of this story?",
+          "choices": ["A curious person", "An adventurous child", "An explorer animal"]
+        },
+        "memory": "Whose memory is this? Share at least one real detail about that person or animal."
+      }
+    }
   }
 }

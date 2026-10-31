@@ -34,6 +34,9 @@
     "placeholders": {
       "addNotesStyleDisabled": "Adicionar notas (ativa a conversão para usar)"
     },
+    "warnings": {
+      "coverTitleNotPrinted": "Atenção: a sua foto vai para a capa impressa exatamente como está, por isso o título da história não vai aparecer. Quer o título desenhado na capa? Escolha \"Converter e editar a foto para o estilo {style}\" e nós incluímo-lo na ilustração."
+    },
     "buttons": {
       "applyPhoto": "Aplicar Foto"
     },
@@ -54,6 +57,8 @@
       "cancel": "Cancelar",
       "crop": "Cortar",
       "processing": "A processar..."
-    }
+    },
+    "removeUploadedImage": "Remover imagem",
+    "uploadedImagePreviewAlt": "Pré-visualização da imagem carregada"
   }
 }

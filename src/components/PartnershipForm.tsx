@@ -1,5 +1,6 @@
 'use client';
 
+import ModalPortal from '@/components/ModalPortal';
 import { useEffect, useMemo, useState } from 'react';
 import { Handshake, Send } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
@@ -502,38 +503,40 @@ const PartnershipForm = ({ className = '' }: PartnershipFormProps) => {
 
         {/* Success/Error Modal */}
         {showModal && (
-          <div className="modal modal-open">
-            <div className="modal-box">
-              <div className="flex items-center justify-center mb-4">
-                {isSuccess ? (
-                  <div className="text-6xl">🚀</div>
-                ) : (
-                  <div className="text-6xl">❌</div>
-                )}
-              </div>
-              <h3 className="font-bold text-lg text-center mb-4">
-                {isSuccess ? t('successTitle') : t('errorTitle')}
-              </h3>
-              <p className="text-center text-base-content/80">{responseMessage}</p>
-              {isSuccess && (
-                <p className="text-center text-sm text-base-content/60 mt-2">
-                  {t('redirectMessage')}
-                </p>
-              )}
-              <div className="modal-action">
-                {!isSuccess && (
-                  <button className="btn btn-primary" onClick={() => setShowModal(false)}>
-                    {t('tryAgain')}
-                  </button>
-                )}
+          <ModalPortal>
+            <div className="modal modal-open">
+              <div className="modal-box">
+                <div className="flex items-center justify-center mb-4">
+                  {isSuccess ? (
+                    <div className="text-6xl">🚀</div>
+                  ) : (
+                    <div className="text-6xl">❌</div>
+                  )}
+                </div>
+                <h3 className="font-bold text-lg text-center mb-4">
+                  {isSuccess ? t('successTitle') : t('errorTitle')}
+                </h3>
+                <p className="text-center text-base-content/80">{responseMessage}</p>
                 {isSuccess && (
-                  <button className="btn btn-primary" onClick={() => router.push('/')}>
-                    {t('goToHomepage')}
-                  </button>
+                  <p className="text-center text-sm text-base-content/60 mt-2">
+                    {t('redirectMessage')}
+                  </p>
                 )}
+                <div className="modal-action">
+                  {!isSuccess && (
+                    <button className="btn btn-primary" onClick={() => setShowModal(false)}>
+                      {t('tryAgain')}
+                    </button>
+                  )}
+                  {isSuccess && (
+                    <button className="btn btn-primary" onClick={() => router.push('/')}>
+                      {t('goToHomepage')}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          </ModalPortal>
         )}
       </div>
     </div>

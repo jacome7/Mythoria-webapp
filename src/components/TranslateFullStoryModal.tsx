@@ -1,5 +1,6 @@
 'use client';
 
+import ModalPortal from '@/components/ModalPortal';
 import { useEffect, useMemo, useState } from 'react';
 import { AlertCircle, Globe, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -179,133 +180,139 @@ export default function TranslateFullStoryModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-lg w-full overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Globe className="w-5 h-5 text-blue-600" />
+    <ModalPortal>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-xl max-w-lg w-full overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 border-b border-gray-200">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Globe className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">{tModal('title')}</h2>
+                <p className="text-sm text-gray-600">
+                  {tModal('currentLanguage', { lang: currentLanguage })}
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">{tModal('title')}</h2>
-              <p className="text-sm text-gray-600">
-                {tModal('currentLanguage', { lang: currentLanguage })}
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
-          >
-            <X className="w-4 h-4 text-gray-600" />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="p-6 space-y-5">
-          {/* Target language */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {tModal('targetLanguage')}
-            </label>
-            <select
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              value={targetLocale}
-              onChange={(e) => setTargetLocale(e.target.value)}
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
             >
-              {languages.map((opt) => (
-                <option key={opt.value} value={opt.value} disabled={opt.value === currentLanguage}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-            {targetEqualsCurrent && (
-              <p className="text-xs text-red-600 mt-1">
-                {tModal('errors.selectDifferentLanguage')}
+              <X className="w-4 h-4 text-gray-600" />
+            </button>
+          </div>
+
+          {/* Content */}
+          <div className="p-6 space-y-5">
+            {/* Target language */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {tModal('targetLanguage')}
+              </label>
+              <select
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={targetLocale}
+                onChange={(e) => setTargetLocale(e.target.value)}
+              >
+                {languages.map((opt) => (
+                  <option
+                    key={opt.value}
+                    value={opt.value}
+                    disabled={opt.value === currentLanguage}
+                  >
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+              {targetEqualsCurrent && (
+                <p className="text-xs text-red-600 mt-1">
+                  {tModal('errors.selectDifferentLanguage')}
+                </p>
+              )}
+            </div>
+
+            {/* Duplicate checkbox */}
+            <div className="space-y-2">
+              <label className="inline-flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={duplicate}
+                  onChange={(e) => setDuplicate(e.target.checked)}
+                />
+                {tModal('duplicateLabel')}
+              </label>
+              <p className="text-xs text-gray-600 whitespace-pre-line">
+                {duplicate ? tModal('duplicateOn') : tModal('duplicateOff')}
               </p>
+            </div>
+
+            {/* Cost */}
+            {creditInfo && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-900">
+                <div className="font-medium mb-1">{tModal('cost.title')}</div>
+                <div className="space-y-1">
+                  <div>{creditInfo.message}</div>
+                  {typeof creditInfo.freeEdits === 'number' && creditInfo.freeEdits > 0 && (
+                    <div>{tModal('cost.freeEdits', { count: creditInfo.freeEdits })}</div>
+                  )}
+                  {typeof creditInfo.paidEdits === 'number' && creditInfo.paidEdits > 0 && (
+                    <div>{tModal('cost.paidEdits', { count: creditInfo.paidEdits })}</div>
+                  )}
+                  <div>{tModal('cost.balance', { credits: creditInfo.currentBalance })}</div>
+                </div>
+              </div>
+            )}
+
+            {/* Error */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-2 text-sm text-red-700">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span>{error}</span>
+              </div>
             )}
           </div>
 
-          {/* Duplicate checkbox */}
-          <div className="space-y-2">
-            <label className="inline-flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={duplicate}
-                onChange={(e) => setDuplicate(e.target.checked)}
-              />
-              {tModal('duplicateLabel')}
-            </label>
-            <p className="text-xs text-gray-600 whitespace-pre-line">
-              {duplicate ? tModal('duplicateOn') : tModal('duplicateOff')}
-            </p>
-          </div>
-
-          {/* Cost */}
-          {creditInfo && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-900">
-              <div className="font-medium mb-1">{tModal('cost.title')}</div>
-              <div className="space-y-1">
-                <div>{creditInfo.message}</div>
-                {typeof creditInfo.freeEdits === 'number' && creditInfo.freeEdits > 0 && (
-                  <div>{tModal('cost.freeEdits', { count: creditInfo.freeEdits })}</div>
-                )}
-                {typeof creditInfo.paidEdits === 'number' && creditInfo.paidEdits > 0 && (
-                  <div>{tModal('cost.paidEdits', { count: creditInfo.paidEdits })}</div>
-                )}
-                <div>{tModal('cost.balance', { credits: creditInfo.currentBalance })}</div>
-              </div>
-            </div>
-          )}
-
-          {/* Error */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-2 text-sm text-red-700">
-              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-              <span>{error}</span>
-            </div>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
-          <button onClick={onClose} className="px-4 py-2 text-gray-700 hover:text-gray-900">
-            {tModal('cancel')}
-          </button>
-          {insufficientCredits ? (
-            <Link
-              href="/buy-credits"
-              className="px-5 py-2 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600"
-            >
-              {tModal('buyCredits')}
-            </Link>
-          ) : (
-            <button
-              onClick={startTranslation}
-              disabled={checking || creating || !Boolean(targetLocale) || targetEqualsCurrent}
-              className="px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
-            >
-              {creating ? tModal('processing') : tModal('translate')}
+          {/* Footer */}
+          <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
+            <button onClick={onClose} className="px-4 py-2 text-gray-700 hover:text-gray-900">
+              {tModal('cancel')}
             </button>
-          )}
+            {insufficientCredits ? (
+              <Link
+                href="/pricing#buy-credits"
+                className="px-5 py-2 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600"
+              >
+                {tModal('buyCredits')}
+              </Link>
+            ) : (
+              <button
+                onClick={startTranslation}
+                disabled={checking || creating || !Boolean(targetLocale) || targetEqualsCurrent}
+                className="px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                {creating ? tModal('processing') : tModal('translate')}
+              </button>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Progress */}
-      {showProgress && (
-        <JobProgressModal
-          isOpen={showProgress}
-          onClose={() => {
-            setShowProgress(false);
-            setJobId(null);
-          }}
-          jobId={jobId}
-          jobType="text_edit"
-          onComplete={handleJobComplete}
-          onError={handleJobError}
-        />
-      )}
-    </div>
+        {/* Progress */}
+        {showProgress && (
+          <JobProgressModal
+            isOpen={showProgress}
+            onClose={() => {
+              setShowProgress(false);
+              setJobId(null);
+            }}
+            jobId={jobId}
+            jobType="text_edit"
+            onComplete={handleJobComplete}
+            onError={handleJobError}
+          />
+        )}
+      </div>
+    </ModalPortal>
   );
 }

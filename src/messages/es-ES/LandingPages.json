@@ -28,7 +28,8 @@
       "readWithImage": "Leer el capítulo y ver la imagen",
       "readSample": "Leer el capítulo de muestra",
       "sampleChapter": "Capítulo de muestra",
-      "closeSample": "Cerrar el capítulo de muestra"
+      "closeSample": "Cerrar el capítulo de muestra",
+      "transcript": "Transcripción"
     },
     "floating": {
       "examplesAria": "Ver ejemplos de libros",

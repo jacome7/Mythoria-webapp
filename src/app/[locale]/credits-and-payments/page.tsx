@@ -83,7 +83,7 @@ export default async function CreditsAndPaymentsPage({
                   {t('needMore')}
                 </h2>
                 <Link
-                  href={`/${locale}/buy-credits`}
+                  href={`/${locale}/pricing#buy-credits`}
                   className="btn btn-primary btn-lg w-full max-w-xs gap-2 mt-4"
                 >
                   <CirclePlus className="text-xl" />

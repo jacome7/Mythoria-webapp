@@ -1,5 +1,6 @@
 'use client';
 
+import ModalPortal from '@/components/ModalPortal';
 import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { createPortal } from 'react-dom';
@@ -291,25 +292,27 @@ export default function MyCharactersTable() {
 
       {/* Delete Confirmation Modal */}
       {deleteModalOpen && (
-        <div className="modal modal-open">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg">
-              {tMyCharactersPage('deleteConfirm.title') || 'Delete Character'}
-            </h3>
-            <p className="py-4">
-              {tMyCharactersPage('deleteConfirm.message') ||
-                'Are you sure you want to delete this character? This action cannot be undone.'}
-            </p>
-            <div className="modal-action">
-              <button className="btn btn-ghost" onClick={() => setDeleteModalOpen(false)}>
-                {tMyCharactersPage('deleteConfirm.cancel') || 'Cancel'}
-              </button>
-              <button className="btn btn-error" onClick={handleDeleteConfirm}>
-                {tMyCharactersPage('deleteConfirm.confirm') || 'Delete'}
-              </button>
+        <ModalPortal>
+          <div className="modal modal-open">
+            <div className="modal-box">
+              <h3 className="font-bold text-lg">
+                {tMyCharactersPage('deleteConfirm.title') || 'Delete Character'}
+              </h3>
+              <p className="py-4">
+                {tMyCharactersPage('deleteConfirm.message') ||
+                  'Are you sure you want to delete this character? This action cannot be undone.'}
+              </p>
+              <div className="modal-action">
+                <button className="btn btn-ghost" onClick={() => setDeleteModalOpen(false)}>
+                  {tMyCharactersPage('deleteConfirm.cancel') || 'Cancel'}
+                </button>
+                <button className="btn btn-error" onClick={handleDeleteConfirm}>
+                  {tMyCharactersPage('deleteConfirm.confirm') || 'Delete'}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </ModalPortal>
       )}
     </div>
   );

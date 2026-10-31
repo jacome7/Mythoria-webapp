@@ -120,10 +120,14 @@ See [the local contract](docs/story-templates.md) and [cross-service runbook](..
 
 <!-- BEGIN:nextjs-agent-rules -->
 
-# This is NOT the Next.js you know
+## This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## Customer research surveys (2026-10-28)
+
+See the [cross-service contract](../docs/SURVEYS.md). Survey definitions are code (`src/surveys/definitions`, contract `src/lib/surveys/definition-schema.ts`) published immutably with `npm run surveys:validate` / `npm run surveys:publish` (dry run; `-- --apply` writes). Changing wording, options or branching of a published version requires a new version file. Respondents answer via opaque HMAC links (`src/lib/surveys/tokens.ts`, `SURVEY_LINK_SECRET`) without login; reward redemption requires the invited author's Clerk session and goes through `startProductGeneration` with `funding: { type: 'survey_reward' }` (no credit debit, `funding_source = 'survey_reward'` — never count as paid). Migration `0045_survey_foundation` needs explicit authorization before it is applied.

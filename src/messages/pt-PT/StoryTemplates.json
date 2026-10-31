@@ -1,9 +1,9 @@
 {
-  "selectorTitle": "Por onde começa a tua história?",
-  "selectorDescription": "Escolhe uma ideia ou traz a tua. Podes mudar todos os detalhes.",
-  "browse": "Explorar ideias",
+  "selectorTitle": "Por onde começa a sua história?",
+  "selectorDescription": "Escolha um modelo ou comece com a sua ideia. Pode mudar todos os detalhes.",
+  "browse": "Explorar mais ideias",
   "mine": "Começar com a minha ideia",
-  "summary": "A tua história até agora",
+  "summary": "A sua história até agora",
   "continue": "Continuar",
   "personalize": "Tornar mais pessoal",
   "skip": "Saltar esta pergunta",
@@ -14,15 +14,15 @@
   "round": "Ronda {current}",
   "loading": "A preparar as próximas perguntas…",
   "fallback": "Aqui ficam algumas perguntas simples para começar.",
-  "memoryContributionRequired": "Acrescenta pelo menos um detalhe real antes de continuar com uma história de memórias.",
+  "memoryContributionRequired": "Acrescente pelo menos um detalhe real antes de continuar.",
   "memoryContributionLabel": "Uma memória ou um detalhe real",
-  "memoryContributionPlaceholder": "Conta algo que aconteceu mesmo, ou acrescenta-o por voz ou imagem.",
+  "memoryContributionPlaceholder": "Conte algo que aconteceu, ou acrescente fotografias ou voz.",
   "modeLabel": "Que tipo de história?",
   "fiction": "Uma história imaginada",
   "memory": "Memórias reais",
-  "modeHelp": "A imaginação pode preencher um mundo de ficção. Uma história de memórias usa apenas os factos que partilhas.",
+  "modeHelp": "Uma história de memórias usa apenas os factos que partilhar.",
   "changeTitle": "Mudar de ideia inicial?",
-  "changeDescription": "Isto substitui o modelo atual e as respostas guiadas. O teu contributo original continua disponível.",
+  "changeDescription": "O modelo e as respostas guiadas serão substituídos.",
   "confirmChange": "Mudar de ideia",
   "cancel": "Continuar a trabalhar",
   "resume": "Retomar a minha história",
@@ -30,12 +30,12 @@
   "back": "Voltar",
   "choose": "Escolher esta ideia",
   "selected": "Selecionado",
-  "recommended": "Sugestão para ti",
+  "recommended": "Sugestão para si",
   "showAll": "Ver todas as ideias",
   "clear": "Limpar",
   "save": "Guardar",
   "questionProgress": "Pergunta {current} de {total}",
-  "error": "Algo correu mal. As tuas respostas continuam aqui.",
+  "error": "Algo correu mal. As suas respostas continuam aqui.",
   "retry": "Tentar novamente",
   "createSimilar": "Criar uma história assim",
   "optional": "Opcional",
@@ -45,27 +45,27 @@
   "tone": "Tom",
   "artStyle": "Estilo de ilustração",
   "writingStyle": "Estilo de escrita",
-  "questionNext": "Usar esta resposta",
-  "resetDescription": "Começar de novo neste dispositivo? Isto limpa os dados e as escolhas da história atual. As histórias guardadas continuam na tua biblioteca.",
+  "questionNext": "Continuar",
+  "resetDescription": "Começar de novo neste dispositivo? Isto limpa os dados e as escolhas da história atual. As histórias guardadas continuam na sua biblioteca.",
   "confirmReset": "Começar de novo",
   "editAnswer": "Editar resposta",
   "removeAnswer": "Remover resposta",
   "roundComplete": "Esta ronda está concluída",
-  "guideComplete": "A tua história está pronta para continuar",
-  "contributionHelp": "Partilha apenas o que queres incluir. Não vamos inventar factos pessoais.",
+  "guideComplete": "A sua história está pronta para continuar",
+  "contributionHelp": "Partilhe apenas o que quer incluir. Não vamos inventar factos pessoais.",
   "restructureTitle": "Atualizar o resumo da história?",
-  "restructureDescription": "Reconstruir o resumo com estes detalhes? Isto pode substituir detalhes que editaste nos passos seguintes.",
+  "restructureDescription": "Reconstruir o resumo com estes detalhes? Isto pode substituir detalhes que editou nos passos seguintes.",
   "confirmRestructure": "Usar esta versão",
-  "structureError": "Não foi possível concluir o resumo. Os teus dados estão guardados; tenta novamente.",
+  "structureError": "Não foi possível concluir o resumo. Os seus dados estão guardados; tente novamente.",
   "continueWithoutGuide": "Continuar sem o guia",
-  "templateUnavailable": "Esta ideia não está disponível. Escolhe outra ou usa a tua.",
+  "templateUnavailable": "Esta ideia não está disponível. Escolha outra ou use a sua.",
   "previewReplacement": "Rever a versão proposta",
   "characters": "Personagens",
   "templates": {
     "drawing-adventure": {
       "title": "Um desenho ganha vida",
       "premise": "Uma pessoa curiosa, que adora inventar, descobre que um desenho pode sair do papel e acompanhá-la numa aventura cheia de amizade.",
-      "description": "Transforma um desenho imaginário num novo amigo."
+      "description": "Transforme um desenho imaginário num novo amigo."
     },
     "moonlight-adventure": {
       "title": "Uma pequena aventura ao luar",
@@ -75,27 +75,27 @@
     "pet-mission": {
       "title": "Um animal numa missão secreta",
       "premise": "Um animal cheio de recursos descobre um pequeno mistério e ajuda os amigos a resolvê-lo com curiosidade e carinho.",
-      "description": "Dá a um animal de ficção uma aventura inesperada."
+      "description": "Dê a um animal de ficção uma aventura inesperada."
     },
     "magic-doorway": {
       "title": "A porta escondida",
       "premise": "Uma personagem exploradora encontra uma porta inesperada e segue pistas até um mundo mágico e acolhedor.",
-      "description": "Abre uma porta para um mundo de possibilidades."
+      "description": "Abra uma porta para um mundo de possibilidades."
     },
     "little-love": {
       "title": "O amor nas pequenas coisas",
       "premise": "A história de duas pessoas, contada através dos pequenos gestos e objetos do quotidiano que lhes são queridos.",
-      "description": "Celebra o amor nos detalhes de todos os dias."
+      "description": "Celebre o amor nos detalhes de todos os dias."
     },
     "travel-memories": {
       "title": "Uma viagem para guardar",
       "premise": "Uma viagem contada através de descobertas, desvios e momentos que vale a pena guardar.",
-      "description": "Transforma uma viagem real ou imaginada numa história."
+      "description": "Transforme uma viagem real ou imaginada numa história."
     },
     "grandparent-memory": {
       "title": "Histórias para passar adiante",
-      "premise": "Uma história familiar tecida com as memórias, expressões e detalhes que partilhas sobre uma avó ou um avô.",
-      "description": "Começa com uma memória, expressão ou detalhe real."
+      "premise": "Uma história familiar tecida com as memórias, expressões e detalhes que partilhar sobre uma avó ou um avô.",
+      "description": "Comece com uma memória, expressão ou detalhe real."
     },
     "teamwork-day": {
       "title": "Cada pessoa conta",
@@ -105,26 +105,26 @@
   },
   "questions": {
     "tone": {
-      "text": "Que ambiente queres para a história?",
+      "text": "Que ambiente quer para a história?",
       "first": "Caloroso e tranquilo",
       "second": "Divertido e bem-humorado",
       "third": "Vivo e aventureiro"
     },
     "pace": {
-      "text": "Que ritmo preferes?",
+      "text": "Que ritmo prefere?",
       "first": "Cenas curtas e claras",
       "second": "Um percurso calmo e descritivo",
       "third": "Uma sequência animada de momentos"
     },
     "presentation": {
-      "text": "Como gostavas que fosse contada?",
+      "text": "Como gostaria que fosse contada?",
       "first": "Como uma narrativa contínua",
       "second": "Em capítulos curtos",
       "third": "Como uma coleção de momentos"
     },
     "focus": {
       "text": "O que deve a escrita destacar?",
-      "first": "Os detalhes que partilhares",
+      "first": "Os detalhes que partilhar",
       "second": "O ambiente de cada momento",
       "third": "O significado dos gestos quotidianos"
     },
@@ -157,6 +157,105 @@
       "first": "Um jogo amigável",
       "second": "Um percurso de obstáculos divertido",
       "third": "Uma caça ao tesouro"
+    }
+  },
+  "selectedModel": "Modelo escolhido",
+  "summaryHelp": "Reveja esta ideia. Pode ajustá-la ou acrescentar detalhes abaixo.",
+  "personalization": "Personalizar a história",
+  "answerQuestions": "Responder a algumas perguntas",
+  "questionsHelp": "Vamos ajudá-lo a desenvolver esta ideia.",
+  "combineInputsHelp": "Pode combinar as respostas com texto, imagens e voz.",
+  "answeredQuestions": "Rever as suas respostas",
+  "fictionContinueHint": "Pode continuar sem personalizar ou dar um toque seu à história.",
+  "memoryContinueHint": "Os detalhes reais que partilhou serão usados na sua história.",
+  "photoAnswerLabel": "Adicionar fotografia",
+  "photoReferenceHelp": "A fotografia servirá de referência para que o protagonista das ilustrações se pareça com a pessoa ou o animal escolhido.",
+  "photoCaption": "Nome ou detalhe (opcional)",
+  "characterAnswerPlaceholder": "Escreva o nome da personagem e, se quiser, alguns detalhes sobre ela.",
+  "memoryCharacterPlaceholder": "Escreva o nome da personagem e partilhe um detalhe real sobre ela.",
+  "photoPreparing": "A preparar fotografia…",
+  "photoError": "Não foi possível preparar a fotografia.",
+  "photoNoSubject": "Não foi possível identificar uma pessoa ou um animal na fotografia.",
+  "photoChooseSubject": "Escolha a pessoa ou o animal que quer incluir.",
+  "photoRemove": "Remover fotografia",
+  "photoRetry": "Tentar novamente",
+  "photoLimit": "Pode usar uma fotografia de referência para o protagonista e até três imagens no total.",
+  "photoConfirm": "Confirmar fotografia",
+  "photoPreview": "Fotografia de referência do protagonista",
+  "photoSubject": "Pessoa ou animal",
+  "photoReplace": "Substituir fotografia",
+  "photoConfirmed": "Fotografia de referência confirmada",
+  "customPhotoAnswer": "Texto ou fotografia",
+  "preview": {
+    "photoOnlyAnswer": "Use a pessoa ou o animal selecionado na fotografia como referência visual do protagonista. A fotografia não confirma factos pessoais.",
+    "questions": {
+      "drawing-adventure": {
+        "fiction": {
+          "text": "Quem é a personagem principal que vê os seus desenhos ganhar vida?",
+          "choices": ["Uma criança que adora desenhar", "Um jovem inventor", "Uma artista curiosa"]
+        },
+        "memory": "De quem é a memória ligada aos desenhos? Conte pelo menos um detalhe real sobre essa pessoa."
+      },
+      "moonlight-adventure": {
+        "fiction": {
+          "text": "Quem é a personagem principal desta aventura à luz da lua?",
+          "choices": ["Uma criança sonhadora", "Um pequeno coelho curioso", "Uma jovem pasteleira"]
+        },
+        "memory": "De quem é esta memória de uma noite especial? Conte pelo menos um detalhe real sobre essa pessoa ou animal."
+      },
+      "pet-mission": {
+        "fiction": {
+          "text": "Que animal protagoniza esta missão inesperada?",
+          "choices": ["Um gato aventureiro", "Um cão corajoso", "Um coelho explorador"]
+        },
+        "memory": "De que animal é esta memória? Conte pelo menos um detalhe real sobre ele."
+      },
+      "magic-doorway": {
+        "fiction": {
+          "text": "Quem é a personagem principal que descobre as portas mágicas?",
+          "choices": ["Uma criança exploradora", "Um jovem aprendiz de magia", "Uma menina curiosa"]
+        },
+        "memory": "De quem é esta memória de descoberta? Conte pelo menos um detalhe real sobre essa pessoa."
+      },
+      "little-love": {
+        "fiction": {
+          "text": "Quem é a personagem principal desta história de amor?",
+          "choices": ["Uma florista sonhadora", "Um músico viajante", "Uma cozinheira criativa"]
+        },
+        "memory": "De quem é esta memória de amor? Conte pelo menos um detalhe real sobre essa pessoa."
+      },
+      "travel-memories": {
+        "fiction": {
+          "text": "Quem é a personagem principal desta viagem imaginária?",
+          "choices": ["Uma criança aventureira", "Uma fotógrafa curiosa", "Um viajante sonhador"]
+        },
+        "memory": "De quem é esta memória de viagem? Conte pelo menos um detalhe real sobre essa pessoa ou animal."
+      },
+      "grandparent-memory": {
+        "fiction": {
+          "text": "Quem é a personagem principal desta história imaginária?",
+          "choices": ["Uma avó contadora de histórias", "Um avô aventureiro", "Uma criança curiosa"]
+        },
+        "memory": "De que avó ou avô é esta memória? Conte pelo menos um detalhe real sobre essa pessoa."
+      },
+      "teamwork-day": {
+        "fiction": {
+          "text": "Quem é a personagem principal da equipa?",
+          "choices": [
+            "Uma capitã persistente",
+            "Um guarda-redes criativo",
+            "Uma jogadora cheia de ideias"
+          ]
+        },
+        "memory": "De quem é esta memória de equipa? Conte pelo menos um detalhe real sobre essa pessoa."
+      },
+      "default": {
+        "fiction": {
+          "text": "Quem é a personagem principal desta história?",
+          "choices": ["Uma pessoa curiosa", "Uma criança aventureira", "Um animal explorador"]
+        },
+        "memory": "De quem é esta memória? Conte pelo menos um detalhe real sobre essa pessoa ou animal."
+      }
     }
   }
 }

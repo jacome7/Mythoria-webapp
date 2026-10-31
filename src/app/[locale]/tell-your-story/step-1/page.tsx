@@ -263,14 +263,9 @@ export default function Step1Page() {
                           checkForChanges(customAuthor, e.target.value);
                         }}
                         placeholder={tStoryStepsStep1('fields.dedicationPlaceholder')}
-                        className="textarea textarea-bordered h-24 w-full"
-                        rows={4}
+                        className="textarea textarea-bordered h-40 min-[769px]:h-24 w-full"
+                        rows={6}
                       />
-                      <label className="label">
-                        <span className="label-text-alt break-words max-w-full whitespace-normal">
-                          {tStoryStepsStep1('fields.dedicationHelp')}
-                        </span>
-                      </label>
                     </div>
                   </div>
                 </div>

@@ -1,5 +1,12 @@
 {
   "AudiobookGenerationProgress": {
+    "estimatedProgress": "Geschätzter Fortschritt",
+    "takingLonger": "Es dauert länger als erwartet. Wir arbeiten weiterhin an deinem Hörbuch.",
+    "lessThanMinute": "Weniger als eine Minute verbleibend",
+    "minutesRemaining": "Noch etwa {minutes} {minutes, plural, one {Minute} other {Minuten}}",
+    "preparing": "Dein Hörbuch wird vorbereitet…",
+    "leaveAndReturn": "Du kannst diese Seite verlassen und später zurückkehren.",
+    "checkAgain": "Erneut prüfen",
     "title": "Hörbuch-Generierung läuft",
     "generatingAudiobook": "Dein Hörbuch wird erstellt",
     "processingMessage": "Bitte lass diese Seite geöffnet, während wir deine Geschichte vertonen.",

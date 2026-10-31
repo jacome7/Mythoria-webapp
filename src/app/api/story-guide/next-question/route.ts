@@ -60,6 +60,7 @@ export async function POST(request: NextRequest) {
         preferences: input.preferences,
         premise: input.premise,
         contribution: input.contribution,
+        ...(input.photoAnswers ? { photoAnswers: true } : {}),
       }),
     });
     if (!response.ok) return fallback();
@@ -70,11 +71,13 @@ export async function POST(request: NextRequest) {
     const question = guideQuestionSchema.safeParse(result.question);
     if (!question.success || input.previousQuestions.includes(question.data.text))
       return fallback();
+    const { photoTarget, customOnly: _customOnly, ...plainQuestion } = question.data;
     return NextResponse.json({
       revision: input.revision,
       source: 'ai',
       question: {
-        ...question.data,
+        ...plainQuestion,
+        ...(input.photoAnswers && photoTarget ? { photoTarget } : {}),
         suggestedChoiceId: input.mode === 'memory' ? null : question.data.suggestedChoiceId,
       },
     });

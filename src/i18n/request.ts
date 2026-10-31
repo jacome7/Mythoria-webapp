@@ -26,11 +26,9 @@ export default getRequestConfig(async ({ requestLocale }) => {
     voicesMessages,
     listenStoryMessages,
     creditConfirmationMessages,
-    imageEditingTabMessages,
     storyCounterMessages,
     storyGenerationProgressMessages,
     storyRatingMessages,
-    aiEditModalMessages,
     aboutUsMessages,
     homePageMessages,
     myStoriesPageMessages,
@@ -65,6 +63,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     cookieConsentMessages,
     landingPagesMessages,
     storyTemplatesMessages,
+    surveyMessages,
   ] = await Promise.all([
     import(`../messages/${locale}/Header.json`).then((module) => module.default),
     import(`../messages/${locale}/Footer.json`).then((module) => module.default),
@@ -82,11 +81,9 @@ export default getRequestConfig(async ({ requestLocale }) => {
     import(`../messages/${locale}/Voices.json`).then((module) => module.default),
     import(`../messages/${locale}/ListenStory.json`).then((module) => module.default),
     import(`../messages/${locale}/CreditConfirmation.json`).then((module) => module.default),
-    import(`../messages/${locale}/ImageEditingTab.json`).then((module) => module.default),
     import(`../messages/${locale}/StoryCounter.json`).then((module) => module.default),
     import(`../messages/${locale}/StoryGenerationProgress.json`).then((module) => module.default),
     import(`../messages/${locale}/StoryRating.json`).then((module) => module.default),
-    import(`../messages/${locale}/AIEditModal.json`).then((module) => module.default),
     import(`../messages/${locale}/AboutUs.json`).then((module) => module.default),
     import(`../messages/${locale}/HomePage.json`).then((module) => module.default),
     import(`../messages/${locale}/MyStoriesPage.json`).then((module) => module.default),
@@ -121,6 +118,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     import(`../messages/${locale}/CookieConsent.json`).then((module) => module.default),
     import(`../messages/${locale}/LandingPages.json`).then((module) => module.default),
     import(`../messages/${locale}/StoryTemplates.json`).then((module) => module.default),
+    import(`../messages/${locale}/Survey.json`).then((module) => module.default),
   ]);
 
   // Ensure each domain is properly namespaced. Some JSON files are flat (e.g., {"title": ...})
@@ -135,6 +133,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     locale: locale as string,
     messages: {
       Referrals: (await import(`../messages/${locale}/Referrals.json`)).default,
+      SurveyReward: (await import(`../messages/${locale}/SurveyReward.json`)).default,
       ...ns(headerMessages, 'Header'),
       ...ns(footerMessages, 'Footer'),
       ...ns(stepNavigationMessages, 'StepNavigation'),
@@ -151,11 +150,9 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ...ns(voicesMessages, 'Voices'),
       ...ns(listenStoryMessages, 'ListenStory'),
       ...ns(creditConfirmationMessages, 'CreditConfirmation'),
-      ...ns(imageEditingTabMessages, 'ImageEditingTab'),
       ...ns(storyCounterMessages, 'StoryCounter'),
       ...ns(storyGenerationProgressMessages, 'StoryGenerationProgress'),
       ...ns(storyRatingMessages, 'StoryRating'),
-      ...ns(aiEditModalMessages, 'AIEditModal'),
       ...ns(aboutUsMessages, 'AboutUs'),
       ...ns(homePageMessages, 'HomePage'),
       ...ns(myStoriesPageMessages, 'MyStoriesPage'),
@@ -190,6 +187,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ...ns(cookieConsentMessages, 'CookieConsent'),
       ...ns(landingPagesMessages, 'LandingPages'),
       ...ns(storyTemplatesMessages, 'StoryTemplates'),
+      ...ns(surveyMessages, 'Survey'),
     },
   };
 });

@@ -32,6 +32,9 @@ jest.mock('next-intl', () => ({
         'AIImageEditor.newImageLabel': 'New Generated Image',
         'AIImageEditor.newImageSuccess': 'New image generated successfully!',
         'AIImageEditor.replaceButton': 'Replace Original',
+        'AIImageEditor.radio.asIs': 'Use as-is',
+        'AIImageEditor.radio.legend': 'How should we use your photo?',
+        'AIImageEditor.warnings.coverTitleNotPrinted': 'Cover title will not be printed',
         'AIImageEditor.requestPlaceholder': 'Describe how you want to modify this image...',
       };
 
@@ -69,7 +72,7 @@ const currentImageUrl =
 const generatedImageUrl =
   'https://storage.googleapis.com/mythoria-generated-stories/story/images/chapter_2_v002.jpg';
 
-function renderEditor() {
+function renderEditor(imageType: 'cover' | 'backcover' | 'chapter' = 'chapter') {
   const onClose = jest.fn();
   const onImageEditSuccess = jest.fn();
 
@@ -84,8 +87,8 @@ function renderEditor() {
       }}
       imageData={{
         imageUri: currentImageUrl,
-        imageType: 'chapter',
-        chapterNumber: 2,
+        imageType,
+        chapterNumber: imageType === 'chapter' ? 2 : undefined,
         title: 'Chapter 2',
       }}
       onImageEditSuccess={onImageEditSuccess}
@@ -169,5 +172,71 @@ describe('AIImageEditor', () => {
     expect(screen.getByRole('img', { name: 'Generated Image' })).toBeInTheDocument();
     expect(onImageEditSuccess).not.toHaveBeenCalled();
     expect(onClose).not.toHaveBeenCalled();
+  });
+
+  describe('cover title warning', () => {
+    const warningText = 'Cover title will not be printed';
+
+    async function openUploadWithPhoto(imageType: 'cover' | 'backcover' | 'chapter') {
+      renderEditor(imageType);
+      fireEvent.click(screen.getByRole('tab', { name: 'Use your photo' }));
+      const input = document.getElementById('user-image-input') as HTMLInputElement;
+      const file = new File(['x'], 'photo.png', { type: 'image/png' });
+      fireEvent.change(input, { target: { files: [file] } });
+      await screen.findByRole('radio', { name: 'Use as-is' });
+    }
+
+    beforeEach(() => {
+      URL.createObjectURL = jest.fn().mockReturnValue('blob:photo');
+      URL.revokeObjectURL = jest.fn();
+      class MockImage {
+        width = 1024;
+        height = 1536;
+        onload: (() => void) | null = null;
+        onerror: (() => void) | null = null;
+        set src(_value: string) {
+          setTimeout(() => this.onload?.(), 0);
+        }
+      }
+      Object.defineProperty(window, 'Image', { configurable: true, value: MockImage });
+      jest.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({
+        drawImage: jest.fn(),
+      } as unknown as CanvasRenderingContext2D);
+      jest
+        .spyOn(HTMLCanvasElement.prototype, 'toDataURL')
+        .mockReturnValue('data:image/jpeg;base64,xx');
+      (global.fetch as jest.Mock).mockResolvedValue(
+        new Response(
+          JSON.stringify({ success: true, publicUrl: 'https://example.com/cover_v002.jpg' }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } },
+        ),
+      );
+    });
+
+    it('shows the warning for cover in upload mode with as-is selected', async () => {
+      await openUploadWithPhoto('cover');
+      expect(screen.getByRole('alert')).toHaveTextContent(warningText);
+    });
+
+    it('hides the warning after choosing convert', async () => {
+      await openUploadWithPhoto('cover');
+      fireEvent.click(screen.getAllByRole('radio')[1]);
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
+
+    it('hides the warning for backcover', async () => {
+      await openUploadWithPhoto('backcover');
+      expect(screen.queryByText(warningText)).not.toBeInTheDocument();
+    });
+
+    it('hides the warning for chapter images', async () => {
+      await openUploadWithPhoto('chapter');
+      expect(screen.queryByText(warningText)).not.toBeInTheDocument();
+    });
+
+    it('hides the warning in edit mode', () => {
+      renderEditor('cover');
+      expect(screen.queryByText(warningText)).not.toBeInTheDocument();
+    });
   });
 });

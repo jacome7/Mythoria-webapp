@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { pricingService, storyService } from '@/db/services';
-import { publishAudiobookRequest } from '@/lib/pubsub';
 import { getRecommendedVoice, getTTSProvider, isValidVoice } from '@/lib/voice-options';
 import { randomUUID } from 'crypto';
 import { resolveServerAnalyticsContext } from '@/lib/analytics/server-context';
-import { analyticsReference } from '@/lib/analytics/reference';
-import {
-  compensateProductGeneration,
-  InsufficientProductCreditsError,
-  markProductGenerationQueued,
-  startProductGeneration,
-} from '@/lib/product-generation';
+import { InsufficientProductCreditsError, startProductGeneration } from '@/lib/product-generation';
+import { launchAudiobookWorkflow } from '@/lib/product-launch';
 
 export async function POST(
   request: NextRequest,
@@ -107,42 +101,18 @@ export async function POST(
       );
     }
 
-    // Update story status to indicate audiobook generation is in progress
-    await storyService.updateStory(storyId, {
-      audiobookStatus: 'generating' as const,
+    const launched = await launchAudiobookWorkflow({
+      storyId,
+      runId,
+      voice,
+      includeBackgroundMusic,
     });
-
-    // Publish the Pub/Sub message to trigger the audiobook generation workflow
-    let messageId: string;
-    try {
-      messageId = String(
-        await publishAudiobookRequest({
-          storyId: storyId,
-          runId: runId,
-          voice: voice,
-          includeBackgroundMusic: includeBackgroundMusic,
-          timestamp: new Date().toISOString(),
-        }),
-      );
-    } catch (pubsubError) {
-      console.error('Failed to publish audiobook request:', pubsubError);
-
-      // Revert story status and refund credits since we couldn't trigger the workflow
-      await storyService.updateStory(storyId, {
-        audiobookStatus: null,
-      });
-
-      await compensateProductGeneration(runId, 'queue', 'pubsub_publish_failed');
-
+    if (!launched.ok) {
       return NextResponse.json(
         { error: 'Failed to start audiobook generation workflow' },
         { status: 500 },
       );
     }
-    await markProductGenerationQueued(runId, messageId);
-    console.info('[Audiobook] Generation request queued', {
-      runRef: analyticsReference(runId),
-    });
 
     // Return 202 Accepted to indicate async processing
     return NextResponse.json(

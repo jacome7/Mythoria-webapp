@@ -40,6 +40,7 @@ Edit Story is the hub for revising published stories and managing the listening 
 - **Rich text editor:** `src/components/chapter-editor/ChapterEditor.tsx` wraps Lexical, autosave, and version history APIs for undo/redo.
 - **AI text edits:** `src/components/AITextStoryEditor.tsx` checks credits, submits edit jobs, tracks progress, and patches updated HTML back to the chapter endpoint.
 - **AI image edits:** `src/components/AIImageEditor.tsx` supports prompt-driven edits and image uploads, then applies replacements through async jobs.
+- **Cover upload warning:** when a user uploads a cover and keeps "use as-is", the editor shows a non-blocking warning (`AIImageEditor.warnings.coverTitleNotPrinted`) because the print cover never renders the title; choosing AI conversion letters the title into the art.
 - **Full-story translation:** `src/components/TranslateFullStoryModal.tsx` queues translation jobs and redirects on completion.
 
 ### Audiobook generation

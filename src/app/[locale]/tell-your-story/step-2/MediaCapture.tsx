@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { createPortal } from 'react-dom';
 import { UploadedImage, UploadedAudio } from '@/hooks/useStep2Session';
@@ -9,6 +9,8 @@ import { useMediaUpload } from '@/hooks/useMediaUpload';
 import styles from './Step2Page.module.css';
 
 interface Props {
+  preview?: boolean;
+  imageLimit?: number;
   activeModal: 'images' | 'audio' | null;
   setActiveModal: (value: 'images' | 'audio' | null) => void;
   uploadedImages: UploadedImage[];
@@ -18,7 +20,6 @@ interface Props {
   saveToSession: () => void;
 }
 
-const MAX_IMAGES = 3;
 const MAX_ANALYSIS_ATTEMPTS = 3; // initial attempt + 2 retries
 const modalSurfaceClass =
   'modal-box !bg-[#fff7e6] !bg-gradient-to-br !from-[#fff8e8] !to-[#f7deb8] border border-[#5e401a]/20 shadow-[0_18px_30px_rgba(74,48,14,0.13)]';
@@ -26,14 +27,30 @@ const modalSurfaceClass =
 const stripLeadingTipsIcon = (value: string) => value.replace(/^\s*[📷📸🎤]\s*/u, '');
 
 export default function MediaCapture({
+  preview = false,
+  imageLimit = 3,
   activeModal,
   setActiveModal,
   uploadedImages,
-  setUploadedImages,
+  setUploadedImages: commitImages,
   uploadedAudio,
-  setUploadedAudio,
+  setUploadedAudio: commitAudio,
   saveToSession,
 }: Props) {
+  const MAX_IMAGES = Math.max(0, Math.min(3, imageLimit));
+  const alive = useRef(true);
+  const setUploadedImages: typeof commitImages = (value) => {
+    if (alive.current) commitImages(value);
+  };
+  const setUploadedAudio: typeof commitAudio = (value) => {
+    if (alive.current) commitAudio(value);
+  };
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
+    };
+  }, []);
   const t = useTranslations('StorySteps.step2');
   const locale = useLocale();
   const { uploadInput, analyzeImage } = useMediaUpload();
@@ -44,9 +61,15 @@ export default function MediaCapture({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const cameraStream = useRef<MediaStream | null>(null);
+  const currentModal = useRef(activeModal);
+  useEffect(() => {
+    currentModal.current = activeModal;
+  }, [activeModal]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const recordingStartedAt = useRef(0);
 
   // ---- Image upload + analysis pipeline -----------------------------------
 
@@ -71,13 +94,14 @@ export default function MediaCapture({
         error: e instanceof Error ? e.message : 'Analysis failed',
       });
     } finally {
-      saveToSession();
+      if (alive.current) saveToSession();
     }
   };
 
   const processImage = async (id: string, file: File) => {
     try {
       const { objectPath, publicUrl } = await uploadInput('image', file);
+      if (!alive.current) return;
       updateImage(id, { objectPath, publicUrl });
       await runAnalysis(id, objectPath);
     } catch (e) {
@@ -85,7 +109,7 @@ export default function MediaCapture({
         status: 'error',
         error: e instanceof Error ? e.message : 'Upload failed',
       });
-      saveToSession();
+      if (alive.current) saveToSession();
     }
   };
 
@@ -95,6 +119,7 @@ export default function MediaCapture({
       const id = crypto.randomUUID();
       const reader = new FileReader();
       reader.onload = (e) => {
+        if (!alive.current) return;
         const preview = (e.target?.result as string) || '';
         setUploadedImages((prev) =>
           [...prev, { id, file, preview, status: 'uploading' as const, attempts: 0 }].slice(
@@ -131,9 +156,16 @@ export default function MediaCapture({
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment' },
       });
+      if (!alive.current || currentModal.current !== 'images') {
+        stream.getTracks().forEach((track) => track.stop());
+        return;
+      }
+      cameraStream.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         videoRef.current.play();
+      } else {
+        stream.getTracks().forEach((track) => track.stop());
       }
     } catch (error) {
       console.error('Error accessing camera:', error);
@@ -181,19 +213,26 @@ export default function MediaCapture({
 
   // ---- Audio upload --------------------------------------------------------
 
-  const processAudio = async (file: File, preview: string) => {
-    setUploadedAudio({ file, preview, status: 'uploading' });
+  const processAudio = async (file: File, preview: string, durationSeconds?: number) => {
+    if (!alive.current) return;
+    setUploadedAudio({ file, preview, status: 'uploading', durationSeconds });
     try {
       const { objectPath } = await uploadInput('audio', file);
-      setUploadedAudio((prev) => (prev ? { ...prev, objectPath, status: 'done' } : prev));
-    } catch (e) {
+      if (!alive.current) return;
       setUploadedAudio((prev) =>
-        prev
+        prev?.file === file && prev.preview === preview
+          ? { ...prev, objectPath, status: 'done' }
+          : prev,
+      );
+    } catch (e) {
+      if (!alive.current) return;
+      setUploadedAudio((prev) =>
+        prev?.file === file && prev.preview === preview
           ? { ...prev, status: 'error', error: e instanceof Error ? e.message : 'Upload failed' }
           : prev,
       );
     } finally {
-      saveToSession();
+      if (alive.current) saveToSession();
     }
   };
 
@@ -215,6 +254,10 @@ export default function MediaCapture({
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      if (!alive.current || currentModal.current !== 'audio') {
+        stream.getTracks().forEach((track) => track.stop());
+        return;
+      }
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
@@ -222,12 +265,21 @@ export default function MediaCapture({
         if (event.data.size > 0) audioChunksRef.current.push(event.data);
       };
       mediaRecorder.onstop = () => {
+        if (!alive.current) {
+          stream.getTracks().forEach((track) => track.stop());
+          return;
+        }
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
         const audioFile = new File([audioBlob], 'recorded-audio.wav', { type: 'audio/wav' });
         const audioUrl = URL.createObjectURL(audioBlob);
-        void processAudio(audioFile, audioUrl);
+        void processAudio(
+          audioFile,
+          audioUrl,
+          (performance.now() - recordingStartedAt.current) / 1000,
+        );
         stream.getTracks().forEach((track) => track.stop());
       };
+      recordingStartedAt.current = performance.now();
       mediaRecorder.start();
       setIsRecording(true);
     } catch (error) {
@@ -242,6 +294,27 @@ export default function MediaCapture({
       setIsRecording(false);
     }
   };
+
+  useEffect(() => {
+    if (activeModal !== 'images' && videoRef.current?.srcObject) {
+      (videoRef.current.srcObject as MediaStream).getTracks().forEach((track) => track.stop());
+      videoRef.current.srcObject = null;
+      setIsCapturing(false);
+    }
+    if (activeModal !== 'audio' && mediaRecorderRef.current?.state === 'recording') {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  }, [activeModal]);
+  useEffect(
+    () => () => {
+      cameraStream.current?.getTracks().forEach((track) => track.stop());
+      const recorder = mediaRecorderRef.current;
+      if (recorder?.state === 'recording') recorder.stop();
+      recorder?.stream.getTracks().forEach((track) => track.stop());
+    },
+    [],
+  );
 
   // ---- Helpers -------------------------------------------------------------
 
@@ -264,9 +337,14 @@ export default function MediaCapture({
     <>
       {activeModal === 'images' &&
         createPortal(
-          <div className={`modal modal-open ${styles.step2Modal}`}>
+          <div
+            className={`modal modal-open ${styles.step2Modal} ${preview ? styles.previewModal : ''}`}
+          >
             <div
-              className={`${modalSurfaceClass} ${styles.step2ModalBox} max-w-5xl w-11/12 flex flex-col`}
+              role="dialog"
+              aria-modal="true"
+              aria-label={preview ? t('guided.cards.addPhotos') : t('tabImage')}
+              className={`${modalSurfaceClass} ${styles.step2ModalBox} ${preview ? styles.previewModalBox : ''} max-w-5xl w-11/12 flex flex-col`}
             >
               <div className="modal-header flex justify-between items-center mb-4">
                 <h3 className={styles.modalTitle}>
@@ -277,14 +355,15 @@ export default function MediaCapture({
                     height={64}
                     className={`${styles.modalTitleIcon} ${styles.cameraIcon}`}
                   />
-                  {t('tabImage')}
+                  {preview ? t('guided.cards.addPhotos') : t('tabImage')}
                 </h3>
                 <button
                   className="btn btn-sm btn-circle btn-ghost"
+                  aria-label={preview ? t('guided.close') : t('actions.done')}
                   onClick={() => {
                     setActiveModal(null);
                     stopCamera();
-                    saveToSession();
+                    if (alive.current) saveToSession();
                   }}
                 >
                   ✕
@@ -454,7 +533,7 @@ export default function MediaCapture({
                   onClick={() => {
                     setActiveModal(null);
                     stopCamera();
-                    saveToSession();
+                    if (alive.current) saveToSession();
                   }}
                 >
                   {t('actions.done')}
@@ -466,12 +545,17 @@ export default function MediaCapture({
         )}
 
       {/* Image analysis details modal */}
-      {detailsImage && (
-        <div className="modal modal-open">
+      {activeModal === 'images' && detailsImage && (
+        <ImageDetailsDialog
+          onClose={() => setDetailsId(null)}
+          title={t('imageAnalysis.detailsTitle')}
+        >
           <div className={`${modalSurfaceClass} max-w-2xl`}>
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold text-xl">ℹ️ {t('imageAnalysis.detailsTitle')}</h3>
               <button
+                type="button"
+                aria-label={t('actions.done')}
                 className="btn btn-sm btn-circle btn-ghost"
                 onClick={() => setDetailsId(null)}
               >
@@ -523,14 +607,19 @@ export default function MediaCapture({
               </button>
             </div>
           </div>
-        </div>
+        </ImageDetailsDialog>
       )}
 
       {activeModal === 'audio' &&
         createPortal(
-          <div className={`modal modal-open ${styles.step2Modal}`}>
+          <div
+            className={`modal modal-open ${styles.step2Modal} ${preview ? styles.previewModal : ''}`}
+          >
             <div
-              className={`${modalSurfaceClass} ${styles.step2ModalBox} max-w-5xl w-11/12 flex flex-col`}
+              role="dialog"
+              aria-modal="true"
+              aria-label={preview ? t('guided.cards.dictate') : t('tabRecord')}
+              className={`${modalSurfaceClass} ${styles.step2ModalBox} ${preview ? styles.previewModalBox : ''} max-w-5xl w-11/12 flex flex-col`}
             >
               <div className="modal-header flex justify-between items-center mb-4">
                 <h3 className={styles.modalTitle}>
@@ -541,10 +630,12 @@ export default function MediaCapture({
                     height={64}
                     className={`${styles.modalTitleIcon} ${styles.microphoneIcon}`}
                   />
-                  {t('tabRecord')}
+                  {preview ? t('guided.cards.dictate') : t('tabRecord')}
                 </h3>
                 <button
                   className="btn btn-sm btn-circle btn-ghost"
+                  data-close
+                  aria-label={preview ? t('guided.close') : t('actions.done')}
                   onClick={() => setActiveModal(null)}
                 >
                   ✕
@@ -629,6 +720,17 @@ export default function MediaCapture({
                         {uploadedAudio.preview && (
                           <audio
                             src={uploadedAudio.preview}
+                            onLoadedMetadata={(event) => {
+                              const duration = event.currentTarget.duration;
+                              const source = uploadedAudio.preview;
+                              if (Number.isFinite(duration) && duration > 0) {
+                                setUploadedAudio((previous) =>
+                                  previous?.preview === source
+                                    ? { ...previous, durationSeconds: duration }
+                                    : previous,
+                                );
+                              }
+                            }}
                             controls
                             className="w-full max-w-md mx-auto"
                           >
@@ -670,7 +772,7 @@ export default function MediaCapture({
                   className="btn btn-primary"
                   onClick={() => {
                     setActiveModal(null);
-                    saveToSession();
+                    if (alive.current) saveToSession();
                   }}
                 >
                   {t('actions.done')}
@@ -681,5 +783,45 @@ export default function MediaCapture({
           document.body,
         )}
     </>
+  );
+}
+
+/** Native top-layer dialog stays above the gallery portal and owns keyboard focus. */
+function ImageDetailsDialog({
+  title,
+  onClose,
+  children,
+}: {
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const dialog = ref.current;
+    const previous = document.activeElement as HTMLElement | null;
+    dialog?.showModal();
+    return () => {
+      dialog?.close();
+      if (previous?.isConnected) previous.focus();
+    };
+  }, []);
+
+  return createPortal(
+    <dialog
+      ref={ref}
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+      className={`modal modal-open ${styles.detailsModal}`}
+      onKeyDown={(event) => event.stopPropagation()}
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
+    >
+      {children}
+    </dialog>,
+    document.body,
   );
 }

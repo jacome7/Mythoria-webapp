@@ -12,9 +12,13 @@ export default function ProgressIndicator({ currentStep, totalSteps }: ProgressI
 
   return (
     <>
-      <div className="block md:hidden mb-8">
+      <div className="block min-[769px]:hidden mb-8">
         <div className="text-center text-sm text-gray-600 mb-2">
-          {t('stepProgress', { currentStep, totalSteps })}
+          {t.rich('stepProgress', {
+            currentStep,
+            totalSteps,
+            current: (chunks) => <strong>{chunks}</strong>,
+          })}
         </div>
         <progress
           className="progress progress-primary w-full"
@@ -23,7 +27,7 @@ export default function ProgressIndicator({ currentStep, totalSteps }: ProgressI
         />
       </div>
 
-      <div className="hidden md:block mb-8">
+      <div className="hidden min-[769px]:block mb-8">
         <ul className="steps steps-horizontal w-full">
           {Array.from({ length: totalSteps }).map((_, index) => (
             <li

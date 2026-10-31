@@ -96,6 +96,35 @@ export const envManifest: EnvVarDescriptor[] = [
     scopes: ['runtime', 'dev', 'prod'],
     note: 'Referral v1; see docs/referrals.md. Feature flags default to false.',
   },
+  {
+    name: 'SURVEY_LINK_SECRET',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    secret: true,
+    source: 'secret-manager',
+    note: 'Customer research surveys (docs/SURVEYS.md). HMAC secret (>= 32 chars) for survey invitation link tokens; shared with notification-engine.',
+  },
+  {
+    name: 'SURVEY_INTERNAL_AUDIENCE',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    source: 'substitution',
+    note: 'Customer research surveys. Audience of the Google OIDC token accepted by /api/internal/surveys/*; Admin calls with the same audience.',
+  },
+  {
+    name: 'SURVEY_ADMIN_SERVICE_ACCOUNT',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    source: 'substitution',
+    note: 'Customer research surveys. Service account email allowed to call /api/internal/surveys/command (Mythoria Admin).',
+  },
+  {
+    name: 'SURVEY_SCHEDULER_SERVICE_ACCOUNT',
+    required: false,
+    scopes: ['runtime', 'dev', 'prod'],
+    source: 'substitution',
+    note: 'Customer research surveys. Cloud Scheduler service account allowed to call /api/internal/surveys/jobs/*.',
+  },
   // Core runtime environment
   {
     name: 'NODE_ENV',

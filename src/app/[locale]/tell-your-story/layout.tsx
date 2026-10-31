@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { buildStaticPageMetadata } from '@/lib/static-page-metadata';
+import styles from './WizardMobile.module.css';
+import { WizardNavigation } from '@/components/WizardNavigation';
 
 export async function generateMetadata({
   params,
@@ -19,5 +21,9 @@ export async function generateMetadata({
 }
 
 export default function TellYourStoryLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <WizardNavigation>
+      <div className={styles.shell}>{children}</div>
+    </WizardNavigation>
+  );
 }

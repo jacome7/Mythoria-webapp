@@ -3,6 +3,11 @@ export const ANALYTICS_BASE_URL = 'https://mythoria.pt';
 const UUID_SEGMENT =
   /\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}(?=\/|$)/gi;
 const PRIVATE_SHARE_SEGMENT = /(\/s\/)[^/]+/gi;
+// `/survey/<bearer token>` carries an invitation credential. `/survey/reward/<id>` is a different
+// route whose id is an entitlement uuid (already redacted by UUID_SEGMENT; the explicit rule below
+// also covers any non-uuid value).
+const SURVEY_REWARD_SEGMENT = /(\/survey\/reward\/)[^/]+/gi;
+const SURVEY_TOKEN_SEGMENT = /(\/survey\/)(?!reward(?:\/|$))[^/]+/gi;
 
 function allowedOrigins(): Set<string> {
   const origins = new Set([new URL(ANALYTICS_BASE_URL).origin]);
@@ -26,6 +31,8 @@ export function sanitizeAnalyticsPathname(pathname: string): string | undefined 
   return pathname
     .replace(UUID_SEGMENT, '/:id')
     .replace(PRIVATE_SHARE_SEGMENT, '$1:token')
+    .replace(SURVEY_REWARD_SEGMENT, '$1:id')
+    .replace(SURVEY_TOKEN_SEGMENT, '$1:token')
     .replace(/\/{2,}/g, '/');
 }
 
@@ -52,4 +59,23 @@ export function currentBrowserPageContext(): {
     ...(pageLocation ? { pageLocation } : {}),
     ...(pageReferrer ? { pageReferrer } : {}),
   };
+}
+
+/**
+ * Explicit, already-redacted `page_location` / `page_path` for events fired on pages whose real URL
+ * carries a credential. GA4 otherwise derives `page_location` from `document.location`.
+ */
+export function redactedPageParams(redactedPath: string): {
+  page_location: string;
+  page_path: string;
+} {
+  const origin = typeof window === 'undefined' ? ANALYTICS_BASE_URL : window.location.origin;
+  return { page_location: `${origin}${redactedPath}`, page_path: redactedPath };
+}
+
+/** Redacted page params derived from the current browser path (uuid / token segments removed). */
+export function currentRedactedPageParams(): { page_location: string; page_path: string } {
+  const path =
+    typeof window === 'undefined' ? '/' : sanitizeAnalyticsPathname(window.location.pathname);
+  return redactedPageParams(path || '/');
 }

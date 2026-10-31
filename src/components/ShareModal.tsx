@@ -1,5 +1,6 @@
 'use client';
 
+import ModalPortal from '@/components/ModalPortal';
 import { useEffect, useState } from 'react';
 import { Check, Copy, Globe, Info, Lock, Mail, Share2, Users, X } from 'lucide-react';
 import { FaFacebook, FaWhatsapp } from 'react-icons/fa';
@@ -251,50 +252,138 @@ export default function ShareModal({
   );
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b">
-          <div className="flex items-center gap-3">
-            <Share2 className="text-primary text-xl" />
-            <h2 className="text-xl font-semibold">{tCommonShareModal('title')}</h2>
+    <ModalPortal>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+          <div className="flex items-center justify-between p-6 border-b">
+            <div className="flex items-center gap-3">
+              <Share2 className="text-primary text-xl" />
+              <h2 className="text-xl font-semibold">{tCommonShareModal('title')}</h2>
+            </div>
+            <button
+              onClick={handleClose}
+              className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <X className="text-xl" />
+            </button>
           </div>
-          <button
-            onClick={handleClose}
-            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <X className="text-xl" />
-          </button>
-        </div>
-        <div className="p-6 space-y-6">
-          {isCurrentlyPublic && !shareData ? (
-            <>
-              <div className="bg-green-50 rounded-lg p-4 border border-green-200 space-y-4">
-                <div>
-                  <h3 className="font-medium text-green-900 mb-2">
-                    {tCommonShareModal('publicStoryTitle')}
-                  </h3>
-                  <p className="text-sm text-green-700">{tCommonShareModal('publicStoryDesc')}</p>
-                </div>
-                {shareOptions(taggedUrl('copy_link'))}
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-red-100 rounded-lg">
-                    <Lock className="text-red-600" />
-                  </div>
+          <div className="p-6 space-y-6">
+            {isCurrentlyPublic && !shareData ? (
+              <>
+                <div className="bg-green-50 rounded-lg p-4 border border-green-200 space-y-4">
                   <div>
-                    <h4 className="font-medium">{tCommonShareModal('makePrivate')}</h4>
-                    <p className="text-sm text-gray-600">{tCommonShareModal('makePrivateDesc')}</p>
+                    <h3 className="font-medium text-green-900 mb-2">
+                      {tCommonShareModal('publicStoryTitle')}
+                    </h3>
+                    <p className="text-sm text-green-700">{tCommonShareModal('publicStoryDesc')}</p>
+                  </div>
+                  {shareOptions(taggedUrl('copy_link'))}
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-red-100 rounded-lg">
+                      <Lock className="text-red-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium">{tCommonShareModal('makePrivate')}</h4>
+                      <p className="text-sm text-gray-600">
+                        {tCommonShareModal('makePrivateDesc')}
+                      </p>
+                    </div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-primary"
+                    checked={makePublic}
+                    onChange={(event) => setMakePublic(event.target.checked)}
+                  />
+                </div>
+                {!makePublic && (
+                  <button
+                    onClick={() => void handleCreateShareLink()}
+                    disabled={loading}
+                    className="w-full btn btn-primary"
+                  >
+                    {loading ? (
+                      <span className="loading loading-spinner loading-sm" />
+                    ) : (
+                      <>
+                        <Lock />
+                        {tCommonShareModal('makePrivate')}
+                      </>
+                    )}
+                  </button>
+                )}
+              </>
+            ) : !shareData ? (
+              <>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h3 className="font-medium text-gray-900 mb-1">{storyTitle}</h3>
+                  <p className="text-sm text-gray-600">{tCommonShareModal('chooseOptions')}</p>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <Users className="text-blue-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium">{tCommonShareModal('allowEdit')}</h4>
+                        <p className="text-sm text-gray-600">
+                          {tCommonShareModal('allowEditDesc')}
+                        </p>
+                      </div>
+                    </div>
+                    <input
+                      type="checkbox"
+                      className="toggle toggle-primary"
+                      checked={allowEdit}
+                      onChange={(event) => setAllowEdit(event.target.checked)}
+                      disabled={makePublic}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-green-100 rounded-lg">
+                        <Globe className="text-green-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium">{tCommonShareModal('makePublic')}</h4>
+                        <p className="text-sm text-gray-600">
+                          {tCommonShareModal('makePublicDesc')}
+                        </p>
+                      </div>
+                    </div>
+                    <input
+                      type="checkbox"
+                      className="toggle toggle-primary"
+                      checked={makePublic}
+                      onChange={(event) => {
+                        setMakePublic(event.target.checked);
+                        if (event.target.checked) setAllowEdit(false);
+                      }}
+                    />
                   </div>
                 </div>
-                <input
-                  type="checkbox"
-                  className="toggle toggle-primary"
-                  checked={makePublic}
-                  onChange={(event) => setMakePublic(event.target.checked)}
-                />
-              </div>
-              {!makePublic && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
+                  <Info className="text-blue-600 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm">
+                    <p className="font-medium text-blue-900 mb-2">
+                      {tCommonShareModal('optionsExplained')}
+                    </p>
+                    <ul className="space-y-1 text-blue-700">
+                      <li>
+                        <strong>{tCommonShareModal('privateView')}</strong>
+                      </li>
+                      <li>
+                        <strong>{tCommonShareModal('privateEdit')}</strong>
+                      </li>
+                      <li>
+                        <strong>{tCommonShareModal('publicOption')}</strong>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
                 <button
                   onClick={() => void handleCreateShareLink()}
                   disabled={loading}
@@ -304,120 +393,40 @@ export default function ShareModal({
                     <span className="loading loading-spinner loading-sm" />
                   ) : (
                     <>
-                      <Lock />
-                      {tCommonShareModal('makePrivate')}
+                      <Share2 />
+                      {tCommonShareModal('generateLink')}
                     </>
                   )}
                 </button>
-              )}
-            </>
-          ) : !shareData ? (
-            <>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="font-medium text-gray-900 mb-1">{storyTitle}</h3>
-                <p className="text-sm text-gray-600">{tCommonShareModal('chooseOptions')}</p>
-              </div>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-100 rounded-lg">
-                      <Users className="text-blue-600" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium">{tCommonShareModal('allowEdit')}</h4>
-                      <p className="text-sm text-gray-600">{tCommonShareModal('allowEditDesc')}</p>
-                    </div>
+              </>
+            ) : (
+              <>
+                <div className="text-center space-y-4">
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <Check className="text-green-600 text-2xl mx-auto mb-2" />
+                    <p className="text-green-800 font-medium">{shareData.message}</p>
                   </div>
-                  <input
-                    type="checkbox"
-                    className="toggle toggle-primary"
-                    checked={allowEdit}
-                    onChange={(event) => setAllowEdit(event.target.checked)}
-                    disabled={makePublic}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-100 rounded-lg">
-                      <Globe className="text-green-600" />
+                  {basePath && shareOptions(taggedUrl('copy_link'))}
+                  {shareData.linkType === 'private' && (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-center gap-2 text-yellow-800 text-sm">
+                      <Lock />
+                      <span>{tCommonShareModal('privateExpires')}</span>
                     </div>
-                    <div>
-                      <h4 className="font-medium">{tCommonShareModal('makePublic')}</h4>
-                      <p className="text-sm text-gray-600">{tCommonShareModal('makePublicDesc')}</p>
-                    </div>
-                  </div>
-                  <input
-                    type="checkbox"
-                    className="toggle toggle-primary"
-                    checked={makePublic}
-                    onChange={(event) => {
-                      setMakePublic(event.target.checked);
-                      if (event.target.checked) setAllowEdit(false);
-                    }}
-                  />
+                  )}
                 </div>
-              </div>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
-                <Info className="text-blue-600 mt-0.5 flex-shrink-0" />
-                <div className="text-sm">
-                  <p className="font-medium text-blue-900 mb-2">
-                    {tCommonShareModal('optionsExplained')}
-                  </p>
-                  <ul className="space-y-1 text-blue-700">
-                    <li>
-                      <strong>{tCommonShareModal('privateView')}</strong>
-                    </li>
-                    <li>
-                      <strong>{tCommonShareModal('privateEdit')}</strong>
-                    </li>
-                    <li>
-                      <strong>{tCommonShareModal('publicOption')}</strong>
-                    </li>
-                  </ul>
+                <div className="flex gap-3">
+                  <button onClick={reset} className="flex-1 btn btn-outline">
+                    {tCommonShareModal('createAnother')}
+                  </button>
+                  <button onClick={handleClose} className="flex-1 btn btn-primary">
+                    {tCommonShareModal('done')}
+                  </button>
                 </div>
-              </div>
-              <button
-                onClick={() => void handleCreateShareLink()}
-                disabled={loading}
-                className="w-full btn btn-primary"
-              >
-                {loading ? (
-                  <span className="loading loading-spinner loading-sm" />
-                ) : (
-                  <>
-                    <Share2 />
-                    {tCommonShareModal('generateLink')}
-                  </>
-                )}
-              </button>
-            </>
-          ) : (
-            <>
-              <div className="text-center space-y-4">
-                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <Check className="text-green-600 text-2xl mx-auto mb-2" />
-                  <p className="text-green-800 font-medium">{shareData.message}</p>
-                </div>
-                {basePath && shareOptions(taggedUrl('copy_link'))}
-                {shareData.linkType === 'private' && (
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-center gap-2 text-yellow-800 text-sm">
-                    <Lock />
-                    <span>{tCommonShareModal('privateExpires')}</span>
-                  </div>
-                )}
-              </div>
-              <div className="flex gap-3">
-                <button onClick={reset} className="flex-1 btn btn-outline">
-                  {tCommonShareModal('createAnother')}
-                </button>
-                <button onClick={handleClose} className="flex-1 btn btn-primary">
-                  {tCommonShareModal('done')}
-                </button>
-              </div>
-            </>
-          )}
+              </>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </ModalPortal>
   );
 }
