@@ -34,7 +34,12 @@
       "intro": "Conte a sua história com palavras, imagens, áudio ou uma combinação à sua escolha.",
       "tellYourStoryLabel": "Conte a sua história...",
       "documentImport": {
-        "title": "Já tem um texto escrito?",
+        "intro": "Importe uma história existente ou prepare as suas ideias com um guião.",
+        "outlineTitle": "Precisa de um ponto de partida?",
+        "outlineDownload": "Descarregar guião da história",
+        "outlineHelp": "Um guia editável para personagens, cenários e acontecimentos principais. Substitua as perguntas pelas suas notas antes de importar.",
+
+        "title": "Já tenho um documento",
         "button": "Importar documento",
         "formats": "TXT, DOCX ou PDF · até 5 MB",
         "formatHelp": "O texto será extraído no seu dispositivo. A formatação e as imagens não são importadas.",
@@ -58,7 +63,7 @@
         "allowance": "{words} palavras · {remaining} caracteres disponíveis",
         "saveError": "Não foi possível guardar nesta sessão. Mantenha esta página aberta e copie o seu texto."
       },
-      "textPlaceholder": "Escreva ou cole aqui a sua história, ideia ou memória.",
+      "textPlaceholder": "Escreva ou cole aqui a sua história…",
       "textHelp": "Pode editar o texto antes de continuar.",
       "tabWrite": "Escrever",
       "tabImage": "Imagem",

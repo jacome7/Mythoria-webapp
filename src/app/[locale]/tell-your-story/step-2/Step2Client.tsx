@@ -2,6 +2,8 @@
 
 import { STORY_BRIEF_MAX_LENGTH } from '@/lib/story-templates/story-input-limit';
 import DocumentImport from './DocumentImport';
+import WriterPanel from './WriterPanel';
+import writerStyles from './WritingModal.module.css';
 
 import { Show, RedirectToSignIn, useAuth } from '@clerk/nextjs';
 import Image from 'next/image';
@@ -336,7 +338,11 @@ function Step2Content({
   ];
 
   useEffect(() => {
-    if (!preview || (!activeModal && !waitingForMedia && !showLoadingModal)) return;
+    if (
+      (!preview && activeModal !== 'text') ||
+      (!activeModal && !waitingForMedia && !showLoadingModal)
+    )
+      return;
     const previous = document.activeElement as HTMLElement | null;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -345,6 +351,7 @@ function Step2Content({
       (dialog?.querySelector<HTMLElement>('button') ?? dialog)?.focus();
     }, 0);
     const key = (event: KeyboardEvent) => {
+      if (document.querySelector('dialog[open]')) return;
       const dialog = document.querySelector<HTMLElement>('[role="dialog"]');
       if (event.key === 'Escape') {
         if (waitingForMedia) setWaitingForMedia(false);
@@ -1156,16 +1163,16 @@ function Step2Content({
         {/* Text Modal - Improved with better text area */}
         {activeModal === 'text' &&
           createPortal(
-            <div
-              className={`modal modal-open ${styles.step2Modal} ${preview ? styles.previewModal : ''}`}
-            >
+            <div className={`modal modal-open ${styles.step2Modal} ${writerStyles.overlay}`}>
               <div
                 role="dialog"
                 aria-modal="true"
                 aria-label={tStoryStepsStep2('tabWrite')}
-                className={`${modalSurfaceClass} ${styles.step2ModalBox} ${preview ? styles.previewModalBox : ''} max-w-5xl w-11/12 flex flex-col p-0`}
+                className={`${modalSurfaceClass} ${styles.step2ModalBox} ${writerStyles.modal} flex flex-col p-0`}
               >
-                <div className="modal-header flex justify-between items-center p-6 pb-4 border-b">
+                <div
+                  className={`modal-header flex justify-between items-center border-b ${writerStyles.header}`}
+                >
                   <h3 className={styles.modalTitle}>
                     <Image
                       src="/Papercut_icons/Pencil.webp"
@@ -1187,115 +1194,42 @@ function Step2Content({
                   </button>
                 </div>
 
-                <div className="flex-1 flex flex-col overflow-y-auto min-h-0">
-                  <div className="flex-1 flex flex-col min-h-64 px-6 py-4">
-                    <DocumentImport value={storyText} onChange={setStoryText} fits={fitsBrief} />
-                    {/* Enhanced text area with better scrolling */}
-                    <div className="flex-1 relative rounded-lg border border-base-300 overflow-hidden">
-                      <style
-                        dangerouslySetInnerHTML={{
-                          __html: `
-                        .enhanced-textarea {
-                          /* Firefox scrollbar */
-                          scrollbar-width: thick;
-                          scrollbar-color: rgba(59, 130, 246, 0.6) rgba(156, 163, 175, 0.2);
-                        }
-                        
-                        .enhanced-textarea::-webkit-scrollbar {
-                          width: 16px;
-                          height: 16px;
-                        }
-                        
-                        .enhanced-textarea::-webkit-scrollbar-track {
-                          background: rgba(156, 163, 175, 0.2);
-                          border-radius: 8px;
-                        }
-                        
-                        .enhanced-textarea::-webkit-scrollbar-thumb {
-                          background: rgba(59, 130, 246, 0.6);
-                          border-radius: 8px;
-                          border: 2px solid rgba(156, 163, 175, 0.2);
-                        }
-                        
-                        .enhanced-textarea::-webkit-scrollbar-thumb:hover {
-                          background: rgba(59, 130, 246, 0.8);
-                        }
-                        
-                        .enhanced-textarea::-webkit-scrollbar-thumb:active {
-                          background: rgba(59, 130, 246, 1);
-                        }
-                        
-                        /* Mobile optimizations */
-                        @media (max-width: 768px) {
-                          .enhanced-textarea::-webkit-scrollbar {
-                            width: 20px;
-                            height: 20px;
-                          }
-                          
-                          .enhanced-textarea::-webkit-scrollbar-thumb {
-                            border: 3px solid rgba(156, 163, 175, 0.2);
-                            border-radius: 10px;
-                          }
-                        }
-                        
-                        /* Touch devices - even larger scrollbar */
-                        @media (hover: none) and (pointer: coarse) {
-                          .enhanced-textarea::-webkit-scrollbar {
-                            width: 24px;
-                            height: 24px;
-                          }
-                          
-                          .enhanced-textarea::-webkit-scrollbar-thumb {
-                            border: 4px solid rgba(156, 163, 175, 0.2);
-                            border-radius: 12px;
-                          }
-                        }
-                      `,
-                        }}
-                      />
-                      <textarea
-                        className="enhanced-textarea w-full h-full p-4 resize-none text-base leading-relaxed border-0 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset"
-                        aria-label={tStoryStepsStep2('tabWrite')}
-                        placeholder={tStoryStepsStep2('textPlaceholder')}
-                        value={storyText}
-                        onChange={(e) => setStoryText(e.target.value)}
-                      />
-                    </div>
-
-                    <label className="label px-0 pt-2">
-                      <span className="label-text-alt break-words max-w-full whitespace-normal">
-                        {tStoryStepsStep2('documentImport.allowance', {
-                          words: wordCount,
-                          remaining: remainingCharacters,
-                        })}
-                      </span>
-                    </label>
+                <div className={writerStyles.body}>
+                  <DocumentImport value={storyText} onChange={setStoryText} fits={fitsBrief} />
+                  <div className={writerStyles.editor}>
+                    <textarea
+                      className={writerStyles.textarea}
+                      aria-label={tStoryStepsStep2('tabWrite')}
+                      placeholder={tStoryStepsStep2('textPlaceholder')}
+                      value={storyText}
+                      onChange={(e) => setStoryText(e.target.value)}
+                    />
                   </div>
-
+                  <p className={writerStyles.counter}>
+                    {tStoryStepsStep2('documentImport.allowance', {
+                      words: wordCount,
+                      remaining: remainingCharacters,
+                    })}
+                  </p>
                   {remainingCharacters < 0 && (
-                    <p role="alert" className="px-6 text-error">
+                    <p role="alert" className="text-error text-sm">
                       {tStoryStepsStep2('documentImport.overLimit')}
                     </p>
                   )}
                   {saveError && (
-                    <p role="alert" className="px-6 text-error">
+                    <p role="alert" className="text-error text-sm">
                       {tStoryStepsStep2('documentImport.saveError')}
                     </p>
                   )}
-                  {/* Writing Tips */}
-                  <div className="px-6 pb-4">
-                    {preview ? (
-                      <details>
-                        <summary>{tStoryStepsStep2('guided.needInspiration')}</summary>
-                        <WritingTips />
-                      </details>
-                    ) : (
-                      <WritingTips />
-                    )}
-                  </div>
+                  <WriterPanel
+                    label={tStoryStepsStep2('writingTipsTitle')}
+                    closeLabel={tStoryStepsStep2('actions.done')}
+                  >
+                    <WritingTips />
+                  </WriterPanel>
                 </div>
 
-                <div className="modal-action p-6 pt-4 border-t">
+                <div className={`modal-action border-t ${writerStyles.footer}`}>
                   <button
                     className="btn btn-primary"
                     onClick={() => {

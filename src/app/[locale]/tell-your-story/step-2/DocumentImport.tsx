@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import WriterPanel from './WriterPanel';
 import { createDocumentWorker } from '@/lib/story-templates/create-document-worker';
 
 export default function DocumentImport({
@@ -14,6 +15,7 @@ export default function DocumentImport({
   fits: (value: string) => boolean;
 }) {
   const t = useTranslations('StorySteps.step2.documentImport');
+  const locale = useLocale();
   const [review, setReview] = useState<string | null>(null);
   const [filename, setFilename] = useState('');
   const [busy, setBusy] = useState(false);
@@ -101,110 +103,136 @@ export default function DocumentImport({
     if (!next || !fits(next)) return;
     setUndo({ before: value, after: next });
     onChange(next);
+    input.current?.closest('dialog')?.close();
     setReview(null);
     setError('');
   };
   return (
-    <section className="shrink-0 space-y-2 pb-3" aria-label={t('title')}>
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="font-semibold">{t('title')}</span>
-        <button
-          type="button"
-          className="btn btn-outline btn-sm"
-          onClick={() => input.current?.click()}
-        >
-          {t('button')}
-        </button>
-        <input
-          ref={input}
-          type="file"
-          className="sr-only"
-          tabIndex={-1}
-          accept=".txt,.docx,.pdf,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-          onChange={(e) => {
-            select(e.target.files?.[0]);
-            e.target.value = '';
-          }}
-        />
-        <span className="text-sm">{t('formats')}</span>
-      </div>
-      <p className="text-sm">{t('formatHelp')}</p>
-      <div aria-live="polite">
-        {busy && (
-          <p>
-            {t('loading')}{' '}
-            <button type="button" className="btn btn-ghost btn-sm" onClick={cancel}>
-              {t('cancel')}
-            </button>
-          </p>
-        )}
-        {error && (
-          <p role="alert" className="text-error">
-            {error}
-          </p>
-        )}
-      </div>
-      {review !== null && (
-        <div className="space-y-2 rounded border p-2">
-          <p className="font-semibold">
-            {t('review')}: {filename}
-          </p>
-          <p className="text-sm">
-            {t('words', { count: review.trim() ? review.trim().split(/\s+/u).length : 0 })}
-          </p>
-          {pdfWarning && <p className="text-sm">{t('pdfWarning')}</p>}
-          <label className="block">
-            <span className="sr-only">{t('review')}</span>
-            <textarea
-              className="textarea textarea-bordered w-full h-32 text-base"
-              value={review}
-              onChange={(e) => setReview(e.target.value)}
-            />
-          </label>
-          {!fits(combined(false)) && (
-            <p role="alert" className="text-error text-sm">
-              {t('overLimit')}
+    <section className="shrink-0" aria-label={t('title')}>
+      <WriterPanel
+        label={t('title')}
+        closeLabel={t('cancel')}
+        onClose={() => {
+          cancel();
+          setReview(null);
+          setError('');
+        }}
+      >
+        <p className="mb-4 text-sm">{t('intro')}</p>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            className="btn btn-primary w-full min-h-11"
+            onClick={() => input.current?.click()}
+          >
+            {t('button')}
+          </button>
+          <input
+            ref={input}
+            type="file"
+            className="hidden"
+            tabIndex={-1}
+            accept=".txt,.docx,.pdf,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            onChange={(e) => {
+              select(e.target.files?.[0]);
+              e.target.value = '';
+            }}
+          />
+          <span className="text-sm">{t('formats')}</span>
+        </div>
+        <p className="text-sm">{t('formatHelp')}</p>
+        <div aria-live="polite">
+          {busy && (
+            <p>
+              {t('loading')}{' '}
+              <button type="button" className="btn btn-ghost btn-sm" onClick={cancel}>
+                {t('cancel')}
+              </button>
             </p>
           )}
-          <div className="flex flex-wrap gap-2">
-            {value.trim() ? (
-              <>
+          {error && (
+            <p role="alert" className="text-error">
+              {error}
+            </p>
+          )}
+        </div>
+        {review !== null && (
+          <div className="space-y-2 rounded border p-2">
+            <p className="font-semibold">
+              {t('review')}: {filename}
+            </p>
+            <p className="text-sm">
+              {t('words', { count: review.trim() ? review.trim().split(/\s+/u).length : 0 })}
+            </p>
+            {pdfWarning && <p className="text-sm">{t('pdfWarning')}</p>}
+            <label className="block">
+              <span className="sr-only">{t('review')}</span>
+              <textarea
+                className="textarea textarea-bordered w-full h-32 text-base"
+                value={review}
+                onChange={(e) => setReview(e.target.value)}
+              />
+            </label>
+            {!fits(combined(false)) && (
+              <p role="alert" className="text-error text-sm">
+                {t('overLimit')}
+              </p>
+            )}
+            <div className="flex flex-wrap gap-2">
+              {value.trim() ? (
+                <>
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-sm"
+                    disabled={!review.trim() || !fits(combined(true))}
+                    onClick={() => apply(true)}
+                  >
+                    {t('append')}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-outline btn-sm"
+                    disabled={!review.trim() || !fits(combined(false))}
+                    onClick={() => apply(false)}
+                  >
+                    {t('replace')}
+                  </button>
+                </>
+              ) : (
                 <button
                   type="button"
                   className="btn btn-primary btn-sm"
-                  disabled={!review.trim() || !fits(combined(true))}
-                  onClick={() => apply(true)}
-                >
-                  {t('append')}
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-outline btn-sm"
                   disabled={!review.trim() || !fits(combined(false))}
                   onClick={() => apply(false)}
                 >
-                  {t('replace')}
+                  {t('use')}
                 </button>
-              </>
-            ) : (
+              )}
               <button
                 type="button"
-                className="btn btn-primary btn-sm"
-                disabled={!review.trim() || !fits(combined(false))}
-                onClick={() => apply(false)}
+                className="btn btn-ghost btn-sm"
+                onClick={() => setReview(null)}
               >
-                {t('use')}
+                {t('cancel')}
               </button>
+            </div>
+            {value.trim() && !fits(combined(true)) && (
+              <p className="text-error text-sm">{t('appendLimit')}</p>
             )}
-            <button type="button" className="btn btn-ghost btn-sm" onClick={() => setReview(null)}>
-              {t('cancel')}
-            </button>
           </div>
-          {value.trim() && !fits(combined(true)) && (
-            <p className="text-error text-sm">{t('appendLimit')}</p>
-          )}
+        )}
+        <div className="mt-6 border-t pt-4 space-y-3">
+          <p className="font-semibold">{t('outlineTitle')}</p>
+          <a
+            className="btn btn-outline w-full"
+            href={`/downloads/story-outline/${locale}.docx`}
+            download={`mythoria-story-outline-${locale}.docx`}
+          >
+            {t('outlineDownload')}
+          </a>
+          <p className="text-sm">{t('outlineHelp')}</p>
         </div>
-      )}
+      </WriterPanel>
       {undo !== null && undo.after === value && (
         <button
           type="button"

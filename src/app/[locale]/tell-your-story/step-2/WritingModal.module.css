@@ -1,0 +1,138 @@
+.overlay {
+  padding: 4px !important;
+  align-items: center !important;
+}
+.modal {
+  width: min(96vw, 76rem) !important;
+  max-width: none !important;
+  height: calc(var(--visible-height, 100dvh) - 8px) !important;
+  max-height: calc(var(--visible-height, 100dvh) - 8px) !important;
+  overflow: hidden;
+}
+.header,
+.footer {
+  flex-shrink: 0;
+  padding: 8px 12px !important;
+}
+.header h3 {
+  font-size: 1.65rem;
+  gap: 8px;
+}
+.header img {
+  width: 36px;
+  height: 36px;
+}
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding: 8px 12px;
+  gap: 8px;
+  overflow: auto;
+}
+.editor {
+  flex: 1 1 0;
+  min-height: 100px;
+  border: 1px solid #5e401a40;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.textarea {
+  display: block;
+  width: 100%;
+  height: 100%;
+  resize: none;
+  padding: 12px;
+  background: transparent;
+  font-size: 16px;
+  line-height: 1.6;
+  color: inherit;
+}
+.textarea:focus {
+  outline: 2px solid #00557a;
+  outline-offset: -2px;
+}
+.counter {
+  font-size: 0.75rem;
+  color: #5b554a;
+  flex-shrink: 0;
+}
+.disclosure {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 40px;
+  border-radius: 6px;
+  padding: 6px 10px;
+  text-align: left;
+  color: #073967;
+  background: #5e401a08;
+}
+.disclosure:focus-visible {
+  outline: 2px solid #00557a;
+}
+.sheet {
+  position: fixed;
+  inset: auto 0 0;
+  margin: 0 auto;
+  width: min(100%, 42rem);
+  max-width: none;
+  max-height: min(80dvh, 48rem);
+  border: 1px solid #5e401a30;
+  border-radius: 14px 14px 0 0;
+  padding: 0;
+  background: #fff7e6;
+  color: #073967;
+  overflow: auto;
+}
+.sheet::backdrop {
+  background: #0007;
+}
+.sheetHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #5e401a30;
+}
+.sheetHeader h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.sheetBody {
+  padding: 16px;
+}
+@media (max-width: 768px) {
+  .modal {
+    width: calc(100vw - 8px) !important;
+  }
+}
+@media (max-height: 500px) {
+  .header,
+  .footer {
+    padding: 4px 8px !important;
+  }
+  .header img {
+    display: none;
+  }
+  .header h3 {
+    font-size: 1.2rem;
+  }
+  .body {
+    gap: 4px;
+    padding: 4px 8px;
+  }
+  .disclosure {
+    min-height: 32px;
+  }
+}
+
+.header button {
+  min-width: 40px;
+  min-height: 40px;
+  height: 40px;
+}

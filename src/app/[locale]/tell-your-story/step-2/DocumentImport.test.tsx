@@ -6,7 +6,20 @@ import { createDocumentWorker } from '@/lib/story-templates/create-document-work
 jest.mock('@/lib/story-templates/create-document-worker', () => ({
   createDocumentWorker: jest.fn(),
 }));
-jest.mock('next-intl', () => ({ useTranslations: () => (key: string) => key }));
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => key,
+  useLocale: () => 'en-US',
+}));
+
+beforeAll(() => {
+  HTMLDialogElement.prototype.showModal = function () {
+    this.setAttribute('open', '');
+  };
+  HTMLDialogElement.prototype.close = function () {
+    this.removeAttribute('open');
+    this.dispatchEvent(new Event('close'));
+  };
+});
 
 function Harness() {
   const [value, setValue] = useState('Original');
@@ -26,6 +39,7 @@ test('ignores worker handshake, reviews an import, appends and undoes without lo
   };
   (createDocumentWorker as jest.Mock).mockReturnValue(worker);
   const { container } = render(<Harness />);
+  fireEvent.click(screen.getByRole('button', { name: 'title' }));
   const file = new File(['content'], 'story.txt', { type: 'text/plain' });
   fireEvent.change(container.querySelector('input[type=file]')!, { target: { files: [file] } });
   expect(screen.getByText('loading')).toBeInTheDocument();
@@ -42,6 +56,7 @@ test('ignores worker handshake, reviews an import, appends and undoes without lo
 
 test('rejects an oversized file without changing the story', () => {
   const { container } = render(<Harness />);
+  fireEvent.click(screen.getByRole('button', { name: 'title' }));
   const file = new File([new Uint8Array(5 * 1024 * 1024 + 1)], 'story.txt');
   fireEvent.change(container.querySelector('input[type=file]')!, { target: { files: [file] } });
   expect(screen.getByRole('alert')).toHaveTextContent('tooLarge');
@@ -56,10 +71,11 @@ test('cancelling extraction terminates the worker and ignores a late result', ()
   };
   (createDocumentWorker as jest.Mock).mockReturnValue(worker);
   const { container } = render(<Harness />);
+  fireEvent.click(screen.getByRole('button', { name: 'title' }));
   fireEvent.change(container.querySelector('input[type=file]')!, {
     target: { files: [new File(['x'], 'story.txt')] },
   });
-  fireEvent.click(screen.getByRole('button', { name: 'cancel' }));
+  fireEvent.click(screen.getByText('cancel', { exact: true }));
   expect(worker.terminate).toHaveBeenCalled();
   act(() => worker.onmessage?.({ data: { kind: 'result', text: 'late result' } }));
   expect(screen.queryByRole('textbox', { name: 'review' })).not.toBeInTheDocument();
@@ -74,6 +90,7 @@ test('does not allow a reviewed result that exceeds the available allowance', ()
   };
   (createDocumentWorker as jest.Mock).mockReturnValue(worker);
   const { container } = render(<Harness />);
+  fireEvent.click(screen.getByRole('button', { name: 'title' }));
   fireEvent.change(container.querySelector('input[type=file]')!, {
     target: { files: [new File(['x'], 'story.txt')] },
   });
@@ -81,4 +98,16 @@ test('does not allow a reviewed result that exceeds the available allowance', ()
   expect(screen.getByRole('button', { name: 'append' })).toBeDisabled();
   expect(screen.getByRole('button', { name: 'replace' })).toBeDisabled();
   expect(screen.getByTestId('story')).toHaveTextContent('Original');
+});
+
+test('keeps document instructions hidden until the document button is pressed', () => {
+  render(<Harness />);
+  expect(screen.queryByRole('button', { name: 'button' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: 'outlineDownload' })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'title' }));
+  expect(screen.getByRole('button', { name: 'button' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'outlineDownload' })).toHaveAttribute(
+    'href',
+    '/downloads/story-outline/en-US.docx',
+  );
 });

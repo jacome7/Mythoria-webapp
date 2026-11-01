@@ -34,7 +34,12 @@
       "intro": "Erzähle deine Geschichte mit Worten, Bildern, Audio oder einer Kombination deiner Wahl.",
       "tellYourStoryLabel": "Erzähl deine Geschichte...",
       "documentImport": {
-        "title": "Haben Sie bereits einen Text?",
+        "intro": "Importieren Sie eine vorhandene Geschichte oder bereiten Sie Ihre Ideen mit einer Vorlage vor.",
+        "outlineTitle": "Brauchen Sie einen Ausgangspunkt?",
+        "outlineDownload": "Geschichtenvorlage herunterladen",
+        "outlineHelp": "Eine bearbeitbare Vorlage für Figuren, Schauplätze und wichtige Ereignisse. Ersetzen Sie die Fragen vor dem Import durch Ihre Notizen.",
+
+        "title": "Ich habe bereits ein Dokument",
         "button": "Dokument importieren",
         "formats": "TXT, DOCX oder PDF · bis 5 MB",
         "formatHelp": "Der Text wird auf Ihrem Gerät ausgelesen. Formatierungen und Bilder werden nicht importiert.",
@@ -58,7 +63,7 @@
         "allowance": "{words} Wörter · {remaining} Zeichen verfügbar",
         "saveError": "Speichern in dieser Sitzung fehlgeschlagen. Lassen Sie die Seite offen und kopieren Sie Ihren Text."
       },
-      "textPlaceholder": "Schreiben Sie Ihre Geschichte, Idee oder Erinnerung hier oder fügen Sie sie ein.",
+      "textPlaceholder": "Schreiben oder fügen Sie Ihre Geschichte hier ein…",
       "textHelp": "Sie können den Text vor dem Fortfahren bearbeiten.",
       "tabWrite": "Schreiben",
       "tabImage": "Bild",

@@ -34,7 +34,12 @@
       "intro": "Raconte ton histoire avec des mots, des images, de l’audio ou la combinaison de ton choix.",
       "tellYourStoryLabel": "Racontez votre histoire...",
       "documentImport": {
-        "title": "Vous avez déjà un texte ?",
+        "intro": "Importez une histoire existante ou préparez vos idées avec un plan.",
+        "outlineTitle": "Besoin d’un point de départ ?",
+        "outlineDownload": "Télécharger le plan de l’histoire",
+        "outlineHelp": "Un guide modifiable pour les personnages, les lieux et les événements clés. Remplacez les questions par vos notes avant l’importation.",
+
+        "title": "J’ai déjà un document",
         "button": "Importer un document",
         "formats": "TXT, DOCX ou PDF · 5 Mo maximum",
         "formatHelp": "Le texte est extrait sur votre appareil. La mise en forme et les images ne sont pas importées.",
@@ -58,7 +63,7 @@
         "allowance": "{words} mots · {remaining} caractères disponibles",
         "saveError": "Impossible d’enregistrer cette session. Gardez cette page ouverte et copiez votre texte."
       },
-      "textPlaceholder": "Écrivez ou collez ici votre histoire, idée ou souvenir.",
+      "textPlaceholder": "Écrivez ou collez votre histoire ici…",
       "textHelp": "Vous pouvez modifier le texte avant de continuer.",
       "tabWrite": "Écrire",
       "tabImage": "Image",

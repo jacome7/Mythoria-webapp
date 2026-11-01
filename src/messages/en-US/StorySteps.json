@@ -34,7 +34,12 @@
       "intro": "Tell your story with words, images, audio, or any mix you like.",
       "tellYourStoryLabel": "Tell your story...",
       "documentImport": {
-        "title": "Already have a written text?",
+        "intro": "Import an existing story or prepare your ideas with an outline.",
+        "outlineTitle": "Need a starting point?",
+        "outlineDownload": "Download story outline",
+        "outlineHelp": "An editable guide to characters, setting and key events. Replace the prompts with your own notes before importing.",
+
+        "title": "I already have a document",
         "button": "Import document",
         "formats": "TXT, DOCX or PDF · up to 5 MB",
         "formatHelp": "Text is extracted on your device. Formatting and images are not imported.",
@@ -58,7 +63,7 @@
         "allowance": "{words} words · {remaining} characters available",
         "saveError": "Could not save in this session. Keep this page open and copy your text."
       },
-      "textPlaceholder": "Write or paste your story, idea or memory here.",
+      "textPlaceholder": "Write or paste your story here…",
       "textHelp": "You can edit the text before continuing.",
       "tabWrite": "Write",
       "tabImage": "Image",
