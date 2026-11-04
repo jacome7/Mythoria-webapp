@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 @plugin "daisyui" {
-  exclude: properties, radialprogress;
+  exclude: properties, radialprogress, join;
 }
 @plugin "daisyui/theme" {
   name: 'autumn';
