@@ -3,7 +3,6 @@ import { NextRequest } from 'next/server';
 import { POST } from './route';
 import { storyService, StoryDraftOwnershipError } from '@/db/services';
 import { getCurrentAuthor } from '@/lib/auth';
-import { isStoryTemplatesEnabledForAuthor } from '@/lib/story-templates/feature';
 import { linkReferralFromRequest } from '@/lib/referrals/http';
 
 jest.mock('@/db/services', () => ({
@@ -11,7 +10,6 @@ jest.mock('@/db/services', () => ({
   StoryDraftOwnershipError: class extends Error {},
 }));
 jest.mock('@/lib/auth', () => ({ getCurrentAuthor: jest.fn() }));
-jest.mock('@/lib/story-templates/feature', () => ({ isStoryTemplatesEnabledForAuthor: jest.fn() }));
 jest.mock('@/lib/referrals/http', () => ({ linkReferralFromRequest: jest.fn() }));
 
 const draftId = 'e23a1f19-cce9-4b55-a9b7-9696a137fa97';
@@ -26,7 +24,6 @@ type Story = Awaited<ReturnType<typeof storyService.createStory>>;
 describe('guided story draft API', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.mocked(isStoryTemplatesEnabledForAuthor).mockReturnValue(true);
     jest
       .mocked(getCurrentAuthor)
       .mockResolvedValue({ authorId: 'author-1' } as NonNullable<
@@ -58,18 +55,17 @@ describe('guided story draft API', () => {
     );
   });
 
-  it('is hidden while disabled', async () => {
-    jest.mocked(isStoryTemplatesEnabledForAuthor).mockReturnValue(false);
-    expect((await POST(request())).status).toBe(404);
-    expect(getCurrentAuthor).toHaveBeenCalled();
-  });
-
-  it('passes the authenticated author to the access check', async () => {
-    await POST(request());
-    expect(isStoryTemplatesEnabledForAuthor).toHaveBeenCalledWith(
-      expect.objectContaining({ authorId: 'author-1' }),
-    );
-  });
+  it.each([false, true])(
+    'allows experimental preference %s',
+    async (experimentalFeaturesEnabled) => {
+      jest
+        .mocked(getCurrentAuthor)
+        .mockResolvedValue({ authorId: 'author-1', experimentalFeaturesEnabled } as NonNullable<
+          Awaited<ReturnType<typeof getCurrentAuthor>>
+        >);
+      expect((await POST(request())).status).toBe(200);
+    },
+  );
 
   it('requires authentication', async () => {
     jest.mocked(getCurrentAuthor).mockResolvedValue(null);

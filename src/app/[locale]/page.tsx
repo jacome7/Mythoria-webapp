@@ -6,7 +6,6 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { buildStaticPageMetadata } from '@/lib/static-page-metadata';
 import { getHomepageLandingPageGuides } from '@/content/landing-pages';
-import { getStoryTemplateAccess } from '@/lib/story-templates/access';
 
 export const dynamic = 'force-dynamic';
 
@@ -59,7 +58,7 @@ export default async function Home({ searchParams, params }: HomePageProps) {
       initialIntentContext={initialIntentContext}
       intentOverrideActive={initialHeroIntentOverride !== null}
       homepageGuides={homepageGuides}
-      storyTemplatesEnabled={await getStoryTemplateAccess()}
+      storyTemplatesEnabled
     />
   );
 }
