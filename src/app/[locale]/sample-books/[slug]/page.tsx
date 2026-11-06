@@ -5,7 +5,6 @@ import { getSeoSampleBook } from '@/content/sample-books/seo';
 import { buildPublicRedirectSearch, buildStoryAuthReturnSearch } from '@/lib/campaign-context';
 import { getTranslations } from 'next-intl/server';
 import { getTemplateForSample } from '@/lib/story-templates/catalog';
-import { getStoryTemplateAccess } from '@/lib/story-templates/access';
 import { getSampleBookBySlug, getSampleBookChapter } from '@/lib/sample-books/catalog';
 import { buildAbsoluteUrl, buildLocalizedUrl } from '@/lib/seo';
 
@@ -62,9 +61,7 @@ export default async function SampleBookPage({ params, searchParams }: SampleBoo
   }
 
   const chapter = await getSampleBookChapter(book);
-  const template = (await getStoryTemplateAccess())
-    ? getTemplateForSample(book.slug, locale)
-    : null;
+  const template = getTemplateForSample(book.slug, locale);
   let createSimilar: { href: string; label: string } | undefined;
   if (template) {
     const safeQuery = buildStoryAuthReturnSearch(query);

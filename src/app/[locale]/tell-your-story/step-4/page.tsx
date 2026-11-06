@@ -243,7 +243,7 @@ function Step4Page() {
       return literaryPersonaOptionMap[literaryPersona].description;
     }
 
-    return literaryPersonaMessages?.helper || '';
+    return '';
   };
 
   const getSavedPersonaSettings = (persona: SavedWritingPersona): WritingPersonaSettings => ({
@@ -762,14 +762,19 @@ function Step4Page() {
                           {/* Literary Persona Field */}
                           <div className="form-control md:col-span-2">
                             <label className="label">
-                              <span className="label-text font-semibold">
+                              <span
+                                id="literary-persona-label"
+                                className="label-text font-semibold"
+                              >
                                 {literaryPersonaMessages?.label ||
                                   tStoryStepsStep4('fields.literaryPersona')}
                               </span>
                             </label>
                             <button
                               type="button"
-                              className={`w-full text-left border border-base-300 rounded-lg bg-base-100 px-4 py-3 focus:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                              aria-labelledby="literary-persona-label literary-persona-value"
+                              aria-haspopup="dialog"
+                              className={`select select-bordered w-full flex items-center justify-between text-left ${
                                 !literaryPersona && !customWritingPersona ? 'text-gray-500' : ''
                               }`}
                               onClick={() => setShowLiteraryPersonaDropdown(true)}
@@ -780,22 +785,15 @@ function Step4Page() {
                                 }
                               }}
                             >
-                              <div className="flex flex-col items-start gap-1">
-                                <span className="font-semibold whitespace-normal leading-snug">
-                                  {getSelectedPersonaName() ||
-                                    literaryPersonaMessages?.placeholder ||
-                                    tStoryStepsStep4('placeholders.selectLiteraryPersona')}
-                                </span>
-                                <span className="text-xs text-gray-600 whitespace-normal leading-snug">
-                                  {getSelectedPersonaDescription()}
-                                </span>
-                              </div>
-                            </button>
-                            <label className="label">
-                              <span className="label-text-alt break-words max-w-full whitespace-normal">
-                                {literaryPersonaMessages?.helper || ''}
+                              <span id="literary-persona-value" className="truncate">
+                                {getSelectedPersonaName() ||
+                                  literaryPersonaMessages?.placeholder ||
+                                  tStoryStepsStep4('placeholders.selectLiteraryPersona')}
                               </span>
-                            </label>
+                            </button>
+                            <p className="text-sm text-gray-600 mt-1">
+                              {getSelectedPersonaDescription()}
+                            </p>
                           </div>
 
                           {/* Novel Style Field */}

@@ -486,7 +486,7 @@ describe('SurveyRenderer persistence and submission', () => {
     pick('Fantasy');
     clickBack();
     pick('No'); // hides Q2 and must drop its answer
-    fireEvent.click(screen.getByRole('button', { name: 'Send my answers' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
 
     await waitFor(() =>
       expect(screen.getByRole('heading', { name: 'Thank you!' })).toBeInTheDocument(),
@@ -505,7 +505,7 @@ describe('SurveyRenderer persistence and submission', () => {
 
     // First attempt fails, the retry must reuse the same key.
     submitResponse = { status: 500, body: { error: 'server_error' } };
-    fireEvent.click(screen.getByRole('button', { name: 'Send my answers' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
     await waitFor(() =>
       expect(screen.getByRole('alert')).toHaveTextContent("We couldn't send your answers"),
     );
@@ -514,7 +514,7 @@ describe('SurveyRenderer persistence and submission', () => {
       status: 200,
       body: { ok: true, entitlementId: 'ent-42', rewardStatus: 'pending_story' },
     };
-    fireEvent.click(screen.getByRole('button', { name: 'Send my answers' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
     await waitFor(() =>
       expect(screen.getByText('All done, thanks for sharing!')).toBeInTheDocument(),
     );
@@ -539,7 +539,7 @@ describe('SurveyRenderer persistence and submission', () => {
     renderSurvey(branching);
     start();
     pick('No');
-    fireEvent.click(screen.getByRole('button', { name: 'Send my answers' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
     await waitFor(() =>
       expect(screen.getByRole('link', { name: 'Choose my gift' })).toBeInTheDocument(),
     );
@@ -551,7 +551,7 @@ describe('SurveyRenderer persistence and submission', () => {
     renderSurvey(branching);
     start();
     pick('No');
-    fireEvent.click(screen.getByRole('button', { name: 'Send my answers' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
     await waitFor(() =>
       expect(screen.getByText('All done, thanks for sharing!')).toBeInTheDocument(),
     );
@@ -566,7 +566,7 @@ describe('SurveyRenderer persistence and submission', () => {
     renderSurvey(branching);
     start();
     pick('No');
-    fireEvent.click(screen.getByRole('button', { name: 'Send my answers' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
     await waitFor(() =>
       expect(screen.getByText(/A few answers need another look/)).toBeInTheDocument(),
     );
@@ -578,7 +578,7 @@ describe('SurveyRenderer persistence and submission', () => {
     renderSurvey(branching);
     start();
     pick('No');
-    fireEvent.click(screen.getByRole('button', { name: 'Send my answers' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
     await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent(/just closed/));
   });
 });

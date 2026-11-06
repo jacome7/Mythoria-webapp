@@ -16,7 +16,7 @@
   "nav": {
     "back": "Zurück",
     "next": "Weiter",
-    "submit": "Antworten senden",
+    "submit": "Senden",
     "submitting": "Wird gesendet…",
     "stepProgress": "Schritt {current} von {total}",
     "progressLabel": "Fortschritt der Umfrage"

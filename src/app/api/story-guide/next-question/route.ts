@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentAuthor } from '@/lib/auth';
 import { sgwFetch } from '@/lib/sgw-client';
-import { isStoryTemplatesEnabledForAuthor } from '@/lib/story-templates/feature';
 import { getStoryTemplate } from '@/lib/story-templates/catalog';
 import {
   fallbackQuestion,
@@ -12,8 +11,6 @@ import {
 export async function POST(request: NextRequest) {
   const author = await getCurrentAuthor();
   if (!author) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  if (!isStoryTemplatesEnabledForAuthor(author))
-    return NextResponse.json({ error: 'Not found' }, { status: 404 });
   let body: unknown;
   try {
     const text = await request.text();

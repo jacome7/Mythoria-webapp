@@ -16,7 +16,7 @@
   "nav": {
     "back": "Voltar",
     "next": "Seguinte",
-    "submit": "Enviar as minhas respostas",
+    "submit": "Enviar",
     "submitting": "A enviar…",
     "stepProgress": "Passo {current} de {total}",
     "progressLabel": "Progresso do questionário"

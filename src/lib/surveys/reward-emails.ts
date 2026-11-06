@@ -10,6 +10,7 @@ import { normalizeLocale } from '@/utils/locale-utils';
 
 export interface RewardEmailSummary {
   sent: number;
+  accepted: number;
   failed: number;
 }
 
@@ -72,7 +73,7 @@ async function sendRewardEmails(
   kind: RewardEmailKind,
   entitlementIds: string[],
 ): Promise<RewardEmailSummary> {
-  const summary: RewardEmailSummary = { sent: 0, failed: 0 };
+  const summary: RewardEmailSummary = { sent: 0, accepted: 0, failed: 0 };
   if (!entitlementIds.length) return summary;
 
   let contexts: RewardEmailContext[];
@@ -97,7 +98,8 @@ async function sendRewardEmails(
         entityId: `${entityPrefix}:${ctx.entitlementId}`,
         metadata: { notificationType: templateId },
       });
-      if (response.success) summary.sent += 1;
+      if (response.success && response.deliveryStatus === 'sent') summary.sent += 1;
+      else if (response.success && response.deliveryStatus !== 'failed') summary.accepted += 1;
       else {
         summary.failed += 1;
         console.error('[SurveyRewards] Reward email was not accepted', {

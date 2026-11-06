@@ -20,7 +20,6 @@ interface Props {
   saveToSession: () => void;
 }
 
-const MAX_ANALYSIS_ATTEMPTS = 3; // initial attempt + 2 retries
 const modalSurfaceClass =
   'modal-box !bg-[#fff7e6] !bg-gradient-to-br !from-[#fff8e8] !to-[#f7deb8] border border-[#5e401a]/20 shadow-[0_18px_30px_rgba(74,48,14,0.13)]';
 
@@ -135,8 +134,13 @@ export default function MediaCapture({
 
   const retryAnalysis = (id: string) => {
     const img = uploadedImages.find((i) => i.id === id);
-    if (!img || !img.objectPath || img.attempts >= MAX_ANALYSIS_ATTEMPTS) return;
-    void runAnalysis(id, img.objectPath);
+    if (!img || img.status !== 'error') return;
+    if (img.objectPath) {
+      void runAnalysis(id, img.objectPath);
+    } else if (img.file) {
+      updateImage(id, { status: 'uploading', error: undefined });
+      void processImage(id, img.file);
+    }
   };
 
   const removeImage = (id: string) => {
@@ -428,7 +432,7 @@ export default function MediaCapture({
                                 </button>
                               )}
                               {img.status === 'error' &&
-                                (img.attempts < MAX_ANALYSIS_ATTEMPTS && img.objectPath ? (
+                                (img.objectPath || img.file ? (
                                   <button
                                     className="btn btn-xs btn-primary"
                                     onClick={() => retryAnalysis(img.id)}

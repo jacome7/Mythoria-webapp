@@ -16,7 +16,7 @@
   "nav": {
     "back": "Back",
     "next": "Next",
-    "submit": "Send my answers",
+    "submit": "Send",
     "submitting": "Sending…",
     "stepProgress": "Step {current} of {total}",
     "progressLabel": "Survey progress"

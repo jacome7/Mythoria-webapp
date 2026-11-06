@@ -35,14 +35,6 @@ export interface EnvVarDescriptor {
 
 export const envManifest: EnvVarDescriptor[] = [
   {
-    name: 'STORY_TEMPLATES_ENABLED',
-    required: false,
-    scopes: ['runtime', 'dev', 'prod'],
-    default: 'false',
-    source: 'substitution',
-    note: 'Enables editorial story templates and mapped sample creation links. Default off.',
-  },
-  {
     name: 'REFERRAL_PROGRAM_ENABLED',
     required: false,
     scopes: ['runtime', 'dev', 'prod'],

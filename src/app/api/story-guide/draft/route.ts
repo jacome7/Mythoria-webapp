@@ -4,7 +4,6 @@ import { z } from 'zod';
 import { storyService, StoryDraftOwnershipError } from '@/db/services';
 import { getCurrentAuthor } from '@/lib/auth';
 import { linkReferralFromRequest } from '@/lib/referrals/http';
-import { isStoryTemplatesEnabledForAuthor } from '@/lib/story-templates/feature';
 
 const draftSchema = z
   .object({
@@ -19,8 +18,6 @@ export async function POST(request: NextRequest) {
   try {
     const author = await getCurrentAuthor();
     if (!author) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    if (!isStoryTemplatesEnabledForAuthor(author))
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
     let body: unknown;
     try {
       const text = await request.text();

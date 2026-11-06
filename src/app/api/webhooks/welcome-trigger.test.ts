@@ -21,6 +21,7 @@ describe('triggerWelcomeEmailSafe', () => {
     expect(notificationFetch).toHaveBeenCalledTimes(1);
     const call = (notificationFetch as jest.Mock).mock.calls[0];
     expect(call[0]).toBe('/email/template');
+    expect(call[1].headers['Idempotency-Key']).toBe('welcome:11111111-1111-1111-1111-111111111111');
     const body = JSON.parse(call[1].body);
     expect(body.templateId).toBe('welcome');
     expect(body.authorId).toBe('11111111-1111-1111-1111-111111111111');

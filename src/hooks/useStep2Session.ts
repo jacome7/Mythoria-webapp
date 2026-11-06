@@ -23,7 +23,7 @@ export interface UploadedImage {
   file?: File; // present for freshly added images; absent for session-restored ones
   preview: string; // data URL (fresh) or public URL (restored)
   status: AnalysisStatus;
-  attempts: number; // analysis attempts used (capped at 3)
+  attempts: number; // analysis attempts used during this session
   objectPath?: string;
   publicUrl?: string;
   metadata?: ImageMetadataSummary;

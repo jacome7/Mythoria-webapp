@@ -38,7 +38,7 @@ describe('survey reward emails', () => {
     jest.clearAllMocks();
     process.env.NEXT_PUBLIC_BASE_URL = 'https://mythoria.test/';
     getRewardEmailContextsMock.mockResolvedValue([context()]);
-    sendTemplatedEmailMock.mockResolvedValue({ success: true });
+    sendTemplatedEmailMock.mockResolvedValue({ success: true, deliveryStatus: 'sent' });
     jest.spyOn(console, 'error').mockImplementation(() => undefined);
   });
 
@@ -50,7 +50,11 @@ describe('survey reward emails', () => {
   });
 
   it('sends the available email once per entitlement id', async () => {
-    await expect(sendRewardAvailableEmails(['ent-1'])).resolves.toEqual({ sent: 1, failed: 0 });
+    await expect(sendRewardAvailableEmails(['ent-1'])).resolves.toEqual({
+      sent: 1,
+      accepted: 0,
+      failed: 0,
+    });
     expect(sendTemplatedEmailMock).toHaveBeenCalledWith(
       expect.objectContaining({
         templateId: 'survey-reward-available',
@@ -83,6 +87,7 @@ describe('survey reward emails', () => {
     ]);
     await expect(sendAudiobookReadyEmails(['ent-1', 'ent-2'])).resolves.toEqual({
       sent: 1,
+      accepted: 0,
       failed: 0,
     });
     expect(sendTemplatedEmailMock).toHaveBeenCalledTimes(1);
@@ -106,14 +111,35 @@ describe('survey reward emails', () => {
       .mockRejectedValueOnce(new Error('boom'));
     await expect(sendRewardAvailableEmails(['ent-1', 'ent-2'])).resolves.toEqual({
       sent: 0,
+      accepted: 0,
       failed: 2,
+    });
+  });
+
+  it('does not count accepted pending or legacy responses as sent', async () => {
+    getRewardEmailContextsMock.mockResolvedValue([context(), context({ entitlementId: 'ent-2' })]);
+    sendTemplatedEmailMock
+      .mockResolvedValueOnce({ success: true, deliveryStatus: 'pending' })
+      .mockResolvedValueOnce({ success: true });
+    await expect(sendRewardAvailableEmails(['ent-1', 'ent-2'])).resolves.toEqual({
+      sent: 0,
+      accepted: 2,
+      failed: 0,
     });
   });
 
   it('survives a recipient lookup failure and skips empty input', async () => {
     getRewardEmailContextsMock.mockRejectedValue(new Error('db'));
-    await expect(sendRewardAvailableEmails(['ent-1'])).resolves.toEqual({ sent: 0, failed: 1 });
-    await expect(sendRewardAvailableEmails([])).resolves.toEqual({ sent: 0, failed: 0 });
+    await expect(sendRewardAvailableEmails(['ent-1'])).resolves.toEqual({
+      sent: 0,
+      accepted: 0,
+      failed: 1,
+    });
+    await expect(sendRewardAvailableEmails([])).resolves.toEqual({
+      sent: 0,
+      accepted: 0,
+      failed: 0,
+    });
     expect(sendTemplatedEmailMock).not.toHaveBeenCalled();
   });
 });

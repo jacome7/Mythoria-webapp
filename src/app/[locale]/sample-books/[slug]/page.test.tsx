@@ -3,10 +3,8 @@
 import { render, screen } from '@testing-library/react';
 import SampleBookPage from './page';
 import { getTemplateForSample } from '@/lib/story-templates/catalog';
-import { getStoryTemplateAccess } from '@/lib/story-templates/access';
 import { permanentRedirect } from 'next/navigation';
 
-jest.mock('@/lib/story-templates/access', () => ({ getStoryTemplateAccess: jest.fn() }));
 jest.mock('@/lib/story-templates/catalog', () => ({ getTemplateForSample: jest.fn() }));
 jest.mock('next-intl/server', () => ({ getTranslations: async () => () => 'Create similar' }));
 jest.mock('next/navigation', () => ({
@@ -42,22 +40,13 @@ describe('sample story template entry', () => {
     jest.clearAllMocks();
   });
 
-  it('keeps the existing detail page when disabled', async () => {
-    jest.mocked(getStoryTemplateAccess).mockResolvedValue(false);
-    render(await SampleBookPage(request));
-    expect(screen.queryByRole('link', { name: 'Create similar' })).not.toBeInTheDocument();
-    expect(getTemplateForSample).not.toHaveBeenCalled();
-  });
-
   it('does not offer unmapped stories as templates', async () => {
-    jest.mocked(getStoryTemplateAccess).mockResolvedValue(true);
     jest.mocked(getTemplateForSample).mockReturnValue(undefined);
     render(await SampleBookPage(request));
     expect(screen.queryByRole('link', { name: 'Create similar' })).not.toBeInTheDocument();
   });
 
   it('uses the approved template and carries safe acquisition context', async () => {
-    jest.mocked(getStoryTemplateAccess).mockResolvedValue(true);
     jest
       .mocked(getTemplateForSample)
       .mockReturnValue({ id: 'moonlight-adventure' } as NonNullable<

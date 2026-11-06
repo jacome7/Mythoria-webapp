@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import MediaCapture from './MediaCapture';
 import type { UploadedImage } from '@/hooks/useStep2Session';
 
@@ -8,8 +8,10 @@ jest.mock('next-intl', () => ({
   useLocale: () => 'pt-PT',
   useTranslations: () => Object.assign((key: string) => key, { raw: () => [] }),
 }));
+const mockUpload = jest.fn();
+const mockAnalyze = jest.fn();
 jest.mock('@/hooks/useMediaUpload', () => ({
-  useMediaUpload: () => ({ uploadInput: jest.fn(), analyzeImage: jest.fn() }),
+  useMediaUpload: () => ({ uploadInput: mockUpload, analyzeImage: mockAnalyze }),
 }));
 jest.mock('./Step2Page.module.css', () => ({
   step2Modal: 'gallery',
@@ -95,4 +97,37 @@ it('contains keyboard events and closes only the details on Escape cancellation'
   } finally {
     document.removeEventListener('keydown', outerKeyboard);
   }
+});
+
+it.each(['upload', 'analysis'])('retries a failed %s and runs image analysis', async (failure) => {
+  const file = new File(['image'], 'photo.jpg', { type: 'image/jpeg' });
+  const initial: UploadedImage = {
+    id: 'failed',
+    file,
+    preview: '',
+    status: 'error',
+    attempts: 3,
+    objectPath: failure === 'analysis' ? 'test/photo.jpg' : undefined,
+  };
+  mockUpload.mockResolvedValue({ objectPath: 'test/photo.jpg', publicUrl: 'url' });
+  mockAnalyze.mockResolvedValue({ description: 'Success' });
+  function Harness() {
+    const [images, setImages] = React.useState([initial]);
+    return (
+      <MediaCapture
+        activeModal="images"
+        setActiveModal={jest.fn()}
+        uploadedImages={images}
+        setUploadedImages={setImages}
+        uploadedAudio={null}
+        setUploadedAudio={jest.fn()}
+        saveToSession={jest.fn()}
+      />
+    );
+  }
+  render(<Harness />);
+  fireEvent.click(screen.getByRole('button', { name: /imageAnalysis.retry/ }));
+  await waitFor(() => expect(mockAnalyze).toHaveBeenCalledWith('test/photo.jpg', 'pt-PT'));
+  expect(mockUpload).toHaveBeenCalledTimes(failure === 'upload' ? 1 : 0);
+  await waitFor(() => expect(screen.getByText('imageAnalysis.statusReady')).toBeInTheDocument());
 });

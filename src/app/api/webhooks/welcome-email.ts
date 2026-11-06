@@ -29,13 +29,14 @@ export async function triggerWelcomeEmailSafe(params: WelcomeEmailParams) {
     };
     const res = await notificationFetch('/email/template', {
       method: 'POST',
+      headers: { 'Idempotency-Key': `welcome:${params.authorId}` },
       body: JSON.stringify(body),
     });
     if (!res.ok) {
       const text = await res.text();
       console.warn('Welcome email API responded non-OK', res.status, text);
     } else {
-      console.log('Welcome email dispatched (template)', {
+      console.log('Welcome email accepted (template)', {
         authorId: params.authorId,
         email: params.email,
       });

@@ -3,12 +3,10 @@ import { NextRequest } from 'next/server';
 import { POST } from './route';
 import { getCurrentAuthor } from '@/lib/auth';
 import { sgwFetch } from '@/lib/sgw-client';
-import { isStoryTemplatesEnabledForAuthor } from '@/lib/story-templates/feature';
 import { getStoryTemplate } from '@/lib/story-templates/catalog';
 
 jest.mock('@/lib/auth', () => ({ getCurrentAuthor: jest.fn() }));
 jest.mock('@/lib/sgw-client', () => ({ sgwFetch: jest.fn() }));
-jest.mock('@/lib/story-templates/feature', () => ({ isStoryTemplatesEnabledForAuthor: jest.fn() }));
 
 const body = {
   templateId: 'drawing-adventure',
@@ -37,7 +35,6 @@ const provider = (value: unknown = { revision: 7, question }) =>
 describe('next story guide question API', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.mocked(isStoryTemplatesEnabledForAuthor).mockReturnValue(true);
     jest
       .mocked(getCurrentAuthor)
       .mockResolvedValue({ authorId: 'trusted-author' } as NonNullable<
@@ -46,13 +43,6 @@ describe('next story guide question API', () => {
     provider();
   });
   afterEach(() => jest.restoreAllMocks());
-
-  it('passes the authenticated author to the access check', async () => {
-    await POST(request());
-    expect(isStoryTemplatesEnabledForAuthor).toHaveBeenCalledWith(
-      expect.objectContaining({ authorId: 'trusted-author' }),
-    );
-  });
 
   it.each(['en-US', 'pt-PT', 'es-ES', 'fr-FR', 'de-DE'])(
     'forwards opted-in photo guidance and returns its photo target for %s',
@@ -87,11 +77,18 @@ describe('next story guide question API', () => {
     expect(sgwFetch).not.toHaveBeenCalled();
   });
 
-  it('is hidden behind the feature flag and requires authentication', async () => {
-    jest.mocked(isStoryTemplatesEnabledForAuthor).mockReturnValue(false);
-    expect((await POST(request())).status).toBe(404);
-    expect(getCurrentAuthor).toHaveBeenCalled();
-    jest.mocked(isStoryTemplatesEnabledForAuthor).mockReturnValue(true);
+  it.each([false, true])(
+    'allows experimental preference %s',
+    async (experimentalFeaturesEnabled) => {
+      jest.mocked(getCurrentAuthor).mockResolvedValue({
+        authorId: 'trusted-author',
+        experimentalFeaturesEnabled,
+      } as NonNullable<Awaited<ReturnType<typeof getCurrentAuthor>>>);
+      expect((await POST(request())).status).toBe(200);
+    },
+  );
+
+  it('requires authentication', async () => {
     jest.mocked(getCurrentAuthor).mockResolvedValue(null);
     expect((await POST(request())).status).toBe(401);
     expect(sgwFetch).not.toHaveBeenCalled();

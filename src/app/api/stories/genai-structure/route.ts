@@ -5,7 +5,6 @@ import { getCurrentAuthor } from '@/lib/auth';
 import { storyService } from '@/db/services';
 import { sgwFetch } from '@/lib/sgw-client';
 import { storyPreferencesSchema, characterReferenceSchema } from '@/lib/story-templates/journey';
-import { isStoryTemplatesEnabledForAuthor } from '@/lib/story-templates/feature';
 
 const inputSchema = z.object({
   storyId: z.string().uuid(),
@@ -90,42 +89,6 @@ export async function POST(request: NextRequest) {
         { error: 'Only an unfinished draft can be structured' },
         { status: 409 },
       );
-    }
-
-    if (
-      (storyPreferences !== undefined ||
-        factuality !== undefined ||
-        structureRequestId !== undefined ||
-        characterReferences !== undefined) &&
-      !isStoryTemplatesEnabledForAuthor(currentAuthor)
-    ) {
-      // Rollback stops new template work, but a lost response must not strand
-      // an already accepted owned request. Recover its identity with a read only.
-      if (structureRequestId) {
-        try {
-          const pendingResponse = await sgwFetch(`/api/jobs/${structureRequestId}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-          });
-          if (pendingResponse.ok) {
-            const pending = await pendingResponse.json();
-            const job = pending?.job;
-            if (job?.type === 'story_structure' && job.metadata?.storyId === storyId) {
-              return NextResponse.json({
-                success: true,
-                jobId: structureRequestId,
-                duplicate: true,
-                status: job.status,
-                estimatedDuration:
-                  typeof job.estimatedDuration === 'number' ? job.estimatedDuration : 0,
-              });
-            }
-          }
-        } catch {
-          // No new work and no private upstream details on failed recovery.
-        }
-      }
-      return NextResponse.json({ error: 'Story templates are unavailable' }, { status: 404 });
     }
 
     const payload: Record<string, unknown> = {

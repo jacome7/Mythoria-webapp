@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import {
   COHORT_SURVEY_IDS,
   classifyAuthor,
+  SURVEY_COHORT_KEYS,
   holdoutBucket,
   isHoldout,
   isSurveyCohortKey,
@@ -11,13 +12,44 @@ describe('classifyAuthor', () => {
   it.each([
     [0, false, 'C1'],
     [1, false, 'C2'],
-    [2, false, 'U1'],
-    [7, false, 'U1'],
-    [0, true, 'U2'],
+    [2, false, 'C2'],
+    [3, false, 'C2'],
+    [7, false, 'C2'],
+    [4, false, 'C2'],
+    [0, true, 'C3'],
     [1, true, 'C3'],
     [5, true, 'C3'],
   ])('published=%i paid=%s -> %s', (publishedStoryCount, hasPaidPurchase, expected) => {
     expect(classifyAuthor({ publishedStoryCount, hasPaidPurchase })).toBe(expected);
+  });
+
+  it('classifies an author with 3 published stories and no purchase as C2', () => {
+    expect(classifyAuthor({ publishedStoryCount: 3, hasPaidPurchase: false })).toBe('C2');
+  });
+
+  it('classifies a paid author with zero published stories as C3', () => {
+    expect(classifyAuthor({ publishedStoryCount: 0, hasPaidPurchase: true })).toBe('C3');
+  });
+
+  it('classifies a paid author with 5 published stories as C3', () => {
+    expect(classifyAuthor({ publishedStoryCount: 5, hasPaidPurchase: true })).toBe('C3');
+  });
+
+  it('gives every author exactly one class and reconciles to the total', () => {
+    const counts = { C1: 0, C2: 0, C3: 0 };
+    let total = 0;
+    for (let published = 0; published <= 5; published += 1) {
+      for (const hasPaidPurchase of [false, true]) {
+        const cls = classifyAuthor({ publishedStoryCount: published, hasPaidPurchase });
+        expect(SURVEY_COHORT_KEYS).toContain(cls);
+        expect(cls === 'C1').toBe(published === 0 && !hasPaidPurchase);
+        expect(cls === 'C2').toBe(published >= 1 && !hasPaidPurchase);
+        expect(cls === 'C3').toBe(hasPaidPurchase);
+        counts[cls] += 1;
+        total += 1;
+      }
+    }
+    expect(counts.C1 + counts.C2 + counts.C3).toBe(total);
   });
 
   it('maps every invited cohort to a survey id', () => {

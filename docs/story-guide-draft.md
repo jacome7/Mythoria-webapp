@@ -1,6 +1,6 @@
 # Guided story draft API
 
-`POST /api/story-guide/draft` prepares a temporary story for the Step 2 template journey. It requires a signed-in author and the server runtime flag `STORY_TEMPLATES_ENABLED=true` (default off).
+`POST /api/story-guide/draft` prepares a temporary story for the Step 2 template journey and requires a signed-in author.
 
 The JSON body contains `draftId` (UUID), `title` (1–300 characters after trimming), `plotDescription` (up to 40,000 characters), and `storyLanguage` (`en-US`, `pt-PT`, `es-ES`, `fr-FR`, or `de-DE`). Unknown fields are rejected. JSON request text is bounded at 250,000 characters to accommodate escaped Unicode within the field limits.
 

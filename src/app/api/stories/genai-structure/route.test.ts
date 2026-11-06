@@ -4,14 +4,12 @@ import { POST } from './route';
 import { getCurrentAuthor } from '@/lib/auth';
 import { storyService } from '@/db/services';
 import { sgwFetch } from '@/lib/sgw-client';
-import { isStoryTemplatesEnabledForAuthor } from '@/lib/story-templates/feature';
 
 jest.mock('@/lib/auth', () => ({ getCurrentAuthor: jest.fn() }));
 jest.mock('@/db/services', () => ({
   storyService: { getStoryById: jest.fn(), updateStory: jest.fn() },
 }));
 jest.mock('@/lib/sgw-client', () => ({ sgwFetch: jest.fn() }));
-jest.mock('@/lib/story-templates/feature', () => ({ isStoryTemplatesEnabledForAuthor: jest.fn() }));
 
 const storyId = '2042e134-7f04-43f3-99de-a043139ee4ee';
 const body = { storyId, userDescription: 'A child discovers a magical doorway.', locale: 'en-US' };
@@ -45,7 +43,6 @@ const draft = {
 describe('story structure API template extension', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.mocked(isStoryTemplatesEnabledForAuthor).mockReturnValue(true);
     jest
       .mocked(getCurrentAuthor)
       .mockResolvedValue({ authorId: 'trusted-author' } as NonNullable<
@@ -60,13 +57,6 @@ describe('story structure API template extension', () => {
       );
   });
   afterEach(() => jest.restoreAllMocks());
-
-  it('passes the authenticated author to the access check', async () => {
-    await POST(request({ ...body, storyPreferences: {} }));
-    expect(isStoryTemplatesEnabledForAuthor).toHaveBeenCalledWith(
-      expect.objectContaining({ authorId: 'trusted-author' }),
-    );
-  });
 
   it.each(['en-US', 'pt-PT', 'es-ES', 'fr-FR', 'de-DE'])(
     'forwards a validated photo reference in %s',
@@ -92,43 +82,22 @@ describe('story structure API template extension', () => {
     expect(sgwFetch).not.toHaveBeenCalled();
   });
 
-  it('gates references for ineligible authors and checks story ownership', async () => {
-    jest.mocked(isStoryTemplatesEnabledForAuthor).mockReturnValue(false);
-    expect((await POST(request(photoBody))).status).toBe(404);
-    expect(isStoryTemplatesEnabledForAuthor).toHaveBeenCalledWith(
-      expect.objectContaining({ authorId: 'trusted-author' }),
-    );
-    expect(sgwFetch).not.toHaveBeenCalled();
-    jest.mocked(isStoryTemplatesEnabledForAuthor).mockReturnValue(true);
+  it('checks story ownership', async () => {
     jest.mocked(storyService.getStoryById).mockResolvedValue({ ...draft, authorId: 'other' });
     expect((await POST(request(photoBody))).status).toBe(404);
     expect(sgwFetch).not.toHaveBeenCalled();
   });
 
-  it('recovers an accepted owned photo structure request during rollback', async () => {
-    const structureRequestId = '096c4dc2-1b2a-42c5-9e92-c05cd4f76c93';
-    jest.mocked(isStoryTemplatesEnabledForAuthor).mockReturnValue(false);
-    jest.mocked(sgwFetch).mockResolvedValue(
-      new Response(
-        JSON.stringify({
-          success: true,
-          job: {
-            id: structureRequestId,
-            type: 'story_structure',
-            status: 'processing',
-            metadata: { storyId },
-          },
-        }),
-      ),
-    );
-    const response = await POST(request({ ...photoBody, structureRequestId }));
-    expect(response.status).toBe(200);
-    expect(await response.json()).toEqual(
-      expect.objectContaining({ jobId: structureRequestId, duplicate: true }),
-    );
-    expect(sgwFetch).toHaveBeenCalledTimes(1);
-    expect(jest.mocked(sgwFetch).mock.calls[0][1]?.method).toBe('GET');
-  });
+  it.each([false, true])(
+    'allows experimental preference %s',
+    async (experimentalFeaturesEnabled) => {
+      jest.mocked(getCurrentAuthor).mockResolvedValue({
+        authorId: 'trusted-author',
+        experimentalFeaturesEnabled,
+      } as NonNullable<Awaited<ReturnType<typeof getCurrentAuthor>>>);
+      expect((await POST(request(photoBody))).status).toBe(200);
+    },
+  );
 
   it('requires authentication before any story or upstream request', async () => {
     jest.mocked(getCurrentAuthor).mockResolvedValue(null);
@@ -137,105 +106,12 @@ describe('story structure API template extension', () => {
     expect(sgwFetch).not.toHaveBeenCalled();
   });
 
-  it('keeps the existing freeform request working when templates are off', async () => {
-    jest.mocked(isStoryTemplatesEnabledForAuthor).mockReturnValue(false);
+  it('keeps the existing freeform request working', async () => {
     expect((await POST(request())).status).toBe(200);
     expect(JSON.parse(String(jest.mocked(sgwFetch).mock.calls[0][1]?.body))).toEqual(body);
   });
 
-  it.each([
-    { storyPreferences: {} },
-    { factuality: 'memory' },
-    { structureRequestId: '096c4dc2-1b2a-42c5-9e92-c05cd4f76c93' },
-  ])('gates template-only fields when disabled', async (fields) => {
-    jest.mocked(isStoryTemplatesEnabledForAuthor).mockReturnValue(false);
-    expect((await POST(request({ ...body, ...fields }))).status).toBe(404);
-    if ('structureRequestId' in fields) {
-      expect(sgwFetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/jobs/'),
-        expect.objectContaining({ method: 'GET' }),
-      );
-    } else {
-      expect(sgwFetch).not.toHaveBeenCalled();
-    }
-  });
-
-  it('recovers an accepted owned structure request during rollback without starting new work', async () => {
-    const structureRequestId = '096c4dc2-1b2a-42c5-9e92-c05cd4f76c93';
-    jest.mocked(isStoryTemplatesEnabledForAuthor).mockReturnValue(false);
-    jest.mocked(sgwFetch).mockResolvedValue(
-      new Response(
-        JSON.stringify({
-          success: true,
-          job: {
-            id: structureRequestId,
-            type: 'story_structure',
-            status: 'processing',
-            estimatedDuration: 20,
-            metadata: { storyId },
-            result: { private: 'Do not return this outline here' },
-          },
-        }),
-      ),
-    );
-    const response = await POST(request({ ...body, structureRequestId }));
-    expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({
-      success: true,
-      jobId: structureRequestId,
-      duplicate: true,
-      status: 'processing',
-      estimatedDuration: 20,
-    });
-    expect(sgwFetch).toHaveBeenCalledTimes(1);
-    expect(sgwFetch).toHaveBeenCalledWith(
-      `/api/jobs/${structureRequestId}`,
-      expect.objectContaining({ method: 'GET' }),
-    );
-    expect(storyService.updateStory).not.toHaveBeenCalled();
-  });
-
-  it.each([
-    { type: 'story_structure', metadata: { storyId: 'another-story' } },
-    { type: 'text_edit', metadata: { storyId } },
-    { type: 'story_structure', metadata: {} },
-  ])('does not recover unrelated or malformed job data while disabled', async (job) => {
-    jest.mocked(isStoryTemplatesEnabledForAuthor).mockReturnValue(false);
-    jest.mocked(sgwFetch).mockResolvedValue(new Response(JSON.stringify({ success: true, job })));
-    const response = await POST(
-      request({
-        ...body,
-        structureRequestId: '096c4dc2-1b2a-42c5-9e92-c05cd4f76c93',
-        factuality: 'memory',
-      }),
-    );
-    expect(response.status).toBe(404);
-    expect(await response.json()).toEqual({ error: 'Story templates are unavailable' });
-    expect(sgwFetch).toHaveBeenCalledTimes(1);
-    expect(jest.mocked(sgwFetch).mock.calls[0][1]?.method).toBe('GET');
-    expect(storyService.updateStory).not.toHaveBeenCalled();
-  });
-
-  it('keeps new requests disabled when no accepted job exists', async () => {
-    jest.mocked(isStoryTemplatesEnabledForAuthor).mockReturnValue(false);
-    jest.mocked(sgwFetch).mockResolvedValue(new Response('{}', { status: 404 }));
-    expect(
-      (
-        await POST(
-          request({
-            ...body,
-            structureRequestId: '096c4dc2-1b2a-42c5-9e92-c05cd4f76c93',
-            storyPreferences: {},
-          }),
-        )
-      ).status,
-    ).toBe(404);
-    expect(sgwFetch).toHaveBeenCalledTimes(1);
-    expect(jest.mocked(sgwFetch).mock.calls[0][1]?.method).toBe('GET');
-  });
-
   it('checks ownership before attempting rollback recovery', async () => {
-    jest.mocked(isStoryTemplatesEnabledForAuthor).mockReturnValue(false);
     jest
       .mocked(storyService.getStoryById)
       .mockResolvedValue({ ...draft, authorId: 'another-author' });

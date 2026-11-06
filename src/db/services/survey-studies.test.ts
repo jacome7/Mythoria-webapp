@@ -331,27 +331,25 @@ describe('previewAudience', () => {
       rows([
         ['C1', 100, 80, 5],
         ['C2', 40, 30, 0],
-        ['C3', 10, 10, 0],
-        ['U1', 3, 3, 0],
-        ['U2', 2, 2, 0],
-        ['ACTIVE', 155, 0, 0],
+        ['C3', 12, 12, 0],
+        ['ACTIVE', 152, 0, 0],
         ['CLOSED', 7, 0, 0],
         ['DUPLICATES', 0, 0, 0],
       ]),
     ];
     const preview = await previewAudience(STUDY_ID);
     expect(preview).toEqual({
-      totalAuthors: 162,
+      totalAuthors: 159,
       closedAccounts: 7,
       cohorts: {
         C1: { classified: 100, emailEligible: 80, suppressed: 20, alreadyInvited: 5 },
         C2: { classified: 40, emailEligible: 30, suppressed: 10, alreadyInvited: 0 },
-        C3: { classified: 10, emailEligible: 10, suppressed: 0, alreadyInvited: 0 },
+        C3: { classified: 12, emailEligible: 12, suppressed: 0, alreadyInvited: 0 },
       },
-      unclassified: { U1: 3, U2: 2 },
       duplicateEmails: 0,
       reconciles: true,
     });
+    expect(preview).not.toHaveProperty('unclassified');
     expect(state.executed).toHaveLength(1);
   });
 
@@ -376,6 +374,37 @@ describe('previewAudience', () => {
     expect(text).toContain("not in ('unsub', 'hard_bounce')");
     expect(text).toContain('lower(trim(email))');
     expect(params).toEqual(expect.arrayContaining(['news', 'inspiration', STUDY_ID]));
+  });
+
+  it('classifies any paid author as C3 (even with zero published) and has no unclassified branch', async () => {
+    state.results = [[study()]];
+    await previewAudience(STUDY_ID);
+    const text = render(state.executed[0]).sql.replace(/\s+/g, ' ');
+    expect(text).toContain(
+      "case when pd.author_id is not null then 'C3' when coalesce(p.n, 0) = 0 then 'C1' else 'C2' end as cohort_key",
+    );
+    expect(text).not.toContain('U1');
+    expect(text).not.toContain('U2');
+  });
+
+  it('reconciles with every author classified and no unclassified groups', async () => {
+    state.results = [[study()]];
+    state.executeResults = [
+      rows([
+        ['C1', 5, 5, 0],
+        ['C2', 7, 7, 0],
+        ['C3', 4, 4, 0],
+        ['ACTIVE', 16, 0, 0],
+        ['CLOSED', 0, 0, 0],
+        ['DUPLICATES', 0, 0, 0],
+      ]),
+    ];
+    const preview = await previewAudience(STUDY_ID);
+    const sum =
+      preview.cohorts.C1.classified + preview.cohorts.C2.classified + preview.cohorts.C3.classified;
+    expect(sum).toBe(preview.totalAuthors - preview.closedAccounts);
+    expect(preview).not.toHaveProperty('unclassified');
+    expect(preview.reconciles).toBe(true);
   });
 
   it('treats an empty preference list as nobody eligible', async () => {

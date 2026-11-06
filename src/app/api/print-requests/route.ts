@@ -434,6 +434,7 @@ export async function POST(request: NextRequest) {
         const userLocale = normalizeLocale(author.preferredLocale || undefined);
         const payload = {
           templateId: 'print-request-created',
+          entityId: newRequest[0].id,
           recipients: [{ email: authorEmail, name: authorName, language: userLocale }],
           variables: {
             name: authorName,
@@ -459,6 +460,7 @@ export async function POST(request: NextRequest) {
           headers: {
             'Content-Type': 'application/json',
             'x-api-key': config.notification.apiKey,
+            'Idempotency-Key': `print-request-created:${newRequest[0].id}`,
           },
           body: JSON.stringify(payload),
         });

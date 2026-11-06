@@ -291,7 +291,7 @@ describe('POST /api/internal/surveys/command', () => {
       });
     });
 
-    it('rejects U1/U2 as snapshot cohorts', async () => {
+    it('rejects legacy U1/U2 keys as snapshot cohorts', async () => {
       const res = await call({
         operation: 'snapshotAudience',
         input: { studyId: STUDY_ID, cohortKeys: ['U1'] },

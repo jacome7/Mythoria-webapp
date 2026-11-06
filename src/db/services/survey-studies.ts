@@ -470,11 +470,9 @@ function classifiedAuthorsCte(preferences: string[]): SQL {
         (st.author_id is not null) as started_story,
         ${emailEligibleExpr(preferences)} as email_eligible,
         case
-          when pd.author_id is not null and coalesce(p.n, 0) >= 1 then 'C3'
-          when pd.author_id is not null then 'U2'
+          when pd.author_id is not null then 'C3'
           when coalesce(p.n, 0) = 0 then 'C1'
-          when coalesce(p.n, 0) = 1 then 'C2'
-          else 'U1'
+          else 'C2'
         end as cohort_key
       from authors a
       left join published p on p.author_id = a.author_id
@@ -492,7 +490,6 @@ export interface AudiencePreview {
     SurveyCohortKey,
     { classified: number; emailEligible: number; suppressed: number; alreadyInvited: number }
   >;
-  unclassified: { U1: number; U2: number };
   duplicateEmails: number;
   reconciles: boolean;
 }
@@ -554,21 +551,14 @@ export async function previewAudience(
       alreadyInvited: num(key, 'already_invited'),
     };
   }
-  const unclassified = { U1: num('U1', 'classified'), U2: num('U2', 'classified') };
   const active = num('ACTIVE', 'classified');
   const closedAccounts = num('CLOSED', 'classified');
-  const classifiedTotal =
-    cohorts.C1.classified +
-    cohorts.C2.classified +
-    cohorts.C3.classified +
-    unclassified.U1 +
-    unclassified.U2;
+  const classifiedTotal = cohorts.C1.classified + cohorts.C2.classified + cohorts.C3.classified;
 
   return {
     totalAuthors: active + closedAccounts,
     closedAccounts,
     cohorts,
-    unclassified,
     duplicateEmails: num('DUPLICATES', 'classified'),
     reconciles: classifiedTotal === active,
   };

@@ -1,5 +1,7 @@
 # Mythoria Web App – Agent Guide
 
+For stable email event identities and accepted-versus-sent response handling, see [email delivery](docs/email-delivery.md) and its shared cutover runbook. Credit events require their durable payment/ledger IDs. Generation emails use a successful run ID; copied stories do not create that event. Notification Engine owns the new delivery schema.
+
 ## Purpose & Scope
 
 This document is the single source of truth for agents working on the Mythoria web application. It describes how to set up the project, which quality checks must run before submitting work, and how to keep configuration and documentation in sync with the codebase.
@@ -116,7 +118,7 @@ The expanded owner welcome is implemented in `src/lib/referrals/invitation.ts` a
 
 ## Story templates and optional guidance
 
-See [the local contract](docs/story-templates.md) and [cross-service runbook](../docs/STORY_TEMPLATES.md). Both service flags default off. Keep draft/structure retries idempotent, private job polling owner-scoped, and existing pending jobs recoverable during rollback. SGW workflows migrations 0008 and 0009 were applied with authorization on 2026-09-19 after backup; see the [operation record](../docs/STORY_TEMPLATES_LOCAL_TEST_2026-09-19.md). Template entry and new guided requests also require the author’s `experimentalFeaturesEnabled` opt-in; preserve stored journeys and accepted job recovery when either gate is off. WebApp core migration 0044 was applied with authorization on 2026-10-27 after full backup; all existing authors were verified opted out. See the [opt-in migration record](../docs/EXPERIMENTAL_FEATURES_MIGRATION_2026-10-27.md). Future migrations need explicit authorization; never run integration fixtures against the production-shared development database.
+See [the local contract](docs/story-templates.md) and [cross-service runbook](../docs/STORY_TEMPLATES.md). Story templates are available to all users. Keep draft and structure retries idempotent, private job polling owner-scoped, and accepted jobs recoverable during rollback. Never run integration fixtures against the production-shared development database.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

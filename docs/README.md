@@ -4,6 +4,8 @@ This directory contains comprehensive documentation for the Mythoria WebApp fron
 
 ## Main Documentation
 
+- **[email-delivery.md](./email-delivery.md)** - Stable email event identities, queued/confirmed responses, and the shared rollout runbook
+
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - System architecture, technology stack, and frontend patterns
 - **[features.md](./features.md)** - Complete feature list and user interface capabilities
 - **[api-reference.md](./api-reference.md)** - Frontend API integration and backend communication

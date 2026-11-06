@@ -10,10 +10,8 @@ import { createHash } from 'node:crypto';
 export const SURVEY_COHORT_KEYS = ['C1', 'C2', 'C3'] as const;
 export type SurveyCohortKey = (typeof SURVEY_COHORT_KEYS)[number];
 
-export const SURVEY_UNCLASSIFIED_KEYS = ['U1', 'U2'] as const;
-export type SurveyUnclassifiedKey = (typeof SURVEY_UNCLASSIFIED_KEYS)[number];
-
-export type AuthorClass = SurveyCohortKey | SurveyUnclassifiedKey;
+/** Every author gets exactly one cohort; there are no unclassified groups. */
+export type AuthorClass = SurveyCohortKey;
 
 /** Default survey definition id for each invited cohort. */
 export const COHORT_SURVEY_IDS: Readonly<Record<SurveyCohortKey, string>> = Object.freeze({
@@ -33,18 +31,18 @@ export interface AuthorCohortInput {
 
 /**
  * - C1: no published story, never paid
- * - C2: exactly one published story, never paid
- * - C3: at least one published story and paid
- * - U1: two or more published stories, never paid (excluded)
- * - U2: paid but no published story (excluded)
+ * - C2: one or more published stories, never paid
+ * - C3: any successful paid credit purchase, regardless of published story count (including zero)
+ *
+ * Every author gets exactly one class (mutually exclusive and exhaustive).
  */
 export function classifyAuthor({
   publishedStoryCount,
   hasPaidPurchase,
 }: AuthorCohortInput): AuthorClass {
-  if (hasPaidPurchase) return publishedStoryCount >= 1 ? 'C3' : 'U2';
+  if (hasPaidPurchase) return 'C3';
   if (publishedStoryCount <= 0) return 'C1';
-  return publishedStoryCount === 1 ? 'C2' : 'U1';
+  return 'C2';
 }
 
 /**
